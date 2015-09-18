@@ -205,11 +205,11 @@
 
             var cropLeft = Math.ceil(crop.cropZone.left * this.width / canvas.width);
             var cropTop = Math.ceil(crop.cropZone.top * this.height / canvas.height);
-            var cropWidth = Math.ceil(crop.cropZone.width * this.width / canvas.width);
-            var cropHeight = Math.ceil(crop.cropZone.height * this.height / canvas.height);
+            var cropWidth = Math.ceil(crop.cropZone.currentWidth * this.width / canvas.width);
+            var cropHeight = Math.ceil(crop.cropZone.currentHeight * this.height / canvas.height);
 
-            var cropThumbnailWidth = Math.ceil(crop.cropZone.width * this.thumbnailWidth / canvas.width);
-            var cropThumbnailHeight = Math.ceil(crop.cropZone.height * this.thumbnailHeight / canvas.height);
+            var cropThumbnailWidth = Math.ceil(crop.cropZone.currentWidth * this.thumbnailWidth / canvas.width);
+            var cropThumbnailHeight = Math.ceil(crop.cropZone.currentHeight * this.thumbnailHeight / canvas.height);
 
             // Crop.
             crop.cropCurrentZone();
