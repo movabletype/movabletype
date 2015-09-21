@@ -81,6 +81,7 @@ requires 'CGI::Compile';
 requires 'YAML::Syck';
 
 # GoogleOpenIDConnect plugin
+requires 'JSON::XS', '< 3.0';
 requires 'OIDC::Lite';
 
 
