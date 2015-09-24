@@ -3023,8 +3023,7 @@ sub dialog_asset_modal {
     }
 
     my %param;
-    _set_start_upload_params( $app, \%param )
-        if $app->can_do('upload');
+    _set_start_upload_params( $app, \%param );
 
     $param{can_multi} = 1
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
@@ -3049,7 +3048,7 @@ sub dialog_asset_modal {
 
     $param{upload_mode} = $mode_userpic;
     if ($mode_userpic) {
-        $param{user_id}      = $app->user->id;
+        $param{user_id}      = $param{filter_val} || $app->user->id;
         $param{require_type} = 'image';
         $param{'is_image'}   = 1;
         $param{can_upload}   = 1;
