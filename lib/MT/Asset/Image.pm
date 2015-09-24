@@ -562,7 +562,7 @@ sub on_upload {
         my ( $w, $h ) = map $param->{$_}, qw( thumb_width thumb_height );
         if ( !$h ) {
             my $pct = $w / $width;
-            my $h = floor( ( $pct * $height ) + 0.5 );
+            $h = floor( ( $pct * $height ) + 0.5 );
         }
 
         my ($pseudo_thumbnail_url)
