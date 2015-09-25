@@ -33,8 +33,18 @@ sub extensions {
 
 sub save {
     my $asset = shift;
-    $asset->image_metadata( $asset->has_metadata
-            && $asset->exif ? $asset->exif->GetInfo : undef );
+
+    if ( $asset->has_metadata && $asset->exif ) {
+        my $info = $asset->GetInfo;
+
+# TODO: An error occurs when uploading image having ThumbnailImage tag on Azure.
+        delete $info->{ThumbnailImage};
+        $asset->image_metadata($info);
+    }
+    else {
+        $asset->image_metadata(undef);
+    }
+
     $asset->SUPER::save(@_);
 }
 
