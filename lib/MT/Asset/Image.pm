@@ -35,7 +35,7 @@ sub save {
     my $asset = shift;
 
     if ( $asset->has_metadata && $asset->exif ) {
-        my $info = $asset->GetInfo;
+        my $info = $asset->exif->GetInfo;
 
 # TODO: An error occurs when uploading image having ThumbnailImage tag on Azure.
         delete $info->{ThumbnailImage};
