@@ -9,7 +9,7 @@ use strict;
 use JSON qw/encode_json decode_json/;
 use MT::Util;
 
-my $scope = 'openid email profile phone address';
+my $scope = 'openid email profile';
 
 BEGIN {
     eval {
