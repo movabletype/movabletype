@@ -209,7 +209,8 @@ sub _get_userinfo {
 
     my $req = HTTP::Request->new( GET => $userinfo_endpoint );
     $req->header( Authorization => sprintf( q{Bearer %s}, $access_token ) );
-    return LWP::UserAgent->new->request($req);
+    my $ua = MT->new_ua( { paranoid => 1 } );
+    return $ua->request($req);
 }
 
 sub _uri_to_authorization_endpoint {
