@@ -2,7 +2,7 @@ package GoogleOpenIDConnect::Auth::GoogleOIDC;
 
 use strict;
 
-use base qw( GoogleOpenIDConnect::Auth::OIDC );
+use base qw( MT::Auth::OIDC );
 use GoogleOpenIDConnect;
 use JSON qw/encode_json decode_json/;
 use MT::Util;

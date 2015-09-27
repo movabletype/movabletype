@@ -8,8 +8,9 @@ use Test::More;
 use MT::Test;
 
 # Core module
+use_ok('MT::Auth::OIDC');
 use_ok('GoogleOpenIDConnect');
-use_ok('GoogleOpenIDConnect::Auth::OIDC');
+use_ok('GoogleOpenIDConnect::App');
 use_ok('GoogleOpenIDConnect::Auth::GoogleOIDC');
 
 # L10N modules

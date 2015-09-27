@@ -12,6 +12,7 @@ use warnings;
 use Encode;
 use MT::Util;
 
+use MT::Auth::OIDC;
 use GoogleOpenIDConnect;
 use GoogleOpenIDConnect::Auth::GoogleOIDC;
 
@@ -57,11 +58,10 @@ sub config_tmpl {
                     }
                     keys(%$system_config)
             ),
-            redirect_uri =>
-                GoogleOpenIDConnect::Auth::OIDC::_create_return_url(
+            redirect_uri => MT::Auth::OIDC::_create_return_url(
                 $app,
                 $blog
-                ),
+            ),
             (   $blog
                 ? ( scope_label => $blog->class_label, )
                 : ()

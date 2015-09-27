@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package GoogleOpenIDConnect::Auth::OIDC;
+package MT::Auth::OIDC;
 use strict;
 use JSON qw/encode_json decode_json/;
 use MT::Util;
@@ -92,17 +92,15 @@ sub handle_sign_in {
     }
 
     # ID Token validation
-    my $id_token = OIDC::Lite::Model::IDToken->load( $token->id_token );
-    my $config = $class->_get_client_info( $app, $blog );
+    my $id_token      = OIDC::Lite::Model::IDToken->load( $token->id_token );
+    my $config        = $class->_get_client_info( $app, $blog );
     my $authenticator = _get_commenter_authenticator($app);
     $config->{iss} = $authenticator->{issuer_identifier};
-    if(my $error = $class->_validate_id_token( 
-        $id_token->payload, 
-        $config,
-    )){
+    if ( my $error
+        = $class->_validate_id_token( $id_token->payload, $config, ) )
+    {
         return $app->error($error);
     }
-
 
     # get_user_info
     my $userinfo_res = $class->_get_userinfo( $app, $token->access_token );
@@ -201,6 +199,7 @@ sub _validate_id_token {
     return undef;
 
 }
+
 sub _get_userinfo {
     my ( $class, $app, $access_token ) = @_;
 
