@@ -456,7 +456,13 @@ jQuery('#open-file-dialog').click( function() {
 jQuery('#file').change( function(e) {
   var files = e.originalEvent.target.files;
   uploadFiles(files);
-  jQuery('#file').val('');  
+  jQuery('#file').val('');
+  if ( navigator.userAgent.match('MSIE') ) {
+    // Maybe lower than IE11
+    jQuery('#file').attr('type', 'text');
+    jQuery('#file').val('');
+    jQuery('#file').attr('type', 'file');
+  }
 });
 
 /* ]]> */
