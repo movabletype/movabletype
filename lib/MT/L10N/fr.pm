@@ -4074,6 +4074,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Undo' => 'Annuler', # Translate - New
 	'Redo' => 'Refaire', # Translate - New
 	'Save (s)' => 'Enregistrer (s)',
+	'You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?' => 'Les modifications apportées à cette image seront perdues. Voulez-vous vraiment fermer cette fenêtre?', # Translate - New
 
 ## tmpl/cms/dialog/entry_notify.tmpl
 	'Send a Notification' => 'Envoyer une notification',

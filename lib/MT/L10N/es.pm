@@ -4076,6 +4076,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Undo' => 'Deshacer', # Translate - New
 	'Redo' => 'Rehacer', # Translate - New
 	'Save (s)' => 'Guardar (s)',
+	'You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?' => 'Los cambios no guardados de esta imagen se perderán. ¿Está seguro de que desea cerrar este diálogo?', # Translate - New
 
 ## tmpl/cms/dialog/entry_notify.tmpl
 	'Send a Notification' => 'Enviar una notificación',

@@ -4065,6 +4065,7 @@ use vars qw( @ISA %Lexicon );
 	'Undo' => 'Rückgängig', # Translate - New # OK
 	'Redo' => 'Wiederholen', # Translate - New # OK
 	'Save (s)' => 'Sichern (s)',
+	'You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?' => 'Ihre Änderungen an diesem Bild wurden noch nicht gespeichert und gehen verloren. Dialog wirklich schließen?', # Translate - New
 
 ## tmpl/cms/dialog/entry_notify.tmpl
 	'Send a Notification' => 'Benachrichtigung versenden',

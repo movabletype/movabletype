@@ -2851,6 +2851,28 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## mt-static/js/dialog.js
 	'(None)' => '(Geen)',
 
+## mt-static/js/image_editor/fabric.js
+	' +
+                          toFixed(center.x, NUM_FRACTION_DIGITS) +
+                           +
+                          toFixed(center.y, NUM_FRACTION_DIGITS) +
+                        ' => ' +
+                          toFixed(center.x, NUM_FRACTION_DIGITS) +
+                           +
+                          toFixed(center.y, NUM_FRACTION_DIGITS) +
+                        ', # Translate - New
+	', (-this.width / 2), , (-this.height/2), ' => ', (-this.width / 2), , (-this.height/2), ', # Translate - New
+	' + (-this.width/2) +  + (-this.height/2) + ' => ' + (-this.width/2) +  + (-this.height/2) + ', # Translate - New
+	', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ' => ', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ', # Translate - New
+	',
+        -this.width / 2, ,
+        -this.height + heightOfLine, ' => ',
+        -this.width / 2, ,
+        -this.height + heightOfLine, ', # Translate - New
+
+## mt-static/js/image_editor/fabric.min.js
+	'+t(i.x,r)++t(i.y,r)+' => '+t(i.x,r)++t(i.y,r)+', # Translate - New
+	',s(r.textLeft,2)," ",s(r.textTop,2),' => ',s(r.textLeft,2)," ",s(r.textTop,2),', # Translate - New
 
 ## mt-static/js/tc/mixer/display.js
 	'Title:' => 'Titel:',
@@ -3578,7 +3600,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Left' => 'Links',
 	'Center' => 'Centreren',
 	'Right' => 'Rechts',
-	'Link to popup window' => '', # Translate - New
+	'Link to popup window' => 'Link naar popup venster', # Translate - New
 	'Link image to full-size version in a popup window.' => 'Link naar oorspronkelijke afbeelding in popup venster.',
 	'Save changes to these settings (s)' => 'Wijzigingen aan deze instellingen opslaan (s)',
 	'The range for Basename Length is 15 to 250.' => 'Basisnamen kunnen van 15 tot 250 karakters lang zijn.',
@@ -4056,6 +4078,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Undo' => 'Ongedaan maken', # Translate - New
 	'Redo' => 'Herhalen', # Translate - New
 	'Save (s)' => 'Opslaan (s)',
+	'You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?' => 'Er zijn niet opgeslagen wijzigingen aan deze afbeelding die verloren zullen gaan.  Bent u zeker dat u deze dialoog wil sluiten?', # Translate - New
 
 ## tmpl/cms/dialog/entry_notify.tmpl
 	'Send a Notification' => 'Notificatie versturen',
