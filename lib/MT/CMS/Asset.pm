@@ -491,12 +491,6 @@ sub js_upload_file {
                 $app->json_error( $app->translate("Permission denied.") ) );
         }
     }
-    elsif (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
     else {
         if ( my $perms = $app->permissions ) {
             return $app->error(
@@ -3022,7 +3016,6 @@ sub dialog_asset_modal {
     {
         return $app->permission_denied()
             unless $app->permissions;
-        $param{can_upload} = 1;
     }
     else {
         return $app->permission_denied()
