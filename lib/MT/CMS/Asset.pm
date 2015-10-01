@@ -491,6 +491,12 @@ sub js_upload_file {
                 $app->json_error( $app->translate("Permission denied.") ) );
         }
     }
+    elsif (   $app->param('edit_field')
+        && $app->param('edit_field') =~ m/^customfield_.*$/ )
+    {
+        return $app->permission_denied()
+            unless $app->permissions;
+    }
     else {
         if ( my $perms = $app->permissions ) {
             return $app->error(
@@ -1367,9 +1373,6 @@ sub _set_start_upload_params {
         if $app->config('EnableUploadCompat');
 
     if ( my $perms = $app->permissions ) {
-        return $app->permission_denied()
-            unless $perms->can_do('upload');
-
         my $blog_id = $app->param('blog_id');
         require MT::Blog;
         my $blog = MT::Blog->load($blog_id)
@@ -3011,19 +3014,20 @@ sub dialog_asset_modal {
     my $blog;
     $blog = $blog_class->load($blog_id) if $blog_id;
 
+    my %param;
+    _set_start_upload_params( $app, \%param );
+
     if (   $app->param('edit_field')
         && $app->param('edit_field') =~ m/^customfield_.*$/ )
     {
         return $app->permission_denied()
             unless $app->permissions;
+        $param{can_upload} = 1;
     }
     else {
         return $app->permission_denied()
             if $blog_id && !$app->can_do('access_to_insert_asset_list');
     }
-
-    my %param;
-    _set_start_upload_params( $app, \%param );
 
     $param{can_multi} = 1
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
