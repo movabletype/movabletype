@@ -208,6 +208,14 @@
             var cropWidth = Math.ceil(crop.cropZone.currentWidth * this.width / canvas.width);
             var cropHeight = Math.ceil(crop.cropZone.currentHeight * this.height / canvas.height);
 
+            // Adjust width and height.
+            if (cropLeft + cropWidth > this.width) {
+                cropWidth = this.width - cropLeft;
+            }
+            if (cropTop + cropHeight > this.height) {
+                cropHeight = this.height - cropTop;
+            }
+
             var cropThumbnailWidth = Math.ceil(crop.cropZone.currentWidth * this.thumbnailWidth / canvas.width);
             var cropThumbnailHeight = Math.ceil(crop.cropZone.currentHeight * this.thumbnailHeight / canvas.height);
 
