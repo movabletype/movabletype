@@ -414,13 +414,15 @@ sub init_website {
     return $app->error( $app->translate('Invalid request') )
         if $db_defs;
 
+    my $sep = quotemeta MT::Util::dir_separator;
+
     $param{config}           = $param->{config} || $app->param('config');
     $param{website_name}     = $app->param('website_name');
     $param{website_url}      = $app->param('website_url') || '';
     $param{website_path}     = $app->param('website_path') || '';
     $param{website_timezone} = $app->param('website_timezone');
     $param{website_theme}    = $app->param('website_theme');
-    $param{website_path} =~ s!(/|\\)$!!;
+    $param{website_path} =~ s!$sep+$!!;
     $param{website_url} .= '/' if $param{website_url} !~ m!/$!;
 
     my $tz

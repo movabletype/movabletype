@@ -39,7 +39,7 @@ the partition_key
 
 I<Data::ObjectDriver::Driver::MultiPartition> is used internally by
 I<Data::ObjectDriver::Driver::SimplePartition> to do very simple
-search accross partition, if the terms of the query cannot be used to
+search across partition, if the terms of the query cannot be used to
 determine the partition.
 
 It's just a basic support. For instance 'limit' arg isn't supported

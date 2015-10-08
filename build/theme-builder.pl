@@ -302,6 +302,8 @@ build-themes.pl - generates themes from a theme.yaml file
 or
     build-themes.pl ../experiments/funkymusic/theme.yaml
 
+=back
+
 =head1 DESCRIPTION
 
 Builds themes from a theme.yaml file and any .tt template files in 

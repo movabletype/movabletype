@@ -26,7 +26,7 @@ my $mock_cms_common = Test::MockModule->new('MT::CMS::Common');
 $mock_cms_common->mock( 'run_web_services_save_config_callbacks', sub { } );
 
 # $blog->use_revision is always 0 when TrackRevisions is 0.
-$app->config->TrackRevisions(1);
+$app->config->TrackRevisions( 1, 1 );
 
 my $suite = suite();
 test_data_api($suite);
@@ -360,6 +360,88 @@ sub suite {
                 },
             },
         },
+        {    # SitePath ends with slash.
+            path         => '/v2/sites',
+            method       => 'POST',
+            is_superuser => 1,
+            callbacks    => [
+
+                # save_permission_filter callback is not executed,
+                # because superuser accesses.
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.website',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.website',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.website',
+                    count => 1,
+                },
+            ],
+            params => {
+                website => {
+                    name     => 'SitePath ends with slash',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $FindBin::Bin . '/',
+                },
+            },
+        },
+        {    # ArchivePath.
+            path         => '/v2/sites',
+            method       => 'POST',
+            is_superuser => 1,
+            callbacks    => [
+
+                # save_permission_filter callback is not executed,
+                # because superuser accesses.
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.website',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.website',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.website',
+                    count => 1,
+                },
+            ],
+            params => {
+                website => {
+                    name     => 'test-api-permission-website',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $FindBin::Bin,
+                    archivePath => $FindBin::Bin . '/archives',
+                    archiveUrl  => 'http://narnia2.na/archives/',
+                },
+            },
+        },
+        {    # ArchivePath - Ends with slash.
+            path         => '/v2/sites',
+            method       => 'POST',
+            is_superuser => 1,
+            callbacks    => [
+
+                # save_permission_filter callback is not executed,
+                # because superuser accesses.
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.website',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.website',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.website',
+                    count => 1,
+                },
+            ],
+            params => {
+                website => {
+                    name     => 'test-api-permission-website',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $FindBin::Bin,
+                    archivePath => $FindBin::Bin . '/archives/',
+                    archiveUrl => 'http://narnia2.na/archives/',
+                },
+            },
+        },
         {   path         => '/v2/sites',
             method       => 'POST',
             is_superuser => 1,
@@ -402,6 +484,32 @@ sub suite {
                 is( $got->{themeId},      'classic_website', 'themeId' );
                 is( $got->{serverOffset}, -5.5,              'serverOffset' );
                 is( $got->{language},     'de',              'language' );
+            },
+        },
+
+        # site_path website
+        {   path         => '/v2/sites',
+            method       => 'POST',
+            is_superuser => 1,
+            params       => {
+                website => {
+                    name     => 'test-api-website-3',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $FindBin::Bin . '/',
+                    themeId  => 'classic_website',
+                },
+            },
+            result => sub {
+                $app->model('website')
+                    ->load( { name => 'test-api-website-3' } );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $got = $app->current_format->{unserialize}->($body);
+
+                # is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
             },
         },
 
@@ -644,9 +752,34 @@ sub suite {
             },
         },
 
+        # site_path blog
+        {   path         => '/v2/sites/2',
+            method       => 'POST',
+            is_superuser => 1,
+            params       => {
+                blog => {
+                    name     => 'test-api-blog-3',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $FindBin::Bin . '/',
+                    themeId  => 'classic_blog',
+                },
+            },
+            result => sub {
+                $app->model('blog')->load( { name => 'test-api-blog-3' } );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $got = $app->current_format->{unserialize}->($body);
+
+                # is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
+            },
+        },
+
         # update_site - irregular tests
         {    # Non-existent site.
-            path   => '/v2/sites/10',
+            path   => '/v2/sites/20',
             method => 'PUT',
             code   => 404,
             result => sub {
@@ -1041,6 +1174,33 @@ sub suite {
             },
         },
 
+        # site_path website
+        {   path         => '/v2/sites/3',
+            method       => 'PUT',
+            is_superuser => 1,
+            params       => {
+                website => {
+                    name     => 'test-api-website-3-update',
+                    url      => 'http://narnia2.na/update/',
+                    sitePath => File::Spec->catfile( $FindBin::Bin, 'update' )
+                        . '/',
+                },
+            },
+            result => sub {
+                $app->model('website')->load(3);
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $blog = $app->model('website')->load(3);
+
+                my $got = $app->current_format->{unserialize}->($body);
+
+                # is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
+            },
+        },
+
         # delete_site - irregular tests
         {   path   => '/v2/sites/2',
             method => 'DELETE',
@@ -1055,7 +1215,7 @@ sub suite {
             },
         },
         {    # Non-existent site.
-            path   => '/v2/sites/10',
+            path   => '/v2/sites/20',
             method => 'DELETE',
             code   => 404,
             result => sub {

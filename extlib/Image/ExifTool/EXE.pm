@@ -21,7 +21,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.06';
+$VERSION = '1.08';
 
 sub ProcessPEResources($$);
 sub ProcessPEVersion($$);
@@ -726,16 +726,16 @@ my %languageCode = (
 # Returns: 1 on success, 0 if this wasn't a valid CHM file
 sub ProcessCHM($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $buff;
 
     return 0 unless $raf->Read($buff, 56) == 56 and
         $buff =~ /^ITSF.{20}\x10\xfd\x01\x7c\xaa\x7b\xd0\x11\x9e\x0c\0\xa0\xc9\x22\xe6\xec/s;
     my $tagTablePtr = GetTagTable('Image::ExifTool::EXE::CHM');
-    $exifTool->SetFileType();
+    $et->SetFileType();
     SetByteOrder('II');
-    $exifTool->ProcessDirectory({ DataPt => \$buff }, $tagTablePtr);
+    $et->ProcessDirectory({ DataPt => \$buff }, $tagTablePtr);
     return 1;
 }
 
@@ -746,7 +746,7 @@ sub ProcessCHM($$)
 #          1) end pos (rounded up to nearest 4 bytes)
 sub ReadUnicodeStr($$;$)
 {
-    my ($dataPt, $pos, $exifTool) = @_;
+    my ($dataPt, $pos, $et) = @_;
     my $len = length $$dataPt;
     my $str = '';
     while ($pos + 2 <= $len) {
@@ -756,7 +756,7 @@ sub ReadUnicodeStr($$;$)
         $str .= $ch;
     }
     $pos += 2 if $pos & 0x03;
-    my $to = $exifTool ? $exifTool->Options('Charset') : 'UTF8';
+    my $to = $et ? $et->Options('Charset') : 'UTF8';
     return (Image::ExifTool::Decode(undef,$str,'UCS2','II',$to), $pos);
 }
 
@@ -766,7 +766,7 @@ sub ReadUnicodeStr($$;$)
 # Returns: true on success
 sub ProcessPEVersion($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $pos = $$dirInfo{DirStart};
     my $end = $pos + $$dirInfo{DirLen};
@@ -783,7 +783,7 @@ sub ProcessPEVersion($$)
         ($string, $strEnd) = ReadUnicodeStr($dataPt, $pos + 6);
         return 0 if $strEnd + $valLen > $end;
         unless ($index or $string eq 'VS_VERSION_INFO') {
-            $exifTool->Warn('Invalid Version Info block');
+            $et->Warn('Invalid Version Info block');
             return 0;
         }
         if ($string eq 'VS_VERSION_INFO') {
@@ -791,7 +791,7 @@ sub ProcessPEVersion($$)
             $$dirInfo{DirStart} = $strEnd;
             $$dirInfo{DirLen} = $valLen;
             my $subTablePtr = GetTagTable('Image::ExifTool::EXE::PEVersion');
-            $exifTool->ProcessDirectory($dirInfo, $subTablePtr);
+            $et->ProcessDirectory($dirInfo, $subTablePtr);
             $pos = $strEnd + $valLen;
         } elsif ($string eq 'StringFileInfo' and $valLen == 0) {
             $pos += $len;
@@ -814,8 +814,8 @@ sub ProcessPEVersion($$)
                         $char = substr($string, 4);
                         $string = substr($string, 0, 4);
                     }
-                    $exifTool->HandleTag($tagTablePtr, 'LanguageCode', uc $string);
-                    $exifTool->HandleTag($tagTablePtr, 'CharacterSet', uc $char) if $char;
+                    $et->HandleTag($tagTablePtr, 'LanguageCode', uc $string);
+                    $et->HandleTag($tagTablePtr, 'CharacterSet', uc $char) if $char;
                     next;
                 }
                 my $tag = $string;
@@ -828,11 +828,11 @@ sub ProcessPEVersion($$)
                 }
                 # get tag value (converted to current Charset)
                 if ($valLen) {
-                    ($string, $pt) = ReadUnicodeStr($dataPt, $pt, $exifTool);
+                    ($string, $pt) = ReadUnicodeStr($dataPt, $pt, $et);
                 } else {
                     $string = '';
                 }
-                $exifTool->HandleTag($tagTablePtr, $tag, $string);
+                $et->HandleTag($tagTablePtr, $tag, $string);
             }
         } else {
             $pos += $len + $valLen;
@@ -848,12 +848,12 @@ sub ProcessPEVersion($$)
 # Returns: true on success
 sub ProcessPEResources($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $base = $$dirInfo{Base};
     my $dirStart = $$dirInfo{DirStart} + $base;
     my $level = $$dirInfo{Level} || 0;
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
     my ($buff, $buf2, $item);
 
     return 0 if $level > 10;    # protect against deep recursion
@@ -873,7 +873,7 @@ sub ProcessPEResources($$)
             my $resType = $resourceType{$name} || sprintf('Unknown (0x%x)', $name);
             # ignore everything but the Version resource unless verbose
             if ($verbose) {
-                $exifTool->VPrint(0, "$resType resource:\n");
+                $et->VPrint(0, "$resType resource:\n");
             } else {
                 next unless $resType eq 'Version';
             }
@@ -883,7 +883,7 @@ sub ProcessPEResources($$)
             # descend into next directory level
             $$dirInfo{DirStart} = $entryPos & 0x7fffffff;
             $$dirInfo{Level} = $level + 1;
-            ProcessPEResources($exifTool, $dirInfo) or return 0;
+            ProcessPEResources($et, $dirInfo) or return 0;
             --$$dirInfo{Level};
         } elsif ($$dirInfo{ResType} eq 'Version' and $level == 2 and
             not $$dirInfo{GotVersion}) # (only process first Version resource)
@@ -903,12 +903,12 @@ sub ProcessPEResources($$)
             }
             return 0 unless $filePos;
             $raf->Seek($filePos, 0) and $raf->Read($buf2, $len) == $len or return 0;
-            ProcessPEVersion($exifTool, {
+            ProcessPEVersion($et, {
                 DataPt   => \$buf2,
                 DataLen  => $len,
                 DirStart => 0,
                 DirLen   => $len,
-            }) or $exifTool->Warn('Possibly corrupt Version resource');
+            }) or $et->Warn('Possibly corrupt Version resource');
             $$dirInfo{GotVersion} = 1;  # set flag so we don't do this again
         }
     }
@@ -921,7 +921,7 @@ sub ProcessPEResources($$)
 # Returns: true on success
 sub ProcessPEDict($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $dataPt = $$dirInfo{DataPt};
     my $dirLen = length($$dataPt);
@@ -945,7 +945,7 @@ sub ProcessPEDict($$)
         ) if $name eq ".rsrc\0\0\0" and not %dirInfo;
     }
     # process the first resource section
-    ProcessPEResources($exifTool, \%dirInfo) or return 0 if %dirInfo;
+    ProcessPEResources($et, \%dirInfo) or return 0 if %dirInfo;
     return 1;
 }
 
@@ -955,9 +955,9 @@ sub ProcessPEDict($$)
 # Returns: 1 on success, 0 if this wasn't a valid EXE file
 sub ProcessEXE($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
-    my ($buff, $buf2, $type, $tagTablePtr, %dirInfo);
+    my ($buff, $buf2, $type, $mime, $tagTablePtr, %dirInfo);
 
     my $size = $raf->Read($buff, 0x40) or return 0;
 #
@@ -1016,7 +1016,7 @@ sub ProcessEXE($$)
                     my $machine = $Image::ExifTool::EXE::Main{0}{PrintConv}{Get16u(\$buff, 4)} || '';
                     my $winType = $machine =~ /64/ ? 'Win64' : 'Win32';
                     my $flags = Get16u(\$buff, 22);
-                    $exifTool->SetFileType($winType . ' ' . ($flags & 0x2000 ? 'DLL' : 'EXE'));
+                    $et->SetFileType($winType . ' ' . ($flags & 0x2000 ? 'DLL' : 'EXE'));
                     # read the rest of the optional header if necessary
                     my $optSize = Get16u(\$buff, 20);
                     my $more = $optSize + 24 - $size;
@@ -1027,11 +1027,11 @@ sub ProcessEXE($$)
                             my $magic = Get16u(\$buff, 24);
                             # verify PE32/PE32+ magic number
                             unless ($magic == 0x10b or $magic == 0x20b) {
-                                $exifTool->Warn('Unknown PE magic number');
+                                $et->Warn('Unknown PE magic number');
                                 return 1;
                             }
                         } else {
-                            $exifTool->Warn('Error reading optional header');
+                            $et->Warn('Error reading optional header');
                         }
                     }
                     # process PE COFF file header
@@ -1043,7 +1043,7 @@ sub ProcessEXE($$)
                         DirStart => 4,
                         DirLen => $size,
                     );
-                    $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+                    $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
                     # process data dictionary
                     my $num = Get16u(\$buff, 6);    # NumberOfSections
                     if ($raf->Read($buff, 40 * $num) == 40 * $num) {
@@ -1051,7 +1051,7 @@ sub ProcessEXE($$)
                             RAF => $raf,
                             DataPt => \$buff,
                         );
-                        ProcessPEDict($exifTool, \%dirInfo) or $exifTool->Warn('Error processing PE data dictionary');
+                        ProcessPEDict($et, \%dirInfo) or $et->Warn('Error processing PE data dictionary');
                     }
                     return 1;
                 }
@@ -1070,24 +1070,24 @@ sub ProcessEXE($$)
         $tagTablePtr = GetTagTable('Image::ExifTool::EXE::MachO');
         if ($1 eq "\xca\xfe\xba\xbe") {
             SetByteOrder('MM');
-            $exifTool->SetFileType('Mach-O fat binary executable');
+            $et->SetFileType('Mach-O fat binary executable');
             my $count = Get32u(\$buff, 4);  # get architecture count
             my $more = $count * 20 - ($size - 8);
             if ($more > 0) {
                 unless ($raf->Read($buf2, $more) == $more) {
-                    $exifTool->Warn('Error reading fat-arch headers');
+                    $et->Warn('Error reading fat-arch headers');
                     return 1;
                 }
                 $buff .= $buf2;
                 $size += $more;
             }
-            $exifTool->HandleTag($tagTablePtr, 2, $count);
+            $et->HandleTag($tagTablePtr, 2, $count);
             my $i;
             for ($i=0; $i<$count; ++$i) {
                 my $cpuType = Get32s(\$buff, 8 + $i * 20);
                 my $cpuSubtype = Get32u(\$buff, 12 + $i * 20);
-                $exifTool->HandleTag($tagTablePtr, 3, $cpuType);
-                $exifTool->HandleTag($tagTablePtr, 4, "$cpuType $cpuSubtype");
+                $et->HandleTag($tagTablePtr, 3, $cpuType);
+                $et->HandleTag($tagTablePtr, 4, "$cpuType $cpuSubtype");
             }
             # load first Mach-O header to get the object file type
             my $offset = Get32u(\$buff, 16);
@@ -1095,18 +1095,18 @@ sub ProcessEXE($$)
                 if ($buf2 =~ /^(\xfe\xed\xfa(\xce|\xcf)|(\xce|\xcf)\xfa\xed\xfe)/) {
                     SetByteOrder($buf2 =~ /^\xfe\xed/ ? 'MM' : 'II');
                     my $objType = Get32s(\$buf2, 12);
-                    $exifTool->HandleTag($tagTablePtr, 5, $objType);
+                    $et->HandleTag($tagTablePtr, 5, $objType);
                 } elsif ($buf2 =~ /^!<arch>\x0a/) {
                     # .a libraries use this magic number
-                    $exifTool->HandleTag($tagTablePtr, 5, -1);
+                    $et->HandleTag($tagTablePtr, 5, -1);
                 } else {
-                    $exifTool->Warn('Unrecognized object file type');
+                    $et->Warn('Unrecognized object file type');
                 }
             } else {
-                $exifTool->Warn('Error reading file');
+                $et->Warn('Error reading file');
             }
        } elsif ($size >= 16) {
-            $exifTool->SetFileType('Mach-O executable');
+            $et->SetFileType('Mach-O executable');
             my $info = {
                 "\xfe\xed\xfa\xce" => ['32 bit', 'Big endian'],
                 "\xce\xfa\xed\xfe" => ['32 bit', 'Little endian'],
@@ -1118,11 +1118,11 @@ sub ProcessEXE($$)
             my $cpuType = Get32s(\$buff, 4);
             my $cpuSubtype = Get32s(\$buff, 8);
             my $objType = Get32s(\$buff, 12);
-            $exifTool->HandleTag($tagTablePtr, 0, $$info[0]);
-            $exifTool->HandleTag($tagTablePtr, 1, $$info[1]);
-            $exifTool->HandleTag($tagTablePtr, 3, $cpuType);
-            $exifTool->HandleTag($tagTablePtr, 4, "$cpuType $cpuSubtype");
-            $exifTool->HandleTag($tagTablePtr, 5, $objType);
+            $et->HandleTag($tagTablePtr, 0, $$info[0]);
+            $et->HandleTag($tagTablePtr, 1, $$info[1]);
+            $et->HandleTag($tagTablePtr, 3, $cpuType);
+            $et->HandleTag($tagTablePtr, 4, "$cpuType $cpuSubtype");
+            $et->HandleTag($tagTablePtr, 5, $objType);
         }
         return 1;
 #
@@ -1130,7 +1130,7 @@ sub ProcessEXE($$)
 #
     } elsif ($buff =~ /^Joy!peff/ and $size > 12) {
         # ref http://developer.apple.com/documentation/mac/pdf/MacOS_RT_Architectures.pdf
-        $exifTool->SetFileType('Classic MacOS executable');
+        $et->SetFileType('Classic MacOS executable');
         SetByteOrder('MM');
         $tagTablePtr = GetTagTable('Image::ExifTool::EXE::PEF');
         %dirInfo = (
@@ -1140,13 +1140,13 @@ sub ProcessEXE($$)
             DirStart => 0,
             DirLen => $size,
         );
-        $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+        $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         return 1;
 #
 # ELF (Unix)
 #
     } elsif ($buff =~ /^\x7fELF/ and $size >= 16) {
-        $exifTool->SetFileType("ELF executable");
+        $et->SetFileType("ELF executable");
         SetByteOrder(Get8u(\$buff,5) == 1 ? 'II' : 'MM');
         $tagTablePtr = GetTagTable('Image::ExifTool::EXE::ELF');
         %dirInfo = (
@@ -1156,13 +1156,14 @@ sub ProcessEXE($$)
             DirStart => 0,
             DirLen => $size,
         );
-        $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+        $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         return 1;
 #
 # various scripts (perl, sh, etc...)
 #
     } elsif ($buff =~ m{^#!\s*/\S*bin/(\w+)}) {
         $type = "$1 script";
+        $mime = "text/x-$1";
 #
 # .a libraries
 #
@@ -1170,7 +1171,7 @@ sub ProcessEXE($$)
         $type = 'Static library',
     }
     return 0 unless $type;
-    $exifTool->SetFileType($type);
+    $et->SetFileType($type, $mime);
     return 1;
 }
 
@@ -1194,7 +1195,7 @@ library files.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

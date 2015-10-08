@@ -8,6 +8,7 @@
 #               16/04/2011 - P. Harvey Decode NikonCaptureEditVersions
 #
 # References:   1) http://www.cybercom.net/~dcoffin/dcraw/
+#               2) Iliah Borg private communication (LibRaw)
 #------------------------------------------------------------------------------
 
 package Image::ExifTool::NikonCapture;
@@ -17,7 +18,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.09';
+$VERSION = '1.13';
 
 sub ProcessNikonCapture($$$);
 
@@ -93,6 +94,11 @@ my %unsharpColor = (
         Writable => 'string', # (null terminated)
     },
     # 0x3e726567 added when I rotated by 90 degrees
+    0x416391c6 => {
+        Name => 'QuickFix',
+        Writable => 'int8u',
+        PrintConv => \%offOn,
+    },
     0x56a54260 => {
         Name => 'Exposure',
         SubDirectory => {
@@ -165,6 +171,7 @@ my %unsharpColor = (
             TagTable => 'Image::ExifTool::NikonCapture::Brightness',
         },
     },
+  # 0x88f55e48 - related to QuickFix
     0x890ff591 => {
         Name => 'D-LightingHQData',
         SubDirectory => {
@@ -183,7 +190,7 @@ my %unsharpColor = (
             TagTable => 'Image::ExifTool::IPTC::Main',
         },
     },
-  # 0xa7264a72, 0x88f55e48 and 0x416391c6 all change from 0 to 1 when QuickFix is turned on
+  # 0xa7264a72 - related to QuickFix
     0xab5eca5e => {
         Name => 'PhotoEffects',
         Writable => 'int8u',
@@ -346,23 +353,40 @@ my %unsharpColor = (
             1 => 'Use Gray Point',
             2 => 'Recorded Value',
             3 => 'Use Temperature',
-            4 => 'Calculate Automatically'
+            4 => 'Calculate Automatically',
+            5 => 'Auto2', #2
+            6 => 'Underwater', #2
+            7 => 'Auto1',
         },
     },
-    0x14 => {
-        Name => 'WBAdjLightingSubtype',
-        # this varies for different lighting types
-        # (ie. for Daylight, this is 0 => 'Direct', 1 => 'Shade', 2 => 'Cloudy')
-    },
-    0x15 => {
+    0x14 => { #2
         Name => 'WBAdjLighting',
+        Format => 'int16u',
+        PrintHex => 1,
         PrintConv => {
-            0 => 'None',
-            1 => 'Incandescent',
-            2 => 'Daylight',
-            3 => 'Standard Fluorescent',
-            4 => 'High Color Rendering Fluorescent',
-            5 => 'Flash',
+            0x000 => 'None',
+            0x100 => 'Incandescent',
+            0x200 => 'Daylight (direct sunlight)',
+            0x201 => 'Daylight (shade)',
+            0x202 => 'Daylight (cloudy)',
+            0x300 => 'Standard Fluorescent (warm white)',
+            0x301 => 'Standard Fluorescent (3700K)',
+            0x302 => 'Standard Fluorescent (cool white)',
+            0x303 => 'Standard Fluorescent (5000K)',
+            0x304 => 'Standard Fluorescent (daylight)',
+            0x305 => 'Standard Fluorescent (high temperature mercury vapor)',
+            0x400 => 'High Color Rendering Fluorescent (warm white)',
+            0x401 => 'High Color Rendering Fluorescent (3700K)',
+            0x402 => 'High Color Rendering Fluorescent (cool white)',
+            0x403 => 'High Color Rendering Fluorescent (5000K)',
+            0x404 => 'High Color Rendering Fluorescent (daylight)',
+            0x500 => 'Flash',
+            0x501 => 'Flash (FL-G1 filter)',
+            0x502 => 'Flash (FL-G2 filter)',
+            0x503 => 'Flash (TN-A1 filter)',
+            0x504 => 'Flash (TN-A2 filter)',
+            0x600 => 'Sodium Vapor Lamps',
+            # 0x1002 => seen for WBAdjMode modes of Underwater and Calculate Automatically
         },
     },
     0x18 => {
@@ -461,6 +485,7 @@ my %unsharpColor = (
         PrintConv => {
             0 => 'Faster',
             1 => 'Better Quality',
+            2 => 'Better Quality 2013',
         },
     },
     0x15 => {
@@ -654,6 +679,8 @@ my %unsharpColor = (
             3 => 'Normal',
             4 => 'High',
             6 => 'Extra High',
+            7 => 'Extra High 1',
+            8 => 'Extra High 2',
         },
     },
 );
@@ -678,28 +705,28 @@ my %unsharpColor = (
 # Returns: 1 on success
 sub WriteNikonCapture($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
-    $exifTool or return 1;    # allow dummy access to autoload this package
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    $et or return 1;    # allow dummy access to autoload this package
 
     # no need to edit this information unless necessary
-    unless ($exifTool->{EDIT_DIRS}->{MakerNotes} or $exifTool->{EDIT_DIRS}->{IPTC}) {
+    unless ($$et{EDIT_DIRS}{MakerNotes} or $$et{EDIT_DIRS}{IPTC}) {
         return undef;
     }
     my $dataPt = $$dirInfo{DataPt};
     my $dirStart = $$dirInfo{DirStart};
     my $dirLen = $$dirInfo{DirLen};
     if ($dirLen < 22) {
-        $exifTool->Warn('Short Nikon Capture Data',1);
+        $et->Warn('Short Nikon Capture Data',1);
         return undef;
     }
     # make sure the capture data is properly contained
     SetByteOrder('II');
     my $tagID = Get32u($dataPt, $dirStart);
-    # sometimes size includes 18 header bytes, and other times it doesn't (ie. ViewNX 2.1.1)
+    # sometimes size includes 18 header bytes, and other times it doesn't (eg. ViewNX 2.1.1)
     my $size = Get32u($dataPt, $dirStart + 18);
     my $pad = $dirLen - $size - 18; 
     unless ($tagID == 0x7a86a940 and ($pad >= 0 or $pad == -18)) {
-        $exifTool->Warn('Unrecognized Nikon Capture Data header');
+        $et->Warn('Unrecognized Nikon Capture Data header');
         return undef;
     }
     # determine if there is any data after this block
@@ -711,7 +738,7 @@ sub WriteNikonCapture($$$)
     }
     my $outBuff = '';
     my $pos;
-    my $newTags = $exifTool->GetNewTagInfoHash($tagTablePtr);
+    my $newTags = $et->GetNewTagInfoHash($tagTablePtr);
     my $dirEnd = $dirStart + $dirLen;
 
     # loop through all entries in the Nikon Capture data
@@ -719,7 +746,7 @@ sub WriteNikonCapture($$$)
         $tagID = Get32u($dataPt, $pos);
         $size = Get32u($dataPt, $pos + 18) - 4;
         last if $size < 0 or $pos + 22 + $size > $dirEnd;
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tagID);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tagID);
         if ($tagInfo) {
             my $newVal;
             if ($$tagInfo{SubDirectory}) {
@@ -731,25 +758,25 @@ sub WriteNikonCapture($$$)
                 );
                 my $subTable = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
                 # ignore minor errors in IPTC since there is typically trailing garbage
-                my $oldSetting = $exifTool->Options('IgnoreMinorErrors');
-                $$tagInfo{Name} =~ /IPTC/ and $exifTool->Options(IgnoreMinorErrors => 1);
+                my $oldSetting = $et->Options('IgnoreMinorErrors');
+                $$tagInfo{Name} =~ /IPTC/ and $et->Options(IgnoreMinorErrors => 1);
                 # rewrite the directory
-                $newVal = $exifTool->WriteDirectory(\%subdirInfo, $subTable);
+                $newVal = $et->WriteDirectory(\%subdirInfo, $subTable);
                 # restore our original options
-                $exifTool->Options(IgnoreMinorErrors => $oldSetting);
+                $et->Options(IgnoreMinorErrors => $oldSetting);
             } elsif ($$newTags{$tagID}) {
                 # get new value for this tag if we are writing it
                 my $format = $$tagInfo{Format} || $$tagInfo{Writable};
                 my $oldVal = ReadValue($dataPt,$pos+22,$format,1,$size);
-                my $nvHash = $exifTool->GetNewValueHash($tagInfo);
-                if ($exifTool->IsOverwriting($nvHash, $oldVal)) {
-                    my $val = $exifTool->GetNewValues($tagInfo);
+                my $nvHash = $et->GetNewValueHash($tagInfo);
+                if ($et->IsOverwriting($nvHash, $oldVal)) {
+                    my $val = $et->GetNewValues($tagInfo);
                     $newVal = WriteValue($val, $$tagInfo{Writable}) if defined $val;
                     if (defined $newVal and length $newVal) {
-                        ++$exifTool->{CHANGED};
+                        ++$$et{CHANGED};
                     } else {
                         undef $newVal;
-                        $exifTool->Warn("Can't delete $$tagInfo{Name}");
+                        $et->Warn("Can't delete $$tagInfo{Name}");
                     }
                 }
             }
@@ -771,7 +798,7 @@ sub WriteNikonCapture($$$)
             # (did they forget to include the size word?)
             $outBuff .= substr($$dataPt, $pos, 4);
         } else {
-            $exifTool->Warn('Nikon Capture Data improperly terminated',1);
+            $et->Warn('Nikon Capture Data improperly terminated',1);
             return undef;
         }
     }
@@ -787,17 +814,17 @@ sub WriteNikonCapture($$$)
 # Returns: 1 on success
 sub ProcessNikonCaptureEditVersions($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dirStart = $$dirInfo{DirStart};
     my $dirLen = $$dirInfo{DirLen};
     my $dirEnd = $dirStart + $dirLen;
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
     SetByteOrder('II');
     return 0 unless $dirLen > 4;
     my $num = Get32u($dataPt, $dirStart);
     my $pos = $dirStart + 4;
-    $verbose and $exifTool->VerboseDir('NikonCaptureEditVersions', $num);
+    $verbose and $et->VerboseDir('NikonCaptureEditVersions', $num);
     while ($num) {
         last if $pos + 4 > $dirEnd;
         my $len = Get32u($dataPt, $pos);
@@ -809,12 +836,12 @@ sub ProcessNikonCaptureEditVersions($$$)
             DirStart => $pos + 4,
             DirLen   => $len,
         );
-        $$exifTool{DOC_NUM} = ++$$exifTool{DOC_COUNT};
-        $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+        $$et{DOC_NUM} = ++$$et{DOC_COUNT};
+        $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         --$num;
         $pos += $len + 4;
     }
-    delete $$exifTool{DOC_NUM};
+    delete $$et{DOC_NUM};
     return 1;
 }
 
@@ -824,22 +851,22 @@ sub ProcessNikonCaptureEditVersions($$$)
 # Returns: 1 on success
 sub ProcessNikonCapture($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dirStart = $$dirInfo{DirStart};
     my $dirLen = $$dirInfo{DirLen};
     my $dirEnd = $dirStart + $dirLen;
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
     my $success = 0;
     SetByteOrder('II');
-    $verbose and $exifTool->VerboseDir('NikonCapture', 0, $dirLen);
+    $verbose and $et->VerboseDir('NikonCapture', 0, $dirLen);
     my $pos;
     for ($pos=$dirStart+22; $pos+22<$dirEnd; ) {
         my $tagID = Get32u($dataPt, $pos);
         my $size = Get32u($dataPt, $pos + 18) - 4;
         $pos += 22;
         last if $size < 0 or $pos + $size > $dirEnd;
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tagID);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tagID);
         if ($tagInfo or $verbose) {
             my ($format, $value);
             # (note that Writable will be 0 for Unknown tags)
@@ -859,10 +886,12 @@ sub ProcessNikonCapture($$$)
             } elsif ($size == 1) {
                 $value = substr($$dataPt, $pos, $size);
             }
-            $exifTool->HandleTag($tagTablePtr, $tagID, $value,
-                DataPt => $dataPt,
-                Start  => $pos,
-                Size   => $size,
+            $et->HandleTag($tagTablePtr, $tagID, $value,
+                DataPt  => $dataPt,
+                DataPos => $$dirInfo{DataPos},
+                Base    => $$dirInfo{Base},
+                Start   => $pos,
+                Size    => $size,
             ) and $success = 1;
         }
         $pos += $size;
@@ -889,7 +918,7 @@ the maker notes of NEF images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

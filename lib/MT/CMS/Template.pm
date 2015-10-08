@@ -1827,7 +1827,7 @@ sub pre_save {
 
     require MT::PublishOption;
     my $build_type = $app->param('build_type');
-
+    $build_type = $obj->build_type unless defined $build_type;
     if ( $build_type == MT::PublishOption::SCHEDULED() ) {
         my $period   = $app->param('schedule_period');
         my $interval = $app->param('schedule_interval');

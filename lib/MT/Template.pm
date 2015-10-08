@@ -553,7 +553,7 @@ sub save {
     }
 
     if ( $tmpl->linked_file ) {
-        $tmpl->_sync_to_disk( $tmpl->SUPER::text ) or return;
+        $tmpl->_sync_to_disk( $tmpl->column('text') ) or return;
     }
     $tmpl->needs_db_sync(0);
 
@@ -562,10 +562,10 @@ sub save {
 
 sub build_dynamic {
     my $tmpl = shift;
-    return $tmpl->SUPER::build_dynamic( $_[0] ) if @_;
+    return $tmpl->column( 'build_dynamic', $_[0] ) if @_;
     require MT::PublishOption;
     return 1 if $tmpl->build_type == MT::PublishOption::DYNAMIC();
-    return $tmpl->SUPER::build_dynamic;
+    return $tmpl->column('build_dynamic');
 }
 
 sub blog {
@@ -611,14 +611,14 @@ sub text {
         $tmpl->{reflow_flag} = 0;
         $text = $tmpl->reflow();
     }
-    $text = $tmpl->SUPER::text(@_);
+    $text = $tmpl->column( 'text', @_ );
 
     $tmpl->needs_db_sync(0);
     unless (@_) {
         if ( $tmpl->linked_file ) {
             if ( my $res = $tmpl->_sync_from_disk ) {
                 $text = $res;
-                $tmpl->SUPER::text($text);
+                $tmpl->column( 'text', $text );
                 $tmpl->needs_db_sync(1);
             }
         }
@@ -760,9 +760,9 @@ sub _sync_to_disk {
     ## linked file, assuming that it should not be overwritten. If the
     ## file does not already exist, or if there is template text, assume
     ## that we should update the linked file.
-    if ( -e $lfile && !$tmpl->SUPER::text ) {
+    if ( -e $lfile && !$tmpl->column('text') ) {
         open my $fh, '+<', $lfile or return;
-        do { local $/; $tmpl->SUPER::text(<$fh>) };
+        do { local $/; $tmpl->column( 'text', <$fh> ) };
         close $fh;
     }
     else {

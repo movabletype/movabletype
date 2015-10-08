@@ -110,7 +110,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '6.1.2';
+    $version = '6.2';
 }
 
 my ( $mt, $LH );
@@ -714,20 +714,6 @@ my @CORE_OPT = (
         )
     ],
 
-    [   'Net::SMTP::SSL',
-        0, 0,
-        translate(
-            'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.'
-        )
-    ],
-
-    [   'Net::SMTP::TLS',
-        0, 0,
-        translate(
-            'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.'
-        )
-    ],
-
     [   'IO::Socket::SSL',
         0, 0,
         translate(
@@ -790,7 +776,7 @@ my @CORE_OPT = (
     [   'Mozilla::CA',
         0, 0,
         translate(
-            'This module is required for Google Analytics site statistics.'
+            'This module is required for Google Analytics site statistics and for verification of SSL certificates.'
         )
     ],
     [   'Time::HiRes',

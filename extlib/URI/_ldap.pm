@@ -5,9 +5,9 @@
 package URI::_ldap;
 
 use strict;
+use warnings;
 
-use vars qw($VERSION);
-$VERSION = "1.10";
+our $VERSION = "1.67";
 
 use URI::Escape qw(uri_unescape);
 
@@ -47,7 +47,7 @@ sub attributes {
 sub _scope {
   my $self = shift;
   my $old = _ldap_elem($self,1, @_);
-  return unless defined wantarray && defined $old;
+  return undef unless defined wantarray && defined $old;
   uri_unescape($old);
 }
 
@@ -60,7 +60,7 @@ sub scope {
 sub _filter {
   my $self = shift;
   my $old = _ldap_elem($self,2, @_);
-  return unless defined wantarray && defined $old;
+  return undef unless defined wantarray && defined $old;
   uri_unescape($old); # || "(objectClass=*)";
 }
 
@@ -98,7 +98,7 @@ sub canonical
     # Should really know about mixed case "postalAddress", etc...
     $other->attributes(map lc, $other->attributes);
 
-    # Lowecase scope, remove default
+    # Lowercase scope, remove default
     my $old_scope = $other->scope;
     my $new_scope = lc($old_scope);
     $new_scope = "" if $new_scope eq "base";

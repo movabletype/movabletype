@@ -9,6 +9,7 @@
 # References:   1) CPAN forum post by 'hardloaf' (http://www.cpanforum.com/threads/2183)
 #               2) http://www.cybercom.net/~dcoffin/dcraw/
 #               3) http://syscall.eu/#pana
+#               4) Iliah Borg private communication (LibRaw)
 #              JD) Jens Duttke private communication (TZ3,FZ30,FZ50)
 #------------------------------------------------------------------------------
 
@@ -19,7 +20,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.05';
+$VERSION = '1.08';
 
 sub ProcessJpgFromRaw($$$);
 sub WriteJpgFromRaw($$$);
@@ -39,6 +40,11 @@ my %jpgFromRawMap = (
     IFD0         => 'APP1',
     MakerNotes   => 'ExifIFD',
     Comment      => 'COM',
+);
+
+my %wbTypeInfo = (
+    PrintConv => \%Image::ExifTool::Exif::lightSource,
+    SeparateTable => 'EXIF LightSource',
 );
 
 # Tags found in Panasonic RAW/RW2/RWL images (ref PH)
@@ -62,13 +68,23 @@ my %jpgFromRawMap = (
     # 0x08: 1
     # 0x09: 1,3,4
     # 0x0a: 12
+    0x08 => { #4
+        Name => 'BlackLevel1',
+        Writable => 'int16u',
+        Notes => q{
+            summing BlackLevel1+2+3 values gives the common bias that must be added to
+            the BlackLevelRed/Green/Blue tags below
+        },
+    },
+    0x09 => { Name => 'BlackLevel2', Writable => 'int16u' }, #4
+    0x0a => { Name => 'BlackLevel3', Writable => 'int16u' }, #4
     # 0x0b: 0x860c,0x880a,0x880c
     # 0x0c: 2 (only Leica Digilux 2)
     # 0x0d: 0,1
     # 0x0e,0x0f,0x10: 4095
-    # 0x18,0x19,0x1a,0x1c,0x1d,0x1e: 0
-    # 0x1b,0x27,0x29,0x2a,0x2b,0x2c: [binary data]
-    # 0x2d: 2,3
+    0x0e => { Name => 'LinearityLimitRed',   Writable => 'int16u' }, #4
+    0x0f => { Name => 'LinearityLimitGreen', Writable => 'int16u' }, #4
+    0x10 => { Name => 'LinearityLimitBlue',  Writable => 'int16u' }, #4
     0x11 => { #JD
         Name => 'RedBalance',
         Writable => 'int16u',
@@ -82,10 +98,38 @@ my %jpgFromRawMap = (
         ValueConv => '$val / 256',
         ValueConvInv => 'int($val * 256 + 0.5)',
     },
+    0x13 => { #4
+        Name => 'WBInfo',
+        SubDirectory => { TagTable => 'Image::ExifTool::PanasonicRaw::WBInfo' },
+    },
     0x17 => { #1
         Name => 'ISO',
         Writable => 'int16u',
     },
+    # 0x18,0x19,0x1a: 0
+    0x18 => { #4
+        Name => 'HighISOMultiplierRed', 
+        Writable => 'int16u',
+        ValueConv => '$val / 256',
+        ValueConvInv => 'int($val * 256 + 0.5)',
+    },
+    0x19 => { #4
+        Name => 'HighISOMultiplierGreen', 
+        Writable => 'int16u',
+        ValueConv => '$val / 256',
+        ValueConvInv => 'int($val * 256 + 0.5)',
+    },
+    0x1a => { #4
+        Name => 'HighISOMultiplierBlue', 
+        Writable => 'int16u',
+        ValueConv => '$val / 256',
+        ValueConvInv => 'int($val * 256 + 0.5)',
+    },
+    # 0x1b: [binary data] (something to do with the camera ISO cababilities: int16u count N,
+    #                      followed by table of  N entries: int16u ISO, int16u[3] RGB gains - ref 4)
+    0x1c => { Name => 'BlackLevelRed',   Writable => 'int16u' }, #4
+    0x1d => { Name => 'BlackLevelGreen', Writable => 'int16u' }, #4
+    0x1e => { Name => 'BlackLevelBlue',  Writable => 'int16u' }, #4
     0x24 => { #2
         Name => 'WBRedLevel',
         Writable => 'int16u',
@@ -98,6 +142,12 @@ my %jpgFromRawMap = (
         Name => 'WBBlueLevel',
         Writable => 'int16u',
     },
+    0x27 => { #4
+        Name => 'WBInfo2',
+        SubDirectory => { TagTable => 'Image::ExifTool::PanasonicRaw::WBInfo2' },
+    },
+    # 0x27,0x29,0x2a,0x2b,0x2c: [binary data]
+    # 0x2d: 2,3
     0x2e => { #JD
         Name => 'JpgFromRaw', # (writable directory!)
         Writable => 'undef',
@@ -159,7 +209,7 @@ my %jpgFromRawMap = (
     },
     0x118 => {
         Name => 'RawDataOffset', #PH (RW2/RWL)
-        IsOffset => '$$exifTool{TIFF_TYPE} =~ /^(RW2|RWL)$/', # (invalid in DNG-converted files)
+        IsOffset => '$$et{TIFF_TYPE} =~ /^(RW2|RWL)$/', # (invalid in DNG-converted files)
         PanasonicHack => 1,
         OffsetPair => 0x117, # (use StripByteCounts as the offset pair)
     },
@@ -209,6 +259,59 @@ my %jpgFromRawMap = (
             Start => '$val',
         },
     },
+    # 0xffff => 'DCSHueShiftValues', #exifprobe (NC)
+);
+
+# white balance information (ref 4)
+# (PanasonicRawVersion<200: Digilux 2)
+%Image::ExifTool::PanasonicRaw::WBInfo = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    WRITE_PROC => \&Image::ExifTool::WriteBinaryData,
+    CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
+    WRITABLE => 1,
+    FORMAT => 'int16u',
+    FIRST_ENTRY => 0,
+    0 => 'NumWBEntries',
+    1 => { Name => 'WBType1', %wbTypeInfo },
+    2 => { Name => 'WB_RBLevels1', Format => 'int16u[2]' },
+    4 => { Name => 'WBType2', %wbTypeInfo },
+    5 => { Name => 'WB_RBLevels2', Format => 'int16u[2]' },
+    7 => { Name => 'WBType3', %wbTypeInfo },
+    8 => { Name => 'WB_RBLevels3', Format => 'int16u[2]' },
+    10 => { Name => 'WBType4', %wbTypeInfo },
+    11 => { Name => 'WB_RBLevels4', Format => 'int16u[2]' },
+    13 => { Name => 'WBType5', %wbTypeInfo },
+    14 => { Name => 'WB_RBLevels5', Format => 'int16u[2]' },
+    16 => { Name => 'WBType6', %wbTypeInfo },
+    17 => { Name => 'WB_RBLevels6', Format => 'int16u[2]' },
+    19 => { Name => 'WBType7', %wbTypeInfo },
+    20 => { Name => 'WB_RBLevels7', Format => 'int16u[2]' },
+);
+
+# white balance information (ref 4)
+# (PanasonicRawVersion>=200: D-Lux2, D-Lux3, DMC-FZ18/FZ30/LX1/L10)
+%Image::ExifTool::PanasonicRaw::WBInfo2 = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    WRITE_PROC => \&Image::ExifTool::WriteBinaryData,
+    CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
+    WRITABLE => 1,
+    FORMAT => 'int16u',
+    FIRST_ENTRY => 0,
+    0 => 'NumWBEntries',
+    1 => { Name => 'WBType1', %wbTypeInfo },
+    2 => { Name => 'WB_RGBLevels1', Format => 'int16u[3]' },
+    5 => { Name => 'WBType2', %wbTypeInfo },
+    6 => { Name => 'WB_RGBLevels2', Format => 'int16u[3]' },
+    9 => { Name => 'WBType3', %wbTypeInfo },
+    10 => { Name => 'WB_RGBLevels3', Format => 'int16u[3]' },
+    13 => { Name => 'WBType4', %wbTypeInfo },
+    14 => { Name => 'WB_RGBLevels4', Format => 'int16u[3]' },
+    17 => { Name => 'WBType5', %wbTypeInfo },
+    18 => { Name => 'WB_RGBLevels5', Format => 'int16u[3]' },
+    21 => { Name => 'WBType6', %wbTypeInfo },
+    22 => { Name => 'WB_RGBLevels6', Format => 'int16u[3]' },
+    25 => { Name => 'WBType7', %wbTypeInfo },
+    26 => { Name => 'WB_RGBLevels7', Format => 'int16u[3]' },
 );
 
 # lens distortion information (ref 3)
@@ -314,7 +417,7 @@ sub Checksum($$$$)
 # Returns: 1 on success
 sub ProcessDistortionInfo($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $start = $$dirInfo{DirStart} || 0;
     my $size = $$dirInfo{DataLen} || (length($$dataPt) - $start);
@@ -328,11 +431,11 @@ sub ProcessDistortionInfo($$$)
                   $csum2 ^ Get16u($dataPt, $start + 28) ^
                   $csum3 ^ Get16u($dataPt, $start + 0) ^
                   $csum4 ^ Get16u($dataPt, $start + 30);
-        $exifTool->Warn('Invalid DistortionInfo checksum',1) if $res;
+        $et->Warn('Invalid DistortionInfo checksum',1) if $res;
     } else {
-        $exifTool->Warn('Invalid DistortionInfo',1);
+        $et->Warn('Invalid DistortionInfo',1);
     }
-    return $exifTool->ProcessBinaryData($dirInfo, $tagTablePtr);
+    return $et->ProcessBinaryData($dirInfo, $tagTablePtr);
 }
 
 #------------------------------------------------------------------------------
@@ -341,9 +444,9 @@ sub ProcessDistortionInfo($$$)
 # Returns: updated distortion information or undef on error
 sub WriteDistortionInfo($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
-    $exifTool or return 1;  # (allow dummy access)
-    my $dat = $exifTool->WriteBinaryData($dirInfo, $tagTablePtr);
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    $et or return 1;  # (allow dummy access)
+    my $dat = $et->WriteBinaryData($dirInfo, $tagTablePtr);
     if (defined $dat and length($dat) == 32) {
         # fix checksums (ref 3)
         Set16u(Checksum(\$dat,  4, 12, 1), \$dat,  2);
@@ -351,7 +454,7 @@ sub WriteDistortionInfo($$$)
         Set16u(Checksum(\$dat,  2, 14, 2), \$dat,  0);
         Set16u(Checksum(\$dat,  3, 14, 2), \$dat, 30);
     } else {
-        $exifTool->Warn('Error wriing DistortionInfo',1);
+        $et->Warn('Error wriing DistortionInfo',1);
     }
     return $dat;
 }
@@ -412,10 +515,10 @@ sub PatchRawDataOffset($$$)
 # Returns: updated image data, or undef if nothing changed
 sub WriteJpgFromRaw($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $byteOrder = GetByteOrder();
-    my $fileType = $$exifTool{FILE_TYPE};   # RAW, RW2 or RWL
+    my $fileType = $$et{FILE_TYPE};   # RAW, RW2 or RWL
     my $dirStart = $$dirInfo{DirStart};
     if ($dirStart) { # DirStart is non-zero in DNG-converted RW2/RWL
         my $dirLen = $$dirInfo{DirLen} | length($$dataPt) - $dirStart;
@@ -428,21 +531,21 @@ sub WriteJpgFromRaw($$$)
         RAF => $raf,
         OutFile => \$outbuff,
     );
-    $$exifTool{BASE} = $$dirInfo{DataPos};
-    $$exifTool{FILE_TYPE} = $$exifTool{TIFF_TYPE} = 'JPEG';
+    $$et{BASE} = $$dirInfo{DataPos};
+    $$et{FILE_TYPE} = $$et{TIFF_TYPE} = 'JPEG';
     # use a specialized map so we don't write XMP or IPTC (or other junk) into the JPEG
-    my $editDirs = $$exifTool{EDIT_DIRS};
-    my $addDirs = $$exifTool{ADD_DIRS};
-    $exifTool->InitWriteDirs(\%jpgFromRawMap);
+    my $editDirs = $$et{EDIT_DIRS};
+    my $addDirs = $$et{ADD_DIRS};
+    $et->InitWriteDirs(\%jpgFromRawMap);
     # don't add XMP segment (IPTC won't get added because it is in Photoshop record)
-    delete $$exifTool{ADD_DIRS}{XMP};
-    my $result = $exifTool->WriteJPEG(\%dirInfo);
+    delete $$et{ADD_DIRS}{XMP};
+    my $result = $et->WriteJPEG(\%dirInfo);
     # restore variables we changed
-    $$exifTool{BASE} = 0;
-    $$exifTool{FILE_TYPE} = 'TIFF';
-    $$exifTool{TIFF_TYPE} = $fileType;
-    $$exifTool{EDIT_DIRS} = $editDirs;
-    $$exifTool{ADD_DIRS} = $addDirs;
+    $$et{BASE} = 0;
+    $$et{FILE_TYPE} = 'TIFF';
+    $$et{TIFF_TYPE} = $fileType;
+    $$et{EDIT_DIRS} = $editDirs;
+    $$et{ADD_DIRS} = $addDirs;
     SetByteOrder($byteOrder);
     return $result > 0 ? $outbuff : $$dataPt;
 }
@@ -453,43 +556,43 @@ sub WriteJpgFromRaw($$$)
 # Returns: 1 on success, 0 if this wasn't a valid JpgFromRaw image
 sub ProcessJpgFromRaw($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $byteOrder = GetByteOrder();
-    my $fileType = $$exifTool{FILE_TYPE};   # RAW, RW2 or RWL
+    my $fileType = $$et{FILE_TYPE};   # RAW, RW2 or RWL
     my $tagInfo = $$dirInfo{TagInfo};
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
     my ($indent, $out);
-    $tagInfo or $exifTool->Warn('No tag info for Panasonic JpgFromRaw'), return 0;
+    $tagInfo or $et->Warn('No tag info for Panasonic JpgFromRaw'), return 0;
     my $dirStart = $$dirInfo{DirStart};
     if ($dirStart) { # DirStart is non-zero in DNG-converted RW2/RWL
         my $dirLen = $$dirInfo{DirLen} | length($$dataPt) - $dirStart;
         my $buff = substr($$dataPt, $dirStart, $dirLen);
         $dataPt = \$buff;
     }
-    $$exifTool{BASE} = $$dirInfo{DataPos} + ($dirStart || 0);
-    $$exifTool{FILE_TYPE} = $$exifTool{TIFF_TYPE} = 'JPEG';
-    $$exifTool{DOC_NUM} = 1;
+    $$et{BASE} = $$dirInfo{DataPos} + ($dirStart || 0);
+    $$et{FILE_TYPE} = $$et{TIFF_TYPE} = 'JPEG';
+    $$et{DOC_NUM} = 1;
     # extract information from embedded JPEG
     my %dirInfo = (
         Parent => 'RAF',
         RAF    => new File::RandomAccess($dataPt),
     );
     if ($verbose) {
-        my $indent = $$exifTool{INDENT};
-        $$exifTool{INDENT} = '  ';
-        $out = $exifTool->Options('TextOut');
+        my $indent = $$et{INDENT};
+        $$et{INDENT} = '  ';
+        $out = $et->Options('TextOut');
         print $out '--- DOC1:JpgFromRaw ',('-'x56),"\n";
     }
-    my $rtnVal = $exifTool->ProcessJPEG(\%dirInfo);
+    my $rtnVal = $et->ProcessJPEG(\%dirInfo);
     # restore necessary variables for continued RW2/RWL processing
-    $$exifTool{BASE} = 0;
-    $$exifTool{FILE_TYPE} = 'TIFF';
-    $$exifTool{TIFF_TYPE} = $fileType;
-    delete $$exifTool{DOC_NUM};
+    $$et{BASE} = 0;
+    $$et{FILE_TYPE} = 'TIFF';
+    $$et{TIFF_TYPE} = $fileType;
+    delete $$et{DOC_NUM};
     SetByteOrder($byteOrder);
     if ($verbose) {
-        $$exifTool{INDENT} = $indent;
+        $$et{INDENT} = $indent;
         print $out ('-'x76),"\n";
     }
     return $rtnVal;
@@ -514,7 +617,7 @@ write meta information in Panasonic/Leica RAW, RW2 and RWL images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

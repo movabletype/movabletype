@@ -14,6 +14,10 @@ use MT::Test::DataAPI;
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
+if ( $^O eq 'MSWin32' ) {
+    $app->config->TempDir('C:\Windows\Temp');
+}
+
 my $suite = suite();
 test_data_api( $suite, { author_id => 1, is_superuser => 1 } );
 
@@ -51,7 +55,12 @@ sub suite {
                 };
             },
             complete => sub {
-                $app->config->TempDir( $app->config->default('TempDir') );
+                if ( $^O eq 'MSWin32' ) {
+                    $app->config->TempDir('C:\Windows\Temp');
+                }
+                else {
+                    $app->config->TempDir( $app->config->default('TempDir') );
+                }
             },
         },
         {    # Invalid backup_what.

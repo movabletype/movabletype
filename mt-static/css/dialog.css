@@ -137,8 +137,8 @@ body.has-dialog {
     z-index: 2001;
     top: 30px;
     left: 50%;
-    width: 680px;
-    margin-left: -340px;
+    width: 960px;
+    margin-left: -480px;
 }
 .mt-dialog span {
     display: none;

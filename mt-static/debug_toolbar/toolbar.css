@@ -315,7 +315,7 @@
 #djDebug a.toggleTemplate {
 	padding:4px;
 	background-color:#bbb;
-	-moz-border-radius:3px;
+	border-radius:3px;
 	-webkit-border-radius:3px;
 }
 
@@ -323,7 +323,7 @@
 	padding:4px;
 	background-color:#444;
 	color:#ffe761;
-	-moz-border-radius:3px;
+	border-radius:3px;
 	-webkit-border-radius:3px;
 }
 

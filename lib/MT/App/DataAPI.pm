@@ -21,7 +21,7 @@ use MT::AccessToken;
 our %endpoints = ();
 
 sub id                 {'data_api'}
-sub DEFAULT_VERSION () {2}
+sub DEFAULT_VERSION () {3}
 
 sub init {
     my $app = shift;
@@ -2121,6 +2121,38 @@ sub core_endpoints {
 #            },
 #        },
 
+        # version 3
+        {   id             => 'authenticate',
+            route          => '/authentication',
+            verb           => 'POST',
+            version        => 3,
+            handler        => "${pkg}v3::Auth::authentication",
+            requires_login => 0,
+        },
+        {
+            id             => 'upload_asset',
+            route          => '/assets/upload',
+            verb           => 'POST',
+            version        => 3,
+            handler        => "${pkg}v3::Asset::upload",
+            default_params => {
+                autoRenameIfExists   => 0,
+                normalizeOrientation => 1,
+            },
+            error_codes => { 403 => 'Do not have permission to upload.', },
+        },
+        {
+            id             => 'upload_asset_for_site',
+            route          => '/sites/:site_id/assets/upload',
+            verb           => 'POST',
+            version        => 3,
+            handler        => "${pkg}v3::Asset::upload",
+            default_params => {
+                autoRenameIfExists   => 0,
+                normalizeOrientation => 1,
+            },
+            error_codes => { 403 => 'Do not have permission to upload.', },
+        },
     ];
 }
 

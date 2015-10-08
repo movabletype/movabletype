@@ -180,16 +180,6 @@ sub init_core_registry {
                 label =>
                     'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.',
             },
-            'Net::SMTP::SSL' => {
-                link => 'http://search.cpan.org/dist/Net-SMTP-SSL/',
-                label =>
-                    'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.',
-            },
-            'Net::SMTP::TLS' => {
-                link => 'http://search.cpan.org/dist/Net-SMTP-TLS/',
-                label =>
-                    'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.',
-            },
             'IO::Socket::SSL' => {
                 link => 'http://search.cpan.org/dist/IO-Socket-SSL/',
                 label =>
@@ -355,7 +345,7 @@ sub init_core_registry {
             'Mozilla::CA' => {
                 link => 'http://search.cpan.org/dist/Mozilla-CA/',
                 label =>
-                    'This module is required for Google Analytics site statistics.',
+                    'This module is required for Google Analytics site statistics and for verification of SSL certificates.',
             },
             'YAML::Syck' => {
                 link => 'http://search.cpan.org/dist/YAML-Syck',
@@ -1430,9 +1420,24 @@ sub is_valid_static_path {
         $path = $app->cgipath . $static_uri . 'mt.js';
     }
 
+    # If the hostname of $path is same with $app->cgipath,
+    # do not verify SSL certificate.
+    my ($cgihost) = ( $app->cgipath =~ m/^(https?:\/\/[^\/]+)\// );
+    $cgihost =~ s/^http:/https:/;
+    my $ssl_verify_peer = $path !~ m/^$cgihost/ ? 1 : 0;
+    my %ssl_opts = (
+        verify_hostname => $ssl_verify_peer,
+        $ssl_verify_peer
+        ? ( SSL_version => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2' )
+        : (),
+        ( $ssl_verify_peer && eval { require Mozilla::CA; 1 } )
+        ? ( SSL_ca_file => Mozilla::CA::SSL_ca_file() )
+        : (),
+    );
+
     require LWP::UserAgent;
-    my $ua       = LWP::UserAgent->new;
-    my $request  = HTTP::Request->new( GET => $path );
+    my $ua = LWP::UserAgent->new( ssl_opts => \%ssl_opts );
+    my $request = HTTP::Request->new( GET => $path );
     my $response = $ua->request($request);
     $response->is_success
         and ( $response->content_length() != 0 )

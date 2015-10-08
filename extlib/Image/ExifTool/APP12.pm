@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.11';
+$VERSION = '1.12';
 
 sub ProcessAPP12($$$);
 sub ProcessDucky($$$);
@@ -134,11 +134,11 @@ sub WriteDucky($$$);
 # Returns: New directory data or undefined on error
 sub WriteDucky($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
-    $exifTool or return 1;    # allow dummy access to autoload this package
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    $et or return 1;    # allow dummy access to autoload this package
     my $dataPt = $$dirInfo{DataPt};
     my $pos = $$dirInfo{DirStart};
-    my $newTags = $exifTool->GetNewTagInfoHash($tagTablePtr);
+    my $newTags = $et->GetNewTagInfoHash($tagTablePtr);
     my @addTags = sort { $a <=> $b } keys(%$newTags);
     my ($dirEnd, %doneTags);
     if ($dataPt) {
@@ -158,7 +158,7 @@ sub WriteDucky($$$)
             $len = Get16u($dataPt, $pos + 2);
             $pos += 4;
             if ($pos + $len > $dirEnd) {
-                $exifTool->Warn('Invalid Ducky block length');
+                $et->Warn('Invalid Ducky block length');
                 return undef;
             }
             $val = substr($$dataPt, $pos, $len);
@@ -171,11 +171,11 @@ sub WriteDucky($$$)
         $doneTags{$tag} = 1;
         my $tagInfo = $$newTags{$tag};
         if ($tagInfo) {
-            my $nvHash = $exifTool->GetNewValueHash($tagInfo);
+            my $nvHash = $et->GetNewValueHash($tagInfo);
             my $isNew;
             if (defined $val) {
-                if ($exifTool->IsOverwriting($nvHash, $val)) {
-                    $exifTool->VerboseValue("- Ducky:$$tagInfo{Name}", $val);
+                if ($et->IsOverwriting($nvHash, $val)) {
+                    $et->VerboseValue("- Ducky:$$tagInfo{Name}", $val);
                     $isNew = 1;
                 }
             } else {
@@ -183,10 +183,10 @@ sub WriteDucky($$$)
                 $isNew = 1;
             }
             if ($isNew) {
-                $val = $exifTool->GetNewValues($nvHash);
-                ++$exifTool->{CHANGED};
+                $val = $et->GetNewValues($nvHash);
+                ++$$et{CHANGED};
                 next unless defined $val;   # next if tag is being deleted
-                $exifTool->VerboseValue("+ Ducky:$$tagInfo{Name}", $val);
+                $et->VerboseValue("+ Ducky:$$tagInfo{Name}", $val);
             }
         }
         $newData .= pack('nn', $tag, length $val) . $val;
@@ -207,7 +207,7 @@ sub WriteDucky($$$)
 #      c) N bytes: block data
 sub ProcessDucky($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $pos = $$dirInfo{DirStart};
     my $dirEnd = $pos + $$dirInfo{DirLen};
@@ -219,11 +219,11 @@ sub ProcessDucky($$$)
         my $len = Get16u($dataPt, $pos + 2);
         $pos += 4;
         if ($pos + $len > $dirEnd) {
-            $exifTool->Warn('Invalid Ducky block length');
+            $et->Warn('Invalid Ducky block length');
             last;
         }
         my $val = substr($$dataPt, $pos, $len);
-        $exifTool->HandleTag($tagTablePtr, $tag, $val,
+        $et->HandleTag($tagTablePtr, $tag, $val,
             DataPt => $dataPt,
             DataPos => $$dirInfo{DataPos},
             Start => $pos,
@@ -240,7 +240,7 @@ sub ProcessDucky($$$)
 # Returns: 1 on success, 0 if this wasn't a recognized APP12
 sub ProcessAPP12($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dirStart = $$dirInfo{DirStart} || 0;
     my $dirLen = $$dirInfo{DirLen} || (length($$dataPt) - $dirStart);
@@ -250,29 +250,29 @@ sub ProcessAPP12($$$)
     } else {
         pos($$dataPt) = $$dirInfo{DirStart};
     }
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
     my $success = 0;
     my $section = '';
     pos($$dataPt) = 0;
 
     # this regular expression is a bit complex, but basically we are looking for
-    # section headers (ie. "[Camera Info]") and tag/value pairs (ie. "tag=value",
+    # section headers (eg. "[Camera Info]") and tag/value pairs (eg. "tag=value",
     # where "value" may contain white space), separated by spaces or CR/LF.
     # (APP12 uses CR/LF, but Olympus TextualInfo is similar and uses spaces)
     while ($$dataPt =~ /(\[.*?\]|[\w#-]+=[\x20-\x7e]+?(?=\s*([\n\r\0]|[\w#-]+=|\[|$)))/g) {
         my $token = $1;
         # was this a section name?
         if ($token =~ /^\[(.*)\]/) {
-            $exifTool->VerboseDir($1) if $verbose;
+            $et->VerboseDir($1) if $verbose;
             $section = ($token =~ /\[(\S+) ?Info\]/i) ? $1 : '';
             $success = 1;
             next;
         }
-        $exifTool->VerboseDir($$dirInfo{DirName}) if $verbose and not $success;
+        $et->VerboseDir($$dirInfo{DirName}) if $verbose and not $success;
         $success = 1;
         my ($tag, $val) = ($token =~ /(\S+)=(.+)/);
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
-        $verbose and $exifTool->VerboseInfo($tag, $tagInfo, Value => $val);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
+        $verbose and $et->VerboseInfo($tag, $tagInfo, Value => $val);
         unless ($tagInfo) {
             # add new tag to table
             $tagInfo = { Name => ucfirst $tag };
@@ -280,7 +280,7 @@ sub ProcessAPP12($$$)
             $$tagInfo{Groups} = { 2 => 'Camera' } if $section =~ /camera/i;
             AddTagToTable($tagTablePtr, $tag, $tagInfo);
         }
-        $exifTool->FoundTag($tagInfo, $val);
+        $et->FoundTag($tagInfo, $val);
     }
     return $success;
 }
@@ -305,7 +305,7 @@ APP12 meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

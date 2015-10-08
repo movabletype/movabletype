@@ -1047,12 +1047,12 @@ are identical.
 =head2 C<$obj-E<gt>object_is_stored()>
 
 Returns true if the object hasn't been stored in the database yet.
-This is particularily useful in triggers where you can then determine
+This is particularly useful in triggers where you can then determine
 if the object is being INSERTED or just UPDATED.
 
 =head2 C<$obj-E<gt>pk_str()>
 
-returns the primay key has a printable string.
+returns the primary key has a printable string.
 
 =head2 C<$obj-E<gt>has_primary_key()>
 
@@ -1062,7 +1062,7 @@ Returns whether the given object has values for all of its primary key fields.
 
 If you use a Cache driver, returned object will be automatically cached as a result
 of common retrieve operations. In some rare cases you may want the cache to be cleared
-explicitely, and this method provides you with a way to do it.
+explicitly, and this method provides you with a way to do it.
 
 =head2 C<$obj-E<gt>primary_key_to_terms([$id])>
 

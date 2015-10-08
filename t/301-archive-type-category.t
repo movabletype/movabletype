@@ -16,12 +16,22 @@ eval(
 );
 
 use Test::More;
+use File::Basename;
 use MT::WeblogPublisher;
 
 my $mt        = MT->instance;
 my $publisher = MT::WeblogPublisher->new( start_time => time() + 10 );
 my $map       = $mt->model('templatemap')->new;
 $map->file_template('publish_empty_archive_test/%C/index.html');
+
+# Set template_id of template map.
+my $category_archive = MT->model('template')->load(
+    {   blog_id    => 1,
+        type       => 'archive',
+        identifier => 'category_entry_listing'
+    }
+);
+$map->template_id( $category_archive->id );
 
 my $blog = $mt->model('blog')->load(1);
 my @cats = $mt->model('category')->load( { blog_id => $blog->id } );
@@ -95,6 +105,13 @@ for my $at (
             $d->{published}, 'Rebuild: When a target file does not exists' );
 
         {
+            my $dirname = dirname($file);
+            if ( !-d $dirname ) {
+                require MT::FileMgr;
+                my $fmgr = MT::FileMgr->new('Local');
+                $fmgr->mkpath($dirname);
+            }
+
             open my $fh, '>', $file;
             print {$fh} "test";
             close $fh;

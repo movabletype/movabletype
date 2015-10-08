@@ -23,6 +23,12 @@ require POSIX;
 
 my $mt = MT->new();
 
+# Set config directives.
+$mt->config->AllowComments( 1, 1 );
+$mt->config->StaticFilePath( '../mt-static', 1 );
+$mt->config->CommenterRegistration( { Allow => 1 }, 1 );
+$mt->config->save_config;
+
 # Clear cache
 my $request = MT::Request->instance;
 $request->{__stash} = {};

@@ -7,10 +7,39 @@ BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
+use Test::More;
+
+use File::Copy;
+use File::Spec;
+
+# Disable Cloud.pack temporarily.
+BEGIN {
+    my $cloudpack_config
+        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
+    my $cloudpack_config_rename
+        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
+
+    if ( -f $cloudpack_config ) {
+        move( $cloudpack_config, $cloudpack_config_rename )
+            or plan skip_all => "$cloudpack_config cannot be moved.";
+    }
+}
+
+# Recover Cloud.pack.
+END {
+    my $cloudpack_config
+        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
+    my $cloudpack_config_rename
+        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
+
+    if ( -f $cloudpack_config_rename ) {
+        move( $cloudpack_config_rename, $cloudpack_config );
+    }
+}
+
 use lib 't/lib', 'lib', 'extlib';
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
-use Test::More;
 
 ### Make test data
 

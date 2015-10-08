@@ -44,8 +44,8 @@ sub SetResourceName($$$)
 # Notes: Increments ExifTool CHANGED flag for each tag changed
 sub WritePhotoshop($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
-    $exifTool or return 1;    # allow dummy access to autoload this package
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    $et or return 1;    # allow dummy access to autoload this package
     my $dataPt = $$dirInfo{DataPt};
     unless ($dataPt) {
         my $emptyData = '';
@@ -57,9 +57,9 @@ sub WritePhotoshop($$$)
     my $newData = '';
 
     # make a hash of new tag info, keyed on tagID
-    my $newTags = $exifTool->GetNewTagInfoHash($tagTablePtr);
+    my $newTags = $et->GetNewTagInfoHash($tagTablePtr);
 
-    my ($addDirs, $editDirs) = $exifTool->GetAddDirHash($tagTablePtr);
+    my ($addDirs, $editDirs) = $et->GetAddDirHash($tagTablePtr);
 
     SetByteOrder('MM');     # Photoshop is always big-endian
 #
@@ -77,7 +77,7 @@ sub WritePhotoshop($$$)
         ++$pos if ($pos ^ $start) & 0x01;
         my $type = substr($$dataPt, $pos, 4);
         if ($type !~ /^(8BIM|PHUT|DCSR|AgHg)$/) {
-            $exifTool->Error("Bad Photoshop IRB resource");
+            $et->Error("Bad Photoshop IRB resource");
             undef $newData;
             last;
         }
@@ -86,7 +86,7 @@ sub WritePhotoshop($$$)
         my $namelen = 1 + Get8u($dataPt, $pos + 6);
         ++$namelen if $namelen & 0x01;
         if ($pos + $namelen + 10 > $dirEnd) {
-            $exifTool->Error("Bad APP13 resource block");
+            $et->Error("Bad APP13 resource block");
             undef $newData;
             last;
         }
@@ -94,43 +94,43 @@ sub WritePhotoshop($$$)
         $size = Get32u($dataPt, $pos + 6 + $namelen);
         $pos += $namelen + 10;
         if ($size + $pos > $dirEnd) {
-            $exifTool->Error("Bad APP13 resource data size $size");
+            $et->Error("Bad APP13 resource data size $size");
             undef $newData;
             last;
         }
         if ($$newTags{$tagID} and $type eq '8BIM') {
             $tagInfo = $$newTags{$tagID};
             delete $$newTags{$tagID};
-            my $nvHash = $exifTool->GetNewValueHash($tagInfo);
+            my $nvHash = $et->GetNewValueHash($tagInfo);
             # check to see if we are overwriting this tag
             $value = substr($$dataPt, $pos, $size);
-            my $isOverwriting = $exifTool->IsOverwriting($nvHash, $value);
+            my $isOverwriting = $et->IsOverwriting($nvHash, $value);
             # handle special 'new' and 'old' values for IPTCDigest
             if (not $isOverwriting and $tagInfo eq $iptcDigestInfo) {
                 if (grep /^new$/, @{$$nvHash{DelValue}}) {
-                    $isOverwriting = 1 if $$exifTool{NewIPTCDigest} and
-                                          $$exifTool{NewIPTCDigest} eq $value;
+                    $isOverwriting = 1 if $$et{NewIPTCDigest} and
+                                          $$et{NewIPTCDigest} eq $value;
                 }
                 if (grep /^old$/, @{$$nvHash{DelValue}}) {
-                    $isOverwriting = 1 if $$exifTool{OldIPTCDigest} and
-                                          $$exifTool{OldIPTCDigest} eq $value;
+                    $isOverwriting = 1 if $$et{OldIPTCDigest} and
+                                          $$et{OldIPTCDigest} eq $value;
                 }
             }
             if ($isOverwriting) {
-                $exifTool->VerboseValue("- Photoshop:$$tagInfo{Name}", $value);
+                $et->VerboseValue("- Photoshop:$$tagInfo{Name}", $value);
                 # handle IPTCDigest specially because we want to write it last
                 # so the new IPTC digest will be known
                 if ($tagInfo eq $iptcDigestInfo) {
                     $$newTags{$tagID} = $tagInfo;   # add later
                     $value = undef;
                 } else {
-                    $value = $exifTool->GetNewValues($nvHash);
+                    $value = $et->GetNewValues($nvHash);
                 }
-                ++$exifTool->{CHANGED};
+                ++$$et{CHANGED};
                 next unless defined $value;     # next if tag is being deleted
                 # set resource name if necessary
                 SetResourceName($tagInfo, $name, \$value);
-                $exifTool->VerboseValue("+ Photoshop:$$tagInfo{Name}", $value);
+                $et->VerboseValue("+ Photoshop:$$tagInfo{Name}", $value);
             }
         } else {
             if ($type eq '8BIM') {
@@ -138,7 +138,7 @@ sub WritePhotoshop($$$)
                 unless ($tagInfo) {
                     # process subdirectory anyway if writable (except EXIF to avoid recursion)
                     # --> this allows IPTC to be processed if found here in TIFF images
-                    my $tmpInfo = $exifTool->GetTagInfo($tagTablePtr, $tagID);
+                    my $tmpInfo = $et->GetTagInfo($tagTablePtr, $tagID);
                     if ($tmpInfo and $$tmpInfo{SubDirectory} and
                         $tmpInfo->{SubDirectory}->{TagTable} ne 'Image::ExifTool::Exif::Main')
                     {
@@ -158,7 +158,7 @@ sub WritePhotoshop($$$)
                 );
                 my $subTable = Image::ExifTool::GetTagTable($tagInfo->{SubDirectory}->{TagTable});
                 my $writeProc = $tagInfo->{SubDirectory}->{WriteProc};
-                my $newValue = $exifTool->WriteDirectory(\%subdirInfo, $subTable, $writeProc);
+                my $newValue = $et->WriteDirectory(\%subdirInfo, $subTable, $writeProc);
                 if (defined $newValue) {
                     next unless length $newValue;   # remove subdirectory entry
                     $value = $newValue;
@@ -184,14 +184,14 @@ sub WritePhotoshop($$$)
         my $name = "\0\0";
         if ($$newTags{$tagID}) {
             $tagInfo = $$newTags{$tagID};
-            my $nvHash = $exifTool->GetNewValueHash($tagInfo);
-            $value = $exifTool->GetNewValues($nvHash);
+            my $nvHash = $et->GetNewValueHash($tagInfo);
+            $value = $et->GetNewValues($nvHash);
             # handle new IPTCDigest value specially
             if ($tagInfo eq $iptcDigestInfo and defined $value) {
                 if ($value eq 'new') {
-                    $value = $$exifTool{NewIPTCDigest};
+                    $value = $$et{NewIPTCDigest};
                 } elsif ($value eq 'old') {
-                    $value = $$exifTool{OldIPTCDigest};
+                    $value = $$et{OldIPTCDigest};
                 }
                 # (we already know we want to create this tag)
             } else {
@@ -199,8 +199,8 @@ sub WritePhotoshop($$$)
                 next unless $$nvHash{IsCreating};
             }
             next unless defined $value;     # next if tag is being deleted
-            $exifTool->VerboseValue("+ Photoshop:$$tagInfo{Name}", $value);
-            ++$exifTool->{CHANGED};
+            $et->VerboseValue("+ Photoshop:$$tagInfo{Name}", $value);
+            ++$$et{CHANGED};
         } else {
             $tagInfo = $$addDirs{$tagID};
             # create new directory
@@ -209,7 +209,7 @@ sub WritePhotoshop($$$)
             );
             my $subTable = Image::ExifTool::GetTagTable($tagInfo->{SubDirectory}->{TagTable});
             my $writeProc = $tagInfo->{SubDirectory}->{WriteProc};
-            $value = $exifTool->WriteDirectory(\%subdirInfo, $subTable, $writeProc);
+            $value = $et->WriteDirectory(\%subdirInfo, $subTable, $writeProc);
             next unless $value;
         }
         # set resource name if necessary
@@ -218,7 +218,7 @@ sub WritePhotoshop($$$)
         # write the new directory entry
         $newData .= '8BIM' . Set16u($tagID) . $name . Set32u($size) . $value;
         $newData .= "\0" if $size & 0x01;   # must null pad to even numbered byte
-        ++$exifTool->{CHANGED};
+        ++$$et{CHANGED};
     }
     return $newData;
 }
@@ -253,7 +253,7 @@ default resource name, and applied if no appended name is provided.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

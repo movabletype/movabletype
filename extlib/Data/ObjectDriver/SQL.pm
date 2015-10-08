@@ -81,6 +81,7 @@ sub as_sql {
             $sql .= $table unless $initial_table_written++;
             $joined{$table}++;
             for my $join (@{ $j->{joins} }) {
+                $joined{$join->{table}}++;
                 $sql .= ' ' .
                         uc($join->{type}) . ' JOIN ' . $join->{table} . ' ON ' .
                         $join->{condition};

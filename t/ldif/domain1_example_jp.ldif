@@ -1,0 +1,43 @@
+dn: dc=domain1,dc=example,dc=jp
+objectClass: dcObject
+objectClass: organization
+dc: domain1
+o: Example Corporation
+description: The Example Corporation
+
+dn: ou=users,dc=domain1,dc=example,dc=jp
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=groups,dc=domain1,dc=example,dc=jp
+objectClass: organizationalUnit
+ou: groups
+
+dn: cn=Melody,ou=users,dc=domain1,dc=example,dc=jp
+uid: Melody
+cn: Melody
+givenName: Melody
+sn: Nelson
+mail: m@example.com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+
+dn: cn=Chuck D,ou=users,dc=domain1,dc=example,dc=jp
+uid: Chuck D
+cn: Chuck D
+givenName: Chucky
+sn: Dee
+mail: chuckd@example.com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+
+dn: cn=group1,ou=groups,dc=domain1,dc=example,dc=jp
+cn: group1
+objectClass: top
+objectClass: posixGroup
+memberUid: Chuck D
+gidNumber: 2000

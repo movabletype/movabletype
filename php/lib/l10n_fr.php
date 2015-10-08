@@ -9,7 +9,7 @@ global $Lexicon_fr;
 $Lexicon_fr = array(
 
 ## php/lib/archive_lib.php
-	'Individual' => 'Individuel',
+	'Individual' => 'Individuelles',
 	'Page' => 'Page',
 	'Yearly' => 'Annuelles',
 	'Monthly' => 'Mensuelles',
@@ -25,12 +25,13 @@ $Lexicon_fr = array(
 	'Category Monthly' => 'Par catégories et mois',
 	'Category Daily' => 'Par catégories et jours',
 	'Category Weekly' => 'Par catégories et semaines',
+	'Category' => 'Catégorie',
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'sort_by="score" doit être utilisé avec un espace de noms.',
 
 ## php/lib/block.mtauthorhasentry.php
-	'No author available' => 'Il n\'a pas d\'auteur disponible',
+	'No author available' => 'Aucun auteur disponible',
 
 ## php/lib/block.mtauthorhaspage.php
 
@@ -87,7 +88,7 @@ $Lexicon_fr = array(
 
 ## php/lib/function.mtpasswordvalidation.php
 	'Password should be longer than [_1] characters' => 'Le mot de passe doit faire plus de [_1] caractères',
-	'Password should not include your Username' => 'Le mot de passe ne doit pas être composé de votre nom d\'utilisateur',
+	q{Password should not include your Username} => q{Le mot de passe ne doit pas être composé de votre nom d'utilisateur},
 	'Password should include letters and numbers' => 'Le mot de passe doit être composé de lettres et de chiffres',
 	'Password should include lowercase and uppercase letters' => 'Le mot de passe doit être composé de lettres en minuscule et majuscule',
 	'Password should contain symbols such as #!$%' => 'Le mot de passe doit contenir des caractères spéciaux comme #!$%',

@@ -13,7 +13,7 @@ package Image::ExifTool::JPEGDigest;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.02';
+$VERSION = '1.04';
 
 # the print conversion for the JPEGDigest tag
 my %PrintConv = ( #JD
@@ -2446,10 +2446,10 @@ my %PrintConv = ( #JD
 # Inputs: 0) ExifTool object ref, 1) DQT segments array ref, 2) subsampling string
 sub Calculate($$$)
 {
-    my ($exifTool, $dqtList, $subSampling) = @_;
+    my ($et, $dqtList, $subSampling) = @_;
 
-    unless (eval 'require Digest::MD5') {
-        $exifTool->Warn('Digest::MD5 must be installed to calculate JPEGDigest');
+    unless (eval { require Digest::MD5 }) {
+        $et->Warn('Digest::MD5 must be installed to calculate JPEGDigest');
         return;
     }
     # create a string of DQT tables (in indexed order), separated by zero bytes
@@ -2469,7 +2469,7 @@ sub Calculate($$$)
     # add print conversion for JPEGDigest dynamically so it doesn't
     # bulk up the documentation and slow down loading unnecessarily
     $Image::ExifTool::Extra{JPEGDigest}{PrintConv} = \%PrintConv;
-    $exifTool->FoundTag('JPEGDigest', $md5);
+    $et->FoundTag('JPEGDigest', $md5);
 }
 
 
@@ -2492,7 +2492,7 @@ some image identification from JPEG data alone.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

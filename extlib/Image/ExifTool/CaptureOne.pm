@@ -17,7 +17,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::XMP;
 use Image::ExifTool::ZIP;
 
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 # CaptureOne COS XML tags
 # - tags are added dynamically when encountered
@@ -65,11 +65,11 @@ sub HandleCOSAttrs($$$$)
 # Returns: 1 if valid tag was found
 sub FoundCOS($$$$;$)
 {
-    my ($exifTool, $tagTablePtr, $props, $val, $attrs) = @_;
+    my ($et, $tagTablePtr, $props, $val, $attrs) = @_;
 
     my $tag = $$props[-1];
     unless ($$tagTablePtr{$tag}) {
-        $exifTool->VPrint(0, "  | [adding $tag]\n");
+        $et->VPrint(0, "  | [adding $tag]\n");
         my $name = ucfirst $tag;
         $name =~ tr/-_a-zA-Z0-9//dc;
         return 0 unless length $tag;
@@ -84,10 +84,10 @@ sub FoundCOS($$$$;$)
         AddTagToTable($tagTablePtr, $tag, \%tagInfo);
     }
     # convert from UTF8 to ExifTool Charset
-    $val = $exifTool->Decode($val, "UTF8");
+    $val = $et->Decode($val, "UTF8");
     # un-escape XML character entities
     $val = Image::ExifTool::XMP::UnescapeXML($val);
-    $exifTool->HandleTag($tagTablePtr, $tag, $val);
+    $et->HandleTag($tagTablePtr, $tag, $val);
     return 0;
 }
 
@@ -97,7 +97,7 @@ sub FoundCOS($$$$;$)
 # Returns: 1 on success, 0 if this wasn't a valid XML file
 sub ProcessCOS($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
 
     # process using XMP module, but override handling of attributes and tags
     $$dirInfo{XMPParseOpts} = {
@@ -105,7 +105,7 @@ sub ProcessCOS($$)
         FoundProc => \&FoundCOS,
     };
     my $tagTablePtr = GetTagTable('Image::ExifTool::CaptureOne::Main');
-    my $success = $exifTool->ProcessDirectory($dirInfo, $tagTablePtr);
+    my $success = $et->ProcessDirectory($dirInfo, $tagTablePtr);
     delete $$dirInfo{XMLParseArgs};
     return $success;
 }
@@ -119,11 +119,11 @@ sub ProcessCOS($$)
 #   ZIP     - reference to Archive::Zip object for this file
 sub ProcessEIP($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $zip = $$dirInfo{ZIP};
     my ($file, $buff, $status, $member, %parseFile);
 
-    $exifTool->SetFileType('EIP');
+    $et->SetFileType('EIP');
 
     # must catch all Archive::Zip warnings
     local $SIG{'__WARN__'} = \&Image::ExifTool::ZIP::WarnProc;
@@ -159,10 +159,10 @@ sub ProcessEIP($$)
         # get filename of this ZIP member
         $file = $member->fileName();
         next unless defined $file;
-        $exifTool->VPrint(0, "File: $file\n");
+        $et->VPrint(0, "File: $file\n");
         # set the document number and extract ZIP tags
-        $$exifTool{DOC_NUM} = ++$docNum;
-        Image::ExifTool::ZIP::HandleMember($exifTool, $member);
+        $$et{DOC_NUM} = ++$docNum;
+        Image::ExifTool::ZIP::HandleMember($et, $member);
         if (%parseFile) {
             next unless $parseFile{$file};
         } else {
@@ -173,7 +173,7 @@ sub ProcessEIP($$)
         # extract the contents of the file
         # Note: this could use a LOT of memory here for RAW images...
         ($buff, $status) = $zip->contents($member);
-        $status and $exifTool->Warn("Error extracting $file"), next;
+        $status and $et->Warn("Error extracting $file"), next;
         if ($file =~ /\.cos$/i) {
             # process Capture One Settings files
             my %dirInfo = (
@@ -181,18 +181,18 @@ sub ProcessEIP($$)
                 DirLen => length $buff,
                 DataLen => length $buff,
             );
-            ProcessCOS($exifTool, \%dirInfo);
+            ProcessCOS($et, \%dirInfo);
         } else {
             # set HtmlDump error if necessary because it doesn't work with embedded files
-            if ($$exifTool{HTML_DUMP}) {
-                $$exifTool{HTML_DUMP}{Error} = "Sorry, can't dump images embedded in ZIP files";
+            if ($$et{HTML_DUMP}) {
+                $$et{HTML_DUMP}{Error} = "Sorry, can't dump images embedded in ZIP files";
             }
             # process IIQ, JPEG and TIFF images
-            $exifTool->ExtractInfo(\$buff, { ReEntry => 1 });
+            $et->ExtractInfo(\$buff, { ReEntry => 1 });
         }
         undef $buff;    # (free memory now)
     }
-    delete $$exifTool{DOC_NUM};
+    delete $$et{DOC_NUM};
     return 1;
 }
 
@@ -221,7 +221,7 @@ settings files (COS).
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

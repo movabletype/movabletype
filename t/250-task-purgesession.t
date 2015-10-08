@@ -90,6 +90,9 @@ my $expired_token = make_token(
 
 MT::App::DataAPI->purge_session_records();
 
+# Clear cache.
+$session_class->driver->Disabled(1) if $session_class->driver->can('Disabled');
+
 ok( $session_class->load( $effective->id ),
     'An effective session record is not purged'
 );

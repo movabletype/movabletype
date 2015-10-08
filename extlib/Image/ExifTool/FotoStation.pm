@@ -12,7 +12,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 sub ProcessFotoStation($$);
 
@@ -118,14 +118,14 @@ my %cropConv = (
 # - updates DirLen to trailer length
 sub ProcessFotoStation($$)
 {
-    my ($exifTool, $dirInfo) = @_;
-    $exifTool or return 1;    # allow dummy access to autoload this package
+    my ($et, $dirInfo) = @_;
+    $et or return 1;    # allow dummy access to autoload this package
     my ($buff, $footer, $dirBuff, $tagTablePtr);
     my $raf = $$dirInfo{RAF};
     my $outfile = $$dirInfo{OutFile};
     my $offset = $$dirInfo{Offset} || 0;
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
+    my $verbose = $et->Options('Verbose');
+    my $out = $et->Options('TextOut');
     my $rtnVal = 0;
 
     $$dirInfo{DirLen} = 0;      # initialize returned trailer length
@@ -151,8 +151,8 @@ sub ProcessFotoStation($$)
         }
         unless ($outfile) {
             # print verbose trailer information
-            if ($verbose or $exifTool->{HTML_DUMP}) {
-                $exifTool->DumpTrailer({
+            if ($verbose or $$et{HTML_DUMP}) {
+                $et->DumpTrailer({
                     RAF => $raf,
                     DataPos => $$dirInfo{DataPos},
                     DirLen => $size + 10,
@@ -160,21 +160,22 @@ sub ProcessFotoStation($$)
                 });
             }
             # extract information for this tag
-            $exifTool->HandleTag($tagTablePtr, $tag, $buff,
-                                 DataPt => \$buff,
-                                 Start => 0,
-                                 Size => $size,
-                                 DataPos => $$dirInfo{DataPos});
+            $et->HandleTag($tagTablePtr, $tag, $buff,
+                DataPt => \$buff,
+                Start => 0,
+                Size => $size,
+                DataPos => $$dirInfo{DataPos},
+            );
             next;
         }
-        if ($exifTool->{DEL_GROUP}->{FotoStation}) {
+        if ($$et{DEL_GROUP}{FotoStation}) {
             $verbose and printf $out "  Deleting FotoStation trailer\n";
             $verbose = 0;   # no more verbose messages after this
-            ++$exifTool->{CHANGED};
+            ++$$et{CHANGED};
             next;
         }
         # rewrite this information
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
         if ($tagInfo) {
             my $newVal;
             my $tagName = $$tagInfo{Name};
@@ -188,18 +189,18 @@ sub ProcessFotoStation($$)
                     Parent => 'FotoStation',
                 );
                 my $subTable = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
-                $newVal = $exifTool->WriteDirectory(\%subdirInfo, $subTable);
+                $newVal = $et->WriteDirectory(\%subdirInfo, $subTable);
             } else {
-                my $nvHash = $exifTool->GetNewValueHash($tagInfo);
-                if ($exifTool->IsOverwriting($nvHash) > 0) {
-                    $newVal = $exifTool->GetNewValues($nvHash);
+                my $nvHash = $et->GetNewValueHash($tagInfo);
+                if ($et->IsOverwriting($nvHash) > 0) {
+                    $newVal = $et->GetNewValues($nvHash);
                     $newVal = '' unless defined $newVal;
                     if ($verbose > 1) {
                         my $n = length $newVal;
                         print $out "    - FotoStation:$tagName ($size bytes)\n" if $size;
                         print $out "    + FotoStation:$tagName ($n bytes)\n" if $n;
                     }
-                    ++$exifTool->{CHANGED};
+                    ++$$et{CHANGED};
                 }
             }
             if (defined $newVal) {
@@ -240,7 +241,7 @@ write information from the FotoWare FotoStation trailer.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

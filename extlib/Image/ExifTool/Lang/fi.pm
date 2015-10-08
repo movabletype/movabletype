@@ -78,8 +78,8 @@ $VERSION = '1.01';
         'Near Upper/Left' => 'Hieman ylhäällä/vasemmalla',
         'Top Center' => 'Ylhäällä keskellä',
         'Top Left' => 'Ylävasemmalla',
-        'Top Near-Left' => 'Hieman ylävasemmalla',
-        'Top Near-Right' => 'Hieman yläoikealla',
+        'Top Near-left' => 'Hieman ylävasemmalla',
+        'Top Near-right' => 'Hieman yläoikealla',
         'Top Right' => 'Yläoikealla',
         'Upper Left' => 'Ylävasemmalla',
         'Upper Right' => 'Yläoikealla',
@@ -508,7 +508,6 @@ $VERSION = '1.01';
       },
     },
    'ColorMoireReduction' => 'Värimoareen vaimennus',
-   'ColorMoireReductionMode' => '',
    'ColorPalette' => 'Väripaletti',
    'ColorProfile' => 'Väriprofiili',
    'ColorRepresentation' => 'Väriesitys',
@@ -1106,7 +1105,6 @@ $VERSION = '1.01';
    'FocusArea' => 'Tarkennusalue',
    'FocusAreaSelection' => 'Tarkennusalueen valinta',
    'FocusContinuous' => 'Jatkuva tarkennus',
-   'FocusDistance' => '',
    'FocusDistanceLower' => 'Lähitarkennus',
    'FocusDistanceUpper' => 'Kaukotarkennus',
    'FocusMode' => {
@@ -2838,7 +2836,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

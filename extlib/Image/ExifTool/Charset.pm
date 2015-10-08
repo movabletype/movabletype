@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION %csType);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.07';
+$VERSION = '1.08';
 
 my %charsetTable;   # character set tables we've loaded
 
@@ -117,7 +117,7 @@ sub LoadCharset($)
 sub Decompose($$$;$)
 {
     local $_;
-    my ($exifTool, $val, $charset) = @_; # ($byteOrder assigned later if required)
+    my ($et, $val, $charset) = @_; # ($byteOrder assigned later if required)
     my $type = $csType{$charset};
     my (@uni, $conv);
 
@@ -125,7 +125,7 @@ sub Decompose($$$;$)
         $conv = LoadCharset($charset);
         unless ($conv) {
             # (shouldn't happen)
-            $exifTool->Warn("Invalid character set $charset") if $exifTool;
+            $et->Warn("Invalid character set $charset") if $et;
             return \@uni;   # error!
         }
     } elsif ($type == 0x100) {
@@ -140,9 +140,9 @@ sub Decompose($$$;$)
             # (somehow the meaning of "U0" was reversed in Perl 5.10.0!)
             @uni = unpack($] < 5.010000 ? 'U0U*' : 'C0U*', $val);
             # issue warning if we had errors
-            if ($Image::ExifTool::evalWarning and $exifTool and not $$exifTool{WarnBadUTF8}) {
-                $exifTool->Warn('Malformed UTF-8 character(s)');
-                $$exifTool{WarnBadUTF8} = 1;
+            if ($Image::ExifTool::evalWarning and $et and not $$et{WarnBadUTF8}) {
+                $et->Warn('Malformed UTF-8 character(s)');
+                $$et{WarnBadUTF8} = 1;
             }
         }
         return \@uni;       # all done!
@@ -274,9 +274,9 @@ sub Decompose($$$;$)
 sub Recompose($$;$$)
 {
     local $_;
-    my ($exifTool, $uni, $charset) = @_; # ($byteOrder assigned later if required)
+    my ($et, $uni, $charset) = @_; # ($byteOrder assigned later if required)
     my ($outVal, $conv, $inv);
-    $charset or $charset = $$exifTool{OPTIONS}{Charset};
+    $charset or $charset = $$et{OPTIONS}{Charset};
     my $csType = $csType{$charset};
     if ($csType == 0x100) {     # UTF8 (also treat ASCII as UTF8)
         if ($] >= 5.006001) {
@@ -293,14 +293,14 @@ sub Recompose($$;$$)
     if ($csType & 0x801) {
         $conv = LoadCharset($charset);
         unless ($conv) {
-            $exifTool->Warn("Missing charset $charset") if $exifTool;
+            $et->Warn("Missing charset $charset") if $et;
             return '';
         }
         $inv = $unicode2byte{$charset};
         # generate inverse lookup if necessary
         unless ($inv) {
             if (not $csType or $csType & 0x802) {
-                $exifTool->Warn("Invalid destination charset $charset") if $exifTool;
+                $et->Warn("Invalid destination charset $charset") if $et;
                 return '';
             }
             # prepare table to convert from Unicode to 1-byte characters
@@ -321,9 +321,9 @@ sub Recompose($$;$$)
             # different character with this byte value
             next if $_ < 0x100 and not $$conv{$_};
             $_ = ord('?');  # set invalid characters to '?'
-            if ($exifTool and not $$exifTool{EncodingError}) {
-                $exifTool->Warn("Some character(s) could not be encoded in $charset");
-                $$exifTool{EncodingError} = 1;
+            if ($et and not $$et{EncodingError}) {
+                $et->Warn("Some character(s) could not be encoded in $charset");
+                $$et{EncodingError} = 1;
             }
         }
         # repack as an 8-bit string and truncate at null
@@ -384,7 +384,7 @@ when decoding certain types of information.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

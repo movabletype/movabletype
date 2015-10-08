@@ -17,17 +17,7 @@ sub edit {
     my $blog    = $obj || $app->blog;
     my $blog_id = $id;
 
-    # The inflow from management screen of Blogs
-    # is redirected to dashboard.
-    if ( $app->mode eq 'view' && $blog && $blog_id ) {
-        return $app->redirect(
-            $app->uri(
-                mode => 'dashboard',
-                args => { blog_id => $blog_id },
-            )
-        );
-    }
-
+    my $lang;
     if ($id) {
         my $output = $param->{output} ||= 'cfg_prefs.tmpl';
         $param->{need_full_rebuild} = 1 if $q->param('need_full_rebuild');
@@ -43,7 +33,7 @@ sub edit {
             $param->{'list_on_index'} = ( $obj->days_on_index || 0 );
             $param->{'days'} = 1;
         }
-        my $lang = $obj->language || 'en';
+        $lang = $obj->language || 'en';
         $lang = 'en' if lc($lang) eq 'en-us' || lc($lang) eq 'en_us';
         $lang = 'ja' if lc($lang) eq 'jp';
         $param->{ 'language_' . $lang } = 1;
@@ -114,7 +104,7 @@ sub edit {
         if ( $output eq 'cfg_prefs.tmpl' ) {
             $app->add_breadcrumb( $app->translate('General Settings') );
 
-            my $lang = $obj->language || 'en';
+            $lang = $obj->language || 'en';
             $lang = 'en' if lc($lang) eq 'en-us' || lc($lang) eq 'en_us';
             $lang = 'ja' if lc($lang) eq 'jp';
             $param->{ 'language_' . $lang } = 1;
@@ -194,6 +184,20 @@ sub edit {
                 = (    $obj->max_revisions_template
                     || $MT::Revisable::MAX_REVISIONS );
             $param->{publish_empty_archive} = $obj->publish_empty_archive;
+
+            # Default options for upload
+            $param->{'upload_destination'} = $obj->upload_destination;
+            $param->{'extra_path'}         = $obj->extra_path;
+            $param->{'allow_to_change_at_upload'}
+                = $obj->allow_to_change_at_upload;
+            $param->{'operation_if_exists'}   = $obj->operation_if_exists;
+            $param->{'normalize_orientation'} = $obj->normalize_orientation;
+            $param->{'auto_rename_non_ascii'} = $obj->auto_rename_non_ascii;
+
+            require MT::CMS::Asset;
+            my @dest_root
+                = MT::CMS::Asset::_make_upload_destinations( $app, $obj );
+            $param->{destination_loop} = \@dest_root;
         }
         elsif ( $output eq 'cfg_entry.tmpl' ) {
             ## load entry preferences for new/edit entry page of the blog
@@ -221,6 +225,12 @@ sub edit {
             $param->{ 'nwc_smart_replace_' . ( $blog->smart_replace || 0 ) }
                 = 1;
             $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
+
+            $param->{popup}      = $blog->image_default_popup ? 1 : 0;
+            $param->{make_thumb} = $blog->image_default_thumb ? 1 : 0;
+            $param->{ 'align_' . ( $blog->image_default_align || 'none' ) }
+                = 1;
+            $param->{thumb_width} = $blog->image_default_width || 0;
         }
         elsif ( $output eq 'cfg_web_services.tmpl' ) {
             $param->{system_disabled_notify_pings}
@@ -346,28 +356,36 @@ sub edit {
             if !$blog || ( $blog && $blog->is_blog() );
 
         $app->add_breadcrumb( $app->translate('New Blog') );
-        ( my $tz = $cfg->DefaultTimezone ) =~ s![-\.]!_!g;
+        my $tz;
+        if ( defined( $param->{server_offset} ) ) {
+            ( $tz = $param->{server_offset} ) =~ s![-\.]!_!g;
+        }
+        else {
+            ( $tz = $cfg->DefaultTimezone ) =~ s![-\.]!_!g;
+        }
         $tz =~ s!_00$!!;    # fix syntax highlight ->!
         $param->{ 'server_offset_' . $tz } = 1;
         $param->{'can_edit_config'} = $app->can_do('edit_new_blog_config');
         $param->{'can_set_publish_paths'}
             = $app->can_do('set_new_blog_publish_paths');
+        $lang = $param->{'blog_language'};
+
     }
 
     $param->{languages} = MT::I18N::languages_list( $app,
-        $id ? $obj->language : MT->config->DefaultLanguage );
+        $id ? $obj->language : $lang || MT->config->DefaultLanguage );
 
     if ( !$param->{site_path} ) {
         $param->{suggested_site_path} = 'BLOG-NAME';
     }
 
-    if ( !$param->{site_url} ) {
+    if ( !$param->{site_url_path} ) {
         $param->{suggested_site_url} = 'BLOG-NAME';
     }
     if ( !$param->{id} ) {
-        if ( $param->{site_url} ) {
-            $param->{site_url} .= '/'
-                unless $param->{site_url} =~ /\/$/;
+        if ( $param->{site_url_path} ) {
+            $param->{site_url_path} .= '/'
+                unless $param->{site_url_path} =~ /\/$/;
         }
         else {
             $param->{suggested_site_url} .= '/'
@@ -447,13 +465,21 @@ sub cfg_prefs {
         $archive_label = $at unless $archive_label;
         $archive_label = $archive_label->()
             if ( ref $archive_label ) eq 'CODE';
-        push @data,
-            {
+        my $row = {
             archive_type_translated => $archive_label,
             archive_type            => $at,
             archive_type_is_preferred =>
                 ( $blog->archive_type_preferred eq $at ? 1 : 0 ),
-            };
+        };
+        if (   $q->param('preferred_archive_type')
+            && $q->param('preferred_archive_type') eq $at )
+        {
+            $row->{archive_type_is_preferred} = 1;
+        }
+        elsif ( $blog->archive_type_preferred eq $at ) {
+            $row->{archive_type_is_preferred} = 1;
+        }
+        push @data, $row;
     }
     @data = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @data;
     unless ( grep $_->{archive_type_is_preferred}, @data ) {
@@ -1515,12 +1541,13 @@ sub pre_save {
         }
         elsif ( $screen eq 'cfg_entry' ) {
             @fields = qw( allow_comments_default
-                allow_pings_default );
+                allow_pings_default image_default_thumb image_default_popup );
         }
         elsif ( $screen eq 'cfg_plugins' ) {
         }
         elsif ( $screen eq 'cfg_prefs' ) {
-            @fields = qw( use_revision );
+            @fields
+                = qw( use_revision allow_to_change_at_upload normalize_orientation auto_rename_non_ascii );
         }
         for my $cb (@fields) {
             unless ( defined $app->param($cb) ) {
@@ -1659,6 +1686,15 @@ sub pre_save {
                 if $obj->basename_limit < 15;    # 15 is the *minimum*
             $obj->basename_limit(250)
                 if $obj->basename_limit > 250;    # 15 is the *maximum*
+
+            $obj->image_default_thumb(
+                $app->param('image_default_thumb') ? 1 : 0 );
+            $obj->image_default_width(
+                scalar $app->param('image_default_width') );
+            $obj->image_default_align(
+                scalar $app->param('image_default_align') );
+            $obj->image_default_popup(
+                $app->param('image_default_popup') ? 1 : 0 );
         }
         if ( $screen eq 'cfg_prefs' ) {
             $obj->include_system( $app->param('include_system') || '' );
@@ -2385,6 +2421,16 @@ sub cfg_prefs_save {
         $blog->max_revisions_template( $app->param('max_revisions_template') )
             if $app->param('max_revisions_template');
     }
+
+    $blog->upload_destination( scalar $app->param('upload_destination') );
+    $blog->extra_path( scalar $app->param('extra_path') );
+    $blog->allow_to_change_at_upload(
+        $app->param('allow_to_change_at_upload') ? 1 : 0 );
+    $blog->operation_if_exists( scalar $app->param('operation_if_exists') );
+    $blog->normalize_orientation(
+        $app->param('normalize_orientation') ? 1 : 0 );
+    $blog->auto_rename_non_ascii(
+        $app->param('auto_rename_non_ascii') ? 1 : 0 );
 
     $blog->save
         or return $app->error(

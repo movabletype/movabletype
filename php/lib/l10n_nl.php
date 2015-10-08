@@ -25,6 +25,7 @@ $Lexicon_nl = array(
 	'Category Monthly' => 'per categorie per maand',
 	'Category Daily' => 'per categorie per dag',
 	'Category Weekly' => 'per categorie per week',
+	'Category' => 'Categorie',
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace',

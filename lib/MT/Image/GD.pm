@@ -10,6 +10,10 @@ use warnings;
 
 use base qw( MT::Image );
 
+use Class::Method::Modifiers;
+
+our $OVERRIDE;
+
 sub load_driver {
     my $image = shift;
     eval { require GD };
@@ -17,12 +21,26 @@ sub load_driver {
         return $image->error( MT->translate( "Cannot load GD: [_1]", $err ) );
     }
     GD::Image->trueColor(1);
+
+    # All file starting SOI is JPEG.
+    if ( !$OVERRIDE ) {
+        $OVERRIDE = 1;
+        around 'GD::Image::_image_type' => sub {
+            my ( $orig, $data ) = @_;
+            my $magic = unpack( 'H*', substr( $data, 0, 2 ) );
+            return 'Jpeg' if $magic eq 'ffd8';
+            $orig->($data);
+        };
+    }
+
     1;
 }
 
 sub init {
     my $image = shift;
     my %param = @_;
+
+    $image->SUPER::init(%param);
 
     if ( ( !defined $param{Type} ) && ( my $file = $param{Filename} ) ) {
         ( my $ext = $file ) =~ s/.*\.//;
@@ -56,9 +74,21 @@ sub _translate_filetype {
 }
 
 sub blob {
-    my $image = shift;
-    my $type  = $image->{type};
-    $image->{gd}->$type;
+    my ( $image, $quality ) = @_;
+    my $type = $image->{type};
+
+    if ( !defined $quality ) {
+        my $quality_column = "${type}_quality";
+        $quality
+            = $image->can($quality_column) ? $image->$quality_column : undef;
+    }
+
+    if ( defined $quality ) {
+        $image->{gd}->$type($quality);
+    }
+    else {
+        $image->{gd}->$type;
+    }
 }
 
 sub scale {
@@ -74,22 +104,23 @@ sub scale {
     wantarray ? ( $image->blob, $w, $h ) : $image->blob;
 }
 
-sub crop {
+sub crop_rectangle {
     my $image = shift;
     my %param = @_;
-    my ( $size, $x, $y ) = @param{qw( Size X Y )};
+    my ( $width, $height, $x, $y ) = @param{qw( Width Height X Y )};
     my $src = $image->{gd};
-    my $gd = GD::Image->new( $size, $size, 1 );    # True color image (24 bit)
+    my $gd = GD::Image->new( $width, $height, 1 ); # True color image (24 bit)
     $gd->alphaBlending(0);
     $gd->saveAlpha(1);
 
     # Use copyResampled() instead of copy(),
     # because copy() with libgd 2.0.35 or lower does not work correctly.
     # $gd->copy( $src, 0, 0, $x, $y, $size, $size );
-    $gd->copyResampled( $src, 0, 0, $x, $y, $size, $size, $size, $size );
+    $gd->copyResampled( $src, 0, 0, $x, $y, $width, $height, $width,
+        $height );
     ( $image->{gd}, $image->{width}, $image->{height} )
-        = ( $gd, $size, $size );
-    wantarray ? ( $image->blob, $size, $size ) : $image->blob;
+        = ( $gd, $width, $height );
+    wantarray ? ( $image->blob, $width, $height ) : $image->blob;
 }
 
 sub flipHorizontal {

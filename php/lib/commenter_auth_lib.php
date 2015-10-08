@@ -5,6 +5,8 @@
 #
 # $Id$
 
+# Do not remove providers when they are disabled,
+# because the output of MT tags should keep same.
 global $_commenter_auths;
 $provider = new OpenIDCommenterAuth();
 $_commenter_auths[$provider->get_key()] = $provider;

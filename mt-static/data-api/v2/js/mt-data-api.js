@@ -2242,8 +2242,8 @@ DataAPI.registerFormat = function(key, spec) {
  * @param {String} key Session store name
  * @param {Object} spec
  *   @param {String} spec.save Saving method
- *   @param {String} spec.restore Restoring method
- *   @param {String} spec.dispose Disposing method
+ *   @param {String} spec.fetch Fetching method
+ *   @param {String} spec.remove Removing method
  * @category core
  */
 DataAPI.registerSessionStore = function(key, spec) {
@@ -4212,1228 +4212,1252 @@ DataAPI.on('initialize', function() {
     this.generateEndpointMethods(
         [
     {
-        "id": "list_endpoints", 
-        "resources": null, 
-        "route": "/endpoints", 
-        "verb": "GET"
-    }, 
+        "id": "list_endpoints",
+        "route": "/endpoints",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "authorize", 
-        "resources": null, 
-        "route": "/authorization", 
-        "verb": "GET"
-    }, 
+        "id": "authenticate",
+        "route": "/authentication",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "authenticate", 
-        "resources": null, 
-        "route": "/authentication", 
-        "verb": "POST"
-    }, 
+        "id": "get_token",
+        "route": "/token",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "get_token", 
-        "resources": null, 
-        "route": "/token", 
-        "verb": "POST"
-    }, 
+        "id": "revoke_authentication",
+        "route": "/authentication",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "revoke_authentication", 
-        "resources": null, 
-        "route": "/authentication", 
-        "verb": "DELETE"
-    }, 
+        "id": "revoke_token",
+        "route": "/token",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "revoke_token", 
-        "resources": null, 
-        "route": "/token", 
-        "verb": "DELETE"
-    }, 
+        "id": "get_user",
+        "route": "/users/:user_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_user", 
-        "resources": null, 
-        "route": "/users/:user_id", 
-        "verb": "GET"
-    }, 
-    {
-        "id": "update_user", 
+        "id": "update_user",
+        "route": "/users/:user_id",
+        "verb": "PUT",
         "resources": [
             "user"
-        ], 
-        "route": "/users/:user_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "list_blogs_for_user", 
-        "resources": null, 
-        "route": "/users/:user_id/sites", 
-        "verb": "GET"
-    }, 
+        "id": "list_blogs_for_user",
+        "route": "/users/:user_id/sites",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_blog", 
-        "resources": null, 
-        "route": "/sites/:site_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_blog",
+        "route": "/sites/:site_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_entries", 
-        "resources": null, 
-        "route": "/sites/:site_id/entries", 
-        "verb": "GET"
-    }, 
+        "id": "list_entries",
+        "route": "/sites/:site_id/entries",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_entry", 
+        "id": "create_entry",
+        "route": "/sites/:site_id/entries",
+        "verb": "POST",
         "resources": [
             "entry"
-        ], 
-        "route": "/sites/:site_id/entries", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "get_entry", 
-        "resources": null, 
-        "route": "/sites/:site_id/entries/:entry_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_entry",
+        "route": "/sites/:site_id/entries/:entry_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "update_entry", 
+        "id": "update_entry",
+        "route": "/sites/:site_id/entries/:entry_id",
+        "verb": "PUT",
         "resources": [
             "entry"
-        ], 
-        "route": "/sites/:site_id/entries/:entry_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_entry", 
-        "resources": null, 
-        "route": "/sites/:site_id/entries/:entry_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_entry",
+        "route": "/sites/:site_id/entries/:entry_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "list_categories", 
-        "resources": null, 
-        "route": "/sites/:site_id/categories", 
-        "verb": "GET"
-    }, 
+        "id": "list_categories",
+        "route": "/sites/:site_id/categories",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_comments", 
-        "resources": null, 
-        "route": "/sites/:site_id/comments", 
-        "verb": "GET"
-    }, 
+        "id": "list_comments",
+        "route": "/sites/:site_id/comments",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_comments_for_entry", 
-        "resources": null, 
-        "route": "/sites/:site_id/entries/:entry_id/comments", 
-        "verb": "GET"
-    }, 
+        "id": "list_comments_for_entry",
+        "route": "/sites/:site_id/entries/:entry_id/comments",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_comment", 
+        "id": "create_comment",
+        "route": "/sites/:site_id/entries/:entry_id/comments",
+        "verb": "POST",
         "resources": [
             "comment"
-        ], 
-        "route": "/sites/:site_id/entries/:entry_id/comments", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "create_reply_comment", 
+        "id": "create_reply_comment",
+        "route": "/sites/:site_id/entries/:entry_id/comments/:comment_id/replies",
+        "verb": "POST",
         "resources": [
             "comment"
-        ], 
-        "route": "/sites/:site_id/entries/:entry_id/comments/:comment_id/replies", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "get_comment", 
-        "resources": null, 
-        "route": "/sites/:site_id/comments/:comment_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_comment",
+        "route": "/sites/:site_id/comments/:comment_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "update_comment", 
+        "id": "update_comment",
+        "route": "/sites/:site_id/comments/:comment_id",
+        "verb": "PUT",
         "resources": [
             "comment"
-        ], 
-        "route": "/sites/:site_id/comments/:comment_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_comment", 
-        "resources": null, 
-        "route": "/sites/:site_id/comments/:comment_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_comment",
+        "route": "/sites/:site_id/comments/:comment_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "list_trackbacks", 
-        "resources": null, 
-        "route": "/sites/:site_id/trackbacks", 
-        "verb": "GET"
-    }, 
+        "id": "list_trackbacks",
+        "route": "/sites/:site_id/trackbacks",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_trackbacks_for_entry", 
-        "resources": null, 
-        "route": "/sites/:site_id/entries/:entry_id/trackbacks", 
-        "verb": "GET"
-    }, 
+        "id": "list_trackbacks_for_entry",
+        "route": "/sites/:site_id/entries/:entry_id/trackbacks",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_trackback", 
-        "resources": null, 
-        "route": "/sites/:site_id/trackbacks/:ping_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_trackback",
+        "route": "/sites/:site_id/trackbacks/:ping_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "update_trackback", 
+        "id": "update_trackback",
+        "route": "/sites/:site_id/trackbacks/:ping_id",
+        "verb": "PUT",
         "resources": [
             "trackback"
-        ], 
-        "route": "/sites/:site_id/trackbacks/:ping_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_trackback", 
-        "resources": null, 
-        "route": "/sites/:site_id/trackbacks/:ping_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_trackback",
+        "route": "/sites/:site_id/trackbacks/:ping_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "upload_asset", 
-        "resources": null, 
-        "route": "/sites/:site_id/assets/upload", 
-        "verb": "POST"
-    }, 
+        "id": "upload_asset",
+        "route": "/sites/:site_id/assets/upload",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "list_permissions_for_user", 
-        "resources": null, 
-        "route": "/users/:user_id/permissions", 
-        "verb": "GET"
-    }, 
+        "id": "list_permissions_for_user",
+        "route": "/users/:user_id/permissions",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "publish_entries", 
-        "resources": null, 
-        "route": "/publish/entries", 
-        "verb": "GET"
-    }, 
+        "id": "publish_entries",
+        "route": "/publish/entries",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_stats_provider", 
-        "resources": null, 
-        "route": "/sites/:site_id/stats/provider", 
-        "verb": "GET"
-    }, 
+        "id": "get_stats_provider",
+        "route": "/sites/:site_id/stats/provider",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_stats_pageviews_for_path", 
-        "resources": null, 
-        "route": "/sites/:site_id/stats/path/pageviews", 
-        "verb": "GET"
-    }, 
+        "id": "list_stats_pageviews_for_path",
+        "route": "/sites/:site_id/stats/path/pageviews",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_stats_visits_for_path", 
-        "resources": null, 
-        "route": "/sites/:site_id/stats/path/visits", 
-        "verb": "GET"
-    }, 
+        "id": "list_stats_visits_for_path",
+        "route": "/sites/:site_id/stats/path/visits",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_stats_pageviews_for_date", 
-        "resources": null, 
-        "route": "/sites/:site_id/stats/date/pageviews", 
-        "verb": "GET"
-    }, 
+        "id": "list_stats_pageviews_for_date",
+        "route": "/sites/:site_id/stats/date/pageviews",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_stats_visits_for_date", 
-        "resources": null, 
-        "route": "/sites/:site_id/stats/date/visits", 
-        "verb": "GET"
-    }, 
+        "id": "list_stats_visits_for_date",
+        "route": "/sites/:site_id/stats/date/visits",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_categories", 
-        "resources": null, 
-        "route": "/sites/:site_id/categories", 
-        "verb": "GET"
-    }, 
+        "id": "list_categories",
+        "route": "/sites/:site_id/categories",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_categories_for_entry", 
-        "resources": null, 
-        "route": "/sites/:site_id/entries/:entry_id/categories", 
-        "verb": "GET"
-    }, 
+        "id": "list_categories_for_entry",
+        "route": "/sites/:site_id/entries/:entry_id/categories",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_parent_categories", 
-        "resources": null, 
-        "route": "/sites/:site_id/categories/:category_id/parents", 
-        "verb": "GET"
-    }, 
+        "id": "list_parent_categories",
+        "route": "/sites/:site_id/categories/:category_id/parents",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_sibling_categories", 
-        "resources": null, 
-        "route": "/sites/:site_id/categories/:category_id/siblings", 
-        "verb": "GET"
-    }, 
+        "id": "list_sibling_categories",
+        "route": "/sites/:site_id/categories/:category_id/siblings",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_child_categories", 
-        "resources": null, 
-        "route": "/sites/:site_id/categories/:category_id/children", 
-        "verb": "GET"
-    }, 
+        "id": "list_child_categories",
+        "route": "/sites/:site_id/categories/:category_id/children",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_category", 
+        "id": "create_category",
+        "route": "/sites/:site_id/categories",
+        "verb": "POST",
         "resources": [
             "category"
-        ], 
-        "route": "/sites/:site_id/categories", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "get_category", 
-        "resources": null, 
-        "route": "/sites/:site_id/categories/:category_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_category",
+        "route": "/sites/:site_id/categories/:category_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "update_category", 
+        "id": "update_category",
+        "route": "/sites/:site_id/categories/:category_id",
+        "verb": "PUT",
         "resources": [
             "category"
-        ], 
-        "route": "/sites/:site_id/categories/:category_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_category", 
-        "resources": null, 
-        "route": "/sites/:site_id/categories/:category_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_category",
+        "route": "/sites/:site_id/categories/:category_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "permutate_categories", 
-        "resources": null, 
-        "route": "/sites/:site_id/categories/permutate", 
-        "verb": "POST"
-    }, 
+        "id": "permutate_categories",
+        "route": "/sites/:site_id/categories/permutate",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "list_folders", 
-        "resources": null, 
-        "route": "/sites/:site_id/folders", 
-        "verb": "GET"
-    }, 
+        "id": "list_folders",
+        "route": "/sites/:site_id/folders",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_parent_folders", 
-        "resources": null, 
-        "route": "/sites/:site_id/folders/:folder_id/parents", 
-        "verb": "GET"
-    }, 
+        "id": "list_parent_folders",
+        "route": "/sites/:site_id/folders/:folder_id/parents",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_sibling_folders", 
-        "resources": null, 
-        "route": "/sites/:site_id/folders/:folder_id/siblings", 
-        "verb": "GET"
-    }, 
+        "id": "list_sibling_folders",
+        "route": "/sites/:site_id/folders/:folder_id/siblings",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_child_folders", 
-        "resources": null, 
-        "route": "/sites/:site_id/folders/:folder_id/children", 
-        "verb": "GET"
-    }, 
+        "id": "list_child_folders",
+        "route": "/sites/:site_id/folders/:folder_id/children",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_folder", 
+        "id": "create_folder",
+        "route": "/sites/:site_id/folders",
+        "verb": "POST",
         "resources": [
             "folder"
-        ], 
-        "route": "/sites/:site_id/folders", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "get_folder", 
-        "resources": null, 
-        "route": "/sites/:site_id/folders/:folder_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_folder",
+        "route": "/sites/:site_id/folders/:folder_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "update_folder", 
+        "id": "update_folder",
+        "route": "/sites/:site_id/folders/:folder_id",
+        "verb": "PUT",
         "resources": [
             "folder"
-        ], 
-        "route": "/sites/:site_id/folders/:folder_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_folder", 
-        "resources": null, 
-        "route": "/sites/:site_id/folders/:folder_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_folder",
+        "route": "/sites/:site_id/folders/:folder_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "permutate_folders", 
-        "resources": null, 
-        "route": "/sites/:site_id/folders/permutate", 
-        "verb": "POST"
-    }, 
+        "id": "permutate_folders",
+        "route": "/sites/:site_id/folders/permutate",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "list_assets", 
-        "resources": null, 
-        "route": "/sites/:site_id/assets", 
-        "verb": "GET"
-    }, 
+        "id": "list_assets",
+        "route": "/sites/:site_id/assets",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_assets_for_entry", 
-        "resources": null, 
-        "route": "/sites/:site_id/entries/:entry_id/assets", 
-        "verb": "GET"
-    }, 
+        "id": "list_assets_for_entry",
+        "route": "/sites/:site_id/entries/:entry_id/assets",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_assets_for_page", 
-        "resources": null, 
-        "route": "/sites/:site_id/pages/:page_id/assets", 
-        "verb": "GET"
-    }, 
+        "id": "list_assets_for_page",
+        "route": "/sites/:site_id/pages/:page_id/assets",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_assets_for_site_and_tag", 
-        "resources": null, 
-        "route": "/sites/:site_id/tags/:tag_id/assets", 
-        "verb": "GET"
-    }, 
+        "id": "list_assets_for_site_and_tag",
+        "route": "/sites/:site_id/tags/:tag_id/assets",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "upload_asset", 
-        "resources": null, 
-        "route": "/assets/upload", 
-        "verb": "POST"
-    }, 
+        "id": "upload_asset",
+        "route": "/assets/upload",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "upload_asset_for_site", 
-        "resources": null, 
-        "route": "/sites/:site_id/assets/upload", 
-        "verb": "POST"
-    }, 
+        "id": "upload_asset_for_site",
+        "route": "/sites/:site_id/assets/upload",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "get_asset", 
-        "resources": null, 
-        "route": "/sites/:site_id/assets/:asset_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_asset",
+        "route": "/sites/:site_id/assets/:asset_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "update_asset", 
+        "id": "update_asset",
+        "route": "/sites/:site_id/assets/:asset_id",
+        "verb": "PUT",
         "resources": [
             "asset"
-        ], 
-        "route": "/sites/:site_id/assets/:asset_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_asset", 
-        "resources": null, 
-        "route": "/sites/:site_id/assets/:asset_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_asset",
+        "route": "/sites/:site_id/assets/:asset_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "get_thumbnail", 
-        "resources": null, 
-        "route": "/sites/:site_id/assets/:asset_id/thumbnail", 
-        "verb": "GET"
-    }, 
+        "id": "get_thumbnail",
+        "route": "/sites/:site_id/assets/:asset_id/thumbnail",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_entries_for_category", 
-        "resources": null, 
-        "route": "/sites/:site_id/categories/:category_id/entries", 
-        "verb": "GET"
-    }, 
+        "id": "list_entries_for_category",
+        "route": "/sites/:site_id/categories/:category_id/entries",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_entries_for_asset", 
-        "resources": null, 
-        "route": "/sites/:site_id/assets/:asset_id/entries", 
-        "verb": "GET"
-    }, 
+        "id": "list_entries_for_asset",
+        "route": "/sites/:site_id/assets/:asset_id/entries",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_entries_for_site_and_tag", 
-        "resources": null, 
-        "route": "/sites/:site_id/tags/:tag_id/entries", 
-        "verb": "GET"
-    }, 
+        "id": "list_entries_for_site_and_tag",
+        "route": "/sites/:site_id/tags/:tag_id/entries",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_entry", 
+        "id": "create_entry",
+        "route": "/sites/:site_id/entries",
+        "verb": "POST",
         "resources": [
             "entry"
-        ], 
-        "route": "/sites/:site_id/entries", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "update_entry", 
+        "id": "update_entry",
+        "route": "/sites/:site_id/entries/:entry_id",
+        "verb": "PUT",
         "resources": [
             "entry"
-        ], 
-        "route": "/sites/:site_id/entries/:entry_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "import_entries", 
-        "resources": null, 
-        "route": "/sites/:site_id/entries/import", 
-        "verb": "POST"
-    }, 
+        "id": "import_entries",
+        "route": "/sites/:site_id/entries/import",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "export_entries", 
-        "resources": null, 
-        "route": "/sites/:site_id/entries/export", 
-        "verb": "GET"
-    }, 
+        "id": "export_entries",
+        "route": "/sites/:site_id/entries/export",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_pages", 
-        "resources": null, 
-        "route": "/sites/:site_id/pages", 
-        "verb": "GET"
-    }, 
+        "id": "preview_entry_by_id",
+        "route": "/sites/:site_id/entries/:entry_id/preview",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "list_pages_for_folder", 
-        "resources": null, 
-        "route": "/sites/:site_id/folders/:folder_id/pages", 
-        "verb": "GET"
-    }, 
+        "id": "preview_entry",
+        "route": "/sites/:site_id/entries/preview",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "list_pages_for_asset", 
-        "resources": null, 
-        "route": "/sites/:site_id/assets/:asset_id/pages", 
-        "verb": "GET"
-    }, 
+        "id": "list_pages",
+        "route": "/sites/:site_id/pages",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_pages_for_site_and_tag", 
-        "resources": null, 
-        "route": "/sites/:site_id/tags/:tag_id/pages", 
-        "verb": "GET"
-    }, 
+        "id": "list_pages_for_folder",
+        "route": "/sites/:site_id/folders/:folder_id/pages",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_page", 
+        "id": "list_pages_for_asset",
+        "route": "/sites/:site_id/assets/:asset_id/pages",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "list_pages_for_site_and_tag",
+        "route": "/sites/:site_id/tags/:tag_id/pages",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "create_page",
+        "route": "/sites/:site_id/pages",
+        "verb": "POST",
         "resources": [
             "page"
-        ], 
-        "route": "/sites/:site_id/pages", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "get_page", 
-        "resources": null, 
-        "route": "/sites/:site_id/pages/:page_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_page",
+        "route": "/sites/:site_id/pages/:page_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "update_page", 
+        "id": "update_page",
+        "route": "/sites/:site_id/pages/:page_id",
+        "verb": "PUT",
         "resources": [
             "page"
-        ], 
-        "route": "/sites/:site_id/pages/:page_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_page", 
-        "resources": null, 
-        "route": "/sites/:site_id/pages/:page_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_page",
+        "route": "/sites/:site_id/pages/:page_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "list_comments_for_page", 
-        "resources": null, 
-        "route": "/sites/:site_id/pages/:page_id/comments", 
-        "verb": "GET"
-    }, 
+        "id": "preview_page_by_id",
+        "route": "/sites/:site_id/pages/:page_id/preview",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "create_comment_for_page", 
+        "id": "preview_page",
+        "route": "/sites/:site_id/pages/preview",
+        "verb": "POST",
+        "resources": null
+    },
+    {
+        "id": "list_comments_for_page",
+        "route": "/sites/:site_id/pages/:page_id/comments",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "create_comment_for_page",
+        "route": "/sites/:site_id/pages/:page_id/comments",
+        "verb": "POST",
         "resources": [
             "comment"
-        ], 
-        "route": "/sites/:site_id/pages/:page_id/comments", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "create_reply_comment_for_page", 
+        "id": "create_reply_comment_for_page",
+        "route": "/sites/:site_id/pages/:page_id/comments/:comment_id/replies",
+        "verb": "POST",
         "resources": [
             "comment"
-        ], 
-        "route": "/sites/:site_id/pages/:page_id/comments/:comment_id/replies", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "list_trackbacks_for_page", 
-        "resources": null, 
-        "route": "/sites/:site_id/pages/:page_id/trackbacks", 
-        "verb": "GET"
-    }, 
+        "id": "list_trackbacks_for_page",
+        "route": "/sites/:site_id/pages/:page_id/trackbacks",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_sites", 
-        "resources": null, 
-        "route": "/sites", 
-        "verb": "GET"
-    }, 
+        "id": "list_sites",
+        "route": "/sites",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_sites_by_parent", 
-        "resources": null, 
-        "route": "/sites/:site_id/children", 
-        "verb": "GET"
-    }, 
+        "id": "list_sites_by_parent",
+        "route": "/sites/:site_id/children",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "insert_new_blog", 
+        "id": "insert_new_blog",
+        "route": "/sites/:site_id",
+        "verb": "POST",
         "resources": [
             "blog"
-        ], 
-        "route": "/sites/:site_id", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "insert_new_website", 
+        "id": "insert_new_website",
+        "route": "/sites",
+        "verb": "POST",
         "resources": [
             "website"
-        ], 
-        "route": "/sites", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "update_site", 
-        "resources": null, 
-        "route": "/sites/:site_id", 
-        "verb": "PUT"
-    }, 
+        "id": "update_site",
+        "route": "/sites/:site_id",
+        "verb": "PUT",
+        "resources": null
+    },
     {
-        "id": "delete_site", 
-        "resources": null, 
-        "route": "/sites/:site_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_site",
+        "route": "/sites/:site_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "list_roles", 
-        "resources": null, 
-        "route": "/roles", 
-        "verb": "GET"
-    }, 
+        "id": "list_roles",
+        "route": "/roles",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_role", 
+        "id": "create_role",
+        "route": "/roles",
+        "verb": "POST",
         "resources": [
             "role"
-        ], 
-        "route": "/roles", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "get_role", 
-        "resources": null, 
-        "route": "/roles/:role_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_role",
+        "route": "/roles/:role_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "update_role", 
+        "id": "update_role",
+        "route": "/roles/:role_id",
+        "verb": "PUT",
         "resources": [
             "role"
-        ], 
-        "route": "/roles/:role_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_role", 
-        "resources": null, 
-        "route": "/roles/:role_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_role",
+        "route": "/roles/:role_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "list_permissions", 
-        "resources": null, 
-        "route": "/permissions", 
-        "verb": "GET"
-    }, 
+        "id": "list_permissions",
+        "route": "/permissions",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_permissions_for_user", 
-        "resources": null, 
-        "route": "/users/:user_id/permissions", 
-        "verb": "GET"
-    }, 
+        "id": "list_permissions_for_user",
+        "route": "/users/:user_id/permissions",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_permissions_for_site", 
-        "resources": null, 
-        "route": "/sites/:site_id/permissions", 
-        "verb": "GET"
-    }, 
+        "id": "list_permissions_for_site",
+        "route": "/sites/:site_id/permissions",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_permissions_for_role", 
-        "resources": null, 
-        "route": "/roles/:role_id/permissions", 
-        "verb": "GET"
-    }, 
+        "id": "list_permissions_for_role",
+        "route": "/roles/:role_id/permissions",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "grant_permission_to_site", 
-        "resources": null, 
-        "route": "/sites/:site_id/permissions/grant", 
-        "verb": "POST"
-    }, 
+        "id": "grant_permission_to_site",
+        "route": "/sites/:site_id/permissions/grant",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "grant_permission_to_user", 
-        "resources": null, 
-        "route": "/users/:user_id/permissions/grant", 
-        "verb": "POST"
-    }, 
+        "id": "grant_permission_to_user",
+        "route": "/users/:user_id/permissions/grant",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "revoke_permission_from_site", 
-        "resources": null, 
-        "route": "/sites/:site_id/permissions/revoke", 
-        "verb": "POST"
-    }, 
+        "id": "revoke_permission_from_site",
+        "route": "/sites/:site_id/permissions/revoke",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "revoke_permission_from_user", 
-        "resources": null, 
-        "route": "/users/:user_id/permissions/revoke", 
-        "verb": "POST"
-    }, 
+        "id": "revoke_permission_from_user",
+        "route": "/users/:user_id/permissions/revoke",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "search", 
-        "resources": null, 
-        "route": "/search", 
-        "verb": "GET"
-    }, 
+        "id": "search",
+        "route": "/search",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_logs", 
-        "resources": null, 
-        "route": "/sites/:site_id/logs", 
-        "verb": "GET"
-    }, 
+        "id": "list_logs",
+        "route": "/sites/:site_id/logs",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_log", 
-        "resources": null, 
-        "route": "/sites/:site_id/logs/:log_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_log",
+        "route": "/sites/:site_id/logs/:log_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_log", 
+        "id": "create_log",
+        "route": "/sites/:site_id/logs",
+        "verb": "POST",
         "resources": [
             "log"
-        ], 
-        "route": "/sites/:site_id/logs", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "update_log", 
+        "id": "update_log",
+        "route": "/sites/:site_id/logs/:log_id",
+        "verb": "PUT",
         "resources": [
             "log"
-        ], 
-        "route": "/sites/:site_id/logs/:log_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_log", 
-        "resources": null, 
-        "route": "/sites/:site_id/logs/:log_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_log",
+        "route": "/sites/:site_id/logs/:log_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "reset_logs", 
-        "resources": null, 
-        "route": "/sites/:site_id/logs", 
-        "verb": "DELETE"
-    }, 
+        "id": "reset_logs",
+        "route": "/sites/:site_id/logs",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "export_logs", 
-        "resources": null, 
-        "route": "/sites/:site_id/logs/export", 
-        "verb": "GET"
-    }, 
+        "id": "export_logs",
+        "route": "/sites/:site_id/logs/export",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_tags_for_site", 
-        "resources": null, 
-        "route": "/sites/:site_id/tags", 
-        "verb": "GET"
-    }, 
+        "id": "list_tags_for_site",
+        "route": "/sites/:site_id/tags",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_tag_for_site", 
-        "resources": null, 
-        "route": "/sites/:site_id/tags/:tag_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_tag_for_site",
+        "route": "/sites/:site_id/tags/:tag_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "rename_tag_for_site", 
-        "resources": null, 
-        "route": "/sites/:site_id/tags/:tag_id", 
-        "verb": "PUT"
-    }, 
+        "id": "rename_tag_for_site",
+        "route": "/sites/:site_id/tags/:tag_id",
+        "verb": "PUT",
+        "resources": null
+    },
     {
-        "id": "delete_tag_for_site", 
-        "resources": null, 
-        "route": "/sites/:site_id/tags/:tag_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_tag_for_site",
+        "route": "/sites/:site_id/tags/:tag_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "list_themes", 
-        "resources": null, 
-        "route": "/themes", 
-        "verb": "GET"
-    }, 
+        "id": "list_themes",
+        "route": "/themes",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_themes_for_site", 
-        "resources": null, 
-        "route": "/sites/:site_id/themes", 
-        "verb": "GET"
-    }, 
+        "id": "list_themes_for_site",
+        "route": "/sites/:site_id/themes",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_theme", 
-        "resources": null, 
-        "route": "/themes/:theme_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_theme",
+        "route": "/themes/:theme_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_theme_for_site", 
-        "resources": null, 
-        "route": "/sites/:site_id/themes/:theme_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_theme_for_site",
+        "route": "/sites/:site_id/themes/:theme_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "apply_theme_to_site", 
-        "resources": null, 
-        "route": "/sites/:site_id/themes/:theme_id/apply", 
-        "verb": "POST"
-    }, 
+        "id": "apply_theme_to_site",
+        "route": "/sites/:site_id/themes/:theme_id/apply",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "uninstall_theme", 
-        "resources": null, 
-        "route": "/themes/:theme_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "uninstall_theme",
+        "route": "/themes/:theme_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "export_site_theme", 
-        "resources": null, 
-        "route": "/sites/:site_id/export_theme", 
-        "verb": "POST"
-    }, 
+        "id": "export_site_theme",
+        "route": "/sites/:site_id/export_theme",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "list_templates", 
-        "resources": null, 
-        "route": "/sites/:site_id/templates", 
-        "verb": "GET"
-    }, 
+        "id": "list_templates",
+        "route": "/sites/:site_id/templates",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_template", 
-        "resources": null, 
-        "route": "/sites/:site_id/templates/:template_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_template",
+        "route": "/sites/:site_id/templates/:template_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_template", 
+        "id": "create_template",
+        "route": "/sites/:site_id/templates",
+        "verb": "POST",
         "resources": [
             "template"
-        ], 
-        "route": "/sites/:site_id/templates", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "update_template", 
+        "id": "update_template",
+        "route": "/sites/:site_id/templates/:template_id",
+        "verb": "PUT",
         "resources": [
             "template"
-        ], 
-        "route": "/sites/:site_id/templates/:template_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_template", 
-        "resources": null, 
-        "route": "/sites/:site_id/templates/:template_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_template",
+        "route": "/sites/:site_id/templates/:template_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "publish_template", 
-        "resources": null, 
-        "route": "/sites/:site_id/templates/:template_id/publish", 
-        "verb": "POST"
-    }, 
+        "id": "publish_template",
+        "route": "/sites/:site_id/templates/:template_id/publish",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "refresh_template", 
-        "resources": null, 
-        "route": "/sites/:site_id/templates/:template_id/refresh", 
-        "verb": "POST"
-    }, 
+        "id": "refresh_template",
+        "route": "/sites/:site_id/templates/:template_id/refresh",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "refresh_templates_for_site", 
-        "resources": null, 
-        "route": "/sites/:site_id/refresh_templates", 
-        "verb": "POST"
-    }, 
+        "id": "refresh_templates_for_site",
+        "route": "/sites/:site_id/refresh_templates",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "clone_template", 
-        "resources": null, 
-        "route": "/sites/:site_id/templates/:template_id/clone", 
-        "verb": "POST"
-    }, 
+        "id": "clone_template",
+        "route": "/sites/:site_id/templates/:template_id/clone",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "list_templatemaps", 
-        "resources": null, 
-        "route": "/sites/:site_id/templates/:template_id/templatemaps", 
-        "verb": "GET"
-    }, 
+        "id": "preview_template_by_id",
+        "route": "/sites/:site_id/templates/:template_id/preview",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "get_templatemap", 
-        "resources": null, 
-        "route": "/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id", 
-        "verb": "GET"
-    }, 
+        "id": "preview_template",
+        "route": "/sites/:site_id/templates/preview",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "create_templatemap", 
+        "id": "list_templatemaps",
+        "route": "/sites/:site_id/templates/:template_id/templatemaps",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "get_templatemap",
+        "route": "/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "create_templatemap",
+        "route": "/sites/:site_id/templates/:template_id/templatemaps",
+        "verb": "POST",
         "resources": [
             "templatemap"
-        ], 
-        "route": "/sites/:site_id/templates/:template_id/templatemaps", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "update_templatemap", 
+        "id": "update_templatemap",
+        "route": "/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id",
+        "verb": "PUT",
         "resources": [
             "templatemap"
-        ], 
-        "route": "/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_templatemap", 
-        "resources": null, 
-        "route": "/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_templatemap",
+        "route": "/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "list_widgetsets", 
-        "resources": null, 
-        "route": "/sites/:site_id/widgetsets", 
-        "verb": "GET"
-    }, 
+        "id": "list_widgetsets",
+        "route": "/sites/:site_id/widgetsets",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_widgetset", 
-        "resources": null, 
-        "route": "/sites/:site_id/widgetsets/:widgetset_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_widgetset",
+        "route": "/sites/:site_id/widgetsets/:widgetset_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_widgetset", 
+        "id": "create_widgetset",
+        "route": "/sites/:site_id/widgetsets",
+        "verb": "POST",
         "resources": [
             "widgetset"
-        ], 
-        "route": "/sites/:site_id/widgetsets", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "update_widgetset", 
+        "id": "update_widgetset",
+        "route": "/sites/:site_id/widgetsets/:widgetset_id",
+        "verb": "PUT",
         "resources": [
             "widgetset"
-        ], 
-        "route": "/sites/:site_id/widgetsets/:widgetset_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_widgetset", 
-        "resources": null, 
-        "route": "/sites/:site_id/widgetsets/:widgetset_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_widgetset",
+        "route": "/sites/:site_id/widgetsets/:widgetset_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "list_widgets", 
-        "resources": null, 
-        "route": "/sites/:site_id/widgets", 
-        "verb": "GET"
-    }, 
+        "id": "list_widgets",
+        "route": "/sites/:site_id/widgets",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_widgets_for_widgetset", 
-        "resources": null, 
-        "route": "/sites/:site_id/widgetsets/:widgetset_id/widgets", 
-        "verb": "GET"
-    }, 
+        "id": "list_widgets_for_widgetset",
+        "route": "/sites/:site_id/widgetsets/:widgetset_id/widgets",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_widgets", 
-        "resources": null, 
-        "route": "/sites/:site_id/widgets/:widget_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_widgets",
+        "route": "/sites/:site_id/widgets/:widget_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_widget_for_widgetset", 
-        "resources": null, 
-        "route": "/sites/:site_id/widgetsets/:widgetset_id/widgets/:widget_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_widget_for_widgetset",
+        "route": "/sites/:site_id/widgetsets/:widgetset_id/widgets/:widget_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_widget", 
+        "id": "create_widget",
+        "route": "/sites/:site_id/widgets",
+        "verb": "POST",
         "resources": [
             "widget"
-        ], 
-        "route": "/sites/:site_id/widgets", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "update_widget", 
+        "id": "update_widget",
+        "route": "/sites/:site_id/widgets/:widget_id",
+        "verb": "PUT",
         "resources": [
             "widget"
-        ], 
-        "route": "/sites/:site_id/widgets/:widget_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_widget", 
-        "resources": null, 
-        "route": "/sites/:site_id/widgets/:widget_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_widget",
+        "route": "/sites/:site_id/widgets/:widget_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "refresh_widget", 
-        "resources": null, 
-        "route": "/sites/:site_id/widgets/:widget_id/refresh", 
-        "verb": "POST"
-    }, 
+        "id": "refresh_widget",
+        "route": "/sites/:site_id/widgets/:widget_id/refresh",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "clone_widget", 
-        "resources": null, 
-        "route": "/sites/:site_id/widgets/:widget_id/clone", 
-        "verb": "POST"
-    }, 
+        "id": "clone_widget",
+        "route": "/sites/:site_id/widgets/:widget_id/clone",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "list_users", 
-        "resources": null, 
-        "route": "/users", 
-        "verb": "GET"
-    }, 
+        "id": "list_users",
+        "route": "/users",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_user", 
+        "id": "create_user",
+        "route": "/users",
+        "verb": "POST",
         "resources": [
             "user"
-        ], 
-        "route": "/users", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "delete_user", 
-        "resources": null, 
-        "route": "/users/:user_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_user",
+        "route": "/users/:user_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "unlock_user", 
-        "resources": null, 
-        "route": "/users/:user_id/unlock", 
-        "verb": "POST"
-    }, 
+        "id": "unlock_user",
+        "route": "/users/:user_id/unlock",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "recover_password_for_user", 
-        "resources": null, 
-        "route": "/users/:user_id/recover_password", 
-        "verb": "POST"
-    }, 
+        "id": "recover_password_for_user",
+        "route": "/users/:user_id/recover_password",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "recover_password", 
-        "resources": null, 
-        "route": "/recover_password", 
-        "verb": "POST"
-    }, 
+        "id": "recover_password",
+        "route": "/recover_password",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "list_plugins", 
-        "resources": null, 
-        "route": "/plugins", 
-        "verb": "GET"
-    }, 
+        "id": "list_plugins",
+        "route": "/plugins",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_plugin", 
-        "resources": null, 
-        "route": "/plugins/:plugin_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_plugin",
+        "route": "/plugins/:plugin_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "enable_plugin", 
-        "resources": null, 
-        "route": "/plugins/:plugin_id/enable", 
-        "verb": "POST"
-    }, 
+        "id": "enable_plugin",
+        "route": "/plugins/:plugin_id/enable",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "disable_plugin", 
-        "resources": null, 
-        "route": "/plugins/:plugin_id/disable", 
-        "verb": "POST"
-    }, 
+        "id": "disable_plugin",
+        "route": "/plugins/:plugin_id/disable",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "enable_all_plugins", 
-        "resources": null, 
-        "route": "/plugins/enable", 
-        "verb": "POST"
-    }, 
+        "id": "enable_all_plugins",
+        "route": "/plugins/enable",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "disable_all_plugins", 
-        "resources": null, 
-        "route": "/plugins/disable", 
-        "verb": "POST"
-    }, 
+        "id": "disable_all_plugins",
+        "route": "/plugins/disable",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "backup_site", 
-        "resources": null, 
-        "route": "/sites/:site_id/backup", 
-        "verb": "GET"
-    }, 
+        "id": "backup_site",
+        "route": "/sites/:site_id/backup",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "restore_site", 
-        "resources": null, 
-        "route": "/restore", 
-        "verb": "POST"
-    }, 
+        "id": "list_fields",
+        "route": "/sites/:site_id/fields",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_fields", 
-        "resources": null, 
-        "route": "/sites/:site_id/fields", 
-        "verb": "GET"
-    }, 
+        "id": "get_field",
+        "route": "/sites/:site_id/fields/:field_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_field", 
-        "resources": null, 
-        "route": "/sites/:site_id/fields/:field_id", 
-        "verb": "GET"
-    }, 
-    {
-        "id": "create_field", 
+        "id": "create_field",
+        "route": "/sites/:site_id/fields",
+        "verb": "POST",
         "resources": [
             "field"
-        ], 
-        "route": "/sites/:site_id/fields", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "update_field", 
+        "id": "update_field",
+        "route": "/sites/:site_id/fields/:field_id",
+        "verb": "PUT",
         "resources": [
             "field"
-        ], 
-        "route": "/sites/:site_id/fields/:field_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_field", 
-        "resources": null, 
-        "route": "/sites/:site_id/fields/:field_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_field",
+        "route": "/sites/:site_id/fields/:field_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "list_groups", 
-        "resources": null, 
-        "route": "/groups", 
-        "verb": "GET"
-    }, 
+        "id": "list_groups",
+        "route": "/groups",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "list_groups_for_user", 
-        "resources": null, 
-        "route": "/users/:user_id/groups", 
-        "verb": "GET"
-    }, 
+        "id": "list_groups_for_user",
+        "route": "/users/:user_id/groups",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_group", 
-        "resources": null, 
-        "route": "/groups/:group_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_group",
+        "route": "/groups/:group_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_group", 
+        "id": "create_group",
+        "route": "/groups",
+        "verb": "POST",
         "resources": [
             "group"
-        ], 
-        "route": "/groups", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "update_group", 
+        "id": "update_group",
+        "route": "/groups/:group_id",
+        "verb": "PUT",
         "resources": [
             "group"
-        ], 
-        "route": "/groups/:group_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_group", 
-        "resources": null, 
-        "route": "/groups/:group_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "delete_group",
+        "route": "/groups/:group_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "synchronize_groups", 
-        "resources": null, 
-        "route": "/groups/synchronize", 
-        "verb": "POST"
-    }, 
+        "id": "synchronize_groups",
+        "route": "/groups/synchronize",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "list_permissions_for_group", 
-        "resources": null, 
-        "route": "/groups/:group_id/permissions", 
-        "verb": "GET"
-    }, 
+        "id": "list_permissions_for_group",
+        "route": "/groups/:group_id/permissions",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "grant_permission_to_group", 
-        "resources": null, 
-        "route": "/groups/:group_id/permissions/grant", 
-        "verb": "POST"
-    }, 
+        "id": "grant_permission_to_group",
+        "route": "/groups/:group_id/permissions/grant",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "revoke_permission_from_group", 
-        "resources": null, 
-        "route": "/groups/:group_id/permissions/revoke", 
-        "verb": "POST"
-    }, 
+        "id": "revoke_permission_from_group",
+        "route": "/groups/:group_id/permissions/revoke",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "list_members_for_group", 
-        "resources": null, 
-        "route": "/groups/:group_id/members", 
-        "verb": "GET"
-    }, 
+        "id": "list_members_for_group",
+        "route": "/groups/:group_id/members",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_member_for_group", 
-        "resources": null, 
-        "route": "/groups/:group_id/members/:member_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_member_for_group",
+        "route": "/groups/:group_id/members/:member_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "add_member_to_group", 
-        "resources": null, 
-        "route": "/groups/:group_id/members", 
-        "verb": "POST"
-    }, 
+        "id": "add_member_to_group",
+        "route": "/groups/:group_id/members",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "remove_member_from_group", 
-        "resources": null, 
-        "route": "/groups/:group_id/members/:member_id", 
-        "verb": "DELETE"
-    }, 
+        "id": "remove_member_from_group",
+        "route": "/groups/:group_id/members/:member_id",
+        "verb": "DELETE",
+        "resources": null
+    },
     {
-        "id": "bulk_author_import", 
-        "resources": null, 
-        "route": "/users/import", 
-        "verb": "POST"
-    }, 
+        "id": "bulk_author_import",
+        "route": "/users/import",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "bulk_author_export", 
-        "resources": null, 
-        "route": "/users/export", 
-        "verb": "GET"
-    }, 
+        "id": "bulk_author_export",
+        "route": "/users/export",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "synchronize_users", 
-        "resources": null, 
-        "route": "/users/synchronize", 
-        "verb": "POST"
-    }, 
+        "id": "synchronize_users",
+        "route": "/users/synchronize",
+        "verb": "POST",
+        "resources": null
+    },
     {
-        "id": "list_formatted_texts", 
-        "resources": null, 
-        "route": "/sites/:site_id/formatted_texts", 
-        "verb": "GET"
-    }, 
+        "id": "list_formatted_texts",
+        "route": "/sites/:site_id/formatted_texts",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "get_formatted_text", 
-        "resources": null, 
-        "route": "/sites/:site_id/formatted_texts/:formatted_text_id", 
-        "verb": "GET"
-    }, 
+        "id": "get_formatted_text",
+        "route": "/sites/:site_id/formatted_texts/:formatted_text_id",
+        "verb": "GET",
+        "resources": null
+    },
     {
-        "id": "create_formatted_text", 
+        "id": "create_formatted_text",
+        "route": "/sites/:site_id/formatted_texts",
+        "verb": "POST",
         "resources": [
             "formatted_text"
-        ], 
-        "route": "/sites/:site_id/formatted_texts", 
-        "verb": "POST"
-    }, 
+        ]
+    },
     {
-        "id": "update_formatted_text", 
+        "id": "update_formatted_text",
+        "route": "/sites/:site_id/formatted_texts/:formatted_text_id",
+        "verb": "PUT",
         "resources": [
             "formatted_text"
-        ], 
-        "route": "/sites/:site_id/formatted_texts/:formatted_text_id", 
-        "verb": "PUT"
-    }, 
+        ]
+    },
     {
-        "id": "delete_formatted_text", 
-        "resources": null, 
-        "route": "/sites/:site_id/formatted_texts/:formatted_text_id", 
-        "verb": "DELETE"
+        "id": "delete_formatted_text",
+        "route": "/sites/:site_id/formatted_texts/:formatted_text_id",
+        "verb": "DELETE",
+        "resources": null
     }
 ]
 

@@ -695,6 +695,21 @@ sub response_content {
     $app->{response_content};
 }
 
+sub set_x_frame_options_header {
+    my $app             = shift;
+    my $x_frame_options = $app->config->XFrameOptions;
+
+    # Use default value when invalid value is set.
+    unless ( lc $x_frame_options eq 'deny'
+        || lc $x_frame_options eq 'sameorigin'
+        || $x_frame_options =~ /^allow-from\s+\S+/i )
+    {
+        $x_frame_options = $app->config->default('XFrameOptions');
+    }
+
+    $app->set_header( 'X-Frame-Options', $x_frame_options );
+}
+
 sub send_http_header {
     my $app = shift;
     my ($type) = @_;
@@ -1818,7 +1833,8 @@ sub _get_options_tmpl {
     }
     else {    # no spaces in $tmpl; must be a filename...
         if ( my $plugin = $authenticator->{plugin} ) {
-            return $plugin->load_tmpl($tmpl) or die $plugin->errstr;
+            my $ret = $plugin->load_tmpl($tmpl) or die $plugin->errstr;
+            return $ret;
         }
         else {
             return MT->instance->load_tmpl($tmpl);
@@ -3024,6 +3040,8 @@ sub run {
     if ( my $cache_control = $app->config->HeaderCacheControl ) {
         $app->set_header( 'Cache-Control' => $cache_control );
     }
+
+    $app->set_x_frame_options_header;
 
     my ($body);
 

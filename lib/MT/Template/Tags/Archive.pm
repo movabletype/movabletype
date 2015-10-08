@@ -672,6 +672,9 @@ sub _hdlr_archive_link {
         $entry = $ctx->stash('entry');
     }
     my $author = $ctx->stash('author');
+    if ( $archiver->author_based && !$author && $ctx->stash('entry') ) {
+        $author = $ctx->stash('entry')->author;
+    }
 
     #return $ctx->error(MT->translate(
     #    "You used an [_1] tag outside of the proper context.",

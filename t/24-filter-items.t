@@ -11,8 +11,7 @@ BEGIN {
 
 use Test::More;
 
-#use MT::Test qw(:db :data);
-use MT::Test;
+use MT::Test qw(:db :data);
 
 use MT;
 use MT::Filter;
