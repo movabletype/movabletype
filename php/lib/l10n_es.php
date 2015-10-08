@@ -25,6 +25,7 @@ $Lexicon_es = array(
 	'Category Monthly' => 'Categorías mensuales',
 	'Category Daily' => 'Categorías diarias',
 	'Category Weekly' => 'Categorías semanales',
+	'Category' => 'Categoría',
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'sort_by="score" debe usarse junto al espacio de nombres.',

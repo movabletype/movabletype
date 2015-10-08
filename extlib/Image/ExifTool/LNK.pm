@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.05';
+$VERSION = '1.07';
 
 sub ProcessItemID($$$);
 sub ProcessLinkInfo($$$);
@@ -460,7 +460,7 @@ sub GetString($$;$)
 # Returns: 1 on success
 sub ProcessItemID($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataLen = length $$dataPt;
     my $pos = 0;
@@ -468,7 +468,7 @@ sub ProcessItemID($$$)
         DataPt  => $dataPt,
         DataPos => $$dirInfo{DataPos},
     );
-    $exifTool->VerboseDir('ItemID', undef, $dataLen);
+    $et->VerboseDir('ItemID', undef, $dataLen);
     for (;;) {
         last if $pos + 4 >= $dataLen;
         my $size = Get16u($dataPt, $pos);
@@ -478,7 +478,7 @@ sub ProcessItemID($$$)
             Name => sprintf('Item%.4x', $tag),
             SubDirectory => { TagTable => 'Image::ExifTool::LNK::UnknownData' },
         }) unless $$tagTablePtr{$tag};
-        $exifTool->HandleTag($tagTablePtr, $tag, undef, %opts, Start => $pos, Size => $size);
+        $et->HandleTag($tagTablePtr, $tag, undef, %opts, Start => $pos, Size => $size);
         $pos += $size;
     }
 }
@@ -489,7 +489,7 @@ sub ProcessItemID($$$)
 # Returns: 1 on success
 sub ProcessLinkInfo($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataLen = length $$dataPt;
     return 0 if $dataLen < 0x20;
@@ -501,13 +501,13 @@ sub ProcessLinkInfo($$$)
         Size    => 4, # (typical value size)
     );
     my ($off, $unicode, $pos, $val, $size);
-    $exifTool->VerboseDir('LinkInfo', undef, $dataLen);
+    $et->VerboseDir('LinkInfo', undef, $dataLen);
     if ($lif & 0x01) {
         # read Volume ID
         $off = Get32u($dataPt, 0x0c);
         if ($off + 0x20 <= $dataLen) {
             # my $len = Get32u($dataPt, $off);
-            $exifTool->HandleTag($tagTablePtr, 'DriveType', undef, %opts, Start=>$off+4);
+            $et->HandleTag($tagTablePtr, 'DriveType', undef, %opts, Start=>$off+4);
             $pos = Get32u($dataPt, $off + 0x0c);
             if ($pos == 0x14) {
                 # use VolumeLabelOffsetUnicode instead
@@ -518,8 +518,8 @@ sub ProcessLinkInfo($$$)
             $val = GetString($dataPt, $pos, $unicode);
             if (defined $val) {
                 $size = length $val;
-                $val = $exifTool->Decode($val, 'UCS2') if $unicode;
-                $exifTool->HandleTag($tagTablePtr, 'VolumeLabel', $val, %opts, Start=>$pos, Size=>$size);
+                $val = $et->Decode($val, 'UCS2') if $unicode;
+                $et->HandleTag($tagTablePtr, 'VolumeLabel', $val, %opts, Start=>$pos, Size=>$size);
             }
         }
         # read local base path
@@ -533,8 +533,8 @@ sub ProcessLinkInfo($$$)
         $val = GetString($dataPt, $pos, $unicode);
         if (defined $val) {
             $size = length $val;
-            $val = $exifTool->Decode($val, 'UCS2') if $unicode;
-            $exifTool->HandleTag($tagTablePtr, 'LocalBasePath', $val, %opts, Start=>$pos, Size=>$size);
+            $val = $et->Decode($val, 'UCS2') if $unicode;
+            $et->HandleTag($tagTablePtr, 'LocalBasePath', $val, %opts, Start=>$pos, Size=>$size);
         }
     }
     if ($lif & 0x02) {
@@ -552,8 +552,8 @@ sub ProcessLinkInfo($$$)
             $val = GetString($dataPt, $pos, $unicode);
             if (defined $val) {
                 $size = length $val;
-                $val = $exifTool->Decode($val, 'UCS2') if $unicode;
-                $exifTool->HandleTag($tagTablePtr, 'NetName', $val, %opts, Start=>$pos, Size=>$size);
+                $val = $et->Decode($val, 'UCS2') if $unicode;
+                $et->HandleTag($tagTablePtr, 'NetName', $val, %opts, Start=>$pos, Size=>$size);
             }
             my $flg = Get32u($dataPt, $off + 0x04);
             if ($flg & 0x01) {
@@ -567,13 +567,13 @@ sub ProcessLinkInfo($$$)
                 $val = GetString($dataPt, $pos, $unicode);
                 if (defined $val) {
                     $size = length $val;
-                    $val = $exifTool->Decode($val, 'UCS2') if $unicode;
-                    $exifTool->HandleTag($tagTablePtr, 'DeviceName', $val, %opts, Start=>$pos, Size=>$size);
+                    $val = $et->Decode($val, 'UCS2') if $unicode;
+                    $et->HandleTag($tagTablePtr, 'DeviceName', $val, %opts, Start=>$pos, Size=>$size);
                 }
             }
             if ($flg & 0x02) {
                 $val = Get32u($dataPt, $off + 0x10);
-                $exifTool->HandleTag($tagTablePtr, 'NetProviderType', $val, %opts, Start=>$off + 0x10);
+                $et->HandleTag($tagTablePtr, 'NetProviderType', $val, %opts, Start=>$off + 0x10);
             }
         }
     }
@@ -586,7 +586,7 @@ sub ProcessLinkInfo($$$)
 # Returns: 1 on success, 0 if this wasn't a valid LNK file
 sub ProcessLNK($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($buff, $buf2, $len, $i);
 
@@ -599,7 +599,7 @@ sub ProcessLNK($$)
         $raf->Read($buf2, $len - 0x4c) == $len - 0x4c or return 0;
         $buff .= $buf2;
     }
-    $exifTool->SetFileType('Windows Shortcut');
+    $et->SetFileType();
     SetByteOrder('II');
 
     my $tagTablePtr = GetTagTable('Image::ExifTool::LNK::Main');
@@ -609,7 +609,7 @@ sub ProcessLNK($$)
         DataLen => length $buff,
         DirLen => length $buff,
     );
-    $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+    $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
 
     my $flags = Get32u(\$buff, 0x14);
 
@@ -618,7 +618,7 @@ sub ProcessLNK($$)
         $raf->Read($buff, 2) or return 1;
         $len = unpack('v', $buff);
         $raf->Read($buff, $len) == $len or return 1;
-        $exifTool->HandleTag($tagTablePtr, 0x10000, undef,
+        $et->HandleTag($tagTablePtr, 0x10000, undef,
             DataPt  => \$buff,
             DataPos => $raf->Tell() - $len,
             Size    => $len,
@@ -632,7 +632,7 @@ sub ProcessLNK($$)
         return 1 if $len < 4;
         $raf->Read($buf2, $len - 4) == $len - 4 or return 1;
         $buff .= $buf2;
-        $exifTool->HandleTag($tagTablePtr, 0x20000, undef,
+        $et->HandleTag($tagTablePtr, 0x20000, undef,
             DataPt  => \$buff,
             DataPos => $raf->Tell() - $len,
             Size    => $len,
@@ -650,8 +650,8 @@ sub ProcessLNK($$)
         $len *= 2 if $flags & 0x80;  # characters are 2 bytes if Unicode flag is set   
         $raf->Read($buff, $len) or return 1;
         my $val;
-        $val = $exifTool->Decode($buff, 'UCS2') if $flags & 0x80;
-        $exifTool->HandleTag($tagTablePtr, 0x30000 | $mask, $val,
+        $val = $et->Decode($buff, 'UCS2') if $flags & 0x80;
+        $et->HandleTag($tagTablePtr, 0x30000 | $mask, $val,
             DataPt  => \$buff,
             DataPos => $raf->Tell() - $len,
             Size    => $len,
@@ -671,7 +671,7 @@ sub ProcessLNK($$)
         unless (ref $tagInfo eq 'HASH' and $$tagInfo{SubDirectory}) {
             $tagInfo = $$tagTablePtr{0xa0000000};
         }
-        $exifTool->HandleTag($tagTablePtr, $tag, undef,
+        $et->HandleTag($tagTablePtr, $tag, undef,
             DataPt  => \$buff,
             DataPos => $raf->Tell() - $len - 4,
             TagInfo => $tagInfo,
@@ -699,7 +699,7 @@ information MS Shell Link (Windows shortcut) files.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

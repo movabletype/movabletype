@@ -223,7 +223,7 @@ sub update {
     my($obj) = @_;
     return $driver->fallback->update($obj)
         if $driver->Disabled;
-    my $ret = $driver->fallback->update($obj);
+    my $ret = $driver->fallback->update(@_);
     my $key = $driver->cache_key(ref($obj), $obj->primary_key);
     $driver->modify_cache(sub {
         $driver->uncache_object($obj);

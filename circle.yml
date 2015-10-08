@@ -2,6 +2,10 @@ machine:
   services:
     - docker
 
+checkout:
+  post:
+    - t/git-mtime t/cpanfile t/ldif/cn=config.ldif t/ldif/domain1_example_jp.ldif t/ldif/domain2_example_jp.ldif t/ldif/example_com.ldif t/ldif/example_jp.ldif
+
 dependencies:
   cache_directories:
     - "~/docker"
@@ -19,4 +23,4 @@ test:
     - rm t/90-podcoverage.t
 
   override:
-    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove ./t ./plugins/*/t && phpunit"
+    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove -s ./t ./plugins/*/t && phpunit"

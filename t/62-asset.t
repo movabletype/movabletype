@@ -3,12 +3,14 @@
 use strict;
 use warnings;
 use File::Copy;
+use File::Temp qw( tempfile );
 
 use lib qw( t t/lib ./extlib ./lib);
 
-use Test::More tests => 68;
+use Test::More tests => 71;
 use MT::Test qw(:db :data);
 
+use Image::ExifTool;
 use Image::Size;
 $Image::Size::NO_CACHE = 1;
 
@@ -69,6 +71,36 @@ isa_ok( $mt, 'MT', 'Is MT' );
             "t/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg");
         is( $width,  100, "resized image's width: 100" );
         is( $height, 75,  "resized image's height: 75" );
+    }
+
+    {
+        note('Remove metadata from thumbnail file');
+
+        # Changing t/images/test.jpg affects t/35-tags.t,
+        # so preserve this image file here.
+        my ( undef, $temp_file )
+            = tempfile( DIR => MT->config->TempDir, OPEN => 0 );
+        copy( $asset->file_path, $temp_file );
+
+        my $exif = $asset->exif;
+        $exif->SetNewValue( 'GPSVersionID', '2.2.1.0' );
+        $exif->WriteInfo( $asset->file_path );
+
+        ok( $asset->has_metadata, 'add metadata to image' );
+
+        is( ( $asset->thumbnail_file( Height => 100, Width => 100 ) )[0],
+            "t/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg",
+            'thumbnail file name'
+        );
+
+        my $info = Image::ExifTool->new->ImageInfo(
+            "t/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg");
+        ok( !exists $info->{GPSVersionID},
+            'removed metadata from thumbnail file'
+        );
+
+        # Restore t/images/test.jpg.
+        copy( $temp_file, $asset->file_path );
     }
 
     is( $asset->image_width,  640, 'image_width' );

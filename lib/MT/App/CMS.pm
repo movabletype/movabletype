@@ -90,6 +90,7 @@ sub core_methods {
 
         'asset_insert'         => "${pkg}Asset::insert",
         'asset_userpic'        => "${pkg}Asset::asset_userpic",
+        'transform_image'      => "${pkg}Asset::transform_image",
         'save_commenter_perm'  => "${pkg}Comment::save_commenter_perm",
         'trust_commenter'      => "${pkg}Comment::trust_commenter",
         'ban_commenter'        => "${pkg}Comment::ban_commenter",
@@ -183,12 +184,27 @@ sub core_methods {
         'send_notify'        => "${pkg}AddressBook::send_notify",
         'start_upload'       => "${pkg}Asset::start_upload",
         'upload_file'        => "${pkg}Asset::upload_file",
-        'upload_userpic'     => "${pkg}User::upload_userpic",
         'complete_insert'    => "${pkg}Asset::complete_insert",
         'cancel_upload'      => "${pkg}Asset::cancel_upload",
         'complete_upload'    => "${pkg}Asset::complete_upload",
         'start_upload_entry' => "${pkg}Asset::start_upload_entry",
-        'logout'             => {
+
+        ## New asset mode
+        'js_upload_file' => {
+            code     => "${pkg}Asset::js_upload_file",
+            app_mode => 'JSON',
+        },
+        'dialog_edit_asset' => "${pkg}Asset::dialog_edit_asset",
+        'js_save_asset'     => {
+            code     => "${pkg}Asset::js_save_asset",
+            app_mode => 'JSON',
+        },
+        'dialog_asset_modal' =>
+            { code => "${pkg}Asset::dialog_asset_modal", },
+        'dialog_insert_options' => "${pkg}Asset::dialog_insert_options",
+        'insert_asset'          => "${pkg}Asset::insert_asset",
+
+        'logout' => {
             code           => sub { $_[0]->SUPER::logout(@_) },
             requires_login => 0,
         },
@@ -294,6 +310,10 @@ sub core_methods {
         'dialog_select_assoc_type' => "${pkg}User::dialog_select_assoc_type",
         'dialog_select_author'     => "${pkg}User::dialog_select_author",
         'dialog_list_asset'        => "${pkg}Asset::dialog_list_asset",
+        'dialog_edit_image'        => "${pkg}Asset::dialog_edit_image",
+
+        'thumbnail_image' =>
+            "${pkg}Asset::thumbnail_image",    # Used in Edit Image dialog.
 
         ## AJAX handlers
         'delete_map'        => "${pkg}Template::delete_map",
@@ -330,6 +350,7 @@ sub core_methods {
         'list_blogs'        => "${pkg}Blog::list",
         'list_associations' => "${pkg}User::list_association",
         'list_roles'        => "${pkg}User::list_role",
+        'upload_userpic'    => "${pkg}User::upload_userpic",
     };
 }
 
@@ -2861,7 +2882,9 @@ sub set_default_tmpl_params {
         my $date_format = $auth->date_format || 'relative';
         $param->{ "dates_" . $date_format } = 1;
 
-        if ( my ($url) = $auth->userpic_url( Width => 36, Height => 36 ) ) {
+        if ( my ($url)
+            = $auth->userpic_url( Width => 36, Height => 36, Ts => 1 ) )
+        {
             $param->{author_userpic_url} = $url;
         }
     }
@@ -4874,9 +4897,9 @@ sub setup_editor_param {
 
     if ( my $blog = $app->blog ) {
         if ( my $css = $blog->content_css ) {
-            $css =~ s#{{support}}/?#$app->support_directory_url#ie;
+            $css =~ s#\{\{support}}/?#$app->support_directory_url#ie;
             if ( my $theme = $blog->theme ) {
-                $css =~ s#{{theme_static}}/?#$theme->static_file_url#ie;
+                $css =~ s#\{\{theme_static}}/?#$theme->static_file_url#ie;
             }
             if ( $css !~ m#\A(https?:)?/# ) {
                 $css = MT::Util::caturl( $blog->site_url, $css );
@@ -5098,6 +5121,46 @@ sub pre_run {
                     args => { blog_id => 0 }
                 )
             );
+        }
+        else {
+            $message->{text}
+                .= ' '
+                . $app->translate(
+                'Please contact your Movable Type system administrator.');
+        }
+        push @messages, $message;
+    }
+
+    my $has_mozilla_ca = eval { require Mozilla::CA; 1 };
+    unless ( $app->config('SSLVerifyNone') || $has_mozilla_ca ) {
+        my $message = {
+            level => 'warning',
+            text  => $app->translate('Cannot verify SSL certificate.'),
+        };
+        if ( $user && $user->is_superuser ) {
+            $message->{detail}
+                = $app->translate(
+                'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this is not recommended.'
+                );
+        }
+        else {
+            $message->{text}
+                .= ' '
+                . $app->translate(
+                'Please contact your Movable Type system administrator.');
+        }
+        push @messages, $message;
+    }
+    elsif ( $app->config('SSLVerifyNone') && $has_mozilla_ca ) {
+        my $message = {
+            level => 'warning',
+            text  => $app->translate(
+                'Can verify SSL certificate, but verification is disabled.'),
+        };
+        if ( $user && $user->is_superuser ) {
+            $message->{detail}
+                = $app->translate(
+                'You should remove "SSLVerifyNone 1" in mt-config.cgi.');
         }
         else {
             $message->{text}

@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.00';
+$VERSION = '1.02';
 
 sub ProcessPhaseOne($$$);
 sub ProcessSensorCalibration($$$);
@@ -179,14 +179,8 @@ my @formatSize = ( undef,        1,       1, undef,        4 );
         ValueConv => '2 ** ($val / 2)',
         PrintConv => 'sprintf("%.1f",$val)',
     },
-    0x0416 => {
-        Name => 'ManufactureDate', # (guess) (in the lens info section -- maybe Lens date?)
-        Format => 'int32u',
-        Groups => { 2 => 'Time' },
-        ValueConv => 'ConvertUnixTime($val)',
-        PrintConv => '$self->ConvertDateTime($val)',
-    },
-    # 0x0417 - int32u: 80 (focal length again?)
+    # 0x0416 - float: (min focal length? ref LibRaw, Credo50) (but looks more like an int32u date for the 645DF - PH)
+    # 0x0417 - float: 80 (max focal length? ref LibRaw)
 );
 
 # Phase One metadata (ref 1)
@@ -288,10 +282,10 @@ my @formatSize = ( undef,        1,       1, undef,        4 );
 #         5) IFD entry offset, 6) IFD entry size, 7) parameter hash
 sub HtmlDump($$$$$$%)
 {
-    my ($exifTool, $tagTablePtr, $tagID, $value, $entry, $entryLen, %parms) = @_;
+    my ($et, $tagTablePtr, $tagID, $value, $entry, $entryLen, %parms) = @_;
     my ($dirName, $index, $formatStr, $base, $size, $valuePtr) =
         @parms{qw(DirName Index Format DataPos Size Start)};
-    my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tagID);
+    my $tagInfo = $et->GetTagInfo($tagTablePtr, $tagID);
     my ($tagName, $colName, $subdir);
     my $count = $parms{Count} || $size;
     if ($tagInfo) {
@@ -322,11 +316,11 @@ sub HtmlDump($$$$$$%)
         $tval =~ tr/\x00-\x1f\x7f-\xff/./;
         $tip .= "Value: $tval";
     }
-    $exifTool->HDump($entry+$base, $entryLen, "$dname $colName", $tip, 1);
+    $et->HDump($entry+$base, $entryLen, "$dname $colName", $tip, 1);
     if ($size > 4) {
         my $dumpPos = $valuePtr + $base;
         # add value data block
-        $exifTool->HDump($dumpPos,$size,"$tagName value",'SAME', $subdir ? 0x04 : 0);
+        $et->HDump($dumpPos,$size,"$tagName value",'SAME', $subdir ? 0x04 : 0);
     }
 }
 
@@ -336,13 +330,13 @@ sub HtmlDump($$$$$$%)
 # Returns: 1 on success
 sub ProcessSensorCalibration($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataPos = $$dirInfo{DataPos} || 0;
     my $dirStart = $$dirInfo{DirStart} || 0;
     my $dirLen = $$dirInfo{DirLen} || $$dirInfo{DataLen} - $dirStart;
-    my $verbose = $exifTool->Options('Verbose');
-    my $htmlDump = $exifTool->{HTML_DUMP};
+    my $verbose = $et->Options('Verbose');
+    my $htmlDump = $$et{HTML_DUMP};
 
     return 0 unless $dirLen >= 12 and SetByteOrder(substr($$dataPt, $dirStart, 2));
     # get offset to start of SensorCalibration directory
@@ -351,13 +345,13 @@ sub ProcessSensorCalibration($$$)
     my $numEntries = Get32u($dataPt, $dirStart + $ifdStart);
     my $ifdEnd = $ifdStart + 8 + 12 * $numEntries;
     return 0 if $numEntries < 2 or $numEntries > 300 or $ifdEnd > $dirLen;
-    $exifTool->VerboseDir('SensorCalibration', $numEntries);
+    $et->VerboseDir('SensorCalibration', $numEntries);
     if ($htmlDump) {
-        $exifTool->HDump($dirStart + $dataPos, 8, 'SensorCalibration header');
-        $exifTool->HDump($dirStart + $dataPos + 8, 4, 'SensorCalibration IFD offset');
-        $exifTool->HDump($dirStart + $dataPos + $ifdStart, 4, 'SensorCalibration entries',
-                             "Entry count: $numEntries");
-        $exifTool->HDump($dirStart + $dataPos + $ifdStart + 4, 4, '[unused]');
+        $et->HDump($dirStart + $dataPos, 8, 'SensorCalibration header');
+        $et->HDump($dirStart + $dataPos + 8, 4, 'SensorCalibration IFD offset');
+        $et->HDump($dirStart + $dataPos + $ifdStart, 4, 'SensorCalibration entries',
+                   "Entry count: $numEntries");
+        $et->HDump($dirStart + $dataPos + $ifdStart + 4, 4, '[unused]');
     }
     my $index;
     for ($index=0; $index<$numEntries; ++$index) {
@@ -367,17 +361,17 @@ sub ProcessSensorCalibration($$$)
         my $valuePtr = $entry + 8;
         if ($size > 4) {
             if ($size > 0x7fffffff) {
-                $exifTool->Warn("Invalid size for SensorCalibration IFD entry $index");
+                $et->Warn("Invalid size for SensorCalibration IFD entry $index");
                 return 0;
             }
             $valuePtr = Get32u($dataPt, $valuePtr);
             if ($valuePtr + $size > $dirLen) {
-                $exifTool->Warn(sprintf("Invalid offset 0x%.4x for SensorCalibration IFD entry $index",$valuePtr));
+                $et->Warn(sprintf("Invalid offset 0x%.4x for SensorCalibration IFD entry $index",$valuePtr));
                 return 0;
             }
             $valuePtr += $dirStart;
         }
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tagID);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tagID);
         my $formatStr;
         if ($tagInfo) {
             $formatStr = $$tagInfo{Format};
@@ -402,8 +396,8 @@ sub ProcessSensorCalibration($$$)
             Start   => $valuePtr,
             Format  => $formatStr,
         );
-        $htmlDump and HtmlDump($exifTool, $tagTablePtr, $tagID, $value, $entry, 12, %parms);
-        $exifTool->HandleTag($tagTablePtr, $tagID, $value, %parms);
+        $htmlDump and HtmlDump($et, $tagTablePtr, $tagID, $value, $entry, 12, %parms);
+        $et->HandleTag($tagTablePtr, $tagID, $value, %parms);
     }
     return 1;
 }
@@ -414,14 +408,14 @@ sub ProcessSensorCalibration($$$)
 # Returns: 1 on success
 sub ProcessPhaseOne($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataPos = $$dirInfo{DataPos} || 0;
     my $dirStart = $$dirInfo{DirStart} || 0;
     my $dirLen = $$dirInfo{DirLen} || $$dirInfo{DataLen} - $dirStart;
-    my $binary = $exifTool->Options('Binary');
-    my $verbose = $exifTool->Options('Verbose');
-    my $htmlDump = $exifTool->{HTML_DUMP};
+    my $binary = $et->Options('Binary');
+    my $verbose = $et->Options('Verbose');
+    my $htmlDump = $$et{HTML_DUMP};
 
     return 0 if $dirLen < 12;
     my $hdr = substr($$dataPt, $dirStart, 12);
@@ -434,13 +428,13 @@ sub ProcessPhaseOne($$$)
     my $numEntries = Get32u($dataPt, $dirStart + $ifdStart);
     my $ifdEnd = $ifdStart + 8 + 16 * $numEntries;
     return 0 if $numEntries < 2 or $numEntries > 300 or $ifdEnd > $dirLen;
-    $exifTool->VerboseDir('PhaseOne', $numEntries);
+    $et->VerboseDir('PhaseOne', $numEntries);
     if ($htmlDump) {
-        $exifTool->HDump($dirStart + $dataPos, 8, 'PhaseOne header');
-        $exifTool->HDump($dirStart + $dataPos + 8, 4, 'PhaseOne IFD offset');
-        $exifTool->HDump($dirStart + $dataPos + $ifdStart, 4, "PhaseOne entries",
-                             "Entry count: $numEntries");
-        $exifTool->HDump($dirStart + $dataPos + $ifdStart + 4, 4, '[unused]');
+        $et->HDump($dirStart + $dataPos, 8, 'PhaseOne header');
+        $et->HDump($dirStart + $dataPos + 8, 4, 'PhaseOne IFD offset');
+        $et->HDump($dirStart + $dataPos + $ifdStart, 4, "PhaseOne entries",
+                   "Entry count: $numEntries");
+        $et->HDump($dirStart + $dataPos + $ifdStart + 4, 4, '[unused]');
     }
     my $index;
     for ($index=0; $index<$numEntries; ++$index) {
@@ -449,11 +443,11 @@ sub ProcessPhaseOne($$$)
         my $format = Get32u($dataPt, $entry+4);
         my $size = Get32u($dataPt, $entry+8);
         if ($format < 1 or $format > 13) {
-            $exifTool->Warn("Invalid PhaseOne IFD entry $index",1);
+            $et->Warn("Invalid PhaseOne IFD entry $index",1);
             return 0;
         }
         unless (defined $formatSize[$format]) {
-            $exifTool->WarnOnce("Unrecognized PhaseOne format type $format",1);
+            $et->WarnOnce("Unrecognized PhaseOne format type $format",1);
             $formatSize[$format] = 1;
             $formatName[$format] = 'undef';
         }
@@ -461,17 +455,17 @@ sub ProcessPhaseOne($$$)
         my $valuePtr = $entry + 12;
         if ($size > 4) {
             if ($size > 0x7fffffff) {
-                $exifTool->Warn("Invalid size for PhaseOne IFD entry $index");
+                $et->Warn("Invalid size for PhaseOne IFD entry $index");
                 return 0;
             }
             $valuePtr = Get32u($dataPt, $valuePtr);
             if ($valuePtr + $size > $dirLen) {
-                $exifTool->Warn(sprintf("Invalid offset 0x%.4x for PhaseOne IFD entry $index",$valuePtr));
+                $et->Warn(sprintf("Invalid offset 0x%.4x for PhaseOne IFD entry $index",$valuePtr));
                 return 0;
             }
             $valuePtr += $dirStart;
         }
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tagID);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tagID);
         my $formatStr = $formatName[$format];
         if ($tagInfo) {
             $formatStr = $$tagInfo{Format} if $$tagInfo{Format};
@@ -511,8 +505,8 @@ sub ProcessPhaseOne($$$)
             Format  => $formatStr,
             Count   => $count
         );
-        $htmlDump and HtmlDump($exifTool, $tagTablePtr, $tagID, $value, $entry, 16, %parms);
-        $exifTool->HandleTag($tagTablePtr, $tagID, $value, %parms);
+        $htmlDump and HtmlDump($et, $tagTablePtr, $tagID, $value, $entry, 16, %parms);
+        $et->HandleTag($tagTablePtr, $tagID, $value, %parms);
     }
     return 1;
 }
@@ -536,7 +530,7 @@ One maker notes.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

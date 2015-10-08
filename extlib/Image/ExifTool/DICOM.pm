@@ -20,7 +20,7 @@ use strict;
 use vars qw($VERSION %uid);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.16';
+$VERSION = '1.19';
 
 # DICOM VR (Value Representation) format conversions
 my %dicomFormat = (
@@ -3407,6 +3407,9 @@ my %implicitVR = (
     '1.2.840.10008.5.1.4.1.1.12.3' => 'X-Ray Angiographic Bi-Plane Image Storage ',
     '1.2.840.10008.5.1.4.1.1.13.1.1' => 'X-Ray 3D Angiographic Image Storage',
     '1.2.840.10008.5.1.4.1.1.13.1.2' => 'X-Ray 3D Craniofacial Image Storage',
+    '1.2.840.10008.5.1.4.1.1.13.1.3' => 'Breast Tomosynthesis Image Storage',
+    '1.2.840.10008.5.1.4.1.1.14.1' => 'Intravascular Optical Coherence Tomography Image Storage - For Presentation',
+    '1.2.840.10008.5.1.4.1.1.14.2' => 'Intravascular Optical Coherence Tomography Image Storage - For Processing',
     '1.2.840.10008.5.1.4.1.1.20' => 'Nuclear Medicine Image Storage',
     '1.2.840.10008.5.1.4.1.1.66' => 'Raw Data Storage',
     '1.2.840.10008.5.1.4.1.1.66.1' => 'Spatial Registration Storage',
@@ -3427,6 +3430,17 @@ my %implicitVR = (
     '1.2.840.10008.5.1.4.1.1.77.1.5.2' => 'Ophthalmic Photography 16 Bit Image Storage',
     '1.2.840.10008.5.1.4.1.1.77.1.5.3' => 'Stereometric Relationship Storage',
     '1.2.840.10008.5.1.4.1.1.77.1.5.4' => 'Ophthalmic Tomography Image Storage',
+    '1.2.840.10008.5.1.4.1.1.77.1.6' => 'VL Whole Slide Microscopy Image Storage',
+    '1.2.840.10008.5.1.4.1.1.78.1' => 'Lensometry Measurements Storage',
+    '1.2.840.10008.5.1.4.1.1.78.2' => 'Autorefraction Measurements Storage',
+    '1.2.840.10008.5.1.4.1.1.78.3' => 'Keratometry Measurements Storage',
+    '1.2.840.10008.5.1.4.1.1.78.4' => 'Subjective Refraction Measurements Storage',
+    '1.2.840.10008.5.1.4.1.1.78.5' => 'Visual Acuity Measurements Storage',
+    '1.2.840.10008.5.1.4.1.1.78.6' => 'Spectacle Prescription Report Storage',
+    '1.2.840.10008.5.1.4.1.1.78.7' => 'Ophthalmic Axial Measurements Storage',
+    '1.2.840.10008.5.1.4.1.1.78.8' => 'Intraocular Lens Calculations Storage',
+    '1.2.840.10008.5.1.4.1.1.79.1' => 'Macular Grid Thickness and Volume Report Storage SOP Class',
+    '1.2.840.10008.5.1.4.1.1.80.1' => 'Ophthalmic Visual Field Static Perimetry Measurements Storage',
     '1.2.840.10008.5.1.4.1.1.88.1' => 'Text SR Storage - Trial (Retired)',
     '1.2.840.10008.5.1.4.1.1.88.2' => 'Audio SR Storage - Trial (Retired)',
     '1.2.840.10008.5.1.4.1.1.88.3' => 'Detail SR Storage - Trial (Retired)',
@@ -3439,6 +3453,8 @@ my %implicitVR = (
     '1.2.840.10008.5.1.4.1.1.88.59' => 'Key Object Selection Document',
     '1.2.840.10008.5.1.4.1.1.88.65' => 'Chest CAD SR',
     '1.2.840.10008.5.1.4.1.1.88.67' => 'X-Ray Radiation Dose SR Storage',
+    '1.2.840.10008.5.1.4.1.1.88.69' => 'Colon CAD SR',
+    '1.2.840.10008.5.1.4.1.1.88.70' => 'Implantation Plan SR Document Storage',
     '1.2.840.10008.5.1.4.1.1.104.1' => 'Encapsulated PDF Storage',
     '1.2.840.10008.5.1.4.1.1.104.2' => 'Encapsulated CDA Storage',
     '1.2.840.10008.5.1.4.1.1.128' => 'Positron Emission Tomography Image Storage',
@@ -3476,14 +3492,37 @@ my %implicitVR = (
     '1.2.840.10008.5.1.4.34.4.3' => 'Unified Procedure Step - Pull SOP Class',
     '1.2.840.10008.5.1.4.34.4.4' => 'Unified Procedure Step - Event SOP Class',
     '1.2.840.10008.5.1.4.34.5' => 'Unified Worklist and Procedure Step SOP Instance',
+    '1.2.840.10008.5.1.4.34.6.1' => 'Unified Procedure Step - Push SOP Class',
+    '1.2.840.10008.5.1.4.34.6.2' => 'Unified Procedure Step - Watch SOP Class',
+    '1.2.840.10008.5.1.4.34.6.3' => 'Unified Procedure Step - Pull SOP Class',
+    '1.2.840.10008.5.1.4.34.6.4' => 'Unified Procedure Step - Event SOP Class',
+    '1.2.840.10008.5.1.4.34.7' => 'RT Beams Delivery Instruction Storage',
+    '1.2.840.10008.5.1.4.34.8' => 'RT Conventional Machine Verification',
+    '1.2.840.10008.5.1.4.34.9' => 'RT Ion Machine Verification',
     '1.2.840.10008.5.1.4.37.1' => 'General Relevant Patient Information Query',
     '1.2.840.10008.5.1.4.37.2' => 'Breast Imaging Relevant Patient Information Query',
     '1.2.840.10008.5.1.4.37.3' => 'Cardiac Relevant Patient Information Query',
     '1.2.840.10008.5.1.4.38.1' => 'Hanging Protocol Storage',
     '1.2.840.10008.5.1.4.38.2' => 'Hanging Protocol Information Model - FIND',
     '1.2.840.10008.5.1.4.38.3' => 'Hanging Protocol Information Model - MOVE',
+    '1.2.840.10008.5.1.4.39.1' => 'Color Palette Storage',
+    '1.2.840.10008.5.1.4.39.2' => 'Color Palette Information Model - FIND',
+    '1.2.840.10008.5.1.4.39.3' => 'Color Palette Information Model - MOVE',
+    '1.2.840.10008.5.1.4.39.4' => 'Color Palette Information Model - GET',
     '1.2.840.10008.5.1.4.41' => 'Product Characteristics Query SOP Class',
     '1.2.840.10008.5.1.4.42' => 'Substance Approval Query SOP Class',
+    '1.2.840.10008.5.1.4.43.1' => 'Generic Implant Template Storage',
+    '1.2.840.10008.5.1.4.43.2' => 'Generic Implant Template Information Model - FIND',
+    '1.2.840.10008.5.1.4.43.3' => 'Generic Implant Template Information Model - MOVE',
+    '1.2.840.10008.5.1.4.43.4' => 'Generic Implant Template Information Model - GET',
+    '1.2.840.10008.5.1.4.44.1' => 'Implant Assembly Template Storage',
+    '1.2.840.10008.5.1.4.44.2' => 'Implant Assembly Template Information Model - FIND',
+    '1.2.840.10008.5.1.4.44.3' => 'Implant Assembly Template Information Model - MOVE',
+    '1.2.840.10008.5.1.4.44.4' => 'Implant Assembly Template Information Model - GET',
+    '1.2.840.10008.5.1.4.45.1' => 'Implant Template Group Storage',
+    '1.2.840.10008.5.1.4.45.2' => 'Implant Template Group Information Model - FIND',
+    '1.2.840.10008.5.1.4.45.3' => 'Implant Template Group Information Model - MOVE',
+    '1.2.840.10008.5.1.4.45.4' => 'Implant Template Group Information Model - GET',
     '1.2.840.10008.15.0.3.1' => 'dicomDeviceName',
     '1.2.840.10008.15.0.3.2' => 'dicomDescription',
     '1.2.840.10008.15.0.3.3' => 'dicomManufacturer',
@@ -3529,12 +3568,12 @@ my %implicitVR = (
 # Extract information from a DICOM (DCM) image
 # Inputs: 0) ExifTool object reference, 1) DirInfo reference
 # Returns: 1 on success, 0 if this wasn't a valid DICOM file
-sub ProcessDICM($$)
+sub ProcessDICOM($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
-    my $unknown = $exifTool->Options('Unknown');
-    my $verbose = $exifTool->Options('Verbose');
+    my $unknown = $et->Options('Unknown');
+    my $verbose = $et->Options('Verbose');
     my ($hdr, $buff, $implicit, $vr, $len);
 #
 # identify the DICOM or ACR-NEMA file
@@ -3545,7 +3584,7 @@ sub ProcessDICM($$)
     if ($buff eq 'DICM') {
         # file meta information transfer syntax is explicit little endian
         SetByteOrder('II');
-        $exifTool->SetFileType('DICOM');
+        $et->SetFileType('DICOM');
     } else {
         # test for a RAW DCM image (ACR-NEMA format, ie. no header)
         foreach ('II','MM','') {
@@ -3575,7 +3614,7 @@ sub ProcessDICM($$)
             last;   # success!
         }
         $raf->Seek(0, 0) or return 0;   # rewind to start of file
-        $exifTool->SetFileType('ACR');
+        $et->SetFileType('ACR');
     }
 #
 # process the meta information
@@ -3597,7 +3636,7 @@ sub ProcessDICM($$)
             # 1.2.840.10008.1.2.x = explicit VR little endian
             # 1.2.840.10008.1.2.1.99 = deflated
             unless ($transferSyntax =~ /^1\.2\.840\.10008\.1\.2(\.\d+)?(\.\d+)?/) {
-                $exifTool->Warn("Unrecognized transfer syntax $transferSyntax");
+                $et->Warn("Unrecognized transfer syntax $transferSyntax");
                 last;
             }
             if (not $1) {
@@ -3607,7 +3646,7 @@ sub ProcessDICM($$)
                 $group = Get16u(\$buff, 0); # must get group again
             } elsif ($1 eq '.1' and $2 and $2 eq '.99') {
                 # inflate compressed data stream
-                if (eval 'require Compress::Zlib') {
+                if (eval { require Compress::Zlib }) {
                     # must use undocumented zlib feature to disable zlib header information
                     # because DICOM deflated data doesn't have the zlib header (ref 3)
                     my $wbits = -Compress::Zlib::MAX_WBITS();
@@ -3623,7 +3662,7 @@ sub ProcessDICM($$)
                                 $data .= $buf;
                                 last if $stat == Compress::Zlib::Z_STREAM_END();
                             } else {
-                                $exifTool->Warn('Error inflating compressed data stream');
+                                $et->Warn('Error inflating compressed data stream');
                                 return 1;
                             }
                         }
@@ -3634,11 +3673,11 @@ sub ProcessDICM($$)
                         $raf->Read($buff, 8) == 8 or last;
                         $group = Get16u(\$buff, 0);
                     } else {
-                        $exifTool->Warn('Error initializing inflation');
+                        $et->Warn('Error initializing inflation');
                         return 1;
                     }
                 } else {
-                    $exifTool->Warn('Install Compress::Zlib to decode compressed data stream');
+                    $et->Warn('Install Compress::Zlib to decode compressed data stream');
                     return 1;
                 }
             }
@@ -3669,8 +3708,8 @@ sub ProcessDICM($$)
             $len = 0;   # don't read value if undefined length
             if ($verbose) {
                 # start list of items in verbose output
-                $exifTool->VPrint(0, "$exifTool->{INDENT}+ [List of items]\n");
-                $exifTool->{INDENT} .= '| ';
+                $et->VPrint(0, "$$et{INDENT}+ [List of items]\n");
+                $$et{INDENT} .= '| ';
             }
         }
         # read the element value
@@ -3724,8 +3763,8 @@ sub ProcessDICM($$)
             # treat large data elements as binary data
             my $binData;
             my $lcTag = $tagInfo ? lc($$tagInfo{Name}) : 'unknown';
-            if ($exifTool->{REQ_TAG_LOOKUP}{$lcTag} or
-                ($exifTool->{OPTIONS}{Binary} and not $exifTool->{EXCL_TAG_LOOKUP}{$lcTag}))
+            if ($$et{REQ_TAG_LOOKUP}{$lcTag} or
+                ($$et{OPTIONS}{Binary} and not $$et{EXCL_TAG_LOOKUP}{$lcTag}))
             {
                 $binData = $buff;   # must make a copy
             } else {
@@ -3763,7 +3802,7 @@ sub ProcessDICM($$)
         }
 
         # handle the new tag information
-        $exifTool->HandleTag($tagTablePtr, $tag, $val,
+        $et->HandleTag($tagTablePtr, $tag, $val,
             DataPt => \$buff,
             DataPos => $pos - $len,
             Format => $format,
@@ -3773,9 +3812,9 @@ sub ProcessDICM($$)
         );
 
         # stop indenting for list if we reached EndOfItems tag
-        $exifTool->{INDENT} =~ s/..$// if $verbose and $tag eq 'FFFE,E00D';
+        $$et{INDENT} =~ s/..$// if $verbose and $tag eq 'FFFE,E00D';
     }
-    $err and $exifTool->Warn('Error reading DICOM file (corrupted?)');
+    $err and $et->Warn('Error reading DICOM file (corrupted?)');
     return 1;
 }
 
@@ -3807,7 +3846,7 @@ No translation of special characters sets is done.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

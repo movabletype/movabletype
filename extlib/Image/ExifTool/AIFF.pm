@@ -18,7 +18,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::ID3;
 
-$VERSION = '1.04';
+$VERSION = '1.06';
 
 # information for time/date-based tags (time zero is Jan 1, 1904)
 my %timeInfo = (
@@ -125,30 +125,45 @@ my %timeInfo = (
     },
 );
 
+%Image::ExifTool::AIFF::Composite = (
+    Duration => {
+        Require => {
+            0 => 'AIFF:SampleRate',
+            1 => 'AIFF:NumSampleFrames',
+        },
+        RawConv => '($val[0] and $val[1]) ? $val[1] / $val[0] : undef',
+        PrintConv => 'ConvertDuration($val)',
+    },
+);
+
+# add our composite tags
+Image::ExifTool::AddCompositeTags('Image::ExifTool::AIFF');
+
+
 #------------------------------------------------------------------------------
 # Process AIFF Comment chunk
 # Inputs: 0) ExifTool object reference, 1) DirInfo reference, 2) tag table ref
 # Returns: 1 on success
 sub ProcessComment($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dirLen = $$dirInfo{DirLen};
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
     return 0 unless $dirLen > 2;
     my $numComments = unpack('n',$$dataPt);
     my $pos = 2;
     my $i;
-    $verbose and $exifTool->VerboseDir('Comment', $numComments);
+    $verbose and $et->VerboseDir('Comment', $numComments);
     for ($i=0; $i<$numComments; ++$i) {
         last if $pos + 8 > $dirLen;
         my ($time, $markerID, $size) = unpack("x${pos}Nnn", $$dataPt);
-        $exifTool->HandleTag($tagTablePtr, 0, $time);
-        $exifTool->HandleTag($tagTablePtr, 1, $markerID) if $markerID;
+        $et->HandleTag($tagTablePtr, 0, $time);
+        $et->HandleTag($tagTablePtr, 1, $markerID) if $markerID;
         $pos += 8;
         last if $pos + $size > $dirLen;
         my $val = substr($$dataPt, $pos, $size);
-        $exifTool->HandleTag($tagTablePtr, 2, $val);
+        $et->HandleTag($tagTablePtr, 2, $val);
         ++$size if $size & 0x01;    # account for padding byte if necessary
         $pos += $size;
     }
@@ -160,7 +175,7 @@ sub ProcessComment($$$)
 # Returns: 1 on success, 0 if this wasn't a valid AIFF file
 sub ProcessAIFF($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($buff, $err, $tagTablePtr, $page, $type);
 
@@ -176,18 +191,18 @@ sub ProcessAIFF($$)
         $pos += 4;
         $buff = substr($buff, 4) . $buf2;
         $tagTablePtr = GetTagTable('Image::ExifTool::DjVu::Main');
-        $exifTool->SetFileType('DJVU');
+        $et->SetFileType('DJVU');
         # modifiy FileType to indicate a multi-page document
-        $exifTool->{VALUE}->{FileType} .= " (multi-page)" if $buf2 eq 'DJVM';
+        $$et{VALUE}{FileType} .= " (multi-page)" if $buf2 eq 'DJVM';
         $type = 'DjVu';
     } else {
         return 0 unless $buff =~ /^FORM....(AIF(F|C))/s;
-        $exifTool->SetFileType($1);
+        $et->SetFileType($1);
         $tagTablePtr = GetTagTable('Image::ExifTool::AIFF::Main');
         $type = 'AIFF';
     }
     SetByteOrder('MM');
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
 #
 # Read through the IFF chunks
 #
@@ -195,21 +210,21 @@ sub ProcessAIFF($$)
         $raf->Read($buff, 8) == 8 or last;
         $pos += 8;
         my ($tag, $len) = unpack('a4N', $buff);
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
-        $exifTool->VPrint(0, "AIFF '$tag' chunk ($len bytes of data):\n");
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
+        $et->VPrint(0, "AIFF '$tag' chunk ($len bytes of data):\n");
         # AIFF chunks are padded to an even number of bytes
         my $len2 = $len + ($len & 0x01);
         if ($tagInfo) {
             if ($$tagInfo{TypeOnly}) {
                 $len = $len2 = 4;
                 $page = ($page || 0) + 1;
-                $exifTool->VPrint(0, $exifTool->{INDENT} . "Page $page:\n");
+                $et->VPrint(0, $$et{INDENT} . "Page $page:\n");
             }
             $raf->Read($buff, $len2) >= $len or $err=1, last;
             unless ($$tagInfo{SubDirectory} or $$tagInfo{Binary}) {
                 $buff =~ s/\0+$//;  # remove trailing nulls
             }
-            $exifTool->HandleTag($tagTablePtr, $tag, $buff,
+            $et->HandleTag($tagTablePtr, $tag, $buff,
                 DataPt => \$buff,
                 DataPos => $pos,
                 Start => 0,
@@ -217,13 +232,13 @@ sub ProcessAIFF($$)
             );
         } elsif ($verbose > 2 and $len2 < 1024000) {
             $raf->Read($buff, $len2) == $len2 or $err = 1, last;
-            Image::ExifTool::HexDump(\$buff, undef, MaxLen => 512);
+            HexDump(\$buff, undef, MaxLen => 512);
         } else {
             $raf->Seek($len2, 1) or $err=1, last;
         }
         $pos += $len2;
     }
-    $err and $exifTool->Warn("Error reading $type file (corrupted?)");
+    $err and $et->Warn("Error reading $type file (corrupted?)");
     return 1;
 }
 
@@ -246,7 +261,7 @@ information from AIFF (Audio Interchange File Format) audio files.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

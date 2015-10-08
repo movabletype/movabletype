@@ -6,7 +6,7 @@ Image::ExifTool::MIEUnits - MIE units documentation
 =head1 DESCRIPTION
 
 The MIE format allows units of measurement to be specified in brackets at
-the end of a MIE tag name (ie. "Volume(m3)"). This document describes the
+the end of a MIE tag name (eg. "Volume(m3)"). This document describes the
 standard MIE units abbreviations.
 
 =head1 SYNTAX
@@ -18,13 +18,13 @@ units|/STANDARD UNITS> should be used where possible.  In the standard
 units, an underline ('_') is used to indicate a subscript, and multiple
 words may be separated with a hyphen ('-').
 
-Exponents should be positive, and require no separator (ie. "m2" for square
-meters).  L<Prefixes|/PREFIXES> may be added to the standard units (ie.
+Exponents should be positive, and require no separator (eg. "m2" for square
+meters).  L<Prefixes|/PREFIXES> may be added to the standard units (eg.
 "cm") except when the resulting name conflicts with another standard unit.
 
 Multiplication is indicated by '.', and division by '/'.  Reciprocal units
 (ie. the multiplicative inverse) are obtained through division rather than
-the use of negative exponents (ie. "/in", not "in-1").  In MIE units,
+the use of negative exponents (eg. "/in", not "in-1").  In MIE units,
 multiplication has precedence over division, so everything to the right of a
 '/' is in the denominator.  (See L</EXAMPLES> for a few examples.)
 
@@ -356,7 +356,7 @@ A few examples of combined units strings:
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

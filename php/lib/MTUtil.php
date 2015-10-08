@@ -852,6 +852,25 @@ function encode_js($str) {
     return $str;
 }
 
+function encode_json($str) {
+    if (!isset($str)) return '';
+    // Do not use JSON_UNESCAPED_UNICODE with json_encode for supporting PHP 5.3.x and before.
+    // Do not use closure for supporting PHP 5.2.x and before.
+    $callback = create_function(
+        '$matches',
+        'return mb_convert_encoding(pack("H*", str_replace("\\\\u", "", $matches[0])), "UTF-8", "UTF-16");'
+    );
+    // Do not escape slashes for compatible with Perl,
+    // and JSON spec says that it is OK whether slashes are escaped or not.
+    $encoded_str = preg_replace_callback(
+        '/(?:\\\\u[0-9a-zA-Z]{4})++/',
+        $callback,
+        str_replace('\/', '/', json_encode($str))
+    );
+    // "foo" => foo
+    return preg_replace('/^"(.+)"$/', '$1', $encoded_str);
+}
+
 function gmtime($ts = null) {
     if (!isset($ts)) {
         $ts = time();
@@ -1119,16 +1138,16 @@ function create_cat_expr_function($expr, &$cats, $param) {
                 }
                 $repl = '';
                 foreach ($child_cats as $ccid => $cc) {
-                    $repl .= '||#' . $ccid;
+                    $repl .= ' OR #' . $ccid;
                 }
-                if (strlen($repl)) $repl = substr($repl, 2);
-                $repl = '(' . $repl . ')';
+                if (strlen($repl)) $repl = substr($repl, 4);
+                $repl = " $repl ";
             } else {
-                $repl = "(#$catid)";
+                $repl = " #$catid ";
             }
             if (isset($cats_replaced[$catl])) {
                 $last_catid = $cats_replaced[$catl];
-                $expr = preg_replace("/(#$last_catid\b)/", '($1 || #' . $catid . ')', $expr);
+                $expr = preg_replace("/(#$last_catid\b)/", '($1 OR #' . $catid . ')', $expr);
             } else {
         	    $expr = preg_replace("/(?:(?<!#)(?:\[$catre\]|$catre))|#$catid\b/", $repl,
                     $expr);
@@ -1143,14 +1162,33 @@ function create_cat_expr_function($expr, &$cats, $param) {
         }
     }
 
+    # when $expr not containing AND, OR or NOT, parenthesis is invalid token.
+    if (preg_match('/\b(AND|OR|NOT)\b/i', $expr)) {
+        $regexp = '#\d+|&&|\|\||!|\(|\)';
+    }
+    else {
+        $regexp = '#\d+';
+    }
+
     $expr = preg_replace('/\bAND\b/i', '&&', $expr);
     $expr = preg_replace('/\bOR\b/i', '||', $expr);
     $expr = preg_replace('/\bNOT\b/i', '!', $expr);
-    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^()]+)/', 'create_expr_exception', $expr);
+
+    # replace any other 'thing' with '(0)' since it's a category that doesn't even exist.
+    $cat_expr = preg_split("/($regexp)/", $expr, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+    $new_cat_expr = array();
+    foreach ($cat_expr as $token) {
+        if (preg_match("/^(\s+|$regexp)$/", $token, $matches)) {
+            $new_cat_expr[] = $matches[0];
+        } else {
+            $new_cat_expr[] = '(0)';
+        }
+    }
+    $expr = implode($new_cat_expr);
 
     # strip out all the 'ok' stuff. if anything is left, we have
     # some invalid data in our expression:
-    $test_expr = preg_replace('/!|&&|\|\||\(0\)|\(|\)|\s|#\d+/', '', $expr);
+    $test_expr = preg_replace("/\s+|\(0\)|$regexp/", '', $expr);
     if ($test_expr != '') {
         echo "Invalid category filter: $orig_expr";
         return;

@@ -16,13 +16,6 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
-## plugins/MultiBlog/lib/MultiBlog.pm
-	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'Restaurando MultiBlog el inductor de reconstrucción en el blog #[_1]...',
-
-## plugins/MultiBlog/lib/MultiBlog/Tags.pm
-	'MTMultiBlog tags cannot be nested.' => 'Las etiquetas MTMultiBlog no se pueden anidar.',
-	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'Valor del atributo "mode" desconocido: [_1]. Los valores válidos son "loop" y "context".',
-
 ## plugins/MultiBlog/multiblog.pl
 	'MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.' => 'MultiBlog le permite publicar contenidos de otros blogs y definir reglas de publicación y control de accesos entre ellas.',
 	'MultiBlog' => 'MultiBlog',
@@ -35,17 +28,17 @@ use vars qw( %Lexicon );
 	'Select to apply this trigger to all websites and blogs in this system.' => 'Aplica este inductor a todos los sitios web del sistema.',
 	'saves an entry/page' => 'guarda una entrada/página',
 	'publishes an entry/page' => 'publica una entrada/página',
+	'unpublishes an entry/page' => 'despublica una entrada/página', # Translate - New
 	'publishes a comment' => 'publica un comentario',
 	'publishes a TrackBack' => 'publica un TrackBack',
 	'rebuild indexes.' => 'reconstruye los índices.',
 	'rebuild indexes and send pings.' => 'reconstruye los índices y envía pings.',
-	'Updating the MultiBlog trigger cache...' => 'Actualizando la caché de inductores de MultiBlog...', # Translate - New
+	'Updating the MultiBlog trigger cache...' => 'Actualizando la caché de inductores de MultiBlog...',
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => 'Cuando',
 	'Trigger' => 'Inductor',
 	'Action' => 'Acción',
-	'Weblog' => 'Weblog',
 	'Content Privacy' => 'Privacidad de contenidos',
 	'Specify whether other blogs in the installation may publish content from this blog. This setting takes precedence over the default system aggregation policy found in the system-level MultiBlog configuration.' => 'Especifique si otros blogs de la instalación podrán publicar contenidos de este blog. Esta opción tiene prioridad sobre la política predefinida de agregación del sistema que se encuentra en la configuración a nivel del sistema de MultiBlog.',
 	'Use system default' => 'Utilizar valor predefinido del sistema',

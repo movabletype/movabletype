@@ -3050,7 +3050,7 @@ ul.tabs li a {
     height: 50px;
 }
 .personal-stats-widget .user-stats-upper {
-    margin-left: 70;
+    margin-left: 70px;
     min-height: 60px;
 }
 .personal-stats-widget .icon {
@@ -4284,6 +4284,10 @@ input#system_performance_logging_threshold {
     padding: 10px;
     border: 1px solid #c0c6c9;
     background-color: #fff;
+}
+#list-themes #theme-in-use-group .theme,
+#list-themes #current-theme-group .theme {
+    border-radius: 3px 3px 3px 3px;
 }
 #list-themes .theme.first-child {
     border-radius: 3px 3px 0 0;

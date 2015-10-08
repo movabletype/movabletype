@@ -15,6 +15,8 @@ BEGIN {
         or plan skip_all => 'Test::MockObject is not installed';
 }
 
+use File::Spec;
+
 use MT::Test qw( :app :db :data );
 use Test::More;
 
@@ -32,6 +34,11 @@ sub _run_app_with_upload_file {
     };
     my $fmgr_module = Test::MockModule->new( ref $fmgr );
     $fmgr_module->mock( $_, $mock_put ) for qw(put put_data);
+
+    # Quality of image file cannot be changed,
+    # because image file is not uploaded.
+    my $asset_image = Test::MockModule->new('MT::Asset::Image');
+    $asset_image->mock( 'change_quality', sub {1} );
 
     my $app = Test::MockModule->new('MT::App');
     $app->mock(
@@ -51,7 +58,7 @@ my $fmgr_module = Test::MockModule->new( ref $fmgr );
 $fmgr_module->mock(
     'exists',
     sub {
-        $_[1] eq 't/site/archives/test.jpg';
+        $_[1] eq File::Spec->catfile(qw/ t site archives test.jpg /);
     }
 );
 
@@ -99,18 +106,20 @@ subtest 'With "auto_rename_if_exists"' => sub {
     );
     my $out = delete $app->{__test_output};
 
-    like(
-        $put_args->[1],
-        qr!t/site/archives/[0-9a-z]{40}\.jpg!,
-        'Uploaded file path'
-    );
-    my $created_asset = MT::Asset->load( { id => { '>' => $newest_asset->id } },
+    my $regex
+        = ( $^O eq 'MSWin32' )
+        ? qr!t\\site\\archives\\[0-9a-z]{40}\.jpg!
+        : qr!t/site/archives/[0-9a-z]{40}\.jpg!;
+    like( $put_args->[1], $regex, 'Uploaded file path' );
+
+    my $created_asset
+        = MT::Asset->load( { id => { '>' => $newest_asset->id } },
         { sort => [ { column => 'id', desc => 'DESC' } ], } );
     ok( $created_asset, 'Created' );
     my $replaced_basename = File::Basename::basename( $put_args->[1] );
     my $expected_values   = {
         'file_ext'   => 'jpg',
-        'file_path'  => '%a/' . $replaced_basename,
+        'file_path'  => File::Spec->catfile( '%a', $replaced_basename ),
         'file_name'  => $replaced_basename,
         'url'        => '%a/' . $replaced_basename,
         'class'      => 'image',

@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 # map for writing metadata to InDesign files (currently only write XMP)
 my %indMap = (
@@ -32,7 +32,7 @@ my $objectTrailerGUID = "\xfd\xce\xdb\x70\xf7\x86\x4b\x4f\xa4\xd3\xc7\x28\xb3\x4
 # Returns: 1 on success, 0 if this wasn't a valid InDesign file, or -1 on write error
 sub ProcessIND($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $outfile = $$dirInfo{OutFile};
     my ($hdr, $buff, $buf2, $err, $writeLen, $foundXMP);
@@ -41,7 +41,7 @@ sub ProcessIND($$)
     return 0 unless $raf->Read($hdr, 16) == 16;
     return 0 unless $hdr eq $masterPageGUID;
     return 0 unless $raf->Read($buff, 8) == 8;
-    $exifTool->SetFileType($buff eq 'DOCUMENT' ? 'INDD' : 'IND');   # set the FileType tag
+    $et->SetFileType($buff eq 'DOCUMENT' ? 'INDD' : 'IND');   # set the FileType tag
 
     # read the master pages
     $raf->Seek(0, 0) or $err = 'Seek error', goto DONE;
@@ -73,13 +73,13 @@ sub ProcessIND($$)
     my $pages = Get32u($curPage, 280);
     $pages < 2 and $err = 'Invalid page count', goto DONE;
     my $pos = $pages * 4096;
-    if ($pos > 0x7fffffff and not $exifTool->Options('LargeFileSupport')) {
+    if ($pos > 0x7fffffff and not $et->Options('LargeFileSupport')) {
         $err = 'InDesign files larger than 2 GB not supported (LargeFileSupport not set)';
         goto DONE;
     }
     if ($outfile) {
         # make XMP the preferred group for writing
-        $exifTool->InitWriteDirs(\%indMap, 'XMP');
+        $et->InitWriteDirs(\%indMap, 'XMP');
 
         Write($outfile, $buff, $buf2) or $err = 1, goto DONE;
         my $result = Image::ExifTool::CopyBlock($raf, $outfile, $pos - 8192);
@@ -92,8 +92,8 @@ sub ProcessIND($$)
         $raf->Seek($pos, 0) or $err = 'Seek error', goto DONE;
     }
     # scan through the contiguous objects for XMP
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
+    my $verbose = $et->Options('Verbose');
+    my $out = $et->Options('TextOut');
     for (;;) {
         $raf->Read($hdr, 32) or last;
         unless (length($hdr) == 32 and $hdr =~ /^\Q$objectHeaderGUID/) {
@@ -109,7 +109,7 @@ sub ProcessIND($$)
                 my %parms = (Addr => $raf->Tell());
                 $parms{MaxLen} = $verbose > 3 ? 1024 : 96 if $verbose < 5;
                 $raf->Seek(-$raf->Read($buff, $len2), 1) or $err = 1;
-                Image::ExifTool::HexDump(\$buff, undef, %parms);
+                HexDump(\$buff, undef, %parms);
             }
         }
         # check for XMP if stream data is long enough
@@ -126,11 +126,11 @@ sub ProcessIND($$)
                 if ($len > 300 * 1024 * 1024) {
                     my $msg = sprintf('Insanely large XMP (%.0f MB)', $len / (1024 * 1024));
                     if ($outfile) {
-                        $exifTool->Error($msg, 2) and $err = 1, last;
-                    } elsif ($exifTool->Options('IgnoreMinorErrors')) {
-                        $exifTool->Warn($msg);
+                        $et->Error($msg, 2) and $err = 1, last;
+                    } elsif ($et->Options('IgnoreMinorErrors')) {
+                        $et->Warn($msg);
                     } else {
-                        $exifTool->Warn("$msg. Ignored.", 1);
+                        $et->Warn("$msg. Ignored.", 1);
                         $err = 1;
                         last;
                     }
@@ -156,7 +156,7 @@ sub ProcessIND($$)
                     # make sure that XMP is writable
                     my $classID = Get32u(\$hdr, 20);
                     $classID & 0x40000000 or $err = 'XMP stream is not writable', last;
-                    my $xmp = $exifTool->WriteDirectory(\%dirInfo, $tagTablePtr);
+                    my $xmp = $et->WriteDirectory(\%dirInfo, $tagTablePtr);
                     if ($xmp and length $xmp) {
                         # write new xmp with leading length word
                         $buff = pack($streamInt32u, length $xmp) . $xmp;
@@ -164,13 +164,13 @@ sub ProcessIND($$)
                         Set32u(length($buff), \$hdr, 24);
                         Set32u(0xffffffff, \$hdr, 28);
                     } else {
-                        $$exifTool{CHANGED} = 0;    # didn't change anything
-                        $exifTool->Warn("Can't delete XMP as a block from InDesign file") if defined $xmp;
+                        $$et{CHANGED} = 0;    # didn't change anything
+                        $et->Warn("Can't delete XMP as a block from InDesign file") if defined $xmp;
                         # put length word back at start of stream
                         $buff = $lenWord . $buff;
                     }
                 } else {
-                    $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+                    $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
                 }
                 $len = 0;   # we got the full stream (nothing left to read)
             } else {
@@ -213,14 +213,14 @@ sub ProcessIND($$)
     }
 DONE:
     if (not $err) {
-        $exifTool->Warn('No XMP stream to edit') if $outfile and not $foundXMP;
+        $et->Warn('No XMP stream to edit') if $outfile and not $foundXMP;
         return 1;       # success!
     } elsif (not $outfile) {
         # issue warning on read error
-        $exifTool->Warn($err) unless $err eq '1';
+        $et->Warn($err) unless $err eq '1';
     } elsif ($err ne '1') {
         # set error and return success code
-        $exifTool->Error($err);
+        $et->Error($err);
     } else {
         return -1;      # write error
     }
@@ -256,7 +256,7 @@ the ability to handle large files like this is system dependent.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

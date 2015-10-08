@@ -421,11 +421,6 @@ sub _pre_search_scope_terms_to_class {
     # scope search terms to class
 
     $terms ||= {};
-    return
-        if ( ref $terms eq 'HASH' )
-        && ( exists( $terms->{id} )
-        && ( ref $terms->{id} ne 'HASH' || !exists( $terms->{id}{not} ) ) )
-        && !exists( $args->{not}{id} );
 
     my $props = $class->properties;
     my $col   = $props->{class_column}
@@ -454,8 +449,11 @@ sub _pre_search_scope_terms_to_class {
             # no further changes.
             return;
         }
-        $terms->{$col} = $props->{class_type}
-            unless $no_class;
+        # class term is class_type if id is not exists.
+        if ( !exists( $terms->{id} ) ) {
+            $terms->{$col} = $props->{class_type}
+                unless $no_class;
+        }
     }
     elsif ( ref $terms eq 'ARRAY' ) {
         if ( my @class_terms
@@ -1167,7 +1165,7 @@ sub modified_by {
     my ($user_id) = @_;
     if ($user_id) {
         if ( $obj->properties->{audit} ) {
-            my $res = $obj->SUPER::modified_by($user_id);
+            my $res = $obj->column( 'modified_by', $user_id );
 
             my $blog;
             if ( $obj->isa('MT::Blog') ) {
@@ -1183,7 +1181,7 @@ sub modified_by {
             return $res;
         }
     }
-    return $obj->SUPER::modified_by(@_);
+    return $obj->column( 'modified_by', @_ );
 }
 
 # D::OD uses Class::Trigger. Map the call_trigger calls to also invoke

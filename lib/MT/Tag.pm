@@ -706,6 +706,10 @@ sub save_tags {
     require MT::ObjectTag;
     my $clear_cache = 0;
     my @tags        = @{ $obj->{__tags} };
+    if (scalar(@tags) < 1) {
+        $obj->remove_tags();
+        return 1;
+    }
     return 1 unless delete $obj->{__force_save_tags} || @tags;
 
     my $t = MT->get_timer;

@@ -72,7 +72,7 @@ sub score {
         $objectscore->{__orig_value}->{score} = $objectscore->score
             unless exists( $objectscore->{__orig_value}->{score} );
     }
-    return $objectscore->SUPER::score(@_);
+    return $objectscore->column( 'score', @_ );
 }
 
 1;

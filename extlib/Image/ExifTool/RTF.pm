@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 sub ProcessUserProps($$$);
 
@@ -146,7 +146,7 @@ sub ReadToNested($;$)
 # Returns: Unescaped text (in current ExifTool Charset)
 sub UnescapeRTF($$$)
 {
-    my ($exifTool, $val, $charset) = @_;
+    my ($et, $val, $charset) = @_;
 
     # return now unless we have a control sequence
     unless ($val =~ /\\/) {
@@ -180,7 +180,7 @@ sub UnescapeRTF($$$)
                 $skip = $2;
             } elsif ($1 eq 'u') {   # \uN
                 require Image::ExifTool::Charset;
-                $rtnVal .= Image::ExifTool::Charset::Recompose($exifTool, [$2]);
+                $rtnVal .= Image::ExifTool::Charset::Recompose($et, [$2]);
                 if ($skip) {
                     # must skip the specified number of characters
                     # (not simple because RTF control words count as a single character)
@@ -188,7 +188,7 @@ sub UnescapeRTF($$$)
                 }
             } elsif ($rtfEntity{$1}) {
                 require Image::ExifTool::Charset;
-                $rtnVal .= Image::ExifTool::Charset::Recompose($exifTool, [$rtfEntity{$1}]);
+                $rtnVal .= Image::ExifTool::Charset::Recompose($et, [$rtfEntity{$1}]);
             } # (else ignore the command)
         } else {
             my $ch = substr($val, $p1, 1);
@@ -198,7 +198,7 @@ sub UnescapeRTF($$$)
                 my $hex = substr($val, $p1 + 1, 2);
                 if ($hex =~ /^[0-9a-fA-F]{2}$/) {
                     require Image::ExifTool::Charset;
-                    $rtnVal .= $exifTool->Decode(chr(hex($hex)), $charset);
+                    $rtnVal .= $et->Decode(chr(hex($hex)), $charset);
                 }
                 pos($val) = $p1 + 3;    # skip to after the hex code
             } else {
@@ -220,13 +220,13 @@ sub UnescapeRTF($$$)
 # Returns: 1 on success, 0 if this wasn't a valid RTF file
 sub ProcessRTF($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($buff, $buf2, $cs);
     
     return 0 unless $raf->Read($buff, 64) and $raf->Seek(0,0);
     return 0 unless $buff =~ /^[\n\r]*\{[\n\r]*\\rtf[^a-zA-Z]/;
-    $exifTool->SetFileType();
+    $et->SetFileType();
 #
 # determine the RTF character set
 #
@@ -241,12 +241,12 @@ sub ProcessRTF($$)
         );
         $cs = $trans{$1};
     } else {
-        $exifTool->Warn('Unspecified RTF encoding. Will assume Latin');
+        $et->Warn('Unspecified RTF encoding. Will assume Latin');
         $cs = 'Latin';
     }
     my $charset = $Image::ExifTool::charsetName{lc $cs};
     unless ($charset) {
-        $exifTool->Warn("Unsupported RTF encoding $cs. Will assume Latin.");
+        $et->Warn("Unsupported RTF encoding $cs. Will assume Latin.");
         $charset = 'Latin';
     }
     my $tagTablePtr = GetTagTable('Image::ExifTool::RTF::Main');
@@ -267,10 +267,10 @@ sub ProcessRTF($$)
         pos($buff) = pos($buff) - 1 if $1 ne ' ';
         my $info = ReadToNested(\$buff, $raf);
         unless (defined $info) {
-            $exifTool->Warn('Unterminated information group');
+            $et->Warn('Unterminated information group');
             last;
         }
-        # process info commands (ie. "\author", "\*\copyright");
+        # process info commands (eg. "\author", "\*\copyright");
         while ($info =~ /\{[\n\r]*(\\\*[\n\r]*)?\\([a-zA-Z]+)([^a-zA-Z])/g) {
             pos($info) = pos($info) - 1 if $3 ne ' ';
             my $tag = $2;
@@ -288,13 +288,13 @@ sub ProcessRTF($$)
                 $val = sprintf("%.4d:%.2d:%.2d %.2d:%.2d:%.2d", @t);
             } else {
                 # unescape RTF string value
-                $val = UnescapeRTF($exifTool, $val, $charset);
+                $val = UnescapeRTF($et, $val, $charset);
             }
             # create tagInfo for unknown tags
             if (not $tagInfo) {
                 AddTagToTable($tagTablePtr, $tag, { Name => ucfirst($tag) });
             }
-            $exifTool->HandleTag($tagTablePtr, $tag, $val);
+            $et->HandleTag($tagTablePtr, $tag, $val);
         }
     }
     return 1 unless defined $buff;
@@ -309,7 +309,7 @@ sub ProcessRTF($$)
         my $props = ReadToNested(\$buff, $raf);
         $tagTablePtr = Image::ExifTool::GetTagTable('Image::ExifTool::RTF::UserProps');
         unless (defined $props) {
-            $exifTool->Warn('Unterminated user properties');
+            $et->Warn('Unterminated user properties');
             last;
         }
         # process user properties
@@ -319,7 +319,7 @@ sub ProcessRTF($$)
             my $t = $2;
             my $val = ReadToNested(\$props);
             last unless defined $val;
-            $val = UnescapeRTF($exifTool, $val, $charset);
+            $val = UnescapeRTF($et, $val, $charset);
             if ($t eq 'propname') {
                 $tag = $val;
                 next;
@@ -333,7 +333,7 @@ sub ProcessRTF($$)
             unless ($$tagTablePtr{$tag}) {
                 AddTagToTable($tagTablePtr, $tag, { Name => $tag });
             }
-            $exifTool->HandleTag($tagTablePtr, $tag, $val);
+            $et->HandleTag($tagTablePtr, $tag, $val);
         }
         last;   # (didn't really want to loop)
     }
@@ -359,7 +359,7 @@ information from RTF (Rich Text Format) documents.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -1,0 +1,4 @@
+*MT::load_exif_config = sub {1};
+
+1;
+

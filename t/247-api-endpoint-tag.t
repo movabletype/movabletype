@@ -178,7 +178,7 @@ sub suite {
                 local *boolean::false = sub {'false'};
 
                 return +{
-                    totalResults => 1,
+                    totalResults => 2,
                     items => MT::DataAPI::Resource->from_object( \@tags ),
                 };
             },

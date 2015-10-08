@@ -26,6 +26,14 @@
     <mt:var name="config_warning">
   </mtapp:statusmsg>
 </mt:if>
+<mt:if name="image_driver" eq="imager">
+  <mtapp:statusmsg
+     id="info"
+     class="info"
+     can_close="0">
+    <__trans phrase="Imager does not support ImageQualityPng.">
+  </mtapp:statusmsg>
+</mt:if>
   <mtapp:statusmsg
      id="email_sent"
      class="success"
@@ -225,6 +233,25 @@ function validate (f) {
 
 </mtapp:settinggroup>
 
+<h2><__trans phrase="Image Quality Settings"></h2>
+<mtapp:settinggroup id="image-quality">
+  <mtapp:setting
+    id="image-quality-jpeg"
+    label="<__trans phrase="Image quality(JPEG)">"
+    hint="<__trans phrase="Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.">"
+    show_hint="1">
+    <input type="text" class="text num required jpeg-quality" name="image_quality_jpeg" value="<mt:var name="image_quality_jpeg">" <mt:if name="config_warnings_imagequalityjpeg">disabled="disabled"</mt:if> />
+  </mtapp:setting>
+
+  <mtapp:setting
+    id="image-quality-png"
+    label="<__trans phrase="Image quality(PNG)">"
+    hint="<__trans phrase="Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.">"
+    show_hint="1">
+    <input type="text" class="text num required png-quality" name="image_quality_png" value="<mt:var name="image_quality_png">" <mt:if name="config_warnings_imagequalitypng">disabled="disabled"<mt:elseif name="image_driver" eq="imager">disabled="disabled"</mt:if> />
+  </mtapp:setting>
+</mtapp:settinggroup>
+
 <mt:setvarblock name="action_buttons">
   <button
      type="submit"
@@ -327,11 +354,19 @@ function validate (f) {
         '.absolute-site_path': function ($e) {
             if ($e.val().length == 0) return 1;
             return MT.Validator.absolutePath($e.val());
+        },
+        '.jpeg-quality': function ($e) {
+            return !$e.val() || ($e.val() >= 0 && $e.val() <= 100  && /^\d+$/.test($e.val()));
+        },
+        '.png-quality': function ($e) {
+            return !$e.val() || ($e.val() >= 0 && $e.val() <= 9 && /^\d$/.test($e.val()));
         }
     });
 
     jQuery.mtValidateAddMessages({
-        '.absolute-site_path': '<__trans phrase="You must set a valid absolute Path." escape="singlequotes">'
+        '.absolute-site_path': '<__trans phrase="You must set a valid absolute Path." escape="singlequotes">',
+        '.jpeg-quality': '<__trans phrase="You must set an integer value between 0 and 100." escape="singlequotes">',
+        '.png-quality': '<__trans phrase="You must set an integer value between 0 and 9.", escape="singlequotes">'
     });
     jQuery('#sys_conf').submit( function () {
         if ( !jQuery(this).find('input:not(:disabled), select:not(:disabled)').filter('input:visible, select:visible').mtValidate('simple') ) return false;

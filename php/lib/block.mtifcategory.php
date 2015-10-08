@@ -31,7 +31,7 @@ function smarty_block_mtifcategory($args, $content, &$ctx, &$repeat) {
 
         $ok = 0;
         $cats = array();
-        if ($primary || !$entry_context) {
+        if ( $cat && ($primary || !$entry_context ) ) {
             $cats[] = $cat;
         } elseif ($e) {
             $cats = $ctx->mt->db()->fetch_categories(array('entry_id' => $e->entry_id, 'class' => $args['class']));

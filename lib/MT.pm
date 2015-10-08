@@ -33,13 +33,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '6.1', '6.0009' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.2', '6.0009' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.1.2',                '__PRODUCT_VERSION_ID__',
+        '6.2',                '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 2;
+        $RELEASE_NUMBER = 0;
     }
 
     $DebugMode = 0;
@@ -68,6 +68,9 @@ BEGIN {
 
     # Alias these; Components is the preferred array for MT 4
     *Plugins = \@Components;
+
+    # Do not read ExifTool configFile.
+    $Image::ExifTool::configFile = '';
 }
 
 # On-demand loading of compatibility module, if a plugin asks for it, using
@@ -1290,10 +1293,6 @@ __END_OF_EVAL__
                     SSL_verify_mode => 0,                 # SSL_VERIFY_NONE
                 );
             };
-
-            if ( $mt->config->SMTPAuth eq 'starttls' ) {
-                eval { require Net::SMTP::TLS; Net::SMTP::TLS->new };
-            }
         }
     }
 
@@ -1822,6 +1821,10 @@ sub ping {
 
         my $ua = MT->new_ua;
 
+        # Get the hostname of MT in HTTPS.
+        my $base = MT->config->CGIPath;
+        $base =~ s/^http:/https:/;
+
         ## Build query string to be sent on each ping.
         my @qs;
         push @qs, 'title=' . MT::Util::encode_url( $entry->title );
@@ -1840,11 +1843,28 @@ sub ping {
             ($url_domain) = MT::Util::extract_domains($url);
             next if $tb_domains && ( lc($url_domain) !~ $tb_domains );
 
+            # Do not verify SSL certificate
+            # when sending a trackback ping to self.
+            my %ssl_opts;
+            my $changed_ssl_opts;
+            if ( $base && $url =~ m/^$base/ ) {
+                $ssl_opts{verify_hostname} = $ua->ssl_opts('verify_hostname');
+                $ua->ssl_opts( verify_hostname => 0 );
+                $changed_ssl_opts = 1;
+            }
+
             my $req = HTTP::Request->new( POST => $url );
             $req->content_type(
                 "application/x-www-form-urlencoded; charset=$enc");
             $req->content($qs);
             my $res = $ua->request($req);
+
+            # Restore ssl_opts.
+            if ($changed_ssl_opts) {
+                $ua->ssl_opts(
+                    'verify_hostname' => $ssl_opts{verify_hostname} );
+            }
+
             if ( substr( $res->code, 0, 1 ) eq '2' ) {
                 my $c = $res->content;
                 $c = Encode::decode_utf8($c) if !Encode::is_utf8($c);
@@ -2663,10 +2683,17 @@ sub new_ua {
     }
 
     my $ua = $lwp_class->new;
-    eval "require Mozilla::CA;";
-    $ua->ssl_opts( verify_hostname => 0 )
-        if $@;   # Should not verify hostname if Mozilla::CA was not installed
-    $ua->max_size($max_size) if ( defined $max_size ) && $ua->can('max_size');
+    if ( MT->config->SSLVerifyNone || !( eval { require Mozilla::CA; 1 } ) ) {
+        $ua->ssl_opts( verify_hostname => 0 );
+    }
+    else {
+        $ua->ssl_opts(
+            verify_hostname => 1,
+            SSL_vesion  => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
+            SSL_ca_file => Mozilla::CA::SSL_ca_file(),
+        );
+    }
+    $ua->max_size($max_size) if $ua->can('max_size');
     $ua->agent($agent);
     $ua->timeout($timeout) if defined $timeout;
     eval { require HTML::HeadParser; };
@@ -2892,6 +2919,7 @@ sub core_commenter_authenticators {
             logo              => 'images/comment/google.png',
             logo_small        => 'images/comment/google_logo.png',
             order             => 13,
+            disable           => 1,
         },
         'Yahoo' => {
             class             => 'MT::Auth::Yahoo',

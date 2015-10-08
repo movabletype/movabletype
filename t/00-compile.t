@@ -469,6 +469,9 @@ use_ok('MT::DataAPI::Endpoint::v2::BackupRestore');
 use_ok('MT::DataAPI::Endpoint::v2::Plugin');
 use_ok('MT::DataAPI::Endpoint::v2::User');
 
+use_ok('MT::DataAPI::Endpoint::v3::Auth');
+use_ok('MT::DataAPI::Endpoint::v3::Asset');
+
 use_ok('MT::App::Search::Common');
 
 SKIP: {

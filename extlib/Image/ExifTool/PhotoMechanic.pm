@@ -15,7 +15,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::IPTC;
 use Image::ExifTool::XMP;
 
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 sub ProcessPhotoMechanic($$);
 
@@ -148,12 +148,12 @@ my %rawCropConv = (
 # - updates DirLen to trailer length
 sub ProcessPhotoMechanic($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $offset = $$dirInfo{Offset} || 0;
     my $outfile = $$dirInfo{OutFile};
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
+    my $verbose = $et->Options('Verbose');
+    my $out = $et->Options('TextOut');
     my $rtnVal = 0;
     my ($buff, $footer);
 
@@ -164,11 +164,11 @@ sub ProcessPhotoMechanic($$)
         my $size = unpack('N', $footer);
 
         if ($size & 0x80000000 or not $raf->Seek(-$size-12, 1)) {
-            $exifTool->Warn('Bad PhotoMechanic trailer');
+            $et->Warn('Bad PhotoMechanic trailer');
             last;
         }
         unless ($raf->Read($buff, $size) == $size) {
-            $exifTool->Warn('Error reading PhotoMechanic trailer');
+            $et->Warn('Error reading PhotoMechanic trailer');
             last;
         }
         $rtnVal = 1;    # we read the trailer successfully
@@ -187,20 +187,20 @@ sub ProcessPhotoMechanic($$)
         my $tagTablePtr = GetTagTable('Image::ExifTool::PhotoMechanic::Main');
         if (not $outfile) {
             # extract trailer information
-            $exifTool->DumpTrailer($dirInfo) if $verbose or $exifTool->{HTML_DUMP};
-            $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
-        } elsif ($exifTool->{DEL_GROUP}->{PhotoMechanic}) {
+            $et->DumpTrailer($dirInfo) if $verbose or $$et{HTML_DUMP};
+            $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
+        } elsif ($$et{DEL_GROUP}{PhotoMechanic}) {
             # delete the trailer
             $verbose and printf $out "  Deleting PhotoMechanic trailer\n";
-            ++$exifTool->{CHANGED};
+            ++$$et{CHANGED};
         } else {
             # rewrite the trailer
             my $newPt;
-            my $newBuff = $exifTool->WriteDirectory(\%dirInfo, $tagTablePtr);
+            my $newBuff = $et->WriteDirectory(\%dirInfo, $tagTablePtr);
             if (defined $newBuff) {
                 $newPt = \$newBuff; # write out the modified trailer
                 my $pad = 0x800 - length($newBuff);
-                if ($pad > 0 and not $exifTool->Options('Compact')) {
+                if ($pad > 0 and not $et->Options('Compact')) {
                     # pad out to 2kB like PhotoMechanic does
                     $newBuff .= "\0" x $pad;
                 }
@@ -236,7 +236,7 @@ write information written by the Camera Bits Photo Mechanic software.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

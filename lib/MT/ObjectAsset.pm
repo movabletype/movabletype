@@ -17,7 +17,7 @@ __PACKAGE__->install_properties(
             object_id => 'integer not null',
             object_ds => 'string(50) not null',
             asset_id  => 'integer not null',
-            embedded  => 'boolean',
+            embedded => 'boolean',    # Deprecated (case #112321).
         },
         indexes => {
             blog_obj =>

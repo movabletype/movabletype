@@ -21,6 +21,11 @@ BEGIN {
     # Set config to driver-test.cfg when run as /path/to/99-driver.t
     $ENV{MT_CONFIG} = "$1-test.cfg"
         if __FILE__ =~ m{ [\\/] \d+- ([^\\/]+) \.t \z }xms;
+
+    # Set "DisableObjectCache 1" when testing MySQL.
+    if ( $ENV{MT_CONFIG} =~ /^mysql/ ) {
+        $ENV{MT_CONFIG} = 'mysql-test-disable-object-cache.cfg';
+    }
 }
 
 use Test::More;
@@ -39,7 +44,7 @@ BEGIN {
     );
 
     my $db = $1
-        if $ENV{MT_CONFIG} =~ m/(.*)-test.cfg/;
+        if $ENV{MT_CONFIG} =~ m/(.*)-test(?:-disable-object-cache)?.cfg/;
     my $module = $modules{$db};
     eval "require $module;";
     plan skip_all => "Database driver '$module' not found."

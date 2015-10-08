@@ -11,7 +11,7 @@ package Image::ExifTool::Lang::nl;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.09';
+$VERSION = '1.11';
 
 %Image::ExifTool::Lang::nl::Translate = (
    'AEBAutoCancel' => {
@@ -1000,7 +1000,7 @@ $VERSION = '1.09';
       PrintConv => {
         'Landscape' => 'Landschap',
         'Manual' => 'Handmatig',
-        'Night' => 'Nachtszene',
+        'Night' => 'Nachtscene',
         'Portrait' => 'Portret',
       },
     },
@@ -1522,7 +1522,7 @@ $VERSION = '1.09';
    'GPSDestDistanceRef' => {
       Description => 'Referentie voor de afstand tot de bestemming',
       PrintConv => {
-        'Miles' => 'Meilen',
+        'Miles' => 'Mijlen',
         'Nautical Miles' => 'Knopen',
       },
     },
@@ -1530,7 +1530,7 @@ $VERSION = '1.09';
    'GPSDestLatitudeRef' => {
       Description => 'Referentie voor de breedte van het doel',
       PrintConv => {
-        'North' => 'Nordelijke breedte',
+        'North' => 'Noordelijke breedte',
         'South' => 'Zuidelijke breedte',
       },
     },
@@ -1539,7 +1539,7 @@ $VERSION = '1.09';
       Description => 'Referentie voor de lengte van het doel',
       PrintConv => {
         'East' => 'Oostelijke lengte',
-        'West' => 'Westlijke Lengte',
+        'West' => 'Westlijke lengte',
       },
     },
    'GPSDifferential' => {
@@ -1594,7 +1594,7 @@ $VERSION = '1.09';
       PrintConv => {
         'km/h' => 'Kilometer per uur',
         'knots' => 'Knopen',
-        'mph' => 'Meilen per uur',
+        'mph' => 'Mijl per uur',
       },
     },
    'GPSStatus' => {
@@ -2611,7 +2611,7 @@ $VERSION = '1.09';
       Description => 'Scene opname type',
       PrintConv => {
         'Landscape' => 'Landschap',
-        'Night' => 'Nachtszene',
+        'Night' => 'Nachtscene',
         'Portrait' => 'Portret',
         'Standard' => 'Standaard',
       },
@@ -2651,7 +2651,7 @@ $VERSION = '1.09';
     },
    'SceneSelect' => {
       PrintConv => {
-        'Night' => 'Nachtszene',
+        'Night' => 'Nachtscene',
         'Off' => 'Uit',
       },
     },
@@ -2893,7 +2893,7 @@ $VERSION = '1.09';
         'Passive Matrix Display' => 'Passieve matrixdisplay',
         'Photo CD' => 'Photo-CD',
         'Photo Image Setter' => 'Fotofilmbelichter',
-        'Photographic Paper Printer' => 'Photopapier printer',
+        'Photographic Paper Printer' => 'Fotopapier printer',
         'Projection Television' => 'Projectietelevisie',
         'Reflective Scanner' => 'Reflectieve Scanner',
         'Thermal Wax Printer' => 'Thermische was printer',
@@ -3058,7 +3058,9 @@ $VERSION = '1.09';
     },
    'WBAdjLighting' => {
       PrintConv => {
-        'Daylight' => 'Daglicht',
+        'Daylight (direct sunlight)' => 'Daglicht (0)',
+        'Daylight (shade)' => 'Daglicht (1)',
+        'Daylight (cloudy)' => 'Daglicht (2)',
         'Flash' => 'Flits',
         'None' => 'Geen',
       },
@@ -3202,15 +3204,15 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
 =head1 ACKNOWLEDGEMENTS
 
-Thanks to Jens Duttke, Peter Moonen and Herman Beld for providing this
-translation.
+Thanks to Jens Duttke, Peter Moonen, Herman Beld and Peter van der Laan for
+providing this translation.
 
 =head1 SEE ALSO
 

@@ -7,6 +7,8 @@
 #
 # References:   1) http://www.ozhiker.com/electronics/pjmt/jpeg_info/ricoh_mn.html
 #               2) http://homepage3.nifty.com/kamisaka/makernote/makernote_ricoh.htm
+#               3) Tim Gray private communication (GR)
+#               4) https://github.com/atotto/ricoh-theta-tools/
 #------------------------------------------------------------------------------
 
 package Image::ExifTool::Ricoh;
@@ -16,7 +18,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.24';
+$VERSION = '1.28';
 
 sub ProcessRicohText($$$);
 sub ProcessRicohRMETA($$$);
@@ -46,7 +48,7 @@ my %ricohLensIDs = (
     0x0002 => { #PH
         Name => 'FirmwareVersion',
         Writable => 'string',
-        # ie. "Rev0113" is firmware version 1.13
+        # eg. "Rev0113" is firmware version 1.13
         PrintConv => '$val=~/^Rev(\d+)$/ ? sprintf("%.2f",$1/100) : $val',
         PrintConvInv => '$val=~/^(\d+)\.(\d+)$/ ? sprintf("Rev%.2d%.2d",$1,$2) : $val',
     },
@@ -77,19 +79,312 @@ my %ricohLensIDs = (
         Description => 'Print Image Matching',
         SubDirectory => { TagTable => 'Image::ExifTool::PrintIM::Main' },
     },
-    0x1001 => {
+    0x1000 => { #3
+        Name => 'RecordingFormat',
+        Writable => 'int16u',
+        PrintConv => {
+            2 => 'JPEG',
+            3 => 'DNG',
+        },
+    },            
+    0x1001 => [{
         Name => 'ImageInfo',
+        Condition => '$format ne "int16u"',
         SubDirectory => { TagTable => 'Image::ExifTool::Ricoh::ImageInfo' },
-    },
-    0x1003 => {
+    },{ #3
+        Name => 'ExposureProgram',
+        Writable => 'int16u',
+        Notes => 'GR',
+        PrintConv => {
+            1 => 'Auto',
+            2 => 'Program AE',
+            3 => 'Aperture-priority AE',
+            4 => 'Shutter speed priority AE',
+            5 => 'Shutter/aperture priority AE', # TAv
+            6 => 'Manual',
+            7 => 'Movie', #PH
+        },
+    }],
+    0x1002 => { #3
+        Name => 'DriveMode',
+        Condition => '$format eq "int16u"',
+        Notes => 'valid only for some models',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Single-frame',
+            1 => 'Continuous',
+            8 => 'AF-priority Continuous',
+        },
+    },            
+    0x1003 => [{
         Name => 'Sharpness',
+        Condition => '$format ne "int16u"',
         Writable => 'int32u',
         PrintConv => {
             0 => 'Sharp',
             1 => 'Normal',
             2 => 'Soft',
         },
+    },{ #3
+        Name => 'WhiteBalance',
+        Writable => 'int16u',
+        Notes => 'GR',
+        PrintConv => {
+            0 => 'Auto',
+            1 => 'Multi-P Auto',
+            2 => 'Daylight',
+            3 => 'Cloudy',
+            4 => 'Incandescent 1',
+            5 => 'Incandescent 2',
+            6 => 'Daylight Fluorescent',
+            7 => 'Neutral White Fluorescent',
+            8 => 'Cool White Fluorescent',
+            9 => 'Warm White Fluorescent',
+            10 => 'Manual',
+            11 => 'Kelvin',
+        },
+    }],
+    0x1004 => { #3
+        Name => 'WhiteBalanceFineTune',
+        Condition => '$format eq "int16u"',
+        Format => 'int16s',
+        Writable => 'int16u',
+        Notes => q{
+            2 numbers: amount of adjustment towards Amber and Green.  Not valid for all
+            models
+        },
     },
+    # 0x1005 int16u - 5
+    0x1006 => { #3
+        Name => 'FocusMode',
+        Writable => 'int16u',
+        PrintConv => {
+            1 => 'Manual',
+            2 => 'Multi AF',
+            3 => 'Spot AF',
+            4 => 'Snap',
+            5 => 'Infinity',
+            7 => 'Face Detect', #PH
+            8 => 'Subject Tracking',
+            9 => 'Pinpoint AF',
+            10 => 'Movie', #PH
+        },
+    },
+    0x1007 => { #3
+        Name => 'AutoBracketing',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Off',
+            9 => 'AE',
+            11 => 'WB',
+            16 => 'DR', # (dynamic range)
+            17 => 'Contrast',
+            18 => 'WB2', # (selects two different WB presets besides normal)
+            19 => 'Effect',
+        },
+    },
+    0x1009 => { #3
+        Name => 'MacroMode',
+        Writable => 'int16u',
+        PrintConv => { 0 => 'Off', 1 => 'On' },
+    },
+    0x100a => { #3
+        Name => 'FlashMode',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Off',
+            1 => 'Auto, Fired',
+            2 => 'On',
+            3 => 'Auto, Fired, Red-eye reduction',
+            4 => 'Slow Sync',
+            5 => 'Manual',
+            6 => 'On, Red-eye reduction',
+            7 => 'Synchro, Red-eye reduction',
+            8 => 'Auto, Did not fire',
+        },
+    },
+    0x100b => { #3
+        Name => 'FlashExposureComp',
+        Writable => 'rational64s',
+        PrintConv => '$val ? sprintf("%+.1f",$val) : $val',
+        PrintConvInv => '$val',
+    },
+    0x100c => { #3
+        Name => 'ManualFlashOutput',
+        Writable => 'rational64s',
+        PrintConv => {
+               0 => 'Full',
+             -24 => '1/1.4',
+             -48 => '1/2',
+             -72 => '1/2.8',
+             -96 => '1/4',
+            -120 => '1/5.6',
+            -144 => '1/8',
+            -168 => '1/11',
+            -192 => '1/16',
+            -216 => '1/22',
+            -240 => '1/32',
+            -288 => '1/64',
+        },
+    },
+    0x100d => { #3
+        Name => 'FullPressSnap',
+        Writable => 'int16u',
+        PrintConv => { 0 => 'Off', 1 => 'On' },
+    },
+    0x100e => { #3
+        Name => 'DynamicRangeExpansion',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Off',
+            3 => 'Weak',
+            4 => 'Medium',
+            5 => 'Strong',
+        },
+    },
+    0x100f => { #3
+        Name => 'NoiseReduction',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Off',
+            1 => 'Weak',
+            2 => 'Medium',
+            3 => 'Strong',
+        },
+    },
+    0x1010 => { #3
+        Name => 'ImageEffects',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Standard',
+            1 => 'Vivid',
+            3 => 'Black & White',
+            5 => 'B&W Toning Effect',
+            6 => 'Setting 1',
+            7 => 'Setting 2',
+            9 => 'High-contrast B&W',
+            10 => 'Cross Process',
+            11 => 'Positive Film',
+            12 => 'Bleach Bypass',
+            13 => 'Retro',
+            15 => 'Miniature',
+            17 => 'High Key',
+        },
+    },
+    0x1011 => { #3
+        Name => 'Vignetting',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Off',
+            1 => 'Low',
+            2 => 'Medium',
+            3 => 'High',
+        },
+    },
+    0x1012 => { #PH
+        Name => 'Contrast',
+        Writable => 'int32u',
+        Format => 'int32s', #3 (high-contrast B&W also has -1 and -2 settings)
+        PrintConv => {
+            OTHER => sub { shift },
+            2147483647 => 'MAX', #3 (high-contrast B&W effect MAX setting)
+        },
+    },
+    0x1013 => { Name => 'Saturation', Writable => 'int32u' }, #PH
+    0x1014 => { Name => 'Sharpness',  Writable => 'int32u' }, #3
+    0x1015 => { #3
+        Name => 'ToningEffect',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Off',
+            1 => 'Sepia',
+            2 => 'Red',
+            3 => 'Green',
+            4 => 'Blue',
+            5 => 'Purple',
+            6 => 'B&W',
+            7 => 'Color',
+        },
+    },
+    0x1016 => { #3
+        Name => 'HueAdjust',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Off',
+            1 => 'Basic',
+            2 => 'Magenta',
+            3 => 'Yellow',
+            4 => 'Normal',
+            5 => 'Warm',
+            6 => 'Cool',
+        },
+    },
+    0x1017 => { #3
+        Name => 'WideAdapter',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Not Attached',
+            2 => 'Attached', # (21mm)
+        },
+    },
+    0x1018 => { #3
+        Name => 'CropMode35mm',
+        Writable => 'int16u',
+        PrintConv => { 0 => 'Off', 1 => 'On' },
+    },
+    0x1019 => { #3
+        Name => 'NDFilter',
+        Writable => 'int16u',
+        PrintConv => { 0 => 'Off', 1 => 'On' },
+    },
+    0x101a => { Name => 'WBBracketShotNumber', Writable => 'int16u' }, #3
+    # 0x1100 - related to DR correction (ref 3)
+    0x1307 => { Name => 'ColorTempKelvin',     Writable => 'int32u' }, #3
+    0x1308 => { Name => 'ColorTemperature',    Writable => 'int32u' }, #3
+    0x1500 => { #3
+        Name => 'FocalLength',
+        Writable => 'rational64u',
+        PrintConv => 'sprintf("%.1f mm",$val)',
+        PrintConvInv => '$val=~s/\s*mm$//;$val',
+    },
+    0x1200 => { #3
+        Name => 'AFStatus',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Out of Focus',
+            1 => 'In Focus',
+        },
+    },
+    # 0x1201-0x1204 - related to focus points (ref 3)
+    0x1201 => { #PH (NC)
+        Name => 'AFAreaXPosition1',
+        Writable => 'int32u',
+        Notes => 'manual AF area position in a 1280x864 image',
+    },
+    0x1202 => { Name => 'AFAreaYPosition1', Writable => 'int32u' }, #PH (NC)
+    0x1203 => { #PH (NC)
+        Name => 'AFAreaXPosition',
+        Writable => 'int32u',
+        Notes => 'manual AF area position in the full image',
+        # (coordinates change to correspond with smaller image
+        #  when recording reduced-size JPEG)
+    },
+    0x1204 => { Name => 'AFAreaYPosition', Writable => 'int32u' }, #PH (NC)
+    0x1205 => { #3
+        Name => 'AFAreaMode',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Auto',
+            2 => 'Manual',
+        },
+    },
+    0x1601 => { Name => 'SensorWidth',  Writable => 'int32u' }, #3
+    0x1602 => { Name => 'SensorHeight', Writable => 'int32u' }, #3
+    0x1603 => { Name => 'CroppedImageWidth',  Writable => 'int32u' }, #3
+    0x1604 => { Name => 'CroppedImageHeight', Writable => 'int32u' }, #3
+    # 0x1700 - Composite? (0=normal image, 1=interval composite, 2=multi-exposure composite) (ref 3)
+    # 0x1703 - 0=normal, 1=final composite (ref 3)
+    # 0x1704 - 0=normal, 2=final composite (ref 3)
     0x2001 => [
         {
             Name => 'RicohSubdir',
@@ -127,6 +422,51 @@ my %ricohLensIDs = (
             },
         },
     ],
+    0x4001 => {
+        Name => 'ThetaSubdir',
+        Groups => { 1 => 'MakerNotes' },    # SubIFD needs group 1 set
+        Flags => 'SubIFD',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Ricoh::ThetaSubdir',
+            Start => '$val',
+        },
+    },
+);
+
+# Ricoh type 2 maker notes (ref PH)
+# (similar to Kodak::Type11 and GE::Main)
+%Image::ExifTool::Ricoh::Type2 = (
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    NOTES => q{
+        Tags written by models such as the Ricoh HZ15 and the Pentax XG-1.  These
+        are not writable due to numerous formatting errors as written by these
+        cameras.
+    },
+    # 0x104 - int32u: 1
+    # 0x200 - int32u[3]: 0 0 0
+    # 0x202 - int16u: 0 (GE Macro?)
+    # 0x203 - int16u: 0,3 (Kodak PictureEffect?)
+    # 0x204 - rational64u: 0/10
+    # 0x205 - rational64u: 150/1
+    # 0x206 - float[6]: (not really float because size should be 2 bytes)
+    0x207 => {
+        Name => 'RicohModel',
+        Writable => 'string',
+    },
+    0x300 => {
+        # brutal.  There are lots of errors in the XG-1 maker notes.  For the XG-1,
+        # 0x300 has a value of "XG-1Pentax".  The "XG-1" part is likely an improperly
+        # stored 0x207 RicohModel, resulting in an erroneous 4-byte offset for this tag
+        Name => 'RicohMake',
+        Writable => 'undef',
+        ValueConv => '$val =~ s/ *$//; $val',
+    },
+    # 0x306 - int16u: 1
+    # 0x500 - int16u: 0,1
+    # 0x501 - int16u: 0
+    # 0x502 - int16u: 0
+    # 0x9c9c - int8u[6]: ?
+    # 0xadad - int8u[20480]: ?
 );
 
 # Ricoh image info (ref 2)
@@ -300,6 +640,31 @@ my %ricohLensIDs = (
         SubDirectory => { TagTable => 'Image::ExifTool::Ricoh::SerialInfo' },
     }
     # 0x000E ProductionNumber? (ref 2) [no. zero for most models - PH]
+);
+
+
+# Ricoh Theta subdirectory tags - Contains orientation information (ref 4)
+%Image::ExifTool::Ricoh::ThetaSubdir = (
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    WRITE_PROC => \&Image::ExifTool::Exif::WriteExif,
+    CHECK_PROC => \&Image::ExifTool::Exif::CheckExif,
+    # 0x0001 => Unknown
+    # 0x0002 => Unknown
+    0x0003 => {
+        Name => 'Accelerometer',
+        Writable => 'rational64s',
+        Count => 2,
+    },
+    0x0004 => {
+        Name => 'Compass',
+        Writable => 'rational64u',
+    },
+    # 0x0005 => Unknown
+    # 0x0101 => Unknown - ISO Speed?
+    # 0x0102 => Unknown - F Number?
+    # 0x0103 => Unknown - Exposure?
+    # 0x0104 => Unknown - Serial Number?
+    # 0x0105 => Unknown - Serial Number?
 );
 
 # face detection information (ref PH, CX4)
@@ -533,6 +898,14 @@ my %ricohLensIDs = (
         ValueConv => '$val=~s/\s*:.*//; $val',
         PrintConv => \%ricohLensIDs,
     },
+    RicohPitch => {
+        Require => 'Ricoh:Accelerometer',
+        ValueConv => 'my @v = split(" ",$val); $v[1]',
+    },
+    RicohRoll => {
+        Require => 'Ricoh:Accelerometer',
+        ValueConv => 'my @v = split(" ",$val); $v[0] <= 180 ? $v[0] : $v[0] - 360',
+    },
 );
 
 # add our composite tags
@@ -547,32 +920,32 @@ Image::ExifTool::AddCompositeTags('Image::ExifTool::Ricoh');
 # Returns: 1 on success, otherwise returns 0 and sets a Warning
 sub ProcessRicohText($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataLen = $$dirInfo{DataLen};
     my $dirStart = $$dirInfo{DirStart} || 0;
     my $dirLen = $$dirInfo{DirLen} || $dataLen - $dirStart;
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
 
     my $data = substr($$dataPt, $dirStart, $dirLen);
     return 1 if $data =~ /^\0/;     # blank Ricoh maker notes
     # validate text maker notes
     unless ($data =~ /^(Rev|Rv)/) {
-        $exifTool->Warn('Bad Ricoh maker notes');
+        $et->Warn('Bad Ricoh maker notes');
         return 0;
     }
     while ($data =~ m/([A-Z][a-z]{1,2})([0-9A-F]+);/sg) {
         my $tag = $1;
         my $val = $2;
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
         if ($verbose) {
-            $exifTool->VerboseInfo($tag, $tagInfo,
+            $et->VerboseInfo($tag, $tagInfo,
                 Table  => $tagTablePtr,
                 Value  => $val,
             );
         }
         unless ($tagInfo) {
-            next unless $exifTool->{OPTIONS}->{Unknown};
+            next unless $$et{OPTIONS}{Unknown};
             $tagInfo = {
                 Name => "Ricoh_Text_$tag",
                 Unknown => 1,
@@ -581,7 +954,7 @@ sub ProcessRicohText($$$)
             # add tag information to table
             AddTagToTable($tagTablePtr, $tag, $tagInfo);
         }
-        $exifTool->FoundTag($tagInfo, $val);
+        $et->FoundTag($tagInfo, $val);
     }
     return 1;
 }
@@ -592,32 +965,33 @@ sub ProcessRicohText($$$)
 # Returns: 1 on success, otherwise returns 0 and sets a Warning
 sub ProcessRicohRMETA($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dirStart = $$dirInfo{DirStart};
     my $dataLen = length($$dataPt);
     my $dirLen = $dataLen - $dirStart;
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
 
-    $exifTool->VerboseDir('Ricoh RMETA') if $verbose;
-    $dirLen > 6 or $exifTool->Warn('Truncated Ricoh RMETA data', 1), return 0;
+    $et->VerboseDir('Ricoh RMETA') if $verbose;
+    $dirLen > 6 or $et->Warn('Truncated Ricoh RMETA data', 1), return 0;
     my $byteOrder = substr($$dataPt, $dirStart, 2);
-    SetByteOrder($byteOrder) or $exifTool->Warn('Bad Ricoh RMETA data', 1), return 0;
-    my $rmetaType = Get16u($dataPt, $dirStart+4);
-    if ($rmetaType != 0) {
-        # not sure how to recognize audio, so do it by brute force and assume
-        # all subsequent RMETA segments are part of the audio data
-        $dirLen < 14 and $exifTool->Warn('Short Ricoh RMETA block', 1), return 0;
+    SetByteOrder($byteOrder) or $et->Warn('Bad Ricoh RMETA data', 1), return 0;
+    my $rmetaNum = Get16u($dataPt, $dirStart+4);
+    if ($rmetaNum != 0) {
+        # not sure how to recognize audio, so do it by checking for "RIFF" header
+        # and assume all subsequent RMETA segments are part of the audio data
+        # (but it looks like the int16u at $dirStart+6 is the next block number
+        # if the data is continued, or 0 for the last block)
+        $dirLen < 14 and $et->Warn('Short Ricoh RMETA block', 1), return 0;
         my $audioLen = Get16u($dataPt, $dirStart+12);
-        $audioLen + 14 > $dirLen and $exifTool->Warn('Truncated Ricoh RMETA audio data', 1), return 0;
+        $audioLen + 14 > $dirLen and $et->Warn('Truncated Ricoh RMETA audio data', 1), return 0;
         my $buff = substr($$dataPt, $dirStart + 14, $audioLen);
-        my $val = $$exifTool{VALUE}{SoundFile};
-        if ($val) {
-            $$val .= $buff;
-        } elsif ($audioLen >= 4 and substr($buff, 0, 4) eq 'RIFF') {
-            $exifTool->HandleTag($tagTablePtr, '_audio', \$buff);
+        if ($audioLen >= 4 and substr($buff, 0, 4) eq 'RIFF') {
+            $et->HandleTag($tagTablePtr, '_audio', \$buff);
+        } elsif ($$et{VALUE}{SoundFile}) {
+            ${$$et{VALUE}{SoundFile}} .= $buff;
         } else {
-            $exifTool->Warn('Unknown Ricoh RMETA type', 1);
+            $et->Warn('Unknown Ricoh RMETA type', 1);
             return 0;
         }
         return 1;
@@ -632,7 +1006,7 @@ sub ProcessRicohRMETA($$$)
         $pos += 4;
         $size -= 2;
         if ($size < 0 or $pos + $size > $dataLen) {
-            $exifTool->Warn('Corrupted Ricoh RMETA data', 1);
+            $et->Warn('Corrupted Ricoh RMETA data', 1);
             last;
         }
         if ($type eq 1) {
@@ -658,7 +1032,7 @@ sub ProcessRicohRMETA($$$)
     if (@tags or @vals) {
         if (@tags < @vals) {
             my ($nt, $nv) = (scalar(@tags), scalar(@vals));
-            $exifTool->Warn("Fewer tags ($nt) than values ($nv) in Ricoh RMETA", 1);
+            $et->Warn("Fewer tags ($nt) than values ($nv) in Ricoh RMETA", 1);
         }
         # find next tag in null-delimited list
         # unpack numerical values from block of int16u values
@@ -670,10 +1044,10 @@ sub ProcessRicohRMETA($$$)
             $name =~ s/ (\w)/\U$1/g;                # remove special characters
             $name = 'RMETA_Unknown' unless length($name);
             my $num = shift @nums;
-            my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+            my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
             if ($tagInfo) {
                 # make sure print conversion is defined
-                $$tagInfo{PrintConv} = { } unless $$tagInfo{PrintConv};
+                $$tagInfo{PrintConv} = { } unless ref $$tagInfo{PrintConv} eq 'HASH';
             } else {
                 # create tagInfo hash
                 $tagInfo = { Name => $name, PrintConv => { } };
@@ -682,9 +1056,9 @@ sub ProcessRicohRMETA($$$)
             # use string value directly if no numerical value
             $num = $val unless defined $num;
             # add conversion for this value (replacing any existing entry)
-            $tagInfo->{PrintConv}->{$num} = $val;
+            $tagInfo->{PrintConv}->{$num} = length $val ? $val : $num;
             if ($verbose) {
-                $exifTool->VerboseInfo($tag, $tagInfo,
+                $et->VerboseInfo($tag, $tagInfo,
                     Table   => $tagTablePtr,
                     Value   => $num,
                     DataPt  => $dataPt,
@@ -693,7 +1067,7 @@ sub ProcessRicohRMETA($$$)
                     Size    => length($val),
                 );
             }
-            $exifTool->FoundTag($tagInfo, $num);
+            $et->FoundTag($tagInfo, $num);
             $valPos += length($val) + 1;
         }
     }
@@ -719,7 +1093,7 @@ interpret Ricoh maker notes EXIF meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -731,6 +1105,10 @@ under the same terms as Perl itself.
 =item L<http://www.ozhiker.com/electronics/pjmt/jpeg_info/ricoh_mn.html>
 
 =back
+
+=head1 ACKNOWLEDGEMENTS
+
+Thanks to Tim Gray for his help decoding a number of tags for the Ricoh GR.
 
 =head1 SEE ALSO
 

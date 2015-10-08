@@ -13,7 +13,9 @@
   </div>
   <div class="up-right-column">
     <div id="statistics_settings_link">
+<mt:unless name="is_smartphone_devices">
       <a href="<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Statistics Settings"></a>
+</mt:unless>
     </div>
   </div>
   <div class="clear"></div>
@@ -143,6 +145,7 @@
         end: data.graph_data[9].x
       }
       new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
+<mt:unless name="is_smartphone_devices">
       if (data.can_edit_config) {
         <mt:if name="object_loop">
         var select_blog_id = jQuery('select#select_blog_id').val();
@@ -150,6 +153,7 @@
         </mt:if>
         jQuery('#statistics_settings_link').show();
       }
+</mt:unless>
     }
 
   });

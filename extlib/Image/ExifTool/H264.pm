@@ -24,7 +24,7 @@ use vars qw($VERSION %convMake);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.08';
+$VERSION = '1.12';
 
 sub ProcessSEI($$);
 
@@ -35,6 +35,7 @@ my $parsePictureTiming; # flag to enable parsing of picture timing information (
     0x0103 => 'Panasonic',
     0x0108 => 'Sony',
     0x1011 => 'Canon',
+    0x1104 => 'JVC', #Rob Lewis
 );
 
 # information extracted from H.264 video streams
@@ -82,7 +83,11 @@ my $parsePictureTiming; # flag to enable parsing of picture timing information (
     # 0x10 - TitleTotalTime (ref 7)
     # 0x11 - TitleRemainTime (ref 7)
     # 0x12 - TitleChapterTotalNo (ref 7)
-    # 0x13 - TitleTimecode
+    0x13 => {
+        Name => 'TimeCode',
+        Notes => 'hours:minutes:seconds:frames',
+        ValueConv => 'sprintf("%.2x:%.2x:%.2x:%.2x",reverse unpack("C*",$val))',
+    },
     # 0x14 - TitleBinaryGroup
     # 0x15 - TitleCassetteNo (ref 7)
     # 0x16-0x17 - TitleSoftID (ref 7)
@@ -292,6 +297,7 @@ my $parsePictureTiming; # flag to enable parsing of picture timing information (
         Combine => 2,    # the next tags (0xbc/0xbd) contain the minutes/seconds
         Notes => 'combined with tags 0xbc and 0xbd',
         ValueConv => 'Image::ExifTool::GPS::ConvertTimeStamp($val)',
+        PrintConv => 'Image::ExifTool::GPS::PrintTimeStamp($val)',
     },
     0xbe => {
         Name => 'GPSStatus',
@@ -490,7 +496,7 @@ my $parsePictureTiming; # flag to enable parsing of picture timing information (
         Name => 'ExposureTime',
         Mask => 0x7fff, # (what is bit 0x8000 for?)
         RawConv => '$val == 0x7fff ? undef : $val', #7
-        ValueConv => '$val / 33640', #PH (conversion factor determined empirically)
+        ValueConv => '$val / 28125', #PH (Vixia HF G30, ref forum5588) (was $val/33640 until 9.49)
         PrintConv => 'Image::ExifTool::Exif::PrintExposureTime($val)',
     },
 );
@@ -507,12 +513,21 @@ my $parsePictureTiming; # flag to enable parsing of picture timing information (
         RawConv => '$$self{Make} = ($Image::ExifTool::H264::convMake{$val} || "Unknown"); $val',
         PrintConv => \%convMake,
     },
-    # 1 => ModelIDCode according to ref 4/5 (I think not)
-    # vals: 0x3001 - Sony HDR-CX105E/TG3E/XR500V
+    # 1 => ModelIDCode according to ref 4/5 (I think not - PH)
+    # 1 => { Name => 'ModelIDCode', PrintConv => 'sprintf("%.4x",$val)' },
+    # vals: 0x0313 - various Pansonic HDC models
+    #       0x0345 - Panasonic HC-V7272
+    #       0x0414 - Panasonic AG-AF100
+    #       0x0591 - various Panasonic DMC models
+    #       0x3001 - various Sony DSC, HDR, NEX and SLT models
+    #       0x3003 - various Sony DSC models
+    #       0x3100 - various Sony DSC, ILCE, NEX and SLT models
     #       0x1000 - Sony HDR-UX1
-    #       0x3000 - Canon HF100 (30p)
     #       0x2000 - Canon HF100 (60i)
+    #       0x3000 - Canon HF100 (30p)
     #       0x3101 - Canon HFM300 (PH, all qualities and frame rates)
+    #       0x3102 - Canon HFS200
+    #       0x4300 - Canon HFG30
 );
 
 # camera info 0xe1 (ref 6)
@@ -694,7 +709,7 @@ sub DecodeScalingMatrices($)
 # Inputs) 0) ExifTool ref, 1) tag table ref, 2) data ref
 sub ParseSeqParamSet($$$)
 {
-    my ($exifTool, $tagTablePtr, $dataPt) = @_;
+    my ($et, $tagTablePtr, $dataPt) = @_;
     # initialize our bitstream object
     my $bstr = NewBitStream($dataPt) or return;
     my ($t, $i, $j, $n);
@@ -751,8 +766,8 @@ sub ParseSeqParamSet($$$)
     # quick validity checks (just in case)
     return unless $$bstr{Mask};
     if ($w>=160 and $w<=4096 and $h>=120 and $h<=3072) {
-        $exifTool->HandleTag($tagTablePtr, ImageWidth => $w);
-        $exifTool->HandleTag($tagTablePtr, ImageHeight => $h);
+        $et->HandleTag($tagTablePtr, ImageWidth => $w);
+        $et->HandleTag($tagTablePtr, ImageHeight => $h);
         # (whew! -- so much work just to get ImageSize!!)
     }
     # return now unless interested in picture timing information
@@ -783,15 +798,15 @@ sub ParseSeqParamSet($$$)
     $t = GetIntN($bstr, 1);         # timing_info_present_flag
     if ($t) {
         return if BitsLeft($bstr) < 65;
-        $$exifTool{VUI_units} = GetIntN($bstr, 32); # num_units_in_tick
-        $$exifTool{VUI_scale} = GetIntN($bstr, 32); # time_scale
+        $$et{VUI_units} = GetIntN($bstr, 32); # num_units_in_tick
+        $$et{VUI_scale} = GetIntN($bstr, 32); # time_scale
         GetIntN($bstr, 1);          # fixed_frame_rate_flag
     }
     my $hard;
     for ($j=0; $j<2; ++$j) {
         $t = GetIntN($bstr, 1);     # nal_/vcl_hrd_parameters_present_flag
         if ($t) {
-            $$exifTool{VUI_hard} = 1;
+            $$et{VUI_hard} = 1;
             $hard = 1;
             $n = GetGolomb($bstr);  # cpb_cnt_minus1
             GetIntN($bstr, 8);      # bit_rate_scale/cpb_size_scale
@@ -801,13 +816,13 @@ sub ParseSeqParamSet($$$)
                 GetIntN($bstr, 1);  # cbr_flag[SchedSelIdx]
             }
             GetIntN($bstr, 5);      # initial_cpb_removal_delay_length_minus1
-            $$exifTool{VUI_clen} = GetIntN($bstr, 5); # cpb_removal_delay_length_minus1
-            $$exifTool{VUI_dlen} = GetIntN($bstr, 5); # dpb_output_delay_length_minus1
-            $$exifTool{VUI_toff} = GetIntN($bstr, 5); # time_offset_length
+            $$et{VUI_clen} = GetIntN($bstr, 5); # cpb_removal_delay_length_minus1
+            $$et{VUI_dlen} = GetIntN($bstr, 5); # dpb_output_delay_length_minus1
+            $$et{VUI_toff} = GetIntN($bstr, 5); # time_offset_length
         }
     }
     GetIntN($bstr, 1) if $hard;     # low_delay_hrd_flag
-    $$exifTool{VUI_pic} = GetIntN($bstr, 1);    # pic_struct_present_flag
+    $$et{VUI_pic} = GetIntN($bstr, 1);    # pic_struct_present_flag
     # (don't yet decode the rest of the vui data)
 }
 
@@ -816,17 +831,17 @@ sub ParseSeqParamSet($$$)
 # Inputs) 0) ExifTool ref, 1) data ref
 sub ParsePictureTiming($$)
 {
-    my ($exifTool, $dataPt) = @_;
+    my ($et, $dataPt) = @_;
     my $bstr = NewBitStream($dataPt) or return;
     my ($i, $t, $n);
     # the specification is very odd on this point: the following delays
     # exist if the VUI hardware parameters are present, or if
     # "determined by the application, by some means not specified" -- WTF??
-    if ($$exifTool{VUI_hard}) {
-        GetIntN($bstr, $$exifTool{VUI_clen} + 1);   # cpb_removal_delay
-        GetIntN($bstr, $$exifTool{VUI_dlen} + 1);   # dpb_output_delay
+    if ($$et{VUI_hard}) {
+        GetIntN($bstr, $$et{VUI_clen} + 1);   # cpb_removal_delay
+        GetIntN($bstr, $$et{VUI_dlen} + 1);   # dpb_output_delay
     }
-    if ($$exifTool{VUI_pic}) {
+    if ($$et{VUI_pic}) {
         $t = GetIntN($bstr, 4);     # pic_struct
         # determine NumClockTS ($n)
         $n = { 0=>1, 1=>1, 2=>1, 3=>2, 4=>2, 5=>3, 6=>3, 7=>2, 8=>3 }->{$t};
@@ -858,8 +873,8 @@ sub ParsePictureTiming($$)
                     }
                 }
             }
-            if ($$exifTool{VUI_toff}) {
-                $o = GetIntN($bstr, $$exifTool{VUI_toff});  # time_offset
+            if ($$et{VUI_toff}) {
+                $o = GetIntN($bstr, $$et{VUI_toff});  # time_offset
             }
             last;   # only parse the first clock timestamp found
         }
@@ -872,7 +887,7 @@ sub ParsePictureTiming($$)
 # Returns: 1 if we processed payload type 5
 sub ProcessSEI($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $end = length($$dataPt);
     my $pos = 0;
@@ -899,7 +914,7 @@ sub ProcessSEI($$)
         if ($type == 1) {                   # picture timing information
             if ($parsePictureTiming) {
                 my $buff = substr($$dataPt, $pos, $size);
-                ParsePictureTiming($exifTool, $dataPt);
+                ParsePictureTiming($et, $dataPt);
             }
         } elsif ($type == 5) {              # unregistered user data
             last; # exit loop to process user data now
@@ -921,24 +936,24 @@ sub ProcessSEI($$)
 # unregistered user data payload (ref PH)
 #
     my $tagTablePtr = GetTagTable('Image::ExifTool::H264::MDPM');
-    my $oldIndent = $$exifTool{INDENT};
-    $$exifTool{INDENT} .= '| ';
+    my $oldIndent = $$et{INDENT};
+    $$et{INDENT} .= '| ';
     $end = $pos + $size;    # end of payload
     $pos += 20;             # skip UUID + "MDPM"
     my $num = Get8u($dataPt, $pos++);   # get entry count
     my $lastTag = 0;
-    $exifTool->VerboseDir('MDPM', $num) if $exifTool->Options('Verbose');
+    $et->VerboseDir('MDPM', $num) if $et->Options('Verbose');
     # walk through entries in the MDPM payload
     for ($index=0; $index<$num and $pos<$end; ++$index) {
         my $tag = Get8u($dataPt, $pos);
         if ($tag <= $lastTag) { # should be in numerical order (PH)
-            $exifTool->Warn('Entries in MDPM directory are out of sequence');
+            $et->Warn('Entries in MDPM directory are out of sequence');
             last;
         }
         $lastTag = $tag;
         my $buff = substr($$dataPt, $pos + 1, 4);
         my $from;
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
         if ($tagInfo) {
             # use our own print conversion for Unknown tags
             if ($$tagInfo{Unknown} and not $$tagInfo{SetPrintConv}) {
@@ -958,7 +973,7 @@ sub ProcessSEI($$)
                 ++$lastTag;
                 --$combine;
             }
-            $exifTool->HandleTag($tagTablePtr, $tag, undef,
+            $et->HandleTag($tagTablePtr, $tag, undef,
                 TagInfo => $tagInfo,
                 DataPt  => \$buff,
                 Size    => length($buff),
@@ -967,7 +982,7 @@ sub ProcessSEI($$)
         }
         $pos += 5;
     }
-    $$exifTool{INDENT} = $oldIndent;
+    $$et{INDENT} = $oldIndent;
     return 1;
 }
 
@@ -977,9 +992,9 @@ sub ProcessSEI($$)
 # Returns: 0 = done parsing, 1 = we want to parse more of these
 sub ParseH264Video($$)
 {
-    my ($exifTool, $dataPt) = @_;
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
+    my ($et, $dataPt) = @_;
+    my $verbose = $et->Options('Verbose');
+    my $out = $et->Options('TextOut');
     my $tagTablePtr = GetTagTable('Image::ExifTool::H264::Main');
     my %parseNalUnit = ( 0x06 => 1, 0x07 => 1 );    # NAL unit types to parse
     my $foundUserData;
@@ -1001,7 +1016,7 @@ sub ParseH264Video($$)
         my $nal_unit_type = Get8u($dataPt, $pos);
         ++$pos;
         # check forbidden_zero_bit
-        $nal_unit_type & 0x80 and $exifTool->Warn('H264 forbidden bit error'), last;
+        $nal_unit_type & 0x80 and $et->Warn('H264 forbidden bit error'), last;
         $nal_unit_type &= 0x1f;
         # ignore this NAL unit unless we will parse it
         $parseNalUnit{$nal_unit_type} or $verbose or $pos = $nextPos, next;
@@ -1018,37 +1033,37 @@ sub ParseH264Video($$)
             printf $out "  NAL Unit Type: 0x%x (%d bytes)\n",$nal_unit_type, length $buff;
             my %parms = ( Out => $out );
             $parms{MaxLen} = 96 if $verbose < 4;
-            Image::ExifTool::HexDump(\$buff, undef, %parms) if $verbose > 2;
+            HexDump(\$buff, undef, %parms) if $verbose > 2;
         }
         pos($$dataPt) = $pos = $nextPos;
 
         if ($nal_unit_type == 0x06) {       # sei_rbsp (supplemental enhancement info)
 
-            if ($$exifTool{GotNAL06}) {
+            if ($$et{GotNAL06}) {
                 # process only the first SEI unless ExtractEmbedded is set
-                next unless $exifTool->Options('ExtractEmbedded');
-                $$exifTool{DOC_NUM} = $$exifTool{GotNAL06};
+                next unless $et->Options('ExtractEmbedded');
+                $$et{DOC_NUM} = $$et{GotNAL06};
             }
-            $foundUserData = ProcessSEI($exifTool, { DataPt => \$buff } );
-            delete $$exifTool{DOC_NUM};
+            $foundUserData = ProcessSEI($et, { DataPt => \$buff } );
+            delete $$et{DOC_NUM};
             # keep parsing SEI's until we find the user data
             next unless $foundUserData;
-            $$exifTool{GotNAL06} = ($$exifTool{GotNAL06} || 0) + 1;
+            $$et{GotNAL06} = ($$et{GotNAL06} || 0) + 1;
 
         } elsif ($nal_unit_type == 0x07) {  # sequence_parameter_set_rbsp
 
             # process this NAL unit type only once
-            next if $$exifTool{GotNAL07};
-            $$exifTool{GotNAL07} = 1;
-            ParseSeqParamSet($exifTool, $tagTablePtr, \$buff);
+            next if $$et{GotNAL07};
+            $$et{GotNAL07} = 1;
+            ParseSeqParamSet($et, $tagTablePtr, \$buff);
         }
         # we were successful, so don't parse this NAL unit type again
         delete $parseNalUnit{$nal_unit_type};
     }
     # parse one extra H264 frame if we didn't find the user data in this one
     # (Panasonic cameras don't put the SEI in the first frame)
-    return 0 if $foundUserData or $$exifTool{ParsedH264};
-    $$exifTool{ParsedH264} = 1;
+    return 0 if $foundUserData or $$et{ParsedH264};
+    $$et{ParsedH264} = 1;
     return 1;
 }
 
@@ -1071,7 +1086,7 @@ information from H.264 video streams.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -1,0 +1,50 @@
+dn: olcDatabase={2}bdb,cn=config
+changetype: modify
+add: olcRootPW
+olcRootPW: {SSHA}NV1D8+tyIAVXlcOlcRO3rA842OaD4NqG
+-
+replace: olcRootDN
+olcRootDN: cn=admin,dc=example,dc=com
+-
+replace: olcSuffix
+olcSuffix: dc=example,dc=com
+
+dn: olcDatabase={3}bdb,cn=config
+changetype: add
+olcAddContentAcl: FALSE
+olcDbCacheSize: 1000
+olcDbDirtyRead: FALSE
+olcLastMod: TRUE
+olcDbDNcacheSize: 0
+olcMaxDerefDepth: 15
+olcDbMode: 0600
+olcDbLinearIndex: FALSE
+olcMonitoring: TRUE
+objectClass: olcDatabaseConfig
+objectClass: olcBdbConfig
+olcRootDN: cn=admin,dc=example,dc=jp
+olcRootPW: {SSHA}NV1D8+tyIAVXlcOlcRO3rA842OaD4NqG
+olcDbDirectory: /var/lib/ldap/jp
+olcDbIDLcacheSize: 0
+olcDatabase: {3}bdb
+olcDbNoSync: FALSE
+olcDbCheckpoint: 1024 15
+olcSyncUseSubentry: FALSE
+olcDbSearchStack: 16
+olcReadOnly: FALSE
+olcDbIndex: objectClass pres,eq
+olcDbIndex: cn pres,eq,sub
+olcDbIndex: uid pres,eq,sub
+olcDbIndex: uidNumber pres,eq
+olcDbIndex: gidNumber pres,eq
+olcDbIndex: mail pres,eq,sub
+olcDbIndex: ou pres,eq,sub
+olcDbIndex: sn pres,eq,sub
+olcDbIndex: givenName pres,eq,sub
+olcDbIndex: loginShell pres,eq
+olcDbIndex: memberUid pres,eq,sub
+olcDbIndex: nisMapName pres,eq,sub
+olcDbIndex: nisMapEntry pres,eq,sub
+olcSuffix: dc=example,dc=jp
+olcDbShmKey: 0
+olcDbCacheFree: 1

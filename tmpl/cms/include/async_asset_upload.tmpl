@@ -1,0 +1,510 @@
+<style>
+#drop-handler {
+    height: 150px;
+    background-color: #DFDFDF;
+    border-radius: 10px;
+    border: dotted 2px #6f6f6f;
+    margin-bottom: 1em;
+}
+
+#drop-handler p{
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    text-align: center;
+    font-size: 1.5em;
+}        
+
+#drop-handler button{
+    text-decoration: underline;
+    color: #0076BF;
+    border: none;
+    background: transparent;
+}
+
+.upload-status-block {
+    border: solid 1px #afafaf;
+    margin: 0.5em;
+    padding: 0.5em;
+    height: 50px;
+    overflow: hidden;
+}
+
+.upload-status-block-left-panel {
+    float: left;
+    width: 100%;
+    margin: 0 -100px 0 0;
+}
+
+.upload-status-block-right-panel {
+    float: right;
+    width: 100px;
+}
+
+.upload-status-block-left-content {
+    margin: 0 80px 0 0;
+}
+
+.upload-status-block-left-content.full-width {
+    margin: 0 0 0 0;
+}
+
+.upload-status-block-left-content.full-width {
+    margin: 0 0 0 0;
+}
+
+.upload-cancel {
+    margin-right: 0.25em;
+    text-align: right;
+    line-height: 50px;
+    text-decoration: underline;
+    color: #0076BF;
+}
+
+.edit-asset {
+    margin-right: 0.25em;
+    text-align: right;
+    line-height: 50px;
+    text-decoration: underline;
+    color: #0076BF;
+}
+
+span.filename {
+    margin-left: 0.5em;
+    text-align: center;
+    line-height: 50px;
+}
+
+p.msg-error {
+    line-height: 50px;
+    padding-left: 10px;
+}
+
+p.msg-warning {
+    line-height: 50px;
+    padding-left: 10px;
+}
+</style>
+
+<form>
+  <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
+  <div id="drop-handler">
+      <p><mt:if name="can_multi"><__trans phrase="Drag and drop here to upload files, or<button id='open-file-dialog'>Browse</button>"><mt:else><__trans phrase="Drag and drop here to upload a file, or<button id='open-file-dialog'>Browse</button>"><br /><__trans phrase="(If you upload multiple files, last uploaded files will be used.)"></mt:if></p>
+  </div>
+<mt:unless name="filter" eq="userpic">  
+    <h2><__trans phrase="Upload Destination"></h2>
+  <mt:if name="allow_to_change_at_upload">
+    <mtapp:setting
+      id="site_path"
+      hint="<__trans phrase="_USAGE_UPLOAD">"
+      show_hint="1"
+      show_label="0"
+      label_class="top-label">
+      <mt:if name="destination_loop">
+        <select name="destination" id="destination">
+        <mt:loop name="destination_loop">
+          <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
+        </mt:loop>
+        </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
+      </mt:if>
+    </mtapp:setting>
+  <mt:else>
+    <div id="site_path-field" class="field field-top-label">
+      <div class="field-content">
+        <mt:var name="upload_destination_label">/<mt:var name="extra_path">
+        <input type="hidden" id="destination" name="destination" value="<mt:var name="upload_destination_value" escape="html">" />
+        <input type="hidden" id="extra_path" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
+      </div>
+    </div>
+  </mt:if>
+</mtunless>
+
+    <h2><__trans phrase="Upload Options"></h2>
+<mtapp:setting
+  id="auto_rename_non_ascii"
+  label="<__trans phrase="Rename filename">"
+  show_label="1">
+      <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb" />
+      <label for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically."></label>
+</mtapp:setting>
+<mtapp:setting
+  id="operation_if_exists"
+  show_hint="0"
+  show_label="1"
+  label="<__trans phrase="Operation for a file exists">"
+  label_class="left-label">
+    <select name="operation_if_exists" id="operation_if_exists">
+      <option value="1"<mt:if name="operation_if_exists" eq="1"> selected="selected"</mtif>><__trans phrase="Upload and rename"></option>
+      <option value="2"<mt:if name="operation_if_exists" eq="2"> selected="selected"</mtif>><__trans phrase="Overwrite existing file"></option>
+      <option value="3"<mt:if name="operation_if_exists" eq="3"> selected="selected"</mtif>><__trans phrase="Cancel upload"></option>
+    </select>
+</mtapp:setting>
+<mtapp:setting
+  id="normalize_orientation"
+  label="<__trans phrase="Normalize orientation">"
+  show_label="1">
+      <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb" />
+      <label for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
+</mtapp:setting>
+</form>
+
+<div id="upload-progress"></div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+// Assign drag and drop event
+jQuery('#drop-handler').on('dragenter', function(e) {
+  e.stopPropagation();
+  e.preventDefault();
+  jQuery(this).css('border', '2px solid #0B85A1');
+}).on('dragover', function (e) {
+  e.stopPropagation();
+  e.preventDefault();
+}).on('dragleave', function(e) {
+  jQuery(this).css('border', '2px dotted #6f6f6f');
+}).on('drop', function (e) {
+  jQuery(this).css('border', '2px dotted #6f6f6f');
+  e.preventDefault();
+
+  uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
+});
+
+// Ignore drop on non-droppable area
+jQuery(document).on('dragenter', function (e) {
+  e.stopPropagation();
+  e.preventDefault();
+}).on('dragover', function (e) {
+  e.stopPropagation();
+  e.preventDefault();
+}).on('drop', function (e) {
+  e.stopPropagation();
+  e.preventDefault();
+});
+
+function createFormData(file) {
+  var fd = new FormData();
+
+  // Set file object
+  fd.append('file', file);
+
+  // Set extended parameters
+  fd.append('__mode', 'js_upload_file');
+<mt:if name="filter" eq="userpic">
+  fd.append('type', 'userpic');
+</mt:if>
+<mt:if name="blog_id">
+  fd.append('blog_id', <mt:var name="blog_id">);
+</mt:if>
+  fd.append('entry_insert', '<mt:var name="entry_insert" escape="html">');
+  fd.append('asset_select', '<mt:var name="asset_select" escape="html">');
+  fd.append('edit_field', '<mt:var name="edit_field" escape="html">');
+  fd.append('require_type', '<mt:var name="require_type" escape="html">');
+  fd.append('magic_token', '<mt:var name="magic_token">');
+
+  var normalizeOrientation = 0;
+  if ( jQuery('#normalize_orientation').prop('checked') ) {
+    normalizeOrientation = 1;
+  }
+  fd.append('normalize_orientation', normalizeOrientation);
+  fd.append('operation_if_exists', jQuery('#operation_if_exists').val() );
+  fd.append('auto_rename_non_ascii', jQuery('#auto_rename_non_ascii').prop('checked')? 1 : 0 );  
+
+  fd.append('destination', jQuery('#destination').val() );
+  fd.append('extra_path', jQuery('#extra_path').val() );
+
+<mt:if name="no_insert">
+  fd.append('no_insert', '<mt:var name="no_insert">');
+</mt:if>
+<mt:if name="user_id">
+  fd.append('user_id', '<mt:var name="user_id" escape="html">');
+</mt:if>
+<mt:if name="dialog">
+  fd.append('dialog', '<mt:var name="dialog">');
+</mt:if>
+    return fd;
+}
+
+var numOfRows = 0;
+function createUploadBlock () {
+  numOfRows++;
+
+  this.uploadBlock  = jQuery('<div class="upload-status-block" id="upload-status_' + numOfRows + '"></div>');
+
+  this.leftPanel    = jQuery('<div class="upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
+  this.rightPanel   = jQuery('<div class="upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
+  this.leftContent  = jQuery('<div class="upload-status-block-left-content"></div>').appendTo(this.leftPanel);
+  this.progressbar  = jQuery('<div class="progressbar"></div>').appendTo(this.leftContent);
+  this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);
+  this.thumbnail    = jQuery('<div class="upload-thubmnail"></div>').appendTo(this.leftContent);
+  this.uploadResult = jQuery('<div class="upload-result"></div>').appendTo(this.leftContent);
+  this.cancelUpload = jQuery('<div class="upload-cancel"><__trans phrase="Cancel"></div>').appendTo(this.rightPanel);
+<mt:unless name="filter" eq="userpic">
+  this.editAsset    = jQuery('<div class="edit-asset"></div>').appendTo(this.rightPanel);
+
+  this.editAsset.hide();
+</mt:unless>
+  this.progressbar.progressbar({ value: 0 });
+  jQuery('#upload-progress').append(this.uploadBlock);
+
+  // Recalculate block height
+  jQuery('#content-body-right-body').height(
+    jQuery('#content-body-right-body').height()
+    + this.uploadBlock.height()
+    + parseFloat(this.uploadBlock.css('padding-bottom'))
+    + parseFloat(this.uploadBlock.css('padding-top')) + 10);
+
+  this.setFilename = function(filename) {
+    this.filename.html(filename);
+  }
+
+  this.setProgress = function(val) {
+    this.progressbar.progressbar({ value: val });
+    if( parseInt(val) >= 100 ) {
+      this.filename.hide();
+      this.cancelUpload.hide();
+    }
+  }
+
+  this.setCancelUpload = function(xhr) {
+    var parent = this;
+    this.cancelUpload.show();
+    this.cancelUpload.click( function() {
+      xhr.abort();
+      parent.setCancelResult(trans('Cancelled: [_1]', parent.filename.html()));
+    });
+  }
+
+  this.setThumbnail = function(url, fname, id, msg) {
+    var data = '<img src="' + url + '"><span class="filename">' + fname;
+    if ( msg ) {
+      data += ' <span class="msg-warning" style="padding:0.5em">' + msg + '</span>';
+    }
+    data += '</span>';
+
+    jQuery(data).appendTo(this.thumbnail);
+    this.thumbnail.parents('.upload-status-block').attr('data-asset-id', id);
+  }
+
+  this.setError = function(err) {
+    this.cancelUpload.hide();
+    this.progressbar.hide();
+    this.filename.hide();
+    jQuery('.upload-status-block-left-content').addClass('full-width');  
+    jQuery('<p class="msg-error">' + err + '</p>').appendTo(this.uploadResult);
+  }
+
+  this.setCancelResult = function(msg) {
+    this.cancelUpload.hide();
+    this.progressbar.hide();
+    this.filename.hide();
+    jQuery('.upload-status-block-left-content').addClass('full-width');  
+    jQuery('<p class="msg-warning">' + msg+ '</p>').appendTo(this.uploadResult);
+  }
+
+<mt:unless name="filter" eq="userpic">
+  this.enableEditAsset = function(Asset) {
+    var link = jQuery('<a>');
+    link.attr('href', '<mt:var name="script_url">?__mode=dialog_edit_asset&blog_id=' + Asset.blog_id + '&id=' + Asset.id + '&magic_token=<mt:var name="magic_token">').append('<__trans phrase="Edit">').appendTo(this.editAsset);
+    link.mtDialog();
+    this.editAsset.show();
+  }
+</mt:unless>
+}
+ 
+var queue = [];
+function uploadFiles(files, items) {
+    if (!files || files.length === 0 ) {
+        return;
+    }
+
+<mt:if name="can_multi">
+    var num_files = files.length;
+<mt:else>
+    var num_files = 1; // Always 1 file only
+    jQuery('#upload-progress').empty();
+</mt:if>    
+  var max_upload_size = <mt:var name="max_upload_size">;
+
+<mt:unless name="filter" eq="userpic">
+  <mt:if name="allow_to_change_at_upload">    
+  // Validate extra path
+  var $extra_path = jQuery('#extra_path');
+  if ($extra_path.val().length > 0 ) {
+    if (!$extra_path.mtValidate('simple')) {
+      return;
+    }
+  }
+  </mt:if>
+</mt:unless>
+
+  // Disable submit button
+  jQuery('.actions-bar button.primary')
+    .attr('disabled', 'disabled')
+    .addClass('disabled');
+
+  var require_type = '<mt:var name="require_type" escape="js">';
+  var require_type_label = '<mt:var name="require_type_label" escape="js">';
+  for (var i = 0; i < num_files; i++) {
+    if( files[i].size === 0 ) {
+      // Maybe directory
+      continue;
+    }
+    if ( items && items[i].webkitGetAsEntry && items[i].webkitGetAsEntry().isDirectory ) {
+      // Maybe directory only for Chrome
+      continue;
+    }
+
+    var fd = createFormData( files[i] );
+    var uploadBlock = new createUploadBlock();
+    uploadBlock.setFilename(files[i].name);
+    if ( files[i].size >= max_upload_size ) {
+      uploadBlock.setError(trans("The file you tried to upload is too large: [_1]", files[i].name));
+      continue;  
+    }
+    if ( require_type && require_type !== 'file' ) {
+      var regexp = new RegExp('^' + require_type + '/.*');
+      if(!files[i].type.match(regexp)) {
+        uploadBlock.setError(trans("[_1] is not a valid [_2] file.", files[i].name, require_type_label));
+        continue;  
+      }
+    }
+    var f = uploadFile(fd, uploadBlock);
+    queue.push(f);
+  }
+<mt:if name="dialog">
+  jQuery.when.apply(null, queue).then( function() {
+    // Enable submit button
+    if ( jQuery('#select_asset input[name="id"]').val().length > 0 ) {
+      jQuery('.actions-bar button.primary')
+        .removeAttr('disabled')
+        .removeClass('disabled');
+    }
+  });
+</mt:if>
+}
+
+function uploadFile( formData, uploadBlock ) {
+    var d = new jQuery.Deferred();
+    var xhr = jQuery.ajax({
+    xhr: function() {
+      var handler = jQuery.ajaxSettings.xhr();
+      if (handler.upload) {
+        handler.upload.addEventListener('progress', function(event) {
+          var percent = 0;
+          var position = event.loaded || event.position;
+          var total = event.total;
+          if (event.lengthComputable) {
+            percent = Math.ceil(position / total * 100);
+          }
+          uploadBlock.setProgress(percent);
+        }, false);
+      }
+      return handler;
+    },
+    url: "<mt:var name="script_url">",
+    type: "POST",
+    contentType:false,
+    processData: false,
+    cache: false,
+    data: formData
+  }).done( function(data){
+    if ( data.error ) {
+      // An eror occurrs
+      uploadBlock.setError( data.error );
+    }
+    else if ( data.result.cancel ) {
+      // Cancelled by server
+      uploadBlock.setCancelResult( data.result.cancel );
+    }
+    else {
+      // Success
+      uploadBlock.setProgress(100);
+      uploadBlock.setThumbnail(data.result.asset.thumbnail, data.result.asset.filename, data.result.asset.id, data.result.asset.message);
+        
+      uploadBlock.progressbar.hide();
+<mt:unless name="filter" eq="userpic">
+      uploadBlock.enableEditAsset(data.result.asset);
+</mt:unless>
+
+<mt:if name="dialog">
+      // Set asset ID
+  <mt:if name="can_multi">
+      if (jQuery('#select_asset input[name="id"]').val().length > 0 ) {
+        jQuery('#select_asset input[name="id"]').val( jQuery('#select_asset input[name="id"]').val() + ',');
+      }
+      jQuery('#select_asset input[name="id"]').val(jQuery('#select_asset input[name="id"]').val() +  data.result.asset.id);
+<mt:else>
+      jQuery('#select_asset input[name="id"]').val(data.result.asset.id);
+  </mt:if>
+</mt:if>
+    }
+  }).always(function() {
+    d.resolve();
+  });
+
+  uploadBlock.setCancelUpload(xhr);
+  return d.promise();
+}
+
+jQuery('#open-file-dialog').click( function() {
+  jQuery('#file').click();
+  return false;
+});
+
+jQuery('#file').change( function(e) {
+  var files = e.originalEvent.target.files;
+  uploadFiles(files);
+  jQuery('#file').val('');
+  if ( navigator.userAgent.match('MSIE') ) {
+    // Maybe lower than IE11
+    jQuery('#file').attr('type', 'text');
+    jQuery('#file').val('');
+    jQuery('#file').attr('type', 'file');
+  }
+});
+
+/* ]]> */
+</script>
+
+<mt:setvarblock name="jq_js_include" append="1">
+  <mt:unless name="filter" eq="userpic">  
+    <mt:if name="allow_to_change_at_upload">    
+  function is_valid_path(path_){
+    var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
+    str = encodeURIComponent(str);
+    if (str.indexOf('%') != -1) {
+        return false;
+    }
+    if (str.match(/\.\./)) {
+        return false;
+    }
+    return true;
+  }
+
+  jQuery.mtValidateAddRules({
+    "#extra_path": function($e) {
+      return is_valid_path($e.val());
+    }
+  });
+  jQuery.mtValidateAddMessages({
+    "#extra_path": '<__trans phrase="You must set a valid path." escape="singlequotes">',
+  });
+    </mt:if>
+  </mt:unless>
+  <mt:if name="dialog">
+  jQuery('#upload-asset-panel').on('changePanel', function() {
+    if(jQuery('#upload-progress').children('.upload-status-block').length > 0) {
+      var id = jQuery('#upload-progress').children('.upload-status-block').attr('data-asset-id');
+      jQuery('#select_asset input[name="id"]').val(id);
+
+      // Enable submit button
+      jQuery('.actions-bar button.primary')
+        .removeAttr('disabled')
+        .removeClass('disabled');
+    }
+  });
+  </mt:if>
+  jQuery('form').find('input:visible').first().focus();
+</mt:setvarblock>

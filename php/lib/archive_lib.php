@@ -816,6 +816,12 @@ class AuthorBasedArchiver implements ArchiveType {
 
         $blog_id = intval($args['blog_id']);
         $author = $ctx->stash('author');
+        if ( empty( $author ) ) {
+            $entry = $ctx->stash('entry');
+            if ( !empty( $entry ) ) {
+                $author = $entry->author();
+            }
+        }
         $auth_id = $author->author_id;
         $at or $at = $ctx->stash('current_archive_type');
 
@@ -823,7 +829,6 @@ class AuthorBasedArchiver implements ArchiveType {
                  and fileinfo_archive_type = '".$mt->db()->escape($at)."'
                  and fileinfo_author_id = '$auth_id'
                  and templatemap_is_preferred = 1";
-
         return $sql;
     }
 

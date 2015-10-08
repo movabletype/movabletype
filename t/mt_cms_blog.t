@@ -8,7 +8,7 @@ use MT::Test qw(:db :data);
 
 use Test::More;
 
-plan tests => 25;
+plan tests => 26;
 
 {
     note('test MT::CMS::Blog::_update_finfos');
@@ -37,24 +37,25 @@ plan tests => 25;
     is( finfos_of_type('Yearly'),   0, 'blog #1 has 0 yearly fileinfos' );
     is( finfos_of_type('Page'),     4, 'blog #1 has 4 page fileinfos' );
     is( finfos_of_type('Category'), 2, 'blog #1 has 2 category fileinfos' );
+    is( finfos_of_type('Author'), 2, 'blog #1 has 2 author fileinfos' );
 
     my $total_fileinfos = MT->model('fileinfo')->count( { blog_id => 1 } );
-    is( $total_fileinfos, 36, 'blog #1 has 36 fileinfos' );
+    is( $total_fileinfos, 38, 'blog #1 has 38 fileinfos' );
 
     my $static_fileinfos = MT->model('fileinfo')->count(
         {   blog_id => 1,
             virtual => [ \"= 0", \"is null" ],
         }
     );
-    is( $static_fileinfos, 36, "all blog #1's fileinfos are static" );
+    is( $static_fileinfos, 38, "all blog #1's fileinfos are static" );
 
     my $mapped_fileinfos = MT->model('fileinfo')->count(
         {   blog_id        => 1,
             templatemap_id => \"is not null",
         }
     );
-    is( $mapped_fileinfos, 30,
-        "blog #1 has 30 fileinfos for archive pages (fileinfos with template maps)"
+    is( $mapped_fileinfos, 32,
+        "blog #1 has 32 fileinfos for archive pages (fileinfos with template maps)"
     );
 
     require MT::CMS::Blog;
@@ -152,8 +153,8 @@ plan tests => 25;
                 virtual => 1,
             }
         ),
-        30,
-        '30 other fileinfos are virtual'
+        32,
+        '32 other fileinfos are virtual'
     );
 }
 

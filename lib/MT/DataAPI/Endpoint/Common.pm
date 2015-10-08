@@ -10,6 +10,7 @@ use warnings;
 use strict;
 
 use MT::DataAPI::Resource;
+use MT::Util qw( is_valid_date );
 
 use base 'Exporter';
 our @EXPORT = qw(
@@ -275,8 +276,24 @@ sub filtered_list {
                 if defined $list_permission->{inherit};
             $list_permission = $list_permission->{permit_action};
         }
-        my $allowed  = 0;
-        my @act      = split /\s*,\s*/, $list_permission;
+        my $allowed = 0;
+        my @act;
+        if ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
+            my $code = $list_permission;
+            $code = MT->handler_to_coderef($code);
+            eval { @act = $code->(); };
+            return $app->error(
+                $app->translate(
+                    'Error occurred during permission check: [_1]', $@
+                )
+            ) if $@;
+        }
+        elsif ( 'ARRAY' eq ref $list_permission ) {
+            @act = @$list_permission;
+        }
+        else {
+            @act = split /\s*,\s*/, $list_permission;
+        }
         my $blog_ids = undef;
         if ($blog_id) {
             push @$blog_ids, $blog_id;
@@ -393,6 +410,77 @@ sub filtered_list {
                     },
                 }
             );
+        }
+    }
+
+    # Filter by date.
+    if ( $app->current_api_version >= 3 ) {
+        my $date_field  = $app->param('dateField') || 'created_on';
+        my $date_from   = $app->param('dateFrom');
+        my $date_to     = $app->param('dateTo');
+        my $column_defs = $class->column_defs;
+        if (   $column_defs->{$date_field}
+            && $column_defs->{$date_field}{type} eq 'datetime' )
+        {
+            my $is_valid_date_from = sub {
+                if ( !is_valid_date("${date_from} 00:00:00") ) {
+                    return $app->error(
+                        MT->translate(
+                            'Invalid dateFrom parameter: [_1]', $date_from
+                        ),
+                        400,
+                    );
+                }
+                1;
+            };
+            my $is_valid_date_to = sub {
+                if ( !is_valid_date("${date_to} 00:00:00") ) {
+                    return $app->error(
+                        MT->translate(
+                            'Invalid dateTo parameter: [_1]', $date_to
+                        ),
+                        400,
+                    );
+                }
+                1;
+            };
+
+            if ( $date_from && $date_to ) {
+                return if !$is_valid_date_from->() || !$is_valid_date_to->();
+                $filter->append_item(
+                    {   type => $date_field,
+                        args => {
+                            option => 'range',
+                            from   => $date_from,
+                            to     => $date_to,
+                        },
+                    }
+                );
+            }
+            elsif ($date_from) {
+                return if !$is_valid_date_from->();
+                $filter->append_item(
+                    {   type => $date_field,
+                        args => {
+                            option   => 'after',
+                            origin   => $date_from,
+                            boundary => 1,
+                        },
+                    }
+                );
+            }
+            elsif ($date_to) {
+                return if !$is_valid_date_to->();
+                $filter->append_item(
+                    {   type => $date_field,
+                        args => {
+                            option   => 'before',
+                            origin   => $date_to,
+                            boundary => 1,
+                        },
+                    }
+                );
+            }
         }
     }
 
@@ -558,7 +646,7 @@ sub _restrict_site {
 }
 
 sub remove_autosave_session_obj {
-    my $app  = shift;
+    my $app = shift;
     my ( $type, $id ) = @_;
     return unless $type;
 

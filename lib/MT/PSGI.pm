@@ -182,7 +182,9 @@ sub run_cgi_without_buffering {
 sub prepare_app {
     my $self = shift;
     my $app;
-    if ( $self->application ) {
+    if ( $self->application
+        && !$self->is_restricted_app( $self->application ) )
+    {
         $app = $self->make_app( $self->application );
     }
     else {
@@ -193,9 +195,11 @@ sub prepare_app {
 }
 
 sub application_list {
-    my $reg  = MT::Component->registry('applications');
-    my %apps = map {
+    my ($self) = @_;
+    my $reg    = MT::Component->registry('applications');
+    my %apps   = map {
         map { $_ => 1 }
+            grep { !$self->is_restricted_app($_) }
             keys %$_
     } @$reg;
     keys %apps;
@@ -334,6 +338,11 @@ sub apply_plack_middlewares {
 sub call {
     my ( $self, $env ) = @_;
     $self->_app->($env);
+}
+
+sub is_restricted_app {
+    my ( $self, $app ) = @_;
+    ( grep { $app eq $_ } $mt->config->RestrictedPSGIApp ) ? 1 : 0;
 }
 
 1;
@@ -490,6 +499,24 @@ for example:
           apply_to:
               - cms
               - upgrade
+
+=back
+
+=head1 CONFIG_DIRECTIVE
+
+=over 4
+
+=item RestrictedPSGIApp
+
+If you want to restrict application, you can do it by setting config directive
+"RestrictedPSGIApp" with application's ID. For example:
+
+=over 8
+
+    RestrictedPSGIApp  cms
+    RestrictedPSGIApp  upgrade
+
+=back
 
 =back
 

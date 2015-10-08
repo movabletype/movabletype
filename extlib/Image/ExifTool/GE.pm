@@ -18,6 +18,7 @@ $VERSION = '1.00';
 sub ProcessGE2($$$);
 
 # GE type 1 maker notes (ref PH)
+# (similar to Kodak::Type11 and Ricoh::Type2)
 %Image::ExifTool::GE::Main = (
     WRITE_PROC => \&Image::ExifTool::Exif::WriteExif,
     CHECK_PROC => \&Image::ExifTool::Exif::CheckExif,
@@ -67,7 +68,7 @@ General Imaging maker notes.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

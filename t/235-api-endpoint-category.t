@@ -604,22 +604,29 @@ sub suite {
             },
         },
         {    # Top.
-            path   => '/v2/sites/1/categories/2/siblings',
-            method => 'GET',
-            result => sub {
-                $app->user($author);
+            path     => '/v2/sites/1/categories/2/siblings',
+            method   => 'GET',
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $got = $app->current_format->{unserialize}->($body);
+
                 my $cat = $app->model('category')->load(2);
                 my @cats
                     = $app->model('category')
                     ->load(
                     { id => { not => $cat->id }, parent => $cat->parent } );
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-                return +{
-                    'totalResults' => scalar @cats,
-                    'items' => MT::DataAPI::Resource->from_object( \@cats ),
-                };
+
+                is( $got->{totalResults}, scalar @cats,
+                    'Got ' . scalar(@cats) . ' categories.' );
+
+                my @got_ids = sort( map { $_->{id} } @{ $got->{items} } );
+                my @expected_ids = sort( map { $_->id } @cats );
+
+                is_deeply( \@got_ids, \@expected_ids,
+                          'Got categories\' ID are '
+                        . join( ',', @got_ids )
+                        . '.' );
             },
         },
 

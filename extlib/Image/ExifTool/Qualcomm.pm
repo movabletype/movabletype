@@ -12,7 +12,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 sub ProcessQualcomm($$$);
 sub MakeNameAndDesc($$);
@@ -1264,13 +1264,13 @@ sub MakeNameAndDesc($$)
 # Returns: 1 on success
 sub ProcessQualcomm($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataPos = $$dirInfo{DataPos};
     my $pos = $$dirInfo{DirStart};
     my $dirEnd = $pos + $$dirInfo{DirLen};
 
-    $exifTool->VerboseDir('Qualcomm', undef, $$dirInfo{DirLen});
+    $et->VerboseDir('Qualcomm', undef, $$dirInfo{DirLen});
     SetByteOrder('II');
 
     while ($pos + 3 < $dirEnd) {
@@ -1296,11 +1296,11 @@ sub ProcessQualcomm($$$)
         unless (defined $$tagTablePtr{$tag} or $Image::ExifTool::specialTags{$tag}) {
             my %tagInfo;
             if (MakeNameAndDesc($tag, \%tagInfo)) {
-                $exifTool->VPrint(0, $$exifTool{INDENT}, "[adding Qualcomm:$tagInfo{Name}]\n");
+                $et->VPrint(0, $$et{INDENT}, "[adding Qualcomm:$tagInfo{Name}]\n");
                 AddTagToTable($tagTablePtr, $tag, \%tagInfo);
             }
         }
-        $exifTool->HandleTag($tagTablePtr, $tag, $val,
+        $et->HandleTag($tagTablePtr, $tag, $val,
             DataPt  => $dataPt,
             DataPos => $dataPos,
             Start   => $pos,
@@ -1331,7 +1331,7 @@ information from the Qualcomm APP7 segment in JPEG images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

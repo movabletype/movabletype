@@ -547,6 +547,46 @@ function setLicense() {
     </div>
   </mtapp:settinggroup>
 
+  <mtapp:settinggroup id="upload-settings">
+    <h2><__trans phrase="Upload"></h2>
+    <mtapp:setting
+      id="upload_destination"
+      label="<__trans phrase="Upload Destination">">
+      <select name="upload_destination" id="upload_destination">
+      <mt:loop name="destination_loop">
+        <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
+      </mt:loop>
+      </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
+      <div class="option" >
+        <input type="checkbox" name="allow_to_change_at_upload" id="allow_to_change_at_upload" value="1"<mt:if name="allow_to_change_at_upload"> checked="checked"</mt:if> class="cb" />
+        <label for="allow_to_change_at_upload"><__trans phrase="Allow to change at upload"></label>
+      </div>
+    </mtapp:setting>
+    <mtapp:setting
+      id="auto_rename_non_ascii"
+      class="has-option"
+      label="<__trans phrase="Rename filename">">
+      <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb" />
+      <label for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically."></label>
+    </mtapp:setting>
+    <mtapp:setting
+      id="operation_if_exists"
+      label="<__trans phrase="Operation if a file exists">">
+      <select name="operation_if_exists" id="operation_if_exists">
+          <option value="1"<mt:if name="operation_if_exists" eq="1"> selected="selected"</mtif>><__trans phrase="Upload and rename"></option>
+        <option value="2"<mt:if name="operation_if_exists" eq="2"> selected="selected"</mtif>><__trans phrase="Overwrite existing file"></option>
+        <option value="3"<mt:if name="operation_if_exists" eq="3"> selected="selected"</mtif>><__trans phrase="Cancel upload"></option>
+      </select>
+    </mtapp:setting>
+    <mtapp:setting
+      id="normalize_orientation"
+      class="has-option"
+      label="<__trans phrase="Normalize orientation">">
+      <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb" />
+      <label for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
+    </mtapp:setting>
+  </mtapp:settinggroup>
+
   <mt:setvarblock name="action_buttons">
     <button
        type="submit"
@@ -577,6 +617,17 @@ function setLicense() {
         return true;
     }
     </mt:if>
+    function is_valid_path(path_){
+      var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
+      str = encodeURIComponent(str);
+      if (str.indexOf('%') != -1) {
+          return false;
+      }
+      if (str.match(/\.\./)) {
+          return false;
+      }
+      return true;
+    }
 
     jQuery.mtValidateAddRules({
 <mt:if name="is_blog">
@@ -636,6 +687,9 @@ function setLicense() {
             if (( $selected.length == 0 ) || ($selected.attr('value') == "") )
               return false;
             return true;
+        },
+        "#extra_path": function($e) {
+          return is_valid_path($e.val());
         }
     });
 
@@ -665,7 +719,8 @@ function setLicense() {
 </mt:if>
         "#archive_path_absolute.required": '<__trans phrase="You must set your Local Archive Path." escape="singlequotes">',
         "#archive_path_absolute": '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
-        "#preferred_archive_type": '<__trans phrase="Please choose a preferred archive type." escape="singlequotes">'
+        "#preferred_archive_type": '<__trans phrase="Please choose a preferred archive type." escape="singlequotes">',
+        "#extra_path": '<__trans phrase="You must set a valid path." escape="singlequotes">'
     });
 
     jQuery('#cfg_form').submit( function () {

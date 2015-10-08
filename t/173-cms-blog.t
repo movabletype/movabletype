@@ -15,6 +15,34 @@ BEGIN {
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
+# Move addons/Cloud.pack/config.yaml to config.yaml.disabled.
+# An error occurs in save_community_prefs mode when Cloud.pack installed.
+use File::Spec;
+use File::Copy;
+
+BEGIN {
+    my $cloudpack_config
+        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
+    my $cloudpack_config_rename
+        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
+
+    if ( -f $cloudpack_config ) {
+        move( $cloudpack_config, $cloudpack_config_rename )
+            or plan skip_all => "$cloudpack_config cannot be moved.";
+    }
+}
+
+END {
+    my $cloudpack_config
+        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
+    my $cloudpack_config_rename
+        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
+
+    if ( -f $cloudpack_config_rename ) {
+        move( $cloudpack_config_rename, $cloudpack_config );
+    }
+}
+
 use MT;
 use MT::Association;
 use MT::CMS::User;
@@ -133,10 +161,7 @@ subtest 'Check callbacks for each config screens for global level' => sub {
             my $out = delete $app->{__test_output};
 
             for my $t (qw(blog)) {
-                for my $name (
-                    qw(cms_edit)
-                    )
-                {
+                for my $name ( qw(cms_edit) ) {
                     my $cb = 'MT::App::CMS::' . $name . '.' . $t;
                     is( scalar @{ $callbacks{$cb} || [] },
                         1, $cb . ' has been called once' );

@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool::XMP;
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 my %dateTimeInfo = (
     # NOTE: Do NOT put "Groups" here because Groups hash must not be common!
@@ -79,6 +79,7 @@ my %dateTimeInfo = (
             latestAgeOrHighestStage     => { },
             latestEonOrHighestEonothem  => { },
             latestEpochOrHighestSeries  => { },
+            latestEraOrHighestErathem   => { },
             latestPeriodOrHighestSystem => { },
             lithostratigraphicTerms     => { },
             lowestBiostratigraphicZone  => { },
@@ -99,6 +100,7 @@ my %dateTimeInfo = (
             identificationQualifier     => { },
             identificationReferences    => { },
             identificationRemarks       => { },
+            identificationVerificationStatus => { },
             identifiedBy                => { },
             typeStatus                  => { },
         },
@@ -135,15 +137,15 @@ my %dateTimeInfo = (
             individualCount             => { },
             individualID                => { },
             lifeStage                   => { },
-            occurrenceRemarks           => { },
             occurrenceDetails           => { },
             occurrenceID                => { },
+            occurrenceRemarks           => { },
             occurrenceStatus            => { },
             otherCatalogNumbers         => { },
             preparations                => { },
             previousIdentifications     => { },
-            recordNumber                => { },
             recordedBy                  => { },
+            recordNumber                => { },
             reproductiveCondition       => { },
             sex                         => { },
         },
@@ -199,10 +201,12 @@ my %dateTimeInfo = (
             nameAccordingToID           => { },
             namePublishedIn             => { },
             namePublishedInID           => { },
+            namePublishedInYear         => { },
             nomenclaturalCode           => { },
             nomenclaturalStatus         => { },
             order                       => { },
             originalNameUsage           => { },
+            originalNameUsageID         => { },
             parentNameUsage             => { },
             parentNameUsageID           => { },
             phylum                      => { },
@@ -239,15 +243,16 @@ my %dateTimeInfo = (
             county                      => { },
             decimalLatitude             => { },
             decimalLongitude            => { },
-            footprintSRS                => { },
             footprintSpatialFit         => { },
+            footprintSRS                => { },
             footprintWKT                => { },
             geodeticDatum               => { },
+            georeferencedBy             => { },
+            georeferencedDate           => { },
             georeferenceProtocol        => { },
             georeferenceRemarks         => { },
             georeferenceSources         => { },
             georeferenceVerificationStatus => { },
-            georeferencedBy             => { },
             higherGeography             => { },
             higherGeographyID           => { },
             island                      => { },
@@ -265,8 +270,8 @@ my %dateTimeInfo = (
             municipality                => { },
             pointRadiusSpatialFit       => { },
             stateProvince               => { },
-            verbatimCoordinateSystem    => { },
             verbatimCoordinates         => { },
+            verbatimCoordinateSystem    => { },
             verbatimDepth               => { },
             verbatimElevation           => { },
             verbatimLatitude            => { },
@@ -296,7 +301,7 @@ This file contains tag definitions for the Darwin Core XMP namespace.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

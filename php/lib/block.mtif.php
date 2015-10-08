@@ -72,11 +72,18 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
             $tag = preg_replace('/^mt:?/i', '', $tag);
             $largs = $args; // local arguments without 'tag' element
             unset($largs['tag']);
+
+            // Disable error handler temporarily
+            // for disabling trigger_error function.
+            set_error_handler('_dummy_error_handler');
+
             try {
                 $val = $ctx->tag($tag, $largs);
             } catch (exception $e) {
                 $val = '';
             }
+
+            restore_error_handler();
         }
         if ( !is_array($value)
           && preg_match('/^smarty_fun_[a-f0-9]+$/', $value) ) {
@@ -156,5 +163,9 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
         $vars =& $ctx->__stash['vars'];
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
+}
+
+function _dummy_error_handler() {
+    return TRUE;
 }
 ?>

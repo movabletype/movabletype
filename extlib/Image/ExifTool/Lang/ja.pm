@@ -11,7 +11,7 @@ package Image::ExifTool::Lang::ja;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.19';
+$VERSION = '1.22';
 
 %Image::ExifTool::Lang::ja::Translate = (
    'AEAperture' => 'AE絞り',
@@ -1324,16 +1324,19 @@ $VERSION = '1.19';
    'Contrast' => {
       Description => 'コントラスト',
       PrintConv => {
+        '+1 (med high)' => '+1 (少し高い)',
+        '+2 (high)' => '+2 (ハード)',
+        '+3 (very high)' => '+3 (かなり高い)',
+        '-1 (med low)' => '-1 (少し低い)',
+        '-2 (low)' => '-2 (ソフト)',
+        '-3 (very low)' => '-3 (かなり低い)',
+        '0 (normal)' => '0 (スタンダード)',
         'Film Simulation' => 'フィルムシミュレーション',
         'High' => 'ハード',
         'Low' => 'ソフト',
-        'Med High' => '少し高い',
-        'Med Low' => '少し低い',
         'Medium High' => '少し高い',
         'Medium Low' => '少し低い',
         'Normal' => 'スタンダード',
-        'Very High' => 'かなり高い',
-        'Very Low' => 'かなり低い',
       },
     },
    'ContrastCurve' => 'コントラストカーブ',
@@ -1377,6 +1380,7 @@ $VERSION = '1.19';
    'Country' => '国名',
    'Country-PrimaryLocationCode' => 'ISO国コード',
    'Country-PrimaryLocationName' => '国',
+   'CountryCode' => '撮影国コード',
    'CreateDate' => 'デジタルデータ作成日時',
    'CreationDate' => '作成日時',
    'CreativeStyle' => {
@@ -1401,6 +1405,7 @@ $VERSION = '1.19';
    'Creator' => '製作者',
    'CreatorAddress' => 'クリエーター　-　住所',
    'CreatorCity' => 'クリエーター　-　街',
+   'CreatorContactInfo' => '作成者のコン タクト先',
    'CreatorCountry' => 'クリエーター　-　国',
    'CreatorPostalCode' => 'クリエーター　-　郵便番号',
    'CreatorRegion' => 'クリエーター　-　国/州',
@@ -4520,18 +4525,21 @@ $VERSION = '1.19';
    'Saturation' => {
       Description => '彩度',
       PrintConv => {
+        '+1 (med high)' => '+1 (少し高い)',
+        '+2 (high)' => '+2 (ハード)',
+        '+3 (very high)' => '+3 (かなり高い)',
+        '-1 (med low)' => '-1 (少し低い)',
+        '-2 (low)' => '-2 (ソフト)',
+        '-3 (very low)' => '-3 (かなり低い)',
+        '0 (normal)' => '0 (スタンダード)',
         'Film Simulation' => 'フィルムシミュレーション',
         'High' => '高い彩度',
         'Low' => '低い彩度',
-        'Med High' => '少し高い',
-        'Med Low' => '少し低い',
         'Medium High' => '少し高い',
         'Medium Low' => '少し低い',
         'None' => '未設定',
         'None (B&W)' => '無し（黒＆白）',
         'Normal' => '標準',
-        'Very High' => 'かなり高い',
-        'Very Low' => 'かなり低い',
       },
     },
    'SaturationFaithful' => '彩度忠実設定',
@@ -4839,19 +4847,22 @@ $VERSION = '1.19';
    'Sharpness' => {
       Description => 'シャープネス',
       PrintConv => {
+        '+1 (med hard)' => '+1 (少しハード)',
+        '+2 (hard)' => '+2 (ハード)',
+        '+3 (very hard)' => '+3 (かなりハード)',
+        '-1 (med soft)' => '-1 (ミドルソフト)',
+        '-2 (soft)' => '-2 (ソフト)',
+        '-3 (very soft)' => '-3 (かなりソフト)',
+        '0 (normal)' => '0 (ノーマル)',
         'Film Simulation' => 'フィルムシミュレーション',
         'Hard' => 'ハード',
         'Hard2' => 'ハード2',
-        'Med Hard' => '少しハード',
-        'Med Soft' => '少しソフト',
         'Medium Hard' => 'ミドルハード',
         'Medium Soft' => 'ミドルソフト',
         'Normal' => 'ノーマル',
         'Sharp' => 'シャープ',
         'Soft' => 'ソフト',
         'Soft2' => 'ソフト2',
-        'Very Hard' => 'かなりハード',
-        'Very Soft' => 'かなりソフト',
         'n/a' => '該当無し',
       },
     },
@@ -5080,6 +5091,7 @@ $VERSION = '1.19';
     },
    'Subject' => 'サブジェクト',
    'SubjectArea' => '対象領域',
+   'SubjectCode' => 'サブジェクトコード',
    'SubjectDistance' => '対象距離',
    'SubjectDistanceRange' => {
       Description => '被写体距離範囲',
@@ -5505,10 +5517,19 @@ $VERSION = '1.19';
       PrintConv => {
         'Daylight' => '昼光',
         'Flash' => 'ストロボ',
-        'High Color Rendering Fluorescent' => 'ハイカラーレンダリング蛍光灯',
+        'High Color Rendering Fluorescent (3700K)' => 'ハイカラーレンダリング蛍光灯 (1)',
+        'High Color Rendering Fluorescent (5000K)' => 'ハイカラーレンダリング蛍光灯 (3)',
+        'High Color Rendering Fluorescent (cool white)' => 'ハイカラーレンダリング蛍光灯 (2)',
+        'High Color Rendering Fluorescent (daylight)' => 'ハイカラーレンダリング蛍光灯 (4)',
+        'High Color Rendering Fluorescent (warm white)' => 'ハイカラーレンダリング蛍光灯 (0)',
         'Incandescent' => '電球',
         'None' => '無し',
-        'Standard Fluorescent' => '標準蛍光灯',
+        'Standard Fluorescent (3700K)' => '標準蛍光灯 (1)',
+        'Standard Fluorescent (5000K)' => '標準蛍光灯 (3)',
+        'Standard Fluorescent (6500K)' => '標準蛍光灯 (4)',
+        'Standard Fluorescent (cool white)' => '標準蛍光灯 (2)',
+        'Standard Fluorescent (high temperature mercury vapor)' => '標準蛍光灯 (5)',
+        'Standard Fluorescent (warm white)' => '標準蛍光灯 (0)',
       },
     },
    'WBAdjMode' => {
@@ -5798,7 +5819,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
