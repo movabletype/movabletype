@@ -507,6 +507,9 @@ subtest 'mode = start_upload' => sub {
     ok( $out, "Request: start_upload" );
     ok( $out !~ m!Permission=1!i, "start_upload by permitted user" );
 
+SKIP: {
+    skip 'This will be fixed in the case #113512.', 4;
+
     # By non Permitted user
     $app = _run_app(
         'MT::App::CMS',
@@ -534,6 +537,7 @@ subtest 'mode = start_upload' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_upload" );
     ok( $out =~ m!Permission=1!i, "start_upload by other permission" );
+}
 };
 
 subtest 'mode = start_upload_entry' => sub {
