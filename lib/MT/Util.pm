@@ -1304,7 +1304,7 @@ sub _get_basename {
         );
         last if !$existing;
         $last_id = $existing->id;
-        if ( $existing->basename =~ /^$base\_([1-9]\d*)$/o ) {
+        if ( $existing->basename =~ /^$base\_([1-9]\d*)$/ ) {
             my $num = $1;
             next if !$num;
             $base_num = $num + 1;
