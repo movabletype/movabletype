@@ -275,7 +275,7 @@ sub mount_applications {
         Plack::App::Directory->new( { root => $staticpath } )->to_app );
 
     ## Mount support directory
-    my $supporturl = MT->config->SupportURL;
+    my $supporturl = MT->config->SupportDirectoryURL;
     $supporturl =~ s!^https?://[^/]*!!;
     my $supportpath = MT->config->SupportDirectoryPath;
     $urlmap->map( $supporturl,
