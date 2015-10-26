@@ -39,8 +39,8 @@ addons:
     - unzip
 
 before_install:
-  # PHPUnit
-  - wget -O phpunit https://phar.phpunit.de/phpunit.phar
+  # Use PHPUnit 4.8, because PHP version of Travis CI is 5.3.
+  - wget -O phpunit https://phar.phpunit.de/phpunit-old.phar
   - chmod +x phpunit
 
 install:

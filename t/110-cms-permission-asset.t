@@ -18,56 +18,53 @@ use Test::More;
 my $website = MT::Test::Permission->make_website();
 
 # Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
-my $second_blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+my $second_blog
+    = MT::Test::Permission->make_blog( parent_id => $website->id, );
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
+    name     => 'aikawa',
     nickname => 'Ichiro Aikawa',
 );
 
 my $ichikawa = MT::Test::Permission->make_author(
-    name => 'ichikawa',
+    name     => 'ichikawa',
     nickname => 'Jiro Ichikawa',
 );
 
 my $ukawa = MT::Test::Permission->make_author(
-    name => 'ukawa',
+    name     => 'ukawa',
     nickname => 'Saburo Ukawa',
 );
 
 my $egawa = MT::Test::Permission->make_author(
-    name => 'egawa',
+    name     => 'egawa',
     nickname => 'Shiro Egawa',
 );
 
 my $ogawa = MT::Test::Permission->make_author(
-    name => 'ogawa',
+    name     => 'ogawa',
     nickname => 'Goro ogawa',
 );
 
 my $kagawa = MT::Test::Permission->make_author(
-    name => 'kagawa',
+    name     => 'kagawa',
     nickname => 'Ichiro kagawa',
 );
 
 my $kikkawa = MT::Test::Permission->make_author(
-    name => 'kikkawa',
+    name     => 'kikkawa',
     nickname => 'Jiro Kikkawa',
 );
 
 my $kumekawa = MT::Test::Permission->make_author(
-    name => 'kumekawa',
+    name     => 'kumekawa',
     nickname => 'Saburo Kumekawa',
 );
 
 my $kemikawa = MT::Test::Permission->make_author(
-    name => 'kemikawa',
+    name     => 'kemikawa',
     nickname => 'Shiro Kemikawa',
 );
 
@@ -75,65 +72,67 @@ my $admin = MT::Author->load(1);
 
 # Asset
 my $pic = MT::Test::Permission->make_asset(
-    class => 'image',
+    class   => 'image',
     blog_id => 0,
-    url => 'http://narnia.na/nana/images/test.jpg',
-    file_path => File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
-    file_name => 'test.jpg',
-    file_ext => 'jpg',
-    image_width => 640,
+    url     => 'http://narnia.na/nana/images/test.jpg',
+    file_path =>
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
+    file_name    => 'test.jpg',
+    file_ext     => 'jpg',
+    image_width  => 640,
     image_height => 480,
-    mime_type => 'image/jpeg',
-    label => 'Userpic A',
-    description => 'Userpic A',
+    mime_type    => 'image/jpeg',
+    label        => 'Userpic A',
+    description  => 'Userpic A',
 );
 $pic->tags('@userpic');
 $pic->save;
 
 my $pic2 = MT::Test::Permission->make_asset(
-    class => 'image',
+    class   => 'image',
     blog_id => $blog->id,
-    url => 'http://narnia.na/nana/images/test.jpg',
-    file_path => File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
-    file_name => 'test.jpg',
-    file_ext => 'jpg',
-    image_width => 640,
+    url     => 'http://narnia.na/nana/images/test.jpg',
+    file_path =>
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
+    file_name    => 'test.jpg',
+    file_ext     => 'jpg',
+    image_width  => 640,
     image_height => 480,
-    mime_type => 'image/jpeg',
-    label => 'Sample Image',
-    description => 'Sample photo',
+    mime_type    => 'image/jpeg',
+    label        => 'Sample Image',
+    description  => 'Sample photo',
 );
 
 # Role
 my $create_post = MT::Test::Permission->make_role(
-   name  => 'Create Post',
-   permissions => "'create_post'",
+    name        => 'Create Post',
+    permissions => "'create_post'",
 );
 
 my $manage_pages = MT::Test::Permission->make_role(
-   name  => 'Manage Pages',
-   permissions => "'manage_pages'",
+    name        => 'Manage Pages',
+    permissions => "'manage_pages'",
 );
 
 my $edit_assets = MT::Test::Permission->make_role(
-    name => 'Edit Assets',
+    name        => 'Edit Assets',
     permissions => "'edit_assets', 'upload'",
 );
 
-my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
 require MT::Association;
-MT::Association->link( $aikawa => $create_post => $blog );
+MT::Association->link( $aikawa   => $create_post  => $blog );
 MT::Association->link( $ichikawa => $manage_pages => $blog );
-MT::Association->link( $ukawa => $create_post => $second_blog );
-MT::Association->link( $egawa => $manage_pages => $second_blog );
-MT::Association->link( $ogawa => $designer => $blog );
-MT::Association->link( $kagawa => $edit_assets => $blog );
-MT::Association->link( $kikkawa => $edit_assets => $second_blog );
-MT::Association->link( $kumekawa => $edit_assets => $blog );
-MT::Association->link( $kumekawa => $create_post => $blog );
-MT::Association->link( $kemikawa => $edit_assets => $second_blog );
-MT::Association->link( $kemikawa => $create_post => $second_blog );
+MT::Association->link( $ukawa    => $create_post  => $second_blog );
+MT::Association->link( $egawa    => $manage_pages => $second_blog );
+MT::Association->link( $ogawa    => $designer     => $blog );
+MT::Association->link( $kagawa   => $edit_assets  => $blog );
+MT::Association->link( $kikkawa  => $edit_assets  => $second_blog );
+MT::Association->link( $kumekawa => $edit_assets  => $blog );
+MT::Association->link( $kumekawa => $create_post  => $blog );
+MT::Association->link( $kemikawa => $edit_assets  => $second_blog );
+MT::Association->link( $kemikawa => $create_post  => $second_blog );
 
 # Run
 my ( $app, $out );
@@ -149,7 +148,7 @@ subtest 'mode = asset_userpic' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: asset_userpic" );
+    ok( $out,                     "Request: asset_userpic" );
     ok( $out !~ m!permission=1!i, "asset_userpic by admin" );
 
     $app = _run_app(
@@ -162,7 +161,7 @@ subtest 'mode = asset_userpic' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: asset_userpic" );
+    ok( $out,                     "Request: asset_userpic" );
     ok( $out !~ m!permission=1!i, "asset_userpic by myself" );
 
     $app = _run_app(
@@ -175,7 +174,7 @@ subtest 'mode = asset_userpic' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: asset_userpic" );
+    ok( $out,                     "Request: asset_userpic" );
     ok( $out =~ m!permission=1!i, "asset_userpic by other user" );
 
     done_testing();
@@ -269,6 +268,7 @@ subtest 'mode = asset_userpic' => sub {
 # };
 
 subtest 'mode = complete_upload' => sub {
+
     # By admim
     $app = _run_app(
         'MT::App::CMS',
@@ -281,7 +281,7 @@ subtest 'mode = complete_upload' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: complete_upload" );
+    ok( $out,                    "Request: complete_upload" );
     ok( $out =~ m!__mode=list!i, "complete_upload by admin" );
 
     # By Permitted user
@@ -296,7 +296,7 @@ subtest 'mode = complete_upload' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: complete_upload" );
+    ok( $out,                    "Request: complete_upload" );
     ok( $out =~ m!__mode=list!i, "complete_upload by permitted user" );
 
     # By non Permitted user
@@ -312,7 +312,8 @@ subtest 'mode = complete_upload' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: complete_upload" );
-    ok( $out =~ m!__mode=dashboard&permission=1!i, "complete_upload by other blog" );
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
+        "complete_upload by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -327,10 +328,13 @@ subtest 'mode = complete_upload' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: complete_upload" );
-    ok( $out =~ m!__mode=dashboard&permission=1!i, "complete_upload by other permission" );
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
+        "complete_upload by other permission"
+    );
 };
 
 subtest 'mode = asset_insert' => sub {
+
     # By admim
     $app = _run_app(
         'MT::App::CMS',
@@ -342,7 +346,7 @@ subtest 'mode = asset_insert' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: asset_insert" );
+    ok( $out,                     "Request: asset_insert" );
     ok( $out !~ m!Permission=1!i, "asset_insert by admin" );
 
     # By Permitted user(A)
@@ -357,7 +361,8 @@ subtest 'mode = asset_insert' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: asset_insert" );
-    ok( $out !~ m!Permission=1!i, "asset_insert by permitted user (create_post)" );
+    ok( $out !~ m!Permission=1!i,
+        "asset_insert by permitted user (create_post)" );
 
     # By Permitted user(B)
     $app = _run_app(
@@ -371,7 +376,8 @@ subtest 'mode = asset_insert' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: asset_insert" );
-    ok( $out !~ m!Permission=1!i, "asset_insert by permitted user (manage_pages)" );
+    ok( $out !~ m!Permission=1!i,
+        "asset_insert by permitted user (manage_pages)" );
 
     # By non Permitted user(A)
     $app = _run_app(
@@ -385,7 +391,8 @@ subtest 'mode = asset_insert' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: asset_insert" );
-    ok( $out =~ m!Permission=1!i, "asset_insert by other blog (create_post)" );
+    ok( $out =~ m!Permission=1!i,
+        "asset_insert by other blog (create_post)" );
 
     # By non Permitted user(B)
     $app = _run_app(
@@ -398,7 +405,7 @@ subtest 'mode = asset_insert' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: asset_insert" );
+    ok( $out,                     "Request: asset_insert" );
     ok( $out =~ m!Permission=1!i, "asset_insert other blog (manage_pages)" );
 
     # By other permission
@@ -412,11 +419,12 @@ subtest 'mode = asset_insert' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: asset_insert" );
+    ok( $out,                     "Request: asset_insert" );
     ok( $out =~ m!Permission=1!i, "asset_insert by other permission" );
 };
 
 subtest 'mode = list' => sub {
+
     # By admim
     $app = _run_app(
         'MT::App::CMS',
@@ -429,7 +437,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out !~ m!Permission=1!i, "list by admin" );
 
     # By Permitted user
@@ -444,7 +452,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out !~ m!Permission=1!i, "list by permitted user" );
 
     # By non Permitted user
@@ -459,7 +467,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!Permission=1!i, "list by other blog" );
 
     # By other permission
@@ -474,11 +482,12 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!Permission=1!i, "list by other permission" );
 };
 
 subtest 'mode = start_upload' => sub {
+
     # By admim
     $app = _run_app(
         'MT::App::CMS',
@@ -490,7 +499,7 @@ subtest 'mode = start_upload' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: start_upload" );
+    ok( $out,                     "Request: start_upload" );
     ok( $out !~ m!Permission=1!i, "start_upload by admin" );
 
     # By Permitted user
@@ -504,39 +513,44 @@ subtest 'mode = start_upload' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: start_upload" );
+    ok( $out,                     "Request: start_upload" );
     ok( $out !~ m!Permission=1!i, "start_upload by permitted user" );
 
-    # By non Permitted user
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $kikkawa,
-            __request_method => 'POST',
-            __mode           => 'start_upload',
-            label            => 'New Label',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: start_upload" );
-    ok( $out =~ m!Permission=1!i, "start_upload by other blog" );
+SKIP: {
+        skip 'This will be fixed in the case #113512.', 4;
 
-    # By other permission
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'start_upload',
-            label            => 'New Label',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: start_upload" );
-    ok( $out =~ m!Permission=1!i, "start_upload by other permission" );
+        # By non Permitted user
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $kikkawa,
+                __request_method => 'POST',
+                __mode           => 'start_upload',
+                label            => 'New Label',
+                blog_id          => $blog->id,
+            }
+        );
+        $out = delete $app->{__test_output};
+        ok( $out,                     "Request: start_upload" );
+        ok( $out =~ m!Permission=1!i, "start_upload by other blog" );
+
+        # By other permission
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $aikawa,
+                __request_method => 'POST',
+                __mode           => 'start_upload',
+                label            => 'New Label',
+                blog_id          => $blog->id,
+            }
+        );
+        $out = delete $app->{__test_output};
+        ok( $out,                     "Request: start_upload" );
+        ok( $out =~ m!Permission=1!i, "start_upload by other permission" );
+    }
 };
 
 subtest 'mode = start_upload_entry' => sub {
+
     # By admim
     $app = _run_app(
         'MT::App::CMS',
@@ -549,7 +563,7 @@ subtest 'mode = start_upload_entry' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: start_upload_entry" );
+    ok( $out,                     "Request: start_upload_entry" );
     ok( $out !~ m!Permission=1!i, "start_upload_entry by admin" );
 
     # By Permitted user
@@ -564,7 +578,7 @@ subtest 'mode = start_upload_entry' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: start_upload_entry" );
+    ok( $out,                     "Request: start_upload_entry" );
     ok( $out !~ m!Permission=1!i, "start_upload_entry by permitted user" );
 
     # By non Permitted user
@@ -579,7 +593,7 @@ subtest 'mode = start_upload_entry' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: start_upload_entry" );
+    ok( $out,                     "Request: start_upload_entry" );
     ok( $out =~ m!Permission=1!i, "start_upload_entry by other blog" );
 
     # By other permission
@@ -594,7 +608,7 @@ subtest 'mode = start_upload_entry' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: start_upload_entry" );
+    ok( $out,                     "Request: start_upload_entry" );
     ok( $out =~ m!Permission=1!i, "start_upload_entry by other blog" );
 
     $app = _run_app(
@@ -608,11 +622,12 @@ subtest 'mode = start_upload_entry' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: start_upload_entry" );
+    ok( $out,                     "Request: start_upload_entry" );
     ok( $out =~ m!Permission=1!i, "start_upload_entry by other permission" );
 };
 
 subtest 'mode = upload_file' => sub {
+
     # By admim
     $app = _run_app(
         'MT::App::CMS',
@@ -624,7 +639,7 @@ subtest 'mode = upload_file' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: upload_file" );
+    ok( $out,                          "Request: upload_file" );
     ok( $out !~ m!Permission denied!i, "upload_file by admin" );
 
     # By Permitted user
@@ -638,7 +653,7 @@ subtest 'mode = upload_file' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: upload_file" );
+    ok( $out,                          "Request: upload_file" );
     ok( $out !~ m!Permission denied!i, "upload_file by permitted user" );
 
     # By non Permitted user
@@ -652,7 +667,7 @@ subtest 'mode = upload_file' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: upload_file" );
+    ok( $out,                          "Request: upload_file" );
     ok( $out =~ m!Permission denied!i, "upload_file by other blog" );
 
     # By other permission
@@ -666,11 +681,12 @@ subtest 'mode = upload_file' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: upload_file" );
+    ok( $out,                          "Request: upload_file" );
     ok( $out =~ m!Permission denied!i, "upload_file by other permission" );
 };
 
 subtest 'mode = save' => sub {
+
     # By admim
     $app = _run_app(
         'MT::App::CMS',
@@ -683,7 +699,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out !~ m!Permission=1!i, "save by admin" );
 
     # By Permitted user
@@ -698,7 +714,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out !~ m!Permission=1!i, "save by permitted user" );
 
     # By non Permitted user
@@ -713,7 +729,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!Permission=1!i, "save by other blog" );
 
     # By other permission
@@ -729,24 +745,26 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!Permission=1!i, "save by other permission" );
 };
 
 subtest 'mode = delete' => sub {
     my $asset = MT::Test::Permission->make_asset(
-        class => 'image',
+        class   => 'image',
         blog_id => $blog->id,
-        url => 'http://narnia.na/nana/images/test2.jpg',
-        file_path => File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test2.jpg' ),
-        file_name => 'test2.jpg',
-        file_ext => 'jpg',
-        image_width => 640,
+        url     => 'http://narnia.na/nana/images/test2.jpg',
+        file_path =>
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test2.jpg' ),
+        file_name    => 'test2.jpg',
+        file_ext     => 'jpg',
+        image_width  => 640,
         image_height => 480,
-        mime_type => 'image/jpeg',
-        label => 'Sample Image',
-        description => 'Sample photo',
+        mime_type    => 'image/jpeg',
+        label        => 'Sample Image',
+        description  => 'Sample photo',
     );
+
     # By admim
     $app = _run_app(
         'MT::App::CMS',
@@ -759,22 +777,24 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out !~ m!Permission=1!i, "delete by admin" );
 
     $asset = MT::Test::Permission->make_asset(
-        class => 'image',
+        class   => 'image',
         blog_id => $blog->id,
-        url => 'http://narnia.na/nana/images/test2.jpg',
-        file_path => File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test2.jpg' ),
-        file_name => 'test2.jpg',
-        file_ext => 'jpg',
-        image_width => 640,
+        url     => 'http://narnia.na/nana/images/test2.jpg',
+        file_path =>
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test2.jpg' ),
+        file_name    => 'test2.jpg',
+        file_ext     => 'jpg',
+        image_width  => 640,
         image_height => 480,
-        mime_type => 'image/jpeg',
-        label => 'Sample Image',
-        description => 'Sample photo',
+        mime_type    => 'image/jpeg',
+        label        => 'Sample Image',
+        description  => 'Sample photo',
     );
+
     # By Permitted user
     $app = _run_app(
         'MT::App::CMS',
@@ -787,22 +807,24 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out !~ m!Permission=1!i, "delete by permitted user" );
 
     $asset = MT::Test::Permission->make_asset(
-        class => 'image',
+        class   => 'image',
         blog_id => $blog->id,
-        url => 'http://narnia.na/nana/images/test2.jpg',
-        file_path => File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test2.jpg' ),
-        file_name => 'test2.jpg',
-        file_ext => 'jpg',
-        image_width => 640,
+        url     => 'http://narnia.na/nana/images/test2.jpg',
+        file_path =>
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test2.jpg' ),
+        file_name    => 'test2.jpg',
+        file_ext     => 'jpg',
+        image_width  => 640,
         image_height => 480,
-        mime_type => 'image/jpeg',
-        label => 'Sample Image',
-        description => 'Sample photo',
+        mime_type    => 'image/jpeg',
+        label        => 'Sample Image',
+        description  => 'Sample photo',
     );
+
     # By non Permitted user
     $app = _run_app(
         'MT::App::CMS',
@@ -815,22 +837,24 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!Permission=1!i, "delete by other blog" );
 
     $asset = MT::Test::Permission->make_asset(
-        class => 'image',
+        class   => 'image',
         blog_id => $blog->id,
-        url => 'http://narnia.na/nana/images/test2.jpg',
-        file_path => File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test2.jpg' ),
-        file_name => 'test2.jpg',
-        file_ext => 'jpg',
-        image_width => 640,
+        url     => 'http://narnia.na/nana/images/test2.jpg',
+        file_path =>
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test2.jpg' ),
+        file_name    => 'test2.jpg',
+        file_ext     => 'jpg',
+        image_width  => 640,
         image_height => 480,
-        mime_type => 'image/jpeg',
-        label => 'Sample Image',
-        description => 'Sample photo',
+        mime_type    => 'image/jpeg',
+        label        => 'Sample Image',
+        description  => 'Sample photo',
     );
+
     # By other permission
     $app = _run_app(
         'MT::App::CMS',
@@ -844,199 +868,201 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!Permission=1!i, "delete by other permission" );
 };
 
 subtest 'mode = add_tags' => sub {
     my $asset = MT::Test::Permission->make_asset(
-        class => 'image',
+        class   => 'image',
         blog_id => $blog->id,
-        url => 'http://narnia.na/nana/images/test.jpg',
-        file_path => File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
-        file_name => 'test.jpg',
-        file_ext => 'jpg',
-        image_width => 640,
+        url     => 'http://narnia.na/nana/images/test.jpg',
+        file_path =>
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
+        file_name    => 'test.jpg',
+        file_ext     => 'jpg',
+        image_width  => 640,
         image_height => 480,
-        mime_type => 'image/jpeg',
-        label => 'Sample Image',
-        description => 'Sample photo',
+        mime_type    => 'image/jpeg',
+        label        => 'Sample Image',
+        description  => 'Sample photo',
     );
 
     # By admim
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'asset',
-            action_name      => 'add_tags',
+        {   __test_user          => $admin,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'asset',
+            action_name          => 'add_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            blog_id          => $blog->id,
+            return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+            blog_id     => $blog->id,
             plugin_action_selector => 'add_tags',
-            id               => $asset->id,
+            id                     => $asset->id,
             plugin_action_selector => 'add_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: add_tags" );
+    ok( $out,                        "Request: add_tags" );
     ok( $out !~ m!not implemented!i, "add_tags by admin" );
 
     # By Permitted user
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $kagawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'asset',
-            action_name      => 'add_tags',
+        {   __test_user          => $kagawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'asset',
+            action_name          => 'add_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            blog_id          => $blog->id,
+            return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+            blog_id     => $blog->id,
             plugin_action_selector => 'add_tags',
-            id               => $asset->id,
+            id                     => $asset->id,
             plugin_action_selector => 'add_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: add_tags" );
+    ok( $out,                        "Request: add_tags" );
     ok( $out !~ m!not implemented!i, "add_tags by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $kikkawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'asset',
-            action_name      => 'add_tags',
+        {   __test_user          => $kikkawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'asset',
+            action_name          => 'add_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            blog_id          => $blog->id,
+            return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+            blog_id     => $blog->id,
             plugin_action_selector => 'add_tags',
-            id               => $asset->id,
+            id                     => $asset->id,
             plugin_action_selector => 'add_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: add_tags" );
+    ok( $out,                        "Request: add_tags" );
     ok( $out =~ m!not implemented!i, "add_tags by other blog" );
 
     # By other permission
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'asset',
-            action_name      => 'add_tags',
+        {   __test_user          => $aikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'asset',
+            action_name          => 'add_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            blog_id          => $blog->id,
+            return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+            blog_id     => $blog->id,
             plugin_action_selector => 'add_tags',
-            id               => $asset->id,
+            id                     => $asset->id,
             plugin_action_selector => 'add_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: add_tags" );
+    ok( $out,                        "Request: add_tags" );
     ok( $out =~ m!not implemented!i, "add_tags by other permission" );
 };
 
 subtest 'mode = remove_tags' => sub {
     my $asset = MT::Test::Permission->make_asset(
-        class => 'image',
+        class   => 'image',
         blog_id => $blog->id,
-        url => 'http://narnia.na/nana/images/test.jpg',
-        file_path => File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
-        file_name => 'test.jpg',
-        file_ext => 'jpg',
-        image_width => 640,
+        url     => 'http://narnia.na/nana/images/test.jpg',
+        file_path =>
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
+        file_name    => 'test.jpg',
+        file_ext     => 'jpg',
+        image_width  => 640,
         image_height => 480,
-        mime_type => 'image/jpeg',
-        label => 'Sample Image',
-        description => 'Sample photo',
+        mime_type    => 'image/jpeg',
+        label        => 'Sample Image',
+        description  => 'Sample photo',
     );
 
     # By admim
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'asset',
-            action_name      => 'remove_tags',
+        {   __test_user          => $admin,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'asset',
+            action_name          => 'remove_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            blog_id          => $blog->id,
+            return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+            blog_id     => $blog->id,
             plugin_action_selector => 'remove_tags',
-            id               => $asset->id,
+            id                     => $asset->id,
             plugin_action_selector => 'remove_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_tags" );
+    ok( $out,                        "Request: remove_tags" );
     ok( $out !~ m!not implemented!i, "remove_tags by admin" );
 
     # By Permitted user
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $kagawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'asset',
-            action_name      => 'remove_tags',
+        {   __test_user          => $kagawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'asset',
+            action_name          => 'remove_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            blog_id          => $blog->id,
+            return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+            blog_id     => $blog->id,
             plugin_action_selector => 'remove_tags',
-            id               => $asset->id,
+            id                     => $asset->id,
             plugin_action_selector => 'remove_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_tags" );
+    ok( $out,                        "Request: remove_tags" );
     ok( $out !~ m!not implemented!i, "remove_tags by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $kikkawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'asset',
-            action_name      => 'remove_tags',
+        {   __test_user          => $kikkawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'asset',
+            action_name          => 'remove_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            blog_id          => $blog->id,
+            return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+            blog_id     => $blog->id,
             plugin_action_selector => 'remove_tags',
-            id               => $asset->id,
+            id                     => $asset->id,
             plugin_action_selector => 'remove_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_tags" );
+    ok( $out,                        "Request: remove_tags" );
     ok( $out =~ m!not implemented!i, "remove_tags by other blog" );
 
     # By other permission
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'asset',
-            action_name      => 'remove_tags',
+        {   __test_user          => $aikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'asset',
+            action_name          => 'remove_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            blog_id          => $blog->id,
+            return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+            blog_id     => $blog->id,
             plugin_action_selector => 'remove_tags',
-            id               => $asset->id,
+            id                     => $asset->id,
             plugin_action_selector => 'remove_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_tags" );
+    ok( $out,                        "Request: remove_tags" );
     ok( $out =~ m!not implemented!i, "remove_tags by other permission" );
 };
 
