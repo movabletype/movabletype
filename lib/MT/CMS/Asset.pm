@@ -1350,10 +1350,22 @@ sub _make_upload_destinations {
     }
 
     if ( $blog->upload_destination ) {
-        foreach (@dest_root) {
-            $_->{selected} = 1 if $blog->upload_destination eq $_->{path};
+        if ( my @selected
+            = grep { $blog->upload_destination eq $_->{path} } @dest_root )
+        {
+            $_->{selected} = 1 for @selected;
+        }
+        else {
+            unshift @dest_root,
+                {
+                label    => $blog->upload_destination,
+                path     => $blog->upload_destination,
+                selected => 1,
+                };
         }
     }
+
+    push @dest_root, { label => $app->translate('Custom...') };
 
     return @dest_root;
 }
@@ -1388,6 +1400,7 @@ sub _set_start_upload_params {
                 $param->{upload_destination_value} = $opt->{path};
             }
         }
+        $param->{destination}         = $blog->upload_destination;
         $param->{extra_path}          = $blog->extra_path;
         $param->{operation_if_exists} = $blog->operation_if_exists;
         $param->{normalize_orientation}
@@ -2037,8 +2050,7 @@ sub _upload_file {
     # Change to real file extension
     if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
         my $ext_old
-            = (
-            File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
+            = ( File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
             [2];
         if (   $ext_new ne lc($ext_old)
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
@@ -3052,7 +3064,7 @@ sub dialog_asset_modal {
     }
 
     if ( $param{require_type} ) {
-        my $req_class = $app->model($param{require_type});
+        my $req_class = $app->model( $param{require_type} );
         $param{require_type_label} = $req_class->class_label;
     }
 

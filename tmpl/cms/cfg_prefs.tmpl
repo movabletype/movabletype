@@ -92,6 +92,19 @@ function setLicense() {
     if ( w ) w.focus();
    return false;
 }
+
+function uploadDestinationSelect(sel) {
+    var edit = getByID('upload_destination_custom');
+    var map  = sel.options[sel.selectedIndex].value;
+    if (map == '') {
+        DOM.addClassName(sel, 'hidden');
+        sel.setAttribute('disabled', 'disabled');
+
+        DOM.removeClassName(edit, 'hidden');
+        edit.removeAttribute('disabled');
+        edit.focus();
+    }
+}
 /* ]]> */
 </script>
 
@@ -552,11 +565,14 @@ function setLicense() {
     <mtapp:setting
       id="upload_destination"
       label="<__trans phrase="Upload Destination">">
-      <select name="upload_destination" id="upload_destination">
+      <select name="upload_destination" id="upload_destination" onchange="uploadDestinationSelect(this)">
       <mt:loop name="destination_loop">
         <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
       </mt:loop>
-      </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
+      </select>
+      <input type="text" id="upload_destination_custom" class="text path required hidden" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" />
+      /
+      <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
       <div class="option" >
         <input type="checkbox" name="allow_to_change_at_upload" id="allow_to_change_at_upload" value="1"<mt:if name="allow_to_change_at_upload"> checked="checked"</mt:if> class="cb" />
         <label for="allow_to_change_at_upload"><__trans phrase="Allow to change at upload"></label>

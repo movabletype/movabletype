@@ -103,11 +103,14 @@ p.msg-warning {
       show_label="0"
       label_class="top-label">
       <mt:if name="destination_loop">
-        <select name="destination" id="destination">
+        <select name="destination" id="destination" onchange="uploadDestinationSelect(this);">
         <mt:loop name="destination_loop">
           <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
         </mt:loop>
-        </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
+        </select>
+        <input type="text" id="destination_custom" class="text path required hidden" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" />
+        /
+        <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
       </mt:if>
     </mtapp:setting>
   <mt:else>
@@ -211,7 +214,7 @@ function createFormData(file) {
   fd.append('operation_if_exists', jQuery('#operation_if_exists').val() );
   fd.append('auto_rename_non_ascii', jQuery('#auto_rename_non_ascii').prop('checked')? 1 : 0 );  
 
-  fd.append('destination', jQuery('#destination').val() );
+  fd.append('destination', jQuery('#destination:enabled, #destination_custom:enabled').val() );
   fd.append('extra_path', jQuery('#extra_path').val() );
 
 <mt:if name="no_insert">
@@ -465,6 +468,18 @@ jQuery('#file').change( function(e) {
   }
 });
 
+function uploadDestinationSelect(sel) {
+    var edit = getByID('destination_custom');
+    var map  = sel.options[sel.selectedIndex].value;
+    if (map == '') {
+        DOM.addClassName(sel, 'hidden');
+        sel.setAttribute('disabled', 'disabled');
+
+        DOM.removeClassName(edit, 'hidden');
+        edit.removeAttribute('disabled');
+        edit.focus();
+    }
+}
 /* ]]> */
 </script>
 
