@@ -75,6 +75,10 @@
 </mt:if>
 </mt:setvarblock>
 
+<mt:setvarblock name="html_head" append="1">
+  <script type="text/javascript" src="<mt:var name="static_uri">js/upload_settings.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:setvarblock>
+
 <mt:include name="include/header.tmpl" id="header_include">
 
 <script type="text/javascript">
@@ -91,35 +95,6 @@ function setLicense() {
     var w = window.open('http://creativecommons.org/license/?partner=SixApart&amp;jurisdiction_choose=1&amp;exit_url=<mt:var name="script_full_url">?__mode=cc_return%26license_name=[license_name]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no');
     if ( w ) w.focus();
    return false;
-}
-
-function uploadDestinationSelect(sel) {
-    var edit = getByID('upload_destination_custom');
-    var map  = sel.options[sel.selectedIndex].value;
-    if (map == '') {
-        // Hide and disable Upload Destination selectbox.
-        DOM.addClassName(sel, 'hidden');
-        sel.setAttribute('disabled', 'disabled');
-
-        // Show and enable custom Upload Destination textbox.
-        DOM.removeClassName(edit, 'hidden');
-        edit.removeAttribute('disabled');
-        edit.focus();
-
-        // Hide extra path textbox.
-        jQuery('.upload-extra-path').addClass('hidden');
-
-        // Add slash and the value in extra path textbox to custom Upload Destination textbox
-        // if extra path textbox has value.
-        var $input_extra_path = jQuery('.upload-extra-path > input');
-        if ($input_extra_path.val() !== '') {
-            jQuery(edit).val(
-                jQuery(edit).val() + '/' + $input_extra_path.val()
-            );
-            // Remove the value in extra path textbox.
-            $input_extra_path.val('');
-        }
-    }
 }
 /* ]]> */
 </script>
