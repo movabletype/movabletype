@@ -474,18 +474,6 @@ jQuery('#file').change( function(e) {
 <mt:setvarblock name="jq_js_include" append="1">
   <mt:unless name="filter" eq="userpic">  
     <mt:if name="allow_to_change_at_upload">    
-  function is_valid_path(path_){
-    var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
-    str = encodeURIComponent(str);
-    if (str.indexOf('%') != -1) {
-        return false;
-    }
-    if (str.match(/\.\./)) {
-        return false;
-    }
-    return true;
-  }
-
   jQuery.mtValidateAddRules({
     "#extra_path": function($e) {
       return is_valid_path($e.val());

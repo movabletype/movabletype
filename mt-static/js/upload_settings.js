@@ -1,3 +1,15 @@
+function is_valid_path(path_){
+    var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
+    str = encodeURIComponent(str);
+    if (str.indexOf('%') != -1) {
+        return false;
+    }
+    if (str.match(/\.\./)) {
+        return false;
+    }
+    return true;
+}
+
 function uploadDestinationSelect(sel) {
     var edit = getByID('upload_destination_custom');
     var map  = sel.options[sel.selectedIndex].value;
@@ -30,11 +42,11 @@ function uploadDestinationSelect(sel) {
 jQuery(function() {
     jQuery.mtValidateAddRules({
         '.upload-destination': function($e) {
-            return /^%(s|a)/.test($e.val());
+            return /^%(s|a)/.test($e.val()) && is_valid_path($e.val());
         }
     });
     jQuery.mtValidateAddMessages({
-        '.upload-destination': trans('You must set a string starting %s or %a.')
+        '.upload-destination': trans('You must set a valid path begining with %s or %a.')
     });
 });
 

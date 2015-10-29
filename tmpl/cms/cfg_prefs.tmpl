@@ -625,17 +625,6 @@ function setLicense() {
         return true;
     }
     </mt:if>
-    function is_valid_path(path_){
-      var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
-      str = encodeURIComponent(str);
-      if (str.indexOf('%') != -1) {
-          return false;
-      }
-      if (str.match(/\.\./)) {
-          return false;
-      }
-      return true;
-    }
 
     jQuery.mtValidateAddRules({
 <mt:if name="is_blog">
