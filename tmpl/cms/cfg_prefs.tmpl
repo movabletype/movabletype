@@ -561,7 +561,7 @@ function setLicense() {
         <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
       </mt:loop>
       </select>
-      <input type="text" id="upload_destination_custom" class="text path required hidden" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" />
+      <input type="text" id="upload_destination_custom" class="text path required upload-destination hidden" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" />
       <span class="upload-extra-path">
         / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
       </span>

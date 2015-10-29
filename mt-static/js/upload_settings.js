@@ -27,3 +27,14 @@ function uploadDestinationSelect(sel) {
     }
 }
 
+jQuery(function() {
+    jQuery.mtValidateAddRules({
+        '.upload-destination': function($e) {
+            return /^%(s|a)/.test($e.val());
+        }
+    });
+    jQuery.mtValidateAddMessages({
+        '.upload-destination': trans('You must set a string starting %s or %a.')
+    });
+});
+
