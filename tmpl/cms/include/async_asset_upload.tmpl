@@ -332,7 +332,12 @@ function uploadFiles(files, items) {
   var max_upload_size = <mt:var name="max_upload_size">;
 
 <mt:unless name="filter" eq="userpic">
-  <mt:if name="allow_to_change_at_upload">    
+  <mt:if name="allow_to_change_at_upload">
+  // Validate custom upload destination
+  if (!jQuery('#upload_destination_custom').mtValidate('simple')) {
+    return;
+  }
+
   // Validate extra path
   var $extra_path = jQuery('#extra_path');
   if ($extra_path.val().length > 0 ) {
