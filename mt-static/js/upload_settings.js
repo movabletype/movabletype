@@ -41,12 +41,16 @@ function uploadDestinationSelect(sel) {
 
 jQuery(function() {
     jQuery.mtValidateAddRules({
+        '.valid-path': function($e) {
+            return is_valid_path($e.val());
+        },
         '.upload-destination': function($e) {
-            return /^%(s|a)/.test($e.val()) && is_valid_path($e.val());
+            return /^%(s|a)/.test($e.val());
         }
     });
     jQuery.mtValidateAddMessages({
-        '.upload-destination': trans('You must set a valid path begining with %s or %a.')
+        '.valid-path': trans('You must set a valid path.'),
+        '.upload-destination': trans('You must set a path begining with %s or %a.')
     });
 });
 
