@@ -31,6 +31,16 @@ class BaseObjectTest extends PHPUnit_Framework_TestCase {
     $this->assertNull( $entry->_prefix );
     $this->assertFalse( isset( $entry->_prefix ) );
 
+    // fixed Dynamic publishing error occurred with memcached environment. bugid: 113546
+    $mt->config('MemcachedServers', '127.0.0.1:11211');
+    require_once('php/lib/class.mt_fileinfo.php');
+    $fileinfo= new FileInfo;
+    $where = "fileinfo_id = 1";
+    $fileinfo->Load($where);
+    $blog = $fileinfo->blog();
+
+    $this->assertInstanceOf(Blog, $blog);
+
   }
 
 }
