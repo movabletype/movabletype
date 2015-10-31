@@ -2037,8 +2037,7 @@ sub _upload_file {
     # Change to real file extension
     if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
         my $ext_old
-            = (
-            File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
+            = ( File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
             [2];
         if (   $ext_new ne lc($ext_old)
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
@@ -2092,6 +2091,7 @@ sub _upload_file {
         $local_file,     $asset_file,   $base_url,
         $asset_base_url, $relative_url, $extra_path
     );
+    my $label = $basename;
     if ( $blog_id = $q->param('blog_id') ) {
 
         $param{blog_id} = $blog_id;
@@ -2419,7 +2419,7 @@ sub _upload_file {
         $asset->file_name($local_basename);
         $asset->file_ext($local_ext);
         $asset->blog_id($blog_id);
-        $asset->label($local_basename);
+        $asset->label($label);
         $asset->created_by( $app->user->id );
     }
     else {
@@ -3052,7 +3052,7 @@ sub dialog_asset_modal {
     }
 
     if ( $param{require_type} ) {
-        my $req_class = $app->model($param{require_type});
+        my $req_class = $app->model( $param{require_type} );
         $param{require_type_label} = $req_class->class_label;
     }
 
