@@ -101,7 +101,7 @@ RUN service slapd start & sleep 10 && \
     service slapd stop
 
 # PhantomJS
-RUN yum -y install npm openssl-devel freetype-devel fontconfig-devel libicu-devel sqlite-devel libpng-devel libjpeg-devel
+RUN yum -y install npm tar bzip2 openssl-devel freetype-devel fontconfig-devel libicu-devel sqlite-devel libpng-devel libjpeg-devel
 RUN npm install -g phantomjs
 
 # Install CPAN modules
