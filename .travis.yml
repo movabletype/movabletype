@@ -50,6 +50,9 @@ install:
   # Tests fail with Perl 5.10.
   - cpanm --notest -L ./local XML::Parser::PerlSAX
 
+  # Tests fail with Perl 5.8 and 5.10.
+  - cpanm --notest -L ./local Twiggy
+
   # Instal CPAN modules.
   - cp ./t/cpanfile .
   - travis_retry cpanm Carton
