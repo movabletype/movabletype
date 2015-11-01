@@ -12,11 +12,9 @@ BEGIN {
 }
 
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $ENV{MT_CONFIG} = 't/mysql-test.cfg';
 }
-use lib qw( lib extlib t/lib );
-use MT::Test qw( :db :data );
-use MT;
+use lib qw( lib extlib );
 use MT::PSGI;
 
 my $wight = Test::Wight->new;
