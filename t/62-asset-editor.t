@@ -12,6 +12,9 @@ BEGIN {
 }
 
 BEGIN {
+    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    system 'perl -Ilib -Iextlib -It/lib -e "use MT::Test qw( :db :data );"';
+
     $ENV{MT_CONFIG} = 't/mysql-test.cfg';
 }
 use lib qw( lib extlib );
