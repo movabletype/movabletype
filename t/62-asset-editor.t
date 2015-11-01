@@ -15,6 +15,7 @@ BEGIN {
     $ENV{MT_CONFIG} = 't/mysql-test.cfg';
 }
 use lib qw( lib extlib );
+use MT;
 use MT::PSGI;
 
 my $wight = Test::Wight->new;
