@@ -250,7 +250,7 @@ button.history {
             resizing = true;
  
             // Change the status of resize buttons.
-            if ($resizeWidth.val() === '0' || $resizeWidth.val() === '') {
+            if ($resizeWidth.val() === '0' || $resizeWidth.val() === '' || $resizeWidth.val() > image.width) {
                 disableButton('button#resize-apply');
             } else {
                 enableButton('button#resize-apply');
@@ -293,7 +293,7 @@ button.history {
             resizing = true;
 
             // Enable resize buttons.
-            if ($resizeHeight.val() === '0' || $resizeHeight.val() === '') {
+            if ($resizeHeight.val() === '0' || $resizeHeight.val() === '' || $resizeHeight.val() > image.height) {
                 disableButton('button#resize-apply');
             } else {
                 enableButton('button#resize-apply');

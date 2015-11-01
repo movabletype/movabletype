@@ -64,6 +64,9 @@ RUN cpanm Term::ReadKey -n
 RUN yum -y install epel-release
 RUN yum -y install aspell-en aspell-devel
 
+# Twiggy cannot be installed with Perl 5.8 and 5.10.
+RUN cpanm -n Twiggy
+
 # PHP
 RUN yum -y install php php-mysql php-gd
 RUN sed 's/^;date\.timezone =/date\.timezone = "Asia\/Tokyo"/' -i /etc/php.ini
@@ -96,6 +99,10 @@ RUN service slapd start & sleep 10 && \
     ldapadd -f domain1_example_jp.ldif -x -D "cn=admin,dc=example,dc=jp" -w secret && \
     ldapadd -f domain2_example_jp.ldif -x -D "cn=admin,dc=example,dc=jp" -w secret && \
     service slapd stop
+
+# PhantomJS
+RUN yum -y install npm tar bzip2 openssl-devel freetype-devel fontconfig-devel libicu-devel sqlite-devel libpng-devel libjpeg-devel
+RUN npm install -g phantomjs
 
 # Install CPAN modules
 COPY t/cpanfile /var/www/docker_build/cpanfile
