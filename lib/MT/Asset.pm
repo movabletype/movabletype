@@ -990,9 +990,11 @@ sub list_subclasses {
 
     foreach my $k ( keys %$types ) {
         if ( $k =~ m/^asset\.(.*)/ ) {
+            my $c = $types->{$k};
+            next if ref $c;
             push @types,
                 {
-                class => $types->{$k},
+                class => $c,
                 type  => $1,
                 };
         }
