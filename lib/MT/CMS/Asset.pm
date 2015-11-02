@@ -3062,7 +3062,6 @@ sub dialog_asset_modal {
     my @class_filters;
     foreach my $k (@$subclasses) {
         my $c = $k->{class};
-        next if ref $c ne 'SCALAR';
         push @class_filters,
             {
             key   => $k->{type},
