@@ -484,6 +484,10 @@ abstract class BaseObject extends ADOdb_Active_Record
     protected function cache($key, $obj) {
         if (empty($key))
             return;
+
+        $meta_table = $obj->_table . '_meta';
+        $obj->$meta_table = array();
+
         $this->cache_driver()->set($key, $obj);
     }
 

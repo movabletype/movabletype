@@ -47,8 +47,9 @@ class BaseObjectTest extends PHPUnit_Framework_TestCase {
         'website' => 'Website');
     foreach ($obj_names as $table => $name) {
         require_once("php/lib/class.mt_$table.php");
-        $obj= new $name;
+        $obj = new $name;
         $obj->Load();
+
         $this->cache("$table:".$obj->id, $obj);
         $obj_cache = $this->load_cache("$table:".$obj->id);
         $this->assertInstanceOf("$name", $obj_cache);
@@ -60,6 +61,8 @@ class BaseObjectTest extends PHPUnit_Framework_TestCase {
     private function cache($key, $obj) {
         if (empty($key))
             return;
+        $meta_table = $obj->_table . '_meta';
+        $obj->$meta_table = array();
         $this->cache_driver()->set($key, $obj);
     }
 
