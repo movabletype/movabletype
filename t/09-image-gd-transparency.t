@@ -10,9 +10,12 @@ use File::Spec;
 BEGIN {
     eval 'use GD; 1'
         or plan skip_all => 'GD is not installed';
+
+    $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
 use lib qw( lib extlib t/lib );
+use MT::Test;
 use MT::ConfigMgr;
 use MT::Image;
 
