@@ -3594,7 +3594,7 @@ use vars qw( @ISA %Lexicon );
 	'Upload Destination' => 'アップロード先',
 	'Allow to change at upload' => 'アップロード時に変更を許可する',
 	'Rename filename' => 'ファイル名の変更',
-	'Rename non-ascii filename automatically.' => '日本語ファイル名を自動で変換する',
+	'Rename non-ascii filename automatically' => '日本語ファイル名を自動で変換する',
 	'Operation if a file exists' => '既存ファイルの処理',
 	'Upload and rename' => '既存のファイルを残して、別のファイル名でアップロードする',
 	'Overwrite existing file' => '既存のファイルを上書きする',

@@ -3805,7 +3805,7 @@ use vars qw( @ISA %Lexicon );
 	'Upload Destination' => 'Zielverzeichnis',
 	'Allow to change at upload' => 'Darf beim Hochladen geändert werden', # Translate - New # OK
 	'Rename filename' => 'Datei umbenennen', # Translate - New # OK
-	'Rename non-ascii filename automatically.' => 'Nicht-ASCII-Dateinamen automatisch umbenennen', # Translate - New # OK
+	'Rename non-ascii filename automatically' => 'Nicht-ASCII-Dateinamen automatisch umbenennen', # Translate - New # OK
 	'Operation if a file exists' => 'Vorgang bei bereits vorhandenen Dateien', # Translate - New # OK
 	'Upload and rename' => 'Hochladen und umbenennen', # Translate - New # OK
 	'Overwrite existing file' => 'Vorhandene Datei überschreiben', # Translate - New # OK
