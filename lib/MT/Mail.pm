@@ -283,11 +283,21 @@ sub _send_mt_smtp {
         );
 
     if ($auth) {
-        if ( !$smtp->auth( $user, $pass ) ) {
+        my $mech = MT->config->SMTPAuthSASLMechanism || do {
+
+            # Disable DIGEST-MD5.
+            my $m
+                = $smtp->supports( 'AUTH', 500, ["Command unknown: 'AUTH'"] )
+                || '';
+            $m =~ s/DIGEST-MD5//;
+            $m =~ /^\s+$/ ? undef : $m;
+        };
+
+        if ( !eval { $smtp->auth( $user, $pass, $mech ) } ) {
             return $class->error(
                 MT->translate(
                     "Authentication failure: [_1]",
-                    $smtp->message
+                    $@ ? $@ : $smtp->message
                 )
             );
         }
