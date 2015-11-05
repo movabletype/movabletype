@@ -746,6 +746,7 @@ $.fn.mtRebasename = function(options) {
             $(this).hide();
             $('span.basename-text').hide();
             $('input#basename').show();
+            toggleFile();
             return false;
         });
     });
