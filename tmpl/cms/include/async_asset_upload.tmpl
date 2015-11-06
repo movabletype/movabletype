@@ -334,7 +334,8 @@ function uploadFiles(files, items) {
 <mt:unless name="filter" eq="userpic">
   <mt:if name="allow_to_change_at_upload">
   // Validate custom upload destination
-  if (!jQuery('#upload_destination_custom').mtValidate('simple')) {
+  var $upload_destination_custom = jQuery('#upload_destination_custom:enabled');
+  if ($upload_destination_custom.length && $upload_destination_custom.mtValidate('simple')) {
     return;
   }
 
