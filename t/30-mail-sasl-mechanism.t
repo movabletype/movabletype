@@ -4,7 +4,11 @@ use warnings;
 
 use Test::More;
 
+use lib qw( lib extlib );
+
 BEGIN {
+    eval 'use Net::SMTPS; 1'
+        or plan skip_all => 'Net::SMTPS is not installed';
     eval 'use Test::MockModule; 1'
         or plan skip_all => 'Test::MockModule is not installed';
     eval 'use Test::MockObject; 1'
@@ -12,10 +16,8 @@ BEGIN {
 
     $ENV{MT_CONFIG} = 't/mysql-test.cfg';
 }
-use lib qw( lib extlib );
 use MT;
 use MT::Mail;
-use Net::SMTPS;
 
 # mock
 my ( $MECH, $SUPPORTS );
