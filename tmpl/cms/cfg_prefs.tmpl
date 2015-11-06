@@ -737,14 +737,6 @@ function setLicense() {
         edit: '<__trans phrase="Edit">'
     });
 
-    // Submit form when pushing enter key in textboxes.
-    jQuery('form#cfg_form input[type=text]').keypress(function(event) {
-        if (event.keyCode === 13) {
-            jQuery('form#cfg_form').submit();
-            return false;
-        }
-    });
-
 <mt:if name="is_blog">
     jQuery.mtUseSubdomain();
     jQuery.mtEditSitePath({
