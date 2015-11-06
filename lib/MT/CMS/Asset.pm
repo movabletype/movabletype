@@ -1272,9 +1272,9 @@ sub _make_upload_destinations {
     my $y;
     my $ym;
     my $ymd;
+    my $now = MT::Util::offset_time(time);
 
     if ($real_path) {
-        my $now = MT::Util::offset_time(time);
         $user_basename = $app->user->basename;
         $y             = POSIX::strftime( "%Y", gmtime($now) );
         $ym            = POSIX::strftime( "%Y/%m", gmtime($now) );
@@ -1350,10 +1350,48 @@ sub _make_upload_destinations {
     }
 
     if ( $blog->upload_destination ) {
-        foreach (@dest_root) {
-            $_->{selected} = 1 if $blog->upload_destination eq $_->{path};
+        if ( my @selected
+            = grep { $blog->upload_destination eq $_->{path} } @dest_root )
+        {
+            $_->{selected} = 1 for @selected;
+        }
+        else {
+            my $label = $blog->upload_destination;
+            if ($real_path) {
+
+                # Replace %s and %a.
+                if ( $label =~ /^%s/ ) {
+                    my $site_root
+                        = $app->translate( '<[_1] Root>', $blog->class_label );
+                    $label =~ s/^%s/$site_root/;
+                }
+                elsif ( $label =~ /^%a/ ) {
+                    my $archive_root = $app->translate( '<[_1] Root>',
+                        MT->translate('Archive') );
+                    $label =~ s/^%a/$archive_root/;
+                }
+
+                # Replace %u, %y, %m and %d.
+                my $u = $app->user->basename;
+                my $y = POSIX::strftime( "%Y", gmtime($now) );
+                my $m = POSIX::strftime( "%m", gmtime($now) );
+                my $d = POSIX::strftime( "%d", gmtime($now) );
+                $label =~ s/%u/$u/g;
+                $label =~ s/%y/$y/g;
+                $label =~ s/%m/$m/g;
+                $label =~ s/%d/$d/g;
+            }
+
+            unshift @dest_root,
+                {
+                label    => $label,
+                path     => $blog->upload_destination,
+                selected => 1,
+                };
         }
     }
+
+    push @dest_root, { label => $app->translate('Custom...') };
 
     return @dest_root;
 }
@@ -1388,6 +1426,7 @@ sub _set_start_upload_params {
                 $param->{upload_destination_value} = $opt->{path};
             }
         }
+        $param->{destination}         = $blog->upload_destination;
         $param->{extra_path}          = $blog->extra_path;
         $param->{operation_if_exists} = $blog->operation_if_exists;
         $param->{normalize_orientation}
