@@ -672,7 +672,7 @@ use vars qw( @ISA %Lexicon );
 	'The System Email Address is used in the \'From:\' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events. Please confirm your <a href="[_1]">settings.</a>' => 'このメールアドレスはMovable Typeから送られるメールの\'From:\'アドレスに利用されます。メールはパスワードの再設定、コメント投稿者の登録、コメントやトラックバックの通知、ユーザーまたはIPアドレスのロックアウト、その他の場合に送信されます。<a href="[_1]">設定</a>を確認してください。',
 	'Cannot verify SSL certificate.' => 'SSL 証明書の検証ができません。',
 	'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this is not recommended.' => 'このメッセージを消すには、Mozilla::CA モジュールをインストールするか、mt-config.cgi に "SSLVerifyNone 1" を指定してください。',
-	'Can verify SSL certificate, but verification is disabled.' => 'SSL 証明書の検証を行なう準備ができていますが、環境変数で SSL 証明書の検証が無効に設定されています。',
+	'Can verify SSL certificate, but verification is disabled.' => 'SSL 証明書の検証を行う準備ができていますが、環境変数で SSL 証明書の検証が無効に設定されています。',
 	'You should remove "SSLVerifyNone 1" in mt-config.cgi.' => 'SSLVerifyNone 環境変数の指定を mt-config.cgi から削除してください。',
 	'Personal Stats' => 'ユーザー情報',
 	'Movable Type News' => 'Movable Typeニュース',
