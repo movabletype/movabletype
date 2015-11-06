@@ -10,6 +10,33 @@ function is_valid_path(path_){
     return true;
 }
 
+function cancelCustom() {
+    // Show Upload Destination selectbox and select first option.
+    var $select = jQuery('select#destination, select#upload_destination');
+    $select
+        .removeAttr('disabled')
+        .removeClass('hidden')
+        .val(
+            $select.children(':first').val()
+        );
+
+    // Hide custom Upload Destination textbox and remove its value.
+    jQuery('input#upload_destination_custom')
+        .attr('disabled', 'disabled')
+        .addClass('hidden')
+        .val('');
+
+    // Hide cancel button.
+    jQuery('button#cancel_custom')
+        .attr('disabled', 'disabled')
+        .addClass('hidden');
+
+    // Show extra path textbox.
+    jQuery('.upload-extra-path')
+        .removeAttr('disabled')
+        .removeClass('hidden');
+}
+
 function uploadDestinationSelect(sel) {
     var edit = getByID('upload_destination_custom');
     var map  = sel.options[sel.selectedIndex].value;
@@ -23,8 +50,22 @@ function uploadDestinationSelect(sel) {
         edit.removeAttribute('disabled');
         edit.focus();
 
+        // Set first option's value to custom Upload Destination textbox.
+        jQuery(edit).val(
+            jQuery(sel).children(':first').val()
+        );
+
+        // Show cancel button.
+        jQuery(edit).after(
+            jQuery('button#cancel_custom')
+                .removeClass('hidden')
+                .removeAttr('disabled')
+        );
+
         // Hide extra path textbox.
-        jQuery('.upload-extra-path').addClass('hidden');
+        jQuery('.upload-extra-path')
+            .attr('disabled', 'disabled')
+            .addClass('hidden');
 
         // Add slash and the value in extra path textbox to custom Upload Destination textbox
         // if extra path textbox has value.
