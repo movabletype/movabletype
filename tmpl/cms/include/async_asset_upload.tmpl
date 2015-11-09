@@ -215,7 +215,7 @@ function createFormData(file) {
   fd.append('operation_if_exists', jQuery('#operation_if_exists').val() );
   fd.append('auto_rename_non_ascii', jQuery('#auto_rename_non_ascii').prop('checked')? 1 : 0 );  
 
-  fd.append('destination', jQuery('#destination:enabled, #destination_custom:enabled').val() );
+  fd.append('destination', jQuery('#destination:enabled, #upload_destination_custom:enabled').val() );
   fd.append('extra_path', jQuery('#extra_path').val() );
 
 <mt:if name="no_insert">
