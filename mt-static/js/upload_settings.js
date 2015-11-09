@@ -23,6 +23,11 @@ function uploadDestinationSelect(sel) {
         edit.removeAttribute('disabled');
         edit.focus();
 
+        // Set first option's value to custom Upload Destination textbox.
+        jQuery(edit).val(
+            jQuery(sel).children(':first').val()
+        );
+
         // Hide extra path textbox.
         jQuery('.upload-extra-path').addClass('hidden');
 
