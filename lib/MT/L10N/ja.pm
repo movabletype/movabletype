@@ -1246,6 +1246,7 @@ use vars qw( @ISA %Lexicon );
 	'<[_1] Root>' => '<[_1]パス>',
 	'<[_1] Root>/[_2]' => '<[_1]パス>/[_2]',
 	'Archive' => 'アーカイブ',
+	'Custom...' => 'カスタム...',
 	'Please select a file to upload.' => 'アップロードするファイルを選択してください。',
 	'Invalid filename \'[_1]\'' => 'ファイル名\'[_1]\'が不正です。',
 	'Please select an audio file to upload.' => 'アップロードするオーディオファイルを選択してください。',
@@ -2859,12 +2860,20 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/dialog.js
 	'(None)' => '(なし)',
 
+## mt-static/js/image_editor/fabric.js
+
+## mt-static/js/image_editor/fabric.min.js
+
 ## mt-static/js/tc/mixer/display.js
 	'Title:' => 'タイトル:',
 	'Description:' => '説明:',
 	'Author:' => '作者:',
 	'Tags:' => 'タグ: ',
 	'URL:' => 'URL:',
+
+## mt-static/js/upload_settings.js
+	'You must set a valid path.' => '有効なパス名を指定してください。',
+	'You must set a path begining with %s or %a.' => '%s（サイトパス）か %a（アーカイブパス）から始まるパス名を指定してください。',
 
 ## mt-static/mt.js
 	'delete' => '削除',
@@ -3611,7 +3620,6 @@ use vars qw( @ISA %Lexicon );
 	'You must set a valid Archive URL.' => '有効なアーカイブURLを指定してください。',
 	'You must set your Local Archive Path.' => 'アーカイブパスを指定する必要があります。',
 	'You must set a valid Local Archive Path.' => '有効なアーカイブパスを指定してください。',
-	'You must set a valid path.' => '有効なパス名を指定してください。',
 
 ## tmpl/cms/cfg_registration.tmpl
 	'Registration Settings' => '登録/認証の設定',
@@ -4454,7 +4462,6 @@ use vars qw( @ISA %Lexicon );
 	'HTML Mode' => 'HTMLモード',
 
 ## tmpl/cms/include/archive_maps.tmpl
-	'Custom...' => 'カスタム...',
 
 ## tmpl/cms/include/asset_replace.tmpl
 	q{A file named '[_1]' already exists. Do you want to overwrite this file?} => q{同名のアイテム'[_1]'がすでに存在します。上書きしますか?},
@@ -4490,7 +4497,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/async_asset_upload.tmpl
 	q{Drag and drop here to upload files, or<button id='open-file-dialog'>Browse</button>} => q{アップロードするファイルをここにドラッグ＆ドロップするか、<button id='open-file-dialog'>ファイルを選択</button>します},
 	q{Drag and drop here to upload a file, or<button id='open-file-dialog'>Browse</button>} => q{アップロードするファイルをここにドラッグ＆ドロップするか、<button id='open-file-dialog'>ファイルを選択</button>します},
-	'(If you upload multiple files, last uploaded files will be used.)' => '（複数ファイルをアップロードした時、最後のファイルが利用されます。）', 
+	'(If you upload multiple files, last uploaded files will be used.)' => '（複数ファイルをアップロードした時、最後のファイルが利用されます。）',
 	'Upload Options' => 'アップロードオプション',
 	'Operation for a file exists' => '既存ファイルの処理',
 	'Cancelled: [_1]' => 'キャンセルされました: [_1]',
@@ -6726,7 +6733,6 @@ use vars qw( @ISA %Lexicon );
 	'Re-creating job of contents sync...' => 'サーバー配信のジョブを再生成しています...',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
-	'An error occurred while copying the directory.' => 'ファイルのコピー中にエラーが発生しました。',
 	'Failed to remove sync list. (ID:\'[_1]\')' => '同期リスト (ID:[_1]) の削除に失敗しました。',
 	'Failed to update sync list. (ID:\'[_1]\')' => '同キリスト (ID:[_1]) の更新に失敗しました。',
 	'Failed to create sync list.' => '同期リストの作成に失敗しました。',
@@ -6740,6 +6746,7 @@ use vars qw( @ISA %Lexicon );
 	'Deleting file \'[_1]\' failed.' => 'ファイル\'[_1]\'を削除できませんでした。',
 	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
 	'Unable to write temporary file ([_1]): [_2]' => '一時ファイル([_1])の書き込みができませんでした: [_2]',
+	'Unable to get size of temporary file ([_1]): [_2]' => '一時ファイル ([_1]) のサイズを取得できませんでした] [_2]',
 	'Unable to write remote files. Please check activity log for more details.: [_1]' => '配信先にファイルを書き込めません。詳細についてはログを確認してください。: [_1]',
 	'Unable to write remote files ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
 
@@ -6765,6 +6772,8 @@ use vars qw( @ISA %Lexicon );
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
 	'Copied [_1]' => 'サーバ配信設定 ([_1])の複製',
 	'The sync setting with the same name already exists.' => '同名のサーバー配信設定がすでに存在します。',
+	'Reached the upper limit of the parallel execution.' => '同時に実行できる配信の上限に達しているため、即時配信を実行できません。',
+	'Process ID can\'t be acquired.' => 'プロセスIDを取得できません。',
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'FTPサーバー \'[_1]\' への接続中にエラーが発生しました: [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'FTPサーバーのカレントディレクトリが取得できませんでした。',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした',
@@ -7225,5 +7234,7 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Junk' => 'スパムにするキーワード',
 
 );
+
+## New words: 310
 
 1;
