@@ -16,7 +16,7 @@ sub new {
     my $class = shift;
     $class .= "::" . MT->config->ImageDriver;
     eval "require $class"
-        or return $class->error(
+        or return __PACKAGE__->error(
         MT->translate( "Invalid Image Driver [_1]", $class ) );
     my $image = bless {}, $class;
     $image->load_driver
