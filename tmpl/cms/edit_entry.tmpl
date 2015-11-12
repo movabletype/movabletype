@@ -1373,7 +1373,7 @@
         cursor: 'move',
         forcePlaceholderSize: true,
         handle: '.field-header',
-        containment: 'document',
+        containment: 'body',
         update: function () {
             jQuery('div.field.sort-enabled', this).trigger('sort-updated');
             sendEntryPrefs({ sort_only: true });
