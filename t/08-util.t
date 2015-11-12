@@ -414,7 +414,10 @@ for my $d (@relative_date_data) {
             '%Y/%m/%d', $d->{style}
         ),
         $d->{expected},
-        "relative_date() (offset:$d->{offset}, style:$d->{style})"
+        sprintf(
+            "relative_date() (offset:%d, style:%s)",
+            $d->{offset}, $d->{style} || 'undef'
+        )
     );
 }
 
