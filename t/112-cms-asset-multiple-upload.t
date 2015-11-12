@@ -10,6 +10,8 @@ use File::Spec;
 use JSON;
 
 BEGIN {
+    eval 'use Test::MockObject::Extends; 1'
+        or plan skip_all => 'Test::MockObject::Extends is not installed';
     eval 'use Test::Spec; 1'
         or plan skip_all => 'Test::Spec is not installed';
 
@@ -29,12 +31,17 @@ describe 'Uploaded asset (test.jpg)' => sub {
         before all => sub {
             $asset = upload_asset('test.jpg');
         };
-        describe 'file_name' => sub {
+        describe 'asset' => sub {
+            it 'should be uploaded' => sub {
+                isa_ok( $asset, 'MT::Asset::Image' );
+            };
+        };
+        describe 'asset file_name' => sub {
             it 'should be "test.jpg"' => sub {
                 is( $asset->file_name, 'test.jpg' );
             };
         };
-        describe 'label' => sub {
+        describe 'asset label' => sub {
             it 'should be "test.jpg"' => sub {
                 is( $asset->label, 'test.jpg' );
             };
@@ -45,12 +52,17 @@ describe 'Uploaded asset (test.jpg)' => sub {
         before all => sub {
             $asset = upload_asset('test.jpg');
         };
-        describe 'file_name' => sub {
+        describe 'asset' => sub {
+            it 'should be uploaded' => sub {
+                isa_ok( $asset, 'MT::Asset::Image' );
+            };
+        };
+        describe 'asset file_name' => sub {
             it 'should not be "test.jpg"' => sub {
                 isnt( $asset->file_name, 'test.jpg' );
             };
         };
-        describe 'label' => sub {
+        describe 'asset label' => sub {
             it 'should be "test.jpg"' => sub {
                 is( $asset->label, 'test.jpg' );
             };
@@ -60,17 +72,43 @@ describe 'Uploaded asset (test.jpg)' => sub {
 
 describe 'Uploaded asset (テスト.jpg)' => sub {
     my $asset;
-    before all => sub {
-        $asset = upload_asset('テスト.jpg');
-    };
-    describe 'file_name' => sub {
-        it 'should not be "テスト.jpg"' => sub {
-            isnt( $asset->file_name, 'テスト.jpg' );
+    context 'with ImageMagick' => sub {
+        before all => sub {
+            $asset = upload_asset('テスト.jpg');
+        };
+        describe 'asset' => sub {
+            it 'should be uploaded' => sub {
+                isa_ok( $asset, 'MT::Asset::Image' );
+            };
+        };
+        describe 'asset file_name' => sub {
+            it 'should not be "テスト.jpg"' => sub {
+                isnt( $asset->file_name, 'テスト.jpg' );
+            };
+        };
+        describe 'asset label' => sub {
+            it 'should be "テスト.jpg"' => sub {
+                is( $asset->label, 'テスト.jpg' );
+            };
         };
     };
-    describe 'label' => sub {
-        it 'should be "テスト.jpg"' => sub {
-            is( $asset->label, 'テスト.jpg' );
+    context 'with InvalidDriver' => sub {
+        my $mock_cfg;
+        before all => sub {
+            $mock_cfg = Test::MockObject::Extends->new( MT->config );
+            $mock_cfg->mock( 'ImageDriver', sub {'InvalidDriver'} );
+
+            $asset = upload_asset('テスト.jpg');
+        };
+        describe 'ImageDriver' => sub {
+            it 'should be "InvalidDriver"' => sub {
+                is( MT->config->ImageDriver, 'InvalidDriver' );
+            };
+        };
+        describe 'asset' => sub {
+            it 'should be uploaded' => sub {
+                ok( eval { $asset->isa('MT::Asset::Image') } );
+            };
         };
     };
 };
@@ -98,9 +136,11 @@ sub upload_asset {
     my $out = delete $app->{__test_output};
 
     my ( $headers, $body ) = split /^\s*$/m, $out, 2;
-    my $hash = JSON::from_json($body);
-    my $asset
-        = MT->model('asset.image')->load( $hash->{result}{asset}{id} );
+    my $hash     = JSON::from_json($body);
+    my $asset_id = $hash->{result}{asset}{id};
+    $asset_id
+        ? MT->model('asset.image')->load($asset_id)
+        : undef;
 }
 
 runtests unless caller;
