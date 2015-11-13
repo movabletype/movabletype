@@ -68,7 +68,7 @@ RUN yum -y install aspell-en aspell-devel
 RUN cpanm -n Twiggy
 
 # PHP
-RUN yum -y install php php-mysql php-gd
+RUN yum -y install php php-mysql php-gd php-pecl-memcache
 RUN sed 's/^;date\.timezone =/date\.timezone = "Asia\/Tokyo"/' -i /etc/php.ini
 
 # PHPUnit
