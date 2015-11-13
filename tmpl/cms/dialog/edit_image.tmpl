@@ -257,8 +257,8 @@ button.history {
             }
             enableButton('button#resize-reset');
  
-            // Trigger apply button when pushing enter key.
-            if (event.keyCode === 13) {
+            // Trigger apply button when the button is enabled and enter key is pushed.
+            if (event.keyCode === 13 && jQuery('button#resize-apply:enabled').length) {
                 jQuery('button#resize-apply').trigger('click');
                 return;
             }
@@ -300,8 +300,8 @@ button.history {
             }
             enableButton('button#resize-reset');
 
-            // Trigger apply button when pushing enter key.
-            if (event.keyCode === 13) {  // enter
+            // Trigger apply button when the button is enabled and enter key is pushed.
+            if (event.keyCode === 13 && jQuery('button#resize-apply:enabled').length) {
                 jQuery('button#resize-apply').trigger('click');
                 return;
             }
