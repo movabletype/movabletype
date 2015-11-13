@@ -1440,6 +1440,7 @@ sub _set_start_upload_params {
     }
     else {
         $param->{normalize_orientation} = 1;
+        $param->{auto_rename_non_ascii} = 1;
     }
 
     $param->{max_upload_size} = $app->config->CGIMaxUpload;
