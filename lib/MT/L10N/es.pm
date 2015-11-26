@@ -3816,7 +3816,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Upload Destination' => 'Destino de las transferencias',
 	'Allow to change at upload' => 'Permitir cambiar al transferir', # Translate - New
 	'Rename filename' => 'Renombrar fichero', # Translate - New
-	'Rename non-ascii filename automatically.' => 'Renombrar automáticamente nombres de ficheros que no sean ASCII.', # Translate - New
+	'Rename non-ascii filename automatically' => 'Renombrar automáticamente nombres de ficheros que no sean ASCII.', # Translate - New
 	'Operation if a file exists' => 'Acción si existe un fichero', # Translate - New
 	'Upload and rename' => 'Transferir y renombrar', # Translate - New
 	'Overwrite existing file' => 'Reescribir fichero existente', # Translate - New

@@ -3812,7 +3812,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Upload Destination' => 'Destination du fichier',
 	'Allow to change at upload' => 'Permettre la modification lors du téléchargement', # Translate - New
 	'Rename filename' => 'Renommer le fichier', # Translate - New
-	'Rename non-ascii filename automatically.' => 'Renommer le nom de fichier (avec caractères non-ASCII) automatiquement', # Translate - New
+	'Rename non-ascii filename automatically' => 'Renommer le nom de fichier (avec caractères non-ASCII) automatiquement', # Translate - New
 	'Operation if a file exists' => 'Que faire si un fichier existe', # Translate - New
 	'Upload and rename' => 'Charger et renommer', # Translate - New
 	'Overwrite existing file' => 'Écraser le fichier existant', # Translate - New

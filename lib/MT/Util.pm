@@ -2886,6 +2886,7 @@ sub build_upload_destination {
         $user = $app->user;
     }
 
+    require POSIX;
     my $user_basename = $user ? $user->basename : '';
     my $now           = MT::Util::offset_time(time);
     my $y             = POSIX::strftime( "%Y", gmtime($now) );

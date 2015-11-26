@@ -1015,7 +1015,8 @@ sub change_quality {
     }
 
     require MT::Image;
-    my $img = MT::Image->new( Filename => $asset->file_path );
+    my $img = MT::Image->new( Filename => $asset->file_path )
+        or return $asset->error( MT::Image->errstr );
     my $blob = $img->blob($quality) or return $asset->error( $img->errstr );
 
     my $fmgr;

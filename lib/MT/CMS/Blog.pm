@@ -189,10 +189,18 @@ sub edit {
             $param->{'upload_destination'} = $obj->upload_destination;
             $param->{'extra_path'}         = $obj->extra_path;
             $param->{'allow_to_change_at_upload'}
-                = $obj->allow_to_change_at_upload;
-            $param->{'operation_if_exists'}   = $obj->operation_if_exists;
-            $param->{'normalize_orientation'} = $obj->normalize_orientation;
-            $param->{'auto_rename_non_ascii'} = $obj->auto_rename_non_ascii;
+                = defined $obj->allow_to_change_at_upload
+                ? $obj->allow_to_change_at_upload
+                : 1;
+            $param->{'operation_if_exists'} = $obj->operation_if_exists;
+            $param->{'normalize_orientation'}
+                = defined $obj->normalize_orientation
+                ? $obj->normalize_orientation
+                : 1;
+            $param->{'auto_rename_non_ascii'}
+                = defined $obj->auto_rename_non_ascii
+                ? $obj->auto_rename_non_ascii
+                : 1;
 
             require MT::CMS::Asset;
             my @dest_root

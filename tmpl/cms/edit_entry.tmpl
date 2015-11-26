@@ -500,6 +500,7 @@
   <mt:if name="can_publish_post">
     <span class="basename">
     <input type="text" name="basename" id="basename" class="text full" value="<$mt:var name="basename" escape="html"$>" /><mt:if name="object_type" eq="page"><span class="file-extension"><mt:var name="file_extension" escape="html"></span></mt:if>
+     <input type="hidden" name="basename_manual" id="basename_manual" value="0" />
     </span>
     <mt:if name="object_type" eq="entry">
       <p class="alert-warning-inline" id="basename-warning" style="display: none">
@@ -1372,7 +1373,7 @@
         cursor: 'move',
         forcePlaceholderSize: true,
         handle: '.field-header',
-        containment: 'document',
+        containment: 'body',
         update: function () {
             jQuery('div.field.sort-enabled', this).trigger('sort-updated');
             sendEntryPrefs({ sort_only: true });

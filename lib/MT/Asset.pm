@@ -15,7 +15,7 @@ __PACKAGE__->install_properties(
             'id'          => 'integer not null auto_increment',
             'blog_id'     => 'integer not null',
             'label'       => 'string(255)',
-            'url'         => 'string(255)',
+            'url'         => 'text',
             'description' => 'text',
             'file_path'   => 'string(255)',
             'file_name'   => 'string(255)',
@@ -990,9 +990,11 @@ sub list_subclasses {
 
     foreach my $k ( keys %$types ) {
         if ( $k =~ m/^asset\.(.*)/ ) {
+            my $c = $types->{$k};
+            next if ref $c;
             push @types,
                 {
-                class => $types->{$k},
+                class => $c,
                 type  => $1,
                 };
         }

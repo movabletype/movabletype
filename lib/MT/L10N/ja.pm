@@ -672,7 +672,7 @@ use vars qw( @ISA %Lexicon );
 	'The System Email Address is used in the \'From:\' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events. Please confirm your <a href="[_1]">settings.</a>' => 'このメールアドレスはMovable Typeから送られるメールの\'From:\'アドレスに利用されます。メールはパスワードの再設定、コメント投稿者の登録、コメントやトラックバックの通知、ユーザーまたはIPアドレスのロックアウト、その他の場合に送信されます。<a href="[_1]">設定</a>を確認してください。',
 	'Cannot verify SSL certificate.' => 'SSL 証明書の検証ができません。',
 	'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this is not recommended.' => 'このメッセージを消すには、Mozilla::CA モジュールをインストールするか、mt-config.cgi に "SSLVerifyNone 1" を指定してください。',
-	'Can verify SSL certificate, but verification is disabled.' => 'SSL 証明書の検証を行なう準備ができていますが、環境変数で SSL 証明書の検証が向こうに設定されています。',
+	'Can verify SSL certificate, but verification is disabled.' => 'SSL 証明書の検証を行う準備ができていますが、環境変数で SSL 証明書の検証が無効に設定されています。',
 	'You should remove "SSLVerifyNone 1" in mt-config.cgi.' => 'SSLVerifyNone 環境変数の指定を mt-config.cgi から削除してください。',
 	'Personal Stats' => 'ユーザー情報',
 	'Movable Type News' => 'Movable Typeニュース',
@@ -1246,6 +1246,7 @@ use vars qw( @ISA %Lexicon );
 	'<[_1] Root>' => '<[_1]パス>',
 	'<[_1] Root>/[_2]' => '<[_1]パス>/[_2]',
 	'Archive' => 'アーカイブ',
+	'Custom...' => 'カスタム...',
 	'Please select a file to upload.' => 'アップロードするファイルを選択してください。',
 	'Invalid filename \'[_1]\'' => 'ファイル名\'[_1]\'が不正です。',
 	'Please select an audio file to upload.' => 'アップロードするオーディオファイルを選択してください。',
@@ -2859,12 +2860,20 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/dialog.js
 	'(None)' => '(なし)',
 
+## mt-static/js/image_editor/fabric.js
+
+## mt-static/js/image_editor/fabric.min.js
+
 ## mt-static/js/tc/mixer/display.js
 	'Title:' => 'タイトル:',
 	'Description:' => '説明:',
 	'Author:' => '作者:',
 	'Tags:' => 'タグ: ',
 	'URL:' => 'URL:',
+
+## mt-static/js/upload_settings.js
+	'You must set a valid path.' => '有効なパス名を指定してください。',
+	'You must set a path begining with %s or %a.' => '%s（サイトパス）か %a（アーカイブパス）から始まるパス名を指定してください。',
 
 ## mt-static/mt.js
 	'delete' => '削除',
@@ -3344,7 +3353,7 @@ use vars qw( @ISA %Lexicon );
 	'Basename Length' => 'ファイル名の文字数',
 	'Specifies the default length of an auto-generated basename. The range for this setting is 15 to 250.' => '自動作成される出力ファイル名のデフォルトの文字数を決めます。15文字から250文字の範囲で設定してください。',
 	'Compose Defaults' => '作成の既定値',
-	'Specifies the default Post Status when creating a new entry.' => '新規記事を作成時の公開状態の規定値を指定します。',
+	'Specifies the default Post Status when creating a new entry.' => '新規記事を作成時の公開状態の既定値を指定します。',
 	'Unpublished' => '下書き',
 	'Text Formatting' => 'テキストフォーマット',
 	'Specifies the default Text Formatting option when creating a new entry.' => 'テキストフォーマットの既定値を指定します。',
@@ -3369,7 +3378,7 @@ use vars qw( @ISA %Lexicon );
 	'Character entities (&amp#8221;, &amp#8220;, etc.)' => 'エンティティ (&amp#8221;、&amp#8220;など)',
 	q{ASCII equivalents (&quot;, ', ..., -, --)} => q{対応するASCII文字 (&quot;、'、...、-、--)},
 	'Replace Fields' => '置き換えるフィールド',
-	'Image default insertion options' => '画像挿入の規定値',
+	'Image default insertion options' => '画像挿入の既定値',
 	'Use thumbnail' => 'サムネイルを利用',
 	'width:' => '幅:',
 	'pixels' => 'ピクセル',
@@ -3594,7 +3603,7 @@ use vars qw( @ISA %Lexicon );
 	'Upload Destination' => 'アップロード先',
 	'Allow to change at upload' => 'アップロード時に変更を許可する',
 	'Rename filename' => 'ファイル名の変更',
-	'Rename non-ascii filename automatically.' => '日本語ファイル名を自動で変換する',
+	'Rename non-ascii filename automatically' => '日本語ファイル名を自動で変換する',
 	'Operation if a file exists' => '既存ファイルの処理',
 	'Upload and rename' => '既存のファイルを残して、別のファイル名でアップロードする',
 	'Overwrite existing file' => '既存のファイルを上書きする',
@@ -3611,7 +3620,6 @@ use vars qw( @ISA %Lexicon );
 	'You must set a valid Archive URL.' => '有効なアーカイブURLを指定してください。',
 	'You must set your Local Archive Path.' => 'アーカイブパスを指定する必要があります。',
 	'You must set a valid Local Archive Path.' => '有効なアーカイブパスを指定してください。',
-	'You must set a valid path.' => '有効なパス名を指定してください。',
 
 ## tmpl/cms/cfg_registration.tmpl
 	'Registration Settings' => '登録/認証の設定',
@@ -3634,7 +3642,7 @@ use vars qw( @ISA %Lexicon );
 	'Your settings have been saved.' => '設定を保存しました。',
 	'Imager does not support ImageQualityPng.' => 'イメージドライバーとして Imager を利用する場合、PNG 画像の品質を設定できません。',
 	'A test mail was sent.' => 'テストメールを送信しました。',
-	'One or more of your websites or blogs are not following the base site path (value of BaseSitePath) restriction.' => '1つ以上のウェブサイトまたは、ブログがウェブサイトパスの規定値の制限に違反しています。',
+	'One or more of your websites or blogs are not following the base site path (value of BaseSitePath) restriction.' => '1つ以上のウェブサイトまたは、ブログがウェブサイトパスの既定値の制限に違反しています。',
 	'(None selected)' => '(選択されていません)',
 	'System Email Address' => 'システムメールアドレス',
 	'Send Test Mail' => 'テストメールの送信',
@@ -3651,7 +3659,7 @@ use vars qw( @ISA %Lexicon );
 	'Enable this setting to have Movable Type track revisions made by users to entries, pages and templates.' => 'この設定を有効にすると、記事、ページ、テンプレートの変更履歴を保存します。',
 	'Track revision history' => '変更履歴を保存する',
 	'Site Path Limitation' => 'ウェブサイトパスの制限',
-	'Base Site Path' => 'ウェブサイトパスの規定値',
+	'Base Site Path' => 'ウェブサイトパスの既定値',
 	'Allow sites to be placed only under this directory' => 'ウェブサイトパスの作成を行えるディレクトリを指定します。',
 	'System-wide Feedback Controls' => 'システムレベルフィードバック制御',
 	'Prohibit Comments' => 'コメント',
@@ -4454,7 +4462,6 @@ use vars qw( @ISA %Lexicon );
 	'HTML Mode' => 'HTMLモード',
 
 ## tmpl/cms/include/archive_maps.tmpl
-	'Custom...' => 'カスタム...',
 
 ## tmpl/cms/include/asset_replace.tmpl
 	q{A file named '[_1]' already exists. Do you want to overwrite this file?} => q{同名のアイテム'[_1]'がすでに存在します。上書きしますか?},
@@ -4490,7 +4497,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/async_asset_upload.tmpl
 	q{Drag and drop here to upload files, or<button id='open-file-dialog'>Browse</button>} => q{アップロードするファイルをここにドラッグ＆ドロップするか、<button id='open-file-dialog'>ファイルを選択</button>します},
 	q{Drag and drop here to upload a file, or<button id='open-file-dialog'>Browse</button>} => q{アップロードするファイルをここにドラッグ＆ドロップするか、<button id='open-file-dialog'>ファイルを選択</button>します},
-	'(If you upload multiple files, last uploaded files will be used.)' => '（複数ファイルをアップロードした時、最後のファイルが利用されます。）', 
+	'(If you upload multiple files, last uploaded files will be used.)' => '（複数ファイルをアップロードした時、最後のファイルが利用されます。）',
 	'Upload Options' => 'アップロードオプション',
 	'Operation for a file exists' => '既存ファイルの処理',
 	'Cancelled: [_1]' => 'キャンセルされました: [_1]',
@@ -6726,7 +6733,6 @@ use vars qw( @ISA %Lexicon );
 	'Re-creating job of contents sync...' => 'サーバー配信のジョブを再生成しています...',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
-	'An error occurred while copying the directory.' => 'ファイルのコピー中にエラーが発生しました。',
 	'Failed to remove sync list. (ID:\'[_1]\')' => '同期リスト (ID:[_1]) の削除に失敗しました。',
 	'Failed to update sync list. (ID:\'[_1]\')' => '同キリスト (ID:[_1]) の更新に失敗しました。',
 	'Failed to create sync list.' => '同期リストの作成に失敗しました。',
@@ -6740,6 +6746,7 @@ use vars qw( @ISA %Lexicon );
 	'Deleting file \'[_1]\' failed.' => 'ファイル\'[_1]\'を削除できませんでした。',
 	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
 	'Unable to write temporary file ([_1]): [_2]' => '一時ファイル([_1])の書き込みができませんでした: [_2]',
+	'Unable to get size of temporary file ([_1]): [_2]' => '一時ファイル ([_1]) のサイズを取得できませんでした] [_2]',
 	'Unable to write remote files. Please check activity log for more details.: [_1]' => '配信先にファイルを書き込めません。詳細についてはログを確認してください。: [_1]',
 	'Unable to write remote files ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
 
@@ -6765,6 +6772,8 @@ use vars qw( @ISA %Lexicon );
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
 	'Copied [_1]' => 'サーバ配信設定 ([_1])の複製',
 	'The sync setting with the same name already exists.' => '同名のサーバー配信設定がすでに存在します。',
+	'Reached the upper limit of the parallel execution.' => '同時に実行できる配信の上限に達しているため、即時配信を実行できません。',
+	'Process ID can\'t be acquired.' => 'プロセスIDを取得できません。',
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'FTPサーバー \'[_1]\' への接続中にエラーが発生しました: [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'FTPサーバーのカレントディレクトリが取得できませんでした。',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした',
@@ -7225,5 +7234,7 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Junk' => 'スパムにするキーワード',
 
 );
+
+## New words: 310
 
 1;

@@ -61,6 +61,8 @@ sub init {
             MT->translate( "Reading image failed: [_1]", $@ ) );
     }
     ( $image->{width}, $image->{height} ) = $image->{gd}->getBounds();
+    $image->{gd}->alphaBlending(0);
+    $image->{gd}->saveAlpha(1);
     $image;
 }
 
