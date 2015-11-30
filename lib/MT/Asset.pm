@@ -991,7 +991,15 @@ sub list_subclasses {
     foreach my $k ( keys %$types ) {
         if ( $k =~ m/^asset\.(.*)/ ) {
             my $c = $types->{$k};
+
+            # When extending asset column by plugin.
+            if ( ref $c eq 'ARRAY' && @$c ) {
+                $c = @$c[0];
+            }
+
+            # Ignore invalid value for avoiding error.
             next if ref $c;
+
             push @types,
                 {
                 class => $c,
