@@ -633,7 +633,7 @@ sub from_object {
     for ( my $i = 0; $i < $size; $i++ ) {
         my $h = $hashs->[$i];
         $h->{$name}
-            = MT::Util::ts2iso( @blog_ids ? $blogs{ $blog_ids[$i] } : undef,
+            &&= MT::Util::ts2iso( @blog_ids ? $blogs{ $blog_ids[$i] } : undef,
             $h->{$name}, 1 );
     }
 }
