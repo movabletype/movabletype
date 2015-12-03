@@ -845,7 +845,25 @@ __BODY__
                 isnt( $got->{body}, $expected->text );
             },
         },
-
+        {    # Attach assets.
+            path   => '/v2/sites/1/pages/23',
+            method => 'PUT',
+            params => { page => { assets => [ { id => 1 } ] } },
+            result => sub {
+                $app->model('page')->load(23);
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $page  = $app->model('page')->load(23);
+                my $count = MT->model('objectasset')->count(
+                    {   blog_id   => $page->blog->id,
+                        object_ds => 'entry',
+                        object_id => $page->id,
+                    },
+                );
+                is( $count, 1, 'Attached asset.' );
+            },
+        },
 
         # preview_page_by_id
         {    # Non-existent page
