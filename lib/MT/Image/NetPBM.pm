@@ -83,6 +83,8 @@ sub _translate_filetype {
         jpeg => 'jpeg',
         gif  => 'gif',
         png  => 'png',
+        tif  => 'tiff',
+        tiff => 'tiff',
     }->{ lc $_[0] };
 }
 
