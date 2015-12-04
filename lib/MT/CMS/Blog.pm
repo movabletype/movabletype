@@ -3429,6 +3429,19 @@ HTML
         );
     }
     else {
+        my $auth = $app->user;
+        require MT::Log;
+        $app->log(
+            {   message => $app->translate(
+                    "'[_1] (ID:[_2])' has been copied as '[_3] (ID:[_4])' by '[_5] (ID:[_6])'",
+                    $blog->name,   $blog->id,   $blog_name,
+                    $new_blog->id, $auth->name, $auth->id
+                ),
+                level    => MT::Log::INFO(),
+                class    => $new_blog->class,
+                category => 'new',
+            }
+        );
         my $return_url = $app->base
             . $app->uri(
             mode => 'list',
