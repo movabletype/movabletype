@@ -1445,26 +1445,35 @@ sub handle_sign_in {
         if ( my $e = $@ ) {
             return $app->handle_error( $e, 403 );
         }
-        ( $result, $sess )
+        my $cmtr_auth;
+        ( $cmtr_auth, $sess )
             = $auth_class->handle_sign_in( $app, $q->param('key') );
-        unless ($sess) {
-            my $cmtr_sess = MT::Session->load(
-                {   kind => 'SI',
-                    name => $result->name,
-                },
-                {   limit     => 1,
-                    sort      => "start",
-                    direction => "descend",
-                }
-            );
-            $sess = $cmtr_sess->id
-                if $cmtr_sess && $cmtr_sess->get('author_id') == $result->id;
-            if ( $cmtr_sess && $cmtr_sess->get('author_id') == $result->id ) {
-                my $cfg     = $app->config;
-                my $timeout = $cfg->CommentSessionTimeout;
+        if ($cmtr_auth) {
+            $result = $cmtr_auth;
+            unless ($sess) {
+
+                my $cmtr_sess = MT::Session->load(
+                    {   kind => 'SI',
+                        name => $result->name,
+                    },
+                    {   limit     => 1,
+                        sort      => "start",
+                        direction => "descend",
+                    }
+                );
                 $sess = $cmtr_sess->id
-                    if $cmtr_sess->start() >= time - $timeout;
+                    if $cmtr_sess
+                    && $cmtr_sess->get('author_id') == $result->id;
+                if (   $cmtr_sess
+                    && $cmtr_sess->get('author_id') == $result->id )
+                {
+                    my $cfg     = $app->config;
+                    my $timeout = $cfg->CommentSessionTimeout;
+                    $sess = $cmtr_sess->id
+                        if $cmtr_sess->start() >= time - $timeout;
+                }
             }
+
         }
     }
 
