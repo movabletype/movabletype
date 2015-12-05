@@ -1,5 +1,8 @@
+#!/usr/bin/perl
 # $Id: 08-util.t 3531 2009-03-12 09:11:52Z fumiakiy $
 
+use strict;
+use warnings;
 use utf8;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More;
@@ -23,7 +26,6 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     extract_url_path break_up_text dir_separator deep_do
     deep_copy canonicalize_path is_valid_ip );
 use MT::I18N qw( encode_text );
-use strict;
 
 my $mt = MT->new;
 $mt->config( 'NoHTMLEntities', 1 );
@@ -182,8 +184,12 @@ is( MT::Util::to_json( { 'foo' => 'ho1ge' } ), '{"foo":"ho1ge"}' );
 is( MT::Util::to_json( [ 'foo', 'bar', 'baz' ] ), '["foo","bar","baz"]' );
 is( MT::Util::to_json( [ 'foo', 1, 'bar', 2, 3, 4 ] ),
     '["foo",1,"bar",2,3,4]' );
-is( MT::Util::to_json( [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ], { canonical => 1 } ),
-    '["foo",1,"bar",{"hoge":1,"moge":"a"}]' );
+is( MT::Util::to_json(
+        [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ],
+        { canonical => 1 }
+    ),
+    '["foo",1,"bar",{"hoge":1,"moge":"a"}]'
+);
 
 ### start_end_*
 is( start_end_day('19770908153005'),
@@ -408,7 +414,10 @@ for my $d (@relative_date_data) {
             '%Y/%m/%d', $d->{style}
         ),
         $d->{expected},
-        "relative_date() (offset:$d->{offset}, style:$d->{style})"
+        sprintf(
+            "relative_date() (offset:%d, style:%s)",
+            $d->{offset}, $d->{style} || 'undef'
+        )
     );
 }
 
@@ -591,7 +600,7 @@ is( unescape_unicode('&#12354;'), $utf8_e38182, 'unescape_unicode()' );
 SKIP: {
     skip 'This test depends on installed modules', 1;
     isa_ok( sax_parser(), 'XML::LibXML::SAX', 'sax_parser()' );
-};
+}
 
 is( asset_cleanup(
         '<form mt:asset-id="1" contenteditable="false"><img src="http://example.com/img/foo.jpg" /></form>'
@@ -758,7 +767,7 @@ SKIP: {
 {
     # make_unique_basename()
     my $not_unique_flg = 0;
-    my $entry1 = $mt->model('entry')->load(1);
+    my $entry1         = $mt->model('entry')->load(1);
     $entry1->basename("1111");
     $entry1->title("漢字1111");
     $entry1->save();
@@ -768,19 +777,24 @@ SKIP: {
         $entry->basename("");
         $entry->title("漢字1111");
         $entry->save();
-        my $not_unique_entry = $mt->model('entry')->load({
-            id => { not => $entry->id },
-            basename => $entry->basename()
-        });
-        if(defined($not_unique_entry)){
+        my $not_unique_entry = $mt->model('entry')->load(
+            {   id       => { not => $entry->id },
+                basename => $entry->basename()
+            }
+        );
+        if ( defined($not_unique_entry) ) {
             $not_unique_flg = 1;
         }
     }
-    is($not_unique_flg, 0, 'make_unique_basename()');
+    is( $not_unique_flg, 0, 'make_unique_basename()' );
 }
-{
+
+# Basename is not overlapped.
+for my $clear_cache ( 0, 1 ) {
     my $not_unique_flg = 0;
-    for(my $i = 0; $i < 10; $i++){
+    for ( my $i = 0; $i < 20; $i++ ) {
+        $mt->request->reset if $clear_cache;
+
         my $entry = $mt->model('entry')->new();
         $entry->set_values(
             {   blog_id        => 1,
@@ -801,15 +815,17 @@ SKIP: {
             }
         );
         $entry->save();
-        my $not_unique_entry = $mt->model('entry')->load({
-            id => { not => $entry->id },
-            basename => $entry->basename()
-        });
-        if(defined($not_unique_entry)){
+        my $not_unique_entry = $mt->model('entry')->load(
+            {   id       => { not => $entry->id },
+                basename => $entry->basename()
+            }
+        );
+        if ( defined($not_unique_entry) ) {
             $not_unique_flg = 1;
         }
     }
-    is($not_unique_flg, 0, 'make_unique_basename()');
+    is( $not_unique_flg, 0,
+        "Basename is not overlapped (\$clear_cache = $clear_cache)" );
 
 }
 done_testing();

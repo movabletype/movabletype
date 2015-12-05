@@ -207,7 +207,7 @@ button.history {
             // Resize.
             var width = jQuery('input#resize-width').val();
             var height = jQuery('input#resize-height').val();
-            image.resize(width, height);
+            image.resize(+width, +height);
 
             // Finish resizing.
             resizing = false;
@@ -238,11 +238,11 @@ button.history {
 
         // Update resize-width or resize-height when changing either them.
         jQuery('input#resize-width').keyup(function(event) {
-            var $resizeWidth = jQuery(this);
+            var resizeWidth = jQuery(this).val();
             var $resizeHeight = jQuery('input#resize-height');
  
             // Do nothing when there is no change.
-            if (!resizing && $resizeWidth.val() === image.width) {
+            if (!resizing && +resizeWidth === image.width) {
                 return;
             }
 
@@ -250,15 +250,15 @@ button.history {
             resizing = true;
  
             // Change the status of resize buttons.
-            if ($resizeWidth.val() === '0' || $resizeWidth.val() === '') {
+            if (+resizeWidth === 0 || +resizeWidth > image.width) {
                 disableButton('button#resize-apply');
             } else {
                 enableButton('button#resize-apply');
             }
             enableButton('button#resize-reset');
  
-            // Trigger apply button when pushing enter key.
-            if (event.keyCode === 13) {
+            // Trigger apply button when the button is enabled and enter key is pushed.
+            if (event.keyCode === 13 && jQuery('button#resize-apply:enabled').length) {
                 jQuery('button#resize-apply').trigger('click');
                 return;
             }
@@ -269,23 +269,23 @@ button.history {
             }
  
             // Also change resize-height empty.
-            if ($resizeWidth.val() === '') {
+            if (resizeWidth === '') {
                 $resizeHeight.val('');
                 return;
             }
  
             // Update resize-height.
-            var height = Math.ceil($resizeWidth.val() * image.height / image.width);
+            var height = Math.ceil(+resizeWidth * image.height / image.width);
             $resizeHeight.val(height);
         });
 
         jQuery('input#resize-height').keyup(function(event) {
 
             var $resizeWidth = jQuery('input#resize-width');
-            var $resizeHeight = jQuery(this);
+            var resizeHeight = jQuery(this).val();
 
             // Do nothing when there is no change.
-            if (!resizing && $resizeHeight.val() === image.height) {
+            if (!resizing && +resizeHeight === image.height) {
                 return;
             }
 
@@ -293,15 +293,15 @@ button.history {
             resizing = true;
 
             // Enable resize buttons.
-            if ($resizeHeight.val() === '0' || $resizeHeight.val() === '') {
+            if (+resizeHeight === 0 || +resizeHeight > image.height) {
                 disableButton('button#resize-apply');
             } else {
                 enableButton('button#resize-apply');
             }
             enableButton('button#resize-reset');
 
-            // Trigger apply button when pushing enter key.
-            if (event.keyCode === 13) {  // enter
+            // Trigger apply button when the button is enabled and enter key is pushed.
+            if (event.keyCode === 13 && jQuery('button#resize-apply:enabled').length) {
                 jQuery('button#resize-apply').trigger('click');
                 return;
             }
@@ -312,12 +312,12 @@ button.history {
             }
 
             // Also change resize-width empty.
-            if ($resizeHeight.val() === '') {
+            if (resizeHeight === '') {
                 $resizeWidth.val('');
                 return;
             }
 
-            var width = Math.ceil($resizeHeight.val() * image.width / image.height);
+            var width = Math.ceil(+resizeHeight * image.width / image.height);
             $resizeWidth.val(width);
         });
 

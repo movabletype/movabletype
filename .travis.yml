@@ -31,6 +31,7 @@ addons:
     - php5-cli
     - php5-mysql
     - php5-gd
+    - php5-memcache
     - libpng12-dev
     - libgif-dev
     - libjpeg-dev
@@ -39,8 +40,8 @@ addons:
     - unzip
 
 before_install:
-  # PHPUnit
-  - wget -O phpunit https://phar.phpunit.de/phpunit.phar
+  # Use PHPUnit 4.8, because PHP version of Travis CI is 5.3.
+  - wget -O phpunit https://phar.phpunit.de/phpunit-old.phar
   - chmod +x phpunit
 
 install:
@@ -49,6 +50,9 @@ install:
 
   # Tests fail with Perl 5.10.
   - cpanm --notest -L ./local XML::Parser::PerlSAX
+
+  # Tests fail with Perl 5.8 and 5.10.
+  - cpanm --notest -L ./local Twiggy
 
   # Instal CPAN modules.
   - cp ./t/cpanfile .

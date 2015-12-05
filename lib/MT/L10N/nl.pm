@@ -3817,7 +3817,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Upload Destination' => 'Uploadbestemming',
 	'Allow to change at upload' => 'Toestaan om te wijzigen bij upload', # Translate - New
 	'Rename filename' => 'Bestandsnaam veranderen', # Translate - New
-	'Rename non-ascii filename automatically.' => 'Automatisch niet-ascii bestandsnaam aanpassen.', # Translate - New
+	'Rename non-ascii filename automatically' => 'Automatisch niet-ascii bestandsnaam aanpassen.', # Translate - New
 	'Operation if a file exists' => 'Actie als bestand al bestaat', # Translate - New
 	'Upload and rename' => 'Uploaden en naam aanpassen', # Translate - New
 	'Overwrite existing file' => 'Bestaand bestand overschrijven', # Translate - New

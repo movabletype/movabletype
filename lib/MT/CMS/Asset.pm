@@ -1272,9 +1272,9 @@ sub _make_upload_destinations {
     my $y;
     my $ym;
     my $ymd;
+    my $now = MT::Util::offset_time(time);
 
     if ($real_path) {
-        my $now = MT::Util::offset_time(time);
         $user_basename = $app->user->basename;
         $y             = POSIX::strftime( "%Y", gmtime($now) );
         $ym            = POSIX::strftime( "%Y/%m", gmtime($now) );
@@ -1350,10 +1350,48 @@ sub _make_upload_destinations {
     }
 
     if ( $blog->upload_destination ) {
-        foreach (@dest_root) {
-            $_->{selected} = 1 if $blog->upload_destination eq $_->{path};
+        if ( my @selected
+            = grep { $blog->upload_destination eq $_->{path} } @dest_root )
+        {
+            $_->{selected} = 1 for @selected;
+        }
+        else {
+            my $label = $blog->upload_destination;
+            if ($real_path) {
+
+                # Replace %s and %a.
+                if ( $label =~ /^%s/ ) {
+                    my $site_root
+                        = $app->translate( '<[_1] Root>', $blog->class_label );
+                    $label =~ s/^%s/$site_root/;
+                }
+                elsif ( $label =~ /^%a/ ) {
+                    my $archive_root = $app->translate( '<[_1] Root>',
+                        MT->translate('Archive') );
+                    $label =~ s/^%a/$archive_root/;
+                }
+
+                # Replace %u, %y, %m and %d.
+                my $u = $app->user->basename;
+                my $y = POSIX::strftime( "%Y", gmtime($now) );
+                my $m = POSIX::strftime( "%m", gmtime($now) );
+                my $d = POSIX::strftime( "%d", gmtime($now) );
+                $label =~ s/%u/$u/g;
+                $label =~ s/%y/$y/g;
+                $label =~ s/%m/$m/g;
+                $label =~ s/%d/$d/g;
+            }
+
+            unshift @dest_root,
+                {
+                label    => $label,
+                path     => $blog->upload_destination,
+                selected => 1,
+                };
         }
     }
+
+    push @dest_root, { label => $app->translate('Custom...') };
 
     return @dest_root;
 }
@@ -1388,6 +1426,7 @@ sub _set_start_upload_params {
                 $param->{upload_destination_value} = $opt->{path};
             }
         }
+        $param->{destination}         = $blog->upload_destination;
         $param->{extra_path}          = $blog->extra_path;
         $param->{operation_if_exists} = $blog->operation_if_exists;
         $param->{normalize_orientation}
@@ -1401,6 +1440,7 @@ sub _set_start_upload_params {
     }
     else {
         $param->{normalize_orientation} = 1;
+        $param->{auto_rename_non_ascii} = 1;
     }
 
     $param->{max_upload_size} = $app->config->CGIMaxUpload;
@@ -2037,8 +2077,7 @@ sub _upload_file {
     # Change to real file extension
     if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
         my $ext_old
-            = (
-            File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
+            = ( File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
             [2];
         if (   $ext_new ne lc($ext_old)
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
@@ -2092,6 +2131,7 @@ sub _upload_file {
         $local_file,     $asset_file,   $base_url,
         $asset_base_url, $relative_url, $extra_path
     );
+    my $label = $basename;
     if ( $blog_id = $q->param('blog_id') ) {
 
         $param{blog_id} = $blog_id;
@@ -2419,7 +2459,7 @@ sub _upload_file {
         $asset->file_name($local_basename);
         $asset->file_ext($local_ext);
         $asset->blog_id($blog_id);
-        $asset->label($local_basename);
+        $asset->label($label);
         $asset->created_by( $app->user->id );
     }
     else {
@@ -3052,7 +3092,7 @@ sub dialog_asset_modal {
     }
 
     if ( $param{require_type} ) {
-        my $req_class = $app->model($param{require_type});
+        my $req_class = $app->model( $param{require_type} );
         $param{require_type_label} = $req_class->class_label;
     }
 

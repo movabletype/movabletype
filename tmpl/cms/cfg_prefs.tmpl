@@ -75,6 +75,10 @@
 </mt:if>
 </mt:setvarblock>
 
+<mt:setvarblock name="html_head" append="1">
+  <script type="text/javascript" src="<mt:var name="static_uri">js/upload_settings.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:setvarblock>
+
 <mt:include name="include/header.tmpl" id="header_include">
 
 <script type="text/javascript">
@@ -552,11 +556,15 @@ function setLicense() {
     <mtapp:setting
       id="upload_destination"
       label="<__trans phrase="Upload Destination">">
-      <select name="upload_destination" id="upload_destination">
+      <select name="upload_destination" id="upload_destination" onchange="uploadDestinationSelect(this)">
       <mt:loop name="destination_loop">
         <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
       </mt:loop>
-      </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
+      </select>
+      <input type="text" id="upload_destination_custom" class="text path required valid-path upload-destination hidden" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" />
+      <span class="upload-extra-path">
+        / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
+      </span>
       <div class="option" >
         <input type="checkbox" name="allow_to_change_at_upload" id="allow_to_change_at_upload" value="1"<mt:if name="allow_to_change_at_upload"> checked="checked"</mt:if> class="cb" />
         <label for="allow_to_change_at_upload"><__trans phrase="Allow to change at upload"></label>
@@ -567,7 +575,7 @@ function setLicense() {
       class="has-option"
       label="<__trans phrase="Rename filename">">
       <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb" />
-      <label for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically."></label>
+      <label for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
     </mtapp:setting>
     <mtapp:setting
       id="operation_if_exists"
@@ -617,17 +625,6 @@ function setLicense() {
         return true;
     }
     </mt:if>
-    function is_valid_path(path_){
-      var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
-      str = encodeURIComponent(str);
-      if (str.indexOf('%') != -1) {
-          return false;
-      }
-      if (str.match(/\.\./)) {
-          return false;
-      }
-      return true;
-    }
 
     jQuery.mtValidateAddRules({
 <mt:if name="is_blog">

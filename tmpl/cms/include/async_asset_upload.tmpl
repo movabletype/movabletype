@@ -103,11 +103,15 @@ p.msg-warning {
       show_label="0"
       label_class="top-label">
       <mt:if name="destination_loop">
-        <select name="destination" id="destination">
+        <select name="destination" id="destination" onchange="uploadDestinationSelect(this);">
         <mt:loop name="destination_loop">
           <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
         </mt:loop>
-        </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
+        </select>
+        <input type="text" id="upload_destination_custom" class="text path required valid-path upload-destination hidden" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" />
+        <span class="upload-extra-path">
+          / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
+        </span>
       </mt:if>
     </mtapp:setting>
   <mt:else>
@@ -127,7 +131,7 @@ p.msg-warning {
   label="<__trans phrase="Rename filename">"
   show_label="1">
       <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb" />
-      <label for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically."></label>
+      <label for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
 </mtapp:setting>
 <mtapp:setting
   id="operation_if_exists"
@@ -211,7 +215,7 @@ function createFormData(file) {
   fd.append('operation_if_exists', jQuery('#operation_if_exists').val() );
   fd.append('auto_rename_non_ascii', jQuery('#auto_rename_non_ascii').prop('checked')? 1 : 0 );  
 
-  fd.append('destination', jQuery('#destination').val() );
+  fd.append('destination', jQuery('#destination:enabled, #upload_destination_custom:enabled').val() );
   fd.append('extra_path', jQuery('#extra_path').val() );
 
 <mt:if name="no_insert">
@@ -328,7 +332,13 @@ function uploadFiles(files, items) {
   var max_upload_size = <mt:var name="max_upload_size">;
 
 <mt:unless name="filter" eq="userpic">
-  <mt:if name="allow_to_change_at_upload">    
+  <mt:if name="allow_to_change_at_upload">
+  // Validate custom upload destination
+  var $upload_destination_custom = jQuery('#upload_destination_custom:enabled');
+  if ($upload_destination_custom.length && !$upload_destination_custom.mtValidate('simple')) {
+    return;
+  }
+
   // Validate extra path
   var $extra_path = jQuery('#extra_path');
   if ($extra_path.val().length > 0 ) {
@@ -464,25 +474,12 @@ jQuery('#file').change( function(e) {
     jQuery('#file').attr('type', 'file');
   }
 });
-
 /* ]]> */
 </script>
 
 <mt:setvarblock name="jq_js_include" append="1">
   <mt:unless name="filter" eq="userpic">  
     <mt:if name="allow_to_change_at_upload">    
-  function is_valid_path(path_){
-    var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
-    str = encodeURIComponent(str);
-    if (str.indexOf('%') != -1) {
-        return false;
-    }
-    if (str.match(/\.\./)) {
-        return false;
-    }
-    return true;
-  }
-
   jQuery.mtValidateAddRules({
     "#extra_path": function($e) {
       return is_valid_path($e.val());
