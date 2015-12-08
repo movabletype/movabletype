@@ -2860,10 +2860,6 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/dialog.js
 	'(None)' => '(なし)',
 
-## mt-static/js/image_editor/fabric.js
-
-## mt-static/js/image_editor/fabric.min.js
-
 ## mt-static/js/tc/mixer/display.js
 	'Title:' => 'タイトル:',
 	'Description:' => '説明:',
@@ -3149,6 +3145,7 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/theme.yaml
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
 	'Classic Website' => 'クラシックウェブサイト',
+
 
 ## themes/pico/templates/about_this_page.mtml
 
@@ -6727,6 +6724,7 @@ use vars qw( @ISA %Lexicon );
 	'Sync Settings' => 'サーバー配信設定',
 	'Create new sync setting' => '新しいサーバー配信設定を作成する',
 	'Contents Sync' => 'サーバー配信',
+	'Remove sync PID files' => 'サーバー配信のPIDファイル削除',
 	'Updating MT::SyncSetting table...' => 'サーバー配信設定テーブルを更新しています...',
 	'Migrating settings of contents sync on website...' => 'ウェブサイトのサーバー配信の設定を移行しています...',
 	'Migrating settings of contents sync on blog...' => 'ブログのサーバー配信の設定を移行しています...',
@@ -6747,6 +6745,7 @@ use vars qw( @ISA %Lexicon );
 	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
 	'Unable to write temporary file ([_1]): [_2]' => '一時ファイル([_1])の書き込みができませんでした: [_2]',
 	'Unable to get size of temporary file ([_1]): [_2]' => '一時ファイル ([_1]) のサイズを取得できませんでした] [_2]',
+	'Unable to create destination directory ([_1])' => '配信先にディレクトリを作成できません ([_1])',
 	'Unable to write remote files. Please check activity log for more details.: [_1]' => '配信先にファイルを書き込めません。詳細についてはログを確認してください。: [_1]',
 	'Unable to write remote files ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
 
@@ -6763,6 +6762,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Sync.pack/lib/MT/Worker/ContentsSync.pm
 	'Sync setting # [_1] not found.' => 'ID:[_1]のサーバー配信設定が見つかりませんでした。',
 	'This sync setting is being processed already.' => 'この同期設定は、すでに処理されています。',
+	'Unknown error occurred.' => '想定外のエラーが発生しました。',
 	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバー配信の処理に成功したことを通知するメールです。',
 	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
 	'Failed to remove temporary directory: [_1]' => '一時ディレクトリを削除できませんでした: [_1]',
@@ -6820,7 +6820,6 @@ use vars qw( @ISA %Lexicon );
 	'Preparing...' => 'サーバー配信の準備をしています...',
 	'Synchronizing...' => '配信中です...',
 	'Finish!' => 'ファイルが配信されました!',
-	'Unknown error occurred.' => '想定外のエラーが発生しました。',
 	'The synchronization was interrupted. Unable to resume.' => 'サーバー配信が中断されました。再開できません。',
 
 ## plugins/FacebookCommenters/config.yaml
@@ -6837,7 +6836,7 @@ use vars qw( @ISA %Lexicon );
 	'Could not verify this app with Facebook: [_1]' => 'Facebookでこのアプリケーションを確認できません: [_1]',
 
 ## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
-	'Facebook Application Key' => 'Facebookアプリケーションキー',
+	'Facebook App ID' => 'Facebookアプリケーションキー',
 	'The key for the Facebook application associated with your blog.' => 'ブログ関連付用Facebookアプリケーションキー',
 	'Edit Facebook App' => 'Facebookアプリ編集',
 	'Create Facebook App' => 'Facebookアプリ作成',
@@ -7235,6 +7234,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 310
+## New words: 333
 
 1;
