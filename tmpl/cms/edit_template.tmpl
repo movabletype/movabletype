@@ -225,7 +225,6 @@
 <mt:setvartemplate name="action_buttons">
 <mt:if name="new_object">
   <button
-     onclick="return validate(this.form);"
      type="submit"
      accesskey="s"
      tabindex="12"
@@ -234,7 +233,6 @@
     <__trans phrase="Save"></button>
 <mt:else>
   <button
-     onclick="return validate(this.form);"
      type="submit"
      accesskey="s"
      tabindex="12"
@@ -249,8 +247,7 @@
      accesskey="v"
      tabindex="13"
      title="<__trans phrase="Preview">"
-     class="preview action button"
-     onclick="return validate(this.form);">
+     class="preview action button">
     <__trans phrase="Preview"></button>
 </mt:if>
 <mt:unless name="build_type_0">
@@ -262,8 +259,7 @@
      accesskey="r"
      tabindex="14"
      title="<__trans phrase="Save and Publish this template (r)">"
-     class="publish action button"
-     onclick="return validate(this.form, 1);">
+     class="publish action button">
     <__trans phrase="Save &amp; Publish"></button>
       </mt:if>
     </mt:if>
@@ -881,7 +877,17 @@ function saveTemplatePrefs( sync ) {
         jQuery('form#template-listing-form').removeAttr('target');
         jQuery('button.save').attr('disabled', 'disabled');
         jQuery('button.publish').attr('disabled', 'disabled');
-        jQuery('form#template-listing-form').submit();
+        var rebuild = 0;
+        if(jQuery(this).hasClass('publish')){
+          rebuild = 1;
+        }
+        if(validate(this.form, rebuild)){
+          jQuery('form#template-listing-form').submit();
+          return true;
+        }
+        jQuery('button.save').removeAttr('disabled');
+        jQuery('button.publish').removeAttr('disabled');
+        return false;
   </mt:if>
     });
     jQuery('button.preview').click(function() {
@@ -890,6 +896,11 @@ function saveTemplatePrefs( sync ) {
   <mt:if name="config.previewinnewwindow">
         jQuery('form#template-listing-form').attr('target', 'mt_preview_template_<mt:var name="blog_id" escape="js" default="0">_<mt:var name="id" escape="js" default="0">');
   </mt:if>
+        if(validate(this.form)){
+          jQuery('form#template-listing-form').submit();
+          return true;
+        }
+        return false;
     });
     jQuery('input#save_revision').click(function() {
         jQuery('input#revision-note').toggle();
