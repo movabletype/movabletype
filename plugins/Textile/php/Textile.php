@@ -408,6 +408,14 @@ class Textile {
 			# content by default
 			$str = preg_replace_callback('/(<blockcode(?: [^>]+)?'.'>)(.+?)(<\/blockcode>)/s',
 					 array(&$this, '_replace_pre'), $str);
+
+			# preserve span tag contents
+			if ($this->css['class_caps']) {
+				$str = preg_replace_callback('/(<span class="'.$this->css['class_caps'].'">)(.+?)(<\/span>)/s',
+						 function($matches){
+						 	return $this->_repl($matches[1].$this->encode_html($matches[2], 1).$matches[3]);
+						 }, $str);
+			}
 	
 			# preserve PHPish, ASPish code
 			$str = preg_replace_callback('/(<([\?\%]).*?(\2)>)/s',array(&$this, '_replace_simple'), $str);

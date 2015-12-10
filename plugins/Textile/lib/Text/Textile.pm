@@ -412,6 +412,12 @@ sub textile {
         $str =~ s{(<blockcode(?: [^>]+)?>)(.+?)(</blockcode>)}
                  {"\n\n"._repl(\@repl, $1.$self->encode_html($2, 1).$3)."\n\n"}ges;
 
+        # preserve span tag contents
+        if ( my $caps = $self->{css}{class_caps} ) {
+            $str =~ s{(<span class="$caps">)(.+?)(<\/span>)}
+                 {_repl(\@repl, $1.$self->encode_html($2, 1).$3)}ges;
+        }
+
         # preserve PHPish, ASPish code
         $str =~ s!(<([\?\%]).*?(\2)>)!_repl(\@repl, $1)!ges;
     }
