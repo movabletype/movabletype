@@ -599,6 +599,20 @@ sub post_save {
             }
         );
     }
+    else {
+        $app->log(
+            {   message => $app->translate(
+                    "Category '[_1]' (ID:[_2]) edited by '[_3]'",
+                    $obj->label, $obj->id, $app->user->name
+                ),
+                level    => MT::Log::INFO(),
+                class    => $obj->class,
+                category => 'edit',
+                metadata => $obj->id,
+            }
+        );
+    }
+
     1;
 }
 
