@@ -284,6 +284,11 @@ sub bulk_update {
         $app->run_callbacks( 'cms_pre_save.' . $model,
             $app, $updated, $original )
             or return $app->json_error( $app->errstr() );
+
+        # Setting modified_by updates modified_on which we want to do before
+        # a save but after pre_save callbacks fire.
+        $updated->modified_by( $app->user->id );
+
         $updated->save;
         $app->run_callbacks( 'cms_post_save.' . $model,
             $app, $updated, $original )
