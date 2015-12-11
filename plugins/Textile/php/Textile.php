@@ -309,6 +309,9 @@ class Textile {
             .$this->_repl($matches[1].$this->encode_html($matches[2], 1).$matches[3])
             ."\n\n";
     }
+    function _replace_pre_oneline($matches) {
+        return $this->_repl($matches[1].$this->encode_html($matches[2], 1).$matches[3]);
+    }
     function _replace_code($matches) {
 		return $this->_repl($this->format_code(array('text' => $matches[2].$matches[4], 'lang' => $matches[1].$matches[3])));
     }
@@ -412,9 +415,7 @@ class Textile {
 			# preserve span tag contents
 			if ($this->css['class_caps']) {
 				$str = preg_replace_callback('/(<span class="'.$this->css['class_caps'].'">)(.+?)(<\/span>)/s',
-						 function($matches){
-						 	return $this->_repl($matches[1].$this->encode_html($matches[2], 1).$matches[3]);
-						 }, $str);
+					 array(&$this, '_replace_pre_oneline'), $str);
 			}
 	
 			# preserve PHPish, ASPish code
