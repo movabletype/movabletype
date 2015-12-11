@@ -837,5 +837,8 @@
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicAsset><MTAssetBlogID pad='1'></MTAuthorUserpicAsset></MTAuthors>", "e" : "000000"}, #821
 { "r" : "1", "t" : "<MTEntries limit='1'><MTArchiveLink archive_type=\"Author\"></MTEntries>", "e" : "http://narnia.na/nana/archives/author/chucky-dee/"}, #822
 { "r" : "1", "t" : "<mt:ArchiveList type='Monthly'><MTIfFolder>foge</MTIfFolder></mt:ArchiveList>", "e" : ""}, #823
-{ "r" : "1", "t" : "<MTIfFolder>foge</MTIfFolder>", "e" : ""} #824
+{ "r" : "1", "t" : "<MTIfFolder>foge</MTIfFolder>", "e" : ""}, #824
+{ "r" : "1", "t" : "<MTEntries include_blogs='all' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #825
+{ "r" : "1", "t" : "<MTEntries include_blogs='all' class_type='entry' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #826
+{ "r" : "1", "t" : "<MTEntries include_blogs='all' class_type='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "page"} #827
 ]
