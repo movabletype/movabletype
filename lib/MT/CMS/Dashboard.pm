@@ -1248,9 +1248,10 @@ sub generate_site_stats_data {
             my $handler = $line_setting->{handler} || $line_setting->{code};
             $handler = MT->handler_to_coderef($handler);
             if ($handler) {
-                $counts[$sub] = $handler->( $app, \@ten_days_ago_tl, $param )
-                    or return;
-                $maxes[$sub] = 0;
+                my $temp_cnt = $handler->( $app, \@ten_days_ago_tl, $param )
+                    or next;
+                $counts[$sub] = $temp_cnt;
+                $maxes[$sub]  = 0;
                 foreach my $key ( keys %{ $counts[$sub] } ) {
                     $maxes[$sub] = $counts[$sub]->{$key}
                         if $maxes[$sub] < $counts[$sub]->{$key};
@@ -1311,6 +1312,7 @@ sub generate_site_stats_data {
             || $perms->can_do('set_publish_paths')
             || $perms->can_do('administer_blog')
             || $perms->can_do('administer');
+        $result->{error} = $app->errstr if $app->errstr;
 
         $fmgr->put_data(
             'widget_site_stats_draw_graph('
