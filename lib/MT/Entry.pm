@@ -1984,7 +1984,7 @@ sub update_assets {
     # Detach all assets if no assets.
     unless (@assets) {
         MT->model('objectasset')->remove(
-            {   object_ds => $obj->class,
+            {   object_ds => 'entry',
                 object_id => $obj->id,
             }
         ) or return $obj->error( MT->model('objectasset')->errstr );
@@ -1994,7 +1994,7 @@ sub update_assets {
     # Detach assets.
     my @asset_ids = map { $_->id } @assets;
     MT->model('objectasset')->remove(
-        {   object_ds => $obj->class,
+        {   object_ds => 'entry',
             object_id => $obj->id,
             asset_id  => { not => \@asset_ids },
         }
@@ -2003,7 +2003,7 @@ sub update_assets {
     # Remove already attached assets.
     my @attaching_assets = @assets;
     my @current_oa       = MT->model('objectasset')->load(
-        {   object_ds => $obj->class,
+        {   object_ds => 'entry',
             object_id => $obj->id,
             asset_id  => \@asset_ids,
         }
@@ -2018,7 +2018,7 @@ sub update_assets {
         my $oa = MT->model('objectasset')->new;
         $oa->set_values(
             {   blog_id   => $obj->blog->id,
-                object_ds => $obj->class,
+                object_ds => 'entry',
                 object_id => $obj->id,
                 asset_id  => $asset->id,
             }
