@@ -6,7 +6,10 @@ use warnings;
 use utf8;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More;
+use File::Spec;
+
 use MT;
+use MT::FileMgr;
 use MT::Test qw(:db :data);
 use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     start_end_period week2ymd munge_comment
@@ -24,7 +27,7 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do
-    deep_copy canonicalize_path is_valid_ip );
+    deep_copy canonicalize_path is_valid_ip clear_site_stats_widget_cache);
 use MT::I18N qw( encode_text );
 
 my $mt = MT->new;
@@ -828,4 +831,32 @@ for my $clear_cache ( 0, 1 ) {
         "Basename is not overlapped (\$clear_cache = $clear_cache)" );
 
 }
+
+my $fmgr = MT::FileMgr->new('Local');
+{
+    my $dir = File::Spec->catfile( MT->app->support_directory_path,
+        'dashboard', 'stats', 0, '001', '001' );
+    if ( !$fmgr->exists($dir) ) {
+        $fmgr->mkpath($dir);
+    }
+    my $file = File::Spec->catfile( $dir, 'data_1.json' );
+    if ( !$fmgr->exists($file) ) {
+        $fmgr->put_data( 1, $file );
+    }
+    ok( $fmgr->exists($file), 'JSON file of site stats exists' );
+    clear_site_stats_widget_cache(1);
+    ok( !$fmgr->exists($file), 'JSON file of site stats was removed' );
+}
+
+{
+    my $dir = File::Spec->catdir( MT->app->support_directory_path,
+        'dashboard', 'stats' );
+    if ( !$fmgr->exists($dir) ) {
+        $fmgr->mkpath($dir);
+    }
+    ok( $fmgr->exists($dir), 'Site stats directory exists' );
+    clear_site_stats_widget_cache();
+    ok( !$fmgr->exists($dir), 'Site stats directory was removed' );
+}
+
 done_testing();
