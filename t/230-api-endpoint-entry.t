@@ -683,10 +683,9 @@ __BODY__
             },
         },
         {    # Remove attached categories.
-            path   => '/v2/sites/1/entries/2',
-            method => 'PUT',
-            params =>
-                { entry => { categories => [ ] }, },
+            path      => '/v2/sites/1/entries/2',
+            method    => 'PUT',
+            params    => { entry => { categories => [] }, },
             callbacks => [
                 {   name =>
                         'MT::App::DataAPI::data_api_save_permission_filter.entry',
@@ -712,6 +711,7 @@ __BODY__
 
         # get_entry - normal tests.
         {    # no_format_filter = 1
+                # check unpublishedDate is undef
             path      => '/v2/sites/1/entries/2',
             method    => 'GET',
             params    => { no_text_filter => 1, },
@@ -729,6 +729,8 @@ __BODY__
                 my $expected = $app->model('entry')->load(2);
 
                 is( $got->{body}, $expected->text, 'no_text_filter = 1.' );
+                is( $got->{unpublishedDate},
+                    undef, 'upublishedDate is undef.' );
             },
         },
 
