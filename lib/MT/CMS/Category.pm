@@ -309,10 +309,25 @@ sub bulk_update {
 
     $app->touch_blogs;
 
-    my @ordered_ids = map { $_->id } @objects;
-    my $order = join ',', @ordered_ids;
-    $blog->$meta($order);
-    $blog->save;
+    my $previous_order = $blog->$meta;
+    my @ordered_ids    = map { $_->id } @objects;
+    my $new_order      = join ',', @ordered_ids;
+    if ( $previous_order ne $new_order ) {
+        $blog->$meta($new_order);
+        $app->log(
+            {   message => $app->translate(
+                    "[_1] order has been edited by '[_2]'",
+                    $class->class_label,
+                    $app->user->name
+                ),
+                level    => MT::Log::INFO(),
+                class    => $blog->class,
+                category => 'edit',
+                metadata => "[${previous_order}] => [${new_order}]",
+            }
+        );
+        $blog->save;
+    }
 
     $app->run_callbacks( 'cms_post_bulk_save.' . $model, $app, \@objects );
 
