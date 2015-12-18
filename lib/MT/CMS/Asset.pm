@@ -544,14 +544,17 @@ sub js_upload_file {
             ($thumb_url) = $asset->thumbnail_url(
                 Height => $thumb_size,
                 Width  => $thumb_size,
-                Square => 1
+                Square => 1,
+                Ts     => 1
             );
         }
         elsif ( $orig_width > $thumb_size ) {
-            ($thumb_url) = $asset->thumbnail_url( Width => $thumb_size, );
+            ($thumb_url)
+                = $asset->thumbnail_url( Width => $thumb_size, Ts => 1 );
         }
         elsif ( $orig_height > $thumb_size ) {
-            ($thumb_url) = $asset->thumbnail_url( Height => $thumb_size, );
+            ($thumb_url)
+                = $asset->thumbnail_url( Height => $thumb_size, Ts => 1 );
         }
         else {
             $thumb_url = $asset->url;
@@ -1362,7 +1365,8 @@ sub _make_upload_destinations {
                 # Replace %s and %a.
                 if ( $label =~ /^%s/ ) {
                     my $site_root
-                        = $app->translate( '<[_1] Root>', $blog->class_label );
+                        = $app->translate( '<[_1] Root>',
+                        $blog->class_label );
                     $label =~ s/^%s/$site_root/;
                 }
                 elsif ( $label =~ /^%a/ ) {
