@@ -840,5 +840,6 @@
 { "r" : "1", "t" : "<MTIfFolder>foge</MTIfFolder>", "e" : ""}, #824
 { "r" : "1", "t" : "<MTEntries include_blogs='all' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #825
 { "r" : "1", "t" : "<MTEntries include_blogs='all' class_type='entry' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #826
-{ "r" : "1", "t" : "<MTEntries include_blogs='all' class_type='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "page"} #827
+{ "r" : "1", "t" : "<MTEntries include_blogs='all' class_type='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "page"}, #827
+{ "r" : "1", "t" : "<MTEntries include_blogs='all' class='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"} #828
 ]

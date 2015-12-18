@@ -50,14 +50,10 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         $counter = $ctx->stash('_entries_counter');
         $out = $ctx->stash('__out');
     }
-    if ( (!isset($args['class'])) && (!isset($args['class_type']))) {
-        $args['class'] = 'entry';
+    if ( isset($args['class_type']) ) {
+        $args['class'] = $args['class_type'];
     } else {
-        if (isset($args['class_type'])) {
-            if ( $args['class_type'] == 'page' ) {
-                $args['class'] = 'page';
-            }
-        }
+        $args['class'] = 'entry';
     }
 
     if ( isset($args['offset']) && ($args['offset'] == 'auto') ) {
