@@ -39,7 +39,8 @@ __PACKAGE__->install_properties(
                 revisioned => 1
             },
             'linked_file' => {
-                type       => 'string(255)',
+                type       => 'string',
+                size       => '255',
                 revisioned => 1,
             },
             'linked_file_mtime' => 'string(10)',
