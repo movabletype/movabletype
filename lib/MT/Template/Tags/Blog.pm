@@ -332,6 +332,7 @@ sub _hdlr_blog_relative_url {
     return '' unless $blog;
     my $host = $blog->site_url;
     return '' unless defined $host;
+    $host .= '/' unless $host =~ m|/$|;
     if ( $host =~ m!^https?://[^/]+(/.*)$! ) {
         return $1;
     }
