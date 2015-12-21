@@ -618,7 +618,7 @@ sub _hdlr_comment_if_moderated {
     my ($ctx) = @_;
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
-    return $c->visible ? 1 : 0;
+    return $c->visible ? 0 : 1;
 }
 
 ###########################################################################

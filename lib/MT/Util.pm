@@ -2796,8 +2796,8 @@ sub clear_site_stats_widget_cache {
 
     my $path;
     if ($site_id) {
-        my @perms = MT::Permission->load( { blog_id => $site_id } );
-        foreach my $perm (@perms) {
+        my $iter = MT::Permission->load_iter( { blog_id => $site_id } );
+        while ( my $perm = $iter->() ) {
             my $user_id = $perm->author_id;
             my $low_dir = sprintf( "%03d", $user_id % 1000 );
             my $sub_dir = sprintf( "%03d", $site_id % 1000 );

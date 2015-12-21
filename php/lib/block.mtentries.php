@@ -50,7 +50,9 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         $counter = $ctx->stash('_entries_counter');
         $out = $ctx->stash('__out');
     }
-    if (!isset($args['class'])) {
+    if ( isset($args['class_type']) ) {
+        $args['class'] = $args['class_type'];
+    } else {
         $args['class'] = 'entry';
     }
 

@@ -117,7 +117,7 @@ p.msg-warning {
   <mt:else>
     <div id="site_path-field" class="field field-top-label">
       <div class="field-content">
-        <mt:var name="upload_destination_label">/<mt:var name="extra_path">
+        <mt:var name="upload_destination_label" escape="html">/<mt:var name="extra_path" escape="html">
         <input type="hidden" id="destination" name="destination" value="<mt:var name="upload_destination_value" escape="html">" />
         <input type="hidden" id="extra_path" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
       </div>

@@ -38,7 +38,11 @@ __PACKAGE__->install_properties(
                 label      => 'Template Text',
                 revisioned => 1
             },
-            'linked_file'       => 'string(255)',
+            'linked_file' => {
+                type       => 'string',
+                size       => '255',
+                revisioned => 1,
+            },
             'linked_file_mtime' => 'string(10)',
             'linked_file_size'  => 'integer',
             'rebuild_me'        => {

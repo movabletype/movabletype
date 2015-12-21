@@ -26,6 +26,9 @@ applications:
 
                         return 0 unless FormattedText::App::is_enabled($app);
 
+                        # System Administrator
+                        return 1 if $app->user->is_superuser;
+
                         # Blog context
                         if ($app->blog) {
                             return

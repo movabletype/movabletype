@@ -98,10 +98,27 @@ sub scale {
     my $magick = $image->{magick};
     my $blob;
     eval {
+        my ( $orig_x, $orig_y ) = $magick->Get( 'width', 'height' );
+
         my $err
             = $magick->can('Resize')
             ? $magick->Resize( width => $w, height => $h )
             : $magick->Scale( width => $w, height => $h );
+
+        # Case #112908
+        # $magick->Resize() does nothing with Strawberry Perl 5.10.1
+        # and Image::Magick 6.83.
+        if ( !$err && $^O eq 'MSWin32' && $magick->can('Resize') ) {
+            my ( $x, $y ) = $magick->Get( 'width', 'height' );
+            if (   $orig_x != $w
+                && $orig_y != $h
+                && $x == $orig_x
+                && $y == $orig_y )
+            {
+                $err = $magick->Scale( width => $w, height => $h );
+            }
+        }
+
         return $image->error(
             MT->translate(
                 "Scaling to [_1]x[_2] failed: [_3]", $w, $h, $err

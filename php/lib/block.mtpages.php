@@ -7,7 +7,7 @@
 
 require_once('block.mtentries.php');
 function smarty_block_mtpages($args, $content, &$ctx, &$repeat) {
-    $args['class'] = 'page';
+    $args['class_type'] = 'page';
     if (isset($args['include_subfolders']) &&
         $args['include_subfolders'] == 1)
     {

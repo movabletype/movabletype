@@ -352,7 +352,7 @@ sub suite {
                     'status'       => 'Approved',
                     'date'         => '2004-07-14T18:28:00-03:30',
                     'createdDate'  => '2004-07-14T18:28:00-03:30',
-                    'modifiedDate' => '0000-00-00T00:00:00-03:30',
+                    'modifiedDate' => undef,
                     'updatable'    => 'true',
                     'blog'         => { 'id' => '1' },
                     'author'       => {
@@ -383,7 +383,7 @@ sub suite {
                     'status'       => 'Approved',
                     'date'         => '2004-07-14T18:28:00-03:30',
                     'createdDate'  => '2004-07-14T18:28:00-03:30',
-                    'modifiedDate' => '0000-00-00T00:00:00-03:30',
+                    'modifiedDate' => undef,
                     'updatable'    => 'true',
                     'blog'         => { 'id' => '1' },
                     'author'       => {
@@ -408,7 +408,7 @@ sub suite {
                     'status'       => 'Approved',
                     'date'         => '2004-07-14T18:28:00-03:30',
                     'createdDate'  => '2004-07-14T18:28:00-03:30',
-                    'modifiedDate' => '0000-00-00T00:00:00-03:30',
+                    'modifiedDate' => undef,
                     'updatable'    => 'true',
                     'blog'         => { 'id' => '1' },
                     'author'       => {

@@ -111,6 +111,12 @@
   function widget_site_stats_draw(data) {
       jQuery('.site-stats-widget .down-column').css('height', '');
 
+      if (data.error) {
+        jQuery('#graph')
+          .append(jQuery('<div class="msg msg-error"/>').text(data.error));
+        jQuery('.site-stats-widget .down-column').css('height', 'auto');
+      }
+
       var hover_data = data.hover_data.data;
       var config = {
         type: 'morris.line',
