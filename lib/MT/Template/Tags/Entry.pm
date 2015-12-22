@@ -390,7 +390,6 @@ sub _hdlr_entries {
             undef $entries;
         }
     }
-    $entries = undef unless defined $entries;
 
     local $ctx->{__stash}{entries};
 
