@@ -323,7 +323,7 @@ sub _send_mt_smtp {
             foreach my $a (@$addr) {
                 $smtp->recipient($a);
             }
-            $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n";
+            $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n" if $h ne 'Bcc';
         }
     }
 
