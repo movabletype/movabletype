@@ -2812,7 +2812,7 @@ sub can_view {
     }
     if ($id) {
         my $obj = $objp->force();
-        return 0 unless $obj->is_entry;
+        return 0 if ( !$obj || !$obj->is_entry );
         if ( !$app->user->permissions( $obj->blog_id )
             ->can_edit_entry( $obj, $app->user ) )
         {
