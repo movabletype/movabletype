@@ -1610,17 +1610,26 @@ sub save {
             { ( $id ? ( not => { id => 1 } ) : () ) }
         );
         while ( my $p = $dup_it->() ) {
-            my $p_folder = $p->folder;
-            my $dup_folder_path
-                = defined $p_folder ? $p_folder->publish_path() : '';
-            my $folder;
-            $folder = MT::Folder->load($cat_id) if $cat_id;
-            my $folder_path = defined $folder ? $folder->publish_path() : '';
+            my ( $dup_path, $org_path );
+
+            if ( $app->config('BasenameCheckCompat') ) {
+                my $p_folder = $p->folder;
+                $dup_path
+                    = defined $p_folder ? $p_folder->publish_path() : '';
+                my $folder;
+                $folder = MT::Folder->load($cat_id) if $cat_id;
+                $org_path = defined $folder ? $folder->publish_path() : '';
+            }
+            else {
+                $dup_path = $p->permalink;
+                $org_path = $obj->permalink;
+            }
+
             return $app->error(
                 $app->translate(
                     "This basename has already been used. You should use an unique basename."
                 )
-            ) if ( $dup_folder_path eq $folder_path );
+            ) if ( $dup_path eq $org_path );
         }
 
     }

@@ -1855,6 +1855,7 @@ BEGIN {
             'DBIRaiseError'               => { default => 0, },
             'SearchAlwaysAllowTemplateID' => { default => 0, },
             'PreviewInNewWindow'          => { default => 1, },
+            'BasenameCheckCompat'         => { default => 0, },
 
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
