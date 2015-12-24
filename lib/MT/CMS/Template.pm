@@ -1389,7 +1389,7 @@ sub create_preview_content {
     my $cat_args
         = $cat
         ? { join => MT->model('placement')
-            ->join_on( 'id', { category_id => $cat->id } ) }
+            ->join_on( 'entry_id', { category_id => $cat->id } ) }
         : {};
     my @obj = $entry_class->load(
         {   blog_id => $blog_id,
