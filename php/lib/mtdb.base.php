@@ -244,7 +244,7 @@ abstract class MTDatabase {
             return " not in (" . implode(',', $excl) . ' )';
         } else {
             if ( isset($args['include_blogs']) && strtolower($args['include_blogs']) == 'all') {
-                return " > 0";
+                return " >= 0";
             } elseif (isset($args['blog_id']) && is_numeric($args['blog_id'])) {
                 return " = " . $args['blog_id'];
             } elseif (isset($args['include_blogs'])) {
@@ -3296,8 +3296,8 @@ abstract class MTDatabase {
         # load assets
         $extras = array();
 
-        if (isset($args['blog_id'])) {
-            $blog_filter = 'and asset_blog_id = '.intval($args['blog_id']);
+        if ($sql = $this->include_exclude_blogs($args)) {
+            $blog_filter = 'and asset_blog_id ' . $sql;
         }
 
         # Adds a thumbnail filter to the filters list.
@@ -3366,6 +3366,7 @@ abstract class MTDatabase {
         if ( isset($args['id']) ) {
             if ( $args['id'] == '' ) return null;
             $id_filter = 'and asset_id = ' . intval($args['id']);
+            $blog_filter = '';
         }
 
         # Adds a days filter
