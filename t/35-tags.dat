@@ -810,7 +810,7 @@
 { "r" : "1", "t" : "<MTEntries tag='&test' glue=','><MTEntryID></MTEntries>", "e" : "" }, #794
 { "r" : "1", "t" : "<MTEntries tag='testA AND testB' glue=','><MTEntryID></MTEntries>", "e" : "" }, #795
 { "r" : "1", "t" : "<MTEntries tag='(testA OR testB) AND testC' glue=','><MTEntryID></MTEntries>", "e" : "" }, #796
-{ "r" : "1", "t" : "<MTEntries tag='NOT test' glue=','><MTEntryID></MTEntries>", "e" : "1,8,7,6,5,4" }, #797
+{ "r" : "1", "t" : "<MTEntries tag='NOT test' glue=','><MTEntryID></MTEntries>", "e" : "" }, #797
 { "r" : "1", "t" : "<MTEntries tag=\"'testA AND testB'\" glue=','><MTEntryID></MTEntries>", "e" : "" }, #798
 { "r" : "1", "t" : "<MTEntries tag='\"testA AND testB\"' glue=','><MTEntryID></MTEntries>", "e" : "" }, #799
 { "r" : "1", "t" : "<MTEntries tag='testA (testb)' glue=','><MTEntryID></MTEntries>", "e" : "" }, #800
