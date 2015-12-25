@@ -917,12 +917,26 @@ sub _hdlr_archive_count {
     elsif ( my $count = $ctx->stash('archive_count') ) {
         return $ctx->count_format( $count, $args );
     }
+    elsif ( my $e = $ctx->stash('entries') ) {
+        my @entries;
+        @entries = @$e if ref($e) eq 'ARRAY';
+        my $count = scalar @entries;
+        return $ctx->count_format( $count, $args );
+    }
+    my $eargs = {};
+    my $terms->{'blog_id'} = $ctx->stash('blog_id');
+    my ( $start, $end )
+            = ( $ctx->stash('current_timestamp'), $ctx->stash('current_timestamp_end') );
+    if ($at) {
+        if ( $start && $end ) {
+            $terms->{authored_on} = [ $start, $end ];
+            $eargs->{range_incl}->{authored_on} = 1;
+        }
+        my $count = MT::Entry->count($terms, $eargs);
+        return $ctx->count_format( $count, $eargs );
+    }
+    return 0;
 
-    my $e = $ctx->stash('entries');
-    my @entries;
-    @entries = @$e if ref($e) eq 'ARRAY';
-    my $count = scalar @entries;
-    return $ctx->count_format( $count, $args );
 }
 
 ###########################################################################
