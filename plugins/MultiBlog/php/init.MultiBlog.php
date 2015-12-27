@@ -33,6 +33,8 @@ $multiblog_orig_handlers['mtblogcategorycount']
     = $ctx->add_tag('blogcategorycount', 'multiblog_MTBlogCategoryCount');
 $multiblog_orig_handlers['mtblogentrycount']
     = $ctx->add_tag('blogentrycount', 'multiblog_MTBlogEntryCount');
+$multiblog_orig_handlers['mtassets']
+    = $ctx->add_container_tag('assets', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtauthors']
     = $ctx->add_container_tag('authors', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtentries']
