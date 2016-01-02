@@ -3301,7 +3301,7 @@ abstract class MTDatabase {
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and asset_blog_id ' . $sql;
         } elseif( isset($args['blog_id']) ) {
-            $blog_filter = 'and asset_blog_id = ' . $args['blog_id'];
+            $blog_filter = 'and asset_blog_id = ' . intval($args['blog_id']);
         }
 
         # Adds a thumbnail filter to the filters list.
