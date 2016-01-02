@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -925,14 +925,16 @@ sub _hdlr_archive_count {
     }
     my $eargs = {};
     my $terms->{'blog_id'} = $ctx->stash('blog_id');
-    my ( $start, $end )
-            = ( $ctx->stash('current_timestamp'), $ctx->stash('current_timestamp_end') );
+    my ( $start, $end ) = (
+        $ctx->stash('current_timestamp'),
+        $ctx->stash('current_timestamp_end')
+    );
     if ($at) {
         if ( $start && $end ) {
             $terms->{authored_on} = [ $start, $end ];
             $eargs->{range_incl}->{authored_on} = 1;
         }
-        my $count = MT::Entry->count($terms, $eargs);
+        my $count = MT::Entry->count( $terms, $eargs );
         return $ctx->count_format( $count, $eargs );
     }
     return 0;

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -632,7 +632,7 @@ sub _preview_common {
     my ( $app, $entry ) = @_;
 
     # Set correct class type
-    $app->param('_type', $entry->class);
+    $app->param( '_type', $entry->class );
 
 # TODO: Allow to make a preview content when Individual/Page mapping not found.
 # Currently, we can not make preview content when templatemap could not be found.

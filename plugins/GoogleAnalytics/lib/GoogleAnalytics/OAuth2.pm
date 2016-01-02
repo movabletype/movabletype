@@ -152,7 +152,8 @@ sub get_profiles {
         return $app->error(
             translate(
                 'An error occurred when getting profiles: [_1]: [_2]',
-                'Client-Aborted:'.$res->header("Client-Aborted"),500
+                'Client-Aborted:' . $res->header("Client-Aborted"),
+                500
             ),
             500
         ) if $res->header("Client-Aborted");

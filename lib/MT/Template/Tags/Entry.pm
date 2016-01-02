@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -548,7 +548,8 @@ sub _hdlr_entries {
             my @tags = MT::Tag->split( ',', $tag_arg );
             $terms = { name => \@tags };
             $tag_arg = join " or ", @tags;
-        }else{
+        }
+        else {
             my @tags = MT::Tag->split( ',', $tag_arg );
             $terms = { name => \@tags };
             $tag_arg = join " or ", @tags;

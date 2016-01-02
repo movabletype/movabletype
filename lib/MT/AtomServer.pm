@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1096,7 +1096,7 @@ sub _upload_to_asset {
                 $base_path = '%a';
             }
             my $extra_path = $blog->extra_path || '';
-            $dest = MT::Util::build_upload_destination($dest, $user);
+            $dest = MT::Util::build_upload_destination( $dest, $user );
             $middle_path = File::Spec->catdir( $dest, $extra_path );
             ( $middle_url = $middle_path ) =~ s!\\!/!g;
             $upload_dest = File::Spec->catdir( $root_path, $middle_path );
@@ -1151,10 +1151,10 @@ sub _upload_to_asset {
     unless ( $fmgr->exists($path) ) {
         $fmgr->mkpath($path)
             or return $app->error(
-                $app->translate(
-                    "Cannot make path '[_1]': [_2]", $path,
-                    $fmgr->errstr
-                )
+            $app->translate(
+                "Cannot make path '[_1]': [_2]",
+                $path, $fmgr->errstr
+            )
             );
     }
     defined( my $bytes = $fmgr->put_data( $data, $local, 'upload' ) )

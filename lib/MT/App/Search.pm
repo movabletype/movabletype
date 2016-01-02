@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -725,8 +725,8 @@ sub prepare_context {
     if ($blog_id) {
         my $blog = $app->model('blog')->load($blog_id);
         $app->blog($blog);
-        $ctx->stash( 'blog_id', $blog_id );
-        $ctx->stash( 'blog',    $blog );
+        $ctx->stash( 'blog_id',        $blog_id );
+        $ctx->stash( 'blog',           $blog );
         $ctx->stash( 'search_blog_id', $blog_id );
     }
 
@@ -955,7 +955,7 @@ sub query_parse {
     my $filter_types = $reg->{'filter_types'};
     foreach my $type ( keys %$filter_types ) {
         my @filters = $app->param($type);
-        foreach my $filter ( @filters ) {
+        foreach my $filter (@filters) {
             if ( $filter =~ m/\s/ ) {
                 $filter = '"' . $filter . '"';
             }

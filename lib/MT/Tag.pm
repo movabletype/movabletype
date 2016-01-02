@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -706,7 +706,7 @@ sub save_tags {
     require MT::ObjectTag;
     my $clear_cache = 0;
     my @tags        = @{ $obj->{__tags} };
-    if (scalar(@tags) < 1) {
+    if ( scalar(@tags) < 1 ) {
         $obj->remove_tags();
         return 1;
     }

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -172,16 +172,19 @@ sub compile {
         my @m        = $pre_line =~ m/\r?\n/g;
         my $line     = scalar @m;
         $opt->{depth_line} ||= 0;
-        if($depth == 0){
-            $opt->{line} = $line+1;
+        if ( $depth == 0 ) {
+            $opt->{line}       = $line + 1;
             $opt->{depth_line} = 0;
-        }elsif ( $depth > $opt->{old_depth} ) {
+        }
+        elsif ( $depth > $opt->{old_depth} ) {
             $opt->{line} += $line;
-            $opt->{depth_line} = ($opt->{line}-1);
-        }elsif($depth == $opt->{old_depth}){
+            $opt->{depth_line} = ( $opt->{line} - 1 );
+        }
+        elsif ( $depth == $opt->{old_depth} ) {
             $opt->{line} = $opt->{depth_line} + $line;
-        }else{
-            $opt->{line} = $line + 1;
+        }
+        else {
+            $opt->{line}       = $line + 1;
             $opt->{depth_line} = $line;
         }
         $opt->{old_depth} = $depth;
