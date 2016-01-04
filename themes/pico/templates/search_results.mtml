@@ -93,10 +93,10 @@
                                 <span id="current-page" class="hidden"><$mt:CurrentPage$></span>
                                 <h1 id="page-title" class="search-results-header">
         <MTIfStatic><mt:IfStraightSearch>
-                                    <__trans phrase="Results matching &ldquo;[_1]&rdquo;" params="<$mt:SearchString escape="html"$>">
+                                    <__trans phrase="Results matching &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
         </mt:IfStraightSearch></MTIfStatic>
         <mt:IfTagSearch>
-                                    <__trans phrase="Results tagged &ldquo;[_1]&rdquo;" params="<$mt:SearchString escape="html"$>">
+                                    <__trans phrase="Results tagged &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
         </mt:IfTagSearch>
                                 </h1>
                                 <div class="search-results-container autopagerize_page_element">
@@ -121,14 +121,14 @@
 <mt:NoSearchResults>
                             <h1 id="page-title" class="search-results-header">
     <MTIfStatic><mt:IfStraightSearch>
-                                <__trans phrase="Results matching &ldquo;[_1]&rdquo;" params="<$mt:SearchString escape="html"$>">
+                                <__trans phrase="Results matching &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
     </mt:IfStraightSearch></MTIfStatic>
     <mt:IfTagSearch>
-                                <__trans phrase="Results tagged &ldquo;[_1]&rdquo;" params="<$mt:SearchString escape="html"$>">
+                                <__trans phrase="Results tagged &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
     </mt:IfTagSearch>
                             </h1>
                             <div class="search-results-container no-search-result">
-                                <p><__trans phrase="No results found for &ldquo;[_1]&rdquo;." params="<$mt:SearchString escape="html"$>"></p>
+                                <p><__trans phrase="No results found for &ldquo;[_1]&rdquo;." params="<$mt:SearchString$>"></p>
                             </div>
 </mt:NoSearchResults>
 
