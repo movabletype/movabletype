@@ -255,10 +255,10 @@ sub _send_mt_smtp {
                         || MT->config->SMTPSSLVersion
                         || 'SSLv23:!SSLv3:!SSLv2' )
                 : (),
-                ( $ssl_verify_mode && eval { require Mozilla::CA; 1 } )
+                ( $ssl_verify_mode && MT->default_ca )
                 ? ( SSL_verifycn_name   => $host,
                     SSL_verifycn_scheme => 'smtp',
-                    SSL_ca_file         => Mozilla::CA::SSL_ca_file(),
+                    MT->default_ca,
                     )
                 : (),
                 )

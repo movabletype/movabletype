@@ -2683,14 +2683,14 @@ sub new_ua {
     }
 
     my $ua = $lwp_class->new;
-    if ( MT->config->SSLVerifyNone || !( eval { require Mozilla::CA; 1 } ) ) {
+    if ( MT->config->SSLVerifyNone || !MT->default_ca ) {
         $ua->ssl_opts( verify_hostname => 0 );
     }
     else {
         $ua->ssl_opts(
             verify_hostname => 1,
-            SSL_vesion  => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
-            SSL_ca_file => Mozilla::CA::SSL_ca_file(),
+            SSL_vesion => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
+            MT->default_ca,
         );
     }
     $ua->max_size($max_size) if $ua->can('max_size');
@@ -3248,6 +3248,30 @@ sub refresh_cache {
 sub current_time_offset {
     my $self = shift;
     $self->request('time_offset') || $self->config->TimeOffset;
+}
+
+{
+    my $default_ca;
+
+    sub default_ca {
+        return %$default_ca if $default_ca;
+
+        if (eval {
+                require IO::Socket::SSL && $IO::Socket::SSL::VERSION >= 1.993;
+            }
+            )
+        {
+            $default_ca = +{ IO::Socket::SSL::default_ca() };
+        }
+        elsif ( eval { require Mozilla::CA } ) {
+            $default_ca = +{ SSL_ca_file => Mozilla::CA::SSL_ca_file() };
+        }
+        else {
+            $default_ca = +{};
+        }
+
+        %$default_ca;
+    }
 }
 
 sub DESTROY { }
@@ -4279,6 +4303,13 @@ See L<MT::Cache::Negotiate>.
 
 Registers a callback that will cause the MT cache to invalidate itself.
 See L<MT::Cache::Negotiate>.
+
+=head2 MT->default_ca()
+
+Searches and returns CA path and/or file. If IO::Socket::SSL is installed
+and its version is 1.993 or later, IO::Socket::SSL::default_ca() is used.
+If Mozilla::CA is installed, use Mozilla::CA::SSL_ca_file() is used.
+Otherwise, returns empty hash.
 
 =head1 ERROR HANDLING
 

@@ -28,10 +28,10 @@ sub init {
         $verify ? ( SSL_version => MT->config->SSLVersion
                 || MT->config->FTPSSSLVersion
                 || 'SSLv23:!SSLv3:!SSLv2' ) : (),
-        ( $verify && eval { require Mozilla::CA; 1 } )
+        ( $verify && MT->default_ca )
         ? ( SSL_verifycn_name   => $_[0],
             SSL_verifycn_scheme => 'ftp',
-            SSL_ca_file         => Mozilla::CA::SSL_ca_file(),
+            MT->default_ca,
             )
         : (),
     };

@@ -1430,9 +1430,7 @@ sub is_valid_static_path {
         $ssl_verify_peer
         ? ( SSL_version => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2' )
         : (),
-        ( $ssl_verify_peer && eval { require Mozilla::CA; 1 } )
-        ? ( SSL_ca_file => Mozilla::CA::SSL_ca_file() )
-        : (),
+        $ssl_verify_peer ? MT->default_ca : (),
     );
 
     require LWP::UserAgent;
