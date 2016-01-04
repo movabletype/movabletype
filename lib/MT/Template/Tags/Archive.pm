@@ -599,12 +599,13 @@ sub _hdlr_index_list {
     for ( my $ix = 1; $ix <= scalar @tmpls; $ix++ ) {
         my $tmpl = $tmpls[ $ix - 1 ];
         my $vars = $ctx->{__stash}{vars} ||= {};
-        local $ctx->{__stash}{'index'} = $tmpl;
-        local $vars->{__first__}       = $ix == 1;
-        local $vars->{__last__}        = $ix == scalar @tmpls;
-        local $vars->{__odd__}         = ( $ix % 2 ) == 1;
-        local $vars->{__even__}        = ( $ix % 2 ) == 0;
-        local $vars->{__counter__}     = $ix;
+        local $ctx->{__stash}{'index'}  = $tmpl;
+        local $ctx->{__stash}{template} = $tmpl;
+        local $vars->{__first__}        = $ix == 1;
+        local $vars->{__last__}         = $ix == scalar @tmpls;
+        local $vars->{__odd__}          = ( $ix % 2 ) == 1;
+        local $vars->{__even__}         = ( $ix % 2 ) == 0;
+        local $vars->{__counter__}      = $ix;
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $out;
