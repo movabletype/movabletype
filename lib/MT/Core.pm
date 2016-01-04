@@ -1790,6 +1790,7 @@ BEGIN {
             'FTPSOptions'           => { type => 'HASH' },
             'SSLVerifyNone'         => undef,
             'SSLVersion'            => undef,
+            'SSLOptions'            => { type => 'HASH' },
             'DebugEmailAddress'     => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>

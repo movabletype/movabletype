@@ -2693,6 +2693,11 @@ sub new_ua {
             MT->default_ca,
         );
     }
+    my $ssl_opts = MT->config->SSLOptions;
+    if ( ref($ssl_opts) eq 'HASH' && %$ssl_opts ) {
+        $ua->ssl_opts(%$ssl_opts);
+    }
+
     $ua->max_size($max_size) if $ua->can('max_size');
     $ua->agent($agent);
     $ua->timeout($timeout) if defined $timeout;
