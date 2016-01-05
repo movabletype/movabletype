@@ -5131,8 +5131,7 @@ sub pre_run {
         push @messages, $message;
     }
 
-    my $has_mozilla_ca = eval { require Mozilla::CA; 1 };
-    unless ( $app->config('SSLVerifyNone') || $has_mozilla_ca ) {
+    unless ( $app->config('SSLVerifyNone') || MT->default_ca ) {
         my $message = {
             level => 'warning',
             text  => $app->translate('Cannot verify SSL certificate.'),
@@ -5151,7 +5150,7 @@ sub pre_run {
         }
         push @messages, $message;
     }
-    elsif ( $app->config('SSLVerifyNone') && $has_mozilla_ca ) {
+    elsif ( $app->config('SSLVerifyNone') && MT->default_ca ) {
         my $message = {
             level => 'warning',
             text  => $app->translate(
