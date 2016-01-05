@@ -22,7 +22,6 @@ sub init {
         = ( MT->config->SSLVerifyNone || MT->config->FTPSSSLVerifyNone )
         ? 0
         : 1;
-    my $mozilla_ca = eval { require Mozilla::CA; 1 };
     $options{SSL_Client_Certificate} = {
         SSL_verify_mode => $verify,
         $verify ? ( SSL_version => MT->config->SSLVersion
