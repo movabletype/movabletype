@@ -202,6 +202,16 @@ sub application_list {
             grep { !$self->is_restricted_app($_) }
             keys %$_
     } @$reg;
+
+    if ( exists $apps{search} && exists $apps{new_search} ) {
+        if ( MT->config->UseLegacySearch ) {
+            delete $apps{new_search};
+        }
+        else {
+            delete $apps{search};
+        }
+    }
+
     keys %apps;
 }
 
