@@ -3268,12 +3268,14 @@ sub current_time_offset {
         {
             $default_ca = +{ IO::Socket::SSL::default_ca() };
         }
-        elsif ( eval { require Mozilla::CA } ) {
+
+        if ( !( $default_ca && %$default_ca ) && eval { require Mozilla::CA }
+            )
+        {
             $default_ca = +{ SSL_ca_file => Mozilla::CA::SSL_ca_file() };
         }
-        else {
-            $default_ca = +{};
-        }
+
+        $default_ca ||= +{};
 
         %$default_ca;
     }
