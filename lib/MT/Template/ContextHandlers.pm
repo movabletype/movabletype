@@ -4018,10 +4018,10 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
         local $ctx->{__stash}{vars}{ lc $name } = sub {
             my $builder = $ctx->stash('builder');
             my $html = $builder->build( $ctx, $tokens, $cond );
-            return $ctx->error( $builder->errstr ) unless defined $html;
+            die $ctx->error( $builder->errstr ) unless defined $html;
             return $html;
         };
-        return _hdlr_include( $ctx, $args, $cond );
+        return eval { _hdlr_include( $ctx, $args, $cond ) };
     }
 
 ###########################################################################
