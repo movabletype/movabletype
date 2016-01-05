@@ -151,13 +151,4 @@ sub archive_entries_count {
     );
 }
 
-sub does_publish_file {
-    my $obj    = shift;
-    my %params = %{ shift() };
-
-    return 1 if $params{Blog}->publish_empty_archive;
-
-    MT::ArchiveType::archive_entries_count( $obj, \%params );
-}
-
 1;

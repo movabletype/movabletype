@@ -1265,7 +1265,7 @@ sub rebuild_file {
     if (!$archiver->does_publish_file(
             {   Blog        => $blog,
                 ArchiveType => $at,
-                Entry       => $entry,
+                Entry       => $entry || $args{Entry},
                 Category    => $category,
             }
         )

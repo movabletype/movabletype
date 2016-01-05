@@ -174,4 +174,12 @@ sub adjacent_archive_entry {
     $entry;
 }
 
+sub does_publish_file {
+    my $obj    = shift;
+    my %params = %{ shift() };
+
+    $obj->archive_entries_count( $params{Blog}, $params{ArchiveType},
+        $params{Entry} );
+}
+
 1;
