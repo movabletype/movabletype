@@ -217,11 +217,9 @@ sub generate_cache_keys {
     }
 
     # Cache key is different for each applications.
-    if ( !$app->isa('MT::App::Search') ) {
-        my $app_key_param = 'app_id' . encode_url( $app->id );
-        $key       .= $app_key_param;
-        $count_key .= $app_key_param;
-    }
+    my $app_key_param = 'app_id' . encode_url( $app->id );
+    $key       .= $app_key_param;
+    $count_key .= $app_key_param;
 
     $key       = perl_sha1_digest_hex($key);
     $count_key = perl_sha1_digest_hex($count_key);
