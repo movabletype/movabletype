@@ -142,7 +142,11 @@ sub archive_group_entries {
 sub archive_entries_count {
     my $obj = shift;
     my ( $blog, $at, $entry ) = @_;
-    return $obj->SUPER::archive_entries_count(@_) unless $entry;
+    return $obj->SUPER::archive_entries_count(
+        {   Blog        => $blog,
+            ArchiveType => $at,
+        }
+    ) unless $entry;
     my $auth = $entry->author;
     return $obj->SUPER::archive_entries_count(
         {   Blog        => $blog,
