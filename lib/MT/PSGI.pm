@@ -210,7 +210,7 @@ sub make_app {
     my ($app) = @_;
     $app = MT->registry( applications => $app ) unless ref $app;
     Carp::croak('No application is specified') unless $app;
-    my $script = $self->{script} || $app->{script};
+    my $script = $self->{script} || $app->{script} or return;
     $script = MT->handler_to_coderef($script) unless ref $script;
     $script = $script->();
     my $type = $app->{type} || '';
@@ -257,12 +257,12 @@ sub mount_applications {
         }
         $base =~ s!/$!!;
         $base =~ s!^https?://[^/]*!!;
-        my $script = $app->{script};
+        my $script = $app->{script} or next;
         $script = MT->handler_to_coderef($script) unless ref $script;
         $script = $script->();
         $script =~ s!^/!!;
-        my $url      = $base . '/' . $script;
-        my $psgi_app = $self->make_app($app);
+        my $url = $base . '/' . $script;
+        my $psgi_app = $self->make_app($app) or next;
         $psgi_app = $self->apply_plack_middlewares( $app_id, $psgi_app );
         $urlmap->map( $url, $psgi_app );
     }

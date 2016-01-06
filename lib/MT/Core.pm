@@ -2147,7 +2147,6 @@ BEGIN {
             },
             'search' => {
                 handler => 'MT::App::Search::Legacy',
-                script  => sub { MT->config->SearchScript },
                 tags    => sub { MT->app->load_core_tags },
             },
             'new_search' => {
