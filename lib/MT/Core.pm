@@ -1838,17 +1838,20 @@ BEGIN {
             'ActivityFeedItemLimit' => { default => 50, },
             'CommentScript'         => { default => 'mt-comments.cgi', },
             'TrackbackScript'       => { default => 'mt-tb.cgi', },
-            'SearchScript'          => { default => 'mt-search.cgi', },
-            'FreeTextSearchScript'  => { default => 'mt-ftsearch.cgi', },
-            'XMLRPCScript'          => { default => 'mt-xmlrpc.cgi', },
-            'AtomScript'            => { default => 'mt-atom.cgi', },
-            'UpgradeScript'         => { default => 'mt-upgrade.cgi', },
-            'CheckScript'           => { default => 'mt-check.cgi', },
-            'DataAPIScript'         => { default => 'mt-data-api.cgi', },
-            'PublishCharset'        => { default => 'utf-8', },
-            'SafeMode'              => { default => 1, },
-            'AllowFileInclude'      => { default => 0, },
-            'GlobalSanitizeSpec'    => {
+            'SearchScript'          => {
+                default => 'mt-search.cgi',
+                handler => \&SearchScript,
+            },
+            'FreeTextSearchScript' => { default => 'mt-ftsearch.cgi', },
+            'XMLRPCScript'         => { default => 'mt-xmlrpc.cgi', },
+            'AtomScript'           => { default => 'mt-atom.cgi', },
+            'UpgradeScript'        => { default => 'mt-upgrade.cgi', },
+            'CheckScript'          => { default => 'mt-check.cgi', },
+            'DataAPIScript'        => { default => 'mt-data-api.cgi', },
+            'PublishCharset'       => { default => 'utf-8', },
+            'SafeMode'             => { default => 1, },
+            'AllowFileInclude'     => { default => 0, },
+            'GlobalSanitizeSpec'   => {
                 default =>
                     'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
             },
@@ -3350,6 +3353,19 @@ sub CGIMaxUpload {
             unless ( $val =~ /^[+-]?[0-9]+$/ );
     }
     return $val;
+}
+
+sub SearchScript {
+    my $mgr = shift;
+
+    return $mgr->set_internal( 'SearchScript', @_ ) if @_;
+
+    if ( MT->app && MT->app->isa('MT::App::Search::FreeText') ) {
+        return $mgr->get_internal('FreeTextSearchScript');
+    }
+    else {
+        return $mgr->get_internal('SearchScript');
+    }
 }
 
 1;
