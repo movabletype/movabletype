@@ -927,10 +927,10 @@ sub _hdlr_archive_count {
     my $eargs = {};
     my $terms->{'blog_id'} = $ctx->stash('blog_id');
     my ( $start, $end ) = (
-        $ctx->stash('current_timestamp'),
-        $ctx->stash('current_timestamp_end')
+        $ctx->{current_timestamp},
+        $ctx->{current_timestamp_end}
     );
-    if ($at) {
+    if ($archiver) {
         if ( $start && $end ) {
             $terms->{authored_on} = [ $start, $end ];
             $eargs->{range_incl}->{authored_on} = 1;
