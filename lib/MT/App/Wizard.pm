@@ -183,7 +183,7 @@ sub init_core_registry {
             'IO::Socket::SSL' => {
                 link => 'http://search.cpan.org/dist/IO-Socket-SSL/',
                 label =>
-                    'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for connection to server via HTTPS protocol, such as Google Analytics site statistics.',
+                    'IO::Socket::SSL is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.',
             },
             'Net::SSLeay' => {
                 link => 'http://search.cpan.org/dist/Net-SSLeay/',

@@ -717,7 +717,7 @@ my @CORE_OPT = (
     [   'IO::Socket::SSL',
         0, 0,
         translate(
-            'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for connection to server via HTTPS protocol, such as Google Analytics site statistics.'
+            'IO::Socket::SSL is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.'
         )
     ],
 
