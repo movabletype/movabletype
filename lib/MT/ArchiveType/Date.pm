@@ -174,6 +174,22 @@ sub adjacent_archive_entry {
     $entry;
 }
 
+sub archive_entries_count {
+    my $obj = shift;
+    my ( $blog, $at, $entry ) = @_;
+    return $obj->SUPER::archive_entries_count(
+        {   Blog        => $blog,
+            ArchiveType => $at,
+        }
+    ) unless $entry;
+    return $obj->SUPER::archive_entries_count(
+        {   Blog        => $blog,
+            ArchiveType => $at,
+            Timestamp   => $entry->authored_on
+        }
+    );
+}
+
 sub does_publish_file {
     my $obj    = shift;
     my %params = %{ shift() };
