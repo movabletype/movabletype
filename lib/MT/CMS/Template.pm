@@ -1720,7 +1720,7 @@ sub can_view {
     return 1 if $app->user->can_edit_templates;
     return 0 unless $app->blog;
     if ($id) {
-        my $obj = $objp->force();
+        my $obj = $objp->force() or return 0;
         return 0
             unless $app->user->permissions( $obj->blog_id )
             ->can_do('edit_templates');
