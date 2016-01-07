@@ -148,6 +148,11 @@ sub archive_entries_count {
     return $obj->SUPER::archive_entries_count(
         {   Blog        => $blog,
             ArchiveType => $at,
+        }
+    ) unless $entry;
+    return $obj->SUPER::archive_entries_count(
+        {   Blog        => $blog,
+            ArchiveType => $at,
             Timestamp   => $entry->authored_on
         }
     );
