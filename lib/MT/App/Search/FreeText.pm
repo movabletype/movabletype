@@ -10,7 +10,7 @@ use strict;
 use base qw( MT::App::Search );
 use MT::ObjectDriver::SQL qw( :constants );
 
-sub id {'new_search'}
+sub id {'ft_search'}
 
 sub query_parse {
     my $app = shift;
