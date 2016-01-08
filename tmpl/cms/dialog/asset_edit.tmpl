@@ -66,6 +66,21 @@ TC.attachLoadEvent( init );
     <__trans phrase="Your edited image has been saved.">
   </mtapp:statusmsg>
 </mt:if>
+<mt:if name="remove_all_metadata_error">
+  <mtapp:statusmsg
+     id="remove-all-metadata-error"
+     class="error"
+     can_close="0">
+    <__trans phrase="Cannot remove metadata from this image.">
+  </mtapp:statusmsg>
+<mt:elseif name="remove_gps_metadata_error">
+  <mtapp:statusmsg
+     id="remove-gps-metadata-error"
+     class="error"
+     can_close="0">
+    <__trans phrase="Cannot remove GPS metadata from this image.">
+  </mtapp:statusmsg>
+</mt:if>
 </div>
 
 <form>

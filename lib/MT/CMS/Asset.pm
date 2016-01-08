@@ -157,6 +157,11 @@ sub edit {
                 $param->{modified_by} = $app->translate('(user deleted)');
             }
         }
+
+        $param->{remove_all_metadata_error}
+            = $app->param('remove_all_metadata_error');
+        $param->{remove_gps_metadata_error}
+            = $app->param('remove_gps_metadata_error');
     }
     1;
 }
@@ -2957,17 +2962,18 @@ sub transform_image {
         or return $app->errtrans( 'Transforming image failed: [_1]',
         $asset->errstr );
 
+    my %metadata_error;
     if ( $app->param('remove_all_metadata') ) {
         $asset->remove_all_metadata
-            or return $app->error( $asset->errstr );
+            or $metadata_error{remove_all_metadata_error} = 1;
     }
     elsif ( $app->param('remove_gps_metadata') ) {
         $asset->remove_gps_metadata
-            or return $app->error( $asset->errstr );
+            or $metadata_error{remove_gps_metadata_error} = 1;
     }
 
     if ( $app->param('return_args') ) {
-        $app->add_return_arg( 'saved_image' => 1 );
+        $app->add_return_arg( 'saved_image' => 1, %metadata_error );
         $app->call_return;
     }
     else {
@@ -2979,6 +2985,7 @@ sub transform_image {
                     blog_id     => $app->blog ? $app->blog->id : 0,
                     id          => $id,
                     saved_image => 1,
+                    %metadata_error,
                 },
             )
         );
