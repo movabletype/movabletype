@@ -1121,7 +1121,6 @@ sub remove_gps_metadata {
     my ($asset) = @_;
 
     return 1 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
-    return 1 if $asset->is_metadata_broken;
 
     require Image::ExifTool;
     my $exif = Image::ExifTool->new;
@@ -1259,10 +1258,6 @@ Remove all metadata from the image. Do nothing when $asset's metadata is broken.
 
 Change the quality of the file of $asset only when $asset is JPEG or PNG.
 When $quality is not set, config directive "ImageQualityJpeg" or "ImageQualityPng" is used.
-
-=head2 $asset->is_metadata_broken()
-
-Return 1 when $asset's metadata seems to be broken.
 
 =head1 AUTHOR & COPYRIGHT
 
