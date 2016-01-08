@@ -946,10 +946,8 @@ sub _transform {
 
     # Preserve metadata.
     my ( $exif, $next_exif );
-    my $update_metadata
-        = lc( $asset->file_ext ) =~ /^(jpe?g|tiff?)$/
-        && $asset->has_metadata
-        && !$asset->is_metadata_broken;
+    my $update_metadata = lc( $asset->file_ext ) =~ /^(jpe?g|tiff?)$/
+        && $asset->has_metadata;
     if ($update_metadata) {
         $exif      = $asset->exif;
         $next_exif = Image::ExifTool->new;
@@ -1004,10 +1002,8 @@ sub change_quality {
 
     # Preserve metadata. ImageDriver other than ImageMagick removes metadata.
     my $new_exif;
-    my $update_metadata
-        = lc( $asset->file_ext ) =~ /^jpe?g$/
-        && $asset->has_metadata
-        && !$asset->is_metadata_broken;
+    my $update_metadata = lc( $asset->file_ext ) =~ /^jpe?g$/
+        && $asset->has_metadata;
     if ($update_metadata) {
         require Image::ExifTool;
         $new_exif = Image::ExifTool->new;
@@ -1147,7 +1143,6 @@ sub remove_all_metadata {
     my ($asset) = @_;
 
     return 1 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
-    return 1 if $asset->is_metadata_broken;
 
     my $exif = $asset->exif or return;
     $exif->SetNewValue('*');
@@ -1161,18 +1156,6 @@ sub remove_all_metadata {
     $asset->save or return;
 
     1;
-}
-
-sub is_metadata_broken {
-    my ($asset) = @_;
-    if ( my $exif = $asset->exif ) {
-        return ( $exif->GetValue('Error') || $exif->GetValue('Warning') )
-            ? 1
-            : 0;
-    }
-    else {
-        return 0;
-    }
 }
 
 1;

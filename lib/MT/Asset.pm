@@ -1003,10 +1003,6 @@ sub list_subclasses {
     return \@types;
 }
 
-sub is_metadata_broken {
-    return 0;
-}
-
 1;
 
 __END__

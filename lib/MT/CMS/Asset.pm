@@ -157,8 +157,6 @@ sub edit {
                 $param->{modified_by} = $app->translate('(user deleted)');
             }
         }
-
-        $param->{broken_metadata} = $obj->is_metadata_broken;
     }
     1;
 }
@@ -2778,8 +2776,6 @@ sub dialog_edit_asset {
     $param->{saved_image} = 1
         if $app->param('saved_image');
 
-    $param->{broken_metadata} = $asset->is_metadata_broken;
-
     $app->load_tmpl( 'dialog/asset_edit.tmpl', $param );
 }
 
@@ -2871,23 +2867,20 @@ sub dialog_edit_image {
     $param->{modified_on} = $asset->modified_on;
 
     # Check Exif.
-    # Cannot remove metadata when it is broken.
-    if ( !$asset->is_metadata_broken ) {
-        my $has_metadata = $asset->has_metadata;
-        if ( defined $has_metadata ) {
-            $param->{has_metadata} = $has_metadata;
+    my $has_metadata = $asset->has_metadata;
+    if ( defined $has_metadata ) {
+        $param->{has_metadata} = $has_metadata;
+    }
+    else {
+        return $app->error( $asset->errstr );
+    }
+    if ($has_metadata) {
+        my $has_gps_metadata = $asset->has_gps_metadata;
+        if ( defined $has_gps_metadata ) {
+            $param->{has_gps_metadata} = $has_gps_metadata;
         }
         else {
             return $app->error( $asset->errstr );
-        }
-        if ($has_metadata) {
-            my $has_gps_metadata = $asset->has_gps_metadata;
-            if ( defined $has_gps_metadata ) {
-                $param->{has_gps_metadata} = $has_gps_metadata;
-            }
-            else {
-                return $app->error( $asset->errstr );
-            }
         }
     }
 
