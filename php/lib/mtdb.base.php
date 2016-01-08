@@ -981,8 +981,6 @@ abstract class MTDatabase {
                         if (!$not_clause)
                             $entry_list[$o->objecttag_object_id] = 1;
                     }
-                } else {
-                    return null;
                 }
                 $ctx['t'] =& $tmap;
                 $filters[] = $cexpr;

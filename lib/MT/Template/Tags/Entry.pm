@@ -549,11 +549,6 @@ sub _hdlr_entries {
             $terms = { name => \@tags };
             $tag_arg = join " or ", @tags;
         }
-        else {
-            my @tags = MT::Tag->split( ',', $tag_arg );
-            $terms = { name => \@tags };
-            $tag_arg = join " or ", @tags;
-        }
         my $tags = [
             MT::Tag->load(
                 $terms,
@@ -568,7 +563,6 @@ sub _hdlr_entries {
                 }
             )
         ];
-        return '' unless scalar(@$tags);
         my $cexpr = $ctx->compile_tag_filter( $tag_arg, $tags );
         if ($cexpr) {
             my @tag_ids
