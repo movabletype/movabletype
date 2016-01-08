@@ -1893,7 +1893,9 @@ sub _upload_file_compat {
     require File::Basename;
     my $local_basename = File::Basename::basename($local_file);
     my $local_ext
-        = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+        = ( File::Basename::fileparse( $local_file, qr/\.[A-Za-z0-9]+$/ ) )
+        [2];
+    $local_ext =~ s/^\.//;
 
     require MT::Asset;
     my $asset_pkg = MT::Asset->handler_for_file($local_basename);
@@ -2427,7 +2429,9 @@ sub _upload_file {
     require File::Basename;
     my $local_basename = File::Basename::basename($local_file);
     my $local_ext
-        = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+        = ( File::Basename::fileparse( $local_file, qr/\.[A-Za-z0-9]+$/ ) )
+        [2];
+    $local_ext =~ s/^\.//;
 
     require MT::Asset;
     my $asset_pkg = MT::Asset->handler_for_file($local_basename);
