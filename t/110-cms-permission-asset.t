@@ -515,37 +515,33 @@ subtest 'mode = start_upload' => sub {
     ok( $out,                     "Request: start_upload" );
     ok( $out !~ m!Permission=1!i, "start_upload by permitted user" );
 
-SKIP: {
-        skip 'This will be fixed in the case #113512.', 4;
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'POST',
+            __mode           => 'start_upload',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: start_upload" );
+    ok( $out =~ m!Permission=1!i, "start_upload by other blog" );
 
-        # By non Permitted user
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $kikkawa,
-                __request_method => 'POST',
-                __mode           => 'start_upload',
-                label            => 'New Label',
-                blog_id          => $blog->id,
-            }
-        );
-        $out = delete $app->{__test_output};
-        ok( $out,                     "Request: start_upload" );
-        ok( $out =~ m!Permission=1!i, "start_upload by other blog" );
-
-        # By other permission
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $aikawa,
-                __request_method => 'POST',
-                __mode           => 'start_upload',
-                label            => 'New Label',
-                blog_id          => $blog->id,
-            }
-        );
-        $out = delete $app->{__test_output};
-        ok( $out,                     "Request: start_upload" );
-        ok( $out =~ m!Permission=1!i, "start_upload by other permission" );
-    }
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'start_upload',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: start_upload" );
+    ok( $out =~ m!Permission=1!i, "start_upload by other permission" );
 };
 
 subtest 'mode = start_upload_entry' => sub {

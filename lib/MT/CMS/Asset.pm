@@ -438,6 +438,8 @@ sub start_upload {
     return $app->return_to_dashboard( redirect => 1 )
         if !$app->blog && !$dialog;
 
+    return $app->permission_denied unless $app->can_do('upload');
+
     $app->add_breadcrumb( $app->translate('Upload File') );
     my %param;
     %param = @_ if @_;
