@@ -5,7 +5,7 @@ set_include_path(realpath(__DIR__).'/../extlib/adodb5');
 
 class AdodbTest extends PHPUnit_Framework_TestCase {
 
-    public function require_test() {
+    public function testRequire() {
 
         # case 113603
         $this->assertEquals( require_once('adodb.inc.php'), 1, 'require_once \'adodb.inc.php\'' );
