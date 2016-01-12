@@ -229,7 +229,8 @@ sub archive_entries_count {
     my $obj = shift;
     my ( $blog, $at, $entry ) = @_;
     my $auth = $entry->author;
-    return $obj->SUPER::archive_entries_count(
+    return MT::ArchiveType::archive_entries_count(
+        $obj,
         {   Blog        => $blog,
             ArchiveType => $at,
             Timestamp   => $entry->authored_on,
