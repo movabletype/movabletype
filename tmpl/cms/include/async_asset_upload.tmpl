@@ -272,7 +272,7 @@ function createUploadBlock () {
   this.editAsset.hide();
 </mt:unless>
   this.progressbar.progressbar({ value: 0 });
-  jQuery('#upload-progress').append(this.uploadBlock);
+  jQuery('#upload-progress').prepend(this.uploadBlock);
 
   // Recalculate block height
   jQuery('#content-body-right-body').height(
