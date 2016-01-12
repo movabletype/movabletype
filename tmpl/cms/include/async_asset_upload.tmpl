@@ -86,13 +86,27 @@ p.msg-warning {
     line-height: 50px;
     padding-left: 10px;
 }
+
+h1.dialog-title {
+    margin: 0 0 1em 0;
+    font-size: 150%;
+    font-weight: normal;
+}
 </style>
+
+<mt:if name="dialog">
+  <mt:if name="filter_val" eq="image">
+<h1 class="dialog-title"><__trans phrase="Upload Image"></h1>
+  <mt:elseif name="is_image">
+<h1 class="dialog-title"><__trans phrase="Upload Image"></h1>
+  <mt:else>
+<h1 class="dialog-title"><__trans phrase="Upload Asset"></h1>
+  </mt:if>
+</mt:if>
 
 <form>
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
-  <div id="drop-handler">
-      <p><mt:if name="can_multi"><__trans phrase="Drag and drop here to upload files, or<button id='open-file-dialog'>Browse</button>"><mt:else><__trans phrase="Drag and drop here to upload a file, or<button id='open-file-dialog'>Browse</button>"><br /><__trans phrase="(If you upload multiple files, last uploaded files will be used.)"></mt:if></p>
-  </div>
+  <button class="action button primary" id="open-file-dialog"><img src="">&nbsp;<__trans phrase="Choose files..."></img></button>
 <mt:unless name="filter" eq="userpic">  
     <h2><__trans phrase="Upload Destination"></h2>
   <mt:if name="allow_to_change_at_upload">
