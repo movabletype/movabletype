@@ -106,7 +106,15 @@ h1.dialog-title {
 
 <form>
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
-  <button class="action button primary" id="open-file-dialog"><img src="">&nbsp;<__trans phrase="Choose files..."></img></button>
+  <button class="action button primary" id="open-file-dialog">
+    <img src="">
+<mt:if name="can_multi">
+      <__trans phrase="Choose files...">
+<mt:else>
+      <__trans phrase="Choose file...">
+</mt:if>
+    </img>
+  </button>
 <mt:unless name="filter" eq="userpic">  
     <h2><__trans phrase="Upload Destination"></h2>
   <mt:if name="allow_to_change_at_upload">
