@@ -1,7 +1,7 @@
 language: perl
 
 perl:
-  - "5.21"
+  - "5.22"
   - "5.20"
   - "5.18"
   - "5.16"
@@ -50,6 +50,9 @@ install:
 
   # Tests fail with Perl 5.10.
   - cpanm --notest -L ./local XML::Parser::PerlSAX
+
+  # Use patched Coro for Perl 5.22.
+  - cpanm -L ./local https://github.com/rurban/Coro/archive/rel-6.48_01.tar.gz
 
   # Tests fail with Perl 5.8 and 5.10.
   - cpanm --notest -L ./local Twiggy
