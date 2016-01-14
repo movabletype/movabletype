@@ -248,9 +248,11 @@ jQuery(window)
   .resize(resize_upload_overlay)
   .on('dragover', function(e) {
     e.preventDefault();
-    if (++dragover_count >= dragover_limit) {
+    if (dragover_count > dragover_limit) {
       jQuery('body').addClass('has-dialog');  // Forbid scroll while dragging file.
       jQuery('#upload-overlay, #upload-overlay-border').show();
+    } else {
+      dragover_count++;
     }
   })
   .on('drop', function(e) {
