@@ -92,6 +92,44 @@ h1.dialog-title {
     font-size: 150%;
     font-weight: normal;
 }
+
+#open-file-dialog {
+  font-size: 13pt;
+  font-weight: normal;
+  color: #ffffff;
+}
+
+#upload-overlay {
+  z-index: 700;
+  display: none;
+  background-color: #BAE3FF;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+#upload-overlay-border {
+  display: none;
+  z-index: 800;
+  font-size: 18px;
+  color: #0D76BF;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 3px solid #0A93F3;
+}
+
+#upload-overlay-message {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+  width: 100vw;
+  height: 100vh;
+}
+
 </style>
 
 <mt:if name="dialog">
@@ -106,7 +144,7 @@ h1.dialog-title {
 
 <form>
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
-  <button class="action button primary" id="open-file-dialog" style="font-size: 13pt; font-weight: normal; color: #ffffff;">
+  <button class="action button primary" id="open-file-dialog">
     <img src="<mt:var name="static_uri">images/upload/ico_nowuploading_s@2x.png" width="12" height="10">
 <mt:if name="can_multi">
       <__trans phrase="Choose files to upload or drag files.">
@@ -180,34 +218,60 @@ h1.dialog-title {
 
 <script type="text/javascript">
 /* <![CDATA[ */
-// Assign drag and drop event
-jQuery('#drop-handler').on('dragenter', function(e) {
-  e.stopPropagation();
-  e.preventDefault();
-  jQuery(this).css('border', '2px solid #0B85A1');
-}).on('dragover', function (e) {
-  e.stopPropagation();
-  e.preventDefault();
-}).on('dragleave', function(e) {
-  jQuery(this).css('border', '2px dotted #6f6f6f');
-}).on('drop', function (e) {
-  jQuery(this).css('border', '2px dotted #6f6f6f');
-  e.preventDefault();
 
-  uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
-});
+function resize_upload_overlay() {
 
-// Ignore drop on non-droppable area
-jQuery(document).on('dragenter', function (e) {
-  e.stopPropagation();
-  e.preventDefault();
-}).on('dragover', function (e) {
-  e.stopPropagation();
-  e.preventDefault();
-}).on('drop', function (e) {
-  e.stopPropagation();
-  e.preventDefault();
-});
+  // Take into account border width.
+  jQuery('#upload-overlay-border')
+    .width(
+      jQuery(window).width() - 6
+    )
+    .height(
+      jQuery(window).height() - 6
+    );
+}
+
+// Create upload overlay DOM.
+jQuery('body')
+  .append('<div id="upload-overlay"></div><div id="upload-overlay-border"><div id="upload-overlay-message"><img src="<mt:var name="static_uri">images/upload/nowuploading@2x.png" width="60" height="50" /><br />Drag and drop here</div></div>');
+
+// Initialize upload overlay size.
+resize_upload_overlay();
+
+// Avoid chattering when drag and drop.
+var dragover_count        = 0;
+var dragover_limit        = 10;
+var delay_closing_overlay = 100;
+
+// Bind events.
+jQuery(window)
+  .resize(resize_upload_overlay)
+  .on('dragover', function(e) {
+    e.preventDefault();
+    if (++dragover_count >= dragover_limit) {
+      jQuery('body').addClass('has-dialog');  // Forbid scroll while dragging file.
+      jQuery('#upload-overlay, #upload-overlay-border').show();
+    }
+  })
+  .on('drop', function(e) {
+    e.preventDefault();
+    jQuery('body').removeClass('has-dialog');
+    jQuery('#upload-overlay, #upload-overlay-border').hide();
+    dragover_count = 0;
+    uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
+  })
+;
+
+jQuery('#upload-overlay-message')
+  .on('dragleave', function(e) {
+    dragover_count = 0;
+    setTimeout(function() {
+      if (dragover_count >= dragover_limit) return;
+      jQuery('body').removeClass('has-dialog');
+      jQuery('#upload-overlay, #upload-overlay-border').hide();
+    }, delay_closing_overlay);
+  })
+;
 
 function createFormData(file) {
   var fd = new FormData();
