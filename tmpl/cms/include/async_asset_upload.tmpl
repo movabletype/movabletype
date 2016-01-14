@@ -96,22 +96,22 @@ h1.dialog-title {
 
 <mt:if name="dialog">
   <mt:if name="filter_val" eq="image">
-<h1 class="dialog-title"><__trans phrase="Upload Image"></h1>
+<h1 class="dialog-title"><__trans phrase="Upload new image"></h1>
   <mt:elseif name="is_image">
-<h1 class="dialog-title"><__trans phrase="Upload Image"></h1>
+<h1 class="dialog-title"><__trans phrase="Upload new image"></h1>
   <mt:else>
-<h1 class="dialog-title"><__trans phrase="Upload Asset"></h1>
+<h1 class="dialog-title"><__trans phrase="Upload new asset"></h1>
   </mt:if>
 </mt:if>
 
 <form>
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
-  <button class="action button primary" id="open-file-dialog">
-    <img src="">
+  <button class="action button primary" id="open-file-dialog" style="font-size: 13pt; color: #ffffff;">
+    <img src="<mt:var name="static_uri">images/upload/ico_nowuploading_s@2x.png" width="12" height="10">
 <mt:if name="can_multi">
-      <__trans phrase="Choose files...">
+      <__trans phrase="Choose files to upload or drag files.">
 <mt:else>
-      <__trans phrase="Choose file...">
+      <__trans phrase="Choose file to upload or drag file.">
 </mt:if>
     </img>
   </button>
