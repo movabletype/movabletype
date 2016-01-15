@@ -187,11 +187,25 @@ h1.dialog-title {
 <script type="text/javascript">
 /* <![CDATA[ */
 
-function resize_upload_overlay() {
+var isDialog = (top !== window);
 
-  // Take into account scroll bar width on Windows.
-  var width  = top.innerWidth;
-  var height = top.innerHeight;
+function resize_upload_overlay() {
+  var width, height;
+
+  if ( isDialog
+    && navigator.userAgent.indexOf("Gecko/")  !== -1
+    && navigator.userAgent.indexOf("Windows") !== -1
+  ) {
+
+    // Upload dialog on Firefox and Windows. (case #105562)
+    width  = jQuery(top).width();
+    height = jQuery(top).height();
+  } else {
+
+    // Take into account scroll bar width on Windows.
+    width  = top.innerWidth;
+    height = top.innerHeight;
+  }
 
   top.jQuery('#upload-overlay, #upload-overlay-message')
     .width(width)
@@ -249,8 +263,6 @@ resize_upload_overlay();
 var dragover_count        = 0;
 var dragover_limit        = 10;
 var delay_closing_overlay = 100;
-
-var isDialog = (top !== window);
 
 // Bind events.
 jQuery(top).resize(resize_upload_overlay);  // Resize upload overlay whenever resizing browser.
