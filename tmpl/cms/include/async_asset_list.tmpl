@@ -274,7 +274,7 @@ jQuery('#asset-class').change(function() {
   loadAssetList(0);
 });
 
-<mt:if name="filter" ne="userpic">
+<mt:unless name="filter" eq="userpic">
 jQuery('#modal-search').submit(function(){
   checked = [];
   loadAssetList(0);
@@ -289,7 +289,7 @@ jQuery('.search-reset').click(function() {
   loadAssetList(0);
   jQuery('.search-reset').addClass('hidden').hide();
 });
-</mt:if>
+</mt:unless>
 
 jQuery('.actions-bar button.primary').click(function() {
   if ( currentPanel != '#list-asset-panel' ) {
