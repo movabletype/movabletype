@@ -126,23 +126,25 @@ sub create {
         my $assets_hash = $page_hash->{assets};
         $assets_hash = [$assets_hash] if ref $assets_hash ne 'ARRAY';
 
-        my @asset_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
-        my @blog_ids = ( $site->id );
-        if ( !$site->is_blog ) {
-            my @child_blogs = @{ $site->blogs };
-            my @child_blog_ids = map { $_->id } @child_blogs;
-            push @blog_ids, @child_blog_ids;
-        }
-        @attach_assets = MT->model('asset')->load(
-            {   id      => \@asset_ids,
-                blog_id => \@blog_ids,
+        if ( scalar @$assets_hash > 0 ) {
+            my @asset_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
+            my @blog_ids = ( $site->id );
+            if ( !$site->is_blog ) {
+                my @child_blogs = @{ $site->blogs };
+                my @child_blog_ids = map { $_->id } @child_blogs;
+                push @blog_ids, @child_blog_ids;
             }
-        );
+            @attach_assets = MT->model('asset')->load(
+                {   id      => \@asset_ids,
+                    blog_id => \@blog_ids,
+                }
+            );
 
-        return $app->error( "'assets' parameter is invalid.", 400 )
-            if scalar @$assets_hash == 0
-            || scalar @$assets_hash != scalar @attach_assets;
+            return $app->error( "'assets' parameter is invalid.", 400 )
+                if scalar @$assets_hash == 0
+                || scalar @$assets_hash != scalar @attach_assets;
+        }
     }
 
     save_object( $app, 'page', $new_page )
@@ -197,27 +199,35 @@ sub update {
     }
 
     my @update_assets;
+    my $do_update_assets;
     if ( exists $page_hash->{assets} ) {
         my $assets_hash = $page_hash->{assets};
         $assets_hash = [$assets_hash] if ref $assets_hash ne 'ARRAY';
 
-        my @asset_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
-        my @blog_ids = ( $site->id );
-        if ( !$site->is_blog ) {
-            my @child_blogs = @{ $site->blogs };
-            my @child_blog_ids = map { $_->id } @child_blogs;
-            push @blog_ids, @child_blog_ids;
+        if ( scalar @$assets_hash == 0 ) {
+            $do_update_assets = 1;
         }
-        @update_assets = MT->model('asset')->load(
-            {   id      => \@asset_ids,
-                blog_id => \@blog_ids,
+        else {
+            my @asset_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
+            my @blog_ids = ( $site->id );
+            if ( !$site->is_blog ) {
+                my @child_blogs = @{ $site->blogs };
+                my @child_blog_ids = map { $_->id } @child_blogs;
+                push @blog_ids, @child_blog_ids;
             }
-        );
+            @update_assets = MT->model('asset')->load(
+                {   id      => \@asset_ids,
+                    blog_id => \@blog_ids,
+                }
+            );
 
-        return $app->error( "'assets' parameter is invalid.", 400 )
-            if scalar @$assets_hash == 0
-            || scalar @$assets_hash != scalar @update_assets;
+            return $app->error( "'assets' parameter is invalid.", 400 )
+                if scalar @$assets_hash == 0
+                || scalar @$assets_hash != scalar @update_assets;
+
+            $do_update_assets = 1;
+        }
     }
 
     save_object(
@@ -236,7 +246,7 @@ sub update {
     # Update categories and assets.
     $new_page->update_categories( $update_folder ? $update_folder : () )
         or return $app->error( $new_page->errstr );
-    if (@update_assets) {
+    if ($do_update_assets) {
         $new_page->update_assets(@update_assets)
             or return $app->error( $new_page->errstr );
     }

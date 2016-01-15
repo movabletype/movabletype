@@ -560,6 +560,40 @@ __BODY__
                     [qw/ 2 3 /], "Entry's categoy Ids are \"2 3\"" );
             },
         },
+        {    # Detatch categories.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params =>
+                { entry => { categories => [] }, },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('entry')->load(
+                    {   id    => 2,
+                        title => 'test-api-update-categories',
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is( scalar @{ $got->{categories} },
+                    0, 'Entry has no category' );
+            },
+        },
         {    # Attach assets.
             path   => '/v2/sites/1/entries/2',
             method => 'PUT',
@@ -600,6 +634,48 @@ __BODY__
                     }
                 );
                 is( scalar @oa, 2, 'Entry has 2 assets' );
+            },
+        },
+        {    # Detach assets.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => {
+                entry => {
+                    title  => 'test-api-update-assets',
+                    assets => [],
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('entry')->load(
+                    {   id    => 2,
+                        title => 'test-api-update-assets',
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $entry = MT->model('entry')->load(2);
+                my @oa    = MT->model('objectasset')->load(
+                    {   object_ds => 'entry',
+                        object_id => $entry->id,
+                    }
+                );
+                is( scalar @oa, 0, 'Entry has no asset' );
             },
         },
         {    # Update attached assets.
