@@ -189,14 +189,18 @@ h1.dialog-title {
 
 function resize_upload_overlay() {
 
+  // Take into account scroll bar width on Windows.
+  var width  = top.innerWidth;
+  var height = top.innerHeight;
+
+  top.jQuery('#upload-overlay, #upload-overlay-message')
+    .width(width)
+    .height(height);
+
   // Take into account border width.
   top.jQuery('#upload-overlay-border')
-    .width(
-      jQuery(top).width() - 6
-    )
-    .height(
-      jQuery(top).height() - 6
-    );
+    .width(width - 6)
+    .height(height - 6);
 }
 
 // Create upload overlay DOM once.
@@ -211,9 +215,7 @@ if (!top.jQuery('#upload-overlay').length) {
           'opacity': 0.6,
           'position': 'fixed',
           'top': 0,
-          'left': 0,
-          'width': '100vw',
-          'height': '100vh'
+          'left': 0
         })
     )
     .append(
@@ -233,9 +235,7 @@ if (!top.jQuery('#upload-overlay').length) {
             .css({
               'display': 'table-cell',
               'text-align': 'center',
-              'vertical-align': 'middle',
-              'width': '100vw',
-              'height': '100vh'
+              'vertical-align': 'middle'
             })
             .append('<img src="<mt:var name="static_uri">images/upload/nowuploading@2x.png" width="60" height="50" /><br />Drag and drop here')
         )
