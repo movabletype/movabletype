@@ -469,7 +469,9 @@ sub rebuild_deleted_entry {
                             : ()
                         ),
                     );
-                    if ( $app->config('DeleteFilesAtRebuild') ) {
+                    if (   $app->config('RebuildAtDelete')
+                        && $app->config('DeleteFilesAtRebuild') )
+                    {
                         $mt->remove_entry_archive_file(
                             Entry       => $entry,
                             ArchiveType => $at,
@@ -513,7 +515,9 @@ sub rebuild_deleted_entry {
                     (   $archiver->date_based() ? ( startdate => $start ) : ()
                     ),
                 );
-                if ( $app->config('DeleteFilesAtRebuild') ) {
+                if (   $app->config('RebuildAtDelete')
+                    && $app->config('DeleteFilesAtRebuild') )
+                {
                     $mt->remove_entry_archive_file(
                         Entry       => $entry,
                         ArchiveType => $at
