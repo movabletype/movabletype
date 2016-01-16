@@ -453,6 +453,111 @@ __BODY__
                     { blog_id => 1, title => 'create-entry-with-none' } );
             },
         },
+        {    # Attach empty category list.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title      => 'test-api-attach-empty-category-list-to-entry',
+                    status     => 'Draft',
+                    categories => [],
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                require MT::Entry;
+                MT->model('entry')->load(
+                    {   title  => 'test-api-attach-empty-category-list-to-entry',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                require MT::Entry;
+                my $entry = MT->model('entry')->load(
+                    {   title  => 'test-api-attach-empty-category-list-to-entry',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+                is( $entry->revision, 1, 'Has created new revision' );
+
+                my $got = $app->current_format->{unserialize}->($body);
+                is( scalar @{ $got->{categories} }, 0,
+                    'Attaches no category' );
+            },
+        },
+        {    # Attach empty asset list.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title  => 'test-api-attach-empty-asset-list-to-entry',
+                    status => 'Draft',
+                    assets => [],
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                require MT::Entry;
+                MT->model('entry')->load(
+                    {   title  => 'test-api-attach-empty-asset-list-to-entry',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                require MT::Entry;
+                my $entry = MT->model('entry')->load(
+                    {   title  => 'test-api-attach-empty-asset-list-to-entry',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+                is( $entry->revision, 1, 'Has created new revision' );
+                my @assets = MT->model('asset')->load(
+                    { class => '*' },
+                    {   join => MT->model('objectasset')->join_on(
+                            'asset_id',
+                            {   object_ds => 'entry',
+                                object_id => $entry->id,
+                                asset_id  => 1,
+                            },
+                        ),
+                    }
+                );
+                is( scalar @assets, 0, 'Attaches no asset' );
+            },
+        },
 
         # update_entry - irregular tests.
         {    # Attach non-existent category
