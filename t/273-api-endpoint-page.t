@@ -694,6 +694,62 @@ __BODY__
                     { blog_id => 1, title => 'create-page-with-none' } );
             },
         },
+        {    # Attach empty asset list.
+            path   => '/v2/sites/1/pages',
+            method => 'POST',
+            params => {
+                page => {
+                    title  => 'test-api-attach-empty-asset-list-to-page',
+                    status => 'Draft',
+                    assets => [],
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.page',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                require MT::Entry;
+                MT->model('page')->load(
+                    {   title  => 'test-api-attach-empty-asset-list-to-page',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                require MT::Entry;
+                my $page = MT->model('page')->load(
+                    {   title  => 'test-api-attach-empty-asset-list-to-page',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+                is( $page->revision, 1, 'Has created new revision' );
+                my @assets = MT->model('asset')->load(
+                    { class => '*' },
+                    {   join => MT->model('objectasset')->join_on(
+                            'asset_id',
+                            {   object_ds => 'entry',
+                                object_id => $page->id,
+                                asset_id  => 1,
+                            },
+                        ),
+                    }
+                );
+                is( scalar @assets, 0, 'Attaches no asset' );
+            },
+        },
 
         # update_page - irregular tests
         {    # Non-existent page.
@@ -862,6 +918,25 @@ __BODY__
                     },
                 );
                 is( $count, 1, 'Attached asset.' );
+            },
+        },
+        {    # Detach assets.
+            path   => '/v2/sites/1/pages/23',
+            method => 'PUT',
+            params => { page => { assets => [] } },
+            result => sub {
+                $app->model('page')->load(23);
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $page  = $app->model('page')->load(23);
+                my $count = MT->model('objectasset')->count(
+                    {   blog_id   => $page->blog->id,
+                        object_ds => 'entry',
+                        object_id => $page->id,
+                    },
+                );
+                is( $count, 0, 'Detached asset.' );
             },
         },
 

@@ -71,22 +71,24 @@ sub create {
         my $cats_hash = $entry_hash->{categories};
         $cats_hash = [$cats_hash] if ref $cats_hash ne 'ARRAY';
 
-        my @cat_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
-        @attach_cats = MT->model('category')->load(
-            {   id      => \@cat_ids,
-                blog_id => $blog->id,
-                class   => 'category',
-            }
-        );
+        if ( scalar @$cats_hash > 0 ) {
+            my @cat_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
+            @attach_cats = MT->model('category')->load(
+                {   id      => \@cat_ids,
+                    blog_id => $blog->id,
+                    class   => 'category',
+                }
+            );
 
-        return $app->error( "'categories' parameter is invalid.", 400 )
-            if scalar @$cats_hash == 0
-            || scalar @$cats_hash != scalar @attach_cats;
+            return $app->error( "'categories' parameter is invalid.", 400 )
+                if scalar @$cats_hash == 0
+                || scalar @$cats_hash != scalar @attach_cats;
 
-        # Restore order.
-        my %attach_cats_hash = map { +( $_->id => $_ ) } @attach_cats;
-        @attach_cats = map { $attach_cats_hash{$_} } @cat_ids;
+            # Restore order.
+            my %attach_cats_hash = map { +( $_->id => $_ ) } @attach_cats;
+            @attach_cats = map { $attach_cats_hash{$_} } @cat_ids;
+        }
     }
 
     my @attach_assets;
@@ -94,23 +96,25 @@ sub create {
         my $assets_hash = $entry_hash->{assets};
         $assets_hash = [$assets_hash] if ref $assets_hash ne 'ARRAY';
 
-        my @asset_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
-        my @blog_ids = ( $blog->id );
-        if ( !$blog->is_blog ) {
-            my @child_blogs = @{ $blog->blogs };
-            my @child_blog_ids = map { $_->id } @child_blogs;
-            push @blog_ids, @child_blog_ids;
-        }
-        @attach_assets = MT->model('asset')->load(
-            {   id      => \@asset_ids,
-                blog_id => \@blog_ids,
+        if ( scalar @$assets_hash > 0 ) {
+            my @asset_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
+            my @blog_ids = ( $blog->id );
+            if ( !$blog->is_blog ) {
+                my @child_blogs = @{ $blog->blogs };
+                my @child_blog_ids = map { $_->id } @child_blogs;
+                push @blog_ids, @child_blog_ids;
             }
-        );
+            @attach_assets = MT->model('asset')->load(
+                {   id      => \@asset_ids,
+                    blog_id => \@blog_ids,
+                }
+            );
 
-        return $app->error( "'assets' parameter is invalid.", 400 )
-            if scalar @$assets_hash == 0
-            || scalar @$assets_hash != scalar @attach_assets;
+            return $app->error( "'assets' parameter is invalid.", 400 )
+                if scalar @$assets_hash == 0
+                || scalar @$assets_hash != scalar @attach_assets;
+        }
     }
 
     save_object( $app, 'entry', $new_entry )
@@ -181,27 +185,35 @@ sub update {
     }
 
     my @update_assets;
+    my $do_update_assets;
     if ( exists $entry_hash->{assets} ) {
         my $assets_hash = $entry_hash->{assets};
         $assets_hash = [$assets_hash] if ref $assets_hash ne 'ARRAY';
 
-        my @asset_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
-        my @blog_ids = ( $blog->id );
-        if ( !$blog->is_blog ) {
-            my @child_blogs = @{ $blog->blogs };
-            my @child_blog_ids = map { $_->id } @child_blogs;
-            push @blog_ids, @child_blog_ids;
+        if ( scalar @$assets_hash == 0 ) {
+            $do_update_assets = 1;
         }
-        @update_assets = MT->model('asset')->load(
-            {   id      => \@asset_ids,
-                blog_id => \@blog_ids,
+        else {
+            my @asset_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
+            my @blog_ids = ( $blog->id );
+            if ( !$blog->is_blog ) {
+                my @child_blogs = @{ $blog->blogs };
+                my @child_blog_ids = map { $_->id } @child_blogs;
+                push @blog_ids, @child_blog_ids;
             }
-        );
+            @update_assets = MT->model('asset')->load(
+                {   id      => \@asset_ids,
+                    blog_id => \@blog_ids,
+                }
+            );
 
-        return $app->error( "'assets' parameter is invalid.", 400 )
-            if scalar @$assets_hash == 0
-            || scalar @$assets_hash != scalar @update_assets;
+            return $app->error( "'assets' parameter is invalid.", 400 )
+                if scalar @$assets_hash == 0
+                || scalar @$assets_hash != scalar @update_assets;
+
+            $do_update_assets = 1;
+        }
     }
 
     save_object(
@@ -222,7 +234,7 @@ sub update {
         $new_entry->update_categories(@update_cats)
             or return $app->error( $new_entry->errstr );
     }
-    if (@update_assets) {
+    if ($do_update_assets) {
         $new_entry->update_assets(@update_assets)
             or return $app->error( $new_entry->errstr );
     }
