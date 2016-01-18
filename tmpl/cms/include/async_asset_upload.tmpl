@@ -207,7 +207,7 @@ function resize_upload_overlay() {
     height = top.innerHeight;
   }
 
-  top.jQuery('#upload-overlay, #upload-overlay-message')
+  top.jQuery('#upload-overlay, #upload-overlay-message, #upload-overlay-message > div')
     .width(width)
     .height(height);
 
@@ -237,32 +237,36 @@ if (!top.jQuery('#upload-overlay').length) {
         .css({
           'display': 'none',
           'z-index': 2200,
-          'font-size': '18px',
-          'color': '#0D76BF',
           'position': 'fixed',
           'top': 0,
           'left': 0,
           'border': '3px solid #0A93F3'
         })
+    )
+    .append(
+      jQuery('<div id="upload-overlay-message" />')
+        .css({
+          'display': 'none',
+          'z-index': 2300,
+          'position': 'fixed',
+          'top': 0,
+          'left': 0
+        })
         .append(
-          jQuery('<div id="upload-overlay-message" />')
+          jQuery('<div><img src="<mt:var name="static_uri">images/upload/nowuploading@2x.png" width="60" height="50" /><br />Drag and drop here</div>')
             .css({
               'display': 'table-cell',
               'text-align': 'center',
-              'vertical-align': 'middle'
+              'vertical-align': 'middle',
+              'font-size': '18px',
+              'color': '#0D76BF'
             })
-            .append('<img src="<mt:var name="static_uri">images/upload/nowuploading@2x.png" width="60" height="50" /><br />Drag and drop here')
         )
     );
 }
 
 // Initialize upload overlay size.
 resize_upload_overlay();
-
-// Avoid chattering when drag and drop.
-var dragover_count        = 0;
-var dragover_limit        = 10;
-var delay_closing_overlay = 100;
 
 // Bind events.
 jQuery(top).on('resize.multiUpload', resize_upload_overlay);  // Resize upload overlay whenever resizing browser.
@@ -271,30 +275,21 @@ jQuery(isDialog ? [top, window] : window)
   .on({
     'dragover.multiUpload': function(e) {  // Show upload overlay.
       e.preventDefault();
-      if (dragover_count > dragover_limit) {
-        jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
-        top.jQuery('#upload-overlay, #upload-overlay-border').show();
-      } else {
-        dragover_count++;
-      }
+      jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
+      top.jQuery('#upload-overlay, #upload-overlay-border, #upload-overlay-message').show();
     },
     'drop.multiUpload': function(e) {  // Upload files.
       e.preventDefault();
       jQuery('body').removeClass('has-dialog');
-      top.jQuery('#upload-overlay, #upload-overlay-border').hide();
-      dragover_count = 0;
+      top.jQuery('#upload-overlay, #upload-overlay-border, #upload-overlay-message').hide();
       uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
     }
   });
 
 top.jQuery('#upload-overlay-message')
   .on('dragleave.multiUpload', function(e) {  // Hide upload overlay.
-    dragover_count = 0;
-    setTimeout(function() {
-      if (dragover_count >= dragover_limit) return;
-      jQuery('body').removeClass('has-dialog');
-      top.jQuery('#upload-overlay, #upload-overlay-border').hide();
-    }, delay_closing_overlay);
+    jQuery('body').removeClass('has-dialog');
+    top.jQuery('#upload-overlay, #upload-overlay-border, #upload-overlay-message').hide();
   });
 
 // Unbind events when closing dialog.
