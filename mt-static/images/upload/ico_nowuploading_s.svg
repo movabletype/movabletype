@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="12px" height="10px" viewBox="0 0 12 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
+    <title>ico_nowuploading_s</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="upload_modal-window" sketch:type="MSArtboardGroup" transform="translate(-452.000000, -105.000000)" fill="#FFFFFF">
+            <g id="Drag-and-drop-here" sketch:type="MSLayerGroup" transform="translate(442.000000, 97.000000)">
+                <g id="Rectangle-125-+-Drag-and-drop-here" transform="translate(10.000000, 8.000000)" sketch:type="MSShapeGroup">
+                    <path d="M1,6 L11,6 L11,9 L1,9 L1,6 Z M9.5,8 C9.77614237,8 10,7.77614237 10,7.5 C10,7.22385763 9.77614237,7 9.5,7 C9.22385763,7 9,7.22385763 9,7.5 C9,7.77614237 9.22385763,8 9.5,8 Z M7.2,2.77777778 L7.2,5 L4.8,5 L4.8,2.77777778 L3,2.77777778 L6,0 L9,2.77777778 L7.2,2.77777778 Z" id="Rectangle-125"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
