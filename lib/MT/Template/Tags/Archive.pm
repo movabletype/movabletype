@@ -918,28 +918,12 @@ sub _hdlr_archive_count {
     elsif ( my $count = $ctx->stash('archive_count') ) {
         return $ctx->count_format( $count, $args );
     }
-    elsif ( my $e = $ctx->stash('entries') ) {
-        my @entries;
-        @entries = @$e if ref($e) eq 'ARRAY';
-        my $count = scalar @entries;
-        return $ctx->count_format( $count, $args );
-    }
-    my $eargs = {};
-    my $terms->{'blog_id'} = $ctx->stash('blog_id');
-    my ( $start, $end ) = (
-        $ctx->{current_timestamp},
-        $ctx->{current_timestamp_end}
-    );
-    if ($archiver) {
-        if ( $start && $end ) {
-            $terms->{authored_on} = [ $start, $end ];
-            $eargs->{range_incl}->{authored_on} = 1;
-        }
-        my $count = MT::Entry->count( $terms, $eargs );
-        return $ctx->count_format( $count, $eargs );
-    }
-    return 0;
-
+    my $e = $ctx->stash('entries');
+    $e = $ctx->stash('entry') if !$e && $ctx->stash('entry');
+    my @entries;
+    @entries = @$e if ref($e) eq 'ARRAY';
+    my $count = scalar @entries;
+    return $ctx->count_format( $count, $args );
 }
 
 ###########################################################################
