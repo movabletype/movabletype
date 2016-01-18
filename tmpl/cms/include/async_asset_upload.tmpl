@@ -265,7 +265,7 @@ var dragover_limit        = 10;
 var delay_closing_overlay = 100;
 
 // Bind events.
-jQuery(top).resize(resize_upload_overlay);  // Resize upload overlay whenever resizing browser.
+jQuery(top).on('resize', resize_upload_overlay);  // Resize upload overlay whenever resizing browser.
 
 jQuery(isDialog ? [top, window] : window)
   .on('dragover', function(e) {  // Show upload overlay.
@@ -301,7 +301,7 @@ if (isDialog) {
   top.jQuery.fn.mtDialog.close = function() {
     close.call();
 
-    jQuery(top).off('dragover').off('drop');
+    jQuery(top).off('resize').off('dragover').off('drop');
     top.jQuery('#upload-overlay-message').off('dragleave');
 
     top.jQuery.fn.mtDialog.close = close;
