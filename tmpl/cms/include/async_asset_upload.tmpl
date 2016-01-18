@@ -265,28 +265,30 @@ var dragover_limit        = 10;
 var delay_closing_overlay = 100;
 
 // Bind events.
-jQuery(top).on('resize', resize_upload_overlay);  // Resize upload overlay whenever resizing browser.
+jQuery(top).on('resize.multiUpload', resize_upload_overlay);  // Resize upload overlay whenever resizing browser.
 
 jQuery(isDialog ? [top, window] : window)
-  .on('dragover', function(e) {  // Show upload overlay.
-    e.preventDefault();
-    if (dragover_count > dragover_limit) {
-      jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
-      top.jQuery('#upload-overlay, #upload-overlay-border').show();
-    } else {
-      dragover_count++;
+  .on({
+    'dragover.multiUpload': function(e) {  // Show upload overlay.
+      e.preventDefault();
+      if (dragover_count > dragover_limit) {
+        jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
+        top.jQuery('#upload-overlay, #upload-overlay-border').show();
+      } else {
+        dragover_count++;
+      }
+    },
+    'drop.multiUpload': function(e) {  // Upload files.
+      e.preventDefault();
+      jQuery('body').removeClass('has-dialog');
+      top.jQuery('#upload-overlay, #upload-overlay-border').hide();
+      dragover_count = 0;
+      uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
     }
-  })
-  .on('drop', function(e) {  // Upload files.
-    e.preventDefault();
-    jQuery('body').removeClass('has-dialog');
-    top.jQuery('#upload-overlay, #upload-overlay-border').hide();
-    dragover_count = 0;
-    uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
   });
 
 top.jQuery('#upload-overlay-message')
-  .on('dragleave', function(e) {  // Hide upload overlay.
+  .on('dragleave.multiUpload', function(e) {  // Hide upload overlay.
     dragover_count = 0;
     setTimeout(function() {
       if (dragover_count >= dragover_limit) return;
@@ -301,8 +303,8 @@ if (isDialog) {
   top.jQuery.fn.mtDialog.close = function() {
     close.call();
 
-    jQuery(top).off('resize').off('dragover').off('drop');
-    top.jQuery('#upload-overlay-message').off('dragleave');
+    jQuery(top).off('resize.multiUpload dragover.multiUpload drop.multiUpload');
+    top.jQuery('#upload-overlay-message').off('dragleave.multiUpload');
 
     top.jQuery.fn.mtDialog.close = close;
   };
