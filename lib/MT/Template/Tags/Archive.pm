@@ -919,7 +919,8 @@ sub _hdlr_archive_count {
         return $ctx->count_format( $count, $args );
     }
     my $e = $ctx->stash('entries');
-    $e = $ctx->stash('entry') if !$e && $ctx->stash('entry');
+    $e = [ $ctx->stash('entry') ]
+        if !$e && $ctx->stash('entry');
     my @entries;
     @entries = @$e if ref($e) eq 'ARRAY';
     my $count = scalar @entries;
