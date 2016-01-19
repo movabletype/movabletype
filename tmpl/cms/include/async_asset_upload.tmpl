@@ -278,10 +278,16 @@ jQuery(isDialog ? [top, window] : window)
       jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
       top.jQuery('#upload-overlay, #upload-overlay-border, #upload-overlay-message').show();
     },
-    'drop.multiUpload': function(e) {  // Upload files.
+    'drop.multiUpload': function(e) {  // Upload files and hide overlay.
       e.preventDefault();
       jQuery('body').removeClass('has-dialog');
       top.jQuery('#upload-overlay, #upload-overlay-border, #upload-overlay-message').hide();
+
+      // Change to upload asset panel.
+      if (isDialog) {
+        jQuery('.left-menu-item[data-panel-id="#upload-asset-panel"]').trigger('click');
+      }
+
       uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
     }
   });
