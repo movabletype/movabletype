@@ -278,10 +278,16 @@ jQuery(isDialog ? [top, window] : window)
       jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
       top.jQuery('#upload-overlay, #upload-overlay-border, #upload-overlay-message').show();
     },
-    'drop.multiUpload': function(e) {  // Upload files.
+    'drop.multiUpload': function(e) {  // Upload files and hide overlay.
       e.preventDefault();
       jQuery('body').removeClass('has-dialog');
       top.jQuery('#upload-overlay, #upload-overlay-border, #upload-overlay-message').hide();
+
+      // Change to upload asset panel.
+      if (isDialog) {
+        jQuery('.left-menu-item[data-panel-id="#upload-asset-panel"]').trigger('click');
+      }
+
       uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
     }
   });
@@ -292,16 +298,25 @@ top.jQuery('#upload-overlay-message')
     top.jQuery('#upload-overlay, #upload-overlay-border, #upload-overlay-message').hide();
   });
 
-// Unbind events when closing dialog.
+// Unbind events on dialog.
 if (isDialog) {
   var close = top.jQuery.fn.mtDialog.close;
+
+  function unbind() {
+    jQuery(top).off('resize.multiUpload dragover.multiUpload drop.multiUpload click.multiUpload');
+    top.jQuery('#upload-overlay-message').off('dragleave.multiUpload');
+    top.jQuery.fn.mtDialog.close = close;
+  }
+
+  // Unbind when inserting asset.
+  jQuery(document).ready(function() {
+    jQuery('.actions-bar button.primary').on('click.multiUpload', unbind);
+  });
+
+  // Unbind when closing dialog.
   top.jQuery.fn.mtDialog.close = function() {
     close.call();
-
-    jQuery(top).off('resize.multiUpload dragover.multiUpload drop.multiUpload');
-    top.jQuery('#upload-overlay-message').off('dragleave.multiUpload');
-
-    top.jQuery.fn.mtDialog.close = close;
+    unbind();
   };
 }
 
