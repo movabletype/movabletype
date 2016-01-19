@@ -28,6 +28,9 @@ function smarty_function_mtarchivecount($args, &$ctx) {
     if(is_array($e)){
         $entries = $e;
     }
-    return count($entries);
+    else {
+        $entries = array( $e );
+    }
+    return $ctx->count_format($count, $args);
 }
 ?>
