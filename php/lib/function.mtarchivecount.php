@@ -31,6 +31,6 @@ function smarty_function_mtarchivecount($args, &$ctx) {
     else {
         $entries = array( $e );
     }
-    return $ctx->count_format($count, $args);
+    return $ctx->count_format( count($entries), $args);
 }
 ?>
