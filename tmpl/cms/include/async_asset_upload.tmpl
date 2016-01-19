@@ -292,16 +292,25 @@ top.jQuery('#upload-overlay-message')
     top.jQuery('#upload-overlay, #upload-overlay-border, #upload-overlay-message').hide();
   });
 
-// Unbind events when closing dialog.
+// Unbind events on dialog.
 if (isDialog) {
   var close = top.jQuery.fn.mtDialog.close;
+
+  function unbind() {
+    jQuery(top).off('resize.multiUpload dragover.multiUpload drop.multiUpload click.multiUpload');
+    top.jQuery('#upload-overlay-message').off('dragleave.multiUpload');
+    top.jQuery.fn.mtDialog.close = close;
+  }
+
+  // Unbind when inserting asset.
+  jQuery(document).ready(function() {
+    jQuery('.actions-bar button.primary').on('click.multiUpload', unbind);
+  });
+
+  // Unbind when closing dialog.
   top.jQuery.fn.mtDialog.close = function() {
     close.call();
-
-    jQuery(top).off('resize.multiUpload dragover.multiUpload drop.multiUpload');
-    top.jQuery('#upload-overlay-message').off('dragleave.multiUpload');
-
-    top.jQuery.fn.mtDialog.close = close;
+    unbind();
   };
 }
 
