@@ -50,8 +50,15 @@ sub suite {
                         }
                     },
                 },
+                {   path   => "/version",
+                    method => 'GET',
+                    result => +{
+			endpointVersion => 'v' . $app->DEFAULT_VERSION(),
+			apiVersion      => $app->API_VERSION(),
+		    }
+                },
                 )
-        } qw/ 1 2 /,
+        } qw/ 1 2 3 /,
     ];
 }
 
