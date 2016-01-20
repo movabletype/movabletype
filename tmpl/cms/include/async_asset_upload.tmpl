@@ -283,9 +283,18 @@ jQuery(isDialog ? [top, window] : window)
       e.preventDefault();
       jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
       top.jQuery('#upload-overlay-container').show();
+    }
+  });
+
+top.jQuery('#upload-overlay-drop')
+  .on({
+    'dragleave.multiUpload': function(e) {  // Hide upload overlay.
+      jQuery('body').removeClass('has-dialog');
+      top.jQuery('#upload-overlay-container').hide();
     },
     'drop.multiUpload': function(e) {  // Upload files and hide overlay.
       e.preventDefault();
+      e.stopPropagation();
       jQuery('body').removeClass('has-dialog');
       top.jQuery('#upload-overlay-container').hide();
 
@@ -298,19 +307,13 @@ jQuery(isDialog ? [top, window] : window)
     }
   });
 
-top.jQuery('#upload-overlay-drop')
-  .on('dragleave.multiUpload', function(e) {  // Hide upload overlay.
-    jQuery('body').removeClass('has-dialog');
-    top.jQuery('#upload-overlay-container').hide();
-  });
-
 // Unbind events on dialog.
 if (isDialog) {
   var close = top.jQuery.fn.mtDialog.close;
 
   function unbind() {
-    jQuery(top).off('resize.multiUpload dragover.multiUpload drop.multiUpload click.multiUpload');
-    top.jQuery('#upload-overlay-drop').off('dragleave.multiUpload');
+    jQuery(top).off('resize.multiUpload dragover.multiUpload click.multiUpload');
+    top.jQuery('#upload-overlay-drop').off('drop.multiUpload dragleave.multiUpload');
     top.jQuery.fn.mtDialog.close = close;
   }
 
