@@ -62,10 +62,10 @@ sub view {
         $stylelibrary = [ @$stylelibrary, @$lib ];
     }
     for my $lib (@$stylelibrary) {
-        $lib->{url} =~ s/{{static}}/$static_webpath/i;
-        $lib->{url} =~ s/{{support}}/$support_url/i;
+        $lib->{url} =~ s/\{\{static}}/$static_webpath/i;
+        $lib->{url} =~ s/\{\{support}}/$support_url/i;
         $lib->{url}
-            =~ s/{{theme_static}}/MT::Theme::static_file_url_from_id($lib->{key})/ie;
+            =~ s/\{\{theme_static}}/MT::Theme::static_file_url_from_id($lib->{key})/ie;
         if ( $lib->{url} =~ m!^/! ) {
             $lib->{url} = $app->base . $lib->{url};
         }
