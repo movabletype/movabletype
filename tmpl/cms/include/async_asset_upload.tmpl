@@ -207,7 +207,7 @@ function resize_upload_overlay() {
     height = top.innerHeight;
   }
 
-  top.jQuery('#upload-overlay, #upload-overlay-message, #upload-overlay-message > div')
+  top.jQuery('#upload-overlay-container, #upload-overlay-background, #upload-overlay-drop, #upload-overlay-message')
     .width(width)
     .height(height);
 
@@ -218,50 +218,56 @@ function resize_upload_overlay() {
 }
 
 // Create upload overlay DOM once.
-if (!top.jQuery('#upload-overlay').length) {
+if (!top.jQuery('#upload-overlay-container').length) {
   top.jQuery('body')
     .append(
-      jQuery('<div id="upload-overlay" />')
+      jQuery('<div id="upload-overlay-container" />')
         .css({
+          'display': 'none',
           'z-index': 2100,
-          'display': 'none',
-          'background-color': '#BAE3FF',
-          'opacity': 0.6,
-          'position': 'fixed',
-          'top': 0,
-          'left': 0
-        })
-    )
-    .append(
-      jQuery('<div id="upload-overlay-border" />')
-        .css({
-          'display': 'none',
-          'z-index': 2200,
-          'position': 'fixed',
-          'top': 0,
-          'left': 0,
-          'border': '3px solid #0A93F3'
-        })
-    )
-    .append(
-      jQuery('<div id="upload-overlay-message" />')
-        .css({
-          'display': 'none',
-          'z-index': 2300,
           'position': 'fixed',
           'top': 0,
           'left': 0
         })
         .append(
-          jQuery('<div><img src="<mt:var name="static_uri">images/upload/nowuploading@2x.png" width="60" height="50" /><br />Drag and drop here</div>')
+          jQuery('<div id="upload-overlay-background" />')
             .css({
-              'display': 'table-cell',
-              'text-align': 'center',
-              'vertical-align': 'middle',
-              'font-size': '18px',
-              'color': '#0D76BF'
+              'background-color': '#BAE3FF',
+              'opacity': 0.6,
+              'position': 'fixed',
+              'top': 0,
+              'left': 0
             })
         )
+        .append(
+          jQuery('<div id="upload-overlay-drop" />')
+            .css({
+              'z-index': 2200,
+              'position': 'fixed',
+              'top': 0,
+              'left': 0
+            })
+            .append(
+              jQuery('<div id="upload-overlay-border" />')
+                .css({
+                  'position': 'fixed',
+                  'top': 0,
+                  'left': 0,
+                  'border': '3px solid #0A93F3'
+                })
+            )
+            .append(
+              jQuery('<div id="upload-overlay-message" />')
+                .append('<img src="<mt:var name="static_uri">images/upload/nowuploading@2x.png" width="60" height="50" /><br />Drag and drop here')
+                .css({
+                  'display': 'table-cell',
+                  'text-align': 'center',
+                  'vertical-align': 'middle',
+                  'font-size': '18px',
+                  'color': '#0D76BF'
+                })
+            )
+         )
     );
 }
 
@@ -276,12 +282,12 @@ jQuery(isDialog ? [top, window] : window)
     'dragover.multiUpload': function(e) {  // Show upload overlay.
       e.preventDefault();
       jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
-      top.jQuery('#upload-overlay, #upload-overlay-border, #upload-overlay-message').show();
+      top.jQuery('#upload-overlay-container').show();
     },
     'drop.multiUpload': function(e) {  // Upload files and hide overlay.
       e.preventDefault();
       jQuery('body').removeClass('has-dialog');
-      top.jQuery('#upload-overlay, #upload-overlay-border, #upload-overlay-message').hide();
+      top.jQuery('#upload-overlay-container').hide();
 
       // Change to upload asset panel.
       if (isDialog) {
@@ -292,10 +298,10 @@ jQuery(isDialog ? [top, window] : window)
     }
   });
 
-top.jQuery('#upload-overlay-message')
+top.jQuery('#upload-overlay-drop')
   .on('dragleave.multiUpload', function(e) {  // Hide upload overlay.
     jQuery('body').removeClass('has-dialog');
-    top.jQuery('#upload-overlay, #upload-overlay-border, #upload-overlay-message').hide();
+    top.jQuery('#upload-overlay-container').hide();
   });
 
 // Unbind events on dialog.
@@ -304,7 +310,7 @@ if (isDialog) {
 
   function unbind() {
     jQuery(top).off('resize.multiUpload dragover.multiUpload drop.multiUpload click.multiUpload');
-    top.jQuery('#upload-overlay-message').off('dragleave.multiUpload');
+    top.jQuery('#upload-overlay-drop').off('dragleave.multiUpload');
     top.jQuery.fn.mtDialog.close = close;
   }
 
