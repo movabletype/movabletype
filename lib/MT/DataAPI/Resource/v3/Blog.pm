@@ -25,7 +25,7 @@ sub fields {
             alias       => 'upload_destination',
             from_object => sub {
                 my ($obj) = @_;
-                my $dest  = '';
+                my $dest  = $obj->site_path; # site_path is a default.
                 my $raw   = '';
                 if ( defined $obj->upload_destination ) {
                     $dest = $raw = $obj->upload_destination;
