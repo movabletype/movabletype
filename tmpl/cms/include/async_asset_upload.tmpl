@@ -584,10 +584,10 @@ function uploadFile( formData, uploadBlock ) {
       // Set asset ID
   <mt:if name="can_multi">
       if (jQuery('#select_asset input[name="id"]').val().length > 0 ) {
-        jQuery('#select_asset input[name="id"]').val( jQuery('#select_asset input[name="id"]').val() + ',');
+        jQuery('#select_asset input[name="id"]').val( ',' + jQuery('#select_asset input[name="id"]').val());
       }
-      jQuery('#select_asset input[name="id"]').val(jQuery('#select_asset input[name="id"]').val() +  data.result.asset.id);
-<mt:else>
+      jQuery('#select_asset input[name="id"]').val(data.result.asset.id + jQuery('#select_asset input[name="id"]').val());
+  <mt:else>
       jQuery('#select_asset input[name="id"]').val(data.result.asset.id);
   </mt:if>
 </mt:if>
@@ -635,8 +635,11 @@ jQuery('#file').change( function(e) {
   <mt:if name="dialog">
   jQuery('#upload-asset-panel').on('changePanel', function() {
     if(jQuery('#upload-progress').children('.upload-status-block').length > 0) {
-      var id = jQuery('#upload-progress').children('.upload-status-block').attr('data-asset-id');
-      jQuery('#select_asset input[name="id"]').val(id);
+      var id = [];
+      jQuery('#upload-progress').children('.upload-status-block').each(function() {
+          id.push(jQuery(this).attr('data-asset-id'));
+      });
+      jQuery('#select_asset input[name="id"]').val(id.join(','));
 
       // Enable submit button
       jQuery('.actions-bar button.primary')

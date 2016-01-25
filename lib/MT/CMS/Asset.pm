@@ -3139,6 +3139,11 @@ sub dialog_insert_options {
         my @ids = split ',', $ids;
         return $app->errtrans('Invalid request.') unless @ids;
         my @assets = $app->model('asset')->load( { id => \@ids } );
+
+        # Sort by @ids order.
+        my %assets = map { $_->id => $_ } @assets;
+        @assets = map { $assets{$_} } @ids;
+
         $assets = \@assets;
     }
     $assets = [$assets] if 'ARRAY' ne ref $assets;
