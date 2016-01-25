@@ -316,7 +316,7 @@ sub bulk_update {
         $blog->$meta($new_order);
         $app->log(
             {   message => $app->translate(
-                    "[_1] order has been edited by '[_2]'",
+                    "[_1] order has been edited by '[_2]'.",
                     $class->class_label,
                     $app->user->name
                 ),
@@ -605,7 +605,7 @@ sub post_save {
     if ( !$original->id ) {
         $app->log(
             {   message => $app->translate(
-                    "Category '[_1]' created by '[_2]'", $obj->label,
+                    "Category '[_1]' created by '[_2]'.", $obj->label,
                     $app->user->name
                 ),
                 level    => MT::Log::INFO(),

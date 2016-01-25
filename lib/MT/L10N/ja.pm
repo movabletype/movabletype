@@ -195,7 +195,7 @@ use vars qw( @ISA %Lexicon );
 	'Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'Digest::SHA1のインストールは必須ではありませんが、LiveJournal、あるいはOpenIDでコメント投稿者を認証するために必要になります。',
 	'Net::SMTP is required in order to send mail via an SMTP Server.' => 'メールの送信にSMTPを利用する場合に必要になります。',
 	'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' => 'Authen::SASLとその依存モジュールはCRAM-MD5、DIGEST-MD5又はLOGINをSASLメカニズムとして利用する場合に必要となります。',
-	'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for Google Analytics site statistics.' => 'IO::Socket::SSLはSMTP認証にSSLまたは、STARTTLSコマンドを利用する場合、または Google Analytics を利用する場合に必要となります。',
+	'IO::Socket::SSL is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.' => 'IO::Socket::SSL のインストールは必須ではありませんが、Google Analytics との連携や SMTP 認証を SSL/TLS で行う場合など、外部と SSL/TLS通信をするために必要になります。',
 	'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'Net::SSLeayはSMTP認証にSSLまたは、STARTTLSコマンドを利用する場合に必要となります。',
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'MT:Ifタグの機能で使われます。',
 	'This module is used by the Markdown text filter.' => 'Markdown形式を利用するために必要です。',
@@ -1319,11 +1319,13 @@ use vars qw( @ISA %Lexicon );
 	'Entries must be cloned if comments and trackbacks are cloned' => 'コメントやトラックバックの複製により、記事も複製されます。',
 	'Entries must be cloned if comments are cloned' => 'コメントの複製により、記事も複製されます。',
 	'Entries must be cloned if trackbacks are cloned' => 'トラックバックの複製により、記事も複製されます。',
+	'\'[_1]\' (ID:[_2]) has been copied as \'[_3]\' (ID:[_4]) by \'[_5]\' (ID:[_6]).' => '\'[_1]\' (ID:[_2]) が \'[_3]\' (ID:[_4]) として \'[_5]\' (ID: [_6]) によって複製されました。',
 
 ## lib/MT/CMS/Category.pm
 	'The [_1] must be given a name!' => '[_1]には名前が必要です。',
 	'Failed to update [_1]: Some of [_2] were changed after you opened this page.' => 'いくつかの[_2]がすでに更新されていたため、[_1]の更新に失敗しました。',
 	'Tried to update [_1]([_2]), but the object was not found.' => '[_1]([_2])が見つからないため、更新ができません。',
+	'[_1] order has been edited by \'[_2]\'.' => '[_1] の順番を \'[_2]\' が更新しました。',
 	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => '変更を保存しました。(追加:[_1]件, 更新:[_2]件, 削除:[_3]件) 変更を有効にするには<a href="#" onclick="[_4]" class="mt-rebuild">再構築</a>をしてください。',
 	'Add a [_1]' => '[_1]を追加しました。',
 	'No label' => '名前がありません。',
@@ -1332,7 +1334,8 @@ use vars qw( @ISA %Lexicon );
 	'The category name \'[_1]\' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.' => '\'[_1]\'は他のカテゴリと衝突しています。同じ階層にあるカテゴリの名前は一意でなければなりません。',
 	'The category basename \'[_1]\' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.' => '\'[_1]\'は他のカテゴリと衝突しています。同じ階層にあるカテゴリのベースネームは一意でなければなりません。',
 	'The name \'[_1]\' is too long!' => '\'[_1]\'は長すぎます。',
-	'Category \'[_1]\' created by \'[_2]\'' => '\'[_2]\'がカテゴリ\'[_1]\'を作成しました。',
+	'Category \'[_1]\' created by \'[_2]\'.' => '\'[_2]\'がカテゴリ\'[_1]\'を作成しました。',
+	'Category \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => '\'[_2]\'がカテゴリ\'[_1]\' (ID:[_2])を編集しました。',
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '\'[_3]\'がカテゴリ\'[_1]\'(ID:[_2])を削除しました。',
 	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => '\'[_1]\'は他のカテゴリと衝突しています。同じ階層にあるカテゴリの名前は一意でなければなりません。',
 
@@ -1443,6 +1446,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/Folder.pm
 	'The folder \'[_1]\' conflicts with another folder. Folders with the same parent must have unique basenames.' => '\'[_1]\'は他のフォルダと衝突しています。同じ階層にあるフォルダの名前(ベースネーム)は一意でなければなりません。',
 	'Folder \'[_1]\' created by \'[_2]\'' => '\'[_2]\'がフォルダ\'[_1]\'を作成しました。',
+	'Folder \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => '\'[_2]\'がフォルダ\'[_1]\'(ID:[_2])を編集しました。',
 	'Folder \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '\'[_3]\'がフォルダ\'[_1]\'(ID:[_2])を削除しました。',
 
 ## lib/MT/CMS/Import.pm
@@ -2294,7 +2298,7 @@ use vars qw( @ISA %Lexicon );
 	'Pages in This Website' => 'ウェブサイトのウェブページ',
 	'Published Pages' => '公開されているウェブページ',
 	'Draft Pages' => '下書きのウェブページ',
-	'Unpublished Pages' => '未公開のウェブページ',
+	'Unpublished Pages' => '公開終了にされているウェブページ',
 	'Scheduled Pages' => '日時指定されているウェブページ',
 	'Pages with comments in the last 7 days' => '最近7日間以内にコメントされたウェブページ',
 
@@ -3145,7 +3149,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/theme.yaml
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
 	'Classic Website' => 'クラシックウェブサイト',
-
 
 ## themes/pico/templates/about_this_page.mtml
 
@@ -4492,9 +4495,10 @@ use vars qw( @ISA %Lexicon );
 	'[_1] - [_2] of [_3]' => '[_1] - [_2] / [_3]',
 
 ## tmpl/cms/include/async_asset_upload.tmpl
-	q{Drag and drop here to upload files, or<button id='open-file-dialog'>Browse</button>} => q{アップロードするファイルをここにドラッグ＆ドロップするか、<button id='open-file-dialog'>ファイルを選択</button>します},
-	q{Drag and drop here to upload a file, or<button id='open-file-dialog'>Browse</button>} => q{アップロードするファイルをここにドラッグ＆ドロップするか、<button id='open-file-dialog'>ファイルを選択</button>します},
-	'(If you upload multiple files, last uploaded files will be used.)' => '（複数ファイルをアップロードした時、最後のファイルが利用されます。）',
+	'Upload new image' => '新しい画像をアップロード',
+	'Upload new asset' => '新規アイテムのアップロード',
+	'Choose files to upload or drag files.' => 'アップロードするファイルを選択または画面にドラッグ＆ドロップしてください。（複数可）',
+	'Choose file to upload or drag file.' => 'アップロードするファイルを選択または画面にドラッグ＆ドロップしてください。',
 	'Upload Options' => 'アップロードオプション',
 	'Operation for a file exists' => '既存ファイルの処理',
 	'Cancelled: [_1]' => 'キャンセルされました: [_1]',
@@ -5748,6 +5752,9 @@ use vars qw( @ISA %Lexicon );
 	'Restoring asset associations found in custom fields ( [_1] ) ...' => 'カスタムフィールド([_1])に含まれるアイテムとの関連付けを復元しています...',
 	'Restoring url of the assets associated in custom fields ( [_1] )...' => 'カスタムフィールド([_1])に含まれるアイテムのURLを復元しています...',
 
+## addons/Commercial.pack/lib/CustomFields/DataAPI/Callback.pm
+	'Please enter valid option for the [_1] field: [_2]' => '名前: [_2] (種類: [_1] ) のオプションを選択してください。',
+
 ## addons/Commercial.pack/lib/CustomFields/DataAPI/Callback/Field.pm
 	'The type "[_1]" is invalid.' => '不正な種類です: [_1]',
 	'The systemObject "[_1]" is invalid.' => '不正なシステムオブジェクトです: [_1]',
@@ -6031,8 +6038,8 @@ use vars qw( @ISA %Lexicon );
 	'Email verification' => 'メールアドレスの確認',
 	'Registration notification' => '登録通知',
 	'New entry notification' => '記事の投稿通知',
-	'Community Styles' => 'コミュニティースタイル',
-	'A collection of styles compatible with Community themes.' => 'コミュニティーテーマ互換のスタイルです。',
+	'Community Styles' => 'コミュニティスタイル',
+	'A collection of styles compatible with Community themes.' => 'コミュニティテーマ互換のスタイルです。',
 	'Community Blog' => 'コミュニティブログ',
 	'Atom ' => 'Atom',
 	'Entry Response' => '投稿完了',
@@ -7104,48 +7111,6 @@ use vars qw( @ISA %Lexicon );
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
 	'Failed.' => '失敗',
 
-## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
-	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードが使用されます。[_2]のHTTPステータスが返されました。',
-	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードはありません。[_2]のHTTPステータスが返されました。',
-
-## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
-	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' は[_2]の引数を必要とします',
-	'MT[_1] was not used in the proper context.' => 'MT[_1]を適切なコンテキスト外で使用しています。',
-
-## plugins/feeds-app-lite/mt-feeds.pl
-	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Liteからブログ上のフィードを更新（再構築）できます。Movable Typeでフィードをさらに活用するには<a href="http://code.appnel.com/feeds-app" target="_blank">Feeds.App</a>にアップグレードします。',
-	'Create a Feed Widget' => 'フィードウィジェットを作成',
-
-## plugins/feeds-app-lite/tmpl/config.tmpl
-	'Feeds.App Lite Widget Creator' => 'Feeds.App Lite ウィジェット作成ツール',
-	'Configure feed widget settings' => 'フィードウィジェットを設定する',
-	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Widgetのタイトルを入力してください。このタイトルは、公開されているブログでWidgetが使用されたときにもフィードのタイトルとして表示されます。',
-	'[_1] Feed Widget' => '[_1]フィードウィジェット',
-	'Select the maximum number of entries to display.' => '表示するブログ記事の最大数を選択します。',
-	'3' => '3',
-	'5' => '5',
-	'10' => '10',
-	'All' => 'すべて',
-
-## plugins/feeds-app-lite/tmpl/msg.tmpl
-	'No feeds could be discovered using [_1]' => '[_1]でフィードが見つかりませんでした。',
-	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{[_1]の実行中にエラーが発生しました。<a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">ここ</a>をクリックし、詳細を確認のうえ、再度実行してください。},
-	'A widget named <strong>[_1]</strong> has been created.' => 'フィードウィジェット「[_1]」を作成しました。',
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{<a href="javascript:void(0)" onclick="closeDialog('[_2]')">[_1]を編集</a>できます。また、<a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a>か以下のMTIncludeタグを使ってブログに挿入できます。},
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{<a href="javascript:void(0)" onclick="closeDialog('[_2]')">[_1]を編集</a>できます。また、以下のMTIncludeタグを使ってブログに挿入できます。},
-	'Create Another' => '続けて作成する',
-
-## plugins/feeds-app-lite/tmpl/select.tmpl
-	'Multiple feeds were found' => 'フィードが複数見つかりました。',
-	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => '利用するフィードを選択してください。<strong>Feeds.App Liteはテキストで構成されたRSS 1.0、RSS 2.0、Atomの各形式をサポートしています</strong>。',
-	'URI' => 'URI',
-
-## plugins/feeds-app-lite/tmpl/start.tmpl
-	'You must enter a feed or site URL to proceed' => 'フィードまたはサイトのURLを入力してください。',
-	'Create a widget from a feed' => 'フィードからウィジェットを作成する',
-	'Feed or Site URL' => 'フィードまたはサイトのURL',
-	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'フィードのURLを入力するか、フィードを配信しているサイトのURLを入力してください。',
-
 ## plugins/mixiComment/lib/mixiComment/App.pm
 	'mixi reported that you failed to login.  Try again.' => 'ログインに失敗しました。',
 
@@ -7233,7 +7198,5 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Junk' => 'スパムにするキーワード',
 
 );
-
-## New words: 333
 
 1;
