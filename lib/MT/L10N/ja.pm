@@ -4501,6 +4501,7 @@ use vars qw( @ISA %Lexicon );
 	'Choose file to upload or drag file.' => 'アップロードするファイルを選択または画面にドラッグ＆ドロップしてください。',
 	'Upload Options' => 'アップロードオプション',
 	'Operation for a file exists' => '既存ファイルの処理',
+	'Drag and drop here' => 'ファイルをドロップしてください',
 	'Cancelled: [_1]' => 'キャンセルされました: [_1]',
 	'The file you tried to upload is too large: [_1]' => 'アップロードしようとしたファイルは大きすぎます: [_1]',
 	'[_1] is not a valid [_2] file.' => '[_1] は、正しい[_2]ファイルではありません。',
@@ -7198,5 +7199,7 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Junk' => 'スパムにするキーワード',
 
 );
+
+## New words: 296
 
 1;
