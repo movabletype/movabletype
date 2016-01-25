@@ -633,7 +633,10 @@ jQuery('#file').change( function(e) {
     if(jQuery('#upload-progress').children('.upload-status-block').length > 0) {
       var id = [];
       jQuery('#upload-progress').children('.upload-status-block').each(function() {
-          id.push(jQuery(this).attr('data-asset-id'));
+          var asset_id = jQuery(this).attr('data-asset-id');
+          if (asset_id) {
+            id.push(asset_id);
+          }
       });
       jQuery('#select_asset input[name="id"]').val(id.join(','));
 
