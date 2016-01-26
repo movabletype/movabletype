@@ -290,16 +290,6 @@ jQuery('#upload-overlay-drop')
     uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
   });
 
-// Disable drag & drop event of div.mt-dialog-overlay on parent frame.
-if (isDialog && !top.dropCallbackIsBound) {
-  top.dropCallbackIsBound = true;
-  top.jQuery('div.mt-dialog-overlay')
-    .on('dragover drop', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    });
-}
-
 function createFormData(file) {
   var fd = new FormData();
 
