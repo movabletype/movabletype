@@ -227,22 +227,10 @@ h1.dialog-title {
 var isDialog = (top !== window);
 
 function resize_upload_overlay() {
-  var width, height;
 
-  if ( isDialog
-    && navigator.userAgent.indexOf("Gecko/")  !== -1
-    && navigator.userAgent.indexOf("Windows") !== -1
-  ) {
-
-    // Upload dialog on Firefox and Windows. (case #105562)
-    width  = jQuery(window).width();
-    height = jQuery(window).height();
-  } else {
-
-    // Take into account scroll bar width on Windows.
-    width  = window.innerWidth;
-    height = window.innerHeight;
-  }
+  // Take into account scroll bar width on Windows.
+  var width  = window.innerWidth,
+      height = window.innerHeight;
 
   jQuery('#upload-overlay-container, #upload-overlay-background, #upload-overlay-drop, #upload-overlay-message')
     .width(width)
