@@ -104,7 +104,6 @@ h1.dialog-title {
   z-index: 700;
   position: fixed;
   top: 0;
-  left: 0;
 }
 
 #upload-overlay-background {
@@ -112,19 +111,16 @@ h1.dialog-title {
   opacity: 0.6;
   position: fixed;
   top: 0;
-  left: 0;
 }
 
 #upload-overlay-drop {
   position: fixed;
   top: 0;
-  left: 0;
 }
 
 #upload-overlay-border {
   position: fixed;
   top: 0;
-  left: 0;
   border: 3px solid #0A93F3;
 }
 
@@ -229,17 +225,46 @@ var isDialog = (top !== window);
 function resize_upload_overlay() {
 
   // Take into account scroll bar width on Windows.
-  var width  = window.innerWidth,
-      height = window.innerHeight;
+  var width       = window.innerWidth,
+      height      = window.innerHeight;
+
+  var left = 0,
+      offset_left;
+
+  // Change "width" and "left" properties when dialog width is bigger than parent frame width.
+  if (isDialog) {
+    offset_left = top.jQuery('#mt-dialog-iframe').offset().left;
+    if (offset_left < 0) {
+
+      // width
+      if (navigator.userAgent.indexOf("Gecko/")  !== -1
+       && navigator.userAgent.indexOf("Windows") !== -1
+      ) {
+        width = jQuery(top).width();  // Upload dialog on Firefox and Windows. (case #105562)
+      } else {
+        width = top.innerWidth;
+      }
+
+      // left
+      if (navigator.userAgent.indexOf("Safari/") !== -1
+       && navigator.userAgent.indexOf("Chrome/") === -1) {
+        left = Math.round(- offset_left);  // Safari
+      } else {
+        left = Math.floor(- offset_left);
+      }
+    }
+  }
 
   jQuery('#upload-overlay-container, #upload-overlay-background, #upload-overlay-drop, #upload-overlay-message')
     .width(width)
-    .height(height);
+    .height(height)
+    .css('left', left);
 
   // Take into account border width.
   jQuery('#upload-overlay-border')
     .width(width - 6)
-    .height(height - 6);
+    .height(height - 6)
+    .css('left', left);
 }
 
 // Create upload overlay DOM once.
@@ -263,8 +288,10 @@ if (!jQuery('#upload-overlay-container').length) {
 resize_upload_overlay();
 
 // Bind events.
+jQuery(top)
+  .on('resize.multiUpload', resize_upload_overlay);  // Resize upload overlay whenever resizing browser.
+
 jQuery(window)
-  .on('resize.multiUpload', resize_upload_overlay)  // Resize upload overlay whenever resizing browser.
   .on('dragover.multiUpload', function(e) {  // Show upload overlay.
     e.preventDefault();
     jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
