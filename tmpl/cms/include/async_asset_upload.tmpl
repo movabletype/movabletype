@@ -284,22 +284,19 @@ if (!jQuery('#upload-overlay-container').length) {
 resize_upload_overlay();
 
 // Bind events.
-jQuery(top)
-  .on('resize.multiUpload', resize_upload_overlay);  // Resize upload overlay whenever resizing browser.
-
 jQuery(window)
-  .on('dragover.multiUpload', function(e) {  // Show upload overlay.
+  .on('dragover', function(e) {  // Show upload overlay.
     e.preventDefault();
     jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
     jQuery('#upload-overlay-container').show();
   });
 
 jQuery('#upload-overlay-drop')
-  .on('dragleave.multiUpload', function(e) {  // Hide upload overlay.
+  .on('dragleave', function(e) {  // Hide upload overlay.
     jQuery('body').removeClass('has-dialog');
     jQuery('#upload-overlay-container').hide();
   })
-  .on('drop.multiUpload', function(e) {  // Upload files and hide overlay.
+  .on('drop', function(e) {  // Upload files and hide overlay.
     e.preventDefault();
     e.stopPropagation();
     jQuery('body').removeClass('has-dialog');
@@ -312,6 +309,30 @@ jQuery('#upload-overlay-drop')
 
     uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
   });
+
+jQuery(top)
+  .on('resize.multiUpload', resize_upload_overlay);  // Resize upload overlay whenever resizing browser.
+
+// Unbind resizing event of parent frame.
+if (isDialog) {
+  var close = top.jQuery.fn.mtDialog.close;
+
+  function unbind() {
+    jQuery(top).off('resize.multiUpload');
+    top.jQuery.fn.mtDialog.close = close;
+  }
+
+  // Unbind when inserting asset.
+  jQuery(document).ready(function() {
+    jQuery('.actions-bar button.primary').on('click.multiUpload', unbind);
+  });
+
+  // Unbind when closing dialog.
+  top.jQuery.fn.mtDialog.close = function() {
+    close.call();
+    unbind();
+  };
+}
 
 function createFormData(file) {
   var fd = new FormData();
