@@ -389,6 +389,12 @@ function init_dialog() {
         $(".mt-dialog > div > span").click(function() {
             close_dialog();
         });
+
+        // Disable drag & drop on overlay.
+        $('.mt-dialog-overlay').on('dragover drop', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        });
     }
 }
 
