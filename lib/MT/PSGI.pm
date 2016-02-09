@@ -198,8 +198,9 @@ sub application_list {
     my ($self) = @_;
     my $reg    = MT::Component->registry('applications');
     my %apps   = map {
+        my $app = $_;
         map { $_ => 1 }
-            grep { !$self->is_restricted_app($_) }
+            grep { $app->{$_}->{script} && !$self->is_restricted_app($_) }
             keys %$_
     } @$reg;
     keys %apps;
