@@ -160,8 +160,12 @@ sub does_publish_file {
     my $obj    = shift;
     my %params = %{ shift() };
 
-    $obj->archive_entries_count( $params{Blog}, $params{ArchiveType},
-        $params{Entry} );
+    if ( !$params{Author} && $params{Entry} ) {
+        $params{Author} = $params{Entry}->author;
+    }
+    return 0 unless $params{Author};
+
+    MT::ArchiveType::archive_entries_count( $obj, \%params );
 }
 
 sub display_name {

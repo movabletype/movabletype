@@ -1269,8 +1269,10 @@ sub rebuild_file {
     if (!$archiver->does_publish_file(
             {   Blog        => $blog,
                 ArchiveType => $at,
-                Entry       => $entry || $args{Entry},
+                Entry       => $entry,
                 Category    => $category,
+                Author      => $author,
+                TimeStamp   => $start,
             }
         )
         )
