@@ -1272,7 +1272,7 @@ sub rebuild_file {
                 Entry       => $entry,
                 Category    => $category,
                 Author      => $author,
-                TimeStamp   => $start,
+                Timestamp   => $start,
             }
         )
         )
