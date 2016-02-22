@@ -33,29 +33,20 @@ my $category_archive = MT->model('template')->load(
 );
 $map->template_id( $category_archive->id );
 
-my $blog = $mt->model('blog')->load(1);
-my @cats = $mt->model('category')->load( { blog_id => $blog->id } );
-my ($cat_with_entry)    = grep { $_->entry_count } @cats;
-my ($cat_without_entry) = grep { !$_->entry_count } @cats;
-
-my @suite = (
-    {   category              => $cat_with_entry,
+my $blog     = $mt->model('blog')->load(1);
+my $cat_iter = $mt->model('category')->load_iter( { blog_id => $blog->id } );
+my @suite    = ();
+while ( my $cat = $cat_iter->() ) {
+    my $count     = $cat->entry_count;
+    my $published = $count ? 1 : 0;
+    my $suite     = {
+        category              => $cat,
         publish_empty_archive => 0,
-        published             => 1,
-    },
-    {   category              => $cat_with_entry,
-        publish_empty_archive => 1,
-        published             => 1,
-    },
-    {   category              => $cat_without_entry,
-        publish_empty_archive => 0,
-        published             => 0,
-    },
-    {   category              => $cat_without_entry,
-        publish_empty_archive => 1,
-        published             => 1,
-    },
-);
+        count                 => $count,
+        published             => $published,
+    };
+    push @suite, $suite;
+}
 
 for my $at (
     qw(Category Category-Yearly Category-Weekly Category-Monthly Category-Daily)
@@ -77,18 +68,29 @@ for my $at (
         $blog->publish_empty_archive( $d->{publish_empty_archive} );
         $blog->save;
 
+        my $params = {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Entry       => undef,
+            Category    => $cat,
+            Author      => undef,
+        };
+
+        # does_publish_file
         my $archiver          = $publisher->archiver($at);
-        my $does_publish_file = $archiver->does_publish_file(
-            {   Blog        => $blog,
-                ArchiveType => $at,
-                Category    => $cat,
-            }
-        );
+        my $does_publish_file = $archiver->does_publish_file($params);
         is( $does_publish_file, $d->{published},
             ref($archiver) . '::does_publish_file' );
 
+        # archive_entries_count
+        my $archive_entries_count
+            = MT::ArchiveType::archive_entries_count( $archiver, $params );
+        is( $archive_entries_count, $d->{count},
+            ref($archiver) . '::archive_entries_count' );
+
         next if $at ne 'Category';
 
+        # publish file
         my $file = File::Spec->catfile( $blog->archive_path,
             'publish_empty_archive_test', $cat->basename, 'index.html' );
 
