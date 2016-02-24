@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -284,6 +284,11 @@ sub bulk_update {
         $app->run_callbacks( 'cms_pre_save.' . $model,
             $app, $updated, $original )
             or return $app->json_error( $app->errstr() );
+
+        # Setting modified_by updates modified_on which we want to do before
+        # a save but after pre_save callbacks fire.
+        $updated->modified_by( $app->user->id );
+
         $updated->save;
         $app->run_callbacks( 'cms_post_save.' . $model,
             $app, $updated, $original )
@@ -304,10 +309,25 @@ sub bulk_update {
 
     $app->touch_blogs;
 
-    my @ordered_ids = map { $_->id } @objects;
-    my $order = join ',', @ordered_ids;
-    $blog->$meta($order);
-    $blog->save;
+    my $previous_order = $blog->$meta;
+    my @ordered_ids    = map { $_->id } @objects;
+    my $new_order      = join ',', @ordered_ids;
+    if ( $previous_order ne $new_order ) {
+        $blog->$meta($new_order);
+        $app->log(
+            {   message => $app->translate(
+                    "[_1] order has been edited by '[_2]'.",
+                    $class->class_label,
+                    $app->user->name
+                ),
+                level    => MT::Log::INFO(),
+                class    => $blog->class,
+                category => 'edit',
+                metadata => "[${previous_order}] => [${new_order}]",
+            }
+        );
+        $blog->save;
+    }
 
     $app->run_callbacks( 'cms_post_bulk_save.' . $model, $app, \@objects );
 
@@ -585,7 +605,7 @@ sub post_save {
     if ( !$original->id ) {
         $app->log(
             {   message => $app->translate(
-                    "Category '[_1]' created by '[_2]'", $obj->label,
+                    "Category '[_1]' created by '[_2]'.", $obj->label,
                     $app->user->name
                 ),
                 level    => MT::Log::INFO(),
@@ -594,6 +614,20 @@ sub post_save {
             }
         );
     }
+    else {
+        $app->log(
+            {   message => $app->translate(
+                    "Category '[_1]' (ID:[_2]) edited by '[_3]'",
+                    $obj->label, $obj->id, $app->user->name
+                ),
+                level    => MT::Log::INFO(),
+                class    => $obj->class,
+                category => 'edit',
+                metadata => $obj->id,
+            }
+        );
+    }
+
     1;
 }
 

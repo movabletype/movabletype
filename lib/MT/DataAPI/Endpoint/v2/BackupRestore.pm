@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -172,7 +172,8 @@ sub restore {
 
     if ( !defined $app->param('file') ) {
         return $app->error(
-            $app->translate('A parameter "[_1]" is required.', 'file'), 400 );
+            $app->translate( 'A parameter "[_1]" is required.', 'file' ),
+            400 );
     }
 
     my $param;

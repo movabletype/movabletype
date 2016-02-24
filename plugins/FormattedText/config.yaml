@@ -1,6 +1,6 @@
 id: FormattedText
 name: FormattedText
-version: 1.21
+version: 1.22
 author_link: http://www.movabletype.org/
 author_name: Six Apart, Ltd.
 description: <MT_TRANS phrase="Manage boilerplate.">
@@ -25,6 +25,9 @@ applications:
                         my $app = MT->instance;
 
                         return 0 unless FormattedText::App::is_enabled($app);
+
+                        # System Administrator
+                        return 1 if $app->user->is_superuser;
 
                         # Blog context
                         if ($app->blog) {

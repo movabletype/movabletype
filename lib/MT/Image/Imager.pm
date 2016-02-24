@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -66,6 +66,7 @@ sub init {
         if ( !defined $Types ) {
             $Types = { map { $_ => $_ } Imager->read_types };
             $Types->{jpg} = 'jpeg' if $Types->{jpeg};
+            $Types->{tif} = 'tiff' if $Types->{tiff};
         }
         return $Types->{ lc $_[0] };
     }

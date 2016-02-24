@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -38,7 +38,11 @@ __PACKAGE__->install_properties(
                 label      => 'Template Text',
                 revisioned => 1
             },
-            'linked_file'       => 'string(255)',
+            'linked_file' => {
+                type       => 'string',
+                size       => '255',
+                revisioned => 1,
+            },
             'linked_file_mtime' => 'string(10)',
             'linked_file_size'  => 'integer',
             'rebuild_me'        => {

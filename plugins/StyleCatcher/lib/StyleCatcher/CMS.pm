@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2005-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2005-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -62,10 +62,10 @@ sub view {
         $stylelibrary = [ @$stylelibrary, @$lib ];
     }
     for my $lib (@$stylelibrary) {
-        $lib->{url} =~ s/{{static}}/$static_webpath/i;
-        $lib->{url} =~ s/{{support}}/$support_url/i;
+        $lib->{url} =~ s/\{\{static}}/$static_webpath/i;
+        $lib->{url} =~ s/\{\{support}}/$support_url/i;
         $lib->{url}
-            =~ s/{{theme_static}}/MT::Theme::static_file_url_from_id($lib->{key})/ie;
+            =~ s/\{\{theme_static}}/MT::Theme::static_file_url_from_id($lib->{key})/ie;
         if ( $lib->{url} =~ m!^/! ) {
             $lib->{url} = $app->base . $lib->{url};
         }

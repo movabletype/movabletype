@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -442,9 +442,13 @@ sub end_element {
                             = MT::Serialize->serializer_version($text);
                         if ( $ser_ver == 3 ) {
                             my $conf_ver = lc MT->config->Serializer;
-                            if ( ( $conf_ver ne 'storable' ) && ( $conf_ver ne 'mts' ) ) {
+                            if (   ( $conf_ver ne 'storable' )
+                                && ( $conf_ver ne 'mts' ) )
+                            {
                                 $self->{critical} = 1;
-                                die MT->translate('Invalid serializer version was specified.');
+                                die MT->translate(
+                                    'Invalid serializer version was specified.'
+                                );
                             }
                         }
                         $text = MT::Serialize->unserialize($text);
@@ -466,9 +470,13 @@ sub end_element {
                             = MT::Serialize->serializer_version($text);
                         if ( $ser_ver == 3 ) {
                             my $conf_ver = lc MT->config->Serializer;
-                            if ( ( $conf_ver ne 'storable' ) && ( $conf_ver ne 'mts' ) ) {
+                            if (   ( $conf_ver ne 'storable' )
+                                && ( $conf_ver ne 'mts' ) )
+                            {
                                 $self->{critical} = 1;
-                                die MT->translate('Invalid serializer version was specified.');
+                                die MT->translate(
+                                    'Invalid serializer version was specified.'
+                                );
                             }
                         }
                         $text = MT::Serialize->unserialize($text);

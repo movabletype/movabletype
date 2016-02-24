@@ -98,18 +98,18 @@ function loadAssetList(offset) {
     __mode: 'dialog_list_asset',
     _type: 'asset',
 <mt:if name="edit_field">
-      edit_field: '<mt:var name="edit_field">',
+      edit_field: '<mt:var name="edit_field" escape="html">',
 </mt:if>
 <mt:if name="blog_id">
-      blog_id: <mt:var name="blog_id">,
+      blog_id: <mt:var name="blog_id" escape="html">,
 </mt:if>
       dialog_view: 1,
 <mt:if name="upload_mode">
-      upload_mode: '<mt:var name="upload_mode">',
+      upload_mode: '<mt:var name="upload_mode" escape="html">',
 </mt:if>
     dialog: 1,
     json: 1,
-    can_multi: <mt:var name="can_multi" default="0">
+    can_multi: <mt:var name="can_multi" default="0" escape="html">
   };
 
 <mt:if name="filter" eq="userpic">
@@ -274,7 +274,7 @@ jQuery('#asset-class').change(function() {
   loadAssetList(0);
 });
 
-<mt:if name="filter" ne="userpic">
+<mt:unless name="filter" eq="userpic">
 jQuery('#modal-search').submit(function(){
   checked = [];
   loadAssetList(0);
@@ -289,7 +289,7 @@ jQuery('.search-reset').click(function() {
   loadAssetList(0);
   jQuery('.search-reset').addClass('hidden').hide();
 });
-</mt:if>
+</mt:unless>
 
 jQuery('.actions-bar button.primary').click(function() {
   if ( currentPanel != '#list-asset-panel' ) {

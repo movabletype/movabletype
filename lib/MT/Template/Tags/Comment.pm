@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -618,7 +618,7 @@ sub _hdlr_comment_if_moderated {
     my ($ctx) = @_;
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
-    return $c->visible ? 1 : 0;
+    return $c->visible ? 0 : 1;
 }
 
 ###########################################################################

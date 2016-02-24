@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -112,7 +112,7 @@ __PACKAGE__->install_properties(
             'category_order'            => 'text meta',
             'folder_order'              => 'text meta',
             'publish_empty_archive'     => 'boolean meta',
-            'upload_destination'        => 'boolean meta',
+            'upload_destination'        => 'boolean meta', # not really boolean but blob field is good.
             'extra_path'                => 'string meta',
             'allow_to_change_at_upload' => 'boolean meta',
             'operation_if_exists'       => 'integer meta',

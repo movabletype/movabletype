@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -229,7 +229,8 @@ sub archive_entries_count {
     my $obj = shift;
     my ( $blog, $at, $entry ) = @_;
     my $auth = $entry->author;
-    return $obj->SUPER::archive_entries_count(
+    return MT::ArchiveType::archive_entries_count(
+        $obj,
         {   Blog        => $blog,
             ArchiveType => $at,
             Timestamp   => $entry->authored_on,

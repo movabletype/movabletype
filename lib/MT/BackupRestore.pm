@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -817,7 +817,7 @@ sub cb_restore_objects {
             $new_author->call_trigger( 'post_save', $new_author );
         }
         elsif ( $key =~ /^MT::(?:Blog|Website)#(\d+)$/ ) {
-            my $blog = $all_objects->{$key};
+            my $blog   = $all_objects->{$key};
             my $orders = {
                 category => 'MT::Category#',
                 folder   => 'MT::Folder#',

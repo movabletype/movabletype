@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -28,7 +28,7 @@ sub can_view {
     }
     if ($id) {
         my $obj = $objp->force();
-        return 0 if $obj->is_entry;
+        return 0 if ( !$obj || $obj->is_entry );
         if ( !$app->user->permissions( $obj->blog_id )
             ->can_do('open_page_edit_screen') )
         {

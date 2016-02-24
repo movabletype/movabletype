@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -18,28 +18,19 @@ function smarty_function_mtarchivecount($args, &$ctx) {
         return $ctx->tag('MTCategoryCount', $args);
     } elseif ($count = $ctx->stash('archive_count')) {
         # $count is set
-    } elseif ($entries = $ctx->stash('entries')) {
-        $count = count($entries);
-    } else {
-        $eargs = array();
-        $eargs['blog_id'] = $ctx->stash('blog_id');
-        if ($at) {
-            $ts = $ctx->stash('current_timestamp');
-            $tse = $ctx->stash('current_timestamp_end');
-            if (isset($archiver)) {
-                if ($ts && $tse) {
-                    # assign date range if we have both
-                    # start and end date
-                    $eargs['current_timestamp'] = $ts;
-                    $eargs['current_timestamp_end'] = $tse;
-                }
-                $archiver->setup_args($ctx, $eargs);
-            }
-            $eargs['lastn'] = -1;
-            $entries = $ctx->mt->db()->fetch_entries($eargs);
-            $count = count($entries);
-        }
+        return $count;
     }
-    return $ctx->count_format($count, $args);
+    $entries = array();
+    $e = $ctx->stash('entries');
+    if(!isset($e) && $ctx->stash('entry')) {
+        $e = $ctx->stash('entry') ;
+    }
+    if(is_array($e)){
+        $entries = $e;
+    }
+    else {
+        $entries = array( $e );
+    }
+    return $ctx->count_format( count($entries), $args);
 }
 ?>

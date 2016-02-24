@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -83,6 +83,11 @@ sub _translate_filetype {
         jpeg => 'jpeg',
         gif  => 'gif',
         png  => 'png',
+
+        # TODO: NetPBM driver does not support TIFF.
+        # case #113464
+        # tif  => 'tiff',
+        # tiff => 'tiff',
     }->{ lc $_[0] };
 }
 

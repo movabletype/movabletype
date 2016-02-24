@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -13,7 +13,7 @@ sub save_filter {
     my ( $eh, $app, $obj, $orig ) = @_;
 
     if ( !defined( $obj->label ) || $obj->label eq '' ) {
-        return $app->errtrans('A parameter "[_1]" is required.', 'label');
+        return $app->errtrans( 'A parameter "[_1]" is required.', 'label' );
     }
 
     if ($app->model('formatted_text')->exist(

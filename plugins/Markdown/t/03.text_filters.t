@@ -3,12 +3,17 @@
 use strict;
 use warnings;
 
-use lib qw(lib);
+BEGIN {
+    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+}
+
+use lib qw( lib extlib t/lib );
+use MT::Test qw( :app :db );
 
 use IPC::Open2;
 
 use Test::Base;
-delimiters('@@@', '---');
+delimiters( '@@@', '---' );
 plan tests => 4 * blocks() + 4 * blocks('decode_entities');
 
 use MT;
@@ -54,7 +59,7 @@ run {
 };
 
 sub php_test_script {
-    my ($template, $text, $text_filter) = @_;
+    my ( $template, $text, $text_filter ) = @_;
     $text ||= '';
     my $test_script = <<PHP;
 <?php
@@ -98,7 +103,8 @@ PHP
 SKIP:
 {
     unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
-        skip "Can't find executable file: php", 2 * blocks() + 2 * blocks('decode_entities');
+        skip "Can't find executable file: php",
+            2 * blocks() + 2 * blocks('decode_entities');
     }
 
     run {
@@ -106,7 +112,7 @@ SKIP:
         my $template = '<mt:EntryBody />';
 
         for my $text_filter ( 'markdown', 'markdown_with_smartypants' ) {
-          SKIP: {
+        SKIP: {
                 open2( my $php_in, my $php_out, 'php -q' );
                 print $php_out &php_test_script( $template, $block->text,
                     $text_filter );
@@ -119,10 +125,10 @@ SKIP:
                     $php_result = decode_entities($php_result);
                 }
                 is( $php_result, $block->$text_filter,
-                        $block->name
-                      . ' text_filter:'
-                      . $text_filter
-                      . ' - dynamic' );
+                          $block->name
+                        . ' text_filter:'
+                        . $text_filter
+                        . ' - dynamic' );
             }
         }
     };

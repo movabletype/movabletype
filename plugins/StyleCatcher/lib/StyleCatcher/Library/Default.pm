@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2005-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2005-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -19,10 +19,10 @@ sub fetch_themes {
     my $static_webpath = MT->app->static_path;
     my $support_url    = MT->app->support_directory_url;
     $url ||= $self->url || '';
-    $url =~ s/{{static}}/$static_webpath/i;
-    $url =~ s/{{support}}/$support_url/i;
+    $url =~ s/\{\{static}}/$static_webpath/i;
+    $url =~ s/\{\{support}}/$support_url/i;
     $url
-        =~ s/{{theme_static}}/MT::Theme::static_file_url_from_id($self->key)/ie;
+        =~ s/\{\{theme_static}}/MT::Theme::static_file_url_from_id($self->key)/ie;
     if ( $url =~ m!^/! ) {
         $url = MT->app->base . $url;
     }

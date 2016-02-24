@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1111,7 +1111,8 @@ It\'s a hard rain\'s a-gonna fall',
         . $tmpl_map->errstr;
 
     # Revert into default for test...
-    $blog->archive_type('Individual,Monthly,Weekly,Daily,Category,Page,Author');
+    $blog->archive_type(
+        'Individual,Monthly,Weekly,Daily,Category,Page,Author');
     $blog->save;
 
     ### Asset
