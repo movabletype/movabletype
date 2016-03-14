@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtpings($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtpings($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $localvars = array(array('ping', '_pings', '_pings_counter', 'current_timestamp', 'blog_id', 'blog'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);

@@ -5,11 +5,12 @@
 #
 # $Id$
 
-function smarty_function_mtstaticwebpath($args, &$ctx) {
+function smarty_function_mtstaticwebpath($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $path = $ctx->mt->config('StaticWebPath');
     if (!$path) {
         require_once "function.mtcgipath.php";
-        $path = smarty_function_mtcgipath($args, $ctx);
+        $path = smarty_function_mtcgipath($args, $_smarty_tpl);
         $path .= 'mt-static/';
     } elseif (substr($path, 0, 1) == '/') {
         $blog = $ctx->stash('blog');

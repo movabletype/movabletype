@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtassetthumbnailurl($args, &$ctx) {
+function smarty_function_mtassetthumbnailurl($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $asset = $ctx->stash('asset');
     if (!$asset) return '';
     if ($asset->asset_class != 'image') return '';

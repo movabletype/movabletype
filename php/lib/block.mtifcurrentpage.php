@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtifcurrentpage($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtifcurrentpage($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $limit = $ctx->stash('__pager_limit');
         $offset = $ctx->stash('__pager_offset');

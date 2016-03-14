@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcategorycount($args, &$ctx) {
+function smarty_function_mtcategorycount($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     require_once("MTUtil.php");
     $category = get_category_context($ctx);
     if (!$category) return '';

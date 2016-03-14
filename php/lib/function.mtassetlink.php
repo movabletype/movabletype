@@ -6,7 +6,8 @@
 # $Id$
 
 require_once("function.mtasseturl.php");
-function smarty_function_mtassetlink($args, &$ctx) {
+function smarty_function_mtassetlink($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $asset = $ctx->stash('asset');
     if (!$asset) return '';
 
@@ -15,7 +16,7 @@ function smarty_function_mtassetlink($args, &$ctx) {
     if (isset($args['new_window']))
         $target = " target=\"_blank\"";
 
-    $url = smarty_function_mtasseturl($args, $ctx);
+    $url = smarty_function_mtasseturl($args, $_smarty_tpl);
 
     return sprintf("<a href=\"%s\"%s>%s</a>",
         $url,

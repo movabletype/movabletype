@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentryexcerpt($args, &$ctx) {
+function smarty_function_mtentryexcerpt($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // todo: needs work
     $e = $ctx->stash('entry');
     if ($excerpt = $e->entry_excerpt) {

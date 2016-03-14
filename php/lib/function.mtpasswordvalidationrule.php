@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtpasswordvalidationrule($args, &$ctx) {
+function smarty_function_mtpasswordvalidationrule($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $app =  $ctx->mt;
 
     $constrains = $app->config('UserPasswordValidation');

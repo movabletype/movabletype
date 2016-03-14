@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcommentauthoridentity($args, &$ctx) {
+function smarty_function_mtcommentauthoridentity($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $cmt = $ctx->stash('comment');
     $cmntr = $ctx->stash('commenter');
     if (!$cmntr) {
@@ -19,7 +20,7 @@ function smarty_function_mtcommentauthoridentity($args, &$ctx) {
     if (isset($cmntr->author_url))
         $link = $cmntr->author_url;
     require_once "function.mtstaticwebpath.php";
-    $static_path = smarty_function_mtstaticwebpath($args, $ctx);
+    $static_path = smarty_function_mtstaticwebpath($args, $_smarty_tpl);
     require_once "commenter_auth_lib.php";
     $logo = _auth_icon_url($static_path, $cmntr);
     if (!$logo) {

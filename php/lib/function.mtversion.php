@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtversion($args, &$ctx) {
+function smarty_function_mtversion($args, &$_smarty_tpl) {
     // status: complete
     // parameters: none
     return VERSION_ID;

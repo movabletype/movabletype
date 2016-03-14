@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtbloghost($args, &$ctx) {
+function smarty_function_mtbloghost($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: complete
     // parameters: exclude_port, signature
     $blog = $ctx->stash('blog');

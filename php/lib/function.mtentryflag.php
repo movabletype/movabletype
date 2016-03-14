@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentryflag($args, &$ctx) {
+function smarty_function_mtentryflag($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $entry = $ctx->stash('entry');
     $flag = 'entry_' . $args['flag'];
     if (isset($entry->$flag)) {

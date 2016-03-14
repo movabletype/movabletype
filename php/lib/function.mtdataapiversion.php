@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtdataapiversion($args, &$ctx) {
+function smarty_function_mtdataapiversion($args, &$_smarty_tpl) {
     // status: complete
     // parameters: none
     return DATA_API_DEFAULT_VERSION;

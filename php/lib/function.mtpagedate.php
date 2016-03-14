@@ -6,7 +6,8 @@
 # $Id$
 
 require_once('function.mtentrydate.php');
-function smarty_function_mtpagedate($args, &$ctx) {
-    return smarty_function_mtentrydate($args, $ctx);
+function smarty_function_mtpagedate($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
+    return smarty_function_mtentrydate($args, $_smarty_tpl);
 }
 ?>

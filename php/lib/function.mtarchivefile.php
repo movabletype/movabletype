@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtarchivefile($args, &$ctx) {
+function smarty_function_mtarchivefile($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $at = $ctx->stash('archive_type');
     $at or $at = $ctx->stash('current_archive_type');
     if (!$at or $at == 'Individual') {

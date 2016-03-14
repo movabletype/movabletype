@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtproductname($args, &$ctx) {
+function smarty_function_mtproductname($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $short_name = PRODUCT_NAME;
     if ($args['version']) {
         return $ctx->mt->translate("[_1] [_2]", array($short_name, VERSION_ID));

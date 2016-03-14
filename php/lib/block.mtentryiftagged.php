@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtentryiftagged($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtentryiftagged($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $entry = $ctx->stash('entry');
         if ($entry) {

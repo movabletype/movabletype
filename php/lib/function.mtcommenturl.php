@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcommenturl($args, &$ctx) {
+function smarty_function_mtcommenturl($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $comment = $ctx->stash('comment');
     return $comment->comment_url;
 }

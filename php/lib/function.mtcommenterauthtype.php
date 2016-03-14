@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcommenterauthtype($args, &$ctx) {
+function smarty_function_mtcommenterauthtype($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $a =& $ctx->stash('commenter');
     return isset($a) ? $a->author_auth_type : '';
 }

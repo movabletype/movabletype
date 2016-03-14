@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtblogurl($args, &$ctx) {
+function smarty_function_mtblogurl($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     if (isset($args['id']) && is_numeric($args['id'])) {
         require_once('class.mt_blog.php');
         $blog = new Blog();

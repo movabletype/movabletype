@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtcommentreplies($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtcommentreplies($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $localvars = array(array('comments', 'comment_order_num', 'comment','current_timestamp', 'commenter', 'blog', 'blog_id', '_comment_replies_tokens', 'conditional', 'else_content'), common_loop_vars());
     $token_fn = $ctx->stash('_comment_replies_tokens');
     if (!isset($content)) {

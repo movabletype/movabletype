@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mttemplatenote($args, &$ctx) {
+function smarty_function_mttemplatenote($args, &$_smarty_tpl) {
     return '';
 }
 ?>

@@ -6,7 +6,8 @@
 # $Id$
 
 require_once('function.mtentryid.php');
-function smarty_function_mtpageid($args, &$ctx) {
-    return smarty_function_mtentryid($args, $ctx);
+function smarty_function_mtpageid($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
+    return smarty_function_mtentryid($args, $_smarty_tpl);
 }
 ?>

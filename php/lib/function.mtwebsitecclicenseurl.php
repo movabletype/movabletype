@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtwebsitecclicenseurl($args, &$ctx) {
+function smarty_function_mtwebsitecclicenseurl($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $blog = $ctx->stash('blog');
     if (empty($blog)) return '';
     $website = $blog->is_blog() ? $blog->website() : $blog;

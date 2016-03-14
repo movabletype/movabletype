@@ -42,7 +42,7 @@ $conditional, the block function must return $content either way.
 This allows the inner 'if' statements to do their work. See above
 for how the '$conditional' variable is used.
 */
-function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
+function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
     // used to serialize attributes when creating tag stack for
     // function tags.
     $var_export = function_exists('var_export');
@@ -86,6 +86,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
 
             if (preg_match_all('!(?:((?:\w|:)+)\s*=\s*(["\'])((?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)*?)?\2((?:[,:](["\'])((?:<[^>]*?>|.)*?)?\5)*)?|(\w+))!s', $args,
                                $arglist, PREG_SET_ORDER)) {
+
                 for ($a = 0; $a < count($arglist); $a++) {
                     if (isset($arglist[$a][7])) {
                         $attr = 'name';
@@ -175,6 +176,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                  ($mttag == 'mtelse' || $mttag == 'mtelseif')) &&
                 $close != '/') {
                 $smart_source .= $ldelim.'/if'.$rdelim;
+
             }
 
             $tokname = null;
@@ -236,7 +238,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
 
             if ($fn_tag) {
                 $smart_source .= $ldelim . 'php' . $rdelim
-                    . '$this->_tag_stack[] = array("' . $mttag . '"'
+                    . '$_smarty_tpl->smarty->_cache["_tag_stack"][] = array("' . $mttag . '"'
                     // . ', array(' . implode(',', $ctx2->_compile_arg_list(null, null, $attrs, $dummy)) . '));'
                     . ($var_export ? ', ' . var_export($attrs, true) : '')
                     . ');' . $ldelim . '/php' . $rdelim;
@@ -249,7 +251,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                                   $rdelim;
             if ($fn_tag) {
                 $smart_source .= $ldelim . 'php' . $rdelim
-                    . 'array_pop($this->_tag_stack);'
+                    . 'array_pop($_smarty_tpl->smarty->_cache["_tag_stack"]);'
                     . $ldelim . '/php' . $rdelim;
             }
 
@@ -342,8 +344,14 @@ function _parse_modifier($str) {
 }
 
 function _block_handler_exists(&$smarty, $name) {
-    if ($smarty->_plugins['block'][$name]) return true;
-    if ($smarty->_get_plugin_filepath('block', $name)) return true;
+    if (!is_null($smarty->smarty->registered_plugins[Smarty::PLUGIN_BLOCK][$name])) return true;
+    $_plugin_filename = 'block.' . $name . '.php';
+    foreach ($smarty->smarty->plugins_dir as $value) { 
+        $filepath = $value .$_plugin_filename; 
+        if (file_exists($filepath)) { 
+            return true; 
+        } 
+    } 
     return false;
 }
 ?>

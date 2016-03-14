@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mttagsearchlink($args, &$ctx) {
+function smarty_function_mttagsearchlink($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $mt  = MT::get_instance();
     $blog = $ctx->stash('blog');
 
@@ -53,7 +54,7 @@ function smarty_function_mttagsearchlink($args, &$ctx) {
     }
 
     require_once "function.mtcgipath.php";
-    $search = smarty_function_mtcgipath($args, $ctx);
+    $search = smarty_function_mtcgipath($args, $_smarty_tpl);
     $search .= $ctx->mt->config('SearchScript');
     $link = $search . '?' . $param . ($param ? '&amp;' : '')
         . 'tag=' . urlencode($name);

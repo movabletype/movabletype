@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtif($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $result = 0;
         $name = isset($args['name'])
@@ -78,7 +79,7 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
             set_error_handler('_dummy_error_handler');
 
             try {
-                $val = $ctx->tag($tag, $largs);
+                $val = $_smarty_tpl->tag($tag, $largs);
             } catch (exception $e) {
                 $val = '';
             }
@@ -158,6 +159,7 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
         } else {
             $result = isset($val) && $val ? 1 : 0;
         }
+
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $result);
     } else {
         $vars =& $ctx->__stash['vars'];

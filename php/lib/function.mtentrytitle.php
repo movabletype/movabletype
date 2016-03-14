@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentrytitle($args, &$ctx) {
+function smarty_function_mtentrytitle($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $entry = $ctx->stash('entry');
     $title = $entry->entry_title;
     if (empty($title)) {

@@ -6,7 +6,8 @@
 # $Id$
 
 require_once('function.mtcategorycount.php');
-function smarty_function_mtfoldercount($args, &$ctx) {
-    return smarty_function_mtcategorycount($args, $ctx);
+function smarty_function_mtfoldercount($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
+    return smarty_function_mtcategorycount($args, $_smarty_tpl);
 }
 ?>

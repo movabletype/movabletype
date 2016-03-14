@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcommentordernumber($args, &$ctx) {
+function smarty_function_mtcommentordernumber($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     return $ctx->stash('comment_order_num');
 }
 ?>

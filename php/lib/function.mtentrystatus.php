@@ -17,7 +17,8 @@ function status_text($s) {
     return $mt->translate($status[$s]);
 }
 
-function smarty_function_mtentrystatus($args, &$ctx) {
+function smarty_function_mtentrystatus($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $entry = $ctx->stash('entry');
     return status_text($entry->entry_status);
 }

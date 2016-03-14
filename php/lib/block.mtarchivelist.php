@@ -1,6 +1,7 @@
 <?php
 require_once "archive_lib.php";
-function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtarchivelist($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $localvars = array(array('current_archive_type', 'current_timestamp', 'current_timestamp_end', 'entries', 'archive_count', '_archive_list_num', '_archive_list_results','entry','ArchiveListHeader', 'ArchiveListFooter', 'inside_archive_list', 'category', 'author'), common_loop_vars());
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
@@ -34,7 +35,7 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
         ## handle it here--instead hand it over to <MTCategories>.
         if ($at == 'Category') {
             require_once("block.mtcategories.php");
-            return smarty_block_mtcategories($args, $content, $ctx, $repeat);
+            return smarty_block_mtcategories($args, $content, $_smarty_tpl, $repeat);
         }
         $blog_id = $blog->blog_id;
         $args['sort'] = 'created_on';
@@ -54,7 +55,7 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
         $i = $ctx->stash('_archive_list_num');
     }
     if ($at == 'Category') {
-        $content = smarty_block_mtcategories($args, $content, $ctx, $repeat);
+        $content = smarty_block_mtcategories($args, $content, $_smarty_tpl, $repeat);
         if (!$repeat)
             $ctx->restore($localvars);
         return $content;

@@ -62,23 +62,25 @@ $multiblog_orig_handlers['mttagsearchlink']
 
 $ctx->add_conditional_tag('mtmultiblogiflocalblog');
 
-function multiblog_MTBlogCategoryCount($args, &$ctx) {
-    return multiblog_function_wrapper('mtblogcategorycount', $args, $ctx);
+function multiblog_MTBlogCategoryCount($args, &$_smarty_tpl) {
+    return multiblog_function_wrapper('mtblogcategorycount', $args, $_smarty_tpl);
 }
-function multiblog_MTBlogCommentCount($args, &$ctx) {
-    return multiblog_function_wrapper('mtblogcommentcount', $args, $ctx);
+function multiblog_MTBlogCommentCount($args, &$_smarty_tpl) {
+    return multiblog_function_wrapper('mtblogcommentcount', $args, $_smarty_tpl);
 }
-function multiblog_MTBlogPingCount($args, &$ctx) {
-    return multiblog_function_wrapper('mtblogpingcount', $args, $ctx);
+function multiblog_MTBlogPingCount($args, &$_smarty_tpl) {
+    return multiblog_function_wrapper('mtblogpingcount', $args, $_smarty_tpl);
 }
-function multiblog_MTBlogEntryCount($args, &$ctx) {
-    return multiblog_function_wrapper('mtblogentrycount', $args, $ctx);
+function multiblog_MTBlogEntryCount($args, &$_smarty_tpl) {
+    return multiblog_function_wrapper('mtblogentrycount', $args, $_smarty_tpl);
 }
-function multiblog_MTTagSearchLink($args, &$ctx) {
-    return multiblog_function_wrapper('mttagsearchlink', $args, $ctx);
+function multiblog_MTTagSearchLink($args, &$_smarty_tpl) {
+    return multiblog_function_wrapper('mttagsearchlink', $args, $_smarty_tpl);
 }
 # Special handler for MTInclude
-function multiblog_MTInclude($args, &$ctx) {
+function multiblog_MTInclude($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
+    
     if (isset($args['blog_id'])) {
     # Load multiblog access control list
         $acl = multiblog_load_acl($ctx);
@@ -109,12 +111,14 @@ function multiblog_MTInclude($args, &$ctx) {
     }
     global $multiblog_orig_handlers;
     $fn = $multiblog_orig_handlers['mtinclude'];
-    $result = $fn($args, $ctx);
+    $result = $fn($args, $_smarty_tpl);
     return $result;
 }
 
 # MultiBlog plugin wrapper for function tags (i.e. variable tags)
-function multiblog_function_wrapper($tag, $args, &$ctx) {
+function multiblog_function_wrapper($tag, $args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
+
     $localvars = array('local_blog_id');
     $ctx->localize($localvars);
     
@@ -149,7 +153,7 @@ function multiblog_function_wrapper($tag, $args, &$ctx) {
     # Call original tag handler with new multiblog args
     global $multiblog_orig_handlers;
     $fn = $multiblog_orig_handlers[$tag];
-    $result = $fn($args, $ctx);
+    $result = $fn($args, $_smarty_tpl);
 
     # Restore localized variables
     $ctx->restore($localvars);
@@ -157,7 +161,9 @@ function multiblog_function_wrapper($tag, $args, &$ctx) {
 }
 
 # MultiBlog plugin wrapper for block tags (i.e. container/conditional)
-function multiblog_block_wrapper(&$args, $content, &$ctx, &$repeat) {
+function multiblog_block_wrapper($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
+
     $tag = $ctx->this_tag();
     $localvars = array('entries', 'current_timestamp', 'current_timestamp_end', 'category', 'archive_category', 'local_blog_id');
 
@@ -205,14 +211,14 @@ function multiblog_block_wrapper(&$args, $content, &$ctx, &$repeat) {
 
         # Fix for MTMultiBlogIfLocalBlog which should never return
         # true with MTTags block because tags are cross-blog
-        if ($ctx->this_tag() == 'mttags')
+        if ($tag == 'mttags')
             $ctx->stash('local_blog_id', 0);
     }
 
     # Call original tag handler with new multiblog args
-    global $multiblog_orig_handlers;
+    global $multiblog_orig_handlers;    // if(!is_null($tag)){
     $fn = $multiblog_orig_handlers[$tag];
-    $result = $fn($args, $content, $ctx, $repeat);
+    $result = $fn($args, $content, $_smarty_tpl, $repeat);
 
     # Restore localized variables if last loop
     if (!$repeat)

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtdataapiscript($args, &$ctx) {
+function smarty_function_mtdataapiscript($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: complete
     // parameters: none
     return $ctx->mt->config('DataAPIScript');

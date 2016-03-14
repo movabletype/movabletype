@@ -28,9 +28,9 @@ class Smarty_Template_Config extends Smarty_Template_Source
     /**
      * scope into which the config variables shall be loaded
      *
-     * @var string
+     * @var int
      */
-    public $scope = 'local';
+    public $scope = 0;
 
     /**
      * Flag that source is a config file
@@ -72,7 +72,8 @@ class Smarty_Template_Config extends Smarty_Template_Source
      * @return Smarty_Template_Config Source Object
      * @throws SmartyException
      */
-    public static function load(Smarty_Internal_Template $_template = null, Smarty $smarty = null, $template_resource = null)
+    public static function load(Smarty_Internal_Template $_template = null, Smarty $smarty = null,
+                                $template_resource = null)
     {
         static $_incompatible_resources = array('extends' => true, 'php' => true);
         $template_resource = $_template->template_resource;
@@ -80,9 +81,10 @@ class Smarty_Template_Config extends Smarty_Template_Source
             throw new SmartyException('Missing config name');
         }
         // parse resource_name, load resource handler
-        list($name, $type) = Smarty_Resource::parseResourceName($template_resource, $_template->smarty->default_config_type);
+        list($name, $type) =
+            Smarty_Resource::parseResourceName($template_resource, $_template->smarty->default_config_type);
         // make sure configs are not loaded via anything smarty can't handle
-        if (isset($_incompatible_resources[$type])) {
+        if (isset($_incompatible_resources[ $type ])) {
             throw new SmartyException ("Unable to use resource '{$type}' for config");
         }
         $resource = Smarty_Resource::load($_template->smarty, $type);
@@ -91,7 +93,6 @@ class Smarty_Template_Config extends Smarty_Template_Source
         if (!$source->exists && isset($_template->smarty->default_config_handler_func)) {
             Smarty_Internal_Method_RegisterDefaultTemplateHandler::_getDefaultTemplate($source);
         }
-        $source->unique_resource = $resource->buildUniqueResourceName($_template->smarty, $name, true);
         return $source;
     }
 }

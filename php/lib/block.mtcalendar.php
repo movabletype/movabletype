@@ -7,7 +7,8 @@
 
 require_once("MTUtil.php");
 
-function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtcalendar($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $local_vars = array('cal_entries','cal_day','cal_pad_start','cal_pad_end','cal_days_in_month','cal_prefix','cal_left','CalendarDay','CalendarWeekHeader','CalendarWeekFooter','CalendarIfEntries','CalendarIfNoEntries','CalendarIfToday','CalendarIfBlank','entries','current_timestamp','current_timestamp_end','cal_today','CalendarCellNumber');
     // arguments supported: month, category
     // arguments implemented:

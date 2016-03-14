@@ -7,7 +7,8 @@
 
 require_once('stats_lib.php');
 
-function smarty_function_mtstatssnippet($args, &$ctx) {
+function smarty_function_mtstatssnippet($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $provider = Stats::readied_provider($ctx->stash('blog'));
     if (empty($provider)) {
         return '';

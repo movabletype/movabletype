@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mttagname($args, &$ctx) {
+function smarty_function_mttagname($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $tag = $ctx->stash('Tag');
     if (!$tag) return '';
     if (is_object($tag)) {

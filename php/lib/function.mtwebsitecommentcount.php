@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtwebsitecommentcount($args, &$ctx) {
+function smarty_function_mtwebsitecommentcount($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $count = $ctx->mt->db()->blog_comment_count($args);
     return $ctx->count_format($count, $args);
 }

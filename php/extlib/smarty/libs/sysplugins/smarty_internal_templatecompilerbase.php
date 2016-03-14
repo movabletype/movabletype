@@ -17,8 +17,8 @@
  *
  * @property Smarty_Internal_SmartyTemplateCompiler $prefixCompiledCode  = ''
  * @property Smarty_Internal_SmartyTemplateCompiler $postfixCompiledCode = ''
- * @method Smarty_Internal_SmartyTemplateCompiler registerPostCompileCallback($callback, $parameter = array(), $key = null, $replace = false)
- * @method Smarty_Internal_SmartyTemplateCompiler unregisterPostCompileCallback($key)
+ * @method registerPostCompileCallback($callback, $parameter = array(), $key = null, $replace = false)
+ * @method unregisterPostCompileCallback($key)
  */
 abstract class Smarty_Internal_TemplateCompilerBase
 {
@@ -56,7 +56,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
      *
      * @var array
      */
-    public $_tag_objects = array();
+    static $_tag_objects = array();
 
     /**
      * tag stack
@@ -290,6 +290,13 @@ abstract class Smarty_Internal_TemplateCompilerBase
     public $_cache = array();
 
     /**
+     * counter for prefix variable number
+     *
+     * @var int
+     */
+    public static $prefixVariableNumber = 0;
+
+    /**
      * method to compile a Smarty template
      *
      * @param mixed $_content template source
@@ -377,7 +384,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
             // add file dependency
             $this->parent_compiler->template->compiled->file_dependency[ $this->template->source->uid ] =
                 array($this->template->source->filepath, $this->template->source->getTimeStamp(),
-                      $this->template->source->type);
+                      $this->template->source->type,);
             $this->smarty->_current_file = $this->template->source->filepath;
             // get template source
             if (!empty($this->template->source->components)) {
@@ -396,7 +403,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
                 $this->smarty->_debug->end_compile($this->template);
             }
             $this->_tag_stack = array();
-            $this->_tag_objects = array();
+            self::$_tag_objects = array();
             // free memory
             $this->parent_compiler = null;
             $this->template = null;
@@ -407,7 +414,6 @@ abstract class Smarty_Internal_TemplateCompilerBase
             $this->smarty->_debug->end_compile($this->template);
         }
         $this->parent_compiler = null;
-        $this->template = null;
         $this->parser = null;
         return $_compiled_code;
     }
@@ -501,10 +507,18 @@ abstract class Smarty_Internal_TemplateCompilerBase
             $this->template->_cache[ 'used_tags' ][] = array($tag, $args);
         }
         // check nocache option flag
-        if (in_array("'nocache'", $args) || in_array(array('nocache' => 'true'), $args) ||
-            in_array(array('nocache' => '"true"'), $args) || in_array(array('nocache' => "'true'"), $args)
-        ) {
-            $this->tag_nocache = true;
+        foreach ($args as $arg) {
+            if (!is_array($arg)) {
+                if ($arg == "'nocache'") {
+                    $this->tag_nocache = true;
+                }
+            } else {
+                foreach ($arg as $k => $v) {
+                    if ($k == "'nocache'" && (trim($v, "'\" ") == 'true')) {
+                        $this->tag_nocache = true;
+                    }
+                }
+            }
         }
         // compile the smarty tag (required compile classes to compile the tag are auto loaded)
         if (($_output = $this->callTagCompiler($tag, $args, $parameter)) === false) {
@@ -544,7 +558,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
                     $method = $parameter[ 'object_method' ];
                     if (!in_array($method, $this->smarty->registered_objects[ $tag ][ 3 ]) &&
                         (empty($this->smarty->registered_objects[ $tag ][ 1 ]) ||
-                            in_array($method, $this->smarty->registered_objects[ $tag ][ 1 ]))
+                         in_array($method, $this->smarty->registered_objects[ $tag ][ 1 ]))
                     ) {
                         return $this->callTagCompiler('private_object_function', $args, $parameter, $tag, $method);
                     } elseif (in_array($method, $this->smarty->registered_objects[ $tag ][ 3 ])) {
@@ -557,7 +571,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
                     }
                 }
                 // check if tag is registered
-                foreach (array(Smarty::PLUGIN_COMPILER, Smarty::PLUGIN_FUNCTION, Smarty::PLUGIN_BLOCK) as $plugin_type)
+                foreach (array(Smarty::PLUGIN_COMPILER, Smarty::PLUGIN_FUNCTION, Smarty::PLUGIN_BLOCK,) as $plugin_type)
                 {
                     if (isset($this->smarty->registered_plugins[ $plugin_type ][ $tag ])) {
                         // if compiler function plugin call it now
@@ -595,7 +609,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
                     if ($plugin_type == Smarty::PLUGIN_COMPILER &&
                         $this->smarty->loadPlugin('smarty_compiler_' . $tag) &&
                         (!isset($this->smarty->security_policy) ||
-                            $this->smarty->security_policy->isTrustedTag($tag, $this))
+                         $this->smarty->security_policy->isTrustedTag($tag, $this))
                     ) {
                         $plugin = 'smarty_compiler_' . $tag;
                         if (is_callable($plugin)) {
@@ -754,7 +768,8 @@ abstract class Smarty_Internal_TemplateCompilerBase
             // not a variable variable
             $var = trim($variable, '\'');
             $this->tag_nocache = $this->tag_nocache |
-                $this->template->ext->getTemplateVars->_getVariable($this->template, $var, null, true, false)->nocache;
+                                 $this->template->ext->getTemplateVars->_getVariable($this->template, $var, null, true,
+                                                                                     false)->nocache;
             // todo $this->template->compiled->properties['variables'][$var] = $this->tag_nocache | $this->nocache;
         }
         return '$_smarty_tpl->tpl_vars[' . $variable . ']->value';
@@ -787,7 +802,6 @@ abstract class Smarty_Internal_TemplateCompilerBase
         if ((string) $text != '') {
             $store = array();
             $_store = 0;
-            $_offset = 0;
             if ($this->parser->strip) {
                 if (strpos($text, '<') !== false) {
                     // capture html elements not to be messed with
@@ -804,15 +818,13 @@ abstract class Smarty_Internal_TemplateCompilerBase
                             $_store ++;
                         }
                     }
-
                     $expressions = array(// replace multiple spaces between tags by a single space
                                          // can't remove them entirely, becaue that might break poorly implemented CSS display:inline-block elements
-                                         '#(:SMARTY@!@|>)\s+(?=@!@SMARTY:|<)#s'                                    => '\1 \2',
+                                         '#(:SMARTY@!@|>)\s+(?=@!@SMARTY:|<)#s' => '\1 \2',
                                          // remove spaces between attributes (but not in attribute values!)
                                          '#(([a-z0-9]\s*=\s*("[^"]*?")|(\'[^\']*?\'))|<[a-z0-9_]+)\s+([a-z/>])#is' => '\1 \5',
-                                         '#^\s+<#Ss'                                                               => '<',
-                                         '#>\s+$#Ss'                                                               => '>',
-                                         $this->stripRegEx                                                         => '');
+                                         '#>[\040\011]+$#Ss' => '> ', '#>[\040\011]*[\n]\s*$#Ss' => '>',
+                                         $this->stripRegEx => '',);
 
                     $text = preg_replace(array_keys($expressions), array_values($expressions), $text);
                     $_offset = 0;
@@ -853,7 +865,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
     public function callTagCompiler($tag, $args, $param1 = null, $param2 = null, $param3 = null)
     {
         // re-use object if already exists
-        if (!isset($this->_tag_objects[ $tag ])) {
+        if (!isset(self::$_tag_objects[ $tag ])) {
             // lazy load internal compiler plugin
             $_tag = explode('_', $tag);
             $_tag = array_map('ucfirst', $_tag);
@@ -861,15 +873,15 @@ abstract class Smarty_Internal_TemplateCompilerBase
             if (class_exists($class_name) &&
                 (!isset($this->smarty->security_policy) || $this->smarty->security_policy->isTrustedTag($tag, $this))
             ) {
-                $this->_tag_objects[ $tag ] = new $class_name;
+                self::$_tag_objects[ $tag ] = new $class_name;
             } else {
-                $this->_tag_objects[ $tag ] = false;
+                self::$_tag_objects[ $tag ] = false;
                 return false;
             }
         }
         // compile this tag
-        return $this->_tag_objects[ $tag ] === false ? false :
-            $this->_tag_objects[ $tag ]->compile($args, $this, $param1, $param2, $param3);
+        return self::$_tag_objects[ $tag ] === false ? false :
+            self::$_tag_objects[ $tag ]->compile($args, $this, $param1, $param2, $param3);
     }
 
     /**
@@ -955,7 +967,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
         $script = null;
         $cacheable = true;
         $result = call_user_func_array($this->smarty->default_plugin_handler_func,
-                                       array($tag, $plugin_type, $this->template, &$callback, &$script, &$cacheable));
+                                       array($tag, $plugin_type, $this->template, &$callback, &$script, &$cacheable,));
         if ($result) {
             $this->tag_nocache = $this->tag_nocache || !$cacheable;
             if ($script !== null) {
@@ -1035,7 +1047,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
                 $_output = addcslashes($content, '\'\\');
                 $_output = str_replace("^#^", "'", $_output);
                 $_output = "<?php echo '/*%%SmartyNocache:{$this->nocache_hash}%%*/" . $_output .
-                    "/*/%%SmartyNocache:{$this->nocache_hash}%%*/';?>\n";
+                           "/*/%%SmartyNocache:{$this->nocache_hash}%%*/';?>\n";
                 // make sure we include modifier plugins for nocache code
                 foreach ($this->modifier_plugins as $plugin_name => $dummy) {
                     if (isset($this->parent_compiler->template->compiled->required_plugins[ 'compiled' ][ $plugin_name ][ 'modifier' ])) {
@@ -1065,8 +1077,8 @@ abstract class Smarty_Internal_TemplateCompilerBase
      */
     public function getId($input)
     {
-        if (preg_match('~^[\'"]*([0-9]*[a-zA-Z_]\w*)[\'"]*$~', $input, $match)) {
-            return $match[ 1 ];
+        if (preg_match('~^([\'"]*)([0-9]*[a-zA-Z_]\w*)\1$~', $input, $match)) {
+            return $match[ 2 ];
         }
         return false;
     }
@@ -1087,6 +1099,55 @@ abstract class Smarty_Internal_TemplateCompilerBase
     }
 
     /**
+     * Set nocache flag in variable or create new variable
+     *
+     * @param string $varName
+     */
+    public function setNocacheInVariable($varName)
+    {
+        // create nocache var to make it know for further compiling
+        if ($_var = $this->getId($varName)) {
+            if (isset($this->template->tpl_vars[ $_var ])) {
+                $this->template->tpl_vars[ $_var ] = clone $this->template->tpl_vars[ $_var ];
+                $this->template->tpl_vars[ $_var ]->nocache = true;
+            } else {
+                $this->template->tpl_vars[ $_var ] = new Smarty_Variable(null, true);
+            }
+        }
+    }
+
+    /**
+     * @param array $_attr tag attributes
+     * @param array $validScopes
+     *
+     * @return int|string
+     * @throws \SmartyCompilerException
+     */
+    public function convertScope($_attr, $validScopes)
+    {
+        $_scope = 0;
+        if (isset($_attr[ 'scope' ])) {
+            $_scopeName = trim($_attr[ 'scope' ], "'\"");
+            if (is_numeric($_scopeName) && in_array($_scopeName, $validScopes)) {
+                $_scope = $_scopeName;
+            } elseif (is_string($_scopeName)) {
+                $_scopeName = trim($_scopeName, "'\"");
+                $_scope = isset($validScopes[ $_scopeName ]) ? $validScopes[ $_scopeName ] : false;
+            } else {
+                $_scope = false;
+            }
+            if ($_scope === false) {
+                $err = var_export($_scopeName, true);
+                $this->trigger_template_error("illegal value '{$err}' for \"scope\" attribute", null, true);
+            }
+            if (isset($_attr[ 'bubble_up' ]) && $_attr[ 'bubble_up' ] && $_scope > 2) {
+                $_scope += Smarty::SCOPE_BUBBLE_UP;
+            }
+        }
+        return $_scope;
+    }
+
+    /**
      * Generate nocache code string
      *
      * @param string $code PHP code
@@ -1096,7 +1157,8 @@ abstract class Smarty_Internal_TemplateCompilerBase
     public function makeNocacheCode($code)
     {
         return "echo '/*%%SmartyNocache:{$this->nocache_hash}%%*/<?php " .
-        str_replace("^#^", "'", addcslashes($code, '\'\\')) . "?>/*/%%SmartyNocache:{$this->nocache_hash}%%*/';\n";
+               str_replace("^#^", "'", addcslashes($code, '\'\\')) .
+               "?>/*/%%SmartyNocache:{$this->nocache_hash}%%*/';\n";
     }
 
     /**
@@ -1167,4 +1229,91 @@ abstract class Smarty_Internal_TemplateCompilerBase
         $e->template = $this->template->source->filepath;
         throw $e;
     }
+
+    /**
+     * Return var_export() value with all white spaces removed
+     *
+     * @param  mixed $value
+     *
+     * @return string
+     */
+    public function getVarExport($value)
+    {
+        return preg_replace('/\s/', '', var_export($value, true));
+    }
+
+    /**
+     * Check if $value contains variable elements
+     *
+     * @param mixed $value
+     *
+     * @return bool|int
+     */
+    public function isVariable($value)
+    {
+        if (is_string($value)) {
+            return preg_match('/[$(]/', $value);
+        }
+        if (is_bool($value) || is_numeric($value)) {
+            return false;
+        }
+        if (is_array($value)) {
+            foreach ($value as $k => $v) {
+                if ($this->isVariable($k) || $this->isVariable($v)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * Get new prefix variable name
+     *
+     * @return string
+     */
+    public function getNewPrefixVariable()
+    {
+        self::$prefixVariableNumber ++;
+        return $this->getPrefixVariable();
+    }
+
+    /**
+     * Get current prefix variable name
+     *
+     * @return string
+     */
+    public function getPrefixVariable()
+    {
+        return '$_prefixVariable' . self::$prefixVariableNumber;
+    }
+
+    /**
+     * append  code to prefix buffer
+     *
+     * @param string $code
+     */
+    public function appendPrefixCode($code)
+    {
+        $this->prefix_code[] = $code;
+    }
+
+    /**
+     * get prefix code string
+     *
+     * @return string
+     */
+    public function getPrefixCode()
+    {
+        $code = '';
+        $prefixArray = array_merge($this->prefix_code, array_pop($this->prefixCodeStack));
+        $this->prefixCodeStack[] = array();
+        foreach ($prefixArray as $c) {
+            $code = $this->appendCode($code, $c);
+        }
+        $this->prefix_code = array();
+        return $code;
+    }
+
 }

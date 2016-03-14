@@ -7,7 +7,8 @@
 
 require_once('rating_lib.php');
 
-function smarty_function_mtassetscorelow($args, &$ctx) {
+function smarty_function_mtassetscorelow($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     return hdlr_score_low($ctx, 'asset', $args['namespace'], $args);
 }
 ?>

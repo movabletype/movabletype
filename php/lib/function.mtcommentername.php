@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcommentername($args, &$ctx) {
+function smarty_function_mtcommentername($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $a =& $ctx->stash('commenter');
     $name = isset($a) ? $a->author_nickname : '';
     if ($name == '') {

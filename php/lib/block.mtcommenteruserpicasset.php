@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtcommenteruserpicasset($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtcommenteruserpicasset($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $comment = $ctx->stash('comment');
     if (!$comment) {
         return $ctx->error("No comments available");

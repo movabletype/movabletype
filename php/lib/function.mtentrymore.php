@@ -5,7 +5,9 @@
 #
 # $Id$
 
-function smarty_function_mtentrymore($args, &$ctx) {
+function smarty_function_mtentrymore($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
+
     $entry = $ctx->stash('entry');
     $text = $entry->entry_text_more;
 

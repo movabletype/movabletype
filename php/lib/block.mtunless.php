@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtunless($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtunless($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $result = 0;
         if (isset($args['var'])) {

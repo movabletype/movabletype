@@ -6,8 +6,9 @@
 # $Id$
 
 require_once('block.mtsubcategories.php');
-function smarty_block_mtsubfolders($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtsubfolders($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $args['class'] = 'folder';
-    return smarty_block_mtsubcategories($args, $content, $ctx, $repeat);
+    return smarty_block_mtsubcategories($args, $content, $_smarty_tpl, $repeat);
 }
 ?>

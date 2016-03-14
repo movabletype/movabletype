@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentrycommentcount($args, &$ctx) {
+function smarty_function_mtentrycommentcount($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $entry = $ctx->stash('entry');
     if (isset($args['top']) and $args['top'] == 1) {
         $where = "(comment_parent_id is NULL

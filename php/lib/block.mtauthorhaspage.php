@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtauthorhaspage($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtauthorhaspage($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $author = $ctx->stash('author');
         if (!$author) {

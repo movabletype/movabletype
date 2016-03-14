@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtsection($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtsection($args, $content, &$_smarty_tpl, &$repeat) {
     return $content;
 }
 ?>

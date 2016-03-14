@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mttoplevelcategories($args, $content, &$ctx, &$repeat) {
+function smarty_block_mttoplevelcategories($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $ctx->localize(array('category', 'archive_category'));
         $ctx->stash('category', null);
@@ -13,7 +14,7 @@ function smarty_block_mttoplevelcategories($args, $content, &$ctx, &$repeat) {
         require_once("block.mtsubcategories.php");
         $args['top_level_categories'] = 1;
     }
-    $result = smarty_block_mtsubcategories($args, $content, $ctx, $repeat);
+    $result = smarty_block_mtsubcategories($args, $content, $_smarty_tpl, $repeat);
     if (!$repeat) {
         $ctx->restore(array('category', 'archive_category'));
     }

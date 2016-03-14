@@ -5,7 +5,8 @@
 #
 # $Id: function.mtblogname.php 4196 2009-09-04 07:46:50Z takayama $
 
-function smarty_function_mtblogthemeid($args, &$ctx) {
+function smarty_function_mtblogthemeid($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: complete
     // parameters: raw
     $blog = $ctx->stash('blog');

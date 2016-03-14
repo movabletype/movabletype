@@ -6,7 +6,8 @@
 # $Id$
 
 require_once("block.mtifcategory.php");
-function smarty_block_mtentryifcategory($args, $content, &$ctx, &$repeat) {
-    return smarty_block_mtifcategory($args, $content, $ctx, $repeat);
+function smarty_block_mtentryifcategory($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
+    return smarty_block_mtifcategory($args, $content, $_smarty_tpl, $repeat);
 }
 ?>

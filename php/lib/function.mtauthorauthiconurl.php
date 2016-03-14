@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtauthorauthiconurl($args, &$ctx) {
+function smarty_function_mtauthorauthiconurl($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $author = $ctx->stash('author');
     if (empty($author)) {
         $entry = $ctx->stash('entry');
@@ -18,7 +19,7 @@ function smarty_function_mtauthorauthiconurl($args, &$ctx) {
         return $ctx->error("No author available");
     }
     require_once "function.mtstaticwebpath.php";
-    $static_path = smarty_function_mtstaticwebpath($args, $ctx);
+    $static_path = smarty_function_mtstaticwebpath($args, $_smarty_tpl);
     require_once "commenter_auth_lib.php";
     return _auth_icon_url($static_path, $author);
 }

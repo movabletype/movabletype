@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtassettags($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtassettags($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $localvars = array(array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count','all_tag_count', '__out', 'class_type'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtfolderfooter($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtfolderfooter($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $categories =& $ctx->stash('_categories');
         $counter = $ctx->stash('_categories_counter');

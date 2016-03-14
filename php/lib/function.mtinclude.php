@@ -8,7 +8,8 @@
 global $restricted_include_filenames;
 $restricted_include_filenames = array('mt-config.cgi' => 1, 'passwd' => 1);
 
-function smarty_function_mtinclude($args, &$ctx) {
+function smarty_function_mtinclude($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: partial
     // parameters: module, file
     // notes: file case needs work -- search through blog site archive path, etc...
@@ -18,7 +19,7 @@ function smarty_function_mtinclude($args, &$ctx) {
     while(list ($key, $val) = each($args)) {
         if (!preg_match('/(^file$|^module$|^widget$|^blog_id$|^identifier$|^type$)/', $key)) {
             require_once("function.mtsetvar.php");
-            smarty_function_mtsetvar(array('name' => $key, 'value' => $val), $ctx);
+            smarty_function_mtsetvar(array('name' => $key, 'value' => $val), $_smarty_tpl);
             $ext_args[] = $key;
         }
     }
@@ -195,7 +196,8 @@ function smarty_function_mtinclude($args, &$ctx) {
             $_var_compiled = $_include_cache[$cache_id];
         } else {
             $tmpl = $ctx->mt->db()->get_template_text($ctx, $load_name, $blog_id, $load_type, $args['global']);
-            if (!$ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
+            $_var_compiled = $ctx->fetch("eval:$tmpl");
+            if (!$_var_compiled) {
                 _clear_vars($ctx, $ext_args);
                 return $ctx->error("Error compiling template module '$module'");
             }
@@ -212,7 +214,8 @@ function smarty_function_mtinclude($args, &$ctx) {
             $_var_compiled = $_include_cache[$cache_id];
         } else {
             $tmpl = _get_template_from_file($ctx, $file, $blog_id);
-            if (!$ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
+            $_var_compiled = $ctx->fetch("eval:$tmpl");
+            if (!$_var_compiled) {
                 _clear_vars($ctx, $ext_args);
                 return $ctx->error("Error compiling template file '$file'");
             }
@@ -226,7 +229,8 @@ function smarty_function_mtinclude($args, &$ctx) {
         } else {
             $tmpl = $ctx->mt->db()->load_special_template($ctx, null, $type, $blog_id);
             if ($tmpl) {
-                if ($ctx->_compile_source('evaluated template', $tmpl->template_text, $_var_compiled)) {
+                $_var_compiled = $ctx->fetch("eval:".$tmpl->template_text);
+                if ($_var_compiled) {
                     $_include_cache[$cache_id] = $_var_compiled;
                 } else {
                     if ($type != 'dynamic_error') {
@@ -245,7 +249,7 @@ function smarty_function_mtinclude($args, &$ctx) {
     }
 
     ob_start();
-    $ctx->_eval('?>' . $_var_compiled);
+    eval('?>' . $_var_compiled);
     $_contents = ob_get_contents();
     ob_end_clean();
 
@@ -307,7 +311,7 @@ function _clear_vars(&$ctx, $ext_vars) {
     foreach ($ext_vars as $v) {
         unset($vars[$v]);
     }
-    $ctx->__stash['vars'] =& $vars;
+    $ctx->__stash['vars'] = $vars;
 }
 
 function _include_path($path) {

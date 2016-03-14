@@ -6,7 +6,8 @@
 # $Id$
 
 require_once("archive_lib.php");
-function smarty_function_mtarchivetitle($args, &$ctx) {
+function smarty_function_mtarchivetitle($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $at = $ctx->stash('current_archive_type');
     if (isset($args['type'])) {
         $at = $args['type'];

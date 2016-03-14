@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtimageheight($args, &$ctx) {
+function smarty_function_mtimageheight($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // todo: needs work
     return $ctx->stash('ImageHeight');
 }

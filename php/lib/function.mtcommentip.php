@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcommentip($args, &$ctx) {
+function smarty_function_mtcommentip($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $comment = $ctx->stash('comment');
     return $comment->comment_ip;
 }

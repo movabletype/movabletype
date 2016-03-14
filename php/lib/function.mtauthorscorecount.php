@@ -7,7 +7,8 @@
 
 require_once('rating_lib.php');
 
-function smarty_function_mtauthorscorecount($args, &$ctx) {
+function smarty_function_mtauthorscorecount($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     return hdlr_score_count($ctx, 'author', $args['namespace']);
 }
 ?>

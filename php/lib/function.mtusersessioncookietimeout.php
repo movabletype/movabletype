@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtusersessioncookietimeout($args, &$ctx) {
+function smarty_function_mtusersessioncookietimeout($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     return $ctx->mt->config('UserSessionCookieTimeout');
 }
 ?>

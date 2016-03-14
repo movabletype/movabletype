@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mthasparentcategory($args, $content, &$ctx, &$repeat) {
+function smarty_block_mthasparentcategory($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $class = isset($args) && isset($args['class']) ? $args['class'] : 'category';
         require_once("MTUtil.php");

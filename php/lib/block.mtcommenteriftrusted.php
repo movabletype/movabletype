@@ -5,8 +5,9 @@
 #
 # $Id$
 
-function smarty_block_mtcommenteriftrusted($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtcommenteriftrusted($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     require_once('block.mtifcommentertrusted.php');
-    return smarty_block_mtifcommentertrusted($args, $content, $ctx, $repeat);
+    return smarty_block_mtifcommentertrusted($args, $content, $_smarty_tpl, $repeat);
 }
 ?>

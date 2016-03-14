@@ -1,5 +1,6 @@
 <?php
-function smarty_function_mtentryauthoremail($args, &$ctx) {
+function smarty_function_mtentryauthoremail($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: incomplete
     // parameters: spam_protect
     $entry = $ctx->stash('entry');

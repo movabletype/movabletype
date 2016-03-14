@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentrypermalink($args, &$ctx) {
+function smarty_function_mtentrypermalink($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $entry = $ctx->stash('entry');
     if (!$entry)
         return '';

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcommentemail($args, &$ctx) {
+function smarty_function_mtcommentemail($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $comment = $ctx->stash('comment');
     $email = $comment->comment_email;
     $email = strip_tags($email);

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtarchivedateend($args, &$ctx) {
+function smarty_function_mtarchivedateend($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: complete
     $end = $ctx->stash('current_timestamp_end');
     $args['ts'] = $end;

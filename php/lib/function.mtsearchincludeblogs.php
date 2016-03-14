@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsearchincludeblogs($args, &$ctx) {
+function smarty_function_mtsearchincludeblogs($args, &$_smarty_tpl) {
     return '';
 }
 ?>

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtcategoryifallowpings($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtcategoryifallowpings($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $cat = $ctx->stash('category');
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $cat->category_allow_pings > 0);

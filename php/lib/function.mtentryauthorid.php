@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentryauthorid($args, &$ctx) {
+function smarty_function_mtentryauthorid($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: complete
     // parameters: none
     $entry = $ctx->stash('entry');

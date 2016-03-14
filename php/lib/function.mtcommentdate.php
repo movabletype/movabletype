@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcommentdate($args, &$ctx) {
+function smarty_function_mtcommentdate($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $c = $ctx->stash('comment');
     $args['ts'] = $c->comment_created_on;
     return $ctx->_hdlr_date($args, $ctx);

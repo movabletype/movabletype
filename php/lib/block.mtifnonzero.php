@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtifnonzero($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtifnonzero($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: complete
     // parameters: tag
     if (!isset($content)) {

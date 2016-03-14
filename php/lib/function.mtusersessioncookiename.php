@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtusersessioncookiename($args, &$ctx) {
+function smarty_function_mtusersessioncookiename($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $name = $ctx->mt->config('UserSessionCookieName');
     if ($name == 'DEFAULT') {
         if ($ctx->mt->config('SingleCommunity')) {

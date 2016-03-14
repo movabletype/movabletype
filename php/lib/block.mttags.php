@@ -5,8 +5,9 @@
 #
 # $Id$
 
-function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
-  $localvars = array(array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count', 'all_tag_count', 'include_blogs', 'exclude_blogs', 'blog_ids', '__out'), common_loop_vars());
+function smarty_block_mttags($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
+    $localvars = array(array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count', 'all_tag_count', 'include_blogs', 'exclude_blogs', 'blog_ids', '__out'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
         $ctx->stash('include_blogs', $args['include_blogs']);

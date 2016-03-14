@@ -6,8 +6,9 @@
 # $Id$
 
 require_once('block.mtentrytags.php');
-function smarty_block_mtpagetags($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtpagetags($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $args['class'] = 'page';
-    return smarty_block_mtentrytags($args, $content, $ctx, $repeat);
+    return smarty_block_mtentrytags($args, $content, $_smarty_tpl, $repeat);
 }
 ?>

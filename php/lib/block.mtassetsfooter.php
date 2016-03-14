@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtassetsfooter($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtassetsfooter($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $assets = $ctx->stash('_assets');
         $counter = $ctx->stash('_assets_counter');

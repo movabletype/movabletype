@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcommentauthor($args, &$ctx) {
+function smarty_function_mtcommentauthor($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $c = $ctx->stash('comment');
     if (!$c)
         return $ctx->error("No comments available");

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtassetdescription($args, &$ctx) {
+function smarty_function_mtassetdescription($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $asset = $ctx->stash('asset');
     if (!$asset) return '';
 

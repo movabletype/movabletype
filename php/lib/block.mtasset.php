@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtasset($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtasset($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $asset = $ctx->mt->db()->fetch_assets($args);
     } else {

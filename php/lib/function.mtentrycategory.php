@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentrycategory($args, &$ctx) {
+function smarty_function_mtentrycategory($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $entry = $ctx->stash('entry');
     if (empty($entry))
         return '';

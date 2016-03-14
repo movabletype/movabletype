@@ -6,7 +6,8 @@
 # $Id$
 
 require_once('function.mtentrytitle.php');
-function smarty_function_mtpagetitle($args, &$ctx) {
-    return smarty_function_mtentrytitle($args, $ctx);
+function smarty_function_mtpagetitle($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
+    return smarty_function_mtentrytitle($args, $_smarty_tpl);
 }
 ?>

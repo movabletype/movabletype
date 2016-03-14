@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtifimagesupport($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtifimagesupport($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     return $ctx->_hdlr_if($args, $content, $ctx, $repeat, 1);
 }
 ?>

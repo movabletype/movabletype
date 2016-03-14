@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtpingsfooter($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtpingsfooter($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $pings = $ctx->stash('_pings');
         $counter = $ctx->stash('_pings_counter');

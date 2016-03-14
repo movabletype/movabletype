@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtifregistrationallowed($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtifregistrationallowed($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
         $allowed = $blog->blog_allow_reg_comments && $blog->blog_commenter_authenticators;

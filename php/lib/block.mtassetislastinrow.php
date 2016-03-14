@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtassetislastinrow($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtassetislastinrow($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $ctx->stash('asset_last_in_row'));
     } else {

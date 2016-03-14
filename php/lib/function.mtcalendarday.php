@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcalendarday($args, &$ctx) {
+function smarty_function_mtcalendarday($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     return $ctx->stash('CalendarDay');
 }
 ?>

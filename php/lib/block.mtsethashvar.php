@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtsethashvar($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtsethashvar($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $vars =& $ctx->__stash['vars'];
     if (!isset($content)) {
         $name = $args['name'];

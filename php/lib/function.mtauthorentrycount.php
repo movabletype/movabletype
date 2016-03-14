@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtauthorentrycount($args, &$ctx) {
+function smarty_function_mtauthorentrycount($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $author = $ctx->stash('author');
     if (empty($author)) {
         $entry = $ctx->stash('entry');

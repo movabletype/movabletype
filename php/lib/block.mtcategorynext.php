@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtcategorynext($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $localvars = array('category', 'entries');
     $tag = $ctx->this_tag();
     if (($tag == 'mtcategoryprevious') || $tag == 'mtfolderprevious' || $tag == 'mtarchiveprevious') {

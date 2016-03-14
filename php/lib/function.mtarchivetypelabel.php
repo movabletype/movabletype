@@ -6,7 +6,8 @@
 # $Id$
 
 require_once("function.mtarchivelabel.php");
-function smarty_function_mtarchivetypelabel($args, &$ctx) {
-    return smarty_function_mtarchivelabel($args, $ctx);
+function smarty_function_mtarchivetypelabel($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
+    return smarty_function_mtarchivelabel($args, $_smarty_tpl);
 }
 ?>

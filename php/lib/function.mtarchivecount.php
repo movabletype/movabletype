@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtarchivecount($args, &$ctx) {
+function smarty_function_mtarchivecount($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $at = '';
     $archiver = null;
     if ($at = $ctx->stash('current_archive_type')) {

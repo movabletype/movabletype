@@ -6,7 +6,8 @@
 # $Id$
 
 require_once("block.mtcategorynext.php");
-function smarty_block_mtcategoryprevious($args, $content, &$ctx, &$repeat) {
-    return smarty_block_mtcategorynext($args, $content, $ctx, $repeat);
+function smarty_block_mtcategoryprevious($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
+    return smarty_block_mtcategorynext($args, $content, $_smarty_tpl, $repeat);
 }
 ?>

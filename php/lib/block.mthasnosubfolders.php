@@ -6,7 +6,8 @@
 # $Id$
 
 require_once("block.mthassubcategories.php");
-function smarty_block_mthasnosubfolders($args, $content, &$ctx, &$repeat) {
+function smarty_block_mthasnosubfolders($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $has_no_sub_cats = !_has_sub_categories($ctx, 'folder');
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $has_no_sub_cats);

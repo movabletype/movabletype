@@ -6,7 +6,8 @@
 # $Id$
 
 require_once('function.mtcategorybasename.php');
-function smarty_function_mtfolderbasename($args, &$ctx) {
-    return smarty_function_mtcategorybasename($args, $ctx);
+function smarty_function_mtfolderbasename($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
+    return smarty_function_mtcategorybasename($args, $_smarty_tpl);
 }
 ?>

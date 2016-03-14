@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtsubcategorypath($args, &$ctx) {
+function smarty_function_mtsubcategorypath($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     require_once("block.mtparentcategories.php");
     require_once("function.mtcategorybasename.php");
 
@@ -16,12 +17,12 @@ function smarty_function_mtsubcategorypath($args, &$ctx) {
     $args = array('glue' => '/');
     $content = null;
     $repeat = true;
-    smarty_block_mtparentcategories($args, $content, $ctx, $repeat);
+    smarty_block_mtparentcategories($args, $content, $_smarty_tpl, $repeat);
     $res = '';
 
     while ($repeat) {
-        $content = smarty_function_mtcategorybasename($bargs, $ctx);
-        $res .= smarty_block_mtparentcategories($args, $content, $ctx, $repeat);
+        $content = smarty_function_mtcategorybasename($bargs, $_smarty_tpl);
+        $res .= smarty_block_mtparentcategories($args, $content, $_smarty_tpl, $repeat);
     }
     return $res;
 }

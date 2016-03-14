@@ -6,7 +6,8 @@
 # $Id$
 
 require_once("function.mtinclude.php");
-function smarty_function_mtwidgetmanager($args, &$ctx) {
+function smarty_function_mtwidgetmanager($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $blog_id = $args['blog_id'];
     $blog_id or $blog_id = $ctx->stash('blog_id');
     $blog_id or $blog_id = 0;
@@ -14,7 +15,7 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
     if (!$widgetmanager) 
         return;
 
-    $tmpl = $ctx->mt->db()->get_template_text($ctx, $widgetmanager, $blog_id, 'widgetset', $args['global']);
+   $tmpl = $ctx->mt->db()->get_template_text($ctx, $widgetmanager, $blog_id, 'widgetset', $args['global']);
     if ( !isset($tmpl) || !$tmpl ) {
         return '';
     }
@@ -24,7 +25,7 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
         while(list ($key, $val) = each($args)) {
             if (!preg_match('/(^name$|^blog_id$)/', $key)) {
                 require_once("function.mtsetvar.php");
-                smarty_function_mtsetvar(array('name' => $key, 'value' => $val), $ctx);
+                smarty_function_mtsetvar(array('name' => $key, 'value' => $val), $_smarty_tpl);
                 $ext_args[] = $key;
             }
         }

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcgirelativeurl($args, &$ctx) {
+function smarty_function_mtcgirelativeurl($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: complete
     // parameters: none
     $url = $ctx->mt->config('CGIPath');

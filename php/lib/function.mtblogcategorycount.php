@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtblogcategorycount($args, &$ctx) {
+function smarty_function_mtblogcategorycount($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: complete
     // parameters: none
     $args['blog_id'] = $ctx->stash('blog_id');

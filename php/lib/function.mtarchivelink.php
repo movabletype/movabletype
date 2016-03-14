@@ -5,7 +5,8 @@
 #
 # $Id$
 require_once('archive_lib.php');
-function smarty_function_mtarchivelink($args, &$ctx) {
+function smarty_function_mtarchivelink($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $blog = $ctx->stash('blog');
     $at = $args['type'];
     $at or $at = $args['archive_type'];

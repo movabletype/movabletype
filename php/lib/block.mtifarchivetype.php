@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtifarchivetype($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtifarchivetype($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     # status: complete
     if (!isset($content)) {
         $at = $args['type'];

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcommenteruserpic($args, &$ctx) {
+function smarty_function_mtcommenteruserpic($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $comment = $ctx->stash('comment');
     if (!$comment) {
         return $ctx->error("No comments available");

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentryclass($args, &$ctx) {
+function smarty_function_mtentryclass($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $entry = $ctx->stash('entry');
     $class = $entry->entry_class;
     if (!isset($class)) {

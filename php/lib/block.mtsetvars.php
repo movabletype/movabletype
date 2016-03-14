@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtsetvars($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtsetvars($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     // parameters: name, value
     if (isset($content)) {
         $vars =& $ctx->__stash['vars'];

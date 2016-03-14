@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtpublishcharset($args, &$ctx) {
+function smarty_function_mtpublishcharset($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // Status: complete
     // parameters: none
     $charset = $ctx->mt->config('PublishCharset');

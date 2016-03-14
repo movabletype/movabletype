@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtifregistrationrequired($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtifregistrationrequired($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $blog->blog_allow_reg_comments && $blog->blog_commenter_authenticators && !$blog->blog_allow_unreg_comments);

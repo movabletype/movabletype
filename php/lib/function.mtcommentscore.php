@@ -7,7 +7,8 @@
 
 require_once('rating_lib.php');
 
-function smarty_function_mtcommentscore($args, &$ctx) {
+function smarty_function_mtcommentscore($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     return hdlr_score($ctx, 'comment', $args['namespace'], $args['default'], $args);
 }
 ?>

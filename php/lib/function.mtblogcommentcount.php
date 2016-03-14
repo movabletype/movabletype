@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtblogcommentcount($args, &$ctx) {
+function smarty_function_mtblogcommentcount($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!(
         isset($args['include_blogs']) ||
         isset($args['include_websites']) ||

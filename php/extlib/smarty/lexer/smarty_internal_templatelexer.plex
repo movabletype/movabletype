@@ -266,7 +266,7 @@ class Smarty_Internal_Templatelexer
      namespace = ~([0-9]*[a-zA-Z_]\w*)?(\\[0-9]*[a-zA-Z_]\w*)+~
      all = ~[\S\s]+~
      emptyjava = ~[{][}]~
-     phptag = ~(SMARTYldel\s*php(.*?)SMARTYrdel)|(SMARTYldel\s*[/]phpSMARTYrdel)~
+     phptag = ~(SMARTYldel\s*php([ ].*?)?SMARTYrdel)|(SMARTYldel\s*[/]phpSMARTYrdel)~
      phpstart = ~(<[?]((php\s+|=)|\s+))|(<[%])|(<[?]xml\s+)|(<script\s+language\s*=\s*["']?\s*php\s*["']?\s*>)|([?][>])|([%][>])~
      slash = ~[/]~
      ldel = ~SMARTYldel\s*~
@@ -306,7 +306,8 @@ class Smarty_Internal_Templatelexer
      literal = ~literal~
      strip = ~strip~
      lop = ~\s*(([!=][=]{1,2})|([<][=>]?)|([>][=]?)|[&|]{2})\s*~
-     tlop = ~\s+(eq|ne|neq|gt|ge|gte|lt|le|lte|mod|and|or|xor|(is\s+(not\s+)?(odd|even|div)\s+by))\s+~
+     slop = ~\s+(eq|ne|neq|gt|ge|gte|lt|le|lte|mod|and|or|xor)\s+~
+     tlop = ~\s+(is\s+(not\s+)?(odd|even|div)\s+by)\s+~
      scond = ~\s+is\s+(not\s+)?(odd|even)~
      isin = ~\s+is\s+in\s+~
      as = ~\s+as\s+~
@@ -315,6 +316,7 @@ class Smarty_Internal_Templatelexer
      block = ~block~
      if = ~(if|elseif|else if|while)\s+~
      for = ~for\s+~
+     makenocache = ~make_nocache\s+~
      foreach = ~foreach(?![^\s])~
      setfilter = ~setfilter\s+~
      instanceof = ~\s+instanceof\s+~
@@ -394,6 +396,11 @@ class Smarty_Internal_Templatelexer
      }
      ldel setfilter {
           $this->token = Smarty_Internal_Templateparser::TP_LDELSETFILTER;
+          $this->yybegin(self::TAGBODY);
+          $this->taglineno = $this->line;
+     }
+     ldel makenocache {
+          $this->token = Smarty_Internal_Templateparser::TP_LDELMAKENOCACHE;
           $this->yybegin(self::TAGBODY);
           $this->taglineno = $this->line;
      }
@@ -478,6 +485,9 @@ class Smarty_Internal_Templatelexer
      }
      lop {
        $this->token = Smarty_Internal_Templateparser::TP_LOGOP;
+     }
+     slop {
+       $this->token = Smarty_Internal_Templateparser::TP_SLOGOP;
      }
      tlop {
        $this->token = Smarty_Internal_Templateparser::TP_TLOGOP;

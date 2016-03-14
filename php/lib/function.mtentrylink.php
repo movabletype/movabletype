@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentrylink($args, &$ctx) {
+function smarty_function_mtentrylink($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $args['no_anchor'] = 1;
     $link = $ctx->tag('EntryPermalink', $args);
     if ($args['with_index'] && preg_match('/\/(#.*)$/', $link)) {

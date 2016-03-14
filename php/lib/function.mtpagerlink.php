@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtpagerlink($args, &$ctx) {
+function smarty_function_mtpagerlink($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $page = $ctx->__stash['vars']['__value__'];
     if ( !$page ) return '';
 

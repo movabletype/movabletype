@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentryauthorlink($args, &$ctx) {
+function smarty_function_mtentryauthorlink($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $entry = $ctx->stash('entry');
     if (!$entry) return '';
 
@@ -43,7 +44,7 @@ function smarty_function_mtentryauthorlink($args, &$ctx) {
         }
     } elseif ($type == 'archive') {
         require_once("function.mtarchivelink.php");
-        $link = smarty_function_mtarchivelink(array('type' => 'Author'), $ctx);
+        $link = smarty_function_mtarchivelink(array('type' => 'Author'), $_smarty_tpl);
         if ($link) {
             return sprintf('<a href="%s"%s>%s</a>', $link, $target, $displayname);
         }

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtpingssenturl($args, &$ctx) {
+function smarty_function_mtpingssenturl($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $url = $ctx->stash('ping_sent_url');
     return $url;
 }

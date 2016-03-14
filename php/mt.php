@@ -49,7 +49,8 @@ class MT {
     protected $blog_id;
     protected $db;
     protected $config;
-    protected $debugging = false;
+    // protected $debugging = false;
+    protected $debugging = true;
     protected $caching = false;
     protected $conditional = false;
     protected $log = array();
@@ -476,16 +477,15 @@ class MT {
             DIRECTORY_SEPARATOR . 'cache');
 
         $ctx =& $this->context();
-        $ctx->template_dir = $this->config('PHPTemplateDir');
-        $ctx->compile_dir = $ctx->template_dir . '_c';
-        $ctx->cache_dir = $this->config('PHPCacheDir');
+        $ctx->setTemplateDir($this->config('PHPTemplateDir'));
+        $ctx->setCompileDir($this->config('PHPTemplateDir') . '_c');
+        $ctx->setCacheDir($this->config('PHPCacheDir'));
     }
 
     /***
      * Mainline handler function.
      */
     function view($blog_id = null) {
-
         set_error_handler(array(&$this, 'error_handler'));
 
         require_once("MTUtil.php");
@@ -595,7 +595,6 @@ class MT {
         $vars =& $ctx->__stash['vars'];
         $vars['page_columns'] = $columns;
         $vars['page_layout'] = $page_layout;
-
         if (isset($tmpl->template_identifier))
             $vars[$tmpl->template_identifier] = 1;
 
@@ -675,7 +674,7 @@ class MT {
 
         $this->set_canonical_url($ctx, $blog, $data);
 
-        $output = $ctx->fetch('mt:'.$tpl_id, $cache_id);
+        $output = $this->fetch('mt:'.$tpl_id, $cache_id);
 
         $this->http_error = 200;
         header("HTTP/1.1 200 OK");
@@ -794,6 +793,7 @@ class MT {
             $ctx->stash('local_blog_id', $this->blog_id);
             $this->configure_paths($blog->site_path());
         }
+
         return $ctx->display($tpl, $cid);
     }
 
@@ -810,6 +810,7 @@ class MT {
             $ctx->stash('local_blog_id', $this->blog_id);
             $this->configure_paths($blog->site_path());
         }
+
         return $ctx->fetch($tpl, $cid);
     }
 
@@ -860,7 +861,7 @@ class MT {
                 $ctx->stash('http_error', $http_error);
                 $ctx->stash('error_file', $errfile);
                 $ctx->stash('error_line', $errline);
-                $ctx->template_dir = $mtphpdir . DIRECTORY_SEPARATOR . 'tmpl';
+                $ctx->setTemplateDir($mtphpdir . DIRECTORY_SEPARATOR . 'tmpl');
                 $ctx->caching = 0;
                 $ctx->stash('StaticWebPath', $this->config('StaticWebPath'));
                 $ctx->stash('PublishCharset', $this->config('PublishCharset'));
@@ -903,10 +904,10 @@ class MT {
         $ctx->mt =& $this;
         $mtphpdir = $this->config('PHPDir');
         $mtlibdir = $this->config('PHPLibDir');
-        $ctx->compile_check = 1;
+        $ctx->setCompileCheck(1);
         $ctx->caching = false;
-        $ctx->plugins_dir[] = $mtlibdir;
-        $ctx->plugins_dir[] = $mtphpdir . DIRECTORY_SEPARATOR . "plugins";
+        $ctx->add_plugin_dir($mtlibdir);
+        $ctx->add_plugin_dir($mtphpdir . DIRECTORY_SEPARATOR . "plugins");
         if ($this->debugging) {
             $ctx->debugging_ctrl = 'URL';
             $ctx->debug_tpl = $mtphpdir . DIRECTORY_SEPARATOR .

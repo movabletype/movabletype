@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtimageurl($args, &$ctx) {
+function smarty_function_mtimageurl($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     return $ctx->stash('ImageURL');
 }
 ?>

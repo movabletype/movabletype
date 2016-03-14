@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcategoryarchivelink($args, &$ctx) {
+function smarty_function_mtcategoryarchivelink($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $category = $ctx->stash('category') or $ctx->stash('archive_category');
     if (!$category) {
         $entry = $ctx->stash('entry');

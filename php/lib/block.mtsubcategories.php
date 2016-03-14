@@ -1,5 +1,6 @@
 <?php
-function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtsubcategories($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $localvars = array('subCatTokens', 'subCatsSortOrder', 'subCatsSortBy', 'subCatsSortMethod', '__categories', 'inside_mt_categories', '_subcats_counter', 'entries', 'subCatIsFirst', 'subCatIsLast', 'category','current_archive_type', 'subFolderHead', 'subFolderFoot');
     if (!isset($content)) {
         $ctx->localize($localvars);

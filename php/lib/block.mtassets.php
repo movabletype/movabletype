@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtassets($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $localvars = array(array('_assets', 'asset', 'asset_first_in_row', 'asset_last_in_row', 'conditional', 'else_content'), common_loop_vars());
     $counter = 0;
 

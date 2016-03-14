@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtpagerblock($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtpagerblock($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $localvars = array(array('__out', '__pager_limit', '__pager_count', '__pager_pages'), common_loop_vars());
 
     if (!isset($content)) {

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentryauthoruserpic($args, &$ctx) {
+function smarty_function_mtentryauthoruserpic($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $entry = $ctx->stash('entry');
     if (!$entry) {
         return $ctx->error("No entry available");

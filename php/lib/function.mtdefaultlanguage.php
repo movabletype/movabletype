@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtdefaultlanguage($args, &$ctx) {
+function smarty_function_mtdefaultlanguage($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     return $ctx->mt->config('DefaultLanguage');
 }
 ?>

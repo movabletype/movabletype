@@ -40,13 +40,6 @@ class Smarty_Internal_Templateparser
     public $retvalue = 0;
 
     /**
-     * counter for prefix code
-     *
-     * @var int
-     */
-    public static $prefix_number = 0;
-
-    /**
      * @var
      */
     public $yymajor;
@@ -460,6 +453,11 @@ tag(res)   ::= LDEL ID(i) PTR ID(me) modifierlist(l) attributes(a). {
     res .= $this->compiler->compileTag('private_modifier',array(),array('modifierlist'=>l,'value'=>'ob_get_clean()')).';?>';
 }
 
+                  // nocache tag
+tag(res)   ::= LDELMAKENOCACHE DOLLARID(i). {
+    res = $this->compiler->compileTag('make_nocache',array(array('var'=>'\''.substr(i,1).'\'')));
+}
+
                   // {if}, {elseif} and {while} tag
 tag(res)   ::= LDELIF(i) expr(ie). {
     $tag = trim(substr(i,$this->lex->ldel_length)); 
@@ -697,10 +695,15 @@ expr(res)        ::= expr(e) modifierlist(l). {
 }
 
 // if expression
+                    // special conditions
+expr(res)        ::= expr(e1) tlop(c) value(e2). {
+    res = c['pre']. e1.c['op'].e2 .')';
+}
                     // simple expression
 expr(res)        ::= expr(e1) lop(c) expr(e2). {
-    res = (isset(c['pre']) ? c['pre'] : '') . e1.c['op'].e2 . (isset(c['pre']) ? ')' : '');
+    res = e1.c.e2;
 }
+
 expr(res)        ::= expr(e1) scond(c). {
     res = c . e1 . ')';
 }
@@ -711,14 +714,6 @@ expr(res)        ::= expr(e1) ISIN array(a).  {
 
 expr(res)        ::= expr(e1) ISIN value(v).  {
     res = 'in_array('.e1.',(array)'.v.')';
-}
-
-expr(res)        ::= variable(v1) INSTANCEOF(i) ns1(v2). {
-      res = v1.i.v2;
-}
-
-expr(res)        ::= variable(v1) INSTANCEOF(i) variable(v2). {
-      res = v1.i.v2;
 }
 
 
@@ -799,6 +794,13 @@ value(res)       ::= OPENP expr(e) CLOSEP. {
     res = "(". e .")";
 }
 
+value(res)        ::= variable(v1) INSTANCEOF(i) ns1(v2). {
+      res = v1.i.v2;
+}
+value(res)        ::= variable(v1) INSTANCEOF(i) variable(v2). {
+      res = v1.i.v2;
+}
+
                   // singele quoted string
 value(res)       ::= SINGLEQUOTESTRING(t). {
     res = t;
@@ -811,21 +813,21 @@ value(res)       ::= doublequoted_with_quotes(s). {
 
 
 value(res)    ::= varindexed(vi) DOUBLECOLON static_class_access(r). {
-    self::$prefix_number++;
+    $prefixVar = $this->compiler->getNewPrefixVariable();
     if (vi['var'] == '\'smarty\'') {
-        $this->compiler->prefix_code[] = '<?php $_tmp'.self::$prefix_number.' = '. $this->compiler->compileTag('private_special_variable',array(),vi['smarty_internal_index']).';?>';
+        $this->compiler->appendPrefixCode("<?php $prefixVar" .' = '. $this->compiler->compileTag('private_special_variable',array(),vi['smarty_internal_index']).';?>');
      } else {
-        $this->compiler->prefix_code[] = '<?php $_tmp'.self::$prefix_number.' = '. $this->compiler->compileVariable(vi['var']).vi['smarty_internal_index'].';?>';
+        $this->compiler->appendPrefixCode("<?php $prefixVar" .' = '. $this->compiler->compileVariable(vi['var']).vi['smarty_internal_index'].';?>');
     }
-    res = '$_tmp'.self::$prefix_number.'::'.r[0].r[1];
+    res = $prefixVar .'::'.r[0].r[1];
 }
 
                   // Smarty tag
 value(res)       ::= smartytag(st). {
-   self::$prefix_number++;
+    $prefixVar = $this->compiler->getNewPrefixVariable();
     $tmp = $this->compiler->appendCode('<?php ob_start();?>', st);
-    $this->compiler->prefix_code[] = $this->compiler->appendCode($tmp, '<?php $_tmp'.self::$prefix_number.'=ob_get_clean();?>');
-    res = '$_tmp'.self::$prefix_number;
+    $this->compiler->appendPrefixCode($this->compiler->appendCode($tmp, "<?php $prefixVar" .'=ob_get_clean();?>'));
+    res = $prefixVar;
 }
 
 value(res)       ::= value(v) modifierlist(l). {
@@ -944,14 +946,7 @@ indexdef(res)    ::= DOT varvar(v) AT ID(p). {
 }
 
 indexdef(res)   ::= DOT ID(i). {
-    if (defined(i)) {
-            if ($this->security) {
-                $this->security->isTrustedConstant(i, $this->compiler);
-            }
-            res = '['. i .']';
-        } else {
-            res = "['". i ."']";
-        }
+    res = "['". i ."']";
 }
 
 indexdef(res)   ::= DOT INTEGER(n). {
@@ -1099,9 +1094,9 @@ function(res)     ::= ns1(f) OPENP params(p) CLOSEP. {
                 }
                 $par = implode(',',p);
                 if (strncasecmp($par,'$_smarty_tpl->smarty->ext->_config->_getConfigVariable',strlen('$_smarty_tpl->smarty->ext->_config->_getConfigVariable')) === 0) {
-                    self::$prefix_number++;
-                    $this->compiler->prefix_code[] = '<?php $_tmp'.self::$prefix_number.'='.str_replace(')',', false)',$par).';?>';
-                    $isset_par = '$_tmp'.self::$prefix_number;
+                    $prefixVar = $this->compiler->getNewPrefixVariable();
+                    $this->compiler->appendPrefixCode("<?php $prefixVar" .'='.str_replace(')',', false)',$par).';?>');
+                    $isset_par = $prefixVar;
                 } else {
                     $isset_par=str_replace("')->value","',null,true,false)->value",$par);
                 }
@@ -1139,9 +1134,9 @@ method(res)     ::= DOLLARID(f) OPENP params(p) CLOSEP.  {
     if ($this->security) {
         $this->compiler->trigger_template_error (self::Err2);
     }
-    self::$prefix_number++;
-    $this->compiler->prefix_code[] = '<?php $_tmp'.self::$prefix_number.'='.$this->compiler->compileVariable('\''.substr(f,1).'\'').';?>';
-    res = '$_tmp'.self::$prefix_number.'('. implode(',',p) .')';
+    $prefixVar = $this->compiler->getNewPrefixVariable();
+    $this->compiler->appendPrefixCode("<?php $prefixVar" .'='.$this->compiler->compileVariable('\''.substr(f,1).'\'').';?>');
+    res = $prefixVar .'('. implode(',',p) .')';
 }
 
 // function/method parameter
@@ -1229,34 +1224,40 @@ static_class_access(res)       ::= DOLLARID(v) arrayindex(a) objectchain(oc). {
 
 // if conditions and operators
 lop(res)        ::= LOGOP(o). {
-    res['op'] = ' '. trim(o) . ' ';
+    res = ' '. trim(o) . ' ';
 }
 
-lop(res)        ::= TLOGOP(o). {
+lop(res)        ::= SLOGOP(o). {
     static $lops = array(
-        'eq' => array('op' => ' == ', 'pre' => null),
-        'ne' => array('op' => ' != ', 'pre' => null),
-        'neq' => array('op' => ' != ', 'pre' => null),
-        'gt' => array('op' => ' > ', 'pre' => null),
-        'ge' => array('op' => ' >= ', 'pre' => null),
-        'gte' => array('op' => ' >= ', 'pre' => null),
-        'lt' => array('op' => ' < ', 'pre' => null),
-        'le' => array('op' => ' <= ', 'pre' => null),
-        'lte' => array('op' => ' <= ', 'pre' => null),
-        'mod' => array('op' => ' % ', 'pre' => null),
-        'and' => array('op' => ' && ', 'pre' => null),
-        'or' => array('op' => ' || ', 'pre' => null),
-        'xor' => array('op' => ' xor ', 'pre' => null),
-        'isdivby' => array('op' => ' % ', 'pre' => '!('),
-        'isnotdivby' => array('op' => ' % ', 'pre' => '('),
-        'isevenby' => array('op' => ' / ', 'pre' => '!(1 & '),
-        'isnotevenby' => array('op' => ' / ', 'pre' => '(1 & '),
-        'isoddby' => array('op' => ' / ', 'pre' => '(1 & '),
-        'isnotoddby' => array('op' => ' / ', 'pre' => '!(1 & '),
-        );
+        'eq' => ' == ',
+        'ne' => ' != ',
+        'neq' => ' != ',
+        'gt' => ' > ',
+        'ge' => ' >= ',
+        'gte' => ' >= ',
+        'lt' =>  ' < ',
+        'le' =>  ' <= ',
+        'lte' => ' <= ',
+        'mod' =>  ' % ',
+        'and' => ' && ',
+        'or' => ' || ',
+        'xor' => ' xor ',
+         );
     $op = strtolower(preg_replace('/\s*/', '', o));
     res = $lops[$op];
 }
+tlop(res)        ::= TLOGOP(o). {
+     static $tlops = array(
+         'isdivby' => array('op' => ' % ', 'pre' => '!('),
+         'isnotdivby' => array('op' => ' % ', 'pre' => '('),
+         'isevenby' => array('op' => ' / ', 'pre' => '!(1 & '),
+         'isnotevenby' => array('op' => ' / ', 'pre' => '(1 & '),
+         'isoddby' => array('op' => ' / ', 'pre' => '(1 & '),
+         'isnotoddby' => array('op' => ' / ', 'pre' => '!(1 & '),
+         );
+     $op = strtolower(preg_replace('/\s*/', '', o));
+     res = $tlops[$op];
+ }
 
 scond(res)  ::= SINGLECOND(o). {
         static $scond = array (

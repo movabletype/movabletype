@@ -5,13 +5,14 @@
 #
 # $Id$
 
-function smarty_function_mtentrytrackbacklink($args, &$ctx) {
+function smarty_function_mtentrytrackbacklink($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $entry = $ctx->stash('entry');
     if (!$entry) return '';
     $tb = $entry->trackback();
     if (!$tb) return '';
     require_once "function.mtcgipath.php";
-    $path = smarty_function_mtcgipath($args, $ctx);
+    $path = smarty_function_mtcgipath($args, $_smarty_tpl);
     $path .= $ctx->mt->config('TrackbackScript') . '/' . $tb->trackback_id;
     return $path;
 }

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtcommentifmoderated($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtcommentifmoderated($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     if (!isset($content)) {
         $comment = $ctx->stash('comment');
         if ($comment)

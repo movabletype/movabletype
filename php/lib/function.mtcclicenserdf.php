@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcclicenserdf($args, &$ctx) {
+function smarty_function_mtcclicenserdf($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: complete
     // parameters: none
     $blog = $ctx->stash('blog');

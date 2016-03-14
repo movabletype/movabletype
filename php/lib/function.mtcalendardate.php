@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtcalendardate($args, &$ctx) {
+function smarty_function_mtcalendardate($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     return $ctx->_hdlr_date($args, $ctx);
 }
 ?>

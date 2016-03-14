@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtpingid($args, &$ctx) {
+function smarty_function_mtpingid($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $ping = $ctx->stash('ping');
     return $ping->tbping_id;
 }

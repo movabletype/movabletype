@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mttagrank($args, &$ctx) {
+function smarty_function_mttagrank($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     $blog_id = $ctx->stash('blog_id');
     $max_level = $args['max'];
     $max_level or $max_level = 6;

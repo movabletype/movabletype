@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtxmlrpcscript($args, &$ctx) {
+function smarty_function_mtxmlrpcscript($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: complete
     // parameters: none
     return $ctx->mt->config('XMLRPCScript');

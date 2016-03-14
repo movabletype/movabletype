@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtremotesigninlink($args, &$ctx) {
+function smarty_function_mtremotesigninlink($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: complete
     // parameters: none
     global $_typekeytoken_cache;
@@ -26,7 +27,7 @@ function smarty_function_mtremotesigninlink($args, &$ctx) {
     }
     $entry = $ctx->stash('entry');
     require_once "function.mtcgipath.php";
-    $path = smarty_function_mtcgipath($args, $ctx);
+    $path = smarty_function_mtcgipath($args, $_smarty_tpl);
     $return = $path . $ctx->mt->config('CommentScript') .
               '%3f__mode=handle_sign_in%26' .
               'key=TypeKey%26'.

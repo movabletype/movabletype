@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtifcommenterisentryauthor($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtifcommenterisentryauthor($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     # status: complete
     if (!isset($content)) {
         $cmtr = $ctx->stash('commenter');

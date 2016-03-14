@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtloop($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtloop($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $localvars = array(array('__loop_keys', '__loop_values', '__out'), common_loop_vars());
 
     if (!isset($content)) {

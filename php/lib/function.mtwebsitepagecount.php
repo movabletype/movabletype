@@ -6,7 +6,8 @@
 # $Id$
 
 require_once('function.mtblogentrycount.php');
-function smarty_function_mtwebsitepagecount($args, &$ctx) {
+function smarty_function_mtwebsitepagecount($args, &$_smarty_tpl) {
+    $ctx =& $_smarty_tpl->smarty;
     // status: complete
     // parameters: none
     $args['class'] = 'page';

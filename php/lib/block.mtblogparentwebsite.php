@@ -5,11 +5,12 @@
 #
 # $Id$
 require_once('block.mtblogs.php');
-function smarty_block_mtblogparentwebsite($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtblogparentwebsite($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx =& $_smarty_tpl->smarty;
     $blog = $ctx->stash('blog');
     $website = $blog->website();
     $args['class'] = 'website';
     $args['blog_id'] = $website ? $website->id : $blog->id;
-    return smarty_block_mtblogs($args, $content, $ctx, $repeat);
+    return smarty_block_mtblogs($args, $content, $_smarty_tpl, $repeat);
 }
 ?>
