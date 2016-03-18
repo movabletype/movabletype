@@ -5,13 +5,12 @@
 #
 # $Id$
 require_once('block.mtblogs.php');
-function smarty_block_mtwebsites($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtwebsites($args, $content, &$ctx, &$repeat) {
     $args['class'] = 'website';
     if (isset($args['site_ids'])) {
         $args['blog_ids'] = $args['site_ids'];
         unset($args['site_ids']);
     }
-    return smarty_block_mtblogs($args, $content, $_smarty_tpl, $repeat);
+    return smarty_block_mtblogs($args, $content, $ctx, $repeat);
 }
 ?>

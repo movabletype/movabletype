@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtblogs($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
     $localvars = array(array('_blogs', '_blogs_counter', 'blog', 'blog_id'), common_loop_vars());
 
     if (!isset($content)) {

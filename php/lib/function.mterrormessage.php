@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mterrormessage($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mterrormessage($args, &$ctx) {
     // status: complete
     // parameters: none
     $err = $ctx->stash('error_message');

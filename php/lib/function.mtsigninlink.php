@@ -5,14 +5,13 @@
 #
 # $Id$
 
-function smarty_function_mtsigninlink($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtsigninlink($args, &$ctx) {
     $blog = $ctx->stash('blog');
     $entry = $ctx->stash('entry');
     $static_arg = $args['static'] ? "&static=1" : "&static=0";
 
     require_once "function.mtcgipath.php";
-    $path = smarty_function_mtcgipath($args, $_smarty_tpl);
+    $path = smarty_function_mtcgipath($args, $ctx);
     $return = $path . $ctx->mt->config('CommentScript') .
         '?__mode=login' . $static_arg;
     if ($blog)

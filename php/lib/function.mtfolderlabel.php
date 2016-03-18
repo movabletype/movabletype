@@ -6,8 +6,7 @@
 # $Id$
 
 require_once('function.mtcategorylabel.php');
-function smarty_function_mtfolderlabel($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
-    return smarty_function_mtcategorylabel($args, $_smarty_tpl);
+function smarty_function_mtfolderlabel($args, &$ctx) {
+    return smarty_function_mtcategorylabel($args, $ctx);
 }
 ?>

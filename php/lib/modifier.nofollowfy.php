@@ -14,7 +14,7 @@ function smarty_modifier_nofollowfy($str, $arg = 1) {
     $ctx =& $mt->context();
     $blog = $ctx->stash('blog');
 
-    $curr_tag = $ctx->_cache["tag_stack"][count($ctx->_cache["tag_stack"]) - 1];
+    $curr_tag = $ctx->_tag_stack[count($ctx->_tag_stack) - 1];
     $enable= false;
     if ( isset($curr_tag[1]['nofollowfy']) )
         $enable = $curr_tag[1]['nofollowfy'] ? true : false;

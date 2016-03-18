@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mttotalpages($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mttotalpages($args, &$ctx) {
     $limit = $ctx->stash('__pager_limit');
     if (!$limit) return 1;
     $offset = $ctx->stash('__pager_offset');

@@ -6,8 +6,7 @@
 # $Id$
 
 require_once("archive_lib.php");
-function smarty_block_mtarchivenext($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtarchivenext($args, $content, &$ctx, &$repeat) {
     return _hdlr_archive_prev_next($args, $content, $ctx, $repeat, 'archivenext');
 }
 ?>

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcategorytrackbackcount($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtcategorytrackbackcount($args, &$ctx) {
     $cat = $ctx->stash('category');
     $cat_id = $cat->category_id;
     $count = $ctx->mt->db()->category_ping_count($cat_id);

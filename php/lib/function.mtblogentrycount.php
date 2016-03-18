@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtblogentrycount($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtblogentrycount($args, &$ctx) {
     // status: complete
     // parameters: none
     $args['blog_id'] = $ctx->stash('blog_id');

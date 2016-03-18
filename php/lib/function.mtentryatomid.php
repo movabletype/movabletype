@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtentryatomid($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtentryatomid($args, &$ctx) {
     $entry = $ctx->stash('entry');
     return $entry->entry_atom_id;
 }

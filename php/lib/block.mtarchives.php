@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtarchives($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
     $localvars = array(array('current_archive_type', 'archive_types', 'archive_type_index', 'old_preferred_archive_type'), common_loop_vars());
     if (!isset($content)) {
         $blog = $ctx->stash('blog');

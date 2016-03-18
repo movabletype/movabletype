@@ -5,14 +5,13 @@
 #
 # $Id$
 
-function smarty_function_mtvar($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtvar($args, &$ctx) {
     // status: complete
     // parameters: name
     if ( array_key_exists('value', $args)
       && !array_key_exists('op', $args) ) {
         require_once("function.mtsetvar.php");
-        return smarty_function_mtsetvar($args, $_smarty_tpl);
+        return smarty_function_mtsetvar($args, $ctx);
     }
     require_once("MTUtil.php");
     $vars =& $ctx->__stash['vars'];

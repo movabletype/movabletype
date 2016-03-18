@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtindexlist($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtindexlist($args, $content, &$ctx, &$repeat) {
     $localvars = array(array('index_templates', 'index_templates_counter'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);

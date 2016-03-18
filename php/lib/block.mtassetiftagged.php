@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtassetiftagged($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtassetiftagged($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $asset = $ctx->stash('asset');
         if ($asset) {

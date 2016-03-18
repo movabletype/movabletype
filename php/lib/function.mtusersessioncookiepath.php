@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtusersessioncookiepath($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtusersessioncookiepath($args, &$ctx) {
     $path = $ctx->mt->config('UserSessionCookiePath');
     if ($path == 'DEFAULT') {
         if ($ctx->mt->config('SingleCommunity')) {
@@ -27,14 +26,13 @@ function smarty_function_mtusersessioncookiepath($args, &$_smarty_tpl) {
         if (preg_match('/<\$?mt/i', $path)) {
             # evaluate expression
 
-            $_var_compiled = $ctx->fetch("string:$path");
-            if (!$_var_compiled) {
+            if (!$ctx->_compile_source('evaluated template', $path, $_var_compiled)) {
                 $path = htmlentities($path);
                 return $ctx->error("Error in expression for UserSessionCookiePath: '$path'");
             }
 
             ob_start();
-            eval('?>' . $_var_compiled);
+            $ctx->_eval('?>' . $_var_compiled);
             $path = ob_get_contents();
             ob_end_clean();
 

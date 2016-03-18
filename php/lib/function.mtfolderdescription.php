@@ -6,8 +6,7 @@
 # $Id$
 
 require_once('function.mtcategorydescription.php');
-function smarty_function_mtfolderdescription($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
-    return smarty_function_mtcategorydescription($args, $_smarty_tpl);
+function smarty_function_mtfolderdescription($args, &$ctx) {
+    return smarty_function_mtcategorydescription($args, $ctx);
 }
 ?>

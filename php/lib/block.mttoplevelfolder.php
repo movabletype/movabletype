@@ -6,9 +6,8 @@
 # $Id$
 
 require_once('block.mttoplevelparent.php');
-function smarty_block_mttoplevelfolder($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mttoplevelfolder($args, $content, &$ctx, &$repeat) {
     $args['class'] = 'folder';
-    return smarty_block_mttoplevelparent($args, $content, $_smarty_tpl, $repeat);
+    return smarty_block_mttoplevelparent($args, $content, $ctx, $repeat);
 }
 ?>

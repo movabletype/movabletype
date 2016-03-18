@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtentryifallowpings($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtentryifallowpings($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $entry = $ctx->stash('entry');
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $entry->entry_allow_pings > 0);

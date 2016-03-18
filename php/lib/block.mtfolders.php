@@ -6,11 +6,10 @@
 # $Id$
 
 require_once('block.mtcategories.php');
-function smarty_block_mtfolders($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtfolders($args, $content, &$ctx, &$repeat) {
     // status: incomplete
     // parameters: show_empty
     $args['class'] = 'folder';
-    return smarty_block_mtcategories($args, $content, $_smarty_tpl, $repeat);
+    return smarty_block_mtcategories($args, $content, $ctx, $repeat);
 }
 ?>

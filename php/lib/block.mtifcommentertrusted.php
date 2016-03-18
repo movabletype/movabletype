@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtifcommentertrusted($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtifcommentertrusted($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $is_trust = NULL;
         $a = $ctx->stash('commenter');

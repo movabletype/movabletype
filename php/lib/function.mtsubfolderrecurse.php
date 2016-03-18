@@ -6,9 +6,8 @@
 # $Id$
 
 require_once('function.mtsubcatsrecurse.php');
-function smarty_function_mtsubfolderrecurse($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtsubfolderrecurse($args, &$ctx) {
     $args['class'] = 'folder';
-    return smarty_function_mtsubcatsrecurse($args, $_smarty_tpl);
+    return smarty_function_mtsubcatsrecurse($args, $ctx);
 }
 ?>

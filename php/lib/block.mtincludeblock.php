@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtincludeblock($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtincludeblock($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
     } else {
         require_once("function.mtinclude.php");
@@ -20,7 +19,7 @@ function smarty_block_mtincludeblock($args, $content, &$_smarty_tpl, &$repeat) {
         $oldval = $vars[$name];
 
         $vars[$name] = $args['token_fn'];
-        $content = smarty_function_mtinclude($args, $_smarty_tpl);
+        $content = smarty_function_mtinclude($args, $ctx);
         $vars[$name] = $oldval;
     }
     return $content;

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtarchivetype($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtarchivetype($args, &$ctx) {
     $at = $ctx->stash('current_archive_type');
     return $at;
 }

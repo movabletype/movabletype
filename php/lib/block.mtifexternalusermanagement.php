@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtifexternalusermanagement($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtifexternalusermanagement($args, $content, &$ctx, &$repeat) {
     return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $ctx->mt->config('ExternalUserManagement'));
 }
 ?>

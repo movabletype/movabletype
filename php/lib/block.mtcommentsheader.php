@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtcommentsheader($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtcommentsheader($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $counter = $ctx->stash('comment_order_num');
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $counter == 1);

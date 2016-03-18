@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtwebsiteurl($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtwebsiteurl($args, &$ctx) {
     // status: complete
     // parameters: none
     if (isset($args['id']) && is_numeric($args['id'])) {

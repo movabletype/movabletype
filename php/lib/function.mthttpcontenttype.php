@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mthttpcontenttype($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mthttpcontenttype($args, &$ctx) {
     $ctx->stash('content_type', $args['type']);
     return '';
 }

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommenterid($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtcommenterid($args, &$ctx) {
     $comment = $ctx->stash('comment');
     if (!$comment) return '';
     $cmntr = $ctx->stash('commenter');

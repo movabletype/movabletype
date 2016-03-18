@@ -6,8 +6,7 @@
 # $Id$
 
 require_once('function.mtentrykeywords.php');
-function smarty_function_mtpagekeywords($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
-    return smarty_function_mtentrykeywords($args, $_smarty_tpl);
+function smarty_function_mtpagekeywords($args, &$ctx) {
+    return smarty_function_mtentrykeywords($args, $ctx);
 }
 ?>

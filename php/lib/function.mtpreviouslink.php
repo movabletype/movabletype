@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtpreviouslink($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtpreviouslink($args, &$ctx) {
     $limit = $ctx->stash('__pager_limit');
     $offset = $ctx->stash('__pager_offset');
 

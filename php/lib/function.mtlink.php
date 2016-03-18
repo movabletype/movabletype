@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtlink($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtlink($args, &$ctx) {
     // status: incomplete
     // parameters: template, entry_id
     static $_template_links = array();

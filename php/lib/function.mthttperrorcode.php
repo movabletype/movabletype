@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mthttperrorcode($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mthttperrorcode($args, &$ctx) {
     $err = $ctx->stash('http_error');
     return empty($err) ? '' : $err;
 }

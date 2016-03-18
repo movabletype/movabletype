@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsetvar($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtsetvar($args, &$ctx) {
     // status: complete
     // parameters: name, value
     $name = $args['name'];

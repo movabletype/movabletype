@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtdate($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtdate($args, &$ctx) {
     require_once("MTUtil.php");
     if (empty($args['ts'])) {
         $t = time();

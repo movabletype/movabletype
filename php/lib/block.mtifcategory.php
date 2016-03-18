@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtifcategory($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtifcategory($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $e = $ctx->stash('entry');
         $tag = $ctx->this_tag();

@@ -5,11 +5,10 @@
 #
 # $Id$
 
-function smarty_block_mtwebsiteifcommentsopen($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtwebsiteifcommentsopen($args, $content, &$ctx, &$repeat) {
     // status: complete
     // parameters: none
     require_once('block.mtblogifcommentsopen.php');
-    return smarty_block_mtblogifcommentsopen($args, $content, $_smarty_tpl, $repeat);
+    return smarty_block_mtblogifcommentsopen($args, $content, $ctx, $repeat);
 }
 ?>

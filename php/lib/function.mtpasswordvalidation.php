@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtpasswordvalidation($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtpasswordvalidation($args, &$ctx) {
     $app =  $ctx->mt;
 
     if (!isset($args['form'])) {

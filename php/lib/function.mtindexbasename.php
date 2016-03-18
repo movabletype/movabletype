@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtindexbasename($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtindexbasename($args, &$ctx) {
     $name = $ctx->mt->config('IndexBasename');
     if (!isset($args['extension']) || !$args['extension']) return $name;
     $blog = $ctx->stash('blog');

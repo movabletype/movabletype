@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommentfields($args, &$_smarty_tpl) {
+function smarty_function_mtcommentfields($args, &$ctx) {
     return "";
 }
 ?>

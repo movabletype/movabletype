@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtwebsitelanguage($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtwebsitelanguage($args, &$ctx) {
     $blog = $ctx->stash('blog');
     if (!empty($blog)) {
         $website = $blog->is_blog() ? $blog->website() : $blog;

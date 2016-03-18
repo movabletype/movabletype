@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtentrytags($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtentrytags($args, $content, &$ctx, &$repeat) {
     $localvars = array(array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count','all_tag_count', '__out', 'class_type'), common_loop_vars());
     if (!isset($content)) {
         $class = 'entry';

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtblogdescription($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtblogdescription($args, &$ctx) {
     // status: complete
     // parameters: none
     $blog = $ctx->stash('blog');

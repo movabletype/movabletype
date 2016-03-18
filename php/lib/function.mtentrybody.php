@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtentrybody($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtentrybody($args, &$ctx) {
     $entry = $ctx->stash('entry');
     $text = $entry->entry_text;
 

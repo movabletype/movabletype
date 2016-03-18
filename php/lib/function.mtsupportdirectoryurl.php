@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsupportdirectoryurl($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtsupportdirectoryurl($args, &$ctx) {
     require_once "MTUtil.php";
     $url = support_directory_url();
     if (isset($args['with_domain']) && $args['with_domain'] && !preg_match("!^http!", $url)) {

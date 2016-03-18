@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtentryauthorurl($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtentryauthorurl($args, &$ctx) {
     $entry = $ctx->stash('entry');
     return $entry->author()->url;
 }

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtifcommentsaccepted($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtifcommentsaccepted($args, $content, &$ctx, &$repeat) {
     # status: complete
     if (!isset($content)) {
         $blog = $ctx->stash('blog');

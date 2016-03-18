@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtwebsiteentrycount($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtwebsiteentrycount($args, &$ctx) {
     // status: complete
     // parameters: none
     $count = $ctx->mt->db()->blog_entry_count($args);

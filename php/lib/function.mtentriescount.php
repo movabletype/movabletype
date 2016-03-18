@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtentriescount($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtentriescount($args, &$ctx) {
     if ($ctx->stash('inside_with_subcategories')) {
         $entries = $ctx->stash('entries');
         if (empty($entries)) {

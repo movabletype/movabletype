@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommentlink($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtcommentlink($args, &$ctx) {
     $args['no_anchor'] = 1;
     $c = $ctx->stash('comment');
     $e = $ctx->stash('entry');

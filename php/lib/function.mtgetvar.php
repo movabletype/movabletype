@@ -5,9 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtgetvar($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtgetvar($args, &$ctx) {
     require_once("function.mtvar.php");
-    return smarty_function_mtvar($args, $_smarty_tpl);
+    return smarty_function_mtvar($args, $ctx);
 }
 ?>

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtentrymodifieddate($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtentrymodifieddate($args, &$ctx) {
     $entry = $ctx->stash('entry');
     $args['ts'] = $entry->entry_modified_on;
     $args['ts'] or $args['ts'] = $entry->entry_created_on;

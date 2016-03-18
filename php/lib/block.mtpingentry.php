@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtpingentry($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtpingentry($args, $content, &$ctx, &$repeat) {
     $localvars = array('entry', 'current_timestamp', 'modification_timestamp');
     if (!isset($content)) {
         $ping = $ctx->stash('ping');

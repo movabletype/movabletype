@@ -19,8 +19,7 @@ function get_parent_categories(&$cat, &$ctx, &$list, $class = 'category') {
     }
 }
 
-function smarty_block_mtparentcategories($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtparentcategories($args, $content, &$ctx, &$repeat) {
     $localvars = array('_categories', 'category', '_categories_counter','glue', '__out');
     if (!isset($content)) {
         $ctx->localize($localvars);

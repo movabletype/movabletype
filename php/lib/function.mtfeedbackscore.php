@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtfeedbackscore($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtfeedbackscore($args, &$ctx) {
     $fb =& $ctx->stash('comment');
     $score = '';
     if (isset($fb)) {

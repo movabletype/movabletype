@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcgiserverpath($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtcgiserverpath($args, &$ctx) {
     // status: complete
     // parameters: none
     $path = $ctx->mt->config('MTDir');

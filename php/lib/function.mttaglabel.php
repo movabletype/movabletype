@@ -6,8 +6,7 @@
 # $Id$
 
 require_once('function.mttagname.php');
-function smarty_function_mttaglabel($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
-    return smarty_function_mttagname($args, $_smarty_tpl);
+function smarty_function_mttaglabel($args, &$ctx) {
+    return smarty_function_mttagname($args, $ctx);
 }
 ?>

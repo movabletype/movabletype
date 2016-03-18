@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtstaticfilepath($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtstaticfilepath($args, &$ctx) {
     $path = $ctx->mt->config('StaticFilePath');
     if (!$path) {
         $path = dirname(dirname(dirname(__FILE__)));

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommentauthorlink($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtcommentauthorlink($args, &$ctx) {
     $mt = MT::get_instance();
     $comment = $ctx->stash('comment');
     $name = $comment->comment_author;
@@ -41,7 +40,7 @@ function smarty_function_mtcommentauthorlink($args, &$_smarty_tpl) {
         return $name;
     } elseif ($show_url && $url) {
         require_once "function.mtcgipath.php";
-        $cgi_path = smarty_function_mtcgipath($args, $_smarty_tpl);
+        $cgi_path = smarty_function_mtcgipath($args, $ctx);
         $comment_script = $ctx->mt->config('CommentScript');
         $name = strip_tags($name);
         $url = encode_html( strip_tags($url) );

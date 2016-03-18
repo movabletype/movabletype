@@ -42,8 +42,7 @@ function _file_template_format($m) {
     return isset($f[$m[1]]) ? $f[$m[1]] : $m[1];
 }
 
-function smarty_function_mtfiletemplate($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtfiletemplate($args, &$ctx) {
     static $_file_template_cache = array();
     $at = $ctx->stash('archive_type');
     $at or $at = $ctx->stash('current_archive_type');
@@ -78,8 +77,7 @@ function smarty_function_mtfiletemplate($args, &$_smarty_tpl) {
     if (isset($_file_template_cache[$format])) {
         $_var_compiled = $_file_template_cache[$format];
     } else {
-        $_var_compiled = $ctx->fetch("eval:$format");
-        if ($_var_compiled) {
+        if ($ctx->_compile_source('evaluated template', $format, $_var_compiled)) {
             $_file_template_cache[$format] = $_var_compiled;
         } else {
             return $ctx->error("Error compiling file template: '$orig_format'");
@@ -87,7 +85,7 @@ function smarty_function_mtfiletemplate($args, &$_smarty_tpl) {
     }
 
     ob_start();
-    eval('?>' . $_var_compiled);
+    $ctx->_eval('?>' . $_var_compiled);
     $file = ob_get_contents();
     ob_end_clean();
 

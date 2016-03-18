@@ -6,9 +6,8 @@
 # $Id$
 
 require_once('block.mtparentcategory.php');
-function smarty_block_mtparentfolder($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtparentfolder($args, $content, &$ctx, &$repeat) {
     $args['class'] = 'folder';
-    return smarty_block_mtparentcategory($args, $content, $_smarty_tpl, $repeat);
+    return smarty_block_mtparentcategory($args, $content, $ctx, $repeat);
 }
 ?>

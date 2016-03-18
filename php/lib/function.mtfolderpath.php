@@ -6,9 +6,8 @@
 # $Id$
 
 require_once('function.mtsubcategorypath.php');
-function smarty_function_mtfolderpath($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtfolderpath($args, &$ctx) {
     $args['class'] = 'folder';
-    return smarty_function_mtsubcategorypath($args, $_smarty_tpl);
+    return smarty_function_mtsubcategorypath($args, $ctx);
 }
 ?>

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mterrorcode($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mterrorcode($args, &$ctx) {
     $err = $ctx->stash('error_code');
     return empty($err) ? '' : $err;
 }

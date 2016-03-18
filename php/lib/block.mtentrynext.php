@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtentrynext($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtentrynext($args, $content, &$ctx, &$repeat) {
     static $_next_cache = array();
     if (!isset($content)) {
         # save all values, to be restored when we're done...

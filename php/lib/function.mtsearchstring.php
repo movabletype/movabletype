@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsearchstring($args, &$_smarty_tpl) {
+function smarty_function_mtsearchstring($args, &$ctx) {
     return '';
 }
 ?>

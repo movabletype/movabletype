@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mttagcount($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mttagcount($args, &$ctx) {
     $tag = $ctx->stash('Tag');
     $count = 0;
     if ($tag && is_object($tag)) {

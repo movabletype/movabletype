@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtentryprevious($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
     static $_prev_cache = array();
     if (!isset($content)) {
         $ctx->localize(array('entry', 'conditional', 'else_content'));

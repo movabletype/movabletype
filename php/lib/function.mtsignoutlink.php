@@ -5,13 +5,12 @@
 #
 # $Id$
 
-function smarty_function_mtsignoutlink($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtsignoutlink($args, &$ctx) {
     // status: complete
     // parameters: none
     $entry = $ctx->stash('entry');
     require_once "function.mtcgipath.php";
-    $path = smarty_function_mtcgipath($args, $_smarty_tpl);
+    $path = smarty_function_mtcgipath($args, $ctx);
     if (isset($args['no_static']) && ($args['no_static'] == 1)) {
         $static_arg = '';
     } else {

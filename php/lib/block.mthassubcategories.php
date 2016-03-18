@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mthassubcategories($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mthassubcategories($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $class = 'category';
         if (isset($args['class'])){

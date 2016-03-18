@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommentparentid($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtcommentparentid($args, &$ctx) {
     $comment = $ctx->stash('comment');
     $id = $comment->comment_parent_id;
     if (! $id) return '';

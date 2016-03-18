@@ -6,8 +6,7 @@
 # $Id$
 
 require_once('function.mtentrymore.php');
-function smarty_function_mtpagemore($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
-    return smarty_function_mtentrymore($args, $_smarty_tpl);
+function smarty_function_mtpagemore($args, &$ctx) {
+    return smarty_function_mtentrymore($args, $ctx);
 }
 ?>

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtcommententry($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtcommententry($args, $content, &$ctx, &$repeat) {
     $localvars = array('entry', 'current_timestamp', 'modification_timestamp');
     if (!isset($content)) {
         $comment = $ctx->stash('comment');

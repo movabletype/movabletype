@@ -6,14 +6,13 @@
 # $Id$
 
 require_once("function.mtassetfilepath.php");
-function smarty_function_mtassetproperty($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtassetproperty($args, &$ctx) {
     $asset = $ctx->stash('asset');
     if (!$asset) return '';
     if (!isset($args['property'])) return '';
 
     if ($args['property'] == 'file_size') {
-        $asset_file = smarty_function_mtassetfilepath($args, $_smarty_tpl);
+        $asset_file = smarty_function_mtassetfilepath($args, $ctx);
         if(file_exists( $asset_file )){
             $filesize = filesize($asset_file);
         }else{

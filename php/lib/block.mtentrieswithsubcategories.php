@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtentrieswithsubcategories($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtentrieswithsubcategories($args, $content, &$ctx, &$repeat) {
     $localvars = array('entries', 'inside_with_subcategories');
     if (!isset($content)) {
         $cat = $args['category'];
@@ -21,7 +20,7 @@ function smarty_block_mtentrieswithsubcategories($args, $content, &$_smarty_tpl,
         $ctx->stash('inside_with_subcategories', 1);
         require_once("block.mtentries.php");
     }
-    $output = smarty_block_mtentries($args, $content, $_smarty_tpl, $repeat);
+    $output = smarty_block_mtentries($args, $content, $ctx, $repeat);
     if (!$repeat)
         $ctx->restore($localvars);
     return $output;

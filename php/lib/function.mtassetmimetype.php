@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtassetmimetype($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtassetmimetype($args, &$ctx) {
     $asset = $ctx->stash('asset');
     if (!$asset) return '';
 

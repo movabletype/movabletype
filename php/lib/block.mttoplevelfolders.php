@@ -6,9 +6,8 @@
 # $Id$
 
 require_once('block.mttoplevelcategories.php');
-function smarty_block_mttoplevelfolders($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mttoplevelfolders($args, $content, &$ctx, &$repeat) {
     $args['class'] = 'folder';
-    return smarty_block_mttoplevelcategories($args, $content, $_smarty_tpl, $repeat);
+    return smarty_block_mttoplevelcategories($args, $content, $ctx, $repeat);
 }
 ?>

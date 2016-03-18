@@ -11,12 +11,11 @@ function smarty_modifier_mteval($text, $arg) {
     $mt = MT::get_instance();
     $ctx =& $mt->context();
     $_var_compiled = '';
-    $_var_compiled = $ctx->fetch("eval:$text");
-    if (!$_var_compiled) {
+    if (!$ctx->_compile_source('evaluated template', $text, $_var_compiled)) {
         return $ctx->error("Error compiling text '$text'");
     }
     ob_start();
-    eval('?>' . $_var_compiled);
+    $ctx->_eval('?>' . $_var_compiled);
     $_contents = ob_get_contents();
     ob_end_clean();
     return $_contents;

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtfolderheader($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtfolderheader($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $ctx->localize(array('conditional', 'else_content'));
         $ctx->stash('conditional',

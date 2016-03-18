@@ -6,8 +6,7 @@
 # $Id$
 
 require_once("archive_lib.php");
-function smarty_function_mtentrytrackbackdata($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtentrytrackbackdata($args, &$ctx) {
     $e = $ctx->stash('entry');
     $tb = $e->trackback();
     if (empty($tb))
@@ -27,7 +26,7 @@ function smarty_function_mtentrytrackbackdata($args, &$_smarty_tpl) {
         return '';
 
     require_once "function.mtcgipath.php";
-    $path = smarty_function_mtcgipath($args, $_smarty_tpl);
+    $path = smarty_function_mtcgipath($args, $ctx);
     $path .= $ctx->mt->config('TrackbackScript') . '/' . $tb->trackback_id;
 
     $at = $ctx->stash('current_archive_type');

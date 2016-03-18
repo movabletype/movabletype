@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtifisancestor($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtifisancestor($args, $content, &$ctx, &$repeat) {
     $localvars = array('conditional', 'else_content');
     if (!isset($content)) {
        require_once("MTUtil.php");

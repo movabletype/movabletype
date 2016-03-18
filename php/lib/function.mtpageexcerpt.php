@@ -6,8 +6,7 @@
 # $Id$
 
 require_once('function.mtentryexcerpt.php');
-function smarty_function_mtpageexcerpt($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
-    return smarty_function_mtentryexcerpt($args, $_smarty_tpl);
+function smarty_function_mtpageexcerpt($args, &$ctx) {
+    return smarty_function_mtentryexcerpt($args, $ctx);
 }
 ?>

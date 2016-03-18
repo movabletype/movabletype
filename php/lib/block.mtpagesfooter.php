@@ -6,8 +6,7 @@
 # $Id$
 
 require_once('block.mtentriesfooter.php');
-function smarty_block_mtpagesfooter($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
-    return smarty_block_mtentriesfooter($args, $content, $_smarty_tpl, $repeat);
+function smarty_block_mtpagesfooter($args, $content, &$ctx, &$repeat) {
+    return smarty_block_mtentriesfooter($args, $content, $ctx, $repeat);
 }
 ?>

@@ -6,8 +6,7 @@
 # $Id$
 
 require_once("function.mtwidgetmanager.php");
-function smarty_function_mtwidgetset($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
-    return smarty_function_mtwidgetmanager($args, $_smarty_tpl);
+function smarty_function_mtwidgetset($args, &$ctx) {
+    return smarty_function_mtwidgetmanager($args, $ctx);
 }
 ?>

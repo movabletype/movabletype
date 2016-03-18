@@ -6,8 +6,7 @@
 # $Id$
 
 require_once('block.mtentries.php');
-function smarty_block_mtpages($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtpages($args, $content, &$ctx, &$repeat) {
     $args['class_type'] = 'page';
     if (isset($args['include_subfolders']) &&
         $args['include_subfolders'] == 1)
@@ -40,7 +39,7 @@ function smarty_block_mtpages($args, $content, &$_smarty_tpl, &$repeat) {
     foreach ($localvars as $localvar) {
         $ctx->__stash[$localvar] = null;
     }
-    $out = smarty_block_mtentries($args, $content, $_smarty_tpl, $repeat);
+    $out = smarty_block_mtentries($args, $content, $ctx, $repeat);
 
     $ctx->restore($localvars);
 

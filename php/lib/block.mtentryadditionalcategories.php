@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtentryadditionalcategories($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtentryadditionalcategories($args, $content, &$ctx, &$repeat) {
     $localvars = array('_categories', 'category', '_categories_counter', '__out');
     if (!isset($content)) {
         $ctx->localize($localvars);

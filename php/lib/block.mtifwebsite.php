@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtifwebsite($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtifwebsite($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
         $ok = empty($blog)

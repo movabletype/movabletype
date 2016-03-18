@@ -6,9 +6,8 @@
 # $Id$
 
 require_once('block.mtentryprevious.php');
-function smarty_block_mtpageprevious($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtpageprevious($args, $content, &$ctx, &$repeat) {
     $args['class'] = 'page';
-    return smarty_block_mtentryprevious($args, $content, $_smarty_tpl, $repeat);
+    return smarty_block_mtentryprevious($args, $content, $ctx, $repeat);
 }
 ?>

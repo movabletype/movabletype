@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtauthoruserpicurl($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtauthoruserpicurl($args, &$ctx) {
     $author = $ctx->stash('author');
     if (empty($author)) {
         $entry = $ctx->stash('entry');

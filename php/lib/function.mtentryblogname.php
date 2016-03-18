@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtentryblogname($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtentryblogname($args, &$ctx) {
     $entry = $ctx->stash('entry');
     if ($entry->entry_blog_id) {
         $blog = $ctx->mt->db()->fetch_blog($entry->entry_blog_id);

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtifcommentparent($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtifcommentparent($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $comment = $ctx->stash('comment');
         $has_parent = 0;

@@ -238,7 +238,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
 
             if ($fn_tag) {
                 $smart_source .= $ldelim . 'php' . $rdelim
-                    . '$_smarty_tpl->smarty->_cache["_tag_stack"][] = array("' . $mttag . '"'
+                    . '$_smarty_tpl->smarty->_tag_stack[] = array("' . $mttag . '"'
                     // . ', array(' . implode(',', $ctx2->_compile_arg_list(null, null, $attrs, $dummy)) . '));'
                     . ($var_export ? ', ' . var_export($attrs, true) : '')
                     . ');' . $ldelim . '/php' . $rdelim;
@@ -251,7 +251,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                                   $rdelim;
             if ($fn_tag) {
                 $smart_source .= $ldelim . 'php' . $rdelim
-                    . 'array_pop($_smarty_tpl->smarty->_cache["_tag_stack"]);'
+                    . 'array_pop($_smarty_tpl->smarty->_tag_stack);'
                     . $ldelim . '/php' . $rdelim;
             }
 

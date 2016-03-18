@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtarchivelistfooter($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtarchivelistfooter($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, 'ArchiveListFooter');
     } else {

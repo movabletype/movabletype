@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtindexlink($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtindexlink($args, &$ctx) {
     $tmpl = $ctx->stash('index_templates');
     $counter = $ctx->stash('index_templates_counter');
     $idx = $tmpl[$counter];

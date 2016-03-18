@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtwebsitehasblog($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtwebsitehasblog($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
         if (empty($blog)) {

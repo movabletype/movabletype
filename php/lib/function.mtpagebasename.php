@@ -6,8 +6,7 @@
 # $Id$
 
 require_once('function.mtentrybasename.php');
-function smarty_function_mtpagebasename($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
-    return smarty_function_mtentrybasename($args, $_smarty_tpl);
+function smarty_function_mtpagebasename($args, &$ctx) {
+    return smarty_function_mtentrybasename($args, $ctx);
 }
 ?>

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommenteremail($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtcommenteremail($args, &$ctx) {
     $a =& $ctx->stash('commenter');
     if (!isset($a)) return '';
     $email = $a->email;

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtauthorbasename($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtauthorbasename($args, &$ctx) {
     $author = $ctx->stash('author');
     if (!$author) return '';
     $basename = $author->author_basename;

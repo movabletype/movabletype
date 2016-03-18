@@ -6,9 +6,8 @@
 # $Id$
 
 require_once('block.mtentryiftagged.php');
-function smarty_block_mtpageiftagged($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtpageiftagged($args, $content, &$ctx, &$repeat) {
     $args['class'] = 'page';
-    return smarty_block_mtentryiftagged($args, $content, $_smarty_tpl, $repeat);
+    return smarty_block_mtentryiftagged($args, $content, $ctx, $repeat);
 }
 ?>

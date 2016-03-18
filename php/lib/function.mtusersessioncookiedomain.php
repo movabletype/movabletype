@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtusersessioncookiedomain($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtusersessioncookiedomain($args, &$ctx) {
     $domain = $ctx->mt->config('UserSessionCookieDomain');
     if ($domain == '<$MTBlogHost exclude_port="1"$>') {
         # optimize for the default case
@@ -19,14 +18,13 @@ function smarty_function_mtusersessioncookiedomain($args, &$_smarty_tpl) {
         if (preg_match('/<\$?mt/i', $domain)) {
             # evaluate expression
 
-            $_var_compiled = $ctx->fetch("eval:$domain");
-            if (!$_var_compiled) {
+            if (!$ctx->_compile_source('evaluated template', $domain, $_var_compiled)) {
                 $domain = htmlentities($domain);
                 return $ctx->error("Error in expression for UserSessionCookieDomain: '$domain'");
             }
 
             ob_start();
-            eval('?>' . $_var_compiled);
+            $ctx->_eval('?>' . $_var_compiled);
             $domain = ob_get_contents();
             ob_end_clean();
         } else {

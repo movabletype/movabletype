@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtauthoruserpicasset($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtauthoruserpicasset($args, $content, &$ctx, &$repeat) {
     $author = $ctx->stash('author');
     if (empty($author)) {
         $entry = $ctx->stash('entry');

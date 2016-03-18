@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtasseturl($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtasseturl($args, &$ctx) {
     $asset = $ctx->stash('asset');
     if (!$asset) return '';
     $blog = $ctx->stash('blog');
@@ -18,7 +17,7 @@ function smarty_function_mtasseturl($args, &$_smarty_tpl) {
     $url = preg_replace('/^%r/', $site_url, $url);
 
     require_once('function.mtstaticwebpath.php');
-    $static_url = smarty_function_mtstaticwebpath($args, $_smarty_tpl);
+    $static_url = smarty_function_mtstaticwebpath($args, $ctx);
     $url = preg_replace('/^%s\//', $static_url, $url);
 
     $archive_url = $blog->archive_url();

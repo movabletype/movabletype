@@ -6,8 +6,7 @@
 # $Id$
 
 require_once("block.mtassets.php");
-function smarty_block_mtpageassets($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
-    return smarty_block_mtassets($args, $content, $_smarty_tpl, $repeat);
+function smarty_block_mtpageassets($args, $content, &$ctx, &$repeat) {
+    return smarty_block_mtassets($args, $content, $ctx, $repeat);
 }
 ?>

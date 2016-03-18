@@ -5,11 +5,10 @@
 #
 # $Id$
 
-function smarty_function_mtarchivecategory($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtarchivecategory($args, &$ctx) {
     if ($ctx->stash('inside_mt_categories')) {
         require_once("function.mtcategorylabel.php");
-        return smarty_function_mtcategorylabel($args, $_smarty_tpl);
+        return smarty_function_mtcategorylabel($args, $ctx);
     }
 
     $cat = $ctx->stash('archive_category');

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtpingdate($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtpingdate($args, &$ctx) {
     $p = $ctx->stash('ping');
     $args['ts'] = $p->tbping_created_on;
     return $ctx->_hdlr_date($args, $ctx);

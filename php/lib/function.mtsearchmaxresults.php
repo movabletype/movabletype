@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsearchmaxresults($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtsearchmaxresults($args, &$ctx) {
     return $ctx->mt->config('SearchMaxResults');
 }
 ?>

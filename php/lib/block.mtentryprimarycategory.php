@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtentryprimarycategory($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtentryprimarycategory($args, $content, &$ctx, &$repeat) {
     $localvars = array( 'category' );
     if (!isset($content)) {
         $ctx->localize($localvars);

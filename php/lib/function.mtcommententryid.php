@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommententryid($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtcommententryid($args, &$ctx) {
     $comment = $ctx->stash('comment');
     $id = $comment->comment_entry_id;
     if (isset($args['pad']) && $args['pad']) {

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtcategories($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
     // status: incomplete
     // parameters: show_empty
     $localvars = array(array('_categories', '_categories_counter', 'category', 'inside_mt_categories', 'entries', '_categories_glue', 'blog_id', 'blog', '__out'), common_loop_vars());

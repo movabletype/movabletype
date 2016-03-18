@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsubcatsrecurse($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtsubcatsrecurse($args, &$ctx) {
   $localvars = array('subCatsDepth', 'category', 'subCatIsFirst', 'subCatIsLast', 'subFolderHead', 'subFolderFoot');
     $fn = $ctx->stash('subCatTokens');
     #if (!method_exists($ctx,$fn)) {
@@ -52,7 +51,7 @@ function smarty_function_mtsubcatsrecurse($args, &$_smarty_tpl) {
     $ctx->localize($localvars);
     $ctx->stash('subCatsDepth', $depth + 1);
     while ($c = array_shift($cats)) {
-        smarty_function_mtsetvar(array('name' => '__depth__', 'value' => ($depth + 1)), $_smarty_tpl);
+        smarty_function_mtsetvar(array('name' => '__depth__', 'value' => ($depth + 1)), $ctx);
         $ctx->stash('category', $c);
         $ctx->stash('subCatIsFirst', !$count);
         $ctx->stash('subCatIsLast', !count($cats));

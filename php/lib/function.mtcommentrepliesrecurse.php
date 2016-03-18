@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommentrepliesrecurse($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtcommentrepliesrecurse($args, &$ctx) {
     $localvars = array(array('comments', 'comment_order_num', 'comment','current_timestamp', 'commenter', 'blog', 'blog_id'), common_loop_vars());
     $token_fn = $ctx->stash('_comment_replies_tokens');
 

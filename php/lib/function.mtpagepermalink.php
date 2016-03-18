@@ -6,8 +6,7 @@
 # $Id$
 
 require_once('function.mtentrypermalink.php');
-function smarty_function_mtpagepermalink($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtpagepermalink($args, &$ctx) {
     $entry = $ctx->stash('entry');
     if (!$entry)
         return '';

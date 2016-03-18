@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtentryauthorusername($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtentryauthorusername($args, &$ctx) {
     // status: complete
     // parameters: none
     $entry = $ctx->stash('entry');

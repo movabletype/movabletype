@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtifcommentreplies($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtifcommentreplies($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $comment = $ctx->stash('comment');
         $args['comment_id'] = $comment->comment_id;

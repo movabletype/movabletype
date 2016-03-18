@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtwebsitepath($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtwebsitepath($args, &$ctx) {
     if (isset($args['id']) && is_numeric($args['id'])) {
         require_once('class.mt_website.php');
         $blog = new Blog();

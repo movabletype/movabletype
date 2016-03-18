@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtpingssent($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtpingssent($args, $content, &$ctx, &$repeat) {
     $localvars = array('_pinged_urls', '_ping_urls_counter', 'ping_sent_url');
     if (!isset($content)) {
         $ctx->localize($localvars);

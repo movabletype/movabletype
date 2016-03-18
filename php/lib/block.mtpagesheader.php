@@ -6,8 +6,7 @@
 # $Id$
 
 require_once('block.mtentriesheader.php');
-function smarty_block_mtpagesheader($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
-    return smarty_block_mtentriesheader($args, $content, $_smarty_tpl, $repeat);
+function smarty_block_mtpagesheader($args, $content, &$ctx, &$repeat) {
+    return smarty_block_mtentriesheader($args, $content, $ctx, $repeat);
 }
 ?>

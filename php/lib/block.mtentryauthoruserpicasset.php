@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtentryauthoruserpicasset($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtentryauthoruserpicasset($args, $content, &$ctx, &$repeat) {
     $entry = $ctx->stash('entry');
     if (!$entry) {
         return $ctx->error("No entry available");

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mttoplevelparent($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mttoplevelparent($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $ctx->localize(array('category','conditional','else_content'));
         require_once("MTUtil.php");

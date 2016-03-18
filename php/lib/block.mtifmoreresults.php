@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtifmoreresults($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtifmoreresults($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $limit = $ctx->stash('__pager_limit');
         $count = $ctx->stash('__pager_total_count');

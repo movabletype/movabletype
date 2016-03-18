@@ -6,8 +6,7 @@
 # $Id$
 
 require_once('function.mtentryauthorurl.php');
-function smarty_function_mtpageauthorurl($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
-    return smarty_function_mtentryauthorurl($args, $_smarty_tpl);
+function smarty_function_mtpageauthorurl($args, &$ctx) {
+    return smarty_function_mtentryauthorurl($args, $ctx);
 }
 ?>

@@ -5,8 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtimagewidth($args, &$_smarty_tpl) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_function_mtimagewidth($args, &$ctx) {
     // todo: needs work
     return $ctx->stash('ImageWidth');
 }

@@ -6,9 +6,8 @@
 # $Id$
 
 require_once("block.mtcategorynext.php");
-function smarty_block_mtfolderprevious($args, $content, &$_smarty_tpl, &$repeat) {
-    $ctx =& $_smarty_tpl->smarty;
+function smarty_block_mtfolderprevious($args, $content, &$ctx, &$repeat) {
     $args['class'] = 'folder';
-    return smarty_block_mtcategorynext($args, $content, $_smarty_tpl, $repeat);
+    return smarty_block_mtcategorynext($args, $content, $ctx, $repeat);
 }
 ?>
