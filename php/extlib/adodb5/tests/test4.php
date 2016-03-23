@@ -1,18 +1,20 @@
 <?php
 
-/** 
- * @version V4.50 6 July 2004 (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
- * Released under both BSD license and Lesser GPL library license. 
- * Whenever there is any discrepancy between the two licenses, 
- * the BSD license will take precedence. 
+/**
+ * @version   v5.20.3  01-Jan-2016
+ * @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
+ * @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
+ * Released under both BSD license and Lesser GPL library license.
+ * Whenever there is any discrepancy between the two licenses,
+ * the BSD license will take precedence.
  *
  * Set tabs to 4 for best viewing.
- * 
+ *
  * Latest version is available at http://php.weblogs.com
  *
  * Test GetUpdateSQL and GetInsertSQL.
  */
- 
+
 error_reporting(E_ALL);
 function testsql()
 {
@@ -28,9 +30,9 @@ global $ADODB_FORCE_TYPE;
 // This code tests an insert
 
 $sql = "
-SELECT * 
-FROM ADOXYZ WHERE id = -1"; 
-// Select an empty record from the database 
+SELECT *
+FROM ADOXYZ WHERE id = -1";
+// Select an empty record from the database
 
 
 #$conn = ADONewConnection("mssql");  // create a connection
@@ -90,9 +92,9 @@ if ($insertSQL != $insertSQL2) echo "<p><b>Walt's new stuff failed</b>: $insertS
 // This code tests an update
 
 $sql = "
-SELECT * 
-FROM ADOXYZ WHERE lastname=".$conn->Param('var'). " ORDER BY 1"; 
-// Select a record to update 
+SELECT *
+FROM ADOXYZ WHERE lastname=".$conn->Param('var'). " ORDER BY 1";
+// Select a record to update
 
 $varr = array('var'=>$record['lastname'].'');
 $rs = $conn->Execute($sql,$varr); // Execute the query and get the existing record to update
@@ -140,4 +142,3 @@ rs2html($rs);
 
 
 testsql();
-?>
