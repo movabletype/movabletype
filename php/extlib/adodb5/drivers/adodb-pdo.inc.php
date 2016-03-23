@@ -148,6 +148,9 @@ class ADODB_pdo extends ADOConnection {
 					$argDSN .= ';dbname='.$argDatabasename;
 			}
 		}
+		if ( $this->port ) {
+			$argDSN .= ';port=' . $this->port;
+		}
 		try {
 			$this->_connectionID = new PDO($argDSN, $argUsername, $argPassword);
 		} catch (Exception $e) {
@@ -480,6 +483,8 @@ class ADODB_pdo extends ADOConnection {
 		#adodb_backtrace();
 		#var_dump($this->_bindInputArray);
 		if ($stmt) {
+			if (empty($this->_driver))
+				$this->_driver = new stdClass;
 			$this->_driver->debug = $this->debug;
 			if ($inputarr) {
 				$ok = $stmt->execute($inputarr);
