@@ -195,9 +195,6 @@ function smarty_function_mtinclude($args, &$ctx) {
             $_var_compiled = $_include_cache[$cache_id];
         } else {
             $tmpl = $ctx->mt->db()->get_template_text($ctx, $load_name, $blog_id, $load_type, $args['global']);
-            if(get_class($ctx) != 'MTViewer') {
-                $ctx = $ctx->smarty;
-            }
             if (!$ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
                 _clear_vars($ctx, $ext_args);
                 return $ctx->error("Error compiling template module '$module'");

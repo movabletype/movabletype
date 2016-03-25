@@ -149,7 +149,7 @@ class MTViewer extends SmartyBC {
 
         $this->register_block('mtdynamic', array(&$this, 'smarty_block_dynamic'),
                               false);
-        $this->register_block('mtif', array('smarty_block_mtif'));
+        $this->register_block('mtif', array(&$this, 'block_wrapper'));
         $this->register_block('mtelse', array(&$this, 'smarty_block_else'));
         $this->register_block('mtelseif', array(&$this, 'smarty_block_elseif'));
 
@@ -199,7 +199,9 @@ class MTViewer extends SmartyBC {
     }
 
     function this_tag() {
-        $ts = $this->_tag_stack[count($this->_tag_stack)-1];
+        if(count($this->_tag_stack) > 0){
+            $ts = $this->_tag_stack[count($this->_tag_stack)-1];
+        }
 
         if ($ts) {
             return $ts[0];
@@ -855,20 +857,20 @@ EOT;
     }
     function block_wrapper($args, $content, &$_smarty_tpl, &$repeat){
         $ctx =& $_smarty_tpl->smarty;
-        // $ctx->_tag_stack = $_smarty_tpl->smarty->_cache['_tag_stack'];
         $tag = $ctx->this_tag();
         if (!isset($content)){
             @include_once 'block.' . $tag . '.php';
         }
         if (function_exists('smarty_block_' . $tag)) {
             $fn = 'smarty_block_' . $tag;
-            $content = $fn($args, $content, $_smarty_tpl->smarty, $repeat);
-            if(get_class($ctx->__stash['conditional']) != Smarty_Variable){
+            $fn($args, $content, $ctx, $repeat);
+            if(isset($ctx->__stash['conditional']) && is_integer($ctx->__stash['conditional'])){
                 $ctx->__stash['conditional'] = new Smarty_Variable($ctx->__stash['conditional']);
             }
+            $_smarty_tpl->smarty->_tag_stack = $_smarty_tpl->smarty->_cache['_tag_stack'];
             $_smarty_tpl->tpl_vars['conditional'] = $ctx->__stash['conditional'];
-            return $content;
         }
+        return $content;
     }
     function function_wrapper($args, &$_smarty_tpl){
         $ctx =& $_smarty_tpl->smarty;
@@ -876,23 +878,29 @@ EOT;
         @include_once 'function.' . $tag . '.php';
         if (function_exists('smarty_function_' . $tag)) { 
             $fn = 'smarty_function_' . $tag;
-            $content = $fn($args, $_smarty_tpl->smarty);
-            if(get_class($ctx->__stash['conditional']) != Smarty_Variable){
-                $ctx->__stash['conditional'] = new Smarty_Variable($ctx->__stash['conditional']);
-            }
-            $_smarty_tpl->tpl_vars['conditional'] = $ctx->__stash['conditional'];
-            return $content;
+            $content = $fn($args, $ctx);
         }
+        return $content;
     }
     function register_block($block, $block_impl, $cacheable = true, $cache_attrs = null) {
+
+        if(isset($this->registered_plugins[ Smarty::PLUGIN_BLOCK ][ $block ])) return;
+
         $this->registerPlugin('block', $block, array($this,'block_wrapper'), $cacheable, $cache_attrs);
     }
 
     function register_function($function, $function_impl, $cacheable = true, $cache_attrs = null) {
+
+        if(isset($this->registered_plugins[ Smarty::PLUGIN_FUNCTION ][ $function ])) return;
+
         $this->registerPlugin('function', $function, array($this,'function_wrapper'), $cacheable, $cache_attrs);
     }
     function _compile_source($resource_name, &$source_content, &$compiled_content, $cache_include_path=null) {
-        $compiled = $this->fetch('eval:'.$source_content);
+        $local_tag_stack = $this->_tag_stack;
+        $local_stash = $this->__stash;
+        $compiled = $this->fetch("eval:$source_content");
+        $this->_tag_stack = $local_tag_stack;
+        $this->__stash = $local_stash;
         $compiled_content = $compiled;
         return $compiled;
     }

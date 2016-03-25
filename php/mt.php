@@ -217,6 +217,13 @@ class MT {
                 } elseif (preg_match('/^init\.(.+?)\.php$/', $file, $matches)) {
                     // load 'init' plugin file
                     require_once($file);
+                } else {
+                    // override plugin function
+                    if(preg_match('/^block\.(mt.+?)\.php$/', $file, $matches)) {
+                        $ctx->register_block($matches[1],'smarty_block_'.$matches[1]);
+                    } elseif(preg_match('/^function\.(mt.+?)\.php$/', $file, $matches)){
+                        $ctx->register_function($matches[1],'smarty_function_'.$matches[1]);
+                    }
                 }
             }
             closedir($dh);
