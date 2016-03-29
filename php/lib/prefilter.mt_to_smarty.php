@@ -308,6 +308,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
     $smart_source = preg_replace('/<\?php(\s*.*?)\?>/s',
                                  $ldelim.'php'.$rdelim.'\1'.';'.$ldelim.'/php'.$rdelim, $smart_source);
 #    echo $smart_source;
+    error_log($smart_source);
     return $smart_source;
 }
 
