@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -4018,10 +4018,10 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
         local $ctx->{__stash}{vars}{ lc $name } = sub {
             my $builder = $ctx->stash('builder');
             my $html = $builder->build( $ctx, $tokens, $cond );
-            return $ctx->error( $builder->errstr ) unless defined $html;
+            die $ctx->error( $builder->errstr ) unless defined $html;
             return $html;
         };
-        return _hdlr_include( $ctx, $args, $cond );
+        return eval { _hdlr_include( $ctx, $args, $cond ) };
     }
 
 ###########################################################################

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -438,6 +438,8 @@ sub start_upload {
     return $app->return_to_dashboard( redirect => 1 )
         if !$app->blog && !$dialog;
 
+    return $app->permission_denied unless $app->can_do('upload');
+
     $app->add_breadcrumb( $app->translate('Upload File') );
     my %param;
     %param = @_ if @_;
@@ -544,14 +546,17 @@ sub js_upload_file {
             ($thumb_url) = $asset->thumbnail_url(
                 Height => $thumb_size,
                 Width  => $thumb_size,
-                Square => 1
+                Square => 1,
+                Ts     => 1
             );
         }
         elsif ( $orig_width > $thumb_size ) {
-            ($thumb_url) = $asset->thumbnail_url( Width => $thumb_size, );
+            ($thumb_url)
+                = $asset->thumbnail_url( Width => $thumb_size, Ts => 1 );
         }
         elsif ( $orig_height > $thumb_size ) {
-            ($thumb_url) = $asset->thumbnail_url( Height => $thumb_size, );
+            ($thumb_url)
+                = $asset->thumbnail_url( Height => $thumb_size, Ts => 1 );
         }
         else {
             $thumb_url = $asset->url;
@@ -1362,7 +1367,8 @@ sub _make_upload_destinations {
                 # Replace %s and %a.
                 if ( $label =~ /^%s/ ) {
                     my $site_root
-                        = $app->translate( '<[_1] Root>', $blog->class_label );
+                        = $app->translate( '<[_1] Root>',
+                        $blog->class_label );
                     $label =~ s/^%s/$site_root/;
                 }
                 elsif ( $label =~ /^%a/ ) {
@@ -1889,7 +1895,9 @@ sub _upload_file_compat {
     require File::Basename;
     my $local_basename = File::Basename::basename($local_file);
     my $local_ext
-        = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+        = ( File::Basename::fileparse( $local_file, qr/\.[A-Za-z0-9]+$/ ) )
+        [2];
+    $local_ext =~ s/^\.//;
 
     require MT::Asset;
     my $asset_pkg = MT::Asset->handler_for_file($local_basename);
@@ -2423,7 +2431,9 @@ sub _upload_file {
     require File::Basename;
     my $local_basename = File::Basename::basename($local_file);
     my $local_ext
-        = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+        = ( File::Basename::fileparse( $local_file, qr/\.[A-Za-z0-9]+$/ ) )
+        [2];
+    $local_ext =~ s/^\.//;
 
     require MT::Asset;
     my $asset_pkg = MT::Asset->handler_for_file($local_basename);
@@ -3129,6 +3139,11 @@ sub dialog_insert_options {
         my @ids = split ',', $ids;
         return $app->errtrans('Invalid request.') unless @ids;
         my @assets = $app->model('asset')->load( { id => \@ids } );
+
+        # Sort by @ids order.
+        my %assets = map { $_->id => $_ } @assets;
+        @assets = map { $assets{$_} } @ids;
+
         $assets = \@assets;
     }
     $assets = [$assets] if 'ARRAY' ne ref $assets;

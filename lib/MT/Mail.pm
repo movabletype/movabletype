@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -323,7 +323,7 @@ sub _send_mt_smtp {
             foreach my $a (@$addr) {
                 $smtp->recipient($a);
             }
-            $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n";
+            $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n" if $h ne 'Bcc';
         }
     }
 

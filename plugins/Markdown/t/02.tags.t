@@ -3,7 +3,12 @@
 use strict;
 use warnings;
 
-use lib qw(lib);
+BEGIN {
+    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+}
+
+use lib qw( lib extlib t/lib );
+use MT::Test qw( :app :db );
 
 use IPC::Open2;
 
@@ -46,7 +51,7 @@ run {
 };
 
 sub php_test_script {
-    my ($template, $text) = @_;
+    my ( $template, $text ) = @_;
     $text ||= '';
     my $test_script = <<PHP;
 <?php

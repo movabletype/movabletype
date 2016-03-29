@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -98,8 +98,8 @@ sub load_theme_loop {
     my ( $pkg, $type, $curr ) = @_;
     $type ||= '';
     my $app = MT->instance;
-    $curr
-        ||= $type eq 'blog'
+    $curr ||=
+          $type eq 'blog'
         ? $app->config('DefaultBlogTheme')
         : $app->config('DefaultWebsiteTheme');
     my $all_themes = load_all_themes($pkg);

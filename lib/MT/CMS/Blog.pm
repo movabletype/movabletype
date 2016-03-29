@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -3429,6 +3429,19 @@ HTML
         );
     }
     else {
+        my $auth = $app->user;
+        require MT::Log;
+        $app->log(
+            {   message => $app->translate(
+                "'[_1]' (ID:[_2]) has been copied as '[_3]' (ID:[_4]) by '[_5]' (ID:[_6]).",
+                    $blog->name,   $blog->id,   $blog_name,
+                    $new_blog->id, $auth->name, $auth->id
+                ),
+                level    => MT::Log::INFO(),
+                class    => $new_blog->class,
+                category => 'new',
+            }
+        );
         my $return_url = $app->base
             . $app->uri(
             mode => 'list',

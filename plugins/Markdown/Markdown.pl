@@ -13,7 +13,7 @@ use bytes;
 
 use Digest::MD5 qw(md5_hex);
 use vars qw($VERSION);
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 # Tue 14 Dec 2004
 

@@ -2652,9 +2652,9 @@ Administrator Melody
 <mt:Comments><mt:CommentIfModerated>if<mt:Else>else</mt:CommentIfModerated>
 </mt:Comments>
 --- expected
-if
-if
-if
+else
+else
+else
 
 === mt:CommentParent
 --- template

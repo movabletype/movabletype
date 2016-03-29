@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -599,12 +599,13 @@ sub _hdlr_index_list {
     for ( my $ix = 1; $ix <= scalar @tmpls; $ix++ ) {
         my $tmpl = $tmpls[ $ix - 1 ];
         my $vars = $ctx->{__stash}{vars} ||= {};
-        local $ctx->{__stash}{'index'} = $tmpl;
-        local $vars->{__first__}       = $ix == 1;
-        local $vars->{__last__}        = $ix == scalar @tmpls;
-        local $vars->{__odd__}         = ( $ix % 2 ) == 1;
-        local $vars->{__even__}        = ( $ix % 2 ) == 0;
-        local $vars->{__counter__}     = $ix;
+        local $ctx->{__stash}{'index'}  = $tmpl;
+        local $ctx->{__stash}{template} = $tmpl;
+        local $vars->{__first__}        = $ix == 1;
+        local $vars->{__last__}         = $ix == scalar @tmpls;
+        local $vars->{__odd__}          = ( $ix % 2 ) == 1;
+        local $vars->{__even__}         = ( $ix % 2 ) == 0;
+        local $vars->{__counter__}      = $ix;
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $out;
@@ -908,16 +909,18 @@ B<Example:>
 sub _hdlr_archive_count {
     my ( $ctx, $args, $cond ) = @_;
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
-    $at = 'Category' if $ctx->{inside_mt_categories};
     my $archiver = MT->publisher->archiver($at);
-    if ( $ctx->{inside_mt_categories} && !$archiver->date_based ) {
+    if ( $ctx->{inside_mt_categories}
+        && !( $archiver && $archiver->date_based ) )
+    {
         return $ctx->invoke_handler( 'categorycount', $args, $cond );
     }
     elsif ( my $count = $ctx->stash('archive_count') ) {
         return $ctx->count_format( $count, $args );
     }
-
     my $e = $ctx->stash('entries');
+    $e = [ $ctx->stash('entry') ]
+        if !$e && $ctx->stash('entry');
     my @entries;
     @entries = @$e if ref($e) eq 'ARRAY';
     my $count = scalar @entries;

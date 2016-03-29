@@ -34,5 +34,17 @@ subtest 'dialog_asset_modal' => sub {
     my $out = delete $app->{__test_output};
     unlike( $out, qr/generic-error/, 'no error' );
 
+    ok( $out =~ /<option value="file"/,
+        'has Files in Asset Type select box' );
+    ok( $out =~ /<option value="video"/,
+        'has Videos in Asset Type select box'
+    );
+    ok( $out =~ /<option value="audio"/,
+        'has Audio in Asset Type select box'
+    );
+    ok( $out =~ /<option value="image"/,
+        'has Images in Asset Type select box'
+    );
+
     done_testing();
 };

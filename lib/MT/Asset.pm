@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -991,7 +991,15 @@ sub list_subclasses {
     foreach my $k ( keys %$types ) {
         if ( $k =~ m/^asset\.(.*)/ ) {
             my $c = $types->{$k};
+
+            # When extending asset column by plugin.
+            if ( ref $c eq 'ARRAY' && @$c ) {
+                $c = @$c[0];
+            }
+
+            # Ignore invalid value for avoiding error.
             next if ref $c;
+
             push @types,
                 {
                 class => $c,

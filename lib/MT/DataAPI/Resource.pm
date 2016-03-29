@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -86,6 +86,10 @@ sub core_resources {
             {   version          => 2,
                 fields           => "${pkg}v2::Blog::fields",
                 updatable_fields => "${pkg}v2::Blog::updatable_fields",
+            },
+            {   version          => 3,
+                fields           => "${pkg}v3::Blog::fields",
+                updatable_fields => "${pkg}v3::Blog::updatable_fields",
             }
         ],
         'website' => [
@@ -96,6 +100,10 @@ sub core_resources {
             {   version          => 2,
                 fields           => "${pkg}v2::Website::fields",
                 updatable_fields => "${pkg}v2::Website::updatable_fields",
+            },
+            {   version          => 3,
+                fields           => "${pkg}v3::Website::fields",
+                updatable_fields => "${pkg}v3::Website::updatable_fields",
             }
         ],
         'asset' => [
@@ -633,7 +641,7 @@ sub from_object {
     for ( my $i = 0; $i < $size; $i++ ) {
         my $h = $hashs->[$i];
         $h->{$name}
-            = MT::Util::ts2iso( @blog_ids ? $blogs{ $blog_ids[$i] } : undef,
+            &&= MT::Util::ts2iso( @blog_ids ? $blogs{ $blog_ids[$i] } : undef,
             $h->{$name}, 1 );
     }
 }

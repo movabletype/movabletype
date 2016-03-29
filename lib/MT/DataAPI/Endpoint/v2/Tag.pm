@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -234,7 +234,7 @@ sub _retrieve_tag {
 
     my $tag_id = $app->param('tag_id')
         or return $app->error(
-        $app->translate('A paramter "[_1]" is required.', 'tag_id'), 400 );
+        $app->translate( 'A paramter "[_1]" is required.', 'tag_id' ), 400 );
 
     my $tag = MT->model('tag')->load($tag_id);
     if ( !$tag || MT->model('tag')->load( { n8d_id => $tag->id } ) ) {
@@ -250,7 +250,8 @@ sub _retrieve_tag_related_to_site {
     my $site_id = $app->param('site_id');
     if ( !defined($site_id) || $site_id eq '' ) {
         return $app->error(
-            $app->translate('A parameter "[_1]" is required.', 'site_id'), 400 );
+            $app->translate( 'A parameter "[_1]" is required.', 'site_id' ),
+            400 );
     }
     if ( $site_id && !MT->model('blog')->load($site_id) ) {
         return $app->error( $app->translate('Site not found'), 404 );
@@ -258,7 +259,7 @@ sub _retrieve_tag_related_to_site {
 
     my $tag_id = $app->param('tag_id')
         or return $app->error(
-        $app->translate('A parameter "[_1]" is required.', 'tag_id'), 400 );
+        $app->translate( 'A parameter "[_1]" is required.', 'tag_id' ), 400 );
 
     my $tag = MT->model('tag')->load(
         { id => $tag_id },

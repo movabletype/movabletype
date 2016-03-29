@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -198,8 +198,9 @@ sub application_list {
     my ($self) = @_;
     my $reg    = MT::Component->registry('applications');
     my %apps   = map {
+        my $app = $_;
         map { $_ => 1 }
-            grep { !$self->is_restricted_app($_) }
+            grep { $app->{$_}->{script} && !$self->is_restricted_app($_) }
             keys %$_
     } @$reg;
     keys %apps;
@@ -210,7 +211,7 @@ sub make_app {
     my ($app) = @_;
     $app = MT->registry( applications => $app ) unless ref $app;
     Carp::croak('No application is specified') unless $app;
-    my $script = $self->{script} || $app->{script};
+    my $script = $self->{script} || $app->{script} or return;
     $script = MT->handler_to_coderef($script) unless ref $script;
     $script = $script->();
     my $type = $app->{type} || '';
@@ -257,12 +258,12 @@ sub mount_applications {
         }
         $base =~ s!/$!!;
         $base =~ s!^https?://[^/]*!!;
-        my $script = $app->{script};
+        my $script = $app->{script} or next;
         $script = MT->handler_to_coderef($script) unless ref $script;
         $script = $script->();
         $script =~ s!^/!!;
-        my $url      = $base . '/' . $script;
-        my $psgi_app = $self->make_app($app);
+        my $url = $base . '/' . $script;
+        my $psgi_app = $self->make_app($app) or next;
         $psgi_app = $self->apply_plack_middlewares( $app_id, $psgi_app );
         $urlmap->map( $url, $psgi_app );
     }

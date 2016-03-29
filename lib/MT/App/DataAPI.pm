@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -22,6 +22,7 @@ our %endpoints = ();
 
 sub id                 {'data_api'}
 sub DEFAULT_VERSION () {3}
+sub API_VERSION     () {3.1}
 
 sub init {
     my $app = shift;
@@ -2129,8 +2130,7 @@ sub core_endpoints {
             handler        => "${pkg}v3::Auth::authentication",
             requires_login => 0,
         },
-        {
-            id             => 'upload_asset',
+        {   id             => 'upload_asset',
             route          => '/assets/upload',
             verb           => 'POST',
             version        => 3,
@@ -2141,8 +2141,7 @@ sub core_endpoints {
             },
             error_codes => { 403 => 'Do not have permission to upload.', },
         },
-        {
-            id             => 'upload_asset_for_site',
+        {   id             => 'upload_asset_for_site',
             route          => '/sites/:site_id/assets/upload',
             verb           => 'POST',
             version        => 3,
@@ -2885,6 +2884,21 @@ sub load_default_page_prefs {
 sub api {
     my ($app) = @_;
     my ( $version, $path ) = $app->_version_path;
+
+    # Special handler for get version information.
+    if ( $path eq '/version' ) {
+	my $raw = {
+	    endpointVersion => 'v' . $app->DEFAULT_VERSION(),
+	    apiVersion      => $app->API_VERSION(),
+	};
+        my $format = $app->current_format;
+	my $data   = $format->{serialize}->($raw);
+
+	$app->send_http_header( $format->{mime_type} );
+        $app->{no_print_body} = 1;
+        $app->print_encode($data);
+        return undef;
+    }
 
     return $app->print_error( 'API Version is required', 400 )
         unless defined $version;

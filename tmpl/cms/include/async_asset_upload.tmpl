@@ -86,13 +86,70 @@ p.msg-warning {
     line-height: 50px;
     padding-left: 10px;
 }
+
+h1.dialog-title {
+    margin: 0 0 1em 0;
+    font-size: 150%;
+    font-weight: normal;
+}
+
+#open-file-dialog {
+    padding: 0.3em;
+    font-weight: normal;
+    color: #fff;
+}
+
+#open-file-dialog img {
+    margin-right: 6pt;
+}
+
+#upload-overlay-container {
+  display: none;
+  z-index: 700;
+  position: fixed;
+  top: 0;
+}
+
+#upload-overlay-background {
+  background-color: #BAE3FF;
+  opacity: 0.6;
+  position: fixed;
+  top: 0;
+}
+
+#upload-overlay-drop {
+  position: fixed;
+  top: 0;
+}
+
+#upload-overlay-border {
+  position: fixed;
+  top: 0;
+  border: 3px solid #0A93F3;
+}
+
+#upload-overlay-message {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 18px;
+  color: #0D76BF;
+}
 </style>
+
+<mt:if name="dialog">
+  <mt:if name="filter_val" eq="image">
+<h1 class="dialog-title"><__trans phrase="Upload new image"></h1>
+  <mt:elseif name="is_image">
+<h1 class="dialog-title"><__trans phrase="Upload new image"></h1>
+  <mt:else>
+<h1 class="dialog-title"><__trans phrase="Upload new asset"></h1>
+  </mt:if>
+</mt:if>
 
 <form>
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
-  <div id="drop-handler">
-      <p><mt:if name="can_multi"><__trans phrase="Drag and drop here to upload files, or<button id='open-file-dialog'>Browse</button>"><mt:else><__trans phrase="Drag and drop here to upload a file, or<button id='open-file-dialog'>Browse</button>"><br /><__trans phrase="(If you upload multiple files, last uploaded files will be used.)"></mt:if></p>
-  </div>
+  <button class="action button primary" id="open-file-dialog"><img src="<mt:var name="static_uri">images/upload/ico_nowuploading_s@2x.png" width="12" height="10"><mt:if name="can_multi"><span><__trans phrase="Choose files to upload or drag files."></span><mt:else><span><__trans phrase="Choose file to upload or drag file."></span></mt:if></img></button>
 <mt:unless name="filter" eq="userpic">  
     <h2><__trans phrase="Upload Destination"></h2>
   <mt:if name="allow_to_change_at_upload">
@@ -117,7 +174,7 @@ p.msg-warning {
   <mt:else>
     <div id="site_path-field" class="field field-top-label">
       <div class="field-content">
-        <mt:var name="upload_destination_label">/<mt:var name="extra_path">
+        <mt:var name="upload_destination_label" escape="html">/<mt:var name="extra_path" escape="html">
         <input type="hidden" id="destination" name="destination" value="<mt:var name="upload_destination_value" escape="html">" />
         <input type="hidden" id="extra_path" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
       </div>
@@ -158,34 +215,124 @@ p.msg-warning {
 
 <script type="text/javascript">
 /* <![CDATA[ */
-// Assign drag and drop event
-jQuery('#drop-handler').on('dragenter', function(e) {
-  e.stopPropagation();
-  e.preventDefault();
-  jQuery(this).css('border', '2px solid #0B85A1');
-}).on('dragover', function (e) {
-  e.stopPropagation();
-  e.preventDefault();
-}).on('dragleave', function(e) {
-  jQuery(this).css('border', '2px dotted #6f6f6f');
-}).on('drop', function (e) {
-  jQuery(this).css('border', '2px dotted #6f6f6f');
-  e.preventDefault();
 
-  uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
-});
+var isDialog = (top !== window);
 
-// Ignore drop on non-droppable area
-jQuery(document).on('dragenter', function (e) {
-  e.stopPropagation();
-  e.preventDefault();
-}).on('dragover', function (e) {
-  e.stopPropagation();
-  e.preventDefault();
-}).on('drop', function (e) {
-  e.stopPropagation();
-  e.preventDefault();
-});
+function resize_upload_overlay() {
+
+  // Take into account scroll bar width on Windows.
+  var width       = window.innerWidth,
+      height      = window.innerHeight;
+
+  var left = 0,
+      offset_left;
+
+  // Change "width" and "left" properties when dialog width is bigger than parent frame width.
+  if (isDialog) {
+    offset_left = top.jQuery('#mt-dialog-iframe').offset().left;
+    if (offset_left < 0) {
+
+      // width
+      if (navigator.userAgent.indexOf("Gecko/")  !== -1
+       && navigator.userAgent.indexOf("Windows") !== -1
+      ) {
+        width = jQuery(top).width();  // Upload dialog on Firefox and Windows. (case #105562)
+      } else {
+        width = top.innerWidth;
+      }
+
+      // left
+      if (navigator.userAgent.indexOf("Safari/") !== -1
+       && navigator.userAgent.indexOf("Chrome/") === -1) {
+        left = Math.round(- offset_left);  // Safari
+      } else {
+        left = Math.floor(- offset_left);
+      }
+    }
+  }
+
+  jQuery('#upload-overlay-container, #upload-overlay-background, #upload-overlay-drop, #upload-overlay-message')
+    .width(width)
+    .height(height)
+    .css('left', left);
+
+  // Take into account border width.
+  jQuery('#upload-overlay-border')
+    .width(width - 6)
+    .height(height - 6)
+    .css('left', left);
+}
+
+// Create upload overlay DOM once.
+if (!jQuery('#upload-overlay-container').length) {
+  jQuery('body')
+    .append(
+      jQuery('<div id="upload-overlay-container" />')
+        .append('<div id="upload-overlay-background" />')
+        .append(
+          jQuery('<div id="upload-overlay-drop" />')
+            .append('<div id="upload-overlay-border" />')
+            .append(
+              jQuery('<div id="upload-overlay-message" />')
+                .append('<img src="<mt:var name="static_uri">images/upload/nowuploading@2x.png" width="60" height="50" /><p><__trans phrase="Drag and drop here"></p>')
+            )
+         )
+    );
+}
+
+// Initialize upload overlay size.
+resize_upload_overlay();
+
+// Bind events.
+jQuery(window)
+  .on('dragover', function(e) {  // Show upload overlay.
+    e.preventDefault();
+    jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
+    jQuery('#upload-overlay-container').show();
+  });
+
+jQuery('#upload-overlay-drop')
+  .on('dragleave', function(e) {  // Hide upload overlay.
+    jQuery('body').removeClass('has-dialog');
+    jQuery('#upload-overlay-container').hide();
+  })
+  .on('drop', function(e) {  // Upload files and hide overlay.
+    e.preventDefault();
+    e.stopPropagation();
+    jQuery('body').removeClass('has-dialog');
+    jQuery('#upload-overlay-container').hide();
+
+    // Change to upload asset panel.
+    if (isDialog) {
+      jQuery('.left-menu-item[data-panel-id="#upload-asset-panel"]').trigger('click');
+    }
+
+    uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
+  });
+
+jQuery(top)
+  .on('resize.multiUpload', resize_upload_overlay);  // Resize upload overlay whenever resizing browser.
+
+// Unbind resizing event of parent frame.
+if (isDialog) {
+  var close = top.jQuery.fn.mtDialog.close;
+
+  function unbind() {
+    jQuery(top).off('resize.multiUpload');
+    top.jQuery.fn.mtDialog.close = close;
+  }
+
+  // Unbind when inserting asset.
+  jQuery(document).ready(function() {
+    jQuery('.actions-bar button.primary').on('click.multiUpload', unbind);
+  });
+
+  // Unbind when closing dialog.
+  top.jQuery.fn.mtDialog.close = function() {
+    close.call();
+    unbind();
+  };
+}
 
 function createFormData(file) {
   var fd = new FormData();
@@ -250,7 +397,7 @@ function createUploadBlock () {
   this.editAsset.hide();
 </mt:unless>
   this.progressbar.progressbar({ value: 0 });
-  jQuery('#upload-progress').append(this.uploadBlock);
+  jQuery('#upload-progress').prepend(this.uploadBlock);
 
   // Recalculate block height
   jQuery('#content-body-right-body').height(
@@ -442,10 +589,10 @@ function uploadFile( formData, uploadBlock ) {
       // Set asset ID
   <mt:if name="can_multi">
       if (jQuery('#select_asset input[name="id"]').val().length > 0 ) {
-        jQuery('#select_asset input[name="id"]').val( jQuery('#select_asset input[name="id"]').val() + ',');
+        jQuery('#select_asset input[name="id"]').val( ',' + jQuery('#select_asset input[name="id"]').val());
       }
-      jQuery('#select_asset input[name="id"]').val(jQuery('#select_asset input[name="id"]').val() +  data.result.asset.id);
-<mt:else>
+      jQuery('#select_asset input[name="id"]').val(data.result.asset.id + jQuery('#select_asset input[name="id"]').val());
+  <mt:else>
       jQuery('#select_asset input[name="id"]').val(data.result.asset.id);
   </mt:if>
 </mt:if>
@@ -493,8 +640,14 @@ jQuery('#file').change( function(e) {
   <mt:if name="dialog">
   jQuery('#upload-asset-panel').on('changePanel', function() {
     if(jQuery('#upload-progress').children('.upload-status-block').length > 0) {
-      var id = jQuery('#upload-progress').children('.upload-status-block').attr('data-asset-id');
-      jQuery('#select_asset input[name="id"]').val(id);
+      var id = [];
+      jQuery('#upload-progress').children('.upload-status-block').each(function() {
+          var asset_id = jQuery(this).attr('data-asset-id');
+          if (asset_id) {
+            id.push(asset_id);
+          }
+      });
+      jQuery('#select_asset input[name="id"]').val(id.join(','));
 
       // Enable submit button
       jQuery('.actions-bar button.primary')

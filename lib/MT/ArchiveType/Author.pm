@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -142,7 +142,11 @@ sub archive_group_entries {
 sub archive_entries_count {
     my $obj = shift;
     my ( $blog, $at, $entry ) = @_;
-    return $obj->SUPER::archive_entries_count(@_) unless $entry;
+    return $obj->SUPER::archive_entries_count(
+        {   Blog        => $blog,
+            ArchiveType => $at,
+        }
+    ) unless $entry;
     my $auth = $entry->author;
     return $obj->SUPER::archive_entries_count(
         {   Blog        => $blog,
@@ -150,6 +154,18 @@ sub archive_entries_count {
             Author      => $auth
         }
     );
+}
+
+sub does_publish_file {
+    my $obj    = shift;
+    my %params = %{ shift() };
+
+    if ( !$params{Author} && $params{Entry} ) {
+        $params{Author} = $params{Entry}->author;
+    }
+    return 0 unless $params{Author};
+
+    MT::ArchiveType::archive_entries_count( $obj, \%params );
 }
 
 sub display_name {

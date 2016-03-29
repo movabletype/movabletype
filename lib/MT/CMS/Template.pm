@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1389,7 +1389,7 @@ sub create_preview_content {
     my $cat_args
         = $cat
         ? { join => MT->model('placement')
-            ->join_on( 'id', { category_id => $cat->id } ) }
+            ->join_on( 'entry_id', { category_id => $cat->id } ) }
         : {};
     my @obj = $entry_class->load(
         {   blog_id => $blog_id,
@@ -1720,7 +1720,7 @@ sub can_view {
     return 1 if $app->user->can_edit_templates;
     return 0 unless $app->blog;
     if ($id) {
-        my $obj = $objp->force();
+        my $obj = $objp->force() or return 0;
         return 0
             unless $app->user->permissions( $obj->blog_id )
             ->can_do('edit_templates');

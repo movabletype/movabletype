@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1838,16 +1838,20 @@ BEGIN {
             'ActivityFeedItemLimit' => { default => 50, },
             'CommentScript'         => { default => 'mt-comments.cgi', },
             'TrackbackScript'       => { default => 'mt-tb.cgi', },
-            'SearchScript'          => { default => 'mt-search.cgi', },
-            'XMLRPCScript'          => { default => 'mt-xmlrpc.cgi', },
-            'AtomScript'            => { default => 'mt-atom.cgi', },
-            'UpgradeScript'         => { default => 'mt-upgrade.cgi', },
-            'CheckScript'           => { default => 'mt-check.cgi', },
-            'DataAPIScript'         => { default => 'mt-data-api.cgi', },
-            'PublishCharset'        => { default => 'utf-8', },
-            'SafeMode'              => { default => 1, },
-            'AllowFileInclude'      => { default => 0, },
-            'GlobalSanitizeSpec'    => {
+            'SearchScript'          => {
+                default => 'mt-search.cgi',
+                handler => \&SearchScript,
+            },
+            'FreeTextSearchScript' => { default => 'mt-ftsearch.cgi', },
+            'XMLRPCScript'         => { default => 'mt-xmlrpc.cgi', },
+            'AtomScript'           => { default => 'mt-atom.cgi', },
+            'UpgradeScript'        => { default => 'mt-upgrade.cgi', },
+            'CheckScript'          => { default => 'mt-check.cgi', },
+            'DataAPIScript'        => { default => 'mt-data-api.cgi', },
+            'PublishCharset'       => { default => 'utf-8', },
+            'SafeMode'             => { default => 1, },
+            'AllowFileInclude'     => { default => 0, },
+            'GlobalSanitizeSpec'   => {
                 default =>
                     'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
             },
@@ -1855,6 +1859,7 @@ BEGIN {
             'DBIRaiseError'               => { default => 0, },
             'SearchAlwaysAllowTemplateID' => { default => 0, },
             'PreviewInNewWindow'          => { default => 1, },
+            'BasenameCheckCompat'         => { default => 0, },
 
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
@@ -2146,12 +2151,21 @@ BEGIN {
             },
             'search' => {
                 handler => 'MT::App::Search::Legacy',
-                script  => sub { MT->config->SearchScript },
                 tags    => sub { MT->app->load_core_tags },
             },
             'new_search' => {
                 handler => 'MT::App::Search',
                 script  => sub { MT->config->SearchScript },
+                tags    => sub {
+                    require MT::Template::Context::Search;
+                    return MT::Template::Context::Search->load_core_tags();
+                },
+                methods => sub { MT->app->core_methods() },
+                default => sub { MT->app->core_parameters() },
+            },
+            'ft_search' => {
+                handler => 'MT::App::Search::FreeText',
+                script  => sub { MT->config->FreeTextSearchScript },
                 tags    => sub {
                     require MT::Template::Context::Search;
                     return MT::Template::Context::Search->load_core_tags();
@@ -3338,6 +3352,19 @@ sub CGIMaxUpload {
             unless ( $val =~ /^[+-]?[0-9]+$/ );
     }
     return $val;
+}
+
+sub SearchScript {
+    my $mgr = shift;
+
+    return $mgr->set_internal( 'SearchScript', @_ ) if @_;
+
+    if ( MT->app && MT->app->isa('MT::App::Search::FreeText') ) {
+        return $mgr->get_internal('FreeTextSearchScript');
+    }
+    else {
+        return $mgr->get_internal('SearchScript');
+    }
 }
 
 1;

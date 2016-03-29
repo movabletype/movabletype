@@ -450,7 +450,7 @@
 { "r" : "1", "t" : "<mt:BlogParentWebsite><mt:WebsiteID></mt:BlogParentWebsite>", "e" : "2"}, #449
 { "r" : "0", "t" : "<MTCalendar><MTCalendarWeekHeader month='197801'><tr></MTCalendarWeekHeader><td><MTCalendarCellNumber>,<MTCalendarIfEntries><MTEntries lastn='1'><a href='<$MTEntryPermalink$>'><$MTCalendarDay$></a></MTEntries></MTCalendarIfEntries><MTCalendarIfNoEntries><$MTCalendarDay$></MTCalendarIfNoEntries><MTCalendarIfBlank>&nbsp;</MTCalendarIfBlank></td><MTCalendarWeekFooter></tr></MTCalendarWeekFooter></MTCalendar>', 'e' : '<tr><td>1,&nbsp;</td><td>2,&nbsp;</td><td>3,&nbsp;</td><td>4,&nbsp;</td><td>5,&nbsp;</td><td>6,1</td><td>7,2</td></tr><tr><td>8,3</td><td>9,4</td><td>10,5</td><td>11,6</td><td>12,7</td><td>13,8</td><td>14,9</td></tr><tr><td>15,10</td><td>16,11</td><td>17,12</td><td>18,13</td><td>19,14</td><td>20,15</td><td>21,16</td></tr><tr><td>22,17</td><td>23,18</td><td>24,19</td><td>25,20</td><td>26,21</td><td>27,22</td><td>28,23</td></tr><tr><td>29,24</td><td>30,25</td><td>31,26</td><td>32,27</td><td>33,28</td><td>34,29</td><td>35,30</td></tr>"}, #450
 { "r" : "0", "t" : "<MTGoogleSearch query='six apart' results='1'><MTGoogleSearchResult property='URL'></MTGoogleSearch>", "e" : "http://www.sixapart.com/"}, #451
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentIfModerated>Moderated<MTElse>NotModerated</MTCommentIfModerated></MTComments>", "e" : "Moderated"}, #452
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentIfModerated>Moderated<MTElse>NotModerated</MTCommentIfModerated></MTComments>", "e" : "NotModerated"}, #452
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentLink></MTComments>", "e" : "http://narnia.na/nana/archives/1962/01/verse-2.html#comment-2"}, #453
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentName></MTComments>", "e" : "John Doe"}, #454
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentParentID></MTComments>", "e" : ""}, #455
@@ -837,5 +837,10 @@
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicAsset><MTAssetBlogID pad='1'></MTAuthorUserpicAsset></MTAuthors>", "e" : "000000"}, #821
 { "r" : "1", "t" : "<MTEntries limit='1'><MTArchiveLink archive_type=\"Author\"></MTEntries>", "e" : "http://narnia.na/nana/archives/author/chucky-dee/"}, #822
 { "r" : "1", "t" : "<mt:ArchiveList type='Monthly'><MTIfFolder>foge</MTIfFolder></mt:ArchiveList>", "e" : ""}, #823
-{ "r" : "1", "t" : "<MTIfFolder>foge</MTIfFolder>", "e" : ""} #824
+{ "r" : "1", "t" : "<MTIfFolder>foge</MTIfFolder>", "e" : ""}, #824
+{ "r" : "1", "t" : "<MTEntries include_blogs='all' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #825
+{ "r" : "1", "t" : "<MTEntries include_blogs='all' class_type='entry' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #826
+{ "r" : "1", "t" : "<MTEntries include_blogs='all' class_type='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "page"}, #827
+{ "r" : "1", "t" : "<MTEntries include_blogs='all' class='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #828
+{ "r" : "1", "t" : "<MTAssets blog_ids='all'><MTAssetBlogID></MTAssets>", "e" : "0011"} #829
 ]
