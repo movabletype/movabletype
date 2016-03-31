@@ -807,15 +807,15 @@ EOT;
         } elseif ($type == 'function') {
             $this->register_function($tag, $fn);
         }
-        $old_handler = $this->_handlers[$tag];
+        // $old_handler = $this->_handlers[$tag];
         $this->_handlers[$tag] = array( $fn, $type );
         if ($old_handler) {
             $fn = $old_handler[0];
         } else {
             if ($type == 'block')
-                $fn = create_function('$args, $content, &$ctx, &$repeat', 'if (!isset($content)) @include_once "block.' . $tag . '.php"; if (function_exists("smarty_block_' . $tag . '")) { return smarty_block_' . $tag . '($args, $content, $ctx, $repeat); } $repeat = false; return "";');
+                $fn = create_function('$args, $content, &$ctx, &$repeat', 'if (!isset($content)) @include_once "block.' . $tag . '.php"; if (function_exists("smarty_block_' . $tag . '")) { return smarty_block_' . $tag . '($args, $content, $ctx->smarty, $repeat); } $repeat = false; return "";');
             elseif ($type == 'function') {
-                $fn = create_function('$args, &$ctx', '@include_once "function.' . $tag . '.php"; if (function_exists("smarty_function_' . $tag . '")) { return smarty_function_' . $tag . '($args, $ctx); } return "";');
+                $fn = create_function('$args, &$ctx', '@include_once "function.' . $tag . '.php"; if (function_exists("smarty_function_' . $tag . '")) { return smarty_function_' . $tag . '($args, $ctx->smarty); } return "";');
             }
         }
         return $fn;
@@ -860,46 +860,32 @@ EOT;
         $ctx =& $_smarty_tpl->smarty;
         $tag = $ctx->this_tag();
 
-        // list($_handler) = $ctx->handler_for($tag);
-
-        // if($_handler){
-        //     if(is_callable($_handler)){
-        //         $_handler($args, $content, $ctx, $repeat);
-        //     }
-        // }else{
-        //     if (function_exists('smarty_block_' . $tag)) {
-        //         $fn = 'smarty_block_' . $tag;
-        //         $fn($args, $content, $ctx, $repeat);
-        //     }
-        // }
-
         if(is_null($tag)) return;
 
-        $content = $ctx->tag($tag,$args);
+        $local_tag_stack = $ctx->_tag_stack;
+
+        $result = $ctx->tag($tag,$args);
+        
         if(isset($ctx->__stash['conditional']) && is_integer($ctx->__stash['conditional'])){
             $ctx->__stash['conditional'] = new Smarty_Variable($ctx->__stash['conditional']);
         }
         $_smarty_tpl->tpl_vars['conditional'] = $ctx->__stash['conditional'];
 
-        return $content;
+        $ctx->_tag_stack = $local_tag_stack;
+
+        if($result) return $result;
     }
+
     function function_wrapper($args, &$_smarty_tpl){
         $ctx =& $_smarty_tpl->smarty;
         $tag = $ctx->this_tag();
         if(is_null($tag)) return;
-        // list($_handler) = $ctx->handler_for($tag);
 
-        // if($_handler){
-        //     if(is_callable($_handler)){
-        //         $content = $_handler($args, $ctx);
-        //     }
-        // }else{
-        //     if (function_exists('smarty_function_' . $tag)) { 
-        //         $fn = 'smarty_function_' . $tag;
-        //         $content = $fn($args, $ctx);
-        //     }
-        // }
-        return $ctx->tag($tag,$args);
+        $local_tag_stack = $ctx->_tag_stack;
+        $content = $ctx->tag($tag,$args);
+        $ctx->_tag_stack = $local_tag_stack;
+
+        return $content;
 
         // return $content;
     }
@@ -913,7 +899,7 @@ EOT;
 
     function register_function($function, $function_impl, $cacheable = true, $cache_attrs = null) {
 
-        if(isset($this->registered_plugins[ Smarty::PLUGIN_BLOCK ][ $block ])) return;
+        if(isset($this->registered_plugins[ Smarty::PLUGIN_FUNCTION ][ $function ])) return;
 
         @include_once 'function.' . $function . '.php';
         $this->registerPlugin('function', $function, array($this,'function_wrapper'), $cacheable, $cache_attrs);
