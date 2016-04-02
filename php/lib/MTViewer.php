@@ -158,6 +158,8 @@ class MTViewer extends SmartyBC {
 
         $this->setDefaultResourceType('mt');
 
+        $this->smarty = $this;
+
     }
 
     function add_plugin_dir($plugin_dir) {
@@ -273,22 +275,23 @@ class MTViewer extends SmartyBC {
                 unset($ctx->__stash['elseif_content']);
                 unset($ctx->__stash['elseif_conditional']);
             }
+
             if ($cond_tag == '1' or $cond_tag == '0') {
                 $ctx->stash('conditional', $cond_tag);
             } else {
-                $ctx->stash('conditional', $ctx->__stash[$cond_tag]->value);
+                $ctx->stash('conditional', $ctx->__stash[$cond_tag]);
             }
         } else {
             if (!$ctx->__stash['conditional']->value) {
-                if ($ctx->__stash['else_content']->value) {
-                    $content = $ctx->__stash['else_content']->value;
+                if ($ctx->__stash['else_content']) {
+                    $content = $ctx->__stash['else_content'];
                 } else {
                     $content = '';
                 }
             }
             else {
-                if ($ctx->__stash['elseif_content']->value) {
-                    $content = $ctx->__stash['elseif_content']->value;
+                if ($ctx->__stash['elseif_content']) {
+                    $content = $ctx->__stash['elseif_content'];
                 }
             }
             if (!isset($args['elseif'])) {
@@ -304,7 +307,7 @@ class MTViewer extends SmartyBC {
     }
 
     function smarty_block_else($args, $content, &$ctx, &$repeat) {
-        if ($ctx->__stash['elseif_content']->value
+        if (isset($ctx->__stash['elseif_content'])
             or $ctx->__stash['conditional']->value) {
             $repeat = false;
             return '';
@@ -312,17 +315,17 @@ class MTViewer extends SmartyBC {
         if ((count($args) > 0) && (!isset($args['name']) && !isset($args['var']) && !isset($args['tag']))) {
             $stash =& $ctx->__stash;
             if ( array_key_exists('__cond_tag__', $stash) ) {
-                $tag = $stash['__cond_tag__']->value;
+                $tag = $stash['__cond_tag__'];
                 if ( isset($tag) && $tag )
                     $args['tag'] = $tag;
             }
             else if ( array_key_exists('__cond_name__', $stash) ) {
-                $name = $stash['__cond_name__']->value;
+                $name = $stash['__cond_name__'];
                 if ( isset($name) && $name )
                     $args['name'] = $name;
             }
             if ( array_key_exists('__cond_value__', $stash) ) {
-                $value = $stash['__cond_value__']->value;
+                $value = $stash['__cond_value__'];
                 if ( isset($value) && $value )
                     $args['value'] = $value;
             }
@@ -332,13 +335,13 @@ class MTViewer extends SmartyBC {
             $args['elseif'] = 1;
             if (!isset($content)) {
                 $out = smarty_block_mtif($args, $content, $ctx, $repeat);
-                if ($ctx->__stash['conditional']->value) {
+                if ($ctx->__stash['conditional']) {
                     $ctx->stash('elseif_conditional', 1);
                     unset($ctx->__stash['conditional']);
                 }
             } else {
                 // $out = smarty_block_mtif($args, $content, $ctx, $repeat);
-                if ($ctx->__stash['elseif_conditional']->value) {
+                if ($ctx->__stash['elseif_conditional']) {
                     $ctx->stash('elseif_content', $content);
                     $ctx->stash('conditional', 1);
                 }
@@ -349,7 +352,7 @@ class MTViewer extends SmartyBC {
             if ($ctx->__stash['conditional']->value)
                 $repeat = false;
         } else {
-            $else_content = $ctx->__stash['else_content']->value;
+            $else_content = $ctx->__stash['else_content'];
             $else_content .= $content;
             $ctx->stash('else_content', $else_content);
         }
@@ -813,9 +816,9 @@ EOT;
             $fn = $old_handler[0];
         } else {
             if ($type == 'block')
-                $fn = create_function('$args, $content, &$ctx, &$repeat', 'if (!isset($content)) @include_once "block.' . $tag . '.php"; if (function_exists("smarty_block_' . $tag . '")) { return smarty_block_' . $tag . '($args, $content, $ctx->smarty, $repeat); } $repeat = false; return "";');
+                $fn = create_function('$args, $content, &$ctx, &$repeat', 'if (!isset($content)) @include_once "block.' . $tag . '.php"; if (function_exists("smarty_block_' . $tag . '")) { return smarty_block_' . $tag . '($args, $content, $ctx, $repeat); } $repeat = false; return "";');
             elseif ($type == 'function') {
-                $fn = create_function('$args, &$ctx', '@include_once "function.' . $tag . '.php"; if (function_exists("smarty_function_' . $tag . '")) { return smarty_function_' . $tag . '($args, $ctx->smarty); } return "";');
+                $fn = create_function('$args, &$ctx', '@include_once "function.' . $tag . '.php"; if (function_exists("smarty_function_' . $tag . '")) { return smarty_function_' . $tag . '($args, $ctx); } return "";');
             }
         }
         return $fn;
@@ -859,35 +862,52 @@ EOT;
     function block_wrapper($args, $content, &$_smarty_tpl, &$repeat){
         $ctx =& $_smarty_tpl->smarty;
         $tag = $ctx->this_tag();
+        $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
 
-        if(is_null($tag)) return;
 
-        $local_tag_stack = $ctx->_tag_stack;
-
-        $result = $ctx->tag($tag,$args);
-        
-        if(isset($ctx->__stash['conditional']) && is_integer($ctx->__stash['conditional'])){
-            $ctx->__stash['conditional'] = new Smarty_Variable($ctx->__stash['conditional']);
+        // $local_tag_stack = $ctx->_tag_stack;
+        list($hdlr) = $this->handler_for("mt" . $tag);
+        if(!$hdlr){
+            $fntag = 'smarty_block_mt' . $tag;
+            if(is_callable($fntag)){
+                $result = $fntag($args, $content, $ctx, $repeat);
+            }
+        } else {
+            $result = $hdlr($args, $content, $ctx, $repeat);
         }
-        $_smarty_tpl->tpl_vars['conditional'] = $ctx->__stash['conditional'];
+        // $ctx->_tag_stack = $local_tag_stack;
 
-        $ctx->_tag_stack = $local_tag_stack;
+        $variables = array('conditional','elseif_conditional');
+        foreach ($variables as $value) {
+            if(isset($ctx->__stash[$value]) && !is_object($ctx->__stash[$value])){
+                $ctx->__stash[$value] = new Smarty_Variable($ctx->__stash[$value]);
+                $_smarty_tpl->tpl_vars[$value] = $ctx->__stash[$value];
+            }
+        }
 
-        if($result) return $result;
+        $result = $content? $content : $result;
+        return $result;
     }
 
     function function_wrapper($args, &$_smarty_tpl){
         $ctx =& $_smarty_tpl->smarty;
         $tag = $ctx->this_tag();
-        if(is_null($tag)) return;
 
-        $local_tag_stack = $ctx->_tag_stack;
-        $content = $ctx->tag($tag,$args);
-        $ctx->_tag_stack = $local_tag_stack;
+        // $result = $ctx->tag($tag,$args);
+        $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
+        // var_dump($tag);
+        list($hdlr) = $this->handler_for("mt" . $tag);
+        if(!$hdlr){
+            $fntag = 'smarty_function_mt' . $tag;
+            if(is_callable($fntag)){
+                $result = $fntag($args, $ctx);
+            }
+        } else {
+            $result = $hdlr($args, $ctx);
+        }
 
-        return $content;
+        return $result;
 
-        // return $content;
     }
     function register_block($block, $block_impl, $cacheable = true, $cache_attrs = null) {
 

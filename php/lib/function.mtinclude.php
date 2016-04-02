@@ -199,7 +199,7 @@ function smarty_function_mtinclude($args, &$ctx) {
                 _clear_vars($ctx, $ext_args);
                 return $ctx->error("Error compiling template module '$module'");
             }
-            $_include_cache[$cache_id] = $_var_compiled;
+            // $_include_cache[$cache_id] = $_var_compiled;
         }
     } elseif (isset($args['file']) && ($args['file'])) {
         $mt = MT::get_instance();

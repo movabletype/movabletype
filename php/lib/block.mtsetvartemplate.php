@@ -41,7 +41,7 @@ function smarty_block_mtsetvartemplate($args, $content, &$ctx, &$repeat) {
             $vars[$name] = $value;
         } else {
             $vars = array($name => $value);
-            $ctx->__stash['vars'] =& $vars;
+            $ctx->__stash['vars'] = $vars;
         }
     }
     return '';
