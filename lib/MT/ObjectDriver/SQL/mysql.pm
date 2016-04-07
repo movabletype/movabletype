@@ -58,4 +58,32 @@ sub add_freetext_where {
     $stmt->where_values->{$col} = $search_string;
 }
 
+sub as_sql {
+    my $stmt = shift;
+
+    if ( $stmt->distinct && $stmt->order ) {
+        my $attribute = $stmt->order;
+        my $elements
+            = ( ref($attribute) eq 'ARRAY' ) ? $attribute : [$attribute];
+        if ( @{ $stmt->select } ) {
+            foreach my $element ( @{$elements} ) {
+                unless (
+                    List::Util::first { $_ eq $element->{column} }
+                    @{ $stmt->select }
+                    )
+                {
+                    $stmt->add_select( $element->{column} );
+                }
+            }
+        }
+        else {
+            foreach my $element ( @{$elements} ) {
+                $stmt->add_select( $element->{column} );
+            }
+        }
+    }
+
+    return $stmt->SUPER::as_sql(@_);
+}
+
 1;
