@@ -78,7 +78,9 @@ function multiblog_MTTagSearchLink($args, &$ctx) {
     return multiblog_function_wrapper('mttagsearchlink', $args, $ctx);
 }
 # Special handler for MTInclude
-function multiblog_MTInclude($args, &$ctx) {
+function multiblog_MTInclude($args, &$_smarty_tpl) {
+    $ctx = $_smarty_tpl->smarty;
+
     if (isset($args['blog_id'])) {
     # Load multiblog access control list
         $acl = multiblog_load_acl($ctx);
@@ -114,7 +116,9 @@ function multiblog_MTInclude($args, &$ctx) {
 }
 
 # MultiBlog plugin wrapper for function tags (i.e. variable tags)
-function multiblog_function_wrapper($tag, $args, &$ctx) {
+function multiblog_function_wrapper($tag, $args, &$_smarty_tpl) {
+    $ctx = $_smarty_tpl->smarty;
+
     $localvars = array('local_blog_id');
     $ctx->localize($localvars);
     
@@ -157,7 +161,8 @@ function multiblog_function_wrapper($tag, $args, &$ctx) {
 }
 
 # MultiBlog plugin wrapper for block tags (i.e. container/conditional)
-function multiblog_block_wrapper(&$args, $content, &$ctx, &$repeat) {
+function multiblog_block_wrapper(&$args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx = $_smarty_tpl->smarty;
     $tag = $ctx->this_tag();
     $localvars = array('entries', 'current_timestamp', 'current_timestamp_end', 'category', 'archive_category', 'local_blog_id');
 

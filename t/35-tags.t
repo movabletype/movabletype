@@ -225,10 +225,9 @@ function cleanup($tmpl) {
 function build(&$ctx, $tmpl) {
     global $error_messages;
     $error_messages = array();
-    $_var_compiled = $ctx->fetch("eval:$tmpl");
-    if($_var_compiled) {
+    if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
         ob_start();
-        eval('?>' . $_var_compiled);
+        $ctx->_eval('?>' . $_var_compiled);
         $_contents = ob_get_contents();
         ob_end_clean();
         return join('', $error_messages) . $_contents;

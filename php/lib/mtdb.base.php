@@ -254,7 +254,7 @@ abstract class MTDatabase {
                 $ctx = $mt->context();
                 $blog = $ctx->stash('blog');
                 if ( !empty( $blog ) ) {
-                    $tag = $ctx->_cache["tag_stack"][count($ctx->_cache["tag_stack"])-1][0];
+                    $tag = $ctx->_tag_stack[count($ctx->_tag_stack)-1][0];
                     if ( !empty($tag)
                       && ( $tag === 'mtwebsitepingcount'
                         || $tag === 'mtwebsiteentrycount'
