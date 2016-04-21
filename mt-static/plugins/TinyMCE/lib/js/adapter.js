@@ -168,7 +168,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         adapter.$editorTextarea = $('#' + adapter.id).css({
             width: '100%',
             background: 'white',
-            'white-space': 'pre',
+            'white-space': 'pre-wrap',
             resize: 'none'
         });
         if (tinyMCE.isIE8) {
