@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,13 +16,6 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
-## plugins/MultiBlog/lib/MultiBlog.pm
-	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'Restauration du compteur de republication MultiBlog pour le blog #[_1]...',
-
-## plugins/MultiBlog/lib/MultiBlog/Tags.pm
-	'MTMultiBlog tags cannot be nested.' => 'Les balises MTMultiBlog ne peuvent pas être imbriquées.',
-	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'Valeur de l\'attribut "mode" inconnue : [_1]. Les valeurs valides sont "loop" et "context".',
-
 ## plugins/MultiBlog/multiblog.pl
 	q{MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.} => q{Multiblog vous permet de publier du contenu d'autres blogs et de définir des règles de publication et de droit d'accès entre eux.},
 	'MultiBlog' => 'MultiBlog',
@@ -35,17 +28,17 @@ use vars qw( %Lexicon );
 	'Select to apply this trigger to all websites and blogs in this system.' => 'Sélectionner pour appliquer ce déclencheur à tous les sites web et blog de ce système.',
 	'saves an entry/page' => 'une note/page est sauvegardée',
 	'publishes an entry/page' => 'une note/page est publiée',
+	'unpublishes an entry/page' => 'une note/page est dépubliée', # Translate - New
 	'publishes a comment' => 'un commentaire est publié',
 	'publishes a TrackBack' => 'un Trackback est publié',
 	'rebuild indexes.' => 'reconstruire les index.',
 	'rebuild indexes and send pings.' => 'reconstruire les index et envoyer les pings.',
-	'Updating the MultiBlog trigger cache...' => 'Mise à jour du cache des déclencheurs MultiBlog', # Translate - New
+	'Updating the MultiBlog trigger cache...' => 'Mise à jour du cache des déclencheurs MultiBlog...',
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => 'Quand',
 	'Trigger' => 'Événement',
 	'Action' => 'Action',
-	'Weblog' => 'Blog',
 	'Content Privacy' => 'Protection du contenu',
 	q{Specify whether other blogs in the installation may publish content from this blog. This setting takes precedence over the default system aggregation policy found in the system-level MultiBlog configuration.} => q{Indiquez si les autres blogs de cette installation peuvent publier du contenu de ce blog. Ce réglage prend le dessus sur la règle d'agrégation du système par défaut qui se trouve dans la configuration de MultiBlog pour tout le système.},
 	'Use system default' => 'Utiliser la règle par défaut du système',

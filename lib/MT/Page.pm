@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -23,11 +23,11 @@ __PACKAGE__->install_properties(
 # Callbacks: clean list of changed columns to only
 # include versioned columns
 MT->add_callback( 'data_api_pre_save.' . 'page',
-    1, undef, \&MT::Revisable::mt_presave_obj );
+    9, undef, \&MT::Revisable::mt_presave_obj );
 MT->add_callback( 'api_pre_save.' . 'page',
-    1, undef, \&MT::Revisable::mt_presave_obj );
+    9, undef, \&MT::Revisable::mt_presave_obj );
 MT->add_callback( 'cms_pre_save.' . 'page',
-    1, undef, \&MT::Revisable::mt_presave_obj );
+    9, undef, \&MT::Revisable::mt_presave_obj );
 
 # Callbacks: object-level callbacks could not be
 # prioritized and thus caused problems with plugins

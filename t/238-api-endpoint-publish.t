@@ -58,7 +58,7 @@ sub suite {
             },
             callbacks => [
                 {   name  => 'build_file_filter',
-                    count => 8,
+                    count => 9,
                 },
             ],
             next_phase_url => qr{/publish/entries\?.*ids=(\D|$)},

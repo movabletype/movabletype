@@ -34,6 +34,11 @@ sub _run_app_with_upload_file {
     my $fmgr_module = Test::MockModule->new( ref $fmgr );
     $fmgr_module->mock( $_, $mock_put ) for qw(put put_data);
 
+    # Quality of image file cannot be changed,
+    # because image file is not uploaded.
+    my $asset_image = Test::MockModule->new('MT::Asset::Image');
+    $asset_image->mock( 'change_quality', sub {1} );
+
     my $app = Test::MockModule->new('MT::App');
     $app->mock(
         'upload_info',

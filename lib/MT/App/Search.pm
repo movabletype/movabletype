@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -217,11 +217,9 @@ sub generate_cache_keys {
     }
 
     # Cache key is different for each applications.
-    if ( !$app->isa('MT::App::Search') ) {
-        my $app_key_param = 'app_id' . encode_url( $app->id );
-        $key       .= $app_key_param;
-        $count_key .= $app_key_param;
-    }
+    my $app_key_param = 'app_id' . encode_url( $app->id );
+    $key       .= $app_key_param;
+    $count_key .= $app_key_param;
 
     $key       = perl_sha1_digest_hex($key);
     $count_key = perl_sha1_digest_hex($count_key);
@@ -672,7 +670,8 @@ sub first_blog_id {
         if (   $q->param('IncludeBlogs') eq ''
             || $q->param('IncludeBlogs') eq 'all' )
         {
-            my @blogs = $app->model('blog')->load( {}, { limit => 1 } );
+            my @blogs = $app->model('blog')
+                ->load( {}, { no_class => 1, limit => 1 } );
             $blog_id = @blogs ? $blogs[0]->id : undef;
         }
 
@@ -724,8 +723,9 @@ sub prepare_context {
     if ($blog_id) {
         my $blog = $app->model('blog')->load($blog_id);
         $app->blog($blog);
-        $ctx->stash( 'blog_id', $blog_id );
-        $ctx->stash( 'blog',    $blog );
+        $ctx->stash( 'blog_id',        $blog_id );
+        $ctx->stash( 'blog',           $blog );
+        $ctx->stash( 'search_blog_id', $blog_id );
     }
 
     # some basic search parameters
@@ -952,7 +952,8 @@ sub query_parse {
         = $app->registry( $app->mode, 'types', $app->{searchparam}{Type} );
     my $filter_types = $reg->{'filter_types'};
     foreach my $type ( keys %$filter_types ) {
-        if ( my $filter = $app->param($type) ) {
+        my @filters = $app->param($type);
+        foreach my $filter (@filters) {
             if ( $filter =~ m/\s/ ) {
                 $filter = '"' . $filter . '"';
             }
@@ -968,7 +969,8 @@ sub query_parse {
     my $return = { $terms && @$terms ? ( terms => $terms ) : () };
     if ( $joins && @$joins ) {
         my $args = {};
-#        _create_join_arg( $args, $joins );
+
+        #        _create_join_arg( $args, $joins );
         $args->{joins} = $joins;
         if ( $args && %$args ) {
             $return->{args} = $args;
@@ -1183,21 +1185,21 @@ sub _join_field {
     my ( $app, $term ) = @_;
 
     eval "require CustomFields::Field;";
-    return if $@; # No Commercial.Pack installed?
+    return if $@;    # No Commercial.Pack installed?
 
     my $query = $term->{term};
     if ( 'PHRASE' eq $term->{query} ) {
         $query =~ s/'/"/g;
     }
 
-    my ($basename, $val) = split ':', $query, 2;
+    my ( $basename, $val ) = split ':', $query, 2;
     return unless $basename && $val;
 
     require MT::Meta;
-    my $field_basename = 'field.'.$basename;
+    my $field_basename = 'field.' . $basename;
     my $class          = $app->model( $app->{searchparam}{Type} );
-    my $meta_rec       = MT::Meta->metadata_by_name( $class, $field_basename );
-    my $type_col       = $meta_rec->{type};
+    my $meta_rec = MT::Meta->metadata_by_name( $class, $field_basename );
+    my $type_col = $meta_rec->{type};
     return unless $type_col;
 
     my $lucene_struct = Lucene::QueryParser::parse_query($val);
@@ -1205,15 +1207,16 @@ sub _join_field {
         $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
     }
 
-    my ( $terms ) 
-        = $app->_query_parse_core( $lucene_struct,
-        { $type_col => 'like' },
+    my ($terms)
+        = $app->_query_parse_core( $lucene_struct, { $type_col => 'like' },
         {} );
     return unless $terms && @$terms;
 
     my $meta_class = $class->meta_pkg;
-    push @$terms, '-and', { entry_id => \'= entry_id', type => $field_basename };
-    $meta_class->join_on( undef, $terms, { unique => 1, alias => "$basename" } );
+    push @$terms, '-and',
+        { entry_id => \'= entry_id', type => $field_basename };
+    $meta_class->join_on( undef, $terms,
+        { unique => 1, alias => "$basename" } );
 }
 
 # throttling related methods

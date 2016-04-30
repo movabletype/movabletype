@@ -12,7 +12,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 # Sony IDC tags (ref PH)
 %Image::ExifTool::SonyIDC::Main = (
@@ -259,23 +259,23 @@ Image::ExifTool::AddCompositeTags('Image::ExifTool::SonyIDC');
 #          or undef if there was no preview in the SonyIDC IFD
 sub ExtractPreviews($)
 {
-    my $exifTool = shift;
+    my $et = shift;
     my $i = 1;
     my $xtra = ' (1)';
     my $preview;
     # loop through all available IDC preview images in the order they were found
     for (;;) {
         my $key = "IDCPreviewStart$xtra";
-        unless (defined $$exifTool{VALUE}{$key}) {
+        unless (defined $$et{VALUE}{$key}) {
             last unless $xtra;
             $xtra = ''; # do the last tag extracted last
             next;
         }
         # run through IDC preview images in the same order they were extracted
-        my $off = $exifTool->GetValue($key) or last;
-        my $len = $exifTool->GetValue("IDCPreviewLength$xtra") or last;
+        my $off = $et->GetValue($key) or last;
+        my $len = $et->GetValue("IDCPreviewLength$xtra") or last;
         # get stack version from number in group 1 name
-        my $grp1 = $exifTool->GetGroup($key, 1);
+        my $grp1 = $et->GetGroup($key, 1);
         if ($grp1 =~ /(\d+)$/) {
             my $tag = "IDCPreviewImage$1";
             unless ($Image::ExifTool::Extra{$tag}) {
@@ -284,10 +284,10 @@ sub ExtractPreviews($)
                     Groups => { 0 => 'Composite', 1 => 'Composite', 2 => 'Image'},
                 });
             }
-            my $val = Image::ExifTool::Exif::ExtractImage($exifTool, $off, $len, $tag);
-            $exifTool->FoundTag($tag, $val);
+            my $val = Image::ExifTool::Exif::ExtractImage($et, $off, $len, $tag);
+            $et->FoundTag($tag, $val);
         } else {
-            $preview = Image::ExifTool::Exif::ExtractImage($exifTool, $off, $len, 'IDCPreviewImage');
+            $preview = Image::ExifTool::Exif::ExtractImage($et, $off, $len, 'IDCPreviewImage');
         }
         # step to next set of tags unless we are done
         last unless $xtra;
@@ -316,7 +316,7 @@ write Sony Image Data Converter version 3.0 metadata in ARW images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

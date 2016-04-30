@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2005-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2005-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -19,10 +19,10 @@ sub fetch_themes {
     my $static_webpath = MT->app->static_path;
     my $support_url    = MT->app->support_directory_url;
     $url ||= $self->url || '';
-    $url =~ s/{{static}}/$static_webpath/i;
-    $url =~ s/{{support}}/$support_url/i;
+    $url =~ s/\{\{static}}/$static_webpath/i;
+    $url =~ s/\{\{support}}/$support_url/i;
     $url
-        =~ s/{{theme_static}}/MT::Theme::static_file_url_from_id($self->key)/ie;
+        =~ s/\{\{theme_static}}/MT::Theme::static_file_url_from_id($self->key)/ie;
     if ( $url =~ m!^/! ) {
         $url = MT->app->base . $url;
     }
@@ -32,8 +32,12 @@ sub fetch_themes {
 # If we have a url then we're specifying a specific theme (css) or repo (html)
 # Pick up the file (html with <link>s or a css file with metadata)
     my $user_agent = MT->new_ua;
-    my $request    = HTTP::Request->new( GET => $url );
-    my $response   = $user_agent->request($request);
+
+    # Do not verify SSL certificate because accessing to oneself.
+    $user_agent->ssl_opts( verify_hostname => 0 );
+
+    my $request = HTTP::Request->new( GET => $url );
+    my $response = $user_agent->request($request);
 
     # Make a repo if you've got a ton of links or an automatic entry if
     # you're a css file
@@ -108,7 +112,11 @@ sub download_theme {
     my $support_path = MT->app->support_directory_path;
     my $themeroot    = File::Spec->catdir( $support_path, 'themes' );
     my $ua           = MT->new_ua( { max_size => 500_000 } );
-    my $filemgr      = file_mgr()
+
+    # Do not verify SSL certificate because accessing to oneself.
+    $ua->ssl_opts( verify_hostname => 0 );
+
+    my $filemgr = file_mgr()
         or return;
 
     my @url                 = split( /\//, $url );

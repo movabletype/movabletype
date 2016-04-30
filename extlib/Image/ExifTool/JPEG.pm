@@ -11,10 +11,10 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.17';
+$VERSION = '1.24';
 
-sub ProcessScalado($$$);
 sub ProcessOcad($$$);
+sub ProcessJPEG_HDR($$$);
 
 # (this main JPEG table is for documentation purposes only)
 %Image::ExifTool::JPEG::Main = (
@@ -76,7 +76,7 @@ sub ProcessOcad($$$);
       }, {
         Name => 'PreviewImage',
         Condition => '$$valPt =~ /^(|QVGA\0|BGTH)\xff\xd8\xff\xdb/',
-        Notes => 'Samsung APP2 preview image', # (Samsung="", BenQ="QVGA\0", Digilife="BGTH")
+        Notes => 'Samsung APP2 preview image', # (Samsung/GoPro="", BenQ="QVGA\0", Digilife="BGTH")
     }],
     APP3 => [{
         Name => 'Meta',
@@ -94,13 +94,13 @@ sub ProcessOcad($$$);
     APP4 => [{
         Name => 'Scalado',
         Condition => '$$valPt =~ /^SCALADO\0/',
-        SubDirectory => { TagTable => 'Image::ExifTool::JPEG::Scalado' },
+        SubDirectory => { TagTable => 'Image::ExifTool::Scalado::Main' },
       }, {
         Name => 'FPXR', # (non-standard location written by some HP models)
         Condition => '$$valPt =~ /^FPXR\0/',
         SubDirectory => { TagTable => 'Image::ExifTool::FlashPix::Main' },
       }, {
-        Name => 'PreviewImage', # (ie. Samsung S1060)
+        Name => 'PreviewImage', # (eg. Samsung S1060)
         Notes => 'continued from APP3',
     }],
     APP5 => [{
@@ -108,7 +108,7 @@ sub ProcessOcad($$$);
         Condition => '$$valPt =~ /^RMETA\0/',
         SubDirectory => { TagTable => 'Image::ExifTool::Ricoh::RMETA' },
       }, {
-        Name => 'PreviewImage', # (ie. BenQ DC E1050)
+        Name => 'PreviewImage', # (eg. BenQ DC E1050)
         Notes => 'continued from APP4',
     }],
     APP6 => [{
@@ -124,20 +124,34 @@ sub ProcessOcad($$$);
         Condition => '$$valPt =~ /^TDHD\x01\0\0\0/',
         SubDirectory => { TagTable => 'Image::ExifTool::HP::TDHD' },
     }],
-    APP7 => {
+    APP7 => [{
+        Name => 'Pentax',
+        Condition => '$$valPt =~ /^PENTAX \0/',
+        SubDirectory => { TagTable => 'Image::ExifTool::Pentax::Main' },
+      }, {
         Name => 'Qualcomm',
         Condition => '$$valPt =~ /^\x1aQualcomm Camera Attributes/',
         SubDirectory => { TagTable => 'Image::ExifTool::Qualcomm::Main' },
-    },
+    }],
     APP8 => {
         Name => 'SPIFF',
         Condition => '$$valPt =~ /^SPIFF\0/',
         SubDirectory => { TagTable => 'Image::ExifTool::JPEG::SPIFF' },
     },
+    APP9 => {
+        Name => 'MediaJukebox',
+        Condition => '$$valPt =~ /^Media Jukebox\0/',
+        SubDirectory => { TagTable => 'Image::ExifTool::JPEG::MediaJukebox' },
+    },
     APP10 => {
         Name => 'Comment',
         Condition => '$$valPt =~ /^UNICODE\0/',
         Notes => 'PhotoStudio Unicode comment',
+    },
+    APP11 => {
+        Name => 'JPEG-HDR',
+        Condition => '$$valPt =~ /^HDR_RI /',
+        SubDirectory => { TagTable => 'Image::ExifTool::JPEG::HDR' },
     },
     APP12 => [{
         Name => 'PictureInfo',
@@ -181,7 +195,7 @@ sub ProcessOcad($$$);
     },
     DQT => {
         Name => 'DefineQuantizationTable',
-        Notes => 'used to calculate the Extra:JPEGDigest tag value',
+        Notes => 'used to calculate the Extra JPEGDigest tag value',
     },
     Trailer => [{
         Name => 'AFCP',
@@ -206,6 +220,10 @@ sub ProcessOcad($$$);
             $$valPt =~ /~\0\x04\0zmie~\0\0\x0a.{8}[\x10\x18]\x08$/s
         },
         SubDirectory => { TagTable => 'Image::ExifTool::MIE::Main' },
+      }, {
+        Name => 'Samsung',
+        Condition => '$$valPt =~ /QDIOBS$/',
+        SubDirectory => { TagTable => 'Image::ExifTool::Samsung::Trailer' },
       }, {
         Name => 'PreviewImage',
         Condition => '$$valPt =~ /^\xff\xd8\xff/',
@@ -318,6 +336,44 @@ sub ProcessOcad($$$);
     },
 );
 
+# Media Jukebox APP9 segment (ref PH)
+%Image::ExifTool::JPEG::MediaJukebox = (
+    GROUPS => { 0 => 'XML', 1 => 'MediaJukebox', 2 => 'Image' },
+    VARS => { NO_ID => 1 },
+    NOTES => 'Tags found in the XML metadata of the "Media Jukebox" APP9 segment.',
+    Date => {
+        Groups => { 2 => 'Time' },
+        # convert from days since Dec 30, 1899 to seconds since Jan 1, 1970
+        ValueConv => 'ConvertUnixTime(($val - (70 * 365 + 17 + 2)) * 24 * 3600)',
+        PrintConv => '$self->ConvertDateTime($val)',
+    },
+    Album        => { },
+    Caption      => { },
+    Keywords     => { },
+    Name         => { },
+    People       => { },
+    Places       => { },
+    Tool_Name    => { },
+    Tool_Version => { },
+);
+
+# JPEG-HDR APP11 information (ref PH, guessed from http://anyhere.com/gward/papers/cic05.pdf)
+%Image::ExifTool::JPEG::HDR = (
+    GROUPS => { 0 => 'APP11', 1 => 'JPEG-HDR', 2 => 'Image' },
+    PROCESS_PROC => \&ProcessJPEG_HDR,
+    TAG_PREFIX => '', # (no prefix for unknown tags)
+    NOTES => 'Information extracted from APP11 of a JPEG-HDR image.',
+    ver => 'JPEG-HDRVersion',
+    # (need names for the next 3 tags)
+    ln0 => { Description => 'Ln0' },
+    ln1 => { Description => 'Ln1' },
+    s2n => { Description => 'S2n' },
+    alp => { Name => 'Alpha' }, # (Alpha/Beta are saturation parameters)
+    bet => { Name => 'Beta' },
+    cor => { Name => 'CorrectionMethod' },
+    RatioImage => { Binary => 1, Notes => 'the embedded JPEG-compressed ratio image' },
+);
+
 # AdobeCM APP13 (no references)
 %Image::ExifTool::JPEG::AdobeCM = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
@@ -347,13 +403,19 @@ sub ProcessOcad($$$);
     0 => 'DCTEncodeVersion',
     1 => {
         Name => 'APP14Flags0',
-        PrintConv => { BITMASK => {
-            15 => 'Encoded with Blend=1 downsampling'
-        } },
+        PrintConv => {
+            0 => '(none)',
+            BITMASK => {
+                15 => 'Encoded with Blend=1 downsampling'
+            },
+        },
     },
     2 => {
         Name => 'APP14Flags1',
-        PrintConv => { BITMASK => { } },
+        PrintConv => {
+            0 => '(none)',
+            BITMASK => { },
+        },
     },
     3 => {
         Name => 'ColorTransform',
@@ -393,6 +455,7 @@ sub ProcessOcad($$$);
 %Image::ExifTool::JPEG::Ocad = (
     PROCESS_PROC => \&ProcessOcad,
     GROUPS => { 0 => 'APP0', 1 => 'Ocad', 2 => 'Image' },
+    TAG_PREFIX => 'Ocad',
     FIRST_ENTRY => 0,
     NOTES => q{
         Tags extracted from the JPEG APP0 "Ocad" segment (found in Photobucket
@@ -464,93 +527,43 @@ sub ProcessOcad($$$);
     },
 );
 
-# information written by Scalado software (PhotoFusion maybe?)
-%Image::ExifTool::JPEG::Scalado = (
-    GROUPS => { 0 => 'APP4', 1 => 'Scalado', 2 => 'Image' },
-    PROCESS_PROC => \&ProcessScalado,
-    TAG_PREFIX => 'Scalado',
-    FORMAT => 'int32s',
-    # I presume this was written by 
-    NOTES => q{
-        Tags extracted from the JPEG APP4 "SCALADO" segment (presumably written by
-        Scalado mobile software, L<http://www.scalado.com/>).
-    },
-    SPMO => {
-        Name => 'DataLength',
-        Unkown => 1,
-    },
-    WDTH => {
-        Name => 'PreviewImageWidth',
-        ValueConv => '$val ? abs($val) : undef',
-    },
-    HGHT => {
-        Name => 'PreviewImageHeight',
-        ValueConv => '$val ? abs($val) : undef',
-    },
-    QUAL => {
-        Name => 'PreviewQuality',
-        ValueConv => '$val ? abs($val) : undef',
-    },
-    # tags not yet decoded with observed values:
-    # CHKH: 0, -9010
-    # CHKL: -2664, -12852
-    # CLEN: -1024
-    # CSPC: -2232593
-    # DATA: (+ve data length)
-    # HDEC: 0
-    # MAIN: 0
-    # SCI0: (+ve data length)
-    # SCX1: (+ve data length)
-    # WDEC: 0
-);
-
 #------------------------------------------------------------------------------
 # Extract information from the JPEG APP0 Ocad segment
 # Inputs: 0) ExifTool object ref, 1) dirInfo ref, 2) tag table ref
 # Returns: 1 on success
 sub ProcessOcad($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
-    $exifTool->VerboseDir('APP0 Ocad', undef, length $$dataPt);
+    $et->VerboseDir('APP0 Ocad', undef, length $$dataPt);
     for (;;) {
         last unless $$dataPt =~ /\$(\w+):([^\0\$]+)/g;
         my ($tag, $val) = ($1, $2);
         $val =~ s/^\s+//; $val =~ s/\s+$//;     # remove leading/trailing spaces
-        unless ($$tagTablePtr{$tag}) {
-            AddTagToTable($tagTablePtr, $tag, { Name => "Ocad_$tag" });
-        }
-        $exifTool->HandleTag($tagTablePtr, $tag, $val);
+        AddTagToTable($tagTablePtr, $tag) unless $$tagTablePtr{$tag};
+        $et->HandleTag($tagTablePtr, $tag, $val);
     }
     return 1;
 }
 
 #------------------------------------------------------------------------------
-# Extract information from the JPEG APP4 SCALADO segment
+# Extract information from the JPEG APP0 Ocad segment
 # Inputs: 0) ExifTool object ref, 1) dirInfo ref, 2) tag table ref
 # Returns: 1 on success
-sub ProcessScalado($$$)
+sub ProcessJPEG_HDR($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
-    my $pos = 0;
-    my $end = length $$dataPt;
-    SetByteOrder('MM');
-    $exifTool->VerboseDir('APP4 SCALADO', undef, $end);
-    for (;;) {
-        last if $pos + 12 > $end;
-        my $tag = substr($$dataPt, $pos, 4);
-        my $unk = Get32u($dataPt, $pos + 4); # (what is this?)
-        $exifTool->HandleTag($tagTablePtr, $tag, undef,
-            DataPt  => $dataPt,
-            Start   => $pos + 8,
-            Size    => 4,
-            Extra   => ", unk $unk",
-        );
-        # shorten directory size by length of SPMO
-        $end -= Get32u($dataPt, $pos + 8) if $tag eq 'SPMO';
-        $pos += 12;
+    $$dataPt =~ /~\0/g or $et->Warn('Unrecognized JPEG-HDR format'), return 0;
+    my $pos = pos $$dataPt;
+    my $meta = substr($$dataPt, 7, $pos-9);
+    $et->VerboseDir('APP11 JPEG-HDR', undef, length $$dataPt);
+    while ($meta =~ /(\w+)=([^,\s]*)/g) {
+        my ($tag, $val) = ($1, $2);
+        AddTagToTable($tagTablePtr, $tag) unless $$tagTablePtr{$tag};
+        $et->HandleTag($tagTablePtr, $tag, $val);
     }
+    $et->HandleTag($tagTablePtr, 'RatioImage', substr($$dataPt, $pos));
     return 1;
 }
 
@@ -574,7 +587,7 @@ segments are included in the Image::ExifTool module itself.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

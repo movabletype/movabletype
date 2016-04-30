@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -469,7 +469,9 @@ sub rebuild_deleted_entry {
                             : ()
                         ),
                     );
-                    if ( $app->config('DeleteFilesAtRebuild') ) {
+                    if (   $app->config('RebuildAtDelete')
+                        && $app->config('DeleteFilesAtRebuild') )
+                    {
                         $mt->remove_entry_archive_file(
                             Entry       => $entry,
                             ArchiveType => $at,
@@ -513,7 +515,9 @@ sub rebuild_deleted_entry {
                     (   $archiver->date_based() ? ( startdate => $start ) : ()
                     ),
                 );
-                if ( $app->config('DeleteFilesAtRebuild') ) {
+                if (   $app->config('RebuildAtDelete')
+                    && $app->config('DeleteFilesAtRebuild') )
+                {
                     $mt->remove_entry_archive_file(
                         Entry       => $entry,
                         ArchiveType => $at
@@ -1267,6 +1271,8 @@ sub rebuild_file {
                 ArchiveType => $at,
                 Entry       => $entry,
                 Category    => $category,
+                Author      => $author,
+                Timestamp   => $start,
             }
         )
         )

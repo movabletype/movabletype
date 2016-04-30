@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -26,7 +26,7 @@ sub updatable_fields {
             ),
         {   name      => 'date',
             condition => sub {
-                MT->instance->can_do('edit_entry_basename');
+                MT->instance->can_do('edit_entry_authored_on');
             },
         },
         {   name      => 'basename',

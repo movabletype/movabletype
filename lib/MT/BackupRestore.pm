@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -91,20 +91,12 @@ sub _populate_obj_to_backup {
         # author will be handled at last
         $populated{ MT->model('author') } = 1;
 
-        my $blog_class = MT->model('blog');
-        if ( my @blogs
-            = $blog_class->load( { id => \@$blog_ids, class => '*' } ) )
+        # Do not run the process of backing up websites when backing up blog.
+        unless ( MT->model('website')
+            ->exist( { id => \@$blog_ids, class => 'website' } ) )
         {
-            my $is_blog;
-            foreach my $blog (@blogs) {
-                $is_blog = 1, last
-                    if $blog->is_blog();
-            }
-            if ($is_blog) {
-                $populated{ MT->model('website') } = 1;
-            }
+            $populated{ MT->model('website') } = 1;
         }
-
     }
 
     my @object_hashes;
@@ -825,16 +817,23 @@ sub cb_restore_objects {
             $new_author->call_trigger( 'post_save', $new_author );
         }
         elsif ( $key =~ /^MT::(?:Blog|Website)#(\d+)$/ ) {
-            my $blog = $all_objects->{$key};
-            if ( my $cat_order = $blog->category_order ) {
-                my @cats = split ',', $cat_order;
-                my @new_cats
-                    = map $_->id,
-                    grep defined $_,
-                    map $all_objects->{ 'MT::Category#' . $_ },
-                    @cats;
-                $blog->category_order( join ',', @new_cats );
-                $blog->save;
+            my $blog   = $all_objects->{$key};
+            my $orders = {
+                category => 'MT::Category#',
+                folder   => 'MT::Folder#',
+            };
+            foreach my $c ( keys %$orders ) {
+                my $col = "${c}_order";
+                if ( my $cat_order = $blog->$col ) {
+                    my @cats = split ',', $cat_order;
+                    my @new_cats
+                        = map $_->id,
+                        grep defined $_,
+                        map $all_objects->{ $orders->{$c} . $_ },
+                        @cats;
+                    $blog->$col( join ',', @new_cats );
+                    $blog->save;
+                }
             }
         }
     }

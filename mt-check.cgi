@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -110,7 +110,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '6.1.1';
+    $version = '6.2.5';
 }
 
 my ( $mt, $LH );
@@ -714,24 +714,10 @@ my @CORE_OPT = (
         )
     ],
 
-    [   'Net::SMTP::SSL',
-        0, 0,
-        translate(
-            'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.'
-        )
-    ],
-
-    [   'Net::SMTP::TLS',
-        0, 0,
-        translate(
-            'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.'
-        )
-    ],
-
     [   'IO::Socket::SSL',
         0, 0,
         translate(
-            'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for Google Analytics site statistics.'
+            'IO::Socket::SSL is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.'
         )
     ],
 
@@ -790,7 +776,7 @@ my @CORE_OPT = (
     [   'Mozilla::CA',
         0, 0,
         translate(
-            'This module is required for Google Analytics site statistics.'
+            'This module is required for Google Analytics site statistics and for verification of SSL certificates.'
         )
     ],
     [   'Time::HiRes',

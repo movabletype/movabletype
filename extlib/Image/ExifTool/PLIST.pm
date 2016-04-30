@@ -20,7 +20,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::XMP;
 
-$VERSION = '1.02';
+$VERSION = '1.05';
 
 sub ExtractObject($$;$);
 sub Get24u($$);
@@ -64,7 +64,7 @@ my %readProc = (
         Description => 'Date/Time Original',
         Groups => { 2 => 'Time' },
         # Sony uses a "real" here -- number of days since Dec 31, 1899
-        ValueConv => 'IsFloat($val) ? ConvertUnixTime(($val - 25569) * 24 * 3600 + 0.5) : $val',
+        ValueConv => 'IsFloat($val) ? ConvertUnixTime(($val - 25569) * 24 * 3600) : $val',
         PrintConv => '$self->ConvertDateTime($val)',
     },
     'MetaDataList//Duration' => {
@@ -111,15 +111,15 @@ my %readProc = (
 # Returns: 1 if valid tag was found
 sub FoundTag($$$$;$)
 {
-    my ($exifTool, $tagTablePtr, $props, $val, $attrs) = @_;
+    my ($et, $tagTablePtr, $props, $val, $attrs) = @_;
     return 0 unless @$props;
-    my $verbose = $exifTool->Options('Verbose');
-    my $keys = $$exifTool{PListKeys} || ( $$exifTool{PListKeys} = [] );
+    my $verbose = $et->Options('Verbose');
+    my $keys = $$et{PListKeys} || ( $$et{PListKeys} = [] );
 
     my $prop = $$props[-1];
     if ($verbose > 1) {
-        $exifTool->VPrint(0, $$exifTool{INDENT}, '[', join('/',@$props), ' = ',
-            $exifTool->Printable($val), "]\n");
+        $et->VPrint(0, $$et{INDENT}, '[', join('/',@$props), ' = ',
+                    $et->Printable($val), "]\n");
     }
     # un-escape XML character entities
     $val = Image::ExifTool::XMP::UnescapeXML($val);
@@ -140,7 +140,7 @@ sub FoundTag($$$$;$)
         $val = ucfirst $prop;
     } else {
         # convert from UTF8 to ExifTool Charset
-        $val = $exifTool->Decode($val, 'UTF8');
+        $val = $et->Decode($val, 'UTF8');
         if ($prop eq 'key') {
             if (@$props <= 3) { # top-level key should be plist/dict/key
                 @$keys = ( $val );
@@ -159,7 +159,7 @@ sub FoundTag($$$$;$)
     my $tag = join '/', @$keys;     # generate tag ID from 'key' values
     my $tagInfo = $$tagTablePtr{$tag};
     unless ($tagInfo) {
-        $exifTool->VPrint(0, $exifTool->{INDENT}, "[adding $tag]\n") if $verbose;
+        $et->VPrint(0, $$et{INDENT}, "[adding $tag]\n") if $verbose;
         # generate tag name from ID
         my $name = $tag;
         $name =~ s{^MetaDataList//}{};  # shorten long MODD metadata tag names
@@ -174,12 +174,12 @@ sub FoundTag($$$$;$)
         AddTagToTable($tagTablePtr, $tag, $tagInfo);
     }
     # allow list-behaviour only for consecutive tags with the same ID
-    if ($$exifTool{LastPListTag} and $$exifTool{LastPListTag} ne $tagInfo) {
-        delete $$exifTool{LIST_TAGS}{$$exifTool{LastPListTag}};
+    if ($$et{LastPListTag} and $$et{LastPListTag} ne $tagInfo) {
+        delete $$et{LIST_TAGS}{$$et{LastPListTag}};
     }
-    $$exifTool{LastPListTag} = $tagInfo;
+    $$et{LastPListTag} = $tagInfo;
     # save the tag
-    $exifTool->HandleTag($tagTablePtr, $tag, $val);
+    $et->HandleTag($tagTablePtr, $tag, $val);
 
     return 1;
 }
@@ -200,7 +200,7 @@ sub Get24u($$)
 # Returns: the object, or undef on error
 sub ExtractObject($$;$)
 {
-    my ($exifTool, $plistInfo, $parent) = @_;
+    my ($et, $plistInfo, $parent) = @_;
     my $raf = $$plistInfo{RAF};
     my ($buff, $val);
 
@@ -234,11 +234,11 @@ sub ExtractObject($$;$)
         # $size is the size of the remaining types
         if ($size == 0x0f) {
             # size is stored in extra integer object
-            $size = ExtractObject($exifTool, $plistInfo);
+            $size = ExtractObject($et, $plistInfo);
             return undef unless defined $size and $size =~ /^\d+$/;
         }
         if ($type == 4) {  # data
-            if ($size < 1000000 or $exifTool->Options('Binary')) {
+            if ($size < 1000000 or $et->Options('Binary')) {
                 $raf->Read($buff, $size) == $size or return undef;
             } else {
                 $buff = "Binary data $size bytes";
@@ -249,7 +249,7 @@ sub ExtractObject($$;$)
         } elsif ($type == 6) {  # UCS-2BE string
             $size *= 2;
             $raf->Read($buff, $size) == $size or return undef;
-            $val = $exifTool->Decode($buff, 'UCS2');
+            $val = $et->Decode($buff, 'UCS2');
         } elsif ($type == 10 or $type == 12 or $type == 13) { # array, set or dict
             # the remaining types store a list of references
             my $refSize = $$plistInfo{RefSize};
@@ -267,26 +267,26 @@ sub ExtractObject($$;$)
             if ($type == 13) { # dict
                 # prevent infinite recursion
                 if (defined $parent and length $parent > 1000) {
-                    $exifTool->WarnOnce('Possible deep recursion while parsing PLIST');
+                    $et->WarnOnce('Possible deep recursion while parsing PLIST');
                     return undef;
                 }
                 my $tagTablePtr = $$plistInfo{TagTablePtr};
-                my $verbose = $exifTool->Options('Verbose');
+                my $verbose = $et->Options('Verbose');
                 for ($i=0; $i<$size; ++$i) {
                     # get the entry key
                     $raf->Seek($$table[$refs[$i]], 0) or return undef;
-                    my $key = ExtractObject($exifTool, $plistInfo);
+                    my $key = ExtractObject($et, $plistInfo);
                     next unless defined $key and length $key; # silently ignore bad dict entries
                     # get the entry value
                     $raf->Seek($$table[$refs[$i+$size]], 0) or return undef;
                     # generate an ID for this tag
                     my $tag = defined $parent ? "$parent/$key" : $key;
                     undef $$plistInfo{DateFormat};
-                    my $val = ExtractObject($exifTool, $plistInfo, $tag);
+                    my $val = ExtractObject($et, $plistInfo, $tag);
                     next if not defined $val or ref($val) eq 'HASH';
-                    my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+                    my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
                     unless ($tagInfo) {
-                        $exifTool->VPrint(0, $exifTool->{INDENT}, "[adding $tag]\n") if $verbose;
+                        $et->VPrint(0, $$et{INDENT}, "[adding $tag]\n") if $verbose;
                         my $name = $tag;
                         $name =~ s/([^A-Za-z])([a-z])/$1\u$2/g; # capitalize words
                         $name =~ tr/-_a-zA-Z0-9//dc; # remove illegal characters
@@ -298,18 +298,18 @@ sub ExtractObject($$;$)
                         AddTagToTable($tagTablePtr, $tag, $tagInfo);
                     }
                     # allow list-behaviour only for consecutive tags with the same ID
-                    if ($$exifTool{LastPListTag} and $$exifTool{LastPListTag} ne $tagInfo) {
-                        delete $$exifTool{LIST_TAGS}{$$exifTool{LastPListTag}};
+                    if ($$et{LastPListTag} and $$et{LastPListTag} ne $tagInfo) {
+                        delete $$et{LIST_TAGS}{$$et{LastPListTag}};
                     }
-                    $$exifTool{LastPListTag} = $tagInfo;
-                    $exifTool->HandleTag($tagTablePtr, $tag, $val);
+                    $$et{LastPListTag} = $tagInfo;
+                    $et->HandleTag($tagTablePtr, $tag, $val);
                 }
                 $val = { }; # flag the value as a dictionary (ie. tags already saved)
             } else {
                 # extract the referenced objects
                 foreach $ref (@refs) {
                     $raf->Seek($$table[$ref], 0) or return undef;   # seek to this object
-                    $val = ExtractObject($exifTool, $plistInfo, $parent);
+                    $val = ExtractObject($et, $plistInfo, $parent);
                     next unless defined $val and ref $val ne 'HASH';
                     push @array, $val;
                 }
@@ -321,19 +321,23 @@ sub ExtractObject($$;$)
 }
 
 #------------------------------------------------------------------------------
-# Process binary PLIST file (ref 2)
+# Process binary PLIST data (ref 2)
 # Inputs: 0) ExifTool object ref, 1) DirInfo ref, 2) tag table ref
 # Returns: 1 on success
 sub ProcessBinaryPLIST($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
-    my $raf = $$dirInfo{RAF};
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my ($i, $buff, @table);
 
-    $exifTool->VerboseDir('Binary PLIST');
+    $et->VerboseDir('Binary PLIST');
     SetByteOrder('MM');
 
+    unless ($$dirInfo{RAF}) {
+        my $buf2 = substr(${$$dirInfo{DataPt}}, $$dirInfo{DirStart} || 0, $$dirInfo{DirLen});
+        $$dirInfo{RAF} = new File::RandomAccess(\$buf2);
+    }
     # read and parse the trailer
+    my $raf = $$dirInfo{RAF};
     $raf->Seek(-32,2) and $raf->Read($buff,32)==32 or return 0;
     my $intSize = Get8u(\$buff, 6);
     my $refSize = Get8u(\$buff, 7);
@@ -360,7 +364,7 @@ sub ProcessBinaryPLIST($$$)
     );
     # position file pointer at the top object, and extract it
     $raf->Seek($table[$topObj], 0) or return 0;
-    my $result = ExtractObject($exifTool, \%plistInfo);
+    my $result = ExtractObject($et, \%plistInfo);
     return defined $result ? 1 : 0;
 }
 
@@ -370,11 +374,11 @@ sub ProcessBinaryPLIST($$$)
 # Returns: 1 on success, 0 if this wasn't valid PLIST
 sub ProcessPLIST($$;$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
 
     # process XML PLIST data using the XMP module
     $$dirInfo{XMPParseOpts}{FoundProc} = \&FoundTag;
-    my $result = Image::ExifTool::XMP::ProcessXMP($exifTool, $dirInfo, $tagTablePtr);
+    my $result = Image::ExifTool::XMP::ProcessXMP($et, $dirInfo, $tagTablePtr);
     delete $$dirInfo{XMPParseOpts};
 
     unless ($result) {
@@ -384,18 +388,18 @@ sub ProcessPLIST($$;$)
         if ($buff =~ /^bplist0/) {
             # binary PLIST file
             my $tagTablePtr = GetTagTable('Image::ExifTool::PLIST::Main');
-            $exifTool->SetFileType('PLIST', 'application/x-plist');
-            $$exifTool{SET_GROUP1} = 'PLIST';
-            unless (ProcessBinaryPLIST($exifTool, $dirInfo, $tagTablePtr)) {
-                $exifTool->Error('Error reading binary PLIST file');
+            $et->SetFileType('PLIST', 'application/x-plist');
+            $$et{SET_GROUP1} = 'PLIST';
+            unless (ProcessBinaryPLIST($et, $dirInfo, $tagTablePtr)) {
+                $et->Error('Error reading binary PLIST file');
             }
-            delete $$exifTool{SET_GROUP1};
+            delete $$et{SET_GROUP1};
             $result = 1;
-        } elsif ($$exifTool{FILE_EXT} and $$exifTool{FILE_EXT} eq 'PLIST' and
+        } elsif ($$et{FILE_EXT} and $$et{FILE_EXT} eq 'PLIST' and
             $buff =~ /^\xfe\xff\x00/)
         {
             # (have seen very old PLIST files encoded as UCS-2BE with leading BOM)
-            $exifTool->Error('Old PLIST format currently not supported');
+            $et->Error('Old PLIST format currently not supported');
             $result = 1;
         }
     }
@@ -425,7 +429,7 @@ This module decodes both the binary and XML-based PLIST format.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -324,17 +324,10 @@ sub suite {
         {    # No permissions.
             path   => '/v2/sites/1/widgetsets/' . $blog_ws->id . '/widgets',
             method => 'GET',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-                $mock_author->mock( 'can_edit_templates', 0 );
-            },
-            code => 403,
+            restrictions => { 1 => [qw/ edit_templates /], },
+            code         => 403,
             error =>
                 'Do not have permission to retrieve widgets of the request widgetset.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-                $mock_author->unmock('can_edit_templates');
-            },
         },
 
         # list_widgets_for_widgetset - normal tests.
@@ -344,13 +337,14 @@ sub suite {
                 my @widget_id = split ',', $blog_ws->modulesets;
                 my @widget
                     = $app->model('template')->load( { id => \@widget_id } );
+                @widget = sort { $a->name cmp $b->name } @widget;
 
                 $app->user($author);
                 no warnings 'redefine';
                 local *boolean::true  = sub {'true'};
                 local *boolean::false = sub {'false'};
                 return +{
-                    totalResults => 3,
+                    totalResults => scalar @widget,
                     items => MT::DataAPI::Resource->from_object( \@widget ),
                 };
             },

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2005-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2005-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -131,7 +131,11 @@ sub theme_for_url {
     }
     elsif ($url) {
         my $user_agent = MT->new_ua;
-        my $response   = $user_agent->get($url);
+
+        # Do not verify SSL certificate because accessing to oneself.
+        $user_agent->ssl_opts( verify_hostname => 0 );
+
+        my $response = $user_agent->get($url);
         return if !$response->is_success();
         $theme{stylesheet} = $response->content;
 

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2004-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2004-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -10,9 +10,9 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '6.1');
-define('PRODUCT_VERSION', '6.1.1');
-define('DATA_API_DEFAULT_VERSION', '2');
+define('VERSION', '6.2');
+define('PRODUCT_VERSION', '6.2.5');
+define('DATA_API_DEFAULT_VERSION', '3');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -21,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 1;
+    $RELEASE_NUMBER = 5;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -431,7 +431,7 @@ class MT {
         isset($cfg['usersessioncookietimeout']) or
             $cfg['usersessioncookietimeout'] = 60*60*4;
         isset($cfg['commenterregistration']) or
-            $cfg['commenterregistration'] = array('allow' => 1 );
+            $cfg['commenterregistration'] = array('Allow' => 1 );
         isset($cfg['userpasswordminlength']) or
             $cfg['userpasswordminlength'] = 8;
         isset($cfg['bulkloadmetaobjectslimit']) or

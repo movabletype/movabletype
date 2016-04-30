@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -286,14 +286,16 @@ sub edit {
                             asset_name => $asset->file_name,
                             asset_type => $asset->class,
                             asset_thumb =>
-                                $asset->thumbnail_url( Width => 100 )
+                                $asset->thumbnail_url( Width => 100 ),
+                            asset_blog_id => $asset->blog_id,
                         };
                     }
                     else {
                         $asset_1 = {
-                            asset_id   => $asset->id,
-                            asset_name => $asset->file_name,
-                            asset_type => $asset->class,
+                            asset_id      => $asset->id,
+                            asset_name    => $asset->file_name,
+                            asset_type    => $asset->class,
+                            asset_blog_id => $asset->blog_id,
                         };
                     }
                     push @{$assets}, $asset_1;
@@ -303,9 +305,10 @@ sub edit {
         elsif ( $q->param('asset_id') && !$id ) {
             my $asset   = MT::Asset->load( $q->param('asset_id') );
             my $asset_1 = {
-                asset_id   => $asset->id,
-                asset_name => $asset->file_name,
-                asset_type => $asset->class
+                asset_id      => $asset->id,
+                asset_name    => $asset->file_name,
+                asset_type    => $asset->class,
+                asset_blog_id => $asset->blog_id,
             };
             push @{$assets}, $asset_1;
         }
@@ -329,14 +332,16 @@ sub edit {
                         asset_id    => $asset->id,
                         asset_name  => $asset->file_name,
                         asset_thumb => $asset->thumbnail_url( Width => 100 ),
-                        asset_type  => $asset->class
+                        asset_type  => $asset->class,
+                        asset_blog_id => $asset->blog_id,
                     };
                 }
                 else {
                     $asset_1 = {
-                        asset_id   => $asset->id,
-                        asset_name => $asset->file_name,
-                        asset_type => $asset->class
+                        asset_id      => $asset->id,
+                        asset_name    => $asset->file_name,
+                        asset_type    => $asset->class,
+                        asset_blog_id => $asset->blog_id,
                     };
                 }
                 push @{$assets}, $asset_1;
@@ -1605,17 +1610,26 @@ sub save {
             { ( $id ? ( not => { id => 1 } ) : () ) }
         );
         while ( my $p = $dup_it->() ) {
-            my $p_folder = $p->folder;
-            my $dup_folder_path
-                = defined $p_folder ? $p_folder->publish_path() : '';
-            my $folder;
-            $folder = MT::Folder->load($cat_id) if $cat_id;
-            my $folder_path = defined $folder ? $folder->publish_path() : '';
+            my ( $dup_path, $org_path );
+
+            if ( $app->config('BasenameCheckCompat') ) {
+                my $p_folder = $p->folder;
+                $dup_path
+                    = defined $p_folder ? $p_folder->publish_path() : '';
+                my $folder;
+                $folder = MT::Folder->load($cat_id) if $cat_id;
+                $org_path = defined $folder ? $folder->publish_path() : '';
+            }
+            else {
+                $dup_path = $p->permalink;
+                $org_path = $obj->permalink;
+            }
+
             return $app->error(
                 $app->translate(
                     "This basename has already been used. You should use an unique basename."
                 )
-            ) if ( $dup_folder_path eq $folder_path );
+            ) if ( $dup_path eq $org_path );
         }
 
     }
@@ -2807,7 +2821,7 @@ sub can_view {
     }
     if ($id) {
         my $obj = $objp->force();
-        return 0 unless $obj->is_entry;
+        return 0 if ( !$obj || !$obj->is_entry );
         if ( !$app->user->permissions( $obj->blog_id )
             ->can_edit_entry( $obj, $app->user ) )
         {
@@ -2846,7 +2860,7 @@ sub pre_save {
             $obj->set_tags(@tags);
         }
         else {
-            $obj->remove_tags();
+            $obj->set_tags();
         }
     }
 
@@ -2926,8 +2940,10 @@ sub post_save {
 sub post_delete {
     my ( $eh, $app, $obj ) = @_;
 
-    my $sess_obj = $app->autosave_session_obj;
-    $sess_obj->remove if $sess_obj;
+    if ( $app->can('autosave_session_obj') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        $sess_obj->remove if $sess_obj;
+    }
 
     $app->log(
         {   message => $app->translate(

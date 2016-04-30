@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -786,6 +786,8 @@ sub core_tags {
 
             ## Asset
             AssetID => '$Core::MT::Template::Tags::Asset::_hdlr_asset_id',
+            AssetBlogID =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_blog_id',
             AssetFileName =>
                 '$Core::MT::Template::Tags::Asset::_hdlr_asset_file_name',
             AssetLabel =>
@@ -976,6 +978,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Filters::_fltr_encode_xml',
             'encode_js' =>
                 '$Core::MT::Template::Tags::Filters::_fltr_encode_js',
+            'encode_json' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_encode_json',
             'encode_php' =>
                 '$Core::MT::Template::Tags::Filters::_fltr_encode_php',
             'encode_url' =>
@@ -1554,6 +1558,9 @@ sub _hdlr_if {
         $tag =~ s/^MT:?//i;
         require Storable;
         my $local_args = Storable::dclone($args);
+        delete $local_args->{tag};
+        local $ctx->{'__stash'}{'tokens_else'} = undef;
+        local $ctx->{_errstr} = undef;
         $value = $ctx->tag( $tag, $local_args, $cond );
         $ctx->{__stash}{vars}{__cond_tag__} = $tag;
     }
@@ -4011,10 +4018,10 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
         local $ctx->{__stash}{vars}{ lc $name } = sub {
             my $builder = $ctx->stash('builder');
             my $html = $builder->build( $ctx, $tokens, $cond );
-            return $ctx->error( $builder->errstr ) unless defined $html;
+            die $ctx->error( $builder->errstr ) unless defined $html;
             return $html;
         };
-        return _hdlr_include( $ctx, $args, $cond );
+        return eval { _hdlr_include( $ctx, $args, $cond ) };
     }
 
 ###########################################################################

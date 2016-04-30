@@ -26,6 +26,7 @@ my $request = MT::Request->instance;
 my $plugin = $app->component('MultiBlog');
 
 my $plugin_data = $app->model('plugindata')->new;
+$plugin_data->plugin('MultiBlog');
 my $new_blog    = $app->model('blog')->new;
 $new_blog->id(9999);
 

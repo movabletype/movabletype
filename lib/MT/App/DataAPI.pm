@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -21,7 +21,8 @@ use MT::AccessToken;
 our %endpoints = ();
 
 sub id                 {'data_api'}
-sub DEFAULT_VERSION () {2}
+sub DEFAULT_VERSION () {3}
+sub API_VERSION     () {3.1}
 
 sub init {
     my $app = shift;
@@ -929,6 +930,22 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to export entries.', },
         },
+        {   id      => 'preview_entry_by_id',
+            route   => '/sites/:site_id/entries/:entry_id/preview',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}v2::Entry::preview_by_id",
+            error_codes =>
+                { 403 => 'Do not have permission to preview entry.', },
+        },
+        {   id      => 'preview_entry',
+            route   => '/sites/:site_id/entries/preview',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}v2::Entry::preview",
+            error_codes =>
+                { 403 => 'Do not have permission to preview entry.', },
+        },
 
         # page endpoints
         {   id             => 'list_pages',
@@ -1064,6 +1081,22 @@ sub core_endpoints {
             handler => "${pkg}v2::Page::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a page.', },
+        },
+        {   id      => 'preview_page_by_id',
+            route   => '/sites/:site_id/pages/:page_id/preview',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}v2::Entry::preview_by_id",
+            error_codes =>
+                { 403 => 'Do not have permission to preview page.', },
+        },
+        {   id      => 'preview_page',
+            route   => '/sites/:site_id/pages/preview',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}v2::Page::preview",
+            error_codes =>
+                { 403 => 'Do not have permission to preview page.', },
         },
 
         # comment endpoints
@@ -1698,6 +1731,22 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to clone a template.', },
         },
+        {   id      => 'preview_template_by_id',
+            route   => '/sites/:site_id/templates/:template_id/preview',
+            version => 2,
+            handler => "${pkg}v2::Template::preview_by_id",
+            verb    => 'POST',
+            error_codes =>
+                { 403 => 'Do not have permission to get template preview.', },
+        },
+        {   id      => 'preview_template',
+            route   => '/sites/:site_id/templates/preview',
+            version => 2,
+            handler => "${pkg}v2::Template::preview",
+            verb    => 'POST',
+            error_codes =>
+                { 403 => 'Do not have permission to get template preview.', },
+        },
 
         # templatemap endpoints
         {   id      => 'list_templatemaps',
@@ -2073,6 +2122,36 @@ sub core_endpoints {
 #            },
 #        },
 
+        # version 3
+        {   id             => 'authenticate',
+            route          => '/authentication',
+            verb           => 'POST',
+            version        => 3,
+            handler        => "${pkg}v3::Auth::authentication",
+            requires_login => 0,
+        },
+        {   id             => 'upload_asset',
+            route          => '/assets/upload',
+            verb           => 'POST',
+            version        => 3,
+            handler        => "${pkg}v3::Asset::upload",
+            default_params => {
+                autoRenameIfExists   => 0,
+                normalizeOrientation => 1,
+            },
+            error_codes => { 403 => 'Do not have permission to upload.', },
+        },
+        {   id             => 'upload_asset_for_site',
+            route          => '/sites/:site_id/assets/upload',
+            verb           => 'POST',
+            version        => 3,
+            handler        => "${pkg}v3::Asset::upload",
+            default_params => {
+                autoRenameIfExists   => 0,
+                normalizeOrientation => 1,
+            },
+            error_codes => { 403 => 'Do not have permission to upload.', },
+        },
     ];
 }
 
@@ -2199,7 +2278,7 @@ sub init_plugins {
             $pkg . 'save_filter.widget' => "${pfx}Widget::save_filter",
             $pkg . 'pre_save.widget' => '$Core::MT::CMS::Template::pre_save',
             $pkg
-                . 'post_save.widget' => '$Core::MT::CMS::Template::post:save',
+                . 'post_save.widget' => '$Core::MT::CMS::Template::post_save',
 
             # widgetset callbacks
             $pkg
@@ -2211,7 +2290,7 @@ sub init_plugins {
                 '$Core::MT::CMS::Template::pre_save',
             $pkg
                 . 'post_save.widgetset' =>
-                '$Core::MT::CMS::Template::post:save',
+                '$Core::MT::CMS::Template::post_save',
 
             # templatemap callbacks
             $pkg
@@ -2805,6 +2884,21 @@ sub load_default_page_prefs {
 sub api {
     my ($app) = @_;
     my ( $version, $path ) = $app->_version_path;
+
+    # Special handler for get version information.
+    if ( $path eq '/version' ) {
+	my $raw = {
+	    endpointVersion => 'v' . $app->DEFAULT_VERSION(),
+	    apiVersion      => $app->API_VERSION(),
+	};
+        my $format = $app->current_format;
+	my $data   = $format->{serialize}->($raw);
+
+	$app->send_http_header( $format->{mime_type} );
+        $app->{no_print_body} = 1;
+        $app->print_encode($data);
+        return undef;
+    }
 
     return $app->print_error( 'API Version is required', 400 )
         unless defined $version;

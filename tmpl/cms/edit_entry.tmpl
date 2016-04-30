@@ -473,7 +473,7 @@
      help_page="entries"
      help_section="date">
     <div class="date-time-fields">
-      <input type="text" id="created-on" class="text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" /><span class="separator"> <__trans phrase="@"></span> <input type="text" class="text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>" />
+      <input type="text" id="created-on" class="text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/><span class="separator"> <__trans phrase="@"></span> <input type="text" class="text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>"  placeholder="HH:mm:ss"/>
     </div>
   </mtapp:setting>
 
@@ -487,7 +487,7 @@
      help_section="date">
     <div class="date-time-fields">
       <div id="unpublished-on" class="mt-edit-inputblock<$mt:if name="show_input_unpublished_on"> show-input</mt:if>">
-        <input type="text" id="unpublished-on-date" class="text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" /><span class="separator"> <__trans phrase="@"></span> <input type="text" id="unpublished-on-time" class="text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" />
+        <input type="text" id="unpublished-on-date" class="text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" /><span class="separator"> <__trans phrase="@"></span> <input type="text" id="unpublished-on-time" class="text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" placeholder="HH:mm:ss" />
       </div>
     </div>
   </mtapp:setting>
@@ -500,6 +500,7 @@
   <mt:if name="can_publish_post">
     <span class="basename">
     <input type="text" name="basename" id="basename" class="text full" value="<$mt:var name="basename" escape="html"$>" /><mt:if name="object_type" eq="page"><span class="file-extension"><mt:var name="file_extension" escape="html"></span></mt:if>
+     <input type="hidden" name="basename_manual" id="basename_manual" value="0" />
     </span>
     <mt:if name="object_type" eq="entry">
       <p class="alert-warning-inline" id="basename-warning" style="display: none">
@@ -654,13 +655,13 @@
      id="asset_container"
      label="$widget_label">
     <div class="asset-list-header">
-      <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1" class="add-new-asset-link mt-open-dialog"><__trans phrase="Add"></a>
+      <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog"><__trans phrase="Add"></a>
     </div>
     <ul id="asset-list" name="asset-list">
     <mt:if name="asset_loop">
     <mt:loop name="asset_loop">
       <li id="list-asset-<mt:var name="asset_id">" class="asset-file asset-type-<mt:var name="asset_type" escape="html" lower_case="1">"<mt:if name="asset_thumb"> onmouseover="show('list-image-<mt:var name="asset_id">')" onmouseout="hide('list-image-<mt:var name="asset_id">')"</mt:if>>
-        <a href="<$mt:var name="script_url"$>?__mode=view&_type=asset&blog_id=<mt:var name="blog_id">&id=<mt:var name="asset_id">" class="asset-title">
+        <a href="<$mt:var name="script_url"$>?__mode=view&_type=asset&blog_id=<mt:var name="asset_blog_id">&id=<mt:var name="asset_id">" class="asset-title">
           <mt:var name="asset_name">
         </a>
         <a href="javascript:removeAssetFromList(<mt:var name="asset_id">)" title="<__trans phrase="Remove this asset.">" class="remove-asset icon-remove icon16 action-icon"><__trans phrase="Remove"></a>
@@ -1372,7 +1373,7 @@
         cursor: 'move',
         forcePlaceholderSize: true,
         handle: '.field-header',
-        containment: 'document',
+        containment: 'body',
         update: function () {
             jQuery('div.field.sort-enabled', this).trigger('sort-updated');
             sendEntryPrefs({ sort_only: true });

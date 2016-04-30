@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -854,19 +854,19 @@ sub cache_key {
 sub author_id {
     my $entry = shift;
     if ( scalar @_ ) {
-        $entry->{__orig_value}->{author_id} = $entry->SUPER::author_id
+        $entry->{__orig_value}->{author_id} = $entry->column('author_id')
             unless exists( $entry->{__orig_value}->{author_id} );
     }
-    return $entry->SUPER::author_id(@_);
+    return $entry->column( 'author_id', @_ );
 }
 
 sub status {
     my $entry = shift;
     if ( scalar @_ ) {
-        $entry->{__orig_value}->{status} = $entry->SUPER::status
+        $entry->{__orig_value}->{status} = $entry->column('status')
             unless exists( $entry->{__orig_value}->{status} );
     }
-    return $entry->SUPER::status(@_);
+    return $entry->column( 'status', @_ );
 }
 
 sub status_text {
@@ -1410,6 +1410,7 @@ sub discover_tb_from_entry {
     }
 }
 
+# Deprecated (case #112321).
 sub sync_assets {
     my $entry = shift;
     my $text = ( $entry->text || '' ) . "\n" . ( $entry->text_more || '' );
@@ -1865,6 +1866,8 @@ sub update_categories {
         MT::Placement->remove( { entry_id => $obj->id, } )
             or return $obj->error( MT::Placement->errstr );
 
+        MT::Memcached->instance->delete(
+            MT::Entry->cache_key( $obj->id, 'categories' ) );
         $obj->clear_cache('category');
         $obj->clear_cache('categories');
 
@@ -1938,7 +1941,7 @@ sub attach_assets {
     my @attach_assets;
     my @current_oa = MT->model('objectasset')->load(
         {   blog_id   => $obj->blog->id,
-            object_ds => $obj->class,
+            object_ds => 'entry',
             object_id => $obj->id,
             asset_id  => [ map { $_->id } @assets ],
         },
@@ -1953,7 +1956,7 @@ sub attach_assets {
         my $oa = MT->model('objectasset')->new;
         $oa->set_values(
             {   blog_id   => $obj->blog->id,
-                object_ds => $obj->class,
+                object_ds => 'entry',
                 object_id => $obj->id,
                 asset_id  => $asset->id,
             }
@@ -1981,7 +1984,7 @@ sub update_assets {
     # Detach all assets if no assets.
     unless (@assets) {
         MT->model('objectasset')->remove(
-            {   object_ds => $obj->class,
+            {   object_ds => 'entry',
                 object_id => $obj->id,
             }
         ) or return $obj->error( MT->model('objectasset')->errstr );
@@ -1991,7 +1994,7 @@ sub update_assets {
     # Detach assets.
     my @asset_ids = map { $_->id } @assets;
     MT->model('objectasset')->remove(
-        {   object_ds => $obj->class,
+        {   object_ds => 'entry',
             object_id => $obj->id,
             asset_id  => { not => \@asset_ids },
         }
@@ -2000,7 +2003,7 @@ sub update_assets {
     # Remove already attached assets.
     my @attaching_assets = @assets;
     my @current_oa       = MT->model('objectasset')->load(
-        {   object_ds => $obj->class,
+        {   object_ds => 'entry',
             object_id => $obj->id,
             asset_id  => \@asset_ids,
         }
@@ -2015,7 +2018,7 @@ sub update_assets {
         my $oa = MT->model('objectasset')->new;
         $oa->set_values(
             {   blog_id   => $obj->blog->id,
-                object_ds => $obj->class,
+                object_ds => 'entry',
                 object_id => $obj->id,
                 asset_id  => $asset->id,
             }

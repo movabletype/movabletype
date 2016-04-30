@@ -1,0 +1,426 @@
+<mt:setvar name="page_title" value="<__trans phrase="Edit Image">">
+
+<mt:setvarblock name="html_head" prepend="1">
+<style type="text/css">
+div#editor {
+  margin-left: 520px;  /* 500+20 */
+}
+
+div#editor input[type=checkbox] {
+  margin-right: 3px;
+}
+div#editor label {
+  margin-right: 3px;
+  vertical-align: middle;
+}
+
+div#image {
+  width: 500px;
+  float: left;
+}
+
+/* resize block */
+div#editor-resize {
+  margin-bottom: 10px;
+}
+div.editor-resize-column,.editor-resize-subcolumn {
+  margin-bottom: 5px;
+}
+div.editor-resize-subcolumn {
+  margin-left: 22px;
+}
+input.resize {
+  width: 96px;
+  text-align: center;
+  margin-right: 8px;
+}
+button.resize {
+  margin: 0px;
+}
+
+/* metadata block */
+div#editor-metadata {
+  margin-bottom: 20px;
+}
+div.editor-metadata-column {
+  margin-bottom: 10px;
+}
+
+/* button block */
+div.editor-button-column {
+  margin-bottom: 5px;
+}
+button.editor-button {
+  width: 40px;
+  height: 40px;
+  margin: 0px;
+}
+button.history {
+  width: 84px;
+  height: 30px;
+  margin: 0px;
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+  <mt:if name="mt_debug">
+  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/fabric.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/darkroom.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/jquery.numeric.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/jquery.selection.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:else>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/fabric.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/darkroom.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/jquery.numeric.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/jquery.selection.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  </mt:if>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/image_editor.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:setvarblock>
+
+<mt:include name="dialog/header.tmpl">
+
+    <div id="image-editor">
+
+      <div id="image">
+        <img src="<mt:var name="script_url">?__mode=thumbnail_image&blog_id=<mt:var name="blog_id" escape="url">&id=<mt:var name="id" escape="url">&ts=<mt:var name="modified_on" escape="url">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
+      </div>
+
+      <div id="editor">
+
+        <div id="editor-resize">
+          <div class="editor-resize-column">
+            <label for="resize-width"><__trans phrase="W:"></label>
+            <input id="resize-width" class="text resize" type="text" value="<mt:var name="image_width">" />
+            <label for="resize-height"><__trans phrase="H:"></label>
+            <input id="resize-height" class="text resize" type="text" value="<mt:var name="image_height">" />
+            <button id="resize-apply" class="button resize enable-submit disabled" disabled="disabled"><__trans phrase="Apply"></button>
+            <button id="resize-reset" class="button resize disabled" disabled="disabled"><__trans phrase="Reset"></button>
+          </div>
+          <div class="editor-resize-subcolumn">
+            <input id="keep-aspect-ratio" class="checkbox" type="checkbox" value="1" checked="checked" />
+            <label for="keep-aspect-ratio"><__trans phrase="Keep aspect ratio"></label>
+          </div>
+        </div>
+
+        <div id="editor-metadata">
+          <mt:if name="has_metadata">
+          <div class="editor-metadata-column">
+            <input id="remove-all-metadata" class="checkbox enable-submit" type="checkbox" />
+            <label for="remove-all-metadata"><__trans phrase="Remove All metadata"></label>
+          </div>
+          </mt:if>
+
+          <mt:if name="has_gps_metadata">
+          <div class="editor-metadata-column">
+            <input id="remove-gps-metadata" class="checkbox enable-submit" type="checkbox" />
+            <label for="remove-gps-metadata"><__trans phrase="Remove GPS metadata"></label>
+          </div>
+          </mt:if>
+        </div>
+
+        <div id="editor-button">
+          <div class="editor-button-column">
+            <button class="button editor-button enable-submit" title="<__trans phrase="Rotate right">" onclick="image.rotate(90);">
+              <img alt="Rotate right" src="<mt:var name="static_uri">images/image_editor/rotate_right@2x.png" width="24" height="24" />
+            </button>
+            <button class="button editor-button enable-submit" title="<__trans phrase="Rotate left">" onclick="image.rotate(-90);">
+              <img alt="Rotate left" src="<mt:var name="static_uri">images/image_editor/rotate_left@2x.png" width="24" height="24" />
+            </button>
+            <button class="button editor-button enable-submit" title="<__trans phrase="Flip horizontal">" onclick="image.flipHorizontal();">
+              <img alt="Flip horizontal" src="<mt:var name="static_uri">images/image_editor/flip_horizontal@2x.png" width="24" height="24" />
+            </button>
+            <button class="button editor-button enable-submit" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
+              <img alt="Flip vertical" src="<mt:var name="static_uri">images/image_editor/flip_vertical@2x.png" width="24" height="24" />
+            </button>
+            <button id="crop" class="button editor-button enable-submit disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
+              <img alt="Crop" src="<mt:var name="static_uri">images/image_editor/crop@2x.png" width="24" height="24" />
+            </button>
+          </div>
+
+          <div class="editor-button-column">
+            <button id="undo" class="button history disabled" disabled="disabled" onclick="image.undo();"><__trans phrase="Undo"></button>
+            <button id="redo" class="button history disabled" disabled="disabled" onclick="image.redo();"><__trans phrase="Redo"></button>
+          </div>
+        </div>
+
+      </div><!-- /editor -->
+
+    </div><!-- /image-editor -->
+
+    <div class="dialog actions-bar actions-bar-bottom">
+      <form action="<mt:var name="script_url">" method="post" target="_parent">
+        <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+        <input type="hidden" name="__mode" value="transform_image" />
+        <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+        <input type="hidden" name="id" value="<mt:var name="id">" />
+        <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+
+        <input type="hidden" name="remove_gps_metadata" />
+        <input type="hidden" name="remove_all_metadata" />
+        <input type="hidden" name="actions" />
+
+        <button
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Save (s)">"
+           class="action primary button close disabled"
+           disabled="disabled">
+          <__trans phrase="Save"></button>
+        <button
+           type="submit"
+           accesskey="x"
+           class="cancel action button image-editor-close-dialog"
+           title="<__trans phrase="Cancel (x)">">
+          <__trans phrase="Cancel"></button>
+      </form>
+    </div>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery(document).ready(function() {
+
+        // This is true while resizing image.
+        var resizing;
+
+        window.image = new ImageEditor('div#image > img', {
+            width: <mt:var name="image_width">,
+            height: <mt:var name="image_height">,
+            thumbnailWidth: <mt:var name="thumbnail_width">,
+            thumbnailHeight: <mt:var name="thumbnail_height">,
+
+            postActionTrigger: update,
+
+            plugins: {
+                 crop: {
+                     postSelectTrigger: function() {
+                         // Enable crop button.
+                         enableButton('button#crop');
+                         // Enable to cancelcropping by escape key.
+                         jQuery(document).on('keyup', document, cancelCropping);
+                     }
+                 }
+            }
+        });
+
+        // Resize image when clicking apply button.
+        jQuery('button#resize-apply').click(function() {
+            // Resize.
+            var width = jQuery('input#resize-width').val();
+            var height = jQuery('input#resize-height').val();
+            image.resize(+width, +height);
+
+            // Finish resizing.
+            resizing = false;
+        });
+
+        // Reset resize-width and resize-height when clicking reset button.
+        jQuery('button#resize-reset').click(function() {
+            // Reset.
+            jQuery('input#resize-width').val(image.width);
+            jQuery('input#resize-height').val(image.height);
+
+            // Finish resizing.
+            resizing = false;
+
+            // Update resize buttons.
+            update();
+        });
+
+        // Restrict input of resize textboxes.
+        jQuery('input#resize-width, input#resize-height')
+            .numeric({decimal: false, negative: false})  // Positive integer only.
+            .keydown(function(event) {
+                // Forbid first zero.
+                if (event.keyCode === 48 && jQuery(this).val().length > 0 && jQuery(this).selection('getPos').start === 0) {
+                    return false;
+                }
+            });
+
+        // Update resize-width or resize-height when changing either them.
+        jQuery('input#resize-width').keyup(function(event) {
+            var resizeWidth = jQuery(this).val();
+            var $resizeHeight = jQuery('input#resize-height');
+ 
+            // Do nothing when there is no change.
+            if (!resizing && +resizeWidth === image.width) {
+                return;
+            }
+
+            // Resizing now.
+            resizing = true;
+ 
+            // Change the status of resize buttons.
+            if (+resizeWidth === 0 || +resizeWidth > image.width) {
+                disableButton('button#resize-apply');
+            } else {
+                enableButton('button#resize-apply');
+            }
+            enableButton('button#resize-reset');
+ 
+            // Trigger apply button when the button is enabled and enter key is pushed.
+            if (event.keyCode === 13 && jQuery('button#resize-apply:enabled').length) {
+                jQuery('button#resize-apply').trigger('click');
+                return;
+            }
+ 
+            // Do not update resize-height when "Keep aspect ratio" checked.
+            if (jQuery('input#keep-aspect-ratio:checked').length === 0) {
+                return;
+            }
+ 
+            // Also change resize-height empty.
+            if (resizeWidth === '') {
+                $resizeHeight.val('');
+                return;
+            }
+ 
+            // Update resize-height.
+            var height = Math.ceil(+resizeWidth * image.height / image.width);
+            $resizeHeight.val(height);
+        });
+
+        jQuery('input#resize-height').keyup(function(event) {
+
+            var $resizeWidth = jQuery('input#resize-width');
+            var resizeHeight = jQuery(this).val();
+
+            // Do nothing when there is no change.
+            if (!resizing && +resizeHeight === image.height) {
+                return;
+            }
+
+            // Resizing now.
+            resizing = true;
+
+            // Enable resize buttons.
+            if (+resizeHeight === 0 || +resizeHeight > image.height) {
+                disableButton('button#resize-apply');
+            } else {
+                enableButton('button#resize-apply');
+            }
+            enableButton('button#resize-reset');
+
+            // Trigger apply button when the button is enabled and enter key is pushed.
+            if (event.keyCode === 13 && jQuery('button#resize-apply:enabled').length) {
+                jQuery('button#resize-apply').trigger('click');
+                return;
+            }
+
+            // Do not update when "Keep aspect ratio" checked.
+            if (jQuery('input#keep-aspect-ratio:checked').length === 0) {
+                return;
+            }
+
+            // Also change resize-width empty.
+            if (resizeHeight === '') {
+                $resizeWidth.val('');
+                return;
+            }
+
+            var width = Math.ceil(+resizeHeight * image.width / image.height);
+            $resizeWidth.val(width);
+        });
+
+        // Also check "Remove GPS metadata" when checking "Remove All metadata".
+        var gpsPreviousState;
+        jQuery('input#remove-all-metadata').click(function() {
+            var $checkboxGps = jQuery('input#remove-gps-metadata');
+            if (jQuery(this).prop('checked')) {
+                gpsPreviousState = $checkboxGps.prop('checked');
+                $checkboxGps
+                    .attr('disabled', 'disabled')
+                    .prop('checked', true);
+            } else {
+                $checkboxGps
+                    .removeAttr('disabled')
+                    .prop('checked', gpsPreviousState);
+            }
+        });
+
+        // Set parameters and submit form.
+        jQuery('button.primary').click(function() {
+            var $form = jQuery('form');
+            $form.children('input[name=actions]').val(JSON.stringify(image.backActionStack));
+            if (jQuery('input#remove-gps-metadata:checked').length > 0) {
+                $form.children('input[name=remove_gps_metadata]').val(1);
+            }
+            if (jQuery('input#remove-all-metadata:checked').length > 0) {
+                $form.children('input[name=remove_all_metadata]').val(1);
+            }
+        });
+
+        // Enable submit button when clicking checkbox/button.
+        var isDirty;
+        jQuery('.enable-submit').click(function() {
+            enableButton('button.primary');
+            isDirty = true;
+        });
+
+        // Confirm before closing dialog.
+        jQuery('button.image-editor-close-dialog').click(function() {
+            if (isDirty || resizing || image.getPlugin('crop').hasFocus()) {
+                var message = '<__trans phrase="You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?">';
+                if (confirm(message)) {
+                    parent.jQuery.fn.mtDialog.close();
+                }
+            } else {
+                parent.jQuery.fn.mtDialog.close();
+            }
+
+            return false;
+        });
+
+        // Cancel cropping when clicking escape key.
+        function cancelCropping(event) {
+            if (event && event.keyCode === 27) {
+                image.cropCancel();
+                disableButton('button#crop');
+            }
+        }
+
+        // Update textboxes and buttons on dialog.
+        function update() {
+            // Update resize textboxes and disable resize buttons.
+            jQuery('input#resize-width').val(image.width);
+            jQuery('input#resize-height').val(image.height);
+
+            disableButton('button#resize-apply');
+            disableButton('button#resize-reset');
+
+            // Disable crop button.
+            jQuery(document).off('keyup', document, cancelCropping);
+            disableButton('button#crop');
+
+            // Toggle history buttons.
+            if (image.undoSize() > 0) {
+                enableButton('button#undo');
+            } else {
+                disableButton('button#undo');
+            }
+            if (image.redoSize() > 0) {
+                enableButton('button#redo');
+            } else {
+                disableButton('button#redo');
+            }
+
+            // Resize thumbnail image.
+            image.getPlugin('resize').resize(image.thumbnailWidth, image.thumbnailHeight);
+        };
+
+        // Enable element.
+        function enableButton(element) {
+            jQuery(element)
+                .removeClass('disabled')
+                .removeAttr('disabled');
+        }
+
+        // Disable element.
+        function disableButton(element) {
+            jQuery(element)
+                .addClass('disabled')
+                .attr('disabled', 'disabled');
+        }
+    });
+</mt:setvarblock>
+
+<mt:include name="dialog/footer.tmpl">

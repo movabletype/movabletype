@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,13 +16,6 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
-## plugins/MultiBlog/lib/MultiBlog.pm
-	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'Stelle MultiBlog-Trigger für Blog #[_1] wieder her....',
-
-## plugins/MultiBlog/lib/MultiBlog/Tags.pm
-	'MTMultiBlog tags cannot be nested.' => 'MTMultiBlog-Tags können nicht veschachtelt werden.',
-	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'Ungültiges "mode"-Attribut [_1]. Gültige Werte sind "loop" und "context".',
-
 ## plugins/MultiBlog/multiblog.pl
 	'MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.' => 'Mit MultiBlog können Sie Inhalte anderer Blogs übernehmen und die dazu erforderlichen Veröffentlichungsregeln definieren.',
 	'MultiBlog' => 'MultiBlog',
@@ -33,19 +26,19 @@ use vars qw( %Lexicon );
 	'Select to apply this trigger to all blogs in this website.' => 'Diesen Trigger auf alle Blogs dieser Website anwenden',
 	'(All websites and blogs in this system)' => '(Alle Websites und Blogs in diesem System)',
 	'Select to apply this trigger to all websites and blogs in this system.' => 'Diesen Trigger auf alle Websites und Blogs dieser Installation anwenden',
-	'saves an entry/page' => 'ein Eintrag / eine Seite gespeichert wird',
-	'publishes an entry/page' => 'ein Eintrag / eine Seite veröffentlicht wird',
+	'saves an entry/page' => 'ein Eintrag/eine Seite gespeichert wird', # Translate - Improved
+	'publishes an entry/page' => 'ein Eintrag/eine Seite veröffentlicht wird', # Translate - Improved
+	'unpublishes an entry/page' => 'ein Eintrag/eine Seite nicht mehr veröffentlicht wird', # Translate - New # OK
 	'publishes a comment' => 'ein Kommentar veröffentlicht wird',
 	'publishes a TrackBack' => 'ein TrackBack veröffentlicht wird',
 	'rebuild indexes.' => 'Indizes neu aufbauen.',
 	'rebuild indexes and send pings.' => 'Indizes neu aufbauen und Pings senden.',
-	'Updating the MultiBlog trigger cache...' => 'Aktualisiere den MultiBlog-Trigger-Cache...', # Translate - New # OK
+	'Updating the MultiBlog trigger cache...' => 'Aktualisiere den MultiBlog-Trigger-Cache...',
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => 'Wenn in',
 	'Trigger' => 'Auslöser',
 	'Action' => 'Aktion',
-	'Weblog' => 'Weblog',
 	'Content Privacy' => 'Externer Zugriff auf Inhalte',
 	'Specify whether other blogs in the installation may publish content from this blog. This setting takes precedence over the default system aggregation policy found in the system-level MultiBlog configuration.' => 'Hier können Sie festlegen, ob andere Blogs dieser Movable Type-Installation die Inhalte dieses Blogs verwenden dürfen oder nicht. Diese Einstellung hat Vorrang vor der globalen MultiBlog-Konfiguration.',
 	'Use system default' => 'System-Voreinstellung verwenden',

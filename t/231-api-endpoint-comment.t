@@ -30,7 +30,7 @@ my $unpublished_page = MT::Test::Permission->make_page(
     status  => 1,
 );
 
-$app->config->allowComments(1);
+$app->config->allowComments( 1, 1 );
 
 my $suite = suite();
 test_data_api($suite);
@@ -278,7 +278,8 @@ sub suite {
                         'displayName' => 'v14GrUH 4 cheep'
                     },
                     'body' => 'alert(1);',
-                    'id'   => 1
+                    'id'   => 1,
+                    MT->component('commercial') ? ( customFields => [] ) : (),
                 };
             },
         },
@@ -305,7 +306,8 @@ sub suite {
                         'displayName' => 'v14GrUH 4 cheep'
                     },
                     'body' => '<p>alert(1);</p>',
-                    'id'   => 1
+                    'id'   => 1,
+                    MT->component('commercial') ? ( customFields => [] ) : (),
                 };
             },
         },
@@ -327,7 +329,8 @@ sub suite {
                         'displayName' => 'v14GrUH 4 cheep'
                     },
                     'body' => '<p><script>alert(1);</script></p>',
-                    'id'   => 1
+                    'id'   => 1,
+                    MT->component('commercial') ? ( customFields => [] ) : (),
                 };
             },
         },
@@ -349,7 +352,7 @@ sub suite {
                     'status'       => 'Approved',
                     'date'         => '2004-07-14T18:28:00-03:30',
                     'createdDate'  => '2004-07-14T18:28:00-03:30',
-                    'modifiedDate' => '0000-00-00T00:00:00-03:30',
+                    'modifiedDate' => undef,
                     'updatable'    => 'true',
                     'blog'         => { 'id' => '1' },
                     'author'       => {
@@ -357,7 +360,8 @@ sub suite {
                         'displayName' => 'v14GrUH 4 cheep'
                     },
                     'body' => 'alert(1);',
-                    'id'   => 1
+                    'id'   => 1,
+                    MT->component('commercial') ? ( customFields => [] ) : (),
                 };
             },
         },
@@ -379,7 +383,7 @@ sub suite {
                     'status'       => 'Approved',
                     'date'         => '2004-07-14T18:28:00-03:30',
                     'createdDate'  => '2004-07-14T18:28:00-03:30',
-                    'modifiedDate' => '0000-00-00T00:00:00-03:30',
+                    'modifiedDate' => undef,
                     'updatable'    => 'true',
                     'blog'         => { 'id' => '1' },
                     'author'       => {
@@ -387,7 +391,8 @@ sub suite {
                         'displayName' => 'v14GrUH 4 cheep'
                     },
                     'body' => '<p>alert(1);</p>',
-                    'id'   => 1
+                    'id'   => 1,
+                    MT->component('commercial') ? ( customFields => [] ) : (),
                 };
             },
         },
@@ -403,7 +408,7 @@ sub suite {
                     'status'       => 'Approved',
                     'date'         => '2004-07-14T18:28:00-03:30',
                     'createdDate'  => '2004-07-14T18:28:00-03:30',
-                    'modifiedDate' => '0000-00-00T00:00:00-03:30',
+                    'modifiedDate' => undef,
                     'updatable'    => 'true',
                     'blog'         => { 'id' => '1' },
                     'author'       => {
@@ -411,7 +416,8 @@ sub suite {
                         'displayName' => 'v14GrUH 4 cheep'
                     },
                     'body' => '<p><script>alert(1);</script></p>',
-                    'id'   => 1
+                    'id'   => 1,
+                    MT->component('commercial') ? ( customFields => [] ) : (),
                 };
             },
         },
@@ -713,12 +719,12 @@ sub suite {
 
         # Cannot comment when config directive "AllowComments" is false.
         {   path   => '/v1/sites/1/entries/1/comments',
-            setup  => sub { $app->config->AllowComments(0) },
+            setup  => sub { $app->config->AllowComments( 0, 1 ) },
             method => 'POST',
             params =>
                 { comment => { body => 'test-api-endopoint-comment', }, },
             code     => '409',
-            complete => sub { $app->config->AllowComments(1) },
+            complete => sub { $app->config->AllowComments( 1, 1 ) },
         },
     ];
 }

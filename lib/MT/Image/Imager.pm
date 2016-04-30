@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -24,6 +24,8 @@ sub load_driver {
 sub init {
     my $image = shift;
     my %param = @_;
+
+    $image->SUPER::init(%param);
 
     if ( ( !defined $param{Type} ) && ( my $file = $param{Filename} ) ) {
         ( my $ext = $file ) =~ s/.*\.//;
@@ -64,22 +66,33 @@ sub init {
         if ( !defined $Types ) {
             $Types = { map { $_ => $_ } Imager->read_types };
             $Types->{jpg} = 'jpeg' if $Types->{jpeg};
+            $Types->{tif} = 'tiff' if $Types->{tiff};
         }
         return $Types->{ lc $_[0] };
     }
 }
 
 sub blob {
-    my $image = shift;
+    my ( $image, $quality ) = @_;
     my $blob;
     my $imager = $image->{imager};
-    if (   defined $image->{type}
-        && $image->{type} eq 'jpeg'
+    my $is_jpeg = defined $image->{type} && $image->{type} eq 'jpeg';
+    if ( $is_jpeg
         && ( $imager->getchannels == 2 || $imager->getchannels == 4 ) )
     {
         $imager = $imager->convert( preset => "noalpha" );
     }
-    $imager->write( data => \$blob, type => $image->{type} );
+
+    # TODO: Imager cannot change PNG compression level.
+    if ( $is_jpeg && !defined $quality ) {
+        $quality = $image->jpeg_quality;
+    }
+
+    $imager->write(
+        data => \$blob,
+        type => $image->{type},
+        $is_jpeg ? ( jpegquality => $quality ) : (),
+    );
     $blob;
 }
 
@@ -94,16 +107,17 @@ sub scale {
     wantarray ? ( $image->blob, $w, $h ) : $image->blob;
 }
 
-sub crop {
+sub crop_rectangle {
     my $image = shift;
     my %param = @_;
-    my ( $size, $x, $y ) = @param{qw( Size X Y )};
+    my ( $width, $height, $x, $y ) = @param{qw( Width Height X Y )};
 
     $image->{imager} = $image->{imager}
-        ->crop( left => $x, top => $y, width => $size, height => $size );
-    $image->{width} = $image->{height} = $size;
+        ->crop( left => $x, top => $y, width => $width, height => $height );
+    $image->{width}  = $width;
+    $image->{height} = $height;
 
-    wantarray ? ( $image->blob, $size, $size ) : $image->blob;
+    wantarray ? ( $image->blob, $width, $height ) : $image->blob;
 }
 
 sub flipHorizontal {

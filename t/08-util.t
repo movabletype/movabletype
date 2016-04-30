@@ -1,10 +1,16 @@
+#!/usr/bin/perl
 # $Id: 08-util.t 3531 2009-03-12 09:11:52Z fumiakiy $
 
+use strict;
+use warnings;
 use utf8;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More;
+use File::Spec;
+
 use MT;
-use MT::Test;
+use MT::FileMgr;
+use MT::Test qw(:db :data);
 use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     start_end_period week2ymd munge_comment
     rich_text_transform html_text_transform encode_html decode_html
@@ -21,9 +27,8 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do
-    deep_copy canonicalize_path is_valid_ip );
+    deep_copy canonicalize_path is_valid_ip clear_site_stats_widget_cache);
 use MT::I18N qw( encode_text );
-use strict;
 
 my $mt = MT->new;
 $mt->config( 'NoHTMLEntities', 1 );
@@ -182,8 +187,12 @@ is( MT::Util::to_json( { 'foo' => 'ho1ge' } ), '{"foo":"ho1ge"}' );
 is( MT::Util::to_json( [ 'foo', 'bar', 'baz' ] ), '["foo","bar","baz"]' );
 is( MT::Util::to_json( [ 'foo', 1, 'bar', 2, 3, 4 ] ),
     '["foo",1,"bar",2,3,4]' );
-is( MT::Util::to_json( [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ] ),
-    '["foo",1,"bar",{"hoge":1,"moge":"a"}]' );
+is( MT::Util::to_json(
+        [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ],
+        { canonical => 1 }
+    ),
+    '["foo",1,"bar",{"hoge":1,"moge":"a"}]'
+);
 
 ### start_end_*
 is( start_end_day('19770908153005'),
@@ -408,7 +417,10 @@ for my $d (@relative_date_data) {
             '%Y/%m/%d', $d->{style}
         ),
         $d->{expected},
-        "relative_date() (offset:$d->{offset}, style:$d->{style})"
+        sprintf(
+            "relative_date() (offset:%d, style:%s)",
+            $d->{offset}, $d->{style} || 'undef'
+        )
     );
 }
 
@@ -588,7 +600,11 @@ is( escape_unicode( Encode::encode( 'utf8', $utf8_e38182 ) ),
     '&#12354;', 'escape_unicode()' );
 is( unescape_unicode('&#12354;'), $utf8_e38182, 'unescape_unicode()' );
 
-isa_ok( sax_parser(), 'XML::LibXML::SAX', 'sax_parser()' );
+SKIP: {
+    skip 'This test depends on installed modules', 1;
+    isa_ok( sax_parser(), 'XML::LibXML::SAX', 'sax_parser()' );
+}
+
 is( asset_cleanup(
         '<form mt:asset-id="1" contenteditable="false"><img src="http://example.com/img/foo.jpg" /></form>'
     ),
@@ -700,7 +716,11 @@ ok( dir_separator(), 'dir_separator()' );
     ok( $data->[0] = $copied->[0], 'not deep copied' );
 }
 
-{
+SKIP: {
+    if ( $^O eq 'MSWin32' ) {
+        skip 'This test is not for Windows', 6;
+    }
+
     my $path;
     $path = '/foo/bar/baz';
     is( canonicalize_path($path),
@@ -719,6 +739,124 @@ ok( dir_separator(), 'dir_separator()' );
     is( canonicalize_path($path), 'baz', 'only filename supplied' );
     $path = '../../baz';
     is( canonicalize_path($path), '../../baz', 'relative parent path' );
+}
+
+SKIP: {
+    if ( $^O ne 'MSWin32' ) {
+        skip 'This test is for Windows', 6;
+    }
+
+    my $path;
+    $path = 'C:\foo\bar\baz';
+    is( canonicalize_path($path),
+        'C:\foo\bar\baz', 'Already canonicalized(abs)' );
+    $path = 'D:\foo\bar\0\baz';
+    is( canonicalize_path($path),
+        'D:\foo\bar\0\baz', 'Contains a path named "0"' );
+    $path = 't\..\t\08-util.t';
+    is( canonicalize_path($path),
+        File::Spec->catdir( 't', '08-util.t' ),
+        'canonicalize relative path'
+    );
+    $path = 'A:\foo\..\bar\baz';
+    is( canonicalize_path($path), 'A:\bar\baz',
+        'canonicalize absolute path' );
+    $path = 'baz';
+    is( canonicalize_path($path), 'baz', 'only filename supplied' );
+    $path = '..\..\baz';
+    is( canonicalize_path($path), '..\..\baz', 'relative parent path' );
+}
+
+{
+    # make_unique_basename()
+    my $not_unique_flg = 0;
+    my $entry1         = $mt->model('entry')->load(1);
+    $entry1->basename("1111");
+    $entry1->title("漢字1111");
+    $entry1->save();
+
+    my $itr = $mt->model('entry')->load_iter();
+    while ( my $entry = $itr->() ) {
+        $entry->basename("");
+        $entry->title("漢字1111");
+        $entry->save();
+        my $not_unique_entry = $mt->model('entry')->load(
+            {   id       => { not => $entry->id },
+                basename => $entry->basename()
+            }
+        );
+        if ( defined($not_unique_entry) ) {
+            $not_unique_flg = 1;
+        }
+    }
+    is( $not_unique_flg, 0, 'make_unique_basename()' );
+}
+
+# Basename is not overlapped.
+for my $clear_cache ( 0, 1 ) {
+    my $not_unique_flg = 0;
+    for ( my $i = 0; $i < 20; $i++ ) {
+        $mt->request->reset if $clear_cache;
+
+        my $entry = $mt->model('entry')->new();
+        $entry->set_values(
+            {   blog_id        => 1,
+                title          => "漢字2222",
+                text           => 'On a drizzly day last weekend,',
+                text_more      => '',
+                excerpt        => 'A story of a stroll.',
+                keywords       => 'keywords',
+                created_on     => '19780131074500',
+                authored_on    => '19780131074500',
+                modified_on    => '19780131074600',
+                authored_on    => '19780131074500',
+                author_id      => 3,
+                pinged_urls    => '',
+                allow_comments => 1,
+                allow_pings    => 1,
+                status         => MT::Entry::RELEASE(),
+            }
+        );
+        $entry->save();
+        my $not_unique_entry = $mt->model('entry')->load(
+            {   id       => { not => $entry->id },
+                basename => $entry->basename()
+            }
+        );
+        if ( defined($not_unique_entry) ) {
+            $not_unique_flg = 1;
+        }
+    }
+    is( $not_unique_flg, 0,
+        "Basename is not overlapped (\$clear_cache = $clear_cache)" );
+
+}
+
+my $fmgr = MT::FileMgr->new('Local');
+{
+    my $dir = File::Spec->catfile( MT->app->support_directory_path,
+        'dashboard', 'stats', 0, '001', '001' );
+    if ( !$fmgr->exists($dir) ) {
+        $fmgr->mkpath($dir);
+    }
+    my $file = File::Spec->catfile( $dir, 'data_1.json' );
+    if ( !$fmgr->exists($file) ) {
+        $fmgr->put_data( 1, $file );
+    }
+    ok( $fmgr->exists($file), 'JSON file of site stats exists' );
+    clear_site_stats_widget_cache(1);
+    ok( !$fmgr->exists($file), 'JSON file of site stats was removed' );
+}
+
+{
+    my $dir = File::Spec->catdir( MT->app->support_directory_path,
+        'dashboard', 'stats' );
+    if ( !$fmgr->exists($dir) ) {
+        $fmgr->mkpath($dir);
+    }
+    ok( $fmgr->exists($dir), 'Site stats directory exists' );
+    clear_site_stats_widget_cache();
+    ok( !$fmgr->exists($dir), 'Site stats directory was removed' );
 }
 
 done_testing();

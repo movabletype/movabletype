@@ -68,7 +68,7 @@ sub WriteProfile($$$;$)
 {
     my ($outfile, $rawType, $dataPt, $profile) = @_;
     my ($buff, $prefix, $chunk, $deflate);
-    if (eval 'require Compress::Zlib') {
+    if (eval { require Compress::Zlib }) {
         $deflate = Compress::Zlib::deflateInit();
     }
     if (not defined $profile) {
@@ -111,18 +111,52 @@ sub WriteProfile($$$;$)
 # Returns: true on success
 sub Add_iCCP($$)
 {
-    my ($exifTool, $outfile) = @_;
-    if ($exifTool->{ADD_DIRS}->{ICC_Profile}) {
+    my ($et, $outfile) = @_;
+    if ($$et{ADD_DIRS}{ICC_Profile}) {
         # write new ICC data
         my $tagTablePtr = Image::ExifTool::GetTagTable('Image::ExifTool::ICC_Profile::Main');
         my %dirInfo = ( Parent => 'PNG', DirName => 'ICC_Profile' );
-        my $buff = $exifTool->WriteDirectory(\%dirInfo, $tagTablePtr);
+        my $buff = $et->WriteDirectory(\%dirInfo, $tagTablePtr);
         if (defined $buff and length $buff and WriteProfile($outfile, 'icm', \$buff)) {
-            $exifTool->VPrint(0, "Created ICC profile\n");
-            delete $exifTool->{ADD_DIRS}->{ICC_Profile}; # don't add it again
+            $et->VPrint(0, "Created ICC profile\n");
+            delete $$et{ADD_DIRS}{ICC_Profile}; # don't add it again
+            $$et{PNGDoneDir}{ICC_Profile} = 2;
         }
     }
     return 1;
+}
+
+#------------------------------------------------------------------------------
+# This routine is called after we edit an existing directory
+# Inputs: 0) ExifTool ref, 1) dir name, 2) output data ref
+#         3) flag set if location is non-standard (to update, but not create from scratch)
+# - on return, $$outBuff is set to '' if the directory is to be deleted
+sub DoneDir($$$;$)
+{
+    my ($et, $dir, $outBuff, $nonStandard) = @_;
+    # don't add this directory again unless this is in a non-standard location
+    delete $$et{ADD_DIRS}{$dir} unless $nonStandard;
+    # handle problem with duplicate XMP when using PNGEarlyXMP option
+    return unless $dir eq 'XMP' and defined $$outBuff and length $$outBuff;
+    if ($nonStandard and $$et{DEL_GROUP}{$dir}) {
+        $et->VPrint(0,"  Deleting non-standard $dir\n");
+        $$outBuff = '';
+    } elsif (not $$et{PNGDoneDir}{$dir}) {
+        $$et{PNGDoneDir}{$dir} = 1;   # set flag indicating the directory exists
+    } elsif ($$et{OPTIONS}{PNGEarlyXMP}) {
+        if ($$et{PNGDoneDir}{$dir} == 2) {
+            if ($$et{OPTIONS}{IgnoreMinorErrors}) {
+                $et->Warn("Deleted existing $dir");
+            } else {
+                $et->Error("Duplicate $dir created. Ignore to delete existing $dir", 1);
+                return;
+            }
+        } elsif ($et->Warn("Duplicate $dir. Ignore to delete", 2)) {
+            return; # warning not ignored: don't delete the duplicate
+        }
+        $et->VPrint(0,"  Deleting duplicate $dir\n");
+        $$outBuff = '';
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -132,7 +166,7 @@ sub Add_iCCP($$)
 # Notes: Sets ExifTool TextChunkType member to the type of chunk written
 sub BuildTextChunk($$$$$)
 {
-    my ($exifTool, $tag, $tagInfo, $val, $lang) = @_;
+    my ($et, $tag, $tagInfo, $val, $lang) = @_;
     my ($xtra, $compVal, $iTXt, $comp);
     if ($$tagInfo{SubDirectory}) {
         if ($$tagInfo{Name} eq 'XMP') {
@@ -143,17 +177,17 @@ sub BuildTextChunk($$$$$)
         }
     } else {
         # compress if specified
-        $comp = 1 if $exifTool->Options('Compress');
+        $comp = 1 if $et->Options('Compress');
         if ($lang) {
             $iTXt = 1;      # write as iTXt if it has a language code
             $tag =~ s/-$lang$//;    # remove language code from tagID
-        } elsif ($$exifTool{OPTIONS}{Charset} ne 'Latin' and $val =~  /[\x80-\xff]/) {
+        } elsif ($$et{OPTIONS}{Charset} ne 'Latin' and $val =~  /[\x80-\xff]/) {
             $iTXt = 1;      # write as iTXt if it contains non-Latin special characters
         }
     }
     if ($comp) {
         my $warn;
-        if (eval 'require Compress::Zlib') {
+        if (eval { require Compress::Zlib }) {
             my $deflate = Compress::Zlib::deflateInit();
             $compVal = $deflate->deflate($val) if $deflate;
             if (defined $compVal) {
@@ -171,20 +205,20 @@ sub BuildTextChunk($$$$$)
         }
         # warn if any user-specified compression fails
         if ($warn and $comp == 1) {
-            $exifTool->Warn("PNG:$$tagInfo{Name} not compressed ($warn)", 1);
+            $et->Warn("PNG:$$tagInfo{Name} not compressed ($warn)", 1);
         }
     }
     # decide whether to write as iTXt, zTXt or tEXt
     if ($iTXt) {
-        $$exifTool{TextChunkType} = 'iTXt';
+        $$et{TextChunkType} = 'iTXt';
         $xtra = (defined $compVal ? "\x01\0" : "\0\0") . ($lang || '') . "\0\0";
         # iTXt is encoded as UTF-8 (but note that XMP is already UTF-8)
-        $val = $exifTool->Encode($val, 'UTF8') if $iTXt == 1;
+        $val = $et->Encode($val, 'UTF8') if $iTXt == 1;
     } elsif (defined $compVal) {
-        $$exifTool{TextChunkType} = 'zTXt';
+        $$et{TextChunkType} = 'zTXt';
         $xtra = "\0";
     } else {
-        $$exifTool{TextChunkType} = 'tEXt';
+        $$et{TextChunkType} = 'tEXt';
         $xtra = '';
     }
     return $tag . "\0" . $xtra . (defined $compVal ? $compVal : $val);
@@ -193,60 +227,69 @@ sub BuildTextChunk($$$$$)
 #------------------------------------------------------------------------------
 # Add any outstanding new chunks to the PNG image
 # Inputs: 0) ExifTool object ref, 1) output file or scalar ref
+#         2-N) dirs to add (empty to add all, including PNG tags)
 # Returns: true on success
-sub AddChunks($$)
+sub AddChunks($$;@)
 {
-    my ($exifTool, $outfile) = @_;
-    # write any outstanding PNG tags
-    my $addTags = $exifTool->{ADD_PNG};
-    delete $exifTool->{ADD_PNG};
-    my ($tag, $dir, $err, $tagTablePtr);
+    my ($et, $outfile, @add) = @_;
+    my ($addTags, $tag, $dir, $err, $tagTablePtr);
 
+    if (@add) {
+        $addTags = { }; # don't add any PNG tags
+    } else {
+        $addTags = $$et{ADD_PNG};    # add all PNG tags...
+        delete $$et{ADD_PNG};        # ...once
+        # add all directories
+        @add = sort keys %{$$et{ADD_DIRS}};
+    }
+    # write any outstanding PNG tags
     foreach $tag (sort keys %$addTags) {
         my $tagInfo = $$addTags{$tag};
-        my $nvHash = $exifTool->GetNewValueHash($tagInfo);
+        my $nvHash = $et->GetNewValueHash($tagInfo);
         # (native PNG information is always preferred, so don't check IsCreating)
-        next unless $exifTool->IsOverwriting($nvHash);
-        my $val = $exifTool->GetNewValues($nvHash);
+        next unless $et->IsOverwriting($nvHash);
+        my $val = $et->GetNewValues($nvHash);
         if (defined $val) {
             next if $$nvHash{EditOnly};
             my $data;
             if ($$tagInfo{Table} eq \%Image::ExifTool::PNG::TextualData) {
-                $data = BuildTextChunk($exifTool, $tag, $tagInfo, $val, $$tagInfo{LangCode});
-                $data = $$exifTool{TextChunkType} . $data;
-                delete $$exifTool{TextChunkType};
+                $data = BuildTextChunk($et, $tag, $tagInfo, $val, $$tagInfo{LangCode});
+                $data = $$et{TextChunkType} . $data;
+                delete $$et{TextChunkType};
             } else {
                 $data = "$tag$val";
             }
             my $hdr = pack('N', length($data) - 4);
             my $cbuf = pack('N', CalculateCRC(\$data, undef));
             Write($outfile, $hdr, $data, $cbuf) or $err = 1;
-            $exifTool->VerboseValue("+ PNG:$$tagInfo{Name}", $val);
-            ++$exifTool->{CHANGED};
+            $et->VerboseValue("+ PNG:$$tagInfo{Name}", $val);
+            $$et{PNGDoneTag}{$tag} = 1;   # set flag indicating this tag was added
+            ++$$et{CHANGED};
         }
     }
-    $addTags = { };     # prevent from adding tags again
     # create any necessary directories
-    foreach $dir (sort keys %{$exifTool->{ADD_DIRS}}) {
+    foreach $dir (@add) {
+        next unless $$et{ADD_DIRS}{$dir}; # make sure we want to add it first
         my $buff;
         my %dirInfo = (
             Parent => 'PNG',
             DirName => $dir,
         );
         if ($dir eq 'IFD0') {
-            $exifTool->VPrint(0, "Creating EXIF profile:\n");
-            $exifTool->{TIFF_TYPE} = 'APP1';
+            $et->Warn('Creating non-standard EXIF in PNG', 1);
+            $et->VPrint(0, "Creating EXIF profile:\n");
+            $$et{TIFF_TYPE} = 'APP1';
             $tagTablePtr = Image::ExifTool::GetTagTable('Image::ExifTool::Exif::Main');
-            $buff = $exifTool->WriteDirectory(\%dirInfo, $tagTablePtr, \&Image::ExifTool::WriteTIFF);
+            $buff = $et->WriteDirectory(\%dirInfo, $tagTablePtr, \&Image::ExifTool::WriteTIFF);
             if (defined $buff and length $buff) {
                 $buff = $Image::ExifTool::exifAPP1hdr . $buff;
                 WriteProfile($outfile, 'APP1', \$buff, 'generic') or $err = 1;
             }
         } elsif ($dir eq 'XMP') {
-            $exifTool->VPrint(0, "Creating XMP iTXt chunk:\n");
+            $et->VPrint(0, "Creating XMP iTXt chunk:\n");
             $tagTablePtr = Image::ExifTool::GetTagTable('Image::ExifTool::XMP::Main');
             $dirInfo{ReadOnly} = 1;
-            $buff = $exifTool->WriteDirectory(\%dirInfo, $tagTablePtr);
+            $buff = $et->WriteDirectory(\%dirInfo, $tagTablePtr);
             if (defined $buff and length $buff and
                 # the packet is read-only (because of CRC)
                 Image::ExifTool::XMP::ValidateXMP(\$buff, 'r'))
@@ -261,26 +304,43 @@ sub AddChunks($$)
                 Write($outfile, $hdr, $buff, $cbuf) or $err = 1;
             }
         } elsif ($dir eq 'IPTC') {
-            $exifTool->VPrint(0, "Creating IPTC profile:\n");
+            $et->Warn('Creating non-standard EXIF in PNG', 1);
+            $et->VPrint(0, "Creating IPTC profile:\n");
             # write new IPTC data (stored in a Photoshop directory)
             $dirInfo{DirName} = 'Photoshop';
             $tagTablePtr = Image::ExifTool::GetTagTable('Image::ExifTool::Photoshop::Main');
-            $buff = $exifTool->WriteDirectory(\%dirInfo, $tagTablePtr);
+            $buff = $et->WriteDirectory(\%dirInfo, $tagTablePtr);
             if (defined $buff and length $buff) {
                 WriteProfile($outfile, 'iptc', \$buff, 'IPTC') or $err = 1;
             }
         } elsif ($dir eq 'ICC_Profile') {
-            $exifTool->VPrint(0, "Creating ICC profile:\n");
+            $et->VPrint(0, "Creating ICC profile:\n");
             # write new ICC data (only done if we couldn't create iCCP chunk)
             $tagTablePtr = Image::ExifTool::GetTagTable('Image::ExifTool::ICC_Profile::Main');
-            $buff = $exifTool->WriteDirectory(\%dirInfo, $tagTablePtr);
+            $buff = $et->WriteDirectory(\%dirInfo, $tagTablePtr);
             if (defined $buff and length $buff) {
                 WriteProfile($outfile, 'icm', \$buff, 'ICC') or $err = 1;
-                $exifTool->Warn('Wrote ICC as a raw profile (no Compress::Zlib)');
+                $et->Warn('Wrote ICC as a raw profile (no Compress::Zlib)');
             }
+        } elsif ($dir eq 'PNG-pHYs') {
+            $et->VPrint(0, "Creating pHYs chunk:\n");
+            $tagTablePtr = Image::ExifTool::GetTagTable('Image::ExifTool::PNG::PhysicalPixel');
+            my $blank = "\0\0\x0b\x12\0\0\x0b\x12\x01"; # 2834 pixels per meter (72 dpi)
+            $dirInfo{DataPt} = \$blank;
+            $buff = $et->WriteDirectory(\%dirInfo, $tagTablePtr);
+            if (defined $buff and length $buff) {
+                $buff = 'pHYs' . $buff; # CRC includes chunk name
+                my $hdr = pack('N', length($buff) - 4);
+                my $cbuf = pack('N', CalculateCRC(\$buff, undef));
+                Write($outfile, $hdr, $buff, $cbuf) or $err = 1;
+            }
+        } else {
+            next;
         }
+        delete $$et{ADD_DIRS}{$dir};  # don't add again
+        # keep track of the directories that we added
+        $$et{PNGDoneDir}{$dir} = 2 if defined $buff and length $buff;
     }
-    $exifTool->{ADD_DIRS} = { };    # prevent from adding dirs again
     return not $err;
 }
 
@@ -317,7 +377,7 @@ strings).
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

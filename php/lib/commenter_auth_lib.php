@@ -1,10 +1,12 @@
 <?php
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
 # $Id$
 
+# Do not remove providers when they are disabled,
+# because the output of MT tags should keep same.
 global $_commenter_auths;
 $provider = new OpenIDCommenterAuth();
 $_commenter_auths[$provider->get_key()] = $provider;

@@ -444,6 +444,9 @@ function init() {
     });
 
     jQuery('.website-path-text').change( function () {
+        // Remove unnecessary trailing directory separators in website path.
+        this.value = this.value.replace(/\<mt:var name="path_separator">+$/, '');
+
         websites_path[this.name] = this.value;
 
         var rex = RegExp("site_path_([0-9]+)");
@@ -459,6 +462,10 @@ function init() {
     });
 
     jQuery('.website-url-text').change( function () {
+        // Remove unnecessary trailing slashes in website URL.
+        this.value  = this.value.replace(/\/+$/, '');
+        this.value += '/';
+
         websites_url[this.name] = this.value;
         var rex = RegExp("site_url_([0-9]+)");
         if (this.name.match(rex)) {

@@ -1,0 +1,144 @@
+#!/usr/bin/env perl
+
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
+#
+# $Id$
+
+use strict;
+use warnings;
+
+use version;
+use FindBin;
+use lib ( "$FindBin::Bin/../lib", "$FindBin::Bin/../extlib" );
+use MT::Bootstrap;
+use MT;
+use MT::App::CMS;
+
+my $verbose;
+my $dry_run;
+
+require Getopt::Long;
+Getopt::Long::GetOptions(
+    "dry_run" => \$dry_run,
+    "verbose" => \$verbose,
+);
+
+$@ = undef;
+
+my $mt = MT::App::CMS->new or die MT->errstr;
+
+# Check.
+die
+    "This program cannot be run when ObjectDriver is not 'Microsoft SQLServer.'\n"
+    if lc( MT->config->ObjectDriver ) !~ m/^u?mssqlserver$/;
+die "This program must be run with Movable Type later than 6.1.1.\n"
+    if version->parse( $mt->product_version ) <= version->parse(6.1.1);
+die "This program cannot be run when upgrade is needed.\n"
+    if $mt->{upgrade_required};
+
+my ( $string_max_size, $text_type );
+if ( lc( MT->config->ObjectDriver ) eq 'mssqlserver' ) {
+    $string_max_size = 8000;
+    $text_type       = 'text';
+}
+else {
+
+    # ObejctDriver is UMSSQLServer.
+    $string_max_size = 4000;
+    $text_type       = 'ntext';
+}
+
+my $object_types = MT->registry('object_types');
+my @types        = keys %$object_types;
+for my $type (@types) {
+    my $class = MT->model($type);
+
+    print "Fixing data type of $class ...\n";
+
+    alter_columns($type);
+
+    for my $which (qw( meta summary )) {
+        if ( $class->meta_pkg($which) ) {
+            alter_columns( $type . ":$which" );
+        }
+    }
+    if ( $class->isa('MT::Revisable') ) {
+        alter_columns( $type . ':revision' );
+    }
+}
+
+print "finished\n";
+
+sub alter_columns {
+    my $type        = shift;
+    my $class       = MT->model($type);
+    my $ddl         = $class->driver->dbd->ddl_class;
+    my $column_defs = $class->column_defs;
+    my $db_defs     = $ddl->column_defs($class);
+    my $dbh         = $class->driver->rw_handle;
+
+    for my $column ( keys %$column_defs ) {
+        my $column_type = $column_defs->{$column}{type};
+        my $column_size = $column_defs->{$column}{size};
+        my $db_type     = $db_defs->{$column}{db_type};
+
+        if (( $column_type eq 'blob' && $db_type eq 'image' )
+            || (   $column_type eq 'text'
+                && $db_type eq $text_type )
+            || (   $column_type eq 'string'
+                && $column_size > $string_max_size
+                && $db_type eq $text_type )
+            )
+        {
+            my $sql = $ddl->alter_column_sql( $class, $column );
+            print "  * $sql\n" if $verbose;
+
+            if ( !$dry_run ) {
+                $dbh->do($sql)
+                    or die "failed to execute statement $sql: "
+                    . $dbh->errstr;
+            }
+        }
+    }
+}
+__END__
+
+=head1 NAME
+
+fix-type-mssql - change deprecated data types (text, ntext and image) of SQL Server
+
+=head1 DESCRIPTION
+
+As of April 2015, text, ntext and image data types of SQL Server are deprecated.
+
+https://msdn.microsoft.com/ja-jp/library/ms143729.aspx
+
+This program changes these deprecated data types to varchar(max), nvarchar(max) and varbinary(max) respectively.
+
+This program can be run under the following conditions.
+
+=over 4
+
+=item * Using Movable Type later 6.1.1 and SQL Server.
+
+=item * All upgrades has been completed.
+
+=back
+
+=head1 OPTIONS
+
+=over 4
+
+=item --verbose
+
+Display SQL statements when setting this option. Default setting is off.
+
+=item --dry-run
+
+Do not change database when setting this option. Default setting is off.
+
+=back
+
+=cut

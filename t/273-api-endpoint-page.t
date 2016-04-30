@@ -7,6 +7,7 @@ use lib qw(lib extlib t/lib);
 
 use Test::More;
 use MT::Test::DataAPI;
+use MT::Test::Permission;
 
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
@@ -29,6 +30,10 @@ my $blog_folder = $app->model('folder')->load( { blog_id => 1 } ) or die;
 my $blog_page_2 = $app->model('page')->load(21) or die;
 $blog_page_2->category_id( $blog_folder->id );
 $blog_page_2->save or die $blog_page_2->errstr;
+
+my $website = $app->model('website')->load;
+my $website_asset
+    = MT::Test::Permission->make_asset( blog_id => $website->id, );
 
 my $suite = suite();
 test_data_api($suite);
@@ -504,6 +509,32 @@ __BODY__
             code         => 403,
             error => 'Do not have permission to create a page.',
         },
+        {    # Attach non-existent asset.
+            path   => '/v2/sites/1/pages',
+            method => 'POST',
+            params => {
+                page => {
+                    title  => 'test-api-attach-assets-to-page',
+                    status => 'Draft',
+                    assets => [ { id => 100 } ],
+                },
+            },
+            code  => 400,
+            error => "'assets' parameter is invalid.",
+        },
+        {    # Attach asset in other site.
+            path   => '/v2/sites/1/pages',
+            method => 'POST',
+            params => {
+                page => {
+                    title  => 'test-api-attach-assets-to-page',
+                    status => 'Draft',
+                    assets => [ { id => $website_asset->id } ],
+                },
+            },
+            code  => 400,
+            error => "'assets' parameter is invalid.",
+        },
 
         # create_page - normal tests
         {   path   => '/v2/sites/1/pages',
@@ -550,6 +581,63 @@ __BODY__
                 );
                 my $folder = $page->category;
                 is( $folder->id, 22, 'Attached folder.' );
+            },
+        },
+        {    # Attach assets.
+            path   => '/v2/sites/1/pages',
+            method => 'POST',
+            params => {
+                page => {
+                    title  => 'test-api-attach-assets-to-page',
+                    status => 'Draft',
+                    assets => [ { id => 1 } ],
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.page',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                require MT::Entry;
+                MT->model('page')->load(
+                    {   title  => 'test-api-attach-assets-to-page',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                require MT::Entry;
+                my $page = MT->model('page')->load(
+                    {   title  => 'test-api-attach-assets-to-page',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+                is( $page->revision, 1, 'Has created new revision' );
+                my @assets = MT->model('asset')->load(
+                    { class => '*' },
+                    {   join => MT->model('objectasset')->join_on(
+                            'asset_id',
+                            {   object_ds => 'entry',
+                                object_id => $page->id,
+                                asset_id  => 1,
+                            },
+                        ),
+                    }
+                );
+                is( scalar @assets, 1, 'Attaches an asset' );
+                is( $assets[0]->id, 1, 'Attached asset ID is 1' );
             },
         },
         {    # Set format.
@@ -604,6 +692,62 @@ __BODY__
                 $app->model('page')
                     ->load(
                     { blog_id => 1, title => 'create-page-with-none' } );
+            },
+        },
+        {    # Attach empty asset list.
+            path   => '/v2/sites/1/pages',
+            method => 'POST',
+            params => {
+                page => {
+                    title  => 'test-api-attach-empty-asset-list-to-page',
+                    status => 'Draft',
+                    assets => [],
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.page',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                require MT::Entry;
+                MT->model('page')->load(
+                    {   title  => 'test-api-attach-empty-asset-list-to-page',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                require MT::Entry;
+                my $page = MT->model('page')->load(
+                    {   title  => 'test-api-attach-empty-asset-list-to-page',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+                is( $page->revision, 1, 'Has created new revision' );
+                my @assets = MT->model('asset')->load(
+                    { class => '*' },
+                    {   join => MT->model('objectasset')->join_on(
+                            'asset_id',
+                            {   object_ds => 'entry',
+                                object_id => $page->id,
+                                asset_id  => 1,
+                            },
+                        ),
+                    }
+                );
+                is( scalar @assets, 0, 'Attaches no asset' );
             },
         },
 
@@ -755,6 +899,170 @@ __BODY__
                 my $expected = $app->model('page')->load(23);
 
                 isnt( $got->{body}, $expected->text );
+            },
+        },
+        {    # Attach assets.
+            path   => '/v2/sites/1/pages/23',
+            method => 'PUT',
+            params => { page => { assets => [ { id => 1 } ] } },
+            result => sub {
+                $app->model('page')->load(23);
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $page  = $app->model('page')->load(23);
+                my $count = MT->model('objectasset')->count(
+                    {   blog_id   => $page->blog->id,
+                        object_ds => 'entry',
+                        object_id => $page->id,
+                    },
+                );
+                is( $count, 1, 'Attached asset.' );
+            },
+        },
+        {    # Detach assets.
+            path   => '/v2/sites/1/pages/23',
+            method => 'PUT',
+            params => { page => { assets => [] } },
+            result => sub {
+                $app->model('page')->load(23);
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $page  = $app->model('page')->load(23);
+                my $count = MT->model('objectasset')->count(
+                    {   blog_id   => $page->blog->id,
+                        object_ds => 'entry',
+                        object_id => $page->id,
+                    },
+                );
+                is( $count, 0, 'Detached asset.' );
+            },
+        },
+
+        # preview_page_by_id
+        {    # Non-existent page
+            path   => '/v2/sites/1/pages/500/preview',
+            method => 'POST',
+            params => {
+                page => {
+                    title  => 'foo',
+                    text   => 'bar',
+                    status => 'Draft',
+                },
+            },
+            code => 404,
+        },
+        {    # No resource.
+            path     => '/v2/sites/1/pages/23/preview',
+            method   => 'POST',
+            code     => 400,
+            resource => sub {
+                return +{
+                    error => {
+                        code    => 400,
+                        message => 'A resource "page" is required.',
+                    },
+                };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/pages/23/preview',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # normal tests
+            path   => '/v2/sites/1/pages/23/preview',
+            params => {
+                page => {
+                    title  => 'foo',
+                    status => 'Draft',
+                    text   => 'bar',
+                },
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview Page make success' );
+            },
+        },
+        {    # normal tests - raw parameter
+            path   => '/v2/sites/1/pages/23/preview',
+            params => {
+                page => {
+                    title  => 'foo',
+                    text   => 'bar',
+                    status => 'Draft',
+                },
+                raw => '1',
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview Page make success' );
+            },
+        },
+
+        # preview_page
+        {    # No resource.
+            path     => '/v2/sites/1/pages/preview',
+            method   => 'POST',
+            code     => 400,
+            resource => sub {
+                return +{
+                    error => {
+                        code    => 400,
+                        message => 'A resource "page" is required.',
+                    },
+                };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/pages/preview',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # normal tests
+            path   => '/v2/sites/1/pages/preview',
+            params => {
+                page => {
+                    title  => 'foo',
+                    status => 'Draft',
+                    text   => 'bar',
+                },
+                authored_on_date => '2015-01-01',
+                authored_on_time => '10:00:00',
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview Page make success' );
+            },
+        },
+        {    # normal tests - raw parameter
+            path   => '/v2/sites/1/pages/preview',
+            params => {
+                page => {
+                    title  => 'foo',
+                    text   => 'bar',
+                    status => 'Draft',
+                },
+                raw              => '1',
+                authored_on_date => '2015-01-01',
+                authored_on_time => '10:00:00',
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview Page make success' );
             },
         },
 

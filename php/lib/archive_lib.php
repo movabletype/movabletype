@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -816,6 +816,12 @@ class AuthorBasedArchiver implements ArchiveType {
 
         $blog_id = intval($args['blog_id']);
         $author = $ctx->stash('author');
+        if ( empty( $author ) ) {
+            $entry = $ctx->stash('entry');
+            if ( !empty( $entry ) ) {
+                $author = $entry->author();
+            }
+        }
         $auth_id = $author->author_id;
         $at or $at = $ctx->stash('current_archive_type');
 
@@ -823,7 +829,6 @@ class AuthorBasedArchiver implements ArchiveType {
                  and fileinfo_archive_type = '".$mt->db()->escape($at)."'
                  and fileinfo_author_id = '$auth_id'
                  and templatemap_is_preferred = 1";
-
         return $sql;
     }
 

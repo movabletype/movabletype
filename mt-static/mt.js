@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1754,6 +1754,10 @@ MT.App = new Class( App, {
 
         var data = DOM.getFormData( this.form );
         data["_autosave"] = 1;
+        if(data["_type"] == "entry" || data["_type"] == "page")
+            data["__mode"] = "save_entry";
+        if(data["_type"] == "template")
+            data["__mode"] = "save";
 
         if ( this.cpeList )
             this.cpeList.forEach( function( cpe ) { cpe.autoSave( data ) } );

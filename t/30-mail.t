@@ -6,7 +6,7 @@ BEGIN {
 };
 
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use MT::Test;
+use MT;
 use MT::Mail;
 use Test::More;
 use MIME::Base64;

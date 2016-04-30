@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -69,6 +69,9 @@ sub get_syscheck_content {
     my $ua = $app->new_ua();
     return unless $ua;
     $ua->max_size(undef) if $ua->can('max_size');
+
+    # Do not verify SSL certificate.
+    $ua->ssl_opts( verify_hostname => 0 );
 
     my $req = new HTTP::Request( GET => $syscheck_url );
     my $resp = $ua->request($req);
@@ -508,7 +511,8 @@ sub cfg_system_general {
         UserLockoutLimit UserLockoutInterval IPLockoutLimit
         IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo
         TrackRevisions DisableNotificationPings OutboundTrackbackLimit
-        OutboundTrackbackDomains AllowPings AllowComments );
+        OutboundTrackbackDomains AllowPings AllowComments
+        ImageQualityJpeg ImageQualityPng);
     push @readonly_configs, 'BaseSitePath' unless $cfg->HideBaseSitePath;
 
     my @config_warnings;
@@ -593,6 +597,10 @@ sub cfg_system_general {
     $param{sitepath_limit}        = $cfg->BaseSitePath;
     $param{sitepath_limit_hidden} = $cfg->HideBaseSitePath;
     $param{preflogging_hidden}    = $cfg->HidePerformanceLoggingSettings;
+
+    $param{image_quality_jpeg} = $cfg->ImageQualityJpeg;
+    $param{image_quality_png}  = $cfg->ImageQualityPng;
+    $param{image_driver}       = lc $cfg->ImageDriver;
 
     $param{saved}        = $app->param('saved');
     $param{screen_class} = "settings-screen system-feedback-settings";
@@ -831,6 +839,31 @@ sub save_cfg_system_general {
                 )
             );
         }
+    }
+
+    # image quality settings
+    my $image_quality_jpeg = $app->param('image_quality_jpeg');
+    if ( defined $image_quality_jpeg && $image_quality_jpeg =~ /^\d{1,3}$/ ) {
+        push(
+            @meta_messages,
+            $app->translate(
+                'Image quality(JPEG) is [_1]',
+                $image_quality_jpeg
+            )
+        );
+        $cfg->ImageQualityJpeg( $image_quality_jpeg, 1 );
+    }
+
+    my $image_quality_png = $app->param('image_quality_png');
+    if ( defined $image_quality_png && $image_quality_png =~ /^\d$/ ) {
+        push(
+            @meta_messages,
+            $app->translate(
+                'Image quality(PNG) is [_1]',
+                $image_quality_png
+            ),
+        );
+        $cfg->ImageQualityPng( $image_quality_png, 1 );
     }
 
     # throw the messages in the activity log

@@ -150,7 +150,6 @@ isa_ok( $mt, 'MT' );
     ok( $author->is_valid_password('xxxxx'),
         'still recognize valid password'
     );
-    $author->remove();
 }
 
 {

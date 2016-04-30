@@ -248,7 +248,8 @@ sub checkthemout {
                 if ( my $type = $metacolumns->{$metacol} ) {
                     if ( 'vblob' eq $type ) {
                         if (   defined( $old->$metacol )
-                            && defined( $obj->$metacol ) )
+                            && defined( $obj->$metacol )
+                            && $metacol ne 'image_metadata' )
                         {
                             is( MIME::Base64::encode_base64(
                                     $old->$metacol, ''

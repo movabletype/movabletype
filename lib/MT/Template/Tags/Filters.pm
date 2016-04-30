@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -445,6 +445,20 @@ B<Example:>
 sub _fltr_encode_js {
     my ( $str, $val, $ctx ) = @_;
     MT::Util::encode_js($str);
+}
+
+###########################################################################
+
+=head2 encode_json
+
+Encodes any special characters so that the string can be used safely as
+the value in JSON.
+
+=cut
+
+sub _fltr_encode_json {
+    my ( $str, $val, $ctx ) = @_;
+    MT::Util::encode_json($str);
 }
 
 ###########################################################################

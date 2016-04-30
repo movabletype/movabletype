@@ -26,6 +26,10 @@ my $unpublished_page = MT::Test::Permission->make_page(
     status  => 1,    # unpublished
 );
 
+# Clear cacne.
+MT->model('asset')->driver->Disabled(1)
+    if MT->model('asset')->driver->can('Disabled');
+
 my $suite = suite();
 test_data_api($suite);
 
@@ -112,6 +116,29 @@ sub suite {
             ],
         },
 
+        # Overwrite once. (version 2 or later)
+        {   path   => '/v1/sites/1/assets/upload',
+            method => 'POST',
+            code   => 409,
+            params => { overwrite_once => 1, },
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+                ),
+            ],
+        },
+        {   path   => '/v2/sites/1/assets/upload',
+            method => 'POST',
+            params => { overwrite_once => 1, },
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+                ),
+            ],
+        },
+
         # upload_asset_v2 - irregular tests.
         {    # Not logged in.
             path   => '/v2/assets/upload',
@@ -165,6 +192,51 @@ sub suite {
                     { sort => [ { column => 'id', desc => 'DESC' }, ] } );
             },
         },
+        {    # Upload again. Already exists.
+            path   => '/v2/assets/upload',
+            method => 'POST',
+            params => { site_id => 1, },
+            code   => '409',
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+                ),
+            ],
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $result = MT::Util::from_json($body);
+                $temp_data = $result->{error}{data};
+            }
+        },
+        {    # Overwrite.
+            path   => '/v2/assets/upload',
+            method => 'POST',
+            params => sub {
+                +{  site_id   => 1,
+                    overwrite => 1,
+                    %$temp_data,
+                };
+            },
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+                ),
+            ],
+        },
+        {    # Overwrite once. (version 2 or later)
+            path   => '/v2/assets/upload',
+            method => 'POST',
+            params => { site_id => 1, overwrite_once => 1, },
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+                ),
+            ],
+        },
+
         {    # System.
             path   => '/v2/assets/upload',
             method => 'POST',
@@ -233,7 +305,7 @@ sub suite {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
                 is( $result->{totalResults},
-                    2, 'The number of asset (blog_id=0) is 2.' );
+                    3, 'The number of asset (blog_id=0) is 3.' );
             },
         },
         {    # Blog.
@@ -684,7 +756,7 @@ sub suite {
             code   => 404,
         },
         {    # Private tag and not logged in.
-            path      => '/v2/sites/2/tags/16/assets',
+            path      => '/v2/sites/2/tags/17/assets',
             method    => 'GET',
             author_id => 0,
             code      => 403,
@@ -693,7 +765,7 @@ sub suite {
         },
 
         # Private tag and no permissions.
-        {   path         => '/v2/sites/2/tags/16/assets',
+        {   path         => '/v2/sites/2/tags/17/assets',
             method       => 'GET',
             restrictions => {
                 2 => [qw/ edit_tags /],
@@ -703,7 +775,7 @@ sub suite {
             error =>
                 'Do not have permission to retrieve the requested assets for site and tag.',
         },
-        {   path         => '/v2/sites/2/tags/16/assets',
+        {   path         => '/v2/sites/2/tags/17/assets',
             method       => 'GET',
             restrictions => {
                 2 => [qw/ access_to_tag_list /],
@@ -1057,7 +1129,7 @@ sub suite {
         },
         {
             # Invalid width.
-            path   => '/v2/sites/1/assets/4/thumbnail',
+            path   => '/v2/sites/1/assets/5/thumbnail',
             method => 'GET',
             params => { width => 'width', },
             code   => 400,
@@ -1072,7 +1144,7 @@ sub suite {
         },
         {
             # Invalid height.
-            path   => '/v2/sites/1/assets/4/thumbnail',
+            path   => '/v2/sites/1/assets/5/thumbnail',
             method => 'GET',
             params => { height => 'height', },
             code   => 400,
@@ -1087,7 +1159,7 @@ sub suite {
         },
         {
             # Invalid scale.
-            path   => '/v2/sites/1/assets/4/thumbnail',
+            path   => '/v2/sites/1/assets/5/thumbnail',
             method => 'GET',
             params => { scale => 'scale', },
             code   => 400,
@@ -1102,11 +1174,11 @@ sub suite {
         },
 
         # get_thumbnail - normal tests
-        {   path      => '/v2/sites/1/assets/4/thumbnail',
+        {   path      => '/v2/sites/1/assets/5/thumbnail',
             method    => 'GET',
             author_id => 0,
             result    => sub {
-                my $image = $app->model('asset')->load(4);
+                my $image = $app->model('asset')->load(5);
                 my ( $thumbnail, $w, $h ) = $image->thumbnail_url;
                 return +{
                     url    => $thumbnail,

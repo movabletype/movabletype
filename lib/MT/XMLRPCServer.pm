@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1571,7 +1571,45 @@ sub newMediaObject {
         ) unless $ret[2];
     }
 
-    my $local_file = File::Spec->catfile( $blog->site_path, $file->{name} );
+    my $basename    = $base . $ext;
+    my $upload_dest = $blog->site_path;
+    my $middle_path;
+    my $is_site_root = 1;
+    if ( defined $blog->allow_to_change_at_upload
+        && !$blog->allow_to_change_at_upload )
+    {
+        if ( $blog->upload_destination ) {
+            my $dest = $blog->upload_destination;
+            my $extra_path = $blog->extra_path || '';
+            my $root_path;
+
+            if ( $dest =~ m/^%s/i ) {
+                $root_path = $blog->site_path;
+            }
+            else {
+                $root_path    = $blog->archive_path;
+                $is_site_root = 0;
+            }
+
+            $dest = MT::Util::build_upload_destination( $dest, $author );
+            $middle_path = MT::Util::caturl( $dest, $extra_path );
+            $upload_dest
+                = File::Spec->catdir( $root_path, $dest, $extra_path );
+        }
+        else {
+            $middle_path = '';
+            $upload_dest = $blog->site_path;
+        }
+    }
+    else {
+        $middle_path
+            = ( $uploaded_path eq '.' . MT::Util::dir_separator )
+            ? ''
+            : $uploaded_path;
+        $upload_dest = File::Spec->catdir( $blog->site_path, $uploaded_path );
+    }
+
+    my $local_file = File::Spec->catfile( $upload_dest, $basename );
     $ext = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
     require MT::Asset::Image;
     if ( MT::Asset::Image->can_handle($ext) ) {
@@ -1609,7 +1647,18 @@ sub newMediaObject {
             = $fmgr->put_data( $file->{bits}, $local_file, 'upload' ) )
         or die _fault(
         MT->translate( "Error writing uploaded file: [_1]", $fmgr->errstr ) );
-    my $url = $blog->site_url . $fname;
+    $middle_path =~ s!\\!/!g;
+    $middle_path =~ s!^/!!;
+    my $url = MT::Util::caturl(
+        (     $is_site_root
+            ? $blog->site_url
+            : $blog->archive_url
+        ),
+        $middle_path,
+        $basename
+    );
+    my $asset_url = MT::Util::caturl( ( $is_site_root ? '%r' : '%a' ),
+        $middle_path, $basename );
 
     require File::Basename;
     my $local_basename = File::Basename::basename($local_file);
@@ -1651,7 +1700,7 @@ sub newMediaObject {
         $asset->modified_by( $author->id );
     }
     my $original = $asset->clone;
-    $asset->url($url);
+    $asset->url($asset_url);
     if ($is_image) {
         $asset->image_width($w);
         $asset->image_height($h);

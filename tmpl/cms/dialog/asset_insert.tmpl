@@ -10,6 +10,9 @@ window.parent.app.insertHTML( '<mt:var name="upload_html" escape="js">', '<mt:va
   <mt:var name="insert_script">
 </mt:if>
 
+// Set dirty flag
+window.parent.app.setDirty();
+ 
 // remove the no assets text if it's there
 var Node = window.parent.document.getElementById("empty-asset-list");
 if (Node) {
@@ -21,7 +24,9 @@ var AssetList = window.parent.document.getElementById("asset-list");
 
 if (AssetList) {
     // make sure the asset isn't there already and that we're in the edit entry page
-    var Asset = window.parent.document.getElementById("list-asset-<mt:AssetID>");
+    var Asset;
+<mt:Assets>
+    Asset = window.parent.document.getElementById("list-asset-<mt:AssetID>");
 
     if (Asset) {
         // do nothing
@@ -36,7 +41,7 @@ if (AssetList) {
 
         // create the link to the asset page with asset name as label
         var myAssetLink = window.document.createElement('a');
-        myAssetLink.setAttribute('href', '<mt:var name="script_url">?__mode=view&_type=asset&blog_id=<mt:var name="blog_id">&id=<mt:AssetID>');
+        myAssetLink.setAttribute('href', '<mt:var name="script_url">?__mode=view&_type=asset&blog_id=<mt:AssetBlogID>&id=<mt:AssetID>');
         myAssetLink.setAttribute('class', 'asset-title');
         myAssetLink.appendChild(document.createTextNode('<mt:AssetFileName encode_js="1">'));
 
@@ -75,6 +80,7 @@ if (AssetList) {
             myElement.appendChild(myImageElement);
         </mt:If>
     }
+</mt:Assets>
 }
 <mt:unless name="extension_message">
   parent.jQuery.fn.mtDialog.close();

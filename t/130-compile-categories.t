@@ -12,6 +12,9 @@ my $mt = MT->new();
 isnt( $mt, undef, "MT loaded" );
 my $cclass = $mt->model('category');
 
+# Disable cache driver for clearing $category->children_categories' cache.
+$cclass->driver->Disabled(1) if $cclass->driver->can('Disabled');
+
 my %cats_hash = map { ( $_->id, $_ ) } $cclass->load( { blog_id => 1 } );
 add_category( 23, 'aaa',       0,  1 );
 add_category( 24, 'subsubfoo', 3,  1 );

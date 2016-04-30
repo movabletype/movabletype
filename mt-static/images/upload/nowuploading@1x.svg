@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="60px" height="50px" viewBox="0 0 60 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
+    <title>nowuploading@1x</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="upload_modal-window" sketch:type="MSArtboardGroup" transform="translate(-607.000000, -250.000000)" fill="#0D76BF">
+            <g id="Rectangle-120-+-Shape-+-Path" sketch:type="MSLayerGroup">
+                <g id="Rectangle-125-+-nowuploading" transform="translate(607.000000, 250.000000)" sketch:type="MSShapeGroup">
+                    <path d="M5,33 L55,33 L55,48 L5,48 L5,33 Z M47.5,43.3333333 C48.8807119,43.3333333 50,42.2140452 50,40.8333333 C50,39.4526215 48.8807119,38.3333333 47.5,38.3333333 C46.1192881,38.3333333 45,39.4526215 45,40.8333333 C45,42.2140452 46.1192881,43.3333333 47.5,43.3333333 Z M36,15 L36,27 L24,27 L24,15 L15,15 L30,0 L45,15 L36,15 Z" id="Rectangle-125"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

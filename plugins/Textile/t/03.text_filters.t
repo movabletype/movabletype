@@ -3,7 +3,12 @@
 use strict;
 use warnings;
 
-use lib qw(lib);
+BEGIN {
+    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+}
+
+use lib qw( lib extlib t/lib );
+use MT::Test qw( :app :db );
 
 use IPC::Open2;
 
@@ -36,7 +41,7 @@ run {
 };
 
 sub php_test_script {
-    my ($template, $text) = @_;
+    my ( $template, $text ) = @_;
     $text ||= '';
     my $test_script = <<PHP;
 <?php
@@ -91,7 +96,6 @@ SKIP:
         is( $php_result, $block->textile_2, $block->name . ' - dynamic' );
     };
 }
-
 
 __END__
 
@@ -172,3 +176,17 @@ h3. header
 |Bar|Bar-Col1|Bar-Col2|
 --- textile_2
 <table><tr><td></td><td>Col1</td><td>Col2</td></tr><tr><td>Foo</td><td>Foo-Col1</td><td>Foo-Col2</td></tr><tr><td>Bar</td><td>Bar-Col1</td><td>Bar-Col2</td></tr></table>
+
+
+=== Capped
+--- text
+text ABC
+--- textile_2
+<p>text <span class="caps">ABC</span></p>
+
+
+=== Capped Overlap. #112878
+--- text
+text <span class="caps">ABC</span>
+--- textile_2
+<p>text <span class="caps">ABC</span></p>

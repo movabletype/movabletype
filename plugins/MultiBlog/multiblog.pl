@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -121,6 +121,8 @@ MT->add_callback( 'cms_post_bulk_save.entries', 10, $plugin,
     sub { $plugin->runner( 'post_entries_bulk_save', @_ ) } );
 MT->add_callback( 'scheduled_post_published', 10, $plugin,
     sub { $plugin->runner( 'post_entry_pub', @_ ) } );
+MT->add_callback( 'unpublish_past_entries', 10, $plugin,
+    sub { $plugin->runner( 'post_entry_unpub', @_ ) } );
 
 # Register page post-save callback for rebuild triggers
 MT->add_callback( 'cms_post_save.page', 10, $plugin,
@@ -163,8 +165,10 @@ sub add_trigger {
                     $row->{link}  = $obj->site_url;
                 }
             },
-            terms => { id  => [$blog_id], },
-            args  => { not => { id => 1 }, },
+            terms => {
+                id => { not => [$blog_id] },
+                class => [ 'website', 'blog' ]
+            },
             params => {
                 panel_type    => 'blog',
                 dialog_title  => $plugin->translate('MultiBlog'),
@@ -226,6 +230,9 @@ sub trigger_loop {
         },
         {   trigger_key  => 'entry_pub',
             trigger_name => $plugin->translate('publishes an entry/page'),
+        },
+        {   trigger_key  => 'entry_unpub',
+            trigger_name => $plugin->translate('unpublishes an entry/page'),
         },
         {   trigger_key  => 'comment_pub',
             trigger_name => $plugin->translate('publishes a comment'),

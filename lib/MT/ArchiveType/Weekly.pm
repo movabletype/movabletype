@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -130,17 +130,6 @@ sub archive_group_entries {
         : undef;
     my $limit = $param{limit};
     $obj->dated_group_entries( $ctx, 'Weekly', $ts, $limit );
-}
-
-sub archive_entries_count {
-    my $obj = shift;
-    my ( $blog, $at, $entry ) = @_;
-    return $obj->SUPER::archive_entries_count(
-        {   Blog        => $blog,
-            ArchiveType => $at,
-            Timestamp   => $entry->authored_on
-        }
-    );
 }
 
 1;

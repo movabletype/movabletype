@@ -22,7 +22,7 @@ use strict;
 use MT;
 use base qw( MT::Plugin );
 
-our $VERSION = 2.05;
+our $VERSION = 2.06;
 our ( $_initialized, $Have_SmartyPants );
 
 MT->add_plugin(

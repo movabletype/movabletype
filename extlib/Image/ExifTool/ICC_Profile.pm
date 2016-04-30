@@ -23,7 +23,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.26';
+$VERSION = '1.29';
 
 sub ProcessICC($$);
 sub ProcessICC_Profile($$$);
@@ -409,6 +409,7 @@ my %profileClass = (
         Name => 'MeasurementGeometry',
         Format => 'int32u',
         PrintConv => {
+            0 => 'Unknown',
             1 => '0/45 or 45/0',
             2 => '0/d or d/0',
         },
@@ -627,20 +628,20 @@ sub FormatICCTag($$$)
 # Returns: 1 on success
 sub ProcessMetadata($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dirStart = $$dirInfo{DirStart};
     my $dirLen = $$dirInfo{DirLen};
     my $dirEnd = $dirStart + $dirLen;
     
     if ($dirLen < 16 or substr($$dataPt, $dirStart, 4) ne 'dict') {
-        $exifTool->Warn('Invalid ICC meta dictionary');
+        $et->Warn('Invalid ICC meta dictionary');
         return 0;
     }
     my $num = Get32u($dataPt, $dirStart + 8);
-    $exifTool->VerboseDir('Metadata', $num);
+    $et->VerboseDir('Metadata', $num);
     my $size = Get32u($dataPt, $dirStart + 12);
-    $size < 16 and $exifTool->Warn('Invalid ICC meta record size'), return 0;
+    $size < 16 and $et->Warn('Invalid ICC meta record size'), return 0;
     # NOTE: In the example the minimum offset is 20,
     # but this doesn't jive with the table (both in ref 5)
     my $minPtr = 16 + $size * $num;
@@ -648,7 +649,7 @@ sub ProcessMetadata($$$)
     for ($index=0; $index<$num; ++$index) {
         my $entry = $dirStart + 16 + $size * $index;
         if ($entry + $size > $dirEnd) {
-            $exifTool->Warn('Truncated ICC meta dictionary');
+            $et->Warn('Truncated ICC meta dictionary');
             last;
         }
         my $namePtr = Get32u($dataPt, $entry);
@@ -659,13 +660,13 @@ sub ProcessMetadata($$$)
         if ($namePtr < $minPtr or $namePtr + $nameLen > $dirLen or
             $valuePtr < $minPtr or $valuePtr + $valueLen > $dirLen)
         {
-            $exifTool->Warn('Corrupted ICC meta dictionary');
+            $et->Warn('Corrupted ICC meta dictionary');
             last;
         }
         my $tag = substr($dataPt, $dirStart + $namePtr, $nameLen);
         my $val = substr($dataPt, $dirStart + $valuePtr, $valueLen);
-        $tag = $exifTool->Decode($tag, 'UTF16', 'MM', 'UTF8');
-        $val = $exifTool->Decode($val, 'UTF16', 'MM');
+        $tag = $et->Decode($tag, 'UTF16', 'MM', 'UTF8');
+        $val = $et->Decode($val, 'UTF16', 'MM');
         # generate tagInfo if it doesn't exist
         unless ($$tagTablePtr{$tag}) {
             my $name = ucfirst $tag;
@@ -674,7 +675,7 @@ sub ProcessMetadata($$$)
             next unless length $name;
             AddTagToTable($tagTablePtr, $tag, { Name => $name });
         }
-        $exifTool->HandleTag($tagTablePtr, $tag, $val);
+        $et->HandleTag($tagTablePtr, $tag, $val);
     }
     return 1;
 }
@@ -686,17 +687,17 @@ sub ProcessMetadata($$$)
 #          or -1 if a write error occurred
 sub WriteICC($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     # first make sure this is a valid ICC file (or no file at all)
     my $raf = $$dirInfo{RAF};
     my $buff;
     return 0 if $raf->Read($buff, 24) and ValidateICC(\$buff);
     # now write the new ICC
-    $buff = WriteICC_Profile($exifTool, $dirInfo);
+    $buff = WriteICC_Profile($et, $dirInfo);
     if (defined $buff and length $buff) {
         Write($$dirInfo{OutFile}, $buff) or return -1;
     } else {
-        $exifTool->Error('No ICC information to write');
+        $et->Error('No ICC information to write');
     }
     return 1;
 }
@@ -709,16 +710,16 @@ sub WriteICC($$)
 # Notes: Increments ExifTool CHANGED flag if changed
 sub WriteICC_Profile($$;$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
-    $exifTool or return 1;    # allow dummy access
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    $et or return 1;    # allow dummy access
     my $dirName = $$dirInfo{DirName} || 'ICC_Profile';
     # (don't write AsShotICCProfile or CurrentICCProfile here)
     return undef unless $dirName eq 'ICC_Profile';
-    my $nvHash = $exifTool->GetNewValueHash($Image::ExifTool::Extra{$dirName});
-    return undef unless $exifTool->IsOverwriting($nvHash);
-    my $val = $exifTool->GetNewValues($nvHash);
+    my $nvHash = $et->GetNewValueHash($Image::ExifTool::Extra{$dirName});
+    my $val = $et->GetNewValues($nvHash);
     $val = '' unless defined $val;
-    ++$exifTool->{CHANGED};
+    return undef unless $et->IsOverwriting($nvHash, $val);
+    ++$$et{CHANGED};
     return $val;
 }
 
@@ -746,22 +747,22 @@ sub ValidateICC($)
 # Returns: 1 if this was an ICC file
 sub ProcessICC($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $buff;
     $raf->Read($buff, 24) == 24 or return 0;
     # check to see if this is a valid ICC profile file
     return 0 if ValidateICC(\$buff);
-    $exifTool->SetFileType();
+    $et->SetFileType();
     # read the profile
     my $size = unpack('N', $buff);
     if ($size < 128 or $size & 0x80000000) {
-        $exifTool->Error("Bad ICC Profile length ($size)");
+        $et->Error("Bad ICC Profile length ($size)");
         return 1;
     }
     $raf->Seek(0, 0);
     unless ($raf->Read($buff, $size)) {
-        $exifTool->Error('Truncated ICC profile');
+        $et->Error('Truncated ICC profile');
         return 1;
     }
     my %dirInfo = (
@@ -771,7 +772,7 @@ sub ProcessICC($$)
         DirLen => $size,
     );
     my $tagTablePtr = GetTagTable('Image::ExifTool::ICC_Profile::Main');
-    return ProcessICC_Profile($exifTool, \%dirInfo, $tagTablePtr);
+    return ProcessICC_Profile($et, \%dirInfo, $tagTablePtr);
 }
 
 #------------------------------------------------------------------------------
@@ -781,21 +782,21 @@ sub ProcessICC($$)
 # Returns: 1 on success
 sub ProcessICC_Profile($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dirStart = $$dirInfo{DirStart} || 0;
     my $dirLen = $$dirInfo{DirLen};
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
 
     return 0 if $dirLen < 4;
 
     # extract binary ICC_Profile data block if binary mode or requested
-    if ((($exifTool->{TAGS_FROM_FILE} and not $exifTool->{EXCL_TAG_LOOKUP}{icc_profile}) or
-        $exifTool->{REQ_TAG_LOOKUP}{icc_profile}) and
+    if ((($$et{TAGS_FROM_FILE} and not $$et{EXCL_TAG_LOOKUP}{icc_profile}) or
+        $$et{REQ_TAG_LOOKUP}{icc_profile}) and
         # (don't extract from AsShotICCProfile or CurrentICCProfile)
         (not $$dirInfo{Name} or $$dirInfo{Name} eq 'ICC_Profile'))
     {
-        $exifTool->FoundTag('ICC_Profile', substr($$dataPt, $dirStart, $dirLen));
+        $et->FoundTag('ICC_Profile', substr($$dataPt, $dirStart, $dirLen));
     }
 
     SetByteOrder('MM');     # ICC_Profile is always big-endian
@@ -803,7 +804,7 @@ sub ProcessICC_Profile($$$)
     # check length of table
     my $len = Get32u($dataPt, $dirStart);
     if ($len != $dirLen or $len < 128) {
-        $exifTool->Warn("Bad length ICC_Profile (length $len)");
+        $et->Warn("Bad length ICC_Profile (length $len)");
         return 0 if $len < 128 or $dirLen < $len;
     }
     my $pos = $dirStart + 128;  # position at start of table
@@ -811,18 +812,18 @@ sub ProcessICC_Profile($$$)
     if ($numEntries < 1 or $numEntries >= 0x100
         or $numEntries * 12 + 132 > $dirLen)
     {
-        $exifTool->Warn("Bad ICC_Profile table ($numEntries entries)");
+        $et->Warn("Bad ICC_Profile table ($numEntries entries)");
         return 0;
     }
 
     if ($verbose) {
-        $exifTool->VerboseDir('ICC_Profile', $numEntries, $dirLen);
+        $et->VerboseDir('ICC_Profile', $numEntries, $dirLen);
         my $fakeInfo = { Name=>'ProfileHeader', SubDirectory => { } };
-        $exifTool->VerboseInfo(undef, $fakeInfo);
+        $et->VerboseInfo(undef, $fakeInfo);
     }
     # increment ICC dir count
-    my $dirCount = $exifTool->{DIR_COUNT}->{ICC} = ($exifTool->{DIR_COUNT}->{ICC} || 0) + 1;
-    $exifTool->{SET_GROUP1} = '+' . $dirCount if $dirCount > 1;
+    my $dirCount = $$et{DIR_COUNT}{ICC} = ($$et{DIR_COUNT}{ICC} || 0) + 1;
+    $$et{SET_GROUP1} = '+' . $dirCount if $dirCount > 1;
     # process the header block
     my %subdirInfo = (
         Name     => 'ProfileHeader',
@@ -834,7 +835,7 @@ sub ProcessICC_Profile($$$)
         DirName  => 'Header',
     );
     my $newTagTable = GetTagTable('Image::ExifTool::ICC_Profile::Header');
-    $exifTool->ProcessDirectory(\%subdirInfo, $newTagTable);
+    $et->ProcessDirectory(\%subdirInfo, $newTagTable);
 
     $pos += 4;    # skip item count
     my $index;
@@ -843,17 +844,17 @@ sub ProcessICC_Profile($$$)
         my $offset = Get32u($dataPt, $pos + 4);
         my $size   = Get32u($dataPt, $pos + 8);
         $pos += 12;
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tagID);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tagID);
         # unknown tags aren't generated automatically by GetTagInfo()
         # if the tagID's aren't numeric, so we must do this manually:
-        if (not $tagInfo and $exifTool->{OPTIONS}->{Unknown}) {
+        if (not $tagInfo and $$et{OPTIONS}{Unknown}) {
             $tagInfo = { Unknown => 1 };
             AddTagToTable($tagTablePtr, $tagID, $tagInfo);
         }
         next unless defined $tagInfo;
 
         if ($offset + $size > $dirLen) {
-            $exifTool->Warn("Bad ICC_Profile table (truncated)");
+            $et->Warn("Bad ICC_Profile table (truncated)");
             last;
         }
         my $valuePtr = $dirStart + $offset;
@@ -883,8 +884,8 @@ sub ProcessICC_Profile($$$)
                     my $strPos = Get32u($dataPt, $recPos + 8);
                     last if $strPos + $strLen > $size; 
                     my $str = substr($$dataPt, $valuePtr + $strPos, $strLen);
-                    $str = $exifTool->Decode($str, 'UTF16');
-                    $exifTool->HandleTag($tagTablePtr, $tagID, $str,
+                    $str = $et->Decode($str, 'UTF16');
+                    $et->HandleTag($tagTablePtr, $tagID, $str,
                         TagInfo => $langInfo || $tagInfo,
                         Table  => $tagTablePtr,
                         Index  => $index,
@@ -895,14 +896,14 @@ sub ProcessICC_Profile($$$)
                         Format => "type '$fmt'",
                     );
                 }
-                $exifTool->Warn("Corrupted $$tagInfo{Name} data") if $i < $count;
+                $et->Warn("Corrupted $$tagInfo{Name} data") if $i < $count;
                 next;
             }
         } else {
             $fmt = 'err ';
         }
         $value = FormatICCTag($dataPt, $valuePtr, $size) unless $subdir;
-        $verbose and $exifTool->VerboseInfo($tagID, $tagInfo,
+        $verbose and $et->VerboseInfo($tagID, $tagInfo,
             Table  => $tagTablePtr,
             Index  => $index,
             Value  => $value,
@@ -937,20 +938,20 @@ sub ProcessICC_Profile($$$)
             my $type = substr($$dataPt, $valuePtr, 4);
             #### eval Validate ($type)
             if (defined $$subdir{Validate} and not eval $$subdir{Validate}) {
-                $exifTool->Warn("Invalid $name data");
+                $et->Warn("Invalid $name data");
             } else {
-                $exifTool->ProcessDirectory(\%subdirInfo, $newTagTable, $$subdir{ProcessProc});
+                $et->ProcessDirectory(\%subdirInfo, $newTagTable, $$subdir{ProcessProc});
             }
         } elsif (defined $value) {
-            $exifTool->FoundTag($tagInfo, $value);
+            $et->FoundTag($tagInfo, $value);
         } else {
             $value = substr($$dataPt, $valuePtr, $size);
             # treat unsupported formats as binary data
             $$tagInfo{ValueConv} = '\$val' unless defined $$tagInfo{ValueConv};
-            $exifTool->FoundTag($tagInfo, $value);
+            $et->FoundTag($tagInfo, $value);
         }
     }
-    delete $exifTool->{SET_GROUP1};
+    delete $$et{SET_GROUP1};
     return 1;
 }
 
@@ -976,7 +977,7 @@ data created on one device into another device's native color space.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

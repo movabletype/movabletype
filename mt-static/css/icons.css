@@ -157,7 +157,6 @@ Some icons are used inside .edit-template class only
 
 .action-icon {
     border-radius: 8px;
-    -moz-border-radius: 8px;
     vertical-align: middle;
 }
 .action-icon:hover {

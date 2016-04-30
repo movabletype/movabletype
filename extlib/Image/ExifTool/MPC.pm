@@ -15,7 +15,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::FLAC;
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 # MPC metadata blocks
 %Image::ExifTool::MPC::Main = (
@@ -78,12 +78,12 @@ $VERSION = '1.00';
 # Returns: 1 on success, 0 if this wasn't a valid MPC file
 sub ProcessMPC($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
 
     # must first check for leading ID3 information
-    unless ($exifTool->{DoneID3}) {
+    unless ($$et{DoneID3}) {
         require Image::ExifTool::ID3;
-        Image::ExifTool::ID3::ProcessID3($exifTool, $dirInfo) and return 1;
+        Image::ExifTool::ID3::ProcessID3($et, $dirInfo) and return 1;
     }
     my $raf = $$dirInfo{RAF};
     my $buff;
@@ -91,26 +91,26 @@ sub ProcessMPC($$)
     # check MPC signature
     $raf->Read($buff, 32) == 32 and $buff =~ /^MP\+(.)/s or return 0;
     my $vers = ord($1) & 0x0f;
-    $exifTool->SetFileType();
+    $et->SetFileType();
 
     # extract audio information (currently only from version 7 MPC files)
     if ($vers == 0x07) {
         SetByteOrder('II');
         my $pos = $raf->Tell() - 32;
-        if ($exifTool->Options('Verbose')) {
-            $exifTool->VPrint(0, "MPC Header (32 bytes):\n");
-            $exifTool->VerboseDump(\$buff, DataPos => $pos);
+        if ($et->Options('Verbose')) {
+            $et->VPrint(0, "MPC Header (32 bytes):\n");
+            $et->VerboseDump(\$buff, DataPos => $pos);
         }
         my $tagTablePtr = GetTagTable('Image::ExifTool::MPC::Main');
         my %dirInfo = ( DataPt => \$buff, DataPos => $pos );
-        $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+        $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
     } else {
-        $exifTool->Warn('Audio info currently not extracted from this version MPC file');
+        $et->Warn('Audio info currently not extracted from this version MPC file');
     }
 
     # process APE trailer if it exists
     require Image::ExifTool::APE;
-    Image::ExifTool::APE::ProcessAPE($exifTool, $dirInfo);
+    Image::ExifTool::APE::ProcessAPE($et, $dirInfo);
 
     return 1;
 }
@@ -134,7 +134,7 @@ information from Musepack (MPC) audio files.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

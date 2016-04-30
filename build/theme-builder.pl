@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -301,6 +301,8 @@ build-themes.pl - generates themes from a theme.yaml file
     build-themes.pl /home/kgoess/temp/funkymusic/
 or
     build-themes.pl ../experiments/funkymusic/theme.yaml
+
+=back
 
 =head1 DESCRIPTION
 

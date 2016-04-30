@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1389,7 +1389,7 @@ sub create_preview_content {
     my $cat_args
         = $cat
         ? { join => MT->model('placement')
-            ->join_on( 'id', { category_id => $cat->id } ) }
+            ->join_on( 'entry_id', { category_id => $cat->id } ) }
         : {};
     my @obj = $entry_class->load(
         {   blog_id => $blog_id,
@@ -1720,7 +1720,7 @@ sub can_view {
     return 1 if $app->user->can_edit_templates;
     return 0 unless $app->blog;
     if ($id) {
-        my $obj = $objp->force();
+        my $obj = $objp->force() or return 0;
         return 0
             unless $app->user->permissions( $obj->blog_id )
             ->can_do('edit_templates');
@@ -1827,7 +1827,7 @@ sub pre_save {
 
     require MT::PublishOption;
     my $build_type = $app->param('build_type');
-
+    $build_type = $obj->build_type unless defined $build_type;
     if ( $build_type == MT::PublishOption::SCHEDULED() ) {
         my $period   = $app->param('schedule_period');
         my $interval = $app->param('schedule_interval');
@@ -1848,8 +1848,10 @@ sub post_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
 
-    my $sess_obj = $app->autosave_session_obj;
-    $sess_obj->remove if $sess_obj;
+    if ( $app->can('autosave_session_obj') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        $sess_obj->remove if $sess_obj;
+    }
 
     my $dynamic = 0;
     my $q       = $app->param;

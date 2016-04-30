@@ -149,6 +149,15 @@ sub get_profiles {
             500
         ) unless $res->is_success;
 
+        return $app->error(
+            translate(
+                'An error occurred when getting profiles: [_1]: [_2]',
+                'Client-Aborted:' . $res->header("Client-Aborted"),
+                500
+            ),
+            500
+        ) if $res->header("Client-Aborted");
+
         my $data
             = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
 

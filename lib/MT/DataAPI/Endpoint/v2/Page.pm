@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -126,23 +126,25 @@ sub create {
         my $assets_hash = $page_hash->{assets};
         $assets_hash = [$assets_hash] if ref $assets_hash ne 'ARRAY';
 
-        my @asset_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
-        my @blog_ids = ( $site->id );
-        if ( !$site->is_blog ) {
-            my @child_blogs = @{ $site->blogs };
-            my @child_blog_ids = map { $_->id } @child_blogs;
-            push @blog_ids, @child_blog_ids;
-        }
-        @attach_assets = MT->model('asset')->load(
-            {   id      => \@asset_ids,
-                blog_id => \@blog_ids,
+        if ( scalar @$assets_hash > 0 ) {
+            my @asset_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
+            my @blog_ids = ( $site->id );
+            if ( !$site->is_blog ) {
+                my @child_blogs = @{ $site->blogs };
+                my @child_blog_ids = map { $_->id } @child_blogs;
+                push @blog_ids, @child_blog_ids;
             }
-        );
+            @attach_assets = MT->model('asset')->load(
+                {   id      => \@asset_ids,
+                    blog_id => \@blog_ids,
+                }
+            );
 
-        return $app->error( "'assets' parameter is invalid.", 400 )
-            if scalar @$assets_hash == 0
-            || scalar @$assets_hash != scalar @attach_assets;
+            return $app->error( "'assets' parameter is invalid.", 400 )
+                if scalar @$assets_hash == 0
+                || scalar @$assets_hash != scalar @attach_assets;
+        }
     }
 
     save_object( $app, 'page', $new_page )
@@ -159,6 +161,9 @@ sub create {
     }
 
     $post_save->();
+
+    # Remove autosave object
+    remove_autosave_session_obj( $app, $new_page->class );
 
     return $new_page;
 }
@@ -194,27 +199,35 @@ sub update {
     }
 
     my @update_assets;
+    my $do_update_assets;
     if ( exists $page_hash->{assets} ) {
         my $assets_hash = $page_hash->{assets};
         $assets_hash = [$assets_hash] if ref $assets_hash ne 'ARRAY';
 
-        my @asset_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
-        my @blog_ids = ( $site->id );
-        if ( !$site->is_blog ) {
-            my @child_blogs = @{ $site->blogs };
-            my @child_blog_ids = map { $_->id } @child_blogs;
-            push @blog_ids, @child_blog_ids;
+        if ( scalar @$assets_hash == 0 ) {
+            $do_update_assets = 1;
         }
-        @update_assets = MT->model('asset')->load(
-            {   id      => \@asset_ids,
-                blog_id => \@blog_ids,
+        else {
+            my @asset_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
+            my @blog_ids = ( $site->id );
+            if ( !$site->is_blog ) {
+                my @child_blogs = @{ $site->blogs };
+                my @child_blog_ids = map { $_->id } @child_blogs;
+                push @blog_ids, @child_blog_ids;
             }
-        );
+            @update_assets = MT->model('asset')->load(
+                {   id      => \@asset_ids,
+                    blog_id => \@blog_ids,
+                }
+            );
 
-        return $app->error( "'assets' parameter is invalid.", 400 )
-            if scalar @$assets_hash == 0
-            || scalar @$assets_hash != scalar @update_assets;
+            return $app->error( "'assets' parameter is invalid.", 400 )
+                if scalar @$assets_hash == 0
+                || scalar @$assets_hash != scalar @update_assets;
+
+            $do_update_assets = 1;
+        }
     }
 
     save_object(
@@ -233,12 +246,15 @@ sub update {
     # Update categories and assets.
     $new_page->update_categories( $update_folder ? $update_folder : () )
         or return $app->error( $new_page->errstr );
-    if (@update_assets) {
+    if ($do_update_assets) {
         $new_page->update_assets(@update_assets)
             or return $app->error( $new_page->errstr );
     }
 
     $post_save->();
+
+    # Remove autosave object
+    remove_autosave_session_obj( $app, $new_page->class, $new_page->id );
 
     return $new_page;
 }
@@ -274,6 +290,48 @@ sub delete {
     $app->run_callbacks( 'rebuild', $site );
 
     return $page;
+}
+
+sub preview {
+    my ( $app, $endpoint ) = @_;
+
+    my ($blog) = context_objects(@_)
+        or return;
+    my $author = $app->user;
+
+    # Create dummy new object
+    my $orig_page = $app->model('page')->new;
+    $orig_page->set_values(
+        {   blog_id        => $blog->id,
+            author_id      => $author->id,
+            allow_comments => $blog->allow_comments_default,
+            allow_pings    => $blog->allow_pings_default,
+            convert_breaks => $blog->convert_paras,
+            status         => MT::Entry::RELEASE(),
+        }
+    );
+    my $page = $app->resource_object( 'page', $orig_page )
+        or return;
+    $page->id(-1);    # fake out things like MT::Taggable::__load_tags
+
+    # Update for preview
+    my $page_json = $app->param('page');
+    my $page_hash = $app->current_format->{unserialize}->($page_json);
+
+    my $names = $page->column_names;
+    foreach my $name (@$names) {
+        if ( exists $page_hash->{$name} ) {
+            $page->$name( $page_hash->{$name} );
+        }
+    }
+
+    if ( exists $page_hash->{folder} ) {
+        my $folder_hash = $page_hash->{folder};
+        $app->param( 'category_ids', $folder_hash->{id} );
+    }
+
+    require MT::DataAPI::Endpoint::v2::Entry;
+    return MT::DataAPI::Endpoint::v2::Entry::_preview_common( $app, $page );
 }
 
 1;

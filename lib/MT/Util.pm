@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -30,7 +30,8 @@ our @EXPORT_OK
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
-    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip );
+    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
+    encode_json build_upload_destination );
 
 {
     my $Has_Weaken;
@@ -709,30 +710,37 @@ sub decode_js {
     return $str;
 }
 
+sub encode_json {
+    my ($str) = @_;
+    return '' unless defined $str && !ref($str);
+    my $json = to_json( [$str] );
+    return ( $json =~ m/^\["(.+)"\]$/ )[0];    # ["foo"] => for
+}
+
 sub encode_php {
     my ( $str, $meth ) = @_;
     return '' unless defined $str;
     if ( $meth eq 'qq' ) {
         $str = encode_phphere($str);
-        $str =~ s!"!\\"!g;    ## Replace " with \"
+        $str =~ s!"!\\"!g;                     ## Replace " with \"
     }
     elsif ( substr( $meth, 0, 4 ) eq 'here' ) {
         $str = encode_phphere($str);
     }
     else {
-        $str =~ s!\\!\\\\!g;    ## Replace \ with \\
-        $str =~ s!'!\\'!g;      ## Replace ' with \'
+        $str =~ s!\\!\\\\!g;                   ## Replace \ with \\
+        $str =~ s!'!\\'!g;                     ## Replace ' with \'
     }
     $str;
 }
 
 sub encode_phphere {
     my ($str) = @_;
-    $str =~ s!\\!\\\\!g;        ## Replace \ with \\
-    $str =~ s!\$!\\\$!g;        ## Replace $ with \$
-    $str =~ s!\n!\\n!g;         ## Replace character \n with string \n
-    $str =~ s!\r!\\r!g;         ## Replace character \r with string \r
-    $str =~ s!\t!\\t!g;         ## Replace character \t with string \t
+    $str =~ s!\\!\\\\!g;    ## Replace \ with \\
+    $str =~ s!\$!\\\$!g;    ## Replace $ with \$
+    $str =~ s!\n!\\n!g;     ## Replace character \n with string \n
+    $str =~ s!\r!\\r!g;     ## Replace character \r with string \r
+    $str =~ s!\t!\\t!g;     ## Replace character \t with string \t
     $str;
 }
 
@@ -1296,7 +1304,7 @@ sub _get_basename {
         );
         last if !$existing;
         $last_id = $existing->id;
-        if ( $existing->basename =~ /^$base\_([1-9]\d*)$/o ) {
+        if ( $existing->basename =~ /^$base\_([1-9]\d*)$/ ) {
             my $num = $1;
             next if !$num;
             $base_num = $num + 1;
@@ -2796,8 +2804,8 @@ sub clear_site_stats_widget_cache {
 
     my $path;
     if ($site_id) {
-        my @perms = MT::Permission->load( { blog_id => $site_id } );
-        foreach my $perm (@perms) {
+        my $iter = MT::Permission->load_iter( { blog_id => $site_id } );
+        while ( my $perm = $iter->() ) {
             my $user_id = $perm->author_id;
             my $low_dir = sprintf( "%03d", $user_id % 1000 );
             my $sub_dir = sprintf( "%03d", $site_id % 1000 );
@@ -2876,6 +2884,34 @@ sub is_valid_ip {
     }
 
     return $str;
+}
+
+sub build_upload_destination {
+    my ( $format, $user ) = @_;
+
+    my $app = MT->instance;
+    if ( !$user && $app->isa('MT::App') ) {
+        $user = $app->user;
+    }
+
+    require POSIX;
+    my $user_basename = $user ? $user->basename : '';
+    my $now           = MT::Util::offset_time(time);
+    my $y             = POSIX::strftime( "%Y", gmtime($now) );
+    my $m             = POSIX::strftime( "%m", gmtime($now) );
+    my $d             = POSIX::strftime( "%d", gmtime($now) );
+
+    $format =~ s|%s/?||g;
+    $format =~ s|%a/?||g;
+    $format =~ s|%u|$user_basename|g;
+    $format =~ s|%y|$y|g;
+    $format =~ s|%m|$m|g;
+    $format =~ s|%d|$d|g;
+
+    my @dest = split '/', $format;
+    my $dest = File::Spec->catdir(@dest);
+
+    return $dest;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;

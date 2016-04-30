@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -375,6 +375,12 @@ sub list_props {
             fields  => [qw(title excerpt source_url ip blog_name)],
             display => 'none',
         },
+        blog_id => {
+            auto            => 1,
+            col             => 'blog_id',
+            display         => 'none',
+            filter_editable => 0,
+        },
     };
 }
 
@@ -668,11 +674,11 @@ sub to_hash {
 
 sub visible {
     my $ping = shift;
-    return $ping->SUPER::visible unless @_;
+    return $ping->column('visible') unless @_;
 
     ## Note transitions in visibility in the object, so that
     ## other methods can act appropriately.
-    my $was_visible = $ping->SUPER::visible || 0;
+    my $was_visible = $ping->column('visible') || 0;
     my $is_visible = shift || 0;
 
     my $vis_delta = 0;
@@ -685,7 +691,7 @@ sub visible {
     $ping->{__changed}{visibility} = $vis_delta;
 
     $ping->junk_status(NOT_JUNK) if $is_visible;
-    return $ping->SUPER::visible($is_visible);
+    return $ping->column( 'visible', $is_visible );
 }
 
 sub get_status_text {

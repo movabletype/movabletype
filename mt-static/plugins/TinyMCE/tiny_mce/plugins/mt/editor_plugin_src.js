@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+ * Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
@@ -575,8 +575,8 @@
                 onclick : function() {
                     ed.execCommand('mtSaveBookmark');
                     openDialog(
-                        'dialog_list_asset',
-                        '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image'
+                        'dialog_asset_modal',
+                        '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1'
                     );
                 }
             });
@@ -586,8 +586,8 @@
                 onclick : function() {
                     ed.execCommand('mtSaveBookmark');
                     openDialog(
-                        'dialog_list_asset',
-                        '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1'
+                        'dialog_asset_modal',
+                        '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;can_multi=1'
                     );
                 }
             });

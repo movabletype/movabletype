@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -19,7 +19,8 @@ sub can_view {
 sub save_filter {
     my ( $eh, $app, $obj, $original ) = @_;
 
-    return $app->error( $app->translate('A parameter "[_1]" is required.', 'label') )
+    return $app->error(
+        $app->translate( 'A parameter "[_1]" is required.', 'label' ) )
         if !defined( $obj->label ) || $obj->label eq '';
 
     return $app->error(

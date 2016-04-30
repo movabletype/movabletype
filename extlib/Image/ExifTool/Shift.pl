@@ -10,7 +10,7 @@ package Image::ExifTool;
 
 use strict;
 
-sub ShiftTime($$$;$);
+sub ShiftTime($$;$$);
 
 #------------------------------------------------------------------------------
 # apply shift to value in new value hash
@@ -277,14 +277,16 @@ sub ShiftNumber($$$;$)
 
 #------------------------------------------------------------------------------
 # Shift date/time string
-# Inputs: 0) date/time string, 1) shift string, 2) shift direction (+1 or -1)
+# Inputs: 0) date/time string, 1) shift string, 2) shift direction (+1 or -1),
+#            or 0 or undef to take shift direction from sign of shift,
 #         3) reference to ShiftOffset hash (with Date, DateTime, Time, Timezone keys)
 # Returns: error string or undef on success and date/time string is updated
-sub ShiftTime($$$;$)
+sub ShiftTime($$;$$)
 {
     local $_;
     my ($val, $shift, $dir, $shiftOffset) = @_;
     my (@time, @shift, @toTime, $mode, $needShiftOffset, $dec);
+    $dir or $dir = ($shift =~ s/^(\+|-)// and $1 eq '-') ? -1 : 1;
 #
 # figure out what we are dealing with (time, date or date/time)
 #
@@ -470,9 +472,9 @@ values.
 
 =head1 DETAILS
 
-Time shifts are applied to standard EXIF-formatted date/time values (ie.
+Time shifts are applied to standard EXIF-formatted date/time values (eg.
 C<2005:03:14 18:55:00>).  Date-only and time-only values may also be
-shifted, and an optional timezone (ie. C<-05:00>) is also supported.  Here
+shifted, and an optional timezone (eg. C<-05:00>) is also supported.  Here
 are some general rules and examples to explain how shift strings are
 interpreted:
 
@@ -544,7 +546,7 @@ Below are some specific examples applied to real date and/or time values
     '07:00:00Z'            '+2:30'   -   '07:00:00-02:30'
     '1970:01:01'           '35::'    +   '2005:01:01'
     '2005:01:01'           '400'     +   '2006:02:05'
-    '10:00:00.00'          '::1.33'  +   '09:59:58.67'
+    '10:00:00.00'          '::1.33'  -   '09:59:58.67'
 
 =head1 NOTES
 
@@ -578,11 +580,11 @@ philosophy).
 =head1 BUGS
 
 Due to the use of the standard time library functions, dates are typically
-limited to the range 1970 to 2038.
+limited to the range 1970 to 2038 on 32-bit systems.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

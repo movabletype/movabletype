@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -25,6 +25,7 @@ $Lexicon_es = array(
 	'Category Monthly' => 'Categorías mensuales',
 	'Category Daily' => 'Categorías diarias',
 	'Category Weekly' => 'Categorías semanales',
+	'Category' => 'Categoría',
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'sort_by="score" debe usarse junto al espacio de nombres.',

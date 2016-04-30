@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,6 +16,11 @@ sub updatable_fields {
     [   qw(
             format
             ),
+        {   name      => 'unpublishedDate',
+            condition => sub {
+                MT->instance->can_do('edit_entry_unpublished_on');
+            },
+        },
     ];
 }
 
@@ -42,6 +47,15 @@ sub fields {
                     ],
                     [qw( id label parent )],
                 );
+            },
+        },
+        {   name      => 'unpublishedDate',
+            alias     => 'unpublished_on',
+            type      => 'MT::DataAPI::Resource::DataType::ISO8601',
+            condition => sub {
+                my $app  = MT->instance or return;
+                my $user = $app->user   or return;
+                return $user->id ? 1 : 0;
             },
         },
         {   name      => 'format',
@@ -116,13 +130,13 @@ sub _apply_text_filters {
 1;
 
 __END__
-            
-=head1 NAME 
-        
+
+=head1 NAME
+
 MT::DataAPI::Resource::v2::Entry - Movable Type class for resources definitions of the MT::Entry.
-            
+
 =head1 AUTHOR & COPYRIGHT
-            
+
 Please see the I<MT> manpage for author, copyright, and license information.
-        
-=cut  
+
+=cut

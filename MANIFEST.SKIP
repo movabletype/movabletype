@@ -231,6 +231,10 @@ plugins/feeds-app-lite/tools/
 plugins/feeds-app-lite/t/
 plugins/MultiBlog/t/
 plugins/FormattedText/t/
+plugins/Loupe
+mt-static/plugins/Loupe
+plugins/mixiComment
+mt-static/plugins/mixiComment
 
 # 'Extras'
 ^extras/

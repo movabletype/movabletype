@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -332,6 +332,7 @@ sub _hdlr_blog_relative_url {
     return '' unless $blog;
     my $host = $blog->site_url;
     return '' unless defined $host;
+    $host .= '/' unless $host =~ m|/$|;
     if ( $host =~ m!^https?://[^/]+(/.*)$! ) {
         return $1;
     }

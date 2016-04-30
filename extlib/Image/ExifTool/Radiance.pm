@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 # Radiance tags
 %Image::ExifTool::Radiance::Main = (
@@ -61,26 +61,26 @@ $VERSION = '1.00';
 # Returns: 1 on success, 0 if this wasn't a valid RGBE image
 sub ProcessHDR($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $buff;
     local $/ = "\x0a";  # set newline character for reading
 
     # verify this is a valid RIFF file
     return 0 unless $raf->ReadLine($buff) and $buff =~ /^#\?(RADIANCE|RGBE)\x0a/s;
-    $exifTool->SetFileType();
+    $et->SetFileType();
     my $tagTablePtr = GetTagTable('Image::ExifTool::Radiance::Main');
 
     while ($raf->ReadLine($buff)) {
         chomp $buff;
         last unless length($buff) > 0 and length($buff) < 4096;
         unless ($buff =~ /^(.*)?\s*=\s*(.*)/) {
-            $exifTool->HandleTag($tagTablePtr, '_command', $buff);
+            $et->HandleTag($tagTablePtr, '_command', $buff);
             next;
         }
         # use lower-case tag names to avoid conflicts with reserved tag table entries
         my ($tag, $val) = (lc $1, $2);
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
         unless ($tagInfo) {
             my $name = $tag;
             $name =~ tr/-_a-zA-Z0-9//dc;
@@ -89,13 +89,13 @@ sub ProcessHDR($$)
             $tagInfo = { Name => $name };
             AddTagToTable($tagTablePtr, $tag, $tagInfo);
         }
-        $exifTool->FoundTag($tagInfo, $val);
+        $et->FoundTag($tagInfo, $val);
     }
     # get image dimensions
     if ($raf->ReadLine($buff) and $buff =~ /([-+][XY])\s*(\d+)\s*([-+][XY])\s*(\d+)/) {
-        $exifTool->HandleTag($tagTablePtr, '_orient', "$1 $3");
-        $exifTool->FoundTag('ImageHeight', $2);
-        $exifTool->FoundTag('ImageWidth', $4);
+        $et->HandleTag($tagTablePtr, '_orient', "$1 $3");
+        $et->FoundTag('ImageHeight', $2);
+        $et->FoundTag('ImageWidth', $4);
     }
     return 1;
 }
@@ -120,7 +120,7 @@ images are a type of high dynamic-range image.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

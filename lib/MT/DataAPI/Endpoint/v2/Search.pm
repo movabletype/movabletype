@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -15,16 +15,27 @@ use MT::DataAPI::Endpoint::Common;
 sub search {
     my ( $app, $endpoint ) = @_;
 
-    # Check "search" paramter.
-    my $search = $app->param('search');
-    if ( !( defined $search && $search ne '' ) ) {
-        return $app->error(
-            $app->translate('A parameter "[_1]" is required.', 'search'), 400 );
-    }
-
     my $tag_search = $app->param('tagSearch') ? 1 : 0;
 
     local $app->{mode} = $tag_search ? 'tag' : 'default';
+
+    # Check "search" paramter.
+    my $search;
+    if ($tag_search) {
+        $search = $app->param('tag') || $app->param('search');
+    }
+    else {
+        $search = $app->param('search');
+    }
+    if ( !( defined $search && $search ne '' ) ) {
+        return $app->error(
+            $app->translate(
+                'A parameter "[_1]" is required.',
+                ( $tag_search ? 'tag' : 'search' )
+            ),
+            400
+        );
+    }
 
     MT::App::Search::init_request($app);
     return $app->error( $app->errstr, 400 ) if $app->errstr;

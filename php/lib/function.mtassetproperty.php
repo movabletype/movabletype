@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -13,8 +13,11 @@ function smarty_function_mtassetproperty($args, &$ctx) {
 
     if ($args['property'] == 'file_size') {
         $asset_file = smarty_function_mtassetfilepath($args, $ctx);
-
-        $filesize = filesize($asset_file);
+        if(file_exists( $asset_file )){
+            $filesize = filesize($asset_file);
+        }else{
+            $filesize = 0;
+        }
         $format = '1';
         if (isset($args['format']))
             $format = $args['format'];

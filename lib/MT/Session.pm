@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -225,6 +225,10 @@ It expiers after 10 minutes.
 =item TC
 
 Tag Cache is the cache of a particular tag data.
+
+=item DU
+
+Disk Usage is the cache for notify free disk space alert. Cloud.pack only.
 
 =back
 

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -192,7 +192,8 @@ sub _get_options_tmpl {
     }
     else {    # no spaces in $tmpl; must be a filename...
         if ( my $c = $importer->{plugin} ) {
-            return $c->load_tmpl($tmpl) or die $c->errstr;
+            my $ret = $c->load_tmpl($tmpl) or die $c->errstr;
+            return $ret;
         }
         else {
             return MT->instance->load_tmpl($tmpl);

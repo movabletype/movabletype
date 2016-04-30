@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1115,11 +1115,11 @@ sub to_hash {
 
 sub visible {
     my $comment = shift;
-    return $comment->SUPER::visible unless @_;
+    return $comment->column('visible') unless @_;
 
     ## Note transitions in visibility in the object, so that
     ## other methods can act appropriately.
-    my $was_visible = $comment->SUPER::visible || 0;
+    my $was_visible = $comment->column('visible') || 0;
     my $is_visible = shift || 0;
 
     my $vis_delta = 0;
@@ -1132,7 +1132,7 @@ sub visible {
     $comment->{__changed}{visibility} ||= 0;
     $comment->{__changed}{visibility} += $vis_delta;
 
-    return $comment->SUPER::visible($is_visible);
+    return $comment->column( 'visible', $is_visible );
 }
 
 sub parent {
@@ -1165,6 +1165,18 @@ sub set_status_by_text {
     }
     else {
         $self->junk;
+    }
+}
+
+# Reset parent_id of child comments after removing parent comment.
+__PACKAGE__->add_trigger( 'post_remove', \&_update_parent_id );
+
+sub _update_parent_id {
+    my $comment = shift;
+    my @children = MT::Comment->load( { parent_id => $comment->id } );
+    for my $c (@children) {
+        $c->parent_id(undef);
+        $c->save;
     }
 }
 

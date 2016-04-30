@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -31,7 +31,7 @@ sub edit {
         $param->{editing_other_profile} = 1
             if !$param->{is_me} && $app->can_do('edit_other_profile');
 
-        $param->{userpic} = $obj->userpic_html();
+        $param->{userpic} = $obj->userpic_html( Ts => 1 );
 
         # General permissions...
         my $sys_perms = $obj->permissions(0);
@@ -554,6 +554,7 @@ sub recover_lockout {
     $app->load_tmpl( 'recover_lockout.tmpl', $params );
 }
 
+## DEPRECATED: v6.2
 sub upload_userpic {
     my $app = shift;
 

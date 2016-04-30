@@ -1,41 +1,66 @@
 language: perl
 
+perl:
+  - "5.22"
+  - "5.20"
+  - "5.18"
+  - "5.16"
+  - "5.14"
+  - "5.12"
+  - "5.10"
+  - "5.8"
+
 services:
   - memcached
 
-env:
-  matrix:
-    - TESTS="prove t/??-*.t t/[^0-9]*.t plugins/*/t"
-    - TESTS="prove t/1??-*.t"
-    - TESTS="prove t/2??-*.t t/3??-*.t && phpunit"
+sudo: false
+
+cache:
+  directories:
+    - ./local
+    - ${HOME}/image-magick
+    - ${HOME}/perl5/perlbrew/perls/${TRAVIS_PERL_VERSION}/bin
+    - ${HOME}/perl5/perlbrew/perls/${TRAVIS_PERL_VERSION}/lib/site_perl
+
+addons:
+  apt_packages:
+    - libgd2-xpm-dev
+    - libgmp3-dev
+    - libperl-dev
+    - php5
+    - php5-cli
+    - php5-mysql
+    - php5-gd
+    - php5-memcache
+    - libpng12-dev
+    - libgif-dev
+    - libjpeg-dev
+    - cpanminus
+    - zip
+    - unzip
 
 before_install:
-  # Use system Perl.
-  - perlbrew switch-off
-  - PATH=${PATH#/home/travis/perl5/perlbrew/bin:}
-  - perl -v
-  - echo $PATH
-  - curl -L https://cpanmin.us | perl - --sudo App::cpanminus
-
-  # Install Berkeley DB for installing DB_File module.
-  # libperl-dev for installing ImageMagick.
-  # php5, php5-mysql, php5-gd for tests of dynamic publishing.
-  # libpng12-dev, libgif-dev and libjpeg-dev for Imager.
-  - sudo apt-get update
-  - sudo apt-get install libdb-dev libgd2-xpm-dev libgmp3-dev libperl-dev php5 php5-mysql php5-gd libpng12-dev libgif-dev libjpeg-dev
-
-  # PHPUnit
-  - wget https://phar.phpunit.de/phpunit.phar
-  - chmod +x phpunit.phar
-  - sudo mv phpunit.phar /usr/local/bin/phpunit
+  # Use PHPUnit 4.8, because PHP version of Travis CI is 5.3.
+  - wget -O phpunit https://phar.phpunit.de/phpunit-old.phar
+  - chmod +x phpunit
 
 install:
-  # Install Image::Magick.
-  - sudo apt-get -y install perlmagick
+  # Install ImageMagick for installing Image::Magick.
+  - bash t/build-image-magick.sh
+
+  # Tests fail with Perl 5.10.
+  - cpanm --notest -L ./local XML::Parser::PerlSAX
+
+  # Use patched Coro for Perl 5.22.
+  - cpanm -L ./local https://github.com/rurban/Coro/archive/rel-6.48_01.tar.gz
+
+  # Tests fail with Perl 5.8 and 5.10.
+  - cpanm --notest -L ./local Twiggy
 
   # Instal CPAN modules.
-  - sudo cpanm -n Crypt::CBC Test::Deep DateTime DateTime::TimeZone Clone
-  - travis_retry sudo cpanm -n --installdeps . --cpanfile ./t/cpanfile
+  - cp ./t/cpanfile .
+  - travis_retry cpanm Carton
+  - travis_retry carton install
 
   # Build MT.
   #- SHELL=/bin/bash make me
@@ -53,5 +78,5 @@ before_script:
   - rm t/90-podcoverage.t
 
 script:
-  - bash -c "${TESTS}"
+  - bash -c "PERL_HASH_SEED=0 carton exec prove -s t plugins/*/t && ./phpunit"
 

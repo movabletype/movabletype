@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -33,6 +33,8 @@ $multiblog_orig_handlers['mtblogcategorycount']
     = $ctx->add_tag('blogcategorycount', 'multiblog_MTBlogCategoryCount');
 $multiblog_orig_handlers['mtblogentrycount']
     = $ctx->add_tag('blogentrycount', 'multiblog_MTBlogEntryCount');
+$multiblog_orig_handlers['mtassets']
+    = $ctx->add_container_tag('assets', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtauthors']
     = $ctx->add_container_tag('authors', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtentries']

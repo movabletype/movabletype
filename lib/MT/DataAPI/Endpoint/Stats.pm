@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -31,6 +31,7 @@ sub _invoke {
         startDate => scalar( $app->param('startDate') ),
         endDate   => scalar( $app->param('endDate') ),
         limit     => scalar( $app->param('limit') ),
+        offset    => scalar( $app->param('offset') ),
     };
     $params->{path} = do {
         if ( defined( my $path = $app->param('path') ) ) {

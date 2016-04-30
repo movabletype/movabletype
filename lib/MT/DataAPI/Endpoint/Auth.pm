@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -100,11 +100,16 @@ sub authorization {
 
 sub authentication {
     my ($app) = @_;
+    _authentication( $app, sub { $_[0]->login } );
+}
+
+sub _authentication {
+    my ( $app, $login ) = @_;
 
     $app->current_client_id
         or return $app->error(400);
 
-    my ( $author, $new_login ) = $app->login;
+    my ( $author, $new_login ) = $login->($app);
     my $session = $app->{session}
         or return $app->error( 'Invalid login', 401 );
 

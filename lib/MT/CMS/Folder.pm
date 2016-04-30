@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -97,6 +97,20 @@ sub post_save {
             }
         );
     }
+    else {
+        $app->log(
+            {   message => $app->translate(
+                    "Folder '[_1]' (ID:[_2]) edited by '[_3]'",
+                    $obj->label, $obj->id, $app->user->name
+                ),
+                level    => MT::Log::INFO(),
+                class    => $obj->class,
+                category => 'edit',
+                metadata => $obj->id,
+            }
+        );
+    }
+
     1;
 }
 

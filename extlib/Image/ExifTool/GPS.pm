@@ -12,7 +12,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.38';
+$VERSION = '1.42';
 
 my %coordConv = (
     ValueConv    => 'Image::ExifTool::GPS::ToDegrees($val)',
@@ -38,6 +38,11 @@ my %coordConv = (
     0x0001 => {
         Name => 'GPSLatitudeRef',
         Writable => 'string',
+        Notes => q{
+            tags 0x0001-0x0006 used for camera location according to MWG 2.0. ExifTool
+            will also accept a number when writing GPSLatitude -- positive for north
+            latitudes, or negative for south
+        },
         Count => 2,
         PrintConv => {
             # extract N/S if written from Composite:GPSLatitude
@@ -63,6 +68,10 @@ my %coordConv = (
         Name => 'GPSLongitudeRef',
         Writable => 'string',
         Count => 2,
+        Notes => q{
+            ExifTool will also accept a number when writing this tag -- positive for
+            east longitudes or negative for west
+        },
         PrintConv => {
             # extract E/W if written from Composite:GPSLongitude
             # (also allow writing from a signed number)
@@ -86,7 +95,16 @@ my %coordConv = (
     0x0005 => {
         Name => 'GPSAltitudeRef',
         Writable => 'int8u',
+        Notes => q{
+            ExifTool will also accept a signed number when writing this tag, beginning
+            with "+" for above sea level, or "-" for below
+        },
         PrintConv => {
+            OTHER => sub {
+                my ($val, $inv) = @_;
+                return undef unless $inv and $val =~ /^([-+])/;
+                return($1 eq '-' ? 1 : 0);
+            },
             0 => 'Above Sea Level',
             1 => 'Below Sea Level',
         },
@@ -111,6 +129,7 @@ my %coordConv = (
         },
         ValueConv => 'Image::ExifTool::GPS::ConvertTimeStamp($val)',
         ValueConvInv => '$val=~tr/:/ /;$val',
+        PrintConv => 'Image::ExifTool::GPS::PrintTimeStamp($val)',
         # pull time out of any format date/time string
         # (converting to UTC if a timezone is given)
         PrintConvInv => sub {
@@ -209,6 +228,7 @@ my %coordConv = (
     0x0013 => {
         Name => 'GPSDestLatitudeRef',
         Writable => 'string',
+        Notes => 'tags 0x0013-0x001a used for subject location according to MWG 2.0',
         Count => 2,
         PrintConv => {
             N => 'North',
@@ -314,6 +334,8 @@ my %coordConv = (
         PrintConvInv => '$val=~s/\s*m$//; $val',
         Writable => 'rational64u',
     },
+    # 0xea1c - Nokia Lumina 1020, Samsung GT-I8750, and other Windows 8
+    #          phones write this (padding) in GPS IFD - PH
 );
 
 # Composite GPS tags
@@ -388,13 +410,26 @@ sub ConvertTimeStamp($)
     $h = int($f / 3600); $f -= $h * 3600;
     $m = int($f / 60);   $f -= $m * 60;
     $s = int($f);        $f -= $s;
-    $f = int($f * 1000000 + 0.5);
+    $f = int($f * 1000000000 + 0.5);
     if ($f) {
-        ($f = sprintf(".%.6d", $f)) =~ s/0+$//;
+        ($f = sprintf(".%.9d", $f)) =~ s/0+$//;
     } else {
         $f = ''
     }
-    return sprintf("%.2d:%.2d:%.2d$f",$h,$m,$s);
+    return sprintf("%.2d:%.2d:%.2d%s",$h,$m,$s,$f);
+}
+
+#------------------------------------------------------------------------------
+# Print GPS timestamp
+# Inputs: 0) EXIF-formatted time string
+# Returns: time rounded to the nearest microsecond
+sub PrintTimeStamp($)
+{
+    my $val = shift;
+    return $val unless $val =~ s/:(\d{2}\.\d+)$//;
+    my $s = int($1 * 1000000 + 0.5) / 1000000;
+    $s = "0$s" if $s < 10;
+    return "${val}:$s";
 }
 
 #------------------------------------------------------------------------------
@@ -405,7 +440,7 @@ sub ConvertTimeStamp($)
 # Returns: DMS string
 sub ToDMS($$;$$)
 {
-    my ($exifTool, $val, $doPrintConv, $ref) = @_;
+    my ($et, $val, $doPrintConv, $ref) = @_;
     my ($fmt, $num, $sign);
 
     if ($ref) {
@@ -423,7 +458,7 @@ sub ToDMS($$;$$)
     }
     if ($doPrintConv) {
         if ($doPrintConv eq '1') {
-            $fmt = $exifTool->Options('CoordFormat');
+            $fmt = $et->Options('CoordFormat');
             if (not $fmt) {
                 $fmt = q{%d deg %d' %.2f"} . $ref;
             } elsif ($ref) {
@@ -489,7 +524,7 @@ GPS (Global Positioning System) meta information in EXIF data.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

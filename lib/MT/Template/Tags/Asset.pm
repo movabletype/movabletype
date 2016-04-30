@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1055,7 +1055,7 @@ sub _hdlr_asset_property {
             $ret = sprintf( "%.1f", $size / 1024000 );
         }
         else {
-            $ret = $size;
+            $ret = sprintf( "%d", $size );
         }
     }
     elsif ( $prop =~ m/^image_/ && $class->can($prop) ) {
@@ -1321,6 +1321,29 @@ sub _hdlr_asset_count {
     $terms{class}   = $args->{type} || '*';
     my $count = MT::Asset->count( \%terms, \%args );
     return $ctx->count_format( $count, $args );
+}
+
+###########################################################################
+
+=head2 AssetBlogID
+
+The numeric system ID of the blog that is parent to the asset currently
+in context.
+
+B<Example:>
+
+    <$mt:AssetBlogID$>
+
+=for tags assets, blogs
+
+=cut
+
+sub _hdlr_asset_blog_id {
+    my ( $ctx, $args ) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
+    return $args
+        && $args->{pad} ? ( sprintf "%06d", $a->blog_id ) : $a->blog_id;
 }
 
 1;

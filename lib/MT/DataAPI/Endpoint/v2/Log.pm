@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,6 +9,7 @@ package MT::DataAPI::Endpoint::v2::Log;
 use strict;
 use warnings;
 
+use MT::I18N qw( const );
 use MT::Log;
 use MT::Permission;
 use MT::App;
@@ -179,7 +180,30 @@ sub reset {
 
 sub export {
     my ( $app, $endpoint ) = @_;
+
+    # Check encoding parameter
+    my $encoding = $app->config->ExportEncoding;
+    if ( defined $app->param('encoding') ) {
+        $encoding = $app->param('encoding');
+        my %valid_encodings
+            = map { $_->{name} => 1 } @{ const('ENCODING_NAMES') };
+        if (  !$valid_encodings{$encoding}
+            || $encoding eq 'guess'
+            || $encoding eq 'WinLatin1' )
+        {
+            return $app->error(
+                $app->translate( 'Invalid encoding: [_1]', $encoding ), 400 );
+        }
+    }
+
+    # Change ExportEncoding
+    my $current = $app->config->ExportEncoding;
+    $app->config->ExportEncoding($encoding);
+
     MT::CMS::Log::export($app);
+
+    # Revert ExportEncoding
+    $app->config->ExportEncoding($current);
 }
 
 1;

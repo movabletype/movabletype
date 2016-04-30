@@ -6,7 +6,7 @@ use warnings;
 use lib qw(lib t/lib);
 
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $ENV{MT_CONFIG} = 'mysql-test-disable-object-cache.cfg';
 }
 
 BEGIN {

@@ -35,7 +35,7 @@ use vars qw( %Lexicon );
 
 ## plugins/WXRImporter/tmpl/options.tmpl
 	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first.} => q{WordPressからMovable Typeへインポートする前に、まず<a href='[_1]'>ブログ公開パスを設定</a>してください。},
-	'Upload path for this WordPress blog' => 'WordPressブログのアップロードパス',
+	'Upload path for this WordPress blog' => 'メディアのアップロードパス',
 	'Replace with' => '置き換えるパス',
 	'Download attachments' => 'Attachmentのダウンロード',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'WordPressのブログからAttachmentをダウンロードするには、cronなどの決められたタイミングでプログラムを実行する環境が必要です。',

@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# Update mtime of files with last commit date of the file
+#
+# Usage: git-mtime <files>
+#
+set -eu
+
+for FILE in $*; do
+    touch -m -t $(date -d "$(git log -1 --pretty=format:%cd --date=iso $FILE)" +%Y%m%d%H%M.%S) $FILE
+done

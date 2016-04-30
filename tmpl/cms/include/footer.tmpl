@@ -75,7 +75,10 @@ jQuery(function() {
     });
     jQuery('div.has-option').mtCheckboxOption();
     jQuery('.msg, .display-options').mtToggleField();
-    jQuery('.fav-actions-nav, #cms-search').mtToggleField({hide_clicked: true});
+    jQuery('.fav-actions-nav').mtToggleField({hide_clicked: true});
+    jQuery('#cms-search').mtToggleField({hide_clicked: true}, function(){
+        jQuery('#quick-search').focus();
+    });
     jQuery('input.text-date').datepicker({
         dateFormat: 'yy-mm-dd',
         dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],

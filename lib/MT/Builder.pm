@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -22,6 +22,7 @@ sub compile {
 
     $opt ||= { uncompiled => 1 };
     my $depth = $opt->{depth} ||= 0;
+    $opt->{old_depth} ||= 0;
 
     my $ids;
     my $classes;
@@ -51,11 +52,6 @@ sub compile {
     }
 
     my $mods;
-
-    # At first, remove MTIgnore blocks.
-    if ( $depth <= 0 && $text =~ m/^<\$?MT:?Ignore/i ) {
-        _remove_ignore_blocks( \$text );
-    }
 
     # Translate any HTML::Template markup into native MT syntax.
     if (   $depth <= 0
@@ -170,34 +166,39 @@ sub compile {
         if ($hdlr) {
             ( $h, $is_container ) = $hdlr->values;
         }
-        if ( !$h ) {
 
-            # determine line #
-            my $pre_error = substr( $text, 0, $tag_start );
-            my @m         = $pre_error =~ m/\r?\n/g;
-            my $line      = scalar @m;
-            if ($depth) {
-                $opt->{error_line} = $line;
-                push @$errors,
-                    {
-                    message => MT->translate(
-                        "<[_1]> at line [_2] is unrecognized.",
-                        $prefix . $tag, "#"
-                    ),
-                    line => $line + 1
-                    };
-            }
-            else {
-                push @$errors,
-                    {
-                    message => MT->translate(
-                        "<[_1]> at line [_2] is unrecognized.",
-                        $prefix . $tag,
-                        $line + 1
-                    ),
-                    line => $line
-                    };
-            }
+        # determine line #
+        my $pre_line = substr( $text, 0, $tag_start );
+        my @m        = $pre_line =~ m/\r?\n/g;
+        my $line     = scalar @m;
+        $opt->{depth_line} ||= 0;
+        if ( $depth == 0 ) {
+            $opt->{line}       = $line + 1;
+            $opt->{depth_line} = 0;
+        }
+        elsif ( $depth > $opt->{old_depth} ) {
+            $opt->{line} += $line;
+            $opt->{depth_line} = ( $opt->{line} - 1 );
+        }
+        elsif ( $depth == $opt->{old_depth} ) {
+            $opt->{line} = $opt->{depth_line} + $line;
+        }
+        else {
+            $opt->{line}       = $line + 1;
+            $opt->{depth_line} = $line;
+        }
+        $opt->{old_depth} = $depth;
+
+        if ( !$h ) {
+            push @$errors,
+                {
+                message => MT->translate(
+                    "<[_1]> at line [_2] is unrecognized.",
+                    $prefix . $tag,
+                    $opt->{line}
+                ),
+                line => $opt->{line}
+                };
         }
         if ($is_container) {
             if ( $whole_tag !~ m|/>$| ) {
@@ -224,16 +225,6 @@ sub compile {
                         local $opt->{parent} = $rec;
                         $rec->childNodes(
                             $build->compile( $ctx, $sec, $opt ) );
-                        if (@$errors) {
-                            my $pre_error = substr( $text, 0, $sec_start );
-                            my @m         = $pre_error =~ m/\r?\n/g;
-                            my $line      = scalar @m;
-                            foreach (@$errors) {
-                                $line += $_->{line};
-                                $_->{line} = $line;
-                                $_->{message} =~ s/#/$line/ unless $depth;
-                            }
-                        }
 
              # unless (defined $rec->[2]) {
              #     my $pre_error = substr($text, 0, $sec_start);
@@ -321,41 +312,6 @@ sub compile {
             if !Encode::is_utf8($text);
     }
     return $state->{tokens};
-}
-
-sub _remove_ignore_blocks {
-    my $text = shift;
-
-    # Search MTIgnore start tag.
-    while ( $$text
-        =~ m!(<\$?(MT:?)(Ignore(?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)*?)[\$/]?>)!gis
-        )
-    {
-        my ( $whole_tag, $prefix, $tag ) = ( $1, $2, $3 );
-        ( $tag, my ($args) ) = split /\s+/, $tag, 2;
-
-        next if lc($tag) ne 'ignore';
-
-        my $sec_start = pos $$text;
-        my $tag_start = $sec_start - length $whole_tag;
-
-        if ( $whole_tag !~ m|/>$| ) {
-
-            # Search MTIgnore end tag.
-            my ( $sec_end, $tag_end )
-                = _consume_up_to( undef, $text, $sec_start, 'ignore' );
-            last unless $sec_end;
-
-            # Remove MTIgnore block.
-            my $remove_text = substr $$text, $tag_start,
-                ( $tag_end - $tag_start );
-            $remove_text = quotemeta $remove_text;
-            $$text =~ s/$remove_text//;
-
-            # Set search position.
-            ( pos $$text ) = $tag_start;
-        }
-    }
 }
 
 sub translate_html_tmpl {

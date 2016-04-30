@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -71,22 +71,24 @@ sub create {
         my $cats_hash = $entry_hash->{categories};
         $cats_hash = [$cats_hash] if ref $cats_hash ne 'ARRAY';
 
-        my @cat_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
-        @attach_cats = MT->model('category')->load(
-            {   id      => \@cat_ids,
-                blog_id => $blog->id,
-                class   => 'category',
-            }
-        );
+        if ( scalar @$cats_hash > 0 ) {
+            my @cat_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
+            @attach_cats = MT->model('category')->load(
+                {   id      => \@cat_ids,
+                    blog_id => $blog->id,
+                    class   => 'category',
+                }
+            );
 
-        return $app->error( "'categories' parameter is invalid.", 400 )
-            if scalar @$cats_hash == 0
-            || scalar @$cats_hash != scalar @attach_cats;
+            return $app->error( "'categories' parameter is invalid.", 400 )
+                if scalar @$cats_hash == 0
+                || scalar @$cats_hash != scalar @attach_cats;
 
-        # Restore order.
-        my %attach_cats_hash = map { +( $_->id => $_ ) } @attach_cats;
-        @attach_cats = map { $attach_cats_hash{$_} } @cat_ids;
+            # Restore order.
+            my %attach_cats_hash = map { +( $_->id => $_ ) } @attach_cats;
+            @attach_cats = map { $attach_cats_hash{$_} } @cat_ids;
+        }
     }
 
     my @attach_assets;
@@ -94,23 +96,25 @@ sub create {
         my $assets_hash = $entry_hash->{assets};
         $assets_hash = [$assets_hash] if ref $assets_hash ne 'ARRAY';
 
-        my @asset_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
-        my @blog_ids = ( $blog->id );
-        if ( !$blog->is_blog ) {
-            my @child_blogs = @{ $blog->blogs };
-            my @child_blog_ids = map { $_->id } @child_blogs;
-            push @blog_ids, @child_blog_ids;
-        }
-        @attach_assets = MT->model('asset')->load(
-            {   id      => \@asset_ids,
-                blog_id => \@blog_ids,
+        if ( scalar @$assets_hash > 0 ) {
+            my @asset_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
+            my @blog_ids = ( $blog->id );
+            if ( !$blog->is_blog ) {
+                my @child_blogs = @{ $blog->blogs };
+                my @child_blog_ids = map { $_->id } @child_blogs;
+                push @blog_ids, @child_blog_ids;
             }
-        );
+            @attach_assets = MT->model('asset')->load(
+                {   id      => \@asset_ids,
+                    blog_id => \@blog_ids,
+                }
+            );
 
-        return $app->error( "'assets' parameter is invalid.", 400 )
-            if scalar @$assets_hash == 0
-            || scalar @$assets_hash != scalar @attach_assets;
+            return $app->error( "'assets' parameter is invalid.", 400 )
+                if scalar @$assets_hash == 0
+                || scalar @$assets_hash != scalar @attach_assets;
+        }
     }
 
     save_object( $app, 'entry', $new_entry )
@@ -127,6 +131,9 @@ sub create {
     }
 
     $post_save->();
+
+    # Remove autosave object
+    remove_autosave_session_obj( $app, $new_entry->class );
 
     $new_entry;
 }
@@ -148,50 +155,65 @@ sub update {
     my $entry_hash = $app->current_format->{unserialize}->($entry_json);
 
     my @update_cats;
+    my $do_update_cats;
     if ( exists $entry_hash->{categories} ) {
         my $cats_hash = $entry_hash->{categories};
         $cats_hash = [$cats_hash] if ref $cats_hash ne 'ARRAY';
 
-        my @cat_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
-        @update_cats = MT->model('category')->load(
-            {   id      => \@cat_ids,
-                blog_id => $blog->id,
-                class   => 'category',
-            }
-        );
+        if ( scalar @$cats_hash == 0 ) {
+            $do_update_cats = 1;
+        }
+        else {
+            my @cat_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
+            @update_cats = MT->model('category')->load(
+                {   id      => \@cat_ids,
+                    blog_id => $blog->id,
+                    class   => 'category',
+                }
+            );
 
-        return $app->error( "'categories' parameter is invalid.", 400 )
-            if scalar @$cats_hash == 0
-            || scalar @$cats_hash != scalar @update_cats;
+            return $app->error( "'categories' parameter is invalid.", 400 )
+                if scalar @$cats_hash == 0
+                || scalar @$cats_hash != scalar @update_cats;
 
-        # Restore order.
-        my %update_cats_hash = map { +( $_->id => $_ ) } @update_cats;
-        @update_cats = map { $update_cats_hash{$_} } @cat_ids;
+            # Restore order.
+            my %update_cats_hash = map { +( $_->id => $_ ) } @update_cats;
+            @update_cats = map { $update_cats_hash{$_} } @cat_ids;
+            $do_update_cats = 1;
+        }
     }
 
     my @update_assets;
+    my $do_update_assets;
     if ( exists $entry_hash->{assets} ) {
         my $assets_hash = $entry_hash->{assets};
         $assets_hash = [$assets_hash] if ref $assets_hash ne 'ARRAY';
 
-        my @asset_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
-        my @blog_ids = ( $blog->id );
-        if ( !$blog->is_blog ) {
-            my @child_blogs = @{ $blog->blogs };
-            my @child_blog_ids = map { $_->id } @child_blogs;
-            push @blog_ids, @child_blog_ids;
+        if ( scalar @$assets_hash == 0 ) {
+            $do_update_assets = 1;
         }
-        @update_assets = MT->model('asset')->load(
-            {   id      => \@asset_ids,
-                blog_id => \@blog_ids,
+        else {
+            my @asset_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
+            my @blog_ids = ( $blog->id );
+            if ( !$blog->is_blog ) {
+                my @child_blogs = @{ $blog->blogs };
+                my @child_blog_ids = map { $_->id } @child_blogs;
+                push @blog_ids, @child_blog_ids;
             }
-        );
+            @update_assets = MT->model('asset')->load(
+                {   id      => \@asset_ids,
+                    blog_id => \@blog_ids,
+                }
+            );
 
-        return $app->error( "'assets' parameter is invalid.", 400 )
-            if scalar @$assets_hash == 0
-            || scalar @$assets_hash != scalar @update_assets;
+            return $app->error( "'assets' parameter is invalid.", 400 )
+                if scalar @$assets_hash == 0
+                || scalar @$assets_hash != scalar @update_assets;
+
+            $do_update_assets = 1;
+        }
     }
 
     save_object(
@@ -208,16 +230,19 @@ sub update {
     ) or return;
 
     # Update categories and assets.
-    if (@update_cats) {
+    if ($do_update_cats) {
         $new_entry->update_categories(@update_cats)
             or return $app->error( $new_entry->errstr );
     }
-    if (@update_assets) {
+    if ($do_update_assets) {
         $new_entry->update_assets(@update_assets)
             or return $app->error( $new_entry->errstr );
     }
 
     $post_save->();
+
+    # Remove autosave object
+    remove_autosave_session_obj( $app, $new_entry->class, $new_entry->id );
 
     $new_entry;
 }
@@ -509,6 +534,186 @@ sub export {
     MT::CMS::Export::export($app);
 
     return;
+}
+
+sub preview_by_id {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $entry ) = context_objects(@_)
+        or return;
+
+    # Update for preview
+    my $entry_json = $app->param( $entry->class )
+        or return $app->error(
+        $app->translate(
+            'A resource "[_1_]" is required.',
+            $entry->class_label
+        ),
+        400
+        );
+    my $entry_hash = $app->current_format->{unserialize}->($entry_json);
+
+    $entry = $app->resource_object( $entry->class, $entry )
+        or return;
+
+    my $names = $entry->column_names;
+    foreach my $name (@$names) {
+        if ( exists $entry_hash->{$name} ) {
+            $entry->$name( $entry_hash->{$name} );
+        }
+    }
+
+    # Permission check
+    return $app->error(403)
+        unless $app->permissions->can_edit_entry( $entry, $app->user );
+
+    # Set authored_on as a parameter
+    my ( $yr, $mo, $dy, $hr, $mn, $sc )
+        = unpack( 'A4A2A2A2A2A2', $entry->authored_on );
+    my $authored_on_date = sprintf( "%04d-%02d-%02d", $yr, $mo, $dy );
+    my $authored_on_time = sprintf( "%02d:%02d:%02d", $hr, $mn, $sc );
+    $app->param( 'authored_on_date', $authored_on_date );
+    $app->param( 'authored_on_time', $authored_on_time );
+
+    if ( exists $entry_hash->{categories} ) {
+        my $cats_hash = $entry_hash->{categories};
+        $cats_hash = [$cats_hash] if ref $cats_hash ne 'ARRAY';
+
+        my @cat_ids = map { $_->{id} }
+            grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
+        my $cat_ids = join ',', @cat_ids;
+        $app->param( 'category_ids', $cat_ids );
+    }
+
+    return _preview_common( $app, $entry );
+}
+
+sub preview {
+    my ( $app, $endpoint ) = @_;
+
+    my ($blog) = context_objects(@_)
+        or return;
+    my $author = $app->user;
+
+    # Create dummy new object
+    my $orig_entry = $app->model('entry')->new;
+    $orig_entry->set_values(
+        {   blog_id        => $blog->id,
+            author_id      => $author->id,
+            allow_comments => $blog->allow_comments_default,
+            allow_pings    => $blog->allow_pings_default,
+            convert_breaks => $blog->convert_paras,
+            status         => (
+                (          $app->can_do('publish_own_entry')
+                        || $app->can_do('publish_all_entry')
+                )
+                ? MT::Entry::RELEASE()
+                : MT::Entry::HOLD()
+            )
+        }
+    );
+    my $entry = $app->resource_object( 'entry', $orig_entry )
+        or return;
+    $entry->id(-1);    # fake out things like MT::Taggable::__load_tags
+
+    # Update for preview
+    my $entry_json = $app->param('entry');
+    my $entry_hash = $app->current_format->{unserialize}->($entry_json);
+
+    my $names = $entry->column_names;
+    foreach my $name (@$names) {
+        if ( exists $entry_hash->{$name} ) {
+            $entry->$name( $entry_hash->{$name} );
+        }
+    }
+
+    if ( exists $entry_hash->{categories} ) {
+        my $cats_hash = $entry_hash->{categories};
+        $cats_hash = [$cats_hash] if ref $cats_hash ne 'ARRAY';
+
+        my @cat_ids = map { $_->{id} }
+            grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
+        my $cat_ids = join ',', @cat_ids;
+        $app->param( 'category_ids', $cat_ids );
+    }
+
+    return _preview_common( $app, $entry );
+}
+
+sub _preview_common {
+    my ( $app, $entry ) = @_;
+
+    # Set correct class type
+    $app->param( '_type', $entry->class );
+
+# TODO: Allow to make a preview content when Individual/Page mapping not found.
+# Currently, we can not make preview content when templatemap could not be found.
+    require MT::TemplateMap;
+    my $at = $entry->class eq 'page' ? 'Page' : 'Individual';
+    my $tmpl_map = MT::TemplateMap->load(
+        {   archive_type => $at,
+            is_preferred => 1,
+            blog_id      => $entry->blog_id,
+        }
+    );
+    if ( !$tmpl_map ) {
+        return $app->error(
+            $app->translate(
+                'Could not found archive template for [_1].',
+                $entry->class_label
+            ),
+            400
+        );
+    }
+
+    my $preview_basename;
+    no warnings 'redefine';
+    local *MT::App::DataAPI::preview_object_basename = sub {
+        require MT::App::CMS;
+        $preview_basename = MT::App::CMS::preview_object_basename(@_);
+    };
+
+    # TODO: PreviewInNewWindow cannot be changed
+    # when Cloud.pack is installed and this value is saved in database.
+    local $app->config->{__overwritable_keys}{previewinnewwindow};
+
+    my $old = $app->config('PreviewInNewWindow');
+    $app->config( 'PreviewInNewWindow', 1 );
+
+    # Make preview file
+    require MT::CMS::Entry;
+    my $preview = MT::CMS::Entry::_build_entry_preview( $app, $entry );
+
+    $app->config( 'PreviewInNewWindow', $old );
+
+    if ( $app->errstr ) {
+        return $app->error( $app->errstr, 500 );
+    }
+
+    my $redirect_to = delete $app->{redirect};
+    if ( $redirect_to && !$app->param('raw') ) {
+        return +{
+            status  => 'success',
+            preview => $redirect_to,
+        };
+    }
+
+    my $session_class = MT->model('session');
+    my $sess = $session_class->load( { id => $preview_basename } );
+    return $app->error( $app->translate('Preview data not found.'), 404 )
+        unless $sess;
+
+    require MT::FileMgr;
+    my $fmgr    = MT::FileMgr->new('Local');
+    my $content = $fmgr->get_data( $sess->name );
+
+    $fmgr->delete( $sess->name );
+    $sess->remove;
+
+    return +{
+        status  => 'success',
+        preview => $content
+    };
 }
 
 1;
