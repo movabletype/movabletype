@@ -112,19 +112,25 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                         $quote = '';
                     }
                     if ($ctx->global_attr[$attr]) {
-                        $modargs .= '|@';
-                        if ($ctx->global_attr[$attr] != '1') {
-                            $modargs .= $ctx->global_attr[$attr];
+                        if($attr != 'setvar'){
+                            $modargs .= '|';
+                            if ($ctx->global_attr[$attr] != '1') {
+                                $modargs .= $ctx->global_attr[$attr];
+                            } else {
+                                $modargs .= $attr;
+                            }
+                            $modargs .= ':' . $quote . $attrs[$attr] . $quote;
+                            if (isset($arglist[$a][4])) {
+                               $modargs .= _parse_modifier($arglist[$a][4]);
+                            }
                         } else {
-                            $modargs .= $attr;
-                        }
-                        $modargs .= ':' . $quote . $attrs[$attr] . $quote;
-                        if (isset($arglist[$a][4])) {
-                           $modargs .= _parse_modifier($arglist[$a][4]);
+                            $attrargs .= ' ' . $attr . '=' . $quote . $attrs[$attr] . $quote;
                         }
                     } else {
                         // reconstruct attribute in case we modified
                         // the attribute to handle variable references
+                        if($attrs[$attr] == '\\')
+                            $attrs[$attr] = addslashes($attrs[$attr]);
                         $attrargs .= ' ' . $attr . '=' . $quote . $attrs[$attr] . $quote;
                         if (isset($arglist[$a][4])) {
                             $attrargs .= _parse_modifier($arglist[$a][4]);
@@ -162,11 +168,6 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                 $conditional = 0;
             }
 
-            if ( $mttag == 'mtsetvartemplate' )
-                $_call_func = false;
-            else
-                $_call_func = true;
-
             // force the elements in $vars to always to act like a function
             if ($open == '$') {
                 $open = '';
@@ -187,8 +188,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                     array_push($tokenstack, $tokname);
                 } else {
                     $tokname = array_pop($tokenstack);
-                    $_tag_args = $_call_func ? '' : ' fun="0"';
-                    $smart_source .= $ldelim.'/defun'.$_tag_args.$rdelim;
+                    $smart_source .= $ldelim.'/defun'.$rdelim;
                 }
             }
 
@@ -295,7 +295,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
 
             // extra newline is eaten by PHP but will cause any actual
             // newline from user to be preserved:
-            if ($close_mod_args == '') {
+            if($open != '/' && $fn_tag){
                 $smart_source .= "\n";
             }
         }

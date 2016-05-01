@@ -152,11 +152,8 @@ class MTViewer extends SmartyBC {
         }
         $this->registerFilter('post', 'smarty_postfilter_mt_to_smarty');
 
-        $this->register_tag_handler('mtdynamic', array(&$this, 'smarty_block_dynamic'),
-                              false,'block');
-        $this->register_tag_handler('mtif', array(&$this, 'smarty_block_mtif'),'block');
-        $this->register_tag_handler('mtelse', array(&$this, 'smarty_block_else'),'block');
-        $this->register_tag_handler('mtelseif', array(&$this, 'smarty_block_elseif'),'block');
+        $this->register_tag_handler('mtelse', '','block');
+        $this->register_tag_handler('mtelseif', '','block');
 
         # Unregister the 'core' regex_replace so we can replace it
         $this->register_modifier('regex_replace', array(&$this, 'regex_replace'));
@@ -287,7 +284,7 @@ class MTViewer extends SmartyBC {
                 $ctx->stash('conditional', $ctx->__stash[$cond_tag]);
             }
         } else {
-            if (!$ctx->__stash['conditional']->value) {
+            if (!$ctx->__stash['conditional']) {
                 if (isset($ctx->__stash['else_content'])) {
                     $content = $ctx->__stash['else_content'];
                 } else {
@@ -313,7 +310,7 @@ class MTViewer extends SmartyBC {
 
     function smarty_block_else($args, $content, &$ctx, &$repeat) {
         if (isset($ctx->__stash['elseif_content'])
-            or $ctx->__stash['conditional']->value) {
+            or $ctx->__stash['conditional']) {
             $repeat = false;
             return '';
         }
@@ -354,7 +351,7 @@ class MTViewer extends SmartyBC {
             return '';
         }
         if (!isset($content)) {
-            if ($ctx->__stash['conditional']->value)
+            if ($ctx->__stash['conditional'])
                 $repeat = false;
         } else {
             $else_content = $ctx->__stash['else_content'];
@@ -812,10 +809,16 @@ EOT;
 
         if ($type == 'block') {
             $this->register_block($tag, $fn);
+            if($fn == ''){
+                $fn = array($this, 'block_wrapper');
+            }
         } elseif ($type == 'function') {
             $this->register_function($tag, $fn);
+            if($fn == ''){
+                $fn = array($this, 'function_wrapper');
+            }
         }
-        // $old_handler = $this->_handlers[$tag];
+        $old_handler = $this->_handlers[$tag];
         $this->_handlers[$tag] = array( $fn, $type );
         if ($old_handler) {
             $fn = $old_handler[0];
@@ -869,21 +872,41 @@ EOT;
         $tag = $ctx->this_tag();
         $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
 
-        list($hdlr) = $this->handler_for("mt" . $tag);
-        if(!$hdlr){
-            $fntag = 'smarty_block_mt' . $tag;
-            if(is_callable($fntag)){
-                $result = $fntag($args, $content, $ctx, $repeat);
-            }
+        if($tag == 'else'){
+            $fntag = array($this, 'smarty_block_else');
+        }elseif($tag == 'elseif'){
+            $fntag = array($this, 'smarty_block_elseif');
         } else {
-            $result = $hdlr($args, $content, $ctx, $repeat);
+            $fntag = 'smarty_block_mt' . $tag;
+        }
+
+        $variables = array('conditional','elseif_conditional');
+        foreach ($variables as $value) {
+            if(isset($ctx->__stash[$value]) && is_object($ctx->__stash[$value])){
+                $ctx->__stash[$value] = $ctx->__stash[$value]->value;
+            }
+        }
+
+        if(is_callable($fntag)){
+            $result = $fntag($args, $content, $ctx, $repeat);
         }
 
         $variables = array('conditional','elseif_conditional');
         foreach ($variables as $value) {
             if(isset($ctx->__stash[$value]) && !is_object($ctx->__stash[$value])){
                 $ctx->__stash[$value] = new Smarty_Variable($ctx->__stash[$value]);
-                $_smarty_tpl->tpl_vars[$value] = $ctx->__stash[$value];
+            }
+            $_smarty_tpl->tpl_vars[$value] = $ctx->__stash[$value];
+        }
+
+
+        foreach ($args as $k => $v) {
+            if (array_key_exists($k, $this->global_attr)) {
+                $fnmod = 'smarty_modifier_' . $k;
+                if (!function_exists($fnmod))
+                    $this->load_modifier($k);
+                if (function_exists($fnmod))
+                    $result = $fnmod($result, $v);
             }
         }
 
@@ -901,14 +924,9 @@ EOT;
         $tag = $ctx->this_tag();
 
         $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
-        list($hdlr) = $this->handler_for("mt" . $tag);
-        if(!$hdlr){
-            $fntag = 'smarty_function_mt' . $tag;
-            if(is_callable($fntag)){
-                $result = $fntag($args, $ctx);
-            }
-        } else {
-            $result = $hdlr($args, $ctx);
+        $fntag = 'smarty_function_mt' . $tag;
+        if(is_callable($fntag)){
+            $result = $fntag($args, $ctx);
         }
 
         foreach ($args as $k => $v) {
@@ -926,18 +944,28 @@ EOT;
     }
     function register_block($block, $block_impl, $cacheable = true, $cache_attrs = null) {
 
-        if(isset($this->registered_plugins[ Smarty::PLUGIN_BLOCK ][ $block ])) return;
+        if(isset($this->registered_plugins[ Smarty::PLUGIN_BLOCK ][ $block ]) && $block_impl == '') return;
+        $this->unregisterPlugin('block', $block);
 
-        @include_once 'block.' . $block . '.php';
-        $this->registerPlugin('block', $block, array($this,'block_wrapper'), $cacheable, $cache_attrs);
+        if($block_impl == ''){
+            @include_once 'block.' . $block . '.php';
+            $block_impl = array($this,'block_wrapper');
+        }
+
+        $this->registerPlugin('block', $block, $block_impl, $cacheable, $cache_attrs);
     }
 
     function register_function($function, $function_impl, $cacheable = true, $cache_attrs = null) {
 
-        if(isset($this->registered_plugins[ Smarty::PLUGIN_FUNCTION ][ $function ])) return;
+        if(isset($this->registered_plugins[ Smarty::PLUGIN_FUNCTION ][ $function ]) && $function_impl == '') return;
+        $this->unregisterPlugin('function', $function);
 
-        @include_once 'function.' . $function . '.php';
-        $this->registerPlugin('function', $function, array($this,'function_wrapper'), $cacheable, $cache_attrs);
+        if($function_impl == ''){
+            @include_once 'function.' . $function . '.php';
+            $function_impl = array($this,'function_wrapper');
+        }
+
+        $this->registerPlugin('function', $function, $function_impl, $cacheable, $cache_attrs);
     }
     function _compile_source($resource_name, &$source_content, &$compiled_content, $cache_include_path=null) {
         $local_tag_stack = $this->_tag_stack;

@@ -21,7 +21,7 @@ function smarty_block_mtparentcategory($args, $content, &$ctx, &$repeat) {
         $ctx->stash('conditional', isset($parent_cat));
         $ctx->stash('else_content', null);
     } else {
-        if (!$ctx->stash('conditional')->value) {
+        if (!$ctx->stash('conditional')) {
             $content = $ctx->stash('else_content');
         }
         $ctx->restore(array('category', 'conditional', 'else_content'));

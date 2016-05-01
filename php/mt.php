@@ -220,9 +220,9 @@ class MT {
                 } else {
                     // override plugin function
                     if(preg_match('/^block\.(mt.+?)\.php$/', $file, $matches)) {
-                        $ctx->register_tag_handler($matches[1],'smarty_block_'.$matches[1],'block');
+                        $ctx->register_tag_handler($matches[1],'','block');
                     } elseif(preg_match('/^function\.(mt.+?)\.php$/', $file, $matches)){
-                        $ctx->register_tag_handler($matches[1],'smarty_function_'.$matches[1],'function');
+                        $ctx->register_tag_handler($matches[1],'','function');
                     }
                 }
             }
