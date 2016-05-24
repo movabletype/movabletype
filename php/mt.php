@@ -123,7 +123,25 @@ class MT {
         $this->init_addons();
         $this->configure_from_db();
 
-        $lang = substr(strtolower($this->config('DefaultLanguage')), 0, 2);
+        if (isset($blog_id)) {
+            $db =& $this->db();
+            $blog = $db->fetch_blog($this->blog_id);
+
+            if ($blog) {
+                $ctx =& $this->context();
+                $ctx->stash('blog', $blog);
+            }
+
+            $lang = substr(strtolower(
+                $blog && $blog->blog_language
+                    ? $blog->blog_language
+                    : $mt->config('DefaultLanguage')
+                ), 0, 2);
+        }
+        else {
+            $lang = substr(strtolower($this->config('DefaultLanguage')), 0, 2);
+        }
+
         if (!@include_once("l10n_$lang.php"))
             include_once("l10n_en.php");
 
