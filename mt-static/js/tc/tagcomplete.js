@@ -148,7 +148,7 @@ TC.TagComplete.prototype.keyDown = function( evt )
         this.currentWord = '';
         this.clearCompletions();
     }
-    else if ( (evt.keyCode > 64) && (evt.keyCode < 91) ) { // uppercase A-Z
+    else if ( (evt.keyCode > 64) && (evt.keyCode < 91) || (evt.keyCode == 32) ) { // uppercase A-Z & space
         this.updateWord( String.fromCharCode(evt.keyCode).toLowerCase() );
     }
     else if ( (evt.keyCode > 47) && (evt.keyCode < 58) ) { // 0-9
