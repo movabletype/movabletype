@@ -15,7 +15,7 @@ use Fcntl qw( :DEFAULT :flock );
 
 sub _local {
     ## TBD: does it needed to escape backslashs?
-    return $^O eq 'MSWin32' ? Encode::encode( 'Shift_JIS', $_[0] ) : $_[0];
+    return $^O eq 'MSWin32' ? Encode::encode( 'cp932', $_[0] ) : $_[0];
 }
 
 sub _syserr {
