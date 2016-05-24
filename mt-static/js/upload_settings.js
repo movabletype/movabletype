@@ -1,4 +1,7 @@
 function is_valid_path(path_){
+    if (!path_.match(/^[^<>#"%\{\}\|\\\^\[\]\`\;\/\?\:\@\&\=\+\$\,\\\*]*$/)) {
+        return false;
+    }
     var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
     str = encodeURIComponent(str);
     if (str.indexOf('%') != -1) {
