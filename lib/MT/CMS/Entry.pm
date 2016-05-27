@@ -3007,6 +3007,12 @@ sub update_entry_status {
         my $original   = $entry->clone;
         my $old_status = $entry->status;
         $entry->status($new_status);
+
+        # unpublished_on is cleared when entry is published.
+        if ( $new_status == MT::Entry::RELEASE() && $entry->unpublished_on ) {
+            $entry->unpublished_on(undef);
+        }
+
         $entry->save() and $rebuild_these{$id} = 1;
 
         # Clear cache for site stats dashboard widget.
