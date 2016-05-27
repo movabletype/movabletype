@@ -1609,8 +1609,6 @@ sub save {
             },
             { ( $id ? ( not => { id => 1 } ) : () ) }
         );
-        my $folder;
-        $folder = MT::Folder->load($cat_id) if $cat_id;
         while ( my $p = $dup_it->() ) {
             my ( $dup_path, $org_path );
 
@@ -1618,14 +1616,13 @@ sub save {
                 my $p_folder = $p->folder;
                 $dup_path
                     = defined $p_folder ? $p_folder->publish_path() : '';
+                my $folder;
+                $folder = MT::Folder->load($cat_id) if $cat_id;
                 $org_path = defined $folder ? $folder->publish_path() : '';
             }
             else {
                 $dup_path = $p->permalink;
-                my $url = $blog->site_url || "";
-                $url .= '/' unless $url =~ m!/$!;
-                $org_path = $url
-                    . archive_file_for( $page, $blog, 'Page', $folder );
+                $org_path = $obj->permalink;
             }
 
             return $app->error(
