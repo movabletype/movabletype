@@ -1435,9 +1435,12 @@ sub dialog_select_weblog {
     {
         use MT::Permission;
         $args->{join} = MT::Permission->join_on( 'blog_id',
-            { author_id => $auth->id } );
+            { author_id => $auth->id, permissions => { not => "'comment'" } }
+        );
     }
-    $terms->{class} = 'blog';
+    $terms->{class}     = 'blog';
+    $terms->{parent_id} = $app->blog->id
+        if $app->blog && !$app->blog->is_blog;
 
     my $hasher = sub {
         my ( $obj, $row ) = @_;
