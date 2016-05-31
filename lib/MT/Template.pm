@@ -780,7 +780,8 @@ sub _sync_to_disk {
             or return $tmpl->error(
             MT->translate(
                 "Opening linked file '[_1]' failed: [_2]",
-                $lfile, "$!"
+                $lfile,
+                ( Encode::is_utf8($!) ? "$!" : Encode::decode_utf8($!) )
             )
             );
         print $fh $text;
