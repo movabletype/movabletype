@@ -1173,6 +1173,12 @@ sub _hdlr_asset_thumbnail_url {
             MT->translate( "[_1] must be a number.", $modifier ) )
             if ( defined $arg{$modifier} && $arg{$modifier} !~ /^\d+$/ );
     }
+
+    if ( !$args->{force} ) {
+        delete $arg{Width}  if $arg{Width} > $a->image_width;
+        delete $arg{Height} if $arg{Height} > $a->image_height;
+    }
+
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
     return $url || '';
 }
