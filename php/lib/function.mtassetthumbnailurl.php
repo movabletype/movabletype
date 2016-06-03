@@ -14,10 +14,8 @@ function smarty_function_mtassetthumbnailurl($args, &$ctx) {
 
     if( !isset($args['force']) || !$args['force'] ){
         if ( isset($args['width']) && $args['width'] > $asset->asset_image_width )
-            // $args['width'] = $asset->asset_image_width;
             unset($args['width']);
         if ( isset($args['height']) && $args['height'] > $asset->asset_image_height )
-            // $args['height'] = $asset->asset_image_height;
             unset($args['height']);
     }
 
