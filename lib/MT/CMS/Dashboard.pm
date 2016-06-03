@@ -212,7 +212,9 @@ sub favorite_blogs_widget {
     %args       = ();
     $args{join} = MT::Permission->join_on( 'blog_id',
         { author_id => $user->id, permissions => { not => "'comment'" } } );
-    $terms{class} = 'blog';
+    $terms{class}     = 'blog';
+    $terms{parent_id} = $app->blog->id
+        if $app->blog && !$app->blog->is_blog;
     $count = MT::Blog->count( \%terms, \%args );
     $param->{has_more_blogs} = 1 if $count > 10;
 
@@ -256,7 +258,9 @@ sub recent_blogs_widget {
     my %terms;
     $args{join} = MT::Permission->join_on( 'blog_id',
         { author_id => $user->id, permissions => { not => "'comment'" } } );
-    $terms{class} = 'blog';
+    $terms{class}     = 'blog';
+    $terms{parent_id} = $app->blog->id
+        if $app->blog && !$app->blog->is_blog;
     my $count = MT::Blog->count( \%terms, \%args );
     $param->{has_more_blogs} = 1 if $count > 10;
 }
