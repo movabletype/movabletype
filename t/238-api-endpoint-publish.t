@@ -19,6 +19,26 @@ my $blog = $app->model('blog')->load(1);
 my $start_time
     = MT::Util::ts2iso( $blog, MT::Util::epoch2ts( $blog, time() ), 1 );
 
+# Load templates start
+my $template_class = $app->model('template');
+
+my $blog_individual_tmpl
+    = $template_class->load( { blog_id => 1, type => 'individual' } )
+    or die $template_class->errstr;
+my $blog_individual_tmpl_id = $blog_individual_tmpl->id;
+
+my $blog_index_tmpl
+    = $template_class->load( { blog_id => 1, type => 'index' } )
+    or die $template_class->errstr;
+my $blog_index_tmpl_id = $blog_index_tmpl->id;
+
+my $blog_archive_tmpl
+    = $template_class->load( { blog_id => 1, type => 'archive' } )
+    or die $template_class->errstr;
+my $blog_archive_tmpl_id = $blog_archive_tmpl->id;
+
+# Load templates end
+
 my $suite = suite();
 test_data_api($suite);
 
@@ -113,6 +133,18 @@ sub suite {
                     1, 'MT::App::rebuild_indexes is called once' );
                 delete $data->{mock};
             },
+        },
+        {   path => "/v2/sites/1/templates/$blog_individual_tmpl_id/publish",
+            method => 'POST',
+            result => { status => 'success' },
+        },
+        {   path   => "/v2/sites/1/templates/$blog_index_tmpl_id/publish",
+            method => 'POST',
+            result => { status => 'success' },
+        },
+        {   path   => "/v2/sites/1/templates/$blog_archive_tmpl_id/publish",
+            method => 'POST',
+            result => { status => 'success' },
         },
     ];
 }
