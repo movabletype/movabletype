@@ -330,7 +330,7 @@ class Thumbnail {
                     $target_h = $this->src_w;
                 }
             }
-
+var_dump($thumb_w, $thumb_h);
             # Create dest image
             $this->dest_img = imagecreatetruecolor ( $thumb_w, $thumb_h );
 
