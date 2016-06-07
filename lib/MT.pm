@@ -2689,7 +2689,7 @@ sub new_ua {
     else {
         $ua->ssl_opts(
             verify_hostname => 1,
-            SSL_vesion  => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
+            SSL_version => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
             SSL_ca_file => Mozilla::CA::SSL_ca_file(),
         );
     }
