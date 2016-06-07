@@ -1335,7 +1335,7 @@ use vars qw( @ISA %Lexicon );
 	'The category basename \'[_1]\' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.' => '\'[_1]\'は他のカテゴリと衝突しています。同じ階層にあるカテゴリのベースネームは一意でなければなりません。',
 	'The name \'[_1]\' is too long!' => '\'[_1]\'は長すぎます。',
 	'Category \'[_1]\' created by \'[_2]\'.' => '\'[_2]\'がカテゴリ\'[_1]\'を作成しました。',
-	'Category \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => '\'[_2]\'がカテゴリ\'[_1]\' (ID:[_2])を編集しました。',
+	'Category \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => '\'[_3]\'がカテゴリ\'[_1]\' (ID:[_2])を編集しました。',
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '\'[_3]\'がカテゴリ\'[_1]\'(ID:[_2])を削除しました。',
 	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => '\'[_1]\'は他のカテゴリと衝突しています。同じ階層にあるカテゴリの名前は一意でなければなりません。',
 
