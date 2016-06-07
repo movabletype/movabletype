@@ -18,7 +18,7 @@ use File::Spec;
 use MT;
 
 unless ($new_config) {
-    print "Need configuration file location. cf: convert-db --new==mt-config.cgi.new\n";
+    print "Need configuration file location. cf: convert-db --new=mt-config.cgi.new\n";
     exit;
 }
 
