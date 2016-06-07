@@ -512,7 +512,7 @@ sub cfg_system_general {
         IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo
         TrackRevisions DisableNotificationPings OutboundTrackbackLimit
         OutboundTrackbackDomains AllowPings AllowComments
-        ImageQualityJpeg ImageQualityPng);
+        AutoChangeImageQuality ImageQualityJpeg ImageQualityPng);
     push @readonly_configs, 'BaseSitePath' unless $cfg->HideBaseSitePath;
 
     my @config_warnings;
@@ -598,9 +598,11 @@ sub cfg_system_general {
     $param{sitepath_limit_hidden} = $cfg->HideBaseSitePath;
     $param{preflogging_hidden}    = $cfg->HidePerformanceLoggingSettings;
 
-    $param{image_quality_jpeg} = $cfg->ImageQualityJpeg;
-    $param{image_quality_png}  = $cfg->ImageQualityPng;
-    $param{image_driver}       = lc $cfg->ImageDriver;
+    # Image settings
+    $param{auto_change_image_quality} = $cfg->AutoChangeImageQuality;
+    $param{image_quality_jpeg}        = $cfg->ImageQualityJpeg;
+    $param{image_quality_png}         = $cfg->ImageQualityPng;
+    $param{image_driver}              = lc $cfg->ImageDriver;
 
     $param{saved}        = $app->param('saved');
     $param{screen_class} = "settings-screen system-feedback-settings";
@@ -842,28 +844,49 @@ sub save_cfg_system_general {
     }
 
     # image quality settings
-    my $image_quality_jpeg = $app->param('image_quality_jpeg');
-    if ( defined $image_quality_jpeg && $image_quality_jpeg =~ /^\d{1,3}$/ ) {
+    my $auto_quality_change = $app->param('auto_change_image_quality');
+    if ( defined $auto_quality_change && $auto_quality_change ) {
         push(
             @meta_messages,
             $app->translate(
-                'Image quality(JPEG) is [_1]',
-                $image_quality_jpeg
+                'Changing image quarity is [_1]',
+                $auto_quality_change
             )
         );
-        $cfg->ImageQualityJpeg( $image_quality_jpeg, 1 );
-    }
+	$cfg->AutoChangeImageQuality( $auto_quality_change, 1 );
 
-    my $image_quality_png = $app->param('image_quality_png');
-    if ( defined $image_quality_png && $image_quality_png =~ /^\d$/ ) {
+	my $image_quality_jpeg = $app->param('image_quality_jpeg');
+	if ( defined $image_quality_jpeg && $image_quality_jpeg =~ /^\d{1,3}$/ ) {
+	    push(
+		@meta_messages,
+		$app->translate(
+		    'Image quality(JPEG) is [_1]',
+		    $image_quality_jpeg
+		)
+		);
+	    $cfg->ImageQualityJpeg( $image_quality_jpeg, 1 );
+	}
+
+        my $image_quality_png = $app->param('image_quality_png');
+        if ( defined $image_quality_png && $image_quality_png =~ /^\d$/ ) {
+            push(
+                @meta_messages,
+                $app->translate(
+                    'Image quality(PNG) is [_1]',
+                    $image_quality_png
+                ),
+            );
+            $cfg->ImageQualityPng( $image_quality_png, 1 );
+        }
+    }
+    else {
         push(
             @meta_messages,
             $app->translate(
-                'Image quality(PNG) is [_1]',
-                $image_quality_png
-            ),
+                'Changing image quarity is [_1]', 0
+            )
         );
-        $cfg->ImageQualityPng( $image_quality_png, 1 );
+	$cfg->AutoChangeImageQuality( 0, 1 );
     }
 
     # throw the messages in the activity log
@@ -2861,7 +2884,8 @@ sub restore_directory {
     require MT::BackupRestore;
     my ( $deferred, $blogs, $assets )
         = MT::BackupRestore->restore_directory( $dir, \@errors,
-        \%error_assets, $schema_version, $overwrite_template,
+        \%error_assets,
+        $schema_version, $overwrite_template,
         sub { _progress( $app, @_ ); } );
 
     if ( scalar @errors ) {
