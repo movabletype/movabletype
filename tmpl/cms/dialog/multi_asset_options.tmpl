@@ -127,6 +127,22 @@
     $form.submit();
     return false;
   });
+
+  jQuery('input[name="thumb_width"]').keypress(function(event){
+    var key = event.charCode || event.keyCode;
+    if (( key == null) || ( key == 0 ) || ( key == 8 ) || 
+        ( key == 9 ) || ( key == 13 ) || ( key == 27 ))
+        return true;
+    if (key > 60000) // handles range of special keys such as arrow keys
+        return true;
+    if (event.ctrlKey || event.altKey)
+        return true;
+    if ((key < 48) || (key > 57)){
+      event.preventDefault
+      return false;
+    }
+    return true;
+  });
 </mt:setvarblock>
 
 <script type="text/javascript">
