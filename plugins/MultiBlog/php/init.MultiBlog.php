@@ -111,7 +111,7 @@ function multiblog_MTInclude($args, &$_smarty_tpl) {
     }
     global $multiblog_orig_handlers;
     $fn = $multiblog_orig_handlers['mtinclude'];
-    $result = $fn($args, $_smarty_tpl);
+    $result = call_user_func_array($fn, array($args, &$_smarty_tpl));
     return $result;
 }
 
@@ -153,7 +153,7 @@ function multiblog_function_wrapper($tag, $args, &$_smarty_tpl) {
     # Call original tag handler with new multiblog args
     global $multiblog_orig_handlers;
     $fn = $multiblog_orig_handlers[$tag];
-    $result = $fn($args, $_smarty_tpl);
+    $result = call_user_func_array($fn, array($args, &$_smarty_tpl));
 
     # Restore localized variables
     $ctx->restore($localvars);
@@ -217,7 +217,7 @@ function multiblog_block_wrapper($args, $content, &$_smarty_tpl, &$repeat) {
     # Call original tag handler with new multiblog args
     global $multiblog_orig_handlers;
     $fn = $multiblog_orig_handlers[$tag];
-    $result = $fn($args, $content, $_smarty_tpl, $repeat);
+    $result = call_user_func_array($fn, array($args, $content, &$_smarty_tpl, &$repeat));
 
     # Restore localized variables if last loop
     if (!$repeat)

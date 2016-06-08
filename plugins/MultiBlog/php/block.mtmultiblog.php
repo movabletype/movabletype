@@ -6,7 +6,7 @@
 # $Id$
 
 if (MULTIBLOG_ENABLED) {
-function smarty_block_mtmultiblog(&$args, $content, &$ctx, &$repeat) {
+function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
 
     if (!isset($content)) {
 

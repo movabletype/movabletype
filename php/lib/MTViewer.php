@@ -717,7 +717,7 @@ EOT;
             if ($hdlr) {
                 $this->_tag_stack[] = array("mt$tag", $args);
                 $repeat = true;
-                $hdlr($args, NULL, $this, $repeat);
+                call_user_func_array($hdlr, array($args, NULL, &$this, &$repeat));
                 if ($repeat) {
                     $content = 'true';
                     $repeat = false;
@@ -761,11 +761,11 @@ EOT;
                     $new_varstack = array();
                     $this->varstack =& $new_varstack;
                     $repeat = true;
-                    $hdlr($args, NULL, $this, $repeat);
+                    call_user_func_array($hdlr, array($args, NULL, &$this, &$repeat));
                     if ($repeat) {
                         $content = 'true';
                         $repeat = false;
-                        $content = $hdlr($args, $content, $this, $repeat);
+                        $content = call_user_func_array($hdlr, array($args, $content, &$this, &$repeat));
                         $result = isset($content) && ($content === 'true');
                     }
                     else {
@@ -779,7 +779,7 @@ EOT;
                     return $result;
                 }
                 $this->_tag_stack[] = array("mt$tag", $args);
-                $content = $hdlr($args, $this);
+                $content = call_user_func_array($hdlr, array($args, &$this));
                 foreach ($args as $k => $v) {
                     if (array_key_exists($k, $this->global_attr)) {
                         $fnmod = 'smarty_modifier_' . $k;
@@ -888,7 +888,7 @@ EOT;
         }
 
         if(is_callable($fntag)){
-            $result = $fntag($args, $content, $ctx, $repeat);
+            $result = call_user_func_array($fntag, array($args, $content, &$ctx, &$repeat));
         }
 
         $variables = array('conditional','elseif_conditional');
@@ -906,7 +906,7 @@ EOT;
                 if (!function_exists($fnmod))
                     $this->load_modifier($k);
                 if (function_exists($fnmod))
-                    $result = $fnmod($result, $v);
+                    $result = call_user_func_array($fnmod, array($result, $v));
             }
         }
 
@@ -926,7 +926,7 @@ EOT;
         $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
         $fntag = 'smarty_function_mt' . $tag;
         if(is_callable($fntag)){
-            $result = $fntag($args, $ctx);
+            $result = call_user_func_array($fntag, array($args, &$ctx));
         }
 
         foreach ($args as $k => $v) {
@@ -935,7 +935,7 @@ EOT;
                 if (!function_exists($fnmod))
                     $this->load_modifier($k);
                 if (function_exists($fnmod))
-                    $result = $fnmod($result, $v);
+                    $result = call_user_func_array($fnmod, array($result, $v));
             }
         }
 
