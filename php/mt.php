@@ -49,8 +49,7 @@ class MT {
     protected $blog_id;
     protected $db;
     protected $config;
-    // protected $debugging = false;
-    protected $debugging = true;
+    protected $debugging = false;
     protected $caching = false;
     protected $conditional = false;
     protected $log = array();
