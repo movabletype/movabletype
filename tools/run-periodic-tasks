@@ -69,7 +69,7 @@ if ( defined(MT->config('RPTProcessCap')) && $proc_process_table ) {
     }
 }
 
-if ( MT->config('RPTFreeMemoryLimit') ) {vc-anno
+if ( MT->config('RPTFreeMemoryLimit') ) {
     my $limit = MT->config('RPTFreeMemoryLimit');
     if ( $limit and ! MT::TheSchwartz::_has_enough_memory($limit) ) {
         die
