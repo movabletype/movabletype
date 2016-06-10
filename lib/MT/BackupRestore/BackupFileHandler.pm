@@ -519,7 +519,7 @@ sub end_element {
                     $self->{callback}->(
                         MT->translate(
                             "Tag '[_1]' exists in the system.",
-                            $obj->name
+                            MT::Util::encode_html( $obj->name )
                         )
                     );
                 }
