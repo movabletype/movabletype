@@ -526,7 +526,7 @@ sub rebuild_deleted_entry {
             }
             else {
                 if ( $app->config('RebuildAtDelete') ) {
-                    if ( $archiver->author_based() && $entry->author_id ) {
+                    if ( $archiver->author_based() && $entry->author ) {
                         if ( $archiver->date_based() ) {
                             $rebuild_recipe{$at}{ $entry->author->id }
                                 { $start . $end }{'Start'} = $start;
