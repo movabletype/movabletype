@@ -721,7 +721,7 @@ EOT;
                 if ($repeat) {
                     $content = 'true';
                     $repeat = false;
-                    $content = $hdlr($args, $content, $this, $repeat);
+                    $content = call_user_func_array($hdlr, array($args, $content, &$this, &$repeat));
                     $result = isset($content) && ($content === 'true');
                 } else {
                     $result = false;
