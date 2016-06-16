@@ -103,11 +103,19 @@
 
   jQuery('button.primary').click(function(){
     var options = [];
+    var errors = 0;
     jQuery('#asset_details').find('div.asset-detail-panel').each(function() {
       var $this = jQuery(this);
       var id = $this.attr('data-asset-id');
       var opts = {};
       opts.id = id;
+      if(jQuery(this).find('[name="thumb"]').prop('checked')){
+        if ( !jQuery(this).find('[name="thumb_width"]').mtValidate('default')) {
+          // each continue
+          errors = 1;
+          return true;
+        }
+      }
       jQuery(this).find('input').each(function() {
         if (jQuery(this).prop('type') === 'checkbox' || jQuery(this).prop('type') === 'radio') {
          if(jQuery(this).prop('checked')) {
@@ -121,10 +129,12 @@
       options.push(opts);
     });
 
-    var json = JSON.stringify(options);
-    var $form = jQuery('#asset-detail-form');
-    $form.find('[name="prefs_json"]').val(json);
-    $form.submit();
+    if( errors == 0 ){
+      var json = JSON.stringify(options);
+      var $form = jQuery('#asset-detail-form');
+      $form.find('[name="prefs_json"]').val(json);
+      $form.submit();
+    }
     return false;
   });
 

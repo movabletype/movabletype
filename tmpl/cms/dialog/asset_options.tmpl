@@ -54,6 +54,11 @@
     TC.attachLoadEvent( init );
 
     function presubmit(f) {
+        if(jQuery('[name="thumb"]').prop('checked')){
+          if ( !jQuery('[name="thumb_width"]').mtValidate('default')) {
+            return false;
+          }
+        }
         var mode = 'complete_upload';
     <mt:if name="entry_insert">
         mode = 'asset_insert';
