@@ -11,6 +11,9 @@ use MT::Test::DataAPI;
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
+use MT::FileMgr;
+my $fmgr = MT::FileMgr->new('Local');
+
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
@@ -136,15 +139,60 @@ sub suite {
         },
         {   path => "/v2/sites/1/templates/$blog_individual_tmpl_id/publish",
             method => 'POST',
-            result => { status => 'success' },
+            setup  => sub {
+                my ($data) = @_;
+
+                my $fi = $app->model('fileinfo')
+                    ->load( { template_id => $blog_individual_tmpl_id } );
+                $fmgr->delete( $fi->file_path );
+
+                $data->{template_file_path} = $fi->file_path;
+            },
+            result   => { status => 'success' },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $file_path = $data->{template_file_path};
+                ok( $fmgr->exists($file_path), "'$file_path' exists." );
+            },
         },
         {   path   => "/v2/sites/1/templates/$blog_index_tmpl_id/publish",
             method => 'POST',
-            result => { status => 'success' },
+            setup  => sub {
+                my ($data) = @_;
+
+                my $fi = $app->model('fileinfo')
+                    ->load( { template_id => $blog_index_tmpl_id } );
+                $fmgr->delete( $fi->file_path );
+
+                $data->{template_file_path} = $fi->file_path;
+            },
+            result   => { status => 'success' },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $file_path = $data->{template_file_path};
+                ok( $fmgr->exists($file_path), "'$file_path' exists." );
+            },
         },
         {   path   => "/v2/sites/1/templates/$blog_archive_tmpl_id/publish",
             method => 'POST',
-            result => { status => 'success' },
+            setup  => sub {
+                my ($data) = @_;
+
+                my $fi = $app->model('fileinfo')
+                    ->load( { template_id => $blog_archive_tmpl_id } );
+                $fmgr->delete( $fi->file_path );
+
+                $data->{template_file_path} = $fi->file_path;
+            },
+            result   => { status => 'success' },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $file_path = $data->{template_file_path};
+                ok( $fmgr->exists($file_path), "'$file_path' exists." );
+            },
         },
     ];
 }

@@ -965,6 +965,8 @@ sub rebuild_pages {
         }
     }
 
+    return if $q->param('no_rebuilding_tmpl');
+
     # Rebuild done--now form the continuation.
     unless ($done) {
         my $dynamic   = 0;
@@ -1260,8 +1262,13 @@ sub start_rebuild_pages {
     $param{is_full_screen} = ( $param{is_entry} )
         || $q->param('single_template');
     $param{page_titles} = [ { bc_name => 'Rebuilding' } ];
-    $app->load_tmpl( 'rebuilding.tmpl', \%param )
-        unless $q->param('no_rebuilding_tmpl');
+    if ( $q->param('no_rebuilding_tmpl') ) {
+        $q->param( 'total', $total );
+        MT::CMS::Blog::rebuild_pages($app);
+    }
+    else {
+        $app->load_tmpl( 'rebuilding.tmpl', \%param )
+    }
 }
 
 sub _create_build_order {
