@@ -1507,6 +1507,13 @@ function doApplyFilter(filter, no_render) {
   itemValues();
   if ( !no_render )
     renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
+
+  // Remove filter_key
+  var return_args = jQuery('input[name=return_args]').val();
+  if ( return_args.match(/&filter_key=[^&]*/) ) {
+    var new_return_args = return_args.replace( /&filter_key=[^&]*/, "" );
+    jQuery('input[name=return_args]').val(new_return_args);
+  }
 }
 
 jQuery('.action_selector').change(function() {
