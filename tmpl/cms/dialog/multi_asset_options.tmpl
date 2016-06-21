@@ -153,6 +153,14 @@
     }
     return true;
   });
+  jQuery.mtValidateAddRules({
+      '[name="thumb_width"]': function ($e) {
+        return /^\d+$/.test($e.val()) && ($e.val() > 0);
+      }
+  });
+  jQuery.mtValidateAddMessages({
+      '[name="thumb_width"]': '<__trans phrase="This field must be a positive integer.">'
+  });
 </mt:setvarblock>
 
 <script type="text/javascript">
