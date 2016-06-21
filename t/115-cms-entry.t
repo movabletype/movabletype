@@ -830,12 +830,42 @@ subtest 'The cache of new entry check' => sub {
             category_ids     => $website_cat->id . ',' . $website_cat2->id,
         },
     );
+    my $out = delete $app->{__test_output};
 
     is_deeply(
         [ map { $_->id } @$categories ],
         [ $website_cat2->id, $website_cat->id ],
         'A new entry has category "Bar" and category "Foo" in cache.'
     );
+};
+
+subtest 'Save prefs check' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'entry',
+            blog_id          => $website->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    my $out = delete $app->{__test_output};
+    my ( $headers, $body ) = split /^\s*$/m, $out;
+    my $json    = MT::Util::from_json($body);
+    my %headers = map {
+        my ( $k, $v ) = split /\s*:\s*/, $_, 2;
+        $v =~ s/(\r\n|\r|\n)\z//;
+        lc $k => $v
+        }
+        split /\n/, $headers;
+
+    ok( $headers{'content-type'} =~ m/application\/json/,
+        'Content-Type is application/json' );
+    ok( $json->{result}{success}, 'Json result is success' );
 };
 
 done_testing();

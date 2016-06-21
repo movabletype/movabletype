@@ -2405,8 +2405,7 @@ sub save_entry_prefs {
         or return $app->error(
         $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
         );
-    $app->send_http_header("text/json");
-    return "true";
+    return $app->json_result( { success => 1 } );
 }
 
 sub publish_entries {
