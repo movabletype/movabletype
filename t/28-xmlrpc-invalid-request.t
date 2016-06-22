@@ -43,17 +43,22 @@ my $logo
     = q{R0lGODlhlgAZANUAAP////Ly8uTk5NfX18nJyb29vbu7u62trZ6eno+Pj1iZvVKQsoCAgE6IqHx8fEmAnnFxcUV4lGtra0BwimFhYTtnf1lZWTZfdVBQUDFWaitMXz8/PydDUyA5SC0tLRswPBYlLxkZGQ8bIggPEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAAHAP8ALAAAAACWABkAAAb/QAjBQCoaMQSC0QiaKJ6LzGhJIhyoVQSWQcBgi8lwIkTdEDZfkjCchHzZbC3JfF0eCOQign3wLOFJRgWDFgUkBRYJAAAUVAaLVBxPk08PU0YHAH5GFABuVAIARF8ABAkIA6VUGABeX4oJsbGuVLKZB7GfJI+NRQwACX8CsQQAAZskpbKxS4YOBRIFDooBSkYeiwBLH08cSxEKD0udwUYGAXlGEACpyEvA5ppLrLS12mlf9FghAQJkHgEGUAlUZF25ZAexGILGUBECeXoAZPoWjgqIbksECLgmEcsAARsAyKECL6I7fa/u4VvV6ss6LcXQ/LFGAtvBkl8WHjqkCFsd/34GFBkZ8eQDlgoKKixR5OqXzCMAGJAYgA6LRAwYElRjWW9pK6xY0+Vr+QaYSCwEPTzSdRXs0zRCH5H5lVUltwlfiEZY4rOIRiznyKzTZSTbogBdUWJRZJhsGsVUAALwh7ZxnSKNVa0UyirYX6FFRChYcGmJpAUD0bGSyrdjkYBWD2ClkKoeZK9gw668veRXr4HDElBwl0y225UkQGvs5AZ0kQUKLlAZAV2BUXWeMoklkWlAmACOMR8MIWpeeK/IueLjXYWm1YTpQa8LUNU5iQxPQCzB/wTvkmquGcHPAMsocpl4AmpWBHvJqZQeCQxCeB4Y7pEEH3Kg8XNWg1Q8EP9OBiDyN4k3mCzS1S+EVQERZsbR5ol5DOSWDlO5vYVFhOwRRIpxYBFnjxEPbWJfERdQYiRGRYS0EShLLmHQO4YFAB8rjdHCmGEVqvfYhO3hkxlOX3hASwhPifmFCBpU0MCRT0ixoI0QwhnnPLl9EUJuuhUhJp5yCojBdkvcCegcfUKIJwY+PqioCBdUR8kCF1yn6KSUVmrppZheKoKHbIajQWmZhirqqKReOgKnnTagX6mstupqqRd1CgWor9Zq661fICVrUrj26qutsU4S6QcfdPAErb8mq6ylaz7RABVFSrrstNQi50RR0y0gbbXcdkuCBk/shQUHInhrLrei8XoZ7rrrFmkdu/B664S48dY7LQcPkGjvvksEAQA7};
 
 my @apis = map {
-    my $valid = +{
-        api    => $_->{api},
-        params => $_->{base_params},
-        result => sub {
-            my ($som) = @_;
-            ok( $som->result );
-            ok( !$som->fault );
-            ok( !$som->faultcode );
-        },
-    };
-    +( $valid, $_->{generate_api}->($_) );
+    my @api;
+    if ( !$_->{no_valid} ) {
+        my $valid = +{
+            api    => $_->{api},
+            params => $_->{base_params},
+            result => sub {
+                my ($som) = @_;
+                ok( $som->result );
+                ok( !$som->fault );
+                ok( !$som->faultcode );
+            },
+        };
+        push @api, $valid;
+    }
+    push @api, $_->{generate_api}->($_);
+    +@api;
 } suite();
 
 sub suite {
@@ -117,6 +122,14 @@ sub suite {
             ],
             generate_api => \&_meta_weblog_post,
         },
+        +(  map {
+                +{  api         => $_,
+                    base_params => [ ( blog_id => { op => 1, value => 1 } ) ],
+                    generate_api => \&_hash_blog_id_post,
+                    no_valid     => 1,
+                };
+            } qw/ blogger._new_entry blogger._edit_entry blogger._get_entries blogger._delete_entry blogger._get_entry /,
+        ),
     );
 }
 
@@ -223,6 +236,25 @@ sub _meta_weblog_post {
     }
 
     return @invalid_api;
+}
+
+sub _hash_blog_id_post {
+    my ($suite) = @_;
+    my $params = $suite->{base_params};
+
+    my $api = +{
+        api    => $suite->{api},
+        params => $params,
+        result => sub {
+            my ($som) = @_;
+            ok( !$som->result );
+            ok( $som->fault );
+            is( $som->faultstring, 'Invalid parameter' );
+            is( $som->faultcode,   1 );
+        },
+    };
+
+    return $api;
 }
 
 my $uri = new URI();
