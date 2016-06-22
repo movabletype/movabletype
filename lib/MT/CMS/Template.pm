@@ -2617,6 +2617,7 @@ sub refresh_individual_templates {
                     $app->errstr
                 )
                 );
+            $tmpl->modified_on($ts);
             $tmpl->save;
             $app->run_callbacks( 'cms_post_save.template',
                 $app, $tmpl, $orig_obj );
