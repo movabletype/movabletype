@@ -1606,7 +1606,15 @@ sub gather_changed_cols {
     MT::Revisable::gather_changed_cols( $obj, @_ );
     my $changed_cols = $obj->{changed_revisioned_cols} || [];
 
-    return 1 unless $obj->id;
+    # When a entry is saved at first and 'unpublished_on' is undef,
+    # 'unpublished_on' is added to 'changed_revisioned_cols'.
+    unless ( $obj->id ) {
+        unless ( $obj->unpublished_on ) {
+            push @$changed_cols, 'unpublished_on';
+            $obj->{changed_revisioned_cols} = $changed_cols;
+        }
+        return 1;
+    }
 
     # there is a changed col; no need to check something else
     return 1 if @$changed_cols;
@@ -2027,6 +2035,26 @@ sub update_assets {
     }
 
     return \@attaching_assets;
+}
+
+sub set_values {
+    my $obj = shift;
+    my ( $values, $args ) = @_;
+
+    $obj->SUPER::set_values(@_);
+
+    # If 'unpublished_on' in revision data is undef, set value.
+    return unless grep { $_ eq 'unpublished_on' } keys %$values;
+    return if defined $values->{'unpublished_on'};
+    if (   $args
+        && exists( $args->{no_changed_flag} )
+        && $args->{no_changed_flag} )
+    {
+        $obj->column( 'unpublished_on', $values->{'unpublished_on'}, $args );
+    }
+    else {
+        $obj->unpublished_on( $values->{'unpublished_on'}, $args );
+    }
 }
 
 #trans('Draft')
