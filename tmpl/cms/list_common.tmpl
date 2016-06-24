@@ -581,6 +581,7 @@ function renameFilter(index, fid, name) {
     complete: function() {
       if ( fid == current_id ) {
           jQuery('#opener').text(name);
+          jQuery('#filter_name').val(name);
       }
       renderFilterList();
     },
