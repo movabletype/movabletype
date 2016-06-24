@@ -1566,8 +1566,16 @@ MT.App = new Class( App, {
             var type = element.getAttribute( "type" );
             type = type ? type.toLowerCase() : "";
             if ( tagName == "button" || 
-                (tagName == "input" && (type == "button" || type == "submit" || type == "image")) )
+                (tagName == "input" && (type == "button" || type == "submit" || type == "image")) ){
                 element.disabled = disable;
+                if( this.eventTarget === element && element.getAttribute('value') ) {
+                    var hiddenelm = document.createElement('input');
+                    hiddenelm.type = 'hidden';
+                    hiddenelm.name = element.getAttribute('name');
+                    hiddenelm.value = element.getAttribute('value');
+                    form.appendChild(hiddenelm);
+                }
+            }
         }
     },
 
@@ -1589,6 +1597,7 @@ MT.App = new Class( App, {
 
     eventClick: function( event ) {
         var command = this.getMouseEventCommand( event );
+        this.eventTarget = event.target;
 
         switch( command ) {
             
