@@ -336,6 +336,21 @@ sub _new_entry {
     my %param = @_;
     my ( $blog_id, $user, $pass, $item, $publish )
         = @param{qw( blog_id user pass item publish )};
+
+    _validate_params( [ $blog_id, $user, $pass, $publish ] ) or return;
+    my $values;
+    foreach my $k ( keys %$item ) {
+        if ( 'categories' eq $k || 'mt_tb_ping_urls' eq $k ) {
+
+            # XMLRPC supports categories array and mt_tb_ping_urls array
+            _validate_params( \@{ $item->{$k} } ) or return;
+        }
+        else {
+            push @$values, $item->{$k};
+        }
+    }
+    _validate_params( \@$values ) or return;
+
     my $obj_type = $param{page} ? 'page' : 'entry';
     die _fault( MT->translate("No blog_id") ) unless $blog_id;
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
@@ -554,6 +569,21 @@ sub _edit_entry {
     my %param = @_;
     my ( $blog_id, $entry_id, $user, $pass, $item, $publish )
         = @param{qw( blog_id entry_id user pass item publish )};
+
+    _validate_params( [ $blog_id, $entry_id, $user, $pass, $publish ] ) or return;
+    my $values;
+    foreach my $k ( keys %$item ) {
+        if ( 'categories' eq $k || 'mt_tb_ping_urls' eq $k ) {
+
+            # XMLRPC supports categories array and mt_tb_ping_urls array
+            _validate_params( \@{ $item->{$k} } ) or return;
+        }
+        else {
+            push @$values, $item->{$k};
+        }
+    }
+    _validate_params( \@$values ) or return;
+
     my $obj_type = $param{page} ? 'page' : 'entry';
     die _fault( MT->translate("No entry_id") ) unless $entry_id;
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
@@ -838,6 +868,9 @@ sub _get_entries {
     my %param = @_;
     my ( $blog_id, $user, $pass, $num, $titles_only )
         = @param{qw( blog_id user pass num titles_only )};
+
+    _validate_params( [ $blog_id, $user, $pass, $num, $titles_only ] ) or return;
+
     my $obj_type = $param{page} ? 'page' : 'entry';
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my ( $author, $perms ) = $class->_login( $user, $pass, $blog_id );
@@ -956,6 +989,9 @@ sub _delete_entry {
     my %param = @_;
     my ( $blog_id, $entry_id, $user, $pass, $publish )
         = @param{qw( blog_id entry_id user pass publish )};
+
+    _validate_params( [ $blog_id, $entry_id, $user, $pass, $publish ] ) or return;
+
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my $obj_type = $param{page} ? 'page' : 'entry';
     my $entry    = MT->model($obj_type)->load($entry_id)
@@ -1050,6 +1086,9 @@ sub _get_entry {
     my %param = @_;
     my ( $blog_id, $entry_id, $user, $pass )
         = @param{qw( blog_id entry_id user pass )};
+
+    _validate_params( [ $blog_id, $entry_id, $user, $pass ] ) or return;
+
     my $obj_type = $param{page} ? 'page' : 'entry';
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my $entry = MT->model($obj_type)->load($entry_id)
