@@ -741,16 +741,14 @@ BEGIN {
                         push @{ $load_args->{joins} },
                             MT->model('author')->join_on(
                             undef,
-                            [   [   {   id => \"= $colname",
-                                        %$name_query,
-                                    },
+                            [   { id => \"= $colname" },
+                                '-and',
+                                [   {%$name_query},
                                     (   $args->{'option'} eq 'not_contains'
                                         ? '-and'
                                         : '-or'
                                     ),
-                                    {   id => \"= $colname",
-                                        %$nick_query,
-                                    },
+                                    {%$nick_query},
                                 ]
                             ],
                             {}
