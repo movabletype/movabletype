@@ -854,30 +854,6 @@ sub save_cfg_system_general {
             )
         );
 	$cfg->AutoChangeImageQuality( $auto_quality_change, 1 );
-
-	my $image_quality_jpeg = $app->param('image_quality_jpeg');
-	if ( defined $image_quality_jpeg && $image_quality_jpeg =~ /^\d{1,3}$/ ) {
-	    push(
-		@meta_messages,
-		$app->translate(
-		    'Image quality(JPEG) is [_1]',
-		    $image_quality_jpeg
-		)
-		);
-	    $cfg->ImageQualityJpeg( $image_quality_jpeg, 1 );
-	}
-
-        my $image_quality_png = $app->param('image_quality_png');
-        if ( defined $image_quality_png && $image_quality_png =~ /^\d$/ ) {
-            push(
-                @meta_messages,
-                $app->translate(
-                    'Image quality(PNG) is [_1]',
-                    $image_quality_png
-                ),
-            );
-            $cfg->ImageQualityPng( $image_quality_png, 1 );
-        }
     }
     else {
         push(
@@ -887,6 +863,30 @@ sub save_cfg_system_general {
             )
         );
 	$cfg->AutoChangeImageQuality( 0, 1 );
+    }
+
+    my $image_quality_jpeg = $app->param('image_quality_jpeg');
+    if ( defined $image_quality_jpeg && $image_quality_jpeg =~ /^\d{1,3}$/ ) {
+	push(
+	    @meta_messages,
+	    $app->translate(
+		'Image quality(JPEG) is [_1]',
+		$image_quality_jpeg
+	    )
+	    );
+	$cfg->ImageQualityJpeg( $image_quality_jpeg, 1 );
+    }
+
+    my $image_quality_png = $app->param('image_quality_png');
+    if ( defined $image_quality_png && $image_quality_png =~ /^\d$/ ) {
+	push(
+	    @meta_messages,
+	    $app->translate(
+		'Image quality(PNG) is [_1]',
+		$image_quality_png
+	    ),
+            );
+	$cfg->ImageQualityPng( $image_quality_png, 1 );
     }
 
     # throw the messages in the activity log
