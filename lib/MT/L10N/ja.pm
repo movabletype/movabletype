@@ -1778,7 +1778,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Core.pm
 	'This is often \'localhost\'.' => '通常「localhost」のままで構いません。',
 	'The physical file path for your SQLite database. ' => 'SQLiteのデータベースファイルのパス',
-	'[_1] in [_2]: [_3]' => '[_2]に \'[_3]\' を含む[_1]',
+	'[_1] in [_2]: [_3]' => '[_2]が \'[_3]\' である[_1]',
 	'option is required' => '条件は必須です。',
 	'Days must be a number.' => '日数には数値を指定してください。',
 	'Invalid date.' => '無効な日付フォーマットです。',
