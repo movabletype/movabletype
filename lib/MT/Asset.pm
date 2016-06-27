@@ -78,7 +78,7 @@ sub list_props {
                 for my $obj (@$objs) {
                     my $id = $obj->id;
                     my $label
-                        = MT::Util::remove_html( $obj->label
+                        = MT::Util::encode_html( $obj->label
                             || $obj->file_name
                             || 'Untitled' );
                     my $blog_id
