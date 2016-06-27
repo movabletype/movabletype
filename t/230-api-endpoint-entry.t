@@ -1133,8 +1133,6 @@ __BODY__
                     status => 'Draft',
                     text   => 'bar',
                 },
-                authored_on_date => '2015-01-01',
-                authored_on_time => '10:00:00',
             },
             method   => 'POST',
             complete => sub {
@@ -1152,6 +1150,22 @@ __BODY__
                     status => 'Draft',
                 },
                 raw              => '1',
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview entry make success' );
+            },
+        },
+        {    # normal tests - authored_on
+            path   => '/v2/sites/1/entries/preview',
+            params => {
+                entry => {
+                    title  => 'foo',
+                    status => 'Draft',
+                    text   => 'bar',
+                },
                 authored_on_date => '2015-01-01',
                 authored_on_time => '10:00:00',
             },
@@ -1162,7 +1176,6 @@ __BODY__
                 is( $obj->{status}, 'success', 'Preview entry make success' );
             },
         },
-
     ];
 }
 
