@@ -3199,6 +3199,9 @@ sub PerformanceLoggingPath {
             'logs' );
     }
 
+    return $path
+        unless $cfg->get_internal('PerformanceLogging');
+
     # If the $path is not a writeable directory, we need to
     # do some work to see if we can create it
     if ( !( -d $path and -w $path ) ) {
