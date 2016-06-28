@@ -378,6 +378,7 @@ function validate (f) {
         '.png-quality': '<__trans phrase="You must set an integer value between 0 and 9.", escape="singlequotes">'
     });
     jQuery('#sys_conf').submit( function () {
+        jQuery('#auto-change-image-quality').removeAttr('disabled'); 
         if ( !jQuery(this).find('input:not(:disabled), select:not(:disabled)').filter('input:visible, select:visible').mtValidate('simple') ) return false;
     });
 

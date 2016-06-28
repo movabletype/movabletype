@@ -845,15 +845,14 @@ sub save_cfg_system_general {
 
     # image quality settings
     my $auto_quality_change = $app->param('auto_change_image_quality');
-    if ( defined $auto_quality_change && $auto_quality_change ) {
+    if ( $auto_quality_change ) {
         push(
             @meta_messages,
             $app->translate(
-                'Changing image quarity is [_1]',
-                $auto_quality_change
+                'Changing image quarity is [_1]', 1
             )
         );
-	$cfg->AutoChangeImageQuality( $auto_quality_change, 1 );
+	$cfg->AutoChangeImageQuality( 1, 1 );
     }
     else {
         push(
