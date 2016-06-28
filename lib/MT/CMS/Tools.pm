@@ -1518,12 +1518,10 @@ sub backup_download {
                 . $newfilename
                 . '"' );
         $app->send_http_header($contenttype);
-        my $data;
         while ( read $fh, my ($chunk), 8192 ) {
-            $data .= $chunk;
+            $app->print($chunk);
         }
         close $fh;
-        $app->print($data);
         $app->log(
             {   message => $app->translate(
                     '[_1] successfully downloaded backup file ([_2])',
