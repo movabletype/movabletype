@@ -1568,7 +1568,7 @@ MT.App = new Class( App, {
             if ( tagName == "button" || 
                 (tagName == "input" && (type == "button" || type == "submit" || type == "image")) ){
                 element.disabled = disable;
-                if( this.eventTarget === element && element.getAttribute('value') ) {
+                if( this.eventTarget === element && form.getAttribute( "mt:once" ) && element.getAttribute('value') ) {
                     var hiddenelm = document.createElement('input');
                     hiddenelm.type = 'hidden';
                     hiddenelm.name = element.getAttribute('name');
