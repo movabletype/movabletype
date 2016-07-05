@@ -226,7 +226,7 @@ TC.TagComplete.prototype.lookForCompletions = function()
 
 TC.TagComplete.prototype.onDivMouseDown = function()
 {
-    this.tagComplete.handleTagComplete(this.innerHTML);
+    this.tagComplete.handleTagComplete(this.textContent);
 }
 
 TC.TagComplete.prototype.onDivMouseOver = function()
