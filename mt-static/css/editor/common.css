@@ -86,7 +86,7 @@ Some styles for textarea are used in no Rich Text mode (Rich Text mode uses ifra
     background-color: #ffffff;
     vertical-align: top;
     font-size: 14px;
-    white-space: pre;
+    white-space: pre-wrap;
     font-family: monospace;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
