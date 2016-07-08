@@ -295,7 +295,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
 
             // extra newline is eaten by PHP but will cause any actual
             // newline from user to be preserved:
-            if($open != '/' && $fn_tag){
+            if($open != '/' && ( $fn_tag || $conditional ) ){
                 $smart_source .= "\n";
             }
         }
