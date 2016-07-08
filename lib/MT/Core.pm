@@ -2113,6 +2113,7 @@ BEGIN {
 
             'RestrictedPSGIApp' => { type    => 'ARRAY' },
             'XFrameOptions'     => { default => 'SAMEORIGIN' },
+            'DynamicCacheTTL'   => { default => 0 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2487,7 +2488,43 @@ sub load_core_tasks {
                 $app->model('fileinfo')->cleanup;
             }
         },
+        'CleanCompiledTemplateFiles' => {
+            label     => 'Remove Compiled Template Files',
+            frequency => 60 * 60,                            # once per hour
+            code      => sub {
+                MT::Core->remove_compiled_template_files;
+            }
+        },
     };
+}
+
+sub remove_compiled_template_files {
+    my $ttl = MT->config->DynamicCacheTTL;
+    return '' if !$ttl;
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+
+    my @compile_dirs;
+
+    # Load all website
+    my $iter = MT->model('blog')->load_iter( { class => '*' } );
+    while ( my $blog = $iter->() ) {
+        push @compile_dirs,
+            File::Spec->catdir( $blog->site_path, 'templates_c' );
+    }
+
+    foreach my $dir (@compile_dirs) {
+        my $compile_glob = File::Spec->catfile( $dir, "*.php" );
+        my @files = glob($compile_glob);
+        foreach my $file (@files) {
+            my $mod_time = $fmgr->file_mod_time($file);
+            if ( $ttl < time - $mod_time ) {
+                $fmgr->delete($file);
+            }
+        }
+    }
+
 }
 
 sub remove_temporary_files {
