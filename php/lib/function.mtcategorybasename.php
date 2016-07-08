@@ -7,8 +7,21 @@
 
 function smarty_function_mtcategorybasename($args, &$ctx) {
     require_once("MTUtil.php");
-    $cat = get_category_context($ctx);
-    if (!$cat) return '';
+
+    $cat = get_category_context($ctx, 'category', true);
+    if( !$cat ) {
+        if( isset($args['default']) )
+            return $args['default'];
+
+        if($ctx->stash('entry')){
+            return '';
+        } else {
+            $tag = $ctx->this_tag();
+            return $ctx->error("$tag must be used in a category context");
+        }
+
+    }
+
     $basename = $cat->category_basename;
     if ($sep = $args['separator']) {
         if ($sep == '-') {

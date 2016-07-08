@@ -857,5 +857,7 @@
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL height='960' square='1' force='1'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-960x960-1.jpg"}, #841
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorLink show_hcard=\"1\"></MTEntries>", "e" : "<a class=\"fn url\" href=\"http://chuckd.com/\">Chucky Dee</a>"}, #842
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorLink type=\"email\" show_hcard=\"1\"></MTEntries>", "e" : "<a class=\"fn email\" href=\"mailto:chuckd@example.com\">Chucky Dee</a>"}, #843
-{ "r" : "1", "t" : "<MTAssets include_blogs=\"1\" limit=\"1\"><mt:AssetThumbnailURL></MTAssets>", "e" : "http://narnia.na/nana/assets_c/2016/06/test-thumb-640x480-1.jpg"} #844
+{ "r" : "1", "t" : "<MTAssets include_blogs=\"1\" limit=\"1\"><mt:AssetThumbnailURL></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg"}, #844
+{ "r" : "1", "t" : "<MTCategoryLabel default='category label default'>", "e" : "category label default"}, #845
+{ "r" : "1", "t" : "<MTCategoryBaseName default='category basename default'>", "e" : "category basename default"} #846
 ]
