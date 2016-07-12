@@ -10,6 +10,8 @@ use strict;
 use warnings;
 use base qw( MT::ObjectDriver::SQL );
 
+*distinct_stmt = \&_subselect_distinct;
+
 sub new {
     my $class = shift;
     my %param = @_;
@@ -78,6 +80,19 @@ sub _parse_array_terms {
     return $stmt->SUPER::_parse_array_terms($term_list);
 }
 
+sub _subselect_distinct {
+    my $class = shift;
+    my ($stmt) = @_;
+
+    my $subselect = $class->SUPER::_subselect_distinct(@_);
+
+    # Added row number.
+    $subselect->from_stmt->add_select('@i:=@i+1 as ROWNUM');
+    push @{ $subselect->from_stmt->from }, '(select @i:=0) as INIT_ROWNUM';
+
+    $subselect;
+}
+
 sub as_sql {
     my $stmt = shift;
 
@@ -85,21 +100,14 @@ sub as_sql {
         my $attribute = $stmt->order;
         my $elements
             = ( ref($attribute) eq 'ARRAY' ) ? $attribute : [$attribute];
-        if ( @{ $stmt->select } ) {
-            foreach my $element ( @{$elements} ) {
-                unless (
-                    List::Util::first { $_ eq $element->{column} }
-                    @{ $stmt->select }
-                    )
-                {
-                    $stmt->add_select( $element->{column} );
-                }
-            }
-        }
-        else {
-            foreach my $element ( @{$elements} ) {
-                $stmt->add_select( $element->{column} );
-            }
+        foreach my $element ( @{$elements} ) {
+            my $col = $element->{column};
+            next
+                if exists( $stmt->select_map->{$col} )
+                || grep( { $_ =~ /\s+AS\s+$col/i } @{ $stmt->select } );
+            $col =~ s{ \A [^_]+_ }{}xms;    # appropriate for all?
+            next if exists( $stmt->select_map_reverse->{$col} );
+            $stmt->add_select( $elements->{column} );
         }
     }
 
