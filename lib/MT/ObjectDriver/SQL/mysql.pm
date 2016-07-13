@@ -107,7 +107,7 @@ sub as_sql {
                 || grep( { $_ =~ /\s+AS\s+$col/i } @{ $stmt->select } );
             $col =~ s{ \A [^_]+_ }{}xms;    # appropriate for all?
             next if exists( $stmt->select_map_reverse->{$col} );
-            $stmt->add_select( $elements->{column} );
+            $stmt->add_select( $element->{column} );
         }
     }
 
