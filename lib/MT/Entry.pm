@@ -503,35 +503,61 @@ sub list_props {
                 my $app    = MT->instance;
                 my $option = $args->{option};
                 my $query  = $args->{string};
-                if ( 'contains' eq $option ) {
-                    $query = { like => "%$query%" };
-                }
-                elsif ( 'not_contains' eq $option ) {
-                    $query = { not_like => "%$query%" };
-                }
-                elsif ( 'beginning' eq $option ) {
-                    $query = { like => "$query%" };
-                }
-                elsif ( 'end' eq $option ) {
-                    $query = { like => "%$query" };
-                }
-                push @{ $db_args->{joins} },
-                    MT->model('placement')->join_on(
-                    undef,
-                    {   entry_id => \'= entry_id',
-                        ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                    },
-                    {   unique => 1,
-                        join   => MT->model( $prop->category_class )->join_on(
-                            undef,
-                            {   label => $query,
-                                id    => \'= placement_category_id',
-                                ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                            },
-                            { unique => 1, }
-                        ),
-                    },
+                $query = { like => "%$query%" }
+                    if ( 'contains' eq $option
+                    || 'not_contains' eq $option
+                    || 'beginning' eq $option
+                    || 'end' eq $option );
+                if ( 'not_contains' eq $option ) {
+                    my @placements = MT->model('placement')->load(
+                        ( $blog_id ? { blog_id => $blog_id } : undef ),
+                        {   unique => 1,
+                            join =>
+                                MT->model( $prop->category_class )->join_on(
+                                undef,
+                                {   label => $query,
+                                    id    => \'= placement_category_id',
+                                    (   $blog_id
+                                        ? ( blog_id => $blog_id )
+                                        : ()
+                                    ),
+                                },
+                                { unique => 1, }
+                                ),
+                        },
                     );
+                    my @entry_ids = map { $_->entry_id } @placements;
+                    my %hash;
+                    @hash{@entry_ids} = ();
+                    @entry_ids = keys %hash;
+                    $db_terms->{id}
+                        = ( 'not_contains' eq $option )
+                        ? { not => \@entry_ids }
+                        : \@entry_ids;
+                }
+                else {
+                    push @{ $db_args->{joins} },
+                        MT->model('placement')->join_on(
+                        undef,
+                        {   entry_id => \'= entry_id',
+                            ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                        },
+                        {   unique => 1,
+                            join =>
+                                MT->model( $prop->category_class )->join_on(
+                                undef,
+                                {   label => $query,
+                                    id    => \'= placement_category_id',
+                                    (   $blog_id
+                                        ? ( blog_id => $blog_id )
+                                        : ()
+                                    ),
+                                },
+                                { unique => 1, }
+                                ),
+                        },
+                        );
+                }
                 return;
             },
         },
