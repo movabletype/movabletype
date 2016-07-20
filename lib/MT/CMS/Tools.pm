@@ -849,7 +849,7 @@ sub save_cfg_system_general {
         push(
             @meta_messages,
             $app->translate(
-                'Changing image quarity is [_1]', 1
+                'Changing image quality is [_1]', 1
             )
         );
 	$cfg->AutoChangeImageQuality( 1, 1 );
@@ -858,7 +858,7 @@ sub save_cfg_system_general {
         push(
             @meta_messages,
             $app->translate(
-                'Changing image quarity is [_1]', 0
+                'Changing image quality is [_1]', 0
             )
         );
 	$cfg->AutoChangeImageQuality( 0, 1 );
