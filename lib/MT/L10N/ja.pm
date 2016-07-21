@@ -6757,7 +6757,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot access to remote directory \'[_1]\'' => 'リモートディレクトリ\'[_1]\'にアクセスできません。',
 	'Deleting file \'[_1]\' failed.' => 'ファイル\'[_1]\'を削除できませんでした。',
 	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
-	'Directory or file by which end of name is dot(.) or blank exists. Cannot synchronize these files.: "[_1]"' => '末尾にドットや空白が存在するファイルやディレクトリは、サーバー配信による送信はができません。[_1]',
+	'Directory or file by which end of name is dot(.) or blank exists. Cannot synchronize these files.: "[_1]"' => '拡張子のないファイルや、末尾に空白が存在するファイルやディレクトリは、サーバー配信による送信ができません。"[_1]"',
 	'Unable to write temporary file ([_1]): [_2]' => '一時ファイル([_1])の書き込みができませんでした: [_2]',
 	'Unable to get size of temporary file ([_1]): [_2]' => '一時ファイル ([_1]) のサイズを取得できませんでした] [_2]',
 	'FTP reconnection was failed. ([_1])' => 'FTP の再接続に失敗しました。([_1])',
