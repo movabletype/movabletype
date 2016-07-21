@@ -5500,7 +5500,7 @@ use vars qw( @ISA %Lexicon );
 	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
 	'Cloud Services' => 'クラウドサービス',
 	'Basic Authentication' => 'Basic認証',
-	'HTTP Redirect' => 'HTTPリダイレクト',
+	'HTTP Redirect' => 'URLリダイレクト',
 	'FTPS Password' => 'FTPSパスワードリセット',
 	'Full Restore' => '環境のリストア',
 	'SSL Certificates' => 'サーバー証明書',
@@ -5534,8 +5534,8 @@ use vars qw( @ISA %Lexicon );
 	'Cannot delete ip_restriction_[_1] file.' => 'アクセス制限の設定を削除することができませんでした。',
 	'[_1] is not a valid IP address.' => '[_1] は正しいIPアドレスではありません。',
 	'Unable to write allowed IP addresses file.' => 'アクセス許可リストファイルの書き込みができませんでした。',
-	'HTTP Redirect setting' => 'HTTPリダイレクトの設定',
-	'Unable to update HTTP Redirect settings.' => 'HTTPリダイレクトの設定を保存することが出来ませんでした。',
+	'HTTP Redirect setting' => 'URLリダイレクトの設定',
+	'Unable to update HTTP Redirect settings.' => 'URLリダイレクトの設定を保存することが出来ませんでした。',
 	'Update SSL Certification' => 'サーバー証明書の更新',
 	'__SSL_CERT_UPDATE' => '更新',
 	'__SSL_CERT_INSTALL' => '導入',
@@ -5618,14 +5618,14 @@ use vars qw( @ISA %Lexicon );
 	'Creater Password' => '制作者のパスワード',
 
 ## addons/Cloud.pack/tmpl/cfg_http_redirect.tmpl
-	'Manage HTTP Redirect' => 'HTTPリダイレクトの管理',
+	'Manage HTTP Redirect' => 'URLリダイレクトの管理',
 	'/path/of/redirect' => '/path/of/redirect',
 	'__REDIRECT_TO' => 'リダイレクト先',
 	'http://example.com or /path/to/redirect' => 'http://example.com 又は /path/to/redirect',
 	'Redirect URL is required.' => 'リダイレクト先URLは必須です。',
 	'Redirect url is same as URI' => 'リダイレクト先URLは、がリダイレクト元URIと違うURLを設定してください。',
-	'HTTP redirect setting' => 'HTTPリダイレクトの設定',
-	'HTTP redirect settings' => 'HTTPリダイレクトの設定',
+	'HTTP redirect setting' => 'URLリダイレクトの設定',
+	'HTTP redirect settings' => 'URLリダイレクトの設定',
 
 ## addons/Cloud.pack/tmpl/cfg_ip_restriction.tmpl
 	'IP Restriction Settings' => 'アクセス制限の設定',
