@@ -1607,6 +1607,7 @@ use vars qw( @ISA %Lexicon );
 	'Only to blogs within this system' => 'ブログのみ',
 	'[_1] is [_2]' => '[_1]が[_2]',
 	'none' => 'なし',
+	'Changing image quality is [_1]' => '画像品質の自動変換は[_1]です',
 	'Image quality(JPEG) is [_1]' => 'JPEG 画像の品質は [_1] です',
 	'Image quality(PNG) is [_1]' => 'PNG 画像の品質は [_1] です',
 	'System Settings Changes Took Place' => 'システム設定が変更されました',
@@ -1863,6 +1864,7 @@ use vars qw( @ISA %Lexicon );
 	'Purge Stale DataAPI Session Records' => '古いData APIのセッションレコードの消去',
 	'Remove expired lockout data' => '古いサインインの失敗レコードの消去',
 	'Purge Unused FileInfo Records' => '古いファイル情報レコードの消去',
+	'Remove Compiled Template Files' => 'ダイナミック・パブリッシング用のコンパイル済みテンプレートの削除',
 	'Manage Website' => 'ウェブサイトの管理',
 	'Manage Blog' => 'ブログの管理',
 	'Manage Website with Blogs' => 'ウェブサイトと所属ブログの管理',
@@ -2864,6 +2866,10 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/dialog.js
 	'(None)' => '(なし)',
 
+## mt-static/js/image_editor/fabric.js
+
+## mt-static/js/image_editor/fabric.min.js
+
 ## mt-static/js/tc/mixer/display.js
 	'Title:' => 'タイトル:',
 	'Description:' => '説明:',
@@ -3686,6 +3692,8 @@ use vars qw( @ISA %Lexicon );
 	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => q{次の一覧で設定されたIPアドレスはアクセスが禁止されることはありません。},
 	'The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks.' => '特定のIPアドレスについて判定を行わない場合、上の一覧にカンマ又は改行区切りで追加してください。',
 	'Image Quality Settings' => '画像品質の設定',
+	'Changing image quality' => '画像品質の自動変換',
+	'Enable image quality changing.' => '画像品質の自動変換を有効にする。',
 	'Image quality(JPEG)' => 'JPEG 画像の品質',
 	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.' => 'アップロードされた JPEG 画像や、生成されるサムネイル画像の品質を 0 から 100 の数値で指定します。初期値は 75 です。',
 	'Image quality(PNG)' => 'PNG 画像の品質',
@@ -5561,7 +5569,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Cloud.pack/lib/Cloud/Util.pm
 	'Cannot read resource file.' => 'リソースファイルを読み込めません。',
 	'Cannot get the resource data.' => 'リソース情報を取得できません。',
-	'Unknown plan. Memory: [_1] / Disk: [_2]' => '不明なプランです。メモリ: [_1] / ディスク: [_1]',
 
 ## addons/Cloud.pack/tmpl/cfg_auto_update.tmpl
 	'Auto Update Settings' => '自動アップデートの設定',
@@ -5601,7 +5608,6 @@ use vars qw( @ISA %Lexicon );
 	'Free Disk Space' => '空き容量',
 	'User Contents' => 'コンテンツファイル',
 	'Others' => 'その他',
-	'System Data' => 'システムファイル',
 	'Free' => '空き容量',
 
 ## addons/Cloud.pack/tmpl/cfg_ftps_password.tmpl
@@ -6751,9 +6757,12 @@ use vars qw( @ISA %Lexicon );
 	'Cannot access to remote directory \'[_1]\'' => 'リモートディレクトリ\'[_1]\'にアクセスできません。',
 	'Deleting file \'[_1]\' failed.' => 'ファイル\'[_1]\'を削除できませんでした。',
 	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
+	'Directory or file by which end of name is dot(.) or blank exists. Cannot synchronize these files.: "[_1]"' => '末尾にドットや空白が存在するファイルやディレクトリは、サーバー配信による送信はができません。[_1]',
 	'Unable to write temporary file ([_1]): [_2]' => '一時ファイル([_1])の書き込みができませんでした: [_2]',
 	'Unable to get size of temporary file ([_1]): [_2]' => '一時ファイル ([_1]) のサイズを取得できませんでした] [_2]',
-	'Unable to create destination directory ([_1])' => '配信先にディレクトリを作成できません ([_1])',
+	'FTP reconnection was failed. ([_1])' => 'FTP の再接続に失敗しました。([_1])',
+	'FTP connection lost.' => 'FTP 接続が切断されました。',
+	'FTP connection timeout.' => 'FTP 接続がタイムアウトしました。',
 	'Unable to write remote files. Please check activity log for more details.: [_1]' => '配信先にファイルを書き込めません。詳細についてはログを確認してください。: [_1]',
 	'Unable to write remote files ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
 
@@ -6916,7 +6925,7 @@ use vars qw( @ISA %Lexicon );
 	'OAuth2 settings' => 'OAuth2の設定',
 	'This [_2] is using the settings of [_1].' => 'この[_2]は、[_1]の設定を利用しています。',
 	'Other Google account' => '別のアカウントを利用する',
-	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a> before selecting profile.} => q{プロファイルを選択するために、<a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a>でウェブアプリケーション向けのClient IDを作成してください。},
+	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a> before selecting profile.} => q{プロファイルを選択するために、<a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a>でウェブアプリケーション向けのClient IDを作成してください。},
 	'Redirect URI of the OAuth2 application' => '承認済みのリダイレクト URI',
 	'Client ID of the OAuth2 application' => 'クライアント ID',
 	'Client secret of the OAuth2 application' => 'クライアント シークレット',
@@ -7200,6 +7209,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 296
+## New words: 348
 
 1;
