@@ -80,3 +80,6 @@ before_script:
 script:
   - bash -c "PERL_HASH_SEED=0 carton exec prove -s t plugins/*/t && ./phpunit"
 
+notifications:
+  slack:
+    secure: c11SdzxeFF23AlZS7b8jeCL8CJSn2Ire6ovAneFwHUUxb9jeG9lqC78mOJiE0Yrcdkv7beom4WVYrFY7ZoT+tD5RXNUkh8PcxPPXBFjvfDi5PCXwbNs1wb4Pa4bHAZvABgjCN8+21KQ6GcvlHl6sDQmhy/8v4yeYngOavsYfhMs=
