@@ -132,8 +132,13 @@ SKIP:
             my $php_result = do { local $/; <$php_in> };
             $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
 
+            my $expected = _unescape( $block->expected );
+            # CR is converted to LF.
+            $expected =~ s/\\r/\\n/g;
+            $expected =~ s/\r/\n/g;
+
             my $name = $block->name . ' - dynamic';
-            is( $php_result, _unescape( $block->expected ), $name );
+            is( $php_result, $expected, $name );
         }
     };
 }
