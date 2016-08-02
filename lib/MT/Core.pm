@@ -2114,6 +2114,10 @@ BEGIN {
             'RestrictedPSGIApp' => { type    => 'ARRAY' },
             'XFrameOptions'     => { default => 'SAMEORIGIN' },
             'DynamicCacheTTL'   => { default => 0 },
+
+            # Activity logging
+            'ActivityLogging'     => { default => 0 },
+            'ActivityLoggingPath' => { handler => \&ActivityLoggingPath },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -3227,17 +3231,24 @@ sub load_archive_types {
 
 sub PerformanceLoggingPath {
     my $cfg = shift;
-    my ( $path, $default );
-    return $cfg->set_internal( 'PerformanceLoggingPath', @_ ) if @_;
+    LoggingPath( $cfg, 'Performance' );
+}
+sub ActivityLoggingPath { my $cfg = shift; LoggingPath( $cfg, 'Activity' ); }
 
-    unless ( $path = $cfg->get_internal('PerformanceLoggingPath') ) {
+sub LoggingPath {
+    my $cfg    = shift;
+    my $prefix = shift;
+    my ( $path, $default );
+    return $cfg->set_internal( $prefix . 'LoggingPath', @_ ) if @_;
+
+    unless ( $path = $cfg->get_internal( $prefix . 'LoggingPath' ) ) {
         $path = $default
             = File::Spec->catdir( MT->instance->support_directory_path,
             'logs' );
     }
 
     return $path
-        unless $cfg->get_internal('PerformanceLogging');
+        unless $cfg->get_internal( $prefix . 'Logging' );
 
     # If the $path is not a writeable directory, we need to
     # do some work to see if we can create it
@@ -3266,20 +3277,26 @@ sub PerformanceLoggingPath {
                 eval { File::Path::mkpath( [$dir], 0, 0777 ); $path = $dir; };
                 if ($@) {
                     $msg = MT->translate(
-                        'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive. [_2]',
+                        'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the '
+                            . $prefix
+                            . 'LoggingPath configuration directive. [_2]',
                         $dir, $@
                     );
                 }
             }
             elsif ( -e $dir and !-d $dir ) {
                 $msg = MT->translate(
-                    'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file. [_1]',
+                    'Error creating performance logs: '
+                        . $prefix
+                        . 'LoggingPath setting must be a directory path, not a file. [_1]',
                     $dir
                 );
             }
             elsif ( -e $dir and !-w $dir ) {
                 $msg = MT->translate(
-                    'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable. [_1]',
+                    'Error creating performance logs: '
+                        . $prefix
+                        . 'LoggingPath directory exists but is not writeable. [_1]',
                     $dir
                 );
             }

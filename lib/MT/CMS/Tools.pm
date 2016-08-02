@@ -1087,6 +1087,7 @@ sub start_backup {
             'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.'
             );
     }
+
     $app->load_tmpl( 'backup.tmpl', \%param );
 }
 
@@ -1136,6 +1137,8 @@ sub backup {
     my $perms    = $app->permissions;
     my $blog_ids = $q->param('backup_what');
     my @blog_ids = split ',', $blog_ids;
+
+    MT->write_activity_log('=== Start backup.');
 
     if ( $user->is_superuser ) {
 
@@ -1440,6 +1443,9 @@ sub backup {
         close $fh;
         _backup_finisher( $app, $fname, $param );
     }
+
+    MT->write_activity_log('=== End   backup.');
+
 }
 
 sub backup_download {
@@ -1544,6 +1550,8 @@ sub restore {
     return $app->permission_denied()
         unless $app->can_do('restore_blog');
     $app->validate_magic() or return;
+
+    MT->write_activity_log('=== Start restore.');
 
     my $q = $app->param;
 
@@ -1684,7 +1692,15 @@ sub restore {
             my $tmp = File::Temp::tempdir( $uploaded_filename . 'XXXX',
                 DIR => $temp_dir );
             $tmp = Encode::decode( MT->config->PublishCharset, $tmp );
+
+            MT->write_activity_log(
+                '=== Start extract ' . $uploaded_filename );
+
             $arc->extract($tmp);
+
+            MT->write_activity_log(
+                '=== End   extract ' . $uploaded_filename );
+
             $arc->close;
             my ( $blog_ids, $asset_ids );
             eval {
@@ -1732,6 +1748,7 @@ sub restore {
             }
         }
     }
+
     $param->{restore_success} = !$error;
     $param->{error} = $error if $error;
     if ( ( exists $param->{open_dialog} ) && ( $param->{open_dialog} ) ) {
@@ -1754,6 +1771,9 @@ sub restore {
 
     $app->print_encode( $app->build_page( "restore_end.tmpl", $param ) );
     close $fh if $fh;
+
+    MT->write_activity_log('=== End   restore.');
+
     1;
 }
 
