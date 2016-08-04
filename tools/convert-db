@@ -9,16 +9,19 @@
 use strict;
 
 use Getopt::Long;
-GetOptions( "old:s" => \my($old_config),
-            "new:s" => \my($new_config));
+GetOptions(
+    "old:s" => \my ($old_config),
+    "new:s" => \my ($new_config)
+);
 
 use FindBin;
-use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use lib ( "$FindBin::Bin/../lib", "$FindBin::Bin/../extlib" );
 use File::Spec;
 use MT;
 
 unless ($new_config) {
-    print "Need configuration file location. cf: convert-db --new=mt-config.cgi.new\n";
+    print
+        "Need configuration file location. cf: convert-db --new=mt-config.cgi.new\n";
     exit;
 }
 
@@ -30,11 +33,11 @@ eval {
     local $SIG{__WARN__} = sub { print "**** WARNING: $_[0]\n" };
 
     require MT;
-    my $mt = MT->new(Config => $new_config) or die MT->errstr;
+    my $mt = MT->new( Config => $new_config ) or die MT->errstr;
     my $cfg = $mt->{cfg};
 
     my $cfg_file_new = $mt->{cfg_file};
-    my $cfg_file_orig = $mt->find_config({Config=>$old_config});
+    my $cfg_file_orig = $mt->find_config( { Config => $old_config } );
     print "convert source: $cfg_file_orig\n";
     print "   destination: $cfg_file_new\n";
     if ( $cfg_file_orig eq $cfg_file_new ) {
@@ -43,26 +46,28 @@ eval {
         exit;
     }
     require MT::Object;
-    MT::Object->driver($cfg->ObjectDriver)
+    MT::Object->driver( $cfg->ObjectDriver )
         or die MT::ObjectDriver->errstr;
 
     use MT::Upgrade;
     print "Loading database schema...\n\n";
-    MT::Upgrade->do_upgrade(Install => 1) or die MT::Upgrade->errstr;
-
+    my @TYPES = keys %{ MT->registry('object_types') };
+    foreach my $type (@TYPES) {
+        check_type($type);
+    }
     ## %ids will hold the highest IDs of each class.
     my %ids;
-    @TYPES = keys %{MT->registry('object_types')};
     print "Loading data...\n";
     require MT::ObjectDriverFactory;
-    for my $type ( @TYPES ) {
+
+    for my $type (@TYPES) {
         my $class = MT->model($type);
         print $class, "\n";
 
         undef $MT::Object::DRIVER;
         undef $MT::ObjectDriverFactory::DRIVER;
         $cfg->read_config($cfg_file_orig);
-        MT::Object->driver($cfg->ObjectDriver);
+        MT::Object->driver( $cfg->ObjectDriver );
 
         my $iter = $class->load_iter;
 
@@ -72,70 +77,81 @@ eval {
         undef $MT::Object::DRIVER;
         undef $MT::ObjectDriverFactory::DRIVER;
         $cfg->read_config($cfg_file_new);
-        MT::Object->driver($cfg->ObjectDriver);
+        MT::Object->driver( $cfg->ObjectDriver );
 
-        while (my $obj = $iter->()) {
-            printf "  %s\n", ( $obj->has_column('id') ? $obj->id : '.');
+        while ( my $obj = $iter->() ) {
+            printf "  %s\n", ( $obj->has_column('id') ? $obj->id : '.' );
             $obj = clean_object($obj);
+
             # Update IDs only auto_increment.
             $ids{$class} = $obj->id
-                if $obj->column_defs->{id}->{auto} &&
-                   (!$ids{$class} || $obj->id > $ids{$class});
+                if $obj->column_defs->{id}->{auto}
+                && ( !$ids{$class} || $obj->id > $ids{$class} );
             ## Look for duplicate template, category, and author names,
             ## because we have uniqueness constraints in the DB.
-            if ($class eq 'MT::Template') {
-                my $key = $obj->blog_id . ':' . lc($obj->name);
-                if ($names{$class}{$key}++) {
-                    print "        Found duplicate template name '" .
-                          $obj->name;
-                    $obj->name($obj->name . ' ' . $names{$class}{$key});
+            if ( $class eq 'MT::Template' ) {
+                my $key = $obj->blog_id . ':' . lc( $obj->name );
+                if ( $names{$class}{$key}++ ) {
+                    print "        Found duplicate template name '"
+                        . $obj->name;
+                    $obj->name( $obj->name . ' ' . $names{$class}{$key} );
                     print "'; renaming to '" . $obj->name . "'\n";
                 }
                 ## Touch the text column to make sure we read in
                 ## any linked templates.
                 my $text = $obj->text;
-            } elsif ($class eq 'MT::Author') {
-                my $key = lc($obj->name);
-                if ($names{$class . $obj->type}{$key}++) {
-                    print "        Found duplicate author name '" .
-                          $obj->name;
-                    $obj->name($obj->name . ' ' . $names{$class}{$key});
+            }
+            elsif ( $class eq 'MT::Author' ) {
+                my $key = lc( $obj->name );
+                if ( $names{ $class . $obj->type }{$key}++ ) {
+                    print "        Found duplicate author name '"
+                        . $obj->name;
+                    $obj->name( $obj->name . ' ' . $names{$class}{$key} );
                     print "'; renaming to '" . $obj->name . "'\n";
                 }
-                $obj->email('') unless defined $obj->email;
+                $obj->email('')        unless defined $obj->email;
                 $obj->set_password('') unless defined $obj->password;
-            } elsif ($class eq 'MT::Comment') {
+            }
+            elsif ( $class eq 'MT::Comment' ) {
                 $obj->visible(1) unless defined $obj->visible;
-            } elsif ($class eq 'MT::TBPing') {
+            }
+            elsif ( $class eq 'MT::TBPing' ) {
                 $obj->visible(1) unless defined $obj->visible;
-            } elsif ($class eq 'MT::Category') {
-                my $key = lc($obj->label) . $obj->blog_id;
-                if ($names{$class}{$key}++) {
-                    print "        Found duplicate category label '" .
-                          $obj->label;
-                    $obj->label($obj->label . ' ' . $names{$class}{$key});
+            }
+            elsif ( $class eq 'MT::Category' ) {
+                my $key = lc( $obj->label ) . $obj->blog_id;
+                if ( $names{$class}{$key}++ ) {
+                    print "        Found duplicate category label '"
+                        . $obj->label;
+                    $obj->label( $obj->label . ' ' . $names{$class}{$key} );
                     print "'; renaming to '" . $obj->label . "'\n";
                 }
+
                 # save the parent value for assignment at the end
-                if ($obj->parent) {
-                    $cat_parent{$obj->id} = $obj->parent;
+                if ( $obj->parent ) {
+                    $cat_parent{ $obj->id } = $obj->parent;
                     $obj->parent(0);
                 }
-            } elsif ($class eq 'MT::Trackback') {
-                $obj->entry_id(0) unless defined $obj->entry_id;
+            }
+            elsif ( $class eq 'MT::Trackback' ) {
+                $obj->entry_id(0)    unless defined $obj->entry_id;
                 $obj->category_id(0) unless defined $obj->category_id;
-            } elsif ($class eq 'MT::Entry') {
+            }
+            elsif ( $class eq 'MT::Entry' ) {
                 $obj->allow_pings(0)
                     if defined $obj->allow_pings && $obj->allow_pings eq '';
                 $obj->allow_comments(0)
-                    if defined $obj->allow_comments && $obj->allow_comments eq '';
+                    if defined $obj->allow_comments
+                    && $obj->allow_comments eq '';
             }
-            $obj->save
-                or die "Fatal Error: Failed to save record for class $class: " . $obj->errstr;
+
+            MT::Object::save($obj)
+                or die "Fatal Error: Failed to save record for class $class: "
+                . $obj->errstr;
         }
 
         # fix up the category parents
-        foreach my $id (keys %cat_parent) {
+        foreach my $id ( keys %cat_parent ) {
             my $cat = MT::Category->load($id);
             $cat->parent( $cat_parent{$id} );
             $cat->save;
@@ -144,58 +160,86 @@ eval {
         print "\n\n";
     }
 
-    if ($cfg->ObjectDriver =~ /postgres/) {
+    if ( $cfg->ObjectDriver =~ /postgres/ ) {
         print "Updating sequences\n";
         my $dbh = MT::Object->driver->{dbh};
-        for my $class (keys %ids) {
+        for my $class ( keys %ids ) {
             print "    $class => $ids{$class}\n";
-            my $seq = 'mt_' . $class->datasource . '_' .
-                      $class->properties->{primary_key};
+            my $seq
+                = 'mt_'
+                . $class->datasource . '_'
+                . $class->properties->{primary_key};
             $dbh->do("select setval('$seq', $ids{$class})")
                 or die $dbh->errstr;
         }
-    } elsif ($cfg->ObjectDriver =~ /oracle/) {
+    }
+    elsif ( $cfg->ObjectDriver =~ /oracle/ ) {
         print "Updating sequences\n";
-        for my $class (keys %ids) {
+        for my $class ( keys %ids ) {
             print "    $class => $ids{$class}\n";
             MT::Object->driver->drop_sequence($class);
             MT::Object->driver->create_sequence($class);
         }
     }
 
-    $cfg->SchemaVersion(MT->schema_version(), 1);
+    $cfg->SchemaVersion( MT->schema_version(), 1 );
     $cfg->save_config();
 };
 if ($@) {
     print "An error occurred while loading data: $@\n";
-} else {
+}
+else {
     print "Done copying data! All went well.\n";
 }
 
-
 sub clean_object {
-    my $obj = shift;
+    my $obj  = shift;
     my $defs = $obj->column_defs;
 
-    foreach my $col (keys %{$defs}) {
+    foreach my $col ( keys %{$defs} ) {
         my $def = $defs->{$col};
-        if ($def->{type} =~ /(?:integer|smallint)/ && $obj->$col) {
+        next unless $def->{type};
+        if ( $def->{type} =~ /(?:integer|smallint)/ && $obj->$col ) {
             my $val = $obj->$col;
-            if ($val =~ /\D/) {
+            if ( $val =~ /\D/ ) {
                 $val =~ s/\D//g;
                 $obj->$col($val);
             }
         }
-        if ($def->{type} =~ /(?:string)/ && $obj->$col) {
+        if ( $def->{type} =~ /(?:string)/ && $obj->$col ) {
             require MT::I18N;
             my $val = $obj->$col;
-            if (MT::I18N::length_text($val) > $def->{size}) {
-                $obj->$col(MT::I18N::substr_text($val,0,$def->{size}));
+            if ( MT::I18N::length_text($val) > $def->{size} ) {
+                $obj->$col( MT::I18N::substr_text( $val, 0, $def->{size} ) );
             }
         }
     }
     return $obj;
 }
+
+sub check_type {
+    my ($type) = @_;
+
+    my $class = MT->model($type);
+
+    if ( $class->meta_pkg ) {
+        check_type( $type . ':meta' );
+    }
+
+    if ( my $result = MT::Upgrade->type_diff($type) ) {
+        if ( $result->{fix} ) {
+            MT::Upgrade->core_fix_type( type => $type );
+        }
+        else {
+            MT::Upgrade->core_column_action( 'add', type => $type )
+                if $result->{add};
+            MT::Upgrade->alter_column( type => $type ) if $result->{alter};
+            MT::Upgrade->drop_column( type => $type ) if $result->{drop};
+            MT::Upgrade->index_column( type => $type ) if $result->{index};
+        }
+    }
+}
+
 1;
 
 __END__
