@@ -195,14 +195,14 @@ use vars qw( @ISA %Lexicon );
 	'Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'Digest::SHA1 en de daarvoor benodigde bestanden zijn vereist om reageerders te kunnen toestaan zich aan te melden via OpenID providers, waaronder LiveJournal.',
 	'Net::SMTP is required in order to send mail via an SMTP Server.' => 'Net::SMTP is vereist om mail te kunnen versturen via een SMTP server.',
 	'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' => 'Deze modules en de modules waar deze van afhangt zijn vereist om CRM-MD5, DIGEST-MD5 of LOGIN SASL te ondersteunen.',
-	'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for Google Analytics site statistics.' => 'I0::Socket::SSL is vereist om SMTP authentication over een SSL verbinding te kunnen gebruiken of met een STARTTLS commando.  Deze module is ook vereist voor sitestatistieken met Google Analytics.',
+	'IO::Socket::SSL is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.' => 'IO::Socket::SSL is vereist voor alle SSL/TLS verbindingen, zoals Google Analytics site statistieken of SMTP Auth over SSL/TLS.', # Translate - New
 	'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'Net::SSLeay is vereist om SMTP Auth te kunnen gebruiken over een SSL verbinding of om het te kunnen gebruiken met een STARTTLS commando.',
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'Deze module wordt gebruikt in een testattribuut voor de MTIf conditionele tag.',
 	'This module is used by the Markdown text filter.' => 'Deze module is vereist voor de Markdown tekstfilter.',
 	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Deze module is vereist door mt-search.cgi als u Movable Type draait op een versie van Perl ouder dan 5.8.',
 	'This module required for action streams.' => 'Deze module is vereist voor action streams.',
 	'[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation' => '[_1] is optioneel; Het is één van de modules die nodig zijn om een backup terug te zetten tijdens een backup/restore operatie',
-	'This module is required for Google Analytics site statistics and for verification of SSL certificates.' => 'Deze module is vereist om statistieken over de site te kunnen weergeven uit Google Analytics en om SSL certificaten te kunnen controleren.', # Translate - New
+	'This module is required for Google Analytics site statistics and for verification of SSL certificates.' => 'Deze module is vereist om statistieken over de site te kunnen weergeven uit Google Analytics en om SSL certificaten te kunnen controleren.',
 	'This module is required for executing run-periodic-tasks.' => 'Deze module is vereist om run-periodic-tasks te kunnen uitvoeren.',
 	'[_1] is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => '[_1] is optioneel; Het is een beter, sneller en lichter alternatief voor YAML::Tiny bij het behandelen van YAML bestanden.',
 	'The [_1] database driver is required to use [_2].' => 'De [_1] databasedriver is vereist om [_2] te kunnen gebruiken.',
@@ -583,10 +583,10 @@ use vars qw( @ISA %Lexicon );
 	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'Een toolkit om afbeeldingen te bewerken, iets wat meestal via de ImageDriver configuratie-directief wordt ingesteld, is niet aanwezig op uw server of verkeerd geconfigureerd.  Zo\'n toolkit is nodig om gebruikersafbeeldingen te kunnen herschalen e.d.  Gelieve Image::Magick, NetPBM, GD, of Imager te installeren op de server en stel dan de ImageDriver directief overeenkomstig in.',
 	'System Email Address is not configured.' => 'Systeem e-mail adres is niet ingesteld.',
 	'The System Email Address is used in the \'From:\' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events. Please confirm your <a href="[_1]">settings.</a>' => 'Het systeem email adres wordt gebruikt in de \'From:\' header van elke mail verzonden door Movable Type.  Mails kunnen verstuurd worden om wachtwoorden terug te vinden, reageerders te registreren, te informeren over nieuwe reacties of trackbacks, in geval van het blokkeren van een gebruiker of IP en in een paar andere gevallen.  Gelieve uw <a href="[_1]">instellingen</a> te bevestigen.',
-	'Cannot verify SSL certificate.' => 'Kan SSL certificaat niet verifiëren.', # Translate - New
-	'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this is not recommended.' => 'Gelieve de Mozilla::CA module te installeren.  De regel "SSLVerifyNone 1" aan mt-config.cgi toevoegen kan deze waarschuwing verbergen maar wordt niet aangeraden', # Translate - New
-	'Can verify SSL certificate, but verification is disabled.' => 'Kan SSL certificaat controleren maar verificatie is uitgeschakeld.', # Translate - New
-	'You should remove "SSLVerifyNone 1" in mt-config.cgi.' => 'U verwijdert best de regel "SSLVerifyNone 1" uit mt-config.cgi.', # Translate - New
+	'Cannot verify SSL certificate.' => 'Kan SSL certificaat niet verifiëren.',
+	'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this is not recommended.' => 'Gelieve de Mozilla::CA module te installeren.  De regel "SSLVerifyNone 1" aan mt-config.cgi toevoegen kan deze waarschuwing verbergen maar wordt niet aangeraden',
+	'Can verify SSL certificate, but verification is disabled.' => 'Kan SSL certificaat controleren maar verificatie is uitgeschakeld.',
+	'You should remove "SSLVerifyNone 1" in mt-config.cgi.' => 'U verwijdert best de regel "SSLVerifyNone 1" uit mt-config.cgi.',
 	'Personal Stats' => 'Persoonlijke statistieken',
 	'Movable Type News' => 'Movable Type-nieuws',
 	'Websites' => 'Websites',
@@ -973,22 +973,22 @@ use vars qw( @ISA %Lexicon );
 	'Invalid basename \'[_1]\'' => 'Ongeldige basisnaam \'[_1]\'',
 	'Error writing to \'[_1]\': [_2]' => 'Fout bij schrijven naar \'[_1]\': [_2]',
 	'Popup page for [_1]' => 'Popup pagina voor [_1]',
-	'Scaling image failed: Invalid parameter.' => 'Schalen van de afbeelding mislukt: ongeldige parameter.', # Translate - New
-	'Cropping image failed: Invalid parameter.' => 'Bijsnijden van de afbeelding mislukt: ongeldige parameter.', # Translate - New
-	'Rotating image failed: Invalid parameter.' => 'Draaien van de afbeelding mislukt: ongeldige parameter.', # Translate - New
-	'Writing metadata failed: [_1]' => 'Schrijven van metadata mislukt: [_1]', # Translate - New
-	'Error writing metadata to \'[_1]\': [_2]' => 'Fout bij schrijven van metadata naar  \'[_1]\': [_2]', # Translate - New
-	'Extracting image metadata failed: [_1]' => 'Extractie van metadata uit de afbeelding mislukt: [_1]', # Translate - New
-	'Writing image metadata failed: [_1]' => 'Schrijven van metadata van de afbeelding mislukt: [_1]', # Translate - New
+	'Scaling image failed: Invalid parameter.' => 'Schalen van de afbeelding mislukt: ongeldige parameter.',
+	'Cropping image failed: Invalid parameter.' => 'Bijsnijden van de afbeelding mislukt: ongeldige parameter.',
+	'Rotating image failed: Invalid parameter.' => 'Draaien van de afbeelding mislukt: ongeldige parameter.',
+	'Writing metadata failed: [_1]' => 'Schrijven van metadata mislukt: [_1]',
+	'Error writing metadata to \'[_1]\': [_2]' => 'Fout bij schrijven van metadata naar  \'[_1]\': [_2]',
+	'Extracting image metadata failed: [_1]' => 'Extractie van metadata uit de afbeelding mislukt: [_1]',
+	'Writing image metadata failed: [_1]' => 'Schrijven van metadata van de afbeelding mislukt: [_1]',
 
 ## lib/MT/Asset.pm
 	'Deleted' => 'Verwijderd',
 	'Enabled' => 'Ingeschakeld',
 	'Disabled' => 'Uitgeschakeld',
-	'missing' => 'ontbrekend', # Translate - New
-	'extant' => 'bestaand', # Translate - New
-	'Assets with Missing File' => 'Mediabestanden met ontbrekend bestand', # Translate - New
-	'Assets with Extant File' => 'Mediabestanden met bestaand bestand', # Translate - New
+	'missing' => 'ontbrekend',
+	'extant' => 'bestaand',
+	'Assets with Missing File' => 'Mediabestanden met ontbrekend bestand',
+	'Assets with Extant File' => 'Mediabestanden met bestaand bestand',
 	'Could not remove asset file [_1] from the filesystem: [_2]' => 'Kon mediabestand [_1] niet verwijderen uit het bestandssysteem: [_2]',
 	'Description' => 'Beschrijving',
 	'Location' => 'Locatie',
@@ -1002,7 +1002,7 @@ use vars qw( @ISA %Lexicon );
 	'Pixel height' => 'Hoogte in pixels',
 	'Except Userpic' => 'Uitgezonderd gebruikersafbeelding',
 	'Author Status' => 'Status auteur',
-	'Missing File' => 'Ontbrekend bestand', # Translate - New
+	'Missing File' => 'Ontbrekend bestand',
 	'Assets of this website' => 'Mediabestanden van deze website',
 
 ## lib/MT/Asset/Video.pm
@@ -1207,8 +1207,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Extension changed from [_1] to [_2]' => 'Extensie veranderd van [_1] in [_2]',
 	'Failed to create thumbnail file because [_1] could not handle this image type.' => 'Aanmaken thumbnailbestand mislukt omdat [_1] dit afbeeldingstype niet aankan.',
 	'Upload File' => 'Opladen',
-	'Invalid Request.' => 'Ongeldig verzoek.', # Translate - Case
-	'File with name \'[_1]\' already exists. Upload has been cancelled.' => 'Bestand met de naam \'[_1]\' bestaat al. Upload geannuleerd.', # Translate - New
+	'Invalid Request.' => 'Ongeldig verzoek.',
+	'File with name \'[_1]\' already exists. Upload has been cancelled.' => 'Bestand met de naam \'[_1]\' bestaat al. Upload geannuleerd.',
 	'Cannot load file #[_1].' => 'Kan bestand niet laden #[_1].',
 	'No permissions' => 'Geen permissies',
 	'File \'[_1]\' uploaded by \'[_2]\'' => 'Bestand \'[_1]\' opgeladen door \'[_2]\'',
@@ -1216,10 +1216,11 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Untitled' => 'Zonder titel',
 	'Archive Root' => 'Archiefroot',
 	'Site Root' => 'Siteroot',
-	'basename of user' => 'basisnaam van gebruiker', # Translate - New
-	'<[_1] Root>' => '<[_1] Root>', # Translate - New
-	'<[_1] Root>/[_2]' => '<[_1] Root>/[_2]', # Translate - New
+	'basename of user' => 'basisnaam van gebruiker',
+	'<[_1] Root>' => '<[_1] Root>',
+	'<[_1] Root>/[_2]' => '<[_1] Root>/[_2]',
 	'Archive' => 'Archief',
+	'Custom...' => 'Gepersonaliseerd...',
 	'Please select a file to upload.' => 'Gelieve een bestand te selecteren om te uploaden.',
 	'Invalid filename \'[_1]\'' => 'Ongeldige bestandsnaam \'[_1]\'',
 	'Please select an audio file to upload.' => 'Gelieve een audiobestand te selecteren om te uploaden.',
@@ -1238,12 +1239,12 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Error writing upload to \'[_1]\': [_2]' => 'Fout bij schrijven van upload naar \'[_1]\': [_2]',
 	'Uploaded file is not an image.' => 'Geupload bestand is geen afbeelding.',
 	'Cannot overwrite an existing file with a file of a different type. Original: [_1] Uploaded: [_2]' => 'Kan geen bestaand bestand overschrijven met een bestand van een ander type.  Origineel: [_1] Geupload: [_2]',
-	'File with name \'[_1]\' already exists.' => 'Bestand met de naam \'[_1]\' bestaat al.', # Translate - New
-	'Cannot load asset #[_1].' => 'Kan mediabestand #[_1] niet laden.', # Translate - New
+	'File with name \'[_1]\' already exists.' => 'Bestand met de naam \'[_1]\' bestaat al.',
+	'Cannot load asset #[_1].' => 'Kan mediabestand #[_1] niet laden.',
 	'Save failed: [_1]' => 'Opslaan mislukt: [_1]',
 	'Saving object failed: [_1]' => 'Object opslaan mislukt: [_1]',
-	'Transforming image failed: [_1]' => 'Transformeren afbeelding mislukt: [_1]', # Translate - New
-	'Cannot load asset #[_1]' => 'Kan mediabestand #[_1] niet laden', # Translate - New
+	'Transforming image failed: [_1]' => 'Transformeren afbeelding mislukt: [_1]',
+	'Cannot load asset #[_1]' => 'Kan mediabestand #[_1] niet laden',
 	'<' => '<',
 	'/' => '/',
 
@@ -1292,11 +1293,13 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Entries must be cloned if comments and trackbacks are cloned' => 'Berichten moeten worden gekloond als reacties en trackbacs gekloond worden',
 	'Entries must be cloned if comments are cloned' => 'Berichten moeten worden gekloond als reacties gekloond worden',
 	'Entries must be cloned if trackbacks are cloned' => 'Berichten moeten worden gekloond als trackbacks gekloond worden',
+	'\'[_1]\' (ID:[_2]) has been copied as \'[_3]\' (ID:[_4]) by \'[_5]\' (ID:[_6]).' => '\'[_1]\' (ID:[_2]) werd gekopiëerd als \'[_3]\' (ID:[_4]) door \'[_5]\' (ID:[_6]).', # Translate - New
 
 ## lib/MT/CMS/Category.pm
 	'The [_1] must be given a name!' => 'De [_1] moet nog een naam krijgen!',
 	'Failed to update [_1]: Some of [_2] were changed after you opened this page.' => 'Kon [_1] niet bijwerken: Sommige [_2] werden gewijzigd sinds u deze pagina opende.',
 	'Tried to update [_1]([_2]), but the object was not found.' => 'Probeerde [_1]([_2]) bij te werken, maar het object werd niet gevonden.',
+	'[_1] order has been edited by \'[_2]\'.' => '_1] volgorde werd aangepast door \'[_2]\'.', # Translate - New
 	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => 'Uw wijzigingen werden aangebracht ([_1] toegevoegd, [_2] aangepast en [_3] verwijderd). <a href="#" onclick="[_4]" class="mt-rebuild">Publiceer uw site</a> om deze wijzigingen zichtbaar te maken.',
 	'Add a [_1]' => 'Voeg een [_1] toe',
 	'No label' => 'Geen label',
@@ -1305,7 +1308,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'The category name \'[_1]\' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Categorienaam \'[_1]\' conflicteert met de naam van een andere categorie. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke naam hebben.',
 	'The category basename \'[_1]\' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.' => 'Categoriebasisnaam \'[_1]\' conflicteert met de basisnaam van een andere categorie. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke basisnaam hebben.',
 	'The name \'[_1]\' is too long!' => 'De naam \'[_1]\' is te lang!',
-	'Category \'[_1]\' created by \'[_2]\'' => 'Categorie \'[_1]\' aangemaakt door \'[_2]\'',
+	'Category \'[_1]\' created by \'[_2]\'.' => '', # Translate - New
+	'Category \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'Categorie \'[_1]\' (ID:[_2]) bewerkt door \'[_3]\'', # Translate - New
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Categorie \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
 	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Categorienaam \'[_1]\' conflicteert met een andere categorie. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke naam hebben.',
 
@@ -1338,7 +1342,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'\'[_1]\' edited the global template \'[_2]\'' => '\'[_1]\' bewerkte het globale sjabloon \'[_2]\'',
 	'Load failed: [_1]' => 'Laden mislukt: [_1]',
 	'(no reason given)' => '(geen reden vermeld)',
-	'Error occurred during permission check: [_1]' => 'Er deed zich een fout voor bij het controleren van de permissies: [_1]', # Translate - New
+	'Error occurred during permission check: [_1]' => 'Er deed zich een fout voor bij het controleren van de permissies: [_1]',
 	'Invalid filter: [_1]' => 'Ongeldige filter: [_1]',
 	'New Filter' => 'Nieuwe Filter',
 	'__SELECT_FILTER_VERB' => 'is gelijk aan',
@@ -1416,6 +1420,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## lib/MT/CMS/Folder.pm
 	'The folder \'[_1]\' conflicts with another folder. Folders with the same parent must have unique basenames.' => 'De map \'[_1]\' conflicteert met een andere map. Mappen met dezelfde ouder moeten een unieke basisnaam hebben.',
 	'Folder \'[_1]\' created by \'[_2]\'' => 'Map \'[_1]\' aangemaakt door \'[_2]\'',
+	'Folder \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'Map \'[_1]\' (ID:[_2]) bewerkt door \'[_3]\'', # Translate - New
 	'Folder \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Map \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
 
 ## lib/MT/CMS/Import.pm
@@ -1575,8 +1580,9 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Only to blogs within this system' => 'Enkel naar blogs binnen dit systeem',
 	'[_1] is [_2]' => '[_1] is [_2]',
 	'none' => 'geen',
-	'Image quality(JPEG) is [_1]' => 'Afbeeldingskwaliteit (JPEG) is [_1]', # Translate - New
-	'Image quality(PNG) is [_1]' => 'Afbeeldingskwaliteit (PNG) is [_1]', # Translate - New
+	'Changing image quality is [_1]' => 'Aanpassen afbeeldingskwaliteit is [_]', # Translate - New
+	'Image quality(JPEG) is [_1]' => 'Afbeeldingskwaliteit (JPEG) is [_1]',
+	'Image quality(PNG) is [_1]' => 'Afbeeldingskwaliteit (PNG) is [_1]',
 	'System Settings Changes Took Place' => 'Wijzigingen werden aangebracht aan de systeeminstellingen',
 	'Invalid password recovery attempt; Cannot recover the password in this configuration' => 'Ongeldige poging om wachtwoord opnieuw in te stellen; Kan het wachtwoord niet terughalen in deze configuratie',
 	'Invalid author_id' => 'Ongeldig author_id',
@@ -1824,6 +1830,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Purge Stale DataAPI Session Records' => 'Verlopen DataAPI sessiegegevens verwijderen',
 	'Remove expired lockout data' => 'Verlopen blokkeringsgegevens verwijderen',
 	'Purge Unused FileInfo Records' => 'Ongebruikte FileInfo records verwijderen',
+	'Remove Compiled Template Files' => 'Gecompileerde sjabloonbestanden verwijderen', # Translate - New
 	'Manage Website' => 'Website beheren',
 	'Manage Blog' => 'Blog beheren',
 	'Manage Website with Blogs' => 'Website met blogs beheren',
@@ -1890,8 +1897,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## lib/MT/DataAPI/Endpoint/Comment.pm
 
 ## lib/MT/DataAPI/Endpoint/Common.pm
-	'Invalid dateFrom parameter: [_1]' => 'Ongeldige dateFrom parameter [_1]', # Translate - New
-	'Invalid dateTo parameter: [_1]' => 'Ongeldige dateTo parameter: [_1]', # Translate - New
+	'Invalid dateFrom parameter: [_1]' => 'Ongeldige dateFrom parameter [_1]',
+	'Invalid dateTo parameter: [_1]' => 'Ongeldige dateTo parameter: [_1]',
 
 ## lib/MT/DataAPI/Endpoint/Entry.pm
 
@@ -1925,9 +1932,9 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Invalid default_cat_id: [_1]' => 'Ongeldige default_cat_id: [_1]',
 	'An error occurred during the import process: [_1]. Please check your import file.' => 'Er deed zich een fout voor tijdens het importproces: [_1]. Gelieve uw importbestand na te kijken.',
 	'Make sure that you remove the files that you imported from the \'import\' folder, so that if/when you run the import process again, those files will not be re-imported.' => 'Verwijder zeker de bestanden waaruit u gegevens importeerde uit de \'import\' folder, zodat wanneer u het import proces ooit opnieuw draait deze bestanden niet nog eens worden geïmporteerd.',
-	'A resource "[_1_]" is required.' => 'Een bron "[_1]" is vereist.', # Translate - New
-	'Could not found archive template for [_1].' => 'Kon archiefsjabloon niet vinden voor [_1].', # Translate - New
-	'Preview data not found.' => 'Gegevens voor voorbeeld niet gevonden.', # Translate - New
+	'A resource "[_1_]" is required.' => 'Een bron "[_1]" is vereist.',
+	'Could not found archive template for [_1].' => 'Kon archiefsjabloon niet vinden voor [_1].',
+	'Preview data not found.' => 'Gegevens voor voorbeeld niet gevonden.',
 
 ## lib/MT/DataAPI/Endpoint/v2/Folder.pm
 
@@ -1963,7 +1970,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Cannot publish [_1] template.' => 'Kan [_1] sjabloon niet publiceren.',
 	'A parameter "refresh_type" is invalid: [_1]' => 'De parameter "refresh_type" is ongeldig: [_1]',
 	'Cannot clone [_1] template.' => 'Kan sjabloon [_1] niet klonen.',
-	'A resource "template" is required.' => 'Een "sjabloon" bron is vereist.', # Translate - New
+	'A resource "template" is required.' => 'Een "sjabloon" bron is vereist.',
 
 ## lib/MT/DataAPI/Endpoint/v2/Theme.pm
 	'Cannot apply website theme to blog.' => 'Kan website-thema niet toepassen op blog.',
@@ -2115,20 +2122,20 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## lib/MT/Image/ImageMagick.pm
 	'Cannot load Image::Magick: [_1]' => 'Kan Image::Magick niet laden: [_1]',
 	'Scaling to [_1]x[_2] failed: [_3]' => 'Dimensies aanpassen naar [_1]x[_2] mislukt: [_3]',
-	'Cropping a [_1]x[_2] square at [_3],[_4] failed: [_5]' => 'Bijsnijden van [_1]x[_2] vierkand naar [_3],[_4] mislukt: [_5]', # Translate - New
+	'Cropping a [_1]x[_2] square at [_3],[_4] failed: [_5]' => 'Bijsnijden van [_1]x[_2] vierkand naar [_3],[_4] mislukt: [_5]',
 	'Flip horizontal failed: [_1]' => 'Horizontaal draaien mislukt: [_1]',
 	'Flip vertical failed: [_1]' => 'Verticaal draaien mislukt: [_1]',
 	'Rotate (degrees: [_1]) failed: [_2]' => 'Roteren (graden: [_1]) mislukt: [_2]',
 	'Converting image to [_1] failed: [_2]' => 'Converteren van afbeelding naar [_1] mislukt: [_2]',
-	'Outputting image failed: [_1]' => 'Uitvoer van afbeelding mislukt: [_1]', # Translate - New
+	'Outputting image failed: [_1]' => 'Uitvoer van afbeelding mislukt: [_1]',
 
 ## lib/MT/Image/Imager.pm
 	'Cannot load Imager: [_1]' => 'Kan Imager niet laden: [_1]',
 
 ## lib/MT/Image/NetPBM.pm
 	'Cannot load IPC::Run: [_1]' => 'Kan IPC::Run niet laden: [_1]',
-	'Reading alpha channel of image failed: [_1]' => 'Lezen alfakanaal van de afbeelding mislukt: [_1]', # Translate - New
-	'Cropping to [_1]x[_2] failed: [_3]' => 'Bijsnijden naar [_1]x[_2] mislukt: [_3]', # Translate - New
+	'Reading alpha channel of image failed: [_1]' => 'Lezen alfakanaal van de afbeelding mislukt: [_1]',
+	'Cropping to [_1]x[_2] failed: [_3]' => 'Bijsnijden naar [_1]x[_2] mislukt: [_3]',
 	'You do not have a valid path to the NetPBM tools on your machine.' => 'U hebt geen geldig pad naar de NetPBM tools op uw machine.',
 
 ## lib/MT/Image.pm
@@ -2860,19 +2867,19 @@ Kan bestand niet schrijven.  Schijf vol.",
                           toFixed(center.x, NUM_FRACTION_DIGITS) +
                            +
                           toFixed(center.y, NUM_FRACTION_DIGITS) +
-                        ', # Translate - New
-	', (-this.width / 2), , (-this.height/2), ' => ', (-this.width / 2), , (-this.height/2), ', # Translate - New
-	' + (-this.width/2) +  + (-this.height/2) + ' => ' + (-this.width/2) +  + (-this.height/2) + ', # Translate - New
-	', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ' => ', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ', # Translate - New
+                        ',
+	', (-this.width / 2), , (-this.height/2), ' => ', (-this.width / 2), , (-this.height/2), ',
+	' + (-this.width/2) +  + (-this.height/2) + ' => ' + (-this.width/2) +  + (-this.height/2) + ',
+	', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ' => ', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ',
 	',
         -this.width / 2, ,
         -this.height + heightOfLine, ' => ',
         -this.width / 2, ,
-        -this.height + heightOfLine, ', # Translate - New
+        -this.height + heightOfLine, ',
 
 ## mt-static/js/image_editor/fabric.min.js
-	'+t(i.x,r)++t(i.y,r)+' => '+t(i.x,r)++t(i.y,r)+', # Translate - New
-	',s(r.textLeft,2)," ",s(r.textTop,2),' => ',s(r.textLeft,2)," ",s(r.textTop,2),', # Translate - New
+	'+e(n.x,r)++e(n.y,r)+' => '+e(n.x,r)++e(n.y,r)+', # Translate - New
+	',i(r.textLeft,2)," ",i(r.textTop,2),' => ',i(r.textLeft,2)," ",i(r.textTop,2),', # Translate - New
 
 ## mt-static/js/tc/mixer/display.js
 	'Title:' => 'Titel:',
@@ -2880,6 +2887,10 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Author:' => 'Auteur:',
 	'Tags:' => 'Tags:',
 	'URL:' => 'URL:',
+
+## mt-static/js/upload_settings.js
+	'You must set a valid path.' => 'U moet een geldig pad instellen.',
+	'You must set a path begining with %s or %a.' => 'U moet een pad instellen dat begint met %s of %a', # Translate - New
 
 ## mt-static/mt.js
 	'delete' => 'verwijderen',
@@ -3592,7 +3603,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Character entities (&amp#8221;, &amp#8220;, etc.)' => 'Karakter entiteiten (&amp#8221;, &amp#8220;, etc.)',
 	q{ASCII equivalents (&quot;, ', ..., -, --)} => q{ASCII equivalenten (&quot;, ', ..., -, --)},
 	'Replace Fields' => 'Velden vervangen',
-	'Image default insertion options' => 'Standaardinstellingen vor invoegen afbeeldingen', # Translate - New
+	'Image default insertion options' => 'Standaardinstellingen vor invoegen afbeeldingen',
 	'Use thumbnail' => 'Thumbnail gebruiken',
 	'width:' => 'breedte:',
 	'pixels' => 'pixels',
@@ -3600,11 +3611,11 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Left' => 'Links',
 	'Center' => 'Centreren',
 	'Right' => 'Rechts',
-	'Link to popup window' => 'Link naar popup venster', # Translate - New
+	'Link to popup window' => 'Link naar popup venster',
 	'Link image to full-size version in a popup window.' => 'Link naar oorspronkelijke afbeelding in popup venster.',
 	'Save changes to these settings (s)' => 'Wijzigingen aan deze instellingen opslaan (s)',
 	'The range for Basename Length is 15 to 250.' => 'Basisnamen kunnen van 15 tot 250 karakters lang zijn.',
-	'You must set valid default thumbnail width.' => 'U moet een geldige standaardbreedte voor thumbnails opgeven.', # Translate - New
+	'You must set valid default thumbnail width.' => 'U moet een geldige standaardbreedte voor thumbnails opgeven.',
 
 ## tmpl/cms/cfg_feedback.tmpl
 	'Feedback Settings' => 'Feedback instellingen',
@@ -3815,15 +3826,15 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Number of revisions per template' => 'Aantal revisies per sjabloon',
 	'Upload' => 'Opladen',
 	'Upload Destination' => 'Uploadbestemming',
-	'Allow to change at upload' => 'Toestaan om te wijzigen bij upload', # Translate - New
-	'Rename filename' => 'Bestandsnaam veranderen', # Translate - New
-	'Rename non-ascii filename automatically' => 'Automatisch niet-ascii bestandsnaam aanpassen.', # Translate - New
-	'Operation if a file exists' => 'Actie als bestand al bestaat', # Translate - New
-	'Upload and rename' => 'Uploaden en naam aanpassen', # Translate - New
-	'Overwrite existing file' => 'Bestaand bestand overschrijven', # Translate - New
-	'Cancel upload' => 'Upload annuleren', # Translate - New
-	'Normalize orientation' => 'Oriëntatie normaliseren', # Translate - New
-	'Enable orientation normalization' => 'Normalisatie oriëntatie inschakelen', # Translate - New
+	'Allow to change at upload' => 'Toestaan om te wijzigen bij upload',
+	'Rename filename' => 'Bestandsnaam veranderen',
+	'Rename non-ascii filename automatically' => 'Automatisch niet-ascii bestandsnaam aanpassen.',
+	'Operation if a file exists' => 'Actie als bestand al bestaat',
+	'Upload and rename' => 'Uploaden en naam aanpassen',
+	'Overwrite existing file' => 'Bestaand bestand overschrijven',
+	'Cancel upload' => 'Upload annuleren',
+	'Normalize orientation' => 'Oriëntatie normaliseren',
+	'Enable orientation normalization' => 'Normalisatie oriëntatie inschakelen',
 	'You must set your Blog Name.' => 'U moet uw blognaam instellen.',
 	'You did not select a time zone.' => 'U selecteerde geen tijdzone',
 	'You must set a valid URL.' => 'U moet een geldige URL instellen.',
@@ -3834,7 +3845,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'You must set a valid Archive URL.' => 'U moet een geldige archief URL instellen.',
 	'You must set your Local Archive Path.' => 'U moet uw lokaal archiefpad instellen.',
 	'You must set a valid Local Archive Path.' => 'U moet een geldig lokaal archiefpad instellen.',
-	'You must set a valid path.' => 'U moet een geldig pad instellen.', # Translate - New
 
 ## tmpl/cms/cfg_registration.tmpl
 	'Registration Settings' => 'Registratie-instellingen',
@@ -3855,7 +3865,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## tmpl/cms/cfg_system_general.tmpl
 	'Your settings have been saved.' => 'Uw instellingen zijn opgeslagen.',
-	'Imager does not support ImageQualityPng.' => 'Imager ondersteunt ImageQualityPng niet.', # Translate - New
+	'Imager does not support ImageQualityPng.' => 'Imager ondersteunt ImageQualityPng niet.',
 	'A test mail was sent.' => 'Een testmail werd verstuurd',
 	'One or more of your websites or blogs are not following the base site path (value of BaseSitePath) restriction.' => 'Eén of meer van uw websites of blogs volgen de site basispad restrictie niet (waarde van BaseSitePath).',
 	'(None selected)' => '(Geen geselecteerd)',
@@ -3900,17 +3910,19 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address.' => 'Een IP adres zal geblokkeerd worden als meer dan [_1] foutieve aanmeldpogingen worden ondernomen binnen de [_2] seconden vanop hetzelfde IP adres.',
 	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => q{Volgende IP adressen staan echter op de 'witte lijst' en zullen nooit geblokkeerd worden:},
 	'The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks.' => 'De lijst met IP adressen.  Als een extern IP adres in deze lijst staat, dan zullen mislukte aanmeldpogingen niet worden geregistreerd.  Meerdere IP adressen kunnen worden opgegeven, van elkaar gescheiden met een komma of een nieuwe regel.',
-	'Image Quality Settings' => 'Kwaliteitsinstellingen afbeelding', # Translate - New
-	'Image quality(JPEG)' => 'Afbeeldingskwaliteit (JPEG)', # Translate - New
-	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.' => 'Afbeeldingskwaliteit van geuploade JPEG afbeelding en thumbnail versie.  Deze waarde kan ingesteld worden als een geheel getal tussen 0 en 100.  Standaardwaarde is 75.', # Translate - New
-	'Image quality(PNG)' => 'Afbeeldingskwaliteit (PNG)', # Translate - New
-	'Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.' => 'Afbeeldingskwaliteit van geuploade PNG afbeelding en thumbnail versie.  Deze waarde kan ingesteld worden als een geheel getal tussen 0 en 9.  Standaardwaarde is 7.', # Translate - New
+	'Image Quality Settings' => 'Kwaliteitsinstellingen afbeelding',
+	'Changing image quality' => 'Afbeeldingskwaliteit aan het aanpassen', # Translate - New
+	'Enable image quality changing.' => 'Aanpassen afbeeldingskwaliteit inschakelen.', # Translate - New
+	'Image quality(JPEG)' => 'Afbeeldingskwaliteit (JPEG)',
+	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.' => 'Afbeeldingskwaliteit van geuploade JPEG afbeelding en thumbnail versie.  Deze waarde kan ingesteld worden als een geheel getal tussen 0 en 100.  Standaardwaarde is 75.',
+	'Image quality(PNG)' => 'Afbeeldingskwaliteit (PNG)',
+	'Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.' => 'Afbeeldingskwaliteit van geuploade PNG afbeelding en thumbnail versie.  Deze waarde kan ingesteld worden als een geheel getal tussen 0 en 9.  Standaardwaarde is 7.',
 	'Send Mail To' => 'Mail verzenden naar',
 	'The email address that should receive a test email from Movable Type.' => 'Het e-mail adres dat een test e-mail moet ontvangen van Movable Type.',
 	'Send' => 'Versturen',
 	'You must set a valid absolute Path.' => 'U moet een absoluut pad instellen.',
-	'You must set an integer value between 0 and 100.' => 'U moet een geheel getal instellen tussen 0 en 100.', # Translate - New
-	'You must set an integer value between 0 and 9.' => 'U moet een geheel getal instellen tussen 0 en 9', # Translate - New
+	'You must set an integer value between 0 and 100.' => 'U moet een geheel getal instellen tussen 0 en 100.',
+	'You must set an integer value between 0 and 9.' => 'U moet een geheel getal instellen tussen 0 en 9',
 
 ## tmpl/cms/cfg_system_users.tmpl
 	'User Settings' => 'Instellingen gebruiker',
@@ -3988,16 +4000,17 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'You must select a parent website.' => 'U moet een moederwebsite selecteren',
 
 ## tmpl/cms/dialog/asset_edit.tmpl
-	'Your edited image has been saved.' => 'U bewerkte afbeelding werd opgeslagen.', # Translate - New
+	'Your edited image has been saved.' => 'U bewerkte afbeelding werd opgeslagen.',
+	'Metadata cannot be updated because Metadata in this image seems to be broken.' => 'De metadata kan niet worden bijgewerkt omdat de metadata van deze afbeelding fouten lijkt te bevatten.',
 	'Error creating thumbnail file.' => 'Fout bij aanmaken thumbnailbestand.',
-	'File Size' => 'Bestandsgrootte', # Translate - New
-	'Edit Image' => 'Afbeelding bewerken', # Translate - New
+	'File Size' => 'Bestandsgrootte',
+	'Edit Image' => 'Afbeelding bewerken',
 	'Save changes to this asset (s)' => 'Wijzigingen aan dit mediabestand opslaan (s)',
 	'Close (x)' => 'Sluiten (x)',
 	'Your changes have been saved.' => 'Uw wijzigingen zijn opgeslagen.',
-	'An error occurred.' => 'Er deed zich een fout voor.', # Translate - New
-	'You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?' => 'Er zijn niet opgeslagen wijzigingen aan dit mediabestand die verloren zullen gaan.  Bent u zeker dat u de afbeelding wenst te bewerken?', # Translate - New
-	'You have unsaved changes to this asset that will be lost. Are you sure you want to close this dialog?' => 'Er zijn niet opgeslagen wijzigingen aan dit mediabestand die verloren zullen gaan.  Bent u zeker dat u deze dialoog wenst te sluiten?', # Translate - New
+	'An error occurred.' => 'Er deed zich een fout voor.',
+	'You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?' => 'Er zijn niet opgeslagen wijzigingen aan dit mediabestand die verloren zullen gaan.  Bent u zeker dat u de afbeelding wenst te bewerken?',
+	'You have unsaved changes to this asset that will be lost. Are you sure you want to close this dialog?' => 'Er zijn niet opgeslagen wijzigingen aan dit mediabestand die verloren zullen gaan.  Bent u zeker dat u deze dialoog wenst te sluiten?',
 
 ## tmpl/cms/dialog/asset_insert.tmpl
 
@@ -4015,7 +4028,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'No assets could be found.' => 'Kon geen mediabestand vinden',
 
 ## tmpl/cms/dialog/asset_modal.tmpl
-	'Library' => 'Bibliotheek', # Translate - New
+	'Library' => 'Bibliotheek',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
 	'Display image in entry/page' => 'Afbeelding tonen in bericht/pagina',
@@ -4064,21 +4077,21 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'Er bestaan geen blogs in deze installatie.[_1]Maak een blog aan</a>',
 
 ## tmpl/cms/dialog/edit_image.tmpl
-	'W:' => 'B:', # Translate - New
-	'H:' => 'H:', # Translate - New
+	'W:' => 'B:',
+	'H:' => 'H:',
 	'Apply' => 'Toepassen',
-	'Keep aspect ratio' => 'Verhouding behouden', # Translate - New
-	'Remove All metadata' => 'Alle metadata verwijderen', # Translate - New
-	'Remove GPS metadata' => 'GPS metadata verwijderen', # Translate - New
-	'Rotate right' => 'Rechts draaien', # Translate - New
-	'Rotate left' => 'Links draaien', # Translate - New
-	'Flip horizontal' => 'Horizontaal spiegelen', # Translate - New
-	'Flip vertical' => 'Verticaal spiegelen', # Translate - New
-	'Crop' => 'Bijsnijden', # Translate - New
-	'Undo' => 'Ongedaan maken', # Translate - New
-	'Redo' => 'Herhalen', # Translate - New
+	'Keep aspect ratio' => 'Verhouding behouden',
+	'Remove All metadata' => 'Alle metadata verwijderen',
+	'Remove GPS metadata' => 'GPS metadata verwijderen',
+	'Rotate right' => 'Rechts draaien',
+	'Rotate left' => 'Links draaien',
+	'Flip horizontal' => 'Horizontaal spiegelen',
+	'Flip vertical' => 'Verticaal spiegelen',
+	'Crop' => 'Bijsnijden',
+	'Undo' => 'Ongedaan maken',
+	'Redo' => 'Herhalen',
 	'Save (s)' => 'Opslaan (s)',
-	'You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?' => 'Er zijn niet opgeslagen wijzigingen aan deze afbeelding die verloren zullen gaan.  Bent u zeker dat u deze dialoog wil sluiten?', # Translate - New
+	'You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?' => 'Er zijn niet opgeslagen wijzigingen aan deze afbeelding die verloren zullen gaan.  Bent u zeker dat u deze dialoog wil sluiten?',
 
 ## tmpl/cms/dialog/entry_notify.tmpl
 	'Send a Notification' => 'Notificatie versturen',
@@ -4099,8 +4112,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Warning: You need to copy uploaded assets to the new path manually. It is also recommended not to delete files in the old path to avoid broken links.' => 'Waarschuwing: u moet geuploade mediabestanden met de hand naar het nieuwe pad kopiëren.  Het is eveneens aan te raden de bestanden in het oude pad niet te verwijderen om gebroken links te vermijden.',
 
 ## tmpl/cms/dialog/multi_asset_options.tmpl
-	'Insert Options' => 'Invoegopties', # Translate - New
-	'Display [_1] in entry/page' => 'Weergeven van [_1] in bericht/pagina.', # Translate - New
+	'Insert Options' => 'Invoegopties',
+	'Display [_1] in entry/page' => 'Weergeven van [_1] in bericht/pagina.',
 
 ## tmpl/cms/dialog/new_password.tmpl
 	'Change Password' => 'Wachtwoord wijzigen',
@@ -4186,7 +4199,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## tmpl/cms/edit_asset.tmpl
 	'Edit Asset' => 'Mediabestand bewerken',
-	'Metadata cannot be updated because Metadata in this image seems to be broken.' => 'De metadata kan niet worden bijgewerkt omdat de metadata van deze afbeelding fouten lijkt te bevatten.', # Translate - New
 	'Stats' => 'Statistieken',
 	'[_1] - Created by [_2]' => '[_1] - aangemaakt door [_2]',
 	'[_1] - Modified by [_2]' => '[_1] - aangepast door [_2]',
@@ -4196,7 +4208,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'[_1] is missing' => '[_1] ontbreekt',
 	'Embed Asset' => 'Mediabestand embedden',
 	'You must specify a name for the asset.' => 'U moet een naam opgeven voor het mediabestand.',
-	'You have unsaved changes to this asset that will be lost.' => 'Er zijn niet opgeslagen wijzigingen aan dit mediabestand die verloren zullen gaan.', # Translate - New
+	'You have unsaved changes to this asset that will be lost.' => 'Er zijn niet opgeslagen wijzigingen aan dit mediabestand die verloren zullen gaan.',
 
 ## tmpl/cms/edit_author.tmpl
 	'Edit Profile' => 'Profiel bewerken',
@@ -4680,7 +4692,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'HTML Mode' => 'HTML modus',
 
 ## tmpl/cms/include/archive_maps.tmpl
-	'Custom...' => 'Gepersonaliseerd...',
 
 ## tmpl/cms/include/asset_replace.tmpl
 	q{A file named '[_1]' already exists. Do you want to overwrite this file?} => q{Er bestaat reeds een bestand net de naam '[_1]'. Wilt u dit bestand overschrijven?},
@@ -4708,20 +4719,22 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'[_1] contains a character that is invalid when used in a directory name: [_2]' => '[_1] bevat een karakter dat niet geldig is wanneer het gebruikt word in de naam van een map: [_2]',
 
 ## tmpl/cms/include/async_asset_list.tmpl
-	'Asset Type: ' => 'Type mediabestand:', # Translate - New
-	'All Types' => 'Alle types', # Translate - New
-	'label' => 'naam', # Translate - Case
+	'Asset Type: ' => 'Type mediabestand:',
+	'All Types' => 'Alle types',
+	'label' => 'naam',
 	'[_1] - [_2] of [_3]' => '[_1] - [_2] van [_3]',
 
 ## tmpl/cms/include/async_asset_upload.tmpl
-	q{Drag and drop here to upload files, or<button id='open-file-dialog'>Browse</button>} => q{Sleep bestanden hierheen en laat ze los om ze te uploaden, of <button id='open-file-dialog'>Uploaden</button>}, # Translate - New
-	q{Drag and drop here to upload a file, or<button id='open-file-dialog'>Browse</button>} => q{Sleep bestand hierheen en laat ze los om ze te uploaden, of <button id='open-file-dialog'>Uploaden</button>}, # Translate - New
-	'(If you upload multiple files, last uploaded files will be used.)' => '(Als u meerdere bestanden uploadt dan worden enkel de laatste bestande gebruikt.)', # Translate - New
-	'Upload Options' => 'Upload opties', # Translate - New
-	'Operation for a file exists' => 'Actie als een bestand al bestaat', # Translate - New
-	'Cancelled: [_1]' => 'Geannuleerd: [_1]', # Translate - New
-	'The file you tried to upload is too large: [_1]' => 'Het bestand dat u probeerde te uploaden is te groot: [_1]', # Translate - New
-	'[_1] is not a valid [_2] file.' => '[_1] is geen geldig [_2] bestand.', # Translate - New
+	'Upload new image' => 'Nieuwe afbeelding upladen', # Translate - Case
+	'Upload new asset' => 'Nieuw mediabestand uploaden', # Translate - Case
+	'Choose files to upload or drag files.' => 'Kies bestanden om te uploaden of sleep ze hierheen', # Translate - New
+	'Choose file to upload or drag file.' => 'Kies bestand om te uploaden of sleep het hierheen', # Translate - New
+	'Upload Options' => 'Upload opties',
+	'Operation for a file exists' => 'Actie als een bestand al bestaat',
+	'Drag and drop here' => 'Klik en sleep hierheen', # Translate - New
+	'Cancelled: [_1]' => 'Geannuleerd: [_1]',
+	'The file you tried to upload is too large: [_1]' => 'Het bestand dat u probeerde te uploaden is te groot: [_1]',
+	'[_1] is not a valid [_2] file.' => '[_1] is geen geldig [_2] bestand.',
 
 ## tmpl/cms/include/author_table.tmpl
 	'Enable selected users (e)' => 'Geselecteerde gebruikers activeren (E)',
@@ -4868,7 +4881,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## tmpl/cms/include/import_end.tmpl
 	'All data imported successfully!' => 'Alle gegevens werden met succes geïmporteerd!',
-	'<a href="#" onclick="[_1]" class="mt-build">Publish your site</a> to see these changes take effect.' => '<a href="#" onclick="[_1]" class="mt-build">Publiceer uw site</a> om de wijzigingen zichtbaar te maken.', # Translate - New
+	'<a href="#" onclick="[_1]" class="mt-build">Publish your site</a> to see these changes take effect.' => '<a href="#" onclick="[_1]" class="mt-build">Publiceer uw site</a> om de wijzigingen zichtbaar te maken.',
 	q{Make sure that you remove the files that you imported from the 'import' folder, so that if/when you run the import process again, those files will not be re-imported.} => q{Verwijder zeker de bestanden waaruit u gegevens importeerde uit de 'import' folder, zodat wanneer u het import proces ooit opnieuw draait deze bestanden niet nog eens worden geïmporteerd.},
 
 ## tmpl/cms/include/import_start.tmpl
@@ -5799,8 +5812,11 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'The type "[_1]" is invalid.' => 'Het type "]_1]" is ongeldig.',
 	'The systemObject "[_1]" is invalid.' => 'Het systemObject "[_1]" is ongeldig.',
 
+## addons/Commercial.pack/lib/CustomFields/DataAPI/Callback.pm
+	'Please enter valid option for the [_1] field: [_2]' => 'Gelieve een geldige optie in te vullen voor het [_1] veld: [_2]', # Translate - New
+
 ## addons/Commercial.pack/lib/CustomFields/DataAPI/Endpoint/v2/Field.pm
-	'Invalid includeShared parameter provided: [_1]' => 'Ongeldige includeShared parameter opgegeven: [_1]', # Translate - New
+	'Invalid includeShared parameter provided: [_1]' => 'Ongeldige includeShared parameter opgegeven: [_1]',
 
 ## addons/Commercial.pack/lib/CustomFields/Field.pm
 	'The template tag \'[_1]\' is already in use in the system level' => 'De sjabloontag \'[_1]\' is al in gebruik op systeemniveau',
@@ -6490,7 +6506,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Populating author\'s external ID to have lower case user name...' => 'Extern ID van auteur aan het bevolken zodat de gebruikersnaam in kleine letters staat...',
 
 ## addons/Enterprise.pack/lib/MT/Auth/LDAP.pm
-	'Cannot connect to LDAP server.' => 'Kan geen verbinding maken met de LDAP server.', # Translate - New
+	'Cannot connect to LDAP server.' => 'Kan geen verbinding maken met de LDAP server.',
 	'User [_1]([_2]) not found.' => 'Gebruker [_1]([_2]) niet gevonden.',
 	'User \'[_1]\' cannot be updated.' => 'Gebruiker \'[_1]\' kan niet worden bijgewerkt.',
 	'User \'[_1]\' updated with LDAP login ID.' => 'Gebruiker \'[_1]\' bijgewerkt met LDAP login ID.',
@@ -6502,7 +6518,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Failed login attempt by user \'[_1]\'. A user with that username already exists in the system with a different UUID.' => 'Mislukte aanmeldpoging van gebruiker \'[_1]\'.  Een gebruiker met die gebruikersnaam bestaat al in het systeem met een andere UUID.',
 	'User \'[_1]\' account is disabled.' => 'Account van gebruiker \'[_1]\' is niet actief.',
 	'LDAP users synchronization interrupted.' => 'LDAP gebruikerssynchronisatie onderbroken',
-	'Loading MT::LDAP::Multi failed: [_1]' => 'Laden van MT::LDAP;;Multi mislukt: [_1]', # Translate - New
+	'Loading MT::LDAP::Multi failed: [_1]' => 'Laden van MT::LDAP;;Multi mislukt: [_1]',
 	'External user synchronization failed.' => 'Externe gebruikerssynchronisatie mislukt.',
 	'An attempt to disable all system administrators in the system was made.  Synchronization of users was interrupted.' => 'Een poging om alle systeembeheerders in het systeem uit te schakelen werd ondernomen.  Synchronisatie van gebruikers werd onderbroken.',
 	'Information about the following users was modified:' => 'Informatie over volgende gebruikers werd bijgewerkt:',
@@ -6771,21 +6787,26 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Sync Settings' => 'Synchronisatie instellingen',
 	'Create new sync setting' => 'Nieuwe synchronisatie instelling aanmaken',
 	'Contents Sync' => 'Synchronisatie inhoud',
+	'Remove sync PID files' => 'PID bestanden synchronisatie verwijderen', # Translate - New
 	'Updating MT::SyncSetting table...' => 'Bezig MT::SyncSetting tabel bij te werken...',
 	'Migrating settings of contents sync on website...' => 'Bezig instellingen van inhoudssynchronisatie op website te migreren...',
 	'Migrating settings of contents sync on blog...' => 'Bezig instellingen van inhoudssynchronisatie op blog te migreren..',
-	'Re-creating job of contents sync...' => 'Inhoudsssynchronisatie job opnieuw aan het aanmaken...', # Translate - New
+	'Re-creating job of contents sync...' => 'Inhoudsssynchronisatie job opnieuw aan het aanmaken...',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/FTPBase.pm
 	'Cannot access to remote directory \'[_1]\'' => 'Geen toegang tot externe map \'[_1]\'',
 	'Deleting file \'[_1]\' failed.' => 'Verwijderen bestand \'[_1]\' mislukt.',
 	'Deleting path \'[_1]\' failed.' => 'Verwijderen pad \'[_1]\' mislukt.',
+	'Directory or file by which end of name is dot(.) or blank exists. Cannot synchronize these files.: "[_1]"' => 'Er bestaat een bestand of map waarvan de naam eindigt op een punt(.) of een blanco extansie. Kan deze bestanden niet synchroniseren.: "[_1]"', # Translate - New
 	'Unable to write temporary file ([_1]): [_2]' => 'Schrijven naar tijdelijk bestand mislukt ([_1]): [_2]',
+	'Unable to get size of temporary file ([_1]): [_2]' => 'Kon grootte van tijdelijk bestand niet vinden ([_1]): [_2]', # Translate - New
+	'FTP reconnection was failed. ([_1])' => 'FTP verbinding mislukt. ([_])', # Translate - New
+	'FTP connection lost.' => 'FTP verbinding verbroken.', # Translate - New
+	'FTP connection timeout.' => 'FTP verbinding te lang inactief.', # Translate - New
 	'Unable to write remote files. Please check activity log for more details.: [_1]' => 'Schrijven van externe bestanden mislukt.  Kijk het activiteitenlog na voor meer details: [_1]',
 	'Unable to write remote files ([_1]): [_2]' => 'Kon geen externe bestanden schrijven ([_1]): [_2]',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
-	'An error occurred while copying the directory.' => 'Er deed zich een fout voor ibj het kopiëren van de map.',
 	'Failed to remove sync list. (ID:\'[_1]\')' => 'Verwijderen sychronisatielijst mislukt. (ID:\'[_1]\')',
 	'Failed to update sync list. (ID:\'[_1]\')' => 'Bijwerken synchronisatielijst mislukt. (ID:\'[_1]\')',
 	'Failed to create sync list.' => 'Aanmaken synchronisatielijst mislukt.',
@@ -6806,22 +6827,25 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## addons/Sync.pack/lib/MT/Worker/ContentsSync.pm
 	'Sync setting # [_1] not found.' => 'Synchronisatie instelling # [_1] niet gevonden.',
-	'This sync setting is being processed already.' => 'Deze synchronisatie-instelling wordt al behandeld momenteel.', # Translate - New
+	'This sync setting is being processed already.' => 'Deze synchronisatie-instelling wordt al behandeld momenteel.',
+	'Unknown error occurred.' => 'Er deed zich een onbekende fout voor.',
 	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'Deze mail is om u te melden dat synchronisatie met een externe server met succes werd afgerond.',
 	'Saving sync settings failed: [_1]' => 'Opslaan instelling voor synchronisatie mislukt: [_1]',
-	'Failed to remove temporary directory: [_1]' => 'Verwijderen van tijdelijke map mislukt: [_1]', # Translate - New
-	'Failed to remove pid file.' => 'Verwijderen van pid bestand mislukt.', # Translate - New
+	'Failed to remove temporary directory: [_1]' => 'Verwijderen van tijdelijke map mislukt: [_1]',
+	'Failed to remove pid file.' => 'Verwijderen van pid bestand mislukt.',
 	'This email is to notify you that failed to sync with an external server.' => 'Deze mail is om u te melden dat synchronisatie met een externe server mislukt is.',
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
 	'Copied [_1]' => '[_1] gekopiëerd',
 	'The sync setting with the same name already exists.' => 'Een synchronisatie instelling met dezelfde naam bestaat al.',
+	'Reached the upper limit of the parallel execution.' => 'Maximumlimiet voor uitvoering in paralel bereikt.', # Translate - New
+	'Process ID can\'t be acquired.' => 'Kan proces ID niet vinden.', # Translate - New
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Er deed zich een fout voor bij het verbinden met de FTP server \'[_1]\': [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Er deed zich een fout voor bij het ophalen van de huidige map van \'[_1]\'',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Er deed zich een fout voor bij het ophalen van de lijst van mappen van \'[_1]\'',
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
-	'Removing all jobs of contents sync...' => 'Bezig alle inhoudssynchronisatie-jobs te verwijderen...', # Translate - New
+	'Removing all jobs of contents sync...' => 'Bezig alle inhoudssynchronisatie-jobs te verwijderen...',
 
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
 	'Contents Sync Settings' => 'Instellingen synchronisatie inhoud',
@@ -6843,13 +6867,13 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Port' => 'Poort',
 	'SSL' => 'SSL',
 	'Enable SSL' => 'SSL inschakelen',
-	'Net::FTPSSL is not available.' => 'Net::FTPSSL is niet beschikbaar', # Translate - New
+	'Net::FTPSSL is not available.' => 'Net::FTPSSL is niet beschikbaar',
 	'Start Directory' => 'Beginmap',
 	'Rsync Destination' => 'Rsync bestemming',
 	'Sync Type *' => 'Synchronisatietype *',
 	'Please select a sync type.' => 'Gelieve een synchronisatietype in te stellen.',
 	'Are you sure you want to run synchronization?' => 'Bent u zeker dat u synchronisatie wenst uit te voeren?',
-	'Sync all files' => 'Alle bestanden synchroniseren', # Translate - New
+	'Sync all files' => 'Alle bestanden synchroniseren',
 	'Sync name is required.' => 'Synchroniatienaam is vereist.',
 	'Sync name should be shorter than [_1] characters.' => 'Synchronisatienaam moet korter dan [_1] karakters zijn.',
 	'The sync date must be in the future.' => 'De synchronisatiedatum moet in de toekomst liggen.',
@@ -6862,7 +6886,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Preparing...' => 'Voorbereiding...',
 	'Synchronizing...' => 'Synchroniseren...',
 	'Finish!' => 'Klaar!',
-	'Unknown error occurred.' => 'Er deed zich een onbekende fout voor.',
 	'The synchronization was interrupted. Unable to resume.' => 'De synchronisatie werd onderbroken.  Hervatten niet mogelijk.',
 
 ## plugins/FacebookCommenters/config.yaml
@@ -6879,7 +6902,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Could not verify this app with Facebook: [_1]' => 'Kon deze app niet verifiëren bij Facebook: [_1]',
 
 ## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
-	'Facebook Application Key' => 'Facebook applicatiesleutel',
+	'Facebook App ID' => 'Facebook applicatiesleutel',
 	'The key for the Facebook application associated with your blog.' => 'De sleutel voor de Facebook-applicatie geassocieerd met uw blog.',
 	'Edit Facebook App' => 'Facebook app bewerken',
 	'Create Facebook App' => 'Facebook app aanmaken',
@@ -6993,7 +7016,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'OAuth2 settings' => 'OAuth2 instellingen',
 	'This [_2] is using the settings of [_1].' => 'Deze [_2] gebruikt de instellingen van [_1].',
 	'Other Google account' => 'Andere Google account',
-	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a> before selecting profile.} => q{Maak een OAuth2 applicatie Client ID voor webapplicaties aan met deze redirect URI via de <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a> voor een profiel te selecteren.},
+	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a> before selecting profile.} => q{Maak een Client ID voor webapplicaties aan van een OAuth2 applicatie met deze redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a> vooraleer een profiel te selecteren. }, # Translate - New
 	'Redirect URI of the OAuth2 application' => 'Redirect URI van de OAuth2 applicatie',
 	'Client ID of the OAuth2 application' => 'Client ID van de OAuth2 applicatie',
 	'Client secret of the OAuth2 application' => 'Client secret van de OAuth2 applicatie',
@@ -7098,7 +7121,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Select to apply this trigger to all websites and blogs in this system.' => 'Selecteer dit om deze trigger toe te passen op alle websites en blogs in dit systeem',
 	'saves an entry/page' => 'een bericht/pagina opslaat',
 	'publishes an entry/page' => 'een bericht/pagina publiceert',
-	'unpublishes an entry/page' => 'een bericht/pagina ontpubliceert', # Translate - New
+	'unpublishes an entry/page' => 'een bericht/pagina ontpubliceert',
 	'publishes a comment' => 'een reactie publiceert',
 	'publishes a TrackBack' => 'een TrackBack publiceert',
 	'rebuild indexes.' => 'indexen opnieuw opbouwt.',
@@ -7335,6 +7358,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 );
 
-## New words: 608
+## New words: 194
 
 1;
