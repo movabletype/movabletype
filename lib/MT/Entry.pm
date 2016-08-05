@@ -530,10 +530,7 @@ sub list_props {
                     my %hash;
                     @hash{@entry_ids} = ();
                     @entry_ids = keys %hash;
-                    $db_terms->{id}
-                        = ( 'not_contains' eq $option )
-                        ? { not => \@entry_ids }
-                        : \@entry_ids;
+                    $db_terms->{id} = { not => \@entry_ids };
                 }
                 else {
                     push @{ $db_args->{joins} },
