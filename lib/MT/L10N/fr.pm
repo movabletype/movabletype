@@ -1915,7 +1915,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Invalid backup_what: [_1]' => 'backup_what invalide : [_1]',
 	'Invalid backup_archive_format: [_1]' => 'backup_archive_format invalide : [_1]',
 	'Invalid limit_size: [_1]' => 'limit_size invalide : [_1]',
-	'An error occurred during the restore process: [_1] Please check activity log for more details.' => 'Une erreur s\'est produite pendant la procédure de restauration : [_1]. Merci de vous reporter au journal d\\'activité pour plus de détails.',
+	'An error occurred during the restore process: [_1] Please check activity log for more details.' => 'Une erreur s\'est produite pendant la procédure de restauration : [_1]. Merci de vous reporter au journal d\'activité pour plus de détails.',
 	'Make sure that you remove the files that you restored from the \'import\' folder, so that if/when you run the restore process again, those files will not be re-restored.' => 'Assurez-vous d\'avoir supprimé les fichiers que vous avez restaurés dans le répertoire \'import\', ainsi, si vous restaurez à nouveau d\'autres fichiers plus tard, les fichiers actuels ne seront pas restaurés une seconde fois.',
 
 ## lib/MT/DataAPI/Endpoint/v2/Blog.pm

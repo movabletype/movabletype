@@ -1308,7 +1308,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'The category name \'[_1]\' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Categorienaam \'[_1]\' conflicteert met de naam van een andere categorie. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke naam hebben.',
 	'The category basename \'[_1]\' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.' => 'Categoriebasisnaam \'[_1]\' conflicteert met de basisnaam van een andere categorie. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke basisnaam hebben.',
 	'The name \'[_1]\' is too long!' => 'De naam \'[_1]\' is te lang!',
-	'Category \'[_1]\' created by \'[_2]\'.' => '', # Translate - New
+	'Category \'[_1]\' created by \'[_2]\'.' => 'Categorie \'[_1]\' aangemaakt door \'[_2]\'.', # Translate - New
 	'Category \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'Categorie \'[_1]\' (ID:[_2]) bewerkt door \'[_3]\'', # Translate - New
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Categorie \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
 	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Categorienaam \'[_1]\' conflicteert met een andere categorie. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke naam hebben.',
