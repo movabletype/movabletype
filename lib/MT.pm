@@ -1697,34 +1697,26 @@ sub publisher {
 
 sub rebuild {
     my $mt = shift;
-    MT->write_activity_log('--- Start rebuild.');
     $mt->publisher->rebuild(@_)
         or return $mt->error( $mt->publisher->errstr );
-    MT->write_activity_log('--- End   rebuild.');
 }
 
 sub rebuild_entry {
     my $mt = shift;
-    MT->write_activity_log('--- Start rebuild_entry.');
     $mt->publisher->rebuild_entry(@_)
         or return $mt->error( $mt->publisher->errstr );
-    MT->write_activity_log('--- End   rebuild_entry.');
 }
 
 sub rebuild_indexes {
     my $mt = shift;
-    MT->write_activity_log('--- Start rebuild_indexes.');
     $mt->publisher->rebuild_indexes(@_)
         or return $mt->error( $mt->publisher->errstr );
-    MT->write_activity_log('--- End   rebuild_indexes.');
 }
 
 sub rebuild_archives {
     my $mt = shift;
-    MT->write_activity_log('--- Start rebuild_archives.');
     $mt->publisher->rebuild_archives(@_)
         or return $mt->error( $mt->publisher->errstr );
-    MT->write_activity_log('--- End   rebuild_archives.');
 }
 
 sub ping {

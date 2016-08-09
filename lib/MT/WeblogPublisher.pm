@@ -124,7 +124,7 @@ sub rebuild {
             );
     }
     return 1 if $blog->is_dynamic;
-    MT->write_activity_log(' Start rebuild.');
+    MT->write_activity_log('--- Start rebuild.');
     my $at = $blog->archive_type || '';
     my @at = split /,/, $at;
     my $entry_class;
@@ -266,7 +266,7 @@ sub rebuild {
         $mt->rebuild_indexes( Blog => $blog, NoStatic => $param{NoStatic}, )
             or return;
     }
-    MT->write_activity_log(' End   rebuild.');
+    MT->write_activity_log('--- End   rebuild.');
     1;
 }
 
@@ -605,7 +605,7 @@ sub rebuild_entry {
     }
     return 1 if $blog->is_dynamic;
 
-    MT->write_activity_log(' Start rebuild_entry.');
+    MT->write_activity_log('--- Start rebuild_entry.');
 
     my $categories_for_rebuild;
     if ( my $ids = $param{OldCategories} ) {
@@ -824,7 +824,7 @@ sub rebuild_entry {
         }
     }
 
-    MT->write_activity_log(' End   rebuild_entry.');
+    MT->write_activity_log('--- End   rebuild_entry.');
 
     1;
 }
@@ -849,7 +849,7 @@ sub rebuild_archives {
         MT->translate( "Parameter '[_1]' is required", 'Blog' ) );
     return 1 if $blog->is_dynamic;
 
-    MT->write_activity_log(' Start rebuild_archives.');
+    MT->write_activity_log('--- Start rebuild_archives.');
 
     my $recipe = $param{Recipe}
         or return $mt->error(
@@ -952,7 +952,7 @@ sub rebuild_archives {
         }
     }
 
-    MT->write_activity_log(' End   rebuild_archives.');
+    MT->write_activity_log('--- End   rebuild_archives.');
 
     1;
 }
@@ -1564,7 +1564,7 @@ sub rebuild_indexes {
     require MT::Template::Context;
     require MT::Entry;
 
-    MT->write_activity_log(' Start rebuild_indexes.');
+    MT->write_activity_log('--- Start rebuild_indexes.');
 
     my $blog;
     $blog = $param{Blog}
@@ -1838,7 +1838,7 @@ sub rebuild_indexes {
         MT->write_activity_log( ' Rebuilded ' . $file );
     }
 
-    MT->write_activity_log(' End   rebuild_indexes.');
+    MT->write_activity_log('--- End   rebuild_indexes.');
 
     1;
 }
