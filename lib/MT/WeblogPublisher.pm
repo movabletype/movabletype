@@ -124,6 +124,7 @@ sub rebuild {
             );
     }
     return 1 if $blog->is_dynamic;
+    MT->write_activity_log(' Start rebuild.');
     my $at = $blog->archive_type || '';
     my @at = split /,/, $at;
     my $entry_class;
@@ -265,6 +266,7 @@ sub rebuild {
         $mt->rebuild_indexes( Blog => $blog, NoStatic => $param{NoStatic}, )
             or return;
     }
+    MT->write_activity_log(' End   rebuild.');
     1;
 }
 
@@ -272,6 +274,7 @@ sub rebuild_categories {
     my $mt    = shift;
     my %param = @_;
     my $blog;
+    MT->write_activity_log(' Start rebuild_categories.');
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
         $blog = MT::Blog->load($blog_id)
@@ -305,6 +308,7 @@ sub rebuild_categories {
             Force    => ( $param{Force} ? 1 : 0 ),
         ) or return;
     }
+    MT->write_activity_log(' End   rebuild_categories.');
     1;
 }
 
@@ -312,6 +316,7 @@ sub rebuild_authors {
     my $mt    = shift;
     my %param = @_;
     my $blog;
+    MT->write_activity_log(' Start rebuild_authors.');
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
         $blog = MT::Blog->load($blog_id)
@@ -357,6 +362,7 @@ sub rebuild_authors {
             Force    => ( $param{Force} ? 1 : 0 ),
         ) or return;
     }
+    MT->write_activity_log(' End   rebuild_authors.');
     1;
 }
 
@@ -405,6 +411,8 @@ sub rebuild_deleted_entry {
     require MT::Entry;
     $entry = MT::Entry->load($entry) unless ref $entry;
     return unless $entry;
+
+    MT->write_activity_log('--- Start rebuild_deleted_entry.');
 
     my $blog;
     unless ( $blog = $param{Blog} ) {
@@ -561,6 +569,8 @@ sub rebuild_deleted_entry {
         }
     }
 
+    MT->write_activity_log('--- End   rebuild_deleted_entry.');
+
     return %rebuild_recipe;
 }
 
@@ -594,6 +604,8 @@ sub rebuild_entry {
             );
     }
     return 1 if $blog->is_dynamic;
+
+    MT->write_activity_log(' Start rebuild_entry.');
 
     my $categories_for_rebuild;
     if ( my $ids = $param{OldCategories} ) {
@@ -812,6 +824,8 @@ sub rebuild_entry {
         }
     }
 
+    MT->write_activity_log(' End   rebuild_entry.');
+
     1;
 }
 
@@ -834,6 +848,8 @@ sub rebuild_archives {
         or return $mt->error(
         MT->translate( "Parameter '[_1]' is required", 'Blog' ) );
     return 1 if $blog->is_dynamic;
+
+    MT->write_activity_log(' Start rebuild_archives.');
 
     my $recipe = $param{Recipe}
         or return $mt->error(
@@ -935,6 +951,8 @@ sub rebuild_archives {
             }
         }
     }
+
+    MT->write_activity_log(' End   rebuild_archives.');
 
     1;
 }
@@ -1533,6 +1551,9 @@ sub rebuild_file {
     }
     $timer->mark( "total:rebuild_file[template_id:" . $tmpl->id . "]" )
         if $timer;
+
+    MT->write_activity_log( ' Rebuilded ' . $file );
+
     1;
 }
 
@@ -1542,6 +1563,8 @@ sub rebuild_indexes {
     require MT::Template;
     require MT::Template::Context;
     require MT::Entry;
+
+    MT->write_activity_log(' Start rebuild_indexes.');
 
     my $blog;
     $blog = $param{Blog}
@@ -1811,13 +1834,20 @@ sub rebuild_indexes {
                 . $tmpl->id
                 . ";file:$file]" )
             if $timer;
+
+        MT->write_activity_log( ' Rebuilded ' . $file );
     }
+
+    MT->write_activity_log(' End   rebuild_indexes.');
+
     1;
 }
 
 sub rebuild_from_fileinfo {
     my $pub = shift;
     my ($fi) = @_;
+
+    MT->write_activity_log(' Start rebuild_from_fileinfo.');
 
     require MT::Blog;
     require MT::Entry;
@@ -1902,6 +1932,8 @@ sub rebuild_from_fileinfo {
     $pub->rebuild_file( $blog, $arch_root, $map, $at, $ctx, \%cond, 1,
         FileInfo => $fi, )
         or return;
+
+    MT->write_activity_log(' End   rebuild_from_fileinfo.');
 
     1;
 }
