@@ -3266,7 +3266,6 @@ sub write_activity_log {
     return unless ( $mt->config('ActivityLogging') );
 
     my ( $pkg, $filename, $line ) = caller;
-    my @time = localtime;
 
     my $memory;
     my $cmd = $mt->config->ProcessMemoryCommand;
@@ -3289,6 +3288,7 @@ sub write_activity_log {
         }
     }
 
+    my @time = localtime(time);
     my $log_line
         = sprintf "%04d-%02d-%02dT%02d:%02d:%02d %s %s at %s line %d.\n",
         $time[5] + 1900, $time[4] + 1, @time[ 3, 2, 1, 0 ],
@@ -3297,7 +3297,6 @@ sub write_activity_log {
     require File::Spec;
     my $dir = MT->config('ActivityLoggingPath') or return;
 
-    my @time = localtime(time);
     my $file = sprintf(
         "al-%04d%02d%02d.log",
         $time[5] + 1900,
