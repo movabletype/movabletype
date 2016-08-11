@@ -145,7 +145,7 @@ sub start_element {
 
                 my $obj;
                 if ( 'author' eq $name ) {
-                    MT->write_activity_log( 'Start restore ' . $class );
+                    MT->write_activity_log( '   Start restore ' . $class );
 
                     $obj = $class->load( { name => $column_data{name} } );
                     if ($obj) {
@@ -217,10 +217,10 @@ sub start_element {
                         }
                     }
 
-                    MT->write_activity_log( 'End restore   ' . $class );
+                    MT->write_activity_log( '   End restore   ' . $class );
                 }
                 elsif ( 'template' eq $name ) {
-                    MT->write_activity_log( 'Start restore ' . $class );
+                    MT->write_activity_log( '   Start restore ' . $class );
 
                     if ( !$column_data{blog_id} ) {
                         $obj = $class->load(
@@ -251,10 +251,10 @@ sub start_element {
                             }
                         }
                     }
-                    MT->write_activity_log( 'End restore   ' . $class );
+                    MT->write_activity_log( '   End restore   ' . $class );
                 }
                 elsif ( 'filter' eq $name ) {
-                    MT->write_activity_log( 'Start restore ' . $class );
+                    MT->write_activity_log( '   Start restore ' . $class );
 
                     if ( $objects->{ "MT::Author#" . $column_data{author_id} }
                         )
@@ -277,10 +277,10 @@ sub start_element {
                         }
                     }
 
-                    MT->write_activity_log( 'End restore   ' . $class );
+                    MT->write_activity_log( '   End restore   ' . $class );
                 }
                 elsif ( 'image' eq $name ) {
-                    MT->write_activity_log( 'Start restore ' . $class );
+                    MT->write_activity_log( '   Start restore ' . $class );
 
                     if ( !$column_data{blog_id} ) {
                         $obj = $class->load(
@@ -337,14 +337,14 @@ sub start_element {
                         }
                     }
 
-                    MT->write_activity_log( 'End restore   ' . $class );
+                    MT->write_activity_log( '   End restore   ' . $class );
                 }
 
                 unless ($obj) {
                     $obj = $class->new;
                 }
                 unless ( $obj->id ) {
-                    MT->write_activity_log( 'Start restore ' . $class );
+                    MT->write_activity_log( '   Start restore ' . $class );
 
                     # Pass through even if an blog doesn't restore
                     # the parent object
@@ -406,7 +406,7 @@ sub start_element {
                         $self->{skip} += 1;
                     }
 
-                    MT->write_activity_log( 'End restore   ' . $class );
+                    MT->write_activity_log( '   End restore   ' . $class );
                 }
             }
         }

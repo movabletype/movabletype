@@ -2188,7 +2188,7 @@ BLOG: for my $blog_id (@id) {
         }
 
         MT->write_activity_log(
-            'Start refresh all templates. blog_id:' . $blog_id );
+            ' Start refresh all templates. blog_id:' . $blog_id );
 
         my $tmpl_lang;
         $tmpl_lang = $blog->language if $blog_id;
@@ -2475,7 +2475,7 @@ BLOG: for my $blog_id (@id) {
         $refreshed = 1;
 
         MT->write_activity_log(
-            'End   refresh all templates. blog_id:' . $blog_id );
+            ' End   refresh all templates. blog_id:' . $blog_id );
     }
     if (@blogs_not_refreshed) {
         $app->add_return_arg( 'not_refreshed' => 1 );

@@ -2036,7 +2036,7 @@ sub save_entries {
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog;
 
-    MT->write_activity_log('Start permission check.');
+    MT->write_activity_log(' Start permission check.');
 
 PERMCHECK: {
         my $action
@@ -2068,7 +2068,7 @@ PERMCHECK: {
         return $app->permission_denied();
     }
 
-    MT->write_activity_log('End   permission check.');
+    MT->write_activity_log(' End   permission check.');
 
     $app->validate_magic() or return;
 
@@ -2081,7 +2081,7 @@ PERMCHECK: {
     my $this_author_id = $this_author->id;
     my @objects;
 
-    MT->write_activity_log('Start check params.');
+    MT->write_activity_log(' Start check params.');
 
     for my $p (@p) {
         next unless $p =~ /^author_id_(\d+)/;
@@ -2283,15 +2283,15 @@ PERMCHECK: {
         push( @objects, { current => $entry, original => $orig_obj } );
     }
 
-    MT->write_activity_log('End   check params.');
+    MT->write_activity_log(' End   check params.');
 
-    MT->write_activity_log('Start callbacks cms_post_bulk_save.');
+    MT->write_activity_log(' Start callbacks cms_post_bulk_save.');
 
     $app->run_callbacks(
         'cms_post_bulk_save.' . ( $type eq 'entry' ? 'entries' : 'pages' ),
         $app, \@objects );
 
-    MT->write_activity_log('End   callbacks cms_post_bulk_save.');
+    MT->write_activity_log(' End   callbacks cms_post_bulk_save.');
 
     $app->add_return_arg( 'saved' => 1, is_power_edit => 1 );
 
@@ -3005,7 +3005,7 @@ sub update_entry_status {
 
     my @objects;
 
-    MT->write_activity_log('Start load entries.');
+    MT->write_activity_log(' Start load entries.');
 
     foreach my $id (@ids) {
         my $entry = MT::Entry->load($id)
@@ -3080,19 +3080,19 @@ sub update_entry_status {
         push( @objects, { current => $entry, original => $original } );
     }
 
-    MT->write_activity_log('End   load entries.');
+    MT->write_activity_log(' End   load entries.');
 
-    MT->write_activity_log('Start rebuild_these.');
+    MT->write_activity_log(' Start rebuild_these.');
 
     my $tmpl = $app->rebuild_these( \%rebuild_these,
         how => MT::App::CMS::NEW_PHASE() );
 
-    MT->write_activity_log('End   rebuild_these.');
+    MT->write_activity_log(' End   rebuild_these.');
 
     if (@objects) {
         my $obj = $objects[0]{current};
 
-        MT->write_activity_log('Start callbacks cms_post_bulk_save.');
+        MT->write_activity_log(' Start callbacks cms_post_bulk_save.');
 
         $app->run_callbacks(
             'cms_post_bulk_save.'
@@ -3100,7 +3100,7 @@ sub update_entry_status {
             $app, \@objects
         );
 
-        MT->write_activity_log('End   callbacks cms_post_bulk_save.');
+        MT->write_activity_log(' End   callbacks cms_post_bulk_save.');
     }
 
     MT->write_activity_log('--- End   update_entry_status.');
