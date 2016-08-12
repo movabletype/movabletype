@@ -18,6 +18,7 @@ use FindBin;
 use lib ( "$FindBin::Bin/../lib", "$FindBin::Bin/../extlib" );
 use File::Spec;
 use MT;
+use MT::Upgrade;
 
 unless ($new_config) {
     print
@@ -45,42 +46,64 @@ eval {
         print "       or, specified new-config file isn't exists.\n";
         exit;
     }
-    require MT::Object;
-    MT::Object->driver( $cfg->ObjectDriver )
-        or die MT::ObjectDriver->errstr;
-
-    use MT::Upgrade;
     print "Loading database schema...\n\n";
     my @TYPES = keys %{ MT->registry('object_types') };
     foreach my $type (@TYPES) {
         check_type($type);
     }
+
+    $cfg->read_config($cfg_file_orig);
+
+    require MT::ObjectDriverFactory;
+    my $password   = $cfg->DBPassword;
+    my $username   = $cfg->DBUser;
+    my $dbd        = MT::ObjectDriverFactory->dbd_class;
+    my $old_driver = MT::ObjectDriver::Driver::DBI->new(
+        dbd       => $dbd,
+        dsn       => $dbd->dsn_from_config($cfg),
+        reuse_dbh => 1,
+        ( $username ? ( username => $username ) : () ),
+        ( $password ? ( password => $password ) : () ),
+    );
+    my $dbh = $old_driver->dbh_handle;
+
+    $cfg->read_config($cfg_file_new);
+
     ## %ids will hold the highest IDs of each class.
     my %ids;
+    my %TABLES;
     print "Loading data...\n";
-    require MT::ObjectDriverFactory;
-
     for my $type (@TYPES) {
         my $class = MT->model($type);
         print $class, "\n";
 
-        undef $MT::Object::DRIVER;
-        undef $MT::ObjectDriverFactory::DRIVER;
-        $cfg->read_config($cfg_file_orig);
-        MT::Object->driver( $cfg->ObjectDriver );
+        my $table_name = $class->table_name();
 
-        my $iter = $class->load_iter;
+        next if exists $TABLES{$table_name};
+        $TABLES{$table_name} = 1;
+
+        my $sth = $dbh->prepare("select * from $table_name;") or next;
+
+        my $result_set;
+        eval { $result_set = $sth->execute };
+        next unless $result_set;
+        my $datasource = $class->datasource;
 
         my %names;
         my %cat_parent;
 
-        undef $MT::Object::DRIVER;
-        undef $MT::ObjectDriverFactory::DRIVER;
-        $cfg->read_config($cfg_file_new);
-        MT::Object->driver( $cfg->ObjectDriver );
+        # データの取得と出力
+        while ( my $row = $sth->fetchrow_hashref ) {
+            my $obj = $class->new();
 
-        while ( my $obj = $iter->() ) {
+            my $values = {};
+            while ( my ( $col, $value ) = each(%$row) ) {
+                $col =~ s/${datasource}_//;
+                $values->{$col} = $value;
+            }
+            $obj->set_values($values);
             printf "  %s\n", ( $obj->has_column('id') ? $obj->id : '.' );
+
             $obj = clean_object($obj);
 
             # Update IDs only auto_increment.
@@ -233,9 +256,12 @@ sub check_type {
         else {
             MT::Upgrade->core_column_action( 'add', type => $type )
                 if $result->{add};
-            MT::Upgrade->alter_column( type => $type ) if $result->{alter};
-            MT::Upgrade->drop_column( type => $type ) if $result->{drop};
-            MT::Upgrade->index_column( type => $type ) if $result->{index};
+            MT::Upgrade->core_column_action( 'alter', type => $type )
+                if $result->{alter};
+            MT::Upgrade->core_column_action( 'drop', type => $type )
+                if $result->{drop};
+            MT::Upgrade->core_column_action( 'index', type => $type )
+                if $result->{index};
         }
     }
 }
