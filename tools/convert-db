@@ -92,7 +92,6 @@ eval {
         my %names;
         my %cat_parent;
 
-        # データの取得と出力
         while ( my $row = $sth->fetchrow_hashref ) {
             my $obj = $class->new();
 
