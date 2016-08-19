@@ -1962,7 +1962,7 @@ sub _upload_file_compat {
         # Adjust image quality according to ImageQualityJpeg
         # and ImageQualityPng.
         $asset->change_quality
-            if $app->config('AutoChangeImageQualiry');
+            if $app->config('AutoChangeImageQuality');
     }
 
     $asset->mime_type($mimetype) if $mimetype;
