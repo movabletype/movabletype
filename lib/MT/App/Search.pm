@@ -11,6 +11,7 @@ use base qw( MT::App );
 
 use MT::Util qw( encode_html encode_url perl_sha1_digest_hex );
 use MT::App::Search::Common;
+use MT::Util::Log;
 
 sub id {'new_search'}
 
@@ -351,7 +352,7 @@ sub check_cache {
 sub process {
     my $app = shift;
 
-    MT->write_activity_log('--- Start search process.');
+    MT::Util::Log->info('--- Start search process.');
 
     my @messages;
     return $app->throttle_response( \@messages )
@@ -360,7 +361,7 @@ sub process {
     my ( $count, $out ) = $app->check_cache();
     if ( defined $out ) {
         $app->run_callbacks( 'search_cache_hit', $count, $out );
-        MT->write_activity_log('--- End   search process. Use cache.');
+        MT::Util::Log->info('--- End   search process. Use cache.');
         return $out;
     }
     my $iter;
@@ -373,22 +374,22 @@ sub process {
         || $app->param('month')
         || $app->param('day') )
     {
-        MT->write_activity_log(' Start search_terms.');
+        MT::Util::Log->info(' Start search_terms.');
         my @arguments = $app->search_terms();
-        MT->write_activity_log(' End   search_terms.');
+        MT::Util::Log->info(' End   search_terms.');
         return $app->error( $app->errstr ) if $app->errstr;
 
         $count = 0;
         if (@arguments) {
-            MT->write_activity_log(' Start search_terms.');
+            MT::Util::Log->info(' Start search_terms.');
             ( $count, $iter ) = $app->execute(@arguments);
-            MT->write_activity_log(' End   search_terms.');
+            MT::Util::Log->info(' End   search_terms.');
             return $app->error( $app->errstr ) unless $iter;
 
-            MT->write_activity_log(' Start callbacks search_post_execute.');
+            MT::Util::Log->info(' Start callbacks search_post_execute.');
             $app->run_callbacks( 'search_post_execute', $app, \$count,
                 \$iter );
-            MT->write_activity_log(' End   callbacks search_post_execute.');
+            MT::Util::Log->info(' End   callbacks search_post_execute.');
         }
     }
 
@@ -407,7 +408,7 @@ sub process {
 
     $out = $app->$method( $count, $iter );
     unless ( defined $out ) {
-        MT->write_activity_log('--- End   search process. No out.');
+        MT::Util::Log->info('--- End   search process. No out.');
         return $app->error( $app->errstr );
     }
 
@@ -421,7 +422,7 @@ sub process {
     }
 
     $app->run_callbacks( 'search_post_render', $app, $count, $result );
-    MT->write_activity_log('--- End   search process.');
+    MT::Util::Log->info('--- End   search process.');
     $result;
 }
 
@@ -448,16 +449,16 @@ sub execute {
         or return $app->errtrans( 'Unsupported type: [_1]',
         encode_html( $app->{searchparam}{Type} ) );
 
-    MT->write_activity_log('  Start count.');
+    MT::Util::Log->info('  Start count.');
     my $count = $app->count( $class, $terms, $args );
-    MT->write_activity_log('  End   count.');
+    MT::Util::Log->info('  End   count.');
     return $app->errtrans( "Invalid query: [_1]", $app->errstr )
         unless defined $count;
 
-    MT->write_activity_log('  Start load_iter.');
+    MT::Util::Log->info('  Start load_iter.');
     my $iter = $class->load_iter( $terms, $args )
         or $app->error( $class->errstr );
-    MT->write_activity_log('  End   load_iter.');
+    MT::Util::Log->info('  End   load_iter.');
     ( $count, $iter );
 }
 

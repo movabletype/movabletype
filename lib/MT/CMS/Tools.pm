@@ -11,6 +11,7 @@ use Symbol;
 use MT::I18N qw( wrap_text );
 use MT::Util
     qw( encode_url encode_html decode_html encode_js trim dir_separator is_valid_email );
+use MT::Util::Log;
 
 sub system_check {
     my $app = shift;
@@ -1138,7 +1139,7 @@ sub backup {
     my $blog_ids = $q->param('backup_what');
     my @blog_ids = split ',', $blog_ids;
 
-    MT->write_activity_log('=== Start backup.');
+    MT::Util::Log->info('=== Start backup.');
 
     if ( $user->is_superuser ) {
 
@@ -1444,7 +1445,7 @@ sub backup {
         _backup_finisher( $app, $fname, $param );
     }
 
-    MT->write_activity_log('=== End   backup.');
+    MT::Util::Log->info('=== End   backup.');
 
 }
 
@@ -1551,7 +1552,7 @@ sub restore {
         unless $app->can_do('restore_blog');
     $app->validate_magic() or return;
 
-    MT->write_activity_log('=== Start restore.');
+    MT::Util::Log->info('=== Start restore.');
 
     my $q = $app->param;
 
@@ -1693,13 +1694,11 @@ sub restore {
                 DIR => $temp_dir );
             $tmp = Encode::decode( MT->config->PublishCharset, $tmp );
 
-            MT->write_activity_log(
-                '=== Start extract ' . $uploaded_filename );
+            MT::Util::Log->info( '=== Start extract ' . $uploaded_filename );
 
             $arc->extract($tmp);
 
-            MT->write_activity_log(
-                '=== End   extract ' . $uploaded_filename );
+            MT::Util::Log->info( '=== End   extract ' . $uploaded_filename );
 
             $arc->close;
             my ( $blog_ids, $asset_ids );
@@ -1772,7 +1771,7 @@ sub restore {
     $app->print_encode( $app->build_page( "restore_end.tmpl", $param ) );
     close $fh if $fh;
 
-    MT->write_activity_log('=== End   restore.');
+    MT::Util::Log->info('=== End   restore.');
 
     1;
 }

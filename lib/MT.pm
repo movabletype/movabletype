@@ -3250,65 +3250,6 @@ sub current_time_offset {
     $self->request('time_offset') || $self->config->TimeOffset;
 }
 
-sub write_activity_log {
-    my $mt = shift;
-    my ($message) = @_;
-    $mt = MT->instance unless ref $mt;
-
-    return unless ( $mt->config('ActivityLogging') );
-
-    my ( $pkg, $filename, $line ) = caller;
-
-    my $memory;
-    my $cmd = $mt->config->ProcessMemoryCommand;
-    if ($cmd) {
-        my $re;
-        if ( ref($cmd) eq 'HASH' ) {
-            $re  = $cmd->{regex};
-            $cmd = $cmd->{command};
-        }
-        $cmd =~ s/\$\$/$$/g;
-        $memory = `$cmd`;
-        if ($re) {
-            if ( $memory =~ m/$re/ ) {
-                $memory = $1;
-                $memory =~ s/\D//g;
-            }
-        }
-        else {
-            $memory =~ s/\s+//gs;
-        }
-    }
-
-    my @time = localtime(time);
-    my $log_line
-        = sprintf "%04d-%02d-%02dT%02d:%02d:%02d %s %s at %s line %d.\n",
-        $time[5] + 1900, $time[4] + 1, @time[ 3, 2, 1, 0 ],
-        $memory, $message, $filename, $line;
-
-    require File::Spec;
-    my $dir = MT->config('ActivityLoggingPath') or return;
-
-    my $file = sprintf(
-        "al-%04d%02d%02d.log",
-        $time[5] + 1900,
-        $time[4] + 1,
-        $time[3]
-    );
-    my $log_file = File::Spec->catfile( $dir, $file );
-
-    my $first_write = !-f $log_file;
-
-    open my $ACTLOG, ">>", $log_file
-        or ( warn("Failed to open activity log $log_file"), return );
-    require Fcntl;
-    flock( $ACTLOG, Fcntl::LOCK_EX() );
-
-    print $ACTLOG $log_line;
-
-    close $ACTLOG;
-}
-
 sub DESTROY { }
 
 1;
@@ -4338,11 +4279,6 @@ See L<MT::Cache::Negotiate>.
 
 Registers a callback that will cause the MT cache to invalidate itself.
 See L<MT::Cache::Negotiate>.
-
-=head2 MT->write_activity_log
-
-When L<ActivityLogging> is true, Activity log is outputted to the
-file defined in L<ActivityLoggingPath>.
 
 =head1 ERROR HANDLING
 

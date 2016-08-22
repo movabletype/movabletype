@@ -9,6 +9,7 @@ use strict;
 use MT::Util qw( format_ts relative_date remove_html encode_html encode_js
     encode_url archive_file_for offset_time_list break_up_text first_n_words );
 use MT::I18N qw( const wrap_text );
+use MT::Util::Log;
 
 sub edit {
     my $cb = shift;
@@ -2025,7 +2026,7 @@ sub save {
 sub save_entries {
     my $app = shift;
 
-    MT->write_activity_log('--- Start save_entries.');
+    MT::Util::Log->info('--- Start save_entries.');
 
     my $perms   = $app->permissions;
     my $type    = $app->param('_type');
@@ -2036,7 +2037,7 @@ sub save_entries {
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog;
 
-    MT->write_activity_log(' Start permission check.');
+    MT::Util::Log->info(' Start permission check.');
 
 PERMCHECK: {
         my $action
@@ -2068,7 +2069,7 @@ PERMCHECK: {
         return $app->permission_denied();
     }
 
-    MT->write_activity_log(' End   permission check.');
+    MT::Util::Log->info(' End   permission check.');
 
     $app->validate_magic() or return;
 
@@ -2081,7 +2082,7 @@ PERMCHECK: {
     my $this_author_id = $this_author->id;
     my @objects;
 
-    MT->write_activity_log(' Start check params.');
+    MT::Util::Log->info(' Start check params.');
 
     for my $p (@p) {
         next unless $p =~ /^author_id_(\d+)/;
@@ -2283,19 +2284,19 @@ PERMCHECK: {
         push( @objects, { current => $entry, original => $orig_obj } );
     }
 
-    MT->write_activity_log(' End   check params.');
+    MT::Util::Log->info(' End   check params.');
 
-    MT->write_activity_log(' Start callbacks cms_post_bulk_save.');
+    MT::Util::Log->info(' Start callbacks cms_post_bulk_save.');
 
     $app->run_callbacks(
         'cms_post_bulk_save.' . ( $type eq 'entry' ? 'entries' : 'pages' ),
         $app, \@objects );
 
-    MT->write_activity_log(' End   callbacks cms_post_bulk_save.');
+    MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
 
     $app->add_return_arg( 'saved' => 1, is_power_edit => 1 );
 
-    MT->write_activity_log('--- End   save_entries.');
+    MT::Util::Log->info('--- End   save_entries.');
 
     $app->call_return;
 }
@@ -2395,7 +2396,7 @@ sub pinged_urls {
 sub save_entry_prefs {
     my $app = shift;
 
-    MT->write_activity_log('--- Start save_entry_prefs.');
+    MT::Util::Log->info('--- Start save_entry_prefs.');
 
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
@@ -2428,7 +2429,7 @@ sub save_entry_prefs {
         $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
         );
 
-    MT->write_activity_log('--- End   save_entry_prefs.');
+    MT::Util::Log->info('--- End   save_entry_prefs.');
 
     return $app->json_result( { success => 1 } );
 }
@@ -2989,7 +2990,7 @@ sub post_delete {
 sub update_entry_status {
     my $app = shift;
 
-    MT->write_activity_log('--- Start update_entry_status.');
+    MT::Util::Log->info('--- Start update_entry_status.');
 
     my ( $new_status, @ids ) = @_;
     return $app->errtrans("Need a status to update entries")
@@ -3005,7 +3006,7 @@ sub update_entry_status {
 
     my @objects;
 
-    MT->write_activity_log(' Start load entries.');
+    MT::Util::Log->info(' Start load entries.');
 
     foreach my $id (@ids) {
         my $entry = MT::Entry->load($id)
@@ -3080,19 +3081,19 @@ sub update_entry_status {
         push( @objects, { current => $entry, original => $original } );
     }
 
-    MT->write_activity_log(' End   load entries.');
+    MT::Util::Log->info(' End   load entries.');
 
-    MT->write_activity_log(' Start rebuild_these.');
+    MT::Util::Log->info(' Start rebuild_these.');
 
     my $tmpl = $app->rebuild_these( \%rebuild_these,
         how => MT::App::CMS::NEW_PHASE() );
 
-    MT->write_activity_log(' End   rebuild_these.');
+    MT::Util::Log->info(' End   rebuild_these.');
 
     if (@objects) {
         my $obj = $objects[0]{current};
 
-        MT->write_activity_log(' Start callbacks cms_post_bulk_save.');
+        MT::Util::Log->info(' Start callbacks cms_post_bulk_save.');
 
         $app->run_callbacks(
             'cms_post_bulk_save.'
@@ -3100,10 +3101,10 @@ sub update_entry_status {
             $app, \@objects
         );
 
-        MT->write_activity_log(' End   callbacks cms_post_bulk_save.');
+        MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
     }
 
-    MT->write_activity_log('--- End   update_entry_status.');
+    MT::Util::Log->info('--- End   update_entry_status.');
 
     $tmpl;
 }

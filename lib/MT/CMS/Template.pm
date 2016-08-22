@@ -8,6 +8,7 @@ package MT::CMS::Template;
 
 use strict;
 use MT::Util qw( format_ts );
+use MT::Util::Log;
 
 sub edit {
     my $cb = shift;
@@ -2131,7 +2132,7 @@ sub refresh_all_templates {
     my ($app) = @_;
     $app->validate_magic or return;
 
-    MT->write_activity_log('--- Start refresh_all_templates.');
+    MT::Util::Log->info('--- Start refresh_all_templates.');
 
     my $backup = 0;
     if ( $app->param('backup') ) {
@@ -2187,7 +2188,7 @@ BLOG: for my $blog_id (@id) {
             next BLOG unless $blog;
         }
 
-        MT->write_activity_log(
+        MT::Util::Log->info(
             ' Start refresh all templates. blog_id:' . $blog_id );
 
         my $tmpl_lang;
@@ -2474,7 +2475,7 @@ BLOG: for my $blog_id (@id) {
         }
         $refreshed = 1;
 
-        MT->write_activity_log(
+        MT::Util::Log->info(
             ' End   refresh all templates. blog_id:' . $blog_id );
     }
     if (@blogs_not_refreshed) {
@@ -2484,7 +2485,7 @@ BLOG: for my $blog_id (@id) {
     }
     $app->add_return_arg( 'refreshed' => 1 ) if $refreshed;
 
-    MT->write_activity_log('--- End   refresh_all_templates.');
+    MT::Util::Log->info('--- End   refresh_all_templates.');
 
     $app->call_return;
 }
@@ -2507,7 +2508,7 @@ sub refresh_individual_templates {
             || $perms->can_administer_blog )
         );
 
-    MT->write_activity_log('--- Start refresh_individual_templates.');
+    MT::Util::Log->info('--- Start refresh_individual_templates.');
 
     my $set;
     my $blog_id = $app->param('blog_id');
@@ -2648,7 +2649,7 @@ sub refresh_individual_templates {
 
     $app->mode('view');    # set mode for blog selector
 
-    MT->write_activity_log('--- End   refresh_individual_templates.');
+    MT::Util::Log->info('--- End   refresh_individual_templates.');
 
     $app->build_page( 'refresh_results.tmpl',
         { message_loop => \@msg_loop, return_url => $app->return_uri } );
