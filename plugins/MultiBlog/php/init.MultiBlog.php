@@ -78,7 +78,9 @@ function multiblog_MTTagSearchLink($args, &$ctx) {
     return multiblog_function_wrapper('mttagsearchlink', $args, $ctx);
 }
 # Special handler for MTInclude
-function multiblog_MTInclude($args, &$ctx) {
+function multiblog_MTInclude($args, &$_smarty_tpl) {
+    $ctx = $_smarty_tpl->smarty;
+
     if (isset($args['blog_id'])) {
     # Load multiblog access control list
         $acl = multiblog_load_acl($ctx);
@@ -109,12 +111,14 @@ function multiblog_MTInclude($args, &$ctx) {
     }
     global $multiblog_orig_handlers;
     $fn = $multiblog_orig_handlers['mtinclude'];
-    $result = $fn($args, $ctx);
+    $result = call_user_func_array($fn, array($args, &$_smarty_tpl));
     return $result;
 }
 
 # MultiBlog plugin wrapper for function tags (i.e. variable tags)
-function multiblog_function_wrapper($tag, $args, &$ctx) {
+function multiblog_function_wrapper($tag, $args, &$_smarty_tpl) {
+    $ctx = $_smarty_tpl->smarty;
+
     $localvars = array('local_blog_id');
     $ctx->localize($localvars);
     
@@ -149,7 +153,7 @@ function multiblog_function_wrapper($tag, $args, &$ctx) {
     # Call original tag handler with new multiblog args
     global $multiblog_orig_handlers;
     $fn = $multiblog_orig_handlers[$tag];
-    $result = $fn($args, $ctx);
+    $result = call_user_func_array($fn, array($args, &$_smarty_tpl));
 
     # Restore localized variables
     $ctx->restore($localvars);
@@ -157,7 +161,8 @@ function multiblog_function_wrapper($tag, $args, &$ctx) {
 }
 
 # MultiBlog plugin wrapper for block tags (i.e. container/conditional)
-function multiblog_block_wrapper(&$args, $content, &$ctx, &$repeat) {
+function multiblog_block_wrapper($args, $content, &$_smarty_tpl, &$repeat) {
+    $ctx = $_smarty_tpl->smarty;
     $tag = $ctx->this_tag();
     $localvars = array('entries', 'current_timestamp', 'current_timestamp_end', 'category', 'archive_category', 'local_blog_id');
 
@@ -212,7 +217,7 @@ function multiblog_block_wrapper(&$args, $content, &$ctx, &$repeat) {
     # Call original tag handler with new multiblog args
     global $multiblog_orig_handlers;
     $fn = $multiblog_orig_handlers[$tag];
-    $result = $fn($args, $content, $ctx, $repeat);
+    $result = call_user_func_array($fn, array($args, $content, &$_smarty_tpl, &$repeat));
 
     # Restore localized variables if last loop
     if (!$repeat)

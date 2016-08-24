@@ -1961,7 +1961,8 @@ sub _upload_file_compat {
 
         # Adjust image quality according to ImageQualityJpeg
         # and ImageQualityPng.
-        $asset->change_quality;
+        $asset->change_quality
+            if $app->config('AutoChangeImageQuality');
     }
 
     $asset->mime_type($mimetype) if $mimetype;
@@ -2497,7 +2498,8 @@ sub _upload_file {
 
         # Adjust image quality according to ImageQualityJpeg
         # and ImageQualityPng.
-        $asset->change_quality;
+        $asset->change_quality
+            if $app->config('AutoChangeImageQuality');
     }
 
     $asset->mime_type($mimetype) if $mimetype;
@@ -3243,7 +3245,8 @@ sub insert_asset {
         # Parse JSON.
         my $prefs = $app->param('prefs_json');
         $prefs =~ s/^"|"$//g;
-        $prefs =~ s/\\//g;
+        $prefs =~ s/\\"/"/g;
+        $prefs =~ s/\\\\/\\/g;
         $prefs = eval { MT::Util::from_json($prefs) };
         if ( !$prefs ) {
             return $app->errtrans('Invalid request.');

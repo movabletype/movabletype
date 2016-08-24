@@ -526,7 +526,7 @@ sub rebuild_deleted_entry {
             }
             else {
                 if ( $app->config('RebuildAtDelete') ) {
-                    if ( $archiver->author_based() && $entry->author_id ) {
+                    if ( $archiver->author_based() && $entry->author ) {
                         if ( $archiver->date_based() ) {
                             $rebuild_recipe{$at}{ $entry->author->id }
                                 { $start . $end }{'Start'} = $start;
@@ -2158,9 +2158,9 @@ sub remove_entry_archive_file {
     my %param = @_;
 
     my $entry = $param{Entry};
-    my $at    = $param{ArchiveType} || 'Individual';
-    my $cat   = $param{Category};
-    my $auth  = $param{Author};
+    my $at  = $param{ArchiveType} || ( $entry->is_entry ? 'Individual' : 'Page' );
+    my $cat = $param{Category};
+    my $auth = $param{Author};
     my $force = exists $param{Force} ? $param{Force} : 1;
 
     require MT::TemplateMap;

@@ -145,6 +145,7 @@ sub publish {
         MT::CMS::Template::publish_index_templates($app);
     }
     else {
+        $app->param( 'no_rebuilding_tmpl', 1 );
         MT::CMS::Template::publish_archive_templates($app);
     }
 

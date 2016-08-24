@@ -2617,6 +2617,7 @@ sub refresh_individual_templates {
                     $app->errstr
                 )
                 );
+            $tmpl->modified_on($ts);
             $tmpl->save;
             $app->run_callbacks( 'cms_post_save.template',
                 $app, $tmpl, $orig_obj );
@@ -3234,8 +3235,7 @@ sub save_template_prefs {
         or return $app->error(
         $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
         );
-    $app->send_http_header("text/json");
-    return "true";
+    return $app->json_result( { success => 1 } );
 }
 
 1;

@@ -54,6 +54,11 @@
     TC.attachLoadEvent( init );
 
     function presubmit(f) {
+        if(jQuery('[name="thumb"]').prop('checked')){
+          if ( !jQuery('[name="thumb_width"]').mtValidate('default')) {
+            return false;
+          }
+        }
         var mode = 'complete_upload';
     <mt:if name="entry_insert">
         mode = 'asset_insert';
@@ -72,6 +77,17 @@
     /* ]]> */
     </script>
 </mt:setvarblock>
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery.mtValidateAddRules({
+        '[name="thumb_width"]': function ($e) {
+          return /^\d+$/.test($e.val()) && ($e.val() > 0);
+        }
+    });
+    jQuery.mtValidateAddMessages({
+        '[name="thumb_width"]': '<__trans phrase="This field must be a positive integer.">'
+    });
+</mt:setvarblock>
+
 <mt:include name="dialog/header.tmpl">
 
 <mt:if name="extension_message">

@@ -11,7 +11,7 @@ function smarty_block_mtsetvars($args, $content, &$ctx, &$repeat) {
         $vars =& $ctx->__stash['vars'];
         if (!is_array($vars)) {
             $vars = array();
-            $ctx->__stash['vars'] =& $vars;
+            $ctx->__stash['vars'] = $vars;
         }
         $pairs = preg_split('/\r?\n/', trim($content));
         foreach ($pairs as $line) {

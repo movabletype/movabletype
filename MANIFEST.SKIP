@@ -142,6 +142,14 @@ themes/broken_blog_theme
 #?package=MTA ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 #?package=MTA ^addons/AWS.pack
 
+#?package=MTAAWS ^COPYING
+#?package=MTAAWS ^COPYRIGHT
+#?package=MTAAWS ^addons/Cloud.pack
+#?package=MTAAWS ^mt-static/addons/Cloud.pack
+#?package=MTAAWS ^mt-hb.cgi
+#?package=MTAAWS ^VERSIONS
+#?package=MTAAWS ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
+
 #?package=MTCLOUD ^COPYING
 #?package=MTCLOUD ^COPYRIGHT
 #?package=MTCLOUD ^addons/Enterprise.pack

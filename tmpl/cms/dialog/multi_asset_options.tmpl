@@ -103,11 +103,19 @@
 
   jQuery('button.primary').click(function(){
     var options = [];
+    var errors = 0;
     jQuery('#asset_details').find('div.asset-detail-panel').each(function() {
       var $this = jQuery(this);
       var id = $this.attr('data-asset-id');
       var opts = {};
       opts.id = id;
+      if(jQuery(this).find('[name="thumb"]').prop('checked')){
+        if ( !jQuery(this).find('[name="thumb_width"]').mtValidate('default')) {
+          // each continue
+          errors = 1;
+          return true;
+        }
+      }
       jQuery(this).find('input').each(function() {
         if (jQuery(this).prop('type') === 'checkbox' || jQuery(this).prop('type') === 'radio') {
          if(jQuery(this).prop('checked')) {
@@ -121,11 +129,37 @@
       options.push(opts);
     });
 
-    var json = JSON.stringify(options);
-    var $form = jQuery('#asset-detail-form');
-    $form.find('[name="prefs_json"]').val(json);
-    $form.submit();
+    if( errors == 0 ){
+      var json = JSON.stringify(options);
+      var $form = jQuery('#asset-detail-form');
+      $form.find('[name="prefs_json"]').val(json);
+      $form.submit();
+    }
     return false;
+  });
+
+  jQuery('input[name="thumb_width"]').keypress(function(event){
+    var key = event.charCode || event.keyCode;
+    if (( key == null) || ( key == 0 ) || ( key == 8 ) || 
+        ( key == 9 ) || ( key == 13 ) || ( key == 27 ))
+        return true;
+    if (key > 60000) // handles range of special keys such as arrow keys
+        return true;
+    if (event.ctrlKey || event.altKey)
+        return true;
+    if ((key < 48) || (key > 57)){
+      event.preventDefault
+      return false;
+    }
+    return true;
+  });
+  jQuery.mtValidateAddRules({
+      '[name="thumb_width"]': function ($e) {
+        return /^\d+$/.test($e.val()) && ($e.val() > 0);
+      }
+  });
+  jQuery.mtValidateAddMessages({
+      '[name="thumb_width"]': '<__trans phrase="This field must be a positive integer.">'
   });
 </mt:setvarblock>
 

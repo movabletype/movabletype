@@ -842,5 +842,22 @@
 { "r" : "1", "t" : "<MTEntries include_blogs='all' class_type='entry' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #826
 { "r" : "1", "t" : "<MTEntries include_blogs='all' class_type='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "page"}, #827
 { "r" : "1", "t" : "<MTEntries include_blogs='all' class='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #828
-{ "r" : "1", "t" : "<MTAssets blog_ids='all'><MTAssetBlogID></MTAssets>", "e" : "0011"} #829
+{ "r" : "1", "t" : "<MTAssets blog_ids='all'><MTAssetBlogID></MTAssets>", "e" : "0011"}, #829
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL width='1280'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg"}, #830
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL width='1280' force='1'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-1280xauto-1.jpg"}, #831
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL height='960'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg"}, #832
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL height='960' force='1'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox960-1.jpg"}, #833
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink width='1280'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg\" width=\"640\" height=\"480\" alt=\"\" /></a>"}, #834
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink width='1280' force='1'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-1280xauto-1.jpg\" width=\"1280\" height=\"960\" alt=\"\" /></a>"}, #835
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink height='960'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg\" width=\"640\" height=\"480\" alt=\"\" /></a>"}, #836
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink height='960' force='1'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox960-1.jpg\" width=\"1280\" height=\"960\" alt=\"\" /></a>"}, #837
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL width='1280' square='1'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x480-1.jpg"}, #838
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL height='960' square='1'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x480-1.jpg"}, #839
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL width='1280' square='1' force='1'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-1280x1280-1.jpg"}, #840
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL height='960' square='1' force='1'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-960x960-1.jpg"}, #841
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorLink show_hcard=\"1\"></MTEntries>", "e" : "<a class=\"fn url\" href=\"http://chuckd.com/\">Chucky Dee</a>"}, #842
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorLink type=\"email\" show_hcard=\"1\"></MTEntries>", "e" : "<a class=\"fn email\" href=\"mailto:chuckd@example.com\">Chucky Dee</a>"}, #843
+{ "r" : "1", "t" : "<MTAssets include_blogs=\"1\" limit=\"1\"><mt:AssetThumbnailURL></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg"}, #844
+{ "r" : "1", "t" : "<MTCategoryLabel default='category label default'>", "e" : "category label default"}, #845
+{ "r" : "1", "t" : "<MTCategoryBaseName default='category basename default'>", "e" : "category basename default"} #846
 ]

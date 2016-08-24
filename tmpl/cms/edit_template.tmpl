@@ -875,6 +875,7 @@ function saveTemplatePrefs( sync ) {
         jQuery('form#template-listing-form > input[name=__mode]').val('save');
   <mt:if name="config.previewinnewwindow">
         jQuery('form#template-listing-form').removeAttr('target');
+  </mt:if>
         jQuery('button.save').attr('disabled', 'disabled');
         jQuery('button.publish').attr('disabled', 'disabled');
         var rebuild = 0;
@@ -888,7 +889,6 @@ function saveTemplatePrefs( sync ) {
         jQuery('button.save').removeAttr('disabled');
         jQuery('button.publish').removeAttr('disabled');
         return false;
-  </mt:if>
     });
     jQuery('button.preview').click(function() {
         syncEditor();

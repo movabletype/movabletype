@@ -1609,6 +1609,8 @@ sub save {
             },
             { ( $id ? ( not => { id => 1 } ) : () ) }
         );
+        my $folder;
+        $folder = MT::Folder->load($cat_id) if $cat_id;
         while ( my $p = $dup_it->() ) {
             my ( $dup_path, $org_path );
 
@@ -1616,13 +1618,15 @@ sub save {
                 my $p_folder = $p->folder;
                 $dup_path
                     = defined $p_folder ? $p_folder->publish_path() : '';
-                my $folder;
-                $folder = MT::Folder->load($cat_id) if $cat_id;
                 $org_path = defined $folder ? $folder->publish_path() : '';
             }
             else {
                 $dup_path = $p->permalink;
-                $org_path = $obj->permalink;
+
+                my $url = $blog->site_url || "";
+                $url .= '/' unless $url =~ m!/$!;
+                $org_path = $url
+                    . archive_file_for( $obj, $blog, 'Page', $folder );
             }
 
             return $app->error(
@@ -2401,8 +2405,7 @@ sub save_entry_prefs {
         or return $app->error(
         $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
         );
-    $app->send_http_header("text/json");
-    return "true";
+    return $app->json_result( { success => 1 } );
 }
 
 sub publish_entries {

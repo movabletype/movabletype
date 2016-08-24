@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
-    $localvars = array(array('_assets', 'asset', 'asset_first_in_row', 'asset_last_in_row', 'conditional', 'else_content'), common_loop_vars());
+    $localvars = array(array('_assets', 'asset', 'asset_first_in_row', 'asset_last_in_row', 'conditional', 'else_content', 'blog', 'blog_id'), common_loop_vars());
     $counter = 0;
 
     if (isset($args['sort_by']) && $args['sort_by'] == 'score' && !isset($args['namespace'])) {
@@ -47,6 +47,7 @@ function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
     }
 
     if ($counter < count($assets)) {
+        $blog_id = $ctx->stash('blog_id');
         $per_row = 1;
         if (isset($args['assets_per_row']))
             $per_row = $args['assets_per_row'];
@@ -55,6 +56,10 @@ function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
         $ctx->stash('_assets_counter', $counter + 1);
         $ctx->stash('asset_first_in_row', ($counter % $per_row) == 0);
         $ctx->stash('asset_last_in_row', (($counter + 1) % $per_row) == 0);
+        if ( $asset->asset_blog_id != $blog_id) {
+            $ctx->stash('blog_id', $asset->asset_blog_id);
+            $ctx->stash('blog', $asset->blog() );
+        }
         if (($counter + 1) >= count($assets))
             $ctx->stash('asset_last_in_row', true);
 
