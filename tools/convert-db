@@ -87,6 +87,7 @@ eval {
         my $result_set;
         eval { $result_set = $sth->execute };
         next unless $result_set;
+
         my $datasource = $class->datasource;
 
         my %names;
@@ -177,6 +178,35 @@ eval {
             my $cat = MT::Category->load($id);
             $cat->parent( $cat_parent{$id} );
             $cat->save;
+        }
+
+        # for meta tables
+        for my $which (qw( meta summary )) {
+            if ( $class->meta_pkg($which) ) {
+                my $class_meta = MT->model( $type . ":$which" );
+                next unless $class_meta;
+                my $datasource_meta = $class_meta->datasource;
+                my $table_name_meta = $class_meta->table_name();
+
+                my $sth = $dbh->prepare("select * from $table_name_meta;")
+                    or next;
+                my $result_set;
+                eval { $result_set = $sth->execute };
+                next unless $result_set;
+                while ( my $row = $sth->fetchrow_hashref ) {
+                    my $obj    = $class_meta->new();
+                    my $values = {};
+                    while ( my ( $col, $value ) = each(%$row) ) {
+                        $col =~ s/${datasource_meta}_//;
+                        $values->{$col} = $value;
+                    }
+                    $obj->set_values($values);
+                    $obj->save()
+                        or die
+                        "Fatal Error: Failed to save record for class $class_meta: "
+                        . $obj->errstr;
+                }
+            }
         }
 
         print "\n\n";
