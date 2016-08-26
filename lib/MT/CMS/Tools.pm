@@ -1088,7 +1088,6 @@ sub start_backup {
             'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.'
             );
     }
-
     $app->load_tmpl( 'backup.tmpl', \%param );
 }
 
