@@ -11,7 +11,6 @@ use base qw( MT::App );
 
 use MT::Util qw( encode_html encode_url perl_sha1_digest_hex );
 use MT::App::Search::Common;
-use MT::Util::Log;
 
 sub id {'new_search'}
 
@@ -352,6 +351,8 @@ sub check_cache {
 sub process {
     my $app = shift;
 
+    require MT::Util::Log;
+
     MT::Util::Log->info('--- Start search process.');
 
     my @messages;
@@ -448,6 +449,8 @@ sub execute {
     my $class = $app->model( $app->{searchparam}{Type} )
         or return $app->errtrans( 'Unsupported type: [_1]',
         encode_html( $app->{searchparam}{Type} ) );
+
+    require MT::Util::Log;
 
     MT::Util::Log->info('  Start count.');
     my $count = $app->count( $class, $terms, $args );

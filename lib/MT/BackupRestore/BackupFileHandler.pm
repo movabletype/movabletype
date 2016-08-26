@@ -11,7 +11,6 @@ use XML::SAX::Base;
 use MIME::Base64;
 use File::Basename;
 use File::Spec;
-use MT::Util::Log;
 
 @MT::BackupRestore::BackupFileHandler::ISA = qw(XML::SAX::Base);
 
@@ -40,6 +39,8 @@ sub start_element {
     my $data = shift;
 
     return if $self->{skip};
+
+    require MT::Util::Log;
 
     my $name  = $data->{LocalName};
     my $attrs = $data->{Attributes};

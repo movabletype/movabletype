@@ -12,7 +12,6 @@ our @EXPORT = qw(ArchiveFileTemplate ArchiveType);
 
 use MT::ArchiveType;
 use File::Basename;
-use MT::Util::Log;
 
 our %ArchiveTypes;
 
@@ -125,7 +124,11 @@ sub rebuild {
             );
     }
     return 1 if $blog->is_dynamic;
+
+    require MT::Util::Log;
+
     MT::Util::Log->info('--- Start rebuild.');
+
     my $at = $blog->archive_type || '';
     my @at = split /,/, $at;
     my $entry_class;
@@ -275,7 +278,11 @@ sub rebuild_categories {
     my $mt    = shift;
     my %param = @_;
     my $blog;
+
+    require MT::Util::Log;
+
     MT::Util::Log->info(' Start rebuild_categories.');
+
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
         $blog = MT::Blog->load($blog_id)
@@ -317,7 +324,11 @@ sub rebuild_authors {
     my $mt    = shift;
     my %param = @_;
     my $blog;
+
+    require MT::Util::Log;
+
     MT::Util::Log->info(' Start rebuild_authors.');
+
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
         $blog = MT::Blog->load($blog_id)
@@ -412,6 +423,8 @@ sub rebuild_deleted_entry {
     require MT::Entry;
     $entry = MT::Entry->load($entry) unless ref $entry;
     return unless $entry;
+
+    require MT::Util::Log;
 
     MT::Util::Log->info('--- Start rebuild_deleted_entry.');
 
@@ -605,6 +618,8 @@ sub rebuild_entry {
             );
     }
     return 1 if $blog->is_dynamic;
+
+    require MT::Util::Log;
 
     MT::Util::Log->info('--- Start rebuild_entry.');
 
@@ -849,6 +864,8 @@ sub rebuild_archives {
         or return $mt->error(
         MT->translate( "Parameter '[_1]' is required", 'Blog' ) );
     return 1 if $blog->is_dynamic;
+
+    require MT::Util::Log;
 
     MT::Util::Log->info('--- Start rebuild_archives.');
 
@@ -1565,6 +1582,8 @@ sub rebuild_indexes {
     require MT::Template::Context;
     require MT::Entry;
 
+    require MT::Util::Log;
+
     MT::Util::Log->info('--- Start rebuild_indexes.');
 
     my $blog;
@@ -1847,6 +1866,8 @@ sub rebuild_indexes {
 sub rebuild_from_fileinfo {
     my $pub = shift;
     my ($fi) = @_;
+
+    require MT::Util::Log;
 
     MT::Util::Log->info(' Start rebuild_from_fileinfo.');
 

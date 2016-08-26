@@ -9,7 +9,6 @@ use strict;
 
 use MT::Util qw( encode_url );
 use Symbol;
-use MT::Util::Log;
 use base qw( MT::ErrorHandler );
 
 sub NS_MOVABLETYPE {'http://www.sixapart.com/ns/movabletype'}
@@ -286,6 +285,8 @@ sub _default_terms_args {
 }
 
 sub backup {
+    require MT::Util::Log;
+
     MT::Util::Log->info('--- Start backup.');
 
     my $class = shift;
@@ -586,6 +587,8 @@ sub restore_directory {
     my ( $dir, $errors, $error_assets, $schema_version, $overwrite,
         $callback )
         = @_;
+
+    require MT::Util::Log;
 
     MT::Util::Log->info(' Start restore_directory');
 

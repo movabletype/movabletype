@@ -11,7 +11,6 @@ use Symbol;
 use MT::I18N qw( wrap_text );
 use MT::Util
     qw( encode_url encode_html decode_html encode_js trim dir_separator is_valid_email );
-use MT::Util::Log;
 
 sub system_check {
     my $app = shift;
@@ -1138,6 +1137,8 @@ sub backup {
     my $blog_ids = $q->param('backup_what');
     my @blog_ids = split ',', $blog_ids;
 
+    require MT::Util::Log;
+
     MT::Util::Log->info('=== Start backup.');
 
     if ( $user->is_superuser ) {
@@ -1550,6 +1551,8 @@ sub restore {
     return $app->permission_denied()
         unless $app->can_do('restore_blog');
     $app->validate_magic() or return;
+
+    require MT::Util::Log;
 
     MT::Util::Log->info('=== Start restore.');
 

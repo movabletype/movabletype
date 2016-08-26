@@ -8,7 +8,6 @@ package MT::CMS::Template;
 
 use strict;
 use MT::Util qw( format_ts );
-use MT::Util::Log;
 
 sub edit {
     my $cb = shift;
@@ -2132,6 +2131,8 @@ sub refresh_all_templates {
     my ($app) = @_;
     $app->validate_magic or return;
 
+    require MT::Util::Log;
+
     MT::Util::Log->info('--- Start refresh_all_templates.');
 
     my $backup = 0;
@@ -2507,6 +2508,8 @@ sub refresh_individual_templates {
         && (   $perms->can_edit_templates()
             || $perms->can_administer_blog )
         );
+
+    require MT::Util::Log;
 
     MT::Util::Log->info('--- Start refresh_individual_templates.');
 

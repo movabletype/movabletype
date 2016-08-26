@@ -9,7 +9,6 @@ use strict;
 use MT::Util qw( format_ts relative_date remove_html encode_html encode_js
     encode_url archive_file_for offset_time_list break_up_text first_n_words );
 use MT::I18N qw( const wrap_text );
-use MT::Util::Log;
 
 sub edit {
     my $cb = shift;
@@ -2026,6 +2025,8 @@ sub save {
 sub save_entries {
     my $app = shift;
 
+    require MT::Util::Log;
+
     MT::Util::Log->info('--- Start save_entries.');
 
     my $perms   = $app->permissions;
@@ -2395,6 +2396,8 @@ sub pinged_urls {
 
 sub save_entry_prefs {
     my $app = shift;
+
+    require MT::Util::Log;
 
     MT::Util::Log->info('--- Start save_entry_prefs.');
 
@@ -2989,6 +2992,8 @@ sub post_delete {
 
 sub update_entry_status {
     my $app = shift;
+
+    require MT::Util::Log;
 
     MT::Util::Log->info('--- Start update_entry_status.');
 
