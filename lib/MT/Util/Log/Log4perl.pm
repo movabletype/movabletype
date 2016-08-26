@@ -10,16 +10,20 @@ use MT;
 use base qw(MT::Util::Log);
 
 BEGIN {
-    use Log::Log4perl;
-
+    use Log::Log4perl qw(:easy);
+    use Log::Log4perl::Level;
 }
 
 sub new {
     my ( $self, $log_file ) = @_;
 
+    my $level  = MT->config->Loggerlevel;
+    my $numval = Log::Log4perl::Level::to_priority( uc $level );
+
     Log::Log4perl->easy_init(
         {   file   => ">>$log_file",
             layout => "%m%n",
+            level  => $numval,
         }
     );
 

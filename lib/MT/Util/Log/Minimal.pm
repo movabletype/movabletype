@@ -30,6 +30,10 @@ sub new {
         print $fh "$message\n";
     };
 
+    my $level = MT->config->Loggerlevel;
+    my $log_level = $level eq 'error' ? 'CRITICAL' : uc $level;
+    $Log::Minimal::LOG_LEVEL = $log_level;
+
     return $self;
 }
 

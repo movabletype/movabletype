@@ -14,26 +14,42 @@ use vars qw( $Module $Can_use );
 
 sub _find_module {
 
-    my $logger_level = MT->config->LoggerLevel;
-    return unless $logger_level;
-    my $logger_path = MT->config->LoggerPath;
-    return unless $logger_path;
-
     # lookup argument for unit test.
-    my ($config) = @_;
-    if ( !$config ) {
+    my ( $logger_level, $logger_path, $logger_module ) = @_;
+
+    if ( !$logger_level ) {
         ## if MT was not yet instantiated, ignore the config directive.
-        eval { $config = MT->app->config('LoggerModule') || '' };
+        eval { $logger_level = MT->config->LoggerLevel || '' };
+        return
+            if (
+               !$logger_level
+            || uc $logger_level eq 'NONE'
+            || (   uc $logger_level ne 'NONE'
+                && uc $logger_level ne 'DEBUG'
+                && uc $logger_level ne 'WARN'
+                && uc $logger_level ne 'ERROR' )
+            );
     }
-    if ($config) {
-        $config =~ s/^Log:://;
-        die 'Invalid Log module' if $config =~ /[^\w:]/;
-        if ( $config !~ /::/ ) {
-            $config = 'MT::Util::Log::' . $config;
+
+    if ( !$logger_path ) {
+        ## if MT was not yet instantiated, ignore the config directive.
+        eval { $logger_path = MT->config->LoggerPath || '' };
+        return unless $logger_path;
+    }
+
+    if ( !$logger_module ) {
+        ## if MT was not yet instantiated, ignore the config directive.
+        eval { $logger_module = MT->config->LoggerModule || '' };
+    }
+    if ($logger_module) {
+        $logger_module =~ s/^Log:://;
+        die 'Invalid Log module' if $logger_module =~ /[^\w:]/;
+        if ( $logger_module !~ /::/ ) {
+            $logger_module = 'MT::Util::Log::' . $logger_module;
         }
-        eval "require $config";
+        eval "require $logger_module";
         die "Cannot load Log module: $@" if $@;
-        $Module = $config;
+        $Module = $logger_module;
     }
     else {
         eval { require Log::Log4perl };
