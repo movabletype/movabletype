@@ -1747,7 +1747,6 @@ sub restore {
             }
         }
     }
-
     $param->{restore_success} = !$error;
     $param->{error} = $error if $error;
     if ( ( exists $param->{open_dialog} ) && ( $param->{open_dialog} ) ) {
