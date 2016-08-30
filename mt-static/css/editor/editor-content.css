@@ -20,6 +20,7 @@ body {
     color: #000000;
     font-family: "Helvetica Neue", Helvetica, sans-serif;
     font-size: 14px;
+    word-break: break-all;
 }
 
 p {
