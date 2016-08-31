@@ -1,5 +1,9 @@
 function is_valid_path(path_){
-    if (!path_.match(/^[^<>#"%\{\}\|\\\^\[\]\`\;\?\:\@\&\=\+\$\,\\\*]*$/)) {
+    if (!path_.match(/^[^<>#"%\{\}\|\^\[\]\`\;\?\:\@\&\=\+\$\,\*]*$/)) {
+        return false;
+    }
+    var dir_separator = jQuery('input[name=dir_separator]').val();
+    if (dir_separator === "/" && !path_.match(/^[^\\]*$/)) {
         return false;
     }
     var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
