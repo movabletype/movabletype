@@ -307,7 +307,6 @@ sub dialog_list_asset {
                     ? ( ext_from => $ext_from, ext_to => $ext_to )
                     : ()
                 ),
-                dir_separator => MT::Util::dir_separator,
                 %carry_params,
             },
         }
