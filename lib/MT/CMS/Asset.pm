@@ -470,10 +470,6 @@ sub start_upload {
     $param{dialog} = $dialog;
     my $tmpl_file
         = $dialog ? 'dialog/asset_upload.tmpl' : 'asset_upload.tmpl';
-
-    # Set directory separator
-    $param{dir_separator} = MT::Util::dir_separator;
-
     $app->load_tmpl( $tmpl_file, \%param );
 }
 
