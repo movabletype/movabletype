@@ -3126,9 +3126,6 @@ sub dialog_asset_modal {
     }
     $param{class_filter_loop} = \@class_filters if @class_filters;
 
-    # Set directory separator
-    $param{dir_separator} = MT::Util::dir_separator;
-
     $app->load_tmpl( 'dialog/asset_modal.tmpl', \%param );
 }
 
