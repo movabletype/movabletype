@@ -534,9 +534,6 @@ sub cfg_prefs {
     $param{site_path}          = $blog->column('site_path');
     $param{site_path_absolute} = $blog->is_site_path_absolute;
 
-    # Set directory separator
-    $param{dir_separator} = MT::Util::dir_separator;
-
     $app->forward( "view", \%param );
 }
 

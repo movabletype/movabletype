@@ -102,9 +102,6 @@ function setLicense() {
 <mt:setvarblock name="o"><mt:if name="is_website">website<mt:else>blog</mt:if></mt:setvarblock>
 <mtapp:form id="cfg_form" name="cfg_form" mode="save" object_type="$o">
   <input type="hidden" name="cfg_screen" value="cfg_prefs" />
-<mt:if name="dir_separator">
-  <input type="hidden" name="dir_separator" value="<mt:var name="dir_separator">" />
-</mt:if>
 
   <mtapp:settinggroup id="blog-settings">
     <h2><__trans phrase="[_1] Settings" params="<mt:var name="object_label" capitalize="1">"></h2>
@@ -564,7 +561,7 @@ function setLicense() {
         <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
       </mt:loop>
       </select>
-      <input type="text" id="upload_destination_custom" class="text path required valid-custom-path upload-destination hidden" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" />
+      <input type="text" id="upload_destination_custom" class="text path required valid-path upload-destination hidden" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" />
       <span class="upload-extra-path">
         / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
       </span>

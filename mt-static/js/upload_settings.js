@@ -1,15 +1,6 @@
-function is_valid_path(path_, custom){
-    if (!path_.match(/^[^<>#"\{\}\|\^\[\]\`\;\?\:\@\&\=\+\$\,\*]*$/)) {
+function is_valid_path(path_){
+    if (!path_.match(/^[^<>#"%\{\}\|\^\[\]\`\;\?\:\@\&\=\+\$\,\*]*$/)) {
         return false;
-    }
-    if (!path_.match(/^[^%]*$/)) {
-        if (custom) {
-            if (path_.indexOf('%') === 0 && path_.lastIndexOf('%') !== 0) {
-                return false;
-            }
-        } else {
-            return false;
-        }
     }
     var dir_separator = jQuery('input[name=dir_separator]').val();
     if (dir_separator === "/" && !path_.match(/^[^\\]*$/)) {
@@ -65,16 +56,12 @@ jQuery(function() {
         '.valid-path': function($e) {
             return is_valid_path($e.val());
         },
-        '.valid-custom-path': function($e) {
-            return is_valid_path($e.val(), 1);
-        },
         '.upload-destination': function($e) {
             return /^%(s|a)/.test($e.val());
         }
     });
     jQuery.mtValidateAddMessages({
         '.valid-path': trans('You must set a valid path.'),
-        '.valid-custom-path': trans('You must set a valid path.'),
         '.upload-destination': trans('You must set a path begining with %s or %a.')
     });
 });
