@@ -30,18 +30,6 @@ function validate(f) {
     }
 </mt:if>
 }
-
-function is_valid_path(path_){
-    var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
-    str = encodeURIComponent(str);
-    if (str.indexOf('%') != -1) {
-        return false;
-    }
-    if (str.match(/\.\./)) {
-        return false;
-    }
-    return true;
-}
 /* ]]> */
 </script>
 
@@ -112,6 +100,9 @@ function is_valid_path(path_){
   </mt:if>
   <input type="hidden" name="auto_rename_if_exists" value="<mt:if name="auto_rename_if_exists">1<mt:Else>0</mt:if>" />
   <input type="hidden" name="normalize_orientation" value="<mt:if name="normalize_orientation">1<mt:Else>0</mt:if>" />
+<mt:if name="dir_separator">
+  <input type="hidden" name="dir_separator" value="<mt:var name="dir_separator">" />
+</mt:if>
 
   <mtapp:setting
      id="file"
