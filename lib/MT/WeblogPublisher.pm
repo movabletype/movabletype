@@ -1570,6 +1570,7 @@ sub rebuild_file {
     $timer->mark( "total:rebuild_file[template_id:" . $tmpl->id . "]" )
         if $timer;
 
+    require MT::Util::Log;
     MT::Util::Log->info( ' Rebuilded ' . $file );
 
     1;
