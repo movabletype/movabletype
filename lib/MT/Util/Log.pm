@@ -71,29 +71,38 @@ BEGIN { _find_module() }
 sub debug {
     my ( $class, $msg ) = @_;
     return unless $Can_use;
-    my $logger = $Module->new( _get_logfile_path() );
-    $logger->debug( _get_message( 'DEBUG', $msg ) );
+    _write_log( 'DEBUG', $msg );
 }
 
 sub info {
     my ( $class, $msg ) = @_;
     return unless $Can_use;
-    my $logger = $Module->new( _get_logfile_path() );
-    $logger->info( _get_message( 'INFO', $msg ) );
+    _write_log( 'INFO', $msg );
 }
 
 sub warn {
     my ( $class, $msg ) = @_;
     return unless $Can_use;
-    my $logger = $Module->new( _get_logfile_path() );
-    $logger->warn( _get_message( 'WARN', $msg ) );
+    _write_log( 'WARN', $msg );
 }
 
 sub error {
     my ( $class, $msg ) = @_;
     return unless $Can_use;
-    my $logger = $Module->new( _get_logfile_path() );
-    $logger->error( _get_message( 'ERROR', $msg ) );
+    _write_log( 'ERROR', $msg );
+}
+
+sub _write_log {
+    my ( $level, $msg ) = @_;
+    return unless $Can_use;
+    eval {
+        my $logger = $Module->new( _get_logfile_path() );
+        $logger->error( _get_message( $level, $msg ) );
+    };
+    if ($@) {
+        my $errmsg = Encode::is_utf8($@) ? $@ : Encode::decode_utf8($@);
+        die MT->translate( 'Failed to write log: [_1]', $errmsg );
+    }
 }
 
 sub _get_message {
@@ -120,7 +129,7 @@ sub _get_message {
         }
     }
 
-    my ( $pkg, $filename, $line ) = caller(1);
+    my ( $pkg, $filename, $line ) = caller(3);
 
     my @time = localtime(time);
     return

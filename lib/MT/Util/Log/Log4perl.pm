@@ -20,12 +20,15 @@ sub new {
     my $level  = MT->config->Loggerlevel;
     my $numval = Log::Log4perl::Level::to_priority( uc $level );
 
-    Log::Log4perl->easy_init(
-        {   file   => ">>$log_file",
-            layout => "%m%n",
-            level  => $numval,
-        }
-    );
+    eval {
+        Log::Log4perl->easy_init(
+            {   file   => ">>$log_file",
+                layout => "%m%n",
+                level  => $numval,
+            }
+        );
+    };
+    die $@ if $@;
 
     return $self;
 }
