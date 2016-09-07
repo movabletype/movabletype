@@ -8,13 +8,15 @@ function is_valid_path(path_, custom){
                 return false;
             }
             var matches = path_.match(/%./g);
-            var unknown = 0;
-            jQuery.each(matches, function() {
-                if (!this.match(/%s|%a|%u|%y|%m|%d/)) {
-                    unknown++;
+            var invalid_variable = 0;
+            jQuery.each(matches, function(index, variable) {
+                if (!variable.match(/%s|%a|%u|%y|%m|%d/)) {
+                    invalid_variable++;
+                } else if (variable.match(/%s|%a/) && index > 0) {
+                    invalid_variable++;
                 }
             });
-            if (unknown) {
+            if (invalid_variable) {
                 return false;
             }
         } else {
