@@ -71,25 +71,25 @@ BEGIN { _find_module() }
 sub debug {
     my ( $class, $msg ) = @_;
     return unless $Can_use;
-    _write_log( 'DEBUG', $msg );
+    _write_log( 'debug', $msg );
 }
 
 sub info {
     my ( $class, $msg ) = @_;
     return unless $Can_use;
-    _write_log( 'INFO', $msg );
+    _write_log( 'info', $msg );
 }
 
 sub warn {
     my ( $class, $msg ) = @_;
     return unless $Can_use;
-    _write_log( 'WARN', $msg );
+    _write_log( 'warn', $msg );
 }
 
 sub error {
     my ( $class, $msg ) = @_;
     return unless $Can_use;
-    _write_log( 'ERROR', $msg );
+    _write_log( 'error', $msg );
 }
 
 sub _write_log {
@@ -97,7 +97,7 @@ sub _write_log {
     return unless $Can_use;
     eval {
         my $logger = $Module->new( _get_logfile_path() );
-        $logger->error( _get_message( $level, $msg ) );
+        $logger->$level( _get_message( uc($level), $msg ) );
     };
     if ($@) {
         my $errmsg = Encode::is_utf8($@) ? $@ : Encode::decode_utf8($@);
