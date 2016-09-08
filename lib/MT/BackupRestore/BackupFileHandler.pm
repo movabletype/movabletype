@@ -40,6 +40,8 @@ sub start_element {
 
     return if $self->{skip};
 
+    require MT::Util::Log;
+
     my $name  = $data->{LocalName};
     my $attrs = $data->{Attributes};
     my $ns    = $data->{NamespaceURI};
@@ -145,6 +147,8 @@ sub start_element {
 
                 my $obj;
                 if ( 'author' eq $name ) {
+                    MT::Util::Log->info( '   Start restore ' . $class );
+
                     $obj = $class->load( { name => $column_data{name} } );
                     if ($obj) {
                         if ( UNIVERSAL::isa( MT->instance, 'MT::App' )
@@ -214,8 +218,12 @@ sub start_element {
                             $self->{loaded} = 1;
                         }
                     }
+
+                    MT::Util::Log->info( '   End restore   ' . $class );
                 }
                 elsif ( 'template' eq $name ) {
+                    MT::Util::Log->info( '   Start restore ' . $class );
+
                     if ( !$column_data{blog_id} ) {
                         $obj = $class->load(
                             {   blog_id => 0,
@@ -245,8 +253,11 @@ sub start_element {
                             }
                         }
                     }
+                    MT::Util::Log->info( '   End restore   ' . $class );
                 }
                 elsif ( 'filter' eq $name ) {
+                    MT::Util::Log->info( '   Start restore ' . $class );
+
                     if ( $objects->{ "MT::Author#" . $column_data{author_id} }
                         )
                     {
@@ -267,8 +278,12 @@ sub start_element {
                             $self->{skip} += 1;
                         }
                     }
+
+                    MT::Util::Log->info( '   End restore   ' . $class );
                 }
                 elsif ( 'image' eq $name ) {
+                    MT::Util::Log->info( '   Start restore ' . $class );
+
                     if ( !$column_data{blog_id} ) {
                         $obj = $class->load(
                             {   file_path => $column_data{file_path},
@@ -323,12 +338,15 @@ sub start_element {
                             }
                         }
                     }
+
+                    MT::Util::Log->info( '   End restore   ' . $class );
                 }
 
                 unless ($obj) {
                     $obj = $class->new;
                 }
                 unless ( $obj->id ) {
+                    MT::Util::Log->info( '   Start restore ' . $class );
 
                     # Pass through even if an blog doesn't restore
                     # the parent object
@@ -389,6 +407,8 @@ sub start_element {
                         $self->{deferred} = $deferred;
                         $self->{skip} += 1;
                     }
+
+                    MT::Util::Log->info( '   End restore   ' . $class );
                 }
             }
         }

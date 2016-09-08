@@ -351,6 +351,10 @@ sub check_cache {
 sub process {
     my $app = shift;
 
+    require MT::Util::Log;
+
+    MT::Util::Log->info('--- Start search process.');
+
     my @messages;
     return $app->throttle_response( \@messages )
         unless $app->throttle_control( \@messages );
@@ -358,6 +362,7 @@ sub process {
     my ( $count, $out ) = $app->check_cache();
     if ( defined $out ) {
         $app->run_callbacks( 'search_cache_hit', $count, $out );
+        MT::Util::Log->info('--- End   search process. Use cache.');
         return $out;
     }
     my $iter;
@@ -370,16 +375,22 @@ sub process {
         || $app->param('month')
         || $app->param('day') )
     {
+        MT::Util::Log->info(' Start search_terms.');
         my @arguments = $app->search_terms();
+        MT::Util::Log->info(' End   search_terms.');
         return $app->error( $app->errstr ) if $app->errstr;
 
         $count = 0;
         if (@arguments) {
+            MT::Util::Log->info(' Start search_terms.');
             ( $count, $iter ) = $app->execute(@arguments);
+            MT::Util::Log->info(' End   search_terms.');
             return $app->error( $app->errstr ) unless $iter;
 
+            MT::Util::Log->info(' Start callbacks search_post_execute.');
             $app->run_callbacks( 'search_post_execute', $app, \$count,
                 \$iter );
+            MT::Util::Log->info(' End   callbacks search_post_execute.');
         }
     }
 
@@ -397,7 +408,10 @@ sub process {
     }
 
     $out = $app->$method( $count, $iter );
-    return $app->error( $app->errstr ) unless defined $out;
+    unless ( defined $out ) {
+        MT::Util::Log->info('--- End   search process. No out.');
+        return $app->error( $app->errstr );
+    }
 
     my $result;
     if ( ref($out) && eval { $out->isa('MT::Template') } ) {
@@ -409,6 +423,7 @@ sub process {
     }
 
     $app->run_callbacks( 'search_post_render', $app, $count, $result );
+    MT::Util::Log->info('--- End   search process.');
     $result;
 }
 
@@ -435,12 +450,18 @@ sub execute {
         or return $app->errtrans( 'Unsupported type: [_1]',
         encode_html( $app->{searchparam}{Type} ) );
 
+    require MT::Util::Log;
+
+    MT::Util::Log->info('  Start count.');
     my $count = $app->count( $class, $terms, $args );
+    MT::Util::Log->info('  End   count.');
     return $app->errtrans( "Invalid query: [_1]", $app->errstr )
         unless defined $count;
 
+    MT::Util::Log->info('  Start load_iter.');
     my $iter = $class->load_iter( $terms, $args )
         or $app->error( $class->errstr );
+    MT::Util::Log->info('  End   load_iter.');
     ( $count, $iter );
 }
 

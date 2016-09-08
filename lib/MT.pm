@@ -535,6 +535,16 @@ sub log {
     print STDERR Encode::encode_utf8(
         MT->translate( "Message: [_1]", $log->message ) . "\n" )
         if $MT::DebugMode && ( $^O ne "MSWin32" );
+
+    require MT::Util::Log;
+    my $method
+        = $log->level == MT::Log::DEBUG()    ? 'debug'
+        : $log->level == MT::Log::INFO()     ? 'info'
+        : $log->level == MT::Log::WARNING()  ? 'warn'
+        : $log->level == MT::Log::ERROR()    ? 'error'
+        : $log->level == MT::Log::SECURITY() ? 'error'
+        :                                      'none';
+    MT::Util::Log->$method( $log->message );
 }
 
 sub run_tasks {

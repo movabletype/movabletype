@@ -285,6 +285,10 @@ sub _default_terms_args {
 }
 
 sub backup {
+    require MT::Util::Log;
+
+    MT::Util::Log->info('--- Start backup.');
+
     my $class = shift;
     my ($blog_ids, $printer, $splitter, $finisher,
         $progress, $size,    $enc,      $metadata
@@ -294,7 +298,11 @@ sub backup {
 # when multiple blogs from the same instance are restored one-by-one. ideally, this should be a user setting on the backup form
 # push @$blog_ids, '0' if defined($blog_ids) && scalar(@$blog_ids);
 
+    MT::Util::Log->info(' Start _populate_obj_to_backup.');
+
     my $obj_to_backup = $class->_populate_obj_to_backup($blog_ids);
+
+    MT::Util::Log->info(' End   _populate_obj_to_backup.');
 
     my $header .= "<movabletype xmlns='" . NS_MOVABLETYPE . "'\n";
     $header .= join ' ',
@@ -304,19 +312,32 @@ sub backup {
     $printer->($header);
 
     my $files = {};
+
+    MT::Util::Log->info(' Start _loop_through_objects.');
+
     my $backuped_objs
         = _loop_through_objects( $printer, $splitter, $finisher, $progress,
         $size, $obj_to_backup, $files, $header );
 
+    MT::Util::Log->info(' End   _loop_through_objects.');
+
     my $else_xml = MT->run_callbacks( 'Backup', $blog_ids, $progress );
     $printer->($else_xml) if $else_xml ne '1';
     my @else_xml;
+
+    MT::Util::Log->info(' Start callbacks "backup.plugin_objects".');
+
     MT->run_callbacks( 'backup.plugin_objects', $blog_ids, $progress,
         \@else_xml, $backuped_objs );
+
+    MT::Util::Log->info(' End   callbacks "backup.plugin_objects".');
+
     $printer->($_) foreach @else_xml;
 
     $printer->('</movabletype>');
     $finisher->($files);
+
+    MT::Util::Log->info('--- End   backup.');
 }
 
 sub _loop_through_objects {
@@ -567,6 +588,10 @@ sub restore_directory {
         $callback )
         = @_;
 
+    require MT::Util::Log;
+
+    MT::Util::Log->info(' Start restore_directory');
+
     my $manifest;
     my @files;
     opendir my $dh,
@@ -631,12 +656,20 @@ sub restore_directory {
         push @asset_ids, @$tmp_asset_ids if defined $tmp_asset_ids;
     }
 
+    MT::Util::Log->info('  Start callback restore.');
+
     unless ($@) {
         MT->run_callbacks( 'restore', \%objects, $deferred, $errors,
             $callback );
     }
+
+    MT::Util::Log->info('  End   callback restore.');
+
     my $blog_ids  = scalar(@blog_ids)  ? \@blog_ids  : undef;
     my $asset_ids = scalar(@asset_ids) ? \@asset_ids : undef;
+
+    MT::Util::Log->info(' End   restore_directory');
+
     ( $deferred, $blog_ids, $asset_ids );
 }
 

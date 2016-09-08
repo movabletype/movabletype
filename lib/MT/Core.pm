@@ -2114,6 +2114,11 @@ BEGIN {
             'RestrictedPSGIApp' => { type    => 'ARRAY' },
             'XFrameOptions'     => { default => 'SAMEORIGIN' },
             'DynamicCacheTTL'   => { default => 0 },
+
+            # Activity logging
+            'LoggerLevel'  => { default => 'none' },
+            'LoggerPath'   => undef,
+            'LoggerModule' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
