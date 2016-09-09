@@ -10,8 +10,6 @@ use MT;
 use base qw( Class::Accessor::Fast MT::ErrorHandler );
 use vars qw( $Module $Can_use );
 
-#__PACKAGE__->mk_accessors(qw( can_use ));
-
 sub _find_module {
 
     # lookup argument for unit test.
@@ -43,22 +41,24 @@ sub _find_module {
     }
     if ($logger_module) {
         $logger_module =~ s/^Log:://;
-        die 'Invalid Log module' if $logger_module =~ /[^\w:]/;
+        die MT->translate('Invalid Log module') if $logger_module =~ /[^\w:]/;
         if ( $logger_module !~ /::/ ) {
             $logger_module = 'MT::Util::Log::' . $logger_module;
         }
         eval "require $logger_module";
-        die "Cannot load Log module: $@" if $@;
+        die MT->translate( "Cannot load Log module: [_1]", $@ ) if $@;
         $Module = $logger_module;
     }
     else {
-        eval { require Log::Log4perl };
-        $Module
-            = $@
-            ? 'MT::Util::Log::Minimal'
-            : 'MT::Util::Log::Log4perl';
-        eval "require $Module";
-        return if $@;
+        foreach my $module (qw( Log4perl Minimal )) {
+            my $m = 'MT::Util::Log::' . $module;
+            eval "require $m";
+            unless ($@) {
+                $Module = $m;
+                last;
+            }
+        }
+        return unless $Module;
     }
 
     $Can_use = 1;
