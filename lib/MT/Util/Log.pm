@@ -46,7 +46,9 @@ sub _find_module {
             $logger_module = 'MT::Util::Log::' . $logger_module;
         }
         eval "require $logger_module";
-        die MT->translate( "Cannot load Log module: [_1]", $@ ) if $@;
+        die MT->translate( "Cannot load Log module: [_1]",
+            MT->config->LoggerModule )
+            if $@;
         $Module = $logger_module;
     }
     else {
