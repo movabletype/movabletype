@@ -7,7 +7,7 @@ package MT::Util::Log;
 use strict;
 use warnings;
 use MT;
-use base qw( Class::Accessor::Fast MT::ErrorHandler );
+use base qw( MT::ErrorHandler );
 use vars qw( $Module $Can_use );
 
 sub _find_module {
