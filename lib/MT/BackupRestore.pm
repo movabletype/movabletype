@@ -285,7 +285,11 @@ sub _default_terms_args {
 }
 
 sub backup {
-    require MT::Util::Log;
+    eval { require MT::Util::Log; };
+    if ($@) {
+        my @msgs = split "\n", $@;
+        die $msgs[0] . "\n";
+    }
 
     MT::Util::Log->info('--- Start backup.');
 
@@ -588,7 +592,11 @@ sub restore_directory {
         $callback )
         = @_;
 
-    require MT::Util::Log;
+    eval { require MT::Util::Log; };
+    if ($@) {
+        my @msgs = split "\n", $@;
+        die $msgs[0] . "\n";
+    }
 
     MT::Util::Log->info(' Start restore_directory');
 

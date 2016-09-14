@@ -351,7 +351,11 @@ sub check_cache {
 sub process {
     my $app = shift;
 
-    require MT::Util::Log;
+    eval { require MT::Util::Log; };
+    if ($@) {
+        my @msgs = split "\n", $@;
+        die $msgs[0] . "\n";
+    }
 
     MT::Util::Log->info('--- Start search process.');
 
@@ -450,7 +454,11 @@ sub execute {
         or return $app->errtrans( 'Unsupported type: [_1]',
         encode_html( $app->{searchparam}{Type} ) );
 
-    require MT::Util::Log;
+    eval { require MT::Util::Log; };
+    if ($@) {
+        my @msgs = split "\n", $@;
+        die $msgs[0] . "\n";
+    }
 
     MT::Util::Log->info('  Start count.');
     my $count = $app->count( $class, $terms, $args );
