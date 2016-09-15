@@ -125,11 +125,8 @@ sub rebuild {
     }
     return 1 if $blog->is_dynamic;
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     MT::Util::Log->info('--- Start rebuild.');
 
@@ -283,11 +280,8 @@ sub rebuild_categories {
     my %param = @_;
     my $blog;
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     MT::Util::Log->info(' Start rebuild_categories.');
 
@@ -333,11 +327,8 @@ sub rebuild_authors {
     my %param = @_;
     my $blog;
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     MT::Util::Log->info(' Start rebuild_authors.');
 
@@ -436,11 +427,8 @@ sub rebuild_deleted_entry {
     $entry = MT::Entry->load($entry) unless ref $entry;
     return unless $entry;
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     MT::Util::Log->info('--- Start rebuild_deleted_entry.');
 
@@ -635,11 +623,8 @@ sub rebuild_entry {
     }
     return 1 if $blog->is_dynamic;
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     MT::Util::Log->info('--- Start rebuild_entry.');
 
@@ -885,11 +870,8 @@ sub rebuild_archives {
         MT->translate( "Parameter '[_1]' is required", 'Blog' ) );
     return 1 if $blog->is_dynamic;
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     MT::Util::Log->info('--- Start rebuild_archives.');
 
@@ -1594,11 +1576,8 @@ sub rebuild_file {
     $timer->mark( "total:rebuild_file[template_id:" . $tmpl->id . "]" )
         if $timer;
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     MT::Util::Log->info( ' Rebuilded ' . $file );
 
@@ -1612,11 +1591,8 @@ sub rebuild_indexes {
     require MT::Template::Context;
     require MT::Entry;
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     MT::Util::Log->info('--- Start rebuild_indexes.');
 
@@ -1901,11 +1877,8 @@ sub rebuild_from_fileinfo {
     my $pub = shift;
     my ($fi) = @_;
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     MT::Util::Log->info(' Start rebuild_from_fileinfo.');
 

@@ -1137,11 +1137,8 @@ sub backup {
     my $blog_ids = $q->param('backup_what');
     my @blog_ids = split ',', $blog_ids;
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     MT::Util::Log->info('=== Start backup.');
 
@@ -1556,11 +1553,8 @@ sub restore {
         unless $app->can_do('restore_blog');
     $app->validate_magic() or return;
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     MT::Util::Log->info('=== Start restore.');
 

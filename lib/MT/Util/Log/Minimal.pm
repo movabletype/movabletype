@@ -14,7 +14,7 @@ BEGIN {
 }
 
 sub new {
-    my ( $self, $log_file ) = @_;
+    my ( $self, $logger_level, $log_file ) = @_;
 
     $ENV{LM_DEBUG} = 1;
 
@@ -30,7 +30,7 @@ sub new {
         print $fh "$message\n";
     };
 
-    my $level = MT->config->Loggerlevel;
+    my $level = $logger_level || MT->config->Loggerlevel;
     my $log_level = $level eq 'error' ? 'CRITICAL' : uc $level;
     $Log::Minimal::LOG_LEVEL = $log_level;
 

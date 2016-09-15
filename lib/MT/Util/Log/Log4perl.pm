@@ -15,9 +15,9 @@ BEGIN {
 }
 
 sub new {
-    my ( $self, $log_file ) = @_;
+    my ( $self, $logger_level, $log_file ) = @_;
 
-    my $level  = MT->config->Loggerlevel;
+    my $level  = $logger_level || MT->config->Loggerlevel;
     my $numval = Log::Log4perl::Level::to_priority( uc $level );
 
     eval {

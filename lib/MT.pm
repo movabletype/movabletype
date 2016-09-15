@@ -536,23 +536,16 @@ sub log {
         MT->translate( "Message: [_1]", $log->message ) . "\n" )
         if $MT::DebugMode && ( $^O ne "MSWin32" );
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        if ( $msgs[0] ne 'Attempt to reload MT/Util/Log.pm aborted.' ) {
-            die $msgs[0] . "\n";
-        }
-    }
-    else {
-        my $method
-            = $log->level == MT::Log::DEBUG()    ? 'debug'
-            : $log->level == MT::Log::INFO()     ? 'info'
-            : $log->level == MT::Log::WARNING()  ? 'warn'
-            : $log->level == MT::Log::ERROR()    ? 'error'
-            : $log->level == MT::Log::SECURITY() ? 'error'
-            :                                      'none';
-        MT::Util::Log->$method( $log->message );
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
+    my $method
+        = $log->level == MT::Log::DEBUG()    ? 'debug'
+        : $log->level == MT::Log::INFO()     ? 'info'
+        : $log->level == MT::Log::WARNING()  ? 'warn'
+        : $log->level == MT::Log::ERROR()    ? 'error'
+        : $log->level == MT::Log::SECURITY() ? 'error'
+        :                                      'none';
+    MT::Util::Log->$method( $log->message );
 }
 
 sub run_tasks {

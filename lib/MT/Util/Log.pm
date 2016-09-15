@@ -8,9 +8,13 @@ use strict;
 use warnings;
 use MT;
 use base qw( MT::ErrorHandler );
-use vars qw( $Module $Can_use );
+use vars qw( $Module $Cannot_use $Logger );
+
+sub init { _find_module() }
 
 sub _find_module {
+
+    return if $Cannot_use;
 
     # lookup argument for unit test.
     my ( $logger_level, $logger_path, $logger_module ) = @_;
@@ -46,9 +50,20 @@ sub _find_module {
             $logger_module = 'MT::Util::Log::' . $logger_module;
         }
         eval "require $logger_module";
-        die MT->translate( "Cannot load Log module: [_1]",
-            MT->config->LoggerModule )
-            if $@;
+        if ($@) {
+            $Cannot_use = 1;
+            MT->log(
+                {   class    => 'system',
+                    category => 'logs',
+                    level    => MT::Log::WARNING(),
+                    message  => MT->translate(
+                        'Cannot load Log module: [_1]'
+                            . MT->config->LoggerModule
+                    ),
+                }
+            );
+            return;
+        }
         $Module = $logger_module;
     }
     else {
@@ -60,51 +75,77 @@ sub _find_module {
                 last;
             }
         }
-        return unless $Module;
+        unless ($Module) {
+            $Cannot_use = 1;
+            MT->log(
+                {   class    => 'system',
+                    category => 'logs',
+                    level    => MT::Log::WARNING(),
+                    message  => MT->translate(
+                        'Cannot load Log module: [_1]',
+                        'Log4perl or Minimal'
+                    ),
+                }
+            );
+            return;
+        }
     }
 
-    $Can_use = 1;
+    eval {
+        $Logger = $Module->new( $logger_level, _get_logfile_path() );
+    };
+    if ($@) {
+        $Cannot_use = 1;
+        my $errmsg = Encode::is_utf8($@) ? $@ : Encode::decode_utf8($@);
+        MT->log(
+            {   class    => 'system',
+                category => 'logs',
+                level    => MT::Log::WARNING(),
+                message  => MT->translate(
+                    'Failed to write log: [_1]', $errmsg
+                ),
+            }
+        );
+        return;
+    }
+
+    $Cannot_use = 0;
 
     1;
 }
 
-BEGIN { _find_module() }
-
 sub debug {
     my ( $class, $msg ) = @_;
-    return unless $Can_use;
+    return if $Cannot_use;
     _write_log( 'debug', $msg );
 }
 
 sub info {
     my ( $class, $msg ) = @_;
-    return unless $Can_use;
+    return if $Cannot_use;
     _write_log( 'info', $msg );
 }
 
 sub warn {
     my ( $class, $msg ) = @_;
-    return unless $Can_use;
+    return if $Cannot_use;
     _write_log( 'warn', $msg );
 }
 
 sub error {
     my ( $class, $msg ) = @_;
-    return unless $Can_use;
+    return if $Cannot_use;
     _write_log( 'error', $msg );
+}
+
+sub can_use {
+   $Cannot_use ? 0 : 1;
 }
 
 sub _write_log {
     my ( $level, $msg ) = @_;
-    return unless $Can_use;
-    eval {
-        my $logger = $Module->new( _get_logfile_path() );
-        $logger->$level( _get_message( uc($level), $msg ) );
-    };
-    if ($@) {
-        my $errmsg = Encode::is_utf8($@) ? $@ : Encode::decode_utf8($@);
-        die MT->translate( 'Failed to write log: [_1]', $errmsg );
-    }
+    return if $Cannot_use;
+    $Logger->$level( _get_message( uc($level), $msg ) );
 }
 
 sub _get_message {
@@ -154,6 +195,17 @@ sub _get_logfile_path {
     );
 
     return File::Spec->catfile( $dir, $file );
+}
+
+sub _write_mt_log {
+    my $msg = shift;
+    MT->log(
+        {   class    => 'system',
+            category => 'logs',
+            level    => MT::Log::WARN(),
+            message  => $msg,
+        }
+    );
 }
 
 1;

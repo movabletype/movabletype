@@ -40,11 +40,8 @@ sub start_element {
 
     return if $self->{skip};
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     my $name  = $data->{LocalName};
     my $attrs = $data->{Attributes};

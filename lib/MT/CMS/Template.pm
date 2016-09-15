@@ -2131,11 +2131,8 @@ sub refresh_all_templates {
     my ($app) = @_;
     $app->validate_magic or return;
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     MT::Util::Log->info('--- Start refresh_all_templates.');
 
@@ -2513,11 +2510,8 @@ sub refresh_individual_templates {
             || $perms->can_administer_blog )
         );
 
-    eval { require MT::Util::Log; };
-    if ($@) {
-        my @msgs = split "\n", $@;
-        die $msgs[0] . "\n";
-    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
 
     MT::Util::Log->info('--- Start refresh_individual_templates.');
 
