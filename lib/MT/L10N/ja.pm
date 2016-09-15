@@ -2772,6 +2772,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid Log module' => '不正なログモジュールが指定されています',
 	'Cannot load Log module: [_1]' => 'ログモジュールをロードできません: [_1]',
 	'Failed to write log: [_1]' => 'ログの書き込みに失敗しました: [_1]',
+	'Unknown Logger Level: [_1]' => '不正なログレベルです: [_1]',
 
 ## lib/MT/Util/YAML.pm
 	'Invalid YAML module' => '不正なYAMLモジュールが指定されています',
