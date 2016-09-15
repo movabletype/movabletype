@@ -8,7 +8,7 @@ use strict;
 use warnings;
 use MT;
 use base qw( MT::ErrorHandler );
-use vars qw( $Module $Cannot_use $Logger );
+use vars qw( $Module $Cannot_use );
 
 sub init { _find_module() }
 
@@ -92,19 +92,20 @@ sub _find_module {
         }
     }
 
-    eval {
-        $Logger = $Module->new( $logger_level, _get_logfile_path() );
-    };
-    if ($@) {
+    my $fmgr         = MT::FileMgr->new('Local');
+    my $logfile_path = _get_logfile_path();
+    if (   !$fmgr->exists($logger_path)
+        || !$fmgr->can_write($logger_path)
+        || ( $fmgr->exists($logfile_path)
+            && !$fmgr->can_write($logfile_path) ) )
+    {
         $Cannot_use = 1;
-        my $errmsg = Encode::is_utf8($@) ? $@ : Encode::decode_utf8($@);
         MT->log(
             {   class    => 'system',
                 category => 'logs',
                 level    => MT::Log::WARNING(),
-                message  => MT->translate(
-                    'Failed to write log: [_1]', $errmsg
-                ),
+                message =>
+                    MT->translate( '[_1] is not writable.', $logfile_path ),
             }
         );
         return;
@@ -139,14 +140,11 @@ sub error {
     _write_log( 'error', $msg );
 }
 
-sub can_use {
-   $Cannot_use ? 0 : 1;
-}
-
 sub _write_log {
     my ( $level, $msg ) = @_;
     return if $Cannot_use;
-    $Logger->$level( _get_message( uc($level), $msg ) );
+    my $logger = $Module->new( $level, _get_logfile_path() );
+    $logger->$level( _get_message( uc($level), $msg ) );
 }
 
 sub _get_message {
