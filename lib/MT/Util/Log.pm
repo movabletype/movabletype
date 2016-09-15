@@ -8,7 +8,7 @@ use strict;
 use warnings;
 use MT;
 use base qw( MT::ErrorHandler );
-use vars qw( $Module $Cannot_use );
+use vars qw( $Module $Cannot_use $Logger );
 
 sub init { _find_module() }
 
@@ -97,7 +97,8 @@ sub _find_module {
     if (   !$fmgr->exists($logger_path)
         || !$fmgr->can_write($logger_path)
         || ( $fmgr->exists($logfile_path)
-            && !$fmgr->can_write($logfile_path) ) )
+            && !$fmgr->can_write($logfile_path) )
+        )
     {
         $Cannot_use = 1;
         MT->log(
@@ -110,6 +111,8 @@ sub _find_module {
         );
         return;
     }
+
+    $Logger = $Module->new( $logger_level, _get_logfile_path() );
 
     $Cannot_use = 0;
 
@@ -143,8 +146,7 @@ sub error {
 sub _write_log {
     my ( $level, $msg ) = @_;
     return if $Cannot_use;
-    my $logger = $Module->new( $level, _get_logfile_path() );
-    $logger->$level( _get_message( uc($level), $msg ) );
+    $Logger->$level( _get_message( uc($level), $msg ) );
 }
 
 sub _get_message {
@@ -172,6 +174,9 @@ sub _get_message {
     }
 
     my ( $pkg, $filename, $line ) = caller(3);
+    unless ($filename) {
+        ( $pkg, $filename, $line ) = caller(2);
+    }
 
     my @time = localtime(time);
     return
