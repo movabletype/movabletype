@@ -37,7 +37,7 @@ sub _find_module {
                     category => 'logs',
                     level    => MT::Log::WARNING(),
                     message  => MT->translate(
-                        'Unknown Logger Level: [_1]' . $logger_level
+                        'Unknown Logger Level: [_1]', $logger_level
                     ),
                 }
             );
@@ -69,8 +69,7 @@ sub _find_module {
                     category => 'logs',
                     level    => MT::Log::WARNING(),
                     message  => MT->translate(
-                        'Cannot load Log module: [_1]'
-                            . MT->config->LoggerModule
+                        'Cannot load Log module: [_1]',  MT->config->LoggerModule
                     ),
                 }
             );
