@@ -166,6 +166,7 @@ themes/broken_blog_theme
 .*/t/
 ^phpunit.xml
 ^php/tests
+^php/extlib/adodb5/tests
 ^db
 ^ToDo$
 ^README
