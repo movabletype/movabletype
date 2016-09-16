@@ -6751,7 +6751,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
 	'Failed to remove sync list. (ID:\'[_1]\')' => '同期リスト (ID:[_1]) の削除に失敗しました。',
-	'Failed to update sync list. (ID:\'[_1]\')' => '同キリスト (ID:[_1]) の更新に失敗しました。',
+	'Failed to update sync list. (ID:\'[_1]\')' => '同期リスト (ID:[_1]) の更新に失敗しました。',
 	'Failed to create sync list.' => '同期リストの作成に失敗しました。',
 	'Failed to save sync list. (ID:\'[_1]\')' => '同期リストの保存に失敗しました。',
 	'Error switching directory.' => 'ディレクトリの切り替えができません。',
@@ -6788,7 +6788,7 @@ use vars qw( @ISA %Lexicon );
 	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバー配信の処理に成功したことを通知するメールです。',
 	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
 	'Failed to remove temporary directory: [_1]' => '一時ディレクトリを削除できませんでした: [_1]',
-	'Failed to remove pid file.' => 'PID　ファイルを削除できませんでした。',
+	'Failed to remove pid file.' => 'PID ファイルを削除できませんでした。',
 	'This email is to notify you that failed to sync with an external server.' => 'これはサーバー配信の処理に失敗したことを通知するメールです。',
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
