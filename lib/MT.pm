@@ -39,7 +39,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.3.1',              '__PRODUCT_VERSION_ID__',
+        '6.3.2',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 1;
+        $RELEASE_NUMBER = 2;
     }
 
     $DebugMode = 0;
@@ -535,6 +535,17 @@ sub log {
     print STDERR Encode::encode_utf8(
         MT->translate( "Message: [_1]", $log->message ) . "\n" )
         if $MT::DebugMode && ( $^O ne "MSWin32" );
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+    my $method
+        = $log->level == MT::Log::DEBUG()    ? 'debug'
+        : $log->level == MT::Log::INFO()     ? 'info'
+        : $log->level == MT::Log::WARNING()  ? 'warn'
+        : $log->level == MT::Log::ERROR()    ? 'error'
+        : $log->level == MT::Log::SECURITY() ? 'error'
+        :                                      'none';
+    MT::Util::Log->$method( $log->message );
 }
 
 sub run_tasks {

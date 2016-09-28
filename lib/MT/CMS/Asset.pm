@@ -307,6 +307,7 @@ sub dialog_list_asset {
                     ? ( ext_from => $ext_from, ext_to => $ext_to )
                     : ()
                 ),
+                dir_separator => MT::Util::dir_separator,
                 %carry_params,
             },
         }
@@ -470,6 +471,10 @@ sub start_upload {
     $param{dialog} = $dialog;
     my $tmpl_file
         = $dialog ? 'dialog/asset_upload.tmpl' : 'asset_upload.tmpl';
+
+    # Set directory separator
+    $param{dir_separator} = MT::Util::dir_separator;
+
     $app->load_tmpl( $tmpl_file, \%param );
 }
 
@@ -3121,6 +3126,9 @@ sub dialog_asset_modal {
             };
     }
     $param{class_filter_loop} = \@class_filters if @class_filters;
+
+    # Set directory separator
+    $param{dir_separator} = MT::Util::dir_separator;
 
     $app->load_tmpl( 'dialog/asset_modal.tmpl', \%param );
 }

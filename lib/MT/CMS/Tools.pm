@@ -1137,6 +1137,11 @@ sub backup {
     my $blog_ids = $q->param('backup_what');
     my @blog_ids = split ',', $blog_ids;
 
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('=== Start backup.');
+
     if ( $user->is_superuser ) {
 
         # Get all target blog_id when system administrator choose website.
@@ -1440,6 +1445,9 @@ sub backup {
         close $fh;
         _backup_finisher( $app, $fname, $param );
     }
+
+    MT::Util::Log->info('=== End   backup.');
+
 }
 
 sub backup_download {
@@ -1544,6 +1552,11 @@ sub restore {
     return $app->permission_denied()
         unless $app->can_do('restore_blog');
     $app->validate_magic() or return;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('=== Start restore.');
 
     my $q = $app->param;
 
@@ -1684,7 +1697,13 @@ sub restore {
             my $tmp = File::Temp::tempdir( $uploaded_filename . 'XXXX',
                 DIR => $temp_dir );
             $tmp = Encode::decode( MT->config->PublishCharset, $tmp );
+
+            MT::Util::Log->info( '=== Start extract ' . $uploaded_filename );
+
             $arc->extract($tmp);
+
+            MT::Util::Log->info( '=== End   extract ' . $uploaded_filename );
+
             $arc->close;
             my ( $blog_ids, $asset_ids );
             eval {
@@ -1754,6 +1773,9 @@ sub restore {
 
     $app->print_encode( $app->build_page( "restore_end.tmpl", $param ) );
     close $fh if $fh;
+
+    MT::Util::Log->info('=== End   restore.');
+
     1;
 }
 

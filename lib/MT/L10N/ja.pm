@@ -2768,6 +2768,16 @@ use vars qw( @ISA %Lexicon );
 	'Image creation failed.' => '画像を作成できませんでした。',
 	'Image error: [_1]' => '画像でエラーが発生しました: [_1]',
 
+## lib/MT/Util/Log.pm
+	'Invalid Log module' => '不正なログモジュールが指定されています',
+	'Cannot load Log module: [_1]' => 'ログモジュールをロードできません: [_1]',
+	'Failed to write log: [_1]' => 'ログの書き込みに失敗しました: [_1]',
+	'Unknown Logger Level: [_1]' => '不正なログレベルです: [_1]',
+
+## lib/MT/Util/YAML.pm
+	'Invalid YAML module' => '不正なYAMLモジュールが指定されています',
+	'Cannot load YAML module: [_1]' => 'YAMLモジュールをロードできません: [_1]',
+
 ## lib/MT/Util/YAML/Syck.pm
 
 ## lib/MT/Util/YAML/Tiny.pm
@@ -2865,10 +2875,6 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/js/dialog.js
 	'(None)' => '(なし)',
-
-## mt-static/js/image_editor/fabric.js
-
-## mt-static/js/image_editor/fabric.min.js
 
 ## mt-static/js/tc/mixer/display.js
 	'Title:' => 'タイトル:',
@@ -3155,7 +3161,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/theme.yaml
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
 	'Classic Website' => 'クラシックウェブサイト',
-
 ## themes/pico/templates/about_this_page.mtml
 
 ## themes/pico/templates/archive_index.mtml
@@ -3246,7 +3251,6 @@ use vars qw( @ISA %Lexicon );
 	'Pico' => 'Pico',
 	'Pico Styles' => 'Picoスタイル',
 	'A collection of styles compatible with Pico themes.' => 'Picoテーマと互換のあるスタイルです。',
-
 ## search_templates/comments.tmpl
 	'Search for new comments from:' => 'コメントを検索:',
 	'the beginning' => '最初から',
@@ -5540,7 +5544,6 @@ use vars qw( @ISA %Lexicon );
 	'__SSL_CERT_UPDATE' => '更新',
 	'__SSL_CERT_INSTALL' => '導入',
 	'Cannot copy default cert file.' => '既定のサーバー証明書のコピーに失敗しました。',
-	'Cannot copy default secret file.' => '既定のサーバーキーのコピーに失敗しました。',
 	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
 	'Unable to update SSL certification.' => 'サーバー証明書の更新をする事が出来ませんでした。',
 	'Config Directive' => '環境変数',
@@ -5569,6 +5572,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Cloud.pack/lib/Cloud/Util.pm
 	'Cannot read resource file.' => 'リソースファイルを読み込めません。',
 	'Cannot get the resource data.' => 'リソース情報を取得できません。',
+	'Unknown CPU type.' => 'CPUタイプの判定ができません。',
 
 ## addons/Cloud.pack/tmpl/cfg_auto_update.tmpl
 	'Auto Update Settings' => '自動アップデートの設定',
@@ -5666,6 +5670,7 @@ use vars qw( @ISA %Lexicon );
 	q{To [_1] the server certificate, please enter the required information in the following fields. To revert back to the initial certificate, please press the 'Remove SSL Certification' button. The passphrase for 'Secret Key' must be released.} => q{サーバー証明書の[_1]を行うには、以下のフィールドに情報を入力してください。現在の証明書を削除して既定の証明書に戻すには、'サーバー証明書の削除'ボタンを押してください。秘密鍵のパスフレーズは解除されている必要があります。},
 	'Server Certification' => '証明書 (server.crt)',
 	'Secret Key' => '秘密鍵 (server.key)',
+	'Intermediate Certification' => '中間証明書',
 	'Remove SSL Certification' => 'サーバー証明書の削除',
 
 ## addons/Cloud.pack/tmpl/full_restore.tmpl
@@ -6746,7 +6751,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
 	'Failed to remove sync list. (ID:\'[_1]\')' => '同期リスト (ID:[_1]) の削除に失敗しました。',
-	'Failed to update sync list. (ID:\'[_1]\')' => '同キリスト (ID:[_1]) の更新に失敗しました。',
+	'Failed to update sync list. (ID:\'[_1]\')' => '同期リスト (ID:[_1]) の更新に失敗しました。',
 	'Failed to create sync list.' => '同期リストの作成に失敗しました。',
 	'Failed to save sync list. (ID:\'[_1]\')' => '同期リストの保存に失敗しました。',
 	'Error switching directory.' => 'ディレクトリの切り替えができません。',
@@ -6783,7 +6788,7 @@ use vars qw( @ISA %Lexicon );
 	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバー配信の処理に成功したことを通知するメールです。',
 	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
 	'Failed to remove temporary directory: [_1]' => '一時ディレクトリを削除できませんでした: [_1]',
-	'Failed to remove pid file.' => 'PID　ファイルを削除できませんでした。',
+	'Failed to remove pid file.' => 'PID ファイルを削除できませんでした。',
 	'This email is to notify you that failed to sync with an external server.' => 'これはサーバー配信の処理に失敗したことを通知するメールです。',
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
@@ -6808,6 +6813,8 @@ use vars qw( @ISA %Lexicon );
 	'Sync Date' => 'サーバー配信日時',
 	'Recipient for Notification' => '配信結果の通知先メールアドレス',
 	'Receive only error notification' => '配信に失敗したときだけ受け取る。',
+	'htaccess' => 'htaccess',
+	'Do not send .htaccess and .htpasswd file' => '.htaccess や .htpasswd ファイルを送信しない',
 	'Destinations' => '配信先',
 	'Add destination' => '配信先を追加する',
 	'Sync Type' => '配信方法',
@@ -7209,6 +7216,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 348
+## New words: 311
 
 1;
