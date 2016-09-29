@@ -3448,7 +3448,7 @@ sub load_widgets {
     my $resave_widgets = 0;
     my $widget_set     = $page . ':' . $scope;
 
-    my $widget_store = $user->widgets;
+    my $widget_store = ref($user->widgets) eq 'HASH' ? $user->widgets : {};
     my $widgets;
     $widgets = $widget_store->{$widget_set} if $widget_store;
 
@@ -3515,7 +3515,7 @@ sub load_widgets {
     ) or return;
 
     if ($resave_widgets) {
-        my $widget_store = $user->widgets();
+        my $widget_store = ref($user->widgets()) eq 'HASH' ? $user->widgets : {};
         $widget_store->{$widget_set} = $widgets;
         $user->widgets($widget_store);
         $user->save;
@@ -3730,7 +3730,7 @@ sub load_widget_list {
         :                             'system';
     $scope = $page . ':' . $scope;
 
-    my $user_widgets = $app->user->widgets || {};
+    my $user_widgets = ref($app->user->widgets) eq 'HASH' ? $app->user->widgets : {};
     $user_widgets
         = $user_widgets->{$scope}
         || $app->default_widgets_for_dashboard($scope_type)
