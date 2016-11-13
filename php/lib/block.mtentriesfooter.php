@@ -7,7 +7,7 @@
 
 function smarty_block_mtentriesfooter($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
-        $entries =& $ctx->stash('entries');
+        $entries = $ctx->stash('entries');
         $counter = $ctx->stash('_entries_counter');
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $counter == count($entries));
     } else {

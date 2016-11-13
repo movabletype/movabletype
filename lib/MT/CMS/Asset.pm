@@ -307,6 +307,7 @@ sub dialog_list_asset {
                     ? ( ext_from => $ext_from, ext_to => $ext_to )
                     : ()
                 ),
+                dir_separator => MT::Util::dir_separator,
                 %carry_params,
             },
         }
@@ -470,6 +471,10 @@ sub start_upload {
     $param{dialog} = $dialog;
     my $tmpl_file
         = $dialog ? 'dialog/asset_upload.tmpl' : 'asset_upload.tmpl';
+
+    # Set directory separator
+    $param{dir_separator} = MT::Util::dir_separator;
+
     $app->load_tmpl( $tmpl_file, \%param );
 }
 
@@ -1961,7 +1966,8 @@ sub _upload_file_compat {
 
         # Adjust image quality according to ImageQualityJpeg
         # and ImageQualityPng.
-        $asset->change_quality;
+        $asset->change_quality
+            if $app->config('AutoChangeImageQuality');
     }
 
     $asset->mime_type($mimetype) if $mimetype;
@@ -2497,7 +2503,8 @@ sub _upload_file {
 
         # Adjust image quality according to ImageQualityJpeg
         # and ImageQualityPng.
-        $asset->change_quality;
+        $asset->change_quality
+            if $app->config('AutoChangeImageQuality');
     }
 
     $asset->mime_type($mimetype) if $mimetype;
@@ -3120,6 +3127,9 @@ sub dialog_asset_modal {
     }
     $param{class_filter_loop} = \@class_filters if @class_filters;
 
+    # Set directory separator
+    $param{dir_separator} = MT::Util::dir_separator;
+
     $app->load_tmpl( 'dialog/asset_modal.tmpl', \%param );
 }
 
@@ -3243,7 +3253,8 @@ sub insert_asset {
         # Parse JSON.
         my $prefs = $app->param('prefs_json');
         $prefs =~ s/^"|"$//g;
-        $prefs =~ s/\\//g;
+        $prefs =~ s/\\"/"/g;
+        $prefs =~ s/\\\\/\\/g;
         $prefs = eval { MT::Util::from_json($prefs) };
         if ( !$prefs ) {
             return $app->errtrans('Invalid request.');

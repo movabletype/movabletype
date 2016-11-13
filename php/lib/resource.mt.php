@@ -4,69 +4,88 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-
-function smarty_resource_mt_source($tpl_name, &$tpl_source, &$ctx) {
-    $blog_id = $ctx->stash('blog_id');
-    if (intval($tpl_name) > 0) {
-        $query = "template_blog_id = $blog_id
-                  and template_id = $tpl_name";
-    } else {
-        $tpl_name = $ctx->mt->db()->escape($tpl_name);
-        $query = "template_blog_id = $blog_id
-                  and template_name='$tpl_name'";
+class smarty_resource_mt extends Smarty_Resource_Custom {
+    protected $ctx;
+    protected $mt;
+    public function __construct() {
+        $this->mt = MT::get_instance();
+        $this->ctx =& $this->mt->context();
     }
 
-    require_once('class.mt_template.php');
-    $tmpl = new Template();
-    $tmpls = $tmpl->Find($query);
-    if (!empty($tmpls)) {
-        $tmpl = $tmpls[0];
-        $file = trim($tmpl->linked_file);
-        $text = $tmpl->text;
-        if ($file) {
-            if (!file_exists($file)) {
-                $blog = $ctx->stash('blog');
-                $path = $blog->site_path();
-                if (!preg_match('![\\/]$!', $path))
-                    $path .= '/';
-                $path .= $file;
-                if (is_file($path) && is_readable($path))
-                    $file = $path;
-                else
-                    $file = '';
-            }
+    /**
+     * Fetch a template and its modification time from database
+     *
+     * @param  string  $name   template name
+     * @param  string  $source template source
+     * @param  integer $mtime  template modification timestamp (epoch)
+     *
+     * @return void
+     */
+    protected function fetch($tpl_name, &$tpl_source, &$mtime) {
+        $blog_id = $this->ctx->stash('blog_id');
+        if (intval($tpl_name) > 0) {
+            $query = "template_blog_id = $blog_id
+                      and template_id = $tpl_name";
+        } else {
+            $tpl_name = $this->mt->db()->escape($tpl_name);
+            $query = "template_blog_id = $blog_id
+                      and template_name='$tpl_name'";
+        }
+
+        require_once('class.mt_template.php');
+        $tmpl = new Template();
+        $tmpls = $tmpl->Find($query);
+        if (!empty($tmpls)) {
+            $tmpl = $tmpls[0];
+            $file = trim($tmpl->linked_file);
+            $text = $tmpl->text;
+            $blog = $this->ctx->stash('blog');
+            $mtime = datetime_to_timestamp($blog->blog_children_modified_on);
             if ($file) {
-                $mtime = $tmpl->linked_file_mtime;
-                $size = $tmpl->linked_file_size;
-                if ((filemtime($file) > $mtime) || (filesize($file) != $size)) {
-                    $contents = @file($file);
-                    $text = implode('', $contents);
+                if (!file_exists($file)) {
+                    $path = $blog->site_path();
+                    if (!preg_match('![\\/]$!', $path))
+                        $path .= '/';
+                    $path .= $file;
+                    if (is_file($path) && is_readable($path))
+                        $file = $path;
+                    else
+                        $file = '';
+                }
+                if ($file) {
+                    $mtime = $tmpl->linked_file_mtime;
+                    $size = $tmpl->linked_file_size;
+                    if ((filemtime($file) > $mtime) || (filesize($file) != $size)) {
+                        $contents = @file($file);
+                        $text = implode('', $contents);
+                    }
                 }
             }
+            $tpl_source = $text;
+            return true;
+        } else {
+            $mtime = null;
+            $tpl_source = null;
+            return false;
         }
-        $tpl_source = $text;
-        return true;
-    } else {
-        return false;
+    }
+
+    /**
+     * Fetch a template's modification time from database
+     *
+     * @note implementing this method is optional. Only implement it if modification times can be accessed faster than loading the comple template source.
+     *
+     * @param  string $name template name
+     *
+     * @return integer timestamp (epoch) the template was modified
+     */
+    protected function fetchTimestamp($name) {
+        require_once('MTUtil.php');
+        $blog = $this->ctx->stash('blog');
+
+        return datetime_to_timestamp($blog->blog_children_modified_on);
     }
 }
 
-function smarty_resource_mt_timestamp($tpl_name, &$tpl_timestamp, &$ctx) {
-    #$tpl_timestamp = $ctx->stash('template_timestamp');
-    #if (!$tpl_timestamp) {
-    require_once('MTUtil.php');
-        $blog = $ctx->stash('blog');
-        $tpl_timestamp = datetime_to_timestamp($blog->blog_children_modified_on);
-    #}
-    return true;
-}
 
-function smarty_resource_mt_secure($tpl_name, &$ctx) {
-    // assume all templates are secure
-    return true;
-}
-
-function smarty_resource_mt_trusted($tpl_name, &$ctx) {
-    // not used for templates
-}
 ?>

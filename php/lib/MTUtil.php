@@ -978,7 +978,7 @@ function decode_html($str, $quote_style = ENT_QUOTES) {
     return (strtr($str, array_flip($trans_table)));
 }
 
-function get_category_context(&$ctx, $class = 'category') {
+function get_category_context(&$ctx, $class = 'category', $error_avoid = FALSE) {
     # Get our hands on the category for the current context
     # Either in MTCategories, a Category Archive Template
     # Or the category for the current entry
@@ -1000,6 +1000,9 @@ function get_category_context(&$ctx, $class = 'category') {
                 return null;
             }
         } else {
+            if($error_avoid)
+                return null;
+
             $tag = $ctx->this_tag();
             return $ctx->error("$tag must be used in a category context");
         }

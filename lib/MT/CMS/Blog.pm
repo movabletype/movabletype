@@ -534,6 +534,9 @@ sub cfg_prefs {
     $param{site_path}          = $blog->column('site_path');
     $param{site_path_absolute} = $blog->is_site_path_absolute;
 
+    # Set directory separator
+    $param{dir_separator} = MT::Util::dir_separator;
+
     $app->forward( "view", \%param );
 }
 
@@ -965,6 +968,8 @@ sub rebuild_pages {
         }
     }
 
+    return if $q->param('no_rebuilding_tmpl');
+
     # Rebuild done--now form the continuation.
     unless ($done) {
         my $dynamic   = 0;
@@ -1260,7 +1265,13 @@ sub start_rebuild_pages {
     $param{is_full_screen} = ( $param{is_entry} )
         || $q->param('single_template');
     $param{page_titles} = [ { bc_name => 'Rebuilding' } ];
-    $app->load_tmpl( 'rebuilding.tmpl', \%param );
+    if ( $q->param('no_rebuilding_tmpl') ) {
+        $q->param( 'total', $total );
+        MT::CMS::Blog::rebuild_pages($app);
+    }
+    else {
+        $app->load_tmpl( 'rebuilding.tmpl', \%param )
+    }
 }
 
 sub _create_build_order {
@@ -1434,9 +1445,12 @@ sub dialog_select_weblog {
     {
         use MT::Permission;
         $args->{join} = MT::Permission->join_on( 'blog_id',
-            { author_id => $auth->id } );
+            { author_id => $auth->id, permissions => { not => "'comment'" } }
+        );
     }
-    $terms->{class} = 'blog';
+    $terms->{class}     = 'blog';
+    $terms->{parent_id} = $app->blog->id
+        if $app->blog && !$app->blog->is_blog;
 
     my $hasher = sub {
         my ( $obj, $row ) = @_;

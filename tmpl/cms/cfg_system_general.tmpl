@@ -236,20 +236,29 @@ function validate (f) {
 <h2><__trans phrase="Image Quality Settings"></h2>
 <mtapp:settinggroup id="image-quality">
   <mtapp:setting
-    id="image-quality-jpeg"
-    label="<__trans phrase="Image quality(JPEG)">"
-    hint="<__trans phrase="Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.">"
-    show_hint="1">
-    <input type="text" class="text num required jpeg-quality" name="image_quality_jpeg" value="<mt:var name="image_quality_jpeg">" <mt:if name="config_warnings_imagequalityjpeg">disabled="disabled"</mt:if> />
+    id="auto-change-image-quality"
+    label="<__trans phrase="Changing image quality">"
+    class="has-option">
+    <input type="checkbox"<mt:if name="config_warnings_autochangeimagequality"> disabled="disabled"</mt:if> name="auto_change_image_quality" id="auto-change-image-quality"<mt:if name="auto_change_image_quality"> checked="checked"</mt:if> /> <label for="auto_change_image_quality"><__trans phrase="Enable image quality changing."></label>
   </mtapp:setting>
 
-  <mtapp:setting
-    id="image-quality-png"
-    label="<__trans phrase="Image quality(PNG)">"
-    hint="<__trans phrase="Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.">"
-    show_hint="1">
-    <input type="text" class="text num required png-quality" name="image_quality_png" value="<mt:var name="image_quality_png">" <mt:if name="config_warnings_imagequalitypng">disabled="disabled"<mt:elseif name="image_driver" eq="imager">disabled="disabled"</mt:if> />
-  </mtapp:setting>
+  <div id="auto-change-image-quality-option" class="setting-option">
+    <mtapp:setting
+      id="image-quality-jpeg"
+      label="<__trans phrase="Image quality(JPEG)">"
+      hint="<__trans phrase="Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.">"
+      show_hint="1">
+      <input type="text" class="text num required jpeg-quality" name="image_quality_jpeg" value="<mt:var name="image_quality_jpeg">" <mt:if name="config_warnings_imagequalityjpeg">disabled="disabled"</mt:if> />
+    </mtapp:setting>
+
+    <mtapp:setting
+      id="image-quality-png"
+      label="<__trans phrase="Image quality(PNG)">"
+      hint="<__trans phrase="Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.">"
+      show_hint="1">
+      <input type="text" class="text num required png-quality" name="image_quality_png" value="<mt:var name="image_quality_png">" <mt:if name="config_warnings_imagequalitypng">disabled="disabled"<mt:elseif name="image_driver" eq="imager">disabled="disabled"</mt:if> />
+    </mtapp:setting>
+  </div>
 </mtapp:settinggroup>
 
 <mt:setvarblock name="action_buttons">
@@ -369,6 +378,7 @@ function validate (f) {
         '.png-quality': '<__trans phrase="You must set an integer value between 0 and 9.", escape="singlequotes">'
     });
     jQuery('#sys_conf').submit( function () {
+        jQuery('#auto-change-image-quality').removeAttr('disabled'); 
         if ( !jQuery(this).find('input:not(:disabled), select:not(:disabled)').filter('input:visible, select:visible').mtValidate('simple') ) return false;
     });
 

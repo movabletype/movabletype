@@ -143,7 +143,7 @@ function smarty_function_mtsetvar($args, &$ctx) {
             $vars[$name] = $data;
         } else {
             $vars = array($name => $data);
-            $ctx->__stash['vars'] =& $vars;
+            $ctx->__stash['vars'] = $vars;
         }
     }
     return '';

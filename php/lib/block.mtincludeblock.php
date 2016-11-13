@@ -12,7 +12,7 @@ function smarty_block_mtincludeblock($args, $content, &$ctx, &$repeat) {
         $vars =& $ctx->__stash['vars'];
         if (!$vars) {
             $vars = array();
-            $ctx->__stash['vars'] =& $vars;
+            $ctx->__stash['vars'] = $vars;
         }
         $name = $args['var'];
         $name or $name = 'contents';

@@ -503,35 +503,58 @@ sub list_props {
                 my $app    = MT->instance;
                 my $option = $args->{option};
                 my $query  = $args->{string};
-                if ( 'contains' eq $option ) {
-                    $query = { like => "%$query%" };
-                }
-                elsif ( 'not_contains' eq $option ) {
-                    $query = { not_like => "%$query%" };
-                }
-                elsif ( 'beginning' eq $option ) {
-                    $query = { like => "$query%" };
-                }
-                elsif ( 'end' eq $option ) {
-                    $query = { like => "%$query" };
-                }
-                push @{ $db_args->{joins} },
-                    MT->model('placement')->join_on(
-                    undef,
-                    {   entry_id => \'= entry_id',
-                        ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                    },
-                    {   unique => 1,
-                        join   => MT->model( $prop->category_class )->join_on(
-                            undef,
-                            {   label => $query,
-                                id    => \'= placement_category_id',
-                                ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                            },
-                            { unique => 1, }
-                        ),
-                    },
+                $query = { like => "%$query%" }
+                    if ( 'contains' eq $option
+                    || 'not_contains' eq $option
+                    || 'beginning' eq $option
+                    || 'end' eq $option );
+                if ( 'not_contains' eq $option ) {
+                    my @placements = MT->model('placement')->load(
+                        ( $blog_id ? { blog_id => $blog_id } : undef ),
+                        {   unique => 1,
+                            join =>
+                                MT->model( $prop->category_class )->join_on(
+                                undef,
+                                {   label => $query,
+                                    id    => \'= placement_category_id',
+                                    (   $blog_id
+                                        ? ( blog_id => $blog_id )
+                                        : ()
+                                    ),
+                                },
+                                { unique => 1, }
+                                ),
+                        },
                     );
+                    my @entry_ids = map { $_->entry_id } @placements;
+                    my %hash;
+                    @hash{@entry_ids} = ();
+                    @entry_ids = keys %hash;
+                    $db_terms->{id} = { not => \@entry_ids };
+                }
+                else {
+                    push @{ $db_args->{joins} },
+                        MT->model('placement')->join_on(
+                        undef,
+                        {   entry_id => \'= entry_id',
+                            ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                        },
+                        {   unique => 1,
+                            join =>
+                                MT->model( $prop->category_class )->join_on(
+                                undef,
+                                {   label => $query,
+                                    id    => \'= placement_category_id',
+                                    (   $blog_id
+                                        ? ( blog_id => $blog_id )
+                                        : ()
+                                    ),
+                                },
+                                { unique => 1, }
+                                ),
+                        },
+                        );
+                }
                 return;
             },
         },
@@ -1606,7 +1629,15 @@ sub gather_changed_cols {
     MT::Revisable::gather_changed_cols( $obj, @_ );
     my $changed_cols = $obj->{changed_revisioned_cols} || [];
 
-    return 1 unless $obj->id;
+    # When a entry is saved at first and 'unpublished_on' is undef,
+    # 'unpublished_on' is added to 'changed_revisioned_cols'.
+    unless ( $obj->id ) {
+        unless ( $obj->unpublished_on ) {
+            push @$changed_cols, 'unpublished_on';
+            $obj->{changed_revisioned_cols} = $changed_cols;
+        }
+        return 1;
+    }
 
     # there is a changed col; no need to check something else
     return 1 if @$changed_cols;
@@ -2027,6 +2058,26 @@ sub update_assets {
     }
 
     return \@attaching_assets;
+}
+
+sub set_values {
+    my $obj = shift;
+    my ( $values, $args ) = @_;
+
+    $obj->SUPER::set_values(@_);
+
+    # If 'unpublished_on' in revision data is undef, set value.
+    return unless grep { $_ eq 'unpublished_on' } keys %$values;
+    return if defined $values->{'unpublished_on'};
+    if (   $args
+        && exists( $args->{no_changed_flag} )
+        && $args->{no_changed_flag} )
+    {
+        $obj->column( 'unpublished_on', $values->{'unpublished_on'}, $args );
+    }
+    else {
+        $obj->unpublished_on( $values->{'unpublished_on'}, $args );
+    }
 }
 
 #trans('Draft')

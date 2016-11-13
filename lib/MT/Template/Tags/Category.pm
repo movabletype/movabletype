@@ -1416,8 +1416,14 @@ sub _hdlr_category_label {
 
     # Get the current category
     defined( my $cat = _get_category_context($ctx) )
-        or return $ctx->error( $ctx->errstr );
-    return if ( $cat eq '' );
+        or return (
+        defined( $args->{default} )
+        ? $args->{default}
+        : $ctx->error( $ctx->errstr )
+        );
+
+    return ( defined( $args->{default} ) ? $args->{default} : '' )
+        if ( $cat eq '' );
 
     my $label = $cat->label;
     $label = '' unless defined $label;
@@ -1457,8 +1463,14 @@ sub _hdlr_category_basename {
 
     # Get the current category
     defined( my $cat = _get_category_context($ctx) )
-        or return $ctx->error( $ctx->errstr );
-    return if ( $cat eq '' );
+        or return (
+        defined( $args->{default} )
+        ? $args->{default}
+        : $ctx->error( $ctx->errstr )
+        );
+
+    return ( defined( $args->{default} ) ? $args->{default} : '' )
+        if ( $cat eq '' );
 
     my $basename = $cat->basename || '';
     if ( my $sep = $args->{separator} ) {

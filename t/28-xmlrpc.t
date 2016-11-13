@@ -13,6 +13,9 @@ use File::Basename qw(dirname);
 use Test::More;
 use MIME::Base64;
 
+use MT::FileMgr;
+my $fmgr = MT::FileMgr->new('Local');
+
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
 
@@ -1802,6 +1805,44 @@ my @apis = (
             my ( $som,      $data ) = @_;
             my ( $file_mgr, $path ) = @$data;
             ok( $file_mgr->exists($path) );
+        },
+    },
+    {   api    => 'blogger.deletePost',
+        params => [
+            '',
+            sub {
+                my $page
+                    = $mt->model('page')
+                    ->load( undef,
+                    { sort => 'id', direction => 'descend', limit => 1 } );
+                $page->id;
+            },
+            $username,
+            $password,
+            0
+        ],
+        pre => sub {
+            my ($page)
+                = $mt->model('page')
+                ->load( undef,
+                { sort => 'id', direction => 'descend', limit => 1 } );
+            return $page;
+        },
+        result => sub {
+            my ( $som, $data ) = @_;
+            my $result = $som->result;
+            MT::Entry->driver->Disabled(1)
+                if MT::Entry->driver->isa(
+                'Data::ObjectDriver::Driver::BaseCache');
+            my $entry = MT::Entry->load( $data->id );
+            is( $entry, undef );
+            MT::Entry->driver->Disabled(0)
+                if MT::Entry->driver->isa(
+                'Data::ObjectDriver::Driver::BaseCache');
+            my $blog      = $mt->model('blog')->load( $data->blog_id );
+            my $file_path = File::Spec->catfile( $blog->archive_path,
+                $data->archive_file );
+            ok( !$fmgr->exists($file_path), "Remove $file_path" );
         },
     },
 

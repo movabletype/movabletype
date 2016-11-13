@@ -741,16 +741,14 @@ BEGIN {
                         push @{ $load_args->{joins} },
                             MT->model('author')->join_on(
                             undef,
-                            [   [   {   id => \"= $colname",
-                                        %$name_query,
-                                    },
+                            [   { id => \"= $colname" },
+                                '-and',
+                                [   {%$name_query},
                                     (   $args->{'option'} eq 'not_contains'
                                         ? '-and'
                                         : '-or'
                                     ),
-                                    {   id => \"= $colname",
-                                        %$nick_query,
-                                    },
+                                    {%$nick_query},
                                 ]
                             ],
                             {}
@@ -1798,47 +1796,48 @@ BEGIN {
                 handler => \&CGIMaxUpload,
                 default => 20_480_000,
             },
-            'DBUmask'               => { default => '0111', },
-            'HTMLUmask'             => { default => '0111', },
-            'UploadUmask'           => { default => '0111', },
-            'DirUmask'              => { default => '0000', },
-            'HTMLPerms'             => { default => '0666', },
-            'UploadPerms'           => { default => '0666', },
-            'NoTempFiles'           => { default => 0, },
-            'TempDir'               => { default => '/tmp', },
-            'RichTextEditor'        => { default => 'archetype', },
-            'WYSIWYGEditor'         => undef,
-            'SourceEditor'          => undef,
-            'Editor'                => { default => 'tinymce', },
-            'EditorStrategy'        => { default => 'Multi', },
-            'EntriesPerRebuild'     => { default => 40, },
-            'UseNFSSafeLocking'     => { default => 0, },
-            'NoLocking'             => { default => 0, },
-            'NoHTMLEntities'        => { default => 1, },
-            'NoCDATA'               => { default => 0, },
-            'NoPlacementCache'      => { default => 0, },
-            'NoPublishMeansDraft'   => { default => 0, },
-            'IgnoreISOTimezones'    => { default => 0, },
-            'PingTimeout'           => { default => 60, },
-            'HTTPTimeout'           => { default => 60 },
-            'PingInterface'         => undef,
-            'HTTPInterface'         => undef,
-            'PingProxy'             => undef,
-            'HTTPProxy'             => undef,
-            'HTTPSProxy'            => undef,
-            'PingNoProxy'           => { default => 'localhost', },
-            'HTTPNoProxy'           => { default => 'localhost', },
-            'HeaderCacheControl'    => undef,
-            'ImageDriver'           => { default => 'ImageMagick', },
-            'ImageQualityJpeg'      => { default => 75 },
-            'ImageQualityPng'       => { default => 7 },
-            'NetPBMPath'            => undef,
-            'AdminScript'           => { default => 'mt.cgi', },
-            'ActivityFeedScript'    => { default => 'mt-feed.cgi', },
-            'ActivityFeedItemLimit' => { default => 50, },
-            'CommentScript'         => { default => 'mt-comments.cgi', },
-            'TrackbackScript'       => { default => 'mt-tb.cgi', },
-            'SearchScript'          => {
+            'DBUmask'                => { default => '0111', },
+            'HTMLUmask'              => { default => '0111', },
+            'UploadUmask'            => { default => '0111', },
+            'DirUmask'               => { default => '0000', },
+            'HTMLPerms'              => { default => '0666', },
+            'UploadPerms'            => { default => '0666', },
+            'NoTempFiles'            => { default => 0, },
+            'TempDir'                => { default => '/tmp', },
+            'RichTextEditor'         => { default => 'archetype', },
+            'WYSIWYGEditor'          => undef,
+            'SourceEditor'           => undef,
+            'Editor'                 => { default => 'tinymce', },
+            'EditorStrategy'         => { default => 'Multi', },
+            'EntriesPerRebuild'      => { default => 40, },
+            'UseNFSSafeLocking'      => { default => 0, },
+            'NoLocking'              => { default => 0, },
+            'NoHTMLEntities'         => { default => 1, },
+            'NoCDATA'                => { default => 0, },
+            'NoPlacementCache'       => { default => 0, },
+            'NoPublishMeansDraft'    => { default => 0, },
+            'IgnoreISOTimezones'     => { default => 0, },
+            'PingTimeout'            => { default => 60, },
+            'HTTPTimeout'            => { default => 60 },
+            'PingInterface'          => undef,
+            'HTTPInterface'          => undef,
+            'PingProxy'              => undef,
+            'HTTPProxy'              => undef,
+            'HTTPSProxy'             => undef,
+            'PingNoProxy'            => { default => 'localhost', },
+            'HTTPNoProxy'            => { default => 'localhost', },
+            'HeaderCacheControl'     => undef,
+            'ImageDriver'            => { default => 'ImageMagick', },
+            'ImageQualityJpeg'       => { default => 75 },
+            'ImageQualityPng'        => { default => 7 },
+            'AutoChangeImageQuality' => { default => 1 },
+            'NetPBMPath'             => undef,
+            'AdminScript'            => { default => 'mt.cgi', },
+            'ActivityFeedScript'     => { default => 'mt-feed.cgi', },
+            'ActivityFeedItemLimit'  => { default => 50, },
+            'CommentScript'          => { default => 'mt-comments.cgi', },
+            'TrackbackScript'        => { default => 'mt-tb.cgi', },
+            'SearchScript'           => {
                 default => 'mt-search.cgi',
                 handler => \&SearchScript,
             },
@@ -2114,6 +2113,12 @@ BEGIN {
 
             'RestrictedPSGIApp' => { type    => 'ARRAY' },
             'XFrameOptions'     => { default => 'SAMEORIGIN' },
+            'DynamicCacheTTL'   => { default => 0 },
+
+            # Activity logging
+            'LoggerLevel'  => { default => 'none' },
+            'LoggerPath'   => undef,
+            'LoggerModule' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2488,7 +2493,43 @@ sub load_core_tasks {
                 $app->model('fileinfo')->cleanup;
             }
         },
+        'CleanCompiledTemplateFiles' => {
+            label     => 'Remove Compiled Template Files',
+            frequency => 60 * 60,                            # once per hour
+            code      => sub {
+                MT::Core->remove_compiled_template_files;
+            }
+        },
     };
+}
+
+sub remove_compiled_template_files {
+    my $ttl = MT->config->DynamicCacheTTL;
+    return '' if !$ttl;
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+
+    my @compile_dirs;
+
+    # Load all website
+    my $iter = MT->model('blog')->load_iter( { class => '*' } );
+    while ( my $blog = $iter->() ) {
+        push @compile_dirs,
+            File::Spec->catdir( $blog->site_path, 'templates_c' );
+    }
+
+    foreach my $dir (@compile_dirs) {
+        my $compile_glob = File::Spec->catfile( $dir, "*.php" );
+        my @files = glob($compile_glob);
+        foreach my $file (@files) {
+            my $mod_time = $fmgr->file_mod_time($file);
+            if ( $ttl < time - $mod_time ) {
+                $fmgr->delete($file);
+            }
+        }
+    }
+
 }
 
 sub remove_temporary_files {
@@ -3199,6 +3240,9 @@ sub PerformanceLoggingPath {
             = File::Spec->catdir( MT->instance->support_directory_path,
             'logs' );
     }
+
+    return $path
+        unless $cfg->get_internal('PerformanceLogging');
 
     # If the $path is not a writeable directory, we need to
     # do some work to see if we can create it

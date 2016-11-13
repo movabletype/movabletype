@@ -12,6 +12,13 @@ function smarty_function_mtassetthumbnailurl($args, &$ctx) {
     $blog = $ctx->stash('blog');
     if (!$blog) return '';
 
+    if( !isset($args['force']) || !$args['force'] ){
+        if ( isset($args['width']) && $args['width'] > $asset->asset_image_width )
+            unset($args['width']);
+        if ( isset($args['height']) && $args['height'] > $asset->asset_image_height )
+            unset($args['height']);
+    }
+
     require_once('MTUtil.php');
 
     list($thumb) = get_thumbnail_file($asset, $blog, $args);

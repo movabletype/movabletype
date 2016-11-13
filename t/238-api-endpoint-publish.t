@@ -11,6 +11,9 @@ use MT::Test::DataAPI;
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
+use MT::FileMgr;
+my $fmgr = MT::FileMgr->new('Local');
+
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
@@ -18,6 +21,26 @@ $author->save;
 my $blog = $app->model('blog')->load(1);
 my $start_time
     = MT::Util::ts2iso( $blog, MT::Util::epoch2ts( $blog, time() ), 1 );
+
+# Load templates start
+my $template_class = $app->model('template');
+
+my $blog_individual_tmpl
+    = $template_class->load( { blog_id => 1, type => 'individual' } )
+    or die $template_class->errstr;
+my $blog_individual_tmpl_id = $blog_individual_tmpl->id;
+
+my $blog_index_tmpl
+    = $template_class->load( { blog_id => 1, type => 'index' } )
+    or die $template_class->errstr;
+my $blog_index_tmpl_id = $blog_index_tmpl->id;
+
+my $blog_archive_tmpl
+    = $template_class->load( { blog_id => 1, type => 'archive' } )
+    or die $template_class->errstr;
+my $blog_archive_tmpl_id = $blog_archive_tmpl->id;
+
+# Load templates end
 
 my $suite = suite();
 test_data_api($suite);
@@ -112,6 +135,63 @@ sub suite {
                 is( $data->{rebuild_indexes},
                     1, 'MT::App::rebuild_indexes is called once' );
                 delete $data->{mock};
+            },
+        },
+        {   path => "/v2/sites/1/templates/$blog_individual_tmpl_id/publish",
+            method => 'POST',
+            setup  => sub {
+                my ($data) = @_;
+
+                my $fi = $app->model('fileinfo')
+                    ->load( { template_id => $blog_individual_tmpl_id } );
+                $fmgr->delete( $fi->file_path );
+
+                $data->{template_file_path} = $fi->file_path;
+            },
+            result   => { status => 'success' },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $file_path = $data->{template_file_path};
+                ok( $fmgr->exists($file_path), "'$file_path' exists." );
+            },
+        },
+        {   path   => "/v2/sites/1/templates/$blog_index_tmpl_id/publish",
+            method => 'POST',
+            setup  => sub {
+                my ($data) = @_;
+
+                my $fi = $app->model('fileinfo')
+                    ->load( { template_id => $blog_index_tmpl_id } );
+                $fmgr->delete( $fi->file_path );
+
+                $data->{template_file_path} = $fi->file_path;
+            },
+            result   => { status => 'success' },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $file_path = $data->{template_file_path};
+                ok( $fmgr->exists($file_path), "'$file_path' exists." );
+            },
+        },
+        {   path   => "/v2/sites/1/templates/$blog_archive_tmpl_id/publish",
+            method => 'POST',
+            setup  => sub {
+                my ($data) = @_;
+
+                my $fi = $app->model('fileinfo')
+                    ->load( { template_id => $blog_archive_tmpl_id } );
+                $fmgr->delete( $fi->file_path );
+
+                $data->{template_file_path} = $fi->file_path;
+            },
+            result   => { status => 'success' },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $file_path = $data->{template_file_path};
+                ok( $fmgr->exists($file_path), "'$file_path' exists." );
             },
         },
     ];

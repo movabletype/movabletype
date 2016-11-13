@@ -43,7 +43,7 @@ function smarty_block_mtsethashvar($args, $content, &$ctx, &$repeat) {
                 $vars[$name] = $hash;
             } else {
                 $vars = array($name => $hash);
-                $ctx->__stash['vars'] =& $vars;
+                $ctx->__stash['vars'] = $vars;
             }
         }
         return $content;

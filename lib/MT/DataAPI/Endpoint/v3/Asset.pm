@@ -27,6 +27,10 @@ sub upload {
     my $site = MT->model('blog')->load($site_id);
     $app->blog($site);
 
+    my $user = $app->user;
+    $app->permissions( $user->permissions($site_id) )
+        if $user && !$user->is_anonymous;
+
     if ($site) {
         if ( defined $site->allow_to_change_at_upload
             && !$site->allow_to_change_at_upload )

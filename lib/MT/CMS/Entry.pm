@@ -1609,6 +1609,8 @@ sub save {
             },
             { ( $id ? ( not => { id => 1 } ) : () ) }
         );
+        my $folder;
+        $folder = MT::Folder->load($cat_id) if $cat_id;
         while ( my $p = $dup_it->() ) {
             my ( $dup_path, $org_path );
 
@@ -1616,13 +1618,15 @@ sub save {
                 my $p_folder = $p->folder;
                 $dup_path
                     = defined $p_folder ? $p_folder->publish_path() : '';
-                my $folder;
-                $folder = MT::Folder->load($cat_id) if $cat_id;
                 $org_path = defined $folder ? $folder->publish_path() : '';
             }
             else {
                 $dup_path = $p->permalink;
-                $org_path = $obj->permalink;
+
+                my $url = $blog->site_url || "";
+                $url .= '/' unless $url =~ m!/$!;
+                $org_path
+                    = $url . archive_file_for( $obj, $blog, 'Page', $folder );
             }
 
             return $app->error(
@@ -2019,7 +2023,13 @@ sub save {
 }
 
 sub save_entries {
-    my $app     = shift;
+    my $app = shift;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('--- Start save_entries.');
+
     my $perms   = $app->permissions;
     my $type    = $app->param('_type');
     my $blog_id = $app->param('blog_id');
@@ -2028,6 +2038,8 @@ sub save_entries {
     my $blog = $app->model('blog')->load($blog_id);
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog;
+
+    MT::Util::Log->info(' Start permission check.');
 
 PERMCHECK: {
         my $action
@@ -2059,6 +2071,8 @@ PERMCHECK: {
         return $app->permission_denied();
     }
 
+    MT::Util::Log->info(' End   permission check.');
+
     $app->validate_magic() or return;
 
     my $q = $app->param;
@@ -2069,6 +2083,8 @@ PERMCHECK: {
     my $this_author    = $app->user;
     my $this_author_id = $this_author->id;
     my @objects;
+
+    MT::Util::Log->info(' Start check params.');
 
     for my $p (@p) {
         next unless $p =~ /^author_id_(\d+)/;
@@ -2269,10 +2285,21 @@ PERMCHECK: {
         );
         push( @objects, { current => $entry, original => $orig_obj } );
     }
+
+    MT::Util::Log->info(' End   check params.');
+
+    MT::Util::Log->info(' Start callbacks cms_post_bulk_save.');
+
     $app->run_callbacks(
         'cms_post_bulk_save.' . ( $type eq 'entry' ? 'entries' : 'pages' ),
         $app, \@objects );
+
+    MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
+
     $app->add_return_arg( 'saved' => 1, is_power_edit => 1 );
+
+    MT::Util::Log->info('--- End   save_entries.');
+
     $app->call_return;
 }
 
@@ -2371,6 +2398,11 @@ sub pinged_urls {
 sub save_entry_prefs {
     my $app = shift;
 
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('--- Start save_entry_prefs.');
+
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
     $app->validate_magic() or return;
@@ -2401,8 +2433,10 @@ sub save_entry_prefs {
         or return $app->error(
         $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
         );
-    $app->send_http_header("text/json");
-    return "true";
+
+    MT::Util::Log->info('--- End   save_entry_prefs.');
+
+    return $app->json_result( { success => 1 } );
 }
 
 sub publish_entries {
@@ -2960,6 +2994,12 @@ sub post_delete {
 
 sub update_entry_status {
     my $app = shift;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('--- Start update_entry_status.');
+
     my ( $new_status, @ids ) = @_;
     return $app->errtrans("Need a status to update entries")
         unless $new_status;
@@ -2973,6 +3013,9 @@ sub update_entry_status {
     my $perms      = $app->permissions;
 
     my @objects;
+
+    MT::Util::Log->info(' Start load entries.');
+
     foreach my $id (@ids) {
         my $entry = MT::Entry->load($id)
             or
@@ -3040,17 +3083,30 @@ sub update_entry_status {
         push( @objects, { current => $entry, original => $original } );
     }
 
+    MT::Util::Log->info(' End   load entries.');
+
+    MT::Util::Log->info(' Start rebuild_these.');
+
     my $tmpl = $app->rebuild_these( \%rebuild_these,
         how => MT::App::CMS::NEW_PHASE() );
 
+    MT::Util::Log->info(' End   rebuild_these.');
+
     if (@objects) {
         my $obj = $objects[0]{current};
+
+        MT::Util::Log->info(' Start callbacks cms_post_bulk_save.');
+
         $app->run_callbacks(
             'cms_post_bulk_save.'
                 . ( $obj->class eq 'entry' ? 'entries' : 'pages' ),
             $app, \@objects
         );
+
+        MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
     }
+
+    MT::Util::Log->info('--- End   update_entry_status.');
 
     $tmpl;
 }

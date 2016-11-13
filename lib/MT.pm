@@ -33,13 +33,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '6.2', '6.0010' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.3', '6.0010' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.2.5',              '__PRODUCT_VERSION_ID__',
+        '6.3.2',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 5;
+        $RELEASE_NUMBER = 2;
     }
 
     $DebugMode = 0;
@@ -535,6 +535,17 @@ sub log {
     print STDERR Encode::encode_utf8(
         MT->translate( "Message: [_1]", $log->message ) . "\n" )
         if $MT::DebugMode && ( $^O ne "MSWin32" );
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+    my $method
+        = $log->level == MT::Log::DEBUG()    ? 'debug'
+        : $log->level == MT::Log::INFO()     ? 'info'
+        : $log->level == MT::Log::WARNING()  ? 'warn'
+        : $log->level == MT::Log::ERROR()    ? 'error'
+        : $log->level == MT::Log::SECURITY() ? 'error'
+        :                                      'none';
+    MT::Util::Log->$method( $log->message );
 }
 
 sub run_tasks {
@@ -2689,7 +2700,7 @@ sub new_ua {
     else {
         $ua->ssl_opts(
             verify_hostname => 1,
-            SSL_vesion  => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
+            SSL_version => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
             SSL_ca_file => Mozilla::CA::SSL_ca_file(),
         );
     }
