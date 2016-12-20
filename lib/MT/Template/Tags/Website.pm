@@ -276,7 +276,8 @@ sub _hdlr_website_url {
     my $url = $website->site_url;
     return '' unless defined $url;
     $url .= '/' unless $url =~ m!/$!;
-    $url;
+
+    return MT::Util::strip_protocol($url, $args);
 }
 
 ###########################################################################
@@ -549,7 +550,7 @@ sub _hdlr_website_relative_url {
 
 =head2 WebsiteThemeID
 
-Outputs applied theme's ID for the website currently in context. The 
+Outputs applied theme's ID for the website currently in context. The
 identifier is modified such that underscores are changed to dashes.
 
 B<Attributes:>

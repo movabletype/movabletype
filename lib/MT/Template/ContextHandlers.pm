@@ -4827,6 +4827,9 @@ sub _hdlr_link {
             or return $ctx->error(
             MT->translate( "Cannot find entry '[_1]'", $entry_id ) );
         my $link = $entry->permalink;
+
+        $link = MT::Util::strip_protocol($link, $arg);
+
         $link = MT::Util::strip_index( $link, $curr_blog )
             unless $arg->{with_index};
         $link;

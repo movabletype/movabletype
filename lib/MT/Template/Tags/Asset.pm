@@ -1180,6 +1180,8 @@ sub _hdlr_asset_thumbnail_url {
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
+
+    $url = MT::Util::strip_protocol($url, $args);
     return $url || '';
 }
 

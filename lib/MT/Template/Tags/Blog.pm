@@ -307,7 +307,8 @@ sub _hdlr_blog_archive_url {
     my $url = $blog->archive_url;
     return '' unless defined $url;
     $url .= '/' unless $url =~ m!/$!;
-    $url;
+
+    return MT::Util::strip_protocol($url, $args);
 }
 
 ###########################################################################

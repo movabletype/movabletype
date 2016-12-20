@@ -2131,7 +2131,8 @@ sub _hdlr_entry_author_url {
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $a = $e->author;
-    return $a ? $a->url || "" : "";
+    return "" unless $a && $a->url;
+    return MT::Util::strip_protocol($a->url, $args);
 }
 
 ###########################################################################
