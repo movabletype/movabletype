@@ -1341,7 +1341,7 @@ sub strip_protocol {
     if ($args->{relative} eq 'protocol') {
         $link =~ s/https?://;
     }
-    else if ($args->{relative} eq 'host') {
+    elsif ($args->{relative} eq 'host') {
         $link =~ s/https?:\/\///;
         $link =~ s/[^\/]+(\/)/$1/;
     }
