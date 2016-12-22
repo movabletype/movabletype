@@ -87,7 +87,6 @@ our $CORE_TIME;
 BEGIN {
     *CORE::GLOBAL::time
         = sub { my ($a) = @_; $a ? CORE::time + $_[0] : CORE::time };
-    *CORE::GLOBAL::sleep = sub { CORE::sleep };
 }
 
 # Suppress output when "MailTransfer debug"
