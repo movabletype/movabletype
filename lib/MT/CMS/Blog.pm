@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1270,7 +1270,7 @@ sub start_rebuild_pages {
         MT::CMS::Blog::rebuild_pages($app);
     }
     else {
-        $app->load_tmpl( 'rebuilding.tmpl', \%param )
+        $app->load_tmpl( 'rebuilding.tmpl', \%param );
     }
 }
 
@@ -3447,7 +3447,7 @@ HTML
         require MT::Log;
         $app->log(
             {   message => $app->translate(
-                "'[_1]' (ID:[_2]) has been copied as '[_3]' (ID:[_4]) by '[_5]' (ID:[_6]).",
+                    "'[_1]' (ID:[_2]) has been copied as '[_3]' (ID:[_4]) by '[_5]' (ID:[_6]).",
                     $blog->name,   $blog->id,   $blog_name,
                     $new_blog->id, $auth->name, $auth->id
                 ),

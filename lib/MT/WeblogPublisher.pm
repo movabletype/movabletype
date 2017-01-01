@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -2223,9 +2223,10 @@ sub remove_entry_archive_file {
     my %param = @_;
 
     my $entry = $param{Entry};
-    my $at  = $param{ArchiveType} || ( $entry->is_entry ? 'Individual' : 'Page' );
-    my $cat = $param{Category};
-    my $auth = $param{Author};
+    my $at
+        = $param{ArchiveType} || ( $entry->is_entry ? 'Individual' : 'Page' );
+    my $cat   = $param{Category};
+    my $auth  = $param{Author};
     my $force = exists $param{Force} ? $param{Force} : 1;
 
     require MT::TemplateMap;
