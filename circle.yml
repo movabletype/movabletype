@@ -20,6 +20,7 @@ test:
     - cp ./t/mysql-test.cfg ./mt-config.cgi
 
     - rm t/34-sqlite.t
+    - rm t/62-asset-editor.t
     - rm t/90-podcoverage.t
 
   override:
