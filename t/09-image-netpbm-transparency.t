@@ -7,8 +7,7 @@ use File::Spec;
 use File::Temp qw( tempfile );
 use Test::More;
 
-use lib qw( lib extlib t );
-use MT::ConfigMgr;
+use lib qw( lib extlib );
 use MT::FileMgr;
 use MT::Image;
 
@@ -17,7 +16,7 @@ my $mt_dir = dirname( dirname($file) );
 my $png    = File::Spec->catfile( $mt_dir, 'mt-static', 'images', 'logo',
     'movable-type-logo.png' );
 
-my $cfg = MT::ConfigMgr->instance;
+my $cfg = MT->config;
 $cfg->ImageDriver('NetPBM');
 
 # Skip this test when NetPBM driver is invalid.
