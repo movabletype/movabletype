@@ -119,10 +119,16 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
             ok( $image->exif->GetValue('JFIFVersion'),
                 'JFIFVersion tag is still remaining.'
             );
-            ok( MT::Image->new( Filename => $image->file_path ),
-                'Read the image having no metadata.' );
-
-            $image->rotate(90);
+            
+            SKIP: {
+                my $mtimg = MT::Image->new;
+                skip( "no $driver for image $tempfile", 1 ) unless $mtimg;
+                ok( $mtimg->init( Filename => $image->file_path ),
+                    'Read the image having no metadata.' );
+                
+                $image->rotate(90);
+            }
+            
             ok( !$image->has_metadata,
                 'Has no metadata after rotating image.' );
         };
