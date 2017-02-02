@@ -935,7 +935,7 @@ EOT;
         $tag = $ctx->this_tag();
 
         $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
-        if( !empty($this->_handlers['mt'.$tag][0]) && is_scalar($this->_handlers['mt'.$tag][0]) ) {
+        if( !empty($this->_handlers['mt'.$tag][0]) && is_scalar($this->_handlers['mt'.$tag][0]) && !is_callable('smarty_function_mt' . $tag) ) {
           $fntag = $this->_handlers['mt'.$tag][0];
         }
         else {
