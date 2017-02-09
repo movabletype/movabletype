@@ -16,6 +16,8 @@ class MTViewer extends SmartyBC {
     var $_handlers = array();
     var $smarty;
     var $_tag_stack = array();
+    var $_override = array();
+    var $_is_override_context = false;
 
     var $path_sep;
 
@@ -840,6 +842,27 @@ EOT;
         }
         return $fn;
     }
+
+    function set_override_context( $state ) {
+        $this->_is_override_context = $state;
+    }
+
+    function add_override_tag( $type, $tag, $fn ) {
+        $handler = $this->handler_for('mt' . $tag);
+        if ( !empty($handler) ) {
+            $this->_override[$tag] = $fn;
+            return $handler[0];
+        } else {
+            if ( $type == 'block') {
+                return $this->add_container_tag($tag, $fn);
+            } elseif( $type == 'function' ) {
+                return $this->add_tag($tag, $fn);
+            } else {
+                return null;
+            }
+        }
+    }
+
     function add_container_tag($tag, $fn = null) {
         return $this->register_tag_handler($tag, $fn, 'block');
     }
@@ -885,6 +908,8 @@ EOT;
             $fntag = array($this, 'smarty_block_else');
         }elseif($tag == 'elseif'){
             $fntag = array($this, 'smarty_block_elseif');
+        } elseif(!empty($this->_override[$tag]) && is_callable($this->_override[$tag]) && !$this->_is_override_context ) {
+            $fntag = $this->_override[$tag];
         } elseif( !empty($this->_handlers['mt'.$tag][0]) && is_scalar($this->_handlers['mt'.$tag][0]) && !is_callable('smarty_block_mt' . $tag) ) {
             $fntag = $this->_handlers['mt'.$tag][0];
         } else {

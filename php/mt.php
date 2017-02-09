@@ -788,7 +788,6 @@ class MT {
 
     function display($tpl, $cid = null) {
         $ctx =& $this->context();
-        $this->init_plugins();
         $blog =& $ctx->stash('blog');
         if (!$blog) {
             $db =& $this->db();
