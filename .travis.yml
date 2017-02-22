@@ -57,6 +57,9 @@ install:
   # Tests fail with Perl 5.8 and 5.10.
   - cpanm --notest -L ./local Twiggy
 
+  # Cannot install Math::GMP 2.12 and 2.13 with Perl 5.8.
+  - cpanm -L ./local Math::GMP@2.11
+
   # Instal CPAN modules.
   - cp ./t/cpanfile .
   - travis_retry cpanm Carton

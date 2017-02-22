@@ -1,0 +1,36 @@
+#!/bin/sh
+
+set -e
+
+if [ "`dirname $0`" == "." ]; then
+  MT_HOME=".."
+else
+  MT_HOME="."
+fi
+
+CHMOD="xargs chmod 755"
+GIT_UPDATE_INDEX="xargs git update-index --add --chmod=+x"
+
+# *.cgi
+find $MT_HOME/*.cgi -type f | grep -v "mt-config.cgi" | $CHMOD
+find $MT_HOME/*.cgi -type f | grep -v "mt-config.cgi" | $GIT_UPDATE_INDEX
+
+# build/
+find $MT_HOME/build -iname "*.pl" -type f | $CHMOD
+find $MT_HOME/build -iname "*.pl" -type f | $GIT_UPDATE_INDEX
+
+find $MT_HOME/build -type f | grep -v MANIFEST | grep -v '\.[^/\.][^/\.][^/\.]\?$' | $CHMOD
+find $MT_HOME/build -type f | grep -v MANIFEST | grep -v '\.[^/\.][^/\.][^/\.]\?$' | $GIT_UPDATE_INDEX
+
+# tools/
+find $MT_HOME/tools -type f | $CHMOD
+find $MT_HOME/tools -type f | $GIT_UPDATE_INDEX
+
+# php/lib/*.php
+find $MT_HOME/php/lib -iname "*.php" -type f | $CHMOD
+find $MT_HOME/php/lib -iname "*.php" -type f | $GIT_UPDATE_INDEX
+
+# plugins/**/*.php
+find $MT_HOME/plugins/**/php -iname "*.php" -type f | $CHMOD
+find $MT_HOME/plugins/**/php -iname "*.php" -type f | $GIT_UPDATE_INDEX
+

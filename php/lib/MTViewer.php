@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,6 +16,8 @@ class MTViewer extends SmartyBC {
     var $_handlers = array();
     var $smarty;
     var $_tag_stack = array();
+    var $_override = array();
+    var $_is_override_context = false;
 
     var $path_sep;
 
@@ -823,14 +825,44 @@ EOT;
         if ($old_handler) {
             $fn = $old_handler[0];
         } else {
-            if ($type == 'block')
-                $fn = create_function('$args, $content, &$ctx, &$repeat', 'if (!isset($content)) @include_once "block.' . $tag . '.php"; if (function_exists("smarty_block_' . $tag . '")) { return smarty_block_' . $tag . '($args, $content, $ctx, $repeat); } $repeat = false; return "";');
+            if ($type == 'block') {
+                $func = 'if (!isset($content)) @include_once "block.' . $tag . '.php"; if (function_exists("smarty_block_' . $tag . '")) { return smarty_block_' . $tag . '($args, $content, $ctx, $repeat); } $repeat = false; return "";';
+                if ( $fn ) {
+                    $func = 'if (!isset($content)) { return ' . $fn . '($args, $content, $ctx, $repeat); } $repeat = false; return "";';
+                }
+                $fn = create_function('$args, $content, &$ctx, &$repeat', $func);
+            }
             elseif ($type == 'function') {
-                $fn = create_function('$args, &$ctx', '@include_once "function.' . $tag . '.php"; if (function_exists("smarty_function_' . $tag . '")) { return smarty_function_' . $tag . '($args, $ctx); } return "";');
+                $func = '@include_once "function.' . $tag . '.php"; if (function_exists("smarty_function_' . $tag . '")) { return smarty_function_' . $tag . '($args, $ctx); } return "";';
+                if ( $fn ) {
+                    $func = 'return ' . $fn . '($args, $ctx); return "";';
+                }
+                $fn = create_function('$args, &$ctx', $func);
             }
         }
         return $fn;
     }
+
+    function set_override_context( $state ) {
+        $this->_is_override_context = $state;
+    }
+
+    function add_override_tag( $type, $tag, $fn ) {
+        $handler = $this->handler_for('mt' . $tag);
+        if ( !empty($handler) ) {
+            $this->_override[$tag] = $fn;
+            return $handler[0];
+        } else {
+            if ( $type == 'block') {
+                return $this->add_container_tag($tag, $fn);
+            } elseif( $type == 'function' ) {
+                return $this->add_tag($tag, $fn);
+            } else {
+                return null;
+            }
+        }
+    }
+
     function add_container_tag($tag, $fn = null) {
         return $this->register_tag_handler($tag, $fn, 'block');
     }
@@ -876,6 +908,10 @@ EOT;
             $fntag = array($this, 'smarty_block_else');
         }elseif($tag == 'elseif'){
             $fntag = array($this, 'smarty_block_elseif');
+        } elseif(!empty($this->_override[$tag]) && is_callable($this->_override[$tag]) && !$this->_is_override_context ) {
+            $fntag = $this->_override[$tag];
+        } elseif( !empty($this->_handlers['mt'.$tag][0]) && is_scalar($this->_handlers['mt'.$tag][0]) && !is_callable('smarty_block_mt' . $tag) ) {
+            $fntag = $this->_handlers['mt'.$tag][0];
         } else {
             $fntag = 'smarty_block_mt' . $tag;
         }
@@ -924,7 +960,12 @@ EOT;
         $tag = $ctx->this_tag();
 
         $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
-        $fntag = 'smarty_function_mt' . $tag;
+        if( !empty($this->_handlers['mt'.$tag][0]) && is_scalar($this->_handlers['mt'.$tag][0]) && !is_callable('smarty_function_mt' . $tag) ) {
+          $fntag = $this->_handlers['mt'.$tag][0];
+        }
+        else {
+            $fntag = 'smarty_function_mt' . $tag;
+        }
         if(is_callable($fntag)){
             $result = call_user_func_array($fntag, array($args, &$ctx));
         }
@@ -951,6 +992,9 @@ EOT;
             @include_once 'block.' . $block . '.php';
             $block_impl = array($this,'block_wrapper');
         }
+        else {
+            $block_impl = array($this, 'block_wrapper');
+        }
 
         $this->registerPlugin('block', $block, $block_impl, $cacheable, $cache_attrs);
     }
@@ -963,6 +1007,9 @@ EOT;
         if($function_impl == ''){
             @include_once 'function.' . $function . '.php';
             $function_impl = array($this,'function_wrapper');
+        }
+        else {
+            $function_impl = array($this, 'function_wrapper');
         }
 
         $this->registerPlugin('function', $function, $function_impl, $cacheable, $cache_attrs);

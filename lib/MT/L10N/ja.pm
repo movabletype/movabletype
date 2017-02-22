@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1077,6 +1077,7 @@ use vars qw( @ISA %Lexicon );
 	'Bad AuthenticationModule config' => 'AuthenticationModuleの設定が正しくありません',
 
 ## lib/MT/Auth/MT.pm
+	'Password contains invalid character.' => 'パスワードに利用できない文字が含まれています。',
 	'Missing required module' => '必要なモジュールが見つかりません',
 
 ## lib/MT/Auth/OpenID.pm
@@ -2769,10 +2770,9 @@ use vars qw( @ISA %Lexicon );
 	'Image error: [_1]' => '画像でエラーが発生しました: [_1]',
 
 ## lib/MT/Util/Log.pm
+	'Unknown Logger Level: [_1]' => '不正なログレベルです: [_1]',
 	'Invalid Log module' => '不正なログモジュールが指定されています',
 	'Cannot load Log module: [_1]' => 'ログモジュールをロードできません: [_1]',
-	'Failed to write log: [_1]' => 'ログの書き込みに失敗しました: [_1]',
-	'Unknown Logger Level: [_1]' => '不正なログレベルです: [_1]',
 
 ## lib/MT/Util/YAML.pm
 	'Invalid YAML module' => '不正なYAMLモジュールが指定されています',
@@ -3161,6 +3161,7 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/theme.yaml
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
 	'Classic Website' => 'クラシックウェブサイト',
+
 ## themes/pico/templates/about_this_page.mtml
 
 ## themes/pico/templates/archive_index.mtml
@@ -3251,6 +3252,7 @@ use vars qw( @ISA %Lexicon );
 	'Pico' => 'Pico',
 	'Pico Styles' => 'Picoスタイル',
 	'A collection of styles compatible with Pico themes.' => 'Picoテーマと互換のあるスタイルです。',
+
 ## search_templates/comments.tmpl
 	'Search for new comments from:' => 'コメントを検索:',
 	'the beginning' => '最初から',
@@ -4048,6 +4050,7 @@ use vars qw( @ISA %Lexicon );
 	'Save changes to this author (s)' => 'ユーザーへの変更を保存 (s)',
 	'_USAGE_PASSWORD_RESET' => 'ユーザーのパスワードを再設定できます。パスワードがランダムに生成され、[_1]にメールで送信されます。',
 	'Initiate Password Recovery' => 'パスワードの再設定',
+	'You must use half-width character for password.' => 'パスワードには全角文字を利用できません。',
 
 ## tmpl/cms/edit_blog.tmpl
 	'Create Blog' => 'ブログの作成',
@@ -7128,17 +7131,6 @@ use vars qw( @ISA %Lexicon );
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
 	'Failed.' => '失敗',
 
-## plugins/mixiComment/lib/mixiComment/App.pm
-	'mixi reported that you failed to login.  Try again.' => 'ログインに失敗しました。',
-
-## plugins/mixiComment/mixiComment.pl
-	'Allows commenters to sign in to Movable Type using their own mixi username and password via OpenID.' => 'mixiのアカウントを使ってMovable Typeにサインインし、コメントできるようにします。',
-	'mixi' => 'ミクシィ',
-
-## plugins/mixiComment/tmpl/config.tmpl
-	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'すでにmixiのIDを登録してあります。ブログに関連付けるmixiのIDを変えたい場合は、<a href="[_1]">ここをクリックしてmixiにログイン</a>してください。マイミクだけでなくすべてのmixiユーザーからのコメントを受け付けたいときは、初期化ボタンをクリックして設定を消去してください。',
-	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'マイミクからのみコメントを受け付ける設定にするには、<a href="[_1]">ここをクリックしてまずmixiにログイン</a>してください。',
-
 ## plugins/spamlookup/lib/spamlookup.pm
 	'Failed to resolve IP address for source URL [_1]' => 'ソースURL[_1]の解決に失敗しました。',
 	'Moderating: Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'ドメインのIPアドレス「[_2]」と送信元「[_1]」のIPアドレス「[_3]」が合致しないため、「未公開」にします。',
@@ -7216,6 +7208,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 311
+## New words: 288
 
 1;

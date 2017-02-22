@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -22,7 +22,7 @@ our %endpoints = ();
 
 sub id                 {'data_api'}
 sub DEFAULT_VERSION () {3}
-sub API_VERSION     () {3.1}
+sub API_VERSION ()     {3.1}
 
 sub init {
     my $app = shift;
@@ -2887,14 +2887,14 @@ sub api {
 
     # Special handler for get version information.
     if ( $path eq '/version' ) {
-	my $raw = {
-	    endpointVersion => 'v' . $app->DEFAULT_VERSION(),
-	    apiVersion      => $app->API_VERSION(),
-	};
+        my $raw = {
+            endpointVersion => 'v' . $app->DEFAULT_VERSION(),
+            apiVersion      => $app->API_VERSION(),
+        };
         my $format = $app->current_format;
-	my $data   = $format->{serialize}->($raw);
+        my $data   = $format->{serialize}->($raw);
 
-	$app->send_http_header( $format->{mime_type} );
+        $app->send_http_header( $format->{mime_type} );
         $app->{no_print_body} = 1;
         $app->print_encode($data);
         return undef;

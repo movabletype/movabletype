@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -87,7 +87,7 @@ our $CORE_TIME;
 BEGIN {
     *CORE::GLOBAL::time
         = sub { my ($a) = @_; $a ? CORE::time + $_[0] : CORE::time };
-    *CORE::GLOBAL::sleep = sub { CORE::sleep };
+    *CORE::GLOBAL::sleep = sub { CORE::sleep(shift) };
 }
 
 # Suppress output when "MailTransfer debug"
