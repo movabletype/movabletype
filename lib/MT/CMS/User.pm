@@ -792,7 +792,9 @@ sub save_cfg_system_users {
         1
     );
 
-    if ( 'MT' eq uc $app->config('AuthenticationModule') ) {
+    if ( 'MT' eq uc $app->config('AuthenticationModule')
+        && !$app->config->is_readonly('UserPasswordMinLength') )
+    {
         my $pass_min_len = $app->param('minimum_length');
         if ( ( $pass_min_len =~ m/\D/ ) or ( $pass_min_len < 1 ) ) {
             return $app->errtrans(
