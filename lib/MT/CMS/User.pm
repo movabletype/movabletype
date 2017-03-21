@@ -69,6 +69,8 @@ sub edit {
         $param->{can_modify_password}
             = ( $param->{editing_other_profile} || $param->{is_me} )
             && MT::Auth->password_exists;
+        $param->{can_modify_api_password}
+            = ( $param->{editing_other_profile} || $param->{is_me} );
         $param->{can_recover_password} = MT::Auth->can_recover_password;
         $param->{languages}
             = MT::I18N::languages_list( $app, $obj->preferred_language )
@@ -93,8 +95,9 @@ sub edit {
         $param->{create_personal_weblog}
             = $app->config->NewUserAutoProvisioning ? 1 : 0
             unless exists $param->{create_personal_weblog};
-        $param->{can_modify_password}  = MT::Auth->password_exists;
-        $param->{can_recover_password} = MT::Auth->can_recover_password;
+        $param->{can_modify_password}     = MT::Auth->password_exists;
+        $param->{can_modify_api_password} = 0;
+        $param->{can_recover_password}    = MT::Auth->can_recover_password;
     }
 
     # Make permission list
