@@ -1,0 +1,52 @@
+<mt:setvar name="page_title" value="<__trans phrase="Select Content Type">">
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvar name="screen_id" value="select-content-type">
+<mt:setvar name="screen_class" value="select-content-type">
+    
+<mt:setvarblock name="system_msg">
+<div id="msg-block"></div>
+  <mt:if name="err_msg">
+    <mtapp:statusmsg
+       id="err_msg"
+       class="error"
+       can_close="0">
+      <mt:var name="err_msg">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:setvarblock>
+        
+<mt:setvarblock name="html_head" append="1">
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/ContentType/css/content-type.css?v=<$mt:var name="mt_version_id" escape="url"$>">
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">plugins/ContentType/js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl" id="header_include">
+
+<mtapp:form id="select-content-type-form" name="select-content-type-form" mode="select_content_type">
+  <input type="hidden" name="cfg_screen" value="select_content_type" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+
+  <mtapp:settinggroup id="content_type">
+
+    <h2><__trans phrase="Content Types"></h2>
+
+    <ul>
+    <mt:loop name="content_types">
+    <mt:if name="can_edit">
+      <li>
+        <a href="<mt:var name="mt_url">?__mode=edit_content_type_data&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">">
+          <mt:var name="name">
+        </a>
+      </li>
+    </mt:if>
+    </mt:loop>
+    </ul>
+
+  </mtapp:settinggroup>
+
+</mtapp:form>
+
+<mt:include name="include/footer.tmpl">

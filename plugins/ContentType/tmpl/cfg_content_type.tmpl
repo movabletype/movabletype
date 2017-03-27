@@ -1,0 +1,180 @@
+<mt:setvar name="page_title" value="<__trans phrase="Content Type Settings">">
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvar name="screen_id" value="manage-content-type">
+<mt:setvar name="screen_class" value="content-type">
+    
+<mt:setvarblock name="system_msg">
+<div id="msg-block"></div>
+  <mt:if name="saved">
+    <mtapp:statusmsg
+       id="saved"
+       class="success">
+      <__trans phrase="Contents type settings has been saved.">
+    </mtapp:statusmsg>
+  </mt:if>
+  <mt:if name="err_msg">
+    <mtapp:statusmsg
+       id="err_msg"
+       class="error"
+       can_close="0">
+      <mt:var name="err_msg">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:setvarblock>
+        
+<mt:setvarblock name="list_actions">
+<div class="button-actions actions">
+  <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="html_head" append="1">
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/ContentType/css/content-type.css?v=<$mt:var name="mt_version_id" escape="url"$>">
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">plugins/ContentType/js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl" id="header_include">
+
+<mtapp:form id="content-type-form" name="content-type-form" mode="save_cfg_content_type">
+  <input type="hidden" name="cfg_screen" value="cfg_content_type" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+
+  <mtapp:settinggroup id="content_type">
+
+    <h2><__trans phrase="Content Type"></h2>
+
+    <mtapp:setting
+       id="name"
+       label="<__trans phrase="Content Type Name">"
+       required="1">
+      <input type="text" name="name" id="name" class="text med required" value="<mt:var name="name" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="unique_key"
+       label="<__trans phrase="Unique Key">">
+      <mt:var name="unique_key" escape="html">
+    </mtapp:setting>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="entities">
+
+    <h2><__trans phrase="Entities"></h2>
+
+      <div id="add-block" class="icon-create icon-left">
+        <span class="item-add"><a href="javascript:void(0);" class="add-link<mt:unless name="id"> disabled" disabled="disabled</mt:unless>"><__trans phrase="Add entity"></a></span>
+      </div>
+
+      <div id="sortable" class="sortable">
+      <mt:loop name="entities">
+      <mtapp:setting
+         id="entity-<mt:var name="entity_id">"
+         class="sort-enabled"
+         label="<mt:var name="name">"
+         label_class="top-label">
+        <ul class="action-link-list">
+          <li>
+            <input type="radio" name="content-label" id="content-label-<mt:var name="entity_id">" value="<mt:var name="entity_id">"<mt:if name="label"> checked="checked"</mt:if> />
+            <label for="content-label-<mt:var name="entity_id">">Label for list screen</label>
+          </li>
+          <li>
+            <a href="<mt:var name="mt_url">?__mode=cfg_entity&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">&id=<mt:var name="entity_id">" class="icon-left icon-edit">
+              <__trans phrase="Edit">
+            </a>
+          </li>
+          <li>
+            <a href="<mt:var name="mt_url">?__mode=delete_entity&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">&id=<mt:var name="entity_id">" class="icon-left icon-delete">
+              <__trans phrase="Delete">
+            </a>
+          </li>
+        </ul>
+        <input type="hidden" name="order-<mt:var name="entity_id">" id="order-<mt:var name="entity_id">" value="<mt:var name="order">" />
+      </mtapp:setting>
+      </mt:loop>
+      </div>
+
+  </mtapp:settinggroup>
+
+  <mt:setvarblock name="action_buttons">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Save changes to these settings (s)">"
+       class="save action primary button disabled">
+      <__trans phrase="Save Changes">
+    </button> 
+  </mt:setvarblock>
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</mtapp:form>
+
+<mt:setvarblock name="jq_js_include" append="1">
+  jQuery(function() {
+    jQuery('input[type="text"]').keyup(function() {
+      setDirty(true);
+    });
+    jQuery('input[type="radio"]').change(function() {
+      setDirty(true);
+    });
+    jQuery('#sortable').sortable({
+      items: 'div.field.sort-enabled',
+      placeholder: 'placeholder',
+      distance: 3,
+      opacity: 0.8,
+      cursor: 'move',
+      forcePlaceholderSize: true,
+      handle: '.field-header',
+      containment: 'body',
+      update: function () {
+        var order = jQuery('#sortable').sortable('toArray');
+        var count = 1;
+        jQuery(order).each( function() {
+          var id = this.match(/\d+/);
+          jQuery('#order-' + id).val(count);
+          count++;
+          setDirty(true);
+        });
+      }
+    });
+    set_events();
+  });
+
+  jQuery('#content-type-form').submit( function() {
+    setDirty(false);
+    return true;
+  });   
+
+  jQuery('.add-link').click(function() {
+    if ( jQuery('.add-link').hasClass('disabled') )
+      return false;
+    location.replace('<mt:var name="mt_url">?__mode=cfg_entity&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">');
+    return false;
+  });
+
+  function set_events() {
+    jQuery('a.delete-link').unbind('click').click(function() {
+      if (! confirm(trans('Are you sure you want to remove this settings?'))) {
+        return false;
+      }
+      jQuery(this).parent().parent().parent().remove();
+      setDirty(true);
+      if (! jQuery('.entity-header')[1] ) {
+        jQuery('a.delete-link').toggleClass('hidden');
+      }
+      return false;
+    });
+    jQuery('input[name="required"]').unbind('change').change(function() {
+      if (jQuery(this).is(':checked')) {
+        jQuery(this).nextAll('input[name="required"]').val('1');
+      } else {
+        jQuery(this).nextAll('input[name="required"]').val('0');
+      }
+    });
+  }   
+</mt:setvarblock>
+
+<mt:include name="include/footer.tmpl">

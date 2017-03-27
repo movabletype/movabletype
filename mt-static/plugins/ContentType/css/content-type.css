@@ -1,0 +1,67 @@
+/* -- Setting Item */
+.setting-item {
+    position: relative;
+    margin-bottom: 5px;
+    padding: 0.62em;
+    border: 1px solid #c0c6c9;
+}
+#manage-contents-sync .setting-item {
+    padding: 0;
+}     
+.item-label {
+    height: 23px;
+    line-height: 23px;
+}
+.item-label {
+    margin-right: 1.62em;
+} 
+.item-label {
+    font-weight: bold;
+} 
+.item-ctrl { 
+    height: 23px;
+    line-height: 23px;
+    position: absolute;
+    right: 0.62em;
+    top: 50%;
+    margin-top: -8px;
+}
+
+/* -- Sync Setting */
+#add-block {
+    margin-bottom: 10px;
+}
+
+.item-header,
+.item-content {
+    position: relative;
+    padding: 0.62em;
+    outline: 0;
+}
+.item-header.ui-state-active.ui-state-hover {
+    cursor: default;
+}
+
+.entity-content
+.field-content
+.plane-text {
+    padding: 0.2em 0;
+}
+
+/* - Clearfix */
+.setting-item {
+    zoom: 1;
+}
+.setting-item:before,
+.setting-item:after {
+  display: block;
+  height: 0;
+  visibility: hidden;
+  content: "\0020";
+}
+.setting-item:after {
+  clear: both;
+}
+
+/* - icons */
+.icon-copy { background-image: url(../images/copy.gif); }
