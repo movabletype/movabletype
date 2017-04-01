@@ -30,7 +30,7 @@ use MT::ContentTypeData;
         }
 }
 
-sub init_request {
+sub init_app {
     my ( $cb, $app ) = @_;
 
     my @content_types = MT::ContentType->load();

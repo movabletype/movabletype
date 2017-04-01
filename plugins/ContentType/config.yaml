@@ -9,7 +9,7 @@ l10n_class: MT::ContentType::L10N
 permissions: $ContentType::ContentType::Permission::permissions
 
 callbacks:
-    init_request: $ContentType::ContentType::App::CMS::init_request
+    init_app: $ContentType::ContentType::App::CMS::init_app
 
     # TODO: should add other callbacks. these are probably insufficient.
     MT::ContentType::post_save: $ContentType::MT::ContentType::post_save
