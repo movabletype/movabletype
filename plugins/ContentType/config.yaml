@@ -6,10 +6,6 @@ version: 0.11
 schema_version: 0.11
 l10n_class: MT::ContentType::L10N
 
-config_settings:
-    AltTemplatePath:
-        default: plugins/ContentType/tmpl
-
 permissions: $ContentType::ContentType::Permission::permissions
 
 callbacks:
