@@ -41,7 +41,7 @@ sub suite {
                 items        => [
                     {   permissions => [
                             qw(administer create_blog create_website edit_templates
-                                manage_plugins view_log)
+                                manage_content_types manage_plugins view_log)
                         ],
                         blog => undef
                     },
