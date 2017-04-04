@@ -1,9 +1,0 @@
-system.administer:
-    inherit_from:
-        - system.manage_content_types
-system.manage_content_types:
-    group: sys_admin
-    label: Manage Content Types
-    order: 500
-    permitted_action:
-        create_conten_type: 1

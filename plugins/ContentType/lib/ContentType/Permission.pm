@@ -12,7 +12,16 @@ sub permissions {
 }
 
 sub _system_permissions {
-    return _load_yaml('system_permissions.yaml');
+    return +{
+        'system.administer' =>
+            { inherit_from => ['system.manage_content_types'] },
+        'system.manage_content_types' => {
+            group            => 'sys_admin',
+            label            => 'Manage Content Types',
+            order            => 500,
+            permitted_action => { create_conten_type => 1 },
+        }
+    };
 }
 
 sub _blog_permissions {
@@ -32,13 +41,6 @@ sub _blog_edit_content_types_permission {
             order => 300,
         }
     };
-}
-
-sub _load_yaml {
-    my $filename = shift;
-    my $plugin   = MT->component('ContentType') or die;
-    my $filepath = File::Spec->catfile( $plugin->envelope, $filename );
-    return MT::Util::YAML::LoadFile($filepath);
 }
 
 1;
