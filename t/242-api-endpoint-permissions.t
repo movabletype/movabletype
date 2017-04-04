@@ -48,7 +48,7 @@ sub suite {
                     {   permissions => [
                             qw(administer_blog administer_website comment create_post
                                 edit_all_posts edit_assets edit_categories edit_config
-                                edit_notifications edit_tags edit_templates manage_feedback
+                                edit_content_types edit_notifications edit_tags edit_templates manage_feedback
                                 manage_member_blogs manage_pages manage_themes manage_users
                                 publish_post rebuild save_image_defaults send_notifications
                                 set_publish_paths upload view_blog_log)

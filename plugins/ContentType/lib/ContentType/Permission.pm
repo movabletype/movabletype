@@ -16,7 +16,22 @@ sub _system_permissions {
 }
 
 sub _blog_permissions {
-    return MT->model('content_type')->all_permissions;
+    return +{
+        %{ _blog_edit_content_types_permission() },
+        %{ MT->model('content_type')->all_permissions },
+    };
+}
+
+sub _blog_edit_content_types_permission {
+    return +{
+        'blog.administer_blog' =>
+            { inherit_from => ['blog.edit_content_types'] },
+        'blog.edit_content_types' => {
+            group => 'blog_design',
+            label => 'Edit Content Types',
+            order => 300,
+        }
+    };
 }
 
 sub _load_yaml {
