@@ -13,7 +13,7 @@ use lib ("$FindBin::Bin/../../../lib", "$FindBin::Bin/../../../extlib", "$FindBi
 use MT::Bootstrap;
 use MT;
 use MT::Util;
-use MT::ContentTypeData;
+use MT::ContentData;
 use MT::Entry;
 use MT::EntityIdx;
 use MT::EntityVarcharIdx;
@@ -44,7 +44,7 @@ while ( my $obj = $iter->() ) {
     my $datetime = $obj->authored_on;
     my $id = $obj->id;
     my $float = rand();
-    my $content_type_data = MT::ContentTypeData->new;
+    my $content_data = MT::ContentData->new;
     my $hash = {
         1 => $title,
         2 => $text,
@@ -52,73 +52,73 @@ while ( my $obj = $iter->() ) {
         4 => $id,
         5 => $float,
     };
-    $content_type_data->content_type_id(1);
-    $content_type_data->data(MT::Util::to_json($hash));
-    $content_type_data->save;
+    $content_data->content_type_id(1);
+    $content_data->data(MT::Util::to_json($hash));
+    $content_data->save;
 
     # Varchar
     my $entity_varchar_idx = MT::EntityVarcharIdx->new;
     $entity_varchar_idx->content_type_id(1);
     $entity_varchar_idx->entity_id(1);
-    $entity_varchar_idx->content_type_data_id($content_type_data->id);
+    $entity_varchar_idx->content_type_data_id($content_data->id);
     $entity_varchar_idx->value($title);
 
     my $entity_idx_varchar = MT::EntityIdx->new;
     $entity_idx_varchar->content_type_id(1);
     $entity_idx_varchar->entity_id(1);
-    $entity_idx_varchar->content_type_data_id($content_type_data->id);
+    $entity_idx_varchar->content_type_data_id($content_data->id);
     $entity_idx_varchar->value_varchar($title);
 
     # Text
     my $entity_text_idx = MT::EntityTextIdx->new;
     $entity_text_idx->content_type_id(1);
     $entity_text_idx->entity_id(2);
-    $entity_text_idx->content_type_data_id($content_type_data->id);
+    $entity_text_idx->content_type_data_id($content_data->id);
     $entity_text_idx->value($text);
 
     my $entity_idx_text = MT::EntityIdx->new;
     $entity_idx_text->content_type_id(1);
     $entity_idx_text->entity_id(2);
-    $entity_idx_text->content_type_data_id($content_type_data->id);
+    $entity_idx_text->content_type_data_id($content_data->id);
     $entity_idx_text->value_text($text);
 
     # Datetime
     my $entity_datetime_idx = MT::EntityDatetimeIdx->new;
     $entity_datetime_idx->content_type_id(1);
     $entity_datetime_idx->entity_id(3);
-    $entity_datetime_idx->content_type_data_id($content_type_data->id);
+    $entity_datetime_idx->content_type_data_id($content_data->id);
     $entity_datetime_idx->value($datetime);
 
     my $entity_idx_datetime = MT::EntityIdx->new;
     $entity_idx_datetime->content_type_id(1);
     $entity_idx_datetime->entity_id(3);
-    $entity_idx_datetime->content_type_data_id($content_type_data->id);
+    $entity_idx_datetime->content_type_data_id($content_data->id);
     $entity_idx_datetime->value_datetime($datetime);
 
     # Integer
     my $entity_integer_idx = MT::EntityIntegerIdx->new;
     $entity_integer_idx->content_type_id(1);
     $entity_integer_idx->entity_id(4);
-    $entity_integer_idx->content_type_data_id($content_type_data->id);
+    $entity_integer_idx->content_type_data_id($content_data->id);
     $entity_integer_idx->value($id);
 
     my $entity_idx_integer = MT::EntityIdx->new;
     $entity_idx_integer->content_type_id(1);
     $entity_idx_integer->entity_id(4);
-    $entity_idx_integer->content_type_data_id($content_type_data->id);
+    $entity_idx_integer->content_type_data_id($content_data->id);
     $entity_idx_integer->value_integer($id);
 
     # Float
     my $entity_float_idx = MT::EntityFloatIdx->new;
     $entity_float_idx->content_type_id(1);
     $entity_float_idx->entity_id(5);
-    $entity_float_idx->content_type_data_id($content_type_data->id);
+    $entity_float_idx->content_type_data_id($content_data->id);
     $entity_float_idx->value($float);
 
     my $entity_idx_float = MT::EntityIdx->new;
     $entity_idx_float->content_type_id(1);
     $entity_idx_float->entity_id(5);
-    $entity_idx_float->content_type_data_id($content_type_data->id);
+    $entity_idx_float->content_type_data_id($content_data->id);
     $entity_idx_float->value_float($float);
 
     $entity_idx_varchar->save;

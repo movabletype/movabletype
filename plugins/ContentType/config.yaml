@@ -27,11 +27,11 @@ applications:
             delete_entity: $ContentType::ContentType::App::CMS::delete_entity
             cfg_content_type: $ContentType::ContentType::App::CMS::cfg_content_type
             save_cfg_content_type: $ContentType::ContentType::App::CMS::save_cfg_content_type
-            cfg_content_type_data: $ContentType::ContentType::App::CMS::cfg_content_type_data
+            # cfg_content_type_data: $ContentType::ContentType::App::CMS::cfg_content_type_data
             select_list_content_type: $ContentType::ContentType::App::CMS::select_list_content_type
             select_edit_content_type: $ContentType::ContentType::App::CMS::select_edit_content_type
-            edit_content_type_data: $ContentType::ContentType::App::CMS::edit_content_type_data
-            save_content_type_data: $ContentType::ContentType::App::CMS::save_content_type_data
+            edit_content_data: $ContentType::ContentType::App::CMS::edit_content_data
+            save_content_data: $ContentType::ContentType::App::CMS::save_content_data
         menus:
             content_type:
                 label: Content Type
@@ -53,17 +53,17 @@ applications:
                 view:
                     - website
                     - blog
-            content_type_data:
-                label: Content Type Data
+            content_data:
+                label: Content Data
                 order: 9200
-            content_type_data:manage_content_type_data:
+            content_data:manage_content_data:
                 label: Manage
                 order: 100
                 mode: select_list_content_type
                 view:
                     - website
                     - blog
-            content_type_data:create_content_type_data:
+            content_data:create_content_data:
                 label: New
                 mode: select_edit_content_type
                 order: 200
@@ -72,7 +72,7 @@ applications:
                     - blog
 object_types:
     content_type: MT::ContentType
-    content_type_data: MT::ContentTypeData
+    content_data: MT::ContentData
     entity: MT::Entity
     entity_idx: MT::EntityIdx
     objectcategory: MT::ObjectCategory
@@ -101,7 +101,7 @@ entity_types:
                 my ( $app, $id, $value )  = @_;
                 require MT::Entity;
                 require MT::ContentType;
-                require MT::ContentTypeData;
+                require MT::ContentData;
                 require JSON;
                 my @values = split ',', $value;
                 my $entity = MT::Entity->load($id);
@@ -111,7 +111,7 @@ entity_types:
                 my $entities = $json ? JSON::decode_json($json) : [];
                 my ($label_entity) = grep { $_->{label} } @$entities;
                 my @ct_datas
-                    = MT::ContentTypeData->load( { content_type_id => $ct_id } );
+                    = MT::ContentData->load( { content_type_id => $ct_id } );
                 my $html = '';
                 my $num = 1;
                 foreach my $ct_data (@ct_datas) {
@@ -378,7 +378,7 @@ entity_types:
                 my $q = $app->param;
                 my $ct_data_id = $q->param('id');
                 my @obj_assets = MT::ObjectAsset->load(
-                    {   object_ds => 'content_type_data',
+                    {   object_ds => 'content_data',
                         object_id => $ct_data_id
                     }
                 );
@@ -407,7 +407,7 @@ entity_types:
                     next unless $asset;
                     my $obj_asset = MT::ObjectAsset->load(
                         {   asset_id  => $asset_id,
-                            object_ds => 'content_type_data',
+                            object_ds => 'content_data',
                             object_id => $ct_data_id
                         }
                     );
@@ -415,7 +415,7 @@ entity_types:
                     $obj_asset = MT::ObjectAsset->new;
                     $obj_asset->blog_id($app->blog->id);
                     $obj_asset->asset_id($asset_id);
-                    $obj_asset->object_ds('content_type_data');
+                    $obj_asset->object_ds('content_data');
                     $obj_asset->object_id( $ct_data_id );
                     $obj_asset->save;
                 }
@@ -439,7 +439,7 @@ entity_types:
                 my $ct_data_id    = $q->param('id');
                 my @cats     = MT::Category->load( { blog_id => $app->blog->id } );
                 my @obj_cats = MT::ObjectCategory->load(
-                    {   object_datasource=> 'content_type_data',
+                    {   object_datasource=> 'content_data',
                         object_id => $ct_data_id
                     }
                 );
@@ -466,7 +466,7 @@ entity_types:
                 my $ct_data_id = $q->param('id');
                 my @cat_ids = $q->param( 'entity-' . $id );
                 my @obj_cats = MT::ObjectCategory->load(
-                    {   object_datasource => 'content_type_data',
+                    {   object_datasource => 'content_data',
                         object_id         => $ct_data_id
                     }
                 );
@@ -477,7 +477,7 @@ entity_types:
                 foreach my $cat_id (@cat_ids) {
                     my $obj_cat = MT::ObjectCategory->load(
                         {   category_id       => $cat_id,
-                            object_datasource => 'content_type_data',
+                            object_datasource => 'content_data',
                             object_id         => $ct_data_id
                         }
                     );
@@ -485,7 +485,7 @@ entity_types:
                     $obj_cat = MT::ObjectCategory->new;
                     $obj_cat->blog_id($app->blog->id);
                     $obj_cat->category_id($cat_id);
-                    $obj_cat->object_datasource('content_type_data');
+                    $obj_cat->object_datasource('content_data');
                     $obj_cat->object_id($ct_data_id);
                     $obj_cat->save;
                 }
@@ -503,7 +503,7 @@ entity_types:
                 my $q = $app->param;
                 my $ct_data_id = $q->param('id');
                 my @obj_tags = MT::ObjectTag->load(
-                    {   object_datasource=> 'content_type_data',
+                    {   object_datasource=> 'content_data',
                         object_id => $ct_data_id
                     }
                 );
@@ -531,7 +531,7 @@ entity_types:
                 my @tags = MT::Tag->load( { name => \@tag_names },
                     { binary => { name => 1 } } );
                 my @obj_tags = MT::ObjectTag->load(
-                    {   object_datasource => 'content_type_data',
+                    {   object_datasource => 'content_data',
                         object_id         => $ct_data_id
                     }
                 );
@@ -548,7 +548,7 @@ entity_types:
                     }
                     my $obj_tag = MT::ObjectTag->load(
                         {   tag_id    => $tag->id,
-                            object_datasource => 'content_type_data',
+                            object_datasource => 'content_data',
                             object_id => $ct_data_id
                         }
                     );
@@ -556,7 +556,7 @@ entity_types:
                     $obj_tag = MT::ObjectTag->new;
                     $obj_tag->blog_id($app->blog->id);
                     $obj_tag->tag_id($tag->id);
-                    $obj_tag->object_datasource('content_type_data');
+                    $obj_tag->object_datasource('content_data');
                     $obj_tag->object_id( $ct_data_id );
                     $obj_tag->save;
                 }

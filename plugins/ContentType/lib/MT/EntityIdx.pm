@@ -14,7 +14,7 @@ __PACKAGE__->install_properties(
             'id'                   => 'integer not null auto_increment',
             'content_type_id'      => 'integer',
             'entity_id'            => 'integer',
-            'content_type_data_id' => 'integer',
+            'content_data_id' => 'integer',
             'value_varchar'        => 'string(255)',
             'value_text'           => 'blob',
             'value_datetime'       => 'datetime',
@@ -63,7 +63,7 @@ sub make_terms {
     push @{ $db_args->{joins} },
         MT->model('entity_idx')->join_on(
         undef,
-        {   content_type_data_id => \'= content_type_data_id',
+        {   content_data_id => \'= content_data_id',
             "value_${idx_type}"  => $query_string,
         },
         { alias => "inidex_${idx_type}" },

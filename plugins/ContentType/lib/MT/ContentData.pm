@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::ContentTypeData;
+package MT::ContentData;
 
 use strict;
 use base qw( MT::Object );
@@ -19,7 +19,7 @@ __PACKAGE__->install_properties(
             'data'            => 'blob',
         },
         indexes     => { content_type_id => 1 },
-        datasource  => 'content_type_data',
+        datasource  => 'content_data',
         primary_key => 'id',
         audit       => 1,
         child_of    => ['MT::ContentType'],
@@ -27,11 +27,11 @@ __PACKAGE__->install_properties(
 );
 
 sub class_label {
-    MT->translate("Content Type Data");
+    MT->translate("Content Data");
 }
 
 sub class_label_plural {
-    MT->translate("Content Type Datas");
+    MT->translate("Content Data");
 }
 
 sub blog {

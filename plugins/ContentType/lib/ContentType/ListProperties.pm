@@ -37,13 +37,13 @@ sub make_listing_screens {
 
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
-        my $key = 'content_type_data_' . $content_type->id;
+        my $key = 'content_data_' . $content_type->id;
 
         $props->{$key} = {
             screen_label        => 'Manage ' . $content_type->name,
             object_label        => $content_type->name,
             object_label_plural => $content_type->name,
-            object_type         => 'content_type_data',
+            object_type         => 'content_data',
             scope_mode          => 'this',
             use_filters         => 0,
             view                => [ 'website', 'blog' ],
@@ -83,7 +83,7 @@ sub make_list_properties {
 
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
-        my $key = 'content_type_data_' . $content_type->id;
+        my $key = 'content_data_' . $content_type->id;
 
         $props->{$key} = {
             id => {
@@ -162,7 +162,7 @@ sub make_title_html {
         $label = $hash->{$key} if $key == $label[0]->{id};
     }
     my $edit_link = $app->uri(
-        mode => 'edit_content_type_data',
+        mode => 'edit_content_data',
         args => {
             blog_id         => $app->blog->id,
             content_type_id => $obj->content_type_id,
@@ -190,13 +190,13 @@ sub make_content_actions {
 
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
-        my $key = 'content_type_data_' . $content_type->id;
+        my $key = 'content_data_' . $content_type->id;
 
         $props->{$key} = {
             new => {
                 label => 'Create new ' . $content_type->name,
                 order => 100,
-                mode  => 'edit_content_type_data',
+                mode  => 'edit_content_data',
                 args  => {
                     blog_id         => $content_type->blog_id,
                     content_type_id => $content_type->id,
@@ -233,7 +233,7 @@ sub make_list_actions {
 
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
-        my $key = 'content_type_data_' . $content_type->id;
+        my $key = 'content_data_' . $content_type->id;
 
         $props->{$key} = {
             delete => {

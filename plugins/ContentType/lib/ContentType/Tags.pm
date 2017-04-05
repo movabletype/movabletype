@@ -62,7 +62,7 @@ sub _hdlr_contents {
             unless $match;
     }
 
-    my @contents = MT::ContentTypeData->load(
+    my @contents = MT::ContentData->load(
         { content_type_id => $content_type->id } );
 
     my $i       = 0;
@@ -174,7 +174,7 @@ sub _hdlr_assets {
         {   join => MT::ObjectAsset->join_on(
                 undef,
                 {   asset_id  => \'= asset_id',
-                    object_ds => 'content_type_data',
+                    object_ds => 'content_data',
                     object_id => $ct_data_id
                 }
             )
@@ -235,7 +235,7 @@ sub _hdlr_content_categories {
     my $cats;
     require MT::ObjectCategory;
     my @obj_cats = MT::ObjectCategory->load(
-        {   object_datasource => 'content_type_data',
+        {   object_datasource => 'content_data',
             object_id         => $ct_data_id
         }
     );

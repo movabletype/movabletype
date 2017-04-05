@@ -17,7 +17,7 @@ use MT;
 use MT::Entity;
 use MT::EntityIdx;
 use MT::ContentType;
-use MT::ContentTypeData;
+use MT::ContentData;
 
 {
     # TBD: Move to Core.
@@ -36,7 +36,7 @@ sub init_app {
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
         $app->add_callback(
-            'cms_pre_load_filtered_list.content_type_data_'
+            'cms_pre_load_filtered_list.content_data_'
                 . $content_type->id,
             0, $app, \&cms_pre_load_filtered_list
         );
@@ -471,7 +471,7 @@ sub select_edit_content_type {
         $param );
 }
 
-sub edit_content_type_data {
+sub edit_content_data {
     my ($app)  = @_;
     my $q      = $app->param;
     my $plugin = $app->component("ContentType");
@@ -490,13 +490,13 @@ sub edit_content_type_data {
     my $json                 = $content_type->entities;
     my $array                = $json ? JSON::decode_json($json) : [];
     my $ct_unique_key        = $content_type->unique_key;
-    my $content_type_data_id = scalar $q->param('id');
+    my $content_data_id = scalar $q->param('id');
 
     my $data;
-    if ($content_type_data_id) {
-        my $content_type_data
-            = MT::ContentTypeData->load($content_type_data_id);
-        my $json = $content_type_data->data;
+    if ($content_data_id) {
+        my $content_data
+            = MT::ContentData->load($content_data_id);
+        my $json = $content_data->data;
         $data = $json ? JSON::decode_json($json) : [];
     }
 
@@ -511,7 +511,7 @@ sub edit_content_type_data {
 
         $_->{value}
             = $q->param( $_->{entity_id} ) ? $q->param( $_->{entity_id} )
-            : $content_type_data_id        ? $data->{ $_->{entity_id} }
+            : $content_data_id        ? $data->{ $_->{entity_id} }
             :                                '';
 
         my $entity_type = $entity_types->{ $_->{type} };
@@ -536,11 +536,11 @@ sub edit_content_type_data {
     foreach my $name (qw( saved err_msg content_type_id id )) {
         $param->{$name} = $q->param($name) if $q->param($name);
     }
-    $app->build_page( $plugin->load_tmpl('edit_content_type_data.tmpl'),
+    $app->build_page( $plugin->load_tmpl('edit_content_data.tmpl'),
         $param );
 }
 
-sub save_content_type_data {
+sub save_content_data {
     my ($app)  = @_;
     my $q      = $app->param;
     my $plugin = $app->component("ContentType");
@@ -564,7 +564,7 @@ sub save_content_type_data {
     my $json         = $content_type->entities;
     my $entities     = $json ? JSON::decode_json($json) : [];
 
-    my $content_type_data_id = scalar $q->param('id');
+    my $content_data_id = scalar $q->param('id');
 
     my $entity_types = $app->registry('entity_types');
 
@@ -587,11 +587,11 @@ sub save_content_type_data {
                 if ( my $err = $app->errstr ) {
                     $data->{blog_id}         = $blog_id;
                     $data->{content_type_id} = $content_type_id;
-                    $data->{id}              = $content_type_data_id;
+                    $data->{id}              = $content_data_id;
                     $data->{err_msg}         = $err;
                     return $app->redirect(
                         $app->uri(
-                            'mode' => 'edit_content_type_data',
+                            'mode' => 'edit_content_data',
                             args   => $data,
                         )
                     );
@@ -601,19 +601,19 @@ sub save_content_type_data {
     }
     $data = JSON::encode_json($data);
 
-    my $content_type_data
-        = $content_type_data_id
-        ? MT::ContentTypeData->load($content_type_data_id)
-        : MT::ContentTypeData->new();
+    my $content_data
+        = $content_data_id
+        ? MT::ContentData->load($content_data_id)
+        : MT::ContentData->new();
 
-    $content_type_data->blog_id($blog_id);
-    $content_type_data->content_type_id($content_type_id);
-    $content_type_data->data($data);
-    $content_type_data->save
+    $content_data->blog_id($blog_id);
+    $content_data->content_type_id($content_type_id);
+    $content_data->data($data);
+    $content_data->save
         or return $app->error(
         $plugin->translate(
             "Saving [_1] failed: [_2]", $content_type->name,
-            $content_type_data->errstr
+            $content_data->errstr
         )
         );
 
@@ -622,17 +622,17 @@ sub save_content_type_data {
         my $value = _get_form_data( $app, $entity_type, $entity->{id} );
 
         my $entity_idx
-            = $content_type_data_id
+            = $content_data_id
             ? MT::EntityIdx->load(
             {   content_type_id      => $content_type_id,
-                content_type_data_id => $content_type_data->id,
+                content_data_id => $content_data->id,
                 entity_id            => $entity->{id},
             }
             )
             : MT::EntityIdx->new();
         $entity_idx = MT::EntityIdx->new() unless $entity_idx;
         $entity_idx->content_type_id($content_type_id);
-        $entity_idx->content_type_data_id( $content_type_data->id );
+        $entity_idx->content_data_id( $content_data->id );
 
         my $type = $entity_types->{ $entity->{type} }{type};
         if ( $type eq 'varchar' ) {
@@ -663,11 +663,11 @@ sub save_content_type_data {
 
     return $app->redirect(
         $app->uri(
-            'mode' => 'edit_content_type_data',
+            'mode' => 'edit_content_data',
             args   => {
                 blog_id         => $blog_id,
                 content_type_id => $content_type_id,
-                id              => $content_type_data->id,
+                id              => $content_data->id,
                 saved           => 1,
             }
         )
@@ -677,7 +677,7 @@ sub save_content_type_data {
 sub cms_pre_load_filtered_list {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
     my $object_ds = $filter->object_ds;
-    $object_ds =~ /content_type_data_(\d+)/;
+    $object_ds =~ /content_data_(\d+)/;
     my $content_type_id = $1;
     $load_options->{terms}{content_type_id} = $content_type_id;
 }

@@ -26,7 +26,7 @@ __PACKAGE__->install_properties(
         audit       => 1,
         child_of => [ 'MT::Blog', 'MT::Website' ],
         child_classes =>
-            [ 'MT::ContentTypeData', 'MT::Entity', 'MT::EntityIdx' ],
+            [ 'MT::ContentData', 'MT::Entity', 'MT::EntityIdx' ],
 
     }
 );
