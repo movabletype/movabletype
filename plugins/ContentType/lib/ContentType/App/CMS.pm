@@ -36,10 +36,8 @@ sub init_app {
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
         $app->add_callback(
-            'cms_pre_load_filtered_list.content_data_'
-                . $content_type->id,
-            0, $app, \&cms_pre_load_filtered_list
-        );
+            'cms_pre_load_filtered_list.content_data_' . $content_type->id,
+            0, $app, \&cms_pre_load_filtered_list );
     }
     return 1;
 }
@@ -487,16 +485,15 @@ sub edit_content_data {
 
     $param->{name} = $content_type->name;
 
-    my $json                 = $content_type->entities;
-    my $array                = $json ? JSON::decode_json($json) : [];
-    my $ct_unique_key        = $content_type->unique_key;
+    my $json            = $content_type->entities;
+    my $array           = $json ? JSON::decode_json($json) : [];
+    my $ct_unique_key   = $content_type->unique_key;
     my $content_data_id = scalar $q->param('id');
 
     my $data;
     if ($content_data_id) {
-        my $content_data
-            = MT::ContentData->load($content_data_id);
-        my $json = $content_data->data;
+        my $content_data = MT::ContentData->load($content_data_id);
+        my $json         = $content_data->data;
         $data = $json ? JSON::decode_json($json) : [];
     }
 
@@ -511,7 +508,7 @@ sub edit_content_data {
 
         $_->{value}
             = $q->param( $_->{entity_id} ) ? $q->param( $_->{entity_id} )
-            : $content_data_id        ? $data->{ $_->{entity_id} }
+            : $content_data_id             ? $data->{ $_->{entity_id} }
             :                                '';
 
         my $entity_type = $entity_types->{ $_->{type} };
@@ -536,8 +533,7 @@ sub edit_content_data {
     foreach my $name (qw( saved err_msg content_type_id id )) {
         $param->{$name} = $q->param($name) if $q->param($name);
     }
-    $app->build_page( $plugin->load_tmpl('edit_content_data.tmpl'),
-        $param );
+    $app->build_page( $plugin->load_tmpl('edit_content_data.tmpl'), $param );
 }
 
 sub save_content_data {
@@ -607,7 +603,7 @@ sub save_content_data {
         : MT::ContentData->new();
 
     $content_data->blog_id($blog_id);
-    $content_data->content_type_id($content_type_id);
+    $content_data->ct_id($content_type_id);
     $content_data->data($data);
     $content_data->save
         or return $app->error(
@@ -624,9 +620,9 @@ sub save_content_data {
         my $entity_idx
             = $content_data_id
             ? MT::EntityIdx->load(
-            {   content_type_id      => $content_type_id,
+            {   content_type_id => $content_type_id,
                 content_data_id => $content_data->id,
-                entity_id            => $entity->{id},
+                entity_id       => $entity->{id},
             }
             )
             : MT::EntityIdx->new();
@@ -674,12 +670,12 @@ sub save_content_data {
     );
 }
 
-sub cms_pre_load_filtered_list {
+sub cms_pre_load_filtered_lit {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
     my $object_ds = $filter->object_ds;
     $object_ds =~ /content_data_(\d+)/;
     my $content_type_id = $1;
-    $load_options->{terms}{content_type_id} = $content_type_id;
+    $load_options->{terms}{ct_id} = $content_type_id;
 }
 
 sub _generate_unique_key {

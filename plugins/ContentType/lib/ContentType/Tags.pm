@@ -62,8 +62,7 @@ sub _hdlr_contents {
             unless $match;
     }
 
-    my @contents = MT::ContentData->load(
-        { content_type_id => $content_type->id } );
+    my @contents = MT::ContentData->load( { ct_id => $content_type->id } );
 
     my $i       = 0;
     my $res     = '';
@@ -82,7 +81,7 @@ sub _hdlr_contents {
         local $ctx->{__stash}{blog_id} = $content->blog_id;
         local $ctx->{__stash}{content} = $content;
 
-        my $ct_id        = $content->content_type_id;
+        my $ct_id        = $content->ct_id;
         my $content_type = MT::ContentType->load($ct_id);
         local $ctx->{__stash}{content_type} = $content_type;
 

@@ -24,9 +24,8 @@ __PACKAGE__->install_properties(
         datasource  => 'content_type',
         primary_key => 'id',
         audit       => 1,
-        child_of => [ 'MT::Blog', 'MT::Website' ],
-        child_classes =>
-            [ 'MT::ContentData', 'MT::Entity', 'MT::EntityIdx' ],
+        child_of      => [ 'MT::Blog',        'MT::Website' ],
+        child_classes => [ 'MT::ContentData', 'MT::Entity', 'MT::EntityIdx' ],
 
     }
 );
@@ -117,7 +116,7 @@ sub post_save {
 sub post_remove {
     my ( $cb, $obj, $original ) = @_;
 
-    $obj->remove_children( { key => 'content_type_id' } );
+    $obj->remove_children( { key => 'ct_id' } );
 
     my $perm_name = 'manage_content_type:' . $obj->unique_key;
     require MT::Role;

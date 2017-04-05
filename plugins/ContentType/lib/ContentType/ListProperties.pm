@@ -152,7 +152,7 @@ sub make_name_html {
 sub make_title_html {
     my ( $prop, $obj, $app ) = @_;
     require JSON;
-    my $content_type = MT::ContentType->load( $obj->content_type_id );
+    my $content_type = MT::ContentType->load( $obj->ct_id );
     my $json         = $content_type->entities();
     my $entities     = $json ? JSON::decode_json($json) : [];
     my @label        = grep { $_->{label} } @$entities;
@@ -165,7 +165,7 @@ sub make_title_html {
         mode => 'edit_content_data',
         args => {
             blog_id         => $app->blog->id,
-            content_type_id => $obj->content_type_id,
+            content_type_id => $obj->ct_id,
             id              => $obj->id,
         },
     );
