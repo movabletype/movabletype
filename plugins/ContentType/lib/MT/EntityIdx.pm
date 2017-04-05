@@ -11,15 +11,15 @@ use base qw( MT::Object );
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'                   => 'integer not null auto_increment',
-            'content_type_id'      => 'integer',
-            'entity_id'            => 'integer',
+            'id'              => 'integer not null auto_increment',
+            'content_type_id' => 'integer',
+            'entity_id'       => 'integer',
             'content_data_id' => 'integer',
-            'value_varchar'        => 'string(255)',
-            'value_text'           => 'blob',
-            'value_datetime'       => 'datetime',
-            'value_integer'        => 'integer',
-            'value_float'          => 'float',
+            'value_varchar'   => 'string(255)',
+            'value_text'      => 'blob',
+            'value_datetime'  => 'datetime',
+            'value_integer'   => 'integer',
+            'value_float'     => 'float',
         },
         indexes => {
             value_varchar  => 1,
@@ -63,8 +63,8 @@ sub make_terms {
     push @{ $db_args->{joins} },
         MT->model('entity_idx')->join_on(
         undef,
-        {   content_data_id => \'= content_data_id',
-            "value_${idx_type}"  => $query_string,
+        {   content_data_id     => \'= content_data_id',
+            "value_${idx_type}" => $query_string,
         },
         { alias => "inidex_${idx_type}" },
         );
