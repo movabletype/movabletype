@@ -439,7 +439,7 @@ entity_types:
                 my $ct_data_id    = $q->param('id');
                 my @cats     = MT::Category->load( { blog_id => $app->blog->id } );
                 my @obj_cats = MT::ObjectCategory->load(
-                    {   object_datasource=> 'content_data',
+                    {   object_ds=> 'content_data',
                         object_id => $ct_data_id
                     }
                 );
@@ -466,7 +466,7 @@ entity_types:
                 my $ct_data_id = $q->param('id');
                 my @cat_ids = $q->param( 'entity-' . $id );
                 my @obj_cats = MT::ObjectCategory->load(
-                    {   object_datasource => 'content_data',
+                    {   object_ds => 'content_data',
                         object_id         => $ct_data_id
                     }
                 );
@@ -477,7 +477,7 @@ entity_types:
                 foreach my $cat_id (@cat_ids) {
                     my $obj_cat = MT::ObjectCategory->load(
                         {   category_id       => $cat_id,
-                            object_datasource => 'content_data',
+                            object_ds => 'content_data',
                             object_id         => $ct_data_id
                         }
                     );
@@ -485,7 +485,7 @@ entity_types:
                     $obj_cat = MT::ObjectCategory->new;
                     $obj_cat->blog_id($app->blog->id);
                     $obj_cat->category_id($cat_id);
-                    $obj_cat->object_datasource('content_data');
+                    $obj_cat->object_ds('content_data');
                     $obj_cat->object_id($ct_data_id);
                     $obj_cat->save;
                 }
@@ -503,7 +503,7 @@ entity_types:
                 my $q = $app->param;
                 my $ct_data_id = $q->param('id');
                 my @obj_tags = MT::ObjectTag->load(
-                    {   object_datasource=> 'content_data',
+                    {   object_ds=> 'content_data',
                         object_id => $ct_data_id
                     }
                 );

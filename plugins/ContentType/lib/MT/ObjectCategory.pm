@@ -13,25 +13,25 @@ use base qw( MT::Object );
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'                => 'integer not null auto_increment',
-            'blog_id'           => 'integer',
-            'object_id'         => 'integer not null',
-            'object_datasource' => 'string(50) not null',
-            'category_id'       => 'integer not null',
+            'id'          => 'integer not null auto_increment',
+            'blog_id'     => 'integer',
+            'object_id'   => 'integer not null',
+            'object_ds'   => 'string(50) not null',
+            'category_id' => 'integer not null',
         },
         indexes => {
-            object_id         => 1,
-            category_id       => 1,
-            object_datasource => 1,
+            object_id   => 1,
+            category_id => 1,
+            object_ds   => 1,
 
             # For MTCategories
             blog_ds_tag =>
-                { columns => [ 'blog_id', 'object_datasource', 'category_id' ], },
+                { columns => [ 'blog_id', 'object_ds', 'category_id' ], },
 
             # For category count
             blog_ds_obj_tag => {
                 columns =>
-                    [ 'blog_id', 'object_datasource', 'object_id', 'category_id' ],
+                    [ 'blog_id', 'object_ds', 'object_id', 'category_id' ],
             },
         },
         child_of    => 'MT::Blog',
@@ -58,9 +58,9 @@ MT::ObjectCategory
 
 =head1 METHODS
 
-=head2 MT::ObjectCategory->class_label
+    = head2 MT::ObjectCategory->class_label
 
-Returns the localized descriptive name for this class.
+    Returns the localized descriptive name for this class .
 
 =head2 MT::ObjectCategory->class_label_plural
 

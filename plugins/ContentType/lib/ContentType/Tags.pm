@@ -234,8 +234,8 @@ sub _hdlr_content_categories {
     my $cats;
     require MT::ObjectCategory;
     my @obj_cats = MT::ObjectCategory->load(
-        {   object_datasource => 'content_data',
-            object_id         => $ct_data_id
+        {   object_ds => 'content_data',
+            object_id => $ct_data_id
         }
     );
     foreach my $obj_cat (@obj_cats) {
