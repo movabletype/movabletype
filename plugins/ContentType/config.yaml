@@ -94,7 +94,7 @@ tags:
 entity_types:
     content_type:
         label: Content Type
-        type: varcahr
+        data_type: varcahr
         order: 10
         field_html: |
             sub {
@@ -138,23 +138,23 @@ entity_types:
             }
     single_line_text:
         label: Single Line Text
-        type: varchar
+        data_type: varchar
         order: 20
     multi_line_text:
         label: Multi Line Text
-        type: blob
+        data_type: blob
         order: 30
     integer:
         label: Integer
-        type: integer
+        data_type: integer
         order: 40
     float:
         label: Float
-        type: float
+        data_type: float
         order: 50
     url:
         label: URL
-        type: varchar
+        data_type: varchar
         order: 60
         validate: |
             sub {
@@ -171,7 +171,7 @@ entity_types:
             }
     date_and_time:
         label: Date and Time
-        type: datetime
+        data_type: datetime
         order: 70
         field_html: |
             sub {
@@ -218,7 +218,7 @@ entity_types:
             }
     date:
         label: Date
-        type: varchar
+        data_type: varchar
         order: 80
         field_html: |
             sub {
@@ -257,7 +257,7 @@ entity_types:
             }
     time:
         label: Time
-        type: varchar
+        data_type: varchar
         order: 90
         field_html: |
             sub {
@@ -298,7 +298,7 @@ entity_types:
             }
     single_select:
         label: Single Select
-        type: varchar
+        data_type: varchar
         order: 100
         field_html: |
             sub {
@@ -318,7 +318,7 @@ entity_types:
             }
     radio:
         label: Radio
-        type: varchar
+        data_type: varchar
         order: 110
         field_html: |
             sub {
@@ -340,7 +340,7 @@ entity_types:
             }
     checkbox:
         label: Checkbox
-        type: varchar
+        data_type: varchar
         order: 120
         field_html: |
             sub {
@@ -370,7 +370,7 @@ entity_types:
             }
     asset:
         label: Asset
-        type: varchar
+        data_type: varchar
         order: 130
         field_html: |
             sub {
@@ -423,11 +423,11 @@ entity_types:
             }
     embed_text:
         label: Embed Text
-        type: blob
+        data_type: blob
         order: 140
     category:
         label: Category
-        type: varchar
+        data_type: varchar
         order: 150
         field_html: |
             sub {
@@ -493,7 +493,7 @@ entity_types:
             }
     tag:
         label: Tag
-        type: tag
+        data_type: tag
         order: 160
         field_html: |
             sub {

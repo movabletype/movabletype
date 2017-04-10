@@ -524,7 +524,7 @@ sub edit_content_data {
                 $_->{field_html} = $field_html;
             }
         }
-        $_->{type} = $entity_types->{ $_->{type} }{type};
+        $_->{data_type} = $entity_types->{ $_->{type} }{data_type};
 
         $_;
     } @$array;
@@ -631,20 +631,20 @@ sub save_content_data {
         $entity_idx->content_type_id($content_type_id);
         $entity_idx->content_data_id( $content_data->id );
 
-        my $type = $entity_types->{ $entity->{type} }{type};
-        if ( $type eq 'varchar' ) {
+        my $data_type = $entity_types->{ $entity->{type} }{data_type};
+        if ( $data_type eq 'varchar' ) {
             $entity_idx->value_varchar($value);
         }
-        elsif ( $type eq 'varchar' ) {
+        elsif ( $data_type eq 'varchar' ) {
             $entity_idx->value_text($value);
         }
-        elsif ( $type eq 'datetime' ) {
+        elsif ( $data_type eq 'datetime' ) {
             $entity_idx->value_datetime($value);
         }
-        elsif ( $type eq 'integer' ) {
+        elsif ( $data_type eq 'integer' ) {
             $entity_idx->value_integer($value);
         }
-        elsif ( $type eq 'float' ) {
+        elsif ( $data_type eq 'float' ) {
             $entity_idx->value_float($value);
         }
 

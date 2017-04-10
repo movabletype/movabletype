@@ -49,13 +49,13 @@
     <div>
       <mt:if name="field_html">
         <mt:var name="field_html">
-      <mt:elseif name"type" eq="varchar">
+      <mt:elseif name"data_type" eq="varchar">
         <input type="text" name="entity-<mt:var name="entity_id">" class="text long" value="<mt:var name="value">" />
-      <mt:elseif name"type" eq="blob">
+      <mt:elseif name"data_type" eq="blob">
         <textarea name="entity-<mt:var name="entity_id">" class="text high"><mt:var name="value"></textarea>
-      <mt:elseif name"type" eq="integer">
+      <mt:elseif name"data_type" eq="integer">
         <input type="text" name="entity-<mt:var name="entity_id">" class="text short" value="<mt:var name="value">" />
-      <mt:elseif name"type" eq="float">
+      <mt:elseif name"data_type" eq="float">
         <input type="text" name="entity-<mt:var name="entity_id">" class="text short" value="<mt:var name="value">" />
       </mt:if>
     </div>
