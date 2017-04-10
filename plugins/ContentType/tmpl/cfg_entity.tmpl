@@ -131,7 +131,22 @@
       return true;
     } 
     return false;
-  });   
+  });
+
+  // TODO: FIXME
+  jQuery(function() {
+    var entityTypesOptions = <mt:var name="entity_types_options">;
+    jQuery('select#type').change(function() {
+      var selected = jQuery(this).val();
+console.log(selected);
+      if (selected && entityTypesOptions[selected]) {
+        jQuery('div#options-field').show();
+      } else {
+        jQuery('div#options-field').hide();
+      }
+    });
+    jQuery('select#type').trigger('change');
+  });
 </mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">

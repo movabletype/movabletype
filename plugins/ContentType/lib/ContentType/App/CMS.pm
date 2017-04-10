@@ -227,12 +227,17 @@ sub cfg_entity {
         my $hash = {};
         $hash->{type}     = $_;
         $hash->{label}    = $entity_types->{$_}{label};
+        $hash->{options}  = $entity_types->{$_}{options};
         $hash->{order}    = $entity_types->{$_}{order};
         $hash->{selected} = $_ eq $entity_type ? 1 : 0;
         $hash;
     } keys %$entity_types;
     @e_array = sort { $a->{order} <=> $b->{order} } @e_array;
     $param->{entity_types} = \@e_array;
+
+    my %entity_types_options = map { ( $_->{type} => $_->{options} ) }
+        grep { $_->{options} } @e_array;
+    $param->{entity_types_options} = encode_json( \%entity_types_options );
 
     my @content_types = MT::ContentType->load( { blog_id => $blog_id } );
     my @c_array = map {

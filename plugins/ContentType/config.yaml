@@ -299,6 +299,7 @@ entity_types:
     single_select:
         label: Single Select
         data_type: varchar
+        options: 1
         order: 100
         field_html: |
             sub {
@@ -319,6 +320,7 @@ entity_types:
     radio:
         label: Radio
         data_type: varchar
+        options: 1
         order: 110
         field_html: |
             sub {
@@ -341,6 +343,7 @@ entity_types:
     checkbox:
         label: Checkbox
         data_type: varchar
+        options: 1
         order: 120
         field_html: |
             sub {
