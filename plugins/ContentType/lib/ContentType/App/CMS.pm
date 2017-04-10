@@ -670,7 +670,7 @@ sub save_content_data {
     );
 }
 
-sub cms_pre_load_filtered_lit {
+sub cms_pre_load_filtered_list {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
     my $object_ds = $filter->object_ds;
     $object_ds =~ /content_data_(\d+)/;
