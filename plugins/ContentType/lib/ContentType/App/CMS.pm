@@ -574,13 +574,13 @@ sub save_content_data {
     foreach my $entity (@$entities) {
         my $entity_type = $entity_types->{ $entity->{type} };
         my $param_name  = 'entity-' . $entity->{id};
-        if ( my $validate = $entity_type->{validate} ) {
-            if ( !ref $validate ) {
-                $validate = MT->handler_to_coderef($validate);
+        if ( my $ss_validator = $entity_type->{ss_validator} ) {
+            if ( !ref $ss_validator ) {
+                $ss_validator = MT->handler_to_coderef($ss_validator);
             }
-            if ( 'CODE' eq ref $validate ) {
+            if ( 'CODE' eq ref $ss_validator ) {
                 $app->error(undef);
-                my $result = $validate->( $app, $entity->{id} );
+                my $result = $ss_validator->( $app, $entity->{id} );
                 if ( my $err = $app->errstr ) {
                     $data->{blog_id}         = $blog_id;
                     $data->{content_type_id} = $content_type_id;

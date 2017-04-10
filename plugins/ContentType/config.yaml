@@ -156,7 +156,7 @@ entity_types:
         label: URL
         data_type: varchar
         order: 60
-        validate: |
+        ss_validator: |
             sub {
                 my ( $app, $id) = @_;
                 my $q = $app->param;
@@ -199,7 +199,7 @@ entity_types:
                 $ts =~ s/\D//g;
                 return $ts;
             }
-        validate: |
+        ss_validator: |
             sub {
                 my ( $app, $id ) = @_;
                 my $q = $app->param;
@@ -239,7 +239,7 @@ entity_types:
                 $date =~ s/\D//g;
                 return $date;
             }
-        validate: |
+        ss_validator: |
             sub {
                 my ( $app, $id ) = @_;
                 my $q = $app->param;
@@ -280,7 +280,7 @@ entity_types:
                 $time =~ s/\D//g;
                 return $time;
             }
-        validate: |
+        ss_validator: |
             sub {
                 my ( $app, $id ) = @_;
                 my $q = $app->param;
