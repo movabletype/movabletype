@@ -96,7 +96,7 @@ entity_types:
         label: Content Type
         type: varcahr
         order: 10
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Entity;
@@ -173,7 +173,7 @@ entity_types:
         label: Date and Time
         type: datetime
         order: 70
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Util;
@@ -220,7 +220,7 @@ entity_types:
         label: Date
         type: varchar
         order: 80
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Util;
@@ -259,7 +259,7 @@ entity_types:
         label: Time
         type: varchar
         order: 90
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Util;
@@ -300,7 +300,7 @@ entity_types:
         label: Single Select
         type: varchar
         order: 100
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Entity;
@@ -320,7 +320,7 @@ entity_types:
         label: Radio
         type: varchar
         order: 110
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Entity;
@@ -342,7 +342,7 @@ entity_types:
         label: Checkbox
         type: varchar
         order: 120
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Entity;
@@ -372,7 +372,7 @@ entity_types:
         label: Asset
         type: varchar
         order: 130
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 my $q = $app->param;
@@ -429,7 +429,7 @@ entity_types:
         label: Category
         type: varchar
         order: 150
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Category;
@@ -495,7 +495,7 @@ entity_types:
         label: Tag
         type: tag
         order: 160
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Tag;

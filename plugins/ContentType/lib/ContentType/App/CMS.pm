@@ -512,15 +512,16 @@ sub edit_content_data {
             :                                '';
 
         my $entity_type = $entity_types->{ $_->{type} };
-        if ( my $html = $entity_type->{html} ) {
-            if ( !ref $html ) {
-                $html = MT->handler_to_coderef($html);
+        if ( my $field_html = $entity_type->{field_html} ) {
+            if ( !ref $field_html ) {
+                $field_html = MT->handler_to_coderef($field_html);
             }
-            if ( 'CODE' eq ref $html ) {
-                $_->{html} = $html->( $app, $_->{entity_id}, $_->{value} );
+            if ( 'CODE' eq ref $field_html ) {
+                $_->{field_html}
+                    = $field_html->( $app, $_->{entity_id}, $_->{value} );
             }
             else {
-                $_->{html} = $html;
+                $_->{field_html} = $field_html;
             }
         }
         $_->{type} = $entity_types->{ $_->{type} }{type};

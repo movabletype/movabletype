@@ -45,3 +45,4 @@ t/archive/
 t/update/
 
 *.swp
+/mt.pid
