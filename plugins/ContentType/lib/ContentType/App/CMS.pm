@@ -519,7 +519,23 @@ sub edit_content_data {
         my $entity_type = $entity_types->{ $_->{type} };
         if ( my $field_html = $entity_type->{field_html} ) {
             if ( !ref $field_html ) {
-                $field_html = MT->handler_to_coderef($field_html);
+                if ( $field_html =~ /\.tmpl$/ ) {
+                    my $field_html_params = $entity_type->{field_html_params};
+                    if ( !ref $field_html_params ) {
+                        $field_html_params
+                            = MT->handler_to_coderef($field_html_params);
+                    }
+                    if ( 'CODE' eq ref $field_html_params ) {
+                        $field_html_params = $field_html_params->(
+                            $app, $_->{entity_id}, $_->{value}
+                        );
+                    }
+                    $field_html = $plugin->load_tmpl( $field_html,
+                        $field_html_params );
+                }
+                else {
+                    $field_html = MT->handler_to_coderef($field_html);
+                }
             }
             if ( 'CODE' eq ref $field_html ) {
                 $_->{field_html}
