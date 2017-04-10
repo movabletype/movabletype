@@ -690,15 +690,15 @@ sub _generate_unique_key {
 sub _get_form_data {
     my ( $app, $entity_type, $id ) = @_;
 
-    if ( my $get_data = $entity_type->{get_data} ) {
-        if ( !ref $get_data ) {
-            $get_data = MT->handler_to_coderef($get_data);
+    if ( my $data_getter = $entity_type->{data_getter} ) {
+        if ( !ref $data_getter ) {
+            $data_getter = MT->handler_to_coderef($data_getter);
         }
-        if ( 'CODE' eq ref $get_data ) {
-            return $get_data->( $app, $id );
+        if ( 'CODE' eq ref $data_getter ) {
+            return $data_getter->( $app, $id );
         }
         else {
-            return $get_data;
+            return $data_getter;
         }
     }
     else {

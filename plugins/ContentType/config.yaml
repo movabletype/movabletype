@@ -129,7 +129,7 @@ entity_types:
                 }
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 my $q = $app->param;
@@ -189,7 +189,7 @@ entity_types:
                 $html .= '</span> ';
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 my $q = $app->param;
@@ -231,7 +231,7 @@ entity_types:
                 $html .= '</span> ';
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 my $q = $app->param;
@@ -272,7 +272,7 @@ entity_types:
                 $html .= '</span> ';
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 my $q = $app->param;
@@ -361,7 +361,7 @@ entity_types:
                 }
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 my $q = $app->param;
@@ -393,7 +393,7 @@ entity_types:
                 $html .= '" />';
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 require MT::Asset;
@@ -457,7 +457,7 @@ entity_types:
                 }
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 require MT::Category;
@@ -519,7 +519,7 @@ entity_types:
                 $html .= '" />';
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 require MT::Tag;
