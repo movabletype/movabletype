@@ -222,17 +222,23 @@ sub cfg_entity {
         $related_content_type_id          = $entity->related_content_type_id;
     }
 
-    my $entity_types = $app->registry('entity_types');
-    my @e_array      = map {
+    my $content_field_types = $app->registry('content_field_types');
+    my @type_array          = map {
         my $hash = {};
         $hash->{type}     = $_;
-        $hash->{label}    = $entity_types->{$_}{label};
-        $hash->{order}    = $entity_types->{$_}{order};
+        $hash->{label}    = $content_field_types->{$_}{label};
+        $hash->{options}  = $content_field_types->{$_}{options};
+        $hash->{order}    = $content_field_types->{$_}{order};
         $hash->{selected} = $_ eq $entity_type ? 1 : 0;
         $hash;
-    } keys %$entity_types;
-    @e_array = sort { $a->{order} <=> $b->{order} } @e_array;
-    $param->{entity_types} = \@e_array;
+    } keys %$content_field_types;
+    @type_array = sort { $a->{order} <=> $b->{order} } @type_array;
+    $param->{content_field_types} = \@type_array;
+
+    my %content_field_types_options = map { ( $_->{type} => $_->{options} ) }
+        grep { $_->{options} } @type_array;
+    $param->{content_field_types_options}
+        = encode_json( \%content_field_types_options );
 
     my @content_types = MT::ContentType->load( { blog_id => $blog_id } );
     my @c_array = map {
@@ -497,7 +503,7 @@ sub edit_content_data {
         $data = $json ? JSON::decode_json($json) : [];
     }
 
-    my $entity_types = $app->registry('entity_types');
+    my $content_field_types = $app->registry('content_field_types');
     @$array = map {
         my $e_unique_key = $_->{unique_key};
         $_->{can_edit} = 1
@@ -511,19 +517,37 @@ sub edit_content_data {
             : $content_data_id             ? $data->{ $_->{entity_id} }
             :                                '';
 
-        my $entity_type = $entity_types->{ $_->{type} };
-        if ( my $html = $entity_type->{html} ) {
-            if ( !ref $html ) {
-                $html = MT->handler_to_coderef($html);
+        my $content_field_type = $content_field_types->{ $_->{type} };
+        if ( my $field_html = $content_field_type->{field_html} ) {
+            if ( !ref $field_html ) {
+                if ( $field_html =~ /\.tmpl$/ ) {
+                    my $field_html_params
+                        = $content_field_type->{field_html_params};
+                    if ( !ref $field_html_params ) {
+                        $field_html_params
+                            = MT->handler_to_coderef($field_html_params);
+                    }
+                    if ( 'CODE' eq ref $field_html_params ) {
+                        $field_html_params = $field_html_params->(
+                            $app, $_->{entity_id}, $_->{value}
+                        );
+                    }
+                    $field_html = $plugin->load_tmpl( $field_html,
+                        $field_html_params );
+                }
+                else {
+                    $field_html = MT->handler_to_coderef($field_html);
+                }
             }
-            if ( 'CODE' eq ref $html ) {
-                $_->{html} = $html->( $app, $_->{entity_id}, $_->{value} );
+            if ( 'CODE' eq ref $field_html ) {
+                $_->{field_html}
+                    = $field_html->( $app, $_->{entity_id}, $_->{value} );
             }
             else {
-                $_->{html} = $html;
+                $_->{field_html} = $field_html;
             }
         }
-        $_->{type} = $entity_types->{ $_->{type} }{type};
+        $_->{data_type} = $content_field_types->{ $_->{type} }{data_type};
 
         $_;
     } @$array;
@@ -562,24 +586,24 @@ sub save_content_data {
 
     my $content_data_id = scalar $q->param('id');
 
-    my $entity_types = $app->registry('entity_types');
+    my $content_field_types = $app->registry('content_field_types');
 
     my $data = {};
     foreach my $entity (@$entities) {
-        my $entity_type = $entity_types->{ $entity->{type} };
+        my $content_field_type = $content_field_types->{ $entity->{type} };
         $data->{ $entity->{id} }
-            = _get_form_data( $app, $entity_type, $entity->{id} );
+            = _get_form_data( $app, $content_field_type, $entity->{id} );
     }
     foreach my $entity (@$entities) {
-        my $entity_type = $entity_types->{ $entity->{type} };
-        my $param_name  = 'entity-' . $entity->{id};
-        if ( my $validate = $entity_type->{validate} ) {
-            if ( !ref $validate ) {
-                $validate = MT->handler_to_coderef($validate);
+        my $content_field_type = $content_field_types->{ $entity->{type} };
+        my $param_name         = 'entity-' . $entity->{id};
+        if ( my $ss_validator = $content_field_type->{ss_validator} ) {
+            if ( !ref $ss_validator ) {
+                $ss_validator = MT->handler_to_coderef($ss_validator);
             }
-            if ( 'CODE' eq ref $validate ) {
+            if ( 'CODE' eq ref $ss_validator ) {
                 $app->error(undef);
-                my $result = $validate->( $app, $entity->{id} );
+                my $result = $ss_validator->( $app, $entity->{id} );
                 if ( my $err = $app->errstr ) {
                     $data->{blog_id}         = $blog_id;
                     $data->{content_type_id} = $content_type_id;
@@ -614,8 +638,9 @@ sub save_content_data {
         );
 
     foreach my $entity (@$entities) {
-        my $entity_type = $entity_types->{ $entity->{type} };
-        my $value = _get_form_data( $app, $entity_type, $entity->{id} );
+        my $content_field_type = $content_field_types->{ $entity->{type} };
+        my $value
+            = _get_form_data( $app, $content_field_type, $entity->{id} );
 
         my $entity_idx
             = $content_data_id
@@ -630,20 +655,20 @@ sub save_content_data {
         $entity_idx->content_type_id($content_type_id);
         $entity_idx->content_data_id( $content_data->id );
 
-        my $type = $entity_types->{ $entity->{type} }{type};
-        if ( $type eq 'varchar' ) {
+        my $data_type = $content_field_types->{ $entity->{type} }{data_type};
+        if ( $data_type eq 'varchar' ) {
             $entity_idx->value_varchar($value);
         }
-        elsif ( $type eq 'varchar' ) {
+        elsif ( $data_type eq 'varchar' ) {
             $entity_idx->value_text($value);
         }
-        elsif ( $type eq 'datetime' ) {
+        elsif ( $data_type eq 'datetime' ) {
             $entity_idx->value_datetime($value);
         }
-        elsif ( $type eq 'integer' ) {
+        elsif ( $data_type eq 'integer' ) {
             $entity_idx->value_integer($value);
         }
-        elsif ( $type eq 'float' ) {
+        elsif ( $data_type eq 'float' ) {
             $entity_idx->value_float($value);
         }
 
@@ -687,17 +712,17 @@ sub _generate_unique_key {
 }
 
 sub _get_form_data {
-    my ( $app, $entity_type, $id ) = @_;
+    my ( $app, $content_field_type, $id ) = @_;
 
-    if ( my $get_data = $entity_type->{get_data} ) {
-        if ( !ref $get_data ) {
-            $get_data = MT->handler_to_coderef($get_data);
+    if ( my $data_getter = $content_field_type->{data_getter} ) {
+        if ( !ref $data_getter ) {
+            $data_getter = MT->handler_to_coderef($data_getter);
         }
-        if ( 'CODE' eq ref $get_data ) {
-            return $get_data->( $app, $id );
+        if ( 'CODE' eq ref $data_getter ) {
+            return $data_getter->( $app, $id );
         }
         else {
-            return $get_data;
+            return $data_getter;
         }
     }
     else {

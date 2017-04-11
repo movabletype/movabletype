@@ -91,12 +91,12 @@ tags:
         Content: $ContentType::ContentType::Tags::_hdlr_content
         Entity: $ContentType::ContentType::Tags::_hdlr_entity
 
-entity_types:
+content_field_types:
     content_type:
         label: Content Type
-        type: varcahr
+        data_type: varcahr
         order: 10
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Entity;
@@ -129,7 +129,7 @@ entity_types:
                 }
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 my $q = $app->param;
@@ -138,25 +138,25 @@ entity_types:
             }
     single_line_text:
         label: Single Line Text
-        type: varchar
+        data_type: varchar
         order: 20
     multi_line_text:
         label: Multi Line Text
-        type: blob
+        data_type: blob
         order: 30
     integer:
         label: Integer
-        type: integer
+        data_type: integer
         order: 40
     float:
         label: Float
-        type: float
+        data_type: float
         order: 50
     url:
         label: URL
-        type: varchar
+        data_type: varchar
         order: 60
-        validate: |
+        ss_validator: |
             sub {
                 my ( $app, $id) = @_;
                 my $q = $app->param;
@@ -171,9 +171,9 @@ entity_types:
             }
     date_and_time:
         label: Date and Time
-        type: datetime
+        data_type: datetime
         order: 70
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Util;
@@ -189,7 +189,7 @@ entity_types:
                 $html .= '</span> ';
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 my $q = $app->param;
@@ -199,7 +199,7 @@ entity_types:
                 $ts =~ s/\D//g;
                 return $ts;
             }
-        validate: |
+        ss_validator: |
             sub {
                 my ( $app, $id ) = @_;
                 my $q = $app->param;
@@ -218,9 +218,9 @@ entity_types:
             }
     date:
         label: Date
-        type: varchar
+        data_type: varchar
         order: 80
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Util;
@@ -231,7 +231,7 @@ entity_types:
                 $html .= '</span> ';
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 my $q = $app->param;
@@ -239,7 +239,7 @@ entity_types:
                 $date =~ s/\D//g;
                 return $date;
             }
-        validate: |
+        ss_validator: |
             sub {
                 my ( $app, $id ) = @_;
                 my $q = $app->param;
@@ -257,9 +257,9 @@ entity_types:
             }
     time:
         label: Time
-        type: varchar
+        data_type: varchar
         order: 90
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Util;
@@ -272,7 +272,7 @@ entity_types:
                 $html .= '</span> ';
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 my $q = $app->param;
@@ -280,7 +280,7 @@ entity_types:
                 $time =~ s/\D//g;
                 return $time;
             }
-        validate: |
+        ss_validator: |
             sub {
                 my ( $app, $id ) = @_;
                 my $q = $app->param;
@@ -298,15 +298,17 @@ entity_types:
             }
     single_select:
         label: Single Select
-        type: varchar
+        data_type: varchar
+        options: 1
         order: 100
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Entity;
                 my $entity  = MT::Entity->load($id);
                 my $options = $entity->options;
-                my @options = split ',', $options;
+                my $options_delimiter = quotemeta( $app->registry('content_field_types')->{single_select}{options_delimiter} || ',' );
+                my @options = split $options_delimiter, $options;
                 my $html = '<select name="entity-' . $id . '" id="entity-' . $id . '" class="select">';
                 foreach my $option (@options) {
                     $html .= '<option value="' . $option . '"';
@@ -318,15 +320,17 @@ entity_types:
             }
     radio:
         label: Radio
-        type: varchar
+        data_type: varchar
+        options: 1
         order: 110
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Entity;
                 my $entity  = MT::Entity->load($id);
                 my $options = $entity->options;
-                my @options = split ',', $options;
+                my $options_delimiter = quotemeta( $app->registry('content_field_types')->{radio}{options_delimiter} || ',' );
+                my @options = split $options_delimiter, $options;
                 my $html = '';
                 my $count = 1;
                 foreach my $option (@options) {
@@ -340,16 +344,18 @@ entity_types:
             }
     checkbox:
         label: Checkbox
-        type: varchar
+        data_type: varchar
+        options: 1
         order: 120
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Entity;
                 my $entity  = MT::Entity->load($id);
                 my $options = $entity->options;
-                my @options = split ',', $options;
-                my @values  = split ',', $value;
+                my $options_delimiter = quotemeta( $app->registry('content_field_types')->{checkbox}{options_delimiter} || ',' );
+                my @options = split $options_delimiter, $options;
+                my @values  = split $options_delimiter, $value;
                 my $html = '';
                 my $count = 1;
                 foreach my $option (@options) {
@@ -361,7 +367,7 @@ entity_types:
                 }
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 my $q = $app->param;
@@ -370,9 +376,9 @@ entity_types:
             }
     asset:
         label: Asset
-        type: varchar
+        data_type: varchar
         order: 130
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 my $q = $app->param;
@@ -393,7 +399,7 @@ entity_types:
                 $html .= '" />';
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 require MT::Asset;
@@ -423,13 +429,13 @@ entity_types:
             }
     embed_text:
         label: Embed Text
-        type: blob
+        data_type: blob
         order: 140
     category:
         label: Category
-        type: varchar
+        data_type: varchar
         order: 150
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Category;
@@ -457,7 +463,7 @@ entity_types:
                 }
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 require MT::Category;
@@ -493,9 +499,9 @@ entity_types:
             }
     tag:
         label: Tag
-        type: tag
+        data_type: tag
         order: 160
-        html: |
+        field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
                 require MT::Tag;
@@ -519,7 +525,7 @@ entity_types:
                 $html .= '" />';
                 return $html;
             }
-        get_data: |
+        data_getter: |
             sub {
                 my ( $app, $id )  = @_;
                 require MT::Tag;

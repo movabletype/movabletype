@@ -54,7 +54,7 @@
        required="1">
       <select name="type" id="type">" class="half-width required">
       <option value=""><__trans phrase="Type is not selected"></option>
-      <mt:loop name="entity_types">
+      <mt:loop name="content_field_types">
       <option value="<mt:var name="type">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
       </mt:loop>
       </select>
@@ -131,7 +131,22 @@
       return true;
     } 
     return false;
-  });   
+  });
+
+  // TODO: FIXME
+  jQuery(function() {
+    var contentFieldTypesOptions = <mt:var name="content_field_types_options">;
+    jQuery('select#type').change(function() {
+      var selected = jQuery(this).val();
+console.log(selected);
+      if (selected && contentFieldTypesOptions[selected]) {
+        jQuery('div#options-field').show();
+      } else {
+        jQuery('div#options-field').hide();
+      }
+    });
+    jQuery('select#type').trigger('change');
+  });
 </mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">
