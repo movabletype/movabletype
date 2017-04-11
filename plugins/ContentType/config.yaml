@@ -91,7 +91,7 @@ tags:
         Content: $ContentType::ContentType::Tags::_hdlr_content
         Entity: $ContentType::ContentType::Tags::_hdlr_entity
 
-entity_types:
+content_field_types:
     content_type:
         label: Content Type
         data_type: varcahr
@@ -307,7 +307,7 @@ entity_types:
                 require MT::Entity;
                 my $entity  = MT::Entity->load($id);
                 my $options = $entity->options;
-                my $options_delimiter = quotemeta( $app->registry('entity_types')->{single_select}{options_delimiter} || ',' );
+                my $options_delimiter = quotemeta( $app->registry('content_field_types')->{single_select}{options_delimiter} || ',' );
                 my @options = split $options_delimiter, $options;
                 my $html = '<select name="entity-' . $id . '" id="entity-' . $id . '" class="select">';
                 foreach my $option (@options) {
@@ -329,7 +329,7 @@ entity_types:
                 require MT::Entity;
                 my $entity  = MT::Entity->load($id);
                 my $options = $entity->options;
-                my $options_delimiter = quotemeta( $app->registry('entity_types')->{radio}{options_delimiter} || ',' );
+                my $options_delimiter = quotemeta( $app->registry('content_field_types')->{radio}{options_delimiter} || ',' );
                 my @options = split $options_delimiter, $options;
                 my $html = '';
                 my $count = 1;
@@ -353,7 +353,7 @@ entity_types:
                 require MT::Entity;
                 my $entity  = MT::Entity->load($id);
                 my $options = $entity->options;
-                my $options_delimiter = quotemeta( $app->registry('entity_types')->{checkbox}{options_delimiter} || ',' );
+                my $options_delimiter = quotemeta( $app->registry('content_field_types')->{checkbox}{options_delimiter} || ',' );
                 my @options = split $options_delimiter, $options;
                 my @values  = split $options_delimiter, $value;
                 my $html = '';

@@ -141,8 +141,9 @@ sub _hdlr_entity {
     my $d_json = $content->data;
     my $datas = $d_json ? JSON::decode_json($d_json) : {};
 
-    my $entity_type = MT->registry('entity_types')->{ $entity->type };
-    if ((      $entity_type->{type} eq 'datetime'
+    my $content_field_type
+        = MT->registry('content_field_types')->{ $entity->type };
+    if ((      $content_field_type->{type} eq 'datetime'
             || $entity->type eq 'date'
             || $entity->type eq 'time'
         )
