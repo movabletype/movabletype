@@ -645,9 +645,9 @@ sub save_content_data {
         my $cf_idx
             = $content_data_id
             ? MT::ContentFieldIndex->load(
-            {   content_type_id => $content_type_id,
-                content_data_id => $content_data->id,
-                entity_id       => $entity->{id},
+            {   content_type_id  => $content_type_id,
+                content_data_id  => $content_data->id,
+                content_field_id => $entity->{id},
             }
             )
             : MT::ContentFieldIndex->new();
@@ -672,7 +672,7 @@ sub save_content_data {
             $cf_idx->value_float($value);
         }
 
-        $cf_idx->entity_id( $entity->{id} );
+        $cf_idx->content_field_id( $entity->{id} );
         $cf_idx->save
             or return $app->error(
             $plugin->translate(

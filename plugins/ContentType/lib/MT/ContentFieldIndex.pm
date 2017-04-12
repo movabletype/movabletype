@@ -11,15 +11,15 @@ use base qw( MT::Object );
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'              => 'integer not null auto_increment',
-            'content_type_id' => 'integer',
-            'entity_id'       => 'integer',
-            'content_data_id' => 'integer',
-            'value_varchar'   => 'string(255)',
-            'value_text'      => 'blob',
-            'value_datetime'  => 'datetime',
-            'value_integer'   => 'integer',
-            'value_float'     => 'float',
+            'id'               => 'integer not null auto_increment',
+            'content_type_id'  => 'integer',
+            'content_field_id' => 'integer',
+            'content_data_id'  => 'integer',
+            'value_varchar'    => 'string(255)',
+            'value_text'       => 'blob',
+            'value_datetime'   => 'datetime',
+            'value_integer'    => 'integer',
+            'value_float'      => 'float',
         },
         indexes => {
             value_varchar  => 1,
