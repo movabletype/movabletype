@@ -118,7 +118,7 @@ sub post_save {
 sub post_remove {
     my ( $cb, $obj, $original ) = @_;
 
-    $obj->remove_children( { key => 'ct_id' } );
+    $obj->remove_children( { key => 'content_type_id' } );
 
     my $perm_name = 'manage_content_type:' . $obj->unique_key;
     require MT::Role;

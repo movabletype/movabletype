@@ -62,26 +62,27 @@ sub _hdlr_contents {
             unless $match;
     }
 
-    my @contents = MT::ContentData->load( { ct_id => $content_type->id } );
+    my @contents
+        = MT::ContentData->load( { content_type_id => $content_type->id } );
 
     my $i       = 0;
     my $res     = '';
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
     my $vars    = $ctx->{__stash}{vars} ||= {};
-    for my $content (@contents) {
-        next if $parent && !grep { $content->id == $_ } @data_ids;
+    for my $content_data (@contents) {
+        next if $parent && !grep { $content_data->id == $_ } @data_ids;
 
         local $vars->{__first__}       = !$i;
         local $vars->{__last__}        = !defined $contents[ $i + 1 ];
         local $vars->{__odd__}         = ( $i % 2 ) == 0;
         local $vars->{__even__}        = ( $i % 2 ) == 1;
         local $vars->{__counter__}     = $i + 1;
-        local $ctx->{__stash}{blog}    = $content->blog;
-        local $ctx->{__stash}{blog_id} = $content->blog_id;
-        local $ctx->{__stash}{content} = $content;
+        local $ctx->{__stash}{blog}    = $content_data->blog;
+        local $ctx->{__stash}{blog_id} = $content_data->blog_id;
+        local $ctx->{__stash}{content} = $content_data;
 
-        my $ct_id        = $content->ct_id;
+        my $ct_id        = $content_data->content_type_id;
         my $content_type = MT::ContentType->load($ct_id);
         local $ctx->{__stash}{content_type} = $content_type;
 

@@ -72,6 +72,7 @@ applications:
                     - blog
 object_types:
     content_type: MT::ContentType
+    cd: MT::ContentData
     content_data: MT::ContentData
     cf: MT::ContentField
     content_field: MT::ContentField
@@ -113,7 +114,7 @@ content_field_types:
                 my $entities = $json ? JSON::decode_json($json) : [];
                 my ($label_entity) = grep { $_->{label} } @$entities;
                 my @ct_datas
-                    = MT::ContentData->load( { ct_id => $ct_id } );
+                    = MT::ContentData->load( { content_type_id => $ct_id } );
                 my $html = '';
                 my $num = 1;
                 foreach my $ct_data (@ct_datas) {

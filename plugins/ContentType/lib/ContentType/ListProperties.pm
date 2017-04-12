@@ -151,12 +151,13 @@ sub make_name_html {
 sub make_title_html {
     my ( $prop, $content_data, $app ) = @_;
     require JSON;
-    my $content_type = MT::ContentType->load( $content_data->ct_id );
-    my $json         = $content_type->entities();
-    my $fields       = $json ? JSON::decode_json($json) : [];
-    my @label        = grep { $_->{label} } @$fields;
-    my $hash         = JSON::decode_json( $content_data->data );
-    my $label        = '';
+    my $content_type
+        = MT::ContentType->load( $content_data->content_type_id );
+    my $json   = $content_type->entities();
+    my $fields = $json ? JSON::decode_json($json) : [];
+    my @label  = grep { $_->{label} } @$fields;
+    my $hash   = JSON::decode_json( $content_data->data );
+    my $label  = '';
     foreach my $key ( keys(%$hash) ) {
         $label = $hash->{$key} if $key == $label[0]->{id};
     }
@@ -164,7 +165,7 @@ sub make_title_html {
         mode => 'edit_content_data',
         args => {
             blog_id         => $content_data->blog->id,
-            content_type_id => $content_data->ct_id,
+            content_type_id => $content_data->content_type_id,
             id              => $content_data->id,
         },
     );

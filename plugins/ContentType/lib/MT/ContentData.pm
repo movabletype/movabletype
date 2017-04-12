@@ -13,13 +13,13 @@ use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'      => 'integer not null auto_increment',
-            'blog_id' => 'integer not null',
-            'ct_id'   => 'integer not null',
-            'data'    => 'blob',
+            'id'              => 'integer not null auto_increment',
+            'blog_id'         => 'integer not null',
+            'content_type_id' => 'integer not null',
+            'data'            => 'blob',
         },
-        indexes     => { ct_id => 1 },
-        datasource  => 'content_data',
+        indexes     => { content_type_id => 1 },
+        datasource  => 'cd',
         primary_key => 'id',
         audit       => 1,
         child_of    => ['MT::ContentType'],

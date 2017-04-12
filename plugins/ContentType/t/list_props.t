@@ -73,9 +73,9 @@ subtest 'make_title' => sub {
     my $prop;
     my $content_data = MT::ContentData->new;
     $content_data->set_values(
-        {   blog_id => $content_type->blog_id,
-            ct_id   => $content_type->id,
-            data    => '{"1":"test"}',
+        {   blog_id         => $content_type->blog_id,
+            content_type_id => $content_type->id,
+            data            => '{"1":"test"}',
         }
     );
     $content_data->save or die $content_data->errstr;

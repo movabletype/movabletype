@@ -67,7 +67,10 @@ subtest 'mode=save_content_data' => sub {
     ok( $out =~ /302 Found/, 'redirect to list_content_data screen' );
 
     my $content_data = MT::ContentData->load(
-        { blog_id => $content_type->blog_id, ct_id => $content_type->id } );
+        {   blog_id         => $content_type->blog_id,
+            content_type_id => $content_type->id
+        }
+    );
     ok( $content_data, 'got content data' );
     is( $content_data->data,
         '{"' . $content_field->id . '":"test input"}',
