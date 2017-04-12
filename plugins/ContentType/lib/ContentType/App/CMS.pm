@@ -9,6 +9,7 @@ package ContentType::App::CMS;
 use strict;
 use warnings;
 
+use JSON ();
 use Digest::SHA1 qw/ sha1_hex /;
 use Encode qw/ encode_utf8 /;
 
@@ -233,7 +234,7 @@ sub cfg_entity {
     my %content_field_types_options = map { ( $_->{type} => $_->{options} ) }
         grep { $_->{options} } @type_array;
     $param->{content_field_types_options}
-        = encode_json( \%content_field_types_options );
+        = JSON::encode_json( \%content_field_types_options );
 
     my @content_types = MT::ContentType->load( { blog_id => $blog_id } );
     my @c_array = map {
