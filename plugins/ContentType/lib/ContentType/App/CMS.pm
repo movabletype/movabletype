@@ -243,9 +243,12 @@ sub cfg_entity {
     my @content_types = MT::ContentType->load( { blog_id => $blog_id } );
     my @c_array = map {
         my $hash = {};
-        $hash->{id}       = $_->id;
-        $hash->{name}     = $_->name;
-        $hash->{selected} = $_->id == $related_content_type_id ? 1 : 0;
+        $hash->{id}   = $_->id;
+        $hash->{name} = $_->name;
+        $hash->{selected}
+            = (    $_->id
+                && $related_content_type_id
+                && $_->id == $related_content_type_id ) ? 1 : 0;
         $hash;
     } @content_types;
     $param->{content_types} = \@c_array;
