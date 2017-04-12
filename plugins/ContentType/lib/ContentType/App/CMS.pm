@@ -95,15 +95,13 @@ sub cfg_content_type {
     if ($content_type) {
         $param->{name}       = $content_type->name;
         $param->{unique_key} = $content_type->unique_key;
-        my $json = $content_type->fields;
-        my $array = $json ? JSON::decode_json($json) : [];
-        @$array = map {
+        my @array = map {
             $_->{entity_id} = $_->{id};
             delete $_->{id};
             $_;
-        } @$array;
-        @$array = sort { $a->{order} <=> $b->{order} } @$array;
-        $param->{entities} = $array;
+        } @{ $content_type->fields };
+        @array = sort { $a->{order} <=> $b->{order} } @array;
+        $param->{entities} = \@array;
     }
 
     foreach my $name (qw( saved err_msg id name )) {
@@ -154,14 +152,12 @@ sub save_cfg_content_type {
     $content_type->blog_id($blog_id);
     $content_type->name($name);
 
-    my $json = $content_type->fields;
-    my $fields = $json ? JSON::decode_json($json) : [];
-    @$fields = map {
+    my @fields = map {
         $_->{order} = $q->param( 'order-' . $_->{id} );
         $_->{label} = $q->param('content-label') == $_->{id} ? 1 : 0;
         $_;
-    } @$fields;
-    $content_type->fields( JSON::encode_json($fields) );
+    } @{ $content_type->fields };
+    $content_type->fields( \@fields );
 
     my $unique_key
         = defined $content_type->unique_key && $content_type->unique_key
@@ -338,8 +334,7 @@ sub save_cfg_entity {
         );
 
     my $content_type = MT::ContentType->load($content_type_id);
-    my $json         = $content_type->fields;
-    my $fields       = $json ? JSON::decode_json($json) : [];
+    my $fields       = $content_type->fields;
     if ( grep { $_->{id} == $content_field->id } @$fields ) {
         @$fields = map {
             if ( $_->{id} == $content_field->id ) {
@@ -360,7 +355,7 @@ sub save_cfg_entity {
             unique_key => $content_field->unique_key,
             };
     }
-    $content_type->fields( JSON::encode_json($fields) );
+    $content_type->fields($fields);
 
     $content_type->save
         or return $app->error(
@@ -415,10 +410,9 @@ sub delete_entity {
         );
 
     my $content_type = MT::ContentType->load($content_type_id);
-    my $json         = $content_type->fields;
-    my $fields       = JSON::decode_json($json);
-    @$fields = grep { $_->{id} ne $content_field_id } @$fields;
-    $content_type->fields( JSON::encode_json($fields) );
+    my @fields
+        = grep { $_->{id} ne $content_field_id } @{ $content_type->fields };
+    $content_type->fields( \@fields );
 
     $content_type->save
         or return $app->error(
@@ -502,8 +496,7 @@ sub edit_content_data {
 
     $param->{name} = $content_type->name;
 
-    my $json            = $content_type->fields;
-    my $array           = $json ? JSON::decode_json($json) : [];
+    my $array           = $content_type->fields;
     my $ct_unique_key   = $content_type->unique_key;
     my $content_data_id = scalar $q->param('id');
 
@@ -592,8 +585,7 @@ sub save_content_data {
         or return $app->errtrans("Invalid request.");
 
     my $content_type = MT::ContentType->load($content_type_id);
-    my $json         = $content_type->fields;
-    my $fields       = $json ? JSON::decode_json($json) : [];
+    my $fields       = $content_type->fields;
 
     my $content_data_id = scalar $q->param('id');
 

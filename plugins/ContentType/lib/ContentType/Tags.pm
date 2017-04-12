@@ -41,11 +41,8 @@ sub _hdlr_contents {
     my $e_hash = {};
 
     if ($parent) {
-        my $f_json = $parent->fields;
-        my $fields = $f_json ? JSON::decode_json($f_json) : [];
-
         my $match = 0;
-        foreach my $f (@$fields) {
+        foreach my $f ( @{ $content_type->fields } ) {
             my $field_obj = MT::ContentField->load( $f->{id} );
             if (   $f->{type} eq 'content_type'
                 && $field_obj->related_content_type_id == $content_type->id )
@@ -99,9 +96,8 @@ sub _hdlr_content {
     my $content      = $ctx->stash('content');
     my $content_type = $ctx->stash('content_type');
 
-    my $f_json = $content_type->fields;
-    my $f      = $f_json ? JSON::decode_json($f_json) : [];
-    my @fields = sort { $a->{order} <=> $b->{order} } @$f;
+    my @fields
+        = sort { $a->{order} <=> $b->{order} } @{ $content_type->fields };
 
     my $d_json = $content->data;
     my $datas = $d_json ? JSON::decode_json($d_json) : {};

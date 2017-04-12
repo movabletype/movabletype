@@ -9,7 +9,7 @@ package MT::ContentType;
 use strict;
 use base qw( MT::Object );
 
-use JSON;
+use JSON ();
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -48,12 +48,23 @@ sub parents {
     };
 }
 
+sub fields {
+    my $obj = shift;
+    if (@_) {
+        my @fields = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
+        my $json = eval { JSON::encode_json( \@fields ) } || [];
+        $obj->column( 'fields', $json );
+    }
+    else {
+        eval { JSON::decode_json( $obj->column('fields') ) } || [];
+    }
+}
+
 sub field_objs {
     my $obj = shift;
-    my $fields = eval { JSON::decode_json( $obj->fields ) } || [];
     my @field_objs
         = map { MT->model('content_field')->load( $_->{id} || 0 ) }
-        @{$fields};
+        @{ $obj->fields };
     return \@field_objs;
 }
 

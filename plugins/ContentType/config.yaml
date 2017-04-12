@@ -108,11 +108,9 @@ content_field_types:
                 require JSON;
                 my @values = split ',', $value;
                 my $content_field = MT::ContentField->load($id);
-                my $ct_id  = $content_field->related_content_type_id;
-                my $ct     = MT::ContentType->load($ct_id);
-                my $json = $ct->fields;
-                my $fields = $json ? JSON::decode_json($json) : [];
-                my ($label_field) = grep { $_->{label} } @$fields;
+                my $ct_id = $content_field->related_content_type_id;
+                my $ct    = MT::ContentType->load($ct_id);
+                my ($label_field) = grep { $_->{label} } @{ $ct->fields };
                 my @ct_datas
                     = MT::ContentData->load( { content_type_id => $ct_id } );
                 my $html = '';

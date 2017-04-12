@@ -48,7 +48,7 @@ my $fields = [
         unique_key => $content_field->unique_key,
     }
 ];
-$content_type->fields( JSON::encode_json($fields) );
+$content_type->fields( $fields );
 $content_type->save or die $content_type->errstr;
 
 subtest 'make_list_properties' => sub {

@@ -97,12 +97,9 @@ sub make_list_properties {
             },
         };
 
-        my $json = $content_type->fields;
-        require JSON;
-        my $fields = $json ? JSON::decode_json($json) : [];
         my $order = 200;
 
-        foreach my $f (@$fields) {
+        foreach my $f ( @{ $content_type->fields } ) {
             my $idx_type  = $f->{type};
             my $field_key = 'entity_' . $f->{id};
             $props->{$key}{$field_key} = {
@@ -153,11 +150,9 @@ sub make_title_html {
     require JSON;
     my $content_type
         = MT::ContentType->load( $content_data->content_type_id );
-    my $json   = $content_type->fields;
-    my $fields = $json ? JSON::decode_json($json) : [];
-    my @label  = grep { $_->{label} } @$fields;
-    my $hash   = JSON::decode_json( $content_data->data );
-    my $label  = '';
+    my @label = grep { $_->{label} } @{ $content_type->fields };
+    my $hash  = JSON::decode_json( $content_data->data );
+    my $label = '';
     foreach my $key ( keys(%$hash) ) {
         $label = $hash->{$key} if $key == $label[0]->{id};
     }
