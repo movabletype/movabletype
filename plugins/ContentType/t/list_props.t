@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 
-use JSON;
 use Test::MockModule;
 use Test::More;
 
@@ -48,7 +47,7 @@ my $fields = [
         unique_key => $content_field->unique_key,
     }
 ];
-$content_type->fields( $fields );
+$content_type->fields($fields);
 $content_type->save or die $content_type->errstr;
 
 subtest 'make_list_properties' => sub {
@@ -75,9 +74,9 @@ subtest 'make_title' => sub {
     $content_data->set_values(
         {   blog_id         => $content_type->blog_id,
             content_type_id => $content_type->id,
-            data            => '{"1":"test"}',
         }
     );
+    $content_data->data( { 1 => 'test' } );
     $content_data->save or die $content_data->errstr;
     my $app = MT->instance;
 

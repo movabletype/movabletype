@@ -48,7 +48,7 @@ my $fields = [
         unique_key => $content_field->unique_key,
     }
 ];
-$content_type->fields( $fields );
+$content_type->fields($fields);
 $content_type->save or die $content_type->errstr;
 
 subtest 'mode=save_content_data' => sub {
@@ -72,7 +72,7 @@ subtest 'mode=save_content_data' => sub {
         }
     );
     ok( $content_data, 'got content data' );
-    is( $content_data->data,
+    is( $content_data->column('data'),
         '{"' . $content_field->id . '":"test input"}',
         'content data has content field data'
     );

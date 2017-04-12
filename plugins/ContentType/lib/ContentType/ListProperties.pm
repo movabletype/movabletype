@@ -147,11 +147,10 @@ sub make_name_html {
 
 sub make_title_html {
     my ( $prop, $content_data, $app ) = @_;
-    require JSON;
     my $content_type
         = MT::ContentType->load( $content_data->content_type_id );
     my @label = grep { $_->{label} } @{ $content_type->fields };
-    my $hash  = JSON::decode_json( $content_data->data );
+    my $hash  = $content_data->data;
     my $label = '';
     foreach my $key ( keys(%$hash) ) {
         $label = $hash->{$key} if $key == $label[0]->{id};

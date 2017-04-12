@@ -9,7 +9,6 @@ package ContentType::App::CMS;
 use strict;
 use warnings;
 
-use JSON qw/ encode_json decode_json /;
 use Digest::SHA1 qw/ sha1_hex /;
 use Encode qw/ encode_utf8 /;
 
@@ -503,8 +502,7 @@ sub edit_content_data {
     my $data;
     if ($content_data_id) {
         my $content_data = MT::ContentData->load($content_data_id);
-        my $json         = $content_data->data;
-        $data = $json ? JSON::decode_json($json) : [];
+        $data = $content_data->data;
     }
 
     my $content_field_types = $app->registry('content_field_types');
@@ -622,7 +620,6 @@ sub save_content_data {
             }
         }
     }
-    $data = JSON::encode_json($data);
 
     my $content_data
         = $content_data_id

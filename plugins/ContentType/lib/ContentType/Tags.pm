@@ -8,8 +8,6 @@ package ContentType::Tags;
 
 use strict;
 
-use JSON;
-
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
@@ -48,9 +46,7 @@ sub _hdlr_contents {
                 && $field_obj->related_content_type_id == $content_type->id )
             {
                 $match++;
-                my $json     = $parent_data->data;
-                my $data     = $json ? JSON::decode_json($json) : [];
-                my $data_ids = $data->{ $f->{id} };
+                my $data_ids = $parent_data->data->{ $f->{id} };
                 @data_ids = split ',', $data_ids;
             }
         }
@@ -99,8 +95,7 @@ sub _hdlr_content {
     my @fields
         = sort { $a->{order} <=> $b->{order} } @{ $content_type->fields };
 
-    my $d_json = $content->data;
-    my $datas = $d_json ? JSON::decode_json($d_json) : {};
+    my $datas = $content->data;
 
     my $out = '';
     foreach my $f (@fields) {
@@ -135,8 +130,7 @@ sub _hdlr_entity {
     }
     my $content_field = MT::ContentField->load($terms);
 
-    my $d_json = $content->data;
-    my $datas = $d_json ? JSON::decode_json($d_json) : {};
+    my $datas = $content->data;
 
     my $content_field_type
         = MT->registry('content_field_types')->{ $content_field->type };

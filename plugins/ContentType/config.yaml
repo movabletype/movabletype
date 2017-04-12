@@ -105,7 +105,6 @@ content_field_types:
                 require MT::ContentField;
                 require MT::ContentType;
                 require MT::ContentData;
-                require JSON;
                 my @values = split ',', $value;
                 my $content_field = MT::ContentField->load($id);
                 my $ct_id = $content_field->related_content_type_id;
@@ -117,9 +116,7 @@ content_field_types:
                 my $num = 1;
                 foreach my $ct_data (@ct_datas) {
                     my $ct_data_id = $ct_data->id;
-                    my $json = $ct_data->data;
-                    my $datas = $json ? JSON::decode_json($json) : [];
-                    my $label = $datas->{ $label_field->{id} };
+                    my $label = $ct_data->data->{ $label_field->{id} };
                     $html .= '<div>';
                     $html .= "<input type=\"checkbox\" name=\"entity-$id\" id=\"entity-$id-$num\" value=\"$ct_data_id\"";
                     $html .= ( grep { $_ eq $ct_data_id } @values ) ? ' checked="checked"' : '';
