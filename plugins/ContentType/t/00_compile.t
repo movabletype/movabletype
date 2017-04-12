@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-
 use strict;
 use warnings;
 
@@ -22,7 +20,7 @@ use_ok('ContentType::Tags');
 
 use_ok('MT::ContentData');
 use_ok('MT::Entity');
-use_ok('MT::EntityIdx');
+use_ok('MT::ContentFieldIndex');
 use_ok('MT::ObjectCategory');
 
 done_testing;

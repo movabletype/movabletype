@@ -11,7 +11,7 @@ use warnings;
 
 use MT::ContentType;
 use MT::Entity;
-use MT::EntityIdx;
+use MT::ContentFieldIndex;
 
 sub make_listing_screens {
     my $props = {
@@ -114,7 +114,7 @@ sub make_list_properties {
                 html      => (
                     $entity->{label} ? ( sub { make_title_html(@_) } ) : ''
                 ),
-                terms => sub { MT::EntityIdx::make_terms(@_) },
+                terms => sub { MT::ContentFieldIndex::make_terms(@_) },
                 filter_tmpl => '<mt:var name="filter_form_string">',
             };
             $order++;

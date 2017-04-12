@@ -24,9 +24,9 @@ __PACKAGE__->install_properties(
         datasource  => 'content_type',
         primary_key => 'id',
         audit       => 1,
-        child_of      => [ 'MT::Blog',        'MT::Website' ],
-        child_classes => [ 'MT::ContentData', 'MT::Entity', 'MT::EntityIdx' ],
-
+        child_of => [ 'MT::Blog', 'MT::Website' ],
+        child_classes =>
+            [ 'MT::ContentData', 'MT::Entity', 'MT::ContentFieldIndex' ],
     }
 );
 

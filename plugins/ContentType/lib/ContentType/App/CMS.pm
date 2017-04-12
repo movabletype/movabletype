@@ -15,7 +15,7 @@ use Encode qw/ encode_utf8 /;
 
 use MT;
 use MT::Entity;
-use MT::EntityIdx;
+use MT::ContentFieldIndex;
 use MT::ContentType;
 use MT::ContentData;
 
@@ -642,42 +642,42 @@ sub save_content_data {
         my $value
             = _get_form_data( $app, $content_field_type, $entity->{id} );
 
-        my $entity_idx
+        my $cf_idx
             = $content_data_id
-            ? MT::EntityIdx->load(
+            ? MT::ContentFieldIndex->load(
             {   content_type_id => $content_type_id,
                 content_data_id => $content_data->id,
                 entity_id       => $entity->{id},
             }
             )
-            : MT::EntityIdx->new();
-        $entity_idx = MT::EntityIdx->new() unless $entity_idx;
-        $entity_idx->content_type_id($content_type_id);
-        $entity_idx->content_data_id( $content_data->id );
+            : MT::ContentFieldIndex->new();
+        $cf_idx = MT::ContentFieldIndex->new() unless $cf_idx;
+        $cf_idx->content_type_id($content_type_id);
+        $cf_idx->content_data_id( $content_data->id );
 
         my $data_type = $content_field_types->{ $entity->{type} }{data_type};
         if ( $data_type eq 'varchar' ) {
-            $entity_idx->value_varchar($value);
+            $cf_idx->value_varchar($value);
         }
         elsif ( $data_type eq 'varchar' ) {
-            $entity_idx->value_text($value);
+            $cf_idx->value_text($value);
         }
         elsif ( $data_type eq 'datetime' ) {
-            $entity_idx->value_datetime($value);
+            $cf_idx->value_datetime($value);
         }
         elsif ( $data_type eq 'integer' ) {
-            $entity_idx->value_integer($value);
+            $cf_idx->value_integer($value);
         }
         elsif ( $data_type eq 'float' ) {
-            $entity_idx->value_float($value);
+            $cf_idx->value_float($value);
         }
 
-        $entity_idx->entity_id( $entity->{id} );
-        $entity_idx->save
+        $cf_idx->entity_id( $entity->{id} );
+        $cf_idx->save
             or return $app->error(
             $plugin->translate(
-                "Saving entity index failed: [_1]",
-                $entity_idx->errstr
+                "Saving content field index failed: [_1]",
+                $cf_idx->errstr
             )
             );
     }

@@ -74,7 +74,8 @@ object_types:
     content_type: MT::ContentType
     content_data: MT::ContentData
     entity: MT::Entity
-    entity_idx: MT::EntityIdx
+    content_field_index: MT::ContentFieldIndex
+    cf_idx: MT::ContentFieldIndex
     objectcategory: MT::ObjectCategory
 
 listing_screens: $ContentType::ContentType::ListProperties::make_listing_screens
