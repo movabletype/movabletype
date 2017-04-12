@@ -22,7 +22,7 @@ use MT::ContentData;
 {
     # TBD: Move to Core.
 
-    no warnings 'redefine';
+    no warnings 'redefine', 'once';
 
     *MT::Author::can_manage_content_types = sub {
         my $author = shift;
