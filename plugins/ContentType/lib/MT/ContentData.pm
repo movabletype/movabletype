@@ -40,7 +40,7 @@ sub data {
     my $obj = shift;
     if (@_) {
         my %data = ref $_[0] eq 'HASH' ? %{ $_[0] } : @_;
-        my $json = eval { JSON::encode_json( \%data ) } || {};
+        my $json = eval { JSON::encode_json( \%data ) } || '{}';
         $obj->column( 'data', $json );
     }
     else {

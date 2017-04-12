@@ -52,7 +52,7 @@ sub fields {
     my $obj = shift;
     if (@_) {
         my @fields = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
-        my $json = eval { JSON::encode_json( \@fields ) } || [];
+        my $json = eval { JSON::encode_json( \@fields ) } || '[]';
         $obj->column( 'fields', $json );
     }
     else {
