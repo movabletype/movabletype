@@ -15,15 +15,16 @@ use MT::ContentFieldIndex;
 
 sub make_listing_screens {
     my $props = {
-        entity_type => {
-            screen_label        => 'Manage Entity Type',
-            object_label        => 'Entity Type',
-            object_label_plural => 'Entity Types',
-            object_type         => 'entity_type',
-            scope_mode          => 'this',
-            use_filters         => 0,
-            view                => ['system'],
-        },
+
+        # entity_type => {
+        #     screen_label        => 'Manage Entity Type',
+        #     object_label        => 'Entity Type',
+        #     object_label_plural => 'Entity Types',
+        #     object_type         => 'entity_type',
+        #     scope_mode          => 'this',
+        #     use_filters         => 0,
+        #     view                => ['system'],
+        # },
         content_type => {
             screen_label        => 'Manage Content Type',
             object_label        => 'Content Type',
@@ -55,18 +56,19 @@ sub make_listing_screens {
 
 sub make_list_properties {
     my $props = {
-        entity_type => {
-            id => {
-                base  => '__virtual.id',
-                order => 100,
-            },
-            name => {
-                base      => '__virtual.name',
-                order     => 200,
-                link_mode => 'cfg_entity_type',
-                html      => sub { make_name_html(@_) },
-            },
-        },
+
+        # entity_type => {
+        #     id => {
+        #         base  => '__virtual.id',
+        #         order => 100,
+        #     },
+        #     name => {
+        #         base      => '__virtual.name',
+        #         order     => 200,
+        #         link_mode => 'cfg_entity_type',
+        #         html      => sub { make_name_html(@_) },
+        #     },
+        # },
         content_type => {
             id => {
                 base  => '__virtual.id',
@@ -101,7 +103,7 @@ sub make_list_properties {
 
         foreach my $f ( @{ $content_type->fields } ) {
             my $idx_type  = $f->{type};
-            my $field_key = 'entity_' . $f->{id};
+            my $field_key = 'content_field_' . $f->{id};
             $props->{$key}{$field_key} = {
                 label            => $f->{name},
                 display          => ( $f->{label} ? 'force' : 'none' ),
@@ -205,15 +207,16 @@ sub make_content_actions {
 
 sub make_list_actions {
     my $props = {
-        entity_type => {
-            delete => {
-                label      => 'Delete',
-                order      => 100,
-                mode       => 'delete',
-                button     => 1,
-                js_message => 'delete',
-            }
-        },
+
+        # entity_type => {
+        #     delete => {
+        #         label      => 'Delete',
+        #         order      => 100,
+        #         mode       => 'delete',
+        #         button     => 1,
+        #         js_message => 'delete',
+        #     }
+        # },
         content_type => {
             delete => {
                 label      => 'Delete',

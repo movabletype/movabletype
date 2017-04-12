@@ -96,12 +96,12 @@ sub cfg_content_type {
         $param->{name}       = $content_type->name;
         $param->{unique_key} = $content_type->unique_key;
         my @array = map {
-            $_->{entity_id} = $_->{id};
+            $_->{content_field_id} = $_->{id};
             delete $_->{id};
             $_;
         } @{ $content_type->fields };
         @array = sort { $a->{order} <=> $b->{order} } @array;
-        $param->{entities} = \@array;
+        $param->{fields} = \@array;
     }
 
     foreach my $name (qw( saved err_msg id name )) {
@@ -186,7 +186,7 @@ sub save_cfg_content_type {
     );
 }
 
-sub cfg_entity {
+sub cfg_content_field {
     my ( $app, $param ) = @_;
     my $q      = $app->param;
     my $plugin = $app->component("ContentType");
@@ -254,10 +254,10 @@ sub cfg_entity {
     {
         $param->{$name} = $q->param($name) if $q->param($name);
     }
-    $app->build_page( $plugin->load_tmpl('cfg_entity.tmpl'), $param );
+    $app->build_page( $plugin->load_tmpl('cfg_content_field.tmpl'), $param );
 }
 
-sub save_cfg_entity {
+sub save_cfg_content_field {
     my ($app)  = @_;
     my $q      = $app->param;
     my $plugin = $app->component("ContentType");
@@ -286,7 +286,7 @@ sub save_cfg_entity {
 
     return $app->redirect(
         $app->uri(
-            'mode' => 'cfg_entity',
+            'mode' => 'cfg_content_field',
             args   => {
                 blog_id         => $blog_id,
                 content_type_id => $content_type_id,
@@ -367,7 +367,7 @@ sub save_cfg_entity {
 
     return $app->redirect(
         $app->uri(
-            'mode' => 'cfg_entity',
+            'mode' => 'cfg_content_field',
             args   => {
                 blog_id         => $blog_id,
                 content_type_id => $content_type_id,
@@ -378,7 +378,7 @@ sub save_cfg_entity {
     );
 }
 
-sub delete_entity {
+sub delete_content_field {
     my ($app)  = @_;
     my $q      = $app->param;
     my $plugin = $app->component("ContentType");
@@ -511,13 +511,13 @@ sub edit_content_data {
         my $e_unique_key = $_->{unique_key};
         $_->{can_edit} = 1
             if $app->permissions->can_do(
-            'content_type:' . $ct_unique_key . '-entity:' . $e_unique_key );
-        $_->{entity_id} = $_->{id};
+            'content_type:' . $ct_unique_key . '-content_field:' . $e_unique_key );
+        $_->{content_field_id} = $_->{id};
         delete $_->{id};
 
         $_->{value}
-            = $q->param( $_->{entity_id} ) ? $q->param( $_->{entity_id} )
-            : $content_data_id             ? $data->{ $_->{entity_id} }
+            = $q->param( $_->{content_field_id} ) ? $q->param( $_->{content_field_id} )
+            : $content_data_id             ? $data->{ $_->{content_field_id} }
             :                                '';
 
         my $content_field_type = $content_field_types->{ $_->{type} };
@@ -532,7 +532,7 @@ sub edit_content_data {
                     }
                     if ( 'CODE' eq ref $field_html_params ) {
                         $field_html_params = $field_html_params->(
-                            $app, $_->{entity_id}, $_->{value}
+                            $app, $_->{content_field_id}, $_->{value}
                         );
                     }
                     $field_html = $plugin->load_tmpl( $field_html,
@@ -544,7 +544,7 @@ sub edit_content_data {
             }
             if ( 'CODE' eq ref $field_html ) {
                 $_->{field_html}
-                    = $field_html->( $app, $_->{entity_id}, $_->{value} );
+                    = $field_html->( $app, $_->{content_field_id}, $_->{value} );
             }
             else {
                 $_->{field_html} = $field_html;
@@ -555,7 +555,7 @@ sub edit_content_data {
         $_;
     } @$array;
 
-    $param->{entities} = $array;
+    $param->{fields} = $array;
 
     foreach my $name (qw( saved err_msg content_type_id id )) {
         $param->{$name} = $q->param($name) if $q->param($name);
@@ -598,7 +598,7 @@ sub save_content_data {
     }
     foreach my $f (@$fields) {
         my $content_field_type = $content_field_types->{ $f->{type} };
-        my $param_name         = 'entity-' . $f->{id};
+        my $param_name         = 'content-field-' . $f->{id};
         if ( my $ss_validator = $content_field_type->{ss_validator} ) {
             if ( !ref $ss_validator ) {
                 $ss_validator = MT->handler_to_coderef($ss_validator);
@@ -727,7 +727,7 @@ sub _get_form_data {
     }
     else {
         my $q = $app->param;
-        return $q->param( 'entity-' . $id );
+        return $q->param( 'content-field-' . $id );
     }
 }
 

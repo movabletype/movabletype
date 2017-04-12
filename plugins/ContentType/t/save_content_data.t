@@ -54,12 +54,12 @@ $content_type->save or die $content_type->errstr;
 subtest 'mode=save_content_data' => sub {
     my $app = _run_app(
         'MT::App::CMS',
-        {   __test_user                    => $admin,
-            __request_method               => 'POST',
-            __mode                         => 'save_content_data',
-            blog_id                        => $content_type->blog_id,
-            content_type_id                => $content_type->id,
-            'entity-' . $content_field->id => 'test input',
+        {   __test_user                           => $admin,
+            __request_method                      => 'POST',
+            __mode                                => 'save_content_data',
+            blog_id                               => $content_type->blog_id,
+            content_type_id                       => $content_type->id,
+            'content-field-' . $content_field->id => 'test input',
         },
     );
     my $out = delete $app->{__test_output};

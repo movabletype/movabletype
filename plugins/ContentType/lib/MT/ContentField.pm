@@ -54,13 +54,13 @@ sub permission {
     my $permitted_action
         = 'content_type:'
         . $content_type->unique_key
-        . '-entity:'
+        . '-content-field:'
         . $obj->unique_key;
     my $name = 'blog.' . $permitted_action;
     return +{
         $name => {
             group            => $content_type->permission_group,
-            label            => 'Manage "' . $obj->name . '" entity',
+            label            => 'Manage "' . $obj->name . '" field',
             permitted_action => { $permitted_action => 1 },
             $order ? ( order => $order ) : (),
         }
@@ -80,7 +80,7 @@ sub post_remove {
     my $perm_name
         = 'content_type:'
         . $content_type->unique_key
-        . '-entity:'
+        . '-content-field:'
         . $obj->unique_key;
     require MT::Role;
     my @roles = MT::Role->load_by_permission($perm_name);
