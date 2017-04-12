@@ -10,9 +10,9 @@ use MT::Test qw( :app :db );
 use ContentType::App::CMS;
 use MT::Author;
 use MT::ContentData;
+use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentType;
-use MT::Entity;
 
 local $ENV{REMOTE_ADDR}     = '127.0.0.1';
 local $ENV{HTTP_USER_AGENT} = 'mt_test';
@@ -28,8 +28,8 @@ $content_type->set_values(
 );
 $content_type->save or die $content_type->errstr;
 
-my $entity = MT::Entity->new;
-$entity->set_values(
+my $content_field = MT::ContentField->new;
+$content_field->set_values(
     {   blog_id         => $content_type->blog_id,
         content_type_id => $content_type->id,
         name            => 'single text',
@@ -37,29 +37,29 @@ $entity->set_values(
         unique_key      => ContentType::App::CMS::_generate_unique_key(),
     }
 );
-$entity->save or die $entity->errstr;
+$content_field->save or die $content_field->errstr;
 
-my $entities = [
-    {   id         => $entity->id,
+my $content_fields = [
+    {   id         => $content_field->id,
         label      => 0,
-        name       => $entity->name,
+        name       => $content_field->name,
         order      => 1,
-        type       => $entity->type,
-        unique_key => $entity->unique_key,
+        type       => $content_field->type,
+        unique_key => $content_field->unique_key,
     }
 ];
-$content_type->entities( JSON::encode_json($entities) );
+$content_type->entities( JSON::encode_json($content_fields) );
 $content_type->save or die $content_type->errstr;
 
 subtest 'mode=save_content_data' => sub {
     my $app = _run_app(
         'MT::App::CMS',
-        {   __test_user             => $admin,
-            __request_method        => 'POST',
-            __mode                  => 'save_content_data',
-            blog_id                 => $content_type->blog_id,
-            content_type_id         => $content_type->id,
-            'entity-' . $entity->id => 'test input',
+        {   __test_user                    => $admin,
+            __request_method               => 'POST',
+            __mode                         => 'save_content_data',
+            blog_id                        => $content_type->blog_id,
+            content_type_id                => $content_type->id,
+            'entity-' . $content_field->id => 'test input',
         },
     );
     my $out = delete $app->{__test_output};
@@ -70,13 +70,13 @@ subtest 'mode=save_content_data' => sub {
         { blog_id => $content_type->blog_id, ct_id => $content_type->id } );
     ok( $content_data, 'got content data' );
     is( $content_data->data,
-        '{"' . $entity->id . '":"test input"}',
+        '{"' . $content_field->id . '":"test input"}',
         'content data has content field data'
     );
 
     my $cf_idx = MT::ContentFieldIndex->load(
         {   content_type_id  => $content_type->id,
-            content_field_id => $entity->id,
+            content_field_id => $content_field->id,
             content_data_id  => $content_data->id,
         }
     );

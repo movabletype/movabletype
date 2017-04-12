@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use MT::ContentType;
-use MT::Entity;
+use MT::ContentField;
 use MT::ContentFieldIndex;
 
 sub make_listing_screens {
@@ -99,21 +99,20 @@ sub make_list_properties {
 
         my $json = $content_type->entities();
         require JSON;
-        my $entities = $json ? JSON::decode_json($json) : [];
+        my $fields = $json ? JSON::decode_json($json) : [];
         my $order = 200;
 
-        foreach my $entity (@$entities) {
-            my $idx_type   = $entity->{type};
-            my $entity_key = 'entity_' . $entity->{id};
-            $props->{$key}{$entity_key} = {
-                label     => $entity->{name},
-                display   => ( $entity->{label} ? 'force' : 'none' ),
-                order     => $order,
-                idx_type  => $idx_type,
-                entity_id => $entity->{id},
-                html      => (
-                    $entity->{label} ? ( sub { make_title_html(@_) } ) : ''
-                ),
+        foreach my $f (@$fields) {
+            my $idx_type  = $f->{type};
+            my $field_key = 'entity_' . $f->{id};
+            $props->{$key}{$field_key} = {
+                label            => $f->{name},
+                display          => ( $f->{label} ? 'force' : 'none' ),
+                order            => $order,
+                idx_type         => $idx_type,
+                content_field_id => $f->{id},
+                html =>
+                    ( $f->{label} ? ( sub { make_title_html(@_) } ) : '' ),
                 terms => sub { MT::ContentFieldIndex::make_terms(@_) },
                 filter_tmpl => '<mt:var name="filter_form_string">',
             };
@@ -150,13 +149,13 @@ sub make_name_html {
 }
 
 sub make_title_html {
-    my ( $prop, $obj, $app ) = @_;
+    my ( $prop, $content_data, $app ) = @_;
     require JSON;
-    my $content_type = MT::ContentType->load( $obj->ct_id );
+    my $content_type = MT::ContentType->load( $content_data->ct_id );
     my $json         = $content_type->entities();
-    my $entities     = $json ? JSON::decode_json($json) : [];
-    my @label        = grep { $_->{label} } @$entities;
-    my $hash         = JSON::decode_json( $obj->data );
+    my $fields       = $json ? JSON::decode_json($json) : [];
+    my @label        = grep { $_->{label} } @$fields;
+    my $hash         = JSON::decode_json( $content_data->data );
     my $label        = '';
     foreach my $key ( keys(%$hash) ) {
         $label = $hash->{$key} if $key == $label[0]->{id};
@@ -164,9 +163,9 @@ sub make_title_html {
     my $edit_link = $app->uri(
         mode => 'edit_content_data',
         args => {
-            blog_id         => $app->blog->id,
-            content_type_id => $obj->ct_id,
-            id              => $obj->id,
+            blog_id         => $content_data->blog->id,
+            content_type_id => $content_data->ct_id,
+            id              => $content_data->id,
         },
     );
     return qq{

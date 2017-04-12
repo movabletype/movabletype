@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::Entity;
+package MT::ContentField;
 
 use strict;
 use base qw( MT::Object );
@@ -26,7 +26,7 @@ __PACKAGE__->install_properties(
             'unique_key'              => 'blob',
         },
         indexes     => { blog_id => 1, content_type_id => 1 },
-        datasource  => 'entity',
+        datasource  => 'content_field',
         primary_key => 'id',
         audit       => 1,
         child_of    => ['MT::ContentType'],
@@ -34,11 +34,11 @@ __PACKAGE__->install_properties(
 );
 
 sub class_label {
-    MT->translate("Entity");
+    MT->translate("Content Field");
 }
 
 sub class_label_plural {
-    MT->translate("Entities");
+    MT->translate("Content Fields");
 }
 
 sub content_type {
@@ -98,4 +98,3 @@ sub post_remove {
 }
 
 1;
-

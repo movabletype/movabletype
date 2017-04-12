@@ -14,8 +14,8 @@ callbacks:
     # TODO: should add other callbacks. these are probably insufficient.
     MT::ContentType::post_save: $ContentType::MT::ContentType::post_save
     MT::ContentType::post_remove: $ContentType::MT::ContentType::post_remove
-    MT::Entity::post_save: $ContentType::MT::Entity::post_save
-    MT::Entity::post_remove: $ContentType::MT::Entity::post_remove
+    MT::ContentField::post_save: $ContentType::MT::ContentField::post_save
+    MT::ContentField::post_remove: $ContentType::MT::ContentField::post_remove
 
 applications:
     cms:
@@ -73,7 +73,7 @@ applications:
 object_types:
     content_type: MT::ContentType
     content_data: MT::ContentData
-    entity: MT::Entity
+    content_field: MT::ContentField
     content_field_index: MT::ContentFieldIndex
     cf_idx: MT::ContentFieldIndex
     objectcategory: MT::ObjectCategory
@@ -100,13 +100,13 @@ content_field_types:
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
-                require MT::Entity;
+                require MT::ContentField;
                 require MT::ContentType;
                 require MT::ContentData;
                 require JSON;
                 my @values = split ',', $value;
-                my $entity = MT::Entity->load($id);
-                my $ct_id  = $entity->related_content_type_id;
+                my $content_field = MT::ContentField->load($id);
+                my $ct_id  = $content_field->related_content_type_id;
                 my $ct     = MT::ContentType->load($ct_id);
                 my $json = $ct->entities();
                 my $entities = $json ? JSON::decode_json($json) : [];
@@ -305,9 +305,9 @@ content_field_types:
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
-                require MT::Entity;
-                my $entity  = MT::Entity->load($id);
-                my $options = $entity->options;
+                require MT::ContentField;
+                my $content_field  = MT::ContentField->load($id);
+                my $options = $content_field->options;
                 my $options_delimiter = quotemeta( $app->registry('content_field_types')->{single_select}{options_delimiter} || ',' );
                 my @options = split $options_delimiter, $options;
                 my $html = '<select name="entity-' . $id . '" id="entity-' . $id . '" class="select">';
@@ -327,9 +327,9 @@ content_field_types:
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
-                require MT::Entity;
-                my $entity  = MT::Entity->load($id);
-                my $options = $entity->options;
+                require MT::ContentField;
+                my $content_field = MT::ContentField->load($id);
+                my $options = $content_field->options;
                 my $options_delimiter = quotemeta( $app->registry('content_field_types')->{radio}{options_delimiter} || ',' );
                 my @options = split $options_delimiter, $options;
                 my $html = '';
@@ -351,9 +351,9 @@ content_field_types:
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
-                require MT::Entity;
-                my $entity  = MT::Entity->load($id);
-                my $options = $entity->options;
+                require MT::ContentField;
+                my $content_field = MT::ContentField->load($id);
+                my $options = $content_field->options;
                 my $options_delimiter = quotemeta( $app->registry('content_field_types')->{checkbox}{options_delimiter} || ',' );
                 my @options = split $options_delimiter, $options;
                 my @values  = split $options_delimiter, $value;

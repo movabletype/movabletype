@@ -42,18 +42,18 @@ sub _hdlr_contents {
 
     if ($parent) {
         my $e_json = $parent->entities();
-        my $entities = $e_json ? JSON::decode_json($e_json) : [];
+        my $fields = $e_json ? JSON::decode_json($e_json) : [];
 
         my $match = 0;
-        foreach my $entity (@$entities) {
-            my $entity_obj = MT::Entity->load( $entity->{id} );
-            if (   $entity->{type} eq 'content_type'
-                && $entity_obj->related_content_type_id == $content_type->id )
+        foreach my $f (@$fields) {
+            my $field_obj = MT::ContentField->load( $f->{id} );
+            if (   $f->{type} eq 'content_type'
+                && $field_obj->related_content_type_id == $content_type->id )
             {
                 $match++;
                 my $json     = $parent_data->data;
                 my $data     = $json ? JSON::decode_json($json) : [];
-                my $data_ids = $data->{ $entity->{id} };
+                my $data_ids = $data->{ $f->{id} };
                 @data_ids = split ',', $data_ids;
             }
         }
@@ -98,16 +98,16 @@ sub _hdlr_content {
     my $content      = $ctx->stash('content');
     my $content_type = $ctx->stash('content_type');
 
-    my $e_json   = $content_type->entities();
-    my $e        = $e_json ? JSON::decode_json($e_json) : [];
-    my @entities = sort { $a->{order} <=> $b->{order} } @$e;
+    my $e_json = $content_type->entities();
+    my $e      = $e_json ? JSON::decode_json($e_json) : [];
+    my @fields = sort { $a->{order} <=> $b->{order} } @$e;
 
     my $d_json = $content->data;
     my $datas = $d_json ? JSON::decode_json($d_json) : {};
 
     my $out = '';
-    foreach my $entity (@entities) {
-        my $data = $datas->{ $entity->{id} };
+    foreach my $f (@fields) {
+        my $data = $datas->{ $f->{id} };
         $out .= "<div>$data</div>";
     }
 
@@ -136,29 +136,31 @@ sub _hdlr_entity {
         return $ctx->error(
             MT->translate('\'type\' or \'name\' is required.') );
     }
-    my $entity = MT::Entity->load($terms);
+    my $content_field = MT::ContentField->load($terms);
 
     my $d_json = $content->data;
     my $datas = $d_json ? JSON::decode_json($d_json) : {};
 
     my $content_field_type
-        = MT->registry('content_field_types')->{ $entity->type };
+        = MT->registry('content_field_types')->{ $content_field->type };
     if ((      $content_field_type->{type} eq 'datetime'
-            || $entity->type eq 'date'
-            || $entity->type eq 'time'
+            || $content_field->type eq 'date'
+            || $content_field->type eq 'time'
         )
-        && $datas->{ $entity->id }
+        && $datas->{ $content_field->id }
         )
     {
         $args->{ts}
-            = $entity->type eq 'date' ? $datas->{ $entity->id } . '000000'
-            : $entity->type eq 'time' ? '19700101' . $datas->{ $entity->id }
-            : $datas->{ $entity->id }
+            = $content_field->type eq 'date'
+            ? $datas->{ $content_field->id } . '000000'
+            : $content_field->type eq 'time'
+            ? '19700101' . $datas->{ $content_field->id }
+            : $datas->{ $content_field->id }
             unless $args->{ts};
         return $ctx->build_date($args);
     }
     else {
-        return $datas->{ $entity->id };
+        return $datas->{ $content_field->id };
     }
 }
 

@@ -14,7 +14,7 @@ use Digest::SHA1 qw/ sha1_hex /;
 use Encode qw/ encode_utf8 /;
 
 use MT;
-use MT::Entity;
+use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentType;
 use MT::ContentData;
@@ -155,13 +155,13 @@ sub save_cfg_content_type {
     $content_type->name($name);
 
     my $json = $content_type->entities();
-    my $entities = $json ? JSON::decode_json($json) : [];
-    @$entities = map {
+    my $fields = $json ? JSON::decode_json($json) : [];
+    @$fields = map {
         $_->{order} = $q->param( 'order-' . $_->{id} );
         $_->{label} = $q->param('content-label') == $_->{id} ? 1 : 0;
         $_;
-    } @$entities;
-    $content_type->entities( JSON::encode_json($entities) );
+    } @$fields;
+    $content_type->entities( JSON::encode_json($fields) );
 
     my $unique_key
         = defined $content_type->unique_key && $content_type->unique_key
@@ -197,29 +197,29 @@ sub cfg_entity {
     my $cfg    = $app->config;
 
     my $blog_id                 = $q->param('blog_id');
-    my $entity_id               = $q->param('id');
-    my $entity_type             = $q->param('type') || '';
+    my $content_field_id        = $q->param('id');
+    my $content_field_type      = $q->param('type') || '';
     my $related_content_type_id = $q->param('related_content_type_id') || '';
 
     require MT::Promise;
     my $obj_promise = MT::Promise::delay(
         sub {
-            return undef unless $entity_id;
-            return MT::Entity->load( { id => $entity_id } )
-                || undef;
+            return undef unless $content_field_id;
+            return MT::ContentField->load($content_field_id) || undef;
         }
     );
 
-    my $entity = $obj_promise->force();
-    if ($entity) {
-        $param->{name}                    = $entity->name;
-        $param->{type}                    = $entity->type;
-        $param->{default}                 = $entity->default;
-        $param->{options}                 = $entity->options;
-        $param->{related_content_type_id} = $entity->related_content_type_id;
-        $param->{unique_key}              = $entity->unique_key;
-        $entity_type                      = $entity->type;
-        $related_content_type_id          = $entity->related_content_type_id;
+    my $content_field = $obj_promise->force();
+    if ($content_field) {
+        $param->{name}    = $content_field->name;
+        $param->{type}    = $content_field->type;
+        $param->{default} = $content_field->default;
+        $param->{options} = $content_field->options;
+        $param->{related_content_type_id}
+            = $content_field->related_content_type_id;
+        $param->{unique_key}     = $content_field->unique_key;
+        $content_field_type      = $content_field->type;
+        $related_content_type_id = $content_field->related_content_type_id;
     }
 
     my $content_field_types = $app->registry('content_field_types');
@@ -229,7 +229,7 @@ sub cfg_entity {
         $hash->{label}    = $content_field_types->{$_}{label};
         $hash->{options}  = $content_field_types->{$_}{options};
         $hash->{order}    = $content_field_types->{$_}{order};
-        $hash->{selected} = $_ eq $entity_type ? 1 : 0;
+        $hash->{selected} = $_ eq $content_field_type ? 1 : 0;
         $hash;
     } keys %$content_field_types;
     @type_array = sort { $a->{order} <=> $b->{order} } @type_array;
@@ -278,7 +278,7 @@ sub save_cfg_entity {
     my $content_type_id = scalar $q->param('content_type_id')
         or return $app->errtrans("Invalid request.");
 
-    my $entity_id               = $q->param('id');
+    my $content_field_id        = $q->param('id');
     my $name                    = $q->param('name');
     my $type                    = $q->param('type');
     my $default                 = $q->param('default');
@@ -291,7 +291,7 @@ sub save_cfg_entity {
             args   => {
                 blog_id         => $blog_id,
                 content_type_id => $content_type_id,
-                id              => $entity_id,
+                id              => $content_field_id,
                 err_msg         => $plugin->translate(
                     "Name \"[_1]\" is already used.", $name
                 ),
@@ -303,57 +303,61 @@ sub save_cfg_entity {
             }
         )
         )
-        if !$entity_id
-        && MT::Entity->count(
+        if !$content_field_id
+        && MT::ContentField->count(
         { content_type_id => $content_type_id, name => $name } );
 
-    my $entity
-        = $entity_id
-        ? MT::Entity->load($entity_id)
-        : MT::Entity->new();
+    my $content_field
+        = $content_field_id
+        ? MT::ContentField->load($content_field_id)
+        : MT::ContentField->new();
 
-    $entity->blog_id($blog_id);
-    $entity->content_type_id($content_type_id);
-    $entity->name($name);
-    $entity->type($type);
-    $entity->options($options);
-    $entity->related_content_type_id( $related_content_type_id || 0 );
+    $content_field->blog_id($blog_id);
+    $content_field->content_type_id($content_type_id);
+    $content_field->name($name);
+    $content_field->type($type);
+    $content_field->options($options);
+    $content_field->related_content_type_id( $related_content_type_id || 0 );
 
     my $unique_key
-        = defined $entity->unique_key && $entity->unique_key
-        ? $entity->unique_key
+        = defined $content_field->unique_key && $content_field->unique_key
+        ? $content_field->unique_key
         : _generate_unique_key($name);
-    $entity->unique_key($unique_key)
-        unless $entity->unique_key;
+    $content_field->unique_key($unique_key)
+        unless $content_field->unique_key;
 
-    $entity->save
+    $content_field->save
         or return $app->error(
-        $plugin->translate( "Saving entity failed: [_1]", $entity->errstr ) );
+        $plugin->translate(
+            "Saving content field failed: [_1]",
+            $content_field->errstr
+        )
+        );
 
     my $content_type = MT::ContentType->load($content_type_id);
     my $json         = $content_type->entities();
-    my $entities     = $json ? JSON::decode_json($json) : [];
-    if ( grep { $_->{id} == $entity->id } @$entities ) {
-        @$entities = map {
-            if ( $_->{id} == $entity->id ) {
+    my $fields       = $json ? JSON::decode_json($json) : [];
+    if ( grep { $_->{id} == $content_field->id } @$fields ) {
+        @$fields = map {
+            if ( $_->{id} == $content_field->id ) {
                 $_->{name} = $name;
                 $_->{type} = $type;
             }
             $_;
-        } @$entities;
+        } @$fields;
     }
     else {
-        push @$entities,
+        push @$fields,
             {
-            id         => $entity->id,
+            id         => $content_field->id,
             name       => $name,
             type       => $type,
-            order      => scalar(@$entities) + 1,
-            label      => ( scalar(@$entities) ? 0 : 1 ),
-            unique_key => $entity->unique_key,
+            order      => scalar(@$fields) + 1,
+            label      => ( scalar(@$fields) ? 0 : 1 ),
+            unique_key => $content_field->unique_key,
             };
     }
-    $content_type->entities( JSON::encode_json($entities) );
+    $content_type->entities( JSON::encode_json($fields) );
 
     $content_type->save
         or return $app->error(
@@ -369,7 +373,7 @@ sub save_cfg_entity {
             args   => {
                 blog_id         => $blog_id,
                 content_type_id => $content_type_id,
-                id              => $entity->id,
+                id              => $content_field->id,
                 saved           => 1,
             }
         )
@@ -395,19 +399,23 @@ sub delete_entity {
         or return $app->errtrans("Invalid request.");
     my $content_type_id = scalar $q->param('content_type_id')
         or return $app->errtrans("Invalid request.");
-    my $entity_id = scalar $q->param('id')
+    my $content_field_id = scalar $q->param('id')
         or return $app->errtrans("Invalid request.");
 
-    my $entity = MT::Entity->load($entity_id);
-    $entity->remove()
+    my $content_field = MT::ContentField->load($content_field_id);
+    $content_field->remove()
         or return $app->error(
-        $plugin->translate( "Remove entity failed: [_1]", $entity->errstr ) );
+        $plugin->translate(
+            "Remove content field failed: [_1]",
+            $content_field->errstr
+        )
+        );
 
     my $content_type = MT::ContentType->load($content_type_id);
     my $json         = $content_type->entities();
-    my $entities     = JSON::decode_json($json);
-    @$entities = grep { $_->{id} ne $entity_id } @$entities;
-    $content_type->entities( JSON::encode_json($entities) );
+    my $fields       = JSON::decode_json($json);
+    @$fields = grep { $_->{id} ne $content_field_id } @$fields;
+    $content_type->entities( JSON::encode_json($fields) );
 
     $content_type->save
         or return $app->error(
@@ -582,28 +590,28 @@ sub save_content_data {
 
     my $content_type = MT::ContentType->load($content_type_id);
     my $json         = $content_type->entities;
-    my $entities     = $json ? JSON::decode_json($json) : [];
+    my $fields       = $json ? JSON::decode_json($json) : [];
 
     my $content_data_id = scalar $q->param('id');
 
     my $content_field_types = $app->registry('content_field_types');
 
     my $data = {};
-    foreach my $entity (@$entities) {
-        my $content_field_type = $content_field_types->{ $entity->{type} };
-        $data->{ $entity->{id} }
-            = _get_form_data( $app, $content_field_type, $entity->{id} );
+    foreach my $f (@$fields) {
+        my $content_field_type = $content_field_types->{ $f->{type} };
+        $data->{ $f->{id} }
+            = _get_form_data( $app, $content_field_type, $f->{id} );
     }
-    foreach my $entity (@$entities) {
-        my $content_field_type = $content_field_types->{ $entity->{type} };
-        my $param_name         = 'entity-' . $entity->{id};
+    foreach my $f (@$fields) {
+        my $content_field_type = $content_field_types->{ $f->{type} };
+        my $param_name         = 'entity-' . $f->{id};
         if ( my $ss_validator = $content_field_type->{ss_validator} ) {
             if ( !ref $ss_validator ) {
                 $ss_validator = MT->handler_to_coderef($ss_validator);
             }
             if ( 'CODE' eq ref $ss_validator ) {
                 $app->error(undef);
-                my $result = $ss_validator->( $app, $entity->{id} );
+                my $result = $ss_validator->( $app, $f->{id} );
                 if ( my $err = $app->errstr ) {
                     $data->{blog_id}         = $blog_id;
                     $data->{content_type_id} = $content_type_id;
@@ -637,17 +645,16 @@ sub save_content_data {
         )
         );
 
-    foreach my $entity (@$entities) {
-        my $content_field_type = $content_field_types->{ $entity->{type} };
-        my $value
-            = _get_form_data( $app, $content_field_type, $entity->{id} );
+    foreach my $f (@$fields) {
+        my $content_field_type = $content_field_types->{ $f->{type} };
+        my $value = _get_form_data( $app, $content_field_type, $f->{id} );
 
         my $cf_idx
             = $content_data_id
             ? MT::ContentFieldIndex->load(
             {   content_type_id  => $content_type_id,
                 content_data_id  => $content_data->id,
-                content_field_id => $entity->{id},
+                content_field_id => $f->{id},
             }
             )
             : MT::ContentFieldIndex->new();
@@ -655,7 +662,7 @@ sub save_content_data {
         $cf_idx->content_type_id($content_type_id);
         $cf_idx->content_data_id( $content_data->id );
 
-        my $data_type = $content_field_types->{ $entity->{type} }{data_type};
+        my $data_type = $content_field_types->{ $f->{type} }{data_type};
         if ( $data_type eq 'varchar' ) {
             $cf_idx->value_varchar($value);
         }
@@ -672,7 +679,7 @@ sub save_content_data {
             $cf_idx->value_float($value);
         }
 
-        $cf_idx->content_field_id( $entity->{id} );
+        $cf_idx->content_field_id( $f->{id} );
         $cf_idx->save
             or return $app->error(
             $plugin->translate(

@@ -24,9 +24,10 @@ __PACKAGE__->install_properties(
         datasource  => 'content_type',
         primary_key => 'id',
         audit       => 1,
-        child_of => [ 'MT::Blog', 'MT::Website' ],
-        child_classes =>
-            [ 'MT::ContentData', 'MT::Entity', 'MT::ContentFieldIndex' ],
+        child_of      => [ 'MT::Blog', 'MT::Website' ],
+        child_classes => [
+            'MT::ContentData', 'MT::ContentField', 'MT::ContentFieldIndex'
+        ],
     }
 );
 
@@ -49,10 +50,11 @@ sub parents {
 
 sub entities_objs {
     my $obj = shift;
-    my $entities = eval { JSON::decode_json( $obj->entities ) } || [];
-    my @entities_objs
-        = map { MT->model('entity')->load( $_->{id} ) } @{$entities};
-    return \@entities_objs;
+    my $fields = eval { JSON::decode_json( $obj->entities ) } || [];
+    my @fields_objs
+        = map { MT->model('content_field')->load( $_->{id} || 0 ) }
+        @{$fields};
+    return \@fields_objs;
 }
 
 sub permissions {

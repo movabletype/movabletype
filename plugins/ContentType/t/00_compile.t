@@ -19,7 +19,7 @@ use_ok('ContentType::Permission');
 use_ok('ContentType::Tags');
 
 use_ok('MT::ContentData');
-use_ok('MT::Entity');
+use_ok('MT::ContentField');
 use_ok('MT::ContentFieldIndex');
 use_ok('MT::ObjectCategory');
 
