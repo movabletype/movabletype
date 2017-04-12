@@ -26,7 +26,7 @@ __PACKAGE__->install_properties(
             'unique_key'              => 'blob',
         },
         indexes     => { blog_id => 1, content_type_id => 1 },
-        datasource  => 'content_field',
+        datasource  => 'cf',
         primary_key => 'id',
         audit       => 1,
         child_of    => ['MT::ContentType'],
