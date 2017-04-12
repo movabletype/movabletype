@@ -110,9 +110,9 @@ content_field_types:
                 my $content_field = MT::ContentField->load($id);
                 my $ct_id  = $content_field->related_content_type_id;
                 my $ct     = MT::ContentType->load($ct_id);
-                my $json = $ct->entities();
-                my $entities = $json ? JSON::decode_json($json) : [];
-                my ($label_entity) = grep { $_->{label} } @$entities;
+                my $json = $ct->fields;
+                my $fields = $json ? JSON::decode_json($json) : [];
+                my ($label_field) = grep { $_->{label} } @$fields;
                 my @ct_datas
                     = MT::ContentData->load( { content_type_id => $ct_id } );
                 my $html = '';
@@ -121,7 +121,7 @@ content_field_types:
                     my $ct_data_id = $ct_data->id;
                     my $json = $ct_data->data;
                     my $datas = $json ? JSON::decode_json($json) : [];
-                    my $label = $datas->{ $label_entity->{id} };
+                    my $label = $datas->{ $label_field->{id} };
                     $html .= '<div>';
                     $html .= "<input type=\"checkbox\" name=\"entity-$id\" id=\"entity-$id-$num\" value=\"$ct_data_id\"";
                     $html .= ( grep { $_ eq $ct_data_id } @values ) ? ' checked="checked"' : '';

@@ -18,7 +18,7 @@ __PACKAGE__->install_properties(
             'name'       => 'string(255)',
             'version'    => 'integer',
             'unique_key' => 'blob',
-            'entities'   => 'blob',
+            'fields'     => 'blob',
         },
         indexes     => { blog_id => 1 },
         datasource  => 'content_type',
@@ -48,18 +48,18 @@ sub parents {
     };
 }
 
-sub entities_objs {
+sub field_objs {
     my $obj = shift;
-    my $fields = eval { JSON::decode_json( $obj->entities ) } || [];
-    my @fields_objs
+    my $fields = eval { JSON::decode_json( $obj->fields ) } || [];
+    my @field_objs
         = map { MT->model('content_field')->load( $_->{id} || 0 ) }
         @{$fields};
-    return \@fields_objs;
+    return \@field_objs;
 }
 
 sub permissions {
     my $obj = shift;
-    return +{ %{ $obj->permission }, %{ $obj->entity_permissions } };
+    return +{ %{ $obj->permission }, %{ $obj->field_permissions } };
 }
 
 sub permission {
@@ -76,12 +76,12 @@ sub permission {
     };
 }
 
-sub entity_permissions {
+sub field_permissions {
     my $obj = shift;
     my %permissions;
     my $order = 200;
-    for my $e ( @{ $obj->entities_objs } ) {
-        %permissions = ( %permissions, %{ $e->permission($order) } );
+    for my $f ( @{ $obj->field_objs } ) {
+        %permissions = ( %permissions, %{ $f->permission($order) } );
         $order += 100;
     }
     return \%permissions;

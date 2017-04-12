@@ -97,7 +97,7 @@ sub make_list_properties {
             },
         };
 
-        my $json = $content_type->entities();
+        my $json = $content_type->fields;
         require JSON;
         my $fields = $json ? JSON::decode_json($json) : [];
         my $order = 200;
@@ -153,7 +153,7 @@ sub make_title_html {
     require JSON;
     my $content_type
         = MT::ContentType->load( $content_data->content_type_id );
-    my $json   = $content_type->entities();
+    my $json   = $content_type->fields;
     my $fields = $json ? JSON::decode_json($json) : [];
     my @label  = grep { $_->{label} } @$fields;
     my $hash   = JSON::decode_json( $content_data->data );

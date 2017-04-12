@@ -41,8 +41,8 @@ sub _hdlr_contents {
     my $e_hash = {};
 
     if ($parent) {
-        my $e_json = $parent->entities();
-        my $fields = $e_json ? JSON::decode_json($e_json) : [];
+        my $f_json = $parent->fields;
+        my $fields = $f_json ? JSON::decode_json($f_json) : [];
 
         my $match = 0;
         foreach my $f (@$fields) {
@@ -99,9 +99,9 @@ sub _hdlr_content {
     my $content      = $ctx->stash('content');
     my $content_type = $ctx->stash('content_type');
 
-    my $e_json = $content_type->entities();
-    my $e      = $e_json ? JSON::decode_json($e_json) : [];
-    my @fields = sort { $a->{order} <=> $b->{order} } @$e;
+    my $f_json = $content_type->fields;
+    my $f      = $f_json ? JSON::decode_json($f_json) : [];
+    my @fields = sort { $a->{order} <=> $b->{order} } @$f;
 
     my $d_json = $content->data;
     my $datas = $d_json ? JSON::decode_json($d_json) : {};

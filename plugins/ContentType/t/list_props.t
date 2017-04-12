@@ -39,7 +39,7 @@ $content_field->set_values(
 );
 $content_field->save or die $content_field->errstr;
 
-my $content_fields = [
+my $fields = [
     {   id         => $content_field->id,
         label      => 1,
         name       => $content_field->name,
@@ -48,7 +48,7 @@ my $content_fields = [
         unique_key => $content_field->unique_key,
     }
 ];
-$content_type->entities( JSON::encode_json($content_fields) );
+$content_type->fields( JSON::encode_json($fields) );
 $content_type->save or die $content_type->errstr;
 
 subtest 'make_list_properties' => sub {
