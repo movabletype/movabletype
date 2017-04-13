@@ -510,15 +510,18 @@ sub edit_content_data {
     @$array = map {
         my $e_unique_key = $_->{unique_key};
         $_->{can_edit} = 1
-            if $app->permissions->can_do(
-            'content_type:' . $ct_unique_key . '-content_field:' . $e_unique_key );
+            if $app->permissions->can_do( 'content_type:'
+                . $ct_unique_key
+                . '-content_field:'
+                . $e_unique_key );
         $_->{content_field_id} = $_->{id};
         delete $_->{id};
 
         $_->{value}
-            = $q->param( $_->{content_field_id} ) ? $q->param( $_->{content_field_id} )
-            : $content_data_id             ? $data->{ $_->{content_field_id} }
-            :                                '';
+            = $q->param( $_->{content_field_id} )
+            ? $q->param( $_->{content_field_id} )
+            : $content_data_id ? $data->{ $_->{content_field_id} }
+            :                    '';
 
         my $content_field_type = $content_field_types->{ $_->{type} };
         if ( my $field_html = $content_field_type->{field_html} ) {
@@ -532,7 +535,8 @@ sub edit_content_data {
                     }
                     if ( 'CODE' eq ref $field_html_params ) {
                         $field_html_params = $field_html_params->(
-                            $app, $_->{content_field_id}, $_->{value}
+                            $app, $_->{content_field_id},
+                            $_->{value}
                         );
                     }
                     $field_html = $plugin->load_tmpl( $field_html,
@@ -544,7 +548,8 @@ sub edit_content_data {
             }
             if ( 'CODE' eq ref $field_html ) {
                 $_->{field_html}
-                    = $field_html->( $app, $_->{content_field_id}, $_->{value} );
+                    = $field_html->( $app, $_->{content_field_id},
+                    $_->{value} );
             }
             else {
                 $_->{field_html} = $field_html;
@@ -659,8 +664,8 @@ sub save_content_data {
         if ( $data_type eq 'varchar' ) {
             $cf_idx->value_varchar($value);
         }
-        elsif ( $data_type eq 'varchar' ) {
-            $cf_idx->value_text($value);
+        elsif ( $data_type eq 'blob' ) {
+            $cf_idx->value_blob($value);
         }
         elsif ( $data_type eq 'datetime' ) {
             $cf_idx->value_datetime($value);
