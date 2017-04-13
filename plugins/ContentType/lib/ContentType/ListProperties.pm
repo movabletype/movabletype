@@ -9,6 +9,7 @@ package ContentType::ListProperties;
 use strict;
 use warnings;
 
+use MT;
 use MT::ContentType;
 use MT::ContentField;
 use MT::ContentFieldIndex;
@@ -83,6 +84,8 @@ sub make_list_properties {
         },
     };
 
+    my $content_field_types = MT->registry('content_field_types');
+
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
         my $key = 'content_data_' . $content_type->id;
@@ -102,8 +105,28 @@ sub make_list_properties {
         my $order = 200;
 
         foreach my $f ( @{ $content_type->fields } ) {
-            my $idx_type  = $f->{type};
-            my $field_key = 'content_field_' . $f->{id};
+            my $idx_type   = $f->{type};
+            my $field_key  = 'content_field_' . $f->{id};
+            my $field_type = $content_field_types->{$idx_type} or next;
+
+            my $default_sort_prop = sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                $args->{joins} ||= [];
+                push @{ $args->{joins} },
+                    MT->model('content_field_index')->join_on(
+                    undef,
+                    {   content_type_id  => \'= cd_content_type_id',
+                        content_data_id  => \'= cd_id',
+                        content_field_id => $f->{id},
+                    },
+                    {   sort      => 'value_' . $field_type->{data_type},
+                        direction => delete $args->{direction},
+                    },
+                    );
+                return;
+            };
+
             $props->{$key}{$field_key} = {
                 label            => $f->{name},
                 display          => ( $f->{label} ? 'force' : 'none' ),
@@ -112,9 +135,40 @@ sub make_list_properties {
                 content_field_id => $f->{id},
                 html =>
                     ( $f->{label} ? ( sub { make_title_html(@_) } ) : '' ),
-                terms => sub { MT::ContentFieldIndex::make_terms(@_) },
+                sort        => $default_sort_prop,
+                terms       => sub { MT::ContentFieldIndex::make_terms(@_) },
                 filter_tmpl => '<mt:var name="filter_form_string">',
             };
+
+            # set html properties of content field type to list_properties
+            if ( exists $field_type->{bulk_html} ) {
+                $props->{$key}{$field_key}{bulk_html}
+                    = $field_type->{bulk_html};
+            }
+            if ( exists $field_type->{html} ) {
+                $props->{$key}{$field_key}{html} = $field_type->{html};
+            }
+            if ( exists $field_type->{html_link} ) {
+                $props->{$key}{$field_key}{html_link}
+                    = $field_type->{html_link};
+            }
+            if ( exists $field_type->{raw} ) {
+                $props->{$key}{$field_key}{raw} = $field_type->{raw};
+            }
+
+            # set sort properties of content field type to list_properties
+            if ( exists $field_type->{bulk_sort} ) {
+                $props->{$key}{$field_key}{bulk_sort}
+                    = $field_type->{bulk_sort};
+            }
+            if ( exists $field_type->{sort} ) {
+                $props->{$key}{$field_key}{sort} = $field_type->{sort};
+            }
+            if ( exists $field_type->{sort_method} ) {
+                $props->{$key}{$field_key}{sort_method}
+                    = $field_type->{sort_method};
+            }
+
             $order++;
         }
     }

@@ -10,8 +10,6 @@ use strict;
 use warnings;
 
 use JSON ();
-use Digest::SHA1 qw/ sha1_hex /;
-use Encode qw/ encode_utf8 /;
 
 use MT;
 use MT::ContentField;
@@ -158,13 +156,6 @@ sub save_cfg_content_type {
         $_;
     } @{ $content_type->fields };
     $content_type->fields( \@fields );
-
-    my $unique_key
-        = defined $content_type->unique_key && $content_type->unique_key
-        ? $content_type->unique_key
-        : _generate_unique_key($name);
-    $content_type->unique_key($unique_key)
-        unless $content_type->unique_key;
 
     $content_type->save
         or return $app->error(
@@ -317,13 +308,6 @@ sub save_cfg_content_field {
     $content_field->type($type);
     $content_field->options($options);
     $content_field->related_content_type_id( $related_content_type_id || 0 );
-
-    my $unique_key
-        = defined $content_field->unique_key && $content_field->unique_key
-        ? $content_field->unique_key
-        : _generate_unique_key($name);
-    $content_field->unique_key($unique_key)
-        unless $content_field->unique_key;
 
     $content_field->save
         or return $app->error(
@@ -643,50 +627,6 @@ sub save_content_data {
         )
         );
 
-    foreach my $f (@$fields) {
-        my $content_field_type = $content_field_types->{ $f->{type} };
-        my $value = _get_form_data( $app, $content_field_type, $f->{id} );
-
-        my $cf_idx
-            = $content_data_id
-            ? MT::ContentFieldIndex->load(
-            {   content_type_id  => $content_type_id,
-                content_data_id  => $content_data->id,
-                content_field_id => $f->{id},
-            }
-            )
-            : MT::ContentFieldIndex->new();
-        $cf_idx = MT::ContentFieldIndex->new() unless $cf_idx;
-        $cf_idx->content_type_id($content_type_id);
-        $cf_idx->content_data_id( $content_data->id );
-
-        my $data_type = $content_field_types->{ $f->{type} }{data_type};
-        if ( $data_type eq 'varchar' ) {
-            $cf_idx->value_varchar($value);
-        }
-        elsif ( $data_type eq 'blob' ) {
-            $cf_idx->value_blob($value);
-        }
-        elsif ( $data_type eq 'datetime' ) {
-            $cf_idx->value_datetime($value);
-        }
-        elsif ( $data_type eq 'integer' ) {
-            $cf_idx->value_integer($value);
-        }
-        elsif ( $data_type eq 'float' ) {
-            $cf_idx->value_float($value);
-        }
-
-        $cf_idx->content_field_id( $f->{id} );
-        $cf_idx->save
-            or return $app->error(
-            $plugin->translate(
-                "Saving content field index failed: [_1]",
-                $cf_idx->errstr
-            )
-            );
-    }
-
     return $app->redirect(
         $app->uri(
             'mode' => 'edit_content_data',
@@ -706,14 +646,6 @@ sub cms_pre_load_filtered_list {
     $object_ds =~ /content_data_(\d+)/;
     my $content_type_id = $1;
     $load_options->{terms}{content_type_id} = $content_type_id;
-}
-
-sub _generate_unique_key {
-    my $name = shift || 'base_name';
-    my $key = join( $ENV{'REMOTE_ADDR'},
-        $ENV{'HTTP_USER_AGENT'}, time, $$, rand(9999), encode_utf8($name) );
-
-    return ( sha1_hex($key) );
 }
 
 sub _get_form_data {

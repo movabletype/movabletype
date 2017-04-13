@@ -12,17 +12,12 @@ use MT::ContentData;
 use MT::ContentType;
 use MT::ContentField;
 use MT::ContentFieldIndex;
-use ContentType::App::CMS;
 use ContentType::ListProperties;
-
-local $ENV{REMOTE_ADDR}     = '127.0.0.1';
-local $ENV{HTTP_USER_AGENT} = 'mt_test';
 
 my $content_type = MT::ContentType->new;
 $content_type->set_values(
-    {   blog_id    => 1,
-        name       => 'test content type',
-        unique_key => ContentType::App::CMS::_generate_unique_key(),
+    {   blog_id => 1,
+        name    => 'test content type',
     }
 );
 $content_type->save or die $content_type->errstr;
@@ -33,7 +28,6 @@ $content_field->set_values(
         content_type_id => $content_type->id,
         name            => 'single text',
         type            => 'single_line_text',
-        unique_key      => ContentType::App::CMS::_generate_unique_key(),
     }
 );
 $content_field->save or die $content_field->errstr;

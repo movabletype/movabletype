@@ -10,6 +10,7 @@ use strict;
 use base qw( MT::Object );
 
 use MT::ContentType;
+use MT::ContentType::UniqueKey;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -39,6 +40,23 @@ sub class_label {
 
 sub class_label_plural {
     MT->translate("Content Fields");
+}
+
+sub unique_key {
+    my $self = shift;
+    $self->column('unique_key');
+}
+
+sub save {
+    my $self = shift;
+
+    unless ( $self->id ) {
+        my $unique_key
+            = MT::ContentType::UniqueKey::generate_unique_key( $self->name );
+        $self->column( 'unique_key', $unique_key );
+    }
+
+    $self->SUPER::save(@_);
 }
 
 sub content_type {
