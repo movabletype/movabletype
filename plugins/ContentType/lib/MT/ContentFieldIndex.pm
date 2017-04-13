@@ -16,7 +16,7 @@ __PACKAGE__->install_properties(
             'content_field_id' => 'integer',
             'content_data_id'  => 'integer',
             'value_varchar'    => 'string(255)',
-            'value_text'       => 'blob',
+            'value_blob'       => 'blob',
             'value_datetime'   => 'datetime',
             'value_integer'    => 'integer',
             'value_float'      => 'float',
