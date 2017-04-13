@@ -9,6 +9,7 @@ package ContentType::ListProperties;
 use strict;
 use warnings;
 
+use MT;
 use MT::ContentType;
 use MT::ContentField;
 use MT::ContentFieldIndex;
@@ -83,6 +84,8 @@ sub make_list_properties {
         },
     };
 
+    my $content_field_types = MT->registry('content_field_types');
+
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
         my $key = 'content_data_' . $content_type->id;
@@ -102,8 +105,28 @@ sub make_list_properties {
         my $order = 200;
 
         foreach my $f ( @{ $content_type->fields } ) {
-            my $idx_type  = $f->{type};
-            my $field_key = 'content_field_' . $f->{id};
+            my $idx_type   = $f->{type};
+            my $field_key  = 'content_field_' . $f->{id};
+            my $field_type = $content_field_types->{$idx_type} or next;
+
+            my $default_sort_prop = sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                $args->{joins} ||= [];
+                push @{ $args->{joins} },
+                    MT->model('content_field_index')->join_on(
+                    undef,
+                    {   content_type_id  => \'= cd_content_type_id',
+                        content_data_id  => \'= cd_id',
+                        content_field_id => $f->{id},
+                    },
+                    {   sort      => 'value_' . $field_type->{data_type},
+                        direction => delete $args->{direction},
+                    },
+                    );
+                return;
+            };
+
             $props->{$key}{$field_key} = {
                 label            => $f->{name},
                 display          => ( $f->{label} ? 'force' : 'none' ),
@@ -112,7 +135,8 @@ sub make_list_properties {
                 content_field_id => $f->{id},
                 html =>
                     ( $f->{label} ? ( sub { make_title_html(@_) } ) : '' ),
-                terms => sub { MT::ContentFieldIndex::make_terms(@_) },
+                sort        => $default_sort_prop,
+                terms       => sub { MT::ContentFieldIndex::make_terms(@_) },
                 filter_tmpl => '<mt:var name="filter_form_string">',
             };
             $order++;
