@@ -99,6 +99,16 @@ content_field_types:
         label: Content Type
         data_type: varcahr
         order: 10
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - multiple
+            - can_add
+            - max
+            - min
+            - listing_filter
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
@@ -138,22 +148,60 @@ content_field_types:
         label: Single Line Text
         data_type: varchar
         order: 20
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - min_length
+            - max_length
+            - initial_value
     multi_line_text:
         label: Multi Line Text
         data_type: blob
         order: 30
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - initial_value
+            - input_format
     integer:
         label: Integer
         data_type: integer
         order: 40
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - min_value
+            - max_value
+            - initial_value
     float:
         label: Float
         data_type: float
         order: 50
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - min_value
+            - max_value
+            - decimal_places
+            - initial_value
     url:
         label: URL
         data_type: varchar
         order: 60
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - initial_value
         ss_validator: |
             sub {
                 my ( $app, $id) = @_;
@@ -171,6 +219,12 @@ content_field_types:
         label: Date and Time
         data_type: datetime
         order: 70
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - initial_value
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
@@ -218,6 +272,12 @@ content_field_types:
         label: Date
         data_type: varchar
         order: 80
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - initial_value
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
@@ -257,6 +317,12 @@ content_field_types:
         label: Time
         data_type: varchar
         order: 90
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - initial_value
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
@@ -297,8 +363,17 @@ content_field_types:
     single_select:
         label: Single Select
         data_type: varchar
-        options: 1
         order: 100
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - multiple
+            - max
+            - min
+            - values
+            - initial_value
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
@@ -319,8 +394,14 @@ content_field_types:
     radio:
         label: Radio
         data_type: varchar
-        options: 1
         order: 110
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - values
+            - initial_value
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
@@ -343,8 +424,17 @@ content_field_types:
     checkbox:
         label: Checkbox
         data_type: varchar
-        options: 1
         order: 120
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - multiple
+            - max
+            - min
+            - values
+            - initial_value
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
@@ -376,6 +466,16 @@ content_field_types:
         label: Asset
         data_type: varchar
         order: 130
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - multiple
+            - can_upload
+            - max
+            - min
+            - listing_filter
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
@@ -425,14 +525,71 @@ content_field_types:
                 }
                 return $asset_ids;
             }
+    audio:
+        label: Audio
+        data_type: varchar
+        order: 140
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - multiple
+            - can_upload
+            - max
+            - min
+            - listing_filter
+    video:
+        label: Video
+        data_type: varchar
+        order: 150
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - multiple
+            - can_upload
+            - max
+            - min
+            - listing_filter
+    image:
+        label: Image
+        data_type: varchar
+        order: 160
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - multiple
+            - can_upload
+            - max
+            - min
+            - listing_filter
     embed_text:
         label: Embed Text
         data_type: blob
-        order: 140
+        order: 170
+        options:
+            - label
+            - hint
+            - required
+            - display
     category:
         label: Category
         data_type: varchar
-        order: 150
+        order: 180
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - multiple
+            - can_add
+            - max
+            - min
+            - category_list
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
@@ -498,7 +655,17 @@ content_field_types:
     tag:
         label: Tag
         data_type: tag
-        order: 160
+        order: 190
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - multiple
+            - can_add
+            - max
+            - min
+            - initial_value
         field_html: |
             sub {
                 my ( $app, $id, $value )  = @_;
@@ -566,3 +733,22 @@ content_field_types:
                 }
                 return $tag_names;
             }
+    list:
+        label: list
+        data_type: blob
+        order: 200
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - bullet_or_numbered
+    table:
+        label: Table
+        data_type: blob
+        order: 210 
+        options:
+            - label
+            - hint
+            - required
+            - display
