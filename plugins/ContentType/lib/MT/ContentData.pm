@@ -9,17 +9,19 @@ package MT::ContentData;
 use strict;
 use base qw( MT::Object );
 
+use JSON ();
+
 use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'      => 'integer not null auto_increment',
-            'blog_id' => 'integer not null',
-            'ct_id'   => 'integer not null',
-            'data'    => 'blob',
+            'id'              => 'integer not null auto_increment',
+            'blog_id'         => 'integer not null',
+            'content_type_id' => 'integer not null',
+            'data'            => 'blob',
         },
-        indexes     => { ct_id => 1 },
-        datasource  => 'content_data',
+        indexes     => { content_type_id => 1 },
+        datasource  => 'cd',
         primary_key => 'id',
         audit       => 1,
         child_of    => ['MT::ContentType'],
@@ -32,6 +34,18 @@ sub class_label {
 
 sub class_label_plural {
     MT->translate("Content Data");
+}
+
+sub data {
+    my $obj = shift;
+    if (@_) {
+        my %data = ref $_[0] eq 'HASH' ? %{ $_[0] } : @_;
+        my $json = eval { JSON::encode_json( \%data ) } || '{}';
+        $obj->column( 'data', $json );
+    }
+    else {
+        eval { JSON::decode_json( $obj->column('data') ) } || {};
+    }
 }
 
 sub blog {

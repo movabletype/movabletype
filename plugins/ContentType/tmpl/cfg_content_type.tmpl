@@ -61,38 +61,38 @@
 
   </mtapp:settinggroup>
 
-  <mtapp:settinggroup id="entities">
+  <mtapp:settinggroup id="content-fields">
 
-    <h2><__trans phrase="Entities"></h2>
+    <h2><__trans phrase="Content Fields"></h2>
 
       <div id="add-block" class="icon-create icon-left">
-        <span class="item-add"><a href="javascript:void(0);" class="add-link<mt:unless name="id"> disabled" disabled="disabled</mt:unless>"><__trans phrase="Add entity"></a></span>
+        <span class="item-add"><a href="javascript:void(0);" class="add-link<mt:unless name="id"> disabled" disabled="disabled</mt:unless>"><__trans phrase="Add cotent field"></a></span>
       </div>
 
       <div id="sortable" class="sortable">
-      <mt:loop name="entities">
+      <mt:loop name="fields">
       <mtapp:setting
-         id="entity-<mt:var name="entity_id">"
+         id="content-field-<mt:var name="content_field_id">"
          class="sort-enabled"
          label="<mt:var name="name">"
          label_class="top-label">
         <ul class="action-link-list">
           <li>
-            <input type="radio" name="content-label" id="content-label-<mt:var name="entity_id">" value="<mt:var name="entity_id">"<mt:if name="label"> checked="checked"</mt:if> />
-            <label for="content-label-<mt:var name="entity_id">">Label for list screen</label>
+            <input type="radio" name="content-label" id="content-label-<mt:var name="content_field_id">" value="<mt:var name="content_field_id">"<mt:if name="label"> checked="checked"</mt:if> />
+            <label for="content-label-<mt:var name="content_field_id">">Label for list screen</label>
           </li>
           <li>
-            <a href="<mt:var name="mt_url">?__mode=cfg_entity&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">&id=<mt:var name="entity_id">" class="icon-left icon-edit">
+            <a href="<mt:var name="mt_url">?__mode=cfg_content_field&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">&id=<mt:var name="content_field_id">" class="icon-left icon-edit">
               <__trans phrase="Edit">
             </a>
           </li>
           <li>
-            <a href="<mt:var name="mt_url">?__mode=delete_entity&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">&id=<mt:var name="entity_id">" class="icon-left icon-delete">
+            <a href="<mt:var name="mt_url">?__mode=delete_content_field&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">&id=<mt:var name="content_field_id">" class="icon-left icon-delete">
               <__trans phrase="Delete">
             </a>
           </li>
         </ul>
-        <input type="hidden" name="order-<mt:var name="entity_id">" id="order-<mt:var name="entity_id">" value="<mt:var name="order">" />
+        <input type="hidden" name="order-<mt:var name="content_field_id">" id="order-<mt:var name="conten_field_id">" value="<mt:var name="order">" />
       </mtapp:setting>
       </mt:loop>
       </div>
@@ -151,7 +151,7 @@
   jQuery('.add-link').click(function() {
     if ( jQuery('.add-link').hasClass('disabled') )
       return false;
-    location.replace('<mt:var name="mt_url">?__mode=cfg_entity&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">');
+    location.replace('<mt:var name="mt_url">?__mode=cfg_content_field&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">');
     return false;
   });
 
@@ -162,7 +162,7 @@
       }
       jQuery(this).parent().parent().parent().remove();
       setDirty(true);
-      if (! jQuery('.entity-header')[1] ) {
+      if (! jQuery('.content-field-header')[1] ) {
         jQuery('a.delete-link').toggleClass('hidden');
       }
       return false;

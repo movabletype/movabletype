@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::Entity;
+package MT::ContentField;
 
 use strict;
 use base qw( MT::Object );
@@ -26,7 +26,7 @@ __PACKAGE__->install_properties(
             'unique_key'              => 'blob',
         },
         indexes     => { blog_id => 1, content_type_id => 1 },
-        datasource  => 'entity',
+        datasource  => 'cf',
         primary_key => 'id',
         audit       => 1,
         child_of    => ['MT::ContentType'],
@@ -34,11 +34,11 @@ __PACKAGE__->install_properties(
 );
 
 sub class_label {
-    MT->translate("Entity");
+    MT->translate("Content Field");
 }
 
 sub class_label_plural {
-    MT->translate("Entities");
+    MT->translate("Content Fields");
 }
 
 sub content_type {
@@ -54,13 +54,13 @@ sub permission {
     my $permitted_action
         = 'content_type:'
         . $content_type->unique_key
-        . '-entity:'
+        . '-content-field:'
         . $obj->unique_key;
     my $name = 'blog.' . $permitted_action;
     return +{
         $name => {
             group            => $content_type->permission_group,
-            label            => 'Manage "' . $obj->name . '" entity',
+            label            => 'Manage "' . $obj->name . '" field',
             permitted_action => { $permitted_action => 1 },
             $order ? ( order => $order ) : (),
         }
@@ -80,7 +80,7 @@ sub post_remove {
     my $perm_name
         = 'content_type:'
         . $content_type->unique_key
-        . '-entity:'
+        . '-content-field:'
         . $obj->unique_key;
     require MT::Role;
     my @roles = MT::Role->load_by_permission($perm_name);
@@ -98,4 +98,3 @@ sub post_remove {
 }
 
 1;
-

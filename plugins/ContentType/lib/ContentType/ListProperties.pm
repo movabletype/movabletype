@@ -10,20 +10,21 @@ use strict;
 use warnings;
 
 use MT::ContentType;
-use MT::Entity;
-use MT::EntityIdx;
+use MT::ContentField;
+use MT::ContentFieldIndex;
 
 sub make_listing_screens {
     my $props = {
-        entity_type => {
-            screen_label        => 'Manage Entity Type',
-            object_label        => 'Entity Type',
-            object_label_plural => 'Entity Types',
-            object_type         => 'entity_type',
-            scope_mode          => 'this',
-            use_filters         => 0,
-            view                => ['system'],
-        },
+
+        # entity_type => {
+        #     screen_label        => 'Manage Entity Type',
+        #     object_label        => 'Entity Type',
+        #     object_label_plural => 'Entity Types',
+        #     object_type         => 'entity_type',
+        #     scope_mode          => 'this',
+        #     use_filters         => 0,
+        #     view                => ['system'],
+        # },
         content_type => {
             screen_label        => 'Manage Content Type',
             object_label        => 'Content Type',
@@ -55,18 +56,19 @@ sub make_listing_screens {
 
 sub make_list_properties {
     my $props = {
-        entity_type => {
-            id => {
-                base  => '__virtual.id',
-                order => 100,
-            },
-            name => {
-                base      => '__virtual.name',
-                order     => 200,
-                link_mode => 'cfg_entity_type',
-                html      => sub { make_name_html(@_) },
-            },
-        },
+
+        # entity_type => {
+        #     id => {
+        #         base  => '__virtual.id',
+        #         order => 100,
+        #     },
+        #     name => {
+        #         base      => '__virtual.name',
+        #         order     => 200,
+        #         link_mode => 'cfg_entity_type',
+        #         html      => sub { make_name_html(@_) },
+        #     },
+        # },
         content_type => {
             id => {
                 base  => '__virtual.id',
@@ -97,24 +99,20 @@ sub make_list_properties {
             },
         };
 
-        my $json = $content_type->entities();
-        require JSON;
-        my $entities = $json ? JSON::decode_json($json) : [];
         my $order = 200;
 
-        foreach my $entity (@$entities) {
-            my $idx_type   = $entity->{type};
-            my $entity_key = 'entity_' . $entity->{id};
-            $props->{$key}{$entity_key} = {
-                label     => $entity->{name},
-                display   => ( $entity->{label} ? 'force' : 'none' ),
-                order     => $order,
-                idx_type  => $idx_type,
-                entity_id => $entity->{id},
-                html      => (
-                    $entity->{label} ? ( sub { make_title_html(@_) } ) : ''
-                ),
-                terms => sub { MT::EntityIdx::make_terms(@_) },
+        foreach my $f ( @{ $content_type->fields } ) {
+            my $idx_type  = $f->{type};
+            my $field_key = 'content_field_' . $f->{id};
+            $props->{$key}{$field_key} = {
+                label            => $f->{name},
+                display          => ( $f->{label} ? 'force' : 'none' ),
+                order            => $order,
+                idx_type         => $idx_type,
+                content_field_id => $f->{id},
+                html =>
+                    ( $f->{label} ? ( sub { make_title_html(@_) } ) : '' ),
+                terms => sub { MT::ContentFieldIndex::make_terms(@_) },
                 filter_tmpl => '<mt:var name="filter_form_string">',
             };
             $order++;
@@ -150,23 +148,21 @@ sub make_name_html {
 }
 
 sub make_title_html {
-    my ( $prop, $obj, $app ) = @_;
-    require JSON;
-    my $content_type = MT::ContentType->load( $obj->ct_id );
-    my $json         = $content_type->entities();
-    my $entities     = $json ? JSON::decode_json($json) : [];
-    my @label        = grep { $_->{label} } @$entities;
-    my $hash         = JSON::decode_json( $obj->data );
-    my $label        = '';
+    my ( $prop, $content_data, $app ) = @_;
+    my $content_type
+        = MT::ContentType->load( $content_data->content_type_id );
+    my @label = grep { $_->{label} } @{ $content_type->fields };
+    my $hash  = $content_data->data;
+    my $label = '';
     foreach my $key ( keys(%$hash) ) {
         $label = $hash->{$key} if $key == $label[0]->{id};
     }
     my $edit_link = $app->uri(
         mode => 'edit_content_data',
         args => {
-            blog_id         => $app->blog->id,
-            content_type_id => $obj->ct_id,
-            id              => $obj->id,
+            blog_id         => $content_data->blog->id,
+            content_type_id => $content_data->content_type_id,
+            id              => $content_data->id,
         },
     );
     return qq{
@@ -211,15 +207,16 @@ sub make_content_actions {
 
 sub make_list_actions {
     my $props = {
-        entity_type => {
-            delete => {
-                label      => 'Delete',
-                order      => 100,
-                mode       => 'delete',
-                button     => 1,
-                js_message => 'delete',
-            }
-        },
+
+        # entity_type => {
+        #     delete => {
+        #         label      => 'Delete',
+        #         order      => 100,
+        #         mode       => 'delete',
+        #         button     => 1,
+        #         js_message => 'delete',
+        #     }
+        # },
         content_type => {
             delete => {
                 label      => 'Delete',

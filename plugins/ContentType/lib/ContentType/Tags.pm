@@ -8,8 +8,6 @@ package ContentType::Tags;
 
 use strict;
 
-use JSON;
-
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
@@ -41,19 +39,14 @@ sub _hdlr_contents {
     my $e_hash = {};
 
     if ($parent) {
-        my $e_json = $parent->entities();
-        my $entities = $e_json ? JSON::decode_json($e_json) : [];
-
         my $match = 0;
-        foreach my $entity (@$entities) {
-            my $entity_obj = MT::Entity->load( $entity->{id} );
-            if (   $entity->{type} eq 'content_type'
-                && $entity_obj->related_content_type_id == $content_type->id )
+        foreach my $f ( @{ $content_type->fields } ) {
+            my $field_obj = MT::ContentField->load( $f->{id} );
+            if (   $f->{type} eq 'content_type'
+                && $field_obj->related_content_type_id == $content_type->id )
             {
                 $match++;
-                my $json     = $parent_data->data;
-                my $data     = $json ? JSON::decode_json($json) : [];
-                my $data_ids = $data->{ $entity->{id} };
+                my $data_ids = $parent_data->data->{ $f->{id} };
                 @data_ids = split ',', $data_ids;
             }
         }
@@ -62,26 +55,27 @@ sub _hdlr_contents {
             unless $match;
     }
 
-    my @contents = MT::ContentData->load( { ct_id => $content_type->id } );
+    my @contents
+        = MT::ContentData->load( { content_type_id => $content_type->id } );
 
     my $i       = 0;
     my $res     = '';
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
     my $vars    = $ctx->{__stash}{vars} ||= {};
-    for my $content (@contents) {
-        next if $parent && !grep { $content->id == $_ } @data_ids;
+    for my $content_data (@contents) {
+        next if $parent && !grep { $content_data->id == $_ } @data_ids;
 
         local $vars->{__first__}       = !$i;
         local $vars->{__last__}        = !defined $contents[ $i + 1 ];
         local $vars->{__odd__}         = ( $i % 2 ) == 0;
         local $vars->{__even__}        = ( $i % 2 ) == 1;
         local $vars->{__counter__}     = $i + 1;
-        local $ctx->{__stash}{blog}    = $content->blog;
-        local $ctx->{__stash}{blog_id} = $content->blog_id;
-        local $ctx->{__stash}{content} = $content;
+        local $ctx->{__stash}{blog}    = $content_data->blog;
+        local $ctx->{__stash}{blog_id} = $content_data->blog_id;
+        local $ctx->{__stash}{content} = $content_data;
 
-        my $ct_id        = $content->ct_id;
+        my $ct_id        = $content_data->content_type_id;
         my $content_type = MT::ContentType->load($ct_id);
         local $ctx->{__stash}{content_type} = $content_type;
 
@@ -98,16 +92,14 @@ sub _hdlr_content {
     my $content      = $ctx->stash('content');
     my $content_type = $ctx->stash('content_type');
 
-    my $e_json   = $content_type->entities();
-    my $e        = $e_json ? JSON::decode_json($e_json) : [];
-    my @entities = sort { $a->{order} <=> $b->{order} } @$e;
+    my @fields
+        = sort { $a->{order} <=> $b->{order} } @{ $content_type->fields };
 
-    my $d_json = $content->data;
-    my $datas = $d_json ? JSON::decode_json($d_json) : {};
+    my $datas = $content->data;
 
     my $out = '';
-    foreach my $entity (@entities) {
-        my $data = $datas->{ $entity->{id} };
+    foreach my $f (@fields) {
+        my $data = $datas->{ $f->{id} };
         $out .= "<div>$data</div>";
     }
 
@@ -136,29 +128,30 @@ sub _hdlr_entity {
         return $ctx->error(
             MT->translate('\'type\' or \'name\' is required.') );
     }
-    my $entity = MT::Entity->load($terms);
+    my $content_field = MT::ContentField->load($terms);
 
-    my $d_json = $content->data;
-    my $datas = $d_json ? JSON::decode_json($d_json) : {};
+    my $datas = $content->data;
 
     my $content_field_type
-        = MT->registry('content_field_types')->{ $entity->type };
+        = MT->registry('content_field_types')->{ $content_field->type };
     if ((      $content_field_type->{type} eq 'datetime'
-            || $entity->type eq 'date'
-            || $entity->type eq 'time'
+            || $content_field->type eq 'date'
+            || $content_field->type eq 'time'
         )
-        && $datas->{ $entity->id }
+        && $datas->{ $content_field->id }
         )
     {
         $args->{ts}
-            = $entity->type eq 'date' ? $datas->{ $entity->id } . '000000'
-            : $entity->type eq 'time' ? '19700101' . $datas->{ $entity->id }
-            : $datas->{ $entity->id }
+            = $content_field->type eq 'date'
+            ? $datas->{ $content_field->id } . '000000'
+            : $content_field->type eq 'time'
+            ? '19700101' . $datas->{ $content_field->id }
+            : $datas->{ $content_field->id }
             unless $args->{ts};
         return $ctx->build_date($args);
     }
     else {
-        return $datas->{ $entity->id };
+        return $datas->{ $content_field->id };
     }
 }
 

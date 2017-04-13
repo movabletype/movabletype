@@ -4,22 +4,22 @@
 #
 # $Id$
 
-package MT::EntityIdx;
+package MT::ContentFieldIndex;
 
 use strict;
 use base qw( MT::Object );
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'              => 'integer not null auto_increment',
-            'content_type_id' => 'integer',
-            'entity_id'       => 'integer',
-            'content_data_id' => 'integer',
-            'value_varchar'   => 'string(255)',
-            'value_text'      => 'blob',
-            'value_datetime'  => 'datetime',
-            'value_integer'   => 'integer',
-            'value_float'     => 'float',
+            'id'               => 'integer not null auto_increment',
+            'content_type_id'  => 'integer',
+            'content_field_id' => 'integer',
+            'content_data_id'  => 'integer',
+            'value_varchar'    => 'string(255)',
+            'value_text'       => 'blob',
+            'value_datetime'   => 'datetime',
+            'value_integer'    => 'integer',
+            'value_float'      => 'float',
         },
         indexes => {
             value_varchar  => 1,
@@ -27,18 +27,18 @@ __PACKAGE__->install_properties(
             value_integer  => 1,
             value_float    => 1
         },
-        datasource  => 'entity_idx',
+        datasource  => 'cf_idx',
         primary_key => 'id',
         audit       => 1,
     }
 );
 
 sub class_label {
-    MT->translate("Entity Index");
+    MT->translate("Content Field Index");
 }
 
 sub class_label_plural {
-    MT->translate("Entity Indexes");
+    MT->translate("Content Field Indexes");
 }
 
 sub make_terms {
@@ -61,12 +61,12 @@ sub make_terms {
     }
 
     push @{ $db_args->{joins} },
-        MT->model('entity_idx')->join_on(
+        __PACKAGE__->join_on(
         undef,
         {   content_data_id     => \'= content_data_id',
             "value_${idx_type}" => $query_string,
         },
-        { alias => "inidex_${idx_type}" },
+        { alias => "index_${idx_type}" },
         );
 }
 

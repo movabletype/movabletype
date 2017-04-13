@@ -1,7 +1,7 @@
-<mt:setvar name="page_title" value="<__trans phrase="Entity Settings">">
+<mt:setvar name="page_title" value="<__trans phrase="Content Field Settings">">
 <mt:setvar name="position_actions_bottom" value="1">
-<mt:setvar name="screen_id" value="config-entity">
-<mt:setvar name="screen_class" value="entity">
+<mt:setvar name="screen_id" value="config-content-field">
+<mt:setvar name="screen_class" value="content-field">
     
 <mt:setvarblock name="system_msg">
 <div id="msg-block"></div>
@@ -9,7 +9,7 @@
     <mtapp:statusmsg
        id="saved"
        class="success">
-      <__trans phrase="Entity settings has been saved.">
+      <__trans phrase="Content Field settings has been saved.">
     </mtapp:statusmsg>
   </mt:if>
   <mt:if name="err_msg">
@@ -32,14 +32,14 @@
 
 <mt:include name="include/header.tmpl" id="header_include">
 
-<mtapp:form id="entity-form" name="entity-form" mode="save_cfg_entity">
-  <input type="hidden" name="cfg_screen" value="cfg_entity" />
+<mtapp:form id="content-field-form" name="content-field-form" mode="save_cfg_content_field">
+  <input type="hidden" name="cfg_screen" value="cfg_content_field" />
   <input type="hidden" name="content_type_id" value="<mt:var name="content_type_id">" />
-  <input type="hidden" name="id" value="<mt:var name="entity_id">" />
+  <input type="hidden" name="id" value="<mt:var name="content_field_id">" />
 
-  <mtapp:settinggroup id="entity">
+  <mtapp:settinggroup id="content-field">
 
-    <h2><__trans phrase="Entity"></h2>
+    <h2><__trans phrase="Content Field"></h2>
 
     <mtapp:setting
        id="name"
@@ -50,7 +50,7 @@
 
     <mtapp:setting
        id="type"
-       label="<__trans phrase="Entity Type">"
+       label="<__trans phrase="Content Field Type">"
        required="1">
       <select name="type" id="type">" class="half-width required">
       <option value=""><__trans phrase="Type is not selected"></option>
@@ -122,7 +122,7 @@
     });
   });
 
-  jQuery('#entity-form').submit( function() {
+  jQuery('#content-field-form').submit( function() {
     if ( jQuery('#name').mtValidate('simple')
       &&  jQuery('#default').mtValid('simple')
       && jQuery('#related_content_type_id').mtValidate('simple') )

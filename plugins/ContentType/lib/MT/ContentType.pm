@@ -9,7 +9,7 @@ package MT::ContentType;
 use strict;
 use base qw( MT::Object );
 
-use JSON;
+use JSON ();
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -18,15 +18,16 @@ __PACKAGE__->install_properties(
             'name'       => 'string(255)',
             'version'    => 'integer',
             'unique_key' => 'blob',
-            'entities'   => 'blob',
+            'fields'     => 'blob',
         },
         indexes     => { blog_id => 1 },
         datasource  => 'content_type',
         primary_key => 'id',
         audit       => 1,
-        child_of      => [ 'MT::Blog',        'MT::Website' ],
-        child_classes => [ 'MT::ContentData', 'MT::Entity', 'MT::EntityIdx' ],
-
+        child_of      => [ 'MT::Blog', 'MT::Website' ],
+        child_classes => [
+            'MT::ContentData', 'MT::ContentField', 'MT::ContentFieldIndex'
+        ],
     }
 );
 
@@ -47,17 +48,29 @@ sub parents {
     };
 }
 
-sub entities_objs {
+sub fields {
     my $obj = shift;
-    my $entities = eval { JSON::decode_json( $obj->entities ) } || [];
-    my @entities_objs
-        = map { MT->model('entity')->load( $_->{id} ) } @{$entities};
-    return \@entities_objs;
+    if (@_) {
+        my @fields = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
+        my $json = eval { JSON::encode_json( \@fields ) } || '[]';
+        $obj->column( 'fields', $json );
+    }
+    else {
+        eval { JSON::decode_json( $obj->column('fields') ) } || [];
+    }
+}
+
+sub field_objs {
+    my $obj = shift;
+    my @field_objs
+        = map { MT->model('content_field')->load( $_->{id} || 0 ) }
+        @{ $obj->fields };
+    return \@field_objs;
 }
 
 sub permissions {
     my $obj = shift;
-    return +{ %{ $obj->permission }, %{ $obj->entity_permissions } };
+    return +{ %{ $obj->permission }, %{ $obj->field_permissions } };
 }
 
 sub permission {
@@ -74,12 +87,12 @@ sub permission {
     };
 }
 
-sub entity_permissions {
+sub field_permissions {
     my $obj = shift;
     my %permissions;
     my $order = 200;
-    for my $e ( @{ $obj->entities_objs } ) {
-        %permissions = ( %permissions, %{ $e->permission($order) } );
+    for my $f ( @{ $obj->field_objs } ) {
+        %permissions = ( %permissions, %{ $f->permission($order) } );
         $order += 100;
     }
     return \%permissions;
@@ -116,7 +129,7 @@ sub post_save {
 sub post_remove {
     my ( $cb, $obj, $original ) = @_;
 
-    $obj->remove_children( { key => 'ct_id' } );
+    $obj->remove_children( { key => 'content_type_id' } );
 
     my $perm_name = 'manage_content_type:' . $obj->unique_key;
     require MT::Role;
