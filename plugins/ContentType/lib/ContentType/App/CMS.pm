@@ -10,7 +10,6 @@ use strict;
 use warnings;
 
 use JSON ();
-use Digest::SHA1 qw/ sha1_hex /;
 use Encode qw/ encode_utf8 /;
 
 use MT;
@@ -18,6 +17,7 @@ use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentType;
 use MT::ContentData;
+use MT::Util ();
 
 {
     # TBD: Move to Core.
@@ -669,7 +669,7 @@ sub _generate_unique_key {
     my $key = join( $ENV{'REMOTE_ADDR'},
         $ENV{'HTTP_USER_AGENT'}, time, $$, rand(9999), encode_utf8($name) );
 
-    return ( sha1_hex($key) );
+    return ( MT::Util::perl_sha1_digest_hex($key) );
 }
 
 sub _get_form_data {
