@@ -643,50 +643,6 @@ sub save_content_data {
         )
         );
 
-    foreach my $f (@$fields) {
-        my $content_field_type = $content_field_types->{ $f->{type} };
-        my $value = _get_form_data( $app, $content_field_type, $f->{id} );
-
-        my $cf_idx
-            = $content_data_id
-            ? MT::ContentFieldIndex->load(
-            {   content_type_id  => $content_type_id,
-                content_data_id  => $content_data->id,
-                content_field_id => $f->{id},
-            }
-            )
-            : MT::ContentFieldIndex->new();
-        $cf_idx = MT::ContentFieldIndex->new() unless $cf_idx;
-        $cf_idx->content_type_id($content_type_id);
-        $cf_idx->content_data_id( $content_data->id );
-
-        my $data_type = $content_field_types->{ $f->{type} }{data_type};
-        if ( $data_type eq 'varchar' ) {
-            $cf_idx->value_varchar($value);
-        }
-        elsif ( $data_type eq 'blob' ) {
-            $cf_idx->value_blob($value);
-        }
-        elsif ( $data_type eq 'datetime' ) {
-            $cf_idx->value_datetime($value);
-        }
-        elsif ( $data_type eq 'integer' ) {
-            $cf_idx->value_integer($value);
-        }
-        elsif ( $data_type eq 'float' ) {
-            $cf_idx->value_float($value);
-        }
-
-        $cf_idx->content_field_id( $f->{id} );
-        $cf_idx->save
-            or return $app->error(
-            $plugin->translate(
-                "Saving content field index failed: [_1]",
-                $cf_idx->errstr
-            )
-            );
-    }
-
     return $app->redirect(
         $app->uri(
             'mode' => 'edit_content_data',

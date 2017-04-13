@@ -11,6 +11,9 @@ use base qw( MT::Object );
 
 use JSON ();
 
+use MT;
+use MT::ContentType;
+
 use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 
 __PACKAGE__->install_properties(
@@ -36,6 +39,47 @@ sub class_label_plural {
     MT->translate("Content Data");
 }
 
+sub save {
+    my $self = shift;
+
+    $self->SUPER::save(@_) or return;
+
+    my $content_field_types = MT->registry('content_field_types');
+    my $content_type        = $self->content_type
+        or return $self->error(
+        MT->component('ContentType')->translate('Invalid content type') );
+    my $field_data = $self->data;
+
+    foreach my $f ( @{ $content_type->fields } ) {
+        my $cf_idx = MT::ContentFieldIndex->load_or_new(
+            {   content_type_id  => $content_type->id,
+                content_data_id  => $self->id,
+                content_field_id => $f->{id},
+            }
+        );
+
+        my $data_type = $content_field_types->{ $f->{type} }{data_type};
+        my $value     = $field_data->{ $f->{id} };
+        $cf_idx->set_value( $data_type, $value )
+            or return $self->error(
+            MT->component('ContentType')->translate(
+                'Saving content field index failed: Invalid field type "[_1]"',
+                $data_type
+            )
+            );
+
+        $cf_idx->save
+            or return $self->error(
+            MT->component('ContentType')->translate(
+                "Saving content field index failed: [_1]",
+                $cf_idx->errstr
+            )
+            );
+    }
+
+    1;
+}
+
 sub data {
     my $obj = shift;
     if (@_) {
@@ -46,6 +90,16 @@ sub data {
     else {
         eval { JSON::decode_json( $obj->column('data') ) } || {};
     }
+}
+
+sub content_type {
+    my $self = shift;
+    $self->cache_property(
+        'content_type',
+        sub {
+            MT::ContentType->load( $self->content_type_id || 0 ) || undef;
+        },
+    );
 }
 
 sub blog {

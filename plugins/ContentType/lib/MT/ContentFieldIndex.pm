@@ -9,6 +9,14 @@ package MT::ContentFieldIndex;
 use strict;
 use base qw( MT::Object );
 
+my %IdxTypes = (
+    varchar  => 1,
+    blob     => 1,
+    datetime => 1,
+    integer  => 1,
+    float    => 1,
+);
+
 __PACKAGE__->install_properties(
     {   column_defs => {
             'id'               => 'integer not null auto_increment',
@@ -39,6 +47,35 @@ sub class_label {
 
 sub class_label_plural {
     MT->translate("Content Field Indexes");
+}
+
+sub load_or_new {
+    my $class   = shift;
+    my ($terms) = @_;
+
+    my $cf_idx  = __PACKAGE__->load($terms);
+    unless ($cf_idx) {
+        $cf_idx = __PACKAGE__->new;
+        $cf_idx->set_values($terms);
+    }
+
+    $cf_idx;
+}
+
+sub _is_valid_idx_type {
+    $IdxTypes{ shift || '' };
+}
+
+sub set_value {
+    my $self = shift;
+    my ( $idx_type, $value ) = @_;
+
+    return unless _is_valid_idx_type($idx_type);
+
+    my $field = "value_${idx_type}";
+    $self->$field($value);
+
+    1;
 }
 
 sub make_terms {
