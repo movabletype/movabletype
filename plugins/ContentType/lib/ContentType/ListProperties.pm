@@ -139,6 +139,36 @@ sub make_list_properties {
                 terms       => sub { MT::ContentFieldIndex::make_terms(@_) },
                 filter_tmpl => '<mt:var name="filter_form_string">',
             };
+
+            # set html properties of content field type to list_properties
+            if ( exists $field_type->{bulk_html} ) {
+                $props->{$key}{$field_key}{bulk_html}
+                    = $field_type->{bulk_html};
+            }
+            if ( exists $field_type->{html} ) {
+                $props->{$key}{$field_key}{html} = $field_type->{html};
+            }
+            if ( exists $field_type->{html_link} ) {
+                $props->{$key}{$field_key}{html_link}
+                    = $field_type->{html_link};
+            }
+            if ( exists $field_type->{raw} ) {
+                $props->{$key}{$field_key}{raw} = $field_type->{raw};
+            }
+
+            # set sort properties of content field type to list_properties
+            if ( exists $field_type->{bulk_sort} ) {
+                $props->{$key}{$field_key}{bulk_sort}
+                    = $field_type->{bulk_sort};
+            }
+            if ( exists $field_type->{sort} ) {
+                $props->{$key}{$field_key}{sort} = $field_type->{sort};
+            }
+            if ( exists $field_type->{sort_method} ) {
+                $props->{$key}{$field_key}{sort_method}
+                    = $field_type->{sort_method};
+            }
+
             $order++;
         }
     }
