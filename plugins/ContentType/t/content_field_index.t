@@ -7,7 +7,6 @@ use lib qw( lib extlib t/lib );
 use MT;
 use MT::Test qw( :db );
 
-use ContentType::App::CMS;
 use MT::ContentData;
 use MT::ContentField;
 use MT::ContentFieldIndex;
@@ -33,15 +32,12 @@ subtest 'load_or_new' => sub {
     };
 
     subtest 'load' => sub {
-        # prepare
-        local $ENV{REMOTE_ADDR}     = '127.0.0.1';
-        local $ENV{HTTP_USER_AGENT} = 'mt_test';
 
+        # prepare
         my $ct = MT::ContentType->new;
         $ct->set_values(
-            {   blog_id    => 1,
-                name       => 'test content type',
-                unique_key => ContentType::App::CMS::_generate_unique_key(),
+            {   blog_id => 1,
+                name    => 'test content type',
             }
         );
         $ct->save or die $ct->errstr;
@@ -52,7 +48,6 @@ subtest 'load_or_new' => sub {
                 content_type_id => $ct->id,
                 name            => 'single text',
                 type            => 'single_line_text',
-                unique_key => ContentType::App::CMS::_generate_unique_key(),
             }
         );
         $cf->save or die $cf->errstr;

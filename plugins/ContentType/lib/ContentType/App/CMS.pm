@@ -10,14 +10,12 @@ use strict;
 use warnings;
 
 use JSON ();
-use Encode qw/ encode_utf8 /;
 
 use MT;
 use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentType;
 use MT::ContentData;
-use MT::Util ();
 
 {
     # TBD: Move to Core.
@@ -158,13 +156,6 @@ sub save_cfg_content_type {
         $_;
     } @{ $content_type->fields };
     $content_type->fields( \@fields );
-
-    my $unique_key
-        = defined $content_type->unique_key && $content_type->unique_key
-        ? $content_type->unique_key
-        : _generate_unique_key($name);
-    $content_type->unique_key($unique_key)
-        unless $content_type->unique_key;
 
     $content_type->save
         or return $app->error(
@@ -317,13 +308,6 @@ sub save_cfg_content_field {
     $content_field->type($type);
     $content_field->options($options);
     $content_field->related_content_type_id( $related_content_type_id || 0 );
-
-    my $unique_key
-        = defined $content_field->unique_key && $content_field->unique_key
-        ? $content_field->unique_key
-        : _generate_unique_key($name);
-    $content_field->unique_key($unique_key)
-        unless $content_field->unique_key;
 
     $content_field->save
         or return $app->error(
@@ -662,14 +646,6 @@ sub cms_pre_load_filtered_list {
     $object_ds =~ /content_data_(\d+)/;
     my $content_type_id = $1;
     $load_options->{terms}{content_type_id} = $content_type_id;
-}
-
-sub _generate_unique_key {
-    my $name = shift || 'base_name';
-    my $key = join( $ENV{'REMOTE_ADDR'},
-        $ENV{'HTTP_USER_AGENT'}, time, $$, rand(9999), encode_utf8($name) );
-
-    return ( MT::Util::perl_sha1_digest_hex($key) );
 }
 
 sub _get_form_data {
