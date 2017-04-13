@@ -116,8 +116,11 @@ subtest 'set_value' => sub {
     ok( $cf_idx->set_value( 'float', 3.141592 ), 'set float' );
     is( $cf_idx->value_float, 3.141592, 'get float' );
 
+    # irregular tests
     ok( !$cf_idx->set_value( 'INVALID_TYPE', 'irohani' ),
         'set invalid type' );
+    ok( !$cf_idx->set_value( '',    'hoheto' ),      'set empty string' );
+    ok( !$cf_idx->set_value( undef, 'chirinuruwo' ), 'set undef' );
 };
 
 subtest 'make_terms' => sub {
