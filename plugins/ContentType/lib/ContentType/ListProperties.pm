@@ -134,6 +134,7 @@ sub make_list_properties {
                 : 'default',    # TODO: should use $f->{options}{display}
                 order            => $order,
                 idx_type         => $idx_type,
+                data_type        => $field_type->{data_type},
                 content_field_id => $f->{id},
                 html             => \&make_title_html,
                 sort             => $default_sort_prop,

@@ -50,10 +50,10 @@ sub class_label_plural {
 }
 
 sub load_or_new {
-    my $class   = shift;
+    my $class = shift;
     my ($terms) = @_;
 
-    my $cf_idx  = __PACKAGE__->load($terms);
+    my $cf_idx = __PACKAGE__->load($terms);
     unless ($cf_idx) {
         $cf_idx = __PACKAGE__->new;
         $cf_idx->set_values($terms);
@@ -91,20 +91,18 @@ sub make_terms {
         : $args->{option} eq 'end'          ? { like     => "%$string" }
         :                                     '';
 
-    my $idx_type = $prop->{idx_type};
+    my $data_type = $prop->{data_type};
 
-    unless ( $db_args->{joins} ) {
-        $db_args->{joins} ||= [];
-    }
+    $db_args->{joins} ||= [];
 
-    push @{ $db_args->{joins} },
-        __PACKAGE__->join_on(
+    push @{ $db_args->{joins} }, __PACKAGE__->join_on(
         undef,
-        {   content_data_id     => \'= content_data_id',
-            "value_${idx_type}" => $query_string,
+        {   content_data_id      => \'= cd_id',
+            "value_${data_type}" => $query_string,
         },
-        { alias => "index_${idx_type}" },
-        );
+
+        # { alias => "index_${idx_type}" },
+    );
 }
 
 1;
