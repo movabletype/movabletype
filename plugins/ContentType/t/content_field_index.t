@@ -124,7 +124,7 @@ subtest 'set_value' => sub {
 };
 
 subtest 'make_terms' => sub {
-    my $prop = { idx_type => 'varchar' };
+    my $prop = { data_type => 'varchar' };
     my $args = { option => 'contains', string => 'test' };
     my $db_terms = {};
     my $db_args  = {};
@@ -135,9 +135,8 @@ subtest 'make_terms' => sub {
         [   'MT::ContentFieldIndex',
             undef,
             {   value_varchar   => { like => '%test%' },
-                content_data_id => \'= content_data_id',
-            },
-            { alias => 'index_varchar' },
+                content_data_id => \'= cd_id',
+            }
         ]
     ];
     is_deeply( $db_args->{joins}, $expected_joins,
