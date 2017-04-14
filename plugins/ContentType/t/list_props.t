@@ -12,6 +12,7 @@ use MT::ContentData;
 use MT::ContentType;
 use MT::ContentField;
 use MT::ContentFieldIndex;
+use MT::ListProperty;
 use ContentType::ListProperties;
 
 my $content_type = MT::ContentType->new;
@@ -63,7 +64,7 @@ subtest 'make_list_properties' => sub {
 };
 
 subtest 'make_title' => sub {
-    my $prop;
+    my $prop = MT::ListProperty->new( 'content_data_1', 'content_field_1' );
     my $content_data = MT::ContentData->new;
     $content_data->set_values(
         {   blog_id         => $content_type->blog_id,
