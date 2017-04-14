@@ -128,14 +128,15 @@ sub make_list_properties {
             };
 
             $props->{$key}{$field_key} = {
-                label            => $f->{name},
-                display          => ( $f->{label} ? 'force' : 'none' ),
+                label   => $f->{name},
+                display => $f->{label}
+                ? 'force'
+                : 'default',    # TODO: should use $f->{options}{display}
                 order            => $order,
                 idx_type         => $idx_type,
                 content_field_id => $f->{id},
-                html =>
-                    ( $f->{label} ? ( sub { make_title_html(@_) } ) : '' ),
-                sort        => $default_sort_prop,
+                html             => \&make_title_html,
+                sort             => $default_sort_prop,
                 terms       => sub { MT::ContentFieldIndex::make_terms(@_) },
                 filter_tmpl => '<mt:var name="filter_form_string">',
             };
@@ -203,27 +204,31 @@ sub make_name_html {
 
 sub make_title_html {
     my ( $prop, $content_data, $app ) = @_;
-    my $content_type
-        = MT::ContentType->load( $content_data->content_type_id );
-    my @label = grep { $_->{label} } @{ $content_type->fields };
-    my $hash  = $content_data->data;
-    my $label = '';
-    foreach my $key ( keys(%$hash) ) {
-        $label = $hash->{$key} if $key == $label[0]->{id};
-    }
-    my $edit_link = $app->uri(
-        mode => 'edit_content_data',
-        args => {
-            blog_id         => $content_data->blog->id,
-            content_type_id => $content_data->content_type_id,
-            id              => $content_data->id,
-        },
-    );
-    return qq{
+    my $label = $content_data->data->{ $prop->content_field_id };
+    $label = '' unless defined $label;
+    my ($field)
+        = grep { $_->{id} == $prop->content_field_id }
+        @{ $content_data->content_type->fields };
+    if ( $field->{label} ) {
+        my $edit_link = $app->uri(
+            mode => 'edit_content_data',
+            args => {
+                blog_id         => $content_data->blog->id,
+                content_type_id => $content_data->content_type_id,
+                id              => $content_data->id,
+            },
+        );
+        return qq{
         <span class="label">
           <a href="$edit_link">$label</a>
         </span>
-    };
+        };
+    }
+    else {
+        return qq{
+        <span class="label">$label</span>
+        };
+    }
 }
 
 sub make_content_actions {
