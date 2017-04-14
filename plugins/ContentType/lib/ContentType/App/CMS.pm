@@ -12,6 +12,7 @@ use warnings;
 use JSON ();
 
 use MT;
+use MT::CMS::Common;
 use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentType;
@@ -666,6 +667,12 @@ sub _get_form_data {
         my $q = $app->param;
         return $q->param( 'content-field-' . $id );
     }
+}
+
+sub delete_content_data {
+    my $app = shift;
+    $app->param( '_type', 'content_data' );
+    MT::CMS::Common::delete($app);
 }
 
 1;

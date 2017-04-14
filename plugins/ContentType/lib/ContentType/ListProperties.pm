@@ -293,9 +293,10 @@ sub make_list_actions {
 
         $props->{$key} = {
             delete => {
-                label      => 'Delete',
-                order      => 100,
-                mode       => 'delete',
+                label => 'Delete',
+                order => 100,
+                code =>
+                    '$ContentType::ContentType::App::CMS::delete_content_data',
                 button     => 1,
                 js_message => 'delete',
             }
