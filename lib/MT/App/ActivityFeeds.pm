@@ -943,7 +943,7 @@ Registers the core callbacks for the standard activity feeds.
 
 =head2 $app->login
 
-Method to override L<MT::App->login> to do token based authentication
+Method to override L<MT::App>->login to do token based authentication
 for feed clients.
 
 =head2 $app->mode_default
