@@ -68,6 +68,7 @@ subtest 'make_title' => sub {
     my $content_data = MT::ContentData->new;
     $content_data->set_values(
         {   blog_id         => $content_type->blog_id,
+            author_id       => 1,
             content_type_id => $content_type->id,
         }
     );

@@ -49,6 +49,32 @@ sub make_listing_screens {
             scope_mode          => 'this',
             use_filters         => 0,
             view                => [ 'website', 'blog' ],
+            feed_link           => sub {
+
+                # TODO: fix permission
+                my ($app) = @_;
+                return 1 if $app->user->is_superuser;
+
+                if ( $app->blog ) {
+                    return 1
+                        if $app->user->can_do( "get_${key}_feed",
+                        at_least_one => 1 );
+                }
+                else {
+                    my $iter = MT->model('permission')->load_iter(
+                        {   author_id => $app->user->id,
+                            blog_id   => { not => 0 },
+                        }
+                    );
+                    my $cond;
+                    while ( my $p = $iter->() ) {
+                        $cond = 1, last
+                            if $p->can_do("get_${key}_feed");
+                    }
+                    return $cond ? 1 : 0;
+                }
+                0;
+            },
         };
     }
 

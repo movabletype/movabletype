@@ -61,6 +61,7 @@ subtest 'mode=save_content_data' => sub {
 
     my $content_data = MT::ContentData->load(
         {   blog_id         => $content_type->blog_id,
+            author_id       => 1,
             content_type_id => $content_type->id
         }
     );

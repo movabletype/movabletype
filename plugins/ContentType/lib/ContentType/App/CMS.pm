@@ -26,7 +26,44 @@ use MT::ContentData;
     *MT::Author::can_manage_content_types = sub {
         my $author = shift;
         return $author->is_superuser(@_);
+    };
+
+    *MT::Permission::can_edit_content_data = sub {
+        my $self = shift;
+        my ( $content_data, $author, $status ) = @_;
+        die unless $author->isa('MT::Author');
+        return 1 if $author->is_superuser();
+        unless ( ref $content_data ) {
+            $content_data = MT::ContentData->load($content_data)
+                or return;
         }
+
+        if (   !ref $self
+            || $self->author_id != $author->id
+            || $self->blog_id != $content_data->blog_id )
+        {
+            $self = $author->permissions( $content_data->blog_id )
+                or return;
+        }
+
+        my $content_data_name = 'content_data_' . $content_data->id;
+
+        return 1
+            if $self->can_do("edit_all_${content_data_name}");
+
+        my $own_content_data = $content_data->author_id == $author->id;
+
+        if ( defined $status ) {
+            return $own_content_data
+                ? $self->can_do("edit_own_published_${content_data_name}")
+                : $self->can_do("edit_all_published_${content_data_name}");
+        }
+        else {
+            return $own_content_data
+                ? $self->can_do("edit_own_unpublished_${content_data_name}")
+                : $self->can_do("edit_all_unpublished_${content_data_name}");
+        }
+    };
 }
 
 sub init_app {
@@ -34,9 +71,17 @@ sub init_app {
 
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
-        $app->add_callback(
-            'cms_pre_load_filtered_list.content_data_' . $content_type->id,
+        my $obj_name = 'content_data_' . $content_type->id;
+
+        $app->add_callback( "cms_pre_load_filtered_list.${obj_name}",
             0, $app, \&cms_pre_load_filtered_list );
+
+        # feed
+        $app->add_callback( "ActivityFeed.${obj_name}", 5, $app,
+            '$ContentType::ContentType::Feed::feed_content_data' );
+        $app->add_callback( "ActivityFeed.filter_object.${obj_name}",
+            5, $app, '$ContentType::ContentType::Feed::filter_content_data' );
+        $content_type->generate_object_log_class;
     }
     return 1;
 }
@@ -617,6 +662,7 @@ sub save_content_data {
         ? MT::ContentData->load($content_data_id)
         : MT::ContentData->new();
 
+    $content_data->author_id( $app->user->id );
     $content_data->blog_id($blog_id);
     $content_data->content_type_id($content_type_id);
     $content_data->data($data);

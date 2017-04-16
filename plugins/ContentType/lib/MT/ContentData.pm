@@ -12,6 +12,7 @@ use base qw( MT::Object );
 use JSON ();
 
 use MT;
+use MT::ContentField;
 use MT::ContentType;
 
 use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
@@ -20,10 +21,13 @@ __PACKAGE__->install_properties(
     {   column_defs => {
             'id'              => 'integer not null auto_increment',
             'blog_id'         => 'integer not null',
+            'status'          => 'smallint not null',
+            'author_id'       => 'integer not null',
             'content_type_id' => 'integer not null',
             'data'            => 'blob',
         },
         indexes     => { content_type_id => 1 },
+        defaults    => { status          => 0 },
         datasource  => 'cd',
         primary_key => 'id',
         audit       => 1,
@@ -37,6 +41,25 @@ sub class_label {
 
 sub class_label_plural {
     MT->translate("Content Data");
+}
+
+sub to_hash {
+    my $self = shift;
+    my $hash = $self->SUPER::to_hash();
+    $hash->{'cd.text_html'}
+        = $self->_generate_text_html || $self->column('data');
+    $hash;
+}
+
+sub _generate_text_html {
+    my $self      = shift;
+    my $data_hash = {};
+    for my $field_id ( keys %{ $self->data } ) {
+        my $field = MT::ContentField->load($field_id);
+        my $hash_key = $field ? $field->name : "field_id_${field_id}";
+        $data_hash->{$hash_key} = $self->data->{$field_id};
+    }
+    eval { JSON::to_json( $data_hash, { canonical => 1, utf8 => 1 } ) };
 }
 
 sub save {

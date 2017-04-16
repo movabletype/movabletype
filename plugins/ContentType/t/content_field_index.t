@@ -67,6 +67,7 @@ subtest 'load_or_new' => sub {
         my $cd = MT::ContentData->new;
         $cd->set_values(
             {   blog_id         => $ct->blog_id,
+                author_id       => 1,
                 content_type_id => $ct->id,
             }
         );
