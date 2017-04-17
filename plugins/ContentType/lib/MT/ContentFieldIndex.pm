@@ -99,9 +99,7 @@ sub make_terms {
         undef,
         {   content_data_id      => \'= cd_id',
             "value_${data_type}" => $query_string,
-        },
-
-        # { alias => "index_${idx_type}" },
+        }
     );
 }
 

@@ -198,6 +198,35 @@ sub make_list_properties {
             }
 
             $order++;
+
+            if (   $idx_type eq 'single_line_text'
+                || $idx_type eq 'multi_line_text' )
+            {
+                $props->{$key}{"${field_key}_is_blank"} = {
+                    base      => '__virtual.hidden',
+                    label     => $f->{name} . ' is blank',
+                    display   => 'none',
+                    order     => $order,
+                    data_type => $field_type->{data_type},
+                    terms     => sub {
+                        my $prop = shift;
+                        my ( $args, $db_terms, $db_args ) = @_;
+
+                        my $data_type = $prop->{data_type};
+
+                        $db_args->{joins} ||= [];
+                        push @{ $db_args->{joins} },
+                            MT::ContentFieldIndex->join_on(
+                            undef,
+                            {   content_data_id      => \'= cd_id',
+                                "value_${data_type}" => '',
+                            }
+                            );
+                    },
+                    singleton => 1,
+                };
+                $order++;
+            }
         }
     }
 
