@@ -138,18 +138,26 @@ content_field_types:
         label: Single Line Text
         data_type: varchar
         order: 20
+        terms: $ContentType::ContentType::ListProperties::terms_text
+        filter_tmpl: <mt:var name="filter_form_string">
     multi_line_text:
         label: Multi Line Text
         data_type: blob
         order: 30
+        terms: $ContentType::ContentType::ListProperties::terms_text
+        filter_tmpl: <mt:var name="filter_form_string">
     integer:
         label: Integer
         data_type: integer
         order: 40
+        terms: $ContentType::ContentType::ListProperties::terms_number
+        filter_tmpl: <mt:var name="filter_form_integer">
     float:
         label: Float
         data_type: float
         order: 50
+        terms: $ContentType::ContentType::ListProperties::terms_number
+        filter_tmpl: <mt:var name="filter_form_float">
     url:
         label: URL
         data_type: varchar

@@ -241,10 +241,22 @@ BEGIN {
                             $query = { like => "%$query" };
                         }
                         if ( $prop->is_meta ) {
+                            if ( 'blank' eq $option ) {
+                                $query = [ '', \'IS NULL' ];
+                            }
                             return $prop->join_meta( $db_args, $query );
                         }
                         else {
-                            return { $col => $query };
+                            if ( 'blank' eq $option ) {
+                                return [
+                                    { $col => '' },
+                                    '-or',
+                                    { $col => \'IS NULL' }
+                                ];
+                            }
+                            else {
+                                return { $col => $query };
+                            }
                         }
                     },
                     filter_tmpl    => '<mt:var name="filter_form_string">',
@@ -300,6 +312,9 @@ BEGIN {
                         }
                         elsif ( 'less_equal' eq $option ) {
                             $query = { '<=' => $value };
+                        }
+                        elsif ( 'blank' eq $option ) {
+                            $query = \'IS NULL';
                         }
                         if ( $prop->is_meta ) {
                             return $prop->join_meta( $db_args, $query );
@@ -743,12 +758,12 @@ BEGIN {
                             undef,
                             [   { id => \"= $colname" },
                                 '-and',
-                                [   {%$name_query},
+                                [   $name_query,
                                     (   $args->{'option'} eq 'not_contains'
                                         ? '-and'
                                         : '-or'
                                     ),
-                                    {%$nick_query},
+                                    $nick_query,
                                 ]
                             ],
                             {}
@@ -795,6 +810,9 @@ BEGIN {
                         }
                         elsif ( 'end' eq $option ) {
                             $query = { like => "%$query" };
+                        }
+                        elsif ( 'blank' eq $option ) {
+                            $query = '';
                         }
                         my $ds           = $prop->object_type;
                         my $tagged_class = $prop->tagged_class || $ds;
@@ -972,9 +990,19 @@ BEGIN {
                             : $args->{option} eq 'less_than'     ? '>'
                             : $args->{option} eq 'less_equal'    ? '>='
                             :                                      '';
-                        return @$objs unless $op;
-                        my $val     = $args->{value};
-                        my $sub     = eval "sub { $val $op shift }";
+                        return @$objs
+                            unless $op || $args->{option} eq 'blank';
+                        my $val = $args->{value};
+                        my $sub;
+                        if ( $args->{option} eq 'blank' ) {
+                            $sub = sub {
+                                my $v = shift;
+                                !defined $v || $v eq '';
+                            };
+                        }
+                        else {
+                            $sub = eval "sub { $val $op shift }";
+                        }
                         my $ref_col = $prop->ref_column;
                         return
                             grep { $sub->( $map{ $_->$ref_col } || 0 ) }

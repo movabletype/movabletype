@@ -111,13 +111,6 @@ sub make_list_properties {
     };
 
     my $content_field_types = MT->registry('content_field_types');
-    my %filter_tmpl         = (
-        _default         => '<mt:var name="filter_form_string">',
-        single_line_text => '<mt:var name="filter_form_string">',
-        multi_line_text  => '<mt:var name="filter_form_string">',
-        integer          => '<mt:var name="filter_form_integer">',
-        float            => '<mt:var name="filter_form_float">',
-    );
 
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
@@ -171,9 +164,8 @@ sub make_list_properties {
                 content_field_id => $f->{id},
                 html             => \&make_title_html,
                 sort             => $default_sort_prop,
-                terms       => sub { MT::ContentFieldIndex::make_terms(@_) },
-                filter_tmpl => $filter_tmpl{$idx_type}
-                    || $filter_tmpl{_default},
+                terms            => \&terms_text,
+                filter_tmpl      => '<mt:var name="filter_form_string">',
             };
 
             # set html properties of content field type to list_properties
@@ -205,36 +197,16 @@ sub make_list_properties {
                     = $field_type->{sort_method};
             }
 
-            $order++;
-
-            if (   $idx_type eq 'single_line_text'
-                || $idx_type eq 'multi_line_text' )
-            {
-                $props->{$key}{"${field_key}_is_blank"} = {
-                    base      => '__virtual.hidden',
-                    label     => $f->{name} . ' is blank',
-                    display   => 'none',
-                    order     => $order,
-                    data_type => $field_type->{data_type},
-                    terms     => sub {
-                        my $prop = shift;
-                        my ( $args, $db_terms, $db_args ) = @_;
-
-                        my $data_type = $prop->{data_type};
-
-                        $db_args->{joins} ||= [];
-                        push @{ $db_args->{joins} },
-                            MT::ContentFieldIndex->join_on(
-                            undef,
-                            {   content_data_id      => \'= cd_id',
-                                "value_${data_type}" => '',
-                            }
-                            );
-                    },
-                    singleton => 1,
-                };
-                $order++;
+            if ( exists $field_type->{filter_tmpl} ) {
+                $props->{$key}{$field_key}{filter_tmpl}
+                    = $field_type->{filter_tmpl};
             }
+
+            if ( exists $field_type->{terms} ) {
+                $props->{$key}{$field_key}{terms} = $field_type->{terms};
+            }
+
+            $order++;
         }
     }
 
@@ -368,6 +340,92 @@ sub make_list_actions {
     }
 
     return $props;
+}
+
+sub terms_text {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $string = $args->{string};
+    my $query_string
+        = $args->{option} eq 'contains'     ? { like     => "%$string%" }
+        : $args->{option} eq 'not_contains' ? { not_like => "%$string%" }
+        : $args->{option} eq 'equal'        ? $string
+        : $args->{option} eq 'beginning'    ? { like     => "$string%" }
+        : $args->{option} eq 'end'          ? { like     => "%$string" }
+        :                                     '';
+
+    my $data_type = $prop->{data_type};
+
+    $db_args->{joins} ||= [];
+
+    if ( $args->{option} && $args->{option} eq 'blank' ) {
+        push @{ $db_args->{joins} },
+            MT::ContentFieldIndex->join_on(
+            undef,
+            [   {   content_data_id  => \'= cd_id',
+                    content_field_id => $prop->{content_field_id},
+                },
+                '-and',
+                [   { "value_${data_type}" => '' },
+                    '-or',
+                    { "value_${data_type}" => \'IS NULL' },
+                ]
+            ],
+            );
+    }
+    else {
+        push @{ $db_args->{joins} },
+            MT::ContentFieldIndex->join_on(
+            undef,
+            {   content_data_id      => \'= cd_id',
+                content_field_id     => $prop->{content_field_id},
+                "value_${data_type}" => $query_string,
+            }
+            );
+    }
+}
+
+sub terms_number {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+    my $option = $args->{option};
+    my $value  = $args->{value};
+    my $query;
+    if ( 'equal' eq $option ) {
+        $query = $value;
+    }
+    elsif ( 'not_equal' eq $option ) {
+        $query = { not => $value };
+    }
+    elsif ( 'greater_than' eq $option ) {
+        $query = { '>' => $value };
+    }
+    elsif ( 'greater_equal' eq $option ) {
+        $query = { '>=' => $value };
+    }
+    elsif ( 'less_than' eq $option ) {
+        $query = { '<' => $value };
+    }
+    elsif ( 'less_equal' eq $option ) {
+        $query = { '<=' => $value };
+    }
+    elsif ( 'blank' eq $option ) {
+        $query = \'IS NULL';
+    }
+
+    my $data_type = $prop->{data_type};
+
+    $db_args->{joins} ||= [];
+
+    push @{ $db_args->{joins} },
+        MT::ContentFieldIndex->join_on(
+        undef,
+        {   content_data_id      => \'= cd_id',
+            content_field_id     => $prop->{content_field_id},
+            "value_${data_type}" => $query,
+        }
+        );
 }
 
 1;

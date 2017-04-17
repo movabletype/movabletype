@@ -53,14 +53,6 @@ subtest 'make_list_properties' => sub {
     my $props = ContentType::ListProperties::make_list_properties;
 
     ok( $props && ref $props eq 'HASH', 'make_list_properties returns hash' );
-
-    my $terms = $props->{ 'content_data_' . $content_type->id }
-        { 'content_field_' . $content_field->id }{terms};
-    is( ref $terms, 'CODE',
-        '$props->{content_data_?}{content_field_?}{terms} is coderef' );
-
-    $terms->();
-    is( $called, 1, 'The coderef is MT::ContentFieldIndex::make_terms' );
 };
 
 subtest 'make_title' => sub {

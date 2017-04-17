@@ -124,25 +124,5 @@ subtest 'set_value' => sub {
     ok( !$cf_idx->set_value( undef, 'chirinuruwo' ), 'set undef' );
 };
 
-subtest 'make_terms' => sub {
-    my $prop = { data_type => 'varchar' };
-    my $args = { option => 'contains', string => 'test' };
-    my $db_terms = {};
-    my $db_args  = {};
-
-    MT::ContentFieldIndex::make_terms( $prop, $args, $db_terms, $db_args );
-
-    my $expected_joins = [
-        [   'MT::ContentFieldIndex',
-            undef,
-            {   value_varchar   => { like => '%test%' },
-                content_data_id => \'= cd_id',
-            }
-        ]
-    ];
-    is_deeply( $db_args->{joins}, $expected_joins,
-        'make_terms sets hash to $db_args->{joins}' );
-};
-
 done_testing;
 

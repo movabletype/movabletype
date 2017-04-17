@@ -72,35 +72,16 @@ sub set_value {
 
     return unless _is_valid_idx_type($idx_type);
 
+    if ( $idx_type eq 'integer' || $idx_type eq 'float' ) {
+        if ( defined $value && $value eq '' ) {
+            $value = undef;
+        }
+    }
+
     my $field = "value_${idx_type}";
     $self->$field($value);
 
     1;
-}
-
-sub make_terms {
-    my $prop = shift;
-    my ( $args, $db_terms, $db_args ) = @_;
-
-    my $string = $args->{string};
-    my $query_string
-        = $args->{option} eq 'contains'     ? { like     => "%$string%" }
-        : $args->{option} eq 'not_contains' ? { not_like => "%$string%" }
-        : $args->{option} eq 'equal'        ? $string
-        : $args->{option} eq 'beginning'    ? { like     => "$string%" }
-        : $args->{option} eq 'end'          ? { like     => "%$string" }
-        :                                     '';
-
-    my $data_type = $prop->{data_type};
-
-    $db_args->{joins} ||= [];
-
-    push @{ $db_args->{joins} }, __PACKAGE__->join_on(
-        undef,
-        {   content_data_id      => \'= cd_id',
-            "value_${data_type}" => $query_string,
-        }
-    );
 }
 
 1;
