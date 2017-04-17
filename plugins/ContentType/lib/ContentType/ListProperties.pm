@@ -111,6 +111,13 @@ sub make_list_properties {
     };
 
     my $content_field_types = MT->registry('content_field_types');
+    my %filter_tmpl         = (
+        _default         => '<mt:var name="filter_form_string">',
+        single_line_text => '<mt:var name="filter_form_string">',
+        multi_line_text  => '<mt:var name="filter_form_string">',
+        integer          => '<mt:var name="filter_form_integer">',
+        float            => '<mt:var name="filter_form_float">',
+    );
 
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
@@ -165,7 +172,8 @@ sub make_list_properties {
                 html             => \&make_title_html,
                 sort             => $default_sort_prop,
                 terms       => sub { MT::ContentFieldIndex::make_terms(@_) },
-                filter_tmpl => '<mt:var name="filter_form_string">',
+                filter_tmpl => $filter_tmpl{$idx_type}
+                    || $filter_tmpl{_default},
             };
 
             # set html properties of content field type to list_properties
