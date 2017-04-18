@@ -204,28 +204,15 @@ content_field_types:
         field_html: $ContentType::MT::ContentFieldType::Time::field_html
         data_getter: $ContentType::MT::ContentFieldType::Time::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::Time::ss_validator
-    single_select:
-        label: Single Select
+    select_box:
+        label: Select Box
         data_type: varchar
         options: 1
         order: 100
-        field_html: |
-            sub {
-                my ( $app, $id, $value )  = @_;
-                require MT::ContentField;
-                my $content_field  = MT::ContentField->load($id);
-                my $options = $content_field->options;
-                my $options_delimiter = quotemeta( $app->registry('content_field_types')->{single_select}{options_delimiter} || ',' );
-                my @options = split $options_delimiter, $options;
-                my $html = '<select name="content-field-' . $id . '" id="content-field-' . $id . '" class="select">';
-                foreach my $option (@options) {
-                    $html .= '<option value="' . $option . '"';
-                    $html .= ' selected="selected"' if $option eq $value;
-                    $html .= '>' . $option . '</option>';
-                }
-                $html .= '</select>';
-                return $html;
-            }
+        terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+        filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+        field_html: $ContentType::MT::ContentFieldType::SelectBox::field_html
+        single_select_options: $ContentType::MT::ContentFieldType::SelectBox::single_select_options
     radio:
         label: Radio
         data_type: varchar

@@ -201,7 +201,10 @@ sub make_list_properties {
                 $props->{$key}{$field_key}{filter_tmpl}
                     = $field_type->{filter_tmpl};
             }
-
+            if ( exists $field_type->{single_select_options} ) {
+                $props->{$key}{$field_key}{single_select_options}
+                    = $field_type->{single_select_options};
+            }
             if ( exists $field_type->{terms} ) {
                 $props->{$key}{$field_key}{terms} = $field_type->{terms};
             }
