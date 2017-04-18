@@ -243,8 +243,15 @@ sub make_name_html {
 
 sub make_title_html {
     my ( $prop, $content_data, $app ) = @_;
+
     my $label = $content_data->data->{ $prop->content_field_id };
     $label = '' unless defined $label;
+    if ( ref $label eq 'ARRAY' ) {
+        my $delimiter = $app->registry('content_field_types')
+            ->{ $prop->{idx_type} }{options_delimiter} || ',';
+        $label = join $delimiter, @$label;
+    }
+
     my ($field)
         = grep { $_->{id} == $prop->content_field_id }
         @{ $content_data->content_type->fields };
