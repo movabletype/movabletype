@@ -23,7 +23,8 @@ sub terms {
         {   content_data_id  => \'= cd_id',
             content_field_id => $prop->{content_field_id},
             value_varchar    => $val,
-        }
+        },
+        { unique => 1 },
         );
 }
 
@@ -67,6 +68,7 @@ sub field_html {
 
     # TODO: Fix $content_field->options
     my $multiple = eval { $content_field->options->{multiple} };
+    $multiple = 1;
 
     my $html
         = '<select name="content-field-'
@@ -110,6 +112,7 @@ sub data_getter {
 
     # TODO: Fix $content_field->options
     my $multiple = eval { $content_field->options->{multiple} };
+    $multiple = 1;
 
     $multiple ? \@options : @options ? $options[0] : undef;
 }
