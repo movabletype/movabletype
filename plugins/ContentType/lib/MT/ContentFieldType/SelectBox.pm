@@ -11,21 +11,31 @@ sub terms {
     my ( $args, $base_terms, $base_args, $opts ) = @_;
 
     my $val = $args->{value};
+
     if ( $args->{option} && $args->{option} eq 'is_not_selected' ) {
-        $val = { not => $val };
-    }
-
-    $base_args->{joins} ||= [];
-
-    push @{ $base_args->{joins} },
-        MT::ContentFieldIndex->join_on(
-        undef,
-        {   content_data_id  => \'= cd_id',
-            content_field_id => $prop->{content_field_id},
-            value_varchar    => $val,
-        },
-        { unique => 1 },
+        my @indexes = MT::ContentFieldIndex->load(
+            {   content_field_id => $prop->{content_field_id},
+                value_varchar    => $val,
+            },
+            { fetchonly => { content_data_id => 1 } }
         );
+        my %content_data_ids = map { $_->content_data_id => 1 } @indexes;
+        my @content_data_ids = keys %content_data_ids;
+        @content_data_ids ? { id => { not => \@content_data_ids } } : undef;
+    }
+    else {
+        $base_args->{joins} ||= [];
+        push @{ $base_args->{joins} },
+            MT::ContentFieldIndex->join_on(
+            undef,
+            {   content_data_id  => \'= cd_id',
+                content_field_id => $prop->{content_field_id},
+                value_varchar    => $val,
+            },
+            { unique => 1 },
+            );
+        return;
+    }
 }
 
 sub filter_tmpl {
@@ -48,6 +58,7 @@ __TMPL__
 
 sub field_html {
     my ( $app, $id, $value ) = @_;
+    $value = '' unless defined $value;
 
     my %values;
     if ( ref $value eq 'ARRAY' ) {

@@ -228,33 +228,11 @@ content_field_types:
         data_type: varchar
         options: 1
         order: 120
-        field_html: |
-            sub {
-                my ( $app, $id, $value )  = @_;
-                require MT::ContentField;
-                my $content_field = MT::ContentField->load($id);
-                my $options = $content_field->options;
-                my $options_delimiter = quotemeta( $app->registry('content_field_types')->{checkbox}{options_delimiter} || ',' );
-                my @options = split $options_delimiter, $options;
-                my @values  = split $options_delimiter, $value;
-                my $html = '';
-                my $count = 1;
-                foreach my $option (@options) {
-                    $html .= "<input type=\"checkbox\" name=\"content-field-$id\" id=\"content-field-$id-$count\" class=\"radio\" value=\"$option\"";
-                    $html .= ( grep { $_ eq $option } @values ) ? ' checked="checked"' : '';
-                    $html .= " />";
-                    $html .= " <label for=\"content-field-$id-$count\">$option ";
-                    $count++;
-                }
-                return $html;
-            }
-        data_getter: |
-            sub {
-                my ( $app, $id )  = @_;
-                my $q = $app->param;
-                my @datas = $q->param( 'content-field-' . $id );
-                return join ',', @datas;
-            }
+        terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+        filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+        field_html: $ContentType::MT::ContentFieldType::Checkbox::field_html
+        single_select_options: $ContentType::MT::ContentFieldType::Checkbox::single_select_options
+        data_getter: $ContentType::MT::ContentFieldType::Checkbox::data_getter
     asset:
         label: Asset
         data_type: varchar
