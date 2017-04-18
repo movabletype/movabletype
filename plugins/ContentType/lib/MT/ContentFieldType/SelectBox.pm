@@ -47,26 +47,44 @@ __TMPL__
 
 sub field_html {
     my ( $app, $id, $value ) = @_;
+
+    my %values;
+    if ( ref $value eq 'ARRAY' ) {
+        %values = map { $_ => 1 } @$value;
+    }
+    else {
+        $values{$value} = 1;
+    }
+
     my $content_field = MT::ContentField->load($id);
-    my $options       = $content_field->options;
+
+    my $options = $content_field->options;
     my $options_delimiter
         = quotemeta(
         $app->registry('content_field_types')->{select_box}{options_delimiter}
             || ',' );
     my @options = split $options_delimiter, $options;
+
+    # TODO: Fix $content_field->options
+    my $multiple = eval { $content_field->options->{multiple} };
+
     my $html
         = '<select name="content-field-'
         . $id
         . '" id="content-field-'
         . $id
-        . '" class="select">';
+        . '" class="select"';
+    $html .= ' multiple style="min-width: 5em; min-height: 5em;"'
+        if $multiple;
+    $html .= '>';
     foreach my $option (@options) {
         $html .= '<option value="' . $option . '"';
         $html .= ' selected="selected"'
-            if defined $value && $option eq $value;
+            if $values{$option};
         $html .= '>' . $option . '</option>';
     }
     $html .= '</select>';
+
     return $html;
 }
 
@@ -83,6 +101,17 @@ sub single_select_options {
     my @options = split $options_delimiter, $content_field->options;
 
     [ map { +{ label => $_, value => $_ } } @options ];
+}
+
+sub data_getter {
+    my ( $app, $id ) = @_;
+    my @options       = $app->param("content-field-${id}");
+    my $content_field = MT::ContentField->load($id);
+
+    # TODO: Fix $content_field->options
+    my $multiple = eval { $content_field->options->{multiple} };
+
+    $multiple ? \@options : @options ? $options[0] : undef;
 }
 
 1;

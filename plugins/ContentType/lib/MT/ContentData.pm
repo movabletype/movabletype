@@ -65,39 +65,52 @@ sub _generate_text_html {
 sub save {
     my $self = shift;
 
-    $self->SUPER::save(@_) or return;
-
     my $content_field_types = MT->registry('content_field_types');
     my $content_type        = $self->content_type
         or return $self->error(
         MT->component('ContentType')->translate('Invalid content type') );
+
+    $self->SUPER::save(@_) or return;
+
     my $field_data = $self->data;
 
     foreach my $f ( @{ $content_type->fields } ) {
-        my $cf_idx = MT::ContentFieldIndex->load_or_new(
+        my $data_type = $content_field_types->{ $f->{type} }{data_type};
+        my $value     = $field_data->{ $f->{id} };
+        $value = [$value] unless ref $value eq 'ARRAY';
+
+        MT::ContentFieldIndex->remove(
             {   content_type_id  => $content_type->id,
                 content_data_id  => $self->id,
                 content_field_id => $f->{id},
             }
         );
 
-        my $data_type = $content_field_types->{ $f->{type} }{data_type};
-        my $value     = $field_data->{ $f->{id} };
-        $cf_idx->set_value( $data_type, $value )
-            or return $self->error(
-            MT->component('ContentType')->translate(
-                'Saving content field index failed: Invalid field type "[_1]"',
-                $data_type
-            )
+        for my $v (@$value) {
+            my $cf_idx = MT::ContentFieldIndex->new;
+            $cf_idx->set_values(
+                {   content_type_id  => $content_type->id,
+                    content_data_id  => $self->id,
+                    content_field_id => $f->{id},
+                }
             );
 
-        $cf_idx->save
-            or return $self->error(
-            MT->component('ContentType')->translate(
-                "Saving content field index failed: [_1]",
-                $cf_idx->errstr
-            )
-            );
+            $cf_idx->set_value( $data_type, $v )
+                or return $self->error(
+                MT->component('ContentType')->translate(
+                    'Saving content field index failed: Invalid field type "[_1]"',
+                    $data_type
+                )
+                );
+
+            $cf_idx->save
+                or return $self->error(
+                MT->component('ContentType')->translate(
+                    "Saving content field index failed: [_1]",
+                    $cf_idx->errstr
+                )
+                );
+        }
     }
 
     1;

@@ -213,6 +213,7 @@ content_field_types:
         filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::SelectBox::field_html
         single_select_options: $ContentType::MT::ContentFieldType::SelectBox::single_select_options
+        data_getter: $ContentType::MT::ContentFieldType::SelectBox::data_getter
     radio:
         label: Radio
         data_type: varchar
