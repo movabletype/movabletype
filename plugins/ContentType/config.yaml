@@ -162,6 +162,8 @@ content_field_types:
         label: URL
         data_type: varchar
         order: 60
+        terms: $ContentType::ContentType::ListProperties::terms_text
+        filter_tmpl: <mt:var name="filter_form_string">
         ss_validator: |
             sub {
                 my ( $app, $id) = @_;
