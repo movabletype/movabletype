@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -12,7 +12,7 @@ function smarty_block_mtincludeblock($args, $content, &$ctx, &$repeat) {
         $vars =& $ctx->__stash['vars'];
         if (!$vars) {
             $vars = array();
-            $ctx->__stash['vars'] =& $vars;
+            $ctx->__stash['vars'] = $vars;
         }
         $name = $args['var'];
         $name or $name = 'contents';

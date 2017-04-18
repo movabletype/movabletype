@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -195,14 +195,14 @@ use vars qw( @ISA %Lexicon );
 	'Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'Digest::SHA1 et ses dépendances sont requises afin de permettre aux auteurs de commentaire d\'être identifiés en utilisant les fournisseurs OpenID, comme LiveJournal.',
 	'Net::SMTP is required in order to send mail via an SMTP Server.' => 'Net::SMTP est nécessaire pour envoyer des e-mails via un serveur SMTP.',
 	'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' => 'Ce module et ses dépendances sont requis pour utiliser les mécanismes CRAM-MD5, DIGEST-MD5 ou LOGIN SASL.',
-	'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for Google Analytics site statistics.' => 'IO::Socket::SSL est requis pour l\'authentification SMTP via SSL ou via une commande STARTTLS. Ce module est également requis pour Google Analytics.',
+	'IO::Socket::SSL is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.' => 'IO::Socket::SSL est requis pour les connexions SSL/TLS, telles que les statistiques Google Analytics ou l\'authentification SMTP via SSL/TLS.', # Translate - New
 	'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'Net::SSLeay est requis pour l\'authentification SMTP via une connexion SSL ou par la commande STARTTLS.',
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'Ce module est utilisé dans attribut de test pour la balise conditionnelle MTIf.',
 	'This module is used by the Markdown text filter.' => 'Ce module est utilisé par le filtre de texte Markdown',
 	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Ce module est requis par mt-search.cgi si vous faites fonctionner Movable Type avec une version de Perl antérieure à 5.8.',
 	'This module required for action streams.' => 'Ce module est nécessaire pour les action streams.',
 	'[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation' => '[_1] est optionnel. C\'est l\'un des modules requis pour restaurer une sauvegarde créée par une opération de sauvegarde.',
-	'This module is required for Google Analytics site statistics and for verification of SSL certificates.' => 'Ce module est requis pour les statistiques Google Analytics ainsi que pour la vérification des certificats SSL.', # Translate - New
+	'This module is required for Google Analytics site statistics and for verification of SSL certificates.' => 'Ce module est requis pour les statistiques Google Analytics ainsi que pour la vérification des certificats SSL.',
 	'This module is required for executing run-periodic-tasks.' => 'Ce module est  requis pour exécuter run-periodic-tasks.',
 	'[_1] is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => '[_1] est optionnel. C\'est une meilleure alternative, plus rapide et plus légère, à YAML::Tiny pour le traitement des fichiers YAML.',
 	'The [_1] database driver is required to use [_2].' => 'Le driver de base de données [_1] est requis pour utiliser [_2].',
@@ -583,10 +583,10 @@ use vars qw( @ISA %Lexicon );
 	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'Un outil de traitement d\'image, souvent spécifié par la directive de configuration ImageDriver, n\'est pas présent sur votre serveur ou n\'est pas configuré correctement. Un outil doit être installé pour permettre l\'utilisation correcte de la fonctionnalité des images d\'utilsateurs. Veuillez installer Image::Magick, NetPBM, GD ou Imager, puis spécifiez la directive de configuration ImageDriver.',
 	'System Email Address is not configured.' => 'Adresse e-mail du système non configurée.',
 	'The System Email Address is used in the \'From:\' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events. Please confirm your <a href="[_1]">settings.</a>' => 'L\'adresse e-mail du système est utilisée comme entête de l\'expéditeur de chaque e-mail envoyé par Movable Type (récupération de mot de passe, enregistrement de commentateur, notification de commentaire ou de TrackBack, blocage d\'un utilisateur ou d\'une adresse IP, et d\'autres événements mineurs). Veuillez confirmer vos <a href="[_1]">paramètres</a>.',
-	'Cannot verify SSL certificate.' => 'Impossible de vérifier le certificat SSL.', # Translate - New
-	'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this is not recommended.' => 'Veuillez installer le module Mozilla::CA. Ajouter "SSLVerifyNone 1" dans mt-config.cgi masque cet avertissement, mais ce n\'est pas recommandé.', # Translate - New
-	'Can verify SSL certificate, but verification is disabled.' => 'Le certificat SSL pourrait être vérifié mais la vérification est désactivée.', # Translate - New
-	'You should remove "SSLVerifyNone 1" in mt-config.cgi.' => 'Vous devriez supprimer "SSLVerifyNone 1" dans mt-config.cgi.', # Translate - New
+	'Cannot verify SSL certificate.' => 'Impossible de vérifier le certificat SSL.',
+	'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this is not recommended.' => 'Veuillez installer le module Mozilla::CA. Ajouter "SSLVerifyNone 1" dans mt-config.cgi masque cet avertissement, mais ce n\'est pas recommandé.',
+	'Can verify SSL certificate, but verification is disabled.' => 'Le certificat SSL pourrait être vérifié mais la vérification est désactivée.',
+	'You should remove "SSLVerifyNone 1" in mt-config.cgi.' => 'Vous devriez supprimer "SSLVerifyNone 1" dans mt-config.cgi.',
 	'Personal Stats' => 'Statistiques personnelles',
 	'Movable Type News' => 'Actualités Movable Type',
 	'Websites' => 'Sites web',
@@ -974,22 +974,22 @@ use vars qw( @ISA %Lexicon );
 	'Invalid basename \'[_1]\'' => 'Nom de base invalide \'[_1]\'',
 	'Error writing to \'[_1]\': [_2]' => 'Erreur d\'écriture sur \'[_1]\' : [_2]',
 	'Popup page for [_1]' => 'Fenêtre surgissante pour [_1]',
-	'Scaling image failed: Invalid parameter.' => 'L\'image n\'a pu être redimensionnée : paramètre invalide.', # Translate - New
-	'Cropping image failed: Invalid parameter.' => 'L\'image n\'a pu être retaillée : paramètre invalide.', # Translate - New
-	'Rotating image failed: Invalid parameter.' => 'L\'image n\'a pu être pivotée : paramètre invalide.', # Translate - New
-	'Writing metadata failed: [_1]' => 'L\'écriture des métadonnées a échoué : [_1]', # Translate - New
-	'Error writing metadata to \'[_1]\': [_2]' => 'Erreur d\'écriture des métadonnées vers \'[_1]\' : [_2]', # Translate - New
-	'Extracting image metadata failed: [_1]' => 'L\'extraction des métadonnées image a échoué : [_1]', # Translate - New
-	'Writing image metadata failed: [_1]' => 'L\'écriture des métadonnées image a échoué : [_1]', # Translate - New
+	'Scaling image failed: Invalid parameter.' => 'L\'image n\'a pu être redimensionnée : paramètre invalide.',
+	'Cropping image failed: Invalid parameter.' => 'L\'image n\'a pu être retaillée : paramètre invalide.',
+	'Rotating image failed: Invalid parameter.' => 'L\'image n\'a pu être pivotée : paramètre invalide.',
+	'Writing metadata failed: [_1]' => 'L\'écriture des métadonnées a échoué : [_1]',
+	'Error writing metadata to \'[_1]\': [_2]' => 'Erreur d\'écriture des métadonnées vers \'[_1]\' : [_2]',
+	'Extracting image metadata failed: [_1]' => 'L\'extraction des métadonnées image a échoué : [_1]',
+	'Writing image metadata failed: [_1]' => 'L\'écriture des métadonnées image a échoué : [_1]',
 
 ## lib/MT/Asset.pm
 	'Deleted' => 'Supprimé',
 	'Enabled' => 'Activé',
 	'Disabled' => 'Désactivé',
-	'missing' => 'manquant', # Translate - New
-	'extant' => 'existant', # Translate - New
-	'Assets with Missing File' => 'Éléments sans fichier', # Translate - New
-	'Assets with Extant File' => 'Éléments avec fichier existant', # Translate - New
+	'missing' => 'manquant',
+	'extant' => 'existant',
+	'Assets with Missing File' => 'Éléments sans fichier',
+	'Assets with Extant File' => 'Éléments avec fichier existant',
 	'Could not remove asset file [_1] from the filesystem: [_2]' => 'Impossible de supprimer le fichier [_1] du système : [_2]',
 	'Description' => 'Description',
 	'Location' => 'Adresse',
@@ -1003,7 +1003,7 @@ use vars qw( @ISA %Lexicon );
 	'Pixel height' => 'Hauteur en pixel',
 	'Except Userpic' => 'Exclure les photos des utilisateurs',
 	'Author Status' => 'Status de l\'auteur',
-	'Missing File' => 'Fichier manquant', # Translate - New
+	'Missing File' => 'Fichier manquant',
 	'Assets of this website' => 'Éléments de ce site',
 
 ## lib/MT/Asset/Video.pm
@@ -1209,8 +1209,8 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Extension changed from [_1] to [_2]' => 'Extensions changées de [_1] vers [_2]',
 	'Failed to create thumbnail file because [_1] could not handle this image type.' => 'Impossible de créer la vignette car [_1] ne gère pas ce type de fichier.',
 	'Upload File' => 'Télécharger un fichier',
-	'Invalid Request.' => 'Requête invalide.', # Translate - Case
-	'File with name \'[_1]\' already exists. Upload has been cancelled.' => 'Un fichier nommé \'[_1]\' existe déjà. Le téléchargement a été annulé.', # Translate - New
+	'Invalid Request.' => 'Requête invalide.',
+	'File with name \'[_1]\' already exists. Upload has been cancelled.' => 'Un fichier nommé \'[_1]\' existe déjà. Le téléchargement a été annulé.',
 	'Cannot load file #[_1].' => 'Impossible de charger le fichier #[_1].',
 	'No permissions' => 'Aucun droit',
 	'File \'[_1]\' uploaded by \'[_2]\'' => 'Fichier \'[_1]\' envoyé par \'[_2]\'',
@@ -1218,10 +1218,11 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Untitled' => 'Sans nom',
 	'Archive Root' => 'Racine de l\'archive',
 	'Site Root' => 'Racine du site',
-	'basename of user' => 'nom de base de l\'utilisateur', # Translate - New
-	'<[_1] Root>' => '<Racine du [_1]>', # Translate - New
-	'<[_1] Root>/[_2]' => '<Racine du [_1]>/[_2]', # Translate - New
+	'basename of user' => 'nom de base de l\'utilisateur',
+	'<[_1] Root>' => '<Racine du [_1]>',
+	'<[_1] Root>/[_2]' => '<Racine du [_1]>/[_2]',
 	'Archive' => 'Archive',
+	'Custom...' => 'Personnalisé...',
 	'Please select a file to upload.' => 'Merci de sélectionner un fichier à télécharger.',
 	'Invalid filename \'[_1]\'' => 'Nom de fichier invalide \'[_1]\'',
 	'Please select an audio file to upload.' => 'Merci de sélectionner un fichier audio à télécharger.',
@@ -1240,12 +1241,12 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Error writing upload to \'[_1]\': [_2]' => 'Erreur d\'écriture lors de l\'envoi de \'[_1]\' : [_2]',
 	'Uploaded file is not an image.' => 'Le fichier téléchargé n\'est pas une image.',
 	'Cannot overwrite an existing file with a file of a different type. Original: [_1] Uploaded: [_2]' => 'Impossible de remplacer un fichier avec un autre de type différent. Original : [_1] / Téléchargé : [_2]',
-	'File with name \'[_1]\' already exists.' => 'Un fichier nommé \'[_1]\' existe déjà.', # Translate - New
-	'Cannot load asset #[_1].' => 'Impossible de charger l\'élément #[_1].', # Translate - New
+	'File with name \'[_1]\' already exists.' => 'Un fichier nommé \'[_1]\' existe déjà.',
+	'Cannot load asset #[_1].' => 'Impossible de charger l\'élément #[_1].',
 	'Save failed: [_1]' => 'Échec de la sauvegarde : [_1]',
 	'Saving object failed: [_1]' => 'Échec de la sauvegarde de l\'objet : [_1]',
-	'Transforming image failed: [_1]' => 'La transformation de l\'image a échoué : [_1]', # Translate - New
-	'Cannot load asset #[_1]' => 'Impossible de charger l\'élément #[_1]', # Translate - New
+	'Transforming image failed: [_1]' => 'La transformation de l\'image a échoué : [_1]',
+	'Cannot load asset #[_1]' => 'Impossible de charger l\'élément #[_1]',
 	'<' => '<',
 	'/' => '/',
 
@@ -1287,18 +1288,20 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Saving blog failed: [_1]' => 'Échec de la sauvegarde du blog : [_1]',
 	'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.' => 'Erreur : Movable Type ne peut pas écrire dans le répertoire de cache de gabarits. Merci de vérifier les autorisations du répertoire <code>[_1]</code> situé dans le répertoire du blog.',
 	'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory.' => 'Erreur : Movable Type n\'a pas pu créer un répertoire pour cacher vos gabarits dynamiques. Vous devez créer un répertoire nommé <code>[_1]</code> dans le répertoire de votre blog.',
-	'No blog was selected to clone.' => 'Aucun blog n\'a été sélectionné pour la duplication.',
+	'No blog was selected to clone.' => 'Aucun blog à cloner n\'a été sélectionné.',
 	'This action can only be run on a single blog at a time.' => 'Cette action ne peut être exécutée que sur un seul blog à la fois.',
-	'Invalid blog_id' => 'Identifiant du blog non valide',
+	'Invalid blog_id' => 'Identifiant du blog invalide',
 	'This action cannot clone website.' => 'Cette action ne peut pas cloner un site web.',
 	'Entries must be cloned if comments and trackbacks are cloned' => 'Les notes doivent être clonées si les commentaires et les TrackBacks le sont',
 	'Entries must be cloned if comments are cloned' => 'Les notes doivent être clonées si les commentaires le sont',
 	'Entries must be cloned if trackbacks are cloned' => 'Les notes doivent être clonées si les TrackBacks le sont',
+	'\'[_1]\' (ID:[_2]) has been copied as \'[_3]\' (ID:[_4]) by \'[_5]\' (ID:[_6]).' => '\'[_1]\' (ID:[_2]) a été copié comme \'[_3]\' (ID:[_4]) par \'[_5]\' (ID:[_6]).', # Translate - New
 
 ## lib/MT/CMS/Category.pm
 	'The [_1] must be given a name!' => 'Le [_1] doit avoir un nom !',
 	'Failed to update [_1]: Some of [_2] were changed after you opened this page.' => 'Impossible de mettre à jour [_1] : certains [_2] ont été modifiés après que vous avez ouvert cette page.',
 	'Tried to update [_1]([_2]), but the object was not found.' => 'Tentative de mise à jour [_1] ([_2]), mais l\'objet est introuvable.',
+	'[_1] order has been edited by \'[_2]\'.' => 'L\'ordre de [_1] a été édité par \'[_2]\'.', # Translate - New
 	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => 'Vos changements ont été effectués ([_1] ajoutés, [_2] édités et [_3] supprimés). <a href="#" onclick="[_4]" class="mt-rebuild">Publiez votre site</a> pour voir les changements.',
 	'Add a [_1]' => 'Ajouter un [_1]',
 	'No label' => 'Pas d\'étiquette',
@@ -1307,7 +1310,8 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'The category name \'[_1]\' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Le nom de la catégorie \'[_1]\' entre en conflit avec celui d\'une autre. Les catégories principales et celles secondaires du même parent doivent avoir un nom distinct.',
 	'The category basename \'[_1]\' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.' => 'Le nom de base de la catégorie \'[_1]\' entre en conflit avec celui d\'une autre. Les catégories principales et celles secondaires du même parent doivent avoir un nom de base distinct.',
 	'The name \'[_1]\' is too long!' => 'Le nom \'[_1]\' est trop long.',
-	'Category \'[_1]\' created by \'[_2]\'' => 'Catégorie \'[_1]\' créée par \'[_2]\'',
+	'Category \'[_1]\' created by \'[_2]\'.' => 'Catégorie \'[_1]\' créée par \'[_2]\'.', # Translate - New
+	'Category \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'Catégorie \'[_1]\' (ID:[_2]) éditée par \'[_3]\'', # Translate - New
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Catégorie \'[_1]\' (ID:[_2]) supprimée par \'[_3]\'',
 	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Le nom de catégorie \'[_1]\' est en conflit avec une autre catégorie. Les catégories racines et les sous-catégories qui ont le même parent doivent avoir un nom distinct.',
 
@@ -1340,7 +1344,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'\'[_1]\' edited the global template \'[_2]\'' => '\'[_1]\' a édité le gabarit global \'[_2]\'',
 	'Load failed: [_1]' => 'Échec du chargement : [_1]',
 	'(no reason given)' => '(sans raison donnée)',
-	'Error occurred during permission check: [_1]' => 'Erreur lors de la vérification des permissions : [_1]', # Translate - New
+	'Error occurred during permission check: [_1]' => 'Erreur lors de la vérification des permissions : [_1]',
 	'Invalid filter: [_1]' => 'Filtre invalide : [_1]',
 	'New Filter' => 'Nouveau filtre',
 	'__SELECT_FILTER_VERB' => 'est',
@@ -1383,7 +1387,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Saving placement failed: [_1]' => 'Échec de la sauvegarde du placement : [_1]',
 	'Invalid date \'[_1]\'; [_2] dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Date invalide \'[_1]\'. Les dates [_2] doivent être au format AAAA-MM-JJ HH:MM:SS.',
 	'Invalid date \'[_1]\'; [_2] dates should be real dates.' => 'Date invalide \'[_1]\'. Les dates [_2] doivent être des dates réelles.',
-	'Invalid date \'[_1]\'; \'Published on\' dates should be earlier than the corresponding \'Unpublished on\' date \'[_2]\'.' => 'Date invalide \'[_1]\'. La date \'Publié le\' doit être antérieure à la date \'Dépublié le\' \'[_2]\' correspondante.',
+	'Invalid date \'[_1]\'; \'Published on\' dates should be earlier than the corresponding \'Unpublished on\' date \'[_2]\'.' => 'Date invalide \'[_1]\'. La date \'Publiée le\' doit être antérieure à la date \'Dépubliée le\' \'[_2]\' correspondante.',
 	'authored on' => 'créée le',
 	'modified on' => 'modifiée le',
 	'Saving entry \'[_1]\' failed: [_2]' => 'La sauvegarde de la note \'[_1]\' a échoué : [_2]',
@@ -1418,6 +1422,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## lib/MT/CMS/Folder.pm
 	'The folder \'[_1]\' conflicts with another folder. Folders with the same parent must have unique basenames.' => 'Le répertoire \'[_1]\' est en conflit avec un autre répertoire. Les répertoires qui ont le même répertoire parent doivent avoir un nom de base distinct.',
 	'Folder \'[_1]\' created by \'[_2]\'' => 'Répertoire \'[_1]\' créé par \'[_2]\'',
+	'Folder \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'Répertoire \'[_1]\' (ID:[_2]) édité par \'[_3]\'', # Translate - New
 	'Folder \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Répertoire \'[_1]\' (ID:[_2]) supprimé par \'[_3]\'',
 
 ## lib/MT/CMS/Import.pm
@@ -1577,8 +1582,9 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Only to blogs within this system' => 'Seulement vers les blogs de ce système',
 	'[_1] is [_2]' => '[_1] est [_2]',
 	'none' => 'aucun fournisseur',
-	'Image quality(JPEG) is [_1]' => 'La qualité d\'image JPEG est [_1]', # Translate - New
-	'Image quality(PNG) is [_1]' => 'La qualité d\'image PNG est [_1]', # Translate - New
+	'Changing image quality is [_1]' => 'Le changement de qualité d\'image est [_1]', # Translate - New
+	'Image quality(JPEG) is [_1]' => 'La qualité d\'image JPEG est [_1]',
+	'Image quality(PNG) is [_1]' => 'La qualité d\'image PNG est [_1]',
 	'System Settings Changes Took Place' => 'Les changements des paramètres système ont pris place',
 	'Invalid password recovery attempt; Cannot recover the password in this configuration' => 'Tentative de récupération de mot de passe invalide. Impossible de recouvrer le mot de passe avec cette configuration.',
 	'Invalid author_id' => 'auteur_id incorrect',
@@ -1824,8 +1830,9 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Remove Temporary Files' => 'Supprimer les fichiers temporaires',
 	'Purge Stale Session Records' => 'Purger les enregistrements des sessions périmées',
 	'Purge Stale DataAPI Session Records' => 'Purger les enregistrements des sessions DataAPI périmées',
-	'Remove expired lockout data' => 'Retirer les données des verrouillages expirés',
+	'Remove expired lockout data' => 'Supprimer les données des verrouillages expirés',
 	'Purge Unused FileInfo Records' => 'Vider les enregistrements d’informations de fichier inutilisés',
+	'Remove Compiled Template Files' => 'Supprimer les fichiers de gabarits compilés', # Translate - New
 	'Manage Website' => 'Gérer un site web',
 	'Manage Blog' => 'Gérer un blog',
 	'Manage Website with Blogs' => 'Gérer un site web avec des blogs',
@@ -1892,8 +1899,8 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## lib/MT/DataAPI/Endpoint/Comment.pm
 
 ## lib/MT/DataAPI/Endpoint/Common.pm
-	'Invalid dateFrom parameter: [_1]' => 'Le paramètre dateFrom est invalide : [_1]', # Translate - New
-	'Invalid dateTo parameter: [_1]' => 'Le paramètre dateTo est invalide : [_1]', # Translate - New
+	'Invalid dateFrom parameter: [_1]' => 'Le paramètre dateFrom est invalide : [_1]',
+	'Invalid dateTo parameter: [_1]' => 'Le paramètre dateTo est invalide : [_1]',
 
 ## lib/MT/DataAPI/Endpoint/Entry.pm
 
@@ -1927,9 +1934,9 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Invalid default_cat_id: [_1]' => 'Paramètre "default_cat_id" invalide [_1]',
 	'An error occurred during the import process: [_1]. Please check your import file.' => 'Une erreur s\'est produite pendant le processus: [_1]. Merci de vérifier le fichier d\'import.',
 	'Make sure that you remove the files that you imported from the \'import\' folder, so that if/when you run the import process again, those files will not be re-imported.' => 'Assurez vous d\'avoir bien enlevé les fichiers importés du répertoire \'import\', pour éviter une ré-importation des mêmes fichiers à l\'avenir.',
-	'A resource "[_1_]" is required.' => 'Une ressource "[_1_]" est requise.', # Translate - New
-	'Could not found archive template for [_1].' => 'Impossible de trouver un gabarit d\'archive pour [_1].', # Translate - New
-	'Preview data not found.' => 'Données de prévisualisation introuvables.', # Translate - New
+	'A resource "[_1_]" is required.' => 'Une ressource "[_1_]" est requise.',
+	'Could not found archive template for [_1].' => 'Impossible de trouver un gabarit d\'archive pour [_1].',
+	'Preview data not found.' => 'Données de prévisualisation introuvables.',
 
 ## lib/MT/DataAPI/Endpoint/v2/Folder.pm
 
@@ -1965,7 +1972,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Cannot publish [_1] template.' => 'Impossible de publier le gabarit [_1].',
 	'A parameter "refresh_type" is invalid: [_1]' => 'Un paramètre "refresh_type" est invalide : [_1]',
 	'Cannot clone [_1] template.' => 'Impossible de dupliquer un gabarit [_1]',
-	'A resource "template" is required.' => 'Une ressource "template" est requise.', # Translate - New
+	'A resource "template" is required.' => 'Une ressource "template" est requise.',
 
 ## lib/MT/DataAPI/Endpoint/v2/Theme.pm
 	'Cannot apply website theme to blog.' => 'Impossible d\'appliquer le thème du site au blog.',
@@ -2118,20 +2125,20 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## lib/MT/Image/ImageMagick.pm
 	'Cannot load Image::Magick: [_1]' => 'Impossible de charger Image::Magick : [_1]',
 	'Scaling to [_1]x[_2] failed: [_3]' => 'La mise à l\'échelle vers [_1]x[_2] a échoué : [_3]',
-	'Cropping a [_1]x[_2] square at [_3],[_4] failed: [_5]' => 'Le retaillage d\'un carré de [_1]x[_2] à [_3],[_4] a échoué : [_5]', # Translate - New
+	'Cropping a [_1]x[_2] square at [_3],[_4] failed: [_5]' => 'Le retaillage d\'un carré de [_1]x[_2] à [_3],[_4] a échoué : [_5]',
 	'Flip horizontal failed: [_1]' => 'La symétrie horizontale a échoué : [_1]',
 	'Flip vertical failed: [_1]' => 'La symétrie verticale a échoué : [_1]',
 	'Rotate (degrees: [_1]) failed: [_2]' => 'La rotation ([_1] degrés) a échoué : [_2]',
 	'Converting image to [_1] failed: [_2]' => 'La conversion de l\'image vers [_1] a échoué : [_2]',
-	'Outputting image failed: [_1]' => 'La génération de l\'image a échoué : [_1]', # Translate - New
+	'Outputting image failed: [_1]' => 'La génération de l\'image a échoué : [_1]',
 
 ## lib/MT/Image/Imager.pm
 	'Cannot load Imager: [_1]' => 'Impossible de charger Imager : [_1]',
 
 ## lib/MT/Image/NetPBM.pm
 	'Cannot load IPC::Run: [_1]' => 'Impossible de charger IPC::Run : [_1]',
-	'Reading alpha channel of image failed: [_1]' => 'La lecture du canal alpha de l\'image a échoué : [_1]', # Translate - New
-	'Cropping to [_1]x[_2] failed: [_3]' => 'Le retaillage vers [_1]x[_2] a échoué : [_3]', # Translate - New
+	'Reading alpha channel of image failed: [_1]' => 'La lecture du canal alpha de l\'image a échoué : [_1]',
+	'Cropping to [_1]x[_2] failed: [_3]' => 'Le retaillage vers [_1]x[_2] a échoué : [_3]',
 	'You do not have a valid path to the NetPBM tools on your machine.' => 'Votre chemin d\'accès vers les outils NetPBM est invalide sur votre machine.',
 
 ## lib/MT/Image.pm
@@ -2863,19 +2870,19 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
                           toFixed(center.x, NUM_FRACTION_DIGITS) +
                            +
                           toFixed(center.y, NUM_FRACTION_DIGITS) +
-                        ', # Translate - New
-	', (-this.width / 2), , (-this.height/2), ' => ', (-this.width / 2), , (-this.height/2), ', # Translate - New
-	' + (-this.width/2) +  + (-this.height/2) + ' => ' + (-this.width/2) +  + (-this.height/2) + ', # Translate - New
-	', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ' => ', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ', # Translate - New
+                        ',
+	', (-this.width / 2), , (-this.height/2), ' => ', (-this.width / 2), , (-this.height/2), ',
+	' + (-this.width/2) +  + (-this.height/2) + ' => ' + (-this.width/2) +  + (-this.height/2) + ',
+	', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ' => ', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ',
 	',
         -this.width / 2, ,
         -this.height + heightOfLine, ' => ',
         -this.width / 2, ,
-        -this.height + heightOfLine, ', # Translate - New
+        -this.height + heightOfLine, ',
 
 ## mt-static/js/image_editor/fabric.min.js
-	'+t(i.x,r)++t(i.y,r)+' => '+t(i.x,r)++t(i.y,r)+', # Translate - New
-	',s(r.textLeft,2)," ",s(r.textTop,2),' => ',s(r.textLeft,2)," ",s(r.textTop,2),', # Translate - New
+	'+e(n.x,r)++e(n.y,r)+' => '', # Translate - New
+	',i(r.textLeft,2)," ",i(r.textTop,2),' => '', # Translate - New
 
 ## mt-static/js/tc/mixer/display.js
 	'Title:' => 'Titre :',
@@ -2883,6 +2890,10 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Author:' => 'Auteur :',
 	'Tags:' => 'Tags :',
 	'URL:' => 'URL :',
+
+## mt-static/js/upload_settings.js
+	'You must set a valid path.' => 'Vous devez définir un chemin valide.',
+	'You must set a path begining with %s or %a.' => 'Vous devez définir un chemin commençant par %s ou %a.', # Translate - New
 
 ## mt-static/mt.js
 	'delete' => 'supprimer',
@@ -3192,7 +3203,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Read more' => 'Lire la suite',
 
 ## themes/eiger/templates/entry.mtml
-	'Posted on' => 'Publié le',
+	'Posted on' => 'Publiée le',
 	'Previous entry' => 'Note précédente',
 	'Next entry' => 'Note suivante',
 	'Zenback' => 'Zenback',
@@ -3394,7 +3405,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## themes/rainier/templates/dynamic_error.mtml
 
 ## themes/rainier/templates/entry.mtml
-	'Posted on [_1]' => 'Publié le [_1]',
+	'Posted on [_1]' => 'Publiée le [_1]',
 	'by [_1]' => 'par [_1]',
 	'in [_1]' => 'dans [_1]',
 
@@ -3505,7 +3516,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Upload New Asset' => 'Télécharger un nouvel élément',
 
 ## tmpl/cms/asset_upload.tmpl
-	q{Upload Asset} => q{Télécharger un élément},
+	'Upload Asset' => 'Télécharger un élément',
 
 ## tmpl/cms/backup.tmpl
 	'Backup [_1]' => 'Sauvegarder [_1]',
@@ -3585,7 +3596,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Character entities (&amp#8221;, &amp#8220;, etc.)' => 'Entités de caractères (&amp#8221;, &amp#8220;, etc.)',
 	q{ASCII equivalents (&quot;, ', ..., -, --)} => q{Équivalents ASCII (&quot;, ', ..., -, --)},
 	'Replace Fields' => 'Appliquer le remplacement des caractères dans les champs',
-	'Image default insertion options' => 'Options d\'insertion d\'image par défaut', # Translate - New
+	q{Image default insertion options} => q{Options d'insertion d'image par défaut},
 	'Use thumbnail' => 'Utiliser une vignette',
 	'width:' => 'largeur :',
 	'pixels' => 'pixels',
@@ -3593,11 +3604,11 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Left' => 'À gauche',
 	'Center' => 'Au centre',
 	'Right' => 'À droite',
-	'Link to popup window' => 'Lien vers fenêtre surgissante', # Translate - New
+	'Link to popup window' => 'Lien vers fenêtre surgissante',
 	q{Link image to full-size version in a popup window.} => q{Créer un lien vers l'image originale dans une fenêtre surgissante},
 	'Save changes to these settings (s)' => 'Enregistrer les modifications de ces paramètres (s)',
 	'The range for Basename Length is 15 to 250.' => 'La longueur du nom de base va de 15 à 250.',
-	'You must set valid default thumbnail width.' => 'Vous devez définir une largeur de vignette par défaut valide.', # Translate - New
+	'You must set valid default thumbnail width.' => 'Vous devez définir une largeur de vignette par défaut valide.',
 
 ## tmpl/cms/cfg_feedback.tmpl
 	'Feedback Settings' => 'Paramètres des feedbacks',
@@ -3810,15 +3821,15 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Number of revisions per template' => 'Nombres de révisions par gabarit',
 	'Upload' => 'Envoyer',
 	'Upload Destination' => 'Destination du fichier',
-	'Allow to change at upload' => 'Permettre la modification lors du téléchargement', # Translate - New
-	'Rename filename' => 'Renommer le fichier', # Translate - New
-	'Rename non-ascii filename automatically' => 'Renommer le nom de fichier (avec caractères non-ASCII) automatiquement', # Translate - New
-	'Operation if a file exists' => 'Que faire si un fichier existe', # Translate - New
-	'Upload and rename' => 'Charger et renommer', # Translate - New
-	'Overwrite existing file' => 'Écraser le fichier existant', # Translate - New
-	'Cancel upload' => 'Annuler le chargement', # Translate - New
-	'Normalize orientation' => 'Normaliser l\'orientation', # Translate - New
-	'Enable orientation normalization' => 'Activer la normalisation de l\'orientation', # Translate - New
+	'Allow to change at upload' => 'Permettre la modification lors du téléchargement',
+	'Rename filename' => 'Renommer le fichier',
+	'Rename non-ascii filename automatically' => 'Renommer le nom de fichier (avec caractères non-ASCII) automatiquement',
+	'Operation if a file exists' => 'Que faire si un fichier existe',
+	'Upload and rename' => 'Charger et renommer',
+	'Overwrite existing file' => 'Écraser le fichier existant',
+	'Cancel upload' => 'Annuler le chargement',
+	q{Normalize orientation} => q{Normaliser l'orientation},
+	q{Enable orientation normalization} => q{Activer la normalisation de l'orientation},
 	'You must set your Blog Name.' => 'Vous devez configurer le nom du blog.',
 	q{You did not select a time zone.} => q{Vous n'avez pas sélectionné de fuseau horaire.},
 	'You must set a valid URL.' => 'Vous devez entrer une URL valide.',
@@ -3830,7 +3841,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{You must set your Local Archive Path.} => q{Vous devez spécifier votre chemin d'archive local.},
 	q{You must set a valid Local Archive Path.} => q{Vous devez spécifier un chemin d'archive local valide.},
 	q{Please choose a preferred archive type.} => q{Veuillez choisir le type d'archive préférée.},
-	'You must set a valid path.' => 'Vous devez définir un chemin valide.', # Translate - New
 
 ## tmpl/cms/cfg_registration.tmpl
 	'Registration Settings' => 'Paramètres des enregistrements',
@@ -3852,7 +3862,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## tmpl/cms/cfg_system_general.tmpl
 	'Your settings have been saved.' => 'Vos paramètres ont été enregistrés.',
-	'Imager does not support ImageQualityPng.' => 'Imager ne gère pas ImageQualityPng.', # Translate - New
+	'Imager does not support ImageQualityPng.' => 'Imager ne gère pas ImageQualityPng.',
 	'A test mail was sent.' => 'Un e-mail de test a été envoyé.',
 	'One or more of your websites or blogs are not following the base site path (value of BaseSitePath) restriction.' => 'Au moins un des sites ou des blogs ne respecte pas la restriction du chemin de base (BaseSitePath).',
 	'(None selected)' => '(Aucune sélection)',
@@ -3897,17 +3907,19 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address.} => q{Une adresse IP sera verrouillée si [_1] tentatives d'identification incorrecte sont effectuées depuis cette même adresse IP en moins de [_2] secondes.},
 	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => q{Cependant, les adresses IP suivantes ne seront jamais verrouillées car elles sont dans la liste blanche :},
 	q{The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks.} => q{La liste des adresses IP. Si une adresse IP distante est incluse dans cette liste, une tentative d'identification infructueuse ne sera pas enregistrée. Vous pouvez spécifier plusieurs adresses IP séparées par des virgules ou des sauts de ligne},
-	'Image Quality Settings' => 'Paramètres de qualité d\'image', # Translate - New
-	'Image quality(JPEG)' => 'Qualité d\'image (JPEG)', # Translate - New
-	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.' => 'Qualité d\'image JPEG téléchargée et de sa vignette. Cette valeur entière est comprise entre 0 et 100, 75 étant la valeur par défaut.', # Translate - New
-	'Image quality(PNG)' => 'Qualité d\'image (PNG)', # Translate - New
-	'Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.' => 'Qualité d\'image PNG téléchargée et de sa vignette. Cette valeur entière est comprise entre 0 et 9, 7 étant la valeur par défaut.', # Translate - New
+	q{Image Quality Settings} => q{Paramètres de qualité d'image},
+	'Changing image quality' => 'Changement de qualité d\'image', # Translate - New
+	'Enable image quality changing.' => 'Activer le changement de qualité d\'image.', # Translate - New
+	q{Image quality(JPEG)} => q{Qualité d'image (JPEG)},
+	q{Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.} => q{Qualité d'image JPEG téléchargée et de sa vignette. Cette valeur entière est comprise entre 0 et 100, 75 étant la valeur par défaut.},
+	q{Image quality(PNG)} => q{Qualité d'image (PNG)},
+	q{Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.} => q{Qualité d'image PNG téléchargée et de sa vignette. Cette valeur entière est comprise entre 0 et 9, 7 étant la valeur par défaut.},
 	'Send Mail To' => 'Envoyer un e-mail à',
 	'The email address that should receive a test email from Movable Type.' => 'Cette adresse e-mail devrait recevoir un e-mail de test de Movable Type',
 	'Send' => 'Envoyer',
 	'You must set a valid absolute Path.' => 'Vous devez définir un chemin absolu valide.',
-	'You must set an integer value between 0 and 100.' => 'Entrez un nombre entier entre 0 et 100.', # Translate - New
-	'You must set an integer value between 0 and 9.' => 'Entrez un nombre entier entre 0 et 9.', # Translate - New
+	'You must set an integer value between 0 and 100.' => 'Entrez un nombre entier entre 0 et 100.',
+	'You must set an integer value between 0 and 9.' => 'Entrez un nombre entier entre 0 et 9.',
 
 ## tmpl/cms/cfg_system_users.tmpl
 	'User Settings' => 'Paramètres utilisateur',
@@ -3984,16 +3996,17 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'You must select a parent website.' => 'Vous devez choisir un site web parent',
 
 ## tmpl/cms/dialog/asset_edit.tmpl
-	'Your edited image has been saved.' => 'Votre image éditée a été sauvegardée.', # Translate - New
+	'Your edited image has been saved.' => 'Votre image éditée a été sauvegardée.',
+	q{Metadata cannot be updated because Metadata in this image seems to be broken.} => q{Les métadonnées ne peuvent être mises à jour car celles présentes dans l'image semblent erronées.},
 	'Error creating thumbnail file.' => 'Erreur à la création du fichier de la vignette.',
-	'File Size' => 'Taille de l\'image', # Translate - New
-	'Edit Image' => 'Éditer l\'image', # Translate - New
+	q{File Size} => q{Taille de l'image},
+	q{Edit Image} => q{Éditer l'image},
 	'Save changes to this asset (s)' => 'Enregistrer les modifications de cet élément (s)',
 	'Close (x)' => 'Fermer (x)',
 	'Your changes have been saved.' => 'Les modifications ont été enregistrées.',
-	'An error occurred.' => 'Une erreur est survenue.', # Translate - New
-	'You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?' => 'Les modifications en cours sur cet élément seront perdues. Voulez-vous vraiment éditer cette image ?', # Translate - New
-	'You have unsaved changes to this asset that will be lost. Are you sure you want to close this dialog?' => 'Les modifications en cours sur cet élément seront perdues. Voulez-vous vraiment fermer ce formulaire ?', # Translate - New
+	'An error occurred.' => 'Une erreur est survenue.',
+	'You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?' => 'Les modifications en cours sur cet élément seront perdues. Voulez-vous vraiment éditer cette image ?',
+	'You have unsaved changes to this asset that will be lost. Are you sure you want to close this dialog?' => 'Les modifications en cours sur cet élément seront perdues. Voulez-vous vraiment fermer ce formulaire ?',
 
 ## tmpl/cms/dialog/asset_insert.tmpl
 
@@ -4011,7 +4024,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{No assets could be found.} => q{Aucun élément n'a été trouvé.},
 
 ## tmpl/cms/dialog/asset_modal.tmpl
-	'Library' => 'Bibliothèque', # Translate - New
+	'Library' => 'Bibliothèque',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
 	q{Display image in entry/page} => q{Afficher l'image dans la note/page},
@@ -4060,21 +4073,21 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{No blogs exist in this installation. [_1]Create a blog</a>} => q{Aucun blog n'existe dans cette installation. [_1]Créer un blog</a>},
 
 ## tmpl/cms/dialog/edit_image.tmpl
-	'W:' => 'L :', # Translate - New
-	'H:' => 'H :', # Translate - New
+	'W:' => 'L :',
+	'H:' => 'H :',
 	'Apply' => 'Appliquer',
-	'Keep aspect ratio' => 'Conserver le ratio d\'aspect', # Translate - New
-	'Remove All metadata' => 'Supprimer toutes les métadonnées', # Translate - New
-	'Remove GPS metadata' => 'Supprimer les métadonnées GPS', # Translate - New
-	'Rotate right' => 'Pivoter à droite', # Translate - New
-	'Rotate left' => 'Pivoter à gauche', # Translate - New
-	'Flip horizontal' => 'Inverser horizontalement', # Translate - New
-	'Flip vertical' => 'Inverser verticalement', # Translate - New
-	'Crop' => 'Retailler', # Translate - New
-	'Undo' => 'Annuler', # Translate - New
-	'Redo' => 'Refaire', # Translate - New
+	q{Keep aspect ratio} => q{Conserver le ratio d'aspect},
+	'Remove All metadata' => 'Supprimer toutes les métadonnées',
+	'Remove GPS metadata' => 'Supprimer les métadonnées GPS',
+	'Rotate right' => 'Pivoter à droite',
+	'Rotate left' => 'Pivoter à gauche',
+	'Flip horizontal' => 'Inverser horizontalement',
+	'Flip vertical' => 'Inverser verticalement',
+	'Crop' => 'Retailler',
+	'Undo' => 'Annuler',
+	'Redo' => 'Refaire',
 	'Save (s)' => 'Enregistrer (s)',
-	'You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?' => 'Les modifications apportées à cette image seront perdues. Voulez-vous vraiment fermer cette fenêtre?', # Translate - New
+	'You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?' => 'Les modifications apportées à cette image seront perdues. Voulez-vous vraiment fermer cette fenêtre?',
 
 ## tmpl/cms/dialog/entry_notify.tmpl
 	'Send a Notification' => 'Envoyer une notification',
@@ -4095,8 +4108,8 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{Warning: You need to copy uploaded assets to the new path manually. It is also recommended not to delete files in the old path to avoid broken links.} => q{Attention : Vous devez copier les éléments envoyés vers le nouveau chemin manuellement. Il est également recommendé de ne pas supprimer les anciens fichiers afin d'éviter les liens morts.},
 
 ## tmpl/cms/dialog/multi_asset_options.tmpl
-	'Insert Options' => 'Options d\'insertion', # Translate - New
-	'Display [_1] in entry/page' => 'Afficher [_1] dans la note/page', # Translate - New
+	q{Insert Options} => q{Options d'insertion},
+	'Display [_1] in entry/page' => 'Afficher [_1] dans la note/page',
 
 ## tmpl/cms/dialog/new_password.tmpl
 	'Change Password' => 'Changer le mot de passe',
@@ -4169,7 +4182,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## tmpl/cms/dialog/restore_upload.tmpl
 	'Restore: Multiple Files' => 'Restauration : plusieurs fichiers',
 	q{Canceling the process will create orphaned objects.  Are you sure you want to cancel the restore operation?} => q{L'annulation de la procédure va créer des objets orphelins.  Voulez-vous vraiment annuler l'opération de restauration ?},
-	q{Please upload the file [_1]} => q{Veuillez télécharger le fichier [_1]},
+	'Please upload the file [_1]' => 'Veuillez télécharger le fichier [_1]',
 
 ## tmpl/cms/dialog/select_association_type.tmpl
 	'Grant website permission to user' => 'Ajouter une autorisation utilisateur sur un site',
@@ -4184,7 +4197,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## tmpl/cms/edit_asset.tmpl
 	'Edit Asset' => 'Éditer les éléments',
-	'Metadata cannot be updated because Metadata in this image seems to be broken.' => 'Les métadonnées ne peuvent être mises à jour car celles présentes dans l\'image semblent erronées.', # Translate - New
 	'Stats' => 'Stats',
 	'[_1] - Created by [_2]' => '[_1] - a été créé par [_2]',
 	'[_1] - Modified by [_2]' => '[_1] - modifié par [_2]',
@@ -4194,7 +4206,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'[_1] is missing' => '[_1] est manquant',
 	q{Embed Asset} => q{Adresse pour embarquer l'élément},
 	q{You must specify a name for the asset.} => q{Vous devez spécifier un nom pour l'élément.},
-	'You have unsaved changes to this asset that will be lost.' => 'Des modifications en cours sur cet élément seront perdues.', # Translate - New
+	'You have unsaved changes to this asset that will be lost.' => 'Des modifications en cours sur cet élément seront perdues.',
 
 ## tmpl/cms/edit_author.tmpl
 	'Edit Profile' => 'Éditer le profil',
@@ -4419,7 +4431,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Save this [_1]' => 'Enregistrer cette [_1]',
 	'You must configure this blog before you can publish this entry.' => 'Vous devez configurer ce blog avant de publier cette note.',
 	'You must configure this blog before you can publish this page.' => 'Vous devez configurer ce blog avant de publier cette page.',
-	'Publish On' => 'Publié le',
+	'Publish On' => 'Publiée le',
 	'@' => '@',
 	q{Warning: If you set the basename manually, it may conflict with another entry.} => q{Attention : éditer le nom de base manuellement peut créer des conflits avec d'autres notes.},
 	q{Warning: Changing this entry's basename may break inbound links.} => q{Attention : changer le nom de base de cette note peut casser des liens entrants.},
@@ -4679,7 +4691,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'HTML Mode' => 'Mode HTML',
 
 ## tmpl/cms/include/archive_maps.tmpl
-	'Custom...' => 'Personnalisé...',
 
 ## tmpl/cms/include/asset_replace.tmpl
 	q{A file named '[_1]' already exists. Do you want to overwrite this file?} => q{Un fichier nommé '[_1]' existe déjà. Souhaitez-vous le remplacer ?},
@@ -4708,21 +4719,22 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'[_1] contains a character that is invalid when used in a directory name: [_2]' => '[_1] contient un caractère invalide pour un nom de répertoire : [_2]',
 
 ## tmpl/cms/include/async_asset_list.tmpl
-	'Asset Type: ' => 'Type d\'élément : ', # Translate - New
-	'All Types' => 'Tous les types', # Translate - New
-	'label' => 'étiquette', # Translate - Case
-	q{No [_1] could be found.} => q{Pas trouvé de [_1].},
+	q{Asset Type: } => q{Type d'élément : },
+	'All Types' => 'Tous les types',
+	'label' => 'étiquette',
 	'[_1] - [_2] of [_3]' => '[_1] - [_2] sur [_3]',
 
 ## tmpl/cms/include/async_asset_upload.tmpl
-	q{Drag and drop here to upload files, or<button id='open-file-dialog'>Browse</button>} => q{Glisser-déposer des fichiers ici pour les télécharger, ou <button id='open-file-dialog'>Sélectionner</button>}, # Translate - New
-	q{Drag and drop here to upload a file, or<button id='open-file-dialog'>Browse</button>} => q{Glisser-déposer un fichier ici pour le télécharger, ou <button id='open-file-dialog'>Sélectionner</button>}, # Translate - New
-	'(If you upload multiple files, last uploaded files will be used.)' => '(Si vous chargez plusieurs fichiers, les derniers seront utilisés.)', # Translate - New
-	'Upload Options' => 'Options de téléchargement', # Translate - New
-	'Operation for a file exists' => 'Que faire si un fichier existe', # Translate - New
-	'Cancelled: [_1]' => 'Annulé : [_1]', # Translate - New
-	'The file you tried to upload is too large: [_1]' => 'LE fichier que vous tentez de charger est trop volumineux : [_1]', # Translate - New
-	'[_1] is not a valid [_2] file.' => '[_1] n\'est pas un fichier [_2] valide.', # Translate - New
+	'Upload new image' => 'Envoyer une nouvelle image', # Translate - Case
+	'Upload new asset' => 'Télécharger un nouvel élément', # Translate - Case
+	'Choose files to upload or drag files.' => 'Choisissez ou glissez les fichiers à télécharger.', # Translate - New
+	'Choose file to upload or drag file.' => 'Choisissez ou glissez le fichier à télécharger.', # Translate - New
+	'Upload Options' => 'Options de téléchargement',
+	'Operation for a file exists' => 'Que faire si un fichier existe',
+	'Drag and drop here' => 'Glissez et déposez ici', # Translate - New
+	'Cancelled: [_1]' => 'Annulé : [_1]',
+	'The file you tried to upload is too large: [_1]' => 'Le fichier que vous tentez de charger est trop volumineux : [_1]',
+	'[_1] is not a valid [_2] file.' => '[_1] n\'est pas un fichier [_2] valide.',
 
 ## tmpl/cms/include/author_table.tmpl
 	'Enable selected users (e)' => 'Activer les utilisateurs sélectionnés (e)',
@@ -4872,7 +4884,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## tmpl/cms/include/import_end.tmpl
 	'All data imported successfully!' => 'Toutes les données ont été importées avec succès !',
-	'<a href="#" onclick="[_1]" class="mt-build">Publish your site</a> to see these changes take effect.' => '<a href="#" onclick="[_1]" class="mt-build">Publiez votre site</a> pour appliquer ces modifications en ligne.', # Translate - New
+	'<a href="#" onclick="[_1]" class="mt-build">Publish your site</a> to see these changes take effect.' => '<a href="#" onclick="[_1]" class="mt-build">Publiez votre site</a> pour appliquer ces modifications en ligne.',
 	q{Make sure that you remove the files that you imported from the 'import' folder, so that if/when you run the import process again, those files will not be re-imported.} => q{Assurez vous d'avoir bien enlevé les fichiers importés du répertoire 'import', pour éviter une ré-importation des mêmes fichiers à l'avenir.},
 	q{An error occurred during the import process: [_1]. Please check your import file.} => q{Une erreur s'est produite pendant le processus: [_1]. Merci de vérifier le fichier d'import.},
 
@@ -4948,7 +4960,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{Create Archive Template:} => q{Créer un gabarit d'archives},
 	'Entry Listing' => 'Liste des notes',
 	'Create template module' => 'Créer un module de gabarit',
-	'Create index template' => 'Créer un gabarit d\'index',
+	q{Create index template} => q{Créer un gabarit d'index},
 	'Publish selected templates (a)' => 'Publier les gabarits sélectionnés (a)',
 	q{Archive Path} => q{Chemin d'archive},
 	'SSI' => 'SSI',
@@ -5468,7 +5480,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## tmpl/cms/widget/personal_stats.tmpl
 	'Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>.' => 'Votre <a href="[_1]">dernière note</a> a été [_2] dans <a href="[_3]">[_4]</a>.',
-	'Your last entry was [_1] in <a href="[_2]">[_3]</a>.' => 'Votre dernière note a été [_1] dans <a href="[_2]">[_3]</a>.',
+	'Your last entry was [_1] in <a href="[_2]">[_3]</a>.' => 'Votre dernière note date du [_1] dans <a href="[_2]">[_3]</a>.',
 	'<a href="[_1]">[quant,_2,entry,entries]</a>' => '<a href="[_1]">[quant,_2,note,notes]</a>',
 	'[quant,_1,entry,entries]' => '[quant,_1,note,notes]',
 	'<a href="[_1]">[quant,_2,page,pages]</a>' => '<a href="[_1]">[quant,_2,page,pages]</a>',
@@ -5824,8 +5836,11 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'The type "[_1]" is invalid.' => 'Le type "[_1]" est invalide.',
 	'The systemObject "[_1]" is invalid.' => 'Le paramètre systemObject "[_1]" est invalide.',
 
+## addons/Commercial.pack/lib/CustomFields/DataAPI/Callback.pm
+	'Please enter valid option for the [_1] field: [_2]' => 'Veuillez saisir une option valide pour le champ [_1] : [_2]', # Translate - New
+
 ## addons/Commercial.pack/lib/CustomFields/DataAPI/Endpoint/v2/Field.pm
-	'Invalid includeShared parameter provided: [_1]' => 'Le paramètre includeShared fourni est invalide : [_1]', # Translate - New
+	'Invalid includeShared parameter provided: [_1]' => 'Le paramètre includeShared fourni est invalide : [_1]',
 
 ## addons/Commercial.pack/lib/CustomFields/Field.pm
 	'The template tag \'[_1]\' is already in use in the system level' => 'Le tag de gabarit \'[_1]\' est déjà utilisé au niveau du système',
@@ -6035,7 +6050,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## addons/Commercial.pack/tmpl/cfg_customfields.tmpl
 	'Data have been saved to custom fields.' => 'Les données ont été enregistrées pour les champs personnalisés.',
 	'Save changes to blog (s)' => 'Sauvegarder les modifications du blog (s)',
-	'No custom fileds could be found. <a href="[_1]">Create a field</a> now.' => 'Aucun champ personnalisé n\'a été trouvé. <a href="[_1]">Créer un champ</a> maintenant.',
+	q{No custom fileds could be found. <a href="[_1]">Create a field</a> now.} => q{Aucun champ personnalisé n'a été trouvé. <a href="[_1]">Créer un champ</a> maintenant.},
 
 ## addons/Commercial.pack/tmpl/edit_field.tmpl
 	'Edit Custom Field' => 'Éditer le champ personnalisé',
@@ -6518,7 +6533,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Populating author\'s external ID to have lower case user name...' => 'Peuplement de l\'ID externe d\'auteur pour avoir des identifiants en minuscule...',
 
 ## addons/Enterprise.pack/lib/MT/Auth/LDAP.pm
-	'Cannot connect to LDAP server.' => 'Impossible de se connecter au serveur LDAP.', # Translate - New
+	'Cannot connect to LDAP server.' => 'Impossible de se connecter au serveur LDAP.',
 	'User [_1]([_2]) not found.' => 'Utilisateur [_1]([_2]) non trouvé.',
 	'User \'[_1]\' cannot be updated.' => 'Utilisateur \'[_1]\' ne peut être mis à jour.',
 	'User \'[_1]\' updated with LDAP login ID.' => 'Utilisateur \'[_1]\' mis à jour avec l\'ID de login LDAP.',
@@ -6530,7 +6545,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Failed login attempt by user \'[_1]\'. A user with that username already exists in the system with a different UUID.' => 'Échec lors de la tentative d\'identification de l\'utilisateur \'[_1]\'. Un utilisateur avec ce nom d\'utilisateur existe déjà dans le système avec un UUID différent.',
 	'User \'[_1]\' account is disabled.' => 'Le compte de l\'utilisateur \'[_1]\' est désactivé.',
 	'LDAP users synchronization interrupted.' => 'Synchronisation des utilisateurs LDAP interrompue.',
-	'Loading MT::LDAP::Multi failed: [_1]' => 'Le chargement de MT::LDAP::Multi a échoué : [_1]', # Translate - New
+	'Loading MT::LDAP::Multi failed: [_1]' => 'Le chargement de MT::LDAP::Multi a échoué : [_1]',
 	'External user synchronization failed.' => 'Synchronisation utilisateur externe échouée.',
 	'An attempt to disable all system administrators in the system was made.  Synchronization of users was interrupted.' => 'Une tentative de désactivation de tous les administrateurs système a été réalisée. La synchronisation des utilisateurs a été interrompue.',
 	'Information about the following users was modified:' => 'Une information à propos des utilisateurs suivants a été modifiée :',
@@ -6800,21 +6815,26 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Sync Settings' => 'Paramètres de synchronisation',
 	'Create new sync setting' => 'Créer un paramètre de synchronisation',
 	'Contents Sync' => 'Synchronisation des contenus',
+	'Remove sync PID files' => 'Supprimer les fichiers PID de synchronisation', # Translate - New
 	'Updating MT::SyncSetting table...' => 'Mise à jour de la table MT::SyncSetting...',
 	'Migrating settings of contents sync on website...' => 'Migration des paramètres de synchronisation des contenus sur le site...',
 	'Migrating settings of contents sync on blog...' => 'Migration des paramètres de synchronisation des contenus sur le blog...',
-	'Re-creating job of contents sync...' => 'Recréation de la tâche de synchronisation de contenu...', # Translate - New
+	'Re-creating job of contents sync...' => 'Recréation de la tâche de synchronisation de contenu...',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/FTPBase.pm
 	'Cannot access to remote directory \'[_1]\'' => 'Impossible d\'accéder au répertoire distant \'[_1]\'',
 	'Deleting file \'[_1]\' failed.' => 'La suppression du fichier \'[_1]\' a échoué.',
 	'Deleting path \'[_1]\' failed.' => 'La suppression du chemin \'[_1]\' a échoué.',
+	'Directory or file by which end of name is dot(.) or blank exists. Cannot synchronize these files.: "[_1]"' => 'Il existe un dossier ou fichier dont le suffixe est vide ou se termine par \'.\'. Ces fichiers ne peuvent pas être synchronisés : "[_1]"', # Translate - New
 	'Unable to write temporary file ([_1]): [_2]' => 'Impossible d\'écrire dans le fichier temporaire ([_1]) : [_2]',
+	'Unable to get size of temporary file ([_1]): [_2]' => 'Impossible de déterminer la taille du fichier temporaire ([_1]) : [_2]', # Translate - New
+	'FTP reconnection was failed. ([_1])' => 'La connexion FTP a échoué. ([_1])', # Translate - New
+	'FTP connection lost.' => 'La connexion FTP a été perdue.', # Translate - New
+	'FTP connection timeout.' => 'La connexion FTP a expirée.', # Translate - New
 	'Unable to write remote files. Please check activity log for more details.: [_1]' => 'Impossible d\'écrire les fichiers distants. Vérifiez le journal d\'activité pour plus de détails : [_1]',
 	'Unable to write remote files ([_1]): [_2]' => 'Impossible d\'écrire les fichiers distants ([_1]) : [_2]',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
-	'An error occurred while copying the directory.' => 'Une erreur est survenue pendant la copie du répertoire.',
 	'Failed to remove sync list. (ID:\'[_1]\')' => 'Impossible de supprimer la liste de synchronisation. (ID:\'[_1]\')',
 	'Failed to update sync list. (ID:\'[_1]\')' => 'Impossible de mettre la liste de synchronisation à jour. (ID:\'[_1]\')',
 	'Failed to create sync list.' => 'Impossible de créer la liste de synchronisation.',
@@ -6835,22 +6855,25 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## addons/Sync.pack/lib/MT/Worker/ContentsSync.pm
 	'Sync setting # [_1] not found.' => 'Paramètre de synchronisation # [_1] introuvable.',
-	'This sync setting is being processed already.' => 'Ce paramètre de synchronisation est déjà en cours de traitement.', # Translate - New
+	'This sync setting is being processed already.' => 'Ce paramètre de synchronisation est déjà en cours de traitement.',
+	'Unknown error occurred.' => 'Erreur inconnue.',
 	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'La synchronisation avec un serveur externe s\'est correctement terminée.',
 	'Saving sync settings failed: [_1]' => 'La sauvegarde des paramètres de synchronisation a échoué : [_1]',
-	'Failed to remove temporary directory: [_1]' => 'Impossible de supprimer le répertoire temporaire : [_1]', # Translate - New
-	'Failed to remove pid file.' => 'Impossible de supprimer le fichier pid.', # Translate - New
+	'Failed to remove temporary directory: [_1]' => 'Impossible de supprimer le répertoire temporaire : [_1]',
+	'Failed to remove pid file.' => 'Impossible de supprimer le fichier pid.',
 	'This email is to notify you that failed to sync with an external server.' => 'La synchronisation avec un serveur externe a échoué.',
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
 	'Copied [_1]' => '[_1] copié',
 	'The sync setting with the same name already exists.' => 'Un paramètre de synchronisation avec le même nom existe déjà.',
+	'Reached the upper limit of the parallel execution.' => 'La limite maximale d\'exécution en parallèle est atteinte.', # Translate - New
+	'Process ID can\'t be acquired.' => 'Impossible de déterminer l\'ID du processus.', # Translate - New
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Une erreur est survenue lors de la connexion avec le serveur FTP \'[_1]\' : [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Une erreur est survenue lors de la tentative de récupération du répertoire courant depuis \'[_1]\'',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Une erreur est survenue lors de la tentative de récupération de la liste des répertoires depuis \'[_1]\'',
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
-	'Removing all jobs of contents sync...' => 'Suppression des tâches de synchronisation de contenu...', # Translate - New
+	'Removing all jobs of contents sync...' => 'Suppression des tâches de synchronisation de contenu...',
 
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
 	'Contents Sync Settings' => 'Paramètres de synchronisation des contenus',
@@ -6872,13 +6895,13 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Port' => 'Port',
 	'SSL' => 'SSL',
 	'Enable SSL' => 'Activer SSL',
-	'Net::FTPSSL is not available.' => 'Net::FTPSSL est introuvable.', # Translate - New
+	'Net::FTPSSL is not available.' => 'Net::FTPSSL est introuvable.',
 	'Start Directory' => 'Répertoire de départ',
 	'Rsync Destination' => 'Répertoire de destination',
 	'Sync Type *' => 'Type de synchronisation *',
 	'Please select a sync type.' => 'Sélectionnez un type de synchronisation.',
 	'Are you sure you want to run synchronization?' => 'Voulez-vous vraiment lancer la synchronisation ?',
-	'Sync all files' => 'Synchroniser tous les fichiers', # Translate - New
+	'Sync all files' => 'Synchroniser tous les fichiers',
 	'Sync name is required.' => 'Un nom de synchronisation est requis.',
 	'Sync name should be shorter than [_1] characters.' => 'Le nom de synchronisation doit faire moins de [_1] caractères.',
 	'The sync date must be in the future.' => 'La date de synchronisation doit être dans le futur.',
@@ -6891,7 +6914,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Preparing...' => 'Préparation...',
 	'Synchronizing...' => 'Synchronisation...',
 	'Finish!' => 'Terminé !',
-	'Unknown error occurred.' => 'Erreur inconnue.',
 	'The synchronization was interrupted. Unable to resume.' => 'La synchronisation a été interrompue. Impossible de reprendre.',
 
 ## plugins/FacebookCommenters/config.yaml
@@ -6908,7 +6930,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Could not verify this app with Facebook: [_1]' => 'impossible de vérifier cette application avec Facebook : [_1]',
 
 ## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
-	'Facebook Application Key' => 'Clé Application Facebook',
+	'Facebook App ID' => 'Clé Application Facebook',
 	q{The key for the Facebook application associated with your blog.} => q{La clé pour l'application Facebook associée à votre blog.},
 	q{Edit Facebook App} => q{Éditer l'application Facebook},
 	'Create Facebook App' => 'Créer une application Facebook',
@@ -6971,7 +6993,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## plugins/FormattedText/lib/FormattedText/App.pm
 	'Are you sure you want to delete the selected boilerplates?' => 'Voulez-vous vraiment supprimer les textes formatés sélectionnés ?',
-	'My Boilerplate' => 'Mes textes formatés',
+	'My Boilerplate' => 'Mon texte formaté',
 
 ## plugins/FormattedText/lib/FormattedText/DataAPI/Callback/FormattedText.pm
 	'The boilerplate \'[_1]\' is already in use in this site.' => 'Le texte formaté \'[_1]\' est déjà utilisé sur ce site.',
@@ -7022,7 +7044,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'OAuth2 settings' => 'Paramètres OAuth2',
 	'This [_2] is using the settings of [_1].' => 'Ce [_2] utilise les paramètres de [_1].',
 	'Other Google account' => 'Autre compte Google',
-	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a> before selecting profile.} => q{Créez un ID d'application cliente OAuth2 pour application web avec cette URL de redirection via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a> avant de sélectionner un profil.},
+	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a> before selecting profile.} => q{Créez un ID client d'application OAuth2 pour application web avec cette URI de redirection via <a href="https://cloud.google.com/console" target="_blank">la plateforme Google Cloud/a> avant de sélectionner un profil.}, # Translate - New
 	q{Redirect URI of the OAuth2 application} => q{URL de redirection de l'application OAuth2},
 	q{Client ID of the OAuth2 application} => q{ID Client de l'application OAuth2},
 	q{Client secret of the OAuth2 application} => q{Secret Client de l'application OAuth2},
@@ -7128,7 +7150,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Select to apply this trigger to all websites and blogs in this system.' => 'Sélectionner pour appliquer ce déclencheur à tous les sites web et blog de ce système.',
 	'saves an entry/page' => 'une note/page est sauvegardée',
 	'publishes an entry/page' => 'une note/page est publiée',
-	'unpublishes an entry/page' => 'une note/page est dépubliée', # Translate - New
+	'unpublishes an entry/page' => 'une note/page est dépubliée',
 	'publishes a comment' => 'un commentaire est publié',
 	'publishes a TrackBack' => 'un Trackback est publié',
 	'rebuild indexes.' => 'reconstruire les index.',
@@ -7349,14 +7371,14 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'L\'élément  (\'[_1]\') a été trouvé en double. Ignoré.',
 	'Saving asset (\'[_1]\')...' => 'Enregistrement de l\'élément (\'[_1]\')...',
 	' and asset will be tagged (\'[_1]\')...' => ' et l\'élément sera taggué (\'[_1]\')...',
-	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'La note (\'[_1]\') a été trouvée en double. Ignorée.',
+	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'La note  (\'[_1]\') a été trouvée en double. Ignorée.',
 	'Saving page (\'[_1]\')...' => 'Enregistrement de la page (\'[_1]\')...',
 	'Entry has no MT::Trackback object!' => 'La note n\'a pas d\'objet MT::Trackback !',
 	'Assigning permissions for new user...' => 'Mise en place des autorisations pour le nouvel utilisateur...',
 	'Saving permission failed: [_1]' => 'Échec de la sauvegarde des droits des utilisateurs : [_1]',
 
 ## plugins/WXRImporter/tmpl/options.tmpl
-	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first.} => q{Avant d'importer des notes WordPress dans Movable Type, nous vous recommandons d'abord de <a href='[_1]'>configurer les chemins de publication de votre blog</a>.},
+	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first.} => q{Avant d'importer des notes Wordpress dans Movable Type, nous vous recommandons d'abord de <a href='[_1]'>configurer les chemins de publication de votre blog</a>.},
 	q{Upload path for this WordPress blog} => q{Chemin d'envoi pour ce blog WordPress},
 	'Replace with' => 'Remplacer par',
 	'Download attachments' => 'Télécharger les fichiers attachés',
@@ -7365,6 +7387,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 );
 
-## New words: 608
+## New words: 194
 
 1;

@@ -49,16 +49,18 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
 
         # Remove 'Orientation' tag. (remove all tags)
         MT::Image->remove_metadata($tempfile);
-
-        ok( MT::Image->new( Filename => $tempfile ),
-            'Can load image having no metadata.'
-        );
-        $exif->ExtractInfo($tempfile);
-        ok( !$exif->GetValue($tag),
-            qq{$tag tag has been removed from JPEG file.} );
-        ok( $exif->GetValue('JFIFVersion'),
-            'JFIFVersion tag is stiall remaining.'
-        );
+        
+        SKIP: {
+            my $img = MT::Image->new;
+            skip( "no $driver for image $tempfile", 3 ) unless $img;
+            ok( $img->init( Filename => $tempfile ) );
+            $exif->ExtractInfo($tempfile);
+            ok( !$exif->GetValue($tag),
+                qq{$tag tag has been removed from JPEG file.} );
+            ok( $exif->GetValue('JFIFVersion'),
+                'JFIFVersion tag is stiall remaining.'
+            );
+        }
     };
 }
 

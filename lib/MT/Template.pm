@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -780,7 +780,8 @@ sub _sync_to_disk {
             or return $tmpl->error(
             MT->translate(
                 "Opening linked file '[_1]' failed: [_2]",
-                $lfile, "$!"
+                $lfile,
+                ( Encode::is_utf8($!) ? "$!" : Encode::decode_utf8($!) )
             )
             );
         print $fh $text;

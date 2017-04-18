@@ -10,19 +10,15 @@ use File::Spec;
 BEGIN {
     eval 'use GD; 1'
         or plan skip_all => 'GD is not installed';
-
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
-use lib qw( lib extlib t/lib );
-use MT::Test;
-use MT::ConfigMgr;
+use lib qw( lib extlib );
 use MT::Image;
 
 my $dir = dirname( dirname( File::Spec->rel2abs(__FILE__) ) );
 my $file = File::Spec->catfile( $dir, qw/ t images test.png / );
 
-my $cfg = MT::ConfigMgr->instance;
+my $cfg = MT->config;
 $cfg->ImageDriver('GD');
 is( $cfg->ImageDriver, 'GD', 'ImageDriver is GD' );
 

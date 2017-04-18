@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1048,6 +1048,90 @@ SKIP: {
 
     eval { $iter->end(); };
     is( $@, q(), 'Iterator can be ended #2' );
+}
+
+sub null_column_join : Tests(2) {
+    my $self = shift;
+    $self->make_objects(
+        {   __class => 'Foo',
+            name    => 'tetsuya',
+            text    => 'Tetsuya Masuda',
+            status  => 1,
+        },
+        {   __class => 'Foo',
+            name    => undef,
+            text    => 'Tetsuko Mutoh',
+            status  => 2,
+        },
+        {   __class => 'Foo',
+            name    => 'tomoya',
+            text    => '',
+            status  => 3,
+        },
+        {   __class => 'Foo',
+            name    => '',
+            text    => 'Tatsuya Masuko',
+            status  => 3,
+        },
+        {   __class => 'Bar',
+            __wait  => 1,
+            name    => 'Lekumo',
+            status  => 1,
+            foo_id  => 1,
+        },
+        {   __class => 'Bar',
+            __wait  => 1,
+            name    => 'ShortNote',
+            status  => 3,
+            foo_id  => 2,
+        },
+        {   __class => 'Bar',
+            __wait  => 1,
+            name    => '',
+            status  => 3,
+            foo_id  => 3,
+        },
+    );
+
+    my ( @bar, $count );
+
+    @bar = Bar->load(
+        undef,
+        {   'joins' => [
+                [   'Foo', undef,
+                    [   { 'id' => \'= bar_foo_id' },
+                        '-and',
+                        [   { 'name' => { 'like' => '%o%' } },
+                            '-or',
+                            { 'text' => { 'like' => '%o%' } }
+                        ]
+                    ],
+                    {}
+                ]
+            ]
+        }
+    );
+    $count = @bar;
+    is( $count, 2 );
+
+    @bar = Bar->load(
+        undef,
+        {   'joins' => [
+                [   'Foo', undef,
+                    [   { 'id' => \'= bar_foo_id' },
+                        '-and',
+                        [   { 'name' => { 'not_like' => '%r%' } },
+                            '-and',
+                            { 'text' => { 'not_like' => '%r%' } }
+                        ]
+                    ],
+                    {}
+                ]
+            ]
+        }
+    );
+    $count = @bar;
+    is( $count, 3 );
 }
 
 sub clean_db : Test(teardown) {

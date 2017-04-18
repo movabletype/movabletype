@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -443,6 +443,13 @@ sub count_objects {
             my $code = $prop->has('terms') or next;
             my $filter_terms
                 = $prop->terms( $item->{args}, $terms, $args, \%options );
+            if ( ( $item->{args}{option} || q{} ) eq 'not_contains'
+                && $class->has_column( $item->{type} ) )
+            {
+                $filter_terms
+                    = [ $filter_terms, '-or',
+                    { $item->{type} => \'IS NULL' } ];
+            }
             if ( $filter_terms
                 && ( 'HASH' eq ref $filter_terms  && scalar %$filter_terms )
                 || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,6 +11,13 @@ function smarty_function_mtassetthumbnailurl($args, &$ctx) {
     if ($asset->asset_class != 'image') return '';
     $blog = $ctx->stash('blog');
     if (!$blog) return '';
+
+    if( !isset($args['force']) || !$args['force'] ){
+        if ( isset($args['width']) && $args['width'] > $asset->asset_image_width )
+            unset($args['width']);
+        if ( isset($args['height']) && $args['height'] > $asset->asset_image_height )
+            unset($args['height']);
+    }
 
     require_once('MTUtil.php');
 

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -15,14 +15,14 @@ use Fcntl qw( :DEFAULT :flock );
 
 sub _local {
     ## TBD: does it needed to escape backslashs?
-    return $^O eq 'MSWin32' ? Encode::encode( 'Shift_JIS', $_[0] ) : $_[0];
+    return $^O eq 'MSWin32' ? Encode::encode( 'cp932', $_[0] ) : $_[0];
 }
 
 sub _syserr {
     if ( $^O eq 'MSWin32' ) {
         return Encode::is_utf8( $_[0] )
             ? $_[0]
-            : Encode::decode( 'Shift_JIS', $_[0] );
+            : Encode::decode( 'cp932', $_[0] );
     }
     else {
         return Encode::is_utf8( $_[0] )

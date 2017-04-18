@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1077,6 +1077,7 @@ use vars qw( @ISA %Lexicon );
 	'Bad AuthenticationModule config' => 'AuthenticationModuleの設定が正しくありません',
 
 ## lib/MT/Auth/MT.pm
+	'Password contains invalid character.' => 'パスワードに利用できない文字が含まれています。',
 	'Missing required module' => '必要なモジュールが見つかりません',
 
 ## lib/MT/Auth/OpenID.pm
@@ -1335,7 +1336,7 @@ use vars qw( @ISA %Lexicon );
 	'The category basename \'[_1]\' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.' => '\'[_1]\'は他のカテゴリと衝突しています。同じ階層にあるカテゴリのベースネームは一意でなければなりません。',
 	'The name \'[_1]\' is too long!' => '\'[_1]\'は長すぎます。',
 	'Category \'[_1]\' created by \'[_2]\'.' => '\'[_2]\'がカテゴリ\'[_1]\'を作成しました。',
-	'Category \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => '\'[_2]\'がカテゴリ\'[_1]\' (ID:[_2])を編集しました。',
+	'Category \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => '\'[_3]\'がカテゴリ\'[_1]\' (ID:[_2])を編集しました。',
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '\'[_3]\'がカテゴリ\'[_1]\'(ID:[_2])を削除しました。',
 	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => '\'[_1]\'は他のカテゴリと衝突しています。同じ階層にあるカテゴリの名前は一意でなければなりません。',
 
@@ -1607,6 +1608,7 @@ use vars qw( @ISA %Lexicon );
 	'Only to blogs within this system' => 'ブログのみ',
 	'[_1] is [_2]' => '[_1]が[_2]',
 	'none' => 'なし',
+	'Changing image quality is [_1]' => '画像品質の自動変換は[_1]です',
 	'Image quality(JPEG) is [_1]' => 'JPEG 画像の品質は [_1] です',
 	'Image quality(PNG) is [_1]' => 'PNG 画像の品質は [_1] です',
 	'System Settings Changes Took Place' => 'システム設定が変更されました',
@@ -1778,7 +1780,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Core.pm
 	'This is often \'localhost\'.' => '通常「localhost」のままで構いません。',
 	'The physical file path for your SQLite database. ' => 'SQLiteのデータベースファイルのパス',
-	'[_1] in [_2]: [_3]' => '[_2]に \'[_3]\' を含む[_1]',
+	'[_1] in [_2]: [_3]' => '[_2]が \'[_3]\' である[_1]',
 	'option is required' => '条件は必須です。',
 	'Days must be a number.' => '日数には数値を指定してください。',
 	'Invalid date.' => '無効な日付フォーマットです。',
@@ -1863,6 +1865,7 @@ use vars qw( @ISA %Lexicon );
 	'Purge Stale DataAPI Session Records' => '古いData APIのセッションレコードの消去',
 	'Remove expired lockout data' => '古いサインインの失敗レコードの消去',
 	'Purge Unused FileInfo Records' => '古いファイル情報レコードの消去',
+	'Remove Compiled Template Files' => 'ダイナミック・パブリッシング用のコンパイル済みテンプレートの削除',
 	'Manage Website' => 'ウェブサイトの管理',
 	'Manage Blog' => 'ブログの管理',
 	'Manage Website with Blogs' => 'ウェブサイトと所属ブログの管理',
@@ -2766,6 +2769,15 @@ use vars qw( @ISA %Lexicon );
 	'Image creation failed.' => '画像を作成できませんでした。',
 	'Image error: [_1]' => '画像でエラーが発生しました: [_1]',
 
+## lib/MT/Util/Log.pm
+	'Unknown Logger Level: [_1]' => '不正なログレベルです: [_1]',
+	'Invalid Log module' => '不正なログモジュールが指定されています',
+	'Cannot load Log module: [_1]' => 'ログモジュールをロードできません: [_1]',
+
+## lib/MT/Util/YAML.pm
+	'Invalid YAML module' => '不正なYAMLモジュールが指定されています',
+	'Cannot load YAML module: [_1]' => 'YAMLモジュールをロードできません: [_1]',
+
 ## lib/MT/Util/YAML/Syck.pm
 
 ## lib/MT/Util/YAML/Tiny.pm
@@ -3241,6 +3253,7 @@ use vars qw( @ISA %Lexicon );
 	'Pico Styles' => 'Picoスタイル',
 	'A collection of styles compatible with Pico themes.' => 'Picoテーマと互換のあるスタイルです。',
 
+
 ## search_templates/comments.tmpl
 	'Search for new comments from:' => 'コメントを検索:',
 	'the beginning' => '最初から',
@@ -3686,6 +3699,8 @@ use vars qw( @ISA %Lexicon );
 	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => q{次の一覧で設定されたIPアドレスはアクセスが禁止されることはありません。},
 	'The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks.' => '特定のIPアドレスについて判定を行わない場合、上の一覧にカンマ又は改行区切りで追加してください。',
 	'Image Quality Settings' => '画像品質の設定',
+	'Changing image quality' => '画像品質の自動変換',
+	'Enable image quality changing.' => '画像品質の自動変換を有効にする。',
 	'Image quality(JPEG)' => 'JPEG 画像の品質',
 	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.' => 'アップロードされた JPEG 画像や、生成されるサムネイル画像の品質を 0 から 100 の数値で指定します。初期値は 75 です。',
 	'Image quality(PNG)' => 'PNG 画像の品質',
@@ -4036,6 +4051,7 @@ use vars qw( @ISA %Lexicon );
 	'Save changes to this author (s)' => 'ユーザーへの変更を保存 (s)',
 	'_USAGE_PASSWORD_RESET' => 'ユーザーのパスワードを再設定できます。パスワードがランダムに生成され、[_1]にメールで送信されます。',
 	'Initiate Password Recovery' => 'パスワードの再設定',
+	'You must use half-width character for password.' => 'パスワードには全角文字を利用できません。',
 
 ## tmpl/cms/edit_blog.tmpl
 	'Create Blog' => 'ブログの作成',
@@ -4724,7 +4740,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/template_table.tmpl
 	'Create Archive Template:' => 'アーカイブテンプレートの作成:',
-	'Entry Listing' => '記事リスト',
 	'Create template module' => 'テンプレートモジュールの作成',
 	'Create index template' => 'インデックステンプレートの作成',
 	'Publish selected templates (a)' => '選択されたテンプレートを公開 (a)',
@@ -5492,7 +5507,7 @@ use vars qw( @ISA %Lexicon );
 	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
 	'Cloud Services' => 'クラウドサービス',
 	'Basic Authentication' => 'Basic認証',
-	'HTTP Redirect' => 'HTTPリダイレクト',
+	'HTTP Redirect' => 'URLリダイレクト',
 	'FTPS Password' => 'FTPSパスワードリセット',
 	'Full Restore' => '環境のリストア',
 	'SSL Certificates' => 'サーバー証明書',
@@ -5511,31 +5526,41 @@ use vars qw( @ISA %Lexicon );
 ## addons/Cloud.pack/lib/Cloud/App/CMS.pm
 	'Owner' => '管理者',
 	'Creator' => '制作者',
+	'FTP passowrd for [_1] has successfully been updated.' => '[_1]用 FTP パスワードが更新されました。',
 	'Unable to reset [_1] FTPS password.' => 'FTPSパスワードのリセットが出来ませんでした。',
 	'Failed to update [_1]: some of [_2] were changed after you opened this screen.' => 'いくつかの[_2]がすでに更新されていたため、[_1]の更新に失敗しました。',
 	'Basic Authentication setting' => 'Basic認証の設定',
 	'Cannot access to this uri: [_1]' => '[_1]が存在しません。',
+	'Basic authentication for site has successfully been updated.' => 'Basic認証の設定が更新されました。',
 	'Unable to update Basic Authentication settings.' => 'Basic認証の設定を保存する事が出来ませんでした。',
 	'Administration Screen Setting' => '管理画面の設定',
 	'The URL you specified is not available.' => '指定されたURLは利用できません。',
 	'Unable to update Admin Screen URL settings.' => '管理画面のURLを変更できませんでした。',
+	'The URL for administration screen has successfully been updated.' => '管理画面のURLが変更されました。',
 	'Cannot delete basicauth_admin file.' => 'Basic認証の設定を削除する事が出来ませんでした。',
+	'Basic authentication for administration screen has successfully been cleared.' => '管理画面のBasic認証設定が削除されました。',
 	'User ID is required.' => 'ユーザー名は必須です。',
 	'Password is required.' => 'パスワードは必須です。',
+	'Unable to update basic authentication for administration screen.' => '管理画面のBasic認証設定を更新できません。',
 	'Unable to write temporary file.' => '一時保存ファイルの書き込みが出来ませんでした。',
+	'Basic authentication for administration screen has successfully been updated.' => '管理画面のBasic認証設定が更新されました。',
 	'Cannot delete ip_restriction_[_1] file.' => 'アクセス制限の設定を削除することができませんでした。',
+	'IP restriction for administration screen has successfully been cleared.' => '管理画面のアクセス制限が解除されました。',
 	'[_1] is not a valid IP address.' => '[_1] は正しいIPアドレスではありません。',
 	'Unable to write allowed IP addresses file.' => 'アクセス許可リストファイルの書き込みができませんでした。',
-	'HTTP Redirect setting' => 'HTTPリダイレクトの設定',
-	'Unable to update HTTP Redirect settings.' => 'HTTPリダイレクトの設定を保存することが出来ませんでした。',
+	'IP restriction white list for administration screen  has successfully been updated.' => '管理画面のアクセス制限が更新されました。',
+	'HTTP Redirect setting' => 'URLリダイレクトの設定',
+	'HTTP redirect settings has successfully updated.' => 'URLリダイレクトの設定が更新されました。',
+	'Unable to update HTTP Redirect settings.' => 'URLリダイレクトの設定を保存することが出来ませんでした。',
 	'Update SSL Certification' => 'サーバー証明書の更新',
 	'__SSL_CERT_UPDATE' => '更新',
 	'__SSL_CERT_INSTALL' => '導入',
 	'Cannot copy default cert file.' => '既定のサーバー証明書のコピーに失敗しました。',
-	'Cannot copy default secret file.' => '既定のサーバーキーのコピーに失敗しました。',
 	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
+	'SSL certification has successfully been updated.' => 'サーバー証明書が更新されました。',
 	'Unable to update SSL certification.' => 'サーバー証明書の更新をする事が出来ませんでした。',
 	'Config Directive' => '環境変数',
+	'Movable Type environment settings has successfully been updated.' => 'MT環境変数の設定が更新されました。',
 	'Restoring Backup Data' => 'バックアップデータの復元',
 	'backup data' => 'バックアップデータ',
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
@@ -5543,6 +5568,7 @@ use vars qw( @ISA %Lexicon );
 	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを保存できません。',
 	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを作成できません。',
 	'Unable to write AUTOUPDATE file: [_1]' => '自動アップデートの設定を保存することが出来ませんでした。',
+	'Auto update settings has successfully been updated.' => '自動アップデートの設定が更新されました。',
 	'IP Restriction settings' => 'アクセス制限の設定',
 	'Domain, Path and IP addresses are required.' => 'ドメイン名、パス名、IPアドレスは必須です。',
 	'\'[_1]\' does not exist.' => '\'[_1]\' が見つかりません。',
@@ -5550,7 +5576,8 @@ use vars qw( @ISA %Lexicon );
 	'Unable to create acl path: [_1]' => '設定ファイルの書き込みディレクトリを作成できません: [_1]',
 	'Cannot write to acl directory: [_1]' => '設定ファイルの書き込みディレクトリに書き込めません: [_1]',
 	'Cannot write to acl file: [_1]' => '設定ファイルを書き込めません: [_1]',
-	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered  is not a valid.' => 'アクセス制限の設定を、適用することができません。おそらく、入力されたパスまたはIPアドレスが有効ではない可能性があります。',
+	'IP restriction for site has successfully been updated.' => 'アクセス制限の設定が更新されました。',
+	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered is not a valid.' => 'アクセス制限の設定を、適用することができません。おそらく、入力されたパスまたはIPアドレスが有効ではない可能性があります。',
 	'Unable to remove acl file.' => 'アクセス制限リストファイルの削除ができません。',
 
 ## addons/Cloud.pack/lib/Cloud/Template.pm
@@ -5561,7 +5588,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Cloud.pack/lib/Cloud/Util.pm
 	'Cannot read resource file.' => 'リソースファイルを読み込めません。',
 	'Cannot get the resource data.' => 'リソース情報を取得できません。',
-	'Unknown plan. Memory: [_1] / Disk: [_2]' => '不明なプランです。メモリ: [_1] / ディスク: [_1]',
+	'Unknown CPU type.' => 'CPUタイプの判定ができません。',
 
 ## addons/Cloud.pack/tmpl/cfg_auto_update.tmpl
 	'Auto Update Settings' => '自動アップデートの設定',
@@ -5601,7 +5628,6 @@ use vars qw( @ISA %Lexicon );
 	'Free Disk Space' => '空き容量',
 	'User Contents' => 'コンテンツファイル',
 	'Others' => 'その他',
-	'System Data' => 'システムファイル',
 	'Free' => '空き容量',
 
 ## addons/Cloud.pack/tmpl/cfg_ftps_password.tmpl
@@ -5612,14 +5638,14 @@ use vars qw( @ISA %Lexicon );
 	'Creater Password' => '制作者のパスワード',
 
 ## addons/Cloud.pack/tmpl/cfg_http_redirect.tmpl
-	'Manage HTTP Redirect' => 'HTTPリダイレクトの管理',
+	'Manage HTTP Redirect' => 'URLリダイレクトの管理',
 	'/path/of/redirect' => '/path/of/redirect',
 	'__REDIRECT_TO' => 'リダイレクト先',
 	'http://example.com or /path/to/redirect' => 'http://example.com 又は /path/to/redirect',
 	'Redirect URL is required.' => 'リダイレクト先URLは必須です。',
 	'Redirect url is same as URI' => 'リダイレクト先URLは、がリダイレクト元URIと違うURLを設定してください。',
-	'HTTP redirect setting' => 'HTTPリダイレクトの設定',
-	'HTTP redirect settings' => 'HTTPリダイレクトの設定',
+	'HTTP redirect setting' => 'URLリダイレクトの設定',
+	'HTTP redirect settings' => 'URLリダイレクトの設定',
 
 ## addons/Cloud.pack/tmpl/cfg_ip_restriction.tmpl
 	'IP Restriction Settings' => 'アクセス制限の設定',
@@ -5660,6 +5686,7 @@ use vars qw( @ISA %Lexicon );
 	q{To [_1] the server certificate, please enter the required information in the following fields. To revert back to the initial certificate, please press the 'Remove SSL Certification' button. The passphrase for 'Secret Key' must be released.} => q{サーバー証明書の[_1]を行うには、以下のフィールドに情報を入力してください。現在の証明書を削除して既定の証明書に戻すには、'サーバー証明書の削除'ボタンを押してください。秘密鍵のパスフレーズは解除されている必要があります。},
 	'Server Certification' => '証明書 (server.crt)',
 	'Secret Key' => '秘密鍵 (server.key)',
+	'Intermediate Certification' => '中間証明書',
 	'Remove SSL Certification' => 'サーバー証明書の削除',
 
 ## addons/Cloud.pack/tmpl/full_restore.tmpl
@@ -6740,7 +6767,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
 	'Failed to remove sync list. (ID:\'[_1]\')' => '同期リスト (ID:[_1]) の削除に失敗しました。',
-	'Failed to update sync list. (ID:\'[_1]\')' => '同キリスト (ID:[_1]) の更新に失敗しました。',
+	'Failed to update sync list. (ID:\'[_1]\')' => '同期リスト (ID:[_1]) の更新に失敗しました。',
 	'Failed to create sync list.' => '同期リストの作成に失敗しました。',
 	'Failed to save sync list. (ID:\'[_1]\')' => '同期リストの保存に失敗しました。',
 	'Error switching directory.' => 'ディレクトリの切り替えができません。',
@@ -6751,9 +6778,12 @@ use vars qw( @ISA %Lexicon );
 	'Cannot access to remote directory \'[_1]\'' => 'リモートディレクトリ\'[_1]\'にアクセスできません。',
 	'Deleting file \'[_1]\' failed.' => 'ファイル\'[_1]\'を削除できませんでした。',
 	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
+	'Directory or file by which end of name is dot(.) or blank exists. Cannot synchronize these files.: "[_1]"' => '拡張子のないファイルや、末尾に空白が存在するファイルやディレクトリは、サーバー配信による送信ができません。"[_1]"',
 	'Unable to write temporary file ([_1]): [_2]' => '一時ファイル([_1])の書き込みができませんでした: [_2]',
 	'Unable to get size of temporary file ([_1]): [_2]' => '一時ファイル ([_1]) のサイズを取得できませんでした] [_2]',
-	'Unable to create destination directory ([_1])' => '配信先にディレクトリを作成できません ([_1])',
+	'FTP reconnection was failed. ([_1])' => 'FTP の再接続に失敗しました。([_1])',
+	'FTP connection lost.' => 'FTP 接続が切断されました。',
+	'FTP connection timeout.' => 'FTP 接続がタイムアウトしました。',
 	'Unable to write remote files. Please check activity log for more details.: [_1]' => '配信先にファイルを書き込めません。詳細についてはログを確認してください。: [_1]',
 	'Unable to write remote files ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
 
@@ -6774,7 +6804,7 @@ use vars qw( @ISA %Lexicon );
 	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバー配信の処理に成功したことを通知するメールです。',
 	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
 	'Failed to remove temporary directory: [_1]' => '一時ディレクトリを削除できませんでした: [_1]',
-	'Failed to remove pid file.' => 'PID　ファイルを削除できませんでした。',
+	'Failed to remove pid file.' => 'PID ファイルを削除できませんでした。',
 	'This email is to notify you that failed to sync with an external server.' => 'これはサーバー配信の処理に失敗したことを通知するメールです。',
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
@@ -6782,6 +6812,8 @@ use vars qw( @ISA %Lexicon );
 	'The sync setting with the same name already exists.' => '同名のサーバー配信設定がすでに存在します。',
 	'Reached the upper limit of the parallel execution.' => '同時に実行できる配信の上限に達しているため、即時配信を実行できません。',
 	'Process ID can\'t be acquired.' => 'プロセスIDを取得できません。',
+	'Sync setting \'[_1]\' (ID: [_2]) edited by [_3].' => '[_3] が、サーバー配信の設定 \'[_1]\' (ID: [_2]) を保存しました。',
+	'Sync setting \'[_1]\' (ID: [_2]) deleted by [_3].' => '[_3] が、サーバー配の信設定 \'[_1]\' (ID: [_2]) を削除しました。',
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'FTPサーバー \'[_1]\' への接続中にエラーが発生しました: [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'FTPサーバーのカレントディレクトリが取得できませんでした。',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした',
@@ -6799,6 +6831,8 @@ use vars qw( @ISA %Lexicon );
 	'Sync Date' => 'サーバー配信日時',
 	'Recipient for Notification' => '配信結果の通知先メールアドレス',
 	'Receive only error notification' => '配信に失敗したときだけ受け取る。',
+	'htaccess' => 'htaccess',
+	'Do not send .htaccess and .htpasswd file' => '.htaccess や .htpasswd ファイルを送信しない',
 	'Destinations' => '配信先',
 	'Add destination' => '配信先を追加する',
 	'Sync Type' => '配信方法',
@@ -6916,7 +6950,7 @@ use vars qw( @ISA %Lexicon );
 	'OAuth2 settings' => 'OAuth2の設定',
 	'This [_2] is using the settings of [_1].' => 'この[_2]は、[_1]の設定を利用しています。',
 	'Other Google account' => '別のアカウントを利用する',
-	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a> before selecting profile.} => q{プロファイルを選択するために、<a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a>でウェブアプリケーション向けのClient IDを作成してください。},
+	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a> before selecting profile.} => q{プロファイルを選択するために、<a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a>でウェブアプリケーション向けのClient IDを作成してください。},
 	'Redirect URI of the OAuth2 application' => '承認済みのリダイレクト URI',
 	'Client ID of the OAuth2 application' => 'クライアント ID',
 	'Client secret of the OAuth2 application' => 'クライアント シークレット',
@@ -7112,17 +7146,6 @@ use vars qw( @ISA %Lexicon );
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
 	'Failed.' => '失敗',
 
-## plugins/mixiComment/lib/mixiComment/App.pm
-	'mixi reported that you failed to login.  Try again.' => 'ログインに失敗しました。',
-
-## plugins/mixiComment/mixiComment.pl
-	'Allows commenters to sign in to Movable Type using their own mixi username and password via OpenID.' => 'mixiのアカウントを使ってMovable Typeにサインインし、コメントできるようにします。',
-	'mixi' => 'ミクシィ',
-
-## plugins/mixiComment/tmpl/config.tmpl
-	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'すでにmixiのIDを登録してあります。ブログに関連付けるmixiのIDを変えたい場合は、<a href="[_1]">ここをクリックしてmixiにログイン</a>してください。マイミクだけでなくすべてのmixiユーザーからのコメントを受け付けたいときは、初期化ボタンをクリックして設定を消去してください。',
-	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'マイミクからのみコメントを受け付ける設定にするには、<a href="[_1]">ここをクリックしてまずmixiにログイン</a>してください。',
-
 ## plugins/spamlookup/lib/spamlookup.pm
 	'Failed to resolve IP address for source URL [_1]' => 'ソースURL[_1]の解決に失敗しました。',
 	'Moderating: Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'ドメインのIPアドレス「[_2]」と送信元「[_1]」のIPアドレス「[_3]」が合致しないため、「未公開」にします。',
@@ -7200,6 +7223,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 296
+## New words: 418
 
 1;

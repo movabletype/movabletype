@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -4234,6 +4234,17 @@ sub log {
     $log->class('system')
         unless defined $log->class;
     $log->save;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+    my $method
+        = $log->level == MT::Log::DEBUG()    ? 'debug'
+        : $log->level == MT::Log::INFO()     ? 'info'
+        : $log->level == MT::Log::WARNING()  ? 'warn'
+        : $log->level == MT::Log::ERROR()    ? 'error'
+        : $log->level == MT::Log::SECURITY() ? 'error'
+        :                                      'none';
+    MT::Util::Log->$method( $log->message );
 }
 
 sub trace {

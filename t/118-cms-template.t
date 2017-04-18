@@ -99,4 +99,29 @@ subtest 'Edit archive template in website' => sub {
     }
 };
 
+subtest 'Save prefs check' => sub {
+    my $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save_template_prefs',
+            blog_id          => $website->id,
+            syntax_highlight => 'sync',
+        },
+    );
+    my $out = delete $app->{__test_output};
+    my ( $headers, $body ) = split /^\s*$/m, $out;
+    my $json    = MT::Util::from_json($body);
+    my %headers = map {
+        my ( $k, $v ) = split /\s*:\s*/, $_, 2;
+        $v =~ s/(\r\n|\r|\n)\z//;
+        lc $k => $v
+        }
+        split /\n/, $headers;
+
+    ok( $headers{'content-type'} =~ m/application\/json/,
+        'Content-Type is application/json' );
+    ok( $json->{result}{success}, 'Json result is success' );
+};
+
 done_testing;

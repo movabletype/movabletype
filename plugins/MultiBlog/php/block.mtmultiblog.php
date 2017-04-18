@@ -1,12 +1,12 @@
 <?php
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
 # $Id$
 
 if (MULTIBLOG_ENABLED) {
-function smarty_block_mtmultiblog(&$args, $content, &$ctx, &$repeat) {
+function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
 
     if (!isset($content)) {
 
@@ -97,7 +97,7 @@ function multiblog_context($args, $content, &$ctx, &$repeat) {
 # Multiblog's "loop" mode:
 # The container's contents are evaluated once per specified blog
 function multiblog_loop($args, $content, &$ctx, &$repeat) {
-    $localvars = array('entries', 'current_timestamp', 'current_timestamp_end', 'category', 'archive_category', '_blogs', '_blogs_counter', 'blog', 'blog_id', 'multiblog_context', 'multiblog_blog_ids');
+    $localvars = array('entries', 'current_timestamp', 'current_timestamp_end', 'category', 'archive_category', '_blogs', '_blogs_counter', 'blog', 'blog_id', 'multiblog_context', 'multiblog_blog_ids', 'local_blog_id');
     if (!isset($content)) {
         $ctx->localize($localvars);
         if ($args['ignore_archive_context']) {

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -20,12 +20,12 @@ sub _find_module {
     }
     if ($config) {
         $config =~ s/^YAML:://;
-        die 'Invalid YAML module' if $config =~ /[^\w:]/;
+        die MT->translate('Invalid YAML module') if $config =~ /[^\w:]/;
         if ( $config !~ /::/ ) {
             $config = 'MT::Util::YAML::' . $config;
         }
         eval "require $config";
-        die "Cannot load YAML module: $@" if $@;
+        die MT->translate( "Cannot load YAML module: [_1]", $@ ) if $@;
         $Module = $config;
     }
     else {

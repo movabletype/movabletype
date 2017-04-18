@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -626,6 +626,21 @@ sub preview {
             $entry->$name( $entry_hash->{$name} );
         }
     }
+
+    # Set authored_on as a parameter
+    if ( !$entry->authored_on ) {
+        my @ts = MT::Util::offset_time_list( time, $blog );
+        my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+            $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+        $entry->authored_on($ts);
+    }
+
+    my ( $yr, $mo, $dy, $hr, $mn, $sc )
+        = unpack( 'A4A2A2A2A2A2', $entry->authored_on );
+    my $authored_on_date = sprintf( "%04d-%02d-%02d", $yr, $mo, $dy );
+    my $authored_on_time = sprintf( "%02d:%02d:%02d", $hr, $mn, $sc );
+    $app->param( 'authored_on_date', $authored_on_date );
+    $app->param( 'authored_on_time', $authored_on_time );
 
     if ( exists $entry_hash->{categories} ) {
         my $cats_hash = $entry_hash->{categories};

@@ -16,6 +16,43 @@ my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
 
+# Make a new role that including upload permission only.
+require MT::Role;
+my $role = MT::Role->new();
+$role->name( 'upload' );
+$role->description( 'upload' );
+$role->clear_full_permissions;
+$role->set_these_permissions( 'upload' );
+$role->save;
+
+# Make a new user who is associated with upload role.
+my $uploader = MT::Author->new;
+$uploader->set_values(
+    {   name             => 'uploader',
+        nickname         => 'Mr. Uploader',
+        email            => 'uploader@example.com',
+        url              => 'http://example.com/',
+        userpic_asset_id => 3,
+        api_password     => 'seecret',
+        auth_type        => 'MT',
+        created_on       => '19780131074500',
+    }
+);
+$uploader->set_password("bass");
+$uploader->type( MT::Author::AUTHOR() );
+$uploader->id(100);
+$uploader->save()
+    or die "Couldn't save author record 100: " . $uploader->errstr;
+
+require MT::Association;
+my $assoc = MT::Association->new();
+$assoc->author_id( $uploader->id );
+$assoc->blog_id(1);
+$assoc->role_id( $role->id );
+$assoc->type(1);
+$assoc->save();
+
+
 my $mock_filemgr_local = Test::MockModule->new('MT::FileMgr::Local');
 $mock_filemgr_local->mock( 'delete', sub {1} );
 
@@ -106,6 +143,27 @@ sub suite {
                     $ENV{MT_HOME}, "t", 'images', 'test.png'
                 ),
             ],
+            result => sub {
+                $app->model('asset')->load( { class => '*' },
+                    { sort => [ { column => 'id', desc => 'DESC' }, ] } );
+            },
+        },
+        # upload_asset_v3 - normal tests upload only user.
+        {    # Site.
+            path   => '/v3/assets/upload',
+            method => 'POST',
+            params => { site_id => 1 },
+            setup  => sub {
+                my ($data) = @_;
+                $data->{count} = $app->model('asset')->count;
+            },
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.gif'
+                ),
+            ],
+            author_id => 100,
             result => sub {
                 $app->model('asset')->load( { class => '*' },
                     { sort => [ { column => 'id', desc => 'DESC' }, ] } );
@@ -317,7 +375,7 @@ sub suite {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
                 is( $result->{totalResults},
-                    5, 'The number of asset (blog_id=1) is 5.' );
+                    6, 'The number of asset (blog_id=1) is 6.' );
             },
         },
         {    # Website.
@@ -367,7 +425,7 @@ sub suite {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
                 is( $result->{totalResults},
-                    4, 'The number of image asset is 4.' );
+                    5, 'The number of image asset is 5.' );
             },
         },
         {    # In order of created_by.

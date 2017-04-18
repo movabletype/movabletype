@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) (C) 2004-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2004-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -56,11 +56,7 @@ TC.TagComplete.prototype.attachElements = function()
         if ( this.input_box ) {
             var self = this;
             var keyDown = function( event ) { return self.keyDown( event ); }
-            var keyUp = function( event ) { return self.keyUp( event ); }
-            var keyPress = function( event ) { return self.keyPress( event ); }
             TC.attachEvent( this.input_box, "keydown", keyDown );
-            TC.attachEvent( this.input_box, "keyup", keyUp );
-            TC.attachEvent( this.input_box, "keypress", keyPress );
             this.input_box.setAttribute("autocomplete", "off");
         }
     }
@@ -71,21 +67,6 @@ TC.TagComplete.prototype.attachElements = function()
     // try again on failure
 	if( !this.input_box )
         window.setTimeout( "TC.TagComplete.instances[ '" + this.id + "' ].attachElements();", 1000 );
-}
-
-TC.TagComplete.prototype.keyPress = function( evt )
-{
-    evt = evt || event;
-    var element = evt.target || evt.srcElement;
-    if ( this.stopped == evt.keyCode )
-    {
-        this.stopped = 0;
-        if ( (evt.keyCode == 9) || (evt.keyCode == 13) || (evt.keyCode == 38 ) || (evt.keyCode == 40) )
-        {
-            return TC.stopEvent( evt );
-        }
-    }
-    return true;
 }
 
 TC.TagComplete.prototype.keyDown = function( evt )
@@ -148,7 +129,7 @@ TC.TagComplete.prototype.keyDown = function( evt )
         this.currentWord = '';
         this.clearCompletions();
     }
-    else if ( (evt.keyCode > 64) && (evt.keyCode < 91) ) { // uppercase A-Z
+    else if ( (evt.keyCode > 64) && (evt.keyCode < 91) || (evt.keyCode == 32) ) { // uppercase A-Z & space
         this.updateWord( String.fromCharCode(evt.keyCode).toLowerCase() );
     }
     else if ( (evt.keyCode > 47) && (evt.keyCode < 58) ) { // 0-9
@@ -160,37 +141,6 @@ TC.TagComplete.prototype.keyDown = function( evt )
     }
     
     this.processed = evt.keyCode;
-    return true;
-}
-
-TC.TagComplete.prototype.keyUp = function( evt )
-{
-    evt = evt || event;
-    if ((evt.keyCode == this.processed) || (evt.keyCode == this.stopped)) {
-        this.processed = 0;
-        return false;
-    }
-    this.processed = 0;
-    var element = evt.target || evt.srcElement;
-    var caret_pos = TC.getCaretPosition(element);
-    if (caret_pos == null) caret_pos = element.value.length - 1;
-    var ch = element.value.charAt(caret_pos);
-    if ( ( String.fromCharCode(evt.keyCode) == this.delimiter ) ||
-              ( ( evt.keyCode == 188 ) && ( this.delimiter == ',' ) ) ) {
-        this.currentWord = '';
-        this.clearCompletions();
-    }
-    else if ( (evt.keyCode > 64) && (evt.keyCode < 91) ) { // uppercase A-Z
-        this.updateWord( String.fromCharCode(evt.keyCode).toLowerCase() );
-    }
-    else if ( (evt.keyCode > 47) && (evt.keyCode < 58) ) { // 0-9
-        if (evt.shiftKey) return true;
-        this.updateWord( String.fromCharCode(evt.keyCode) );
-    }
-    else if (this.symbols.test(ch)) {
-        this.updateWord( ch.toLowerCase() );
-    }
-    
     return true;
 }
 
@@ -276,7 +226,7 @@ TC.TagComplete.prototype.lookForCompletions = function()
 
 TC.TagComplete.prototype.onDivMouseDown = function()
 {
-    this.tagComplete.handleTagComplete(this.innerHTML);
+    this.tagComplete.handleTagComplete(this.textContent);
 }
 
 TC.TagComplete.prototype.onDivMouseOver = function()

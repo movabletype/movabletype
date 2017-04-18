@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -2131,6 +2131,11 @@ sub refresh_all_templates {
     my ($app) = @_;
     $app->validate_magic or return;
 
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('--- Start refresh_all_templates.');
+
     my $backup = 0;
     if ( $app->param('backup') ) {
 
@@ -2184,6 +2189,10 @@ BLOG: for my $blog_id (@id) {
             $blog = MT::Blog->load($blog_id);
             next BLOG unless $blog;
         }
+
+        MT::Util::Log->info(
+            ' Start refresh all templates. blog_id:' . $blog_id );
+
         my $tmpl_lang;
         $tmpl_lang = $blog->language if $blog_id;
         $tmpl_lang ||= $default_language;
@@ -2467,6 +2476,9 @@ BLOG: for my $blog_id (@id) {
             }
         }
         $refreshed = 1;
+
+        MT::Util::Log->info(
+            ' End   refresh all templates. blog_id:' . $blog_id );
     }
     if (@blogs_not_refreshed) {
         $app->add_return_arg( 'not_refreshed' => 1 );
@@ -2474,6 +2486,9 @@ BLOG: for my $blog_id (@id) {
             'error_id' => join( ',', @blogs_not_refreshed ) );
     }
     $app->add_return_arg( 'refreshed' => 1 ) if $refreshed;
+
+    MT::Util::Log->info('--- End   refresh_all_templates.');
+
     $app->call_return;
 }
 
@@ -2494,6 +2509,11 @@ sub refresh_individual_templates {
         && (   $perms->can_edit_templates()
             || $perms->can_administer_blog )
         );
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('--- Start refresh_individual_templates.');
 
     my $set;
     my $blog_id = $app->param('blog_id');
@@ -2617,6 +2637,7 @@ sub refresh_individual_templates {
                     $app->errstr
                 )
                 );
+            $tmpl->modified_on($ts);
             $tmpl->save;
             $app->run_callbacks( 'cms_post_save.template',
                 $app, $tmpl, $orig_obj );
@@ -2632,6 +2653,9 @@ sub refresh_individual_templates {
     push @msg_loop, { message => $_ } foreach @msg;
 
     $app->mode('view');    # set mode for blog selector
+
+    MT::Util::Log->info('--- End   refresh_individual_templates.');
+
     $app->build_page( 'refresh_results.tmpl',
         { message_loop => \@msg_loop, return_url => $app->return_uri } );
 }
@@ -3234,8 +3258,7 @@ sub save_template_prefs {
         or return $app->error(
         $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
         );
-    $app->send_http_header("text/json");
-    return "true";
+    return $app->json_result( { success => 1 } );
 }
 
 1;

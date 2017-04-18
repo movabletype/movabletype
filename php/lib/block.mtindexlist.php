@@ -1,12 +1,12 @@
 <?php
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
 # $Id$
 
 function smarty_block_mtindexlist($args, $content, &$ctx, &$repeat) {
-    $localvars = array(array('index_templates', 'index_templates_counter'), common_loop_vars());
+    $localvars = array(array('index_templates', 'index_templates_counter', 'template'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
         $tmpl = $ctx->mt->db()->fetch_templates(array(
@@ -26,6 +26,7 @@ function smarty_block_mtindexlist($args, $content, &$ctx, &$repeat) {
         $ctx->__stash['vars']['__first__'] = $counter == 0;
         $ctx->__stash['vars']['__last__'] = count($tmpl) == $counter + 1;
         $ctx->stash('index_templates_counter', $counter);
+        $ctx->stash('template', $tmpl[$counter]);
         $repeat = true;
     } else {
         $ctx->restore($localvars);

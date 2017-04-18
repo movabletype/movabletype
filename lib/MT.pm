@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -33,13 +33,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '6.2', '6.0010' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.3', '6.0010' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.2.6',              '__PRODUCT_VERSION_ID__',
+        '6.3.4',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 6;
+        $RELEASE_NUMBER = 4;
     }
 
     $DebugMode = 0;
@@ -535,6 +535,17 @@ sub log {
     print STDERR Encode::encode_utf8(
         MT->translate( "Message: [_1]", $log->message ) . "\n" )
         if $MT::DebugMode && ( $^O ne "MSWin32" );
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+    my $method
+        = $log->level == MT::Log::DEBUG()    ? 'debug'
+        : $log->level == MT::Log::INFO()     ? 'info'
+        : $log->level == MT::Log::WARNING()  ? 'warn'
+        : $log->level == MT::Log::ERROR()    ? 'error'
+        : $log->level == MT::Log::SECURITY() ? 'error'
+        :                                      'none';
+    MT::Util::Log->$method( $log->message );
 }
 
 sub run_tasks {
@@ -2689,7 +2700,7 @@ sub new_ua {
     else {
         $ua->ssl_opts(
             verify_hostname => 1,
-            SSL_vesion  => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
+            SSL_version => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
             SSL_ca_file => Mozilla::CA::SSL_ca_file(),
         );
     }
@@ -4356,7 +4367,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2016 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2017 Six Apart.
 All rights reserved.
 
 =cut

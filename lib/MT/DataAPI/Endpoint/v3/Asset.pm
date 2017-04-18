@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -26,6 +26,10 @@ sub upload {
 
     my $site = MT->model('blog')->load($site_id);
     $app->blog($site);
+
+    my $user = $app->user;
+    $app->permissions( $user->permissions($site_id) )
+        if $user && !$user->is_anonymous;
 
     if ($site) {
         if ( defined $site->allow_to_change_at_upload

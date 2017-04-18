@@ -29,11 +29,14 @@ use MT::Util;
 # Website
 my $website        = MT::Test::Permission->make_website();
 my $second_website = MT::Test::Permission->make_website();
+my $third_website  = MT::Test::Permission->make_website();
 
 # Blog
 my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
 my $second_blog
     = MT::Test::Permission->make_blog( parent_id => $second_website->id, );
+my $third_blog
+    = MT::Test::Permission->make_blog( parent_id => $third_website->id, );
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
@@ -81,6 +84,11 @@ my $kemikawa = MT::Test::Permission->make_author(
     nickname => 'Shiro Kemikawa',
 );
 
+my $kogawa = MT::Test::Permission->make_author(
+    name     => 'kogawa',
+    nickname => 'Goro Kogawa',
+);
+
 my $admin = MT->model('author')->load(1);
 
 # Role
@@ -113,6 +121,9 @@ MT::Association->link( $kemikawa, $website_administrator, $blog );
 
 MT::Association->link( $ichikawa, $create_post, $second_website );
 MT::Association->link( $egawa,    $create_post, $second_blog );
+
+MT::Association->link( $aikawa, $website_administrator, $third_blog );
+MT::Association->link( $kogawa, $create_post,           $third_blog );
 
 # Category
 my $website_cat = MT::Test::Permission->make_category(
@@ -155,6 +166,18 @@ my $second_website_entry = MT::Test::Permission->make_entry(
     blog_id   => $second_website->id,
     author_id => $ichikawa->id,
     title     => 'Other Website Entry by ichikawa',
+);
+
+my $third_blog_entry_aikawa = MT::Test::Permission->make_entry(
+    blog_id   => $third_blog->id,
+    author_id => $aikawa->id,
+    title     => 'Third blog Entry by aikawa',
+);
+
+my $third_blog_entry_kogawa = MT::Test::Permission->make_entry(
+    blog_id   => $third_blog->id,
+    author_id => $kogawa->id,
+    title     => 'Third blog Entry by kogawa',
 );
 
 # Page
@@ -776,7 +799,86 @@ subtest 'Test in website scope' => sub {
         done_testing();
     };
 
-    note 'Batch edit entries check';
+    note 'Custom filter check';
+    subtest 'Custom filter check' => sub {
+        local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
+        my ( $headers, $body, $json );
+
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $admin,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $third_blog->id,
+                columns          => 'title',
+                items =>
+                    "[{\"type\":\"author_name\",\"args\":{\"string\":\"a\",\"option\":\"contains\"}}]",
+            },
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, "Request: filtered_list" );
+        ( $headers, $body ) = split /^\s*$/m, $out;
+        $json = MT::Util::from_json($body);
+        is( $json->{result}{count}, 2, "Contains 'a'" );
+
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $admin,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $third_blog->id,
+                columns          => 'title',
+                items =>
+                    "[{\"type\":\"author_name\",\"args\":{\"string\":\"g\",\"option\":\"contains\"}}]",
+            },
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, "Request: filtered_list" );
+        ( $headers, $body ) = split /^\s*$/m, $out;
+        $json = MT::Util::from_json($body);
+        is( $json->{result}{count}, 1, "Contains 'g'" );
+
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $admin,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $third_blog->id,
+                columns          => 'title',
+                items =>
+                    "[{\"type\":\"author_name\",\"args\":{\"string\":\"q\",\"option\":\"contains\"}}]",
+            },
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, "Request: filtered_list" );
+        ( $headers, $body ) = split /^\s*$/m, $out;
+        $json = MT::Util::from_json($body);
+        is( $json->{result}{count}, 0, "Contains 'q'" );
+
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $admin,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $third_blog->id,
+                columns          => 'title',
+                items =>
+                    "[{\"type\":\"author_name\",\"args\":{\"string\":\"a\",\"option\":\"not_contains\"}}]",
+            },
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, "Request: filtered_list" );
+        ( $headers, $body ) = split /^\s*$/m, $out;
+        $json = MT::Util::from_json($body);
+        is( $json->{result}{count}, 0, "Not contains 'a'" );
+
+        done_testing();
+    };
+
     subtest 'Batch edit entries check' => sub {
         $app = _run_app(
             'MT::App::CMS',
@@ -830,12 +932,42 @@ subtest 'The cache of new entry check' => sub {
             category_ids     => $website_cat->id . ',' . $website_cat2->id,
         },
     );
+    my $out = delete $app->{__test_output};
 
     is_deeply(
         [ map { $_->id } @$categories ],
         [ $website_cat2->id, $website_cat->id ],
         'A new entry has category "Bar" and category "Foo" in cache.'
     );
+};
+
+subtest 'Save prefs check' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'entry',
+            blog_id          => $website->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    my $out = delete $app->{__test_output};
+    my ( $headers, $body ) = split /^\s*$/m, $out;
+    my $json    = MT::Util::from_json($body);
+    my %headers = map {
+        my ( $k, $v ) = split /\s*:\s*/, $_, 2;
+        $v =~ s/(\r\n|\r|\n)\z//;
+        lc $k => $v
+        }
+        split /\n/, $headers;
+
+    ok( $headers{'content-type'} =~ m/application\/json/,
+        'Content-Type is application/json' );
+    ok( $json->{result}{success}, 'Json result is success' );
 };
 
 done_testing();

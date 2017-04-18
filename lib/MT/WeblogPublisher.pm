@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -124,6 +124,12 @@ sub rebuild {
             );
     }
     return 1 if $blog->is_dynamic;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('--- Start rebuild.');
+
     my $at = $blog->archive_type || '';
     my @at = split /,/, $at;
     my $entry_class;
@@ -265,6 +271,7 @@ sub rebuild {
         $mt->rebuild_indexes( Blog => $blog, NoStatic => $param{NoStatic}, )
             or return;
     }
+    MT::Util::Log->info('--- End   rebuild.');
     1;
 }
 
@@ -272,6 +279,12 @@ sub rebuild_categories {
     my $mt    = shift;
     my %param = @_;
     my $blog;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info(' Start rebuild_categories.');
+
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
         $blog = MT::Blog->load($blog_id)
@@ -305,6 +318,7 @@ sub rebuild_categories {
             Force    => ( $param{Force} ? 1 : 0 ),
         ) or return;
     }
+    MT::Util::Log->info(' End   rebuild_categories.');
     1;
 }
 
@@ -312,6 +326,12 @@ sub rebuild_authors {
     my $mt    = shift;
     my %param = @_;
     my $blog;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info(' Start rebuild_authors.');
+
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
         $blog = MT::Blog->load($blog_id)
@@ -357,6 +377,7 @@ sub rebuild_authors {
             Force    => ( $param{Force} ? 1 : 0 ),
         ) or return;
     }
+    MT::Util::Log->info(' End   rebuild_authors.');
     1;
 }
 
@@ -405,6 +426,11 @@ sub rebuild_deleted_entry {
     require MT::Entry;
     $entry = MT::Entry->load($entry) unless ref $entry;
     return unless $entry;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('--- Start rebuild_deleted_entry.');
 
     my $blog;
     unless ( $blog = $param{Blog} ) {
@@ -526,7 +552,7 @@ sub rebuild_deleted_entry {
             }
             else {
                 if ( $app->config('RebuildAtDelete') ) {
-                    if ( $archiver->author_based() && $entry->author_id ) {
+                    if ( $archiver->author_based() && $entry->author ) {
                         if ( $archiver->date_based() ) {
                             $rebuild_recipe{$at}{ $entry->author->id }
                                 { $start . $end }{'Start'} = $start;
@@ -561,6 +587,8 @@ sub rebuild_deleted_entry {
         }
     }
 
+    MT::Util::Log->info('--- End   rebuild_deleted_entry.');
+
     return %rebuild_recipe;
 }
 
@@ -594,6 +622,11 @@ sub rebuild_entry {
             );
     }
     return 1 if $blog->is_dynamic;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('--- Start rebuild_entry.');
 
     my $categories_for_rebuild;
     if ( my $ids = $param{OldCategories} ) {
@@ -812,6 +845,8 @@ sub rebuild_entry {
         }
     }
 
+    MT::Util::Log->info('--- End   rebuild_entry.');
+
     1;
 }
 
@@ -834,6 +869,11 @@ sub rebuild_archives {
         or return $mt->error(
         MT->translate( "Parameter '[_1]' is required", 'Blog' ) );
     return 1 if $blog->is_dynamic;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('--- Start rebuild_archives.');
 
     my $recipe = $param{Recipe}
         or return $mt->error(
@@ -935,6 +975,8 @@ sub rebuild_archives {
             }
         }
     }
+
+    MT::Util::Log->info('--- End   rebuild_archives.');
 
     1;
 }
@@ -1533,6 +1575,12 @@ sub rebuild_file {
     }
     $timer->mark( "total:rebuild_file[template_id:" . $tmpl->id . "]" )
         if $timer;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info( ' Rebuilded ' . $file );
+
     1;
 }
 
@@ -1542,6 +1590,11 @@ sub rebuild_indexes {
     require MT::Template;
     require MT::Template::Context;
     require MT::Entry;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('--- Start rebuild_indexes.');
 
     my $blog;
     $blog = $param{Blog}
@@ -1811,13 +1864,23 @@ sub rebuild_indexes {
                 . $tmpl->id
                 . ";file:$file]" )
             if $timer;
+
+        MT::Util::Log->info( ' Rebuilded ' . $file );
     }
+
+    MT::Util::Log->info('--- End   rebuild_indexes.');
+
     1;
 }
 
 sub rebuild_from_fileinfo {
     my $pub = shift;
     my ($fi) = @_;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info(' Start rebuild_from_fileinfo.');
 
     require MT::Blog;
     require MT::Entry;
@@ -1902,6 +1965,8 @@ sub rebuild_from_fileinfo {
     $pub->rebuild_file( $blog, $arch_root, $map, $at, $ctx, \%cond, 1,
         FileInfo => $fi, )
         or return;
+
+    MT::Util::Log->info(' End   rebuild_from_fileinfo.');
 
     1;
 }
@@ -2158,7 +2223,8 @@ sub remove_entry_archive_file {
     my %param = @_;
 
     my $entry = $param{Entry};
-    my $at    = $param{ArchiveType} || 'Individual';
+    my $at
+        = $param{ArchiveType} || ( $entry->is_entry ? 'Individual' : 'Page' );
     my $cat   = $param{Category};
     my $auth  = $param{Author};
     my $force = exists $param{Force} ? $param{Force} : 1;

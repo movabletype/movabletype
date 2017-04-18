@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -256,7 +256,9 @@ sub recent_blogs_widget {
     my %terms;
     $args{join} = MT::Permission->join_on( 'blog_id',
         { author_id => $user->id, permissions => { not => "'comment'" } } );
-    $terms{class} = 'blog';
+    $terms{class}     = 'blog';
+    $terms{parent_id} = $app->blog->id
+        if $app->blog && !$app->blog->is_blog;
     my $count = MT::Blog->count( \%terms, \%args );
     $param->{has_more_blogs} = 1 if $count > 10;
 }

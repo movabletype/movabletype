@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,6 +9,8 @@ package MT::ObjectDriver::SQL::mysql;
 use strict;
 use warnings;
 use base qw( MT::ObjectDriver::SQL );
+
+*distinct_stmt = \&_subselect_distinct;
 
 sub new {
     my $class = shift;
@@ -56,6 +58,60 @@ sub add_freetext_where {
     push @{ $stmt->{where} }, "($term)";
     push @{ $stmt->{bind} },  $search_string;
     $stmt->where_values->{$col} = $search_string;
+}
+
+sub _parse_array_terms {
+    my $stmt = shift;
+    my ($term_list) = @_;
+
+    foreach my $term (@$term_list) {
+        if ( ref $term eq 'HASH' ) {
+            foreach my $key ( keys %$term ) {
+                if ( ref $term->{$key} eq 'HASH' ) {
+                    if ( $term->{$key}->{not_like} ) {
+                        my @array = ( $term->{$key}, \'IS NULL' );
+                        $term->{$key} = \@array;
+                    }
+                }
+            }
+        }
+    }
+
+    return $stmt->SUPER::_parse_array_terms($term_list);
+}
+
+sub _subselect_distinct {
+    my $class = shift;
+    my ($stmt) = @_;
+
+    my $subselect = $class->SUPER::_subselect_distinct(@_);
+
+    # Added row number.
+    $subselect->from_stmt->add_select('@i:=@i+1 as ROWNUM');
+    push @{ $subselect->from_stmt->from }, '(select @i:=0) as INIT_ROWNUM';
+
+    $subselect;
+}
+
+sub as_sql {
+    my $stmt = shift;
+
+    if ( $stmt->distinct && $stmt->order ) {
+        my $attribute = $stmt->order;
+        my $elements
+            = ( ref($attribute) eq 'ARRAY' ) ? $attribute : [$attribute];
+        foreach my $element ( @{$elements} ) {
+            my $col = $element->{column};
+            next
+                if exists( $stmt->select_map->{$col} )
+                || grep( { $_ =~ /\s+AS\s+$col/i } @{ $stmt->select } );
+            $col =~ s{ \A [^_]+_ }{}xms;    # appropriate for all?
+            next if exists( $stmt->select_map_reverse->{$col} );
+            $stmt->add_select( $element->{column} );
+        }
+    }
+
+    return $stmt->SUPER::as_sql(@_);
 }
 
 1;

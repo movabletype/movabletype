@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -32,14 +32,16 @@ function smarty_function_mtentryauthorlink($args, &$ctx) {
     }
     if ($type == 'url') {
         if ($entry->author()->url && ($displayname != '')) {
-            return sprintf('<a href="%s"%s>%s</a>', encode_html( $entry->author()->url ), $target, $displayname);
+            $hcard = $args[show_hcard] ? ' class="fn url"' : '';
+            return sprintf('<a%s href="%s"%s>%s</a>', $hcard, encode_html( $entry->author()->url ), $target, $displayname);
         }
     } elseif ($type == 'email') {
         if ($entry->author()->email && ($displayname != '')) {
             $str = "mailto:" . encode_html( $entry->author()->email );
             if ($args['spam_protect'])
                 $str = spam_protect($str);
-            return sprintf('<a href="%s">%s</a>', $str, $displayname);
+            $hcard = $args[show_hcard] ? ' class="fn email"' : '';
+            return sprintf('<a%s href="%s">%s</a>', $hcard, $str, $displayname);
         }
     } elseif ($type == 'archive') {
         require_once("function.mtarchivelink.php");

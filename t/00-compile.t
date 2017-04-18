@@ -215,6 +215,23 @@ SKIP: {
     }
 }
 use_ok('MT::Util::YAML::Tiny');
+use_ok('MT::Util::Log');
+SKIP: {
+    if ( eval { require Log::Log4perl } ) {
+        use_ok('MT::Util::Log::Log4perl');
+    }
+    else {
+        skip( 'Log::Log4perl is not installed', 1 );
+    }
+}
+SKIP: {
+    if ( eval { require Log::Minimal } ) {
+        use_ok('MT::Util::Log::Minimal');
+    }
+    else {
+        skip( 'Log::Minimal is not installed', 1 );
+    }
+}
 
 # TheSchwartz support
 use_ok('MT::TheSchwartz');

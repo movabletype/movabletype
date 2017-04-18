@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -512,7 +512,7 @@ sub cfg_system_general {
         IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo
         TrackRevisions DisableNotificationPings OutboundTrackbackLimit
         OutboundTrackbackDomains AllowPings AllowComments
-        ImageQualityJpeg ImageQualityPng);
+        AutoChangeImageQuality ImageQualityJpeg ImageQualityPng);
     push @readonly_configs, 'BaseSitePath' unless $cfg->HideBaseSitePath;
 
     my @config_warnings;
@@ -598,9 +598,11 @@ sub cfg_system_general {
     $param{sitepath_limit_hidden} = $cfg->HideBaseSitePath;
     $param{preflogging_hidden}    = $cfg->HidePerformanceLoggingSettings;
 
-    $param{image_quality_jpeg} = $cfg->ImageQualityJpeg;
-    $param{image_quality_png}  = $cfg->ImageQualityPng;
-    $param{image_driver}       = lc $cfg->ImageDriver;
+    # Image settings
+    $param{auto_change_image_quality} = $cfg->AutoChangeImageQuality;
+    $param{image_quality_jpeg}        = $cfg->ImageQualityJpeg;
+    $param{image_quality_png}         = $cfg->ImageQualityPng;
+    $param{image_driver}              = lc $cfg->ImageDriver;
 
     $param{saved}        = $app->param('saved');
     $param{screen_class} = "settings-screen system-feedback-settings";
@@ -842,6 +844,18 @@ sub save_cfg_system_general {
     }
 
     # image quality settings
+    my $auto_quality_change = $app->param('auto_change_image_quality');
+    if ($auto_quality_change) {
+        push( @meta_messages,
+            $app->translate( 'Changing image quality is [_1]', 1 ) );
+        $cfg->AutoChangeImageQuality( 1, 1 );
+    }
+    else {
+        push( @meta_messages,
+            $app->translate( 'Changing image quality is [_1]', 0 ) );
+        $cfg->AutoChangeImageQuality( 0, 1 );
+    }
+
     my $image_quality_jpeg = $app->param('image_quality_jpeg');
     if ( defined $image_quality_jpeg && $image_quality_jpeg =~ /^\d{1,3}$/ ) {
         push(
@@ -927,9 +941,8 @@ sub save_cfg_system_web_services {
 sub upgrade {
     my $app = shift;
 
-    if ( $ENV{FAST_CGI} ) {
-
-        # don't enter the FCGI loop.
+    if ( $ENV{FAST_CGI} ||  MT->config->PIDFilePath ) {
+        # don't enter the upgrade loop.
         $app->reboot;
     }
 
@@ -1114,6 +1127,11 @@ sub backup {
     my $perms    = $app->permissions;
     my $blog_ids = $q->param('backup_what');
     my @blog_ids = split ',', $blog_ids;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('=== Start backup.');
 
     if ( $user->is_superuser ) {
 
@@ -1418,6 +1436,9 @@ sub backup {
         close $fh;
         _backup_finisher( $app, $fname, $param );
     }
+
+    MT::Util::Log->info('=== End   backup.');
+
 }
 
 sub backup_download {
@@ -1495,12 +1516,10 @@ sub backup_download {
                 . $newfilename
                 . '"' );
         $app->send_http_header($contenttype);
-        my $data;
         while ( read $fh, my ($chunk), 8192 ) {
-            $data .= $chunk;
+            $app->print($chunk);
         }
         close $fh;
-        $app->print($data);
         $app->log(
             {   message => $app->translate(
                     '[_1] successfully downloaded backup file ([_2])',
@@ -1524,6 +1543,11 @@ sub restore {
     return $app->permission_denied()
         unless $app->can_do('restore_blog');
     $app->validate_magic() or return;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('=== Start restore.');
 
     my $q = $app->param;
 
@@ -1664,7 +1688,13 @@ sub restore {
             my $tmp = File::Temp::tempdir( $uploaded_filename . 'XXXX',
                 DIR => $temp_dir );
             $tmp = Encode::decode( MT->config->PublishCharset, $tmp );
+
+            MT::Util::Log->info( '=== Start extract ' . $uploaded_filename );
+
             $arc->extract($tmp);
+
+            MT::Util::Log->info( '=== End   extract ' . $uploaded_filename );
+
             $arc->close;
             my ( $blog_ids, $asset_ids );
             eval {
@@ -1734,6 +1764,9 @@ sub restore {
 
     $app->print_encode( $app->build_page( "restore_end.tmpl", $param ) );
     close $fh if $fh;
+
+    MT::Util::Log->info('=== End   restore.');
+
     1;
 }
 

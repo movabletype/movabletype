@@ -133,4 +133,42 @@
   </div>
 </form>
 
+<mt:setvarblock name="jq_js_include" append="1">
+    function isContainsMultiByte ( val ) {
+        var i = 0;
+        while (i < val.length) {
+            if (encodeURI(val.charAt(i)).length >= 4) {
+                return true;
+            }
+            i++;
+        }
+        return false;
+    }
+
+    jQuery.mtValidateAddRules({
+        "#password": function($e) {
+            if ( isContainsMultiByte( $e.val() ) ) {
+                return false;
+            }
+            return true;
+        },
+        "#pass_verify": function($e) {
+            if ( isContainsMultiByte( $e.val() ) ) {
+                return false;
+            }
+            return true;
+        },
+    });
+
+    jQuery.mtValidateAddMessages({
+        "#password": '<__trans phrase="You must use half-width character for password.">',
+        "#pass_verify": '<__trans phrase="You must use half-width character for password.">'
+    });
+
+    jQuery('#signup_form').submit(function(eventObject) {
+        if ( !jQuery("#password").mtValidate('simple') ) return false;
+        if ( !jQuery("#pass_verify").mtValidate('simple') ) return false;
+    });
+</mt:setvarblock>
+
 <mt:include name="include/chromeless_footer.tmpl">

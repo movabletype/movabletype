@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -190,11 +190,24 @@ class Thumbnail {
                 $thumb_h = $this->dest_w;
                 $thumb_w_name = $this->dest_w;
                 $thumb_h_name = $this->dest_w;
-            } else {
+            } elseif($this->dest_h > 0) {
                 $thumb_w = $this->dest_h;
                 $thumb_h = $this->dest_h;
                 $thumb_w_name = $this->dest_h;
                 $thumb_h_name = $this->dest_h;
+            } else {
+                // dest_w and dest_h is unset;
+                if($this->src_w > $this->src_h){
+                    $thumb_w = $this->src_h;
+                    $thumb_h = $this->src_h;
+                    $thumb_w_name = $this->src_h;
+                    $thumb_h_name = $this->src_h;
+                } else {
+                    $thumb_w = $this->src_w;
+                    $thumb_h = $this->src_w;
+                    $thumb_w_name = $this->src_w;
+                    $thumb_h_name = $this->src_w;
+                }
             }
         } elseif ($this->dest_w > 0 || $this->dest_h > 0) {
             $thumb_w_name = 'auto';
