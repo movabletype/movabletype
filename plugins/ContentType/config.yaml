@@ -188,43 +188,13 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::DateTime::ss_validator
     date:
         label: Date
-        data_type: varchar
+        data_type: datetime
         order: 80
-        field_html: |
-            sub {
-                my ( $app, $id, $value )  = @_;
-                require MT::Util;
-                my $date = MT::Util::format_ts( "%Y-%m-%d", $value, $app->blog, $app->user ? $app->user->preferred_language : undef );
-                my $html = '';
-                $html .= '<span>';
-                $html .= "<input type=\"text\" name=\"date-$id\" id=\"date-$id\" class=\"text date text-date\" value=\"$date\" placeholder=\"YYYY:MM:DD\" />";
-                $html .= '</span> ';
-                return $html;
-            }
-        data_getter: |
-            sub {
-                my ( $app, $id )  = @_;
-                my $q = $app->param;
-                my $date = $q->param('date-' . $id);
-                $date =~ s/\D//g;
-                return $date;
-            }
-        ss_validator: |
-            sub {
-                my ( $app, $id ) = @_;
-                my $q = $app->param;
-                my $date = $q->param('date-' . $id);
-                my $ts   = $date . ' 000000';
-                $ts =~ s/\D//g;
-                require MT::Util;
-                if ( MT::Util::is_valid_date($ts) ) {
-                    return $ts;
-                }
-                else {
-                    my $err = MT->translate( "Invalid date: '[_1]'", $date );
-                    return $app->error($err) if $err && $app;
-                }
-            }
+        terms: $ContentType::MT::ContentFieldType::DateTime::terms
+        filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
+        field_html: $ContentType::MT::ContentFieldType::Date::field_html
+        data_getter: $ContentType::MT::ContentFieldType::Date::data_getter
+        ss_validator: $ContentType::MT::ContentFieldType::Date::ss_validator
     time:
         label: Time
         data_type: varchar
