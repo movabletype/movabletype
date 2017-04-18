@@ -72,7 +72,10 @@ sub set_value {
 
     return unless _is_valid_idx_type($idx_type);
 
-    if ( $idx_type eq 'integer' || $idx_type eq 'float' ) {
+    if (   $idx_type eq 'integer'
+        || $idx_type eq 'float'
+        || $idx_type eq 'datetime' )
+    {
         if ( defined $value && $value eq '' ) {
             $value = undef;
         }
