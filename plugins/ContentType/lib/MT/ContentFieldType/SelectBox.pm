@@ -11,7 +11,7 @@ sub terms {
     my ( $args, $base_terms, $base_args, $opts ) = @_;
 
     my $val = $args->{value};
-    if ( $args->{option} && $args->{option} eq 'is_not' ) {
+    if ( $args->{option} && $args->{option} eq 'is_not_selected' ) {
         $val = { not => $val };
     }
 
@@ -31,11 +31,11 @@ sub filter_tmpl {
     return <<'__TMPL__';
 <mt:setvarblock name="select_options">
 <select class="<mt:var name="type">-option">
-  <option value="is"><__trans phrase="is" escape="js"></option>
-  <option value="is_not"><__trans phrase="is not" escape="js"></option>
+  <option value="is_selected"><__trans phrase="is selected" escape="js"></option>
+  <option value="is_not_selected"><__trans phrase="is not selected" escape="js"></option>
 </select>
 </mt:setvarblock>
-<__trans phrase="[_1] [_3] [_2]"
+<__trans phrase="In [_1] column, [_2] [_3]"
          params="<mt:var name="label" escape="js">%%
                  <select class="<mt:var name="type">-value">
                  <mt:loop name="single_select_options">
