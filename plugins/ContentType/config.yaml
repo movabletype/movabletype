@@ -197,45 +197,13 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::Date::ss_validator
     time:
         label: Time
-        data_type: varchar
+        data_type: datetime
         order: 90
-        field_html: |
-            sub {
-                my ( $app, $id, $value )  = @_;
-                require MT::Util;
-                $value = '19700101' . $value;
-                my $time = MT::Util::format_ts( "%H:%M:%S", $value, $app->blog, $app->user ? $app->user->preferred_language : undef );
-                my $html = '';
-                $html .= '<span>';
-                $html .= '<span>';
-                $html .= "<input type=\"text\" name=\"time-$id\" id=\"time-$id\" class=\"text time\" value=\"$time\" placeholder=\"HH:MM:SS\" />";
-                $html .= '</span> ';
-                return $html;
-            }
-        data_getter: |
-            sub {
-                my ( $app, $id )  = @_;
-                my $q = $app->param;
-                my $time = $q->param('time-' . $id);
-                $time =~ s/\D//g;
-                return $time;
-            }
-        ss_validator: |
-            sub {
-                my ( $app, $id ) = @_;
-                my $q = $app->param;
-                my $time = $q->param('time-' . $id);
-                my $ts   = '19700101 ' . $time;
-                $ts =~ s/\D//g;
-                require MT::Util;
-                if ( MT::Util::is_valid_date($ts) ) {
-                    return $time;
-                }
-                else {
-                    my $err = MT->translate( "Invalid time: '[_1]'", $time );
-                    return $app->error($err) if $err && $app;
-                }
-            }
+        terms: $ContentType::MT::ContentFieldType::DateTime::terms
+        filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
+        field_html: $ContentType::MT::ContentFieldType::Time::field_html
+        data_getter: $ContentType::MT::ContentFieldType::Time::data_getter
+        ss_validator: $ContentType::MT::ContentFieldType::Time::ss_validator
     single_select:
         label: Single Select
         data_type: varchar

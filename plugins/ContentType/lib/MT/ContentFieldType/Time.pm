@@ -1,4 +1,4 @@
-package MT::ContentFieldType::Date;
+package MT::ContentFieldType::Time;
 use strict;
 use warnings;
 
@@ -6,15 +6,16 @@ use MT::Util ();
 
 sub field_html {
     my ( $app, $id, $value ) = @_;
-    my $date = '';
+    my $time = '';
     if ( defined $value && $value ne '' ) {
-        $date = MT::Util::format_ts( "%Y-%m-%d", $value, $app->blog,
+        $time = MT::Util::format_ts( "%H:%M:%S", $value, $app->blog,
             $app->user ? $app->user->preferred_language : undef );
     }
     my $html = '';
     $html .= '<span>';
+    $html .= '<span>';
     $html
-        .= "<input type=\"text\" name=\"date-$id\" id=\"date-$id\" class=\"text date text-date\" value=\"$date\" placeholder=\"YYYY:MM:DD\" />";
+        .= "<input type=\"text\" name=\"time-$id\" id=\"time-$id\" class=\"text time\" value=\"$time\" placeholder=\"HH:MM:SS\" />";
     $html .= '</span> ';
     return $html;
 }
@@ -22,10 +23,10 @@ sub field_html {
 sub data_getter {
     my ( $app, $id ) = @_;
     my $q    = $app->param;
-    my $date = $q->param( 'date-' . $id );
-    $date =~ s/\D//g;
-    if ( defined $date && $date ne '' ) {
-        return $date . '000000';
+    my $time = $q->param( 'time-' . $id );
+    $time =~ s/\D//g;
+    if ( defined $time && $time ne '' ) {
+        return '19700101' . $time;
     }
     else {
         return undef;
@@ -35,16 +36,16 @@ sub data_getter {
 sub ss_validator {
     my ( $app, $id ) = @_;
     my $q    = $app->param;
-    my $date = $q->param( 'date-' . $id );
+    my $time = $q->param( 'time-' . $id );
     my $ts;
-    if ( defined $date && $date ne '' ) {
-        $ts = $date . '000000';
+    if ( defined $time && $time ne '' ) {
+        $ts = '19700101 ' . $time;
     }
     if ( !defined $ts || $ts eq '' || MT::Util::is_valid_date($ts) ) {
         return $ts;
     }
     else {
-        my $err = MT->translate( "Invalid date: '[_1]'", $date );
+        my $err = MT->translate( "Invalid time: '[_1]'", $time );
         return $app->error($err) if $err && $app;
     }
 }
