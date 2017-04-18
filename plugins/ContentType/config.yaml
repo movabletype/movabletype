@@ -99,41 +99,8 @@ content_field_types:
         label: Content Type
         data_type: varcahr
         order: 10
-        field_html: |
-            sub {
-                my ( $app, $id, $value )  = @_;
-                require MT::ContentField;
-                require MT::ContentType;
-                require MT::ContentData;
-                my @values = split ',', $value;
-                my $content_field = MT::ContentField->load($id);
-                my $ct_id = $content_field->related_content_type_id;
-                my $ct    = MT::ContentType->load($ct_id);
-                my ($label_field) = grep { $_->{label} } @{ $ct->fields };
-                my @ct_datas
-                    = MT::ContentData->load( { content_type_id => $ct_id } );
-                my $html = '';
-                my $num = 1;
-                foreach my $ct_data (@ct_datas) {
-                    my $ct_data_id = $ct_data->id;
-                    my $label = $ct_data->data->{ $label_field->{id} };
-                    $html .= '<div>';
-                    $html .= "<input type=\"checkbox\" name=\"content-field-$id\" id=\"content-field-$id-$num\" value=\"$ct_data_id\"";
-                    $html .= ( grep { $_ eq $ct_data_id } @values ) ? ' checked="checked"' : '';
-                    $html .= " />";
-                    $html .= " <label for=\"content-field-$id-$num\">$label</label>";
-                    $html .= '</div>';
-                    $num++;
-                }
-                return $html;
-            }
-        data_getter: |
-            sub {
-                my ( $app, $id )  = @_;
-                my $q = $app->param;
-                my @datas = $q->param( 'content-field-' . $id );
-                return join ',', @datas;
-            }
+        field_html: $ContentType::MT::ContentFieldType::ContentType::field_html
+        data_getter: $ContentType::MT::ContentFieldType::ContentType::data_getter
     single_line_text:
         label: Single Line Text
         data_type: varchar
@@ -164,19 +131,7 @@ content_field_types:
         order: 60
         terms: $ContentType::ContentType::ListProperties::terms_text
         filter_tmpl: <mt:var name="filter_form_string">
-        ss_validator: |
-            sub {
-                my ( $app, $id) = @_;
-                my $q = $app->param;
-                my $str = $q->param( 'content-field-' . $id );
-                if ( MT::Util::is_url($str) ) {
-                    return $str;
-                }
-                else {
-                    my $err = MT->translate( "Invalid URL: '[_1]'", $str );
-                    return $app->error($err) if $err && $app;
-                }
-            }
+        ss_validator: $ContentType::MT::ContentFieldType::URL::ss_validator
     date_and_time:
         label: Date and Time
         data_type: datetime
@@ -237,55 +192,8 @@ content_field_types:
         label: Asset
         data_type: varchar
         order: 130
-        field_html: |
-            sub {
-                my ( $app, $id, $value )  = @_;
-                my $q = $app->param;
-                my $ct_data_id = $q->param('id');
-                my @obj_assets = MT::ObjectAsset->load(
-                    {   object_ds => 'content_data',
-                        object_id => $ct_data_id
-                    }
-                );
-                my $html = '';
-                $html .= '<input type="text" name="content-field-' . $id . '" class="text long" value="';
-                my $count = 1;
-                foreach my $obj_asset (@obj_assets) {
-                    $html .= $obj_asset->asset_id;
-                    $html .= ',' unless $count == @obj_assets;
-                    $count++;
-                }
-                $html .= '" />';
-                return $html;
-            }
-        data_getter: |
-            sub {
-                my ( $app, $id )  = @_;
-                require MT::Asset;
-                require MT::ObjectAsset;
-                my $q = $app->param;
-                my $ct_data_id = $q->param('id');
-                my $asset_ids = $q->param( 'content-field-' . $id );
-                my @asset_ids = split ',', $asset_ids;
-                foreach my $asset_id (@asset_ids) {
-                    my $asset = MT::Asset->load($asset_id);
-                    next unless $asset;
-                    my $obj_asset = MT::ObjectAsset->load(
-                        {   asset_id  => $asset_id,
-                            object_ds => 'content_data',
-                            object_id => $ct_data_id
-                        }
-                    );
-                    next if $obj_asset;
-                    $obj_asset = MT::ObjectAsset->new;
-                    $obj_asset->blog_id($app->blog->id);
-                    $obj_asset->asset_id($asset_id);
-                    $obj_asset->object_ds('content_data');
-                    $obj_asset->object_id( $ct_data_id );
-                    $obj_asset->save;
-                }
-                return $asset_ids;
-            }
+        field_html: $ContentType::MT::ContentFieldType::Asset::field_html
+        data_getter: $ContentType::MT::ContentFieldType::Asset::data_getter
     embed_text:
         label: Embed Text
         data_type: blob
@@ -294,136 +202,12 @@ content_field_types:
         label: Category
         data_type: varchar
         order: 150
-        field_html: |
-            sub {
-                my ( $app, $id, $value )  = @_;
-                require MT::Category;
-                require MT::ObjectCategory;
-                my @values   = split ',', $value;
-                my $q        = $app->param;
-                my $ct_data_id    = $q->param('id');
-                my @cats     = MT::Category->load( { blog_id => $app->blog->id } );
-                my @obj_cats = MT::ObjectCategory->load(
-                    {   object_ds=> 'content_data',
-                        object_id => $ct_data_id
-                    }
-                );
-                my $html = '';
-                my $num = 1;
-                foreach my $cat (@cats) {
-                    my $cat_id = $cat->id;
-                    my $cat_label = $cat->label;
-                    $html .= '<div>';
-                    $html .= "<input type=\"checkbox\" name=\"content-field-$id\" id=\"content-field-$id-$num\" value=\"$cat_id\"";
-                    $html .= ( grep { $_->category_id eq $cat_id } @obj_cats ) ? ' checked="checked"' : '';
-                    $html .= " />";
-                    $html .= " <label for=\"content-field-$id-$num\">$cat_label</label>";
-                    $html .= '</div>';
-                }
-                return $html;
-            }
-        data_getter: |
-            sub {
-                my ( $app, $id )  = @_;
-                require MT::Category;
-                require MT::ObjectCategory;
-                my $q = $app->param;
-                my $ct_data_id = $q->param('id');
-                my @cat_ids = $q->param( 'content-field-' . $id );
-                my @obj_cats = MT::ObjectCategory->load(
-                    {   object_ds => 'content_data',
-                        object_id         => $ct_data_id
-                    }
-                );
-                foreach my $obj_cat (@obj_cats) {
-                    $obj_cat->remove
-                        unless ( grep { $_ eq $obj_cat->category_id } @cat_ids );
-                }
-                foreach my $cat_id (@cat_ids) {
-                    my $obj_cat = MT::ObjectCategory->load(
-                        {   category_id       => $cat_id,
-                            object_ds => 'content_data',
-                            object_id         => $ct_data_id
-                        }
-                    );
-                    next if $obj_cat;
-                    $obj_cat = MT::ObjectCategory->new;
-                    $obj_cat->blog_id($app->blog->id);
-                    $obj_cat->category_id($cat_id);
-                    $obj_cat->object_ds('content_data');
-                    $obj_cat->object_id($ct_data_id);
-                    $obj_cat->save;
-                }
-                return join ',', @cat_ids;
-            }
+        field_html: $ContentType::MT::ContentFieldType::Category::field_html
+        data_getter: $ContentType::MT::ContentFieldType::Category::data_getter
     tag:
         label: Tag
         data_type: tag
         order: 160
-        field_html: |
-            sub {
-                my ( $app, $id, $value )  = @_;
-                require MT::Tag;
-                require MT::ObjectTag;
-                my $q = $app->param;
-                my $ct_data_id = $q->param('id');
-                my @obj_tags = MT::ObjectTag->load(
-                    {   object_ds=> 'content_data',
-                        object_id => $ct_data_id
-                    }
-                );
-                my $html = '';
-                $html .= '<input type="text" name="content-field-' . $id . '" class="text long" value="';
-                my $count = 1;
-                foreach my $obj_tag (@obj_tags) {
-                    my $tag = MT::Tag->load($obj_tag->tag_id);
-                    $html .= $tag->name;
-                    $html .= ',' unless $count == @obj_tags;
-                    $count++;
-                }
-                $html .= '" />';
-                return $html;
-            }
-        data_getter: |
-            sub {
-                my ( $app, $id )  = @_;
-                require MT::Tag;
-                require MT::ObjectTag;
-                my $q = $app->param;
-                my $ct_data_id = $q->param('id');
-                my $tag_names = $q->param( 'content-field-' . $id );
-                my @tag_names = split ',', $tag_names;
-                my @tags = MT::Tag->load( { name => \@tag_names },
-                    { binary => { name => 1 } } );
-                my @obj_tags = MT::ObjectTag->load(
-                    {   object_datasource => 'content_data',
-                        object_id         => $ct_data_id
-                    }
-                );
-                foreach my $obj_tag (@obj_tags) {
-                    $obj_tag->remove
-                        unless ( grep { $_->id eq $obj_tag->id } @tags );
-                }
-                foreach my $tag_name (@tag_names) {
-                    my ($tag) = grep { $_->name eq $tag_name } @tags;
-                    unless ($tag) {
-                        $tag = MT::Tag->new;
-                        $tag->name($tag_name);
-                        $tag->save or next;
-                    }
-                    my $obj_tag = MT::ObjectTag->load(
-                        {   tag_id    => $tag->id,
-                            object_datasource => 'content_data',
-                            object_id => $ct_data_id
-                        }
-                    );
-                    next if $obj_tag;
-                    $obj_tag = MT::ObjectTag->new;
-                    $obj_tag->blog_id($app->blog->id);
-                    $obj_tag->tag_id($tag->id);
-                    $obj_tag->object_datasource('content_data');
-                    $obj_tag->object_id( $ct_data_id );
-                    $obj_tag->save;
-                }
-                return $tag_names;
-            }
+        field_html: $ContentType::MT::ContentFieldType::Tag::field_html
+        data_getter: $ContentType::MT::ContentFieldType::Tag::data_getter
+
