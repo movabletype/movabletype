@@ -126,6 +126,17 @@ sub make_list_properties {
                 display => 'force',
                 order   => 300,
             },
+            author_name => {
+                base    => '__virtual.author_name',
+                order   => 400,
+                display => 'optional',
+            },
+            status     => { base => 'entry.status' },
+            created_on => {
+                base    => '__virtual.created_on',
+                display => 'none',
+            },
+            author_status => { base => 'entry.author_status' },
         };
 
         my $order = 200;
