@@ -367,24 +367,20 @@ sub terms_text {
 
     my $data_type = $prop->{data_type};
 
-    $db_args->{joins} ||= [];
-
     if ( $args->{option} && $args->{option} eq 'blank' ) {
-        push @{ $db_args->{joins} },
-            MT::ContentFieldIndex->join_on(
-            undef,
-            [   {   content_data_id  => \'= cd_id',
-                    content_field_id => $prop->{content_field_id},
-                },
-                '-and',
-                [   { "value_${data_type}" => '' },
-                    '-or',
-                    { "value_${data_type}" => \'IS NULL' },
-                ]
+        my @indexes = MT::ContentFieldIndex->load(
+            [   { content_field_id     => $prop->{content_field_id} },
+                { "value_${data_type}" => { not => '' } },
+                { "value_${data_type}" => \'IS NOT NULL' },
             ],
-            );
+            { fetchonly => { content_data_id => 1 } },
+        );
+        my %content_data_ids = map { $_->content_data_id => 1 } @indexes;
+        my @content_data_ids = keys %content_data_ids;
+        @content_data_ids ? { id => { not => \@content_data_ids } } : undef;
     }
     else {
+        $db_args->{joins} ||= [];
         push @{ $db_args->{joins} },
             MT::ContentFieldIndex->join_on(
             undef,
@@ -420,22 +416,31 @@ sub terms_number {
     elsif ( 'less_equal' eq $option ) {
         $query = { '<=' => $value };
     }
-    elsif ( 'blank' eq $option ) {
-        $query = \'IS NULL';
-    }
 
     my $data_type = $prop->{data_type};
 
-    $db_args->{joins} ||= [];
-
-    push @{ $db_args->{joins} },
-        MT::ContentFieldIndex->join_on(
-        undef,
-        {   content_data_id      => \'= cd_id',
-            content_field_id     => $prop->{content_field_id},
-            "value_${data_type}" => $query,
-        }
+    if ( 'blank' eq $option ) {
+        my @indexes = MT::ContentFieldIndex->load(
+            {   content_field_id     => $prop->{content_field_id},
+                "value_${data_type}" => \'IS NOT NULL'
+            },
+            { fetchonly => { content_data_id => 1 } },
         );
+        my %content_data_ids = map { $_->content_data_id => 1 } @indexes;
+        my @content_data_ids = keys %content_data_ids;
+        @content_data_ids ? { id => { not => \@content_data_ids } } : undef;
+    }
+    else {
+        $db_args->{joins} ||= [];
+        push @{ $db_args->{joins} },
+            MT::ContentFieldIndex->join_on(
+            undef,
+            {   content_data_id      => \'= cd_id',
+                content_field_id     => $prop->{content_field_id},
+                "value_${data_type}" => $query,
+            }
+            );
+    }
 }
 
 1;

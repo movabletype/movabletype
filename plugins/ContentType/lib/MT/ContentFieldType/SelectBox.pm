@@ -10,12 +10,13 @@ sub terms {
     my $prop = shift;
     my ( $args, $base_terms, $base_args, $opts ) = @_;
 
-    my $val = $args->{value};
+    my $val       = $args->{value};
+    my $data_type = $prop->{data_type};
 
     if ( $args->{option} && $args->{option} eq 'is_not_selected' ) {
         my @indexes = MT::ContentFieldIndex->load(
-            {   content_field_id => $prop->{content_field_id},
-                value_varchar    => $val,
+            {   content_field_id     => $prop->{content_field_id},
+                "value_${data_type}" => $val,
             },
             { fetchonly => { content_data_id => 1 } }
         );
@@ -28,9 +29,9 @@ sub terms {
         push @{ $base_args->{joins} },
             MT::ContentFieldIndex->join_on(
             undef,
-            {   content_data_id  => \'= cd_id',
-                content_field_id => $prop->{content_field_id},
-                value_varchar    => $val,
+            {   content_data_id      => \'= cd_id',
+                content_field_id     => $prop->{content_field_id},
+                "value_${data_type}" => $val,
             },
             { unique => 1 },
             );
