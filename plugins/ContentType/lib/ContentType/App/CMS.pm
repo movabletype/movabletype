@@ -663,10 +663,11 @@ sub save_content_data {
         ? MT::ContentData->load($content_data_id)
         : MT::ContentData->new();
 
-    $content_data->author_id( $app->user->id );
+    $content_data->author_id( $app->user->id ) unless $content_data->id;
     $content_data->blog_id($blog_id);
     $content_data->content_type_id($content_type_id);
     $content_data->data($data);
+    $content_data->modified_by( $app->user->id ) if $content_data->id;
     $content_data->save
         or return $app->error(
         $plugin->translate(
