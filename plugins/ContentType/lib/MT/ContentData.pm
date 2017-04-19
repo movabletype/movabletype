@@ -12,8 +12,10 @@ use base qw( MT::Object );
 use JSON ();
 
 use MT;
+use MT::Asset;
 use MT::ContentField;
 use MT::ContentType;
+use MT::ObjectAsset;
 
 use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 
@@ -75,9 +77,19 @@ sub save {
     my $field_data = $self->data;
 
     foreach my $f ( @{ $content_type->fields } ) {
-        my $data_type = $content_field_types->{ $f->{type} }{data_type};
+        my $idx_type  = $f->{type};
+        my $data_type = $content_field_types->{$idx_type}{data_type};
         my $value     = $field_data->{ $f->{id} };
         $value = [$value] unless ref $value eq 'ARRAY';
+
+        if ( $idx_type eq 'asset' ) {
+            $self->_save_asset_field_index( $content_type, $f, $value );
+            next;
+        }
+
+        # next
+        #     || $idx_type eq 'category'
+        #     || $idx_type eq 'tag';
 
         MT::ContentFieldIndex->remove(
             {   content_type_id  => $content_type->id,
@@ -114,6 +126,29 @@ sub save {
     }
 
     1;
+}
+
+sub _save_asset_field_index {
+    my $self = shift;
+    my ( $content_type, $field, $values ) = @_;
+
+    MT::ObjectAsset->remove(
+        {   object_ds => 'content_data',
+            object_id => $self->id,
+        }
+    );
+
+    for my $asset_id (@$values) {
+        my $obj_asset = MT::ObjectAsset->new;
+        $obj_asset->set_values(
+            {   blog_id   => $self->blog_id,
+                asset_id  => $asset_id,
+                object_ds => 'content_data',
+                object_id => $self->id
+            }
+        );
+        $obj_asset->save or die $obj_asset->errstr;
+    }
 }
 
 sub data {
