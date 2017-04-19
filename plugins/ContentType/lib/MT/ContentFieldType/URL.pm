@@ -8,7 +8,9 @@ sub ss_validator {
     my ( $app, $id ) = @_;
     my $q   = $app->param;
     my $str = $q->param( 'content-field-' . $id );
-    if ( MT::Util::is_url($str) ) {
+
+    # TODO: should check "require" option here.
+    if ( !defined $str || $str eq '' || MT::Util::is_url($str) ) {
         return $str;
     }
     else {
