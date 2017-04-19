@@ -83,7 +83,7 @@ sub save {
         $value = [$value] unless ref $value eq 'ARRAY';
 
         if ( $idx_type eq 'asset' ) {
-            $self->_save_asset_field_index( $content_type, $f, $value );
+            $self->_update_object_assets( $content_type, $f, $value );
             next;
         }
 
@@ -128,7 +128,7 @@ sub save {
     1;
 }
 
-sub _save_asset_field_index {
+sub _update_object_assets {
     my $self = shift;
     my ( $content_type, $field, $values ) = @_;
 

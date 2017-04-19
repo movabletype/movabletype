@@ -28,11 +28,11 @@ sub data_getter {
     my $asset_ids = $app->param( 'content-field-' . $id );
     my @asset_ids = split ',', $asset_ids;
 
-    my @assets = MT::Asset->load( { id => \@asset_ids },
+    my @valid_assets = MT::Asset->load( { id => \@asset_ids },
         { no_class => 1, fetchonly => { id => 1 } } );
-    my %assets = map { $_->id => 1 } @assets;
+    my %valid_assets = map { $_->id => 1 } @valid_assets;
 
-    [ grep { $assets{$_} } @asset_ids ];
+    [ grep { $valid_assets{$_} } @asset_ids ];
 }
 
 1;
