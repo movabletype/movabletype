@@ -137,6 +137,7 @@ content_field_types:
         label: Date and Time
         data_type: datetime
         order: 70
+        html: $ContentType::MT::ContentFieldType::DateTime::html
         terms: $ContentType::MT::ContentFieldType::DateTime::terms
         filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::DateTime::field_html
@@ -146,6 +147,7 @@ content_field_types:
         label: Date
         data_type: datetime
         order: 80
+        html: $ContentType::MT::ContentFieldType::Date::html
         terms: $ContentType::MT::ContentFieldType::DateTime::terms
         filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::Date::field_html
@@ -155,6 +157,7 @@ content_field_types:
         label: Time
         data_type: datetime
         order: 90
+        html: $ContentType::MT::ContentFieldType::Time::html
         terms: $ContentType::MT::ContentFieldType::DateTime::terms
         filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::Time::field_html

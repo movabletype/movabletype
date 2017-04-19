@@ -3,7 +3,27 @@ use strict;
 use warnings;
 
 use MT;
+use MT::App::CMS;
+use MT::ContentField;
 use MT::Util ();
+
+sub html {
+    my $prop = shift;
+    my ( $obj, $app, $opts ) = @_;
+    my $ts = $obj->data->{ $prop->{content_field_id} } or return '';
+
+    # TODO: implement date_format option to content field.
+    my $content_field = MT::ContentField->load( $prop->{content_field_id} )
+        or return '';
+    my $date_format = eval { $content_field->options->{date_format} }
+        || MT::App::CMS::LISTING_TIMESTAMP_FORMAT();
+
+    my $blog = $opts->{blog};
+    return MT::Util::format_ts( $date_format, $ts, $blog,
+          $app->user
+        ? $app->user->preferred_language
+        : undef );
+}
 
 sub terms {
     my $prop = shift;
