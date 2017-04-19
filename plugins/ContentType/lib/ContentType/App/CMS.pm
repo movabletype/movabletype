@@ -17,6 +17,7 @@ use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentType;
 use MT::ContentData;
+use MT::Log;
 
 {
     # TBD: Move to Core.
@@ -719,6 +720,23 @@ sub delete_content_data {
     my $app = shift;
     $app->param( '_type', 'content_data' );
     MT::CMS::Common::delete($app);
+}
+
+sub post_delete {
+    my ( $eh, $app, $obj ) = @_;
+
+    my $content_type = $obj->content_type or return;
+
+    $app->log(
+        {   message => $app->translate(
+                "[_1] (ID:[_2]) deleted by '[_3]'", $content_type->name,
+                $obj->id,                           $app->user->name
+            ),
+            level    => MT::Log::INFO(),
+            class    => 'content_data_' . $content_type->id,
+            category => 'delete'
+        }
+    );
 }
 
 1;
