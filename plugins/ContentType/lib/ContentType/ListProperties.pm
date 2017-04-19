@@ -245,8 +245,7 @@ sub make_title_html {
     my ( $prop, $content_data, $app ) = @_;
 
     my $label = $content_data->data->{ $prop->content_field_id };
-    $label = '' unless defined $label;
-    if ( ref $label eq 'ARRAY' ) {
+    if ( $label && ref $label eq 'ARRAY' ) {
         my $delimiter = $app->registry('content_field_types')
             ->{ $prop->{idx_type} }{options_delimiter} || ',';
         $label = join $delimiter, @$label;
@@ -264,11 +263,21 @@ sub make_title_html {
                 id              => $content_data->id,
             },
         );
-        return qq{
-        <span class="label">
-          <a href="$edit_link">$label</a>
-        </span>
-        };
+        if ( !defined $label || $label eq '' ) {
+            my $content_data_id = $content_data->id;
+            return qq{
+                <span class="label">
+                    (<a href="${edit_link}">id:${content_data_id}</a>)
+                </span>
+            };
+        }
+        else {
+            return qq{
+                <span class="label">
+                    <a href="$edit_link">$label</a>
+                </span>
+            };
+        }
     }
     else {
         return qq{
