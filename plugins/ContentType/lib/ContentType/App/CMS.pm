@@ -231,10 +231,92 @@ sub cfg_content_field {
     @type_array = sort { $a->{order} <=> $b->{order} } @type_array;
     $param->{content_field_types} = \@type_array;
 
-    my %content_field_types_options = map { ( $_->{type} => $_->{options} ) }
+    my %content_field_types_option_settings = ();
+    my %content_field_types_options         = map {
+        my $type_name = $_->{type};
+        (   $_->{type} => [
+                map {
+                    if ( ref($_) eq 'HASH' ) {
+                        my $key = ( keys( %{$_} ) )[0];
+                        $content_field_types_option_settings{$type_name}{$key}
+                            = $_->{$key};
+                        $key;
+                    }
+                    else {
+                        $_;
+                    }
+                } @{ $_->{options} }
+            ]
+            )
+        }
         grep { $_->{options} } @type_array;
     $param->{content_field_types_options}
         = JSON::encode_json( \%content_field_types_options );
+
+    my $options_html = '';
+
+    foreach my $name ( keys %content_field_types_options ) {
+        $options_html .= '<div id="' . $name . '-options">' . "\n";
+        foreach my $option_name ( @{ $content_field_types_options{$name} } ) {
+            my $option_settings
+                = $content_field_types_option_settings{$name}{$option_name};
+            if ( ref $option_settings eq 'HASH'
+                && $option_settings->{field_html} )
+            {
+                my $field_html = $option_settings->{field_html};
+                if ( !ref $field_html ) {
+                    if ( $field_html =~ /\.tmpl$/ ) {
+                        my $field_html_params
+                            = $option_settings->{field_html_params};
+                        if ( !ref $field_html_params ) {
+                            $field_html_params
+                                = MT->handler_to_coderef($field_html_params);
+                        }
+                        if ( 'CODE' eq ref $field_html_params ) {
+                            $field_html_params = $field_html_params->(
+                                $app,
+                                {   type_name   => $name,
+                                    option_name => $option_name
+                                }
+                            );
+                        }
+                        $field_html_params->{type_name}   = $name;
+                        $field_html_params->{option_name} = $option_name;
+                        $field_html_params->{label} = $plugin->translate(
+                            $field_html_params->{label} );
+                        $field_html = $plugin->load_tmpl( $field_html,
+                            $field_html_params );
+                        if ($field_html) {
+                            $field_html = $field_html->output();
+                        }
+                    }
+                    else {
+                        $field_html = MT->handler_to_coderef($field_html);
+                    }
+                }
+                if ( 'CODE' eq ref $field_html ) {
+                    $options_html .= $field_html->(
+                        $app,
+                        { type_name => $name, option_name => $option_name }
+                    );
+                }
+                else {
+                    $options_html .= $field_html;
+                }
+            }
+            else {
+                my $tmpl
+                    = $plugin->load_tmpl(
+                    'content_field_type_options/' . $option_name . '.tmpl',
+                    { name => $name } );
+                if ($tmpl) {
+                    $options_html .= $tmpl->output();
+                }
+            }
+        }
+        $options_html .= '</div>' . "\n";
+    }
+    $param->{options_html} = $options_html;
 
     my @content_types = MT::ContentType->load( { blog_id => $blog_id } );
     my @c_array = map {
