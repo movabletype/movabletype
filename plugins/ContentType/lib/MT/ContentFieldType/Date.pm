@@ -5,6 +5,44 @@ use warnings;
 use MT::Util ();
 
 sub html {
+    my ( $prop, $obj, $app, $opts ) = @_;
+
+    my $html = _html(@_);
+
+    if ( !defined $html || $html eq '' ) {
+        my $static_path = $app->static_path;
+        my $icon_url
+            = qq{<img src="${static_path}/images/status_icons/icon-minus.png" />};
+
+        my $label = '';
+
+        my ($field)
+            = grep { $_->{id} == $prop->content_field_id }
+            @{ $obj->content_type->fields };
+
+        if ( $field->{label} ) {
+            my $edit_link = $app->uri(
+                mode => 'edit_content_data',
+                args => {
+                    blog_id         => $obj->blog->id,
+                    content_type_id => $obj->content_type_id,
+                    id              => $obj->id,
+                },
+            );
+            my $content_data_id = $obj->id;
+            $label .= qq{ <a href="${edit_link}">id:(${content_data_id})</a>};
+        }
+
+        $html = qq{
+            <span class="icon settings">${icon_url}</span>
+            <span class="label">${label}</span>
+        };
+    }
+
+    $html;
+}
+
+sub _html {
     my $prop = shift;
     my ( $obj, $app, $opts ) = @_;
     my $ts = $obj->data->{ $prop->{content_field_id} } or return '';
