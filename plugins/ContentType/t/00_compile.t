@@ -32,7 +32,7 @@ use_ok('MT::ContentFieldType::Radio');
 use_ok('MT::ContentFieldType::SelectBox');
 use_ok('MT::ContentFieldType::Tag');
 use_ok('MT::ContentFieldType::Time');
-use_ok('MT::ContentFieldType::URl');
+use_ok('MT::ContentFieldType::URL');
 use_ok('MT::ContentType::UniqueKey');
 use_ok('MT::ContentType');
 use_ok('MT::ObjectCategory');
