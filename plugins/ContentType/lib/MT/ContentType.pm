@@ -11,6 +11,8 @@ use base qw( MT::Object );
 
 use JSON ();
 
+use MT::ContentType::UniqueKey;
+
 __PACKAGE__->install_properties(
     {   column_defs => {
             'id'         => 'integer not null auto_increment',
@@ -37,6 +39,23 @@ sub class_label {
 
 sub class_label_plural {
     MT->translate("Content Types");
+}
+
+sub unique_key {
+    my $self = shift;
+    $self->column('unique_key');
+}
+
+sub save {
+    my $self = shift;
+
+    unless ( $self->id ) {
+        my $unique_key
+            = MT::ContentType::UniqueKey::generate_unique_key( $self->name );
+        $self->column( 'unique_key', $unique_key );
+    }
+
+    $self->SUPER::save(@_);
 }
 
 sub parents {
