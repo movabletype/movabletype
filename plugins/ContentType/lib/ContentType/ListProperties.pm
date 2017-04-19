@@ -245,7 +245,8 @@ sub make_title_html {
     my ( $prop, $content_data, $app ) = @_;
 
     my $label = $content_data->data->{ $prop->content_field_id };
-    if ( $label && ref $label eq 'ARRAY' ) {
+    $label = '' unless defined $label;
+    if ( ref $label eq 'ARRAY' ) {
         my $delimiter = $app->registry('content_field_types')
             ->{ $prop->{idx_type} }{options_delimiter} || ',';
         $label = join $delimiter, @$label;
@@ -254,11 +255,6 @@ sub make_title_html {
     my ($field)
         = grep { $_->{id} == $prop->content_field_id }
         @{ $content_data->content_type->fields };
-
-    my $static_path = $app->static_path;
-    my $icon_url
-        = qq{<img src="${static_path}/images/status_icons/icon-minus.png" />};
-
     if ( $field->{label} ) {
         my $edit_link = $app->uri(
             mode => 'edit_content_data',
@@ -268,33 +264,16 @@ sub make_title_html {
                 id              => $content_data->id,
             },
         );
-        if ( !defined $label || $label eq '' ) {
-            my $content_data_id = $content_data->id;
-            $label = qq{(<a href="${edit_link}">id:${content_data_id}</a>)};
-            return qq{
-                <span class="icon settings">${icon_url}</span>
-                <span class="label">$label</span>
-            };
-        }
-        else {
-            return qq{
-            <span class="label">
-              <a href="$edit_link">$label</a>
-            </span>
-            };
-        }
+        return qq{
+        <span class="label">
+          <a href="$edit_link">$label</a>
+        </span>
+        };
     }
     else {
-        if ( !defined $label || $label eq '' ) {
-            return qq{
-            <span class="icon settings">${icon_url}</span>
-            };
-        }
-        else {
-            return qq{
-            <span class="label">$label</span>
-            };
-        }
+        return qq{
+        <span class="label">$label</span>
+        };
     }
 }
 
