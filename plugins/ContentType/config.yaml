@@ -262,7 +262,7 @@ content_field_types:
                 field_html_params:
                     label: Max value
                     class: num
-            - decimal_places
+            - decimal_places:
                 field_html: content_field_type_options/single_line_text.tmpl
                 field_html_params:
                     label: Decimal places
