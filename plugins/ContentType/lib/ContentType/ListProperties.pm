@@ -221,6 +221,17 @@ sub make_list_properties {
             }
 
             $order++;
+
+            if ( $idx_type eq 'asset' ) {
+                $props->{$key}{"${field_key}_author_name"} = {
+                    base         => "__virtual.author_name",
+                    filter_label => $f->{name} . ' Author Name',
+                    display      => 'none',
+                    terms =>
+                        '$ContentType::MT::ContentFieldType::Asset::author_name_terms',
+                    content_field_id => $f->{id},
+                };
+            }
         }
     }
 
