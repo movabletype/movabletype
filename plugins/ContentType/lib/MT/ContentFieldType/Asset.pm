@@ -138,13 +138,13 @@ sub _date_terms {
     }
 }
 
-sub modified_on {
+sub modified_on_terms {
     my $prop = shift;
     my $col  = 'modified_on';
     _date_terms( $prop, $col, @_ );
 }
 
-sub created_on {
+sub created_on_terms {
     my $prop = shift;
     my $col  = 'created_on';
     _date_terms( $prop, $col, @_ );
@@ -177,6 +177,93 @@ sub _generate_cf_idx_join {
             unique => 1,
         },
     );
+}
+
+sub tag_terms {
+    my $prop = shift;
+    my ( $args, $base_terms, $base_args, $opts ) = @_;
+
+    my $option  = $args->{option};
+    my $query   = $args->{string};
+    my $blog_id = $opts->{blog_ids};
+
+    if ( 'contains' eq $option ) {
+        $query = { like => "%$query%" };
+    }
+    elsif ( 'not_contains' eq $option ) {
+
+        # After searching by LIKE, negate that results.
+        $query = { like => "%$query%" };
+    }
+    elsif ( 'beginning' eq $option ) {
+        $query = { like => "$query%" };
+    }
+    elsif ( 'end' eq $option ) {
+        $query = { like => "%$query" };
+    }
+    elsif ( 'blank' eq $option ) {
+        $query = '';
+    }
+
+    my $tag_join = MT->model('tag')->join_on(
+        undef,
+        {   name => $query,
+            id   => \'= objecttag_tag_id',
+        }
+    );
+    my $objecttag_join = MT->model('objecttag')->join_on(
+        undef,
+        {   blog_id           => MT->app->blog->id,
+            object_datasource => 'asset',
+            object_id         => \'= asset_id',
+        },
+        { join => $tag_join, },
+    );
+    my $asset_join = MT->model('asset')->join_on(
+        undef,
+        {   id      => \'= cf_idx_value_integer',
+            blog_id => MT->app->blog->id,
+        },
+        {   no_class => 1,
+            join     => $objecttag_join,
+        }
+    );
+    my $cf_idx_join = MT::ContentFieldIndex->join_on(
+        undef,
+        {   content_data_id  => \'= cd_id',
+            content_field_id => $prop->content_field_id,
+        },
+        {   join   => $asset_join,
+            unique => 1,
+        },
+    );
+
+    $base_args->{joins} ||= [];
+
+    if ( 'not_contains' eq $option ) {
+
+        # content_data that has assets.
+        push @{ $base_args->{joins} },
+            MT::ContentFieldIndex->join_on(
+            undef,
+            {   content_data_id  => \'= cd_id',
+                content_field_id => $prop->content_field_id,
+            },
+            { unique => 1 },
+            );
+
+        # content_data IDs that does not have asset and tag.
+        my @indexes
+            = MT::ContentFieldIndex->load(
+            { content_field_id => $prop->content_field_id, },
+            { fetchonly => { content_data_id => 1 }, join => $asset_join } );
+        my %content_data_ids = map { $_->content_data_id => 1 } @indexes;
+        my @content_data_ids = keys %content_data_ids;
+        @content_data_ids ? { id => { not => \@content_data_ids } } : ();
+    }
+    else {
+        push @{ $base_args->{joins} }, $cf_idx_join;
+    }
 }
 
 1;

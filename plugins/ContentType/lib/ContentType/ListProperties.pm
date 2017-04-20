@@ -246,7 +246,7 @@ sub make_list_properties {
                     label   => $f->{name} . ' Date Modified',
                     display => 'none',
                     terms =>
-                        '$ContentType::MT::ContentFieldType::Asset::modified_on',
+                        '$ContentType::MT::ContentFieldType::Asset::modified_on_terms',
                     content_field_id => $f->{id},
                 };
 
@@ -255,8 +255,19 @@ sub make_list_properties {
                     label   => $f->{name} . ' Date Created',
                     display => 'none',
                     terms =>
-                        '$ContentType::MT::ContentFieldType::Asset::created_on',
+                        '$ContentType::MT::ContentFieldType::Asset::created_on_terms',
                     content_field_id => $f->{id},
+                };
+
+                $props->{$key}{"${field_key}_tag"} = {
+                    base    => '__virtual.tag',
+                    label   => $f->{name} . ' Tag',
+                    display => 'none',
+                    terms =>
+                        '$ContentType::MT::ContentFieldType::Asset::tag_terms',
+                    content_field_id => $f->{id},
+                    tagged_class     => '*',
+                    tag_ds           => 'asset',
                 };
             }
         }
