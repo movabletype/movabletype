@@ -25,6 +25,7 @@ applications:
             cfg_content_field: $ContentType::ContentType::App::CMS::cfg_content_field
             save_cfg_content_field: $ContentType::ContentType::App::CMS::save_cfg_content_field
             delete_content_field: $ContentType::ContentType::App::CMS::delete_content_field
+            cfg_content_type_description: $ContentType::ContentType::App::CMS::cfg_content_type_description
             cfg_content_type: $ContentType::ContentType::App::CMS::cfg_content_type
             save_cfg_content_type: $ContentType::ContentType::App::CMS::save_cfg_content_type
             # cfg_content_type_data: $ContentType::ContentType::App::CMS::cfg_content_type_data
@@ -48,7 +49,7 @@ applications:
                     - blog
             content_type:create_content_type:
                 label: New
-                mode: cfg_content_type
+                mode: cfg_content_type_description
                 order: 200
                 view:
                     - website

@@ -73,6 +73,16 @@ sub _content_type_permission_tmpl {
 __TMPL__
 }
 
+sub cfg_content_type_description {
+    my ( $app, $param ) = @_;
+    my $q      = $app->param;
+    my $plugin = $app->component("ContentType");
+    my $cfg    = $app->config;
+
+    $app->build_page( $plugin->load_tmpl('cfg_content_type_description.tmpl'),
+        $param );
+}
+
 sub cfg_content_type {
     my ( $app, $param ) = @_;
     my $q      = $app->param;
