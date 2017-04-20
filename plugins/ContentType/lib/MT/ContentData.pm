@@ -84,7 +84,6 @@ sub save {
 
         if ( $idx_type eq 'asset' ) {
             $self->_update_object_assets( $content_type, $f, $value );
-            next;
         }
 
         # next

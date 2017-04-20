@@ -194,7 +194,7 @@ content_field_types:
         data_getter: $ContentType::MT::ContentFieldType::Checkbox::data_getter
     asset:
         label: Asset
-        data_type: varchar
+        data_type: integer
         order: 130
         field_html: $ContentType::MT::ContentFieldType::Asset::field_html
         data_getter: $ContentType::MT::ContentFieldType::Asset::data_getter

@@ -7,6 +7,7 @@ use MT::ObjectAsset;
 
 sub field_html {
     my ( $app, $id, $value ) = @_;
+    $value = [$value] unless ref $value eq 'ARRAY';
     my $q          = $app->param;
     my $ct_data_id = $q->param('id');
     my @obj_assets = MT::ObjectAsset->load(
