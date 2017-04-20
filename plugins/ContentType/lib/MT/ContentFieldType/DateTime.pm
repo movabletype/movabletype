@@ -25,9 +25,10 @@ sub html {
         : undef );
 }
 
-sub terms {
+sub generate_query {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
+
     my $option   = $args->{option};
     my $boundary = $args->{boundary};
     my $query;
@@ -99,7 +100,17 @@ sub terms {
         };
     }
 
+    $query;
+}
+
+sub terms {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $option    = $args->{option};
     my $data_type = $prop->{data_type};
+
+    my $query = generate_query( $prop, @_ );
 
     if ( 'blank' eq $option ) {
         my @indexes = MT::ContentFieldIndex->load(

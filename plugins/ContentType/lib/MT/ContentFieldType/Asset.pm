@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use MT::Asset;
+use MT::ContentFieldType::DateTime;
 use MT::ObjectAsset;
 
 sub field_html {
@@ -58,21 +59,19 @@ sub single_select_options {
 sub author_name_terms {
     my $prop = shift;
     my ( $args, $load_terms, $load_args ) = @_;
-    my $col
-        = $prop->datasource->has_column('author_id')
-        ? 'author_id'
-        : 'created_by';
-    my $driver = $prop->datasource->driver;
-    my $colname
-        = $driver->dbd->db_column_name( $prop->datasource->datasource, $col );
 
+    my $col = 'created_by';
     my $prop_super = MT->registry( 'list_properties', '__virtual', 'string' );
 
-    $prop->{col} = 'name';
-    my $name_query = $prop_super->{terms}->( $prop, @_ );
-
-    $prop->{col} = 'nickname';
-    my $nick_query = $prop_super->{terms}->( $prop, @_ );
+    my ( $name_query, $nick_query );
+    {
+        local $prop->{col} = 'name';
+        $name_query = $prop_super->{terms}->( $prop, @_ );
+    }
+    {
+        local $prop->{col} = 'nickname';
+        $nick_query = $prop_super->{terms}->( $prop, @_ );
+    }
 
     my $author_terms = [
         $name_query,
@@ -99,6 +98,43 @@ sub author_status_terms {
 
     $db_args->{joins} ||= [];
     push @{ $db_args->{joins} }, $cf_idx_join;
+}
+
+sub modified_on {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $option    = $args->{option};
+    my $data_type = $prop->{data_type};
+
+    my $query = MT::ContentFieldType::DateTime::generate_query( $prop, @_ );
+
+    if ( 'blank' eq $option ) {
+        { id => 0 };    # no data
+    }
+    else {
+        my $asset_join = MT->model('asset')->join_on(
+            undef,
+            {   id          => \'= cf_idx_value_integer',
+                blog_id     => MT->app->blog->id,
+                modified_on => $query,
+            },
+            { no_class => 1 }
+        );
+
+        my $cf_idx_join = MT::ContentFieldIndex->join_on(
+            undef,
+            {   content_data_id  => \'= cd_id',
+                content_field_id => $prop->content_field_id,
+            },
+            {   join   => $asset_join,
+                unique => 1,
+            },
+        );
+
+        $db_args->{joins} ||= [];
+        push @{ $db_args->{joins} }, $cf_idx_join;
+    }
 }
 
 sub _generate_cf_idx_join {
