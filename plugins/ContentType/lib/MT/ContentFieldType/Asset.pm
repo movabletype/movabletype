@@ -74,18 +74,41 @@ sub author_name_terms {
     $prop->{col} = 'nickname';
     my $nick_query = $prop_super->{terms}->( $prop, @_ );
 
-    my $author_join = MT->model('author')->join_on(
-        undef,
-        [   { id => \'= asset_created_by' },
-            [   $name_query,
-                (   $args->{'option'} eq 'not_contains'
-                    ? '-and'
-                    : '-or'
-                ),
-                $nick_query,
-            ]
-        ]
-    );
+    my $author_terms = [
+        $name_query,
+        (   $args->{'option'} eq 'not_contains'
+            ? '-and'
+            : '-or'
+        ),
+        $nick_query,
+    ];
+
+    my $cf_idx_join = _generate_cf_idx_join( $prop, $author_terms );
+
+    $load_args->{joins} ||= [];
+    push @{ $load_args->{joins} }, $cf_idx_join;
+}
+
+sub author_status_terms {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $status_query = $prop->super(@_);
+
+    my $cf_idx_join = _generate_cf_idx_join( $prop, $status_query );
+
+    $db_args->{joins} ||= [];
+    push @{ $db_args->{joins} }, $cf_idx_join;
+}
+
+sub _generate_cf_idx_join {
+    my ( $prop, $author_terms ) = @_;
+
+    my $author_join
+        = MT->model('author')
+        ->join_on( undef,
+        [ { id => \'= asset_created_by' }, $author_terms, ] );
+
     my $asset_join = MT->model('asset')->join_on(
         undef,
         {   id      => \'= cf_idx_value_integer',
@@ -95,7 +118,8 @@ sub author_name_terms {
             join     => $author_join,
         }
     );
-    my $cf_idx_join = MT::ContentFieldIndex->join_on(
+
+    MT::ContentFieldIndex->join_on(
         undef,
         {   content_data_id  => \'= cd_id',
             content_field_id => $prop->content_field_id,
@@ -104,9 +128,6 @@ sub author_name_terms {
             unique => 1,
         },
     );
-
-    $load_args->{joins} ||= [];
-    push @{ $load_args->{joins} }, $cf_idx_join;
 }
 
 1;
