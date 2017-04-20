@@ -269,6 +269,80 @@ sub make_list_properties {
                     tagged_class     => '*',
                     tag_ds           => 'asset',
                 };
+
+                $props->{$key}{"${field_key}_image_width"} = {
+                    base  => 'asset.image_width',
+                    label => $f->{name} . ' Pixel Width',
+                    terms =>
+                        '$ContentType::MT::ContentFieldType::Asset::image_width_terms',
+                    content_field_id => $f->{id},
+                };
+
+                $props->{$key}{"${field_key}_image_height"} = {
+                    base  => 'asset.image_height',
+                    label => $f->{name} . ' Pixel Height',
+                    terms =>
+                        '$ContentType::MT::ContentFieldType::Asset::image_width_terms',
+                    content_field_id => $f->{id},
+                };
+
+                $props->{$key}{"${field_key}_missing_file"} = {
+                    base  => 'asset.missing_file',
+                    label => $f->{name} . ' Missing File',
+                    terms =>
+                        '$ContentType::MT::ContentFieldType::Asset::missing_file_terms',
+                    content_field_id => $f->{id},
+                };
+
+                $props->{$key}{"${field_key}_label"} = {
+                    base    => '__virtual.string',
+                    col     => 'label',
+                    label   => $f->{name} . ' Label',
+                    display => 'none',
+                    terms =>
+                        '$ContentType::MT::ContentFieldType::Asset::label_terms',
+                    content_field_id => $f->{id},
+                };
+
+                $props->{$key}{"${field_key}_id"} = {
+                    base             => '__virtual.integer',
+                    col              => 'id',
+                    label            => $f->{name} . ' ID',
+                    display          => 'none',
+                    terms            => \&terms_number,
+                    data_type        => $field_type->{data_type},
+                    content_field_id => $f->{id},
+                };
+
+                $props->{$key}{"${field_key}_file_name"} = {
+                    base    => '__virtual.string',
+                    col     => 'file_name',
+                    label   => $f->{name} . ' Filename',
+                    display => 'none',
+                    terms =>
+                        '$ContentType::MT::ContentFieldType::Asset::label_terms',
+                    content_field_id => $f->{id},
+                };
+
+                $props->{$key}{"${field_key}_file_ext"} = {
+                    base    => '__virtual.string',
+                    col     => 'file_ext',
+                    label   => $f->{name} . ' File Extension',
+                    display => 'none',
+                    terms =>
+                        '$ContentType::MT::ContentFieldType::Asset::label_terms',
+                    content_field_id => $f->{id},
+                };
+
+                $props->{$key}{"${field_key}_description"} = {
+                    base    => '__virtual.string',
+                    col     => 'description',
+                    label   => $f->{name} . ' Description',
+                    display => 'none',
+                    terms =>
+                        '$ContentType::MT::ContentFieldType::Asset::label_terms',
+                    content_field_id => $f->{id},
+                };
             }
         }
     }

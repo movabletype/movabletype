@@ -266,5 +266,122 @@ sub tag_terms {
     }
 }
 
+sub image_width_terms {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $super_terms = $prop->super(@_);
+
+    my $asset_meta_join = MT->model('asset')->meta_pkg->join_on(
+        undef,
+        [   {   type     => $prop->meta_type,
+                asset_id => \'= asset_id',
+            },
+            $super_terms,
+        ],
+    );
+    my $asset_join = MT->model('asset')->join_on(
+        undef,
+        {   id      => \'= cf_idx_value_integer',
+            blog_id => MT->app->blog->id,
+        },
+        {   no_class => 1,
+            join     => $asset_meta_join,
+        }
+    );
+    my $cf_idx_join = MT::ContentFieldIndex->join_on(
+        undef,
+        {   content_data_id  => \'= cd_id',
+            content_field_id => $prop->content_field_id,
+        },
+        {   join   => $asset_join,
+            unique => 1,
+        },
+    );
+
+    $db_args->{joins} ||= [];
+    push @{ $db_args->{joins} }, $cf_idx_join;
+}
+
+sub missing_file_terms {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+
+    my $filter
+        = $args->{value}
+        ? sub { !$fmgr->exists( $_[0] ) }
+        : sub { $fmgr->exists( $_[0] ) };
+
+    my $iter = MT->model('asset')->load_iter(
+        { blog_id => MT->app->blog->id },
+        {   no_class => 1,
+            join     => MT::ContentFieldIndex->join_on(
+                undef,
+                {   value_integer    => \'= asset_id',
+                    content_field_id => $prop->content_field_id,
+                },
+            )
+        }
+    );
+
+    my @asset_ids;
+    while ( my $asset = $iter->() ) {
+        push @asset_ids, $asset->id
+            if defined $asset->file_path
+            && $asset->file_path ne ''
+            && $filter->( $asset->file_path );
+    }
+
+    if (@asset_ids) {
+        $db_args->{joins} ||= [];
+        push @{ $db_args->{joins} },
+            MT::ContentFieldIndex->join_on(
+            undef,
+            {   content_data_id  => \'= cd_id',
+                content_field_id => $prop->content_field_id,
+                value_integer    => \@asset_ids,
+            },
+            { unique => 1 },
+            );
+    }
+    else {
+        { id => 0 };    # no data
+    }
+}
+
+sub label_terms {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $super = MT->registry( 'list_properties', '__virtual', 'string' );
+    my $query = $super->{terms}->( $prop, @_ );
+
+    my $asset_join = MT->model('asset')->join_on(
+        undef,
+        [   {   id      => \'= cf_idx_value_integer',
+                blog_id => MT->app->blog->id,
+            },
+            $query,
+        ],
+        { no_class => 1 },
+    );
+
+    my $cf_idx_join = MT::ContentFieldIndex->join_on(
+        undef,
+        {   content_data_id  => \'= cd_id',
+            content_field_id => $prop->content_field_id,
+        },
+        {   join   => $asset_join,
+            unique => 1,
+        },
+    );
+
+    $db_args->{joins} ||= [];
+    push @{ $db_args->{joins} }, $cf_idx_join;
+}
+
 1;
 
