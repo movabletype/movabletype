@@ -249,6 +249,15 @@ sub make_list_properties {
                         '$ContentType::MT::ContentFieldType::Asset::modified_on',
                     content_field_id => $f->{id},
                 };
+
+                $props->{$key}{"${field_key}_created_on"} = {
+                    base    => '__virtual.date',
+                    label   => $f->{name} . ' Date Created',
+                    display => 'none',
+                    terms =>
+                        '$ContentType::MT::ContentFieldType::Asset::created_on',
+                    content_field_id => $f->{id},
+                };
             }
         }
     }

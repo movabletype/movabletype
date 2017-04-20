@@ -100,8 +100,9 @@ sub author_status_terms {
     push @{ $db_args->{joins} }, $cf_idx_join;
 }
 
-sub modified_on {
+sub _date_terms {
     my $prop = shift;
+    my $col  = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
     my $option    = $args->{option};
@@ -115,9 +116,9 @@ sub modified_on {
     else {
         my $asset_join = MT->model('asset')->join_on(
             undef,
-            {   id          => \'= cf_idx_value_integer',
-                blog_id     => MT->app->blog->id,
-                modified_on => $query,
+            {   id      => \'= cf_idx_value_integer',
+                blog_id => MT->app->blog->id,
+                $col    => $query,
             },
             { no_class => 1 }
         );
@@ -135,6 +136,18 @@ sub modified_on {
         $db_args->{joins} ||= [];
         push @{ $db_args->{joins} }, $cf_idx_join;
     }
+}
+
+sub modified_on {
+    my $prop = shift;
+    my $col  = 'modified_on';
+    _date_terms( $prop, $col, @_ );
+}
+
+sub created_on {
+    my $prop = shift;
+    my $col  = 'created_on';
+    _date_terms( $prop, $col, @_ );
 }
 
 sub _generate_cf_idx_join {
