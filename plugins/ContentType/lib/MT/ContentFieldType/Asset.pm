@@ -36,5 +36,24 @@ sub data_getter {
     [ grep { $valid_assets{$_} } @asset_ids ];
 }
 
+sub single_select_options {
+    my $prop = shift;
+    my $app = shift || MT->app;
+
+    my @assets = MT::Asset->load( { blog_id => $app->blog->id },
+        { fetchonly => { id => 1, label => 1 }, no_class => 1 } );
+
+    my @options;
+    for my $asset (@assets) {
+        my $label = $asset->label . ' (id:' . $asset->id . ')';
+        push @options,
+            {
+            label => $label,
+            value => $asset->id,
+            };
+    }
+    \@options;
+}
+
 1;
 

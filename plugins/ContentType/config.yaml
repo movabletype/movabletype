@@ -196,7 +196,10 @@ content_field_types:
         label: Asset
         data_type: integer
         order: 130
+        terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+        filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::Asset::field_html
+        single_select_options: $ContentType::MT::ContentFieldType::Asset::single_select_options
         data_getter: $ContentType::MT::ContentFieldType::Asset::data_getter
     embed_text:
         label: Embed Text
