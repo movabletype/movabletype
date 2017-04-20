@@ -132,8 +132,8 @@ sub _update_object_assets {
     my ( $content_type, $field, $values ) = @_;
 
     MT::ObjectAsset->remove(
-        {   object_ds => 'content_data',
-            object_id => $self->id,
+        {   object_ds => 'content_field',
+            object_id => $field->{id},
         }
     );
 
@@ -142,8 +142,8 @@ sub _update_object_assets {
         $obj_asset->set_values(
             {   blog_id   => $self->blog_id,
                 asset_id  => $asset_id,
-                object_ds => 'content_data',
-                object_id => $self->id
+                object_ds => 'content_field',
+                object_id => $field->{id},
             }
         );
         $obj_asset->save or die $obj_asset->errstr;

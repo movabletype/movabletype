@@ -7,18 +7,16 @@ use MT::ContentFieldType::DateTime;
 use MT::ObjectAsset;
 
 sub field_html {
-    my ( $app, $id, $value ) = @_;
+    my ( $app, $field_id, $value ) = @_;
     $value = [$value] unless ref $value eq 'ARRAY';
-    my $q          = $app->param;
-    my $ct_data_id = $q->param('id');
     my @obj_assets = MT::ObjectAsset->load(
-        {   object_ds => 'content_data',
-            object_id => $ct_data_id
+        {   object_ds => 'content_field',
+            object_id => $field_id
         }
     );
     my $html
         .= '<input type="text" name="content-field-'
-        . $id
+        . $field_id
         . '" class="text long" value="';
     $html .= join ',', @$value;
     $html .= '" />';
