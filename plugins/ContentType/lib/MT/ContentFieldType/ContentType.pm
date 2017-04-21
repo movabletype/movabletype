@@ -16,9 +16,14 @@ sub field_html {
     my @ct_datas = MT::ContentData->load( { content_type_id => $ct_id } );
     my $html     = '';
     my $num      = 1;
+
     foreach my $ct_data (@ct_datas) {
         my $ct_data_id = $ct_data->id;
         my $label      = $ct_data->data->{ $label_field->{id} };
+        if ( !defined $label || $label eq '' ) {
+            $label = '(id:' . $ct_data->id . ')';
+        }
+
         $html .= '<div>';
         $html
             .= "<input type=\"checkbox\" name=\"content-field-$id\" id=\"content-field-$id-$num\" value=\"$ct_data_id\"";
