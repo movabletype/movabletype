@@ -244,6 +244,12 @@ sub __load_tags {
         @tags = grep {defined} @{ MT::Tag->lookup_multi($tag_ids) };
     }
     else {
+        my @field_ids
+            = map { $_->id }
+            MT::ContentField->load(
+            { content_type_id => $obj->content_type_id },
+            { fetchonly       => { id => 1 } } );
+
         require MT::ObjectTag;
         my $iter = MT::Tag->load_iter(
             undef,
@@ -251,8 +257,8 @@ sub __load_tags {
                 join => [
                     'MT::ObjectTag',
                     'tag_id',
-                    {   object_id         => $obj->id,
-                        object_datasource => $obj->datasource
+                    {   object_id         => \@field_ids,
+                        object_datasource => 'content_field',
                     },
                     { unique => 1 }
                 ],
