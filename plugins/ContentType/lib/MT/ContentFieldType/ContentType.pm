@@ -50,5 +50,25 @@ sub data_getter {
     \@data;
 }
 
+sub html {
+    my $prop = shift;
+    my ( $content_data, $app, $opts ) = @_;
+
+    my $child_cd_ids = $content_data->data->{ $prop->content_field_id } || [];
+
+    my %child_cd = map { $_->id => $_ }
+        MT::ContentData->load( { id => $child_cd_ids } );
+    my @child_cd = map { $child_cd{$_} } @$child_cd_ids;
+
+    my @cd_links;
+    for my $cd (@child_cd) {
+        my $label     = $cd->label;
+        my $edit_link = $cd->edit_link($app);
+        push @cd_links, qq{<a href="${edit_link}">${label}</a>};
+    }
+
+    join ', ', @cd_links;
+}
+
 1;
 

@@ -289,5 +289,17 @@ sub tag_cache_key {
     return sprintf "%stags-%d", $obj->datasource, $obj->id;
 }
 
+sub edit_link {
+    my ( $self, $app ) = @_;
+    $app->uri(
+        mode => 'edit_content_data',
+        args => {
+            id              => $self->id,
+            blog_id         => $self->blog_id,
+            content_type_id => $self->content_type_id,
+        },
+    );
+}
+
 1;
 
