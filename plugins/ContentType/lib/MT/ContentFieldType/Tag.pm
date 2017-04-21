@@ -2,6 +2,7 @@ package MT::ContentFieldType::Tag;
 use strict;
 use warnings;
 
+use MT;
 use MT::Tag;
 use MT::ObjectTag;
 
@@ -65,6 +66,29 @@ sub data_getter {
     }
 
     [ map { $existing_tags{$_}->id } @unique_tag_names ];
+}
+
+sub terms {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $super = MT->registry( 'list_properties', '__virtual', 'string' );
+    my $name_terms = $super->{terms}->( $prop, @_ );
+
+    my $tag_join = MT::Tag->join_on( undef,
+        [ { id => \'= objecttag_tag_id' }, $name_terms ] );
+
+    my $objecttag_join = MT::ObjectTag->join_on(
+        undef,
+        {   blog_id           => MT->app->blog->id,
+            object_datasource => 'content_field',
+            object_id         => $prop->content_field_id,
+        },
+        { join => $tag_join, unique => 1 },
+    );
+
+    $db_args->{joins} ||= [];
+    push @{ $db_args->{joins} }, $objecttag_join;
 }
 
 1;

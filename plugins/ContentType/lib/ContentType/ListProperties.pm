@@ -219,6 +219,9 @@ sub make_list_properties {
             if ( exists $field_type->{terms} ) {
                 $props->{$key}{$field_key}{terms} = $field_type->{terms};
             }
+            if ( exists $field_type->{col} ) {
+                $props->{$key}{$field_key}{col} = $field_type->{col};
+            }
 
             $order++;
 
