@@ -385,6 +385,8 @@ sub make_title_html {
         $label = join $delimiter, @$label;
     }
 
+    $label = '' unless defined $label;
+
     my ($field)
         = grep { $_->{id} == $prop->content_field_id }
         @{ $content_data->content_type->fields };
@@ -397,7 +399,7 @@ sub make_title_html {
                 id              => $content_data->id,
             },
         );
-        if ( !defined $label || $label eq '' ) {
+        if ( $label eq '' ) {
             my $content_data_id = $content_data->id;
             return qq{
                 <span class="label">
