@@ -6,18 +6,16 @@ use MT::Tag;
 use MT::ObjectTag;
 
 sub field_html {
-    my ( $app, $id, $value ) = @_;
-    my $q          = $app->param;
-    my $ct_data_id = $q->param('id');
-    my @obj_tags   = MT::ObjectTag->load(
-        {   object_ds => 'content_data',
-            object_id => $ct_data_id
+    my ( $app, $field_id, $value ) = @_;
+    my @obj_tags = MT::ObjectTag->load(
+        {   object_datasource => 'content_field',
+            object_id         => $field_id,
         }
     );
     my $html = '';
     $html
         .= '<input type="text" name="content-field-'
-        . $id
+        . $field_id
         . '" class="text long" value="';
     my $count = 1;
     foreach my $obj_tag (@obj_tags) {
@@ -31,44 +29,41 @@ sub field_html {
 }
 
 sub data_getter {
-    my ( $app, $id ) = @_;
-    my $q          = $app->param;
-    my $ct_data_id = $q->param('id');
-    my $tag_names  = $q->param( 'content-field-' . $id );
-    my @tag_names  = split ',', $tag_names;
-    my @tags       = MT::Tag->load( { name => \@tag_names },
+    my ( $app, $field_id ) = @_;
+
+    # keep order.
+    my @unique_tag_names;
+    {
+        my @tag_names = split ',',
+            scalar( $app->param( 'content-field-' . $field_id ) );
+
+        my %tmp;
+        for my $tn (@tag_names) {
+            $tn =~ s/^\s*|\s*$//g;
+
+            next if $tmp{$tn};
+            $tmp{$tn} = 1;
+
+            push @unique_tag_names, $tn;
+        }
+    }
+
+    my %existing_tags
+        = map { $_->name => $_ }
+        MT::Tag->load( { name => \@unique_tag_names },
         { binary => { name => 1 } } );
-    my @obj_tags = MT::ObjectTag->load(
-        {   object_datasource => 'content_data',
-            object_id         => $ct_data_id
+
+    for my $utn (@unique_tag_names) {
+        unless ( $existing_tags{$utn} ) {
+            my $tag = MT::Tag->new;
+            $tag->name($utn);
+            $tag->save;
+
+            $existing_tags{$utn} = $tag;
         }
-    );
-    foreach my $obj_tag (@obj_tags) {
-        $obj_tag->remove
-            unless ( grep { $_->id eq $obj_tag->id } @tags );
     }
-    foreach my $tag_name (@tag_names) {
-        my ($tag) = grep { $_->name eq $tag_name } @tags;
-        unless ($tag) {
-            $tag = MT::Tag->new;
-            $tag->name($tag_name);
-            $tag->save or next;
-        }
-        my $obj_tag = MT::ObjectTag->load(
-            {   tag_id            => $tag->id,
-                object_datasource => 'content_data',
-                object_id         => $ct_data_id
-            }
-        );
-        next if $obj_tag;
-        $obj_tag = MT::ObjectTag->new;
-        $obj_tag->blog_id( $app->blog->id );
-        $obj_tag->tag_id( $tag->id );
-        $obj_tag->object_datasource('content_data');
-        $obj_tag->object_id($ct_data_id);
-        $obj_tag->save;
-    }
-    return $tag_names;
+
+    [ map { $existing_tags{$_}->id } @unique_tag_names ];
 }
 
 1;

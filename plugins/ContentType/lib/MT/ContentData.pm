@@ -85,10 +85,11 @@ sub save {
         if ( $idx_type eq 'asset' ) {
             $self->_update_object_assets( $content_type, $f, $value );
         }
+        elsif ( $idx_type eq 'tag' ) {
+            $self->_update_object_tags( $content_type, $f, $value );
+        }
 
-        # next
-        #     || $idx_type eq 'category'
-        #     || $idx_type eq 'tag';
+        # next if $idx_type eq 'category'
 
         MT::ContentFieldIndex->remove(
             {   content_type_id  => $content_type->id,
@@ -147,6 +148,28 @@ sub _update_object_assets {
             }
         );
         $obj_asset->save or die $obj_asset->errstr;
+    }
+}
+
+sub _update_object_tags {
+    my $self = shift;
+    my ( $content_type, $field, $values ) = @_;
+
+    MT::ObjectTag->remove(
+        {   object_datasource => 'content_field',
+            object_id         => $field->{id},
+        }
+    );
+
+    for my $tag_id (@$values) {
+        my $obj_tag = MT::ObjectTag->new;
+        $obj_tag->set_values(
+            {   tag_id            => $tag_id,
+                object_datasource => 'content_field',
+                object_id         => $field->{id},
+            }
+        );
+        $obj_tag->save or die $obj_tag->errstr;
     }
 }
 
