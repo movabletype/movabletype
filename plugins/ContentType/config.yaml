@@ -216,6 +216,7 @@ content_field_types:
         data_type: integer
         order: 160
         col: name
+        html: $ContentType::MT::ContentFieldType::Tag::html
         terms: $ContentType::MT::ContentFieldType::Tag::terms
         filter_tmpl: <mt:var name="filter_form_string">
         field_html: $ContentType::MT::ContentFieldType::Tag::field_html

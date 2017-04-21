@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use MT;
+use MT::ContentField;
 use MT::Tag;
 use MT::ObjectTag;
 
@@ -89,6 +90,18 @@ sub terms {
 
     $db_args->{joins} ||= [];
     push @{ $db_args->{joins} }, $objecttag_join;
+}
+
+sub html {
+    my $prop = shift;
+    my ( $content_data, $app, $opts ) = @_;
+
+    my $tag_ids = $content_data->data->{ $prop->content_field_id } || [];
+
+    my %tags = map { $_->id => $_->name } MT::Tag->load( { id => $tag_ids },
+        { fetchonly => { id => 1, name => 1 } } );
+
+    join( ',', map { $tags{$_} } @$tag_ids );
 }
 
 1;
