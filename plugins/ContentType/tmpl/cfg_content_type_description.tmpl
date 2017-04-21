@@ -80,9 +80,11 @@
   jQuery('#content-type-description-form').submit( function() {
     setDirty(false);
 
-    var ls = localStorage;
-    ls.setItem( "ContentTypeName",        jQuery("#description").val() );
-    ls.setItem( "ContentTypeDescription", jQuery("#description").val() );
+    var data = {
+      name: jQuery("#name").val(),
+      description: jQuery("#description").val()
+    }
+    localStorage.setItem( "ContentType", JSON.stringify(data) ); 
 
     window.location.replace('<mt:var name="script_url">?__mode=cfg_content_type&blog_id=<mt:var name="blog_id">');
     return false;
