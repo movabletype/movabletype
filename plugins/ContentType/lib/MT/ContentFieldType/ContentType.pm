@@ -27,6 +27,7 @@ sub field_html {
         if ( !defined $label || $label eq '' ) {
             $label = "(id:${ct_data_id})";
         }
+        my $edit_link = $ct_data->edit_link($app);
 
         $html .= '<div>';
         $html
@@ -38,6 +39,7 @@ sub field_html {
         $html .= " />";
         $html
             .= " <label for=\"content-field-$field_id-$num\">$label</label>";
+        $html .= qq{ (<a href="${edit_link}">edit</a>)};
         $html .= '</div>';
         $num++;
     }
