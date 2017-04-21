@@ -156,7 +156,8 @@ sub _update_object_tags {
     my ( $content_type, $field, $values ) = @_;
 
     MT::ObjectTag->remove(
-        {   object_datasource => 'content_field',
+        {   blog_id           => $self->blog_id,
+            object_datasource => 'content_field',
             object_id         => $field->{id},
         }
     );
@@ -164,7 +165,8 @@ sub _update_object_tags {
     for my $tag_id (@$values) {
         my $obj_tag = MT::ObjectTag->new;
         $obj_tag->set_values(
-            {   tag_id            => $tag_id,
+            {   blog_id           => $self->blog_id,
+                tag_id            => $tag_id,
                 object_datasource => 'content_field',
                 object_id         => $field->{id},
             }
@@ -257,7 +259,8 @@ sub __load_tags {
                 join => [
                     'MT::ObjectTag',
                     'tag_id',
-                    {   object_id         => \@field_ids,
+                    {   blog_id           => $obj->blog_id,
+                        object_id         => \@field_ids,
                         object_datasource => 'content_field',
                     },
                     { unique => 1 }

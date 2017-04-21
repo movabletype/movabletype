@@ -8,7 +8,8 @@ use MT::ObjectTag;
 sub field_html {
     my ( $app, $field_id, $value ) = @_;
     my @obj_tags = MT::ObjectTag->load(
-        {   object_datasource => 'content_field',
+        {   blog_id           => $app->blog->id,
+            object_datasource => 'content_field',
             object_id         => $field_id,
         }
     );
