@@ -197,6 +197,12 @@ sub content_type {
     );
 }
 
+sub label {
+    my $self        = shift;
+    my $label_field = $self->content_type->label_field;
+    $self->data->{ $label_field->{id} };
+}
+
 sub blog {
     my ($ct_data) = @_;
     $ct_data->cache_property(

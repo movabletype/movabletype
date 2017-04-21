@@ -98,7 +98,7 @@ tags:
 content_field_types:
     content_type:
         label: Content Type
-        data_type: varcahr
+        data_type: integer
         order: 10
         field_html: $ContentType::MT::ContentFieldType::ContentType::field_html
         data_getter: $ContentType::MT::ContentFieldType::ContentType::data_getter

@@ -79,6 +79,12 @@ sub fields {
     }
 }
 
+sub label_field {
+    my $self = shift;
+    my ($label_field) = grep { $_->{label} } @{ $self->fields };
+    $label_field;
+}
+
 sub field_objs {
     my $obj = shift;
     my @field_objs
