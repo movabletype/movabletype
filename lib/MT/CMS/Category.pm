@@ -154,11 +154,19 @@ sub bulk_update {
     my $app = shift;
     $app->validate_magic or return;
 
+    my $is_category_list = $app->param('is_category_list');
+    my $list_id          = $app->param('list_id');
+
     my $model = $app->param('datasource') || 'category';
     if ( 'category' eq $model ) {
         $app->can_do('edit_categories')
             or
             return $app->json_error( $app->translate("Permission denied.") );
+
+        if ($is_category_list) {
+            return $app->json_error( $app->translate('Permission defined.') )
+                unless $app->can_do('save_category_list');
+        }
     }
     elsif ( 'folder' eq $model ) {
         $app->can_do('save_folder')
@@ -187,13 +195,57 @@ sub bulk_update {
     else {
         $objects = [];
     }
-    my @old_objects = $class->load( { blog_id => $blog_id } );
+
+    my $list;
+    if ($is_category_list) {
+        if ($list_id) {
+            $list = MT->model('category_list')->load($list_id)
+                or return $app->errtrans( 'Invalid category_list_id: [_1]',
+                $list_id );
+            $list->name( scalar $app->param('list_name') );
+            $list->save or return $app->error( $list->errstr );
+        }
+        else {
+            $list = MT->model('category_list')->new;
+            $list->set_values(
+                {   blog_id => $blog_id,
+                    name    => scalar $app->param('list_name'),
+                }
+            );
+            $list->save or return $app->error( $list->errstr );
+            $list_id = $list->id;
+            $app->request( 'new_category_list_id', $list_id );
+        }
+    }
+
+    my $old_objects_terms;
+    if ($list_id) {
+        $old_objects_terms = { blog_id => $blog_id, list_id => $list_id };
+    }
+    elsif ($is_category_list) {
+        $old_objects_terms = { id => 0 };    # no data
+    }
+    else {
+        $old_objects_terms = [
+            { blog_id => $blog_id },
+            [ { list_id => 0 }, '-or', { list_id => \'IS NULL' } ],
+        ];
+    }
+    my @old_objects = $class->load($old_objects_terms);
 
     # Test CheckSum
+    my $cat_order;
     my $meta = $model . '_order';
+    if ($is_category_list) {
+        $cat_order = $list->order || '';
+    }
+    else {
+        $cat_order = $app->blog->$meta || '';
+    }
+
     my $text = join(
         ':',
-        $app->blog->$meta,
+        $cat_order,
         map {
             join( ':',
                 $_->id,
@@ -203,7 +255,6 @@ sub bulk_update {
             }
             sort { $a->id <=> $b->id } @old_objects
     );
-    require Digest::MD5;
     if ( $app->param('checksum') ne Digest::MD5::md5_hex($text) ) {
         return $app->json_error(
             $app->translate(
@@ -231,6 +282,7 @@ sub bulk_update {
             $new_obj->set_values($obj);
             $new_obj->blog_id($blog_id);
             $new_obj->author_id( $app->user->id );
+            $new_obj->list_id($list_id) if $list_id;
             push @objects, $new_obj;
             push @creates, $new_obj;
             $new_obj->{tmp_id} = $tmp_id;
@@ -309,11 +361,17 @@ sub bulk_update {
 
     $app->touch_blogs;
 
-    my $previous_order = $blog->$meta;
-    my @ordered_ids    = map { $_->id } @objects;
-    my $new_order      = join ',', @ordered_ids;
+    my $previous_order;
+    if ($is_category_list) {
+        $previous_order = $list->order || '';
+    }
+    else {
+        $previous_order = $blog->$meta || '';
+    }
+
+    my @ordered_ids = map { $_->id } @objects;
+    my $new_order = join ',', @ordered_ids;
     if ( $previous_order ne $new_order ) {
-        $blog->$meta($new_order);
         $app->log(
             {   message => $app->translate(
                     "[_1] order has been edited by '[_2]'.",
@@ -326,7 +384,15 @@ sub bulk_update {
                 metadata => "[${previous_order}] => [${new_order}]",
             }
         );
-        $blog->save;
+
+        if ($is_category_list) {
+            $list->order($new_order);
+            $list->save;
+        }
+        else {
+            $blog->$meta($new_order);
+            $blog->save;
+        }
     }
 
     $app->run_callbacks( 'cms_post_bulk_save.' . $model, $app, \@objects );
@@ -573,7 +639,8 @@ sub pre_save {
     }
     my @siblings = $pkg->load(
         {   parent  => $obj->parent,
-            blog_id => $obj->blog_id
+            blog_id => $obj->blog_id,
+            list_id => $obj->list_id,
         }
     );
     foreach (@siblings) {
@@ -763,6 +830,26 @@ sub move_category {
 
 sub template_param_list {
     my ( $cb, $app, $param, $tmpl ) = @_;
+
+    if ( $param->{is_category_list} = $app->param('is_category_list') ) {
+        my $list_id = $app->param('id');
+        my $list = MT->model('category_list')->load( $list_id || 0 );
+
+        if ($list) {
+            $param->{id}        = $list->id;
+            $param->{list_name} = $list->name;
+        }
+
+        my $verb = $list ? 'Edit' : 'Create';
+        my $object_label = $app->translate('Category List');
+        $param->{page_title}
+            = $app->translate( "${verb} [_1]", $object_label );
+    }
+    else {
+        $param->{page_title}
+            = $app->translate( 'Manage [_1]', $param->{object_label_plural} );
+    }
+
     my $blog = $app->blog or return;
     $param->{basename_limit} = $blog->basename_limit || 30; #FIXME: hardcoded.
     my $type  = $app->param('_type');
@@ -777,17 +864,46 @@ sub pre_load_filtered_list {
     delete $opts->{sort_order};
     $opts->{sort_by} = 'custom_sort';
     @$cols = qw( id parent label basename entry_count );
+
+    if ( my $list_id = $app->param('list_id') ) {
+        $opts->{terms} ||= {};
+        $opts->{terms}{list_id} = $list_id;
+    }
+    elsif ( $app->param('is_category_list') ) {
+        $opts->{terms} ||= {};
+        $opts->{terms}{id} = 0;    # return no data
+    }
+    else {
+        my $list_id_terms
+            = [ { list_id => 0 }, '-or', { list_id => \'IS NULL' } ];
+        if ( $opts->{terms} ) {
+            $opts->{terms} = [ $opts->{terms}, $list_id_terms ];
+        }
+        else {
+            $opts->{terms} = $list_id_terms;
+        }
+    }
 }
 
 sub filtered_list_param {
     my ( $cb, $app, $param, $objs ) = @_;
-    my $type            = $app->param('datasource');
-    my $meta            = $type . '_order';
-    my $blog_meta_value = $app->blog->$meta;
-    $blog_meta_value = '' unless defined($blog_meta_value);
+
+    my $sort_order = '';
+    if ( $app->param('is_category_list') ) {
+        if ( my $list_id = $app->param('list_id') ) {
+            my $list = $app->model('category_list')->load($list_id);
+            $sort_order = $list->order || '';
+        }
+    }
+    else {
+        my $type = $app->param('datasource');
+        my $meta = $type . '_order';
+        $sort_order = $app->blog->$meta || '';
+    }
+
     my $text = join(
         ':',
-        $blog_meta_value,
+        $sort_order,
         map {
             join( ':', $_->id, $_->parent, Encode::encode_utf8( $_->label ), )
             }
@@ -795,6 +911,18 @@ sub filtered_list_param {
     );
     require Digest::MD5;
     $param->{checksum} = Digest::MD5::md5_hex($text);
+
+    if ( my $new_list_id = $app->request('new_category_list_id') ) {
+        $param->{redirect_url} = $app->uri(
+            mode => 'view',
+            args => {
+                _type   => 'category_list',
+                blog_id => $app->blog->id,
+                id      => $new_list_id,
+                saved   => 1,
+            },
+        );
+    }
 }
 
 1;

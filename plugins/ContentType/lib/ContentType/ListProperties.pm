@@ -10,9 +10,11 @@ use strict;
 use warnings;
 
 use MT;
+use MT::CategoryList;
 use MT::ContentType;
 use MT::ContentField;
 use MT::ContentFieldIndex;
+use MT::CMS::CategoryList;
 
 sub make_listing_screens {
     my $props = {
@@ -35,6 +37,7 @@ sub make_listing_screens {
             use_filters         => 0,
             view                => [ 'website', 'blog' ],
         },
+        category_list => MT::CMS::CategoryList::list_screens(),
     };
 
     my @content_types = MT::ContentType->load();
@@ -108,6 +111,7 @@ sub make_list_properties {
                 html      => sub { make_name_html(@_) }
             },
         },
+        category_list => MT::CategoryList::list_props(),
     };
 
     my $content_field_types = MT->registry('content_field_types');
@@ -479,6 +483,7 @@ sub make_list_actions {
                 js_message => 'delete',
             }
         },
+        category_list => MT::CMS::CategoryList::list_actions(),
     };
 
     my @content_types = MT::ContentType->load();

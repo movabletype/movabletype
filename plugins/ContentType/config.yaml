@@ -2,8 +2,8 @@ name: Content Type
 author_name: Six Apart, Ltd.
 author_link: http://www.sixapart.com/
 pack_link: <__trans phrase="http://www.sixapart.com/movabletype/">
-version: 0.13
-schema_version: 0.13
+version: 0.14
+schema_version: 0.14
 l10n_class: MT::ContentType::L10N
 
 permissions: $ContentType::ContentType::Permission::permissions
@@ -33,6 +33,8 @@ applications:
             select_edit_content_type: $ContentType::ContentType::App::CMS::select_edit_content_type
             edit_content_data: $ContentType::ContentType::App::CMS::edit_content_data
             save_content_data: $ContentType::ContentType::App::CMS::save_content_data
+
+            view_category_list: $ContentType::MT::CMS::CategoryList::view
         menus:
             content_type:
                 label: Content Type
@@ -71,6 +73,31 @@ applications:
                 view:
                     - website
                     - blog
+
+            category_list:
+                label: Category Lists
+                order: 9500
+            category_list:manage:
+                label: Manage
+                order: 100
+                mode: list
+                condition: $ContentType::MT::CMS::CategoryList::manage_condition
+                args:
+                    _type: category_list
+                view:
+                    - website
+                    - blog
+            category_list:create:
+                label: New
+                order: 200
+                mode: view
+                permission: edit_categories
+                args:
+                    _type: category_list
+                view:
+                    - website
+                    - blog
+
 object_types:
     content_type: MT::ContentType
     cd: MT::ContentData
@@ -80,6 +107,10 @@ object_types:
     content_field_index: MT::ContentFieldIndex
     cf_idx: MT::ContentFieldIndex
     objectcategory: MT::ObjectCategory
+
+    category:
+        list_id: integer
+    category_list: MT::CategoryList
 
 listing_screens: $ContentType::ContentType::ListProperties::make_listing_screens
 list_properties: $ContentType::ContentType::ListProperties::make_list_properties

@@ -18,7 +18,8 @@ use_ok('ContentType::Feed');
 use_ok('ContentType::ListProperties');
 use_ok('ContentType::Permission');
 use_ok('ContentType::Tags');
-
+use_ok('MT::CategoryList');
+use_ok('MT::CMS::CategoryList');
 use_ok('MT::ContentData');
 use_ok('MT::ContentField');
 use_ok('MT::ContentFieldIndex');
