@@ -89,5 +89,29 @@ sub _edit_link {
     );
 }
 
+sub terms {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $super = MT->registry( 'list_properties', '__virtual', 'string' );
+    my $label_terms = $super->{terms}->( $prop, @_ );
+
+    my $cat_join
+        = MT->model('category')
+        ->join_on( undef,
+        [ { id => \'= cf_idx_value_integer' }, $label_terms ] );
+
+    my $cf_idx_join = MT->model('content_field_index')->join_on(
+        undef,
+        {   content_data_id  => \'= cd_id',
+            content_field_id => $prop->content_field_id,
+        },
+        { join => $cat_join, unique => 1 },
+    );
+
+    $db_args->{joins} ||= [];
+    push @{ $db_args->{joins} }, $cf_idx_join;
+}
+
 1;
 
