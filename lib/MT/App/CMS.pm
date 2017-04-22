@@ -582,6 +582,9 @@ sub init_plugins {
             # folder callbacks
             $pkg
                 . 'view_permission_filter.folder' => "${pfx}Folder::can_view",
+            $pkg
+                . 'pre_load_filtered_list.folder' =>
+                "${pfx}Category::pre_load_filtered_list",
 
             # asset callbacks
             $pkg . 'view_permission_filter.asset' => "${pfx}Asset::can_view",

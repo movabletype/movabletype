@@ -641,7 +641,7 @@ sub pre_save {
     my @siblings = $pkg->load(
         {   parent  => $obj->parent,
             blog_id => $obj->blog_id,
-            list_id => $obj->list_id,
+            list_id => $obj->list_id || [ \'IS NULL', 0 ],
         }
     );
     foreach (@siblings) {
