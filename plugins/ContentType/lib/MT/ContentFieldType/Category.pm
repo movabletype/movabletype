@@ -25,6 +25,8 @@ sub field_html {
     foreach my $cat (@cats) {
         my $cat_id    = $cat->id;
         my $cat_label = $cat->label;
+        my $edit_link = _edit_link( $app, $cat );
+
         $html .= '<div>';
         $html
             .= "<input type=\"checkbox\" name=\"content-field-$field_id\" id=\"content-field-$field_id-$num\" value=\"$cat_id\"";
@@ -35,6 +37,7 @@ sub field_html {
         $html .= " />";
         $html
             .= " <label for=\"content-field-$field_id-$num\">$cat_label</label>";
+        $html .= qq{ (<a href="${edit_link}">edit</a>)};
         $html .= '</div>';
 
         $num++;
@@ -51,6 +54,39 @@ sub data_getter {
     my %valid_cats = map { $_->id => 1 } @valid_cats;
 
     [ grep { $valid_cats{$_} } @cat_ids ];
+}
+
+sub html {
+    my $prop = shift;
+    my ( $content_data, $app, $opts ) = @_;
+
+    my $cat_ids = $content_data->data->{ $prop->content_field_id } || [];
+
+    my %cats
+        = map { $_->id => $_ }
+        MT->model('category')->load( { id => $cat_ids } );
+    my @cats = map { $cats{$_} } @$cat_ids;
+
+    my @links;
+    for my $cat (@cats) {
+        my $label = $cat->label;
+        my $edit_link = _edit_link( $app, $cat );
+        push @links, qq{<a href="${edit_link}">${label}</a>};
+    }
+
+    join ', ', @links;
+}
+
+sub _edit_link {
+    my ( $app, $cat ) = @_;
+    $app->uri(
+        mode => 'edit',
+        args => {
+            _type   => 'category',
+            blog_id => $cat->blog_id,
+            id      => $cat->id,
+        },
+    );
 }
 
 1;
