@@ -233,6 +233,7 @@ sub cfg_content_field {
     my $blog_id                 = $q->param('blog_id');
     my $content_field_id        = $q->param('id');
     my $content_field_type      = $q->param('type') || '';
+    my $related_cat_list_id     = $q->param('related_cat_list_id') || '';
     my $related_content_type_id = $q->param('related_content_type_id') || '';
 
     require MT::Promise;
@@ -249,10 +250,13 @@ sub cfg_content_field {
         $param->{type}    = $content_field->type;
         $param->{default} = $content_field->default;
         $param->{options} = $content_field->options;
+        $param->{related_cat_list_id}
+            = $content_field->related_cat_list_id || '';
         $param->{related_content_type_id}
             = $content_field->related_content_type_id;
-        $param->{unique_key}     = $content_field->unique_key;
-        $content_field_type      = $content_field->type;
+        $param->{unique_key} = $content_field->unique_key;
+        $content_field_type = $content_field->type;
+        $related_cat_list_id = $content_field->related_cat_list_id || '';
         $related_content_type_id = $content_field->related_content_type_id;
     }
 
@@ -273,6 +277,19 @@ sub cfg_content_field {
         grep { $_->{options} } @type_array;
     $param->{content_field_types_options}
         = JSON::encode_json( \%content_field_types_options );
+
+    my @cat_lists_param;
+    my @category_lists
+        = MT->model('category_list')->load( { blog_id => $blog_id } );
+    for my $cl (@category_lists) {
+        push @cat_lists_param,
+            {
+            id       => $cl->id,
+            name     => $cl->name,
+            selected => $cl->id eq $related_cat_list_id,
+            };
+    }
+    $param->{category_lists} = \@cat_lists_param;
 
     my @content_types = MT::ContentType->load( { blog_id => $blog_id } );
     my @c_array = map {
@@ -320,6 +337,7 @@ sub save_cfg_content_field {
     my $type                    = $q->param('type');
     my $default                 = $q->param('default');
     my $options                 = $q->param('options');
+    my $related_cat_list_id     = $q->param('related_cat_list_id');
     my $related_content_type_id = $q->param('related_content_type_id');
 
     return $app->redirect(
@@ -336,6 +354,7 @@ sub save_cfg_content_field {
                 type                    => $type,
                 default                 => $default,
                 options                 => $options,
+                related_cat_list_id     => $related_cat_list_id,
                 related_content_type_id => $related_content_type_id,
             }
         )
@@ -354,6 +373,7 @@ sub save_cfg_content_field {
     $content_field->name($name);
     $content_field->type($type);
     $content_field->options($options);
+    $content_field->related_cat_list_id( $related_cat_list_id         || 0 );
     $content_field->related_content_type_id( $related_content_type_id || 0 );
 
     $content_field->save

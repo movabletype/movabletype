@@ -64,5 +64,11 @@ sub remove {
     $self->SUPER::remove(@_);
 }
 
+sub categories {
+    my $self = shift;
+    my @cats = MT->model('category')->load( { list_id => $self->id } );
+    \@cats;
+}
+
 1;
 

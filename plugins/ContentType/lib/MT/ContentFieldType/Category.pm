@@ -6,16 +6,19 @@ use MT::Category;
 use MT::ObjectCategory;
 
 sub field_html {
-    my ( $app, $id, $value ) = @_;
-    my @values     = split ',', $value;
-    my $q          = $app->param;
-    my $ct_data_id = $q->param('id');
-    my @cats       = MT::Category->load( { blog_id => $app->blog->id } );
-    my @obj_cats   = MT::ObjectCategory->load(
-        {   object_ds => 'content_data',
-            object_id => $ct_data_id
+    my ( $app, $field_id, $value ) = @_;
+    $value = [$value] unless ref $value eq 'ARRAY';
+
+    my @cats;
+    if ( my $field = MT->model('content_field')->load($field_id) ) {
+        if ( my $cat_list
+            = MT->model('category_list')
+            ->load( $field->related_cat_list_id || 0 ) )
+        {
+            @cats = @{ $cat_list->categories };
         }
-    );
+    }
+
     my $html = '';
     my $num  = 1;
 
@@ -24,48 +27,30 @@ sub field_html {
         my $cat_label = $cat->label;
         $html .= '<div>';
         $html
-            .= "<input type=\"checkbox\" name=\"content-field-$id\" id=\"content-field-$id-$num\" value=\"$cat_id\"";
+            .= "<input type=\"checkbox\" name=\"content-field-$field_id\" id=\"content-field-$field_id-$num\" value=\"$cat_id\"";
         $html .=
-            ( grep { $_->category_id eq $cat_id } @obj_cats )
+            ( grep { $_ eq $cat_id } @$value )
             ? ' checked="checked"'
             : '';
         $html .= " />";
-        $html .= " <label for=\"content-field-$id-$num\">$cat_label</label>";
+        $html
+            .= " <label for=\"content-field-$field_id-$num\">$cat_label</label>";
         $html .= '</div>';
+
+        $num++;
     }
     return $html;
 }
 
 sub data_getter {
-    my ( $app, $id ) = @_;
-    my $q          = $app->param;
-    my $ct_data_id = $q->param('id');
-    my @cat_ids    = $q->param( 'content-field-' . $id );
-    my @obj_cats   = MT::ObjectCategory->load(
-        {   object_ds => 'content_data',
-            object_id => $ct_data_id
-        }
-    );
-    foreach my $obj_cat (@obj_cats) {
-        $obj_cat->remove
-            unless ( grep { $_ eq $obj_cat->category_id } @cat_ids );
-    }
-    foreach my $cat_id (@cat_ids) {
-        my $obj_cat = MT::ObjectCategory->load(
-            {   category_id => $cat_id,
-                object_ds   => 'content_data',
-                object_id   => $ct_data_id
-            }
-        );
-        next if $obj_cat;
-        $obj_cat = MT::ObjectCategory->new;
-        $obj_cat->blog_id( $app->blog->id );
-        $obj_cat->category_id($cat_id);
-        $obj_cat->object_ds('content_data');
-        $obj_cat->object_id($ct_data_id);
-        $obj_cat->save;
-    }
-    return join ',', @cat_ids;
+    my ( $app, $field_id ) = @_;
+    my @cat_ids = $app->param( 'content-field-' . $field_id );
+
+    my @valid_cats = MT->model('category')
+        ->load( { id => \@cat_ids }, { fetchonly => { id => 1 } } );
+    my %valid_cats = map { $_->id => 1 } @valid_cats;
+
+    [ grep { $valid_cats{$_} } @cat_ids ];
 }
 
 1;

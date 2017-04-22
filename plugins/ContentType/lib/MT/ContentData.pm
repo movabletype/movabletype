@@ -16,6 +16,8 @@ use MT::Asset;
 use MT::ContentField;
 use MT::ContentType;
 use MT::ObjectAsset;
+use MT::ObjectCategory;
+use MT::ObjectTag;
 
 use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 
@@ -88,8 +90,9 @@ sub save {
         elsif ( $idx_type eq 'tag' ) {
             $self->_update_object_tags( $content_type, $f, $value );
         }
-
-        # next if $idx_type eq 'category'
+        elsif ( $idx_type eq 'category' ) {
+            $self->_update_object_categories( $content_type, $f, $value );
+        }
 
         MT::ContentFieldIndex->remove(
             {   content_type_id  => $content_type->id,
@@ -172,6 +175,30 @@ sub _update_object_tags {
             }
         );
         $obj_tag->save or die $obj_tag->errstr;
+    }
+}
+
+sub _update_object_categories {
+    my $self = shift;
+    my ( $content_type, $field, $values ) = @_;
+
+    MT::ObjectCategory->remove(
+        {   blog_id   => $self->blog_id,
+            object_ds => 'content_field',
+            object_id => $field->{id},
+        }
+    );
+
+    for my $cat_id (@$values) {
+        my $obj_cat = MT::ObjectCategory->new;
+        $obj_cat->set_values(
+            {   blog_id     => $self->blog_id,
+                category_id => $cat_id,
+                object_ds   => 'content_field',
+                object_id   => $field->{id},
+            }
+        );
+        $obj_cat->save or die $obj_cat->errstr;
     }
 }
 
