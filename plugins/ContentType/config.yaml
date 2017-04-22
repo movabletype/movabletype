@@ -101,30 +101,14 @@ content_field_types:
         data_type: varcahr
         order: 10
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - multiple
             - can_add
-            - max:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Max
-                    class: num
-            - min:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Min
-                    class: num
+            - max
+            - min
             - listing_filter
         field_html: |
             sub {
@@ -166,44 +150,20 @@ content_field_types:
         data_type: varchar
         order: 20
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
-            - min_length:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Min length
-                    class: min
-            - max_length:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Max length
-                    class: min
+            - min_length
+            - max_length
             - initial_value
     multi_line_text:
         label: Multi Line Text
         data_type: blob
         order: 30
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - initial_value
@@ -213,77 +173,33 @@ content_field_types:
         data_type: integer
         order: 40
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
-            - min_value:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Min value
-                    class: num
-            - max_value:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Max value
-                    class: num
+            - min_value
+            - max_value
             - initial_value
     float:
         label: Float
         data_type: float
         order: 50
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
-            - min_value:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Min value
-                    class: num
-            - max_value:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Max value
-                    class: num
-            - decimal_places:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Decimal places
-                    class: num
+            - min_value
+            - max_value
+            - decimal_places
             - initial_value
     url:
         label: URL
         data_type: varchar
         order: 60
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - initial_value
@@ -305,16 +221,8 @@ content_field_types:
         data_type: datetime
         order: 70
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - initial_value
@@ -366,16 +274,8 @@ content_field_types:
         data_type: varchar
         order: 80
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - initial_value
@@ -419,16 +319,8 @@ content_field_types:
         data_type: varchar
         order: 90
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - initial_value
@@ -474,29 +366,13 @@ content_field_types:
         data_type: varchar
         order: 100
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - multiple
-            - max:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Max
-                    class: num
-            - min:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Min
-                    class: num
+            - max
+            - min
             - values
             - initial_value
         field_html: |
@@ -521,16 +397,8 @@ content_field_types:
         data_type: varchar
         order: 110
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - values
@@ -559,29 +427,13 @@ content_field_types:
         data_type: varchar
         order: 120
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - multiple
-            - max:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Max
-                    class: num
-            - min:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Min
-                    class: num
+            - max
+            - min
             - values
             - initial_value
         field_html: |
@@ -616,30 +468,14 @@ content_field_types:
         data_type: varchar
         order: 130
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - multiple
             - can_upload
-            - max:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Max
-                    class: num
-            - min:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Min
-                    class: num
+            - max
+            - min
             - listing_filter
         field_html: |
             sub {
@@ -695,106 +531,50 @@ content_field_types:
         data_type: varchar
         order: 140
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - multiple
             - can_upload
-            - max:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Max
-                    class: num
-            - min:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Min
-                    class: num
+            - max
+            - min
             - listing_filter
     video:
         label: Video
         data_type: varchar
         order: 150
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - multiple
             - can_upload
-            - max:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Max
-                    class: num
-            - min:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Min
-                    class: num
+            - max
+            - min
             - listing_filter
     image:
         label: Image
         data_type: varchar
         order: 160
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - multiple
             - can_upload
-            - max:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Max
-                    class: num
-            - min:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Min
-                    class: num
+            - max
+            - min
             - listing_filter
     embed_text:
-        label: Embed Text
+        label: embed text
         data_type: blob
         order: 170
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
     category:
@@ -802,30 +582,14 @@ content_field_types:
         data_type: varchar
         order: 180
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - multiple
             - can_add
-            - max:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Max
-                    class: num
-            - min:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Min
-                    class: num
+            - max
+            - min
             - category_list
         field_html: |
             sub {
@@ -894,30 +658,14 @@ content_field_types:
         data_type: tag
         order: 190
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - multiple
             - can_add
-            - max:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Max
-                    class: num
-            - min:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Min
-                    class: num
+            - max
+            - min
             - initial_value
         field_html: |
             sub {
@@ -991,16 +739,8 @@ content_field_types:
         data_type: blob
         order: 200
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display
             - bullet_or_numbered
@@ -1009,15 +749,7 @@ content_field_types:
         data_type: blob
         order: 210 
         options:
-            - label:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Label
-                    class: med
-            - hint:
-                field_html: content_field_type_options/single_line_text.tmpl
-                field_html_params:
-                    label: Hint
-                    class: med
+            - label
+            - hint
             - required
             - display

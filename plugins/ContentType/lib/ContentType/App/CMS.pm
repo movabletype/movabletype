@@ -112,6 +112,42 @@ sub cfg_content_type {
         $param->{fields} = \@array;
     }
 
+    # Content Field Types
+    my $content_field_types = $app->registry('content_field_types');
+    my @type_array          = map {
+        my $hash = {};
+        $hash->{type}     = $_;
+        $hash->{label}    = $content_field_types->{$_}{label};
+        $hash->{options}  = $content_field_types->{$_}{options};
+        $hash->{order}    = $content_field_types->{$_}{order};
+        $hash;
+    } keys %$content_field_types;
+    @type_array = sort { $a->{order} <=> $b->{order} } @type_array;
+    $param->{content_field_types} = \@type_array;
+
+    # Content Filed Type Options
+    my %content_field_types_option_settings = ();
+    my %content_field_types_options         = map {
+        my $type_name = $_->{type};
+        (   $_->{type} => [
+                map {
+                    if ( ref($_) eq 'HASH' ) {
+                        my $key = ( keys( %{$_} ) )[0];
+                        $content_field_types_option_settings{$type_name}{$key}
+                            = $_->{$key};
+                        $key;
+                    }
+                    else {
+                        $_;
+                    }
+                } @{ $_->{options} }
+            ]
+            )
+        }
+        grep { $_->{options} } @type_array;
+    $param->{content_field_types_options}
+        = JSON::encode_json( \%content_field_types_options );
+
     foreach my $name (qw( saved err_msg id name )) {
         $param->{$name} = $q->param($name) if $q->param($name);
     }
