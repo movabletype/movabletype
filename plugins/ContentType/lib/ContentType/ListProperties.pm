@@ -511,38 +511,29 @@ sub terms_text {
 
     my $string = $args->{string};
     my $query_string
-        = $args->{option} eq 'contains'     ? { like     => "%$string%" }
-        : $args->{option} eq 'not_contains' ? { not_like => "%$string%" }
-        : $args->{option} eq 'equal'        ? $string
-        : $args->{option} eq 'beginning'    ? { like     => "$string%" }
-        : $args->{option} eq 'end'          ? { like     => "%$string" }
-        :                                     '';
+        = $args->{option} eq 'contains' ? { like => "%$string%" }
+        : $args->{option} eq 'not_contains'
+        ? [ { not_like => "%$string%" }, \'IS NULL' ]
+        : $args->{option} eq 'equal'     ? $string
+        : $args->{option} eq 'blank'     ? [ \'IS NULL', '' ]
+        : $args->{option} eq 'beginning' ? { like => "$string%" }
+        : $args->{option} eq 'end'       ? { like => "%$string" }
+        :                                  { not_like => '%' };     # no data
 
-    my $data_type = $prop->{data_type};
+    my $data_type = $prop->data_type;
+    my $join      = MT::ContentFieldIndex->join_on(
+        undef,
+        { "value_${data_type}" => $query_string },
+        {   type      => 'left',
+            condition => {
+                content_data_id  => \'= cd_id',
+                content_field_id => $prop->content_field_id,
+            },
+        },
+    );
 
-    if ( $args->{option} && $args->{option} eq 'blank' ) {
-        my @indexes = MT::ContentFieldIndex->load(
-            [   { content_field_id     => $prop->{content_field_id} },
-                { "value_${data_type}" => { not => '' } },
-                { "value_${data_type}" => \'IS NOT NULL' },
-            ],
-            { fetchonly => { content_data_id => 1 } },
-        );
-        my %content_data_ids = map { $_->content_data_id => 1 } @indexes;
-        my @content_data_ids = keys %content_data_ids;
-        @content_data_ids ? { id => { not => \@content_data_ids } } : undef;
-    }
-    else {
-        $db_args->{joins} ||= [];
-        push @{ $db_args->{joins} },
-            MT::ContentFieldIndex->join_on(
-            undef,
-            {   content_data_id      => \'= cd_id',
-                content_field_id     => $prop->{content_field_id},
-                "value_${data_type}" => $query_string,
-            }
-            );
-    }
+    $db_args->{joins} ||= [];
+    push @{ $db_args->{joins} }, $join;
 }
 
 sub terms_number {
@@ -597,3 +588,4 @@ sub terms_number {
 }
 
 1;
+
