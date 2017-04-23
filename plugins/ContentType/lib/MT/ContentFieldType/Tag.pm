@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use MT;
+use MT::ContentData;
 use MT::ContentField;
 use MT::Tag;
 use MT::ObjectTag;
@@ -73,23 +74,59 @@ sub terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
+    my $option = $args->{option} || '';
+
     my $super = MT->registry( 'list_properties', '__virtual', 'string' );
     my $name_terms = $super->{terms}->( $prop, @_ );
 
-    my $tag_join = MT::Tag->join_on( undef,
-        [ { id => \'= objecttag_tag_id' }, $name_terms ] );
-
-    my $objecttag_join = MT::ObjectTag->join_on(
-        undef,
-        {   blog_id           => MT->app->blog->id,
-            object_datasource => 'content_field',
-            object_id         => $prop->content_field_id,
-        },
-        { join => $tag_join, unique => 1 },
-    );
-
-    $db_args->{joins} ||= [];
-    push @{ $db_args->{joins} }, $objecttag_join;
+    if ( $option eq 'not_contains' ) {
+        my $string   = $args->{string};
+        my $tag_join = MT::Tag->join_on(
+            undef,
+            {   id   => \'= cf_idx_value_integer',
+                name => { like => "%${string}%" },
+            }
+        );
+        my $cf_idx_join = MT::ContentFieldIndex->join_on(
+            undef,
+            {   content_data_id  => \'= cd_id',
+                content_field_id => $prop->content_field_id,
+            },
+            { join => $tag_join, unique => 1 },
+        );
+        my @cd_ids
+            = map { $_->id }
+            MT::ContentData->load( { blog_id => MT->app->blog->id },
+            { join => $cf_idx_join, fetchonly => { id => 1 } } );
+        @cd_ids ? { id => { not => \@cd_ids } } : ();
+    }
+    elsif ( $option eq 'blank' ) {
+        my $cf_idx_join = MT::ContentFieldIndex->join_on(
+            undef,
+            { value_integer => \'IS NULL' },
+            {   type      => 'left',
+                condition => {
+                    content_data_id  => \'= cd_id',
+                    content_field_id => $prop->content_field_id,
+                },
+            }
+        );
+        $db_args->{joins} ||= [];
+        push @{ $db_args->{joins} }, $cf_idx_join;
+    }
+    else {
+        my $tag_join = MT::Tag->join_on( undef,
+            [ { id => \'= cf_idx_value_integer' }, $name_terms ] );
+        my $cf_idx_join = MT::ContentFieldIndex->join_on(
+            undef,
+            {   content_data_id  => \'= cd_id',
+                content_field_id => $prop->content_field_id,
+            },
+            { join => $tag_join, unique => 1 },
+        );
+        $db_args->{joins} ||= [];
+        push @{ $db_args->{joins} }, $cf_idx_join;
+    }
 }
 
 sub html {
