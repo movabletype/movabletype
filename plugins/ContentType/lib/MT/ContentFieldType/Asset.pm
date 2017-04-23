@@ -16,7 +16,7 @@ sub field_html {
         }
     );
     my $html
-        .= '<input type="text" name="content-field-'
+        = '<input type="text" name="content-field-'
         . $field_id
         . '" class="text long" value="';
     $html .= join ',', @$value;
