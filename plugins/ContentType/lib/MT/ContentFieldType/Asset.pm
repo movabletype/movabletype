@@ -8,6 +8,7 @@ use MT::ObjectAsset;
 
 sub field_html {
     my ( $app, $field_id, $value ) = @_;
+    $value = ''       unless defined $value;
     $value = [$value] unless ref $value eq 'ARRAY';
     my @obj_assets = MT::ObjectAsset->load(
         {   object_ds => 'content_field',
