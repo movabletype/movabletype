@@ -99,6 +99,9 @@ sub generate_query {
             value => $now
         };
     }
+    elsif ( 'blank' eq $option ) {
+        $query = \'IS NULL';
+    }
 
     $query;
 }
@@ -112,28 +115,19 @@ sub terms {
 
     my $query = generate_query( $prop, @_ );
 
-    if ( 'blank' eq $option ) {
-        my @indexes = MT::ContentFieldIndex->load(
-            {   content_field_id     => $prop->{content_field_id},
-                "value_${data_type}" => \'IS NOT NULL'
+    my $join = MT::ContentFieldIndex->join_on(
+        undef,
+        { "value_${data_type}" => $query },
+        {   type      => 'left',
+            condition => {
+                content_data_id  => \'= cd_id',
+                content_field_id => $prop->content_field_id,
             },
-            { fetchonly => { content_data_id => 1 } },
-        );
-        my %content_data_ids = map { $_->content_data_id => 1 } @indexes;
-        my @content_data_ids = keys %content_data_ids;
-        @content_data_ids ? { id => { not => \@content_data_ids } } : undef;
-    }
-    else {
-        $db_args->{joins} ||= [];
-        push @{ $db_args->{joins} },
-            MT::ContentFieldIndex->join_on(
-            undef,
-            {   content_data_id      => \'= cd_id',
-                content_field_id     => $prop->{content_field_id},
-                "value_${data_type}" => $query,
-            }
-            );
-    }
+        },
+    );
+
+    $db_args->{joins} ||= [];
+    push @{ $db_args->{joins} }, $join;
 }
 
 sub filter_tmpl {
