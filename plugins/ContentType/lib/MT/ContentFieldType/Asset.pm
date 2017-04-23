@@ -381,5 +381,38 @@ sub label_terms {
     push @{ $db_args->{joins} }, $cf_idx_join;
 }
 
+sub html {
+    my $prop = shift;
+    my ( $content_data, $app, $opts ) = @_;
+
+    my $asset_ids = $content_data->data->{ $prop->content_field_id } || [];
+
+    my %assets
+        = map { $_->id => $_ }
+        MT->model('asset')->load( { id => $asset_ids }, { no_class => 1 } );
+    my @assets = map { $assets{$_} } @$asset_ids;
+
+    my @links;
+    for my $asset (@assets) {
+        my $id = $asset->id;
+        my $edit_link = _edit_link( $app, $asset );
+        push @links, qq{<a href="${edit_link}">${id}</a>};
+    }
+
+    join ', ', @links;
+}
+
+sub _edit_link {
+    my ( $app, $asset ) = @_;
+    $app->uri(
+        mode => 'edit',
+        args => {
+            _type   => 'asset',
+            blog_id => $asset->blog_id,
+            id      => $asset->id,
+        },
+    );
+}
+
 1;
 

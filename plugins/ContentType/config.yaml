@@ -228,6 +228,7 @@ content_field_types:
         label: Asset
         data_type: integer
         order: 130
+        html: $ContentType::MT::ContentFieldType::Asset::html
         terms: $ContentType::MT::ContentFieldType::SelectBox::terms
         filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::Asset::field_html
