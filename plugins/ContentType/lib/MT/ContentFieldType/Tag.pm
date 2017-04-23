@@ -138,7 +138,7 @@ sub html {
     my %tags = map { $_->id => $_->name } MT::Tag->load( { id => $tag_ids },
         { fetchonly => { id => 1, name => 1 } } );
 
-    join( ',', map { $tags{$_} } @$tag_ids );
+    join( ', ', map { $tags{$_} } @$tag_ids );
 }
 
 1;

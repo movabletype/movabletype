@@ -389,7 +389,7 @@ sub make_title_html {
     if ( $label && ref $label eq 'ARRAY' ) {
         my $delimiter = $app->registry('content_field_types')
             ->{ $prop->{idx_type} }{options_delimiter} || ',';
-        $label = join $delimiter, @$label;
+        $label = join "${delimiter} ", @$label;
     }
 
     $label = '' unless defined $label;
