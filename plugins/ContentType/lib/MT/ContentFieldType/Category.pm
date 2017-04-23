@@ -7,6 +7,7 @@ use MT::ObjectCategory;
 
 sub field_html {
     my ( $app, $field_id, $value ) = @_;
+    $value = ''       unless defined $value;
     $value = [$value] unless ref $value eq 'ARRAY';
 
     my @cats;

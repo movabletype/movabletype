@@ -6,7 +6,8 @@ use MT::ContentField;
 
 sub field_html {
     my ( $app, $id, $value ) = @_;
-    $value = [ $value ] unless ref $value eq 'ARRAY';
+    $value = ''       unless defined $value;
+    $value = [$value] unless ref $value eq 'ARRAY';
 
     my $content_field = MT::ContentField->load($id);
     my $options       = $content_field->options;
@@ -16,8 +17,8 @@ sub field_html {
             || ',' );
     my @options = split $options_delimiter, $options;
 
-    my $html    = '';
-    my $count   = 1;
+    my $html  = '';
+    my $count = 1;
 
     foreach my $option (@options) {
         $html
@@ -48,7 +49,7 @@ sub single_select_options {
 
 sub data_getter {
     my ( $app, $id ) = @_;
-    my @data = $app->param( "content-field-${id}" );
+    my @data = $app->param("content-field-${id}");
     \@data;
 }
 
