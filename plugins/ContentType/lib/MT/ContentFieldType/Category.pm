@@ -90,28 +90,70 @@ sub _edit_link {
     );
 }
 
+# similar to tag terms.
 sub terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
+    my $option = $args->{option} || '';
+
     my $super = MT->registry( 'list_properties', '__virtual', 'string' );
     my $label_terms = $super->{terms}->( $prop, @_ );
 
-    my $cat_join
-        = MT->model('category')
-        ->join_on( undef,
-        [ { id => \'= cf_idx_value_integer' }, $label_terms ] );
+    if ( $option eq 'not_contains' ) {
+        my $string = $args->{string};
+        my $field
+            = MT->model('content_field')->load( $prop->content_field_id );
 
-    my $cf_idx_join = MT->model('content_field_index')->join_on(
-        undef,
-        {   content_data_id  => \'= cd_id',
-            content_field_id => $prop->content_field_id,
-        },
-        { join => $cat_join, unique => 1 },
-    );
-
-    $db_args->{joins} ||= [];
-    push @{ $db_args->{joins} }, $cf_idx_join;
+        my $category_join = MT->model('category')->join_on(
+            undef,
+            {   id      => \'= cf_idx_value_integer',
+                label   => { like => "%${string}%" },
+                list_id => $field->related_cat_list_id,
+            },
+        );
+        my $cf_idx_join = MT::ContentFieldIndex->join_on(
+            undef,
+            {   content_data_id  => \'= cd_id',
+                content_field_id => $prop->content_field_id,
+            },
+            { join => $category_join, unique => 1 },
+        );
+        my @cd_ids
+            = map { $_->id }
+            MT::ContentData->load( { blog_id => MT->app->blog->id },
+            { join => $cf_idx_join, fetchonly => { id => 1 } } );
+        @cd_ids ? { id => { not => \@cd_ids } } : ();
+    }
+    elsif ( $option eq 'blank' ) {
+        my $cf_idx_join = MT::ContentFieldIndex->join_on(
+            undef,
+            { value_integer => \'IS NULL' },
+            {   type      => 'left',
+                condition => {
+                    content_data_id  => \'= cd_id',
+                    content_field_id => $prop->content_field_id,
+                },
+            }
+        );
+        $db_args->{joins} ||= [];
+        push @{ $db_args->{joins} }, $cf_idx_join;
+    }
+    else {
+        my $cat_join
+            = MT->model('category')
+            ->join_on( undef,
+            [ { id => \'= cf_idx_value_integer' }, $label_terms ] );
+        my $cf_idx_join = MT->model('content_field_index')->join_on(
+            undef,
+            {   content_data_id  => \'= cd_id',
+                content_field_id => $prop->content_field_id,
+            },
+            { join => $cat_join, unique => 1 },
+        );
+        $db_args->{joins} ||= [];
+        push @{ $db_args->{joins} }, $cf_idx_join;
+    }
 }
 
 1;
