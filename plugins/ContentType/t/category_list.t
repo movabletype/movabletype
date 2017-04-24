@@ -112,7 +112,6 @@ subtest 'remove' => sub {
         blog_id => $blog_id,
         list_id => $cat_list->id,
     );
-    $cat_list->save or die $cat_list->errstr;
 
     my $count = sub {
         MT::Category->count(
@@ -121,7 +120,10 @@ subtest 'remove' => sub {
             }
         );
     };
+
+    $cat_list->save or die $cat_list->errstr;
     ok( $count->(), 'category count is more than 0' );
+
     $cat_list->remove or die $cat_list->errstr;
     is( $count->(), 0, 'category count is 0' );
 };
