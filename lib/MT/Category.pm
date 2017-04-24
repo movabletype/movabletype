@@ -118,9 +118,10 @@ sub list_props {
                 require MT::Blog;
                 my $rep = $objs->[0] or return;
                 my $text;
-                if ( $rep->list_id ) {
+                if ( $rep->category_list_id ) {
                     my $list
-                        = MT->model('category_list')->load( $rep->list_id );
+                        = MT->model('category_list')
+                        ->load( $rep->category_list_id );
                     $text = $list->order || '';
                 }
                 else {
@@ -161,7 +162,7 @@ sub list_props {
             display         => 'none',
             filter_editable => 0,
         },
-        list_id => {
+        category_list_id => {
             auto    => 1,
             display => 'none',
         },

@@ -5,6 +5,7 @@ use base qw( MT::Object );
 
 use MT;
 use MT::Blog;
+use MT::Category;
 use MT::ContentField;
 use MT::ContentType;
 
@@ -14,8 +15,8 @@ __PACKAGE__->install_properties(
             blog_id   => 'integer not null',
             name      => 'string(255) not null',
             order     => 'text',
-            cat_count => 'integer',
-            ct_count  => 'integer',
+            cat_count => 'integer not null',
+            ct_count  => 'integer not null',
         },
         indexes => {
             blog_id => 1,
@@ -79,19 +80,21 @@ sub list_props {
             order => 300,
         },
         category_count => {
-            base    => '__virtual.integer',
-            label   => 'Categories',
-            col     => 'cat_count',
-            display => 'default',
-            order   => 400,
+            base         => '__virtual.integer',
+            label        => 'Categories',
+            filter_label => 'Category Count',
+            col          => 'cat_count',
+            display      => 'default',
+            order        => 400,
         },
         content_type_count => {
-            base      => '__virtual.integer',
-            label     => 'Content Types',
-            col       => 'ct_count',
-            html_link => \&_ct_count_html_link,
-            display   => 'default',
-            order     => 500,
+            base         => '__virtual.integer',
+            label        => 'Content Types',
+            filter_label => 'Content Type Count',
+            col          => 'ct_count',
+            html_link    => \&_ct_count_html_link,
+            display      => 'default',
+            order        => 500,
         },
         created_on => {
             base    => '__virtual.created_on',
@@ -103,7 +106,15 @@ sub list_props {
             order   => 700,
             display => 'optional',
         },
-        blog_name => { display => 'none' },
+        blog_name       => { display         => 'none' },
+        current_context => { filter_editable => 0 },
+        category_label  => {
+            base    => '__virtual.string',
+            label   => 'Category Label',
+            col     => 'label',
+            display => 'none',
+            terms   => \&_category_label_terms,
+        },
     };
 }
 
@@ -120,6 +131,34 @@ sub _ct_count_html_link {
             filter_val => $obj->id,
         },
     );
+}
+
+sub _category_label_terms {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $option = $args->{option};
+
+    if ( $option eq 'not_contains' ) {
+        my $string   = $args->{string};
+        my $cat_join = MT::Category->join_on(
+            'category_list_id',
+            { label  => { like => "%${string}%" } },
+            { unique => 1 },
+        );
+        my @cat_list_ids
+            = map { $_->id }
+            MT::CategoryList->load( { blog_id => MT->app->blog->id },
+            { join => $cat_join, fetchonly => { id => 1 } } );
+        @cat_list_ids ? { id => { not => \@cat_list_ids } } : ();
+    }
+    else {
+        my $query    = $prop->super(@_);
+        my $cat_join = MT::Category->join_on( 'category_list_id', $query,
+            { unique => 1 } );
+        $db_args->{joins} ||= [];
+        push @{ $db_args->{joins} }, $cat_join;
+    }
 }
 
 sub save {
@@ -141,7 +180,7 @@ sub save {
 sub _calculate_cat_count {
     my $self = shift;
     return unless $self->id;
-    my $count = MT::Category->count( { list_id => $self->id } );
+    my $count = MT::Category->count( { category_list_id => $self->id } );
     $self->cat_count($count);
 }
 
@@ -163,7 +202,7 @@ sub _calculate_ct_count {
 sub remove {
     my $self = shift;
     if ( ref $self ) {
-        $self->remove_children( { key => 'list_id' } );
+        $self->remove_children( { key => 'category_list_id' } );
     }
     $self->SUPER::remove(@_);
 }
@@ -183,7 +222,8 @@ sub categories {
     $self->cache_property(
         'categories',
         sub {
-            [ MT->model('category')->load( { list_id => $self->id } ) ];
+            [ MT->model('category')
+                    ->load( { category_list_id => $self->id } ) ];
         },
     );
 }

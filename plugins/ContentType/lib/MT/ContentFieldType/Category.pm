@@ -107,9 +107,9 @@ sub terms {
 
         my $category_join = MT->model('category')->join_on(
             undef,
-            {   id      => \'= cf_idx_value_integer',
-                label   => { like => "%${string}%" },
-                list_id => $field->related_cat_list_id,
+            {   id               => \'= cf_idx_value_integer',
+                label            => { like => "%${string}%" },
+                category_list_id => $field->related_cat_list_id,
             },
         );
         my $cf_idx_join = MT::ContentFieldIndex->join_on(
