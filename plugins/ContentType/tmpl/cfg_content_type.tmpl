@@ -907,7 +907,8 @@
 
   <mt:setvarblock name="action_buttons">
     <button
-       type="submit"
+       type="button"
+       id="save-button"
        accesskey="s"
        title="<__trans phrase="Save changes to these settings (s)">"
        class="save action primary button disabled">
@@ -936,10 +937,34 @@
     set_sortable();
   });
 
-  jQuery('#content-type-form').submit( function() {
+  jQuery('#save-button').click( function() {
     setDirty(false);
-    return true;
-  });   
+    var datalist = localStorage.getItem("ContentType");
+    jQuery.ajax({
+      type: 'POST',
+      contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+      async: true,
+      url: ScriptURI,
+      dataType: 'json',
+      data: {
+        __mode: 'save_cfg_content_type',
+        magic_token: '<mt:var name="magic_token">',
+        blog_id: '<mt:var name="blog_id">',
+        data: datalist
+      }
+    }).done(
+      function(data) {
+        if (data.result.error) {
+          return generate_error(data.result.errmsg);
+        }
+        alert('done');
+      }
+    ).fail(
+      function(xhr, status, errorThrown) {
+        generate_error(status+' '+errorThrown);
+      }
+    );
+  });
 
   jQuery('.add-link').click(function() {
     var selected = jQuery('select#type').val();
