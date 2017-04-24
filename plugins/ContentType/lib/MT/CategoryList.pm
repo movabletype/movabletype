@@ -40,13 +40,13 @@ sub _post_update_content_type {
     if ( $cf->related_cat_list_id || $orig->related_cat_list_id ) {
         if ( my $cat_list = __PACKAGE__->load( $cf->related_cat_list_id ) ) {
             $cat_list->_calculate_ct_count;
-            $cat_list->save;
+            $cat_list->SUPER::save();
         }
         if ( $cf->related_cat_list_id != $orig->related_cat_list_id ) {
             my $old_cat_list = __PACKAGE__->load( $cf->related_cat_list_id )
                 or return;
             $old_cat_list->_calculate_ct_count;
-            $old_cat_list->save;
+            $old_cat_list->SUPER::save();
         }
     }
 }
@@ -184,33 +184,6 @@ sub categories {
         'categories',
         sub {
             [ MT->model('category')->load( { list_id => $self->id } ) ];
-        },
-    );
-}
-
-sub category_count {
-    my $self = shift;
-    $self->cache_property(
-        'category_count',
-        sub {
-            MT->model('category')->count( { list_id => $self->id } );
-        },
-    );
-}
-
-sub content_type_count {
-    my $self = shift;
-    $self->cache_property(
-        'content_type_count',
-        sub {
-            my $cf_join = MT::ContentField->join_on(
-                'content_type_id',
-                {   blog_id             => $self->blog_id,
-                    related_cat_list_id => $self->id,
-                }
-            );
-            MT::ContentType->count( { blog_id => $self->blog_id },
-                { join => $cf_join } );
         },
     );
 }
