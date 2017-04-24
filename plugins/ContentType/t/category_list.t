@@ -39,15 +39,15 @@ subtest 'cat_count' => sub {
     $cat_list->save or die $cat_list->errstr;
 
     my $cat1 = MT::Test::Permission->make_category(
-        blog_id => $blog_id,
-        list_id => $cat_list->id,
+        blog_id          => $blog_id,
+        category_list_id => $cat_list->id,
     );
     $cat_list->save or die $cat_list->errstr;
     is( $cat_list->cat_count, 1, 'cat_count is 1' );
 
     my $cat2 = MT::Test::Permission->make_category(
-        blog_id => $blog_id,
-        list_id => $cat_list->id,
+        blog_id          => $blog_id,
+        category_list_id => $cat_list->id,
     );
     $cat_list->save or die $cat_list->errstr;
     is( $cat_list->cat_count, 2, 'cat_count is 2' );
@@ -109,14 +109,14 @@ subtest 'remove' => sub {
     $cat_list->save or die $cat_list->errstr;
 
     my $cat = MT::Test::Permission->make_category(
-        blog_id => $blog_id,
-        list_id => $cat_list->id,
+        blog_id          => $blog_id,
+        category_list_id => $cat_list->id,
     );
 
     my $count = sub {
         MT::Category->count(
-            {   blog_id => $blog_id,
-                list_Id => $cat_list->id,
+            {   blog_id          => $blog_id,
+                category_list_id => $cat_list->id,
             }
         );
     };
