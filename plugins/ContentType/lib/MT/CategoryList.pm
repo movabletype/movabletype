@@ -115,6 +115,13 @@ sub list_props {
             display => 'none',
             terms   => \&_category_label_terms,
         },
+        content_type_name => {
+            base    => '__virtual.string',
+            label   => 'Content Type Name',
+            col     => 'name',
+            display => 'none',
+            terms   => \&_content_type_name_terms,
+        },
     };
 }
 
@@ -158,6 +165,56 @@ sub _category_label_terms {
             { unique => 1 } );
         $db_args->{joins} ||= [];
         push @{ $db_args->{joins} }, $cat_join;
+    }
+}
+
+sub _content_type_name_terms {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $option = $args->{option};
+
+    if ( $option eq 'not_contains' ) {
+        my $string  = $args->{string};
+        my $ct_join = MT::ContentType->join_on(
+            undef,
+            {   id      => \'= cf_content_type_id',
+                blog_id => MT->app->blog->id,
+                name    => { like => "%${string}%" },
+            }
+        );
+        my $cf_join = MT::ContentField->join_on(
+            undef,
+            {   type                => 'category',
+                related_cat_list_id => \'= category_list_id'
+            },
+            { join => $ct_join },
+        );
+        my @cat_list_ids
+            = map { $_->id }
+            MT::CategoryList->load( { blog_id => MT->app->blog->id },
+            { join => $cf_join, fetchonly => { id => 1 } } );
+        @cat_list_ids ? { id => { not => \@cat_list_ids } } : ();
+    }
+    else {
+        my $query   = $prop->super(@_);
+        my $ct_join = MT::ContentType->join_on(
+            undef,
+            [   $query,
+                {   id      => \'= cf_content_type_id',
+                    blog_id => MT->app->blog->id
+                }
+            ]
+        );
+        my $cf_join = MT::ContentField->join_on(
+            undef,
+            {   type                => 'category',
+                related_cat_list_id => \'= category_list_id'
+            },
+            { join => $ct_join },
+        );
+        $db_args->{joins} ||= [];
+        push @{ $db_args->{joins} }, $cf_join;
     }
 }
 
