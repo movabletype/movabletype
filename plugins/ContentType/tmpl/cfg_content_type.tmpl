@@ -997,39 +997,74 @@
       var block = jQuery(this).parent().parent().parent().parent();
       var block_id = block.attr("id");
       var field_id = block_id.match(/\d+/);
-      var type = jQuery("#type-" + field_id).val();
-      var options = jQuery('#' + type + '-options');
+      var type_name = jQuery("#type-" + field_id).val();
+      var options = jQuery('#' + type_name + '-options');
       options.css( 'display', 'block' );
       jQuery("#current_field_id").val(field_id);
+      var data = JSON.parse( localStorage.getItem("ContentType") );
+      var current_id = jQuery("#current_field_id").val();
+      var regexp = new RegExp(type_name + '-(.*)');
+      options.find("input").each(function(index, element) {
+        if (jQuery(element).attr("type") == 'hidden')
+          return true;
+        var opt_id = jQuery(element).attr("id");
+        var opt_name = (opt_id.match(regexp))[1];
+        if (data[current_id] && data[current_id][opt_name])
+          jQuery(element).val(data[current_id][opt_name]);
+      });
+      options.find("select").each(function(index, element) {
+        var opt_id = jQuery(element).attr("id");
+        var opt_name = (opt_id.match(regexp))[1];
+        if (data[current_id] && data[current_id][opt_name])
+          jQuery(element).val(data[current_id][opt_name]);
+      });
+      options.find("textarea").each(function(index, element) {
+        var opt_id = jQuery(element).attr("id");
+        var opt_name = (opt_id.match(regexp))[1];
+        if (data[current_id] && data[current_id][opt_name])
+          jQuery(element).val(data[current_id][opt_name]);
+      });
     });
-    //jQuery('input[name="required"]').unbind('change').change(function() {
-    //  if (jQuery(this).is(':checked')) {
-    //    jQuery(this).nextAll('input[name="required"]').val('1');
-    //  } else {
-    //    jQuery(this).nextAll('input[name="required"]').val('0');
-    //  }
-    //});
-    jQuery('a.save-link').click(function() {
-      var div = jQuery(this).parent().parent().parent();
-      var id = div.attr("id");
+    jQuery('a.save-link').unbind('click').click(function() {
+      var options = jQuery(this).parent().parent().parent();
+      var id = options.attr("id");
       var type_name = (id.match(/(.*)-options/))[1];
       var current_id = jQuery("#current_field_id").val();
       var regexp = new RegExp(type_name + '-(.*)');
       var hash = {};
-      div.find("input").each(function(index, element) {
+      options.find("input").each(function(index, element) {
         if (jQuery(element).attr("type") == 'hidden')
             return true;
         var opt_id = jQuery(element).attr("id");
-        var opt_val = jQuery(element).val();
         var opt_name = (opt_id.match(regexp))[1];
+        var opt_val = jQuery(element).val();
+        if (!hash[current_id])
+          hash[current_id] = {};
+        hash[current_id][opt_name] = opt_val;
+        jQuery(element).val('');
       });
-      div.find("textarea").each(function(index, element) {
+      options.find("select").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
-        var opt_val = jQuery(element).val();
         var opt_name = (opt_id.match(regexp))[1];
+        var opt_val = jQuery(element).val();
+        if (!hash[current_id])
+          hash[current_id] = {};
+        hash[current_id][opt_name] = opt_val;
+        jQuery(element).val('');
       });
+      options.find("textarea").each(function(index, element) {
+        var opt_id = jQuery(element).attr("id");
+        var opt_name = (opt_id.match(regexp))[1];
+        var opt_val = jQuery(element).val();
+        if (!hash[current_id])
+          hash[current_id] = {};
+        hash[current_id][opt_name] = opt_val;
+        jQuery(element).val('');
+      });
+      localStorage.setItem("ContentType", JSON.stringify(hash));
+      options.css( 'display', 'none' );
     });
-  }   
+  }
 
   function set_sortable() {
     jQuery('#sortable').sortable({
