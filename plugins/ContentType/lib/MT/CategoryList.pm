@@ -134,8 +134,8 @@ sub save {
 
         $self->_calculate_cat_count;
         $self->_calculate_ct_count;
-        $self->SUPER::save(@_);
     }
+    $self->SUPER::save(@_);
 }
 
 sub _calculate_cat_count {
