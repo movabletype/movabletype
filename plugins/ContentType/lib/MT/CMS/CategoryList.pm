@@ -29,6 +29,7 @@ sub list_screens {
         view             => [ 'website', 'blog' ],
         default_sort_key => 'name',
         permission       => 'access_to_category_list_list',
+        scope_mode       => 'this',
     };
 }
 

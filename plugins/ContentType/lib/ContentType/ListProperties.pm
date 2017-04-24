@@ -110,6 +110,13 @@ sub make_list_properties {
                 link_mode => 'cfg_content_type',
                 html      => sub { make_name_html(@_) }
             },
+            category_list => {
+                base                  => '__virtual.single_select',
+                terms                 => \&_cl_terms,
+                single_select_options => \&_cl_single_select_options,
+                label                 => 'Category List',
+                display               => 'none',
+            },
         },
         category_list => MT::CategoryList::list_props(),
     };
@@ -239,6 +246,33 @@ sub make_list_properties {
     }
 
     return $props;
+}
+
+sub _cl_terms {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+    my $cf_join = MT::ContentField->join_on(
+        'content_type_id',
+        {   type                => 'category',
+            related_cat_list_id => $args->{value},
+        },
+    );
+    $db_args->{joins} ||= [];
+    push @{ $db_args->{joins} }, $cf_join;
+}
+
+sub _cl_single_select_options {
+    my $prop = shift;
+    my @cat_lists
+        = MT::CategoryList->load( { blog_id => MT->app->blog->id } );
+    my @options;
+    for my $cl (@cat_lists) {
+        my $id    = $cl->id;
+        my $name  = $cl->name;
+        my $label = "${name} (id:${id})";
+        push @options, { label => $label, value => $id };
+    }
+    \@options;
 }
 
 sub _asset_props {
