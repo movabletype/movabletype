@@ -12,6 +12,7 @@ use MT::ContentData;
 use MT::ContentType;
 use MT::ContentField;
 use MT::ContentFieldIndex;
+use MT::ListProperty;
 use ContentType::ListProperties;
 
 my $content_type = MT::ContentType->new;
@@ -52,21 +53,14 @@ subtest 'make_list_properties' => sub {
     my $props = ContentType::ListProperties::make_list_properties;
 
     ok( $props && ref $props eq 'HASH', 'make_list_properties returns hash' );
-
-    my $terms = $props->{ 'content_data_' . $content_type->id }
-        { 'content_field_' . $content_field->id }{terms};
-    is( ref $terms, 'CODE',
-        '$props->{content_data_?}{content_field_?}{terms} is coderef' );
-
-    $terms->();
-    is( $called, 1, 'The coderef is MT::ContentFieldIndex::make_terms' );
 };
 
 subtest 'make_title' => sub {
-    my $prop;
+    my $prop = MT::ListProperty->new( 'content_data_1', 'content_field_1' );
     my $content_data = MT::ContentData->new;
     $content_data->set_values(
         {   blog_id         => $content_type->blog_id,
+            author_id       => 1,
             content_type_id => $content_type->id,
         }
     );

@@ -207,11 +207,12 @@ sub init_core_callbacks {
             'list_template_param.folder' =>
                 "${pfx}Category::template_param_list",
             $pkg
-                . 'pre_load_filtered_list.folder' =>
-                "${pfx}Category::pre_load_filtered_list",
-            $pkg
                 . 'filtered_list_param.folder' =>
                 "${pfx}Category::filtered_list_param",
+
+            # category_list callbacks
+            "${pkg}delete_permission_filter.category_list" =>
+                "${pfx}CategoryList::can_delete",
 
             # comment callbacks
             $pkg . 'edit.comment' => "${pfx}Comment::edit",

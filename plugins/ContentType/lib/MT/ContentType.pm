@@ -79,6 +79,12 @@ sub fields {
     }
 }
 
+sub label_field {
+    my $self = shift;
+    my ($label_field) = grep { $_->{label} } @{ $self->fields };
+    $label_field;
+}
+
 sub field_objs {
     my $obj = shift;
     my @field_objs
@@ -88,22 +94,62 @@ sub field_objs {
 }
 
 sub permissions {
-    my $obj = shift;
-    return +{ %{ $obj->permission }, %{ $obj->field_permissions } };
+    my $self = shift;
+    return +{ $self->permission, %{ $self->field_permissions } };
 }
 
 sub permission {
-    my $obj              = shift;
-    my $permitted_action = 'manage_content_type:' . $obj->unique_key;
-    my $name             = 'blog.' . $permitted_action;
-    return +{
-        $name => {
-            group            => $obj->permission_group,
-            label            => 'Manage "' . $obj->name . '" content type',
-            order            => 100,
-            permitted_action => { $permitted_action => 1 },
+    my $self = shift;
+    (   $self->_create_content_data_permission,
+        $self->_publish_content_data_permission,
+        $self->_edit_all_content_data_permission,
+    );
+}
+
+sub _create_content_data_permission {
+    my $self            = shift;
+    my $permission_name = 'blog.create_content_data:' . $self->unique_key;
+    (   $permission_name => {
+            group => $self->permission_group,
+            label => 'Create Content Data',
+            order => 100,
         }
-    };
+    );
+}
+
+sub _publish_content_data_permission {
+    my $self            = shift;
+    my $permission_name = 'blog.publish_content_data:' . $self->unique_key;
+    (   $permission_name => {
+            group            => $self->permission_group,
+            label            => 'Publish Content Data',
+            order            => 200,
+            permitted_action => {
+                'edit_own_published_content_data_' . $self->id   => 1,  # TODO
+                'edit_own_unpublished_content_data_' . $self->id => 1,  # TODO
+                'publish_own_content_data_'
+                    . $self->id => 1,    # TODO: unique_id?
+            },
+        }
+    );
+}
+
+sub _edit_all_content_data_permission {
+    my $self            = shift;
+    my $permission_name = 'blog.edit_all_content_data:' . $self->unique_key;
+    (   $permission_name => {
+            group            => $self->permission_group,
+            label            => 'Edit All Content Data',
+            order            => 300,
+            permitted_action => {
+                'edit_all_content_data_' . $self->id => 1,  # TODO: unique_id?
+                'edit_all_published_content_data_' . $self->id   => 1,  # TODO
+                'edit_all_unpublished_content_data_' . $self->id => 1,  # TODO
+                'publish_all_content_data_'
+                    . $self->id => 1,    # TODO: unique_id?
+            },
+        }
+    );
 }
 
 sub field_permissions {
@@ -164,6 +210,51 @@ sub post_remove {
     }
 
     MT->app->reboot;
+}
+
+sub generate_object_log_class {
+    my $self = shift;
+    return unless $self->id;
+
+    eval $self->_generate_object_log_code;
+    die $@ if $@;
+}
+
+sub _generate_object_log_code {
+    my $self = shift;
+
+    my $id   = $self->id;
+    my $name = $self->name;
+
+    return <<"__CODE__";
+package MT::Log::ContentData${id};
+use strict;
+use warnings;
+use base qw( MT::Log );
+
+use MT;
+
+__PACKAGE__->install_properties({ class_type => 'content_data_${id}' });
+
+sub class_label {
+    MT->translate('${name}');
+}
+
+sub metadata_class {
+    'MT::ContentData';
+}
+
+sub description {
+    my \$self = shift;
+    if ( my \$content_data = \$self->metadata_object ) {
+        \$content_data->to_hash->{'cd.text_html'};
+    } else {
+        MT->translate( 'Content Data # [_1] not found.', \$self->metadata );
+    }
+}
+
+1;
+__CODE__
 }
 
 1;

@@ -541,14 +541,23 @@ sub list_props {
                     $query = { like => "%$query" };
                 }
 
-                my @users = MT->model('author')->load( { email => $query, },
-                    { fetchonly => { id => 1 }, } );
+                my $email_terms;
+                if ( 'blank' eq $option ) {
+                    $email_terms
+                        = [ { email => '' }, '-or', { email => \'IS NULL' } ];
+                }
+                else {
+                    $email_terms = { email => $query };
+                }
+
+                my @users = MT->model('author')
+                    ->load( $email_terms, { fetchonly => { id => 1 } } );
                 my @ids = map { $_->id } @users;
                 my $terms;
                 if (@ids) {
                     $terms = [ { commenter_id => \@ids }, '-or', ];
                 }
-                push @$terms, { 'email' => $query };
+                push @$terms, $email_terms;
                 return $terms;
             },
         },
@@ -574,11 +583,19 @@ sub list_props {
                     $query = { like => "%$query" };
                 }
 
-                my @users = MT->model('author')->load( { url => $query, },
-                    { fetchonly => { id => 1 }, } );
+                my $url_terms;
+                if ( 'blank' eq $option ) {
+                    $url_terms
+                        = [ { url => '' }, '-or', { url => \'IS NULL' }, ];
+                }
+                else {
+                    $url_terms = { url => $query };
+                }
+                my @users = MT->model('author')
+                    ->load( $url_terms, { fetchonly => { id => 1 } } );
                 my @ids = map { $_->id } @users;
                 return [
-                    { 'url' => $query },
+                    $url_terms,
                     ( @ids ? ( '-or', { commenter_id => \@ids } ) : () ),
                 ];
 

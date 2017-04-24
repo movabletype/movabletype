@@ -162,15 +162,22 @@ sub _hdlr_assets {
     my $blog_id    = $content->blog_id;
     my $ct_data_id = $content->id;
 
+    my @field_ids
+        = map { $_->id }
+        MT::ContentField->load(
+        { content_type_id => $content->content_type_id },
+        { fetchonly       => { id => 1 } } );
+
     my @assets = MT::Asset->load(
         { class => '*' },
         {   join => MT::ObjectAsset->join_on(
                 undef,
                 {   asset_id  => \'= asset_id',
-                    object_ds => 'content_data',
-                    object_id => $ct_data_id
+                    object_ds => 'content_field',
+                    object_id => \@field_ids,
                 }
-            )
+            ),
+            unique => 1,
         }
     );
     local $ctx->{__stash}{assets} = \@assets;

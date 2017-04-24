@@ -1,3 +1,17 @@
+<mt:setvarblock name="jq_js_include" append="1">
+window.hideInputWhenBlank = function(select) {
+  var input = jQuery(select).siblings('input');
+  if (!input.attr('name')) {
+    input = jQuery(select).siblings('span').children('input');
+  }
+  if (select.value === 'blank') {
+    input.hide();
+  } else {
+    input.show();
+  }
+};
+</mt:setvarblock>
+
 <mt:setvartemplate name="filter_form_legacy">
 <input type="text" disabled="disabled" class="prop-legacy <mt:var name="type">-label text med" value="" />
 <input type="hidden" class="prop-legacy <mt:var name="type">-filter_key text med" value="" />
@@ -7,10 +21,11 @@
 
 <mt:setvartemplate name="filter_form_string">
   <mt:setvarblock name="string_options">
-  <select class="<mt:var name="type">-option">
+  <select class="<mt:var name="type">-option" onChange="hideInputWhenBlank(this);">
     <option value="contains"><__trans phrase="contains" escape="js"></option>
     <option value="not_contains"><__trans phrase="does not contain" escape="js"></option>
     <option value="equal"><__trans phrase="__STRING_FILTER_EQUAL" escape="js"></option>
+    <option value="blank"><__trans phrase="is blank" escape="js"></option>
     <option value="beginning"><__trans phrase="starts with" escape="js"></option>
     <option value="end"><__trans phrase="ends with" escape="js"></option>
   </select>
@@ -23,13 +38,14 @@
 <mt:setvartemplate name="filter_form_integer">
 <__trans phrase="[_1] [_2] [_3]"
          params="<mt:var name="label" escape="js">%%
-                 <select class="<mt:var name="type">-option">
+                 <select class="<mt:var name="type">-option" onChange="hideInputWhenBlank(this);">
                    <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
                    <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
                    <option value="greater_than"><__trans phrase="is greater than" escape="js"></option>
                    <option value="greater_equal"><__trans phrase="is greater than or equal to" escape="js"></option>
                    <option value="less_than"><__trans phrase="is less than" escape="js"></option>
                    <option value="less_equal"><__trans phrase="is less than or equal to" escape="js"></option>
+                   <option value="blank"><__trans phrase="is blank" escape="js"></option>
                  </select>%%
                  <input type="text" class="prop-integer <mt:var name="type">-value text num required digit" value="" />">
 </mt:setvartemplate>
@@ -37,13 +53,14 @@
 <mt:setvartemplate name="filter_form_float">
 <__trans phrase="[_1] [_2] [_3]"
          params="<mt:var name="label" escape="js">%%
-                 <select class="<mt:var name="type">-option">
+                 <select class="<mt:var name="type">-option" onChange="hideInputWhenBlank(this);">
                    <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
                    <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
                    <option value="greater_than"><__trans phrase="is greater than" escape="js"></option>
                    <option value="greater_equal"><__trans phrase="is greater than or equal to" escape="js"></option>
                    <option value="less_than"><__trans phrase="is less than" escape="js"></option>
                    <option value="less_equal"><__trans phrase="is less than or equal to" escape="js"></option>
+                   <option value="blank"><__trans phrase="is blank" escape="js"></option>
                  </select>%%
                  <input type="text" class="prop-float <mt:var name="type">-value text number required" value="" />">
 </mt:setvartemplate>
@@ -57,6 +74,7 @@
     <option value="after"><__trans phrase="is after" escape="js"></option>
     <option value="future"><__trans phrase="is after now" escape="js"></option>
     <option value="past"><__trans phrase="is before now" escape="js"></option>
+    <option value="blank"><__trans phrase="is blank" escape="js"></option>
   </select>
   </mt:setvarblock>
 
@@ -80,6 +98,7 @@
     <option value="days"><__trans phrase="is within the last" escape="js"></option>
     <option value="before"><__trans phrase="is before" escape="js"></option>
     <option value="after"><__trans phrase="is after" escape="js"></option>
+    <option value="blank"><__trans phrase="is blank" escape="js"></option>
   </select>
   </mt:setvarblock>
 

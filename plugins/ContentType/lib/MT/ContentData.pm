@@ -12,7 +12,12 @@ use base qw( MT::Object );
 use JSON ();
 
 use MT;
+use MT::Asset;
+use MT::ContentField;
 use MT::ContentType;
+use MT::ObjectAsset;
+use MT::ObjectCategory;
+use MT::ObjectTag;
 
 use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 
@@ -20,10 +25,13 @@ __PACKAGE__->install_properties(
     {   column_defs => {
             'id'              => 'integer not null auto_increment',
             'blog_id'         => 'integer not null',
+            'status'          => 'smallint not null',
+            'author_id'       => 'integer not null',
             'content_type_id' => 'integer not null',
             'data'            => 'blob',
         },
         indexes     => { content_type_id => 1 },
+        defaults    => { status          => 0 },
         datasource  => 'cd',
         primary_key => 'id',
         audit       => 1,
@@ -39,45 +47,159 @@ sub class_label_plural {
     MT->translate("Content Data");
 }
 
+sub to_hash {
+    my $self = shift;
+    my $hash = $self->SUPER::to_hash();
+    $hash->{'cd.text_html'}
+        = $self->_generate_text_html || $self->column('data');
+    $hash;
+}
+
+sub _generate_text_html {
+    my $self      = shift;
+    my $data_hash = {};
+    for my $field_id ( keys %{ $self->data } ) {
+        my $field = MT::ContentField->load($field_id);
+        my $hash_key = $field ? $field->name : "field_id_${field_id}";
+        $data_hash->{$hash_key} = $self->data->{$field_id};
+    }
+    eval { JSON::to_json( $data_hash, { canonical => 1, utf8 => 1 } ) };
+}
+
 sub save {
     my $self = shift;
-
-    $self->SUPER::save(@_) or return;
 
     my $content_field_types = MT->registry('content_field_types');
     my $content_type        = $self->content_type
         or return $self->error(
         MT->component('ContentType')->translate('Invalid content type') );
+
+    $self->SUPER::save(@_) or return;
+
     my $field_data = $self->data;
 
     foreach my $f ( @{ $content_type->fields } ) {
-        my $cf_idx = MT::ContentFieldIndex->load_or_new(
+        my $idx_type  = $f->{type};
+        my $data_type = $content_field_types->{$idx_type}{data_type};
+        my $value     = $field_data->{ $f->{id} };
+        $value = [$value] unless ref $value eq 'ARRAY';
+
+        if ( $idx_type eq 'asset' ) {
+            $self->_update_object_assets( $content_type, $f, $value );
+        }
+        elsif ( $idx_type eq 'tag' ) {
+            $self->_update_object_tags( $content_type, $f, $value );
+        }
+        elsif ( $idx_type eq 'category' ) {
+            $self->_update_object_categories( $content_type, $f, $value );
+        }
+
+        MT::ContentFieldIndex->remove(
             {   content_type_id  => $content_type->id,
                 content_data_id  => $self->id,
                 content_field_id => $f->{id},
             }
         );
 
-        my $data_type = $content_field_types->{ $f->{type} }{data_type};
-        my $value     = $field_data->{ $f->{id} };
-        $cf_idx->set_value( $data_type, $value )
-            or return $self->error(
-            MT->component('ContentType')->translate(
-                'Saving content field index failed: Invalid field type "[_1]"',
-                $data_type
-            )
+        for my $v (@$value) {
+            my $cf_idx = MT::ContentFieldIndex->new;
+            $cf_idx->set_values(
+                {   content_type_id  => $content_type->id,
+                    content_data_id  => $self->id,
+                    content_field_id => $f->{id},
+                }
             );
 
-        $cf_idx->save
-            or return $self->error(
-            MT->component('ContentType')->translate(
-                "Saving content field index failed: [_1]",
-                $cf_idx->errstr
-            )
-            );
+            $cf_idx->set_value( $data_type, $v )
+                or return $self->error(
+                MT->component('ContentType')->translate(
+                    'Saving content field index failed: Invalid field type "[_1]"',
+                    $data_type
+                )
+                );
+
+            $cf_idx->save
+                or return $self->error(
+                MT->component('ContentType')->translate(
+                    "Saving content field index failed: [_1]",
+                    $cf_idx->errstr
+                )
+                );
+        }
     }
 
     1;
+}
+
+sub _update_object_assets {
+    my $self = shift;
+    my ( $content_type, $field, $values ) = @_;
+
+    MT::ObjectAsset->remove(
+        {   object_ds => 'content_field',
+            object_id => $field->{id},
+        }
+    );
+
+    for my $asset_id (@$values) {
+        my $obj_asset = MT::ObjectAsset->new;
+        $obj_asset->set_values(
+            {   blog_id   => $self->blog_id,
+                asset_id  => $asset_id,
+                object_ds => 'content_field',
+                object_id => $field->{id},
+            }
+        );
+        $obj_asset->save or die $obj_asset->errstr;
+    }
+}
+
+sub _update_object_tags {
+    my $self = shift;
+    my ( $content_type, $field, $values ) = @_;
+
+    MT::ObjectTag->remove(
+        {   blog_id           => $self->blog_id,
+            object_datasource => 'content_field',
+            object_id         => $field->{id},
+        }
+    );
+
+    for my $tag_id (@$values) {
+        my $obj_tag = MT::ObjectTag->new;
+        $obj_tag->set_values(
+            {   blog_id           => $self->blog_id,
+                tag_id            => $tag_id,
+                object_datasource => 'content_field',
+                object_id         => $field->{id},
+            }
+        );
+        $obj_tag->save or die $obj_tag->errstr;
+    }
+}
+
+sub _update_object_categories {
+    my $self = shift;
+    my ( $content_type, $field, $values ) = @_;
+
+    MT::ObjectCategory->remove(
+        {   blog_id   => $self->blog_id,
+            object_ds => 'content_field',
+            object_id => $field->{id},
+        }
+    );
+
+    for my $cat_id (@$values) {
+        my $obj_cat = MT::ObjectCategory->new;
+        $obj_cat->set_values(
+            {   blog_id     => $self->blog_id,
+                category_id => $cat_id,
+                object_ds   => 'content_field',
+                object_id   => $field->{id},
+            }
+        );
+        $obj_cat->save or die $obj_cat->errstr;
+    }
 }
 
 sub data {
@@ -100,6 +222,12 @@ sub content_type {
             MT::ContentType->load( $self->content_type_id || 0 ) || undef;
         },
     );
+}
+
+sub label {
+    my $self        = shift;
+    my $label_field = $self->content_type->label_field;
+    $self->data->{ $label_field->{id} };
 }
 
 sub blog {
@@ -151,6 +279,12 @@ sub __load_tags {
         @tags = grep {defined} @{ MT::Tag->lookup_multi($tag_ids) };
     }
     else {
+        my @field_ids
+            = map { $_->id }
+            MT::ContentField->load(
+            { content_type_id => $obj->content_type_id },
+            { fetchonly       => { id => 1 } } );
+
         require MT::ObjectTag;
         my $iter = MT::Tag->load_iter(
             undef,
@@ -158,8 +292,9 @@ sub __load_tags {
                 join => [
                     'MT::ObjectTag',
                     'tag_id',
-                    {   object_id         => $obj->id,
-                        object_datasource => $obj->datasource
+                    {   blog_id           => $obj->blog_id,
+                        object_id         => \@field_ids,
+                        object_datasource => 'content_field',
                     },
                     { unique => 1 }
                 ],
@@ -179,6 +314,18 @@ sub tag_cache_key {
     my $obj = shift;
     return undef unless $obj->id;
     return sprintf "%stags-%d", $obj->datasource, $obj->id;
+}
+
+sub edit_link {
+    my ( $self, $app ) = @_;
+    $app->uri(
+        mode => 'edit_content_data',
+        args => {
+            id              => $self->id,
+            blog_id         => $self->blog_id,
+            content_type_id => $self->content_type_id,
+        },
+    );
 }
 
 1;

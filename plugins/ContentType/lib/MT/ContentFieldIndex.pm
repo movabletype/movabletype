@@ -50,10 +50,10 @@ sub class_label_plural {
 }
 
 sub load_or_new {
-    my $class   = shift;
+    my $class = shift;
     my ($terms) = @_;
 
-    my $cf_idx  = __PACKAGE__->load($terms);
+    my $cf_idx = __PACKAGE__->load($terms);
     unless ($cf_idx) {
         $cf_idx = __PACKAGE__->new;
         $cf_idx->set_values($terms);
@@ -72,39 +72,19 @@ sub set_value {
 
     return unless _is_valid_idx_type($idx_type);
 
+    if (   $idx_type eq 'integer'
+        || $idx_type eq 'float'
+        || $idx_type eq 'datetime' )
+    {
+        if ( defined $value && $value eq '' ) {
+            $value = undef;
+        }
+    }
+
     my $field = "value_${idx_type}";
     $self->$field($value);
 
     1;
-}
-
-sub make_terms {
-    my $prop = shift;
-    my ( $args, $db_terms, $db_args ) = @_;
-
-    my $string = $args->{string};
-    my $query_string
-        = $args->{option} eq 'contains'     ? { like     => "%$string%" }
-        : $args->{option} eq 'not_contains' ? { not_like => "%$string%" }
-        : $args->{option} eq 'equal'        ? $string
-        : $args->{option} eq 'beginning'    ? { like     => "$string%" }
-        : $args->{option} eq 'end'          ? { like     => "%$string" }
-        :                                     '';
-
-    my $idx_type = $prop->{idx_type};
-
-    unless ( $db_args->{joins} ) {
-        $db_args->{joins} ||= [];
-    }
-
-    push @{ $db_args->{joins} },
-        __PACKAGE__->join_on(
-        undef,
-        {   content_data_id     => \'= content_data_id',
-            "value_${idx_type}" => $query_string,
-        },
-        { alias => "index_${idx_type}" },
-        );
 }
 
 1;

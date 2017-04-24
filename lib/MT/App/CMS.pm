@@ -582,6 +582,9 @@ sub init_plugins {
             # folder callbacks
             $pkg
                 . 'view_permission_filter.folder' => "${pfx}Folder::can_view",
+            $pkg
+                . 'pre_load_filtered_list.folder' =>
+                "${pfx}Category::pre_load_filtered_list",
 
             # asset callbacks
             $pkg . 'view_permission_filter.asset' => "${pfx}Asset::can_view",
@@ -2682,6 +2685,10 @@ sub core_disable_object_methods {
                 return 1;
             },
         },
+        category_list => {
+            save => 1,
+            edit => 1,
+        },
         comment => {
             save => sub {
                 return 0 if $app->param('id');
@@ -4620,7 +4627,11 @@ sub _build_category_list {
     my $blog
         = MT->model('blog')->load( { id => $blog_id }, { no_class => 1 } );
     my $id_ord = $blog->$meta || '';
-    my @cats = $class->load( { blog_id => $blog_id } );
+    my @cats = $class->load(
+        [   { blog_id => $blog_id },
+            [ { list_id => 0 }, '-or', { list_id => \'IS NULL' }, ],
+        ],
+    );
     @cats = MT::Category::_sort_by_id_list(
         $id_ord,
         \@cats,

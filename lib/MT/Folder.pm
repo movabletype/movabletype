@@ -43,6 +43,10 @@ sub list_props {
             class => 'folder',
             base  => 'category.custom_sort',
         },
+        user_custom => {
+            base    => 'folder.custom_sort',
+            display => 'none',
+        },
         blog_id => {
             auto            => 1,
             col             => 'blog_id',

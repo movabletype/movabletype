@@ -24,6 +24,7 @@ __PACKAGE__->install_properties(
             'options'                 => 'string(255)',
             'required'                => 'boolean',
             'related_content_type_id' => 'integer',
+            'related_cat_list_id'     => 'integer',
             'unique_key'              => 'blob',
         },
         indexes     => { blog_id => 1, content_type_id => 1 },

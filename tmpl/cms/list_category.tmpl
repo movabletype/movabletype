@@ -1,5 +1,3 @@
-<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:var name="object_label_plural">"></mt:setvarblock>
-
 <mt:setvarblock name="system_msg">
 <div id="msg-block"></div>
 </mt:setvarblock>
@@ -29,6 +27,15 @@
       <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
       <mt:if name="return_args"><input type="hidden" name="return_args" value="<mt:var name="return_args">" /></mt:if>
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
+
+      <mt:if name="is_category_list">
+      <div>
+        <label>
+          <__trans phrase="List Name">:
+          <input type="text" class="text label" id="list_name" name="list_name" value="<mt:var name="list_name">" />
+        </label>
+      </div>
+      </mt:if>
 
       <div id="actions-bar-top" class="actions-bar actions-bar-top line">
         <mt:var name="list_actions">
@@ -169,7 +176,7 @@ function handleMessages( data ) {
   }
   if ( !data.result ) return false;
   var messages = data.result.messages;
-  if ( !data.result.messages ) return true;
+  if ( !data.result.messages || data.result.redirect_url ) return true;
   for ( var i=0; i < messages.length; i++ ) {
     var msg   = messages[i];
     var text  = msg.msg;
@@ -214,7 +221,9 @@ function createItem(id, parent, label, basename, number) {
   if ( basename )
     line += '<span class="item-basename"><span class="item-basename-text-container"><span class="item-basename-text">'+basename+'</span></span></span>';
   line += ' <span class="item-ctrl"></span>';
+  <mt:unless name="is_category_list">
   line += ' <span class="count">'+number+'</span>';
+  </mt:unless>
   var $item = jQuery('<div id="cat-'+id+'" class="pcat-'+parent+'" />').append(line);
   return $item;
 }
@@ -733,6 +742,12 @@ function renderNestedList() {
   var params = {
     __mode: 'filtered_list',
     datasource: '<mt:var name="list_type">',
+  <mt:if name="is_category_list">
+    is_category_list: 1,
+  </mt:if>
+  <mt:if name="id">
+    list_id: <mt:var name="id" escape="js">,
+  </mt:if>
     blog_id: <mt:var name="blog_id">
   };
   jQuery.ajax({
@@ -817,6 +832,13 @@ function bulkUpdateCategories() {
     data: {
       __mode: 'bulk_update_<mt:var name="object_type">',
       datasource: '<mt:var name="list_type">',
+  <mt:if name="is_category_list">
+      is_category_list: 1,
+      list_name: jQuery('#list_name').val(),
+  </mt:if>
+  <mt:if name="id">
+      list_id: <mt:var name="id" escape="js">,
+  </mt:if>
       blog_id: <mt:var name="blog_id">,
       checksum: checksum,
       objects: jQuery.toJSON(items),
@@ -826,6 +848,9 @@ function bulkUpdateCategories() {
       if ( !handleMessages(data) ) return;
       renderItems(data);
       setDirty(false);
+      if (data.result.redirect_url) {
+        location.href = data.result.redirect_url;
+      }
     },
     complete: function() {
       initMoving();
@@ -842,6 +867,12 @@ function bulkUpdateCategories() {
   });
   return false;
 }
+
+  <mt:if name="is_category_list">
+jQuery('#list_name').keyup(function() {
+  setDirty(true);
+});
+  </mt:if>
 
 jQuery(window).bind('beforeunload', function() {
   if (isdirty) {
