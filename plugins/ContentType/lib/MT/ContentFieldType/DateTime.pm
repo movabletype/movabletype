@@ -4,6 +4,7 @@ use warnings;
 
 use MT;
 use MT::App::CMS;
+use MT::ContentData;
 use MT::ContentField;
 use MT::Util ();
 
@@ -126,8 +127,12 @@ sub terms {
         },
     );
 
-    $db_args->{joins} ||= [];
-    push @{ $db_args->{joins} }, $join;
+    my @cd_ids
+        = map { $_->id }
+        MT::ContentData->load( $db_terms,
+        { join => $join, fetchonly => { id => 1 } } );
+
+    { id => @cd_ids ? \@cd_ids : 0 };
 }
 
 sub filter_tmpl {

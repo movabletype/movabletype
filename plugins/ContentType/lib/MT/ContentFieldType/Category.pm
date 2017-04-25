@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use MT::Category;
+use MT::ContentData;
 use MT::ObjectCategory;
 
 sub field_html {
@@ -136,8 +137,11 @@ sub terms {
                 },
             }
         );
-        $db_args->{joins} ||= [];
-        push @{ $db_args->{joins} }, $cf_idx_join;
+        my @cd_ids
+            = map { $_->id }
+            MT::ContentData->load( $db_terms,
+            { join => $cf_idx_join, fetchonly => { id => 1 } } );
+        { id => @cd_ids ? \@cd_ids : 0 };
     }
     else {
         my $cat_join
@@ -151,8 +155,11 @@ sub terms {
             },
             { join => $cat_join, unique => 1 },
         );
-        $db_args->{joins} ||= [];
-        push @{ $db_args->{joins} }, $cf_idx_join;
+        my @cd_ids
+            = map { $_->id }
+            MT::ContentData->load( $db_terms,
+            { join => $cf_idx_join, fetchonly => { id => 1 } } );
+        { id => @cd_ids ? \@cd_ids : 0 };
     }
 }
 

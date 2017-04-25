@@ -6,6 +6,7 @@ use MT::Asset;
 use MT::ContentData;
 use MT::ContentFieldType::DateTime;
 use MT::ObjectAsset;
+use MT::ObjectTag;
 
 sub field_html {
     my ( $app, $field_id, $value ) = @_;
@@ -84,8 +85,12 @@ sub author_name_terms {
 
     my $cf_idx_join = _generate_cf_idx_join( $prop, $author_terms );
 
-    $load_args->{joins} ||= [];
-    push @{ $load_args->{joins} }, $cf_idx_join;
+    my @cd_ids
+        = map { $_->id }
+        MT::ContentData->load( $load_terms,
+        { join => $cf_idx_join, fetchonly => { id => 1 } } );
+
+    { id => @cd_ids ? \@cd_ids : 0 };
 }
 
 sub author_status_terms {
@@ -96,8 +101,12 @@ sub author_status_terms {
 
     my $cf_idx_join = _generate_cf_idx_join( $prop, $status_query );
 
-    $db_args->{joins} ||= [];
-    push @{ $db_args->{joins} }, $cf_idx_join;
+    my @cd_ids
+        = map { $_->id }
+        MT::ContentData->load( $db_terms,
+        { join => $cf_idx_join, fetchonly => { id => 1 } } );
+
+    { id => @cd_ids ? \@cd_ids : 0 };
 }
 
 sub _date_terms {
@@ -110,32 +119,31 @@ sub _date_terms {
 
     my $query = MT::ContentFieldType::DateTime::generate_query( $prop, @_ );
 
-    if ( 'blank' eq $option ) {
-        { id => 0 };    # no data
-    }
-    else {
-        my $asset_join = MT->model('asset')->join_on(
-            undef,
-            {   id      => \'= cf_idx_value_integer',
-                blog_id => MT->app->blog->id,
-                $col    => $query,
-            },
-            { no_class => 1 }
-        );
+    my $asset_join = MT->model('asset')->join_on(
+        undef,
+        {   id      => \'= cf_idx_value_integer',
+            blog_id => MT->app->blog->id,
+            $col    => $query,
+        },
+        { no_class => 1 }
+    );
 
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            {   content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-            {   join   => $asset_join,
-                unique => 1,
-            },
-        );
+    my $cf_idx_join = MT::ContentFieldIndex->join_on(
+        undef,
+        {   content_data_id  => \'= cd_id',
+            content_field_id => $prop->content_field_id,
+        },
+        {   join   => $asset_join,
+            unique => 1,
+        },
+    );
 
-        $db_args->{joins} ||= [];
-        push @{ $db_args->{joins} }, $cf_idx_join;
-    }
+    my @cd_ids
+        = map { $_->id }
+        MT::ContentData->load( $db_terms,
+        { join => $cf_idx_join, fetchonly => { id => 1 } } );
+
+    { id => @cd_ids ? \@cd_ids : 0 };
 }
 
 sub modified_on_terms {
@@ -201,68 +209,85 @@ sub tag_terms {
     elsif ( 'end' eq $option ) {
         $query = { like => "%$query" };
     }
-    elsif ( 'blank' eq $option ) {
-        $query = '';
-    }
 
-    my $tag_join = MT->model('tag')->join_on(
-        undef,
-        {   name => $query,
-            id   => \'= objecttag_tag_id',
-        }
-    );
-    my $objecttag_join = MT->model('objecttag')->join_on(
-        undef,
-        {   blog_id           => MT->app->blog->id,
-            object_datasource => 'asset',
-            object_id         => \'= asset_id',
-        },
-        { join => $tag_join, },
-    );
-    my $asset_join = MT->model('asset')->join_on(
-        undef,
-        {   id      => \'= cf_idx_value_integer',
-            blog_id => MT->app->blog->id,
-        },
-        {   no_class => 1,
-            join     => $objecttag_join,
-        }
-    );
-    my $cf_idx_join = MT::ContentFieldIndex->join_on(
-        undef,
-        {   content_data_id  => \'= cd_id',
-            content_field_id => $prop->content_field_id,
-        },
-        {   join   => $asset_join,
-            unique => 1,
-        },
-    );
-
-    $base_args->{joins} ||= [];
-
-    if ( 'not_contains' eq $option ) {
-
-        # content_data that has assets.
-        push @{ $base_args->{joins} },
-            MT::ContentFieldIndex->join_on(
+    if ( 'blank' eq $option ) {
+        my $objecttag_join = MT::ObjectTag->join_on(
+            undef,
+            { object_id => \'IS NULL', },
+            {   type      => 'left',
+                condition => {
+                    object_datasource => 'asset',
+                    object_id         => \'= asset_id',
+                },
+            },
+        );
+        my $asset_join = MT->model('asset')->join_on(
+            undef,
+            { id => \'= cf_idx_value_integer', },
+            {   no_class => 1,
+                join     => $objecttag_join,
+            }
+        );
+        my $cf_idx_join = MT::ContentFieldIndex->join_on(
             undef,
             {   content_data_id  => \'= cd_id',
                 content_field_id => $prop->content_field_id,
             },
-            { unique => 1 },
-            );
-
-        # content_data IDs that does not have asset and tag.
-        my @indexes
-            = MT::ContentFieldIndex->load(
-            { content_field_id => $prop->content_field_id, },
-            { fetchonly => { content_data_id => 1 }, join => $asset_join } );
-        my %content_data_ids = map { $_->content_data_id => 1 } @indexes;
-        my @content_data_ids = keys %content_data_ids;
-        @content_data_ids ? { id => { not => \@content_data_ids } } : ();
+            {   join   => $asset_join,
+                unique => 1,
+            },
+        );
+        my @cd_ids
+            = map { $_->id }
+            MT::ContentData->load( $base_terms,
+            { join => $cf_idx_join, fetchonly => { id => 1 } } );
+        { id => @cd_ids ? \@cd_ids : 0 };
     }
     else {
-        push @{ $base_args->{joins} }, $cf_idx_join;
+        my $tag_join = MT->model('tag')->join_on(
+            undef,
+            {   name => $query,
+                id   => \'= objecttag_tag_id',
+            }
+        );
+        my $objecttag_join = MT->model('objecttag')->join_on(
+            undef,
+            {   blog_id           => MT->app->blog->id,
+                object_datasource => 'asset',
+                object_id         => \'= asset_id',
+            },
+            { join => $tag_join, },
+        );
+        my $asset_join = MT->model('asset')->join_on(
+            undef,
+            {   id      => \'= cf_idx_value_integer',
+                blog_id => MT->app->blog->id,
+            },
+            {   no_class => 1,
+                join     => $objecttag_join,
+            }
+        );
+        my $cf_idx_join = MT::ContentFieldIndex->join_on(
+            undef,
+            {   content_data_id  => \'= cd_id',
+                content_field_id => $prop->content_field_id,
+            },
+            {   join   => $asset_join,
+                unique => 1,
+            },
+        );
+
+        my @cd_ids
+            = map { $_->id }
+            MT::ContentData->load( $base_terms,
+            { join => $cf_idx_join, fetchonly => { id => 1 } } );
+
+        if ( 'not_contains' eq $option ) {
+            @cd_ids ? { id => { not => \@cd_ids } } : ();
+        }
+        else {
+            { id => @cd_ids ? \@cd_ids : 0 };
+        }
     }
 }
 
@@ -270,37 +295,37 @@ sub image_width_terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
-    my $super_terms = $prop->super(@_);
+    my $super = MT->registry( 'list_properties', '__virtual', 'integer' );
+    my $super_terms = $super->{terms}->( $prop, @_ );
 
-    my $asset_meta_join = MT->model('asset')->meta_pkg->join_on(
+    my $asset_meta_join
+        = MT->model('asset')
+        ->meta_pkg->join_on( 'asset_id',
+        [ { type => $prop->meta_type }, $super_terms ],
+        );
+
+    my $asset_join = MT::Asset->join_on(
         undef,
-        [   {   type     => $prop->meta_type,
-                asset_id => \'= asset_id',
-            },
-            $super_terms,
-        ],
-    );
-    my $asset_join = MT->model('asset')->join_on(
-        undef,
-        {   id      => \'= cf_idx_value_integer',
-            blog_id => MT->app->blog->id,
-        },
+        { id => \'= cf_idx_value_integer', },
         {   no_class => 1,
             join     => $asset_meta_join,
-        }
+        },
     );
+
     my $cf_idx_join = MT::ContentFieldIndex->join_on(
         undef,
         {   content_data_id  => \'= cd_id',
             content_field_id => $prop->content_field_id,
         },
-        {   join   => $asset_join,
-            unique => 1,
-        },
+        { join => $asset_join, unique => 1 },
     );
 
-    $db_args->{joins} ||= [];
-    push @{ $db_args->{joins} }, $cf_idx_join;
+    my @cd_ids
+        = map { $_->id }
+        MT::ContentData->load( $db_terms,
+        { join => $cf_idx_join, fetchonly => { id => 1 } } );
+
+    { id => @cd_ids ? \@cd_ids : 0 };
 }
 
 sub missing_file_terms {
@@ -335,21 +360,23 @@ sub missing_file_terms {
             && $filter->( $asset->file_path );
     }
 
-    if (@asset_ids) {
-        $db_args->{joins} ||= [];
-        push @{ $db_args->{joins} },
-            MT::ContentFieldIndex->join_on(
-            undef,
-            {   content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-                value_integer    => \@asset_ids,
-            },
-            { unique => 1 },
-            );
-    }
-    else {
-        { id => 0 };    # no data
-    }
+    return { id => 0 } unless @asset_ids;    # no data
+
+    my $cf_idx_join = MT::ContentFieldIndex->join_on(
+        undef,
+        {   content_data_id  => \'= cd_id',
+            content_field_id => $prop->content_field_id,
+            value_integer    => \@asset_ids,
+        },
+        { unique => 1 },
+    );
+
+    my @cd_ids
+        = map { $_->id }
+        MT::ContentData->load( $db_terms,
+        { join => $cf_idx_join, fetchonly => { id => 1 } } );
+
+    { id => @cd_ids ? \@cd_ids : 0 };
 }
 
 sub label_terms {
@@ -361,48 +388,25 @@ sub label_terms {
     my $super = MT->registry( 'list_properties', '__virtual', 'string' );
     my $query = $super->{terms}->( $prop, @_ );
 
-    if ( $option eq 'not_contains' ) {
-        my $string     = $args->{string};
-        my $asset_join = MT::Asset->join_on(
-            undef,
-            {   id    => \'= cf_idx_value_integer',
-                label => { like => "%${string}%" },
-            },
-            { no_class => 1 },
-        );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            {   content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-            {   join   => $asset_join,
-                unique => 1,
-            },
-        );
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( { blog_id => MT->app->blog->id, },
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-        @cd_ids ? { id => { not => \@cd_ids } } : ();
-    }
-    else {
-        my $asset_join = MT::Asset->join_on(
-            undef,
-            [ { id => \'= cf_idx_value_integer' }, $query, ],
-            { no_class => 1 },
-        );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            {   content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-            {   join   => $asset_join,
-                unique => 1,
-            },
-        );
-        $db_args->{joins} ||= [];
-        push @{ $db_args->{joins} }, $cf_idx_join;
-    }
+    my $asset_join = MT::Asset->join_on(
+        undef,
+        [ { id => \'= cf_idx_value_integer' }, $query, ],
+        { no_class => 1 },
+    );
+    my $cf_idx_join = MT::ContentFieldIndex->join_on(
+        undef,
+        {   content_data_id  => \'= cd_id',
+            content_field_id => $prop->content_field_id,
+        },
+        {   join   => $asset_join,
+            unique => 1,
+        },
+    );
+    my @cd_ids
+        = map { $_->id }
+        MT::ContentData->load( { blog_id => MT->app->blog->id, },
+        { join => $cf_idx_join, fetchonly => { id => 1 } } );
+    { id => @cd_ids ? \@cd_ids : 0 };
 }
 
 sub html {

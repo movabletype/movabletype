@@ -111,8 +111,11 @@ sub terms {
                 },
             }
         );
-        $db_args->{joins} ||= [];
-        push @{ $db_args->{joins} }, $cf_idx_join;
+        my @cd_ids
+            = map { $_->id }
+            MT::ContentData->load( $db_terms,
+            { join => $cf_idx_join, fetchonly => { id => 1 } } );
+        { id => @cd_ids ? \@cd_ids : 0 };
     }
     else {
         my $tag_join = MT::Tag->join_on( undef,
@@ -124,8 +127,11 @@ sub terms {
             },
             { join => $tag_join, unique => 1 },
         );
-        $db_args->{joins} ||= [];
-        push @{ $db_args->{joins} }, $cf_idx_join;
+        my @cd_ids
+            = map { $_->id }
+            MT::ContentData->load( $db_terms,
+            { join => $cf_idx_join, fetchonly => { id => 1 } } );
+        { id => @cd_ids ? \@cd_ids : 0 };
     }
 }
 

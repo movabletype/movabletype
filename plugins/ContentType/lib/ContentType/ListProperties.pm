@@ -568,9 +568,12 @@ sub terms_text {
             },
         },
     );
+    my @cd_ids
+        = map { $_->id }
+        MT::ContentData->load( $db_terms,
+        { join => $join, fetchonly => { id => 1 } } );
 
-    $db_args->{joins} ||= [];
-    push @{ $db_args->{joins} }, $join;
+    { id => @cd_ids ? \@cd_ids : 0 };
 }
 
 sub terms_number {
@@ -613,9 +616,12 @@ sub terms_number {
             },
         },
     );
+    my @cd_ids
+        = map { $_->id }
+        MT::ContentData->load( $db_terms,
+        { join => $join, fetchonly => { id => 1 } } );
 
-    $db_args->{joins} ||= [];
-    push @{ $db_args->{joins} }, $join;
+    { id => @cd_ids ? \@cd_ids : 0 };
 }
 
 1;
