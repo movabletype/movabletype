@@ -23,16 +23,16 @@ sub terms {
         { unique => 1 },
     );
 
+    my @cd_ids
+        = map { $_->id }
+        MT::ContentData->load( { blog_id => MT->app->blog->id },
+        { join => $cf_idx_join, fetchonly => { id => 1 } } );
+
     if ( $args->{option} && $args->{option} eq 'is_not_selected' ) {
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( { blog_id => MT->app->blog->id },
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
         @cd_ids ? { id => { not => \@cd_ids } } : ();
     }
     else {
-        $base_args->{joins} ||= [];
-        push @{ $base_args->{joins} }, $cf_idx_join;
+        { id => @cd_ids ? \@cd_ids : 0 };
     }
 }
 
