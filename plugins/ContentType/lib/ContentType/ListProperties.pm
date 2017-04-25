@@ -160,18 +160,23 @@ sub make_list_properties {
             my $default_sort_prop = sub {
                 my $prop = shift;
                 my ( $terms, $args ) = @_;
-                $args->{joins} ||= [];
-                push @{ $args->{joins} },
-                    MT->model('content_field_index')->join_on(
-                    undef,
-                    {   content_type_id  => \'= cd_content_type_id',
-                        content_data_id  => \'= cd_id',
-                        content_field_id => $f->{id},
-                    },
-                    {   sort      => 'value_' . $field_type->{data_type},
+
+                my $cf_idx_join = MT::ContentFieldIndex->join_on(
+                    undef, undef,
+                    {   type      => 'left',
+                        condition => {
+                            content_data_id  => \'= cd_id',
+                            content_field_id => $f->{id},
+                        },
+                        sort      => 'value_' . $field_type->{data_type},
                         direction => delete $args->{direction},
+                        unique    => 1,
                     },
-                    );
+                );
+
+                $args->{joins} ||= [];
+                push @{ $args->{joins} }, $cf_idx_join;
+
                 return;
             };
 
@@ -180,14 +185,17 @@ sub make_list_properties {
                 display => $f->{label}
                 ? 'force'
                 : 'default',    # TODO: should use $f->{options}{display}
-                order            => $order,
-                idx_type         => $idx_type,
-                data_type        => $field_type->{data_type},
-                content_field_id => $f->{id},
-                html             => \&make_title_html,
-                sort             => $default_sort_prop,
-                terms            => \&terms_text,
-                filter_tmpl      => '<mt:var name="filter_form_string">',
+                order              => $order,
+                idx_type           => $idx_type,
+                data_type          => $field_type->{data_type},
+                content_field_id   => $f->{id},
+                html               => \&make_title_html,
+                sort               => $default_sort_prop,
+                default_sort_order => 'ascend',
+                terms              => \&terms_text,
+                filter_tmpl => '<mt:var name="filter_form_blank_string">',
+                use_blank   => 1,
+                use_future  => 1,
             };
 
             # set html properties of content field type to list_properties
@@ -318,6 +326,7 @@ sub _asset_props {
             content_field_id => $f->{id},
             tagged_class     => '*',
             tag_ds           => 'asset',
+            use_blank        => 1,
         },
         "${field_key}_image_width" => {
             base  => 'asset.image_width',
@@ -380,6 +389,7 @@ sub _asset_props {
             display => 'none',
             terms => '$ContentType::MT::ContentFieldType::Asset::label_terms',
             content_field_id => $f->{id},
+            use_blank        => 1,
         },
     };
 }

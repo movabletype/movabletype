@@ -139,31 +139,31 @@ content_field_types:
         data_type: varchar
         order: 20
         terms: $ContentType::ContentType::ListProperties::terms_text
-        filter_tmpl: <mt:var name="filter_form_string">
+        filter_tmpl: <mt:var name="filter_form_blank_string">
     multi_line_text:
         label: Multi Line Text
         data_type: blob
         order: 30
         terms: $ContentType::ContentType::ListProperties::terms_text
-        filter_tmpl: <mt:var name="filter_form_string">
+        filter_tmpl: <mt:var name="filter_form_blank_string">
     integer:
         label: Integer
         data_type: integer
         order: 40
         terms: $ContentType::ContentType::ListProperties::terms_number
-        filter_tmpl: <mt:var name="filter_form_integer">
+        filter_tmpl: <mt:var name="filter_form_blank_integer">
     float:
         label: Float
         data_type: float
         order: 50
         terms: $ContentType::ContentType::ListProperties::terms_number
-        filter_tmpl: <mt:var name="filter_form_float">
+        filter_tmpl: <mt:var name="filter_form_blank_float">
     url:
         label: URL
         data_type: varchar
         order: 60
         terms: $ContentType::ContentType::ListProperties::terms_text
-        filter_tmpl: <mt:var name="filter_form_string">
+        filter_tmpl: <mt:var name="filter_form_blank_string">
         ss_validator: $ContentType::MT::ContentFieldType::URL::ss_validator
     date_and_time:
         label: Date and Time
@@ -245,7 +245,7 @@ content_field_types:
         col: label
         html: $ContentType::MT::ContentFieldType::Category::html
         terms: $ContentType::MT::ContentFieldType::Category::terms
-        filter_tmpl: <mt:var name="filter_form_string">
+        filter_tmpl: <mt:var name="filter_form_blank_string">
         field_html: $ContentType::MT::ContentFieldType::Category::field_html
         data_getter: $ContentType::MT::ContentFieldType::Category::data_getter
     tag:
@@ -255,7 +255,7 @@ content_field_types:
         col: name
         html: $ContentType::MT::ContentFieldType::Tag::html
         terms: $ContentType::MT::ContentFieldType::Tag::terms
-        filter_tmpl: <mt:var name="filter_form_string">
+        filter_tmpl: <mt:var name="filter_form_blank_string">
         field_html: $ContentType::MT::ContentFieldType::Tag::field_html
         data_getter: $ContentType::MT::ContentFieldType::Tag::data_getter
 

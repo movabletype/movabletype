@@ -250,7 +250,14 @@ BEGIN {
                             return { $col => $query };
                         }
                     },
-                    filter_tmpl    => '<mt:var name="filter_form_string">',
+                    filter_tmpl => sub {
+                        my $prop = shift;
+                        my $tmpl
+                            = $prop->use_blank
+                            ? 'filter_form_blank_string'
+                            : 'filter_form_string';
+                        qq{<mt:var name="${tmpl}">};
+                    },
                     base_type      => 'string',
                     args_via_param => sub {
                         my $prop = shift;
@@ -319,15 +326,22 @@ BEGIN {
                         my ( $app, $val ) = @_;
                         return { option => 'equal', value => $val };
                     },
-                    filter_tmpl => '<mt:Var name="filter_form_integer">',
-                    base_type   => 'integer',
-                    priority    => 4,
+                    filter_tmpl => sub {
+                        my $prop      = shift;
+                        my $base_type = $prop->base_type;
+                        my $tmpl
+                            = $prop->use_blank
+                            ? "filter_form_blank_${base_type}"
+                            : "filter_form_${base_type}";
+                        qq{<mt:Var name="${tmpl}">};
+                    },
+                    base_type          => 'integer',
+                    priority           => 4,
                     default_sort_order => 'descend',
                 },
                 float => {
                     base        => '__virtual.integer',
                     col_class   => 'num',
-                    filter_tmpl => '<mt:Var name="filter_form_float">',
                     data_format => '%.1f',
                     html        => sub {
                         my ( $prop, $obj ) = @_;
@@ -457,6 +471,9 @@ BEGIN {
                                 value => $now
                             };
                         }
+                        elsif ( 'blank' eq $option ) {
+                            $query = \'IS NULL';
+                        }
 
                         if ( $prop->is_meta ) {
                             $prop->join_meta( $db_args, $query );
@@ -573,10 +590,26 @@ BEGIN {
                             = $prop->use_future
                             ? 'filter_form_future_date'
                             : 'filter_form_date';
-                        my $opts
-                            = $prop->use_future
-                            ? '<mt:var name="future_date_filter_options">'
-                            : '<mt:var name="date_filter_options">';
+                        my $opts;
+                        if ( $prop->use_future ) {
+                            if ( $prop->use_blank ) {
+                                $opts
+                                    = '<mt:var name="future_blank_date_filter_options">';
+                            }
+                            else {
+                                $opts
+                                    = '<mt:var name="future_date_filter_options">';
+                            }
+                        }
+                        else {
+                            if ( $prop->use_blank ) {
+                                $opts
+                                    = '<mt:var name="blank_date_filter_options">';
+                            }
+                            else {
+                                $opts = '<mt:var name="date_filter_options">';
+                            }
+                        }
                         my $contents
                             = $prop->use_future
                             ? '<mt:var name="future_date_filter_contents">'
@@ -981,19 +1014,9 @@ BEGIN {
                             : $args->{option} eq 'less_than'     ? '>'
                             : $args->{option} eq 'less_equal'    ? '>='
                             :                                      '';
-                        return @$objs
-                            unless $op || $args->{option} eq 'blank';
-                        my $val = $args->{value};
-                        my $sub;
-                        if ( $args->{option} eq 'blank' ) {
-                            $sub = sub {
-                                my $v = shift;
-                                !defined $v || $v eq '';
-                            };
-                        }
-                        else {
-                            $sub = eval "sub { $val $op shift }";
-                        }
+                        return @$objs unless $op;
+                        my $val     = $args->{value};
+                        my $sub     = eval "sub { $val $op shift }";
                         my $ref_col = $prop->ref_column;
                         return
                             grep { $sub->( $map{ $_->$ref_col } || 0 ) }

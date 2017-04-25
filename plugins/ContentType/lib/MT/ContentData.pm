@@ -84,6 +84,8 @@ sub save {
         my $value     = $field_data->{ $f->{id} };
         $value = [$value] unless ref $value eq 'ARRAY';
 
+        $value = [ grep { defined $_ && $_ ne '' } @$value ];
+
         if ( $idx_type eq 'asset' ) {
             $self->_update_object_assets( $content_type, $f, $value );
         }

@@ -527,37 +527,16 @@ sub list_props {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $option = $args->{option};
-                my $query  = $args->{string};
-                if ( 'contains' eq $option ) {
-                    $query = { like => "%$query%" };
-                }
-                elsif ( 'not_contains' eq $option ) {
-                    $query = { not_like => "%$query%" };
-                }
-                elsif ( 'beginning' eq $option ) {
-                    $query = { like => "$query%" };
-                }
-                elsif ( 'end' eq $option ) {
-                    $query = { like => "%$query" };
-                }
-
-                my $email_terms;
-                if ( 'blank' eq $option ) {
-                    $email_terms
-                        = [ { email => '' }, '-or', { email => \'IS NULL' } ];
-                }
-                else {
-                    $email_terms = { email => $query };
-                }
+                my $query  = $prop->super(@_);
 
                 my @users = MT->model('author')
-                    ->load( $email_terms, { fetchonly => { id => 1 } } );
+                    ->load( $query, { fetchonly => { id => 1 } } );
                 my @ids = map { $_->id } @users;
                 my $terms;
                 if (@ids) {
                     $terms = [ { commenter_id => \@ids }, '-or', ];
                 }
-                push @$terms, $email_terms;
+                push @$terms, $query;
                 return $terms;
             },
         },
@@ -569,33 +548,13 @@ sub list_props {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $option = $args->{option};
-                my $query  = $args->{string};
-                if ( 'contains' eq $option ) {
-                    $query = { like => "%$query%" };
-                }
-                elsif ( 'not_contains' eq $option ) {
-                    $query = { not_like => "%$query%" };
-                }
-                elsif ( 'beginning' eq $option ) {
-                    $query = { like => "$query%" };
-                }
-                elsif ( 'end' eq $option ) {
-                    $query = { like => "%$query" };
-                }
+                my $query  = $prop->super(@_);
 
-                my $url_terms;
-                if ( 'blank' eq $option ) {
-                    $url_terms
-                        = [ { url => '' }, '-or', { url => \'IS NULL' }, ];
-                }
-                else {
-                    $url_terms = { url => $query };
-                }
                 my @users = MT->model('author')
-                    ->load( $url_terms, { fetchonly => { id => 1 } } );
+                    ->load( $query, { fetchonly => { id => 1 } } );
                 my @ids = map { $_->id } @users;
                 return [
-                    $url_terms,
+                    $query,
                     ( @ids ? ( '-or', { commenter_id => \@ids } ) : () ),
                 ];
 

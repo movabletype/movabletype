@@ -121,7 +121,12 @@ sub data_getter {
     # TODO: Fix $content_field->options
     my $multiple = eval { $content_field->options->{multiple} };
 
-    $multiple ? \@options : @options ? $options[0] : undef;
+    if ($multiple) {
+        \@options;
+    }
+    else {
+        @options ? $options[0] : undef;
+    }
 }
 
 1;

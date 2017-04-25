@@ -732,8 +732,13 @@ sub _get_form_data {
         }
     }
     else {
-        my $q = $app->param;
-        return $q->param( 'content-field-' . $id );
+        my $value = $app->param( 'content-field-' . $id );
+        if ( defined $value && $value ne '' ) {
+            $value;
+        }
+        else {
+            undef;
+        }
     }
 }
 
