@@ -1030,24 +1030,32 @@
       var current_id = jQuery("#current_field_id").val();
       var regexp = new RegExp(type_name + '-(.*)');
       options.find("input").each(function(index, element) {
-        if (jQuery(element).attr("type") == 'hidden')
+        var input_type = jQuery(element).attr("type");
+        if (input_type === 'hidden')
           return true;
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
-        if (data[current_id] && data[current_id][opt_name])
-          jQuery(element).val(data[current_id][opt_name]);
+        var opt_val = '';
+        if (data[current_id] && data[current_id]['options'] && data[current_id]['options'][opt_name])
+          opt_val = data[current_id]['options'][opt_name];
+        if (input_type === 'checkbox') {
+          jQuery(element).prop("checked", true);
+        }
+        else {
+          jQuery(element).val(data[current_id]['options'][opt_name]);
+        }
       });
       options.find("select").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
-        if (data[current_id] && data[current_id][opt_name])
-          jQuery(element).val(data[current_id][opt_name]);
+        if (data[current_id] && data[current_id]['options'] && data[current_id]['options'][opt_name])
+          jQuery(element).val(data[current_id]['options'][opt_name]);
       });
       options.find("textarea").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
-        if (data[current_id] && data[current_id][opt_name])
-          jQuery(element).val(data[current_id][opt_name]);
+        if (data[current_id] && data[current_id]['options'] && data[current_id]['options'][opt_name])
+          jQuery(element).val(data[current_id]['options'][opt_name]);
       });
     });
     jQuery('a.save-link').unbind('click').click(function() {
@@ -1056,34 +1064,43 @@
       var type_name = (id.match(/(.*)-options/))[1];
       var current_id = jQuery("#current_field_id").val();
       var regexp = new RegExp(type_name + '-(.*)');
-      var hash = {};
+      var hash = {}
+      hash[current_id] = {};
+      hash['type'] = type_name;
       options.find("input").each(function(index, element) {
-        if (jQuery(element).attr("type") == 'hidden')
+        var input_type = jQuery(element).attr("type");
+        if (input_type === 'hidden')
             return true;
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
-        var opt_val = jQuery(element).val();
-        if (!hash[current_id])
-          hash[current_id] = {};
-        hash[current_id][opt_name] = opt_val;
+        var opt_val = '';
+        if (input_type === 'checkbox') {
+          opt_val = jQuery(element).prop('checked') ? 1 : 0;
+        }
+        else {
+          opt_val = jQuery(element).val();
+        }
+        if (!hash[current_id]['options'])
+          hash[current_id]['options'] = {};
+        hash[current_id]['options'][opt_name] = opt_val;
         jQuery(element).val('');
       });
       options.find("select").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
         var opt_val = jQuery(element).val();
-        if (!hash[current_id])
-          hash[current_id] = {};
-        hash[current_id][opt_name] = opt_val;
+        if (!hash[current_id]['options'])
+          hash[current_id]['options'] = {};
+        hash[current_id]['options'][opt_name] = opt_val;
         jQuery(element).val('');
       });
       options.find("textarea").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
         var opt_val = jQuery(element).val();
-        if (!hash[current_id])
-          hash[current_id] = {};
-        hash[current_id][opt_name] = opt_val;
+        if (!hash[current_id]['options'])
+          hash[current_id]['options'] = {};
+        hash[current_id]['options'][opt_name] = opt_val;
         jQuery(element).val('');
       });
       localStorage.setItem("ContentType", JSON.stringify(hash));
