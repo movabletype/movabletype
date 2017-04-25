@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use MT;
+use MT::ContentData;
 use MT::ContentField;
 use MT::ContentFieldIndex;
 
@@ -13,29 +14,25 @@ sub terms {
     my $val       = $args->{value};
     my $data_type = $prop->{data_type};
 
+    my $cf_idx_join = MT::ContentFieldIndex->join_on(
+        undef,
+        {   content_data_id      => \'= cd_id',
+            content_field_id     => $prop->content_field_id,
+            "value_${data_type}" => $val,
+        },
+        { unique => 1 },
+    );
+
     if ( $args->{option} && $args->{option} eq 'is_not_selected' ) {
-        my @indexes = MT::ContentFieldIndex->load(
-            {   content_field_id     => $prop->{content_field_id},
-                "value_${data_type}" => $val,
-            },
-            { fetchonly => { content_data_id => 1 } }
-        );
-        my %content_data_ids = map { $_->content_data_id => 1 } @indexes;
-        my @content_data_ids = keys %content_data_ids;
-        @content_data_ids ? { id => { not => \@content_data_ids } } : undef;
+        my @cd_ids
+            = map { $_->id }
+            MT::ContentData->load( { blog_id => MT->app->blog->id },
+            { join => $cf_idx_join, fetchonly => { id => 1 } } );
+        @cd_ids ? { id => { not => \@cd_ids } } : ();
     }
     else {
         $base_args->{joins} ||= [];
-        push @{ $base_args->{joins} },
-            MT::ContentFieldIndex->join_on(
-            undef,
-            {   content_data_id      => \'= cd_id',
-                content_field_id     => $prop->{content_field_id},
-                "value_${data_type}" => $val,
-            },
-            { unique => 1 },
-            );
-        return;
+        push @{ $base_args->{joins} }, $cf_idx_join;
     }
 }
 

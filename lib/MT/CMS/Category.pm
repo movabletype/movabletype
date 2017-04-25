@@ -220,16 +220,15 @@ sub bulk_update {
 
     my $old_objects_terms;
     if ($list_id) {
-        $old_objects_terms = { blog_id => $blog_id, list_id => $list_id };
+        $old_objects_terms
+            = { blog_id => $blog_id, category_list_id => $list_id };
     }
     elsif ($is_category_list) {
         $old_objects_terms = { id => 0 };    # no data
     }
     else {
-        $old_objects_terms = [
-            { blog_id => $blog_id },
-            [ { list_id => 0 }, '-or', { list_id => \'IS NULL' } ],
-        ];
+        $old_objects_terms
+            = { blog_id => $blog_id, category_list_id => [ \'IS NULL', 0 ] };
     }
     my @old_objects = $class->load($old_objects_terms);
 
@@ -283,7 +282,7 @@ sub bulk_update {
             $new_obj->set_values($obj);
             $new_obj->blog_id($blog_id);
             $new_obj->author_id( $app->user->id );
-            $new_obj->list_id($list_id) if $list_id;
+            $new_obj->category_list_id($list_id) if $list_id;
             push @objects, $new_obj;
             push @creates, $new_obj;
             $new_obj->{tmp_id} = $tmp_id;
@@ -639,9 +638,9 @@ sub pre_save {
         $obj->{__tb_passphrase} = $pass;
     }
     my @siblings = $pkg->load(
-        {   parent  => $obj->parent,
-            blog_id => $obj->blog_id,
-            list_id => $obj->list_id || [ \'IS NULL', 0 ],
+        {   parent           => $obj->parent,
+            blog_id          => $obj->blog_id,
+            category_list_id => $obj->category_list_id || [ \'IS NULL', 0 ],
         }
     );
     foreach (@siblings) {
@@ -868,15 +867,14 @@ sub pre_load_filtered_list {
 
     if ( my $list_id = $app->param('list_id') ) {
         $opts->{terms} ||= {};
-        $opts->{terms}{list_id} = $list_id;
+        $opts->{terms}{category_list_id} = $list_id;
     }
     elsif ( $app->param('is_category_list') ) {
         $opts->{terms} ||= {};
         $opts->{terms}{id} = 0;    # return no data
     }
     else {
-        my $list_id_terms
-            = [ { list_id => 0 }, '-or', { list_id => \'IS NULL' } ];
+        my $list_id_terms = { category_list_id => [ \'IS NULL', 0 ] };
         if ( $opts->{terms} ) {
             $opts->{terms} = [ $opts->{terms}, $list_id_terms ];
         }

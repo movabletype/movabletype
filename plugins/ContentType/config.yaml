@@ -2,8 +2,8 @@ name: Content Type
 author_name: Six Apart, Ltd.
 author_link: http://www.sixapart.com/
 pack_link: <__trans phrase="http://www.sixapart.com/movabletype/">
-version: 0.15
-schema_version: 0.15
+version: 0.17
+schema_version: 0.17
 l10n_class: MT::ContentType::L10N
 
 permissions: $ContentType::ContentType::Permission::permissions
@@ -109,7 +109,7 @@ object_types:
     objectcategory: MT::ObjectCategory
 
     category:
-        list_id: integer
+        category_list_id: integer
     category_list: MT::CategoryList
 
 listing_screens: $ContentType::ContentType::ListProperties::make_listing_screens

@@ -240,23 +240,14 @@ BEGIN {
                         elsif ( 'end' eq $option ) {
                             $query = { like => "%$query" };
                         }
+                        elsif ( 'blank' eq $option ) {
+                            $query = [ \'IS NULL', '' ];
+                        }
                         if ( $prop->is_meta ) {
-                            if ( 'blank' eq $option ) {
-                                $query = [ '', \'IS NULL' ];
-                            }
                             return $prop->join_meta( $db_args, $query );
                         }
                         else {
-                            if ( 'blank' eq $option ) {
-                                return [
-                                    { $col => '' },
-                                    '-or',
-                                    { $col => \'IS NULL' }
-                                ];
-                            }
-                            else {
-                                return { $col => $query };
-                            }
+                            return { $col => $query };
                         }
                     },
                     filter_tmpl    => '<mt:var name="filter_form_string">',

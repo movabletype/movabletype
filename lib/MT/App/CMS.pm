@@ -4628,10 +4628,7 @@ sub _build_category_list {
         = MT->model('blog')->load( { id => $blog_id }, { no_class => 1 } );
     my $id_ord = $blog->$meta || '';
     my @cats = $class->load(
-        [   { blog_id => $blog_id },
-            [ { list_id => 0 }, '-or', { list_id => \'IS NULL' }, ],
-        ],
-    );
+        { blog_id => $blog_id, category_list_id => [ \'IS NULL', 0 ] } );
     @cats = MT::Category::_sort_by_id_list(
         $id_ord,
         \@cats,
