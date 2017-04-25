@@ -160,18 +160,22 @@ sub make_list_properties {
             my $default_sort_prop = sub {
                 my $prop = shift;
                 my ( $terms, $args ) = @_;
-                $args->{joins} ||= [];
-                push @{ $args->{joins} },
-                    MT->model('content_field_index')->join_on(
-                    undef,
-                    {   content_type_id  => \'= cd_content_type_id',
-                        content_data_id  => \'= cd_id',
-                        content_field_id => $f->{id},
-                    },
-                    {   sort      => 'value_' . $field_type->{data_type},
+
+                my $cf_idx_join = MT::ContentFieldIndex->join_on(
+                    undef, undef,
+                    {   type      => 'left',
+                        condition => {
+                            content_data_id  => \'= cd_id',
+                            content_field_id => $f->{id},
+                        },
+                        sort      => 'value_' . $field_type->{data_type},
                         direction => delete $args->{direction},
                     },
-                    );
+                );
+
+                $args->{joins} ||= [];
+                push @{ $args->{joins} }, $cf_idx_join;
+
                 return;
             };
 
