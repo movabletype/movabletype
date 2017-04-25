@@ -100,7 +100,7 @@
             </a>
           </li>
         </ul>
-        <input type="hidden" name="order-<mt:var name="content_field_id">" id="order-<mt:var name="conten_field_id">" value="<mt:var name="order">" />
+        <input type="hidden" name="order-<mt:var name="content_field_id">" id="order-<mt:var name="content_field_id">" value="<mt:var name="order">" />
       </mtapp:setting>
       </mt:loop>
       </div>
@@ -1066,7 +1066,8 @@
       var regexp = new RegExp(type_name + '-(.*)');
       var hash = {}
       hash[current_id] = {};
-      hash['type'] = type_name;
+      hash[current_id]['type'] = type_name;
+      hash[current_id]['order'] = jQuery('#order-' + current_id).val();
       options.find("input").each(function(index, element) {
         var input_type = jQuery(element).attr("type");
         if (input_type === 'hidden')
