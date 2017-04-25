@@ -189,6 +189,7 @@ sub make_list_properties {
                 terms            => \&terms_text,
                 filter_tmpl => '<mt:var name="filter_form_blank_string">',
                 use_blank   => 1,
+                use_future  => 1,
             };
 
             # set html properties of content field type to list_properties
