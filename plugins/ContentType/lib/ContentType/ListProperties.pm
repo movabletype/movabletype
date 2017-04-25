@@ -187,7 +187,8 @@ sub make_list_properties {
                 html             => \&make_title_html,
                 sort             => $default_sort_prop,
                 terms            => \&terms_text,
-                filter_tmpl      => '<mt:var name="filter_form_string">',
+                filter_tmpl => '<mt:var name="filter_form_blank_string">',
+                use_blank   => 1,
             };
 
             # set html properties of content field type to list_properties
@@ -318,6 +319,7 @@ sub _asset_props {
             content_field_id => $f->{id},
             tagged_class     => '*',
             tag_ds           => 'asset',
+            use_blank        => 1,
         },
         "${field_key}_image_width" => {
             base  => 'asset.image_width',
@@ -380,6 +382,7 @@ sub _asset_props {
             display => 'none',
             terms => '$ContentType::MT::ContentFieldType::Asset::label_terms',
             content_field_id => $f->{id},
+            use_blank        => 1,
         },
     };
 }
