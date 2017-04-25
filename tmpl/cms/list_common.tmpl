@@ -1163,6 +1163,18 @@ jQuery('table.listing-table thead a, tfoot a').click(function() {
   return false;
 });
 
+function blankOption($select) {
+  var $input = $select.siblings('input');
+  if (!$input.attr('name')) {
+    $input = $select.siblings('span').children('input');
+  }
+  if ($select.val() === 'blank') {
+    $input.hide();
+  } else {
+    $input.show();
+  }
+}
+
 function dateOption($node) {
   var val = $node.val();
   var type;
@@ -1195,6 +1207,13 @@ function filterItem(type, datepicker_off) {
     $item.find('select').attr('disabled', 1);
   }
   if ( !datepicker_off ) {
+    $item
+      .find('.filter-blank').each(function() {
+          blankOption(jQuery(this));
+      }).bind('change', function() {
+          blankOption(jQuery(this));
+      }).end()
+
     $item
       .find('.filter-date').each(function() {
           dateOption(jQuery(this));
@@ -1457,6 +1476,11 @@ function addItems(items, op) {
             jQuery(this).text( decoded );
       });
     }
+    var $selectNode = $item.find('.filter-blank');
+    if ($selectNode) {
+      blankOption($selectNode);
+    }
+
     var $node = $item.find('.filter-date');
     if ($node) {
       dateOption($node);
@@ -1668,6 +1692,12 @@ jQuery('#filter-detail').on('click','.filtertype .plus',function(){
   var $clone = $node.clone(true);
   $clone.insertAfter($filtertype)
     .find('.item-label').addClass('invisible');
+
+  $clone.find('.filter-blank').each(function() {
+    blankOption(jQuery(this));
+  }).bind('change', function() {
+    blankOption(jQuery(this));
+  });
 
   $clone.find('.filter-date').each(function() {
       dateOption(jQuery(this));
