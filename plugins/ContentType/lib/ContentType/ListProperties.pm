@@ -170,6 +170,7 @@ sub make_list_properties {
                         },
                         sort      => 'value_' . $field_type->{data_type},
                         direction => delete $args->{direction},
+                        unique    => 1,
                     },
                 );
 
@@ -184,13 +185,14 @@ sub make_list_properties {
                 display => $f->{label}
                 ? 'force'
                 : 'default',    # TODO: should use $f->{options}{display}
-                order            => $order,
-                idx_type         => $idx_type,
-                data_type        => $field_type->{data_type},
-                content_field_id => $f->{id},
-                html             => \&make_title_html,
-                sort             => $default_sort_prop,
-                terms            => \&terms_text,
+                order              => $order,
+                idx_type           => $idx_type,
+                data_type          => $field_type->{data_type},
+                content_field_id   => $f->{id},
+                html               => \&make_title_html,
+                sort               => $default_sort_prop,
+                default_sort_order => 'ascend',
+                terms              => \&terms_text,
                 filter_tmpl => '<mt:var name="filter_form_blank_string">',
                 use_blank   => 1,
                 use_future  => 1,
