@@ -116,10 +116,10 @@ sub cfg_content_type {
     my $content_field_types = $app->registry('content_field_types');
     my @type_array          = map {
         my $hash = {};
-        $hash->{type}     = $_;
-        $hash->{label}    = $content_field_types->{$_}{label};
-        $hash->{options}  = $content_field_types->{$_}{options};
-        $hash->{order}    = $content_field_types->{$_}{order};
+        $hash->{type}    = $_;
+        $hash->{label}   = $content_field_types->{$_}{label};
+        $hash->{options} = $content_field_types->{$_}{options};
+        $hash->{order}   = $content_field_types->{$_}{order};
         $hash;
     } keys %$content_field_types;
     @type_array = sort { $a->{order} <=> $b->{order} } @type_array;
@@ -173,20 +173,62 @@ sub save_cfg_content_type {
         or return $app->errtrans("Invalid request.");
 
     my $content_type_id = $q->param('id');
-    my $name            = $q->param('name');
-    my $edited          = $q->param('edited');
 
-    return $app->redirect(
-        $app->uri(
-            'mode' => 'cfg_content_type',
-            args   => {
-                id      => $content_type_id,
-                err_msg => $plugin->translate(
-                    "Name \"[_1]\" is already used.", $name
-                ),
-            }
-        )
+    my $option_list;
+    if ( my $data = $q->param('data') ) {
+        if ( $data =~ /^".*"$/ ) {
+            $data =~ s/^"//;
+            $data =~ s/"$//;
+            $data = MT::Util::decode_js($data);
+        }
+        require JSON;
+        my $decode = JSON->new->utf8(0);
+        $option_list = $decode->decode($data);
+    }
+    else {
+        $option_list = {};
+    }
+
+    my $name        = $option_list->{name};
+    my $description = $option_list->{description};
+
+    return $app->json_result(
+        {   error  => 1,
+            errmsg => $plugin->translate("Name is required.")
+        }
+    ) unless $name;
+
+    return $app->json_result(
+        {   error => 1,
+            errmsg =>
+                $plugin->translate( "Name \"[_1]\" is already used.", $name )
+        }
     ) if !$content_type_id && MT::ContentType->count( { name => $name } );
+
+    my @fields = ();
+    foreach my $field_id ( keys %{$option_list} ) {
+        my $options = $option_list->{$field_id}{options};
+        my $label   = $options->{label};
+        my $content_field;
+        if ($content_type_id) {
+            $content_field = MT::ContentField->load(
+                {   content_type_id => $content_type_id,
+                    name            => $label
+                }
+            );
+        }
+        unless ($content_field) {
+            $content_field = MT::ContentField->new;
+            $content_field->blog_id($blog_id);
+            $content_field->type( $option_list->{$field_id}{type} );
+            $content_field->name( $option_list->{$field_id}{order} );
+            $content_field->default( $options->{initial_value} );
+            $content_field->description( $options->{description} );
+            $content_field->required( $options->{required} );
+            $content_field->save;
+        }
+        push @fields, { id => $field_id, %{ $option_list->{$field_id} } };
+    }
 
     my $content_type
         = $content_type_id
@@ -196,31 +238,19 @@ sub save_cfg_content_type {
     $content_type->blog_id($blog_id);
     $content_type->name($name);
 
-    my @fields = map {
-        $_->{order} = $q->param( 'order-' . $_->{id} );
-        $_->{label} = $q->param('content-label') == $_->{id} ? 1 : 0;
-        $_;
-    } @{ $content_type->fields };
     $content_type->fields( \@fields );
 
     $content_type->save
-        or return $app->error(
-        $plugin->translate(
-            "Saving content type failed: [_1]",
-            $content_type->errstr
-        )
+        or return $app->json_result(
+        {   error  => 1,
+            errmsg => $plugin->translate(
+                "Saving content type failed: [_1]",
+                $content_type->errstr
+            )
+        }
         );
 
-    return $app->redirect(
-        $app->uri(
-            'mode' => 'cfg_content_type',
-            args   => {
-                blog_id => $blog_id,
-                id      => $content_type->id,
-                saved   => 1,
-            }
-        )
-    );
+    return $app->json_result( { success => 1, id => $content_type->id } );
 }
 
 sub cfg_content_field {
