@@ -190,8 +190,8 @@ content_field_types:
         data_type: datetime
         order: 90
         html: $ContentType::MT::ContentFieldType::Time::html
-        terms: $ContentType::MT::ContentFieldType::DateTime::terms
-        filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
+        terms: $ContentType::MT::ContentFieldType::Time::terms
+        filter_tmpl: $ContentType::MT::ContentFieldType::Time::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::Time::field_html
         data_getter: $ContentType::MT::ContentFieldType::Time::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::Time::ss_validator

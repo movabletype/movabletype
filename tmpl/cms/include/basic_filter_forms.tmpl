@@ -165,6 +165,128 @@
   </mt:setvarblock>
 </mt:setvartemplate>
 
+<mt:setvartemplate name="filter_form_time">
+  <mt:setvarblock name="time_filter_options">
+  <select class="<mt:var name="type">-option filter-date">
+    <option value="range"><__trans phrase="is between" escape="js"></option>
+    <option value="hours"><__trans phrase="is within the last" escape="js"></option>
+    <option value="before"><__trans phrase="is before" escape="js"></option>
+    <option value="after"><__trans phrase="is after" escape="js"></option>
+  </select>
+  </mt:setvarblock>
+
+  <mt:setvarblock name="blank_time_filter_options">
+  <select class="<mt:var name="type">-option filter-date">
+    <option value="range"><__trans phrase="is between" escape="js"></option>
+    <option value="hours"><__trans phrase="is within the last" escape="js"></option>
+    <option value="before"><__trans phrase="is before" escape="js"></option>
+    <option value="after"><__trans phrase="is after" escape="js"></option>
+    <option value="blank"><__trans phrase="is blank" escape="js"></option>
+  </select>
+  </mt:setvarblock>
+
+  <mt:setvarblock name="time_filter_contents">
+  <span class="date-options">
+    <mt:setvarblock name="time_input_from"><input type="text" class="<mt:var name="type">-from text required time" placeholder="HH:mm:ss" /></mt:setvarblock>
+    <mt:setvarblock name="time_input_to"><input type="text" class="<mt:var name="type">-to text required time" placeholder="HH:mm:ss" /></mt:setvarblock>
+    <mt:setvarblock name="time_input_origin"><input type="text" class="<mt:var name="type">-origin text required time" placeholder="HH:mm:ss" /></mt:setvarblock>
+    <mt:setvarblock name="time_input_hours">
+    <select class="<mt:var name="type">-hours required hour">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="17">17</option>
+      <option value="18">18</option>
+      <option value="19">19</option>
+      <option value="20">20</option>
+      <option value="21">21</option>
+      <option value="22">22</option>
+      <option value="23">23</option>
+    </select>
+    </mt:setvarblock>
+    <span class="date-option date"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="time_input_origin">" escape="js"></span>
+    <span class="date-option range"><__trans phrase="[_1] and [_2]" params="<mt:var name="time_input_from">%%<mt:var name="time_input_to">" escape="js"></span>
+    <span class="date-option hours"><__trans phrase="[_1] hours" params="<mt:var name="time_input_hours">" escape="js"></span>
+  </span>
+  </mt:setvarblock>
+</mt:setvartemplate>
+
+<mt:setvartemplate name="filter_form_future_time">
+  <mt:setvarblock name="future_time_filter_options">
+  <select class="<mt:var name="type">-option filter-date">
+    <option value="range"><__trans phrase="is between" escape="js"></option>
+    <option value="hours"><__trans phrase="is within the last" escape="js"></option>
+    <option value="before"><__trans phrase="is before" escape="js"></option>
+    <option value="after"><__trans phrase="is after" escape="js"></option>
+    <option value="future"><__trans phrase="is after now" escape="js"></option>
+    <option value="past"><__trans phrase="is before now" escape="js"></option>
+  </select>
+  </mt:setvarblock>
+
+  <mt:setvarblock name="future_blank_time_filter_options">
+  <select class="<mt:var name="type">-option filter-date">
+    <option value="range"><__trans phrase="is between" escape="js"></option>
+    <option value="hours"><__trans phrase="is within the last" escape="js"></option>
+    <option value="before"><__trans phrase="is before" escape="js"></option>
+    <option value="after"><__trans phrase="is after" escape="js"></option>
+    <option value="future"><__trans phrase="is after now" escape="js"></option>
+    <option value="past"><__trans phrase="is before now" escape="js"></option>
+    <option value="blank"><__trans phrase="is blank" escape="js"></option>
+  </select>
+  </mt:setvarblock>
+
+  <mt:setvarblock name="future_time_filter_contents">
+  <span class="date-options">
+    <mt:setvarblock name="time_input_from"><input type="text" class="<mt:var name="type">-from text required time" placeholder="HH:mm:ss" /></mt:setvarblock>
+    <mt:setvarblock name="time_input_to"><input type="text" class="<mt:var name="type">-to text required time" placeholder="HH:mm:ss" /></mt:setvarblock>
+    <mt:setvarblock name="time_input_origin"><input type="text" class="<mt:var name="type">-origin text required time" placeholder="HH:mm:ss" /></mt:setvarblock>
+    <mt:setvarblock name="time_input_hours">
+    <select class="<mt:var name="type">-hours required hour">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="17">17</option>
+      <option value="18">18</option>
+      <option value="19">19</option>
+      <option value="20">20</option>
+      <option value="21">21</option>
+      <option value="22">22</option>
+      <option value="23">23</option>
+    </select>
+    </mt:setvarblock>
+    <span class="date-option date"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="time_input_origin">" escape="js"></span>
+    <span class="date-option range"><__trans phrase="[_1] and [_2]" params="<mt:var name="time_input_from">%%<mt:var name="time_input_to">" escape="js"></span>
+    <span class="date-option hours"><__trans phrase="[_1] hours" params="<mt:var name="time_input_hours">" escape="js"></span>
+  </span>
+  </mt:setvarblock>
+</mt:setvartemplate>
+
 <mt:setvartemplate name="filter_form_single_select">
 <__trans phrase="[_1] [_3] [_2]"
          params="<mt:var name="label" escape="js">%%
