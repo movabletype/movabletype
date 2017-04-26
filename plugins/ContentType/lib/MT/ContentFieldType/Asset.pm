@@ -2,6 +2,7 @@ package MT::ContentFieldType::Asset;
 use strict;
 use warnings;
 
+use MT;
 use MT::Asset;
 use MT::ContentData;
 use MT::ContentFieldType::DateTime;
@@ -413,21 +414,54 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $asset_ids = $content_data->data->{ $prop->content_field_id } || [];
+    my $cd_id     = $content_data->id;
+    my $field_id  = $prop->content_field_id;
+    my $asset_ids = $content_data->data->{$field_id} || [];
 
     my %assets
         = map { $_->id => $_ }
         MT->model('asset')->load( { id => $asset_ids }, { no_class => 1 } );
     my @assets = map { $assets{$_} } @$asset_ids;
 
-    my @links;
+    my ( @ids, @thumbnails );
     for my $asset (@assets) {
-        my $id = $asset->id;
-        my $edit_link = _edit_link( $app, $asset );
-        push @links, qq{<a href="${edit_link}">${id}</a>};
+        my $id             = $asset->id;
+        my $thumbnail_html = _thumbnail_html( $app, $asset );
+        my $edit_link      = _edit_link( $app, $asset );
+
+        push @ids,        qq{<a href="${edit_link}">${id}</a>};
+        push @thumbnails, qq{<a href="${edit_link}">${thumbnail_html}</a>};
     }
 
-    join ', ', @links;
+    my $ids_html
+        = qq{<span id="asset-ids-${cd_id}-${field_id}" class="id">}
+        . join( ', ', @ids )
+        . '</span>';
+    my $thumbnails_html
+        = qq{<span id="asset-thumbnails-${cd_id}-${field_id}" class="thumbnail">}
+        . join( '', @thumbnails )
+        . '</span>';
+    my $js = <<"__JS__";
+<script>
+jQuery(document).ready(function() {
+  jQuery("#custom-prefs-content_field_${field_id}\\\\.thumbnail").change(function() {
+    changeIds();
+  });
+
+  function changeIds() {
+    if (jQuery("#custom-prefs-content_field_${field_id}\\\\.thumbnail").prop('checked')) {
+      jQuery('#asset-ids-${cd_id}-${field_id}').css('display', 'none');
+    } else {
+      jQuery('#asset-ids-${cd_id}-${field_id}').css('display', 'inline');
+    }
+  }
+
+  changeIds();
+});
+</script>
+__JS__
+
+    $ids_html . $thumbnails_html . $js;
 }
 
 sub _edit_link {
@@ -440,6 +474,62 @@ sub _edit_link {
             id      => $asset->id,
         },
     );
+}
+
+sub _thumbnail_html {
+    my ( $app, $asset ) = @_;
+
+    my $edit_link  = _edit_link( $app, $asset );
+    my $thumb_size = 45;
+    my $class_type = $asset->class_type;
+    my $file_path  = $asset->file_path;
+    my $img
+        = MT->static_path
+        . 'images/asset/'
+        . $class_type . '-'
+        . $thumb_size . '.png';
+
+    my ( $orig_width, $orig_height )
+        = ( $asset->image_width, $asset->image_height );
+    my ( $thumbnail_url, $thumbnail_width, $thumbnail_height );
+    if (   $orig_width > $thumb_size
+        && $orig_height > $thumb_size )
+    {
+        ( $thumbnail_url, $thumbnail_width, $thumbnail_height )
+            = $asset->thumbnail_url(
+            Height => $thumb_size,
+            Width  => $thumb_size,
+            Square => 1,
+            Ts     => 1
+            );
+    }
+    elsif ( $orig_width > $thumb_size ) {
+        ( $thumbnail_url, $thumbnail_width, $thumbnail_height )
+            = $asset->thumbnail_url(
+            Width => $thumb_size,
+            Ts    => 1
+            );
+    }
+    elsif ( $orig_height > $thumb_size ) {
+        ( $thumbnail_url, $thumbnail_width, $thumbnail_height )
+            = $asset->thumbnail_url(
+            Height => $thumb_size,
+            Ts     => 1
+            );
+    }
+    else {
+        ( $thumbnail_url, $thumbnail_width, $thumbnail_height ) = (
+            $asset->url . '?ts=' . $asset->modified_on,
+            $orig_width, $orig_height
+        );
+    }
+
+    my $thumbnail_width_offset
+        = int( ( $thumb_size - $thumbnail_width ) / 2 );
+    my $thumbnail_height_offset
+        = int( ( $thumb_size - $thumbnail_height ) / 2 );
+
+    qq{<img alt="" src="${thumbnail_url}" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />};
 }
 
 1;
