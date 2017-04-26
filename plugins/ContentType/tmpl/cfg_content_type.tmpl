@@ -1059,6 +1059,7 @@
         if (data[current_id] && data[current_id]['options'] && data[current_id]['options'][opt_name])
           jQuery(element).val(data[current_id]['options'][opt_name]);
       });
+      setDirty(true);
     });
     jQuery('a.save-link').unbind('click').click(function() {
       var options = jQuery(this).parent().parent().parent();
