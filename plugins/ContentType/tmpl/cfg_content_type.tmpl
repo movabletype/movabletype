@@ -955,13 +955,13 @@
     }).done(
       function(data) {
         if (data.result.error) {
-          return generate_error(data.result.errmsg);
+          alert(data.result.errmsg);
         }
         alert('done');
       }
     ).fail(
       function(xhr, status, errorThrown) {
-        generate_error(status+' '+errorThrown);
+        alert(status+' '+errorThrown);
       }
     );
   });
@@ -1028,6 +1028,8 @@
       jQuery("#current_field_id").val(field_id);
       var data = JSON.parse( localStorage.getItem("ContentType") );
       var current_id = jQuery("#current_field_id").val();
+      if (!data[current_id])
+          return true;
       var regexp = new RegExp(type_name + '-(.*)');
       options.find("input").each(function(index, element) {
         var input_type = jQuery(element).attr("type");
@@ -1064,10 +1066,11 @@
       var type_name = (id.match(/(.*)-options/))[1];
       var current_id = jQuery("#current_field_id").val();
       var regexp = new RegExp(type_name + '-(.*)');
-      var hash = {}
-      hash[current_id] = {};
-      hash[current_id]['type'] = type_name;
-      hash[current_id]['order'] = jQuery('#order-' + current_id).val();
+      var data = JSON.parse( localStorage.getItem("ContentType") );
+      if (!data[current_id])
+          data[current_id] = {};
+      data[current_id]['type'] = type_name;
+      data[current_id]['order'] = jQuery('#order-' + current_id).val();
       options.find("input").each(function(index, element) {
         var input_type = jQuery(element).attr("type");
         if (input_type === 'hidden')
@@ -1081,30 +1084,30 @@
         else {
           opt_val = jQuery(element).val();
         }
-        if (!hash[current_id]['options'])
-          hash[current_id]['options'] = {};
-        hash[current_id]['options'][opt_name] = opt_val;
+        if (!data[current_id]['options'])
+          data[current_id]['options'] = {};
+        data[current_id]['options'][opt_name] = opt_val;
         jQuery(element).val('');
       });
       options.find("select").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
         var opt_val = jQuery(element).val();
-        if (!hash[current_id]['options'])
-          hash[current_id]['options'] = {};
-        hash[current_id]['options'][opt_name] = opt_val;
+        if (!data[current_id]['options'])
+          data[current_id]['options'] = {};
+        data[current_id]['options'][opt_name] = opt_val;
         jQuery(element).val('');
       });
       options.find("textarea").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
         var opt_val = jQuery(element).val();
-        if (!hash[current_id]['options'])
-          hash[current_id]['options'] = {};
-        hash[current_id]['options'][opt_name] = opt_val;
+        if (!data[current_id]['options'])
+          data[current_id]['options'] = {};
+        data[current_id]['options'][opt_name] = opt_val;
         jQuery(element).val('');
       });
-      localStorage.setItem("ContentType", JSON.stringify(hash));
+      localStorage.setItem("ContentType", JSON.stringify(data));
       options.css( 'display', 'none' );
     });
   }
