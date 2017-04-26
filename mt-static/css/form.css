@@ -252,7 +252,8 @@ If you want to show error on text fields, use .error class
 }
 .text.number,
 .text.num,
-.text.days {
+.text.days,
+.text.hours {
     width: 4em;
     text-align: center;
 }
