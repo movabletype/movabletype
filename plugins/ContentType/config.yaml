@@ -234,6 +234,10 @@ content_field_types:
         field_html: $ContentType::MT::ContentFieldType::Asset::field_html
         single_select_options: $ContentType::MT::ContentFieldType::Asset::single_select_options
         data_getter: $ContentType::MT::ContentFieldType::Asset::data_getter
+        sub_fields:
+            - class: thumbnail
+              label: Thumbnail
+              display: default
     embed_text:
         label: Embed Text
         data_type: blob

@@ -242,6 +242,11 @@ sub make_list_properties {
                 $props->{$key}{$field_key}{col} = $field_type->{col};
             }
 
+            if ( exists $field_type->{sub_fields} ) {
+                $props->{$key}{$field_key}{sub_fields}
+                    = $field_type->{sub_fields};
+            }
+
             $order++;
 
             if ( $idx_type eq 'asset' ) {
