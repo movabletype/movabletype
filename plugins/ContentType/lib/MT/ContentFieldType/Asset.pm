@@ -58,7 +58,7 @@ sub single_select_options {
     \@options;
 }
 
-sub author_name_terms {
+sub terms_author_name {
     my $prop = shift;
     my ( $args, $load_terms, $load_args ) = @_;
 
@@ -94,7 +94,7 @@ sub author_name_terms {
     { id => @cd_ids ? \@cd_ids : 0 };
 }
 
-sub author_status_terms {
+sub terms_author_status {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
@@ -110,7 +110,7 @@ sub author_status_terms {
     { id => @cd_ids ? \@cd_ids : 0 };
 }
 
-sub _date_terms {
+sub _terms_date {
     my $prop = shift;
     my $col  = shift;
     my ( $args, $db_terms, $db_args ) = @_;
@@ -147,16 +147,16 @@ sub _date_terms {
     { id => @cd_ids ? \@cd_ids : 0 };
 }
 
-sub modified_on_terms {
+sub terms_modified_on {
     my $prop = shift;
     my $col  = 'modified_on';
-    _date_terms( $prop, $col, @_ );
+    _terms_date( $prop, $col, @_ );
 }
 
-sub created_on_terms {
+sub terms_created_on {
     my $prop = shift;
     my $col  = 'created_on';
-    _date_terms( $prop, $col, @_ );
+    _terms_date( $prop, $col, @_ );
 }
 
 sub _generate_cf_idx_join {
@@ -188,7 +188,7 @@ sub _generate_cf_idx_join {
     );
 }
 
-sub tag_terms {
+sub terms_tag {
     my $prop = shift;
     my ( $args, $base_terms, $base_args, $opts ) = @_;
 
@@ -292,7 +292,7 @@ sub tag_terms {
     }
 }
 
-sub image_width_terms {
+sub terms_image_size {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
@@ -329,7 +329,7 @@ sub image_width_terms {
     { id => @cd_ids ? \@cd_ids : 0 };
 }
 
-sub missing_file_terms {
+sub terms_missing_file {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
@@ -380,7 +380,7 @@ sub missing_file_terms {
     { id => @cd_ids ? \@cd_ids : 0 };
 }
 
-sub label_terms {
+sub terms_text {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
