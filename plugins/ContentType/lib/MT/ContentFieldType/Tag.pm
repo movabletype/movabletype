@@ -10,22 +10,19 @@ use MT::ObjectTag;
 
 sub field_html {
     my ( $app, $field_id, $value ) = @_;
-    my @obj_tags = MT::ObjectTag->load(
-        {   blog_id           => $app->blog->id,
-            object_datasource => 'content_field',
-            object_id         => $field_id,
-        }
-    );
+    $value = '' unless defined $value;
+    $value = [] unless ref $value eq 'ARRAY';
+
     my $html = '';
     $html
         .= '<input type="text" name="content-field-'
         . $field_id
         . '" class="text long" value="';
     my $count = 1;
-    foreach my $obj_tag (@obj_tags) {
-        my $tag = MT::Tag->load( $obj_tag->tag_id );
+    foreach my $tag_id (@$value) {
+        my $tag = MT::Tag->load($tag_id);
         $html .= $tag->name;
-        $html .= ',' unless $count == @obj_tags;
+        $html .= ',' unless $count == @$value;
         $count++;
     }
     $html .= '" />';
@@ -74,29 +71,30 @@ sub terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
+    my $name_terms = $prop->super(@_);
+
     my $option = $args->{option} || '';
-
-    my $super = MT->registry( 'list_properties', '__virtual', 'string' );
-    my $name_terms = $super->{terms}->( $prop, @_ );
-
     if ( $option eq 'not_contains' ) {
-        my $string   = $args->{string};
-        my $tag_join = MT::Tag->join_on(
-            undef,
-            {   id   => \'= cf_idx_value_integer',
-                name => { like => "%${string}%" },
-            }
-        );
+        my $string = $args->{string};
+
+        my @tag_ids
+            = map { $_->id }
+            MT::Tag->load( { name => { like => "%${string}%" }, },
+            { fetchonly => { id => 1 } } );
         my $cf_idx_join = MT::ContentFieldIndex->join_on(
             undef,
-            {   content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
+            { value_integer => [ \'IS NULL', @tag_ids ], },
+            {   unique    => 1,
+                type      => 'left',
+                condition => {
+                    content_data_id  => \'= cd_id',
+                    content_field_id => $prop->content_field_id,
+                },
             },
-            { join => $tag_join, unique => 1 },
         );
         my @cd_ids
             = map { $_->id }
-            MT::ContentData->load( { blog_id => MT->app->blog->id },
+            MT::ContentData->load( $db_terms,
             { join => $cf_idx_join, fetchonly => { id => 1 } } );
         @cd_ids ? { id => { not => \@cd_ids } } : ();
     }

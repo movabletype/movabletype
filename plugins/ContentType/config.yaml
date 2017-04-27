@@ -377,8 +377,8 @@ content_field_types:
         data_getter: $ContentType::MT::ContentFieldType::Tag::data_getter
         list_props:
             tag:
+                base: __virtual.string
                 col: name
-                filter_tmpl: <mt:var name="filter_form_blank_string">
                 html: $ContentType::MT::ContentFieldType::Tag::html
                 terms: $ContentType::MT::ContentFieldType::Tag::terms
                 use_blank: 1
