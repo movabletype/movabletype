@@ -292,12 +292,14 @@ content_field_types:
                 terms: $ContentType::MT::ContentFieldType::Asset::terms_author_status
             date_created:
                 base: __virtual.date
+                col: created_on
                 display: none
-                terms: $ContentType::MT::ContentFieldType::Asset::terms_created_on
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_date
             date_modified:
                 base: __virtual.date
+                col: modified_on
                 display: none
-                terms: $ContentType::MT::ContentFieldType::Asset::terms_modified_on
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_date
             description:
                 base: __virtual.string
                 col: description

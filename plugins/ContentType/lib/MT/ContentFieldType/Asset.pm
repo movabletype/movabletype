@@ -110,22 +110,19 @@ sub terms_author_status {
     { id => @cd_ids ? \@cd_ids : 0 };
 }
 
-sub _terms_date {
+sub terms_date {
     my $prop = shift;
-    my $col  = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
-    my $option    = $args->{option};
-    my $data_type = $prop->{data_type};
-
-    my $query = MT::ContentFieldType::DateTime::generate_query( $prop, @_ );
+    my $query = $prop->super(@_);
 
     my $asset_join = MT->model('asset')->join_on(
         undef,
-        {   id      => \'= cf_idx_value_integer',
-            blog_id => MT->app->blog->id,
-            $col    => $query,
-        },
+        [   {   id      => \'= cf_idx_value_integer',
+                blog_id => MT->app->blog->id,
+            },
+            $query,
+        ],
         { no_class => 1 }
     );
 
@@ -145,18 +142,6 @@ sub _terms_date {
         { join => $cf_idx_join, fetchonly => { id => 1 } } );
 
     { id => @cd_ids ? \@cd_ids : 0 };
-}
-
-sub terms_modified_on {
-    my $prop = shift;
-    my $col  = 'modified_on';
-    _terms_date( $prop, $col, @_ );
-}
-
-sub terms_created_on {
-    my $prop = shift;
-    my $col  = 'created_on';
-    _terms_date( $prop, $col, @_ );
 }
 
 sub _generate_cf_idx_join {
