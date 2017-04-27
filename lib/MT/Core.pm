@@ -298,7 +298,7 @@ BEGIN {
                             $query = $value;
                         }
                         elsif ( 'not_equal' eq $option ) {
-                            $query = { not => $value };
+                            $query = [ { not => $value }, \'IS NULL' ];
                         }
                         elsif ( 'greater_than' eq $option ) {
                             $query = { '>' => $value };

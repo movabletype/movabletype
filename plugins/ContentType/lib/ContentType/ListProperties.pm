@@ -406,53 +406,5 @@ sub make_list_actions {
     return $props;
 }
 
-sub terms_number {
-    my $prop = shift;
-    my ( $args, $db_terms, $db_args ) = @_;
-    my $option = $args->{option};
-    my $value  = $args->{value};
-
-    my $query;
-    if ( 'equal' eq $option ) {
-        $query = $value;
-    }
-    elsif ( 'not_equal' eq $option ) {
-        $query = [ { not => $value }, \'IS NULL' ];
-    }
-    elsif ( 'greater_than' eq $option ) {
-        $query = { '>' => $value };
-    }
-    elsif ( 'greater_equal' eq $option ) {
-        $query = { '>=' => $value };
-    }
-    elsif ( 'less_than' eq $option ) {
-        $query = { '<' => $value };
-    }
-    elsif ( 'less_equal' eq $option ) {
-        $query = { '<=' => $value };
-    }
-    elsif ( 'blank' eq $option ) {
-        $query = \'IS NULL';
-    }
-
-    my $data_type = $prop->{data_type};
-    my $join      = MT::ContentFieldIndex->join_on(
-        undef,
-        { "value_${data_type}" => $query },
-        {   type      => 'left',
-            condition => {
-                content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-        },
-    );
-    my @cd_ids
-        = map { $_->id }
-        MT::ContentData->load( $db_terms,
-        { join => $join, fetchonly => { id => 1 } } );
-
-    { id => @cd_ids ? \@cd_ids : 0 };
-}
-
 1;
 

@@ -410,6 +410,51 @@ sub terms_text {
     { id => @cd_ids ? \@cd_ids : 0 };
 }
 
+sub terms_id {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $option = $args->{option} || '';
+    if ( $option eq 'not_equal' ) {
+        my $col         = $prop->col;
+        my $value       = $args->{value} || 0;
+        my $cf_idx_join = MT::ContentFieldIndex->join_on(
+            undef,
+            { $col => [ \'IS NULL', $value ] },
+            {   type      => 'left',
+                condition => {
+                    content_data_id  => \'= cd_id',
+                    content_field_id => $prop->content_field_id,
+                },
+                unique => 1,
+            },
+        );
+        my @cd_ids
+            = map { $_->id }
+            MT::ContentData->load( $db_terms,
+            { join => $cf_idx_join, fetchonly => { id => 1 } } );
+        @cd_ids ? { id => { not => \@cd_ids } } : ();
+    }
+    else {
+        my $query       = $prop->super(@_);
+        my $cf_idx_join = MT::ContentFieldIndex->join_on(
+            undef, $query,
+            {   type      => 'left',
+                condition => {
+                    content_data_id  => \'= cd_id',
+                    content_field_id => $prop->content_field_id,
+                },
+                unique => 1,
+            },
+        );
+        my @cd_ids
+            = map { $_->id }
+            MT::ContentData->load( $db_terms,
+            { join => $cf_idx_join, fetchonly => { id => 1 } } );
+        { id => @cd_ids ? \@cd_ids : 0 };
+    }
+}
+
 sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
