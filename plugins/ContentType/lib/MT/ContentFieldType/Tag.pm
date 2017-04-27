@@ -141,10 +141,31 @@ sub html {
 
     my $tag_ids = $content_data->data->{ $prop->content_field_id } || [];
 
-    my %tags = map { $_->id => $_->name } MT::Tag->load( { id => $tag_ids },
+    my %tag_names
+        = map { $_->id => $_->name } MT::Tag->load( { id => $tag_ids },
         { fetchonly => { id => 1, name => 1 } } );
 
-    join( ', ', map { $tags{$_} } @$tag_ids );
+    my @links;
+    for my $id (@$tag_ids) {
+        my $tag_name = $tag_names{$id};
+        my $link = _link( $app, $tag_name );
+        push @links, qq{<a href="$link">${tag_name}</a>};
+    }
+
+    join ', ', @links;
+}
+
+sub _link {
+    my ( $app, $tag_name ) = @_;
+    $app->uri(
+        mode => 'list',
+        args => {
+            _type      => 'tag',
+            blog_id    => $app->blog->id,
+            filter     => 'name',
+            filter_val => $tag_name,
+        },
+    );
 }
 
 1;

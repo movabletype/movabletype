@@ -180,80 +180,53 @@ sub make_list_properties {
                 return;
             };
 
-            $props->{$key}{$field_key} = {
-                label   => $f->{name},
-                display => $f->{label}
-                ? 'force'
-                : 'default',    # TODO: should use $f->{options}{display}
-                order              => $order,
-                idx_type           => $idx_type,
-                data_type          => $field_type->{data_type},
-                content_field_id   => $f->{id},
-                html               => \&make_title_html,
-                sort               => $default_sort_prop,
-                default_sort_order => 'ascend',
-                terms              => \&terms_text,
-                filter_tmpl => '<mt:var name="filter_form_blank_string">',
-                use_blank   => 1,
-                use_future  => 1,
-            };
-
-            # set html properties of content field type to list_properties
-            if ( exists $field_type->{bulk_html} ) {
-                $props->{$key}{$field_key}{bulk_html}
-                    = $field_type->{bulk_html};
-            }
-            if ( exists $field_type->{html} ) {
-                $props->{$key}{$field_key}{html} = $field_type->{html};
-            }
-            if ( exists $field_type->{html_link} ) {
-                $props->{$key}{$field_key}{html_link}
-                    = $field_type->{html_link};
-            }
-            if ( exists $field_type->{raw} ) {
-                $props->{$key}{$field_key}{raw} = $field_type->{raw};
-            }
-
-            # set sort properties of content field type to list_properties
-            if ( exists $field_type->{bulk_sort} ) {
-                $props->{$key}{$field_key}{bulk_sort}
-                    = $field_type->{bulk_sort};
-            }
-            if ( exists $field_type->{sort} ) {
-                $props->{$key}{$field_key}{sort} = $field_type->{sort};
-            }
-            if ( exists $field_type->{sort_method} ) {
-                $props->{$key}{$field_key}{sort_method}
-                    = $field_type->{sort_method};
-            }
-
-            if ( exists $field_type->{filter_tmpl} ) {
-                $props->{$key}{$field_key}{filter_tmpl}
-                    = $field_type->{filter_tmpl};
-            }
-            if ( exists $field_type->{single_select_options} ) {
-                $props->{$key}{$field_key}{single_select_options}
-                    = $field_type->{single_select_options};
-            }
-            if ( exists $field_type->{terms} ) {
-                $props->{$key}{$field_key}{terms} = $field_type->{terms};
-            }
-            if ( exists $field_type->{col} ) {
-                $props->{$key}{$field_key}{col} = $field_type->{col};
-            }
-
-            if ( exists $field_type->{sub_fields} ) {
-                $props->{$key}{$field_key}{sub_fields}
-                    = $field_type->{sub_fields};
-            }
-
             $order++;
 
-            if ( $idx_type eq 'asset' ) {
-                $props->{$key} = {
-                    %{ $props->{$key} },
-                    %{ _asset_props( $field_key, $field_type, $f ) },
-                };
+            if ( exists $field_type->{list_props} ) {
+                for my $prop_name ( keys %{ $field_type->{list_props} } ) {
+                    my ( $label, $prop_key );
+                    if ( $prop_name eq $idx_type ) {
+                        $label = $f->{name};
+
+                        $prop_key = $field_key;
+                    }
+                    else {
+                        $label = $prop_name;
+                        if ( $label eq 'id' ) {
+                            $label = 'ID';
+                        }
+                        else {
+                            $label =~ s/^([a-z])/\u$1/g;
+                            $label =~ s/_([a-z])/ \u$1/g;
+                        }
+                        $label = MT->translate( $f->{name} . " ${label}" );
+
+                        $prop_key = "${field_key}_${prop_name}";
+                    }
+
+                    $props->{$key}{$prop_key} = {
+                        (   content_field_id   => $f->{id},
+                            data_type          => $field_type->{data_type},
+                            default_sort_order => 'ascend',
+                            display            => $f->{label}
+                            ? 'force'
+                            : 'default'
+                            ,    # TODO: should use $f->{options}{display}
+                            filter_label => $label,
+                            filter_tmpl =>
+                                '<mt:var name="filter_form_blank_string">',
+                            html     => \&make_title_html,
+                            idx_type => $idx_type,
+                            label    => $label,
+                            order    => $order,
+                            sort     => $default_sort_prop,
+                            terms    => \&terms_text,
+                        ),
+                        %{ $field_type->{list_props}{$prop_name} },
+                    };
+
+                    $order++;
+                }
             }
         }
     }
@@ -286,117 +259,6 @@ sub _cl_single_select_options {
         push @options, { label => $label, value => $id };
     }
     \@options;
-}
-
-sub _asset_props {
-    my ( $field_key, $field_type, $f ) = @_;
-    return {
-        "${field_key}_author_name" => {
-            base         => '__virtual.author_name',
-            filter_label => $f->{name} . ' Author Name',
-            display      => 'none',
-            terms =>
-                '$ContentType::MT::ContentFieldType::Asset::author_name_terms',
-            content_field_id => $f->{id},
-        },
-        "${field_key}_author_status" => {
-            base    => 'author.status',
-            label   => $f->{name} . ' Author Status',
-            display => 'none',
-            terms =>
-                '$ContentType::MT::ContentFieldType::Asset::author_status_terms',
-            content_field_id => $f->{id},
-        },
-        "${field_key}_modified_on" => {
-            base    => '__virtual.date',
-            label   => $f->{name} . ' Date Modified',
-            display => 'none',
-            terms =>
-                '$ContentType::MT::ContentFieldType::Asset::modified_on_terms',
-            content_field_id => $f->{id},
-        },
-        "${field_key}_created_on" => {
-            base    => '__virtual.date',
-            label   => $f->{name} . ' Date Created',
-            display => 'none',
-            terms =>
-                '$ContentType::MT::ContentFieldType::Asset::created_on_terms',
-            content_field_id => $f->{id},
-        },
-        "${field_key}_tag" => {
-            base    => '__virtual.tag',
-            label   => $f->{name} . ' Tag',
-            display => 'none',
-            terms   => '$ContentType::MT::ContentFieldType::Asset::tag_terms',
-            content_field_id => $f->{id},
-            tagged_class     => '*',
-            tag_ds           => 'asset',
-            use_blank        => 1,
-        },
-        "${field_key}_image_width" => {
-            base  => 'asset.image_width',
-            label => $f->{name} . ' Pixel Width',
-            terms =>
-                '$ContentType::MT::ContentFieldType::Asset::image_width_terms',
-            content_field_id => $f->{id},
-        },
-        "${field_key}_image_height" => {
-            base  => 'asset.image_height',
-            label => $f->{name} . ' Pixel Height',
-            terms =>
-                '$ContentType::MT::ContentFieldType::Asset::image_width_terms',
-            content_field_id => $f->{id},
-        },
-        "${field_key}_missing_file" => {
-            base  => 'asset.missing_file',
-            label => $f->{name} . ' Missing File',
-            terms =>
-                '$ContentType::MT::ContentFieldType::Asset::missing_file_terms',
-            content_field_id => $f->{id},
-        },
-        "${field_key}_label" => {
-            base    => '__virtual.string',
-            col     => 'label',
-            label   => $f->{name} . ' Label',
-            display => 'none',
-            terms => '$ContentType::MT::ContentFieldType::Asset::label_terms',
-            content_field_id => $f->{id},
-        },
-        "${field_key}_id" => {
-            base             => '__virtual.integer',
-            col              => 'id',
-            label            => $f->{name} . ' ID',
-            display          => 'none',
-            terms            => \&terms_number,
-            data_type        => $field_type->{data_type},
-            content_field_id => $f->{id},
-        },
-        "${field_key}_file_name" => {
-            base    => '__virtual.string',
-            col     => 'file_name',
-            label   => $f->{name} . ' Filename',
-            display => 'none',
-            terms => '$ContentType::MT::ContentFieldType::Asset::label_terms',
-            content_field_id => $f->{id},
-        },
-        "${field_key}_file_ext" => {
-            base    => '__virtual.string',
-            col     => 'file_ext',
-            label   => $f->{name} . ' File Extension',
-            display => 'none',
-            terms => '$ContentType::MT::ContentFieldType::Asset::label_terms',
-            content_field_id => $f->{id},
-        },
-        "${field_key}_description" => {
-            base    => '__virtual.string',
-            col     => 'description',
-            label   => $f->{name} . ' Description',
-            display => 'none',
-            terms => '$ContentType::MT::ContentFieldType::Asset::label_terms',
-            content_field_id => $f->{id},
-            use_blank        => 1,
-        },
-    };
 }
 
 sub make_name_html {

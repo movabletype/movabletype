@@ -131,135 +131,234 @@ content_field_types:
         label: Content Type
         data_type: integer
         order: 10
-        html: $ContentType::MT::ContentFieldType::ContentType::html
         field_html: $ContentType::MT::ContentFieldType::ContentType::field_html
         data_getter: $ContentType::MT::ContentFieldType::ContentType::data_getter
+        list_props:
+            content_type:
+                html: $ContentType::MT::ContentFieldType::ContentType::html
     single_line_text:
         label: Single Line Text
         data_type: varchar
         order: 20
-        terms: $ContentType::ContentType::ListProperties::terms_text
-        filter_tmpl: <mt:var name="filter_form_blank_string">
+        list_props:
+            single_line_text:
+                filter_tmpl: <mt:var name="filter_form_blank_string">
+                terms: $ContentType::ContentType::ListProperties::terms_text
+                use_blank: 1
     multi_line_text:
         label: Multi Line Text
         data_type: blob
         order: 30
-        terms: $ContentType::ContentType::ListProperties::terms_text
-        filter_tmpl: <mt:var name="filter_form_blank_string">
+        list_props:
+            multi_line_text:
+                filter_tmpl: <mt:var name="filter_form_blank_string">
+                terms: $ContentType::ContentType::ListProperties::terms_text
+                use_blank: 1
     integer:
         label: Integer
         data_type: integer
         order: 40
-        terms: $ContentType::ContentType::ListProperties::terms_number
-        filter_tmpl: <mt:var name="filter_form_blank_integer">
+        list_props:
+            integer:
+                filter_tmpl: <mt:var name="filter_form_blank_integer">
+                terms: $ContentType::ContentType::ListProperties::terms_number
+                use_blank: 1
     float:
         label: Float
         data_type: float
         order: 50
-        terms: $ContentType::ContentType::ListProperties::terms_number
-        filter_tmpl: <mt:var name="filter_form_blank_float">
+        list_props:
+            float:
+                filter_tmpl: <mt:var name="filter_form_blank_float">
+                terms: $ContentType::ContentType::ListProperties::terms_number
+                use_blank: 1
     url:
         label: URL
         data_type: varchar
         order: 60
-        terms: $ContentType::ContentType::ListProperties::terms_text
-        filter_tmpl: <mt:var name="filter_form_blank_string">
         ss_validator: $ContentType::MT::ContentFieldType::URL::ss_validator
+        list_props:
+            url:
+                filter_tmpl: <mt:var name="filter_form_blank_string">
+                terms: $ContentType::ContentType::ListProperties::terms_text
+                use_blank: 1
     date_and_time:
         label: Date and Time
         data_type: datetime
         order: 70
-        html: $ContentType::MT::ContentFieldType::DateTime::html
-        terms: $ContentType::MT::ContentFieldType::DateTime::terms
-        filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::DateTime::field_html
         data_getter: $ContentType::MT::ContentFieldType::DateTime::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::DateTime::ss_validator
+        list_props:
+            date_and_time:
+                filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
+                html: $ContentType::MT::ContentFieldType::DateTime::html
+                terms: $ContentType::MT::ContentFieldType::DateTime::terms
+                use_blank: 1
+                use_future: 1
     date:
         label: Date
         data_type: datetime
         order: 80
-        html: $ContentType::MT::ContentFieldType::Date::html
-        terms: $ContentType::MT::ContentFieldType::DateTime::terms
-        filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::Date::field_html
         data_getter: $ContentType::MT::ContentFieldType::Date::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::Date::ss_validator
+        list_props:
+            date:
+                filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
+                html: $ContentType::MT::ContentFieldType::Date::html
+                terms: $ContentType::MT::ContentFieldType::DateTime::terms
+                use_blank: 1
+                use_future: 1
     time:
         label: Time
         data_type: datetime
         order: 90
-        html: $ContentType::MT::ContentFieldType::Time::html
-        terms: $ContentType::MT::ContentFieldType::Time::terms
-        filter_tmpl: $ContentType::MT::ContentFieldType::Time::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::Time::field_html
         data_getter: $ContentType::MT::ContentFieldType::Time::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::Time::ss_validator
+        list_props:
+            time:
+                filter_tmpl: $ContentType::MT::ContentFieldType::Time::filter_tmpl
+                html: $ContentType::MT::ContentFieldType::Time::html
+                terms: $ContentType::MT::ContentFieldType::Time::terms
+                use_blank: 1
+                use_future: 1
     select_box:
         label: Select Box
         data_type: varchar
         options: 1
         order: 100
-        terms: $ContentType::MT::ContentFieldType::SelectBox::terms
-        filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::SelectBox::field_html
-        single_select_options: $ContentType::MT::ContentFieldType::SelectBox::single_select_options
         data_getter: $ContentType::MT::ContentFieldType::SelectBox::data_getter
+        list_props:
+            select_box:
+                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+                single_select_options: $ContentType::MT::ContentFieldType::SelectBox::single_select_options
+                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
     radio:
         label: Radio
         data_type: varchar
         options: 1
         order: 110
-        terms: $ContentType::MT::ContentFieldType::SelectBox::terms
-        filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::Radio::field_html
-        single_select_options: $ContentType::MT::ContentFieldType::Radio::single_select_options
+        list_props:
+            radio:
+                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+                single_select_options: $ContentType::MT::ContentFieldType::Radio::single_select_options
+                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
     checkbox:
         label: Checkbox
         data_type: varchar
         options: 1
         order: 120
-        terms: $ContentType::MT::ContentFieldType::SelectBox::terms
-        filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::Checkbox::field_html
-        single_select_options: $ContentType::MT::ContentFieldType::Checkbox::single_select_options
         data_getter: $ContentType::MT::ContentFieldType::Checkbox::data_getter
+        list_props:
+            checkbox:
+                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+                single_select_options: $ContentType::MT::ContentFieldType::Checkbox::single_select_options
+                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
     asset:
         label: Asset
         data_type: integer
         order: 130
-        html: $ContentType::MT::ContentFieldType::Asset::html
-        terms: $ContentType::MT::ContentFieldType::SelectBox::terms
-        filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
         field_html: $ContentType::MT::ContentFieldType::Asset::field_html
-        single_select_options: $ContentType::MT::ContentFieldType::Asset::single_select_options
         data_getter: $ContentType::MT::ContentFieldType::Asset::data_getter
-        sub_fields:
-            - class: thumbnail
-              label: Thumbnail
-              display: default
+        list_props:
+            asset:
+                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+                html: $ContentType::MT::ContentFieldType::Asset::html
+                single_select_options: $ContentType::MT::ContentFieldType::Asset::single_select_options
+                sub_fields:
+                    - class: thumbnail
+                      label: Thumbnail
+                      display: default
+                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+            author_name:
+                base: __virtual.author_name
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_author_name
+            author_status:
+                base: author.status
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_author_status
+            date_created:
+                base: __virtual.date
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_created_on
+            date_modified:
+                base: __virtual.date
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_modified_on
+            description:
+                base: __virtual.string
+                col: description
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_text
+                use_blank: 1
+            file_extension:
+                base: __virtual.string
+                col: file_ext
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_text
+            filename:
+                base: __virtual.string
+                col: file_name
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_text
+            id:
+                base: __virtual.integer
+                col: id
+                display: none
+                terms: $ContentType::ContentType::ListProperties::terms_number
+            missing_file:
+                base: asset.missing_file
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_missing_file
+            pixel_height:
+                base: asset.image_height
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_image_size
+            pixel_width:
+                base: asset.image_width
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_image_size
+            tag:
+                base: __virtual.tag
+                display: none
+                tag_ds: asset
+                tagged_class: *
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_tag
+                use_blank: 1
     embed_text:
         label: Embed Text
         data_type: blob
         order: 140
+        list_props:
+            embed_text:
+                use_blank: 1
     category:
         label: Category
         data_type: integer
         order: 150
-        col: label
-        html: $ContentType::MT::ContentFieldType::Category::html
-        terms: $ContentType::MT::ContentFieldType::Category::terms
-        filter_tmpl: <mt:var name="filter_form_blank_string">
         field_html: $ContentType::MT::ContentFieldType::Category::field_html
         data_getter: $ContentType::MT::ContentFieldType::Category::data_getter
+        list_props:
+            category:
+                col: label
+                filter_tmpl: <mt:var name="filter_form_blank_string">
+                html: $ContentType::MT::ContentFieldType::Category::html
+                terms: $ContentType::MT::ContentFieldType::Category::terms
+                use_blank: 1
     tag:
         label: Tag
         data_type: integer
         order: 160
-        col: name
-        html: $ContentType::MT::ContentFieldType::Tag::html
-        terms: $ContentType::MT::ContentFieldType::Tag::terms
-        filter_tmpl: <mt:var name="filter_form_blank_string">
         field_html: $ContentType::MT::ContentFieldType::Tag::field_html
         data_getter: $ContentType::MT::ContentFieldType::Tag::data_getter
+        list_props:
+            tag:
+                col: name
+                filter_tmpl: <mt:var name="filter_form_blank_string">
+                html: $ContentType::MT::ContentFieldType::Tag::html
+                terms: $ContentType::MT::ContentFieldType::Tag::terms
+                use_blank: 1
 
