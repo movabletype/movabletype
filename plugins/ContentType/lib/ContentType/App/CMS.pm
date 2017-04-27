@@ -101,11 +101,21 @@ sub cfg_content_type {
 
     my $content_type = $obj_promise->force();
     if ($content_type) {
-        $param->{name}       = $content_type->name;
-        $param->{unique_key} = $content_type->unique_key;
+        $param->{name}        = $content_type->name;
+        $param->{description} = $content_type->description;
+        $param->{unique_key}  = $content_type->unique_key;
         my @array = map {
             $_->{content_field_id} = $_->{id};
             delete $_->{id};
+            my @options = ();
+            foreach my $key ( keys %{ $_->{options} } ) {
+                push @options,
+                    {
+                    key   => $key,
+                    value => $_->{options}{$key}
+                    };
+            }
+            $_->{options} = \@options;
             $_;
         } @{ $content_type->fields };
         @array = sort { $a->{order} <=> $b->{order} } @array;
@@ -181,7 +191,6 @@ sub save_cfg_content_type {
             $data =~ s/"$//;
             $data = MT::Util::decode_js($data);
         }
-        require JSON;
         my $decode = JSON->new->utf8(0);
         $option_list = $decode->decode($data);
     }
@@ -205,9 +214,27 @@ sub save_cfg_content_type {
         }
     ) if !$content_type_id && MT::ContentType->count( { name => $name } );
 
+    my $content_type
+        = $content_type_id
+        ? MT::ContentType->load($content_type_id)
+        : MT::ContentType->new();
+
+    $content_type->blog_id($blog_id);
+    $content_type->name($name);
+
+    $content_type->save
+        or return $app->json_result(
+        {   error  => 1,
+            errmsg => $plugin->translate(
+                "Saving content type failed: [_1]",
+                $content_type->errstr
+            )
+        }
+        );
+
     my @fields = ();
-    foreach my $field_id ( keys %{$option_list} ) {
-        my $options = $option_list->{$field_id}{options};
+    foreach my $field_id ( keys %{ $option_list->{fields} } ) {
+        my $options = $option_list->{fields}{$field_id}{options};
         my $label   = $options->{label};
         my $content_field;
         if ($content_type_id) {
@@ -220,23 +247,28 @@ sub save_cfg_content_type {
         unless ($content_field) {
             $content_field = MT::ContentField->new;
             $content_field->blog_id($blog_id);
-            $content_field->type( $option_list->{$field_id}{type} );
-            $content_field->name( $option_list->{$field_id}{order} );
+            $content_field->content_type_id( $content_type->id );
+            $content_field->type( $option_list->{fields}{$field_id}{type} );
+            $content_field->name($label);
             $content_field->default( $options->{initial_value} );
             $content_field->description( $options->{description} );
             $content_field->required( $options->{required} );
-            $content_field->save;
+            $content_field->save
+                or return $app->json_result(
+                {   error  => 1,
+                    errmsg => $plugin->translate(
+                        "Saving content field failed: [_1]",
+                        $content_type->errstr
+                    )
+                }
+                );
         }
-        push @fields, { id => $field_id, %{ $option_list->{$field_id} } };
+        push @fields,
+            {
+            id => $content_field->id,
+            %{ $option_list->{fields}{$field_id} }
+            };
     }
-
-    my $content_type
-        = $content_type_id
-        ? MT::ContentType->load($content_type_id)
-        : MT::ContentType->new();
-
-    $content_type->blog_id($blog_id);
-    $content_type->name($name);
 
     $content_type->fields( \@fields );
 

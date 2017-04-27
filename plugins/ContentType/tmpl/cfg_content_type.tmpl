@@ -78,6 +78,7 @@
       </div>
 
       <div id="sortable" class="sortable">
+      <!--
       <mt:loop name="fields">
       <mtapp:setting
          id="content-field-<mt:var name="content_field_id">"
@@ -103,6 +104,7 @@
         <input type="hidden" name="order-<mt:var name="content_field_id">" id="order-<mt:var name="content_field_id">" value="<mt:var name="order">" />
       </mtapp:setting>
       </mt:loop>
+      -->
       </div>
 
   </mtapp:settinggroup>
@@ -932,6 +934,27 @@
     var data = JSON.parse( localStorage.getItem("ContentType") );
     jQuery("#setting-title").text( trans( 'Edit [_1]', data.name ) );
 </mt:unless>
+<mt:if name="name">
+    jQuery("#setting-title").text( trans( 'Edit [_1]', '<mt:var name="name">' ) );
+    var data = {};
+    data['name'] = '<mt:var name="name">';
+    data['description'] = '<mt:var name="description">';
+    data['fields'] = {
+    <mt:loop name="fields">
+      '<mt:var name="id">': {
+        'options': {
+    <mt:loop name="options">
+        <mt:var name="key">: '<mt:var name="value">'<mt:unless name="__last__">,</mt:unless>
+    </mt:loop>
+        }
+      }
+    </mt:loop>
+    };
+    <mt:loop name="fields">
+    add_field('<mt:var name="id">', '<mt:var name="type">', '<mt:var name="__counter__">');
+    </mt:loop>
+    localStorage.setItem("ContentType", JSON.stringify(data));
+</mt:if>
     all_options_hidden();
     set_events();
     set_sortable();
@@ -940,6 +963,7 @@
   jQuery('#save-button').click( function() {
     setDirty(false);
     var datalist = localStorage.getItem("ContentType");
+    var id = jQuery("#id").val();
     jQuery.ajax({
       type: 'POST',
       contentType: 'application/x-www-form-urlencoded; charset=utf-8',
@@ -950,14 +974,25 @@
         __mode: 'save_cfg_content_type',
         magic_token: '<mt:var name="magic_token">',
         blog_id: '<mt:var name="blog_id">',
+        id: '<mt:var name="id">',
         data: datalist
       }
     }).done(
       function(data) {
         if (data.result.error) {
-          alert(data.result.errmsg);
+          msg += '<div id="error" class="msg msg-error">';
+          var msg = '<p class="msg-text">' + data.result.errmsg + '</p>';
+          msg += '</div>';
+          jQuery("#msg-block").append(msg);
         }
-        alert('done');
+        else {
+          var msg = '';
+          msg += '<div id="saved" class="msg msg-success">';
+          msg += '<p class="msg-text"><__trans phrase="Contents type settings has been saved."></p>';
+          msg += '</div>';
+          jQuery("#msg-block").append(msg);
+          jQuery("#id").val(data.result.id);
+        }
       }
     ).fail(
       function(xhr, status, errorThrown) {
@@ -973,10 +1008,17 @@
     if ( jQuery('.add-link').hasClass('disabled') )
       return false;
     var length = jQuery('#sortable').sortable('toArray').length;
-    var field_id = length + 1;
-    var field = '<div id="content-field-block-' + field_id + '" class="field field-top-label sort-enabled">';
+    var id = length + 1;
+    add_field(id, jQuery("#type").val(), id);
+    set_sortable();
+    set_events();
+    return false;
+  });
+
+  function add_field(id, type, order) {
+    var field = '<div id="content-field-block-' + id + '" class="field field-top-label sort-enabled">';
     field += '<div class="field-header">';
-    field += '<label id="content-field-label" for="content-field">' + jQuery("#type").val() + '</label>';
+    field += '<label id="content-field-label" for="content-field">' + type + '</label>';
     field += '</div>';
     field += '<div class="field-content">';
     field += '<ul class="action-link-list">';
@@ -995,15 +1037,12 @@
     field += '</a>';
     field += '</li>';
     field += '</ul>';
-    field += '<input type="hidden" id="order-' + field_id + '" value="' + field_id + '" />';
-    field += '<input type="hidden" id="type-' + field_id + '" value="' + selected + '" />';
+    field += '<input type="hidden" id="order-' + id + '" value="' + order + '" />';
+    field += '<input type="hidden" id="type-' + id + '" value="' + type + '" />';
     field += '</div>';
     field += '</div>';
     jQuery("#sortable").append(field);
-    set_sortable();
-    set_events();
-    return false;
-  });
+  }
 
   function set_events() {
     jQuery('a.delete-link').unbind('click').click(function() {
@@ -1028,7 +1067,7 @@
       jQuery("#current_field_id").val(field_id);
       var data = JSON.parse( localStorage.getItem("ContentType") );
       var current_id = jQuery("#current_field_id").val();
-      if (!data[current_id])
+      if (!data['fields'] || !data['fields'][current_id] || !data['fields'][current_id]['options'])
           return true;
       var regexp = new RegExp(type_name + '-(.*)');
       options.find("input").each(function(index, element) {
@@ -1038,26 +1077,26 @@
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
         var opt_val = '';
-        if (data[current_id] && data[current_id]['options'] && data[current_id]['options'][opt_name])
-          opt_val = data[current_id]['options'][opt_name];
+        if (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options'][opt_name])
+          opt_val = data['fields'][current_id]['options'][opt_name];
         if (input_type === 'checkbox') {
           jQuery(element).prop("checked", true);
         }
         else {
-          jQuery(element).val(data[current_id]['options'][opt_name]);
+          jQuery(element).val(data['fields'][current_id]['options'][opt_name]);
         }
       });
       options.find("select").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
-        if (data[current_id] && data[current_id]['options'] && data[current_id]['options'][opt_name])
-          jQuery(element).val(data[current_id]['options'][opt_name]);
+        if (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options'][opt_name])
+          jQuery(element).val(data['fields'][current_id]['options'][opt_name]);
       });
       options.find("textarea").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
-        if (data[current_id] && data[current_id]['options'] && data[current_id]['options'][opt_name])
-          jQuery(element).val(data[current_id]['options'][opt_name]);
+        if (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options'][opt_name])
+          jQuery(element).val(data['fields'][current_id]['options'][opt_name]);
       });
       setDirty(true);
     });
@@ -1068,10 +1107,12 @@
       var current_id = jQuery("#current_field_id").val();
       var regexp = new RegExp(type_name + '-(.*)');
       var data = JSON.parse( localStorage.getItem("ContentType") );
-      if (!data[current_id])
-          data[current_id] = {};
-      data[current_id]['type'] = type_name;
-      data[current_id]['order'] = jQuery('#order-' + current_id).val();
+      if (!data['fields'])
+          data['fields'] = {};
+      if (!data['fields'][current_id])
+          data['fields'][current_id] = {};
+      data['fields'][current_id]['type'] = type_name;
+      data['fields'][current_id]['order'] = jQuery('#order-' + current_id).val();
       options.find("input").each(function(index, element) {
         var input_type = jQuery(element).attr("type");
         if (input_type === 'hidden')
@@ -1085,27 +1126,27 @@
         else {
           opt_val = jQuery(element).val();
         }
-        if (!data[current_id]['options'])
-          data[current_id]['options'] = {};
-        data[current_id]['options'][opt_name] = opt_val;
+        if (!data['fields'][current_id]['options'])
+          data['fields'][current_id]['options'] = {};
+        data['fields'][current_id]['options'][opt_name] = opt_val;
         jQuery(element).val('');
       });
       options.find("select").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
         var opt_val = jQuery(element).val();
-        if (!data[current_id]['options'])
-          data[current_id]['options'] = {};
-        data[current_id]['options'][opt_name] = opt_val;
+        if (!data['fields'][current_id]['options'])
+          data['fields'][current_id]['options'] = {};
+        data['fields'][current_id]['options'][opt_name] = opt_val;
         jQuery(element).val('');
       });
       options.find("textarea").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
         var opt_val = jQuery(element).val();
-        if (!data[current_id]['options'])
-          data[current_id]['options'] = {};
-        data[current_id]['options'][opt_name] = opt_val;
+        if (!data['fields'][current_id]['options'])
+          data['fields'][current_id]['options'] = {};
+        data['fields'][current_id]['options'][opt_name] = opt_val;
         jQuery(element).val('');
       });
       localStorage.setItem("ContentType", JSON.stringify(data));
