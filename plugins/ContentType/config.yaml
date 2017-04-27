@@ -196,7 +196,8 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::DateTime::ss_validator
         list_props:
             date_and_time:
-                filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
+                base: __virtual.date
+                col: value_datetime
                 html: $ContentType::MT::ContentFieldType::DateTime::html
                 terms: $ContentType::MT::ContentFieldType::DateTime::terms
                 use_blank: 1
@@ -210,7 +211,8 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::Date::ss_validator
         list_props:
             date:
-                filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
+                base: __virtual.date
+                col: value_datetime
                 html: $ContentType::MT::ContentFieldType::Date::html
                 terms: $ContentType::MT::ContentFieldType::DateTime::terms
                 use_blank: 1

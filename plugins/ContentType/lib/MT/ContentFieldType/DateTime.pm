@@ -26,99 +26,15 @@ sub html {
         : undef );
 }
 
-sub generate_query {
-    my $prop = shift;
-    my ( $args, $db_terms, $db_args ) = @_;
-
-    my $option   = $args->{option};
-    my $boundary = $args->{boundary};
-    my $query;
-    my $blog = MT->app ? MT->app->blog : undef;
-    my $now = MT::Util::epoch2ts( $blog, time() );
-    my $from   = $args->{from}   || '';
-    my $to     = $args->{to}     || '';
-    my $origin = $args->{origin} || '';
-    $from =~ s/\D//g;
-    $to =~ s/\D//g;
-    $origin =~ s/\D//g;
-    $from .= '000000' if $from;
-    $to   .= '235959' if $to;
-
-    if ( 'range' eq $option ) {
-        $query = [
-            '-and',
-            { op => '>=', value => $from },
-            { op => '<=', value => $to },
-        ];
-    }
-    elsif ( 'days' eq $option ) {
-        my $days = $args->{days};
-        my $origin = MT::Util::epoch2ts( $blog, time - $days * 60 * 60 * 24 );
-        $query = [
-            '-and',
-            { op => '>', value => $origin },
-            { op => '<', value => $now },
-        ];
-    }
-    elsif ( 'before' eq $option ) {
-        if ($boundary) {
-            $query = {
-                op    => '<=',
-                value => $origin . '235959',
-            };
-        }
-        else {
-            $query = {
-                op    => '<',
-                value => $origin . '000000'
-            };
-        }
-    }
-    elsif ( 'after' eq $option ) {
-        if ($boundary) {
-            $query = {
-                op    => '>=',
-                value => $origin . '000000',
-            };
-        }
-        else {
-            $query = {
-                op    => '>',
-                value => $origin . '235959'
-            };
-        }
-    }
-    elsif ( 'future' eq $option ) {
-        $query = {
-            op    => '>',
-            value => $now
-        };
-    }
-    elsif ( 'past' eq $option ) {
-        $query = {
-            op    => '<',
-            value => $now
-        };
-    }
-    elsif ( 'blank' eq $option ) {
-        $query = \'IS NULL';
-    }
-
-    $query;
-}
-
 sub terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
-    my $option    = $args->{option};
     my $data_type = $prop->{data_type};
-
-    my $query = generate_query( $prop, @_ );
+    my $query     = $prop->super(@_);
 
     my $join = MT::ContentFieldIndex->join_on(
-        undef,
-        { "value_${data_type}" => $query },
+        undef, $query,
         {   type      => 'left',
             condition => {
                 content_data_id  => \'= cd_id',
