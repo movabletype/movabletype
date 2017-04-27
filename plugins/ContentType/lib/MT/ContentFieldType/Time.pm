@@ -75,10 +75,10 @@ sub ss_validator {
 sub filter_tmpl {
     my $prop = shift;
 
-    my $tmpl     = 'filter_form_future_time';
+    my $tmpl     = 'filter_form_time';
     my $label    = '<mt:var name="label">';
-    my $opts     = '<mt:var name="future_blank_time_filter_options">';
-    my $contents = '<mt:var name="future_time_filter_contents">';
+    my $opts     = '<mt:var name="blank_time_filter_options">';
+    my $contents = '<mt:var name="time_filter_contents">';
 
     return MT->translate( '<mt:var name="[_1]"> [_2] [_3] [_4]',
         $tmpl, $label, $opts, $contents );
@@ -91,7 +91,7 @@ sub terms {
     my $option    = $args->{option};
     my $data_type = $prop->{data_type};
 
-    my $query = generate_query( $prop, @_ );
+    my $query = _generate_query( $prop, @_ );
 
     my $join = MT::ContentFieldIndex->join_on(
         undef,
@@ -112,16 +112,18 @@ sub terms {
     { id => @cd_ids ? \@cd_ids : 0 };
 }
 
-sub generate_query {
+sub _generate_query {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
     my $option   = $args->{option};
     my $boundary = $args->{boundary};
-    my $now      = MT::Util::epoch2ts( undef, time );
-    my $from     = $args->{from} || '';
-    my $to       = $args->{to} || '';
-    my $origin   = $args->{origin} || '';
+    my $blog     = MT->app ? MT->app->blog : undef;
+    my $now      = substr MT::Util::epoch2ts( $blog, time ), 8;
+    $now = "19700101${now}";
+    my $from   = $args->{from}   || '';
+    my $to     = $args->{to}     || '';
+    my $origin = $args->{origin} || '';
     $from =~ s/\D//g;
     $to =~ s/\D//g;
     $origin =~ s/\D//g;
@@ -140,7 +142,7 @@ sub generate_query {
     elsif ( 'hours' eq $option ) {
         my $hours = $args->{hours};
         my $origin_time
-            = substr MT::Util::epoch2ts( undef, time - $hours * 60 * 60 ), 8;
+            = substr MT::Util::epoch2ts( $blog, time - $hours * 60 * 60 ), 8;
         $query = [
             '-and',
             { op => '>', value => "19700101${origin_time}" },

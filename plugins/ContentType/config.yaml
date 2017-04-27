@@ -230,7 +230,6 @@ content_field_types:
                 html: $ContentType::MT::ContentFieldType::Time::html
                 terms: $ContentType::MT::ContentFieldType::Time::terms
                 use_blank: 1
-                use_future: 1
     select_box:
         label: Select Box
         data_type: varchar
