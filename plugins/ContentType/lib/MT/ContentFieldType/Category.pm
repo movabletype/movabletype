@@ -3,7 +3,10 @@ use strict;
 use warnings;
 
 use MT::Category;
+use MT::CategoryList;
 use MT::ContentData;
+use MT::ContentField;
+use MT::ContentFieldIndex;
 use MT::ObjectCategory;
 
 sub field_html {
@@ -12,10 +15,9 @@ sub field_html {
     $value = [$value] unless ref $value eq 'ARRAY';
 
     my @cats;
-    if ( my $field = MT->model('content_field')->load($field_id) ) {
+    if ( my $field = MT::ContentField->load($field_id) ) {
         if ( my $cat_list
-            = MT->model('category_list')
-            ->load( $field->related_cat_list_id || 0 ) )
+            = MT::CategoryList->load( $field->related_cat_list_id || 0 ) )
         {
             @cats = @{ $cat_list->categories };
         }
@@ -51,9 +53,9 @@ sub data_getter {
     my ( $app, $field_id ) = @_;
     my @cat_ids = $app->param( 'content-field-' . $field_id );
 
-    my @valid_cats = MT->model('category')
-        ->load( { id => \@cat_ids }, { fetchonly => { id => 1 } } );
-    my %valid_cats = map { $_->id => 1 } @valid_cats;
+    my %valid_cats
+        = map { $_->id => 1 } MT::Category->load( { id => \@cat_ids },
+        { fetchonly => { id => 1 } } );
 
     [ grep { $valid_cats{$_} } @cat_ids ];
 }
@@ -64,9 +66,7 @@ sub html {
 
     my $cat_ids = $content_data->data->{ $prop->content_field_id } || [];
 
-    my %cats
-        = map { $_->id => $_ }
-        MT->model('category')->load( { id => $cat_ids } );
+    my %cats = map { $_->id => $_ } MT::Category->load( { id => $cat_ids } );
     my @cats = map { $cats{$_} } @$cat_ids;
 
     my @links;
@@ -96,33 +96,33 @@ sub terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
+    my $label_terms = $prop->super(@_);
+
     my $option = $args->{option} || '';
-
-    my $super = MT->registry( 'list_properties', '__virtual', 'string' );
-    my $label_terms = $super->{terms}->( $prop, @_ );
-
     if ( $option eq 'not_contains' ) {
         my $string = $args->{string};
-        my $field
-            = MT->model('content_field')->load( $prop->content_field_id );
+        my $field  = MT::ContentField->load( $prop->content_field_id );
 
-        my $category_join = MT->model('category')->join_on(
-            undef,
-            {   id               => \'= cf_idx_value_integer',
-                label            => { like => "%${string}%" },
+        my @cat_ids = map { $_->id } MT::Category->load(
+            {   label => { like => "%${string}%" },
                 category_list_id => $field->related_cat_list_id,
             },
+            { fetchonly => { id => 1 } },
         );
         my $cf_idx_join = MT::ContentFieldIndex->join_on(
             undef,
-            {   content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
+            { value_integer => [ \'IS NULL', @cat_ids ] },
+            {   unique    => 1,
+                type      => 'left',
+                condition => {
+                    content_data_id  => \'= cd_id',
+                    content_field_id => $prop->content_field_id,
+                },
             },
-            { join => $category_join, unique => 1 },
         );
         my @cd_ids
             = map { $_->id }
-            MT::ContentData->load( { blog_id => MT->app->blog->id },
+            MT::ContentData->load( $db_terms,
             { join => $cf_idx_join, fetchonly => { id => 1 } } );
         @cd_ids ? { id => { not => \@cd_ids } } : ();
     }
@@ -135,7 +135,7 @@ sub terms {
                     content_data_id  => \'= cd_id',
                     content_field_id => $prop->content_field_id,
                 },
-            }
+            },
         );
         my @cd_ids
             = map { $_->id }
@@ -145,10 +145,9 @@ sub terms {
     }
     else {
         my $cat_join
-            = MT->model('category')
-            ->join_on( undef,
+            = MT::Category->join_on( undef,
             [ { id => \'= cf_idx_value_integer' }, $label_terms ] );
-        my $cf_idx_join = MT->model('content_field_index')->join_on(
+        my $cf_idx_join = MT::ContentFieldIndex->join_on(
             undef,
             {   content_data_id  => \'= cd_id',
                 content_field_id => $prop->content_field_id,

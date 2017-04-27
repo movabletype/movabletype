@@ -364,8 +364,8 @@ content_field_types:
         data_getter: $ContentType::MT::ContentFieldType::Category::data_getter
         list_props:
             category:
+                base: __virtual.string
                 col: label
-                filter_tmpl: <mt:var name="filter_form_blank_string">
                 html: $ContentType::MT::ContentFieldType::Category::html
                 terms: $ContentType::MT::ContentFieldType::Category::terms
                 use_blank: 1
