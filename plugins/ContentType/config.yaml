@@ -142,8 +142,9 @@ content_field_types:
         order: 20
         list_props:
             single_line_text:
-                filter_tmpl: <mt:var name="filter_form_blank_string">
-                terms: $ContentType::ContentType::ListProperties::terms_text
+                base: __virtual.string
+                col: value_varchar
+                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
                 use_blank: 1
     multi_line_text:
         label: Multi Line Text
@@ -151,8 +152,9 @@ content_field_types:
         order: 30
         list_props:
             multi_line_text:
-                filter_tmpl: <mt:var name="filter_form_blank_string">
-                terms: $ContentType::ContentType::ListProperties::terms_text
+                base: __virtual.string
+                col: value_blob
+                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
                 use_blank: 1
     integer:
         label: Integer
@@ -179,8 +181,9 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::URL::ss_validator
         list_props:
             url:
-                filter_tmpl: <mt:var name="filter_form_blank_string">
-                terms: $ContentType::ContentType::ListProperties::terms_text
+                base: __virtual.string
+                col: value_varchar
+                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
                 use_blank: 1
     date_and_time:
         label: Date and Time
@@ -334,6 +337,9 @@ content_field_types:
         order: 140
         list_props:
             embed_text:
+                base: __virtual.string
+                col: value_blob
+                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
                 use_blank: 1
     category:
         label: Category

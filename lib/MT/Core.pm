@@ -232,7 +232,8 @@ BEGIN {
                             $query = { like => "%$query%" };
                         }
                         elsif ( 'not_contains' eq $option ) {
-                            $query = { not_like => "%$query%" };
+                            $query
+                                = [ { not_like => "%$query%" }, \'IS NULL' ];
                         }
                         elsif ( 'beginning' eq $option ) {
                             $query = { like => "$query%" };
