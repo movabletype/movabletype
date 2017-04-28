@@ -4,8 +4,8 @@ use warnings;
 
 use MT;
 use MT::App::CMS;
-use MT::ContentData;
 use MT::ContentField;
+use MT::ContentFieldType::Common qw( get_cd_ids_by_left_join );
 use MT::Util ();
 
 sub html {
@@ -30,30 +30,9 @@ sub terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
-    my $data_type = $prop->{data_type};
-    my $query     = $prop->super(@_);
-
-    my $join = MT::ContentFieldIndex->join_on(
-        undef, $query,
-        {   type      => 'left',
-            condition => {
-                content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-        },
-    );
-
-    my @cd_ids
-        = map { $_->id }
-        MT::ContentData->load( $db_terms,
-        { join => $join, fetchonly => { id => 1 } } );
-
-    { id => @cd_ids ? \@cd_ids : 0 };
-}
-
-sub filter_tmpl {
-    my $r = MT->registry( 'list_properties', '__virtual', 'date' );
-    $r->{filter_tmpl}->(@_);
+    my $join_terms = $prop->super(@_);
+    my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+    { id => $cd_ids };
 }
 
 sub field_html {

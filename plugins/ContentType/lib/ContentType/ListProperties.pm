@@ -157,29 +157,6 @@ sub make_list_properties {
             my $field_key  = 'content_field_' . $f->{id};
             my $field_type = $content_field_types->{$idx_type} or next;
 
-            my $default_sort_prop = sub {
-                my $prop = shift;
-                my ( $terms, $args ) = @_;
-
-                my $cf_idx_join = MT::ContentFieldIndex->join_on(
-                    undef, undef,
-                    {   type      => 'left',
-                        condition => {
-                            content_data_id  => \'= cd_id',
-                            content_field_id => $f->{id},
-                        },
-                        sort      => 'value_' . $field_type->{data_type},
-                        direction => delete $args->{direction},
-                        unique    => 1,
-                    },
-                );
-
-                $args->{joins} ||= [];
-                push @{ $args->{joins} }, $cf_idx_join;
-
-                return;
-            };
-
             $order++;
 
             if ( exists $field_type->{list_props} ) {
@@ -217,7 +194,7 @@ sub make_list_properties {
                             idx_type     => $idx_type,
                             label        => $label,
                             order        => $order,
-                            sort         => $default_sort_prop,
+                            sort         => \&_default_sort,
                         ),
                         %{ $field_type->{list_props}{$prop_name} },
                     };
@@ -231,6 +208,29 @@ sub make_list_properties {
     return $props;
 }
 
+sub _default_sort {
+    my $prop = shift;
+    my ( $terms, $args ) = @_;
+
+    my $cf_idx_join = MT::ContentFieldIndex->join_on(
+        undef, undef,
+        {   type      => 'left',
+            condition => {
+                content_data_id  => \'= cd_id',
+                content_field_id => $prop->content_field_id,
+            },
+            sort      => 'value_' . $prop->data_type,
+            direction => delete $args->{direction},
+            unique    => 1,
+        },
+    );
+
+    $args->{joins} ||= [];
+    push @{ $args->{joins} }, $cf_idx_join;
+
+    return;
+}
+
 sub _cl_terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
@@ -242,18 +242,20 @@ sub _cl_terms {
     );
     $db_args->{joins} ||= [];
     push @{ $db_args->{joins} }, $cf_join;
+    return;
 }
 
 sub _cl_single_select_options {
     my $prop = shift;
-    my @cat_lists
-        = MT::CategoryList->load( { blog_id => MT->app->blog->id } );
     my @options;
-    for my $cl (@cat_lists) {
-        my $id    = $cl->id;
-        my $name  = $cl->name;
-        my $label = "${name} (id:${id})";
-        push @options, { label => $label, value => $id };
+    my $iter = MT::CategoryList->load_iter(
+        { blog_id   => MT->app->blog->id },
+        { fetchonly => { id => 1, name => 1 } },
+    );
+    while ( my $cl = $iter->() ) {
+        my $id   = $cl->id;
+        my $name = $cl->name;
+        push @options, { label => "${name} (id:${id})", value => $id };
     }
     \@options;
 }

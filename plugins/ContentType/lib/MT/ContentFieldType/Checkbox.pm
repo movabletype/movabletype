@@ -2,6 +2,7 @@ package MT::ContentFieldType::Checkbox;
 use strict;
 use warnings;
 
+use MT;
 use MT::ContentField;
 
 sub field_html {

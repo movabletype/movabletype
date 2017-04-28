@@ -12,7 +12,7 @@ sub view {
         unless $app->can_do('edit_category_list');
 
     if ( my $list_id = $app->param('id') ) {
-        unless ( MT->model('category_list')->exist($list_id) ) {
+        unless ( MT::CategoryList->exist($list_id) ) {
             return $app->errtrans( 'Invalid category_list_id: [_1]',
                 $list_id );
         }
@@ -80,7 +80,7 @@ sub can_delete {
     return 1 if $author->is_superuser();
 
     if ( $list && !ref $list ) {
-        $list = MT->model('category_list')->load($list)
+        $list = MT::CategoryList->load($list)
             or return;
     }
 

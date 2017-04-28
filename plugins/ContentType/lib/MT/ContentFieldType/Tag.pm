@@ -2,11 +2,9 @@ package MT::ContentFieldType::Tag;
 use strict;
 use warnings;
 
-use MT;
-use MT::ContentData;
-use MT::ContentField;
+use MT::ContentFieldType::Common
+    qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 use MT::Tag;
-use MT::ObjectTag;
 
 sub field_html {
     my ( $app, $field_id, $value ) = @_;
@@ -52,7 +50,7 @@ sub data_getter {
     my %existing_tags
         = map { $_->name => $_ }
         MT::Tag->load( { name => \@unique_tag_names },
-        { binary => { name => 1 } } );
+        { binary => { name => 1 }, fetchonly => { name => 1 } } );
 
     for my $utn (@unique_tag_names) {
         unless ( $existing_tags{$utn} ) {
@@ -77,59 +75,30 @@ sub terms {
     if ( $option eq 'not_contains' ) {
         my $string = $args->{string};
 
-        my @tag_ids
-            = map { $_->id }
-            MT::Tag->load( { name => { like => "%${string}%" }, },
+        my @tag_ids;
+        my $iter = MT::Tag->load_iter( { name => { like => "%${string}%" } },
             { fetchonly => { id => 1 } } );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            { value_integer => [ \'IS NULL', @tag_ids ], },
-            {   unique    => 1,
-                type      => 'left',
-                condition => {
-                    content_data_id  => \'= cd_id',
-                    content_field_id => $prop->content_field_id,
-                },
-            },
-        );
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( $db_terms,
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-        @cd_ids ? { id => { not => \@cd_ids } } : ();
+        while ( my $tag = $iter->() ) {
+            push @tag_ids, $tag->id;
+        }
+
+        my $join_terms = { value_integer => [ \'IS NULL', @tag_ids ] };
+        my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+        $cd_ids ? { id => { not => \$cd_ids } } : ();
     }
     elsif ( $option eq 'blank' ) {
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            { value_integer => \'IS NULL' },
-            {   type      => 'left',
-                condition => {
-                    content_data_id  => \'= cd_id',
-                    content_field_id => $prop->content_field_id,
-                },
-            }
-        );
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( $db_terms,
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-        { id => @cd_ids ? \@cd_ids : 0 };
+        my $join_terms = { value_integer => \'IS NULL' };
+        my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+        { id => $cd_ids };
     }
     else {
-        my $tag_join = MT::Tag->join_on( undef,
-            [ { id => \'= cf_idx_value_integer' }, $name_terms ] );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            {   content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-            { join => $tag_join, unique => 1 },
-        );
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( $db_terms,
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-        { id => @cd_ids ? \@cd_ids : 0 };
+        my $join_args = {
+            join => MT::Tag->join_on(
+                undef, [ { id => \'= cf_idx_value_integer' }, $name_terms ],
+            ),
+        };
+        my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
+        { id => $cd_ids };
     }
 }
 

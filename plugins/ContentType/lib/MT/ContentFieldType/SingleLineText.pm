@@ -2,30 +2,15 @@ package MT::ContentFieldType::SingleLineText;
 use strict;
 use warnings;
 
-use MT::ContentData;
-use MT::ContentFieldIndex;
+use MT::ContentFieldType::Common qw( get_cd_ids_by_left_join );
 
 sub terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
-    my $query = $prop->super(@_);
-
-    my $join = MT::ContentFieldIndex->join_on(
-        undef, $query,
-        {   type      => 'left',
-            condition => {
-                content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-        },
-    );
-    my @cd_ids
-        = map { $_->id }
-        MT::ContentData->load( $db_terms,
-        { join => $join, fetchonly => { id => 1 } } );
-
-    { id => @cd_ids ? \@cd_ids : 0 };
+    my $join_terms = $prop->super(@_);
+    my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+    { id => $cd_ids };
 }
 
 1;

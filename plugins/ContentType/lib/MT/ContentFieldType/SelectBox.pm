@@ -3,9 +3,8 @@ use strict;
 use warnings;
 
 use MT;
-use MT::ContentData;
 use MT::ContentField;
-use MT::ContentFieldIndex;
+use MT::ContentFieldType::Common qw( get_cd_ids_by_inner_join );
 
 sub terms {
     my $prop = shift;
@@ -14,25 +13,14 @@ sub terms {
     my $val       = $args->{value};
     my $data_type = $prop->{data_type};
 
-    my $cf_idx_join = MT::ContentFieldIndex->join_on(
-        undef,
-        {   content_data_id      => \'= cd_id',
-            content_field_id     => $prop->content_field_id,
-            "value_${data_type}" => $val,
-        },
-        { unique => 1 },
-    );
-
-    my @cd_ids
-        = map { $_->id }
-        MT::ContentData->load( { blog_id => MT->app->blog->id },
-        { join => $cf_idx_join, fetchonly => { id => 1 } } );
+    my $join_terms = { "value_${data_type}" => $val };
+    my $cd_ids = get_cd_ids_by_inner_join( $prop, $join_terms, undef, @_ );
 
     if ( $args->{option} && $args->{option} eq 'is_not_selected' ) {
-        @cd_ids ? { id => { not => \@cd_ids } } : ();
+        $cd_ids ? { id => { not => $cd_ids } } : ();
     }
     else {
-        { id => @cd_ids ? \@cd_ids : 0 };
+        { id => $cd_ids };
     }
 }
 

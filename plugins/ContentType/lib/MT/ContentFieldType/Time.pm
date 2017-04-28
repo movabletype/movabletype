@@ -3,9 +3,8 @@ use strict;
 use warnings;
 
 use MT;
-use MT::ContentData;
 use MT::ContentField;
-use MT::ContentFieldIndex;
+use MT::ContentFieldType::Common qw( get_cd_ids_by_left_join );
 use MT::Util ();
 
 sub html {
@@ -88,28 +87,13 @@ sub terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
-    my $option    = $args->{option};
     my $data_type = $prop->{data_type};
-
     my $query = _generate_query( $prop, @_ );
 
-    my $join = MT::ContentFieldIndex->join_on(
-        undef,
-        { "value_${data_type}" => $query },
-        {   type      => 'left',
-            condition => {
-                content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-        },
-    );
-
-    my @cd_ids
-        = map { $_->id }
-        MT::ContentData->load( $db_terms,
-        { join => $join, fetchonly => { id => 1 } } );
-
-    { id => @cd_ids ? \@cd_ids : 0 };
+    my $cd_ids
+        = get_cd_ids_by_left_join( $prop, { "value_${data_type}" => $query },
+        undef, @_ );
+    { id => $cd_ids };
 }
 
 sub _generate_query {

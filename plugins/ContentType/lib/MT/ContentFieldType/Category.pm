@@ -4,10 +4,9 @@ use warnings;
 
 use MT::Category;
 use MT::CategoryList;
-use MT::ContentData;
 use MT::ContentField;
-use MT::ContentFieldIndex;
-use MT::ObjectCategory;
+use MT::ContentFieldType::Common
+    qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 
 sub field_html {
     my ( $app, $field_id, $value ) = @_;
@@ -109,56 +108,23 @@ sub terms {
             },
             { fetchonly => { id => 1 } },
         );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            { value_integer => [ \'IS NULL', @cat_ids ] },
-            {   unique    => 1,
-                type      => 'left',
-                condition => {
-                    content_data_id  => \'= cd_id',
-                    content_field_id => $prop->content_field_id,
-                },
-            },
-        );
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( $db_terms,
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-        @cd_ids ? { id => { not => \@cd_ids } } : ();
+
+        my $join_terms = { value_integer => [ \'IS NULL', @cat_ids ] };
+        my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+        $cd_ids ? { id => { not => $cd_ids } } : ();
     }
     elsif ( $option eq 'blank' ) {
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            { value_integer => \'IS NULL' },
-            {   type      => 'left',
-                condition => {
-                    content_data_id  => \'= cd_id',
-                    content_field_id => $prop->content_field_id,
-                },
-            },
-        );
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( $db_terms,
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-        { id => @cd_ids ? \@cd_ids : 0 };
+        my $join_terms = { value_integer => \'IS NULL' };
+        my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+        { id => $cd_ids };
     }
     else {
         my $cat_join
             = MT::Category->join_on( undef,
             [ { id => \'= cf_idx_value_integer' }, $label_terms ] );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            {   content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-            { join => $cat_join, unique => 1 },
-        );
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( $db_terms,
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-        { id => @cd_ids ? \@cd_ids : 0 };
+        my $join_args = { join => $cat_join };
+        my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
+        { id => $cd_ids };
     }
 }
 

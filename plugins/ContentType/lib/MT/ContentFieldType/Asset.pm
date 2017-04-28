@@ -5,9 +5,8 @@ use warnings;
 use MT;
 use MT::Asset;
 use MT::Author;
-use MT::ContentData;
-use MT::ContentFieldType::DateTime;
-use MT::ObjectAsset;
+use MT::ContentFieldType::Common
+    qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 use MT::ObjectTag;
 use MT::Tag;
 
@@ -82,39 +81,32 @@ sub terms_author_name {
             { nickname => { like => "%${string}%" } },
         ];
         my $author_join = MT::Author->join_on( undef,
-            [ $author_terms, { id => \'= asset_created_by' }, ] );
+            [ $author_terms, { id => \'= asset_created_by' } ] );
         my @asset_ids = map { $_->id } MT::Asset->load(
             undef,
             {   no_class => 1,
                 join     => $author_join,
             },
         );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            { value_integer => [ \'IS NULL', @asset_ids ], },
-            {   type      => 'left',
-                condition => {
-                    content_data_id  => \'= cd_id',
-                    content_field_id => $prop->content_field_id,
-                },
-            },
-        );
-        my @cd_ids = map { $_->id } MT::ContentData->load(
-            $load_terms,
-            {   join      => $cf_idx_join,
-                fetchonly => { id => 1 },
-            }
-        );
-        @cd_ids ? { id => { not => \@cd_ids } } : ();
+        my $join_terms = { value_integer => [ \'IS NULL', @asset_ids ] };
+        my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+        $cd_ids ? { id => { not => $cd_ids } } : ();
     }
     else {
         my $author_terms = [ $name_query, $nick_query ];
-        my $cf_idx_join = _generate_cf_idx_join( $prop, $author_terms );
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( $load_terms,
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-        { id => @cd_ids ? \@cd_ids : 0 };
+        my $author_join
+            = MT::Author->join_on( undef,
+            [ { id => \'= asset_created_by' }, $author_terms ] );
+        my $asset_join = MT::Asset->join_on(
+            undef,
+            { id => \'= cf_idx_value_integer' },
+            {   no_class => 1,
+                join     => $author_join,
+            }
+        );
+        my $join_args = { join => $asset_join };
+        my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
+        { id => $cd_ids };
     }
 }
 
@@ -123,15 +115,19 @@ sub terms_author_status {
     my ( $args, $db_terms, $db_args ) = @_;
 
     my $status_query = $prop->super(@_);
-
-    my $cf_idx_join = _generate_cf_idx_join( $prop, $status_query );
-
-    my @cd_ids
-        = map { $_->id }
-        MT::ContentData->load( $db_terms,
-        { join => $cf_idx_join, fetchonly => { id => 1 } } );
-
-    { id => @cd_ids ? \@cd_ids : 0 };
+    my $author_join
+        = MT::Author->join_on( undef,
+        [ { id => \'= asset_created_by' }, $status_query ] );
+    my $asset_join = MT::Asset->join_on(
+        undef,
+        { id => \'= cf_idx_value_integer' },
+        {   no_class => 1,
+            join     => $author_join,
+        }
+    );
+    my $join_args = { join => $asset_join };
+    my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
+    { id => $cd_ids };
 }
 
 sub terms_date {
@@ -146,48 +142,9 @@ sub terms_date {
         { no_class => 1 },
     );
 
-    my $cf_idx_join = MT::ContentFieldIndex->join_on(
-        undef,
-        {   content_data_id  => \'= cd_id',
-            content_field_id => $prop->content_field_id,
-        },
-        {   join   => $asset_join,
-            unique => 1,
-        },
-    );
-
-    my @cd_ids
-        = map { $_->id }
-        MT::ContentData->load( $db_terms,
-        { join => $cf_idx_join, fetchonly => { id => 1 } } );
-
-    { id => @cd_ids ? \@cd_ids : 0 };
-}
-
-sub _generate_cf_idx_join {
-    my ( $prop, $author_terms ) = @_;
-
-    my $author_join
-        = MT::Author->join_on( undef,
-        [ { id => \'= asset_created_by' }, $author_terms, ] );
-
-    my $asset_join = MT::Asset->join_on(
-        undef,
-        { id => \'= cf_idx_value_integer' },
-        {   no_class => 1,
-            join     => $author_join,
-        }
-    );
-
-    MT::ContentFieldIndex->join_on(
-        undef,
-        {   content_data_id  => \'= cd_id',
-            content_field_id => $prop->content_field_id,
-        },
-        {   join   => $asset_join,
-            unique => 1,
-        },
-    );
+    my $join_args = { join => $asset_join };
+    my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
+    { id => $cd_ids };
 }
 
 sub terms_tag {
@@ -213,23 +170,9 @@ sub terms_tag {
                 fetchonly => { object_id => 1 },
             },
         );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            { value_integer => [ \'IS NULL', @asset_ids ] },
-            {   type      => 'left',
-                condition => {
-                    content_data_id  => \'= cd_id',
-                    content_field_id => $prop->content_field_id,
-                },
-            },
-        );
-        my @cd_ids = map { $_->id } MT::ContentData->load(
-            $base_terms,
-            {   join      => $cf_idx_join,
-                fetchonly => { id => 1 },
-            },
-        );
-        @cd_ids ? { id => { not => \@cd_ids } } : ();
+        my $join_terms = { value_integer => [ \'IS NULL', @asset_ids ] };
+        my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+        $cd_ids ? { id => { not => $cd_ids } } : ();
     }
     elsif ( 'blank' eq $option ) {
         my $objecttag_join = MT::ObjectTag->join_on(
@@ -242,20 +185,9 @@ sub terms_tag {
                 },
             },
         );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            {   content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-            {   join   => $objecttag_join,
-                unique => 1,
-            },
-        );
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( $base_terms,
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-        { id => @cd_ids ? \@cd_ids : 0 };
+        my $join_args = { join => $objecttag_join };
+        my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
+        { id => $cd_ids };
     }
     else {
         my $tag_join = MT::Tag->join_on( undef,
@@ -267,26 +199,13 @@ sub terms_tag {
             },
             { join => $tag_join },
         );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            {   content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-            {   join   => $objecttag_join,
-                unique => 1,
-            },
-        );
-
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( $base_terms,
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-
+        my $join_args = { join => $objecttag_join };
+        my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
         if ( 'not_contains' eq $option ) {
-            @cd_ids ? { id => { not => \@cd_ids } } : ();
+            $cd_ids ? { id => { not => $cd_ids } } : ();
         }
         else {
-            { id => @cd_ids ? \@cd_ids : 0 };
+            { id => $cd_ids };
         }
     }
 }
@@ -301,7 +220,6 @@ sub terms_image_size {
     my $option = $args->{option} || '';
     if ( $option eq 'not_equal' ) {
         my $value = $args->{value} || 0;
-        warn $value;
         my $asset_meta_join
             = MT::Asset->meta_pkg->join_on( 'asset_id',
             { type => $prop->meta_type, vinteger => $value },
@@ -313,23 +231,9 @@ sub terms_image_size {
                 fetchonly => { id => 1 },
             },
         );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            { value_integer => [ \'IS NULL', @asset_ids ], },
-            {   type      => 'left',
-                condition => {
-                    content_data_id  => \'= cd_id',
-                    content_field_id => $prop->content_field_id,
-                },
-            },
-        );
-        my @cd_ids = map { $_->id } MT::ContentData->load(
-            $db_terms,
-            {   join      => $cf_idx_join,
-                fetchonly => { id => 1 },
-            },
-        );
-        @cd_ids ? { id => { not => \@cd_ids } } : ();
+        my $join_terms = { value_integer => [ \'IS NULL', @asset_ids ] };
+        my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+        $cd_ids ? { id => { not => $cd_ids } } : ();
     }
     else {
         my $asset_meta_join
@@ -343,18 +247,9 @@ sub terms_image_size {
                 join     => $asset_meta_join,
             },
         );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            {   content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-            { join => $asset_join, unique => 1 },
-        );
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( $db_terms,
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-        { id => @cd_ids ? \@cd_ids : 0 };
+        my $join_args = { join => $asset_join };
+        my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
+        { id => $cd_ids };
     }
 }
 
@@ -392,21 +287,9 @@ sub terms_missing_file {
 
     return { id => 0 } unless @asset_ids;    # no data
 
-    my $cf_idx_join = MT::ContentFieldIndex->join_on(
-        undef,
-        {   content_data_id  => \'= cd_id',
-            content_field_id => $prop->content_field_id,
-            value_integer    => \@asset_ids,
-        },
-        { unique => 1 },
-    );
-
-    my @cd_ids
-        = map { $_->id }
-        MT::ContentData->load( $db_terms,
-        { join => $cf_idx_join, fetchonly => { id => 1 } } );
-
-    { id => @cd_ids ? \@cd_ids : 0 };
+    my $join_terms = { value_integer => \@asset_ids };
+    my $cd_ids = get_cd_ids_by_inner_join( $prop, $join_terms, undef, @_ );
+    { id => $cd_ids };
 }
 
 sub terms_text {
@@ -424,23 +307,9 @@ sub terms_text {
             },
             { no_class => 1, fetchonly => { id => 1 } },
         );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            { value_integer => [ \'IS NULL', @asset_ids ] },
-            {   type      => 'left',
-                condition => {
-                    content_data_id  => \'= cd_id',
-                    content_field_id => $prop->content_field_id,
-                },
-            },
-        );
-        my @cd_ids = map { $_->id } MT::ContentData->load(
-            $db_terms,
-            {   join      => $cf_idx_join,
-                fetchonly => { id => 1 },
-            },
-        );
-        @cd_ids ? { id => { not => \@cd_ids } } : ();
+        my $join_terms = { value_integer => [ \'IS NULL', @asset_ids ] };
+        my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+        $cd_ids ? { id => { not => $cd_ids } } : ();
     }
     else {
         my $query      = $prop->super(@_);
@@ -449,20 +318,9 @@ sub terms_text {
             [ { id => \'= cf_idx_value_integer' }, $query ],
             { no_class => 1 },
         );
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            {   content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-            {   join   => $asset_join,
-                unique => 1,
-            },
-        );
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( $db_terms,
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-        { id => @cd_ids ? \@cd_ids : 0 };
+        my $join_args = { join => $asset_join };
+        my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
+        { id => $cd_ids };
     }
 }
 
@@ -473,42 +331,16 @@ sub terms_id {
     my $option = $args->{option} || '';
 
     if ( $option eq 'not_equal' ) {
-        my $col         = $prop->col;
-        my $value       = $args->{value} || 0;
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef,
-            { $col => [ \'IS NULL', $value ] },
-            {   type      => 'left',
-                condition => {
-                    content_data_id  => \'= cd_id',
-                    content_field_id => $prop->content_field_id,
-                },
-                unique => 1,
-            },
-        );
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( $db_terms,
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-        @cd_ids ? { id => { not => \@cd_ids } } : ();
+        my $col        = $prop->col;
+        my $value      = $args->{value} || 0;
+        my $join_terms = { $col => [ \'IS NULL', $value ] };
+        my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+        $cd_ids ? { id => { not => $cd_ids } } : ();
     }
     else {
-        my $query       = $prop->super(@_);
-        my $cf_idx_join = MT::ContentFieldIndex->join_on(
-            undef, $query,
-            {   type      => 'left',
-                condition => {
-                    content_data_id  => \'= cd_id',
-                    content_field_id => $prop->content_field_id,
-                },
-                unique => 1,
-            },
-        );
-        my @cd_ids
-            = map { $_->id }
-            MT::ContentData->load( $db_terms,
-            { join => $cf_idx_join, fetchonly => { id => 1 } } );
-        { id => @cd_ids ? \@cd_ids : 0 };
+        my $join_terms = $prop->super(@_);
+        my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+        { id => $cd_ids };
     }
 }
 

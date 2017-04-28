@@ -2,6 +2,8 @@ package MT::ContentFieldType::Date;
 use strict;
 use warnings;
 
+use MT;
+use MT::ContentField;
 use MT::Util ();
 
 sub html {

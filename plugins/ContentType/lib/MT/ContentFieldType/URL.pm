@@ -2,6 +2,7 @@ package MT::ContentFieldType::URL;
 use strict;
 use warnings;
 
+use MT;
 use MT::Util ();
 
 sub ss_validator {
