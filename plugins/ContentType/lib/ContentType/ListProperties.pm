@@ -157,8 +157,6 @@ sub make_list_properties {
             my $field_key  = 'content_field_' . $f->{id};
             my $field_type = $content_field_types->{$idx_type} or next;
 
-            $order++;
-
             if ( exists $field_type->{list_props} ) {
                 for my $prop_name ( keys %{ $field_type->{list_props} } ) {
                     my ( $label, $prop_key );

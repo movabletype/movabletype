@@ -50,7 +50,7 @@ sub data_getter {
     my %existing_tags
         = map { $_->name => $_ }
         MT::Tag->load( { name => \@unique_tag_names },
-        { binary => { name => 1 }, fetchonly => { name => 1 } } );
+        { binary => { name => 1 } } );
 
     for my $utn (@unique_tag_names) {
         unless ( $existing_tags{$utn} ) {
