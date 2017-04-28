@@ -4,8 +4,8 @@ use warnings;
 
 use MT;
 use MT::App::CMS;
-use MT::ContentData;
 use MT::ContentField;
+use MT::ContentFieldType::Common qw( get_cd_ids_by_left_join );
 use MT::Util ();
 
 sub html {
@@ -26,118 +26,13 @@ sub html {
         : undef );
 }
 
-sub generate_query {
-    my $prop = shift;
-    my ( $args, $db_terms, $db_args ) = @_;
-
-    my $option   = $args->{option};
-    my $boundary = $args->{boundary};
-    my $query;
-    my $blog = MT->app ? MT->app->blog : undef;
-    my $now = MT::Util::epoch2ts( $blog, time() );
-    my $from   = $args->{from}   || '';
-    my $to     = $args->{to}     || '';
-    my $origin = $args->{origin} || '';
-    $from =~ s/\D//g;
-    $to =~ s/\D//g;
-    $origin =~ s/\D//g;
-    $from .= '000000' if $from;
-    $to   .= '235959' if $to;
-
-    if ( 'range' eq $option ) {
-        $query = [
-            '-and',
-            { op => '>=', value => $from },
-            { op => '<=', value => $to },
-        ];
-    }
-    elsif ( 'days' eq $option ) {
-        my $days = $args->{days};
-        my $origin = MT::Util::epoch2ts( $blog, time - $days * 60 * 60 * 24 );
-        $query = [
-            '-and',
-            { op => '>', value => $origin },
-            { op => '<', value => $now },
-        ];
-    }
-    elsif ( 'before' eq $option ) {
-        if ($boundary) {
-            $query = {
-                op    => '<=',
-                value => $origin . '235959',
-            };
-        }
-        else {
-            $query = {
-                op    => '<',
-                value => $origin . '000000'
-            };
-        }
-    }
-    elsif ( 'after' eq $option ) {
-        if ($boundary) {
-            $query = {
-                op    => '>=',
-                value => $origin . '000000',
-            };
-        }
-        else {
-            $query = {
-                op    => '>',
-                value => $origin . '235959'
-            };
-        }
-    }
-    elsif ( 'future' eq $option ) {
-        $query = {
-            op    => '>',
-            value => $now
-        };
-    }
-    elsif ( 'past' eq $option ) {
-        $query = {
-            op    => '<',
-            value => $now
-        };
-    }
-    elsif ( 'blank' eq $option ) {
-        $query = \'IS NULL';
-    }
-
-    $query;
-}
-
 sub terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
-    my $option    = $args->{option};
-    my $data_type = $prop->{data_type};
-
-    my $query = generate_query( $prop, @_ );
-
-    my $join = MT::ContentFieldIndex->join_on(
-        undef,
-        { "value_${data_type}" => $query },
-        {   type      => 'left',
-            condition => {
-                content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-        },
-    );
-
-    my @cd_ids
-        = map { $_->id }
-        MT::ContentData->load( $db_terms,
-        { join => $join, fetchonly => { id => 1 } } );
-
-    { id => @cd_ids ? \@cd_ids : 0 };
-}
-
-sub filter_tmpl {
-    my $r = MT->registry( 'list_properties', '__virtual', 'date' );
-    $r->{filter_tmpl}->(@_);
+    my $join_terms = $prop->super(@_);
+    my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+    { id => $cd_ids };
 }
 
 sub field_html {

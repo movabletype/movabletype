@@ -3,7 +3,6 @@ use strict;
 use warnings;
 
 use MT::ContentField;
-use MT::ContentType;
 use MT::ContentData;
 
 sub field_html {

@@ -44,7 +44,7 @@ sub _post_update_content_type {
             $cat_list->SUPER::save();
         }
         if ( $cf->related_cat_list_id != $orig->related_cat_list_id ) {
-            my $old_cat_list = __PACKAGE__->load( $cf->related_cat_list_id )
+            my $old_cat_list = __PACKAGE__->load( $orig->related_cat_list_id )
                 or return;
             $old_cat_list->_calculate_ct_count;
             $old_cat_list->SUPER::save();
@@ -165,6 +165,7 @@ sub _category_label_terms {
             { unique => 1 } );
         $db_args->{joins} ||= [];
         push @{ $db_args->{joins} }, $cat_join;
+        return;
     }
 }
 
@@ -178,43 +179,37 @@ sub _content_type_name_terms {
         my $string  = $args->{string};
         my $ct_join = MT::ContentType->join_on(
             undef,
-            {   id      => \'= cf_content_type_id',
-                blog_id => MT->app->blog->id,
-                name    => { like => "%${string}%" },
+            {   id   => \'= cf_content_type_id',
+                name => { like => "%${string}%" },
             }
         );
         my $cf_join = MT::ContentField->join_on(
             undef,
             {   type                => 'category',
-                related_cat_list_id => \'= category_list_id'
+                related_cat_list_id => \'= category_list_id',
             },
             { join => $ct_join },
         );
         my @cat_list_ids
             = map { $_->id }
-            MT::CategoryList->load( { blog_id => MT->app->blog->id },
+            MT::CategoryList->load( $db_terms,
             { join => $cf_join, fetchonly => { id => 1 } } );
         @cat_list_ids ? { id => { not => \@cat_list_ids } } : ();
     }
     else {
         my $query   = $prop->super(@_);
-        my $ct_join = MT::ContentType->join_on(
-            undef,
-            [   $query,
-                {   id      => \'= cf_content_type_id',
-                    blog_id => MT->app->blog->id
-                }
-            ]
-        );
+        my $ct_join = MT::ContentType->join_on( undef,
+            [ $query, { id => \'= cf_content_type_id' } ] );
         my $cf_join = MT::ContentField->join_on(
             undef,
             {   type                => 'category',
-                related_cat_list_id => \'= category_list_id'
+                related_cat_list_id => \'= category_list_id',
             },
             { join => $ct_join },
         );
         $db_args->{joins} ||= [];
         push @{ $db_args->{joins} }, $cf_join;
+        return;
     }
 }
 
@@ -246,8 +241,7 @@ sub _calculate_ct_count {
     return unless $self->id;
     my $cf_join = MT::ContentField->join_on(
         'content_type_id',
-        {   blog_id             => $self->blog_id,
-            type                => 'category',
+        {   type                => 'category',
             related_cat_list_id => $self->id,
         },
     );

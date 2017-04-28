@@ -222,9 +222,7 @@ sub generate_object_log_class {
 
 sub _generate_object_log_code {
     my $self = shift;
-
     my $id   = $self->id;
-    my $name = $self->name;
 
     return <<"__CODE__";
 package MT::Log::ContentData${id};
@@ -237,7 +235,7 @@ use MT;
 __PACKAGE__->install_properties({ class_type => 'content_data_${id}' });
 
 sub class_label {
-    MT->translate('${name}');
+    MT->translate('Content Data');
 }
 
 sub metadata_class {

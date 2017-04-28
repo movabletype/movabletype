@@ -142,8 +142,9 @@ content_field_types:
         order: 20
         list_props:
             single_line_text:
-                filter_tmpl: <mt:var name="filter_form_blank_string">
-                terms: $ContentType::ContentType::ListProperties::terms_text
+                base: __virtual.string
+                col: value_varchar
+                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
                 use_blank: 1
     multi_line_text:
         label: Multi Line Text
@@ -151,8 +152,9 @@ content_field_types:
         order: 30
         list_props:
             multi_line_text:
-                filter_tmpl: <mt:var name="filter_form_blank_string">
-                terms: $ContentType::ContentType::ListProperties::terms_text
+                base: __virtual.string
+                col: value_blob
+                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
                 use_blank: 1
     integer:
         label: Integer
@@ -160,8 +162,9 @@ content_field_types:
         order: 40
         list_props:
             integer:
-                filter_tmpl: <mt:var name="filter_form_blank_integer">
-                terms: $ContentType::ContentType::ListProperties::terms_number
+                base: __virtual.integer
+                col: value_integer
+                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
                 use_blank: 1
     float:
         label: Float
@@ -169,8 +172,9 @@ content_field_types:
         order: 50
         list_props:
             float:
-                filter_tmpl: <mt:var name="filter_form_blank_float">
-                terms: $ContentType::ContentType::ListProperties::terms_number
+                base: __virtual.float
+                col: float
+                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
                 use_blank: 1
     url:
         label: URL
@@ -179,8 +183,9 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::URL::ss_validator
         list_props:
             url:
-                filter_tmpl: <mt:var name="filter_form_blank_string">
-                terms: $ContentType::ContentType::ListProperties::terms_text
+                base: __virtual.string
+                col: value_varchar
+                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
                 use_blank: 1
     date_and_time:
         label: Date and Time
@@ -191,7 +196,8 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::DateTime::ss_validator
         list_props:
             date_and_time:
-                filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
+                base: __virtual.date
+                col: value_datetime
                 html: $ContentType::MT::ContentFieldType::DateTime::html
                 terms: $ContentType::MT::ContentFieldType::DateTime::terms
                 use_blank: 1
@@ -205,7 +211,8 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::Date::ss_validator
         list_props:
             date:
-                filter_tmpl: $ContentType::MT::ContentFieldType::DateTime::filter_tmpl
+                base: __virtual.date
+                col: value_datetime
                 html: $ContentType::MT::ContentFieldType::Date::html
                 terms: $ContentType::MT::ContentFieldType::DateTime::terms
                 use_blank: 1
@@ -223,7 +230,6 @@ content_field_types:
                 html: $ContentType::MT::ContentFieldType::Time::html
                 terms: $ContentType::MT::ContentFieldType::Time::terms
                 use_blank: 1
-                use_future: 1
     select_box:
         label: Select Box
         data_type: varchar
@@ -285,12 +291,14 @@ content_field_types:
                 terms: $ContentType::MT::ContentFieldType::Asset::terms_author_status
             date_created:
                 base: __virtual.date
+                col: created_on
                 display: none
-                terms: $ContentType::MT::ContentFieldType::Asset::terms_created_on
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_date
             date_modified:
                 base: __virtual.date
+                col: modified_on
                 display: none
-                terms: $ContentType::MT::ContentFieldType::Asset::terms_modified_on
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_date
             description:
                 base: __virtual.string
                 col: description
@@ -309,23 +317,30 @@ content_field_types:
                 terms: $ContentType::MT::ContentFieldType::Asset::terms_text
             id:
                 base: __virtual.integer
-                col: id
+                col: value_integer
                 display: none
-                terms: $ContentType::ContentType::ListProperties::terms_number
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_id
+            label:
+                base: __virtual.string
+                col: label
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_text
             missing_file:
                 base: asset.missing_file
+                display: none
                 terms: $ContentType::MT::ContentFieldType::Asset::terms_missing_file
             pixel_height:
                 base: asset.image_height
+                display: none
                 terms: $ContentType::MT::ContentFieldType::Asset::terms_image_size
             pixel_width:
                 base: asset.image_width
+                display: none
                 terms: $ContentType::MT::ContentFieldType::Asset::terms_image_size
             tag:
-                base: __virtual.tag
+                base: __virtual.string
+                col: name
                 display: none
-                tag_ds: asset
-                tagged_class: *
                 terms: $ContentType::MT::ContentFieldType::Asset::terms_tag
                 use_blank: 1
     embed_text:
@@ -334,6 +349,9 @@ content_field_types:
         order: 140
         list_props:
             embed_text:
+                base: __virtual.string
+                col: value_blob
+                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
                 use_blank: 1
     category:
         label: Category
@@ -343,8 +361,8 @@ content_field_types:
         data_getter: $ContentType::MT::ContentFieldType::Category::data_getter
         list_props:
             category:
+                base: __virtual.string
                 col: label
-                filter_tmpl: <mt:var name="filter_form_blank_string">
                 html: $ContentType::MT::ContentFieldType::Category::html
                 terms: $ContentType::MT::ContentFieldType::Category::terms
                 use_blank: 1
@@ -356,8 +374,8 @@ content_field_types:
         data_getter: $ContentType::MT::ContentFieldType::Tag::data_getter
         list_props:
             tag:
+                base: __virtual.string
                 col: name
-                filter_tmpl: <mt:var name="filter_form_blank_string">
                 html: $ContentType::MT::ContentFieldType::Tag::html
                 terms: $ContentType::MT::ContentFieldType::Tag::terms
                 use_blank: 1

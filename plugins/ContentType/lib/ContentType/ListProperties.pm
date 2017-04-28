@@ -157,29 +157,6 @@ sub make_list_properties {
             my $field_key  = 'content_field_' . $f->{id};
             my $field_type = $content_field_types->{$idx_type} or next;
 
-            my $default_sort_prop = sub {
-                my $prop = shift;
-                my ( $terms, $args ) = @_;
-
-                my $cf_idx_join = MT::ContentFieldIndex->join_on(
-                    undef, undef,
-                    {   type      => 'left',
-                        condition => {
-                            content_data_id  => \'= cd_id',
-                            content_field_id => $f->{id},
-                        },
-                        sort      => 'value_' . $field_type->{data_type},
-                        direction => delete $args->{direction},
-                        unique    => 1,
-                    },
-                );
-
-                $args->{joins} ||= [];
-                push @{ $args->{joins} }, $cf_idx_join;
-
-                return;
-            };
-
             $order++;
 
             if ( exists $field_type->{list_props} ) {
@@ -213,14 +190,11 @@ sub make_list_properties {
                             : 'default'
                             ,    # TODO: should use $f->{options}{display}
                             filter_label => $label,
-                            filter_tmpl =>
-                                '<mt:var name="filter_form_blank_string">',
-                            html     => \&make_title_html,
-                            idx_type => $idx_type,
-                            label    => $label,
-                            order    => $order,
-                            sort     => $default_sort_prop,
-                            terms    => \&terms_text,
+                            html         => \&make_title_html,
+                            idx_type     => $idx_type,
+                            label        => $label,
+                            order        => $order,
+                            sort         => \&_default_sort,
                         ),
                         %{ $field_type->{list_props}{$prop_name} },
                     };
@@ -234,6 +208,29 @@ sub make_list_properties {
     return $props;
 }
 
+sub _default_sort {
+    my $prop = shift;
+    my ( $terms, $args ) = @_;
+
+    my $cf_idx_join = MT::ContentFieldIndex->join_on(
+        undef, undef,
+        {   type      => 'left',
+            condition => {
+                content_data_id  => \'= cd_id',
+                content_field_id => $prop->content_field_id,
+            },
+            sort      => 'value_' . $prop->data_type,
+            direction => delete $args->{direction},
+            unique    => 1,
+        },
+    );
+
+    $args->{joins} ||= [];
+    push @{ $args->{joins} }, $cf_idx_join;
+
+    return;
+}
+
 sub _cl_terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
@@ -245,18 +242,20 @@ sub _cl_terms {
     );
     $db_args->{joins} ||= [];
     push @{ $db_args->{joins} }, $cf_join;
+    return;
 }
 
 sub _cl_single_select_options {
     my $prop = shift;
-    my @cat_lists
-        = MT::CategoryList->load( { blog_id => MT->app->blog->id } );
     my @options;
-    for my $cl (@cat_lists) {
-        my $id    = $cl->id;
-        my $name  = $cl->name;
-        my $label = "${name} (id:${id})";
-        push @options, { label => $label, value => $id };
+    my $iter = MT::CategoryList->load_iter(
+        { blog_id   => MT->app->blog->id },
+        { fetchonly => { id => 1, name => 1 } },
+    );
+    while ( my $cl = $iter->() ) {
+        my $id   = $cl->id;
+        my $name = $cl->name;
+        push @options, { label => "${name} (id:${id})", value => $id };
     }
     \@options;
 }
@@ -407,88 +406,6 @@ sub make_list_actions {
     }
 
     return $props;
-}
-
-sub terms_text {
-    my $prop = shift;
-    my ( $args, $db_terms, $db_args ) = @_;
-
-    my $string = $args->{string};
-    my $query_string
-        = $args->{option} eq 'contains' ? { like => "%$string%" }
-        : $args->{option} eq 'not_contains'
-        ? [ { not_like => "%$string%" }, \'IS NULL' ]
-        : $args->{option} eq 'equal'     ? $string
-        : $args->{option} eq 'blank'     ? [ \'IS NULL', '' ]
-        : $args->{option} eq 'beginning' ? { like => "$string%" }
-        : $args->{option} eq 'end'       ? { like => "%$string" }
-        :                                  { not_like => '%' };     # no data
-
-    my $data_type = $prop->data_type;
-    my $join      = MT::ContentFieldIndex->join_on(
-        undef,
-        { "value_${data_type}" => $query_string },
-        {   type      => 'left',
-            condition => {
-                content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-        },
-    );
-    my @cd_ids
-        = map { $_->id }
-        MT::ContentData->load( $db_terms,
-        { join => $join, fetchonly => { id => 1 } } );
-
-    { id => @cd_ids ? \@cd_ids : 0 };
-}
-
-sub terms_number {
-    my $prop = shift;
-    my ( $args, $db_terms, $db_args ) = @_;
-    my $option = $args->{option};
-    my $value  = $args->{value};
-
-    my $query;
-    if ( 'equal' eq $option ) {
-        $query = $value;
-    }
-    elsif ( 'not_equal' eq $option ) {
-        $query = [ { not => $value }, \'IS NULL' ];
-    }
-    elsif ( 'greater_than' eq $option ) {
-        $query = { '>' => $value };
-    }
-    elsif ( 'greater_equal' eq $option ) {
-        $query = { '>=' => $value };
-    }
-    elsif ( 'less_than' eq $option ) {
-        $query = { '<' => $value };
-    }
-    elsif ( 'less_equal' eq $option ) {
-        $query = { '<=' => $value };
-    }
-    elsif ( 'blank' eq $option ) {
-        $query = \'IS NULL';
-    }
-
-    my $data_type = $prop->{data_type};
-    my $join      = MT::ContentFieldIndex->join_on(
-        undef,
-        { "value_${data_type}" => $query },
-        {   type      => 'left',
-            condition => {
-                content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-        },
-    );
-    my @cd_ids
-        = map { $_->id }
-        MT::ContentData->load( $db_terms,
-        { join => $join, fetchonly => { id => 1 } } );
-
-    { id => @cd_ids ? \@cd_ids : 0 };
 }
 
 1;
