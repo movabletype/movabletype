@@ -136,6 +136,10 @@ content_field_types:
         list_props:
             content_type:
                 html: $ContentType::MT::ContentFieldType::ContentType::html
+            id:
+                base: __virtual.integer
+                col: id
+                display: none
     single_line_text:
         label: Single Line Text
         data_type: varchar
