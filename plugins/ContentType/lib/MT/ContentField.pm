@@ -9,6 +9,7 @@ package MT::ContentField;
 use strict;
 use base qw( MT::Object );
 
+use MT::CategoryList;
 use MT::ContentType;
 use MT::ContentType::UniqueKey;
 
@@ -114,6 +115,28 @@ sub post_remove {
     }
 
     MT->app->reboot;
+}
+
+sub related_content_type {
+    my $self = shift;
+    $self->cache_property(
+        'related_content_type',
+        sub {
+            return unless $self->type eq 'content_type';
+            MT::ContentType->load( $self->related_content_type_id || 0 );
+        },
+    );
+}
+
+sub related_cat_list {
+    my $self = shift;
+    $self->cache_property(
+        'related_cat_list',
+        sub {
+            return unless $self->type eq 'category';
+            MT::CategoryList->load( $self->related_cat_list_id || 0 );
+        },
+    );
 }
 
 1;

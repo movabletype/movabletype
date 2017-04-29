@@ -11,9 +11,12 @@ use warnings;
 
 use MT;
 use MT::CategoryList;
-use MT::ContentType;
+use MT::ContentData;
 use MT::ContentField;
 use MT::ContentFieldIndex;
+use MT::ContentFieldType::Common
+    qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
+use MT::ContentType;
 use MT::CMS::CategoryList;
 
 sub make_listing_screens {
@@ -121,11 +124,12 @@ sub make_list_properties {
         category_list => MT::CategoryList::list_props(),
     };
 
-    my $content_field_types = MT->registry('content_field_types');
-
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
-        my $key = 'content_data_' . $content_type->id;
+        my $key   = 'content_data_' . $content_type->id;
+        my $order = 200;
+        my $field_list_props
+            = _make_field_list_props( $content_type, $order );
 
         $props->{$key} = {
             id => {
@@ -148,64 +152,155 @@ sub make_list_properties {
                 display => 'none',
             },
             author_status => { base => 'entry.author_status' },
+            %{$field_list_props},
         };
-
-        my $order = 200;
-
-        foreach my $f ( @{ $content_type->fields } ) {
-            my $idx_type   = $f->{type};
-            my $field_key  = 'content_field_' . $f->{id};
-            my $field_type = $content_field_types->{$idx_type} or next;
-
-            $order++;
-
-            if ( exists $field_type->{list_props} ) {
-                for my $prop_name ( keys %{ $field_type->{list_props} } ) {
-                    my ( $label, $prop_key );
-                    if ( $prop_name eq $idx_type ) {
-                        $label = $f->{name};
-
-                        $prop_key = $field_key;
-                    }
-                    else {
-                        $label = $prop_name;
-                        if ( $label eq 'id' ) {
-                            $label = 'ID';
-                        }
-                        else {
-                            $label =~ s/^([a-z])/\u$1/g;
-                            $label =~ s/_([a-z])/ \u$1/g;
-                        }
-                        $label = MT->translate( $f->{name} . " ${label}" );
-
-                        $prop_key = "${field_key}_${prop_name}";
-                    }
-
-                    $props->{$key}{$prop_key} = {
-                        (   content_field_id   => $f->{id},
-                            data_type          => $field_type->{data_type},
-                            default_sort_order => 'ascend',
-                            display            => $f->{label}
-                            ? 'force'
-                            : 'default'
-                            ,    # TODO: should use $f->{options}{display}
-                            filter_label => $label,
-                            html         => \&make_title_html,
-                            idx_type     => $idx_type,
-                            label        => $label,
-                            order        => $order,
-                            sort         => \&_default_sort,
-                        ),
-                        %{ $field_type->{list_props}{$prop_name} },
-                    };
-
-                    $order++;
-                }
-            }
-        }
     }
 
     return $props;
+}
+
+sub _make_field_list_props {
+    my ( $content_type, $order, $parent_field ) = @_;
+    my $props               = {};
+    my $content_field_types = MT->registry('content_field_types');
+
+    for my $field ( @{ $content_type->fields } ) {
+        my $idx_type   = $field->{type};
+        my $field_key  = 'content_field_' . $field->{id};
+        my $field_type = $content_field_types->{$idx_type} or next;
+
+        for my $prop_name ( keys %{ $field_type->{list_props} || {} } ) {
+
+            next
+                if $parent_field
+                && $prop_name ne $idx_type
+                && !( $idx_type eq 'content_type' && $prop_name eq 'id' );
+
+            my $label;
+            if ( $prop_name eq $idx_type ) {
+                $label = $field->{name};
+            }
+            else {
+                $label = $prop_name;
+                if ( $label eq 'id' ) {
+                    $label = 'ID';
+                }
+                else {
+                    $label =~ s/^([a-z])/\u$1/g;
+                    $label =~ s/_([a-z])/ \u$1/g;
+                }
+                $label = $field->{name} . " ${label}";
+            }
+            if ($parent_field) {
+                $label = $parent_field->{name} . " ${label}";
+            }
+            $label = MT->translate($label);
+
+            my $prop_key;
+            if ( $prop_name eq $idx_type ) {
+                $prop_key = $field_key;
+            }
+            else {
+                $prop_key = "${field_key}_${prop_name}";
+            }
+            if ($parent_field) {
+                my $parent_field_key = 'content_field_' . $parent_field->{id};
+                $prop_key = "${parent_field_key}_${prop_key}";
+            }
+
+            my $display;
+            if ($parent_field) {
+                $display = 'none';
+            }
+            else {
+                # TODO: should use $field->{options}{display}
+                $display = $field->{label} ? 'force' : 'default';
+            }
+
+            $props->{$prop_key} = {
+                (   content_field_id   => $field->{id},
+                    data_type          => $field_type->{data_type},
+                    default_sort_order => 'ascend',
+                    display            => $display,
+                    filter_label       => $label,
+                    html               => \&make_title_html,
+                    idx_type           => $idx_type,
+                    label              => $label,
+                    order              => $order,
+                    sort               => \&_default_sort,
+                ),
+                %{ $field_type->{list_props}{$prop_name} },
+            };
+
+            if ($parent_field) {
+                my $terms = $props->{$prop_key}{terms};
+                if ( $terms && !ref $terms && $terms =~ /^(sub|\$)/ ) {
+                    $terms = MT->handler_to_coderef($terms);
+                    $props->{$prop_key}{terms} = sub {
+                        my $prop = shift;
+                        my ( $args, $db_terms, $db_args ) = @_;
+
+                        my $child_ret;
+                        {
+                            local $db_terms->{content_type_id}
+                                = $content_type->id;
+                            $child_ret = $terms->( $prop, @_ );
+                        }
+                        return $child_ret
+                            unless $child_ret && $child_ret->{id};
+
+                        local $prop->{content_field_id} = $parent_field->{id};
+
+                        my $option = $args->{option} || '';
+                        if (   $option eq 'not_contains'
+                            || $option eq 'not_equal' )
+                        {
+                            my $cd_terms;
+                            if ( ref $child_ret->{id} eq 'HASH'
+                                && $child_ret->{id}{not} )
+                            {
+                                $cd_terms = { id => $child_ret->{id}{not} };
+                            }
+                            else {
+                                $cd_terms
+                                    = { id => { not => $child_ret->{id} } };
+                            }
+                            my @child_contains_cd_ids
+                                = map { $_->id }
+                                MT::ContentData->load( $cd_terms,
+                                { fetchonly => { id => 1 } } );
+                            my $join_terms = { value_integer =>
+                                    [ \'IS NULL', @child_contains_cd_ids ] };
+                            my $cd_ids = get_cd_ids_by_left_join( $prop,
+                                $join_terms, undef, @_ );
+                            $cd_ids ? { id => { not => $cd_ids } } : ();
+                        }
+                        else {
+                            my $join_terms
+                                = { value_integer => $child_ret->{id} };
+                            my $cd_ids = get_cd_ids_by_inner_join( $prop,
+                                $join_terms, undef, @_ );
+                            { id => $cd_ids };
+                        }
+                    };
+                }
+            }
+
+            $order++;
+        }
+
+        if ( !$parent_field && $idx_type eq 'content_type' ) {
+            my $cf = MT::ContentField->load( $field->{id} ) or next;
+            my $related_ct = $cf->related_content_type or next;
+            my $child_props
+                = _make_field_list_props( $related_ct, $order, $field );
+            $props = { %{$props}, %{$child_props} };
+        }
+    }
+
+    $_[1] = $order;
+
+    $props;
 }
 
 sub _default_sort {

@@ -229,7 +229,14 @@ sub content_type {
 sub label {
     my $self        = shift;
     my $label_field = $self->content_type->label_field;
-    $self->data->{ $label_field->{id} };
+    my $label       = $self->data->{ $label_field->{id} };
+    if ( !defined $label || $label eq '' ) {
+        my $id = $self->id;
+        "(id:${id})";
+    }
+    else {
+        $label;
+    }
 }
 
 sub blog {

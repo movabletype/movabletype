@@ -136,6 +136,11 @@ content_field_types:
         list_props:
             content_type:
                 html: $ContentType::MT::ContentFieldType::ContentType::html
+            id:
+                base: __virtual.integer
+                col: value_integer
+                display: none
+                terms: $ContentType::MT::ContentFieldType::ContentType::terms_id
     single_line_text:
         label: Single Line Text
         data_type: varchar
@@ -173,7 +178,7 @@ content_field_types:
         list_props:
             float:
                 base: __virtual.float
-                col: float
+                col: value_float
                 terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
                 use_blank: 1
     url:
