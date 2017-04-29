@@ -178,7 +178,7 @@ content_field_types:
         list_props:
             float:
                 base: __virtual.float
-                col: float
+                col: value_float
                 terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
                 use_blank: 1
     url:
