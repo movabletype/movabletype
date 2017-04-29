@@ -59,7 +59,6 @@ sub terms_author_name {
     my $prop = shift;
     my ( $args, $load_terms, $load_args ) = @_;
 
-    my $col = 'created_by';
     my $prop_super = MT->registry( 'list_properties', '__virtual', 'string' );
 
     my ( $name_query, $nick_query );

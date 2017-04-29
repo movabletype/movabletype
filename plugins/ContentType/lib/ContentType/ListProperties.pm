@@ -278,8 +278,6 @@ sub _make_field_list_props {
                         else {
                             my $join_terms
                                 = { value_integer => $child_ret->{id} };
-                            local $prop->{content_field_id}
-                                = $parent_field->{id};
                             my $cd_ids = get_cd_ids_by_inner_join( $prop,
                                 $join_terms, undef, @_ );
                             { id => $cd_ids };
