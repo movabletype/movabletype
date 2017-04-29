@@ -138,8 +138,9 @@ content_field_types:
                 html: $ContentType::MT::ContentFieldType::ContentType::html
             id:
                 base: __virtual.integer
-                col: id
+                col: value_integer
                 display: none
+                terms: $ContentType::MT::ContentFieldType::ContentType::terms_id
     single_line_text:
         label: Single Line Text
         data_type: varchar

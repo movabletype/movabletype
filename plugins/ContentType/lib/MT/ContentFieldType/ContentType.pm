@@ -2,8 +2,9 @@ package MT::ContentFieldType::ContentType;
 use strict;
 use warnings;
 
-use MT::ContentField;
 use MT::ContentData;
+use MT::ContentField;
+use MT::ContentFieldType::Common qw( get_cd_ids_by_left_join );
 
 sub field_html {
     my ( $app, $field_id, $value ) = @_;
@@ -66,6 +67,25 @@ sub html {
     }
 
     join ', ', @cd_links;
+}
+
+sub terms_id {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $option = $args->{option} || '';
+    if ( $option eq 'not_equal' ) {
+        my $col        = $prop->col;
+        my $value      = $args->{value} || 0;
+        my $join_terms = { $col => [ \'IS NULL', $value ] };
+        my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+        $cd_ids ? { id => { not => $cd_ids } } : ();
+    }
+    else {
+        my $join_terms = $prop->super(@_);
+        my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+        { id => $cd_ids };
+    }
 }
 
 1;
