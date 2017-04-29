@@ -23,10 +23,7 @@ sub field_html {
     foreach my $ct_data (@ct_datas) {
         my $ct_data_id = $ct_data->id;
         my $label      = $ct_data->label;
-        if ( !defined $label || $label eq '' ) {
-            $label = "(id:${ct_data_id})";
-        }
-        my $edit_link = $ct_data->edit_link($app);
+        my $edit_link  = $ct_data->edit_link($app);
 
         $html .= '<div>';
         $html
