@@ -15,12 +15,13 @@ use MT::ContentType::UniqueKey;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'         => 'integer not null auto_increment',
-            'blog_id'    => 'integer not null',
-            'name'       => 'string(255)',
-            'version'    => 'integer',
-            'unique_key' => 'blob',
-            'fields'     => 'blob',
+            'id'          => 'integer not null auto_increment',
+            'blog_id'     => 'integer not null',
+            'name'        => 'string(255)',
+            'description' => 'text',
+            'version'     => 'integer',
+            'unique_key'  => 'blob',
+            'fields'      => 'blob',
         },
         indexes     => { blog_id => 1 },
         datasource  => 'content_type',
@@ -180,7 +181,8 @@ sub permission_groups {
 sub all_permissions {
     my $class = shift;
     my @content_types
-        = eval { __PACKAGE__->load }; # TODO: many error occurs without "eval" in test.
+        = eval { __PACKAGE__->load }
+        || ();    # TODO: many error occurs without "eval" in test.
     my %all_permission = map { %{ $_->permissions } } @content_types;
     return \%all_permission;
 }

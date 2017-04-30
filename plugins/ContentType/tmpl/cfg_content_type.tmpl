@@ -41,17 +41,20 @@
 <mtapp:form id="content-type-form" name="content-type-form" mode="save_cfg_content_type">
   <input type="hidden" name="cfg_screen" value="cfg_content_type" />
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+  <input type="hidden" id="current_field_id" value="" />
 
   <mtapp:settinggroup id="content_type">
 
-    <h2><__trans phrase="Content Type"></h2>
+    <h2 id="setting-title" ><__trans phrase="Content Type"></h2>
 
+<!--
     <mtapp:setting
        id="name"
        label="<__trans phrase="Content Type Name">"
        required="1">
       <input type="text" name="name" id="name" class="text med required" value="<mt:var name="name" escape="html">" />
     </mtapp:setting>
+-->
 
     <mtapp:setting
        id="unique_key"
@@ -66,10 +69,16 @@
     <h2><__trans phrase="Content Fields"></h2>
 
       <div id="add-block" class="icon-create icon-left">
-        <span class="item-add"><a href="javascript:void(0);" class="add-link<mt:unless name="id"> disabled" disabled="disabled</mt:unless>"><__trans phrase="Add cotent field"></a></span>
+        <select name="type" id="type">" class="half-width required">
+        <mt:loop name="content_field_types">
+        <option value="<mt:var name="type">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+        </mt:loop>
+        </select>
+        <span class="item-add"><a href="javascript:void(0);" class="add-link"> <__trans phrase="Add content field"></a></span>
       </div>
 
       <div id="sortable" class="sortable">
+      <!--
       <mt:loop name="fields">
       <mtapp:setting
          id="content-field-<mt:var name="content_field_id">"
@@ -92,16 +101,816 @@
             </a>
           </li>
         </ul>
-        <input type="hidden" name="order-<mt:var name="content_field_id">" id="order-<mt:var name="conten_field_id">" value="<mt:var name="order">" />
+        <input type="hidden" name="order-<mt:var name="content_field_id">" id="order-<mt:var name="content_field_id">" value="<mt:var name="order">" />
       </mtapp:setting>
       </mt:loop>
+      -->
       </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="single_line_text-options">
+
+    <mtapp:setting
+       id="single_line_text-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="single_line_text-label" id="single_line_text-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="single_line_text-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="single_line_text-hint" id="single_line_text-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="single_line_text-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="single_line_text-required" id="single_line_text-required" /> <label for="single_line_text-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="single_line_text-display"
+       label="<__trans phrase="Display">">
+      <select name"single_line_text-display" id="single_line_text-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="multi_line_text-options">
+
+    <mtapp:setting
+       id="multi_line_text-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="multi_line_text-label" id="multi_line_text-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="multi_line_text-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="multi_line_text-hint" id="multi_line_text-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="multi_line_text-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="multi_line_text-required" id="multi_line_text-required" /> <label for="multi_line_text-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="multi_line_text-display"
+       label="<__trans phrase="Display">">
+      <select name"multi_line_text-display" id="multi_line_text-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="integer-options">
+
+    <mtapp:setting
+       id="integer-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="integer-label" id="integer-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="integer-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="integer-hint" id="integer-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="integer-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="integer-required" id="integer-required" /> <label for="integer-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="integer-display"
+       label="<__trans phrase="Display">">
+      <select name"integer-display" id="integer-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="float-options">
+
+    <mtapp:setting
+       id="float-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="float-label" id="float-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="float-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="float-hint" id="float-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="float-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="float-required" id="float-required" /> <label for="float-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="float-display"
+       label="<__trans phrase="Display">">
+      <select name"float-display" id="float-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="url-options">
+
+    <mtapp:setting
+       id="url-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="url-label" id="url-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="url-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="url-hint" id="url-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="url-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="url-required" id="url-required" /> <label for="url-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="url-display"
+       label="<__trans phrase="Display">">
+      <select name"url-display" id="url-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="date_and_time-options">
+
+    <mtapp:setting
+       id="dete_and_time-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="dete_and_time-label" id="dete_and_time-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="dete_and_time-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="dete_and_time-hint" id="dete_and_time-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="dete_and_time-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="dete_and_time-required" id="dete_and_time-required" /> <label for="dete_and_time-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="dete_and_time-display"
+       label="<__trans phrase="Display">">
+      <select name"dete_and_time-display" id="dete_and_time-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="date-options">
+
+    <mtapp:setting
+       id="dete-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="dete-label" id="dete-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="dete-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="dete-hint" id="dete-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="dete-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="dete-required" id="dete-required" /> <label for="dete-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="dete-display"
+       label="<__trans phrase="Display">">
+      <select name"dete-display" id="dete-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="time-options">
+
+    <mtapp:setting
+       id="time-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="time-label" id="time-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="time-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="time-hint" id="time-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="time-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="time-required" id="time-required" /> <label for="time-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="time-display"
+       label="<__trans phrase="Display">">
+      <select name"time-display" id="time-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="single_select-options">
+
+    <mtapp:setting
+       id="single_select-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="single_select-label" id="single_select-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="single_select-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="single_select-hint" id="single_select-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="single_select-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="single_select-required" id="single_select-required" /> <label for="single_select-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="single_select-display"
+       label="<__trans phrase="Display">">
+      <select name"single_select-display" id="single_select-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="radio-options">
+
+    <mtapp:setting
+       id="radio-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="radio-label" id="radio-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="radio-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="radio-hint" id="radio-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="radio-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="radio-required" id="radio-required" /> <label for="radio-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="radio-display"
+       label="<__trans phrase="Display">">
+      <select name"radio-display" id="radio-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="checkbox-options">
+
+    <mtapp:setting
+       id="checkbox-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="checkbox-label" id="checkbox-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="checkbox-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="checkbox-hint" id="checkbox-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="checkbox-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="checkbox-required" id="checkbox-required" /> <label for="checkbox-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="checkbox-display"
+       label="<__trans phrase="Display">">
+      <select name"checkbox-display" id="checkbox-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="embed_text-options">
+
+    <mtapp:setting
+       id="embed_text-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="embed_text-label" id="embed_text-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="embed_text-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="embed_text-hint" id="embed_text-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="embed_text-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="embed_text-required" id="embed_text-required" /> <label for="embed_text-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="embed_text-display"
+       label="<__trans phrase="Display">">
+      <select name"embed_text-display" id="embed_text-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="content_type-options">
+
+    <mtapp:setting
+       id="content_type-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="content_type-label" id="content_type-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="content_type-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="content_type-hint" id="content_type-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="content_type-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="content_type-required" id="content_type-required" /> <label for="content_type-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="content_type-display"
+       label="<__trans phrase="Display">">
+      <select name"content_type-display" id="content_type-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="asset-options">
+
+    <mtapp:setting
+       id="asset-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="asset-label" id="asset-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="asset-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="asset-hint" id="asset-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="asset-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="asset-required" id="asset-required" /> <label for="asset-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="asset-display"
+       label="<__trans phrase="Display">">
+      <select name"asset-display" id="asset-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="audio-options">
+
+    <mtapp:setting
+       id="audio-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="audio-label" id="audio-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="audio-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="audio-hint" id="audio-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="audio-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="audio-required" id="audio-required" /> <label for="audio-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="audio-display"
+       label="<__trans phrase="Display">">
+      <select name"audio-display" id="audio-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="video-options">
+
+    <mtapp:setting
+       id="video-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="video-label" id="video-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="video-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="video-hint" id="video-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="video-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="video-required" id="video-required" /> <label for="video-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="video-display"
+       label="<__trans phrase="Display">">
+      <select name"video-display" id="video-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="image-options">
+
+    <mtapp:setting
+       id="image-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="image-label" id="image-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="image-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="image-hint" id="image-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="image-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="image-required" id="image-required" /> <label for="image-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="image-display"
+       label="<__trans phrase="Display">">
+      <select name"image-display" id="image-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="category-options">
+
+    <mtapp:setting
+       id="category-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="category-label" id="category-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="category-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="category-hint" id="category-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="category-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="category-required" id="category-required" /> <label for="category-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="category-display"
+       label="<__trans phrase="Display">">
+      <select name"category-display" id="category-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="tag-options">
+
+    <mtapp:setting
+       id="tag-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="tag-label" id="tag-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="tag-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="tag-hint" id="tag-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="tag-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="tag-required" id="tag-required" /> <label for="tag-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="tag-display"
+       label="<__trans phrase="Display">">
+      <select name"tag-display" id="tag-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="list-options">
+
+    <mtapp:setting
+       id="list-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="list-label" id="list-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="list-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="list-hint" id="list-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="list-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="list-required" id="list-required" /> <label for="list-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="list-display"
+       label="<__trans phrase="Display">">
+      <select name"list-display" id="list-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
+
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="table-options">
+
+    <mtapp:setting
+       id="table-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="table-label" id="table-label" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="table-hint"
+       label="<__trans phrase="Hint">">
+      <input type="text" name="table-hint" id="table-hint" class="text med" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="table-required"
+       label="<__trans phrase="Required">">
+      <input type="checkbox" name="table-required" id="table-required" /> <label for="table-required"><__trans phrase="Required or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="table-display"
+       label="<__trans phrase="Display">">
+      <select name"table-display" id="table-display">
+        <option value=""><__trans phrase="Display is not selected"></option>
+        <option value="force"><__trans phrase="Force"></option>
+        <option value="default"><__trans phrase="Default"></option>
+        <option value="optional"><__trans phrase="Optional"></option>
+        <option value="none"><__trans phrase="None"></option>
+      </select>
+    </mtapp:setting>
+
+    <div id="save-block" class="icon-save icon-left">
+      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
+    </div>
 
   </mtapp:settinggroup>
 
   <mt:setvarblock name="action_buttons">
     <button
-       type="submit"
+       type="button"
+       id="save-button"
        accesskey="s"
        title="<__trans phrase="Save changes to these settings (s)">"
        class="save action primary button disabled">
@@ -120,6 +929,232 @@
     jQuery('input[type="radio"]').change(function() {
       setDirty(true);
     });
+
+<mt:unless name="id">    
+    var data = JSON.parse( localStorage.getItem("ContentType") );
+    jQuery("#setting-title").text( trans( 'Edit [_1]', data.name ) );
+</mt:unless>
+<mt:if name="name">
+    jQuery("#setting-title").text( trans( 'Edit [_1]', '<mt:var name="name">' ) );
+    var data = {};
+    data['name'] = '<mt:var name="name">';
+    data['description'] = '<mt:var name="description">';
+    data['fields'] = {
+    <mt:loop name="fields">
+      '<mt:var name="id">': {
+        'options': {
+    <mt:loop name="options">
+        <mt:var name="key">: '<mt:var name="value">'<mt:unless name="__last__">,</mt:unless>
+    </mt:loop>
+        }
+      }
+    </mt:loop>
+    };
+    <mt:loop name="fields">
+    add_field('<mt:var name="id">', '<mt:var name="type">', '<mt:var name="__counter__">');
+    </mt:loop>
+    localStorage.setItem("ContentType", JSON.stringify(data));
+</mt:if>
+    all_options_hidden();
+    set_events();
+    set_sortable();
+  });
+
+  jQuery('#save-button').click( function() {
+    setDirty(false);
+    var datalist = localStorage.getItem("ContentType");
+    var id = jQuery("#id").val();
+    jQuery.ajax({
+      type: 'POST',
+      contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+      async: true,
+      url: ScriptURI,
+      dataType: 'json',
+      data: {
+        __mode: 'save_cfg_content_type',
+        magic_token: '<mt:var name="magic_token">',
+        blog_id: '<mt:var name="blog_id">',
+        id: '<mt:var name="id">',
+        data: datalist
+      }
+    }).done(
+      function(data) {
+        if (data.result.error) {
+          msg += '<div id="error" class="msg msg-error">';
+          var msg = '<p class="msg-text">' + data.result.errmsg + '</p>';
+          msg += '</div>';
+          jQuery("#msg-block").append(msg);
+        }
+        else {
+          var msg = '';
+          msg += '<div id="saved" class="msg msg-success">';
+          msg += '<p class="msg-text"><__trans phrase="Contents type settings has been saved."></p>';
+          msg += '</div>';
+          jQuery("#msg-block").append(msg);
+          jQuery("#id").val(data.result.id);
+        }
+      }
+    ).fail(
+      function(xhr, status, errorThrown) {
+        alert(status+' '+errorThrown);
+      }
+    );
+  });
+
+  jQuery('.add-link').click(function() {
+    var selected = jQuery('select#type').val();
+    if ( !selected )
+      return false;
+    if ( jQuery('.add-link').hasClass('disabled') )
+      return false;
+    var length = jQuery('#sortable').sortable('toArray').length;
+    var id = length + 1;
+    add_field(id, jQuery("#type").val(), id);
+    set_sortable();
+    set_events();
+    return false;
+  });
+
+  function add_field(id, type, order) {
+    var field = '<div id="content-field-block-' + id + '" class="field field-top-label sort-enabled">';
+    field += '<div class="field-header">';
+    field += '<label id="content-field-label" for="content-field">' + type + '</label>';
+    field += '</div>';
+    field += '<div class="field-content">';
+    field += '<ul class="action-link-list">';
+    field += '<li>';
+    field += '<input type="radio" name="content-label" id="content-label" value="" />';
+    field += '<label for="content-label"> Label for list screen</label>';
+    field += '</li>';
+    field += '<li>';
+    field += '<a href="javascript:void(0);" class="icon-left icon-edit edit-link">';
+    field += '<__trans phrase="Edit">';
+    field += '</a>';
+    field += '</li>';
+    field += '<li>';
+    field += '<a href="javascript:void(0);" class="icon-left icon-delete delete-link">';
+    field += '<__trans phrase="Delete">';
+    field += '</a>';
+    field += '</li>';
+    field += '</ul>';
+    field += '<input type="hidden" id="order-' + id + '" value="' + order + '" />';
+    field += '<input type="hidden" id="type-' + id + '" value="' + type + '" />';
+    field += '</div>';
+    field += '</div>';
+    jQuery("#sortable").append(field);
+  }
+
+  function set_events() {
+    jQuery('a.delete-link').unbind('click').click(function() {
+      if (! confirm(trans('Are you sure you want to remove this settings?'))) {
+        return false;
+      }
+      jQuery(this).parent().parent().parent().parent().remove();
+      setDirty(true);
+      if (! jQuery('.content-field-header')[1] ) {
+        jQuery('a.delete-link').toggleClass('hidden');
+      }
+      return false;
+    });
+    jQuery('a.edit-link').click(function() {
+      all_options_hidden();
+      var block = jQuery(this).parent().parent().parent().parent();
+      var block_id = block.attr("id");
+      var field_id = block_id.match(/\d+/);
+      var type_name = jQuery("#type-" + field_id).val();
+      var options = jQuery('#' + type_name + '-options');
+      options.css( 'display', 'block' );
+      jQuery("#current_field_id").val(field_id);
+      var data = JSON.parse( localStorage.getItem("ContentType") );
+      var current_id = jQuery("#current_field_id").val();
+      if (!data['fields'] || !data['fields'][current_id] || !data['fields'][current_id]['options'])
+          return true;
+      var regexp = new RegExp(type_name + '-(.*)');
+      options.find("input").each(function(index, element) {
+        var input_type = jQuery(element).attr("type");
+        if (input_type === 'hidden')
+          return true;
+        var opt_id = jQuery(element).attr("id");
+        var opt_name = (opt_id.match(regexp))[1];
+        var opt_val = '';
+        if (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options'][opt_name])
+          opt_val = data['fields'][current_id]['options'][opt_name];
+        if (input_type === 'checkbox') {
+          jQuery(element).prop("checked", true);
+        }
+        else {
+          jQuery(element).val(data['fields'][current_id]['options'][opt_name]);
+        }
+      });
+      options.find("select").each(function(index, element) {
+        var opt_id = jQuery(element).attr("id");
+        var opt_name = (opt_id.match(regexp))[1];
+        if (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options'][opt_name])
+          jQuery(element).val(data['fields'][current_id]['options'][opt_name]);
+      });
+      options.find("textarea").each(function(index, element) {
+        var opt_id = jQuery(element).attr("id");
+        var opt_name = (opt_id.match(regexp))[1];
+        if (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options'][opt_name])
+          jQuery(element).val(data['fields'][current_id]['options'][opt_name]);
+      });
+      setDirty(true);
+    });
+    jQuery('a.save-link').unbind('click').click(function() {
+      var options = jQuery(this).parent().parent().parent();
+      var id = options.attr("id");
+      var type_name = (id.match(/(.*)-options/))[1];
+      var current_id = jQuery("#current_field_id").val();
+      var regexp = new RegExp(type_name + '-(.*)');
+      var data = JSON.parse( localStorage.getItem("ContentType") );
+      if (!data['fields'])
+          data['fields'] = {};
+      if (!data['fields'][current_id])
+          data['fields'][current_id] = {};
+      data['fields'][current_id]['type'] = type_name;
+      data['fields'][current_id]['order'] = jQuery('#order-' + current_id).val();
+      options.find("input").each(function(index, element) {
+        var input_type = jQuery(element).attr("type");
+        if (input_type === 'hidden')
+            return true;
+        var opt_id = jQuery(element).attr("id");
+        var opt_name = (opt_id.match(regexp))[1];
+        var opt_val = '';
+        if (input_type === 'checkbox') {
+          opt_val = jQuery(element).prop('checked') ? 1 : 0;
+        }
+        else {
+          opt_val = jQuery(element).val();
+        }
+        if (!data['fields'][current_id]['options'])
+          data['fields'][current_id]['options'] = {};
+        data['fields'][current_id]['options'][opt_name] = opt_val;
+        jQuery(element).val('');
+      });
+      options.find("select").each(function(index, element) {
+        var opt_id = jQuery(element).attr("id");
+        var opt_name = (opt_id.match(regexp))[1];
+        var opt_val = jQuery(element).val();
+        if (!data['fields'][current_id]['options'])
+          data['fields'][current_id]['options'] = {};
+        data['fields'][current_id]['options'][opt_name] = opt_val;
+        jQuery(element).val('');
+      });
+      options.find("textarea").each(function(index, element) {
+        var opt_id = jQuery(element).attr("id");
+        var opt_name = (opt_id.match(regexp))[1];
+        var opt_val = jQuery(element).val();
+        if (!data['fields'][current_id]['options'])
+          data['fields'][current_id]['options'] = {};
+        data['fields'][current_id]['options'][opt_name] = opt_val;
+        jQuery(element).val('');
+      });
+      localStorage.setItem("ContentType", JSON.stringify(data));
+      options.css( 'display', 'none' );
+    });
+  }
+
+  function set_sortable() {
     jQuery('#sortable').sortable({
       items: 'div.field.sort-enabled',
       placeholder: 'placeholder',
@@ -130,7 +1165,6 @@
       handle: '.field-header',
       containment: 'body',
       update: function () {
-        var order = jQuery('#sortable').sortable('toArray');
         var count = 1;
         jQuery(order).each( function() {
           var id = this.match(/\d+/);
@@ -140,41 +1174,14 @@
         });
       }
     });
-    set_events();
-  });
+  }
 
-  jQuery('#content-type-form').submit( function() {
-    setDirty(false);
-    return true;
-  });   
-
-  jQuery('.add-link').click(function() {
-    if ( jQuery('.add-link').hasClass('disabled') )
-      return false;
-    location.replace('<mt:var name="mt_url">?__mode=cfg_content_field&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">');
-    return false;
-  });
-
-  function set_events() {
-    jQuery('a.delete-link').unbind('click').click(function() {
-      if (! confirm(trans('Are you sure you want to remove this settings?'))) {
-        return false;
-      }
-      jQuery(this).parent().parent().parent().remove();
-      setDirty(true);
-      if (! jQuery('.content-field-header')[1] ) {
-        jQuery('a.delete-link').toggleClass('hidden');
-      }
-      return false;
+  function all_options_hidden() {
+    var contentFieldTypesOptions = <mt:var name="content_field_types_options">;
+    jQuery.each( contentFieldTypesOptions, function( key, val ) {
+        jQuery('#' + key + '-options').css( 'display', 'none' );
     });
-    jQuery('input[name="required"]').unbind('change').change(function() {
-      if (jQuery(this).is(':checked')) {
-        jQuery(this).nextAll('input[name="required"]').val('1');
-      } else {
-        jQuery(this).nextAll('input[name="required"]').val('0');
-      }
-    });
-  }   
+  }
 </mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">

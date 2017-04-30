@@ -59,7 +59,7 @@
       </mt:loop>
       </select>
     </mtapp:setting>
-
+<!--
     <mtapp:setting
        id="default"
        label="<__trans phrase="Default">">
@@ -100,6 +100,9 @@
        label="<__trans phrase="Unique Key">">
       <mt:var name="unique_key" escape="html">
     </mtapp:setting>
+-->
+
+  <mt:if name="options_html"><mt:var name="options_html"></mt:if>
 
   </mtapp:settinggroup>
 
@@ -149,12 +152,12 @@
   jQuery(function() {
     var contentFieldTypesOptions = <mt:var name="content_field_types_options">;
     jQuery('select#type').change(function() {
+      jQuery.each( contentFieldTypesOptions, function( key, val ) {
+          jQuery('#' + key + '-options').css( 'display', 'none' );
+      });
       var selected = jQuery(this).val();
-console.log(selected);
       if (selected && contentFieldTypesOptions[selected]) {
-        jQuery('div#options-field').show();
-      } else {
-        jQuery('div#options-field').hide();
+        jQuery('#' + selected + '-options').css( 'display', 'block' );
       }
     });
     jQuery('select#type').trigger('change');
