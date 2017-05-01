@@ -90,6 +90,14 @@ sub _sort_fields {
     \@sorted_fields;
 }
 
+sub get_field {
+    my $self = shift;
+    my ($field_id) = @_ or return;
+    my ($field)
+        = grep { $_->{id} && $_->{id} == $field_id } @{ $self->fields };
+    $field;
+}
+
 sub label_field {
     my $self = shift;
     my ($label_field) = grep { $_->{label} } @{ $self->fields };

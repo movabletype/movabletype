@@ -56,7 +56,7 @@ sub field_html {
 
     my $content_field = MT::ContentField->load($id);
 
-    my $options = $content_field->options;
+    my $options = $content_field->options->{options} || '';
     my $options_delimiter
         = quotemeta(
         $app->registry('content_field_types')->{select_box}{options_delimiter}
@@ -96,7 +96,8 @@ sub single_select_options {
         = quotemeta(
         $app->registry('content_field_types')->{select_box}{options_delimiter}
             || ',' );
-    my @options = split $options_delimiter, $content_field->options;
+    my @options = split $options_delimiter,
+        $content_field->options->{options} || '';
 
     [ map { +{ label => $_, value => $_ } } @options ];
 }

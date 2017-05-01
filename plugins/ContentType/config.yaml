@@ -486,6 +486,7 @@ content_field_types:
             - min
             - values
             - initial_value
+            - options
         # field_html: |
         #     sub {
         #         my ( $app, $id, $value )  = @_;
@@ -520,6 +521,7 @@ content_field_types:
             - display
             - values
             - initial_value
+            - options
         # field_html: |
         #     sub {
         #         my ( $app, $id, $value )  = @_;
@@ -560,6 +562,7 @@ content_field_types:
             - min
             - values
             - initial_value
+            - options
         # field_html: |
         #     sub {
         #         my ( $app, $id, $value )  = @_;
