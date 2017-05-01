@@ -557,7 +557,6 @@ content_field_types:
             - hint
             - required
             - display
-            - multiple
             - max
             - min
             - values

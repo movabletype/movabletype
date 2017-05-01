@@ -63,9 +63,6 @@ sub field_html {
             || ',' );
     my @options = split $options_delimiter, $options;
 
-    # TODO: Fix $content_field->options
-    my $multiple = eval { $content_field->options->{multiple} };
-
     my $html
         = '<select name="content-field-'
         . $id
@@ -73,8 +70,9 @@ sub field_html {
         . $id
         . '" class="select"';
     $html .= ' multiple style="min-width: 5em; min-height: 5em;"'
-        if $multiple;
+        if $content_field->options->{multiple};
     $html .= '>';
+
     foreach my $option (@options) {
         $html .= '<option value="' . $option . '"';
         $html .= ' selected="selected"'
@@ -107,10 +105,7 @@ sub data_getter {
     my @options       = $app->param("content-field-${id}");
     my $content_field = MT::ContentField->load($id);
 
-    # TODO: Fix $content_field->options
-    my $multiple = eval { $content_field->options->{multiple} };
-
-    if ($multiple) {
+    if ( $content_field->options->{multiple} ) {
         \@options;
     }
     else {
