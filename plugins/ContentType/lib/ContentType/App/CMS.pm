@@ -201,17 +201,30 @@ sub save_cfg_content_type {
     my $name        = $option_list->{name};
     my $description = $option_list->{description};
 
-    return $app->json_result(
-        {   error  => 1,
-            errmsg => $plugin->translate("Name is required.")
-        }
+    return $app->redirect(
+        $app->uri(
+            'mode' => 'cfg_content_type',
+            args   => {
+                blog_id => $blog_id,
+                id      => $content_type_id,
+                err_msg => $plugin->translate(
+                    "Name is required."
+                ),
+            }
+        )
     ) unless $name;
 
-    return $app->json_result(
-        {   error => 1,
-            errmsg =>
-                $plugin->translate( "Name \"[_1]\" is already used.", $name )
-        }
+    return $app->redirect(
+        $app->uri(
+            'mode' => 'cfg_content_type',
+            args   => {
+                blog_id => $blog_id,
+                id      => $content_type_id,
+                err_msg => $plugin->translate(
+                    "Name \"[_1]\" is already used.", $name
+                ),
+            }
+        )
     ) if !$content_type_id && MT::ContentType->count( { name => $name } );
 
     my $content_type
@@ -223,13 +236,11 @@ sub save_cfg_content_type {
     $content_type->name($name);
 
     $content_type->save
-        or return $app->json_result(
-        {   error  => 1,
-            errmsg => $plugin->translate(
-                "Saving content type failed: [_1]",
-                $content_type->errstr
-            )
-        }
+        or return $app->error(
+        $plugin->translate(
+            "Saving content type failed: [_1]",
+            $content_type->errstr
+        )
         );
 
     my @fields = ();
@@ -254,13 +265,11 @@ sub save_cfg_content_type {
             $content_field->description( $options->{description} );
             $content_field->required( $options->{required} );
             $content_field->save
-                or return $app->json_result(
-                {   error  => 1,
-                    errmsg => $plugin->translate(
-                        "Saving content field failed: [_1]",
-                        $content_type->errstr
-                    )
-                }
+                or return $app->error(
+                $plugin->translate(
+                    "Saving content field failed: [_1]",
+                    $content_type->errstr
+                )
                 );
         }
         push @fields,
@@ -273,16 +282,23 @@ sub save_cfg_content_type {
     $content_type->fields( \@fields );
 
     $content_type->save
-        or return $app->json_result(
-        {   error  => 1,
-            errmsg => $plugin->translate(
-                "Saving content type failed: [_1]",
-                $content_type->errstr
-            )
-        }
+        or return $app->error(
+        $plugin->translate(
+            "Saving content type failed: [_1]",
+            $content_type->errstr
+        )
         );
 
-    return $app->json_result( { success => 1, id => $content_type->id } );
+    return $app->redirect(
+        $app->uri(
+            'mode' => 'cfg_content_type',
+            args   => {
+                blog_id => $blog_id,
+                id      => $content_type->id,
+                saved   => 1,
+            }
+        )
+    );
 }
 
 sub cfg_content_field {

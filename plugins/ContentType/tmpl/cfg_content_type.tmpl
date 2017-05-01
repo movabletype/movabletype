@@ -964,41 +964,14 @@
     setDirty(false);
     var datalist = localStorage.getItem("ContentType");
     var id = jQuery("#id").val();
-    jQuery.ajax({
-      type: 'POST',
-      contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-      async: true,
-      url: ScriptURI,
-      dataType: 'json',
-      data: {
-        __mode: 'save_cfg_content_type',
-        magic_token: '<mt:var name="magic_token">',
-        blog_id: '<mt:var name="blog_id">',
-        id: '<mt:var name="id">',
-        data: datalist
-      }
-    }).done(
-      function(data) {
-        if (data.result.error) {
-          msg += '<div id="error" class="msg msg-error">';
-          var msg = '<p class="msg-text">' + data.result.errmsg + '</p>';
-          msg += '</div>';
-          jQuery("#msg-block").append(msg);
-        }
-        else {
-          var msg = '';
-          msg += '<div id="saved" class="msg msg-success">';
-          msg += '<p class="msg-text"><__trans phrase="Contents type settings has been saved."></p>';
-          msg += '</div>';
-          jQuery("#msg-block").append(msg);
-          jQuery("#id").val(data.result.id);
-        }
-      }
-    ).fail(
-      function(xhr, status, errorThrown) {
-        alert(status+' '+errorThrown);
-      }
-    );
+    jQuery('<form/>', {action: "<mt:var name="script_url">", method: 'post'})
+    .append(jQuery('<input/>', {type: 'hidden', name: '__mode',      value: 'save_cfg_content_type'}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'magic_token', value: '<mt:var name="magic_token">'}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'blog_id',     value: '<mt:var name="blog_id">'}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'id',          value: '<mt:var name="id">'}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'data',        value: datalist}))
+    .appendTo(document.body)
+    .submit();
   });
 
   jQuery('.add-link').click(function() {
