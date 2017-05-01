@@ -155,7 +155,7 @@ sub _make_field_list_props {
 
             my $label;
             if ( $prop_name eq $idx_type ) {
-                $label = $field->{name};
+                $label = $field->{options}{label};
             }
             else {
                 $label = $prop_name;
@@ -166,10 +166,10 @@ sub _make_field_list_props {
                     $label =~ s/^([a-z])/\u$1/g;
                     $label =~ s/_([a-z])/ \u$1/g;
                 }
-                $label = $field->{name} . " ${label}";
+                $label = $field->{options}{label} . " ${label}";
             }
             if ($parent_field) {
-                $label = $parent_field->{name} . " ${label}";
+                $label = $parent_field->{options}{label} . " ${label}";
             }
             $label = MT->translate($label);
 
@@ -185,14 +185,7 @@ sub _make_field_list_props {
                 $prop_key = "${parent_field_key}_${prop_key}";
             }
 
-            my $display;
-            if ($parent_field) {
-                $display = 'none';
-            }
-            else {
-                # TODO: should use $field->{options}{display}
-                $display = $field->{label} ? 'force' : 'default';
-            }
+            my $display = $parent_field ? 'none' : $field->{options}{display};
 
             $props->{$prop_key} = {
                 (   content_field_id   => $field->{id},
