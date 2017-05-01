@@ -365,7 +365,8 @@ sub make_title_html {
     my ($field)
         = grep { $_->{id} == $prop->content_field_id }
         @{ $content_data->content_type->fields };
-    if ( $field->{label} ) {
+    if ( $prop->order == 200 )
+    {    # TODO: should create a new parameter for primary field.
         my $edit_link = $app->uri(
             mode => 'edit_content_data',
             args => {
