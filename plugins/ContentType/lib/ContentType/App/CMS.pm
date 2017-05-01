@@ -13,6 +13,7 @@ use JSON ();
 
 use MT;
 use MT::CMS::Common;
+use MT::CategoryList;
 use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentType;
@@ -208,6 +209,19 @@ sub cfg_content_type {
     foreach my $name (qw( saved err_msg id name )) {
         $param->{$name} = $q->param($name) if $q->param($name);
     }
+
+    my @category_lists;
+    my $iter = MT::CategoryList->load_iter( { blog_id => $app->blog->id },
+        { fetchonly => { id => 1, name => 1 } } );
+    while ( my $cat_list = $iter->() ) {
+        push @category_lists,
+            {
+            id   => $cat_list->id,
+            name => $cat_list->name,
+            };
+    }
+    $param->{category_lists} = \@category_lists;
+
     $app->build_page( $plugin->load_tmpl('cfg_content_type.tmpl'), $param );
 }
 
@@ -254,9 +268,7 @@ sub save_cfg_content_type {
             args   => {
                 blog_id => $blog_id,
                 id      => $content_type_id,
-                err_msg => $plugin->translate(
-                    "Name is required."
-                ),
+                err_msg => $plugin->translate("Name is required."),
             }
         )
     ) unless $name;
@@ -307,18 +319,26 @@ sub save_cfg_content_type {
             $content_field->blog_id($blog_id);
             $content_field->content_type_id( $content_type->id );
             $content_field->type( $option_list->{fields}{$field_id}{type} );
-            $content_field->name($label);
-            $content_field->default( $options->{initial_value} );
-            $content_field->description( $options->{description} );
-            $content_field->required( $options->{required} );
-            $content_field->save
-                or return $app->error(
-                $plugin->translate(
-                    "Saving content field failed: [_1]",
-                    $content_type->errstr
-                )
-                );
         }
+        $content_field->name($label);
+        $content_field->default( $options->{initial_value} );
+        $content_field->description( $options->{description} );
+        $content_field->required( $options->{required} );
+
+        if ( $content_field->type eq 'category' ) {
+            $content_field->related_cat_list_id( $options->{category_list} );
+        }
+        else {
+            $content_field->related_cat_list_id(undef);
+        }
+
+        $content_field->save
+            or return $app->error(
+            $plugin->translate(
+                "Saving content field failed: [_1]",
+                $content_type->errstr
+            )
+            );
         push @fields,
             {
             id => $content_field->id,

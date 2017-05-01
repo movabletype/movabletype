@@ -814,6 +814,16 @@
       </select>
     </mtapp:setting>
 
+    <mtapp:setting
+       id="category-category_list"
+       label="<__trans phrase="Category List">">
+      <select name="category-category_list" id="category-category_list">
+      <mt:loop name="category_lists">
+        <option value="<mt:var name="id" escape="html">"><mt:var name="name" escape="html"></option>
+      </mt:loop>
+      </select>
+    </mtapp:setting>
+
     <div id="save-block" class="icon-save icon-left">
       <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
     </div>
