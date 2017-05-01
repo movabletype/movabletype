@@ -34,24 +34,22 @@ $content_field->set_values(
 $content_field->save or die $content_field->errstr;
 
 my $fields = [
-    {   id         => $content_field->id,
-        label      => 1,
-        name       => $content_field->name,
-        order      => 1,
-        type       => $content_field->type,
-        unique_key => $content_field->unique_key,
+    {   id      => $content_field->id,
+        order   => 1,
+        type    => $content_field->type,
+        options => {
+            display  => 'force',
+            hint     => '',
+            label    => 1,
+            required => 1,
+        },
     }
 ];
 $content_type->fields($fields);
 $content_type->save or die $content_type->errstr;
 
 subtest 'make_list_properties' => sub {
-    my $called = 0;
-    my $module = Test::MockModule->new('MT::ContentFieldIndex');
-    $module->mock( 'make_terms', sub { $called++ } );
-
     my $props = ContentType::ListProperties::make_list_properties;
-
     ok( $props && ref $props eq 'HASH', 'make_list_properties returns hash' );
 };
 
