@@ -100,8 +100,7 @@ sub get_field {
 
 sub label_field {
     my $self = shift;
-    my ($label_field) = grep { $_->{label} } @{ $self->fields };
-    $label_field;
+    @{ $self->fields } ? $self->fields->[0] : undef;
 }
 
 sub field_objs {

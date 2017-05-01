@@ -211,9 +211,9 @@ sub cfg_content_type {
     }
 
     my @category_lists;
-    my $iter = MT::CategoryList->load_iter( { blog_id => $app->blog->id },
+    my $cl_iter = MT::CategoryList->load_iter( { blog_id => $app->blog->id },
         { fetchonly => { id => 1, name => 1 } } );
-    while ( my $cat_list = $iter->() ) {
+    while ( my $cat_list = $cl_iter->() ) {
         push @category_lists,
             {
             id   => $cat_list->id,
@@ -221,6 +221,19 @@ sub cfg_content_type {
             };
     }
     $param->{category_lists} = \@category_lists;
+
+    my @content_types;
+    my $ct_iter = MT::ContentType->load_iter( { blog_id => $app->blog->id },
+        { fetchonly => { id => 1, name => 1 } } );
+    while ( my $ct = $ct_iter->() ) {
+        next if ( $content_type_id || 0 ) == $ct->id;
+        push @content_types,
+            {
+            id   => $ct->id,
+            name => $ct->name,
+            };
+    }
+    $param->{content_types} = \@content_types;
 
     $app->build_page( $plugin->load_tmpl('cfg_content_type.tmpl'), $param );
 }
@@ -330,6 +343,14 @@ sub save_cfg_content_type {
         }
         else {
             $content_field->related_cat_list_id(undef);
+        }
+
+        if ( $content_field->type eq 'content_type' ) {
+            $content_field->related_content_type_id(
+                $options->{content_type} );
+        }
+        else {
+            $content_field->related_content_type_id(undef);
         }
 
         $content_field->save

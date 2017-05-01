@@ -152,6 +152,7 @@ content_field_types:
             - max
             - min
             - listing_filter
+            - content_type
         # field_html: |
         #     sub {
         #         my ( $app, $id, $value )  = @_;

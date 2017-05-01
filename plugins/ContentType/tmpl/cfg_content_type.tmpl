@@ -624,6 +624,16 @@
       </select>
     </mtapp:setting>
 
+    <mtapp:setting
+       id="content_type-content_type"
+       label="<__trans phrase="Content Type">">
+      <select name="content_type-content_type" id="content_type-content_type">
+      <mt:loop name="content_types">
+        <option value="<mt:var name="id">" escape="html"><mt:var name="name" escape="html"></option>
+      </mt:loop>
+      </select>
+    </mtapp:setting>
+
     <div id="save-block" class="icon-save icon-left">
       <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
     </div>
