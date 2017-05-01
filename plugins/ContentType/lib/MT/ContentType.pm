@@ -72,12 +72,22 @@ sub fields {
     my $obj = shift;
     if (@_) {
         my @fields = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
-        my $json = eval { JSON::encode_json( \@fields ) } || '[]';
+        my $sorted_fields = _sort_fields( \@fields );
+        my $json = eval { JSON::encode_json($sorted_fields) } || '[]';
         $obj->column( 'fields', $json );
     }
     else {
-        eval { JSON::decode_json( $obj->column('fields') ) } || [];
+        my $fields
+            = eval { JSON::decode_json( $obj->column('fields') ) } || [];
+        _sort_fields($fields);
     }
+}
+
+sub _sort_fields {
+    my $fields = shift;
+    return [] unless $fields && ref $fields eq 'ARRAY';
+    my @sorted_fields = sort { $a->{order} <=> $b->{order} } @{$fields};
+    \@sorted_fields;
 }
 
 sub label_field {
@@ -180,8 +190,7 @@ sub permission_groups {
 # class method
 sub all_permissions {
     my $class = shift;
-    my @content_types
-        = eval { __PACKAGE__->load }
+    my @content_types = eval { __PACKAGE__->load }
         || ();    # TODO: many error occurs without "eval" in test.
     my %all_permission = map { %{ $_->permissions } } @content_types;
     return \%all_permission;
