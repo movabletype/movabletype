@@ -600,10 +600,6 @@ content_field_types:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
                 html: $ContentType::MT::ContentFieldType::Asset::html
                 single_select_options: $ContentType::MT::ContentFieldType::Asset::single_select_options
-                sub_fields:
-                    - class: thumbnail
-                      label: Thumbnail
-                      display: default
                 terms: $ContentType::MT::ContentFieldType::SelectBox::terms
             author_name:
                 base: __virtual.author_name
@@ -653,14 +649,6 @@ content_field_types:
                 base: asset.missing_file
                 display: none
                 terms: $ContentType::MT::ContentFieldType::Asset::terms_missing_file
-            pixel_height:
-                base: asset.image_height
-                display: none
-                terms: $ContentType::MT::ContentFieldType::Asset::terms_image_size
-            pixel_width:
-                base: asset.image_width
-                display: none
-                terms: $ContentType::MT::ContentFieldType::Asset::terms_image_size
             tag:
                 base: __virtual.string
                 col: name
@@ -728,8 +716,69 @@ content_field_types:
         #     }
     audio:
         label: Audio
-        data_type: varchar
+        data_type: integer
         order: 140
+        field_html: $ContentType::MT::ContentFieldType::Asset::field_html
+        data_getter: $ContentType::MT::ContentFieldType::Audio::data_getter
+        list_props:
+            audio:
+                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+                html: $ContentType::MT::ContentFieldType::Asset::html
+                single_select_options: $ContentType::MT::ContentFieldType::Asset::single_select_options
+                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+            author_name:
+                base: __virtual.author_name
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_author_name
+            author_status:
+                base: author.status
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_author_status
+            date_created:
+                base: __virtual.date
+                col: created_on
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_date
+            date_modified:
+                base: __virtual.date
+                col: modified_on
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_date
+            description:
+                base: __virtual.string
+                col: description
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_text
+                use_blank: 1
+            file_extension:
+                base: __virtual.string
+                col: file_ext
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_text
+            filename:
+                base: __virtual.string
+                col: file_name
+                display: none
+            id:
+                base: __virtual.integer
+                col: value_integer
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_id
+            label:
+                base: __virtual.string
+                col: label
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_text
+            missing_file:
+                base: asset.missing_file
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_missing_file
+            tag:
+                base: __virtual.string
+                col: name
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_tag
+                use_blank: 1
         options:
             - label
             - hint
@@ -742,8 +791,69 @@ content_field_types:
             - listing_filter
     video:
         label: Video
-        data_type: varchar
+        data_type: integer
         order: 150
+        field_html: $ContentType::MT::ContentFieldType::Asset::field_html
+        data_getter: $ContentType::MT::ContentFieldType::Video::data_getter
+        list_props:
+            video:
+                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+                html: $ContentType::MT::ContentFieldType::Asset::html
+                single_select_options: $ContentType::MT::ContentFieldType::Asset::single_select_options
+                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+            author_name:
+                base: __virtual.author_name
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_author_name
+            author_status:
+                base: author.status
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_author_status
+            date_created:
+                base: __virtual.date
+                col: created_on
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_date
+            date_modified:
+                base: __virtual.date
+                col: modified_on
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_date
+            description:
+                base: __virtual.string
+                col: description
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_text
+                use_blank: 1
+            file_extension:
+                base: __virtual.string
+                col: file_ext
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_text
+            filename:
+                base: __virtual.string
+                col: file_name
+                display: none
+            id:
+                base: __virtual.integer
+                col: value_integer
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_id
+            label:
+                base: __virtual.string
+                col: label
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_text
+            missing_file:
+                base: asset.missing_file
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_missing_file
+            tag:
+                base: __virtual.string
+                col: name
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_tag
+                use_blank: 1
         options:
             - label
             - hint
@@ -756,8 +866,81 @@ content_field_types:
             - listing_filter
     image:
         label: Image
-        data_type: varchar
+        data_type: integer
         order: 160
+        field_html: $ContentType::MT::ContentFieldType::Asset::field_html
+        data_getter: $ContentType::MT::ContentFieldType::Image::data_getter
+        list_props:
+            image:
+                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+                html: $ContentType::MT::ContentFieldType::Asset::html
+                single_select_options: $ContentType::MT::ContentFieldType::Asset::single_select_options
+                sub_fields:
+                    - class: thumbnail
+                      label: Thumbnail
+                      display: default
+                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+            author_name:
+                base: __virtual.author_name
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_author_name
+            author_status:
+                base: author.status
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_author_status
+            date_created:
+                base: __virtual.date
+                col: created_on
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_date
+            date_modified:
+                base: __virtual.date
+                col: modified_on
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_date
+            description:
+                base: __virtual.string
+                col: description
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_text
+                use_blank: 1
+            file_extension:
+                base: __virtual.string
+                col: file_ext
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_text
+            filename:
+                base: __virtual.string
+                col: file_name
+                display: none
+            id:
+                base: __virtual.integer
+                col: value_integer
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_id
+            label:
+                base: __virtual.string
+                col: label
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_text
+            missing_file:
+                base: asset.missing_file
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_missing_file
+            pixel_height:
+                base: asset.image_height
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_image_size
+            pixel_width:
+                base: asset.image_width
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_image_size
+            tag:
+                base: __virtual.string
+                col: name
+                display: none
+                terms: $ContentType::MT::ContentFieldType::Asset::terms_tag
+                use_blank: 1
         options:
             - label
             - hint

@@ -5,10 +5,20 @@ use warnings;
 use MT;
 use MT::Asset;
 use MT::Author;
+use MT::ContentFieldType::AssetCommon qw( data_getter_common );
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
+use MT::FileMgr;
 use MT::ObjectTag;
 use MT::Tag;
+
+# content field idx_type => asset class
+my %ClassTable = (
+    'asset' => 'file',
+    'audio' => 'audio',
+    'image' => 'image',
+    'video' => 'video',
+);
 
 sub field_html {
     my ( $app, $field_id, $value ) = @_;
@@ -25,23 +35,23 @@ sub field_html {
 }
 
 sub data_getter {
-    my ( $app, $id ) = @_;
-    my $asset_ids = $app->param( 'content-field-' . $id );
-    my @asset_ids = split ',', $asset_ids;
-
-    my %valid_assets
-        = map { $_->id => 1 } MT::Asset->load( { id => \@asset_ids },
-        { no_class => 1, fetchonly => { id => 1 } } );
-
-    [ grep { $valid_assets{$_} } @asset_ids ];
+    my ( $app, $field_id ) = @_;
+    data_getter_common( $app, $field_id, 'file' );
 }
 
 sub single_select_options {
     my $prop = shift;
     my $app = shift || MT->app;
 
-    my @assets = MT::Asset->load( { blog_id => $app->blog->id },
-        { fetchonly => { id => 1, label => 1 }, no_class => 1 } );
+    my $cf_idx_join = MT::ContentFieldIndex->join_on(
+        undef,
+        {   content_field_id => $prop->content_field_id,
+            value_integer    => \'= asset_id',
+        },
+        { unique => 1 },
+    );
+    my @assets = MT::Asset->load( undef,
+        { join => $cf_idx_join, fetchonly => { id => 1, label => 1 } } );
 
     my @options;
     for my $asset (@assets) {
@@ -82,10 +92,10 @@ sub terms_author_name {
         my $author_join = MT::Author->join_on( undef,
             [ $author_terms, { id => \'= asset_created_by' } ] );
         my @asset_ids = map { $_->id } MT::Asset->load(
-            undef,
-            {   no_class => 1,
-                join     => $author_join,
+            {   blog_id => MT->app->blog->id,
+                class   => $ClassTable{ $prop->idx_type },
             },
+            { join => $author_join, fetchonly => { id => 1 } },
         );
         my $join_terms = { value_integer => [ \'IS NULL', @asset_ids ] };
         my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
@@ -98,10 +108,8 @@ sub terms_author_name {
             [ { id => \'= asset_created_by' }, $author_terms ] );
         my $asset_join = MT::Asset->join_on(
             undef,
-            { id => \'= cf_idx_value_integer' },
-            {   no_class => 1,
-                join     => $author_join,
-            }
+            { id   => \'= cf_idx_value_integer' },
+            { join => $author_join, },
         );
         my $join_args = { join => $asset_join };
         my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
@@ -119,10 +127,8 @@ sub terms_author_status {
         [ { id => \'= asset_created_by' }, $status_query ] );
     my $asset_join = MT::Asset->join_on(
         undef,
-        { id => \'= cf_idx_value_integer' },
-        {   no_class => 1,
-            join     => $author_join,
-        }
+        { id   => \'= cf_idx_value_integer' },
+        { join => $author_join, }
     );
     my $join_args = { join => $asset_join };
     my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
@@ -135,11 +141,8 @@ sub terms_date {
 
     my $query = $prop->super(@_);
 
-    my $asset_join = MT::Asset->join_on(
-        undef,
-        [ { id => \'= cf_idx_value_integer' }, $query ],
-        { no_class => 1 },
-    );
+    my $asset_join = MT::Asset->join_on( undef,
+        [ { id => \'= cf_idx_value_integer' }, $query ] );
 
     my $join_args = { join => $asset_join };
     my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
@@ -200,12 +203,7 @@ sub terms_tag {
         );
         my $join_args = { join => $objecttag_join };
         my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
-        if ( 'not_contains' eq $option ) {
-            $cd_ids ? { id => { not => $cd_ids } } : ();
-        }
-        else {
-            { id => $cd_ids };
-        }
+        { id => $cd_ids };
     }
 }
 
@@ -224,9 +222,10 @@ sub terms_image_size {
             { type => $prop->meta_type, vinteger => $value },
             );
         my @asset_ids = map { $_->id } MT::Asset->load(
-            { blog_id => MT->app->blog->id },
-            {   no_class  => 1,
-                join      => $asset_meta_join,
+            {   blog_id => MT->app->blog->id,
+                class   => $ClassTable{ $prop->idx_type },
+            },
+            {   join      => $asset_meta_join,
                 fetchonly => { id => 1 },
             },
         );
@@ -241,10 +240,8 @@ sub terms_image_size {
             );
         my $asset_join = MT::Asset->join_on(
             undef,
-            { id => \'= cf_idx_value_integer' },
-            {   no_class => 1,
-                join     => $asset_meta_join,
-            },
+            { id   => \'= cf_idx_value_integer' },
+            { join => $asset_meta_join, },
         );
         my $join_args = { join => $asset_join };
         my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
@@ -256,7 +253,6 @@ sub terms_missing_file {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
-    require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
 
     my $filter
@@ -265,9 +261,10 @@ sub terms_missing_file {
         : sub { $fmgr->exists( $_[0] ) };
 
     my $iter = MT::Asset->load_iter(
-        { blog_id => MT->app->blog->id },
-        {   no_class => 1,
-            join     => MT::ContentFieldIndex->join_on(
+        {   blog_id => MT->app->blog->id,
+            class   => $ClassTable{ $prop->idx_type },
+        },
+        {   join => MT::ContentFieldIndex->join_on(
                 undef,
                 {   value_integer    => \'= asset_id',
                     content_field_id => $prop->content_field_id,
@@ -302,9 +299,10 @@ sub terms_text {
         my $string    = $args->{string};
         my @asset_ids = map { $_->id } MT::Asset->load(
             {   blog_id => MT->app->blog->id,
+                class   => $ClassTable{ $prop->idx_type },
                 $col => { like => "%${string}%" },
             },
-            { no_class => 1, fetchonly => { id => 1 } },
+            { fetchonly => { id => 1 } },
         );
         my $join_terms = { value_integer => [ \'IS NULL', @asset_ids ] };
         my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
@@ -312,11 +310,8 @@ sub terms_text {
     }
     else {
         my $query      = $prop->super(@_);
-        my $asset_join = MT::Asset->join_on(
-            undef,
-            [ { id => \'= cf_idx_value_integer' }, $query ],
-            { no_class => 1 },
-        );
+        my $asset_join = MT::Asset->join_on( undef,
+            [ { id => \'= cf_idx_value_integer' }, $query ] );
         my $join_args = { join => $asset_join };
         my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
         { id => $cd_ids };
@@ -347,34 +342,38 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
+    my $is_image  = $prop->idx_type eq 'image';
     my $cd_id     = $content_data->id;
     my $field_id  = $prop->content_field_id;
     my $asset_ids = $content_data->data->{$field_id} || [];
 
-    my %assets
-        = map { $_->id => $_ }
-        MT::Asset->load( { id => $asset_ids }, { no_class => 1 } );
+    my %assets = map { $_->id => $_ } MT::Asset->load( { id => $asset_ids } );
     my @assets = map { $assets{$_} } @$asset_ids;
 
     my ( @ids, @thumbnails );
     for my $asset (@assets) {
-        my $id             = $asset->id;
-        my $thumbnail_html = _thumbnail_html( $app, $asset );
-        my $edit_link      = _edit_link( $app, $asset );
+        my $id = $asset->id;
+        my $edit_link = _edit_link( $app, $asset );
 
-        push @ids,        qq{<a href="${edit_link}">${id}</a>};
-        push @thumbnails, qq{<a href="${edit_link}">${thumbnail_html}</a>};
+        push @ids, qq{<a href="${edit_link}">${id}</a>};
+        if ($is_image) {
+            my $thumbnail_html = _thumbnail_html( $app, $asset );
+            push @thumbnails,
+                qq{<a href="${edit_link}">${thumbnail_html}</a>};
+        }
     }
 
     my $ids_html
         = qq{<span id="asset-ids-${cd_id}-${field_id}" class="id">}
         . join( ', ', @ids )
         . '</span>';
-    my $thumbnails_html
-        = qq{<span id="asset-thumbnails-${cd_id}-${field_id}" class="thumbnail">}
-        . join( '', @thumbnails )
-        . '</span>';
-    my $js = <<"__JS__";
+
+    if ($is_image) {
+        my $thumbnails_html
+            = qq{<span id="asset-thumbnails-${cd_id}-${field_id}" class="thumbnail">}
+            . join( '', @thumbnails )
+            . '</span>';
+        my $js = <<"__JS__";
 <script>
 jQuery(document).ready(function() {
   jQuery("#custom-prefs-content_field_${field_id}\\\\.thumbnail").change(function() {
@@ -394,7 +393,11 @@ jQuery(document).ready(function() {
 </script>
 __JS__
 
-    $ids_html . $thumbnails_html . $js;
+        $ids_html . $thumbnails_html . $js;
+    }
+    else {
+        $ids_html;
+    }
 }
 
 sub _edit_link {
@@ -412,7 +415,6 @@ sub _edit_link {
 sub _thumbnail_html {
     my ( $app, $asset ) = @_;
 
-    my $edit_link  = _edit_link( $app, $asset );
     my $thumb_size = 45;
     my $class_type = $asset->class_type;
     my $file_path  = $asset->file_path;
