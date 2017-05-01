@@ -947,7 +947,7 @@
         <mt:var name="key">: '<mt:var name="value">'<mt:unless name="__last__">,</mt:unless>
     </mt:loop>
         }
-      }
+      }<mt:unless name="__last__">,</mt:unless>
     </mt:loop>
     };
     <mt:loop name="fields">
