@@ -29,6 +29,7 @@ sub make_listing_screens {
             scope_mode          => 'this',
             use_filters         => 0,
             view                => [ 'website', 'blog' ],
+            primary             => 'name',
         },
         category_list => MT::CMS::CategoryList::list_screens(),
     };
