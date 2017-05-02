@@ -72,12 +72,35 @@ sub fields {
     my $obj = shift;
     if (@_) {
         my @fields = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
-        my $json = eval { JSON::encode_json( \@fields ) } || '[]';
+        my $sorted_fields = _sort_fields( \@fields );
+        my $json = eval { JSON::encode_json($sorted_fields) } || '[]';
         $obj->column( 'fields', $json );
     }
     else {
-        eval { JSON::decode_json( $obj->column('fields') ) } || [];
+        my $fields
+            = eval { JSON::decode_json( $obj->column('fields') ) } || [];
+        _sort_fields($fields);
     }
+}
+
+sub _sort_fields {
+    my $fields = shift;
+    return [] unless $fields && ref $fields eq 'ARRAY';
+    my @sorted_fields = sort { $a->{order} <=> $b->{order} } @{$fields};
+    \@sorted_fields;
+}
+
+sub get_field {
+    my $self = shift;
+    my ($field_id) = @_ or return;
+    my ($field)
+        = grep { $_->{id} && $_->{id} == $field_id } @{ $self->fields };
+    $field;
+}
+
+sub label_field {
+    my $self = shift;
+    @{ $self->fields } ? $self->fields->[0] : undef;
 }
 
 sub field_objs {
@@ -89,22 +112,62 @@ sub field_objs {
 }
 
 sub permissions {
-    my $obj = shift;
-    return +{ %{ $obj->permission }, %{ $obj->field_permissions } };
+    my $self = shift;
+    return +{ $self->permission, %{ $self->field_permissions } };
 }
 
 sub permission {
-    my $obj              = shift;
-    my $permitted_action = 'manage_content_type:' . $obj->unique_key;
-    my $name             = 'blog.' . $permitted_action;
-    return +{
-        $name => {
-            group            => $obj->permission_group,
-            label            => 'Manage "' . $obj->name . '" content type',
-            order            => 100,
-            permitted_action => { $permitted_action => 1 },
+    my $self = shift;
+    (   $self->_create_content_data_permission,
+        $self->_publish_content_data_permission,
+        $self->_edit_all_content_data_permission,
+    );
+}
+
+sub _create_content_data_permission {
+    my $self            = shift;
+    my $permission_name = 'blog.create_content_data:' . $self->unique_key;
+    (   $permission_name => {
+            group => $self->permission_group,
+            label => 'Create Content Data',
+            order => 100,
         }
-    };
+    );
+}
+
+sub _publish_content_data_permission {
+    my $self            = shift;
+    my $permission_name = 'blog.publish_content_data:' . $self->unique_key;
+    (   $permission_name => {
+            group            => $self->permission_group,
+            label            => 'Publish Content Data',
+            order            => 200,
+            permitted_action => {
+                'edit_own_published_content_data_' . $self->id   => 1,  # TODO
+                'edit_own_unpublished_content_data_' . $self->id => 1,  # TODO
+                'publish_own_content_data_'
+                    . $self->id => 1,    # TODO: unique_id?
+            },
+        }
+    );
+}
+
+sub _edit_all_content_data_permission {
+    my $self            = shift;
+    my $permission_name = 'blog.edit_all_content_data:' . $self->unique_key;
+    (   $permission_name => {
+            group            => $self->permission_group,
+            label            => 'Edit All Content Data',
+            order            => 300,
+            permitted_action => {
+                'edit_all_content_data_' . $self->id => 1,  # TODO: unique_id?
+                'edit_all_published_content_data_' . $self->id   => 1,  # TODO
+                'edit_all_unpublished_content_data_' . $self->id => 1,  # TODO
+                'publish_all_content_data_'
+                    . $self->id => 1,    # TODO: unique_id?
+            },
+        }
+    );
 }
 
 sub field_permissions {
@@ -134,8 +197,7 @@ sub permission_groups {
 # class method
 sub all_permissions {
     my $class = shift;
-    my @content_types
-        = eval { __PACKAGE__->load }
+    my @content_types = eval { __PACKAGE__->load }
         || ();    # TODO: many error occurs without "eval" in test.
     my %all_permission = map { %{ $_->permissions } } @content_types;
     return \%all_permission;
@@ -166,6 +228,49 @@ sub post_remove {
     }
 
     MT->app->reboot;
+}
+
+sub generate_object_log_class {
+    my $self = shift;
+    return unless $self->id;
+
+    eval $self->_generate_object_log_code;
+    die $@ if $@;
+}
+
+sub _generate_object_log_code {
+    my $self = shift;
+    my $id   = $self->id;
+
+    return <<"__CODE__";
+package MT::Log::ContentData${id};
+use strict;
+use warnings;
+use base qw( MT::Log );
+
+use MT;
+
+__PACKAGE__->install_properties({ class_type => 'content_data_${id}' });
+
+sub class_label {
+    MT->translate('Content Data');
+}
+
+sub metadata_class {
+    'MT::ContentData';
+}
+
+sub description {
+    my \$self = shift;
+    if ( my \$content_data = \$self->metadata_object ) {
+        \$content_data->to_hash->{'cd.text_html'};
+    } else {
+        MT->translate( 'Content Data # [_1] not found.', \$self->metadata );
+    }
+}
+
+1;
+__CODE__
 }
 
 1;

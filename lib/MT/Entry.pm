@@ -508,6 +508,16 @@ sub list_props {
                     || 'not_contains' eq $option
                     || 'beginning' eq $option
                     || 'end' eq $option );
+
+                my $label_terms;
+                if ( 'blank' eq $option ) {
+                    $label_terms
+                        = [ { label => '' }, '-or', { label => \'IS NULL' } ];
+                }
+                else {
+                    $label_terms = { label => $query };
+                }
+
                 if ( 'not_contains' eq $option ) {
                     my @placements = MT->model('placement')->load(
                         ( $blog_id ? { blog_id => $blog_id } : undef ),
@@ -515,13 +525,15 @@ sub list_props {
                             join =>
                                 MT->model( $prop->category_class )->join_on(
                                 undef,
-                                {   label => $query,
-                                    id    => \'= placement_category_id',
-                                    (   $blog_id
-                                        ? ( blog_id => $blog_id )
-                                        : ()
-                                    ),
-                                },
+                                [   $label_terms,
+                                    '-and',
+                                    {   id => \'= placement_category_id',
+                                        (   $blog_id
+                                            ? ( blog_id => $blog_id )
+                                            : ()
+                                        ),
+                                    },
+                                ],
                                 { unique => 1, }
                                 ),
                         },
@@ -543,13 +555,15 @@ sub list_props {
                             join =>
                                 MT->model( $prop->category_class )->join_on(
                                 undef,
-                                {   label => $query,
-                                    id    => \'= placement_category_id',
-                                    (   $blog_id
-                                        ? ( blog_id => $blog_id )
-                                        : ()
-                                    ),
-                                },
+                                [   $label_terms,
+                                    '-and',
+                                    {   id => \'= placement_category_id',
+                                        (   $blog_id
+                                            ? ( blog_id => $blog_id )
+                                            : ()
+                                        ),
+                                    },
+                                ],
                                 { unique => 1, }
                                 ),
                         },

@@ -117,10 +117,19 @@ sub list_props {
                 require MT::Category;
                 require MT::Blog;
                 my $rep = $objs->[0] or return;
-                my $blog = MT::Blog->load( { id => $rep->blog_id },
-                    { no_class => 1 } );
-                my $meta = $prop->class . '_order';
-                my $text = $blog->$meta || '';
+                my $text;
+                if ( $rep->category_list_id ) {
+                    my $list
+                        = MT->model('category_list')
+                        ->load( $rep->category_list_id );
+                    $text = $list->order || '';
+                }
+                else {
+                    my $blog = MT::Blog->load( { id => $rep->blog_id },
+                        { no_class => 1 } );
+                    my $meta = $prop->class . '_order';
+                    $text = $blog->$meta || '';
+                }
                 my @cats = _sort_by_id_list(
                     $text,
                     $objs,
@@ -152,6 +161,10 @@ sub list_props {
             col             => 'blog_id',
             display         => 'none',
             filter_editable => 0,
+        },
+        category_list_id => {
+            auto    => 1,
+            display => 'none',
         },
     };
 }

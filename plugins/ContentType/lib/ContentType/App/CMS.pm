@@ -12,10 +12,13 @@ use warnings;
 use JSON ();
 
 use MT;
+use MT::CMS::Common;
+use MT::CategoryList;
 use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentType;
 use MT::ContentData;
+use MT::Log;
 
 {
     # TBD: Move to Core.
@@ -25,7 +28,44 @@ use MT::ContentData;
     *MT::Author::can_manage_content_types = sub {
         my $author = shift;
         return $author->is_superuser(@_);
+    };
+
+    *MT::Permission::can_edit_content_data = sub {
+        my $self = shift;
+        my ( $content_data, $author, $status ) = @_;
+        die unless $author->isa('MT::Author');
+        return 1 if $author->is_superuser();
+        unless ( ref $content_data ) {
+            $content_data = MT::ContentData->load($content_data)
+                or return;
         }
+
+        if (   !ref $self
+            || $self->author_id != $author->id
+            || $self->blog_id != $content_data->blog_id )
+        {
+            $self = $author->permissions( $content_data->blog_id )
+                or return;
+        }
+
+        my $content_data_name = 'content_data_' . $content_data->id;
+
+        return 1
+            if $self->can_do("edit_all_${content_data_name}");
+
+        my $own_content_data = $content_data->author_id == $author->id;
+
+        if ( defined $status ) {
+            return $own_content_data
+                ? $self->can_do("edit_own_published_${content_data_name}")
+                : $self->can_do("edit_all_published_${content_data_name}");
+        }
+        else {
+            return $own_content_data
+                ? $self->can_do("edit_own_unpublished_${content_data_name}")
+                : $self->can_do("edit_all_unpublished_${content_data_name}");
+        }
+    };
 }
 
 sub init_app {
@@ -33,9 +73,17 @@ sub init_app {
 
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
-        $app->add_callback(
-            'cms_pre_load_filtered_list.content_data_' . $content_type->id,
+        my $obj_name = 'content_data_' . $content_type->id;
+
+        $app->add_callback( "cms_pre_load_filtered_list.${obj_name}",
             0, $app, \&cms_pre_load_filtered_list );
+
+        # feed
+        $app->add_callback( "ActivityFeed.${obj_name}", 5, $app,
+            '$ContentType::ContentType::Feed::feed_content_data' );
+        $app->add_callback( "ActivityFeed.filter_object.${obj_name}",
+            5, $app, '$ContentType::ContentType::Feed::filter_content_data' );
+        $content_type->generate_object_log_class;
     }
     return 1;
 }
@@ -161,6 +209,32 @@ sub cfg_content_type {
     foreach my $name (qw( saved err_msg id name )) {
         $param->{$name} = $q->param($name) if $q->param($name);
     }
+
+    my @category_lists;
+    my $cl_iter = MT::CategoryList->load_iter( { blog_id => $app->blog->id },
+        { fetchonly => { id => 1, name => 1 } } );
+    while ( my $cat_list = $cl_iter->() ) {
+        push @category_lists,
+            {
+            id   => $cat_list->id,
+            name => $cat_list->name,
+            };
+    }
+    $param->{category_lists} = \@category_lists;
+
+    my @content_types;
+    my $ct_iter = MT::ContentType->load_iter( { blog_id => $app->blog->id },
+        { fetchonly => { id => 1, name => 1 } } );
+    while ( my $ct = $ct_iter->() ) {
+        next if ( $content_type_id || 0 ) == $ct->id;
+        push @content_types,
+            {
+            id   => $ct->id,
+            name => $ct->name,
+            };
+    }
+    $param->{content_types} = \@content_types;
+
     $app->build_page( $plugin->load_tmpl('cfg_content_type.tmpl'), $param );
 }
 
@@ -207,9 +281,7 @@ sub save_cfg_content_type {
             args   => {
                 blog_id => $blog_id,
                 id      => $content_type_id,
-                err_msg => $plugin->translate(
-                    "Name is required."
-                ),
+                err_msg => $plugin->translate("Name is required."),
             }
         )
     ) unless $name;
@@ -260,18 +332,34 @@ sub save_cfg_content_type {
             $content_field->blog_id($blog_id);
             $content_field->content_type_id( $content_type->id );
             $content_field->type( $option_list->{fields}{$field_id}{type} );
-            $content_field->name($label);
-            $content_field->default( $options->{initial_value} );
-            $content_field->description( $options->{description} );
-            $content_field->required( $options->{required} );
-            $content_field->save
-                or return $app->error(
-                $plugin->translate(
-                    "Saving content field failed: [_1]",
-                    $content_type->errstr
-                )
-                );
         }
+        $content_field->name($label);
+        $content_field->default( $options->{initial_value} );
+        $content_field->description( $options->{description} );
+        $content_field->required( $options->{required} );
+
+        if ( $content_field->type eq 'category' ) {
+            $content_field->related_cat_list_id( $options->{category_list} );
+        }
+        else {
+            $content_field->related_cat_list_id(undef);
+        }
+
+        if ( $content_field->type eq 'content_type' ) {
+            $content_field->related_content_type_id(
+                $options->{content_type} );
+        }
+        else {
+            $content_field->related_content_type_id(undef);
+        }
+
+        $content_field->save
+            or return $app->error(
+            $plugin->translate(
+                "Saving content field failed: [_1]",
+                $content_type->errstr
+            )
+            );
         push @fields,
             {
             id => $content_field->id,
@@ -310,6 +398,7 @@ sub cfg_content_field {
     my $blog_id                 = $q->param('blog_id');
     my $content_field_id        = $q->param('id');
     my $content_field_type      = $q->param('type') || '';
+    my $related_cat_list_id     = $q->param('related_cat_list_id') || '';
     my $related_content_type_id = $q->param('related_content_type_id') || '';
 
     require MT::Promise;
@@ -326,10 +415,13 @@ sub cfg_content_field {
         $param->{type}    = $content_field->type;
         $param->{default} = $content_field->default;
         $param->{options} = $content_field->options;
+        $param->{related_cat_list_id}
+            = $content_field->related_cat_list_id || '';
         $param->{related_content_type_id}
             = $content_field->related_content_type_id;
-        $param->{unique_key}     = $content_field->unique_key;
-        $content_field_type      = $content_field->type;
+        $param->{unique_key} = $content_field->unique_key;
+        $content_field_type = $content_field->type;
+        $related_cat_list_id = $content_field->related_cat_list_id || '';
         $related_content_type_id = $content_field->related_content_type_id;
     }
 
@@ -367,6 +459,19 @@ sub cfg_content_field {
         grep { $_->{options} } @type_array;
     $param->{content_field_types_options}
         = JSON::encode_json( \%content_field_types_options );
+
+    my @cat_lists_param;
+    my @category_lists
+        = MT->model('category_list')->load( { blog_id => $blog_id } );
+    for my $cl (@category_lists) {
+        push @cat_lists_param,
+            {
+            id       => $cl->id,
+            name     => $cl->name,
+            selected => $cl->id eq $related_cat_list_id,
+            };
+    }
+    $param->{category_lists} = \@cat_lists_param;
 
     my $options_html = '';
 
@@ -479,6 +584,7 @@ sub save_cfg_content_field {
     my $type                    = $q->param('type');
     my $default                 = $q->param('default');
     my $options                 = $q->param('options');
+    my $related_cat_list_id     = $q->param('related_cat_list_id');
     my $related_content_type_id = $q->param('related_content_type_id');
 
     return $app->redirect(
@@ -495,6 +601,7 @@ sub save_cfg_content_field {
                 type                    => $type,
                 default                 => $default,
                 options                 => $options,
+                related_cat_list_id     => $related_cat_list_id,
                 related_content_type_id => $related_content_type_id,
             }
         )
@@ -513,6 +620,7 @@ sub save_cfg_content_field {
     $content_field->name($name);
     $content_field->type($type);
     $content_field->options($options);
+    $content_field->related_cat_list_id( $related_cat_list_id         || 0 );
     $content_field->related_content_type_id( $related_content_type_id || 0 );
 
     $content_field->save
@@ -822,9 +930,11 @@ sub save_content_data {
         ? MT::ContentData->load($content_data_id)
         : MT::ContentData->new();
 
+    $content_data->author_id( $app->user->id ) unless $content_data->id;
     $content_data->blog_id($blog_id);
     $content_data->content_type_id($content_type_id);
     $content_data->data($data);
+    $content_data->modified_by( $app->user->id ) if $content_data->id;
     $content_data->save
         or return $app->error(
         $plugin->translate(
@@ -869,9 +979,37 @@ sub _get_form_data {
         }
     }
     else {
-        my $q = $app->param;
-        return $q->param( 'content-field-' . $id );
+        my $value = $app->param( 'content-field-' . $id );
+        if ( defined $value && $value ne '' ) {
+            $value;
+        }
+        else {
+            undef;
+        }
     }
+}
+
+sub delete_content_data {
+    my $app = shift;
+    $app->param( '_type', 'content_data' );
+    MT::CMS::Common::delete($app);
+}
+
+sub post_delete {
+    my ( $eh, $app, $obj ) = @_;
+
+    my $content_type = $obj->content_type or return;
+
+    $app->log(
+        {   message => $app->translate(
+                "[_1] (ID:[_2]) deleted by '[_3]'", $content_type->name,
+                $obj->id,                           $app->user->name
+            ),
+            level    => MT::Log::INFO(),
+            class    => 'content_data_' . $content_type->id,
+            category => 'delete'
+        }
+    );
 }
 
 1;

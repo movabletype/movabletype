@@ -67,6 +67,7 @@ subtest 'load_or_new' => sub {
         my $cd = MT::ContentData->new;
         $cd->set_values(
             {   blog_id         => $ct->blog_id,
+                author_id       => 1,
                 content_type_id => $ct->id,
             }
         );
@@ -121,27 +122,6 @@ subtest 'set_value' => sub {
         'set invalid type' );
     ok( !$cf_idx->set_value( '',    'hoheto' ),      'set empty string' );
     ok( !$cf_idx->set_value( undef, 'chirinuruwo' ), 'set undef' );
-};
-
-subtest 'make_terms' => sub {
-    my $prop = { idx_type => 'varchar' };
-    my $args = { option => 'contains', string => 'test' };
-    my $db_terms = {};
-    my $db_args  = {};
-
-    MT::ContentFieldIndex::make_terms( $prop, $args, $db_terms, $db_args );
-
-    my $expected_joins = [
-        [   'MT::ContentFieldIndex',
-            undef,
-            {   value_varchar   => { like => '%test%' },
-                content_data_id => \'= content_data_id',
-            },
-            { alias => 'index_varchar' },
-        ]
-    ];
-    is_deeply( $db_args->{joins}, $expected_joins,
-        'make_terms sets hash to $db_args->{joins}' );
 };
 
 done_testing;

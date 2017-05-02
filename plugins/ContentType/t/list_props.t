@@ -12,6 +12,7 @@ use MT::ContentData;
 use MT::ContentType;
 use MT::ContentField;
 use MT::ContentFieldIndex;
+use MT::ListProperty;
 use ContentType::ListProperties;
 
 my $content_type = MT::ContentType->new;
@@ -33,40 +34,31 @@ $content_field->set_values(
 $content_field->save or die $content_field->errstr;
 
 my $fields = [
-    {   id         => $content_field->id,
-        label      => 1,
-        name       => $content_field->name,
-        order      => 1,
-        type       => $content_field->type,
-        unique_key => $content_field->unique_key,
+    {   id      => $content_field->id,
+        order   => 1,
+        type    => $content_field->type,
+        options => {
+            display  => 'force',
+            hint     => '',
+            label    => 1,
+            required => 1,
+        },
     }
 ];
 $content_type->fields($fields);
 $content_type->save or die $content_type->errstr;
 
 subtest 'make_list_properties' => sub {
-    my $called = 0;
-    my $module = Test::MockModule->new('MT::ContentFieldIndex');
-    $module->mock( 'make_terms', sub { $called++ } );
-
     my $props = ContentType::ListProperties::make_list_properties;
-
     ok( $props && ref $props eq 'HASH', 'make_list_properties returns hash' );
-
-    my $terms = $props->{ 'content_data_' . $content_type->id }
-        { 'content_field_' . $content_field->id }{terms};
-    is( ref $terms, 'CODE',
-        '$props->{content_data_?}{content_field_?}{terms} is coderef' );
-
-    $terms->();
-    is( $called, 1, 'The coderef is MT::ContentFieldIndex::make_terms' );
 };
 
 subtest 'make_title' => sub {
-    my $prop;
+    my $prop = MT::ListProperty->new( 'content_data_1', 'content_field_1' );
     my $content_data = MT::ContentData->new;
     $content_data->set_values(
         {   blog_id         => $content_type->blog_id,
+            author_id       => 1,
             content_type_id => $content_type->id,
         }
     );

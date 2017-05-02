@@ -232,13 +232,17 @@ BEGIN {
                             $query = { like => "%$query%" };
                         }
                         elsif ( 'not_contains' eq $option ) {
-                            $query = { not_like => "%$query%" };
+                            $query
+                                = [ { not_like => "%$query%" }, \'IS NULL' ];
                         }
                         elsif ( 'beginning' eq $option ) {
                             $query = { like => "$query%" };
                         }
                         elsif ( 'end' eq $option ) {
                             $query = { like => "%$query" };
+                        }
+                        elsif ( 'blank' eq $option ) {
+                            $query = [ \'IS NULL', '' ];
                         }
                         if ( $prop->is_meta ) {
                             return $prop->join_meta( $db_args, $query );
@@ -247,7 +251,14 @@ BEGIN {
                             return { $col => $query };
                         }
                     },
-                    filter_tmpl    => '<mt:var name="filter_form_string">',
+                    filter_tmpl => sub {
+                        my $prop = shift;
+                        my $tmpl
+                            = $prop->use_blank
+                            ? 'filter_form_blank_string'
+                            : 'filter_form_string';
+                        qq{<mt:var name="${tmpl}">};
+                    },
                     base_type      => 'string',
                     args_via_param => sub {
                         my $prop = shift;
@@ -287,7 +298,7 @@ BEGIN {
                             $query = $value;
                         }
                         elsif ( 'not_equal' eq $option ) {
-                            $query = { not => $value };
+                            $query = [ { not => $value }, \'IS NULL' ];
                         }
                         elsif ( 'greater_than' eq $option ) {
                             $query = { '>' => $value };
@@ -301,6 +312,9 @@ BEGIN {
                         elsif ( 'less_equal' eq $option ) {
                             $query = { '<=' => $value };
                         }
+                        elsif ( 'blank' eq $option ) {
+                            $query = \'IS NULL';
+                        }
                         if ( $prop->is_meta ) {
                             return $prop->join_meta( $db_args, $query );
                         }
@@ -313,15 +327,22 @@ BEGIN {
                         my ( $app, $val ) = @_;
                         return { option => 'equal', value => $val };
                     },
-                    filter_tmpl => '<mt:Var name="filter_form_integer">',
-                    base_type   => 'integer',
-                    priority    => 4,
+                    filter_tmpl => sub {
+                        my $prop      = shift;
+                        my $base_type = $prop->base_type;
+                        my $tmpl
+                            = $prop->use_blank
+                            ? "filter_form_blank_${base_type}"
+                            : "filter_form_${base_type}";
+                        qq{<mt:Var name="${tmpl}">};
+                    },
+                    base_type          => 'integer',
+                    priority           => 4,
                     default_sort_order => 'descend',
                 },
                 float => {
                     base        => '__virtual.integer',
                     col_class   => 'num',
-                    filter_tmpl => '<mt:Var name="filter_form_float">',
                     data_format => '%.1f',
                     html        => sub {
                         my ( $prop, $obj ) = @_;
@@ -451,6 +472,9 @@ BEGIN {
                                 value => $now
                             };
                         }
+                        elsif ( 'blank' eq $option ) {
+                            $query = \'IS NULL';
+                        }
 
                         if ( $prop->is_meta ) {
                             $prop->join_meta( $db_args, $query );
@@ -567,10 +591,26 @@ BEGIN {
                             = $prop->use_future
                             ? 'filter_form_future_date'
                             : 'filter_form_date';
-                        my $opts
-                            = $prop->use_future
-                            ? '<mt:var name="future_date_filter_options">'
-                            : '<mt:var name="date_filter_options">';
+                        my $opts;
+                        if ( $prop->use_future ) {
+                            if ( $prop->use_blank ) {
+                                $opts
+                                    = '<mt:var name="future_blank_date_filter_options">';
+                            }
+                            else {
+                                $opts
+                                    = '<mt:var name="future_date_filter_options">';
+                            }
+                        }
+                        else {
+                            if ( $prop->use_blank ) {
+                                $opts
+                                    = '<mt:var name="blank_date_filter_options">';
+                            }
+                            else {
+                                $opts = '<mt:var name="date_filter_options">';
+                            }
+                        }
                         my $contents
                             = $prop->use_future
                             ? '<mt:var name="future_date_filter_contents">'
@@ -743,12 +783,12 @@ BEGIN {
                             undef,
                             [   { id => \"= $colname" },
                                 '-and',
-                                [   {%$name_query},
+                                [   $name_query,
                                     (   $args->{'option'} eq 'not_contains'
                                         ? '-and'
                                         : '-or'
                                     ),
-                                    {%$nick_query},
+                                    $nick_query,
                                 ]
                             ],
                             {}
@@ -795,6 +835,9 @@ BEGIN {
                         }
                         elsif ( 'end' eq $option ) {
                             $query = { like => "%$query" };
+                        }
+                        elsif ( 'blank' eq $option ) {
+                            $query = '';
                         }
                         my $ds           = $prop->object_type;
                         my $tagged_class = $prop->tagged_class || $ds;
@@ -2803,14 +2846,18 @@ sub load_core_permissions {
             'label'            => 'Manage Categories',
             'order'            => 500,
             'permitted_action' => {
+                'access_to_category_list_list'        => 1,
                 'access_to_category_list'             => 1,
                 'bulk_edit_category_trackbacks'       => 1,
+                'delete_category_list'                => 1,
                 'delete_category'                     => 1,
                 'delete_category_trackback'           => 1,
+                'edit_category_list'                  => 1,
                 'edit_categories'                     => 1,
                 'handle_junk_for_category_trackback'  => 1,
                 'open_category_edit_screen'           => 1,
                 'open_category_trackback_edit_screen' => 1,
+                'save_category_list'                  => 1,
                 'save_category'                       => 1,
                 'save_category_trackback'             => 1,
                 'search_category_trackbacks'          => 1,

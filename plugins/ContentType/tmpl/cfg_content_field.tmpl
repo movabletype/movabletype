@@ -73,8 +73,20 @@
     </mtapp:setting>
 
     <mtapp:setting
+      id="related_category_list_id"
+      label="<__trans phrase="Related Category List">"
+    >
+      <select name="related_cat_list_id" id="related_cat_list_id" class="half-width">
+        <option value=""><__trans phrase="Category List is not selected"></option>
+      <mt:loop name="category_lists">
+        <option value="<mt:var name="id">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="name"></option>
+      </mt:loop>
+      </select>
+    </mtapp:setting>
+
+    <mtapp:setting
        id="related_content_type_id"
-       label="<__trans phrase="Releted Content Type">">
+       label="<__trans phrase="Related Content Type">">
       <select name="related_content_type_id" id="related_content_type_id">" class="half-width required">
       <option value=""><__trans phrase="Content Type is not selected"></option>
       <mt:loop name="content_types">
