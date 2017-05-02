@@ -47,15 +47,6 @@
 
     <h2 id="setting-title" ><__trans phrase="Content Type"></h2>
 
-<!--
-    <mtapp:setting
-       id="name"
-       label="<__trans phrase="Content Type Name">"
-       required="1">
-      <input type="text" name="name" id="name" class="text med required" value="<mt:var name="name" escape="html">" />
-    </mtapp:setting>
--->
-
     <mtapp:setting
        id="unique_key"
        label="<__trans phrase="Unique Key">">
@@ -77,35 +68,7 @@
         <span class="item-add"><a href="javascript:void(0);" class="add-link"> <__trans phrase="Add content field"></a></span>
       </div>
 
-      <div id="sortable" class="sortable">
-      <!--
-      <mt:loop name="fields">
-      <mtapp:setting
-         id="content-field-<mt:var name="content_field_id">"
-         class="sort-enabled"
-         label="<mt:var name="name">"
-         label_class="top-label">
-        <ul class="action-link-list">
-          <li>
-            <input type="radio" name="content-label" id="content-label-<mt:var name="content_field_id">" value="<mt:var name="content_field_id">"<mt:if name="label"> checked="checked"</mt:if> />
-            <label for="content-label-<mt:var name="content_field_id">">Label for list screen</label>
-          </li>
-          <li>
-            <a href="<mt:var name="mt_url">?__mode=cfg_content_field&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">&id=<mt:var name="content_field_id">" class="icon-left icon-edit">
-              <__trans phrase="Edit">
-            </a>
-          </li>
-          <li>
-            <a href="<mt:var name="mt_url">?__mode=delete_content_field&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">&id=<mt:var name="content_field_id">" class="icon-left icon-delete">
-              <__trans phrase="Delete">
-            </a>
-          </li>
-        </ul>
-        <input type="hidden" name="order-<mt:var name="content_field_id">" id="order-<mt:var name="content_field_id">" value="<mt:var name="order">" />
-      </mtapp:setting>
-      </mt:loop>
-      -->
-      </div>
+      <div id="sortable" class="sortable"></div>
 
   </mtapp:settinggroup>
 
