@@ -320,7 +320,7 @@ sub save_cfg_content_type {
         my $options = $option_list->{fields}{$field_id}{options};
         my $label   = $options->{label};
         my $content_field;
-        if ($content_type_id) {
+        if ( $content_type_id && !$option_list->{fields}{$field_id}{new} ) {
             $content_field = MT::ContentField->load(
                 {   content_type_id => $content_type_id,
                     name            => $label

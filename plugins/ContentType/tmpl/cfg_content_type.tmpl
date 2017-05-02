@@ -1003,8 +1003,9 @@
       '<mt:var name="id">': {
         'options': {
     <mt:loop name="options">
-        <mt:var name="key">: '<mt:var name="value">'<mt:unless name="__last__">,</mt:unless>
+        <mt:var name="key">: '<mt:var name="value">',
     </mt:loop>
+          new: 0
         }
       }<mt:unless name="__last__">,</mt:unless>
     </mt:loop>
@@ -1041,7 +1042,17 @@
       return false;
     var length = jQuery('#sortable').sortable('toArray').length;
     var id = length + 1;
-    add_field(id, jQuery("#type").val(), id);
+    var type_name = jQuery("#type").val();
+    add_field(id, type_name, id);
+    var data = JSON.parse( localStorage.getItem("ContentType") );
+    if (!data['fields'])
+        data['fields'] = {};
+    if (!data['fields'][id])
+        data['fields'][id] = {};
+    data['fields'][id]['type'] = type_name;
+    data['fields'][id]['order'] = id;
+    data['fields'][id]['new'] = 1;
+    localStorage.setItem("ContentType", JSON.stringify(data));
     set_sortable();
     set_events();
     return false;
@@ -1139,11 +1150,6 @@
       var current_id = jQuery("#current_field_id").val();
       var regexp = new RegExp(type_name + '-(.*)');
       var data = JSON.parse( localStorage.getItem("ContentType") );
-      if (!data['fields'])
-          data['fields'] = {};
-      if (!data['fields'][current_id])
-          data['fields'][current_id] = {};
-      data['fields'][current_id]['type'] = type_name;
       data['fields'][current_id]['order'] = jQuery('#order-' + current_id).val();
       options.find("input").each(function(index, element) {
         var input_type = jQuery(element).attr("type");
