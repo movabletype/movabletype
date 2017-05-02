@@ -964,11 +964,12 @@
     data['fields'] = {
     <mt:loop name="fields">
       '<mt:var name="content_field_id">': {
+        'type': '<mt:var name="type">',
+        'new': 0,
         'options': {
     <mt:loop name="options">
         <mt:var name="key">: '<mt:var name="value">',
     </mt:loop>
-          new: 0
         }
       }<mt:unless name="__last__">,</mt:unless>
     </mt:loop>
