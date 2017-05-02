@@ -360,6 +360,8 @@ sub save_cfg_content_type {
                 $content_type->errstr
             )
             );
+        delete $option_list->{fields}{$field_id}{new}
+            if defined $option_list->{fields}{$field_id}{new};
         push @fields,
             {
             id => $content_field->id,
