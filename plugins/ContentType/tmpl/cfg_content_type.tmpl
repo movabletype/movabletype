@@ -1000,7 +1000,7 @@
     data['description'] = '<mt:var name="description">';
     data['fields'] = {
     <mt:loop name="fields">
-      '<mt:var name="id">': {
+      '<mt:var name="content_field_id">': {
         'options': {
     <mt:loop name="options">
         <mt:var name="key">: '<mt:var name="value">',
@@ -1011,7 +1011,7 @@
     </mt:loop>
     };
     <mt:loop name="fields">
-    add_field('<mt:var name="id">', '<mt:var name="type">', '<mt:var name="__counter__">');
+    add_field('<mt:var name="content_field_id">', '<mt:var name="type">', '<mt:var name="__counter__">');
     </mt:loop>
     localStorage.setItem("ContentType", JSON.stringify(data));
 </mt:if>
