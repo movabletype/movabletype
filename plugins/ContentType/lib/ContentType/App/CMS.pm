@@ -839,6 +839,7 @@ sub edit_content_data {
                     }
                     $field_html = $plugin->load_tmpl( $field_html,
                         $field_html_params );
+                    $field_html = $field_html->output if $field_html;
                 }
                 else {
                     $field_html = MT->handler_to_coderef($field_html);

@@ -740,8 +740,17 @@ content_field_types:
             - initial_value
     list:
         label: list
-        data_type: blob
+        data_type: varchar
         order: 200
+        field_html: field_html_list.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::List::field_html_params
+        data_getter: $ContentType::MT::ContentFieldType::List::data_getter
+        list_props:
+            list:
+                base: __virtual.string
+                col: value_varchar
+                html: $ContentType::MT::ContentFieldType::List::html
+                terms: $ContentType::MT::ContentFieldType::List::terms
         options:
             - label
             - hint
