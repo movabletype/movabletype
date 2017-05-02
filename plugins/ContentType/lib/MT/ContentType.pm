@@ -15,12 +15,13 @@ use MT::ContentType::UniqueKey;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'         => 'integer not null auto_increment',
-            'blog_id'    => 'integer not null',
-            'name'       => 'string(255)',
-            'version'    => 'integer',
-            'unique_key' => 'blob',
-            'fields'     => 'blob',
+            'id'          => 'integer not null auto_increment',
+            'blog_id'     => 'integer not null',
+            'name'        => 'string(255)',
+            'description' => 'text',
+            'version'     => 'integer',
+            'unique_key'  => 'blob',
+            'fields'      => 'blob',
         },
         indexes     => { blog_id => 1 },
         datasource  => 'content_type',
@@ -71,18 +72,35 @@ sub fields {
     my $obj = shift;
     if (@_) {
         my @fields = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
-        my $json = eval { JSON::encode_json( \@fields ) } || '[]';
+        my $sorted_fields = _sort_fields( \@fields );
+        my $json = eval { JSON::encode_json($sorted_fields) } || '[]';
         $obj->column( 'fields', $json );
     }
     else {
-        eval { JSON::decode_json( $obj->column('fields') ) } || [];
+        my $fields
+            = eval { JSON::decode_json( $obj->column('fields') ) } || [];
+        _sort_fields($fields);
     }
+}
+
+sub _sort_fields {
+    my $fields = shift;
+    return [] unless $fields && ref $fields eq 'ARRAY';
+    my @sorted_fields = sort { $a->{order} <=> $b->{order} } @{$fields};
+    \@sorted_fields;
+}
+
+sub get_field {
+    my $self = shift;
+    my ($field_id) = @_ or return;
+    my ($field)
+        = grep { $_->{id} && $_->{id} == $field_id } @{ $self->fields };
+    $field;
 }
 
 sub label_field {
     my $self = shift;
-    my ($label_field) = grep { $_->{label} } @{ $self->fields };
-    $label_field;
+    @{ $self->fields } ? $self->fields->[0] : undef;
 }
 
 sub field_objs {
@@ -179,8 +197,8 @@ sub permission_groups {
 # class method
 sub all_permissions {
     my $class = shift;
-    my @content_types
-        = eval { __PACKAGE__->load }; # TODO: many error occurs without "eval" in test.
+    my @content_types = eval { __PACKAGE__->load }
+        || ();    # TODO: many error occurs without "eval" in test.
     my %all_permission = map { %{ $_->permissions } } @content_types;
     return \%all_permission;
 }

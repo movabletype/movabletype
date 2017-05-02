@@ -21,16 +21,6 @@ use MT::CMS::CategoryList;
 
 sub make_listing_screens {
     my $props = {
-
-        # entity_type => {
-        #     screen_label        => 'Manage Entity Type',
-        #     object_label        => 'Entity Type',
-        #     object_label_plural => 'Entity Types',
-        #     object_type         => 'entity_type',
-        #     scope_mode          => 'this',
-        #     use_filters         => 0,
-        #     view                => ['system'],
-        # },
         content_type => {
             screen_label        => 'Manage Content Type',
             object_label        => 'Content Type',
@@ -39,6 +29,7 @@ sub make_listing_screens {
             scope_mode          => 'this',
             use_filters         => 0,
             view                => [ 'website', 'blog' ],
+            primary             => 'name',
         },
         category_list => MT::CMS::CategoryList::list_screens(),
     };
@@ -89,19 +80,6 @@ sub make_listing_screens {
 
 sub make_list_properties {
     my $props = {
-
-        # entity_type => {
-        #     id => {
-        #         base  => '__virtual.id',
-        #         order => 100,
-        #     },
-        #     name => {
-        #         base      => '__virtual.name',
-        #         order     => 200,
-        #         link_mode => 'cfg_entity_type',
-        #         html      => sub { make_name_html(@_) },
-        #     },
-        # },
         content_type => {
             id => {
                 base  => '__virtual.id',
@@ -178,7 +156,7 @@ sub _make_field_list_props {
 
             my $label;
             if ( $prop_name eq $idx_type ) {
-                $label = $field->{name};
+                $label = $field->{options}{label};
             }
             else {
                 $label = $prop_name;
@@ -189,10 +167,10 @@ sub _make_field_list_props {
                     $label =~ s/^([a-z])/\u$1/g;
                     $label =~ s/_([a-z])/ \u$1/g;
                 }
-                $label = $field->{name} . " ${label}";
+                $label = $field->{options}{label} . " ${label}";
             }
             if ($parent_field) {
-                $label = $parent_field->{name} . " ${label}";
+                $label = $parent_field->{options}{label} . " ${label}";
             }
             $label = MT->translate($label);
 
@@ -208,14 +186,7 @@ sub _make_field_list_props {
                 $prop_key = "${parent_field_key}_${prop_key}";
             }
 
-            my $display;
-            if ($parent_field) {
-                $display = 'none';
-            }
-            else {
-                # TODO: should use $field->{options}{display}
-                $display = $field->{label} ? 'force' : 'default';
-            }
+            my $display = $parent_field ? 'none' : $field->{options}{display};
 
             $props->{$prop_key} = {
                 (   content_field_id   => $field->{id},
@@ -395,7 +366,8 @@ sub make_title_html {
     my ($field)
         = grep { $_->{id} == $prop->content_field_id }
         @{ $content_data->content_type->fields };
-    if ( $field->{label} ) {
+    if ( $prop->order == 200 )
+    {    # TODO: should create a new parameter for primary field.
         my $edit_link = $app->uri(
             mode => 'edit_content_data',
             args => {
@@ -462,16 +434,6 @@ sub make_content_actions {
 
 sub make_list_actions {
     my $props = {
-
-        # entity_type => {
-        #     delete => {
-        #         label      => 'Delete',
-        #         order      => 100,
-        #         mode       => 'delete',
-        #         button     => 1,
-        #         js_message => 'delete',
-        #     }
-        # },
         content_type => {
             delete => {
                 label      => 'Delete',

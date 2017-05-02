@@ -13,6 +13,7 @@ use JSON ();
 
 use MT;
 use MT::CMS::Common;
+use MT::CategoryList;
 use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentType;
@@ -120,6 +121,16 @@ sub _content_type_permission_tmpl {
 __TMPL__
 }
 
+sub cfg_content_type_description {
+    my ( $app, $param ) = @_;
+    my $q      = $app->param;
+    my $plugin = $app->component("ContentType");
+    my $cfg    = $app->config;
+
+    $app->build_page( $plugin->load_tmpl('cfg_content_type_description.tmpl'),
+        $param );
+}
+
 sub cfg_content_type {
     my ( $app, $param ) = @_;
     my $q      = $app->param;
@@ -138,20 +149,92 @@ sub cfg_content_type {
 
     my $content_type = $obj_promise->force();
     if ($content_type) {
-        $param->{name}       = $content_type->name;
-        $param->{unique_key} = $content_type->unique_key;
+        $param->{name}        = $content_type->name;
+        $param->{description} = $content_type->description;
+        $param->{unique_key}  = $content_type->unique_key;
         my @array = map {
             $_->{content_field_id} = $_->{id};
             delete $_->{id};
+            my @options = ();
+            foreach my $key ( keys %{ $_->{options} } ) {
+                push @options,
+                    {
+                    key   => $key,
+                    value => $_->{options}{$key}
+                    };
+            }
+            $_->{options} = \@options;
             $_;
         } @{ $content_type->fields };
         @array = sort { $a->{order} <=> $b->{order} } @array;
         $param->{fields} = \@array;
     }
 
+    # Content Field Types
+    my $content_field_types = $app->registry('content_field_types');
+    my @type_array          = map {
+        my $hash = {};
+        $hash->{type}    = $_;
+        $hash->{label}   = $content_field_types->{$_}{label};
+        $hash->{options} = $content_field_types->{$_}{options};
+        $hash->{order}   = $content_field_types->{$_}{order};
+        $hash;
+    } keys %$content_field_types;
+    @type_array = sort { $a->{order} <=> $b->{order} } @type_array;
+    $param->{content_field_types} = \@type_array;
+
+    # Content Filed Type Options
+    my %content_field_types_option_settings = ();
+    my %content_field_types_options         = map {
+        my $type_name = $_->{type};
+        (   $_->{type} => [
+                map {
+                    if ( ref($_) eq 'HASH' ) {
+                        my $key = ( keys( %{$_} ) )[0];
+                        $content_field_types_option_settings{$type_name}{$key}
+                            = $_->{$key};
+                        $key;
+                    }
+                    else {
+                        $_;
+                    }
+                } @{ $_->{options} }
+            ]
+            )
+        }
+        grep { $_->{options} } @type_array;
+    $param->{content_field_types_options}
+        = JSON::encode_json( \%content_field_types_options );
+
     foreach my $name (qw( saved err_msg id name )) {
         $param->{$name} = $q->param($name) if $q->param($name);
     }
+
+    my @category_lists;
+    my $cl_iter = MT::CategoryList->load_iter( { blog_id => $app->blog->id },
+        { fetchonly => { id => 1, name => 1 } } );
+    while ( my $cat_list = $cl_iter->() ) {
+        push @category_lists,
+            {
+            id   => $cat_list->id,
+            name => $cat_list->name,
+            };
+    }
+    $param->{category_lists} = \@category_lists;
+
+    my @content_types;
+    my $ct_iter = MT::ContentType->load_iter( { blog_id => $app->blog->id },
+        { fetchonly => { id => 1, name => 1 } } );
+    while ( my $ct = $ct_iter->() ) {
+        next if ( $content_type_id || 0 ) == $ct->id;
+        push @content_types,
+            {
+            id   => $ct->id,
+            name => $ct->name,
+            };
+    }
+    $param->{content_types} = \@content_types;
+
     $app->build_page( $plugin->load_tmpl('cfg_content_type.tmpl'), $param );
 }
 
@@ -174,13 +257,40 @@ sub save_cfg_content_type {
         or return $app->errtrans("Invalid request.");
 
     my $content_type_id = $q->param('id');
-    my $name            = $q->param('name');
-    my $edited          = $q->param('edited');
+
+    my $option_list;
+    if ( my $data = $q->param('data') ) {
+        if ( $data =~ /^".*"$/ ) {
+            $data =~ s/^"//;
+            $data =~ s/"$//;
+            $data = MT::Util::decode_js($data);
+        }
+        my $decode = JSON->new->utf8(0);
+        $option_list = $decode->decode($data);
+    }
+    else {
+        $option_list = {};
+    }
+
+    my $name        = $option_list->{name};
+    my $description = $option_list->{description};
 
     return $app->redirect(
         $app->uri(
             'mode' => 'cfg_content_type',
             args   => {
+                blog_id => $blog_id,
+                id      => $content_type_id,
+                err_msg => $plugin->translate("Name is required."),
+            }
+        )
+    ) unless $name;
+
+    return $app->redirect(
+        $app->uri(
+            'mode' => 'cfg_content_type',
+            args   => {
+                blog_id => $blog_id,
                 id      => $content_type_id,
                 err_msg => $plugin->translate(
                     "Name \"[_1]\" is already used.", $name
@@ -197,11 +307,66 @@ sub save_cfg_content_type {
     $content_type->blog_id($blog_id);
     $content_type->name($name);
 
-    my @fields = map {
-        $_->{order} = $q->param( 'order-' . $_->{id} );
-        $_->{label} = $q->param('content-label') == $_->{id} ? 1 : 0;
-        $_;
-    } @{ $content_type->fields };
+    $content_type->save
+        or return $app->error(
+        $plugin->translate(
+            "Saving content type failed: [_1]",
+            $content_type->errstr
+        )
+        );
+
+    my @fields = ();
+    foreach my $field_id ( keys %{ $option_list->{fields} } ) {
+        my $options = $option_list->{fields}{$field_id}{options};
+        my $label   = $options->{label};
+        my $content_field;
+        if ($content_type_id) {
+            $content_field = MT::ContentField->load(
+                {   content_type_id => $content_type_id,
+                    name            => $label
+                }
+            );
+        }
+        unless ($content_field) {
+            $content_field = MT::ContentField->new;
+            $content_field->blog_id($blog_id);
+            $content_field->content_type_id( $content_type->id );
+            $content_field->type( $option_list->{fields}{$field_id}{type} );
+        }
+        $content_field->name($label);
+        $content_field->default( $options->{initial_value} );
+        $content_field->description( $options->{description} );
+        $content_field->required( $options->{required} );
+
+        if ( $content_field->type eq 'category' ) {
+            $content_field->related_cat_list_id( $options->{category_list} );
+        }
+        else {
+            $content_field->related_cat_list_id(undef);
+        }
+
+        if ( $content_field->type eq 'content_type' ) {
+            $content_field->related_content_type_id(
+                $options->{content_type} );
+        }
+        else {
+            $content_field->related_content_type_id(undef);
+        }
+
+        $content_field->save
+            or return $app->error(
+            $plugin->translate(
+                "Saving content field failed: [_1]",
+                $content_type->errstr
+            )
+            );
+        push @fields,
+            {
+            id => $content_field->id,
+            %{ $option_list->{fields}{$field_id} }
+            };
+    }
+
     $content_type->fields( \@fields );
 
     $content_type->save
@@ -273,7 +438,24 @@ sub cfg_content_field {
     @type_array = sort { $a->{order} <=> $b->{order} } @type_array;
     $param->{content_field_types} = \@type_array;
 
-    my %content_field_types_options = map { ( $_->{type} => $_->{options} ) }
+    my %content_field_types_option_settings = ();
+    my %content_field_types_options         = map {
+        my $type_name = $_->{type};
+        (   $_->{type} => [
+                map {
+                    if ( ref($_) eq 'HASH' ) {
+                        my $key = ( keys( %{$_} ) )[0];
+                        $content_field_types_option_settings{$type_name}{$key}
+                            = $_->{$key};
+                        $key;
+                    }
+                    else {
+                        $_;
+                    }
+                } @{ $_->{options} }
+            ]
+            )
+        }
         grep { $_->{options} } @type_array;
     $param->{content_field_types_options}
         = JSON::encode_json( \%content_field_types_options );
@@ -290,6 +472,71 @@ sub cfg_content_field {
             };
     }
     $param->{category_lists} = \@cat_lists_param;
+
+    my $options_html = '';
+
+    foreach my $name ( keys %content_field_types_options ) {
+        $options_html .= '<div id="' . $name . '-options">' . "\n";
+        foreach my $option_name ( @{ $content_field_types_options{$name} } ) {
+            my $option_settings
+                = $content_field_types_option_settings{$name}{$option_name};
+            if ( ref $option_settings eq 'HASH'
+                && $option_settings->{field_html} )
+            {
+                my $field_html = $option_settings->{field_html};
+                if ( !ref $field_html ) {
+                    if ( $field_html =~ /\.tmpl$/ ) {
+                        my $field_html_params
+                            = $option_settings->{field_html_params};
+                        if ( !ref $field_html_params ) {
+                            $field_html_params
+                                = MT->handler_to_coderef($field_html_params);
+                        }
+                        if ( 'CODE' eq ref $field_html_params ) {
+                            $field_html_params = $field_html_params->(
+                                $app,
+                                {   type_name   => $name,
+                                    option_name => $option_name
+                                }
+                            );
+                        }
+                        $field_html_params->{type_name}   = $name;
+                        $field_html_params->{option_name} = $option_name;
+                        $field_html_params->{label} = $plugin->translate(
+                            $field_html_params->{label} );
+                        $field_html = $plugin->load_tmpl( $field_html,
+                            $field_html_params );
+                        if ($field_html) {
+                            $field_html = $field_html->output();
+                        }
+                    }
+                    else {
+                        $field_html = MT->handler_to_coderef($field_html);
+                    }
+                }
+                if ( 'CODE' eq ref $field_html ) {
+                    $options_html .= $field_html->(
+                        $app,
+                        { type_name => $name, option_name => $option_name }
+                    );
+                }
+                else {
+                    $options_html .= $field_html;
+                }
+            }
+            else {
+                my $tmpl
+                    = $plugin->load_tmpl(
+                    'content_field_type_options/' . $option_name . '.tmpl',
+                    { name => $name } );
+                if ($tmpl) {
+                    $options_html .= $tmpl->output();
+                }
+            }
+        }
+        $options_html .= '</div>' . "\n";
+    }
+    $param->{options_html} = $options_html;
 
     my @content_types = MT::ContentType->load( { blog_id => $blog_id } );
     my @c_array = map {

@@ -22,7 +22,6 @@ __PACKAGE__->install_properties(
             'name'                    => 'string(255)',
             'default'                 => 'string(255)',
             'description'             => 'string(255)',
-            'options'                 => 'string(255)',
             'required'                => 'boolean',
             'related_content_type_id' => 'integer',
             'related_cat_list_id'     => 'integer',
@@ -137,6 +136,11 @@ sub related_cat_list {
             MT::CategoryList->load( $self->related_cat_list_id || 0 );
         },
     );
+}
+
+sub options {
+    my $self = shift;
+    $self->content_type->get_field( $self->id )->{options} || {};
 }
 
 1;
