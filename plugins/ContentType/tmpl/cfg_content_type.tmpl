@@ -1087,10 +1087,11 @@
         if (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options'][opt_name])
           opt_val = data['fields'][current_id]['options'][opt_name];
         if (input_type === 'checkbox') {
-          jQuery(element).prop("checked", true);
+          if (opt_val === '1')
+            jQuery(element).prop("checked", true);
         }
         else {
-          jQuery(element).val(data['fields'][current_id]['options'][opt_name]);
+          jQuery(element).val(opt_val);
         }
       });
       options.find("select").each(function(index, element) {
@@ -1131,7 +1132,12 @@
         if (!data['fields'][current_id]['options'])
           data['fields'][current_id]['options'] = {};
         data['fields'][current_id]['options'][opt_name] = opt_val;
-        jQuery(element).val('');
+        if (input_type === 'checkbox') {
+          jQuery(element).prop("checked", false);
+        }
+        else {
+          jQuery(element).val('');
+        }
       });
       options.find("select").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
