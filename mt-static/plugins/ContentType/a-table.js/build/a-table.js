@@ -6880,13 +6880,13 @@ var aTable = function (_aTemplate) {
     _this.menu_id = aTable.getUniqId();
     _this.addTemplate(_this.id, _table2.default);
     _this.addTemplate(_this.menu_id, _menu2.default);
-    _this.data = _zeptoBrowserify.$.extend(true, {}, defs, option);
+    _this.data = _zeptoBrowserify.Zepto.extend(true, {}, defs, option);
     var data = _this.data;
     data.point = { x: -1, y: -1 };
     data.selectedRowNo = -1;
     data.selectedColNo = -1;
     data.showBtnList = true;
-    data.row = _this.parse((0, _zeptoBrowserify.$)(ele).html());
+    data.row = _this.parse((0, _zeptoBrowserify.Zepto)(ele).html());
     data.tableClass = _this.getTableClass(data.tableResult);
     data.highestRow = _this.highestRow;
     data.history = [];
@@ -6897,8 +6897,8 @@ var aTable = function (_aTemplate) {
     _this.convert.getStyleByAlign = _this.getStyleByAlign;
     _this.convert.setClass = _this.setClass;
     var html = '\n    <div class=\'a-table-container\'>\n        <div data-id=\'' + _this.menu_id + '\'></div>\n        <div class=\'a-table-outer\'>\n          <div class=\'a-table-inner\'>\n            <div data-id=\'' + _this.id + '\'></div>\n          </div>\n        </div>\n    </div>';
-    (0, _zeptoBrowserify.$)(ele).before(html);
-    (0, _zeptoBrowserify.$)(ele).remove();
+    (0, _zeptoBrowserify.Zepto)(ele).before(html);
+    (0, _zeptoBrowserify.Zepto)(ele).remove();
     _this.update();
     return _this;
   }
@@ -6925,7 +6925,7 @@ var aTable = function (_aTemplate) {
   }, {
     key: 'getCellByIndex',
     value: function getCellByIndex(x, y) {
-      return (0, _zeptoBrowserify.$)('[data-id=\'' + this.id + '\'] [data-cell-id=\'' + x + '-' + y + '\']');
+      return (0, _zeptoBrowserify.Zepto)('[data-id=\'' + this.id + '\'] [data-cell-id=\'' + x + '-' + y + '\']');
     }
   }, {
     key: 'getCellInfoByIndex',
@@ -6941,13 +6941,13 @@ var aTable = function (_aTemplate) {
       var returnTop = -1;
       var width = parseInt($cell.attr('colspan'));
       var height = parseInt($cell.attr('rowspan'));
-      (0, _zeptoBrowserify.$)('[data-id=\'' + this.id + '\'] .js-table-header th').each(function (i) {
-        if ((0, _zeptoBrowserify.$)(this).offset().left === left) {
+      (0, _zeptoBrowserify.Zepto)('[data-id=\'' + this.id + '\'] .js-table-header th').each(function (i) {
+        if ((0, _zeptoBrowserify.Zepto)(this).offset().left === left) {
           returnLeft = i;
         }
       });
-      (0, _zeptoBrowserify.$)('[data-id=\'' + this.id + '\'] .js-table-side').each(function (i) {
-        if ((0, _zeptoBrowserify.$)(this).offset().top === top) {
+      (0, _zeptoBrowserify.Zepto)('[data-id=\'' + this.id + '\'] .js-table-side').each(function (i) {
+        if ((0, _zeptoBrowserify.Zepto)(this).offset().top === top) {
           returnTop = i;
         }
       });
@@ -7183,8 +7183,8 @@ var aTable = function (_aTemplate) {
   }, {
     key: 'contextmenu',
     value: function contextmenu() {
-      var $ele = (0, _zeptoBrowserify.$)('[data-id=\'' + this.id + '\']');
-      var $target = (0, _zeptoBrowserify.$)(this.e.target);
+      var $ele = (0, _zeptoBrowserify.Zepto)('[data-id=\'' + this.id + '\']');
+      var $target = (0, _zeptoBrowserify.Zepto)(this.e.target);
       var data = this.data;
       this.e.preventDefault();
       data.showMenu = true;
@@ -7197,25 +7197,25 @@ var aTable = function (_aTemplate) {
     value: function parse(html) {
       var self = this;
       var arr1 = [];
-      (0, _zeptoBrowserify.$)('tr', html).each(function () {
+      (0, _zeptoBrowserify.Zepto)('tr', html).each(function () {
         var ret2 = {};
         var arr2 = [];
         ret2.col = arr2;
-        (0, _zeptoBrowserify.$)('th,td', this).each(function () {
+        (0, _zeptoBrowserify.Zepto)('th,td', this).each(function () {
           var obj = {};
-          var html = (0, _zeptoBrowserify.$)(this).html();
-          if ((0, _zeptoBrowserify.$)(this).is('th')) {
+          var html = (0, _zeptoBrowserify.Zepto)(this).html();
+          if ((0, _zeptoBrowserify.Zepto)(this).is('th')) {
             obj.type = 'th';
           } else {
             obj.type = 'td';
           }
-          obj.colspan = (0, _zeptoBrowserify.$)(this).attr('colspan') || 1;
-          obj.rowspan = (0, _zeptoBrowserify.$)(this).attr('rowspan') || 1;
+          obj.colspan = (0, _zeptoBrowserify.Zepto)(this).attr('colspan') || 1;
+          obj.rowspan = (0, _zeptoBrowserify.Zepto)(this).attr('rowspan') || 1;
           obj.value = '';
           if (html) {
             obj.value = html.replace(/{(.*?)}/g, "&lcub;$1&rcub;");
           }
-          var classAttr = (0, _zeptoBrowserify.$)(this).attr('class');
+          var classAttr = (0, _zeptoBrowserify.Zepto)(this).attr('class');
           var cellClass = '';
           if (classAttr) {
             var classList = classAttr.split(/\s+/);
@@ -7268,18 +7268,18 @@ var aTable = function (_aTemplate) {
   }, {
     key: 'getTableClass',
     value: function getTableClass(html) {
-      return (0, _zeptoBrowserify.$)(html).attr('class');
+      return (0, _zeptoBrowserify.Zepto)(html).attr('class');
     }
   }, {
     key: 'toMarkdown',
     value: function toMarkdown(html) {
-      var $table = (0, _zeptoBrowserify.$)(html);
+      var $table = (0, _zeptoBrowserify.Zepto)(html);
       var ret = '';
       $table.find('tr').each(function (i) {
         ret += '| ';
-        var $children = (0, _zeptoBrowserify.$)(this).children();
+        var $children = (0, _zeptoBrowserify.Zepto)(this).children();
         $children.each(function () {
-          ret += (0, _zeptoBrowserify.$)(this).html();
+          ret += (0, _zeptoBrowserify.Zepto)(this).html();
           ret += ' | ';
         });
         if (i === 0) {
@@ -7309,10 +7309,10 @@ var aTable = function (_aTemplate) {
       var point = this.getLargePoint.apply(null, points);
       var width = point.width;
       var selectedPoints = this.getSelectedPoints();
-      var $th = (0, _zeptoBrowserify.$)('.js-table-header th', '[data-id=\'' + this.id + '\']');
-      var $table = (0, _zeptoBrowserify.$)('table', '[data-id=\'' + this.id + '\']');
+      var $th = (0, _zeptoBrowserify.Zepto)('.js-table-header th', '[data-id=\'' + this.id + '\']');
+      var $table = (0, _zeptoBrowserify.Zepto)('table', '[data-id=\'' + this.id + '\']');
       var $inner = $table.parents('.a-table-inner');
-      var elem = (0, _zeptoBrowserify.$)('.a-table-selected .a-table-editable', '[data-id=\'' + this.id + '\']')[0];
+      var elem = (0, _zeptoBrowserify.Zepto)('.a-table-selected .a-table-editable', '[data-id=\'' + this.id + '\']')[0];
       if (elem && !this.data.showMenu) {
         setTimeout(function () {
           elem.focus();
@@ -7584,17 +7584,17 @@ var aTable = function (_aTemplate) {
           }
         }
       } else if (type === 'input') {
-        if ((0, _zeptoBrowserify.$)(this.e.target).hasClass('a-table-editable') && (0, _zeptoBrowserify.$)(this.e.target).parents('td').attr('data-cell-id') === b + '-' + a) {
+        if ((0, _zeptoBrowserify.Zepto)(this.e.target).hasClass('a-table-editable') && (0, _zeptoBrowserify.Zepto)(this.e.target).parents('td').attr('data-cell-id') === b + '-' + a) {
           data.history.push((0, _clone2.default)(data.row));
-          data.row[a].col[b].value = (0, _zeptoBrowserify.$)(this.e.target).html().replace(/{(.*?)}/g, "&lcub;$1&rcub;");
+          data.row[a].col[b].value = (0, _zeptoBrowserify.Zepto)(this.e.target).html().replace(/{(.*?)}/g, "&lcub;$1&rcub;");
         }
         if (this.afterEntered) {
           this.afterEntered();
         }
       } else if (type === 'keyup' && aTable.getBrowser().indexOf('ie') !== -1) {
-        if ((0, _zeptoBrowserify.$)(this.e.target).hasClass('a-table-editable') && (0, _zeptoBrowserify.$)(this.e.target).parents('td').attr('data-cell-id') === b + '-' + a) {
+        if ((0, _zeptoBrowserify.Zepto)(this.e.target).hasClass('a-table-editable') && (0, _zeptoBrowserify.Zepto)(this.e.target).parents('td').attr('data-cell-id') === b + '-' + a) {
           data.history.push((0, _clone2.default)(data.row));
-          data.row[a].col[b].value = (0, _zeptoBrowserify.$)(this.e.target).html().replace(/{(.*?)}/g, "&lcub;$1&rcub;");
+          data.row[a].col[b].value = (0, _zeptoBrowserify.Zepto)(this.e.target).html().replace(/{(.*?)}/g, "&lcub;$1&rcub;");
         }
         if (this.afterEntered) {
           this.afterEntered();

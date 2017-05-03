@@ -1,5 +1,5 @@
 import aTemplate from 'a-template'
-import { $ } from 'zepto-browserify'
+import { Zepto as $ } from 'zepto-browserify'
 import clone from 'clone'
 import template from './table.html'
 import menu from './menu.html'
