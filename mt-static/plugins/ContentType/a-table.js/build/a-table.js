@@ -6885,7 +6885,6 @@ var aTable = function (_aTemplate) {
     data.point = { x: -1, y: -1 };
     data.selectedRowNo = -1;
     data.selectedColNo = -1;
-    data.showBtnList = true;
     data.row = _this.parse((0, _zeptoBrowserify.Zepto)(ele).html());
     data.tableClass = _this.getTableClass(data.tableResult);
     data.highestRow = _this.highestRow;

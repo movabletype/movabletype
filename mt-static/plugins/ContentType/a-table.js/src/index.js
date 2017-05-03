@@ -52,7 +52,6 @@ class aTable extends aTemplate {
     data.point = { x: -1, y: -1 }
     data.selectedRowNo = -1
     data.selectedColNo = -1
-    data.showBtnList = true
     data.row = this.parse($(ele).html())
     data.tableClass = this.getTableClass(data.tableResult)
     data.highestRow = this.highestRow
