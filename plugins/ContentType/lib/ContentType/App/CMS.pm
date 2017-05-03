@@ -790,7 +790,8 @@ sub edit_content_data {
     my $content_type_id = scalar $q->param('content_type_id')
         or return $app->errtrans("Invalid request.");
 
-    my $content_type = MT::ContentType->load($content_type_id);
+    my $content_type = MT::ContentType->load($content_type_id)
+        or return $app->errtrans('Invalid request.');
 
     $param->{name} = $content_type->name;
 

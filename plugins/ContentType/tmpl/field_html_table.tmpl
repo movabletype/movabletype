@@ -1,0 +1,42 @@
+<table id="js-table-<mt:var name="field_id" escape="html">">
+<mt:var name="value">
+</table>
+
+<mt:unless name="loaded_table_library">
+<link rel="stylesheet" href="<mt:var name="static_uri">plugins/ContentType/a-table.js/fonts/a-table-icon.css">
+<link rel="stylesheet" href="<mt:var name="static_uri">plugins/ContentType/a-table.js/css/a-table.css">
+<script src="<mt:var name="static_uri">plugins/ContentType/a-table.js/build/a-table.js"></script>
+</mt:unless>
+
+<script>
+(function() {
+  var changeableColumns = <mt:var name="changeable_columns" escape="js">;
+  var changeableRows = <mt:var name="changeable_rows" escape="js">;
+  var fieldId = '<mt:var name="field_id" escape="js">';
+  var languageTag = '<mt:var name="language_tag" escape="js">';
+
+  var table = new aTable(
+    `#js-table-${fieldId}`,
+    {
+      changeableColumns: changeableColumns,
+      changeableRows: changeableRows,
+      lang: languageTag
+    }
+  );
+
+  table.afterAction =
+  table.afterEntered = function() {
+    setDirty(true);
+  };
+
+  jQuery('form#edit-content-type-data-form').submit(function() {
+    var innerHtml = jQuery(table.getTable()).children().html();
+    var $input = jQuery('<input>')
+      .attr('type', 'hidden')
+      .attr('name', `content-field-${fieldId}`)
+      .attr('value', innerHtml);
+    jQuery(this).append($input);
+  });
+})();
+</script>
+
