@@ -47,15 +47,6 @@
 
     <h2 id="setting-title" ><__trans phrase="Content Type"></h2>
 
-<!--
-    <mtapp:setting
-       id="name"
-       label="<__trans phrase="Content Type Name">"
-       required="1">
-      <input type="text" name="name" id="name" class="text med required" value="<mt:var name="name" escape="html">" />
-    </mtapp:setting>
--->
-
     <mtapp:setting
        id="unique_key"
        label="<__trans phrase="Unique Key">">
@@ -77,35 +68,7 @@
         <span class="item-add"><a href="javascript:void(0);" class="add-link"> <__trans phrase="Add content field"></a></span>
       </div>
 
-      <div id="sortable" class="sortable">
-      <!--
-      <mt:loop name="fields">
-      <mtapp:setting
-         id="content-field-<mt:var name="content_field_id">"
-         class="sort-enabled"
-         label="<mt:var name="name">"
-         label_class="top-label">
-        <ul class="action-link-list">
-          <li>
-            <input type="radio" name="content-label" id="content-label-<mt:var name="content_field_id">" value="<mt:var name="content_field_id">"<mt:if name="label"> checked="checked"</mt:if> />
-            <label for="content-label-<mt:var name="content_field_id">">Label for list screen</label>
-          </li>
-          <li>
-            <a href="<mt:var name="mt_url">?__mode=cfg_content_field&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">&id=<mt:var name="content_field_id">" class="icon-left icon-edit">
-              <__trans phrase="Edit">
-            </a>
-          </li>
-          <li>
-            <a href="<mt:var name="mt_url">?__mode=delete_content_field&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="id">&id=<mt:var name="content_field_id">" class="icon-left icon-delete">
-              <__trans phrase="Delete">
-            </a>
-          </li>
-        </ul>
-        <input type="hidden" name="order-<mt:var name="content_field_id">" id="order-<mt:var name="content_field_id">" value="<mt:var name="order">" />
-      </mtapp:setting>
-      </mt:loop>
-      -->
-      </div>
+      <div id="sortable" class="sortable"></div>
 
   </mtapp:settinggroup>
 
@@ -139,6 +102,18 @@
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="single_line_text-min_length"
+       label="<__trans phrase="Min Length">">
+      <input type="text" name="single_line_text-min_length" id="single_line_text-min_length" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="single_line_text-max_length"
+       label="<__trans phrase="Max Length">">
+      <input type="text" name="single_line_text-max_length" id="single_line_text-max_length" class="text num" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -1001,17 +976,19 @@
     data['description'] = '<mt:var name="description">';
     data['fields'] = {
     <mt:loop name="fields">
-      '<mt:var name="id">': {
+      '<mt:var name="content_field_id">': {
+        'type': '<mt:var name="type">',
+        'new': 0,
         'options': {
     <mt:loop name="options">
-        <mt:var name="key">: '<mt:var name="value">'<mt:unless name="__last__">,</mt:unless>
+        <mt:var name="key">: '<mt:var name="value">',
     </mt:loop>
         }
       }<mt:unless name="__last__">,</mt:unless>
     </mt:loop>
     };
     <mt:loop name="fields">
-    add_field('<mt:var name="id">', '<mt:var name="type">', '<mt:var name="__counter__">');
+    add_field('<mt:var name="content_field_id">', '<mt:var name="type">', '<mt:var name="__counter__">');
     </mt:loop>
     localStorage.setItem("ContentType", JSON.stringify(data));
 </mt:if>
@@ -1042,7 +1019,17 @@
       return false;
     var length = jQuery('#sortable').sortable('toArray').length;
     var id = length + 1;
-    add_field(id, jQuery("#type").val(), id);
+    var type_name = jQuery("#type").val();
+    add_field(id, type_name, id);
+    var data = JSON.parse( localStorage.getItem("ContentType") );
+    if (!data['fields'])
+        data['fields'] = {};
+    if (!data['fields'][id])
+        data['fields'][id] = {};
+    data['fields'][id]['type'] = type_name;
+    data['fields'][id]['order'] = id;
+    data['fields'][id]['new'] = 1;
+    localStorage.setItem("ContentType", JSON.stringify(data));
     set_sortable();
     set_events();
     return false;
@@ -1113,10 +1100,11 @@
         if (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options'][opt_name])
           opt_val = data['fields'][current_id]['options'][opt_name];
         if (input_type === 'checkbox') {
-          jQuery(element).prop("checked", true);
+          if (opt_val === '1')
+            jQuery(element).prop("checked", true);
         }
         else {
-          jQuery(element).val(data['fields'][current_id]['options'][opt_name]);
+          jQuery(element).val(opt_val);
         }
       });
       options.find("select").each(function(index, element) {
@@ -1140,11 +1128,6 @@
       var current_id = jQuery("#current_field_id").val();
       var regexp = new RegExp(type_name + '-(.*)');
       var data = JSON.parse( localStorage.getItem("ContentType") );
-      if (!data['fields'])
-          data['fields'] = {};
-      if (!data['fields'][current_id])
-          data['fields'][current_id] = {};
-      data['fields'][current_id]['type'] = type_name;
       data['fields'][current_id]['order'] = jQuery('#order-' + current_id).val();
       options.find("input").each(function(index, element) {
         var input_type = jQuery(element).attr("type");
@@ -1162,7 +1145,12 @@
         if (!data['fields'][current_id]['options'])
           data['fields'][current_id]['options'] = {};
         data['fields'][current_id]['options'][opt_name] = opt_val;
-        jQuery(element).val('');
+        if (input_type === 'checkbox') {
+          jQuery(element).prop("checked", false);
+        }
+        else {
+          jQuery(element).val('');
+        }
       });
       options.find("select").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
