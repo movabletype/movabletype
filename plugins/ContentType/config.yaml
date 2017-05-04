@@ -161,7 +161,7 @@ content_field_types:
             single_line_text:
                 base: __virtual.string
                 col: value_varchar
-                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
+                terms: $ContentType::MT::ContentFieldType::Common::terms_text
                 use_blank: 1
         options:
             - label
@@ -179,7 +179,7 @@ content_field_types:
             multi_line_text:
                 base: __virtual.string
                 col: value_blob
-                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
+                terms: $ContentType::MT::ContentFieldType::Common::terms_text
                 use_blank: 1
         options:
             - label
@@ -196,7 +196,7 @@ content_field_types:
             integer:
                 base: __virtual.integer
                 col: value_integer
-                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
+                terms: $ContentType::MT::ContentFieldType::Common::terms_text
                 use_blank: 1
         options:
             - label
@@ -214,7 +214,7 @@ content_field_types:
             float:
                 base: __virtual.float
                 col: value_float
-                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
+                terms: $ContentType::MT::ContentFieldType::Common::terms_text
                 use_blank: 1
         options:
             - label
@@ -234,7 +234,7 @@ content_field_types:
             url:
                 base: __virtual.string
                 col: value_varchar
-                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
+                terms: $ContentType::MT::ContentFieldType::Common::terms_text
                 use_blank: 1
         options:
             - label
@@ -685,7 +685,7 @@ content_field_types:
             embed_text:
                 base: __virtual.string
                 col: value_blob
-                terms: $ContentType::MT::ContentFieldType::SingleLineText::terms
+                terms: $ContentType::MT::ContentFieldType::Common::terms_text
                 use_blank: 1
         options:
             - label
@@ -761,9 +761,23 @@ content_field_types:
         label: Table
         data_type: blob
         order: 210 
+        list_props:
+            table:
+                base: __virtual.string
+                col: value_blob
+                html: $ContentType::MT::ContentFieldType::Table::html
+                terms: $ContentType::MT::ContentFieldType::Common::terms_text
+        field_html: field_html_table.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Table::field_html_params
         options:
             - label
             - hint
             - required
             - display
+            - initial_rows
+            - row_headers
+            - changeable_rows
+            - initial_columns
+            - column_headers
+            - changeable_columns
 

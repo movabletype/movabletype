@@ -1,0 +1,44 @@
+{
+  "name": "a-table",
+  "version": "1.1.6",
+  "main": "lib/index.js",
+  "description": "Editable table library",
+  "author": "appleple",
+  "license": "MIT",
+  "scripts": {
+    "bundle": "browserify ./src/index.js -t babelify -t [ stringify --extensions [.html .css] ] -p licensify --standalone aTable -o ./build/a-table.js",
+    "minifyjs": "uglifyjs ./build/a-table.js --comments 'license' -o ./build/a-table.min.js",
+    "build": "npm run bundle && npm run minifyjs",
+    "build:lib": "node ./bin/index.js && babel ./lib/prebuild.js --presets es2015 --out-file ./lib/index.js",
+    "watch": "watch 'npm run build:lib && npm run build' ./src/",
+    "sync": "browser-sync start --server './' --files './build/a-table.js'",
+    "start": "npm-run-all -p watch sync",
+    "test": "mocha ./test/test.js --timeout 1000000"
+  },
+  "dependencies": {
+    "a-template": "0.1.2",
+    "clone": "^2.0.0",
+    "zepto-browserify": "^1.1.6-1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babelify": "^7.3.0",
+    "browser-sync": "^2.18.8",
+    "browserify": "^13.1.1",
+    "eslint": "^3.13.0",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-config-airbnb-base": "^11.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "jsesc": "^2.4.0",
+    "licensify": "^3.1.2",
+    "mocha": "^3.2.0",
+    "nightmare": "^2.8.1",
+    "npm-run-all": "^4.0.2",
+    "power-assert": "^1.4.2",
+    "stringify": "^5.1.0",
+    "uglifyjs": "^2.4.10",
+    "watch": "^1.0.1",
+    "watchify": "^3.7.0"
+  }
+}
