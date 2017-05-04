@@ -1056,7 +1056,20 @@
       if (! confirm(trans('Are you sure you want to remove this settings?'))) {
         return false;
       }
-      jQuery(this).parent().parent().parent().parent().remove();
+      var block = jQuery(this).parent().parent().parent().parent();
+      block.remove();
+      var current_id = block.attr("id").match(/\d+/);
+      var data = JSON.parse( localStorage.getItem("ContentType") );
+      if (data['fields'][current_id]['new'] === 0) {
+        if (data['removed_fields']) {
+          data['removed_fields'] += ',' + current_id;
+        }
+        else {
+          data['removed_fields'] = String(current_id);
+        }
+      }
+      delete data['fields'][current_id];
+      localStorage.setItem("ContentType", JSON.stringify(data));
       setDirty(true);
       if (! jQuery('.content-field-header')[1] ) {
         jQuery('a.delete-link').toggleClass('hidden');
@@ -1066,14 +1079,12 @@
     jQuery('a.edit-link').click(function() {
       all_options_hidden();
       var block = jQuery(this).parent().parent().parent().parent();
-      var block_id = block.attr("id");
-      var field_id = block_id.match(/\d+/);
-      var type_name = jQuery("#type-" + field_id).val();
+      var current_id = block.attr("id").match(/\d+/);
+      var type_name = jQuery("#type-" + current_id).val();
       var options = jQuery('#' + type_name + '-options');
       options.css( 'display', 'block' );
-      jQuery("#current_field_id").val(field_id);
+      jQuery("#current_field_id").val(current_id);
       var data = JSON.parse( localStorage.getItem("ContentType") );
-      var current_id = jQuery("#current_field_id").val();
       if (!data['fields'] || !data['fields'][current_id] || !data['fields'][current_id]['options'])
           return true;
       var regexp = new RegExp(type_name + '-(.*)');
