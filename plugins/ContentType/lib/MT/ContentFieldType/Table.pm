@@ -10,25 +10,8 @@ sub html {
     my ( $content_data, $app, $load_options ) = @_;
 
     my $field = MT::ContentField->load( $prop->content_field_id );
-
     my $value = $content_data->data->{ $prop->content_field_id } || '';
-
-    _table2csv($value);
-}
-
-sub _table2csv {
-    my $html = shift;
-
-    $html =~ s/>\s+</></gm;
-    $html =~ s/^\s*<tr>\s*|\s*<\/tr>\s*$//gm;
-    my @rows = split '</tr><tr>', $html;
-
-    for my $row (@rows) {
-        $row =~ s/^\s*<td>\s*|\s*<\/td>\s*$//gm;
-        $row =~ s/<\/td><td>/, /gm;
-    }
-
-    join '<br>', @rows;
+    qq{<table class="table-field">${value}</table>};
 }
 
 sub field_html_params {
