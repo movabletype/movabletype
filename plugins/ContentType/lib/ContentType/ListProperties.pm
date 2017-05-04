@@ -36,9 +36,13 @@ sub make_listing_screens {
 
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
-        my $key = 'content_data_' . $content_type->id;
+        my $key         = 'content_data_' . $content_type->id;
+        my $label_field = $content_type->label_field;
 
         $props->{$key} = {
+            $label_field
+            ? ( primary => 'content_field_' . $label_field->{id} )
+            : (),
             screen_label        => 'Manage ' . $content_type->name,
             object_label        => $content_type->name,
             object_label_plural => $content_type->name,
