@@ -364,7 +364,8 @@ sub save_cfg_content_type {
             if defined $option_list->{fields}{$field_id}{new};
         push @fields,
             {
-            id => $content_field->id,
+            id         => $content_field->id,
+            unique_key => $content_field->unique_key,
             %{ $option_list->{fields}{$field_id} }
             };
     }
