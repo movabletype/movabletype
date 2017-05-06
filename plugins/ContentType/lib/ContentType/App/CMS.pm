@@ -370,7 +370,9 @@ sub save_cfg_content_type {
     }
 
     # Remove fields
-    foreach my $field_id ( split( ',', $option_list->{removed_fields} ) ) {
+    foreach my $field_id (
+        split( ',', ( $option_list->{removed_fields} || '' ) ) )
+    {
         MT::ContentField->remove( { id => $field_id } )
             or return $app->error(
             $plugin->translate(
