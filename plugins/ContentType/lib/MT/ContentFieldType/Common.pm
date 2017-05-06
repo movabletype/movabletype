@@ -62,5 +62,14 @@ sub _get_cd_ids {
     @cd_ids ? \@cd_ids : 0;
 }
 
+sub terms_text {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $join_terms = $prop->super(@_);
+    my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+    { id => $cd_ids };
+}
+
 1;
 

@@ -364,13 +364,16 @@ sub save_cfg_content_type {
             if defined $option_list->{fields}{$field_id}{new};
         push @fields,
             {
-            id => $content_field->id,
+            id         => $content_field->id,
+            unique_key => $content_field->unique_key,
             %{ $option_list->{fields}{$field_id} }
             };
     }
 
     # Remove fields
-    foreach my $field_id ( split( ',', $option_list->{removed_fields} ) ) {
+    foreach my $field_id (
+        split( ',', ( $option_list->{removed_fields} || '' ) ) )
+    {
         MT::ContentField->remove( { id => $field_id } )
             or return $app->error(
             $plugin->translate(
@@ -803,7 +806,8 @@ sub edit_content_data {
     my $content_type_id = scalar $q->param('content_type_id')
         or return $app->errtrans("Invalid request.");
 
-    my $content_type = MT::ContentType->load($content_type_id);
+    my $content_type = MT::ContentType->load($content_type_id)
+        or return $app->errtrans('Invalid request.');
 
     $param->{name} = $content_type->name;
 
@@ -852,6 +856,7 @@ sub edit_content_data {
                     }
                     $field_html = $plugin->load_tmpl( $field_html,
                         $field_html_params );
+                    $field_html = $field_html->output if $field_html;
                 }
                 else {
                     $field_html = MT->handler_to_coderef($field_html);
