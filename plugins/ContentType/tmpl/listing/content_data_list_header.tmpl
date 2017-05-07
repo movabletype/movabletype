@@ -1,0 +1,14 @@
+<mt:setvarblock name="system_msg">
+<div id="msg-container">
+    <mt:if name="saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            class="success"
+            rebuild="$rebuild"
+            can_close="0">
+            <__trans phrase="The content data has been deleted from the database.">
+        </mtapp:statusmsg>
+    </mt:if>
+</div>
+</mt:setvarblock>
+

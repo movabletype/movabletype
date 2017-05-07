@@ -107,6 +107,7 @@ __PACKAGE__->install_properties(
             'include_system'           => 'string meta',
             'include_cache'            => 'integer meta',
             'max_revisions_entry'      => 'integer meta',
+            'max_revisions_cd'         => 'integer meta',
             'max_revisions_template'   => 'integer meta',
             'theme_export_settings'    => 'hash meta',
             'category_order'           => 'text meta',
@@ -2149,6 +2150,11 @@ php, jsp or asp
 
 If revisions are enabled for this blog, (see use_revision) specify how
 many revision to keep for each entry
+
+=item * max_revisions_cd
+
+If revisions are enabled for this blog, (see use_revision) specify how
+many revision to keep for each content data
 
 =item * max_revisions_template
 

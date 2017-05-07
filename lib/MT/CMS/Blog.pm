@@ -180,6 +180,8 @@ sub edit {
             $param->{'use_revision'}           = ( $obj->use_revision || 0 );
             $param->{'max_revisions_entry'}    = ( $obj->max_revisions_entry
                     || $MT::Revisable::MAX_REVISIONS );
+            $param->{'max_revisions_cd'}
+                = ( $obj->max_revisions_cd || $MT::Revisable::MAX_REVISIONS );
             $param->{'max_revisions_template'}
                 = (    $obj->max_revisions_template
                     || $MT::Revisable::MAX_REVISIONS );
@@ -2130,17 +2132,16 @@ sub save_filter {
 #      && $app->param('archive_path') =~ m/^\s*$/
 #      && $app->param('enable_archive_paths');
     if ( $screen eq 'cfg_prefs' ) {
-        return $eh->error(
-            MT->translate(
-                "The number of revisions to store must be a positive integer."
+        for my $param_name (
+            qw( max_revisions_entry max_revisions_cd max_revisions_template )
             )
-        ) unless 0 < sprintf( '%d', $app->param('max_revisions_entry') );
-        return $eh->error(
-            MT->translate(
-                "The number of revisions to store must be a positive integer."
-            )
-            )
-            unless 0 < sprintf( '%d', $app->param('max_revisions_template') );
+        {
+            return $eh->error(
+                MT->translate(
+                    "The number of revisions to store must be a positive integer."
+                )
+            ) unless 0 < sprintf( '%d', $app->param($param_name) );
+        }
         return $eh->error(
             MT->translate("Please choose a preferred archive type.") )
             if ( !$app->param('no_archives_are_active')
@@ -2440,6 +2441,8 @@ sub cfg_prefs_save {
     if ( $app->param('use_revision') ) {
         $blog->max_revisions_entry( $app->param('max_revisions_entry') )
             if $app->param('max_revisions_entry');
+        $blog->max_revisions_cd( $app->param('max_revisions_cd') )
+            if $app->param('max_revisions_cd');
         $blog->max_revisions_template( $app->param('max_revisions_template') )
             if $app->param('max_revisions_template');
     }

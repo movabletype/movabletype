@@ -2065,7 +2065,7 @@ sub build_revision_table {
         #    $app->translate( $label );
         #} @{ $revision->[1] };
         #$row->{changed_columns} = \@changed;
-        if ( ( 'entry' eq $type ) || ( 'page' eq $type ) ) {
+        if ( $type =~ /^(entry|page|cd)$/ ) {
             $row->{rev_status} = $revision->[0]->status;
         }
         $row->{rev_js}     = $js . '&amp;r=' . $row->{rev_number} . "'";
@@ -2105,15 +2105,17 @@ sub list_revision {
         $app, $id, $obj_promise )
         || return $app->permission_denied();
 
-    my $obj = $obj_promise->force();
+    my $obj  = $obj_promise->force();
     my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
-    my $js
-        = "parent.location.href='"
-        . $app->uri
-        . '?__mode=view&amp;_type='
-        . $type
-        . '&amp;id='
-        . $obj->id;
+    my $js   = "parent.location.href='" . $app->uri;
+    if ( $type eq 'cd' ) {
+        $js .= '?__mode=edit_content_data&amp;content_type_id='
+            . $obj->content_type_id;
+    }
+    else {
+        $js .= '?__mode=view&amp;_type=' . $type;
+    }
+    $js .= '&amp;id=' . $obj->id;
     if ( defined $blog ) {
         $js .= '&amp;blog_id=' . $blog->id;
     }
