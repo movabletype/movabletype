@@ -12,6 +12,7 @@ use MT::ContentData;
 use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentType;
+use MT::Entry;
 
 my $admin = MT::Author->load(1);
 my $user  = MT::Test::Permission->make_author;
@@ -58,6 +59,7 @@ subtest 'mode=save_content_data (create)' => sub {
             __mode                                => 'save_content_data',
             blog_id                               => $content_type->blog_id,
             content_type_id                       => $content_type->id,
+            status                                => MT::Entry::HOLD(),
             'content-field-' . $content_field->id => 'test input',
         },
     );
@@ -103,6 +105,7 @@ subtest 'mode=save_content_data (update)' => sub {
             id                                    => $content_data->id,
             blog_id                               => $content_type->blog_id,
             content_type_id                       => $content_type->id,
+            status                                => MT::Entry::HOLD(),
             'content-field-' . $content_field->id => 'test input update',
         },
     );
