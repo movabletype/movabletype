@@ -752,6 +752,7 @@ content_field_types:
                 col: value_varchar
                 html: $ContentType::MT::ContentFieldType::List::html
                 terms: $ContentType::MT::ContentFieldType::List::terms
+                display: none
         options:
             - label
             - hint
@@ -768,6 +769,7 @@ content_field_types:
                 col: value_blob
                 html: $ContentType::MT::ContentFieldType::Table::html
                 terms: $ContentType::MT::ContentFieldType::Common::terms_text
+                display: none
         field_html: field_html_table.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Table::field_html_params
         options:
