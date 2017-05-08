@@ -155,13 +155,28 @@ sub cfg_content_type {
         my @array = map {
             $_->{content_field_id} = $_->{id};
             delete $_->{id};
+            my $type    = $_->{type};
             my @options = ();
             foreach my $key ( keys %{ $_->{options} } ) {
-                push @options,
-                    {
-                    key   => $key,
-                    value => $_->{options}{$key}
-                    };
+                if ( $type eq 'date_and_time' && $key eq 'initial_value' ) {
+                    my ( $date, $time ) = split ' ', $_->{options}{$key};
+                    push @options,
+                        {
+                        key   => 'initial_date',
+                        value => $date
+                        },
+                        {
+                        key   => 'initial_time',
+                        value => $time
+                        };
+                }
+                else {
+                    push @options,
+                        {
+                        key   => $key,
+                        value => $_->{options}{$key}
+                        };
+                }
             }
             $_->{options} = \@options;
             $_;
@@ -317,8 +332,14 @@ sub save_cfg_content_type {
 
     my @fields = ();
     foreach my $field_id ( keys %{ $option_list->{fields} } ) {
+        my $type    = $option_list->{fields}{$field_id}{type};
         my $options = $option_list->{fields}{$field_id}{options};
         my $label   = $options->{label};
+        if ( $type eq 'date_and_time' ) {
+            my $date = delete $options->{initial_date};
+            my $time = delete $options->{initial_time};
+            $options->{initial_value} = "$date $time";
+        }
         my $content_field;
         if ( $content_type_id && !$option_list->{fields}{$field_id}{new} ) {
             $content_field = MT::ContentField->load(
@@ -331,7 +352,7 @@ sub save_cfg_content_type {
             $content_field = MT::ContentField->new;
             $content_field->blog_id($blog_id);
             $content_field->content_type_id( $content_type->id );
-            $content_field->type( $option_list->{fields}{$field_id}{type} );
+            $content_field->type($type);
         }
         $content_field->name($label);
         $content_field->default( $options->{initial_value} );
@@ -362,6 +383,7 @@ sub save_cfg_content_type {
             );
         delete $option_list->{fields}{$field_id}{new}
             if defined $option_list->{fields}{$field_id}{new};
+        $option_list->{fields}{$field_id}{options} = $options;
         push @fields,
             {
             id         => $content_field->id,
