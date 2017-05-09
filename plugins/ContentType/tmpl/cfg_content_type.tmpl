@@ -164,6 +164,19 @@
       <input type="text" name="multi_line_text-initial_value" id="multi_line_text-initial_value" class="text long" />
     </mtapp:setting>
 
+    <mtapp:setting
+       id="multi_line_text-input_format"
+       label="<__trans phrase="Input format">">
+      <select name"multi_line_text-input_format" id="multi_line_text-input_format">
+        <option value=""><__trans phrase="Input format is not selected"></option>
+        <option value="plain_text"><__trans phrase="Plain Text"></option>
+        <option value="wysiwyg"><__trans phrase="WYSIWYG"></option>
+        <option value="markdown"><__trans phrase="Markdown"></option>
+        <option value="convert_breaks"><__trans phrase="Convert Breaks"></option>
+        <option value="block"><__trans phrase="Block"></option>
+      </select>
+    </mtapp:setting>
+
     <div id="save-block" class="icon-save icon-left">
       <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
     </div>
@@ -199,6 +212,18 @@
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="integer-min_value"
+       label="<__trans phrase="Min Value">">
+      <input type="text" name="integer-min_value" id="integer-min_value" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="integer-max_value"
+       label="<__trans phrase="Max Value">">
+      <input type="text" name="integer-max_value" id="integer-max_value" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -242,6 +267,24 @@
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="float-min_value"
+       label="<__trans phrase="Min Value">">
+      <input type="text" name="float-min_value" id="float-min_value" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="float-max_value"
+       label="<__trans phrase="Max Value">">
+      <input type="text" name="float-max_value" id="float-max_value" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="float-decimal_places"
+       label="<__trans phrase="Number of decimal places">">
+      <input type="text" name="float-decimal_places" id="float-decimal_places" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -475,6 +518,18 @@
     </mtapp:setting>
 
     <mtapp:setting
+       id="select_box-min"
+       label="<__trans phrase="Min">">
+      <input type="text" name="select_box-min" id="select_box-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="select_box-max"
+       label="<__trans phrase="Max">">
+      <input type="text" name="select_box-max" id="select_box-max" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
        id="select_box-initial_value"
        label="<__trans phrase="Initial Value">">
       <input type="text" name="select_box-initial_value" id="select_box-initial_value" class="text med" />
@@ -573,6 +628,27 @@
     </mtapp:setting>
 
     <mtapp:setting
+      id="checkbox-multiple"
+      label="<__trans phrase="Multiple">">
+      <label>
+        <input type="checkbox" name="checkbox-multiple" id="checkbox-multiple" />
+        <__trans phrase="Enable multiple selection">
+      </label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="checkbox-min"
+       label="<__trans phrase="Min">">
+      <input type="text" name="checkbox-min" id="checkbox-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="checkbox-max"
+       label="<__trans phrase="Max">">
+      <input type="text" name="checkbox-max" id="checkbox-max" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
        id="checkbox-initial_value"
        label="<__trans phrase="Initial Value">">
       <input type="text" name="checkbox-initial_value" id="checkbox-initial_value" class="text med" />
@@ -653,6 +729,33 @@
     </mtapp:setting>
 
     <mtapp:setting
+      id="content_type-multiple"
+      label="<__trans phrase="Multiple">">
+      <label>
+        <input type="checkbox" name="content_type-multiple" id="content_type-multiple" />
+        <__trans phrase="Enable multiple selection">
+      </label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="content_type-can_add"
+       label="<__trans phrase="Can add">">
+      <input type="checkbox" name="content_type-can_add" id="content_type-can_add" /> <label for="content_type-can_add"><__trans phrase="Can add or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="content_type-min"
+       label="<__trans phrase="Min">">
+      <input type="text" name="content_type-min" id="content_type-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="content_type-max"
+       label="<__trans phrase="Max">">
+      <input type="text" name="content_type-max" id="content_type-max" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
        id="content_type-content_type"
        label="<__trans phrase="Content Type">">
       <select name="content_type-content_type" id="content_type-content_type">
@@ -699,6 +802,27 @@
       </select>
     </mtapp:setting>
 
+    <mtapp:setting
+      id="asset-multiple"
+      label="<__trans phrase="Multiple">">
+      <label>
+        <input type="checkbox" name="asset-multiple" id="asset-multiple" />
+        <__trans phrase="Enable multiple selection">
+      </label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="asset-min"
+       label="<__trans phrase="Min">">
+      <input type="text" name="asset-min" id="asset-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="asset-max"
+       label="<__trans phrase="Max">">
+      <input type="text" name="asset-max" id="asset-max" class="text num" />
+    </mtapp:setting>
+
     <div id="save-block" class="icon-save icon-left">
       <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
     </div>
@@ -734,6 +858,27 @@
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+      id="audio-multiple"
+      label="<__trans phrase="Multiple">">
+      <label>
+        <input type="checkbox" name="audio-multiple" id="audio-multiple" />
+        <__trans phrase="Enable multiple selection">
+      </label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="audio-min"
+       label="<__trans phrase="Min">">
+      <input type="text" name="audio-min" id="audio-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="audio-max"
+       label="<__trans phrase="Max">">
+      <input type="text" name="audio-max" id="audio-max" class="text num" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -773,6 +918,27 @@
       </select>
     </mtapp:setting>
 
+    <mtapp:setting
+      id="video-multiple"
+      label="<__trans phrase="Multiple">">
+      <label>
+        <input type="checkbox" name="video-multiple" id="video-multiple" />
+        <__trans phrase="Enable multiple selection">
+      </label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="video-min"
+       label="<__trans phrase="Min">">
+      <input type="text" name="video-min" id="video-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="video-max"
+       label="<__trans phrase="Max">">
+      <input type="text" name="video-max" id="video-max" class="text num" />
+    </mtapp:setting>
+
     <div id="save-block" class="icon-save icon-left">
       <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
     </div>
@@ -810,6 +976,27 @@
       </select>
     </mtapp:setting>
 
+    <mtapp:setting
+      id="image-multiple"
+      label="<__trans phrase="Multiple">">
+      <label>
+        <input type="checkbox" name="image-multiple" id="image-multiple" />
+        <__trans phrase="Enable multiple selection">
+      </label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="image-min"
+       label="<__trans phrase="Min">">
+      <input type="text" name="image-min" id="image-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="image-max"
+       label="<__trans phrase="Max">">
+      <input type="text" name="image-max" id="image-max" class="text num" />
+    </mtapp:setting>
+
     <div id="save-block" class="icon-save icon-left">
       <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
     </div>
@@ -845,6 +1032,33 @@
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+      id="category-multiple"
+      label="<__trans phrase="Multiple">">
+      <label>
+        <input type="checkbox" name="category-multiple" id="category-multiple" />
+        <__trans phrase="Enable multiple selection">
+      </label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="category-can_add"
+       label="<__trans phrase="Can add">">
+      <input type="checkbox" name="category-can_add" id="category-can_add" /> <label for="category-can_add"><__trans phrase="Can add or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="category-min"
+       label="<__trans phrase="Min">">
+      <input type="text" name="category-min" id="category-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="category-max"
+       label="<__trans phrase="Max">">
+      <input type="text" name="category-max" id="category-max" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -892,6 +1106,33 @@
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+      id="tag-multiple"
+      label="<__trans phrase="Multiple">">
+      <label>
+        <input type="checkbox" name="tag-multiple" id="tag-multiple" />
+        <__trans phrase="Enable multiple selection">
+      </label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="tag-can_add"
+       label="<__trans phrase="Can add">">
+      <input type="checkbox" name="tag-can_add" id="tag-can_add" /> <label for="tag-can_add"><__trans phrase="Can add or not."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="tag-min"
+       label="<__trans phrase="Min">">
+      <input type="text" name="tag-min" id="tag-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="tag-max"
+       label="<__trans phrase="Max">">
+      <input type="text" name="tag-max" id="tag-max" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
