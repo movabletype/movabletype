@@ -5,26 +5,45 @@
 <mt:setvar name="screen_class" value="edit-content-type-data">
     
 <mt:setvarblock name="system_msg">
-<div id="msg-block"></div>
-  <mt:if name="saved">
-    <mtapp:statusmsg
-       id="saved"
-       class="success">
-      <__trans phrase="[_1] has been saved." params="<mt:var name="name">">
-    </mtapp:statusmsg>
+<div id="msg-block">
+<mt:if name="recovered_object">
+  <mtapp:statusmsg
+     id="recovered-object"
+     class="success">
+    <__trans phrase="You have successfully recovered your saved content data.">
+  </mtapp:statusmsg>
+<mt:else>
+  <mt:if name="autosaved_object_exists">
+    <mt:unless name="error">
+  <mtapp:statusmsg
+     id="recovered-object"
+     class="info">
+    <__trans phrase="A saved version of this content data was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=edit_content_data&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="content_type_id">&amp;content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
+  </mtapp:statusmsg>
+    </mt:unless>
   </mt:if>
-  <mt:if name="err_msg">
-    <mtapp:statusmsg
-       id="err_msg"
-       class="error"
-       can_close="0">
-      <mt:var name="err_msg">
-    </mtapp:statusmsg>
-  </mt:if>
+</mt:if>
+
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="success">
+    <__trans phrase="[_1] has been saved." params="<mt:var name="name">">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="err_msg">
+  <mtapp:statusmsg
+     id="err_msg"
+     class="error"
+     can_close="0">
+    <mt:var name="err_msg">
+  </mtapp:statusmsg>
+</mt:if>
+</div>
 </mt:setvarblock>
 
 <mt:setvarblock name="form_header">
-<form name="edit-content-type-data-form" id="edit-content-type-data-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewnewwindow"> mt:once</mt:unless>>
+<form name="edit-content-type-data-form" id="edit-content-type-data-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewnewwindow"> mt:once</mt:unless> mt:auto-save="1" mt:auto-save-delay="<mt:var name="autosave_frequency">000">
   <input type="hidden" name="__mode" value="save_content_data" />
   <input type="hidden" name="_type" value="content_data" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
@@ -298,6 +317,8 @@
 <mt:setvarblock name="html_head" append="1">
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/ContentType/css/content-type.css?v=<$mt:var name="mt_version_id" escape="url"$>">
 
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/client.js"></script>
+
 <script type="text/javascript">
 function highlightSwitch(selection) {
     var descriptionObject = getByID('created_on-label');
@@ -313,6 +334,14 @@ function highlightSwitch(selection) {
     }
     return false;
 }
+
+Template.templates.autoSave = '<mt:section encode_js="1">
+[# if ( saving ) { #]
+    [#= trans("Auto-saving..." ) #]
+[# } else { #]
+    [#= trans("Last auto-save at [_1]:[_2]:[_3]", hh, mm, ss ) #]
+[# } #]
+</mt:section>';
 </script>
 </mt:setvarblock>
 
@@ -335,13 +364,13 @@ function highlightSwitch(selection) {
     <mt:if name="field_html">
       <mt:var name="field_html">
     <mt:elseif name"data_type" eq="varchar">
-      <input type="text" name="content-field-<mt:var name="content_field_id">" class="text long" value="<mt:var name="value">" />
+      <input type="text" name="content-field-<mt:var name="content_field_id">" class="text long" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" />
     <mt:elseif name"data_type" eq="blob">
-      <textarea name="content-field-<mt:var name="content_field_id">" class="text high"><mt:var name="value"></textarea>
+      <textarea name="content-field-<mt:var name="content_field_id">" class="text high" mt:watch-change="1" mt:raw-name="1"><mt:var name="value"></textarea>
     <mt:elseif name"data_type" eq="integer">
-      <input type="text" name="content-field-<mt:var name="content_field_id">" class="text short" value="<mt:var name="value">" />
+      <input type="text" name="content-field-<mt:var name="content_field_id">" class="text short" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" />
     <mt:elseif name"data_type" eq="float">
-      <input type="text" name="content-field-<mt:var name="content_field_id">" class="text short" value="<mt:var name="value">" />
+      <input type="text" name="content-field-<mt:var name="content_field_id">" class="text short" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" />
     </mt:if>
   </div>
   </mt:if>
@@ -407,5 +436,7 @@ function highlightSwitch(selection) {
   }
   setSaveButtonText();
 </mt:setvarblock>
+
+<div id="autosave-notification-<$mt:var name="bar_position" escape="html" default="top"$>" class="autosave-notification"></div>
 
 <mt:include name="include/footer.tmpl">

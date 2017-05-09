@@ -89,7 +89,13 @@ jQuery(function() {
         onClose: function(dateText, inst){
           var $this = jQuery(this);
           var ns = jQuery.data( this, 'mtValidator' );
-          if ( !ns ) return true;
+          if ( !ns ) {
+            if ($this.attr('mt:watch-change') && inst.lastVal !== $this.val()) {
+              log('found dirty from: ' + $this.attr('id'));
+              (app.getIndirectMethod('setDirty'))();
+            }
+            return true;
+          }
           $this.mtValid({ focus: false });
         }
     });

@@ -30,7 +30,7 @@ sub field_html {
         . $field_id
         . '" class="text long" value="';
     $html .= join ',', @$value;
-    $html .= '" />';
+    $html .= '" mt:watch-change="1" mt:raw-name=\"1\" />';
     return $html;
 }
 

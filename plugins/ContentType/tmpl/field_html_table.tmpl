@@ -1,6 +1,7 @@
 <table id="js-table-<mt:var name="field_id" escape="html">">
 <mt:var name="value">
 </table>
+<input type="hidden" id="content-field-<mt:var name="field_id" escape="html">" name="content-field-<mt:var name="field_id" escape="html">" value="" mt:raw-name="1" />
 
 <mt:unless name="loaded_table_library">
 <link rel="stylesheet" href="<mt:var name="static_uri">plugins/ContentType/a-table.js/fonts/a-table-icon.css">
@@ -27,15 +28,21 @@
   table.afterAction =
   table.afterEntered = function() {
     setDirty(true);
+    log(`found dirty form: #js-table-${fieldId}`);
+    (app.getIndirectMethod('setDirty'))();
   };
 
+  function updateTableInputValue() {
+    var tableInnerHtml = jQuery(table.getTable()).children().html();
+    jQuery(`#content-field-${fieldId}`).val(tableInnerHtml);
+  }
+
+  jQuery(window).on('pre_autosave', function() {
+    updateTableInputValue();
+  });
+
   jQuery('form#edit-content-type-data-form').submit(function() {
-    var innerHtml = jQuery(table.getTable()).children().html();
-    var $input = jQuery('<input>')
-      .attr('type', 'hidden')
-      .attr('name', `content-field-${fieldId}`)
-      .attr('value', innerHtml);
-    jQuery(this).append($input);
+    updateTableInputValue();
   });
 })();
 </script>

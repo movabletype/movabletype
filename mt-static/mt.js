@@ -1443,6 +1443,7 @@ MT.App = new Class( App, {
 
             var es = Array.fromPseudo(
                 forms[ i ].getElementsByTagName( "input" ),
+                forms[ i ].getElementsByTagName( "select" ),
                 forms[ i ].getElementsByTagName( "textarea" )
             );
             for ( var j = 0; j < es.length; j++ ) {

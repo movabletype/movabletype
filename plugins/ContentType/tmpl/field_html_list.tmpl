@@ -1,6 +1,6 @@
 <mt:loop name="list_values">
-<div>
-  <input type="text" name="content-field-<mt:var name="field_id" escape="html">" class="text long" value="<mt:var name="__value__">" />
+<div style="display: inline">
+  <input type="text" name="content-field-<mt:var name="field_id" escape="html">" class="text long" value="<mt:var name="__value__">" mt:watch-change="1" mt:raw-name="1" style="width: 95%" />
   <a href="javascript:void(0)" onclick="removeList(this)"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>
 </div>
 </mt:loop>
@@ -11,17 +11,25 @@
 function removeList(removeButton) {
   jQuery(removeButton).parent().remove();
   setDirty(true);
+  log('found dirty form: removed list element');
+  (app.getIndirectMethod('setDirty'))();
 }
 
 function addList(createButton) {
-  var newDiv = '<div>' + "\n";
-  newDiv += '  <input name="content-field-<mt:var name="field_id" escape="html">" class="text long" value="" />' + "\n";
-  newDiv += '  <a href="javascript:void(0)" onclick="jQuery(this).parent().remove()"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>' + "\n";
-  newDiv += '</div>' + "\n";
+  var newDiv = '<div style="display: inline">' + "\n";
+  newDiv    += '  <input name="content-field-<mt:var name="field_id" escape="html">" class="text long" value="" mt:raw-name="1" style="width: 95%" />' + "\n";
+  newDiv    += '  <a href="javascript:void(0)" onclick="jQuery(this).parent().remove()"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>' + "\n";
+  newDiv    += '</div>' + "\n";
 
-  jQuery(createButton).before(newDiv);
+  var $newDiv = jQuery(newDiv);
+  log('adding watcher to content-type-<mt:var name="field_id" escape="js">');
+  DOM.addEventListener($newDiv.get(0), 'change', app.getIndirectEventListener('setDirty'));
+
+  jQuery(createButton).before($newDiv);
 
   setDirty(true);
+  log('found dirty form: added list element');
+  (app.getIndirectMethod('setDirty'))();
 }
 </script>
 

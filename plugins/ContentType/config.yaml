@@ -22,7 +22,10 @@ applications:
         callbacks:
             template_param.list_common: $ContentType::ContentType::App::CMS::tmpl_param_list_common
             template_param.edit_role: $ContentType::ContentType::App::CMS::tmpl_param_edit_role
-            cms_post_delete.content_data: $ContentType::ContentType::App::CMS::post_delete
+
+            cms_post_save.content_data: $ContentType::MT::CMS::ContentData::post_save
+            cms_post_delete.content_data: $ContentType::MT::CMS::ContentData::post_delete
+
         methods:
             cfg_content_field: $ContentType::ContentType::App::CMS::cfg_content_field
             save_cfg_content_field: $ContentType::ContentType::App::CMS::save_cfg_content_field

@@ -847,16 +847,48 @@ sub edit_content_data {
     my $plugin = $app->component("ContentType");
     my $cfg    = $app->config;
     my $param  = {};
+    my $data;
 
     my $blog_id = scalar $q->param('blog_id')
         or return $app->errtrans("Invalid request.");
     my $content_type_id = scalar $q->param('content_type_id')
         or return $app->errtrans("Invalid request.");
-
     my $content_type = MT::ContentType->load($content_type_id)
         or return $app->errtrans('Invalid request.');
 
-    $param->{name} = $content_type->name;
+    $q->param( '_type', 'content_data' );
+
+    if ( $q->param('_recover') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        if ($sess_obj) {
+            my $autosave_data = $sess_obj->thaw_data;
+            if ($autosave_data) {
+                $q->param( $_, $autosave_data->{$_} )
+                    for keys %$autosave_data;
+                $app->delete_param('id')
+                    if defined $q->param('id') && !$q->param('id');
+                $data = $autosave_data->{data};
+                $param->{'recovered_object'} = 1;
+            }
+            else {
+                $param->{'recovered_failed'} = 1;
+            }
+        }
+        else {
+            $param->{'recovered_failed'} = 1;
+        }
+    }
+
+    if ( !$q->param('reedit') ) {
+        if ( my $sess_obj = $app->autosave_session_obj ) {
+            $param->{autosaved_object_exists} = 1;
+            $param->{autosaved_object_ts}
+                = MT::Util::epoch2ts( $blog, $sess_obj->start );
+        }
+    }
+
+    $param->{autosave_frequency} = $app->config->AutoSaveFrequency;
+    $param->{name}               = $content_type->name;
 
     my $array           = $content_type->fields;
     my $ct_unique_key   = $content_type->unique_key;
@@ -864,7 +896,7 @@ sub edit_content_data {
 
     $param->{use_revision} = $blog->use_revision ? 1 : 0;
 
-    my ( $content_data, $data );
+    my $content_data;
     if ($content_data_id) {
         $content_data = MT::ContentData->load($content_data_id)
             or return $app->error(
@@ -923,8 +955,7 @@ sub edit_content_data {
     }
     else {
         my $def_status;
-        if ( $param->{status} ) {
-            $def_status = $param->{status};
+        if ( $def_status = $q->param('status') ) {
             $def_status =~ s/\D//g;
             $param->{status} = $def_status;
         }
@@ -942,7 +973,7 @@ sub edit_content_data {
         $param->{unpublished_on_time} = $q->param('unpublished_on_time');
     }
 
-    $data = $content_data->data if $content_data;
+    $data = $content_data->data if $content_data && !$data;
 
     my $content_field_types = $app->registry('content_field_types');
     @$array = map {
@@ -958,8 +989,9 @@ sub edit_content_data {
         $_->{value}
             = $q->param( $_->{content_field_id} )
             ? $q->param( $_->{content_field_id} )
-            : $content_data_id ? $data->{ $_->{content_field_id} }
-            :                    '';
+            : ( $content_data_id || $data )
+            ? $data->{ $_->{content_field_id} }
+            : '';
 
         my $content_field_type = $content_field_types->{ $_->{type} };
         if ( my $field_html = $content_field_type->{field_html} ) {
@@ -1046,6 +1078,11 @@ sub save_content_data {
         $data->{ $f->{id} }
             = _get_form_data( $app, $content_field_type, $f->{id} );
     }
+
+    if ( $app->param('_autosave') ) {
+        return _autosave_content_data( $app, $data );
+    }
+
     foreach my $f (@$fields) {
         my $content_field_type = $content_field_types->{ $f->{type} };
         my $param_name         = 'content-field-' . $f->{id};
@@ -1221,7 +1258,8 @@ sub save_content_data {
         }
     }
 
-    $app->run_callbacks( 'cms_pre_save.cd', $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_pre_save.content_data',
+        $app, $content_data, $orig );
 
     $content_data->save
         or return $app->error(
@@ -1231,7 +1269,8 @@ sub save_content_data {
         )
         );
 
-    $app->run_callbacks( 'cms_post_save.cd', $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_post_save.content_data',
+        $app, $content_data, $orig );
 
     return $app->redirect(
         $app->uri(
@@ -1244,6 +1283,27 @@ sub save_content_data {
             }
         )
     );
+}
+
+sub _autosave_content_data {
+    my ( $app, $data ) = @_;
+
+    my $sess_obj = $app->autosave_session_obj(1) or return;
+    $sess_obj->data('');
+    my %data = $app->param_hash;
+    delete $data{_autosave};
+    delete $data{magic_token};
+    $data{data} = $data;
+
+    foreach my $c ( keys %data ) {
+        $sess_obj->set( $c, $data{$c} );
+    }
+    $sess_obj->start(time);
+    $sess_obj->save;
+    $app->send_http_header("text/javascript+json");
+    $app->{no_print_body} = 1;
+    $app->print_encode("true");
+
 }
 
 sub cms_pre_load_filtered_list {
@@ -1281,25 +1341,16 @@ sub _get_form_data {
 
 sub delete_content_data {
     my $app = shift;
+
+    my $orig_type = $app->param('_type');
+    my ($content_type_id) = $orig_type =~ /^content_data_(\d+)$/;
+
     $app->param( '_type', 'content_data' );
+    unless ( $app->param('content_type_id') ) {
+        $app->param( 'content_type_id', $content_type_id );
+    }
+
     MT::CMS::Common::delete($app);
-}
-
-sub post_delete {
-    my ( $eh, $app, $obj ) = @_;
-
-    my $content_type = $obj->content_type or return;
-
-    $app->log(
-        {   message => $app->translate(
-                "[_1] (ID:[_2]) deleted by '[_3]'", $content_type->name,
-                $obj->id,                           $app->user->name
-            ),
-            level    => MT::Log::INFO(),
-            class    => 'content_data_' . $content_type->id,
-            category => 'delete'
-        }
-    );
 }
 
 1;
