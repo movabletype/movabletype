@@ -316,6 +316,7 @@ content_field_types:
         list_props:
             select_box:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+                html: $ContentType::MT::ContentFieldType::SelectBox::html
                 single_select_options: $ContentType::MT::ContentFieldType::SelectBox::single_select_options
                 terms: $ContentType::MT::ContentFieldType::SelectBox::terms
         options:
@@ -337,7 +338,8 @@ content_field_types:
         list_props:
             radio:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
-                single_select_options: $ContentType::MT::ContentFieldType::Radio::single_select_options
+                html: $ContentType::MT::ContentFieldType::SelectBox::html
+                single_select_options: $ContentType::MT::ContentFieldType::SelectBox::single_select_options
                 terms: $ContentType::MT::ContentFieldType::SelectBox::terms
         options:
             - label
@@ -356,7 +358,8 @@ content_field_types:
         list_props:
             checkbox:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
-                single_select_options: $ContentType::MT::ContentFieldType::Checkbox::single_select_options
+                html: $ContentType::MT::ContentFieldType::SelectBox::html
+                single_select_options: $ContentType::MT::ContentFieldType::SelectBox::single_select_options
                 terms: $ContentType::MT::ContentFieldType::SelectBox::terms
         options:
             - label

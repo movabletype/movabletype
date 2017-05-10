@@ -8,40 +8,22 @@ sub field_html {
     my ( $app, $id, $value ) = @_;
     $value = '' unless defined $value;
     my $content_field = MT::ContentField->load($id);
-    my $options = $content_field->options->{options} || '';
-    my $options_delimiter
-        = quotemeta(
-        $app->registry('content_field_types')->{radio}{options_delimiter}
-            || ',' );
-    my @options = split $options_delimiter, $options;
-    my $html    = '';
-    my $count   = 1;
+    my $options_values = $content_field->options->{values} || [];
 
-    foreach my $option (@options) {
+    my $html  = '';
+    my $count = 1;
+
+    foreach my $options_value ( @{$options_values} ) {
         $html
-            .= "<input type=\"radio\" name=\"content-field-$id\" id=\"content-field-$id-$count\" class=\"radio\" value=\"$option\"";
-        $html .= ' checked="checked"' if $option eq $value;
+            .= "<input type=\"radio\" name=\"content-field-$id\" id=\"content-field-$id-$count\" class=\"radio\" value=\""
+            . $options_value->{value} . "\"";
+        $html .= ' checked="checked"' if $options_value->{value} eq $value;
         $html .= ' mt:watch-change="1" mt:raw-name="1" />';
-        $html .= " <label for=\"content-field-$id-$count\">$option ";
+        $html .= " <label for=\"content-field-$id-$count\">"
+            . $options_value->{key};
         $count++;
     }
     return $html;
-}
-
-sub single_select_options {
-    my $prop = shift;
-    my $app = shift || MT->app;
-
-    my $content_field_id = $prop->{content_field_id};
-    my $content_field    = MT::ContentField->load($content_field_id);
-    my $options_delimiter
-        = quotemeta(
-        $app->registry('content_field_types')->{radio}{options_delimiter}
-            || ',' );
-    my @options = split $options_delimiter,
-        $content_field->options->{options} || '';
-
-    [ map { +{ label => $_, value => $_ } } @options ];
 }
 
 1;

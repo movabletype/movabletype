@@ -11,42 +11,25 @@ sub field_html {
     $value = [$value] unless ref $value eq 'ARRAY';
 
     my $content_field = MT::ContentField->load($id);
-    my $options = $content_field->options->{options} || '';
-    my $options_delimiter
-        = quotemeta(
-        $app->registry('content_field_types')->{checkbox}{options_delimiter}
-            || ',' );
-    my @options = split $options_delimiter, $options;
+    my $options_values = $content_field->options->{values} || [];
 
     my $html  = '';
     my $count = 1;
 
-    foreach my $option (@options) {
+    foreach my $options_value ( @{$options_values} ) {
         $html
-            .= "<input type=\"checkbox\" name=\"content-field-$id\" id=\"content-field-$id-$count\" class=\"radio\" value=\"$option\"";
-        $html
-            .= ( grep { $_ eq $option } @$value ) ? ' checked="checked"' : '';
+            .= "<input type=\"checkbox\" name=\"content-field-$id\" id=\"content-field-$id-$count\" class=\"radio\" value=\""
+            . $options_value->{value} . "\"";
+        $html .=
+            ( grep { $_ eq $options_value->{value} } @$value )
+            ? ' checked="checked"'
+            : '';
         $html .= " mt:watch-change=\"1\" mt:raw-name=\"1\" />";
-        $html .= " <label for=\"content-field-$id-$count\">$option ";
+        $html .= " <label for=\"content-field-$id-$count\">"
+            . $options_value->{key};
         $count++;
     }
     return $html;
-}
-
-sub single_select_options {
-    my $prop = shift;
-    my $app = shift || MT->app;
-
-    my $content_field_id = $prop->{content_field_id};
-    my $content_field    = MT::ContentField->load($content_field_id);
-    my $options_delimiter
-        = quotemeta(
-        $app->registry('content_field_types')->{checkbox}{options_delimiter}
-            || ',' );
-    my @options = split $options_delimiter,
-        $content_field->options->{options} || '';
-
-    [ map { +{ label => $_, value => $_ } } @options ];
 }
 
 sub data_getter {
