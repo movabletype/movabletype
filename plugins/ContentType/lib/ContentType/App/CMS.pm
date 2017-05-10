@@ -194,7 +194,14 @@ sub cfg_content_type {
                         value => $time
                         };
                 }
-                elsif ( $type eq 'select_box' && $key eq 'values' ) {
+                elsif (
+                    (      $type eq 'select_box'
+                        || $type eq 'radio'
+                        || $type eq 'checkbox'
+                    )
+                    && $key eq 'values'
+                    )
+                {
                     my $count  = 1;
                     my $values = delete $_->{options}{$key};
                     foreach my $pair ( @{$values} ) {
@@ -380,7 +387,10 @@ sub save_cfg_content_type {
             my $time = delete $options->{initial_time};
             $options->{initial_value} = "$date $time";
         }
-        elsif ( $type eq 'select_box' ) {
+        elsif ($type eq 'select_box'
+            || $type eq 'radio'
+            || $type eq 'checkbox' )
+        {
             my $count  = 1;
             my @values = ();
             while ( $options->{ 'values_key_' . $count } ) {

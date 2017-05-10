@@ -573,9 +573,9 @@
     </mtapp:setting>
 
     <mtapp:setting
-      id="radio-options"
-      label="<__trans phrase="Options">">
-      <input type="text" name="radio-options" id="radio-options" class="text med" />
+      id="radio-values"
+      label="<__trans phrase="Values">">
+      <a href="javascript:void(0)" class="add-values-list"><img src="<mt:var name="static_uri">images/status_icons/create.gif" /></a>
     </mtapp:setting>
 
     <mtapp:setting
@@ -646,6 +646,12 @@
        id="checkbox-max"
        label="<__trans phrase="Max">">
       <input type="text" name="checkbox-max" id="checkbox-max" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+      id="checkbox-values"
+      label="<__trans phrase="Values">">
+      <a href="javascript:void(0)" class="add-values-list"><img src="<mt:var name="static_uri">images/status_icons/create.gif" /></a>
     </mtapp:setting>
 
     <mtapp:setting
@@ -1474,6 +1480,7 @@
           jQuery(element).val(data['fields'][current_id]['options'][opt_name]);
       });
       var count = 1;
+      jQuery('div.' + type_name + '-values').remove();
       while (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options']['values_key_' + count]) {
         var add_button = jQuery('#' + type_name + '-values-field').find('a.add-values-list');
         var key = data['fields'][current_id]['options']['values_key_' + count];
@@ -1540,7 +1547,6 @@
         data['fields'][current_id]['options'][opt_name] = opt_val;
         jQuery(element).val('');
       });
-      jQuery('div.' + type_name + '-values').remove();
       localStorage.setItem("ContentType", JSON.stringify(data));
       options.css( 'display', 'none' );
       setDirty(true);
