@@ -2,8 +2,8 @@ name: Content Type
 author_name: Six Apart, Ltd.
 author_link: http://www.sixapart.com/
 pack_link: <__trans phrase="http://www.sixapart.com/movabletype/">
-version: 0.18
-schema_version: 0.18
+version: 0.21
+schema_version: 0.21
 l10n_class: MT::ContentType::L10N
 
 permissions: $ContentType::ContentType::Permission::permissions
@@ -20,8 +20,12 @@ callbacks:
 applications:
     cms:
         callbacks:
+            template_param.list_common: $ContentType::ContentType::App::CMS::tmpl_param_list_common
             template_param.edit_role: $ContentType::ContentType::App::CMS::tmpl_param_edit_role
-            cms_post_delete.content_data: $ContentType::ContentType::App::CMS::post_delete
+
+            cms_post_save.cd: $ContentType::MT::CMS::ContentData::post_save
+            cms_post_delete.cd: $ContentType::MT::CMS::ContentData::post_delete
+
         methods:
             cfg_content_field: $ContentType::ContentType::App::CMS::cfg_content_field
             save_cfg_content_field: $ContentType::ContentType::App::CMS::save_cfg_content_field
@@ -751,6 +755,7 @@ content_field_types:
                 col: value_varchar
                 html: $ContentType::MT::ContentFieldType::List::html
                 terms: $ContentType::MT::ContentFieldType::List::terms
+                display: none
         options:
             - label
             - hint
@@ -767,6 +772,7 @@ content_field_types:
                 col: value_blob
                 html: $ContentType::MT::ContentFieldType::Table::html
                 terms: $ContentType::MT::ContentFieldType::Common::terms_text
+                display: none
         field_html: field_html_table.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Table::field_html_params
         options:

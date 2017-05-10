@@ -37,7 +37,7 @@ sub field_html {
             ( grep { $_ eq $cat_id } @$value )
             ? ' checked="checked"'
             : '';
-        $html .= " />";
+        $html .= " mt:watch-change=\"1\" mt:raw-name=\"1\" />";
         $html
             .= " <label for=\"content-field-$field_id-$num\">$cat_label</label>";
         $html .= qq{ (<a href="${edit_link}">edit</a>)};

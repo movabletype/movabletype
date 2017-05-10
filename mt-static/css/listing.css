@@ -1348,3 +1348,10 @@ tfoot .col.head{
     word-break: break-all;
 }
 
+a.asset-field-label {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+

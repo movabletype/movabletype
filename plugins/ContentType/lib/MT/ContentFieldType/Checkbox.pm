@@ -26,7 +26,7 @@ sub field_html {
             .= "<input type=\"checkbox\" name=\"content-field-$id\" id=\"content-field-$id-$count\" class=\"radio\" value=\"$option\"";
         $html
             .= ( grep { $_ eq $option } @$value ) ? ' checked="checked"' : '';
-        $html .= " />";
+        $html .= " mt:watch-change=\"1\" mt:raw-name=\"1\" />";
         $html .= " <label for=\"content-field-$id-$count\">$option ";
         $count++;
     }

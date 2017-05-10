@@ -116,6 +116,8 @@ sub edit {
             }
             $param->{'max_revisions_entry'} = ( $obj->max_revisions_entry
                     || $MT::Revisable::MAX_REVISIONS );
+            $param->{'max_revisions_cd'}
+                = ( $obj->max_revisions_cd || $MT::Revisable::MAX_REVISIONS );
             $param->{'max_revisions_template'}
                 = (    $obj->max_revisions_template
                     || $MT::Revisable::MAX_REVISIONS );
@@ -149,6 +151,8 @@ sub edit {
             $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
             $param->{'max_revisions_entry'} = ( $obj->max_revisions_entry
                     || $MT::Revisable::MAX_REVISIONS );
+            $param->{'max_revisions_cd'}
+                = ( $obj->max_revisions_cd || $MT::Revisable::MAX_REVISIONS );
             $param->{'max_revisions_template'}
                 = (    $obj->max_revisions_template
                     || $MT::Revisable::MAX_REVISIONS );

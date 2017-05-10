@@ -36,7 +36,7 @@ sub field_html {
     $html .= '<span>';
     $html .= '<span>';
     $html
-        .= "<input type=\"text\" name=\"time-$id\" id=\"time-$id\" class=\"text time\" value=\"$time\" placeholder=\"HH:MM:SS\" />";
+        .= "<input type=\"text\" name=\"time-$id\" id=\"time-$id\" class=\"text time\" value=\"$time\" placeholder=\"HH:mm:ss\" mt:watch-change=\"1\" mt:raw-name=\"1\" />";
     $html .= '</span> ';
     return $html;
 }

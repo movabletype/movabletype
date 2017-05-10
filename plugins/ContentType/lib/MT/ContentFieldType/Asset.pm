@@ -30,7 +30,7 @@ sub field_html {
         . $field_id
         . '" class="text long" value="';
     $html .= join ',', @$value;
-    $html .= '" />';
+    $html .= '" mt:watch-change="1" mt:raw-name=\"1\" />';
     return $html;
 }
 
@@ -350,12 +350,13 @@ sub html {
     my %assets = map { $_->id => $_ } MT::Asset->load( { id => $asset_ids } );
     my @assets = map { $assets{$_} } @$asset_ids;
 
-    my ( @ids, @thumbnails );
+    my ( @labels, @thumbnails );
     for my $asset (@assets) {
-        my $id = $asset->id;
+        my $label = $asset->label;
         my $edit_link = _edit_link( $app, $asset );
 
-        push @ids, qq{<a href="${edit_link}">${id}</a>};
+        push @labels,
+            qq{<a href="${edit_link}" class="asset-field-label">${label}</a>};
         if ($is_image) {
             my $thumbnail_html = _thumbnail_html( $app, $asset );
             push @thumbnails,
@@ -363,9 +364,9 @@ sub html {
         }
     }
 
-    my $ids_html
-        = qq{<span id="asset-ids-${cd_id}-${field_id}" class="id">}
-        . join( ', ', @ids )
+    my $labels_html
+        = qq{<span id="asset-labels-${cd_id}-${field_id}" class="label">}
+        . join( '', @labels )
         . '</span>';
 
     if ($is_image) {
@@ -377,26 +378,26 @@ sub html {
 <script>
 jQuery(document).ready(function() {
   jQuery("#custom-prefs-content_field_${field_id}\\\\.thumbnail").change(function() {
-    changeIds();
+    changeLabels();
   });
 
-  function changeIds() {
+  function changeLabels() {
     if (jQuery("#custom-prefs-content_field_${field_id}\\\\.thumbnail").prop('checked')) {
-      jQuery('#asset-ids-${cd_id}-${field_id}').css('display', 'none');
+      jQuery('#asset-labels-${cd_id}-${field_id}').css('display', 'none');
     } else {
-      jQuery('#asset-ids-${cd_id}-${field_id}').css('display', 'inline');
+      jQuery('#asset-labels-${cd_id}-${field_id}').css('display', 'inline');
     }
   }
 
-  changeIds();
+  changeLabels();
 });
 </script>
 __JS__
 
-        $ids_html . $thumbnails_html . $js;
+        $labels_html . $thumbnails_html . $js;
     }
     else {
-        $ids_html;
+        $labels_html;
     }
 }
 

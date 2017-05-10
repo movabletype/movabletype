@@ -376,7 +376,7 @@
     <mtapp:setting
        id="date_and_time-initial_value"
        label="<__trans phrase="Initial Value">">
-      <span><input type="text" name="date_and_time-initial_date" id="date_and_time-initial_date" class="text date text-date" value="" placeholder="YYYY:MM:DD" /></span> <span class="separator"><__trans phrase="@"></span> <span><input type="text" name="date_and_time-initial_time" id="date_and_time-initial_time" class="text time" value="" placeholder="HH:MM:SS" /></span>
+      <span><input type="text" name="date_and_time-initial_date" id="date_and_time-initial_date" class="text date text-date" value="" placeholder="YYYY-MM-DD" /></span> <span class="separator"><__trans phrase="@"></span> <span><input type="text" name="date_and_time-initial_time" id="date_and_time-initial_time" class="text time" value="" placeholder="HH:mm:ss" /></span>
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -419,7 +419,7 @@
     <mtapp:setting
        id="date-initial_value"
        label="<__trans phrase="Initial Value">">
-      <input type="text" name="date-initial_value" id="date-initial_value" class="text date text-date" value="" placeholder="YYYY:MM:DD" /></span>
+      <input type="text" name="date-initial_value" id="date-initial_value" class="text date text-date" value="" placeholder="YYYY-MM-DD" /></span>
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -462,7 +462,7 @@
     <mtapp:setting
        id="time-initial_value"
        label="<__trans phrase="Initial Value">">
-      <input type="text" name="time-initial_value" id="time-initial_value" class="text time" value="" placeholder="HH:MM:SS" />
+      <input type="text" name="time-initial_value" id="time-initial_value" class="text time" value="" placeholder="HH:mm:ss" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -796,7 +796,7 @@
        label="<__trans phrase="Display">">
       <select name="asset-display" id="asset-display">
         <option value="force"><__trans phrase="Force"></option>
-        <option value="default"><__trans phrase="Default"></option>
+        <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
@@ -854,7 +854,7 @@
        label="<__trans phrase="Display">">
       <select name="audio-display" id="audio-display">
         <option value="force"><__trans phrase="Force"></option>
-        <option value="default"><__trans phrase="Default"></option>
+        <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
@@ -912,7 +912,7 @@
        label="<__trans phrase="Display">">
       <select name="video-display" id="video-display">
         <option value="force"><__trans phrase="Force"></option>
-        <option value="default"><__trans phrase="Default"></option>
+        <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
@@ -970,7 +970,7 @@
        label="<__trans phrase="Display">">
       <select name="image-display" id="image-display">
         <option value="force"><__trans phrase="Force"></option>
-        <option value="default"><__trans phrase="Default"></option>
+        <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
@@ -1028,7 +1028,7 @@
        label="<__trans phrase="Display">">
       <select name="category-display" id="category-display">
         <option value="force"><__trans phrase="Force"></option>
-        <option value="default"><__trans phrase="Default"></option>
+        <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
@@ -1102,7 +1102,7 @@
        label="<__trans phrase="Display">">
       <select name="tag-display" id="tag-display">
         <option value="force"><__trans phrase="Force"></option>
-        <option value="default"><__trans phrase="Default"></option>
+        <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
@@ -1172,7 +1172,7 @@
        label="<__trans phrase="Display">">
       <select name="list-display" id="list-display">
         <option value="force"><__trans phrase="Force"></option>
-        <option value="default"><__trans phrase="Default"></option>
+        <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
@@ -1182,11 +1182,11 @@
        id="list-bullet_or_numbered"
        label="<__trans phrase="Bullet or Numbered">">
       <label>
-        <input type="radio" name="list-bullet_or_numbered" id="list-bullet_or_numbered" value="bullet" />
+        <input type="radio" name="list-bullet_or_numbered" id="list-bullet_or_numbered-bullet" value="bullet" checked="checked" />
         <__trans phrase="Bullet">
       </label>
       <label>
-        <input type="radio" name="list-bullet_or_numbered" id="list-bullet_or_numbered" value="numbered" />
+        <input type="radio" name="list-bullet_or_numbered" id="list-bullet_or_numbered-numbered" value="numbered" />
         <__trans phrase="Numbered">
       </label>
     </mtapp:setting>
@@ -1222,7 +1222,7 @@
        label="<__trans phrase="Display">">
       <select name="table-display" id="table-display">
         <option value="force"><__trans phrase="Force"></option>
-        <option value="default"><__trans phrase="Default"></option>
+        <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
@@ -1439,14 +1439,23 @@
         var input_type = jQuery(element).attr("type");
         if (input_type === 'hidden')
           return true;
-        var opt_id = jQuery(element).attr("id");
-        var opt_name = (opt_id.match(regexp))[1];
+        if (input_type === 'radio') {
+          var opt_name = (jQuery(element).attr('name').match(regexp))[1];
+        } else {
+          var opt_id = jQuery(element).attr("id");
+          var opt_name = (opt_id.match(regexp))[1];
+        }
         var opt_val = '';
         if (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options'][opt_name])
           opt_val = data['fields'][current_id]['options'][opt_name];
         if (input_type === 'checkbox') {
           if (opt_val === 1 || opt_val === '1')
             jQuery(element).prop("checked", true);
+        }
+        else if (input_type === 'radio') {
+          if (jQuery(element).val() === opt_val) {
+            jQuery(element).prop('checked', 'checked');
+          }
         }
         else {
           jQuery(element).val(opt_val);
@@ -1485,20 +1494,28 @@
       options.find("input").each(function(index, element) {
         var input_type = jQuery(element).attr("type");
         if (input_type === 'hidden')
-            return true;
-        var opt_id = jQuery(element).attr("id");
-        var opt_name = (opt_id.match(regexp))[1];
-        var opt_val = '';
-        if (input_type === 'checkbox') {
-          opt_val = jQuery(element).prop('checked') ? 1 : 0;
-        }
-        else {
-          opt_val = jQuery(element).val();
+          return true;
+        if (input_type === 'radio') {
+          if (!jQuery(element).prop('checked')) {
+            return;
+          }
+          var opt_name = (jQuery(element).attr('name').match(regexp))[1];
+          var opt_val = jQuery(element).val();
+        } else {
+          var opt_id = jQuery(element).attr("id");
+          var opt_name = (opt_id.match(regexp))[1];
+          var opt_val = '';
+          if (input_type === 'checkbox') {
+            opt_val = jQuery(element).prop('checked') ? 1 : 0;
+          }
+          else {
+            opt_val = jQuery(element).val();
+          }
         }
         if (!data['fields'][current_id]['options'])
           data['fields'][current_id]['options'] = {};
         data['fields'][current_id]['options'][opt_name] = opt_val;
-        if (input_type === 'checkbox') {
+        if (input_type === 'checkbox' || input_type === 'radio') {
           jQuery(element).prop("checked", false);
         }
         else {

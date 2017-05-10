@@ -547,6 +547,12 @@ function setLicense() {
       </mtapp:setting>
   
       <mtapp:setting
+         id="max_revisions_cd"
+         label="<__trans phrase="Number of revisions per content data">">
+        <input type="text" name="max_revisions_cd" id="max_revisions_cd" class="text num" value="<mt:var name="max_revisions_cd" escape="html">" />
+      </mtapp:setting>
+
+      <mtapp:setting
          id="max_revisions_template"
          label="<__trans phrase="Number of revisions per template">">
         <input type="text" name="max_revisions_template" id="max_revisions_template" class="text num" value="<mt:var name="max_revisions_template" escape="html">" />

@@ -7,7 +7,7 @@
 package MT::ContentData;
 
 use strict;
-use base qw( MT::Object );
+use base qw( MT::Object MT::Revisable );
 
 use JSON ();
 
@@ -23,18 +23,44 @@ use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'              => 'integer not null auto_increment',
-            'blog_id'         => 'integer not null',
-            'status'          => 'smallint not null',
-            'author_id'       => 'integer not null',
+            'id'      => 'integer not null auto_increment',
+            'blog_id' => 'integer not null',
+            'status'  => {
+                type       => 'smallint',
+                not_null   => 1,
+                label      => 'Status',
+                revisioned => 1,
+            },
+            'author_id' => {
+                type       => 'integer',
+                not_null   => 1,
+                label      => 'Author',
+                revisioned => 1,
+            },
             'content_type_id' => 'integer not null',
-            'data'            => 'blob',
+            'data'            => {
+                type       => 'blob',
+                label      => 'Data',
+                revisioned => 1,
+            },
+            'authored_on' => {
+                type       => 'datetime',
+                label      => 'Publish Date',
+                revisioned => 1,
+            },
+            'unpublished_on' => {
+                type       => 'datetime',
+                label      => 'Unpublished Date',
+                revisioned => 1,
+            },
+            'revision' => 'integer meta',
         },
         indexes     => { content_type_id => 1 },
         defaults    => { status          => 0 },
         datasource  => 'cd',
         primary_key => 'id',
         audit       => 1,
+        meta        => 1,
         child_of    => ['MT::ContentType'],
     }
 );
@@ -207,8 +233,13 @@ sub _update_object_categories {
 sub data {
     my $obj = shift;
     if (@_) {
-        my %data = ref $_[0] eq 'HASH' ? %{ $_[0] } : @_;
-        my $json = eval { JSON::encode_json( \%data ) } || '{}';
+        my $json;
+        if ( ref $_[0] ) {
+            $json = eval { JSON::encode_json( $_[0] ) } || '{}';
+        }
+        else {
+            $json = $_[0];
+        }
         $obj->column( 'data', $json );
     }
     else {

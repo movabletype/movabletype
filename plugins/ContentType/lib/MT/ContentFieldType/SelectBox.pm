@@ -71,7 +71,7 @@ sub field_html {
         . '" class="select"';
     $html .= ' multiple style="min-width: 5em; min-height: 5em;"'
         if $content_field->options->{multiple};
-    $html .= '>';
+    $html .= ' mt:watch-change="1" mt:raw-name="1">';
 
     foreach my $option (@options) {
         $html .= '<option value="' . $option . '"';

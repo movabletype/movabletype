@@ -23,7 +23,7 @@ sub field_html {
         $html .= ',' unless $count == @$value;
         $count++;
     }
-    $html .= '" />';
+    $html .= '" mt:watch-change="1" mt:raw-name="1" />';
     return $html;
 }
 

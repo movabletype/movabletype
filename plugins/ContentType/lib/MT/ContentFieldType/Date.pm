@@ -34,7 +34,7 @@ sub field_html {
     my $html = '';
     $html .= '<span>';
     $html
-        .= "<input type=\"text\" name=\"date-$id\" id=\"date-$id\" class=\"text date text-date\" value=\"$date\" placeholder=\"YYYY:MM:DD\" />";
+        .= "<input type=\"text\" name=\"date-$id\" id=\"date-$id\" class=\"text date text-date\" value=\"$date\" placeholder=\"YYYY-MM-DD\" mt:watch-change=\"1\" mt:raw-name=\"1\" />";
     $html .= '</span> ';
     return $html;
 }

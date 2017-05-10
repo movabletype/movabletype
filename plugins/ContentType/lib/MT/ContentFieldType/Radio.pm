@@ -21,7 +21,7 @@ sub field_html {
         $html
             .= "<input type=\"radio\" name=\"content-field-$id\" id=\"content-field-$id-$count\" class=\"radio\" value=\"$option\"";
         $html .= ' checked="checked"' if $option eq $value;
-        $html .= ' />';
+        $html .= ' mt:watch-change="1" mt:raw-name="1" />';
         $html .= " <label for=\"content-field-$id-$count\">$option ";
         $count++;
     }

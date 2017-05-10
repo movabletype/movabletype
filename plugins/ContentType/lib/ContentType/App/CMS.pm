@@ -9,7 +9,9 @@ package ContentType::App::CMS;
 use strict;
 use warnings;
 
-use JSON ();
+use File::Spec;
+use JSON  ();
+use POSIX ();
 
 use MT;
 use MT::CMS::Common;
@@ -18,7 +20,10 @@ use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentType;
 use MT::ContentData;
+use MT::DateTime;
+use MT::Entry;
 use MT::Log;
+use MT::Util ();
 
 {
     # TBD: Move to Core.
@@ -86,6 +91,25 @@ sub init_app {
         $content_type->generate_object_log_class;
     }
     return 1;
+}
+
+sub tmpl_param_list_common {
+    my ( $cb, $app, $param, $tmpl ) = @_;
+    if (   $app->mode eq 'list'
+        && $app->param('_type') =~ /^content_data_\d+$/ )
+    {
+        my $component = MT->component('ContentType');
+        my $filename
+            = File::Spec->catfile( $component->path, 'tmpl', 'listing',
+            'content_data_list_header.tmpl' );
+        push @{ $param->{list_headers} },
+            {
+            filename  => $filename,
+            component => $component->id,
+            };
+
+        $param->{saved_deleted} = $app->param('saved_deleted') ? 1 : 0;
+    }
 }
 
 sub tmpl_param_edit_role {
@@ -850,29 +874,137 @@ sub select_edit_content_type {
 sub edit_content_data {
     my ($app)  = @_;
     my $q      = $app->param;
+    my $blog   = $app->blog;
     my $plugin = $app->component("ContentType");
     my $cfg    = $app->config;
     my $param  = {};
+    my $data;
 
     my $blog_id = scalar $q->param('blog_id')
         or return $app->errtrans("Invalid request.");
     my $content_type_id = scalar $q->param('content_type_id')
         or return $app->errtrans("Invalid request.");
-
     my $content_type = MT::ContentType->load($content_type_id)
         or return $app->errtrans('Invalid request.');
 
-    $param->{name} = $content_type->name;
+    $q->param( '_type', 'content_data' );
+
+    if ( $q->param('_recover') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        if ($sess_obj) {
+            my $autosave_data = $sess_obj->thaw_data;
+            if ($autosave_data) {
+                $q->param( $_, $autosave_data->{$_} )
+                    for keys %$autosave_data;
+                $app->delete_param('id')
+                    if defined $q->param('id') && !$q->param('id');
+                $data = $autosave_data->{data};
+                $param->{'recovered_object'} = 1;
+            }
+            else {
+                $param->{'recovered_failed'} = 1;
+            }
+        }
+        else {
+            $param->{'recovered_failed'} = 1;
+        }
+    }
+
+    if ( !$q->param('reedit') ) {
+        if ( my $sess_obj = $app->autosave_session_obj ) {
+            $param->{autosaved_object_exists} = 1;
+            $param->{autosaved_object_ts}
+                = MT::Util::epoch2ts( $blog, $sess_obj->start );
+        }
+    }
+
+    $param->{autosave_frequency} = $app->config->AutoSaveFrequency;
+    $param->{name}               = $content_type->name;
 
     my $array           = $content_type->fields;
     my $ct_unique_key   = $content_type->unique_key;
     my $content_data_id = scalar $q->param('id');
 
-    my $data;
+    $param->{use_revision} = $blog->use_revision ? 1 : 0;
+
+    my $content_data;
     if ($content_data_id) {
-        my $content_data = MT::ContentData->load($content_data_id);
-        $data = $content_data->data;
+        $content_data = MT::ContentData->load($content_data_id)
+            or return $app->error(
+            $app->translate(
+                'Load failed: [_1]',
+                MT::ContentData->errstr
+                    || $app->translate('(no reason given)')
+            )
+            );
+
+        if ( $blog->use_revision ) {
+
+            my $original_revision = $content_data->revision;
+            my $rn                = $q->param('r');
+            if ( defined $rn && $rn != $content_data->current_revision ) {
+                my $status_text
+                    = MT::Entry::status_text( $content_data->status );
+                $param->{current_status_text} = $status_text;
+                $param->{current_status_label}
+                    = $app->translate($status_text);
+                my $rev
+                    = $content_data->load_revision( { rev_number => $rn } );
+                if ( $rev && @$rev ) {
+                    $content_data = $rev->[0];
+                    my $values = $content_data->get_values;
+                    $param->{$_} = $values->{$_} for keys %$values;
+                    $param->{loaded_revision} = 1;
+                }
+                $param->{rev_number} = $rn;
+                $param->{no_snapshot} = 1 if $q->param('no_snapshot');
+            }
+            $param->{rev_date} = MT::Util::format_ts(
+                '%Y-%m-%d %H:%M:%S',
+                $content_data->modified_on,
+                $blog, $app->user ? $app->user->preferred_language : undef
+            );
+        }
+
+        my $status = $q->param('status') || $content_data->status;
+        $status =~ s/\D//g;
+        $param->{status} = $status;
+        $param->{ 'status_' . MT::Entry::status_text($status) } = 1;
+
+        $param->{authored_on_date} = $q->param('authored_on_date')
+            || MT::Util::format_ts( '%Y-%m-%d', $content_data->authored_on,
+            $blog, $app->user ? $app->user->preferred_language : undef );
+        $param->{authored_on_time} = $q->param('authored_on_time')
+            || MT::Util::format_ts( '%H:%M:%S', $content_data->authored_on,
+            $blog, $app->user ? $app->user->preferred_language : undef );
+        $param->{unpublished_on_date} = $q->param('unpublished_on_date')
+            || MT::Util::format_ts( '%Y-%m-%d', $content_data->unpublished_on,
+            $blog, $app->user ? $app->user->preferred_language : undef );
+        $param->{unpublished_on_time} = $q->param('unpublished_on_time')
+            || MT::Util::format_ts( '%H:%M:%S', $content_data->unpublished_on,
+            $blog, $app->user ? $app->user->preferred_language : undef );
     }
+    else {
+        my $def_status;
+        if ( $def_status = $q->param('status') ) {
+            $def_status =~ s/\D//g;
+            $param->{status} = $def_status;
+        }
+        else {
+            $def_status = $blog->status_default;
+        }
+        $param->{ "status_" . MT::Entry::status_text($def_status) } = 1;
+
+        my @now = MT::Util::offset_time_list( time, $blog );
+        $param->{authored_on_date} = $q->param('authored_on_date')
+            || POSIX::strftime( '%Y-%m-%d', @now );
+        $param->{authored_on_time} = $q->param('authored_on_time')
+            || POSIX::strftime( '%H:%M:%S', @now );
+        $param->{unpublished_on_date} = $q->param('unpublished_on_date');
+        $param->{unpublished_on_time} = $q->param('unpublished_on_time');
+    }
+
+    $data = $content_data->data if $content_data && !$data;
 
     my $content_field_types = $app->registry('content_field_types');
     @$array = map {
@@ -888,8 +1020,9 @@ sub edit_content_data {
         $_->{value}
             = $q->param( $_->{content_field_id} )
             ? $q->param( $_->{content_field_id} )
-            : $content_data_id ? $data->{ $_->{content_field_id} }
-            :                    '';
+            : ( $content_data_id || $data )
+            ? $data->{ $_->{content_field_id} }
+            : '';
 
         my $content_field_type = $content_field_types->{ $_->{type} };
         if ( my $field_html = $content_field_type->{field_html} ) {
@@ -934,11 +1067,17 @@ sub edit_content_data {
     foreach my $name (qw( saved err_msg content_type_id id )) {
         $param->{$name} = $q->param($name) if $q->param($name);
     }
+
+    $param->{new_object}          = $content_data_id ? 0 : 1;
+    $param->{object_label}        = $content_type->name;
+    $param->{sitepath_configured} = $blog && $blog->site_path ? 1 : 0;
+
     $app->build_page( $plugin->load_tmpl('edit_content_data.tmpl'), $param );
 }
 
 sub save_content_data {
     my ($app)  = @_;
+    my $blog   = $app->blog;
     my $q      = $app->param;
     my $plugin = $app->component("ContentType");
     my $cfg    = $app->config;
@@ -970,6 +1109,11 @@ sub save_content_data {
         $data->{ $f->{id} }
             = _get_form_data( $app, $content_field_type, $f->{id} );
     }
+
+    if ( $app->param('_autosave') ) {
+        return _autosave_content_data( $app, $data );
+    }
+
     foreach my $f (@$fields) {
         my $content_field_type = $content_field_types->{ $f->{type} };
         my $param_name         = 'content-field-' . $f->{id};
@@ -1001,11 +1145,152 @@ sub save_content_data {
         ? MT::ContentData->load($content_data_id)
         : MT::ContentData->new();
 
-    $content_data->author_id( $app->user->id ) unless $content_data->id;
-    $content_data->blog_id($blog_id);
+    my $orig = $content_data->clone;
+    my $status_old = $content_data_id ? $content_data->status : 0;
+
+    if ( $content_data->id ) {
+        $content_data->modified_by( $app->user->id );
+    }
+    else {
+        $content_data->author_id( $app->user->id );
+        $content_data->blog_id($blog_id);
+    }
     $content_data->content_type_id($content_type_id);
     $content_data->data($data);
-    $content_data->modified_by( $app->user->id ) if $content_data->id;
+
+    if ( $app->param('scheduled') ) {
+        $content_data->status( MT::Entry::FUTURE() );
+    }
+    else {
+        $content_data->status( scalar $q->param('status') );
+    }
+    if ( ( $content_data->status || 0 ) != MT::Entry::HOLD() ) {
+        if ( !$blog->site_path || !$blog->site_url ) {
+            return $app->error(
+                $app->translate(
+                    "Your blog has not been configured with a site path and URL. You cannot publish entries until these are defined."
+                )
+            );
+        }
+    }
+
+    my $ao_d = $q->param('authored_on_date');
+    my $ao_t = $q->param('authored_on_time');
+    my $uo_d = $q->param('unpublished_on_date');
+    my $uo_t = $q->param('unpublished_on_time');
+
+    # TODO: permission check
+    if ($ao_d) {
+        my %param = ();
+        my $ao    = $ao_d . ' ' . $ao_t;
+        unless ( $ao
+            =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
+            )
+        {
+            $param{error} = $app->translate(
+                "Invalid date '[_1]'; 'Published on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                $ao
+            );
+        }
+        unless ( $param{error} ) {
+            my $s = $6 || 0;
+            $param{error} = $app->translate(
+                "Invalid date '[_1]'; 'Published on' dates should be real dates.",
+                $ao
+                )
+                if (
+                   $s > 59
+                || $s < 0
+                || $5 > 59
+                || $5 < 0
+                || $4 > 23
+                || $4 < 0
+                || $2 > 12
+                || $2 < 1
+                || $3 < 1
+                || ( MT::Util::days_in( $2, $1 ) < $3
+                    && !MT::Util::leap_day( $0, $1, $2 ) )
+                );
+        }
+        $param{return_args} = $app->param('return_args');
+        return $app->forward( "view", \%param ) if $param{error};
+        my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
+            ( $6 || 0 );
+        $content_data->authored_on($ts);
+    }
+
+    # TODO: permission check
+    if ( $content_data->status != MT::Entry::UNPUBLISH() ) {
+        if ( $uo_d || $uo_t ) {
+            my %param = ();
+            my $uo    = $uo_d . ' ' . $uo_t;
+            $param{error} = $app->translate(
+                "Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                $uo
+                )
+                unless ( $uo
+                =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
+                );
+            unless ( $param{error} ) {
+                my $s = $6 || 0;
+                $param{error} = $app->translate(
+                    "Invalid date '[_1]'; 'Unpublished on' dates should be real dates.",
+                    $uo
+                    )
+                    if (
+                       $s > 59
+                    || $s < 0
+                    || $5 > 59
+                    || $5 < 0
+                    || $4 > 23
+                    || $4 < 0
+                    || $2 > 12
+                    || $2 < 1
+                    || $3 < 1
+                    || ( MT::Util::days_in( $2, $1 ) < $3
+                        && !MT::Util::leap_day( $0, $1, $2 ) )
+                    );
+            }
+            my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
+                ( $6 || 0 );
+            unless ( $param{error} ) {
+                $param{error} = $app->translate(
+                    "Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.",
+                    $uo
+                    )
+                    if (
+                    MT::DateTime->compare(
+                        blog => $blog,
+                        a    => { value => time(), type => 'epoch' },
+                        b    => $ts
+                    ) > 0
+                    );
+            }
+            if ( !$param{error} && $content_data->authored_on ) {
+                $param{error} = $app->translate(
+                    "Invalid date '[_1]'; 'Unpublished on' dates should be later than the corresponding 'Published on' date.",
+                    $uo
+                    )
+                    if (
+                    MT::DateTime->compare(
+                        blog => $blog,
+                        a    => $content_data->authored_on,
+                        b    => $ts
+                    ) > 0
+                    );
+            }
+            $param{show_input_unpublished_on} = 1 if $param{error};
+            $param{return_args} = $app->param('return_args');
+            return $app->forward( "view", \%param ) if $param{error};
+            $content_data->unpublished_on($ts);
+        }
+        else {
+            $content_data->unpublished_on(undef);
+        }
+    }
+
+    $app->run_callbacks( 'cms_pre_save.cd', $app, $content_data, $orig );
+
     $content_data->save
         or return $app->error(
         $plugin->translate(
@@ -1013,6 +1298,8 @@ sub save_content_data {
             $content_data->errstr
         )
         );
+
+    $app->run_callbacks( 'cms_post_save.cd', $app, $content_data, $orig );
 
     return $app->redirect(
         $app->uri(
@@ -1025,6 +1312,27 @@ sub save_content_data {
             }
         )
     );
+}
+
+sub _autosave_content_data {
+    my ( $app, $data ) = @_;
+
+    my $sess_obj = $app->autosave_session_obj(1) or return;
+    $sess_obj->data('');
+    my %data = $app->param_hash;
+    delete $data{_autosave};
+    delete $data{magic_token};
+    $data{data} = $data;
+
+    foreach my $c ( keys %data ) {
+        $sess_obj->set( $c, $data{$c} );
+    }
+    $sess_obj->start(time);
+    $sess_obj->save;
+    $app->send_http_header("text/javascript+json");
+    $app->{no_print_body} = 1;
+    $app->print_encode("true");
+
 }
 
 sub cms_pre_load_filtered_list {
@@ -1062,25 +1370,16 @@ sub _get_form_data {
 
 sub delete_content_data {
     my $app = shift;
-    $app->param( '_type', 'content_data' );
+
+    my $orig_type = $app->param('_type');
+    my ($content_type_id) = $orig_type =~ /^content_data_(\d+)$/;
+
+    $app->param( '_type', 'cd' );
+    unless ( $app->param('content_type_id') ) {
+        $app->param( 'content_type_id', $content_type_id );
+    }
+
     MT::CMS::Common::delete($app);
-}
-
-sub post_delete {
-    my ( $eh, $app, $obj ) = @_;
-
-    my $content_type = $obj->content_type or return;
-
-    $app->log(
-        {   message => $app->translate(
-                "[_1] (ID:[_2]) deleted by '[_3]'", $content_type->name,
-                $obj->id,                           $app->user->name
-            ),
-            level    => MT::Log::INFO(),
-            class    => 'content_data_' . $content_type->id,
-            category => 'delete'
-        }
-    );
 }
 
 1;
