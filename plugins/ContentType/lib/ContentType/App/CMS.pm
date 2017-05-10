@@ -991,7 +991,7 @@ sub edit_content_data {
             ? $q->param( $_->{content_field_id} )
             : ( $content_data_id || $data )
             ? $data->{ $_->{content_field_id} }
-            : '';
+            : $_->{options}{initial_value};
 
         my $content_field_type = $content_field_types->{ $_->{type} };
         if ( my $field_html = $content_field_type->{field_html} ) {
