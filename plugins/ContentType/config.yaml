@@ -329,7 +329,6 @@ content_field_types:
             - min
             - values
             - initial_value
-            - options
     radio:
         label: Radio
         data_type: varchar
@@ -348,7 +347,6 @@ content_field_types:
             - display
             - values
             - initial_value
-            - options
     checkbox:
         label: Checkbox
         data_type: varchar
@@ -370,7 +368,6 @@ content_field_types:
             - min
             - values
             - initial_value
-            - options
     asset:
         label: Asset
         data_type: integer
