@@ -372,6 +372,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     <mt:elseif name"data_type" eq="float">
       <input type="text" name="content-field-<mt:var name="content_field_id">" class="text short" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" />
     </mt:if>
+      <div class="hint"><mt:var name="options{hint}" escape="html"></div>
   </div>
   </mt:if>
   </mt:loop>
