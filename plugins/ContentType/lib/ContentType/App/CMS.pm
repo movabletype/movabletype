@@ -1027,12 +1027,23 @@ sub edit_content_data {
         $_->{content_field_id} = $_->{id};
         delete $_->{id};
 
-        $_->{value}
-            = $q->param( $_->{content_field_id} )
-            ? $q->param( $_->{content_field_id} )
-            : ( $content_data_id || $data )
-            ? $data->{ $_->{content_field_id} }
-            : '';
+        if ( $q->param( $_->{content_field_id} ) ) {
+            $_->{value} = $q->param( $_->{content_field_id} );
+        }
+        elsif ( $content_data_id || $data ) {
+            $_->{value} = $data->{ $_->{content_field_id} };
+        }
+        else {
+            # TODO: fix after updating values option.
+            if ( $_->{type} eq 'select_box' || $_->{type} eq 'checkbox' ) {
+                my $delimiter = quotemeta( $_->{options_delimiter} || ',' );
+                my @values = split $delimiter, $_->{options}{initial_value};
+                $_->{value} = \@values;
+            }
+            else {
+                $_->{value} = $_->{options}{initial_value};
+            }
+        }
 
         my $content_field_type = $content_field_types->{ $_->{type} };
         if ( my $field_html = $content_field_type->{field_html} ) {

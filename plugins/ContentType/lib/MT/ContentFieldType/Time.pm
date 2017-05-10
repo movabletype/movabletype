@@ -29,6 +29,13 @@ sub field_html {
     my ( $app, $id, $value ) = @_;
     my $time = '';
     if ( defined $value && $value ne '' ) {
+
+        # for initial_value.
+        if ( $value =~ /:/ ) {
+            $value =~ tr/://d;
+            $value = '19700101' . $value;
+        }
+
         $time = MT::Util::format_ts( "%H:%M:%S", $value, $app->blog,
             $app->user ? $app->user->preferred_language : undef );
     }

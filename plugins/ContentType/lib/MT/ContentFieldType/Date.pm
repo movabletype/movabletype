@@ -28,6 +28,13 @@ sub field_html {
     my ( $app, $id, $value ) = @_;
     my $date = '';
     if ( defined $value && $value ne '' ) {
+
+        # for initial_value.
+        if ( $value =~ /\-/ ) {
+            $value =~ tr/-//d;
+            $value .= '000000';
+        }
+
         $date = MT::Util::format_ts( "%Y-%m-%d", $value, $app->blog,
             $app->user ? $app->user->preferred_language : undef );
     }

@@ -41,6 +41,8 @@ sub field_html {
     my $date = '';
     my $time = '';
     if ( defined $value && $value ne '' ) {
+        $value =~ s/[ \-:]//g;    # for initial_value.
+
         $date = MT::Util::format_ts( "%Y-%m-%d", $value, $app->blog,
             $app->user ? $app->user->preferred_language : undef );
         $time = MT::Util::format_ts( "%H:%M:%S", $value, $app->blog,
