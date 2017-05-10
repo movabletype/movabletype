@@ -856,7 +856,7 @@ sub edit_content_data {
     my $content_type = MT::ContentType->load($content_type_id)
         or return $app->errtrans('Invalid request.');
 
-    $q->param( '_type', 'content_data' );
+    $q->param( '_type', 'cd' );
 
     if ( $q->param('_recover') ) {
         my $sess_obj = $app->autosave_session_obj;
