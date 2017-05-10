@@ -170,6 +170,22 @@ sub cfg_content_type {
                         value => $time
                         };
                 }
+                elsif ( $type eq 'select_box' && $key eq 'values' ) {
+                    my $count  = 1;
+                    my $values = delete $_->{options}{$key};
+                    foreach my $key ( keys %{$values} ) {
+                        push @options,
+                            {
+                            key   => 'values_key_' . $count,
+                            value => $key,
+                            },
+                            {
+                            key   => 'values_value_' . $count,
+                            value => $values->{$key},
+                            };
+                        $count++;
+                    }
+                }
                 else {
                     push @options,
                         {
@@ -339,6 +355,17 @@ sub save_cfg_content_type {
             my $date = delete $options->{initial_date};
             my $time = delete $options->{initial_time};
             $options->{initial_value} = "$date $time";
+        }
+        elsif ( $type eq 'select_box' ) {
+            my $count  = 1;
+            my %values = ();
+            while ( $options->{ 'values_key_' . $count } ) {
+                my $key   = delete $options->{ 'values_key_' . $count };
+                my $value = delete $options->{ 'values_value_' . $count };
+                $values{$key} = $value;
+                $count++;
+            }
+            $options->{values} = \%values;
         }
         my $content_field;
         if ( $content_type_id && !$option_list->{fields}{$field_id}{new} ) {

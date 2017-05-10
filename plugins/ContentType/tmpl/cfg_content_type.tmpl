@@ -503,9 +503,9 @@
     </mtapp:setting>
 
     <mtapp:setting
-      id="select_box-options"
-      label="<__trans phrase="Options">">
-      <input type="text" name="select_box-options" id="select_box-options" class="text med" />
+      id="select_box-values"
+      label="<__trans phrase="Values">">
+      <a href="javascript:void(0)" class="add-values-list"><img src="<mt:var name="static_uri">images/status_icons/create.gif" /></a>
     </mtapp:setting>
 
     <mtapp:setting
@@ -1464,7 +1464,15 @@
         if (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options'][opt_name])
           jQuery(element).val(data['fields'][current_id]['options'][opt_name]);
       });
-      setDirty(true);
+      var count = 1;
+      while (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options']['values_key_' + count]) {
+        var add_button = jQuery('#' + type_name + '-values-field').find('a.add-values-list');
+        var key = data['fields'][current_id]['options']['values_key_' + count];
+        var value = data['fields'][current_id]['options']['values_value_' + count];
+        addList(add_button, key, value);
+        count++;
+      }
+      setDirty(false);
     });
     jQuery('a.save-link').unbind('click').click(function() {
       var options = jQuery(this).parent().parent().parent();
@@ -1515,8 +1523,13 @@
         data['fields'][current_id]['options'][opt_name] = opt_val;
         jQuery(element).val('');
       });
+      jQuery('div.' + type_name + '-values').remove();
       localStorage.setItem("ContentType", JSON.stringify(data));
       options.css( 'display', 'none' );
+      setDirty(true);
+    });
+    jQuery('a.add-values-list').unbind('click').click(function() {
+      addList(this, "", "");
     });
   }
 
@@ -1547,6 +1560,40 @@
     jQuery.each( contentFieldTypesOptions, function( key, val ) {
         jQuery('#' + key + '-options').css( 'display', 'none' );
     });
+  }
+
+  function removeList(removeButton) {
+    var class_name = jQuery(removeButton).parent().attr('class');
+    var type_name = (class_name.match(/(.*)-values/))[1];
+    jQuery(removeButton).parent().remove();
+    setDirty(true);
+    jQuery('.' + type_name + '-values').each( function(index, element) {
+      var prefix = type_name + '-values_';
+      var number = index + 1;
+      jQuery(this).children('[id^=' + prefix + 'key_]').attr('id', prefix + 'key_' + number);
+      jQuery(this).children('[id^=' + prefix + 'value_]').attr('id', prefix + 'value_' + number);
+    });
+  }
+
+  function addList( addButton, key, value ) {
+    var id = jQuery(addButton).parent().parent().parent().attr("id");
+    var type_name = (id.match(/(.*)-options/))[1];
+    var div = jQuery('.' + type_name + '-values');
+    var number = div.length + 1;
+    var newDiv = '<div class="' + type_name + '-values">' + "\n";
+    newDiv += '  <input name="' + type_name + '-values_key" id="' + type_name + '-values_key_' + number + '" class="text short" value="' + key + '" placeholder="Key" />' + "\n";
+    newDiv += ':';
+    newDiv += '  <input name="' + type_name + '-values_value" id="' + type_name + '-values_value_' + number + '" class="text short" value="' + value + '" placeholder="Value" />' + "\n";
+    newDiv += '  <a href="javascript:void(0)" class="remove-values-list"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>' + "\n";
+    newDiv += '</div>' + "\n";
+  
+    jQuery(addButton).before(newDiv);
+  
+    jQuery('a.remove-values-list').unbind('click').click(function() {
+      removeList(this);
+    });
+
+    setDirty(true);
   }
 </mt:setvarblock>
 
