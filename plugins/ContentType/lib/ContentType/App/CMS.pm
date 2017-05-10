@@ -173,15 +173,15 @@ sub cfg_content_type {
                 elsif ( $type eq 'select_box' && $key eq 'values' ) {
                     my $count  = 1;
                     my $values = delete $_->{options}{$key};
-                    foreach my $key ( keys %{$values} ) {
+                    foreach my $pair ( @{$values} ) {
                         push @options,
                             {
                             key   => 'values_key_' . $count,
-                            value => $key,
+                            value => $pair->{key},
                             },
                             {
                             key   => 'values_value_' . $count,
-                            value => $values->{$key},
+                            value => $pair->{value},
                             };
                         $count++;
                     }
@@ -358,14 +358,18 @@ sub save_cfg_content_type {
         }
         elsif ( $type eq 'select_box' ) {
             my $count  = 1;
-            my %values = ();
+            my @values = ();
             while ( $options->{ 'values_key_' . $count } ) {
                 my $key   = delete $options->{ 'values_key_' . $count };
                 my $value = delete $options->{ 'values_value_' . $count };
-                $values{$key} = $value;
+                push @values,
+                    {
+                    key   => $key,
+                    value => $value
+                    };
                 $count++;
             }
-            $options->{values} = \%values;
+            $options->{values} = \@values;
         }
         my $content_field;
         if ( $content_type_id && !$option_list->{fields}{$field_id}{new} ) {
