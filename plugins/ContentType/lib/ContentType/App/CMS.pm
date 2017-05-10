@@ -1258,8 +1258,7 @@ sub save_content_data {
         }
     }
 
-    $app->run_callbacks( 'cms_pre_save.content_data',
-        $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_pre_save.cd', $app, $content_data, $orig );
 
     $content_data->save
         or return $app->error(
@@ -1269,8 +1268,7 @@ sub save_content_data {
         )
         );
 
-    $app->run_callbacks( 'cms_post_save.content_data',
-        $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_post_save.cd', $app, $content_data, $orig );
 
     return $app->redirect(
         $app->uri(
@@ -1345,7 +1343,7 @@ sub delete_content_data {
     my $orig_type = $app->param('_type');
     my ($content_type_id) = $orig_type =~ /^content_data_(\d+)$/;
 
-    $app->param( '_type', 'content_data' );
+    $app->param( '_type', 'cd' );
     unless ( $app->param('content_type_id') ) {
         $app->param( 'content_type_id', $content_type_id );
     }
