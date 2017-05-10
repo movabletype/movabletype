@@ -8,23 +8,18 @@ use MT::Tag;
 
 sub field_html {
     my ( $app, $field_id, $value ) = @_;
-    $value = '' unless defined $value;
-    $value = [] unless ref $value eq 'ARRAY';
+    $value = [] unless defined $value;
 
-    my $html = '';
-    $html
-        .= '<input type="text" name="content-field-'
-        . $field_id
-        . '" class="text long" value="';
-    my $count = 1;
-    foreach my $tag_id (@$value) {
-        my $tag = MT::Tag->load($tag_id);
-        $html .= $tag->name;
-        $html .= ',' unless $count == @$value;
-        $count++;
+    my $tags;
+    if ( ref $value ) {
+        my %tags = map { $_->id => $_ } MT::Tag->load( { id => $value } );
+        $tags = join ',', ( map { $tags{$_}->name } @{$value} );
     }
-    $html .= '" mt:watch-change="1" mt:raw-name="1" />';
-    return $html;
+    else {
+        $tags = $value;
+    }
+
+    qq{<input type="text" name="content-field-${field_id}" class="text long" value="${tags}" mt:watch-change="1" mt:raw-name="1">};
 }
 
 sub data_getter {
