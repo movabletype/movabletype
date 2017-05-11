@@ -85,16 +85,13 @@ sub field_html_text {
     my $html
         = qq{<input type="text" name="content-field-${field_id}" class="text long" value="${value}" mt:watch-change="1" mt:raw-name="1" ${required} ${max_length} />};
 
-    my $min_length = $content_field->options->{min_length} || 0;
-    if ($max_length) {
+    if ( my $min_length = $content_field->options->{min_length} ) {
         $html .= <<"__JS__";
 <script>
 (function () {
-  var minLength = ${min_length};
-  if (minLength <= 0) return;
   jQuery('input[name=content-field-${field_id}]').on('keyup', function () {
-    if (this.value.length < minLength) {
-      this.setCustomValidity(`Please input \${minLength} characters or more`);
+    if (this.value.length < ${min_length}) {
+      this.setCustomValidity(`Please input ${min_length} characters or more.`);
     } else {
       this.setCustomValidity('');
     }
