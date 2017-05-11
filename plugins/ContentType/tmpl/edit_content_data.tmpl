@@ -359,6 +359,15 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   <mt:if name="can_edit">
   <div>
     <mt:var name="options{label}"><mt:if name=options{required}> *</mt:if>
+    <mt:if name="options{min_length}">
+      <mt:if name="options{max_length}">
+    (min_length:<mt:var name="options{min_length}" escape="html">, max_length:<mt:var name="options{max_length}" escape="html">)
+      <mt:else>
+    (min_length:<mt:var name="options{min_length}" escape="html">)
+      </mt:if>
+    <mt:elseif name="options{max_length}">
+    (max_length:<mt:var name="options{max_length}" escape="html">)
+    </mt:if>
   </div>
   <div>
     <mt:if name="field_html">

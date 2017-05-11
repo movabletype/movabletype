@@ -9,6 +9,7 @@ our @EXPORT_OK = qw(
 );
 
 use MT::ContentData;
+use MT::ContentField;
 use MT::ContentFieldIndex;
 
 sub get_cd_ids_by_inner_join {
@@ -69,6 +70,41 @@ sub terms_text {
     my $join_terms = $prop->super(@_);
     my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
     { id => $cd_ids };
+}
+
+sub field_html_text {
+    my ( $app, $field_id, $value ) = @_;
+    $value = '' unless defined $value;
+
+    my $content_field = MT::ContentField->load($field_id);
+
+    my $max_length = $content_field->options->{max_length};
+    $max_length = $max_length ? qq{maxlength="${max_length}"} : '';
+    my $required = $content_field->options->{required} ? 'required' : '';
+
+    my $html
+        = qq{<input type="text" name="content-field-${field_id}" class="text long" value="${value}" mt:watch-change="1" mt:raw-name="1" ${required} ${max_length} />};
+
+    my $min_length = $content_field->options->{min_length} || 0;
+    if ($max_length) {
+        $html .= <<"__JS__";
+<script>
+(function () {
+  var minLength = ${min_length};
+  if (minLength <= 0) return;
+  jQuery('input[name=content-field-${field_id}]').on('keyup', function () {
+    if (this.value.length < minLength) {
+      this.setCustomValidity(`Please input \${minLength} characters or more`);
+    } else {
+      this.setCustomValidity('');
+    }
+  });
+})();
+</script>
+__JS__
+    }
+
+    $html;
 }
 
 1;
