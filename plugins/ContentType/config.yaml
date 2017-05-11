@@ -313,6 +313,7 @@ content_field_types:
         list_props:
             select_box:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+                html: $ContentType::MT::ContentFieldType::SelectBox::html
                 single_select_options: $ContentType::MT::ContentFieldType::SelectBox::single_select_options
                 terms: $ContentType::MT::ContentFieldType::SelectBox::terms
         options:
@@ -325,7 +326,6 @@ content_field_types:
             - min
             - values
             - initial_value
-            - options
     radio:
         label: Radio
         data_type: varchar
@@ -334,7 +334,8 @@ content_field_types:
         list_props:
             radio:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
-                single_select_options: $ContentType::MT::ContentFieldType::Radio::single_select_options
+                html: $ContentType::MT::ContentFieldType::SelectBox::html
+                single_select_options: $ContentType::MT::ContentFieldType::SelectBox::single_select_options
                 terms: $ContentType::MT::ContentFieldType::SelectBox::terms
         options:
             - label
@@ -343,7 +344,6 @@ content_field_types:
             - display
             - values
             - initial_value
-            - options
     checkbox:
         label: Checkbox
         data_type: varchar
@@ -353,18 +353,19 @@ content_field_types:
         list_props:
             checkbox:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
-                single_select_options: $ContentType::MT::ContentFieldType::Checkbox::single_select_options
+                html: $ContentType::MT::ContentFieldType::SelectBox::html
+                single_select_options: $ContentType::MT::ContentFieldType::SelectBox::single_select_options
                 terms: $ContentType::MT::ContentFieldType::SelectBox::terms
         options:
             - label
             - hint
             - required
             - display
+            - multiple
             - max
             - min
             - values
             - initial_value
-            - options
     asset:
         label: Asset
         data_type: integer
@@ -775,7 +776,6 @@ content_field_types:
         options:
             - label
             - hint
-            - required
             - display
             - initial_rows
             - row_headers

@@ -38,6 +38,10 @@ sub terms {
 sub field_html {
     my ( $app, $id, $value ) = @_;
 
+    # for initial_value.
+    $value = '' unless defined $value;
+    $value =~ s/[ \-:]//g;
+
     my $date = '';
     my $time = '';
     if ( defined $value && $value ne '' ) {

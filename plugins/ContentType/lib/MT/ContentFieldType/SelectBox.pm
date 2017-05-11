@@ -56,12 +56,7 @@ sub field_html {
 
     my $content_field = MT::ContentField->load($id);
 
-    my $options = $content_field->options->{options} || '';
-    my $options_delimiter
-        = quotemeta(
-        $app->registry('content_field_types')->{select_box}{options_delimiter}
-            || ',' );
-    my @options = split $options_delimiter, $options;
+    my $options_values = $content_field->options->{values} || [];
 
     my $html
         = '<select name="content-field-'
@@ -73,11 +68,11 @@ sub field_html {
         if $content_field->options->{multiple};
     $html .= ' mt:watch-change="1" mt:raw-name="1">';
 
-    foreach my $option (@options) {
-        $html .= '<option value="' . $option . '"';
+    foreach my $options_value ( @{$options_values} ) {
+        $html .= '<option value="' . $options_value->{value} . '"';
         $html .= ' selected="selected"'
-            if $values{$option};
-        $html .= '>' . $option . '</option>';
+            if $values{ $options_value->{value} };
+        $html .= '>' . $options_value->{key} . '</option>';
     }
     $html .= '</select>';
 
@@ -90,14 +85,9 @@ sub single_select_options {
 
     my $content_field_id = $prop->{content_field_id};
     my $content_field    = MT::ContentField->load($content_field_id);
-    my $options_delimiter
-        = quotemeta(
-        $app->registry('content_field_types')->{select_box}{options_delimiter}
-            || ',' );
-    my @options = split $options_delimiter,
-        $content_field->options->{options} || '';
+    my $values           = $content_field->options->{values} || [];
 
-    [ map { +{ label => $_, value => $_ } } @options ];
+    [ map { +{ label => $_->{key}, value => $_->{value} } } @{$values} ];
 }
 
 sub data_getter {
@@ -111,6 +101,21 @@ sub data_getter {
     else {
         @options ? $options[0] : undef;
     }
+}
+
+sub html {
+    my $prop = shift;
+    my ( $content_data, $app, $opts ) = @_;
+
+    my $content_field = MT::ContentField->load( $prop->content_field_id );
+    my %label_hash = map { $_->{value} => $_->{key} }
+        @{ $content_field->options->{values} };
+
+    my $values = $content_data->data->{ $prop->content_field_id } || [];
+    $values = [$values] unless ref $values eq 'ARRAY';
+    my @labels = map { $label_hash{$_} } @{$values};
+
+    join ', ', @labels;
 }
 
 1;
