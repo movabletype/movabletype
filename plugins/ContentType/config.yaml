@@ -27,9 +27,6 @@ applications:
             cms_post_delete.cd: $ContentType::MT::CMS::ContentData::post_delete
 
         methods:
-            cfg_content_field: $ContentType::ContentType::App::CMS::cfg_content_field
-            save_cfg_content_field: $ContentType::ContentType::App::CMS::save_cfg_content_field
-            delete_content_field: $ContentType::ContentType::App::CMS::delete_content_field
             cfg_content_type_description: $ContentType::ContentType::App::CMS::cfg_content_type_description
             cfg_content_type: $ContentType::ContentType::App::CMS::cfg_content_type
             save_cfg_content_type: $ContentType::ContentType::App::CMS::save_cfg_content_type
