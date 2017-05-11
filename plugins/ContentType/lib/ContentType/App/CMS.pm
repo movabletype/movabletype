@@ -1138,6 +1138,36 @@ sub save_content_data {
     foreach my $f (@$fields) {
         my $content_field_type = $content_field_types->{ $f->{type} };
         my $param_name         = 'content-field-' . $f->{id};
+
+        if ( exists $f->{options}{required}
+            && $f->{options}{required} )
+        {
+            my $has_data;
+            my $d = $data->{ $f->{id} };
+            if ( ref $d eq 'ARRAY' ) {
+                $has_data = @{$d} ? 1 : 0;
+            }
+            else {
+                $has_data = ( defined $d && $d ne '' ) ? 1 : 0;
+            }
+            unless ($has_data) {
+                my $label = $f->{options}{label};
+                my $err_msg
+                    = $app->translate(qq{"${label}" field is required.});
+                return $app->redirect(
+                    $app->uri(
+                        mode => 'edit_content_data',
+                        args => {
+                            blog_id         => $blog_id,
+                            content_type_id => $content_type_id,
+                            id              => $content_data_id,
+                            err_msg         => $err_msg,
+                        },
+                    )
+                );
+            }
+        }
+
         if ( my $ss_validator = $content_field_type->{ss_validator} ) {
             if ( !ref $ss_validator ) {
                 $ss_validator = MT->handler_to_coderef($ss_validator);
