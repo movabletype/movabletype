@@ -39,11 +39,15 @@ sub field_html {
         $time = MT::Util::format_ts( "%H:%M:%S", $value, $app->blog,
             $app->user ? $app->user->preferred_language : undef );
     }
+
+    my $content_field = MT::ContentField->load($id);
+    my $required = $content_field->options->{required} ? 'required' : '';
+
     my $html = '';
     $html .= '<span>';
     $html .= '<span>';
     $html
-        .= "<input type=\"text\" name=\"time-$id\" id=\"time-$id\" class=\"text time\" value=\"$time\" placeholder=\"HH:mm:ss\" mt:watch-change=\"1\" mt:raw-name=\"1\" />";
+        .= "<input type=\"text\" name=\"time-$id\" id=\"time-$id\" class=\"text time\" value=\"$time\" placeholder=\"HH:mm:ss\" mt:watch-change=\"1\" mt:raw-name=\"1\" $required />";
     $html .= '</span> ';
     return $html;
 }

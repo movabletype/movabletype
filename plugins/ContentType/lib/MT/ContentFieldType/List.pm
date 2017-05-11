@@ -2,6 +2,7 @@ package MT::ContentFieldType::List;
 use strict;
 use warnings;
 
+use MT::ContentField;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 
@@ -10,8 +11,11 @@ sub field_html_params {
     $values = ''        unless defined $values;
     $values = [$values] unless ref $values eq 'ARRAY';
 
+    my $content_field = MT::ContentField->load($field_id);
+
     {   field_id    => $field_id,
         list_values => $values,
+        required    => $content_field->options->{required} ? 1 : 0,
     };
 }
 

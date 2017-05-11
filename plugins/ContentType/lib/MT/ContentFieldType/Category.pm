@@ -45,6 +45,30 @@ sub field_html {
 
         $num++;
     }
+
+    my $content_field = MT::ContentField->load($field_id);
+    if ( $content_field->options->{required} ) {
+        my $error_message
+            = $app->translate('Please select one of these options.');
+        $html .= <<"__JS__";
+<script>
+var \$cats = jQuery('input[name=content-field-${field_id}]');
+
+function validateCategories () {
+  if (\$cats.filter(':checked').length === 0) {
+    \$cats.get(\$cats.length - 1).setCustomValidity('${error_message}');
+  } else {
+    \$cats.get(\$cats.length - 1).setCustomValidity('');
+  }
+}
+
+\$cats.on('change', validateCategories);
+
+validateCategories();
+</script>
+__JS__
+    }
+
     return $html;
 }
 

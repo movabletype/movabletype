@@ -358,19 +358,19 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   <mt:loop name="fields">
   <mt:if name="can_edit">
   <div>
-    <mt:var name="options{label}">
+    <mt:var name="options{label}"><mt:if name=options{required}> *</mt:if>
   </div>
   <div>
     <mt:if name="field_html">
       <mt:var name="field_html">
     <mt:elseif name"data_type" eq="varchar">
-      <input type="text" name="content-field-<mt:var name="content_field_id">" class="text long" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" />
+      <input type="text" name="content-field-<mt:var name="content_field_id">" class="text long" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>/>
     <mt:elseif name"data_type" eq="blob">
-      <textarea name="content-field-<mt:var name="content_field_id">" class="text high" mt:watch-change="1" mt:raw-name="1"><mt:var name="value"></textarea>
+      <textarea name="content-field-<mt:var name="content_field_id">" class="text high" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
     <mt:elseif name"data_type" eq="integer">
-      <input type="text" name="content-field-<mt:var name="content_field_id">" class="text short" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" />
+      <input type="text" name="content-field-<mt:var name="content_field_id">" class="text short" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>/>
     <mt:elseif name"data_type" eq="float">
-      <input type="text" name="content-field-<mt:var name="content_field_id">" class="text short" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" />
+      <input type="text" name="content-field-<mt:var name="content_field_id">" class="text short" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>/>
     </mt:if>
       <div class="hint"><mt:var name="options{hint}" escape="html"></div>
   </div>

@@ -2,6 +2,7 @@ package MT::ContentFieldType::Tag;
 use strict;
 use warnings;
 
+use MT::ContentField;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 use MT::Tag;
@@ -9,6 +10,9 @@ use MT::Tag;
 sub field_html {
     my ( $app, $field_id, $value ) = @_;
     $value = [] unless defined $value;
+
+    my $content_field = MT::ContentField->load($field_id);
+    my $required = $content_field->options->{required} ? 'required' : '';
 
     my $tags;
     if ( ref $value ) {
@@ -19,7 +23,7 @@ sub field_html {
         $tags = $value;
     }
 
-    qq{<input type="text" name="content-field-${field_id}" class="text long" value="${tags}" mt:watch-change="1" mt:raw-name="1">};
+    qq{<input type="text" name="content-field-${field_id}" class="text long" value="${tags}" mt:watch-change="1" mt:raw-name="1" ${required}>};
 }
 
 sub data_getter {

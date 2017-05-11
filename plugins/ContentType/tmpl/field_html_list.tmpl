@@ -8,8 +8,27 @@
 <a href="javascript:void(0)" onclick="addList(this)"><img src="<mt:var name="static_uri">images/status_icons/create.gif" /></a>
 
 <script>
+var fieldId = '<mt:var name="field_id" escape="js">';
+var required = <mt:if name="required">true<mt:else>false</mt:if>;
+
+function checkRequired () {
+  if (!required) return;
+  var $lists = jQuery(`input[name=content-field-${fieldId}]`);
+  if ($lists.length === 1 && $lists.next('a')) {
+    $lists.next('a').remove();
+  } else {
+    $lists.each(function (index) {
+      if (jQuery(this).next('a').length > 0) return;
+      jQuery(this).after('  <a href="javascript:void(0)" onclick="removeList(this)"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>');
+    });
+  }
+}
+
+checkRequired();
+
 function removeList(removeButton) {
   jQuery(removeButton).parent().remove();
+  checkRequired();
   setDirty(true);
   log('found dirty form: removed list element');
   (app.getIndirectMethod('setDirty'))();
@@ -17,8 +36,8 @@ function removeList(removeButton) {
 
 function addList(createButton) {
   var newDiv = '<div style="display: inline">' + "\n";
-  newDiv    += '  <input name="content-field-<mt:var name="field_id" escape="html">" class="text long" value="" mt:raw-name="1" style="width: 95%" />' + "\n";
-  newDiv    += '  <a href="javascript:void(0)" onclick="jQuery(this).parent().remove()"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>' + "\n";
+  newDiv    += '  <input type="text" name="content-field-<mt:var name="field_id" escape="html">" class="text long" value="" mt:raw-name="1" style="width: 95%" />' + "\n";
+  newDiv    += '  <a href="javascript:void(0)" onclick="removeList(this)"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>' + "\n";
   newDiv    += '</div>' + "\n";
 
   var $newDiv = jQuery(newDiv);
@@ -27,6 +46,7 @@ function addList(createButton) {
 
   jQuery(createButton).before($newDiv);
 
+  checkRequired();
   setDirty(true);
   log('found dirty form: added list element');
   (app.getIndirectMethod('setDirty'))();

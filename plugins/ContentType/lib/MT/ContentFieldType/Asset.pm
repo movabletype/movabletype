@@ -5,6 +5,7 @@ use warnings;
 use MT;
 use MT::Asset;
 use MT::Author;
+use MT::ContentField;
 use MT::ContentFieldType::AssetCommon qw( data_getter_common );
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
@@ -25,12 +26,15 @@ sub field_html {
     $value = ''       unless defined $value;
     $value = [$value] unless ref $value eq 'ARRAY';
 
+    my $content_field = MT::ContentField->load($field_id);
+    my $required = $content_field->options->{required} ? 'required' : '';
+
     my $html
         = '<input type="text" name="content-field-'
         . $field_id
         . '" class="text long" value="';
     $html .= join ',', @$value;
-    $html .= '" mt:watch-change="1" mt:raw-name=\"1\" />';
+    $html .= qq{" mt:watch-change="1" mt:raw-name="1" $required />};
     return $html;
 }
 

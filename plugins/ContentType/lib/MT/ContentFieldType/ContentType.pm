@@ -40,6 +40,29 @@ sub field_html {
         $html .= '</div>';
         $num++;
     }
+
+    if ( $content_field->options->{required} ) {
+        my $error_message
+            = $app->translate('Please select one of these options.');
+        $html .= <<"__JS__";
+<script>
+var \$contentTypes = jQuery('input[name=content-field-${field_id}]');
+
+function validateContentTypes () {
+  if (\$contentTypes.filter(':checked').length === 0) {
+    \$contentTypes.get(\$contentTypes.length - 1).setCustomValidity('${error_message}');
+  } else {
+    \$contentTypes.get(\$contentTypes.length - 1).setCustomValidity('');
+  }
+}
+
+\$contentTypes.on('change', validateContentTypes);
+
+validateContentTypes();
+</script>
+__JS__
+    }
+
     return $html;
 }
 

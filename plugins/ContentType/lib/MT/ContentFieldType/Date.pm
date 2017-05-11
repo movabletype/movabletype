@@ -38,10 +38,14 @@ sub field_html {
         $date = MT::Util::format_ts( "%Y-%m-%d", $value, $app->blog,
             $app->user ? $app->user->preferred_language : undef );
     }
+
+    my $content_field = MT::ContentField->load($id);
+    my $required = $content_field->options->{required} ? 'required' : '';
+
     my $html = '';
     $html .= '<span>';
     $html
-        .= "<input type=\"text\" name=\"date-$id\" id=\"date-$id\" class=\"text date text-date\" value=\"$date\" placeholder=\"YYYY-MM-DD\" mt:watch-change=\"1\" mt:raw-name=\"1\" />";
+        .= "<input type=\"text\" name=\"date-$id\" id=\"date-$id\" class=\"text date text-date\" value=\"$date\" placeholder=\"YYYY-MM-DD\" mt:watch-change=\"1\" mt:raw-name=\"1\" $required />";
     $html .= '</span> ';
     return $html;
 }

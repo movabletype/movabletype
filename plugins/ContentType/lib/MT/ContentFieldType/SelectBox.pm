@@ -55,8 +55,8 @@ sub field_html {
     }
 
     my $content_field = MT::ContentField->load($id);
-
     my $options_values = $content_field->options->{values} || [];
+    my $required = $content_field->options->{required} ? 'required' : '';
 
     my $html
         = '<select name="content-field-'
@@ -66,7 +66,7 @@ sub field_html {
         . '" class="select"';
     $html .= ' multiple style="min-width: 5em; min-height: 5em;"'
         if $content_field->options->{multiple};
-    $html .= ' mt:watch-change="1" mt:raw-name="1">';
+    $html .= qq{ mt:watch-change="1" mt:raw-name="1" $required>};
 
     foreach my $options_value ( @{$options_values} ) {
         $html .= '<option value="' . $options_value->{value} . '"';

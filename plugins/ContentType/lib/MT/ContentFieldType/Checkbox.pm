@@ -25,10 +25,34 @@ sub field_html {
             ? ' checked="checked"'
             : '';
         $html .= " mt:watch-change=\"1\" mt:raw-name=\"1\" />";
-        $html .= " <label for=\"content-field-$id-$count\">"
+        $html .= " <label for=\"content-field-$id-$count\" >"
             . $options_value->{key};
+        $html .= '</label>';
         $count++;
     }
+
+    if ( $content_field->options->{required} ) {
+        my $error_message
+            = $app->translate('Please select one of these options.');
+        $html .= <<"__JS__";
+<script>
+var \$checkboxes = jQuery('input[name=content-field-${id}]');
+
+function validateCheckboxes () {
+  if (\$checkboxes.filter(':checked').length === 0) {
+    \$checkboxes.get(0).setCustomValidity('${error_message}');
+  } else {
+    \$checkboxes.get(0).setCustomValidity('');
+  }
+}
+
+\$checkboxes.on('change', validateCheckboxes);
+
+validateCheckboxes();
+</script>
+__JS__
+    }
+
     return $html;
 }
 

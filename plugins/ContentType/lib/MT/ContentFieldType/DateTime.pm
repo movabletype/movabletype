@@ -51,15 +51,18 @@ sub field_html {
             $app->user ? $app->user->preferred_language : undef );
     }
 
+    my $content_field = MT::ContentField->load($id);
+    my $required = $content_field->options->{required} ? 'required' : '';
+
     my $html = '';
     $html .= '<span>';
     $html
-        .= "<input type=\"text\" name=\"date-$id\" id=\"date-$id\" class=\"text date text-date\" value=\"$date\" placeholder=\"YYYY-MM-DD\" mt:watch-change=\"1\" mt:raw-name=\"1\" />";
+        .= "<input type=\"text\" name=\"date-$id\" id=\"date-$id\" class=\"text date text-date\" value=\"$date\" placeholder=\"YYYY-MM-DD\" mt:watch-change=\"1\" mt:raw-name=\"1\" $required />";
     $html .= '</span> ';
     $html .= '<span class="separator"> <__trans phrase="@"></span> ';
     $html .= '<span>';
     $html
-        .= "<input type=\"text\" name=\"time-$id\" id=\"time-$id\" class=\"text time\" value=\"$time\" placeholder=\"HH:mm:ss\" mt:watch-change=\"1\" mt:raw-name=\"1\" />";
+        .= "<input type=\"text\" name=\"time-$id\" id=\"time-$id\" class=\"text time\" value=\"$time\" placeholder=\"HH:mm:ss\" mt:watch-change=\"1\" mt:raw-name=\"1\" $required />";
     $html .= '</span> ';
     return $html;
 }
