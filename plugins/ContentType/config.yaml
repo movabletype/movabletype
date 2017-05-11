@@ -778,7 +778,6 @@ content_field_types:
         options:
             - label
             - hint
-            - required
             - display
             - initial_rows
             - row_headers
