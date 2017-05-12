@@ -158,8 +158,8 @@ content_field_types:
         label: Single Line Text
         data_type: varchar
         order: 20
-        field_html: $ContentType::MT::ContentFieldType::Common::field_html_text
-        ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_text
+        field_html: $ContentType::MT::ContentFieldType::SingleLineText::field_html
+        ss_validator: $ContentType::MT::ContentFieldType::SingleLineText::ss_validator
         list_props:
             single_line_text:
                 base: __virtual.string
