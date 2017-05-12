@@ -195,6 +195,7 @@ content_field_types:
         label: Integer
         data_type: integer
         order: 40
+        ss_validator: $ContentType::MT::ContentFieldType::Integer::ss_validator
         list_props:
             integer:
                 base: __virtual.integer
