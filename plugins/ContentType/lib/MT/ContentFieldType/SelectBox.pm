@@ -83,9 +83,9 @@ sub field_html {
 
     if ( $multiple && ( $max || $min ) ) {
         my $max_error = $app->translate(
-            "Options less than or equal to ${max} must be selected.");
+            'Options less than or equal to [_1] must be selected.', $max );
         my $min_error = $app->translate(
-            "Options greater than or equal to ${min} must be selected.");
+            'Options greater than or equal to [_1] must be selected.', $min );
 
         $html .= <<"__JS__";
 <script>
