@@ -1342,6 +1342,7 @@
     <mt:loop name="fields">
       '<mt:var name="content_field_id">': {
         'type': '<mt:var name="type">',
+        'order': '<mt:var name="order">',
         'new': 0,
         'options': {
     <mt:loop name="options">
@@ -1352,7 +1353,7 @@
     </mt:loop>
     };
     <mt:loop name="fields">
-    add_field('<mt:var name="content_field_id">', '<mt:var name="type">', '<mt:var name="__counter__">');
+    add_field('<mt:var name="content_field_id">', '<mt:var name="type">');
     </mt:loop>
     localStorage.setItem("ContentType", JSON.stringify(data));
 </mt:if>
@@ -1384,7 +1385,7 @@
     var length = jQuery('#sortable').sortable('toArray').length;
     var id = length + 1;
     var type_name = jQuery("#type").val();
-    add_field(id, type_name, id);
+    add_field(id, type_name);
     var data = JSON.parse( localStorage.getItem("ContentType") );
     if (!data['fields'])
         data['fields'] = {};
@@ -1399,7 +1400,7 @@
     return false;
   });
 
-  function add_field(id, type, order) {
+  function add_field(id, type) {
     var field = '<div id="content-field-block-' + id + '" class="field field-top-label sort-enabled">';
     field += '<div class="field-header">';
     field += '<label id="content-field-label" for="content-field">' + type + '</label>';
@@ -1421,7 +1422,6 @@
     field += '</a>';
     field += '</li>';
     field += '</ul>';
-    field += '<input type="hidden" id="order-' + id + '" value="' + order + '" />';
     field += '<input type="hidden" id="type-' + id + '" value="' + type + '" />';
     field += '</div>';
     field += '</div>';
@@ -1521,7 +1521,6 @@
       var current_id = jQuery("#current_field_id").val();
       var regexp = new RegExp(type_name + '-(.*)');
       var data = JSON.parse( localStorage.getItem("ContentType") );
-      data['fields'][current_id]['order'] = jQuery('#order-' + current_id).val();
       options.find("input").each(function(index, element) {
         var input_type = jQuery(element).attr("type");
         if (input_type === 'hidden')
@@ -1591,13 +1590,15 @@
       handle: '.field-header',
       containment: 'body',
       update: function () {
+        var data = JSON.parse( localStorage.getItem("ContentType") );
         var count = 1;
-        jQuery(order).each( function() {
-          var id = this.match(/\d+/);
-          jQuery('#order-' + id).val(count);
+        jQuery('[id^=content-field-block-]').each( function() {
+          var id = jQuery(this).attr('id').match(/\d+/);
+          data['fields'][id]['order'] = count;
           count++;
           setDirty(true);
         });
+        localStorage.setItem("ContentType", JSON.stringify(data));
       }
     });
   }
