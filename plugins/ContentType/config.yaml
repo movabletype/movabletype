@@ -314,8 +314,9 @@ content_field_types:
         label: Select Box
         data_type: varchar
         order: 100
-        field_html: $ContentType::MT::ContentFieldType::SelectBox::field_html
         data_getter: $ContentType::MT::ContentFieldType::SelectBox::data_getter
+        field_html: $ContentType::MT::ContentFieldType::SelectBox::field_html
+        ss_validator: $ContentType::MT::ContentFieldType::SelectBox::ss_validator
         list_props:
             select_box:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl

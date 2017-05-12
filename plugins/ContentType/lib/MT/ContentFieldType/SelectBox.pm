@@ -55,8 +55,13 @@ sub field_html {
     }
 
     my $content_field = MT::ContentField->load($id);
-    my $options_values = $content_field->options->{values} || [];
-    my $required = $content_field->options->{required} ? 'required' : '';
+    my $options       = $content_field->options;
+
+    my $options_values = $options->{values} || [];
+    my $required = $options->{required} ? 'required' : '';
+    my $multiple = $options->{multiple};
+    my $max      = $options->{max} || 0;
+    my $min      = $options->{min} || 0;
 
     my $html
         = '<select name="content-field-'
@@ -75,6 +80,38 @@ sub field_html {
         $html .= '>' . $options_value->{key} . '</option>';
     }
     $html .= '</select>';
+
+    if ( $multiple && ( $max || $min ) ) {
+        my $max_error = $app->translate(
+            "Options less than or equal to ${max} must be selected.");
+        my $min_error = $app->translate(
+            "Options greater than or equal to ${min} must be selected.");
+
+        $html .= <<"__JS__";
+<script>
+(function () {
+  var max = ${max};
+  var min = ${min};
+  var select = jQuery('#content-field-${id}').get(0);
+  var \$options = jQuery('#content-field-${id} > option');
+
+  function validateSelectedOptions () {
+    if (max && \$options.filter(':checked').length > max) {
+      select.setCustomValidity('${max_error}');
+    } else if (min && \$options.filter(':checked').length < min) {
+      select.setCustomValidity('${min_error}');
+    } else {
+      select.setCustomValidity('');
+    }
+  }
+
+  jQuery(select).on('change', validateSelectedOptions);
+
+  validateSelectedOptions();
+})();
+</script>
+__JS__
+    }
 
     return $html;
 }
@@ -116,6 +153,34 @@ sub html {
     my @labels = map { $label_hash{$_} } @{$values};
 
     join ', ', @labels;
+}
+
+sub ss_validator {
+    my ( $app, $field_id ) = @_;
+
+    my $content_field = MT::ContentField->load($field_id);
+    my $options       = $content_field->options;
+
+    my $field_label = $options->{label};
+    my $multiple    = $options->{multiple};
+    my $max         = $options->{max};
+    my $min         = $options->{min};
+
+    if ( $multiple && ( $max || $min ) ) {
+        my @options = $app->param("content-field-${field_id}");
+        if ( $max && @options > $max ) {
+            return $app->errtrans(
+                'Options less than or equal to [_1] must be selected in "[_2]" field.',
+                $max, $field_label,
+            );
+        }
+        if ( $min && @options < $min ) {
+            return $app->errtrans(
+                'Options greater than or equal to [_1] must be selected in "[_2]" field.',
+                $min, $field_label,
+            );
+        }
+    }
 }
 
 1;
