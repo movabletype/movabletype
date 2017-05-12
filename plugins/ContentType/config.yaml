@@ -355,8 +355,9 @@ content_field_types:
         label: Checkbox
         data_type: varchar
         order: 120
-        field_html: $ContentType::MT::ContentFieldType::Checkbox::field_html
         data_getter: $ContentType::MT::ContentFieldType::Checkbox::data_getter
+        field_html: $ContentType::MT::ContentFieldType::Checkbox::field_html
+        ss_validator: $ContentType::MT::ContentFieldType::Checkbox::ss_validator
         list_props:
             checkbox:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl

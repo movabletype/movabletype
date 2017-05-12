@@ -10,8 +10,11 @@ sub field_html {
     $value = ''       unless defined $value;
     $value = [$value] unless ref $value eq 'ARRAY';
 
-    my $content_field = MT::ContentField->load($id);
-    my $options_values = $content_field->options->{values} || [];
+    my $content_field  = MT::ContentField->load($id);
+    my $options        = $content_field->options;
+    my $options_values = $options->{values} || [];
+    my $max            = $options->{max} || 0;
+    my $min            = $options->{min} || 0;
 
     my $html  = '';
     my $count = 1;
@@ -31,27 +34,45 @@ sub field_html {
         $count++;
     }
 
-    if ( $content_field->options->{required} ) {
-        my $error_message
-            = $app->translate('Please select one of these options.');
-        $html .= <<"__JS__";
+    my $multiple = $options->{multiple} ? 'true' : 'false';
+    my $required = $options->{required} ? 'true' : 'false';
+
+    my $required_error
+        = $app->translate('Please select one of these options.');
+    my $max_error = $app->translate(
+        'Options less than or equal to [_1] must be selected.', $max );
+    my $min_error = $app->translate(
+        'Options greater than or equal to [_1]  must be selected.', $min );
+
+    $html .= <<"__JS__";
 <script>
-var \$checkboxes = jQuery('input[name=content-field-${id}]');
+(function () {
+  var required = ${required};
+  var multiple = ${multiple};
+  var max      = ${max};
+  var min      = ${min};
 
-function validateCheckboxes () {
-  if (\$checkboxes.filter(':checked').length === 0) {
-    \$checkboxes.get(0).setCustomValidity('${error_message}');
-  } else {
-    \$checkboxes.get(0).setCustomValidity('');
+  var \$checkboxes = jQuery('input[name=content-field-${id}]');
+
+  function validateCheckboxes () {
+    var checkedLength = \$checkboxes.filter(':checked').length;
+    if (required && checkedLength === 0) {
+      \$checkboxes.get(0).setCustomValidity('${required_error}');
+    } else if (multiple && max && checkedLength > max) {
+      \$checkboxes.get(0).setCustomValidity('${max_error}');
+    } else if (multiple && min && checkedLength < min) {
+      \$checkboxes.get(0).setCustomValidity('${min_error}');
+    } else {
+      \$checkboxes.get(0).setCustomValidity('');
+    }
   }
-}
 
-\$checkboxes.on('change', validateCheckboxes);
+  \$checkboxes.on('change', validateCheckboxes);
 
-validateCheckboxes();
+  validateCheckboxes();
+})();
 </script>
 __JS__
-    }
 
     return $html;
 }
@@ -60,6 +81,34 @@ sub data_getter {
     my ( $app, $id ) = @_;
     my @data = $app->param("content-field-${id}");
     \@data;
+}
+
+sub ss_validator {
+    my ( $app, $field_id ) = @_;
+    my @values = $app->param("content-field-${field_id}");
+
+    my $content_field = MT::ContentField->load($field_id);
+    my $options       = $content_field->options;
+
+    my $field_label = $options->{label};
+    my $multiple    = $options->{multiple};
+    my $max         = $options->{max};
+    my $min         = $options->{min};
+
+    if ($multiple) {
+        if ( $max && @values > $max ) {
+            return $app->errtrans(
+                'Options less than or equal to [_1] must be selected in "[_2]" field.',
+                $max, $field_label
+            );
+        }
+        elsif ( $min && @values < $min ) {
+            return $app->errtrans(
+                'Options greater than or equal to [_1] must be selected in "[_2]" field.',
+                $min, $field_label
+            );
+        }
+    }
 }
 
 1;
