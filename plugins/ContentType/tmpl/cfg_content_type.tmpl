@@ -1382,8 +1382,15 @@
       return false;
     if ( jQuery('.add-link').hasClass('disabled') )
       return false;
+    var max_id = 0;
+    jQuery('[id^=content-field-block-]').each( function() {
+      var id = jQuery(this).attr('id').match(/\d+/);
+      if (Number(max_id) < Number(id))
+        max_id = id;
+    });
+    var id = Number(max_id) + 1;
     var length = jQuery('#sortable').sortable('toArray').length;
-    var id = length + 1;
+    var order = length + 1;
     var type_name = jQuery("#type").val();
     add_field(id, type_name);
     var data = JSON.parse( localStorage.getItem("ContentType") );
@@ -1392,7 +1399,7 @@
     if (!data['fields'][id])
         data['fields'][id] = {};
     data['fields'][id]['type'] = type_name;
-    data['fields'][id]['order'] = id;
+    data['fields'][id]['order'] = order;
     data['fields'][id]['new'] = 1;
     localStorage.setItem("ContentType", JSON.stringify(data));
     set_sortable();
