@@ -215,6 +215,7 @@ content_field_types:
         data_type: float
         order: 50
         field_html: $ContentType::MT::ContentFieldType::Float::field_html
+        ss_validator: $ContentType::MT::ContentFieldType::Float::ss_validator
         list_props:
             float:
                 base: __virtual.float
