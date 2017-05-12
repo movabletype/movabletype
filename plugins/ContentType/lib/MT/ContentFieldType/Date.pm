@@ -42,11 +42,34 @@ sub field_html {
     my $content_field = MT::ContentField->load($id);
     my $required = $content_field->options->{required} ? 'required' : '';
 
+    my $error_message = $app->translate('Invalid date.');
+
     my $html = '';
     $html .= '<span>';
     $html
         .= "<input type=\"text\" name=\"date-$id\" id=\"date-$id\" class=\"text date text-date\" value=\"$date\" placeholder=\"YYYY-MM-DD\" mt:watch-change=\"1\" mt:raw-name=\"1\" $required />";
     $html .= '</span> ';
+
+    $html .= <<"__JS__";
+<script>
+(function () {
+  var date = jQuery('input[name=date-${id}]').get(0);
+
+  function validateDate () {
+    if (jQuery.mtValidateRules['.date'](jQuery(date))) {
+      date.setCustomValidity('');
+    } else {
+      date.setCustomValidity('${error_message}');
+    }
+  }
+
+  jQuery(date).on('change', validateDate);
+
+  validateDate();
+})();
+</script>
+__JS__
+
     return $html;
 }
 
