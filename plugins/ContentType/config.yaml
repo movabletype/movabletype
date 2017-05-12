@@ -159,6 +159,7 @@ content_field_types:
         data_type: varchar
         order: 20
         field_html: $ContentType::MT::ContentFieldType::Common::field_html_text
+        ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_text
         list_props:
             single_line_text:
                 base: __virtual.string

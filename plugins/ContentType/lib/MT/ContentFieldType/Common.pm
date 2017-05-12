@@ -104,5 +104,27 @@ __JS__
     $html;
 }
 
+sub ss_validator_text {
+    my ( $app, $field_id ) = @_;
+    my $value = $app->param("content-field-${field_id}");
+    $value = '' unless defined $value;
+
+    my $content_field = MT::ContentField->load($field_id);
+    my $field_label   = $content_field->options->{label};
+
+    if ( my $max_length = $content_field->options->{max_length} ) {
+        if ( length $value > $max_length ) {
+            return $app->errtrans( '"[_1]" field is too long.',
+                $field_label );
+        }
+    }
+    if ( my $min_length = $content_field->options->{min_length} ) {
+        if ( length $value < $min_length ) {
+            return $app->errtrans( '"[_1]" field is too short.',
+                $field_label );
+        }
+    }
+}
+
 1;
 
