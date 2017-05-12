@@ -214,6 +214,7 @@ content_field_types:
         label: Float
         data_type: float
         order: 50
+        field_html: $ContentType::MT::ContentFieldType::Float::field_html
         list_props:
             float:
                 base: __virtual.float
