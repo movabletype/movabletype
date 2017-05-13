@@ -705,24 +705,35 @@ sub edit_content_data {
         }
 
         my $content_field_type = $content_field_types->{ $_->{type} };
+
+        if ( my $field_html_params
+            = $content_field_type->{field_html_params} )
+        {
+            if ( !ref $field_html_params ) {
+                $field_html_params
+                    = MT->handler_to_coderef($field_html_params);
+            }
+            if ( 'CODE' eq ref $field_html_params ) {
+                $field_html_params = $field_html_params->(
+                    $app, $_->{content_field_id},
+                    $_->{value}
+                );
+            }
+
+            if ( ref $field_html_params eq 'HASH' ) {
+                for my $key ( keys %{$field_html_params} ) {
+                    unless ( exists $_->{$key} ) {
+                        $_->{$key} = $field_html_params->{$key};
+                    }
+                }
+            }
+        }
+
         if ( my $field_html = $content_field_type->{field_html} ) {
             if ( !ref $field_html ) {
                 if ( $field_html =~ /\.tmpl$/ ) {
-                    my $field_html_params
-                        = $content_field_type->{field_html_params};
-                    if ( !ref $field_html_params ) {
-                        $field_html_params
-                            = MT->handler_to_coderef($field_html_params);
-                    }
-                    if ( 'CODE' eq ref $field_html_params ) {
-                        $field_html_params = $field_html_params->(
-                            $app, $_->{content_field_id},
-                            $_->{value}
-                        );
-                    }
-                    $field_html = $plugin->load_tmpl( $field_html,
-                        $field_html_params );
-                    $field_html = $field_html->output if $field_html;
+                    $field_html = $plugin->load_tmpl($field_html);
+                    $field_html = $field_html->text if $field_html;
                 }
                 else {
                     $field_html = MT->handler_to_coderef($field_html);
@@ -737,6 +748,7 @@ sub edit_content_data {
                 $_->{field_html} = $field_html;
             }
         }
+
         $_->{data_type} = $content_field_types->{ $_->{type} }{data_type};
 
         $_;

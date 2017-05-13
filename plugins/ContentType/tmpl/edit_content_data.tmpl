@@ -371,7 +371,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   </div>
   <div>
     <mt:if name="field_html">
-      <mt:var name="field_html">
+      <mt:var name="field_html" mteval="1">
     <mt:elseif name"data_type" eq="varchar">
       <input type="text" name="content-field-<mt:var name="content_field_id">" class="text long" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>/>
     <mt:elseif name"data_type" eq="blob">
