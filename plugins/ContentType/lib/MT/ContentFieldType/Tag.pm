@@ -14,10 +14,12 @@ sub field_html {
     my $content_field = MT::ContentField->load($field_id);
     my $required = $content_field->options->{required} ? 'required' : '';
 
+    my $tag_delim = _tag_delim($app);
+
     my $tags;
     if ( ref $value ) {
         my %tags = map { $_->id => $_ } MT::Tag->load( { id => $value } );
-        $tags = join ',', ( map { $tags{$_}->name } @{$value} );
+        $tags = join $tag_delim, ( map { $tags{$_}->name } @{$value} );
     }
     else {
         $tags = $value;
@@ -29,10 +31,12 @@ sub field_html {
 sub data_getter {
     my ( $app, $field_id ) = @_;
 
+    my $tag_delim = _tag_delim($app);
+
     # keep order.
     my @unique_tag_names;
     {
-        my @tag_names = split ',',
+        my @tag_names = split $tag_delim,
             scalar( $app->param( 'content-field-' . $field_id ) );
 
         my %tmp;
@@ -118,6 +122,7 @@ sub html {
         push @links, qq{<a href="$link">${tag_name}</a>};
     }
 
+    my $tag_delim = _tag_delim($app);
     join ', ', @links;
 }
 
@@ -132,6 +137,11 @@ sub _link {
             filter_val => $tag_name,
         },
     );
+}
+
+sub _tag_delim {
+    my $app = shift;
+    chr( $app->user->entry_prefs->{tag_delim} );
 }
 
 1;
