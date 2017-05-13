@@ -56,6 +56,8 @@ sub field_html {
 
     my $required_error
         = $app->translate('Please select one of these options.');
+    my $not_multiple_error
+        = $app->translate('Only 1 category can be selected.');
     my $max_error = $app->translate(
         'Options less than or equal to [_1] must be selected.', $max );
     my $min_error = $app->translate(
@@ -75,6 +77,8 @@ sub field_html {
     var checkedLength = \$cats.filter(':checked').length;
     if (required && checkedLength === 0) {
       \$cats.get(\$cats.length - 1).setCustomValidity('${required_error}');
+    } else if (!multiple && checkedLength >= 2) {
+      \$cats.get(\$cats.length - 1).setCustomValidity('${not_multiple_error}');
     } else if (multiple && max && checkedLength > max) {
       \$cats.get(\$cats.length - 1).setCustomValidity('${max_error}');
     } else if (multiple && min && checkedLength < min) {

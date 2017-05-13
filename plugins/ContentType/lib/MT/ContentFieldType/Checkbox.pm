@@ -39,6 +39,8 @@ sub field_html {
 
     my $required_error
         = $app->translate('Please select one of these options.');
+    my $not_multiple_error
+        = $app->translate('Only 1 checkbox can be selected.');
     my $max_error = $app->translate(
         'Options less than or equal to [_1] must be selected.', $max );
     my $min_error = $app->translate(
@@ -58,6 +60,8 @@ sub field_html {
     var checkedLength = \$checkboxes.filter(':checked').length;
     if (required && checkedLength === 0) {
       \$checkboxes.get(0).setCustomValidity('${required_error}');
+    } else if (!multiple && checkedLength >= 2) {
+      \$checkboxes.get(0).setCustomValidity('${not_multiple_error}');
     } else if (multiple && max && checkedLength > max) {
       \$checkboxes.get(0).setCustomValidity('${max_error}');
     } else if (multiple && min && checkedLength < min) {
@@ -107,6 +111,13 @@ sub ss_validator {
                 'Options greater than or equal to [_1] must be selected in "[_2]" field.',
                 $min, $field_label
             );
+        }
+    }
+    else {
+        if ( @values >= 2 ) {
+            return $app->errtrans(
+                'Only 1 checkbox can be selected in "[_1]" field.',
+                $field_label );
         }
     }
 }
