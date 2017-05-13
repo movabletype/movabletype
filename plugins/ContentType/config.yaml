@@ -706,8 +706,9 @@ content_field_types:
         label: Category
         data_type: integer
         order: 180
-        field_html: $ContentType::MT::ContentFieldType::Category::field_html
         data_getter: $ContentType::MT::ContentFieldType::Category::data_getter
+        field_html: $ContentType::MT::ContentFieldType::Category::field_html
+        ss_validator: $ContentType::MT::ContentFieldType::Checkbox::ss_validator
         list_props:
             category:
                 base: __virtual.string

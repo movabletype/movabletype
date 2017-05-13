@@ -47,27 +47,49 @@ sub field_html {
     }
 
     my $content_field = MT::ContentField->load($field_id);
-    if ( $content_field->options->{required} ) {
-        my $error_message
-            = $app->translate('Please select one of these options.');
-        $html .= <<"__JS__";
+    my $options       = $content_field->options;
+
+    my $max = $options->{max} || 0;
+    my $min = $options->{min} || 0;
+    my $multiple = $options->{multiple} ? 'true' : 'false';
+    my $required = $options->{required} ? 'true' : 'false';
+
+    my $required_error
+        = $app->translate('Please select one of these options.');
+    my $max_error = $app->translate(
+        'Options less than or equal to [_1] must be selected.', $max );
+    my $min_error = $app->translate(
+        'Options greater than or equal to [_1] must be selected.', $min );
+
+    $html .= <<"__JS__";
 <script>
-var \$cats = jQuery('input[name=content-field-${field_id}]');
+(function () {
+  var required = ${required};
+  var multiple = ${multiple};
+  var max      = ${max};
+  var min      = ${min};
 
-function validateCategories () {
-  if (\$cats.filter(':checked').length === 0) {
-    \$cats.get(\$cats.length - 1).setCustomValidity('${error_message}');
-  } else {
-    \$cats.get(\$cats.length - 1).setCustomValidity('');
+  var \$cats = jQuery('input[name=content-field-${field_id}]');
+
+  function validateCategories () {
+    var checkedLength = \$cats.filter(':checked').length;
+    if (required && checkedLength === 0) {
+      \$cats.get(\$cats.length - 1).setCustomValidity('${required_error}');
+    } else if (multiple && max && checkedLength > max) {
+      \$cats.get(\$cats.length - 1).setCustomValidity('${max_error}');
+    } else if (multiple && min && checkedLength < min) {
+      \$cats.get(\$cats.length - 1).setCustomValidity('${min_error}');
+    } else {
+      \$cats.get(\$cats.length - 1).setCustomValidity('');
+    }
   }
-}
 
-\$cats.on('change', validateCategories);
+  \$cats.on('change', validateCategories);
 
-validateCategories();
+  validateCategories();
+})();
 </script>
 __JS__
-    }
 
     return $html;
 }
