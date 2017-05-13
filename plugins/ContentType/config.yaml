@@ -730,8 +730,9 @@ content_field_types:
         label: Tag
         data_type: integer
         order: 190
-        field_html: $ContentType::MT::ContentFieldType::Tag::field_html
         data_getter: $ContentType::MT::ContentFieldType::Tag::data_getter
+        field_html: $ContentType::MT::ContentFieldType::Tag::field_html
+        ss_validator: $ContentType::MT::ContentFieldType::Tag::ss_validator
         list_props:
             tag:
                 base: __virtual.string

@@ -12,7 +12,20 @@ sub field_html {
     $value = [] unless defined $value;
 
     my $content_field = MT::ContentField->load($field_id);
-    my $required = $content_field->options->{required} ? 'required' : '';
+    my $options       = $content_field->options;
+
+    my $max = $options->{max} || 0;
+    my $min = $options->{min} || 0;
+    my $multiple = $options->{multiple} ? 'true' : 'false';
+    my $required = $options->{required} ? 'true' : 'false';
+
+    my $required_error     = $app->translate('Please input any tag.');
+    my $not_multiple_error = $app->translate('Only 1 tag can be input.');
+    my $max_error
+        = $app->translate( 'Tags less than or equal to [_1] must be input.',
+        $max );
+    my $min_error = $app->translate(
+        'Tags greater than or equal to [_1] must be input.', $min );
 
     my $tag_delim = _tag_delim($app);
 
@@ -25,47 +38,104 @@ sub field_html {
         $tags = $value;
     }
 
-    qq{<input type="text" name="content-field-${field_id}" class="text long" value="${tags}" mt:watch-change="1" mt:raw-name="1" ${required}>};
+    my $html
+        = qq{<input type="text" name="content-field-${field_id}" class="text long" value="${tags}" mt:watch-change="1" mt:raw-name="1">};
+
+    return $html;
+
+    $html .= <<"__JS__";
+<script>
+(function () {
+  var max = ${max};
+  var min = ${min};
+  var multiple = ${multiple};
+  var required = ${required};
+
+  var \$text = jQuery('input[name=content-field-${field_id}]');
+
+  function validateTags () {
+    var tagCount = getUniqueTags().length;
+    if (required && tagCount === 0) {
+      \$text.get(0).setCustomValidity('${required_error}');
+    } else if (!multiple && tagCount >= 2) {
+      \$text.get(0).setCustomValidity('${not_multiple_error}');
+    } else if (multiple && max && tagCount > max) {
+      \$text.get(0).setCustomValidity('${max_error}');
+    } else if (multiple && min && tagCount < min) {
+      \$text.get(0).setCustomValidity('${min_error}');
+    } else {
+      \$text.get(0).setCustomValidity('');
+    }
+  }
+
+  function getUniqueTags () {
+    var tags = {};
+    var rawTags = \$text.val().split(/${tag_delim}/);
+    rawTags.forEach(function (element) {
+      var tag = element.replace(/^\\s+|\\s+\$/g, '');
+      if (tag !== '') {
+        tags[tag] = true;
+      }
+    });
+    return Object.keys(tags);
+  }
+
+  \$text.on('change', validateTags);
+
+  validateTags();
+})();
+</script>
+__JS__
+
+    $html;
 }
 
 sub data_getter {
     my ( $app, $field_id ) = @_;
 
-    my $tag_delim = _tag_delim($app);
-
-    # keep order.
-    my @unique_tag_names;
-    {
-        my @tag_names = split $tag_delim,
-            scalar( $app->param( 'content-field-' . $field_id ) );
-
-        my %tmp;
-        for my $tn (@tag_names) {
-            $tn =~ s/^\s*|\s*$//g;
-
-            next if $tmp{$tn};
-            $tmp{$tn} = 1;
-
-            push @unique_tag_names, $tn;
-        }
-    }
+    my $unique_tag_names = _get_unique_tags( $app, $field_id );
 
     my %existing_tags
-        = map { $_->name => $_ }
-        MT::Tag->load( { name => \@unique_tag_names },
+        = map { $_->name => $_ } MT::Tag->load( { name => $unique_tag_names },
         { binary => { name => 1 } } );
 
-    for my $utn (@unique_tag_names) {
-        unless ( $existing_tags{$utn} ) {
-            my $tag = MT::Tag->new;
-            $tag->name($utn);
-            $tag->save;
+    my $content_field = MT::ContentField->load($field_id);
 
-            $existing_tags{$utn} = $tag;
+    if ( $content_field->options->{can_add} ) {
+        for my $utn ( @{$unique_tag_names} ) {
+            unless ( $existing_tags{$utn} ) {
+                my $tag = MT::Tag->new;
+                $tag->name($utn);
+                $tag->save;
+
+                $existing_tags{$utn} = $tag;
+            }
         }
     }
 
-    [ map { $existing_tags{$_}->id } @unique_tag_names ];
+    my @tags = map { $existing_tags{$_}->id }
+        grep { $existing_tags{$_} } @{$unique_tag_names};
+    \@tags;
+}
+
+sub _get_unique_tags {
+    my ( $app, $field_id ) = @_;
+    my $tag_delim = _tag_delim($app);
+
+    my @tags = split $tag_delim,
+        scalar( $app->param("content-field-${field_id}") );
+
+    my @unique_tags;
+    my %exist_tags;
+    for my $tag (@tags) {
+        $tag =~ s/^\s*|\s*$//g;
+        if ( $tag ne '' ) {
+            next if $exist_tags{$tag}++;
+            push @unique_tags, $tag;
+        }
+    }
+
+    \@unique_tags;
 }
 
 sub terms {
@@ -124,6 +194,46 @@ sub html {
 
     my $tag_delim = _tag_delim($app);
     join ', ', @links;
+}
+
+sub ss_validator {
+    my ( $app, $field_id ) = @_;
+
+    my $content_field = MT::ContentField->load($field_id);
+    my $options       = $content_field->options;
+
+    my $field_label = $options->{label};
+    my $multiple    = $options->{multiple};
+    my $max         = $options->{max};
+    my $min         = $options->{min};
+    my $can_add     = $options->{can_add};
+
+    my $unique_tags = _get_unique_tags( $app, $field_id );
+
+    if ( !$multiple && @{$unique_tags} >= 2 ) {
+        return $app->errtrans( 'Only 1 tag can be input in "[_1]" field.',
+            $field_label );
+    }
+    if ( $multiple && $max && @{$unique_tags} > $max ) {
+        return $app->errtrans(
+            'Tags less than or equal to [_1] must be input in "[_2]" field.',
+            $max, $field_label
+        );
+    }
+    if ( $multiple && $min && @{$unique_tags} < $min ) {
+        return $app->errtrans(
+            'Tags greater than or equal to [_1] must be input in "[_2]" field.',
+            $min, $field_label
+        );
+    }
+    if ( !$can_add ) {
+        my $tag_count = MT::Tag->count( { name => $unique_tags },
+            { binary => { name => 1 } } );
+        if ( $tag_count != @{$unique_tags} ) {
+            return $app->errtrans(
+                'New tag cannot be created in "[_1]" field.', $field_label );
+        }
+    }
 }
 
 sub _link {
