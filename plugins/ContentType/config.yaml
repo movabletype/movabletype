@@ -342,7 +342,8 @@ content_field_types:
         label: Radio
         data_type: varchar
         order: 110
-        field_html: $ContentType::MT::ContentFieldType::Radio::field_html
+        field_html: field_html_radio.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Radio::field_html_params
         list_props:
             radio:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl

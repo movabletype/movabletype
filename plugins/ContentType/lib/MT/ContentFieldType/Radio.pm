@@ -4,28 +4,13 @@ use warnings;
 
 use MT::ContentField;
 
-sub field_html {
-    my ( $app, $id, $value ) = @_;
-    $value = '' unless defined $value;
-
-    my $content_field = MT::ContentField->load($id);
+sub field_html_params {
+    my ( $app, $field_id, $value ) = @_;
+    my $content_field = MT::ContentField->load($field_id);
     my $options_values = $content_field->options->{values} || [];
-    my $required = $content_field->options->{required} ? 'required' : '';
-
-    my $html  = '';
-    my $count = 1;
-
-    foreach my $options_value ( @{$options_values} ) {
-        $html
-            .= "<input type=\"radio\" name=\"content-field-$id\" id=\"content-field-$id-$count\" class=\"radio\" value=\""
-            . $options_value->{value} . "\"";
-        $html .= ' checked="checked"' if $options_value->{value} eq $value;
-        $html .= qq{ mt:watch-change="1" mt:raw-name="1" $required />};
-        $html .= " <label for=\"content-field-$id-$count\">"
-            . $options_value->{key};
-        $count++;
-    }
-    return $html;
+    @{$options_values}
+        = map { { k => $_->{key}, v => $_->{value} } } @{$options_values};
+    { options_values => $options_values };
 }
 
 1;

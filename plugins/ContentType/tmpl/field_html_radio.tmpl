@@ -1,0 +1,5 @@
+<mt:loop name="options_values">
+<input type="radio" name="content-field-<mt:var name="content_field_id" escape="html">" id="content-field-<mt:var name="content_field_id" escape="html">-<mt:var name="__counter__">" value="<mt:var name="v">" <mt:if name="v" eq="$value">checked="checked"</mt:if> mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>>
+<label for="content-field-<mt:var name="content_field_id" escape="html">-<mt:var name="k" escape="html">"><mt:var name="k" escape="html"></label>
+</mt:loop>
+
