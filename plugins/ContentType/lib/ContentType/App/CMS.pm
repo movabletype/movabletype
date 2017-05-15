@@ -461,13 +461,15 @@ sub save_cfg_content_type {
     foreach my $field_id (
         split( ',', ( $option_list->{removed_fields} || '' ) ) )
     {
-        MT::ContentField->remove( { id => $field_id } )
-            or return $app->error(
-            $plugin->translate(
-                "Removing content type failed: [_1]",
-                $content_type->errstr
-            )
-            );
+        if ( my $content_field = MT::ContentField->load($field_id) ) {
+            $content_field->remove
+                or return $app->error(
+                $plugin->translate(
+                    "Removing content type failed: [_1]",
+                    $content_type->errstr
+                )
+                );
+        }
     }
 
     $content_type->fields( \@fields );
