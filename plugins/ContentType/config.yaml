@@ -299,7 +299,8 @@ content_field_types:
         label: Time
         data_type: datetime
         order: 90
-        field_html: $ContentType::MT::ContentFieldType::Time::field_html
+        field_html: field_html_time.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Time::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::Time::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::Time::ss_validator
         list_props:
