@@ -1153,6 +1153,25 @@ $.mtValidateRules = {
     },
     '.number': function ($e) {
         return !$e.val() || /\d/.test($e.val()) && /^\d*\.?\d*$/.test($e.val());
+    },
+    '.min-length': function ($e) {
+        var minLength = Number($e.data('mt-min-length')) || 0;
+        if ($e.val().length >= minLength) {
+            return true;
+        } else {
+            this.error = true;
+            this.errstr = $.mtValidateMessages['.min-length'].replace(/{{min}}/, minLength);
+            return false;
+        }
+    },
+    '.content-field': function ($e) {
+        if ($e.get(0).checkValidity()) {
+            return true;
+        } else {
+            this.error = true;
+            this.errstr = $e.get(0).validationMessage;
+            return false;
+        }
     }
 };
 
@@ -1170,7 +1189,8 @@ $.mtValidateMessages = {
     '.url':         trans('Invalid URL'),
     '.required':    trans('This field is required'),
     '.digit, .num': trans('This field must be an integer'),
-    '.number':      trans('This field must be a number')
+    '.number':      trans('This field must be a number'),
+    '.min-length':  trans('Please input [_1] characters or more', '{{min}}')
 };
 
 $.fn.extend({

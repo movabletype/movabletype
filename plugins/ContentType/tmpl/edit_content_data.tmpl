@@ -43,7 +43,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="form_header">
-<form name="edit-content-type-data-form" id="edit-content-type-data-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewnewwindow"> mt:once</mt:unless> mt:auto-save="1" mt:auto-save-delay="<mt:var name="autosave_frequency">000">
+<form name="edit-content-type-data-form" id="edit-content-type-data-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewnewwindow"> mt:once</mt:unless> mt:auto-save="1" mt:auto-save-delay="<mt:var name="autosave_frequency">000" novalidate>
   <input type="hidden" name="__mode" value="save_content_data" />
   <input type="hidden" name="_type" value="cd" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
@@ -415,6 +415,9 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   });
 
   jQuery('#edit-content-type-data-form').submit( function() {
+    if (!jQuery('.content-field').mtValidate('simple')) {
+      return false;
+    }
     setDirty(false);
     return true;
   });   
