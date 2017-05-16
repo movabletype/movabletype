@@ -7,16 +7,11 @@ use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 
 sub field_html_params {
-    my ( $app, $field_id, $values ) = @_;
-    $values = ''        unless defined $values;
-    $values = [$values] unless ref $values eq 'ARRAY';
-
-    my $content_field = MT::ContentField->load($field_id);
-
-    {   field_id    => $field_id,
-        list_values => $values,
-        required    => $content_field->options->{required} ? 1 : 0,
-    };
+    my ( $app, $field_data ) = @_;
+    my $value = $field_data->{value};
+    $value = ''       unless defined $value;
+    $value = [$value] unless ref $value eq 'ARRAY';
+    { list_value => $value };
 }
 
 sub data_getter {

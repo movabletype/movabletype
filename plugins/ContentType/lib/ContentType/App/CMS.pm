@@ -714,10 +714,7 @@ sub edit_content_data {
                     = MT->handler_to_coderef($field_html_params);
             }
             if ( 'CODE' eq ref $field_html_params ) {
-                $field_html_params = $field_html_params->(
-                    $app, $_->{content_field_id},
-                    $_->{value}
-                );
+                $field_html_params = $field_html_params->( $app, $_ );
             }
 
             if ( ref $field_html_params eq 'HASH' ) {

@@ -1,6 +1,6 @@
-<mt:loop name="list_values">
+<mt:loop name="list_value">
 <div style="display: inline">
-  <input type="text" name="content-field-<mt:var name="field_id" escape="html">" class="text long" value="<mt:var name="__value__">" mt:watch-change="1" mt:raw-name="1" style="width: 95%" />
+  <input type="text" name="content-field-<mt:var name="content_field_id" escape="html">" class="text long" value="<mt:var name="__value__">" mt:watch-change="1" mt:raw-name="1" style="width: 95%" />
   <a href="javascript:void(0)" onclick="removeList(this)"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>
 </div>
 </mt:loop>
@@ -8,8 +8,8 @@
 <a href="javascript:void(0)" onclick="addList(this)"><img src="<mt:var name="static_uri">images/status_icons/create.gif" /></a>
 
 <script>
-var fieldId = '<mt:var name="field_id" escape="js">';
-var required = <mt:if name="required">true<mt:else>false</mt:if>;
+var fieldId = '<mt:var name="content_field_id" escape="js">';
+var required = <mt:if name="options{required}">true<mt:else>false</mt:if>;
 
 function checkRequired () {
   if (!required) return;
@@ -36,12 +36,12 @@ function removeList(removeButton) {
 
 function addList(createButton) {
   var newDiv = '<div style="display: inline">' + "\n";
-  newDiv    += '  <input type="text" name="content-field-<mt:var name="field_id" escape="html">" class="text long" value="" mt:raw-name="1" style="width: 95%" />' + "\n";
+  newDiv    += '  <input type="text" name="content-field-<mt:var name="content_field_id" escape="html">" class="text long" value="" mt:raw-name="1" style="width: 95%" />' + "\n";
   newDiv    += '  <a href="javascript:void(0)" onclick="removeList(this)"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>' + "\n";
   newDiv    += '</div>' + "\n";
 
   var $newDiv = jQuery(newDiv);
-  log('adding watcher to content-type-<mt:var name="field_id" escape="js">');
+  log('adding watcher to content-type-<mt:var name="content_field_id" escape="js">');
   DOM.addEventListener($newDiv.get(0), 'change', app.getIndirectEventListener('setDirty'));
 
   jQuery(createButton).before($newDiv);
