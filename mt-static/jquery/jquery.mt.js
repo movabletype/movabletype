@@ -995,33 +995,51 @@ $.mtValidator('simple', {
         $error_block.find('label.msg-error').text(msg);
     }
 });
-$.mtValidator('simple-datetime', {
+$.mtValidator('simple-group', {
     removeError: function ( $target, $error_block, msg ) {
-        var $container = $target.parents('.datetime-container');
-        var datetimeInputs = $container.parent()
-            .find('.datetime').toArray();
-        var lastErrors = jQuery.grep(datetimeInputs, function (a) {
-            return !jQuery(a).data('mtValidateLastError');
+        var $container = $target.parents('.group-container');
+        var groupInputs = $container.find('.group').toArray();
+        var invalidInputs = jQuery.grep(groupInputs, function (a) {
+            var $a = jQuery(a);
+            if ($a.attr('id') === $target.attr('id')) {
+                return false;
+            }
+            return $a.data('mtValidateLastError');
         });
-        if (lastErrors.length === 1) {
-            $container.siblings('.datetime-error').remove();
+        if ($target.is('input[type=radio]')) {
+            $container.siblings('.group-error').remove();
+            invalidInputs.forEach(function (input) {
+                $.data( input, 'mtValidateError', null );
+                $.data( input, 'mtValidateLastError', null );
+                $(input).addClass( this.validClass );
+                $(input).removeClass( this.errorClass );
+            });
+        } else {
+            if (invalidInputs.length === 0) {
+                $container.siblings('.group-error').remove();
+            } else {
+                var error = jQuery(invalidInputs[0]).data('mtValidateLastError');
+                $container.siblings('.group-error')
+                    .find('label.msg-error')
+                    .text(error);
+            }
         }
     },
     updateError: function( $target, $error_block, msg ) {
-        $target.parents('.datetime-container')
-            .siblings('.datetime-error')
+        $target.parents('.group-container')
+            .siblings('.group-error')
             .find('label.msg-error')
             .text(msg);
     },
     showError: function( $target, $error_block ) {
-        var $container = $target.parents('.datetime-container');
-        if ($container.siblings('.datetime-error').length === 0) {
+        var $container = $target.parents('.group-container');
+        if ($container.siblings('.group-error').length === 0) {
             $container.after($error_block);
         }
     },
     wrapError: function ( $target, msg ) {
         return $('<div />')
-            .addClass('datetime-error')
+            .addClass('group-error')
             .append(
                 $('<label/>')
                     .attr('for', $target.attr('id') )
@@ -1318,7 +1336,13 @@ $.fn.extend({
     }
 });
 
-$(document).on('keyup focusin focusout','input, textarea',function () {
+$(document).on('keyup change input', 'input, textarea', function () {
+    var ns = $.data( this, 'mtValidator' );
+    if ( !ns ) return true;
+    $(this).mtValid({ focus: false });
+});
+
+$(document).on('focusin focusout','input:not([type=radio]):not(.group), textarea',function () {
     var ns = $.data( this, 'mtValidator' );
     if ( !ns ) return true;
     $(this).mtValid({ focus: false });
