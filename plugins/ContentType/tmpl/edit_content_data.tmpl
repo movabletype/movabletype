@@ -415,7 +415,9 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   });
 
   jQuery('#edit-content-type-data-form').submit( function() {
-    if (!jQuery('.content-field').mtValidate('simple')) {
+    if (!jQuery('.content-field:not(.datetime)').mtValidate('simple') ||
+        !jQuery('.content-field.datetime').mtValidate('simple-datetime')
+    ) {
       return false;
     }
     setDirty(false);

@@ -995,6 +995,41 @@ $.mtValidator('simple', {
         $error_block.find('label.msg-error').text(msg);
     }
 });
+$.mtValidator('simple-datetime', {
+    removeError: function ( $target, $error_block, msg ) {
+        var $container = $target.parents('.datetime-container');
+        var datetimeInputs = $container.parent()
+            .find('.datetime').toArray();
+        var lastErrors = jQuery.grep(datetimeInputs, function (a) {
+            return !jQuery(a).data('mtValidateLastError');
+        });
+        if (lastErrors.length === 1) {
+            $container.siblings('.datetime-error').remove();
+        }
+    },
+    updateError: function( $target, $error_block, msg ) {
+        $target.parents('.datetime-container')
+            .siblings('.datetime-error')
+            .find('label.msg-error')
+            .text(msg);
+    },
+    showError: function( $target, $error_block ) {
+        var $container = $target.parents('.datetime-container');
+        if ($container.siblings('.datetime-error').length === 0) {
+            $container.after($error_block);
+        }
+    },
+    wrapError: function ( $target, msg ) {
+        return $('<div />')
+            .addClass('datetime-error')
+            .append(
+                $('<label/>')
+                    .attr('for', $target.attr('id') )
+                    .addClass('validate-error msg-error')
+                    .text(msg)
+            );
+    }
+});
 $.mtValidator('simple2', {
     wrapError: function ( $target, msg ) {
         return $('<li />').append(
@@ -1134,6 +1169,9 @@ $.mtValidateRules = {
     '.date': function ($e) {
         return !$e.val() || /^\d{4}\-\d{2}\-\d{2}$/.test($e.val());
     },
+    '.time': function ($e) {
+        return !$e.val() || /^\d{2}:\d{2}:\d{2}$/.test($e.val());
+    },
 
     // RegExp code taken from http://bassistance.de/jquery-plugins/jquery-plugin-validation/
     '.email': function ($e) {
@@ -1185,6 +1223,7 @@ $.mtValidateAddMessages = function ( rules ) {
 
 $.mtValidateMessages = {
     '.date':        trans('Invalid date format'),
+    '.time':        trans('Invalid time format'),
     '.email':       trans('Invalid email address'),
     '.url':         trans('Invalid URL'),
     '.required':    trans('This field is required'),

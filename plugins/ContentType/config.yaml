@@ -255,7 +255,8 @@ content_field_types:
         label: Date and Time
         data_type: datetime
         order: 70
-        field_html: $ContentType::MT::ContentFieldType::DateTime::field_html
+        field_html: field_html_datetime.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::DateTime::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::DateTime::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::DateTime::ss_validator
         list_props:

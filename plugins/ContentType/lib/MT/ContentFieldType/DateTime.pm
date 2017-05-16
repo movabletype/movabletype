@@ -35,6 +35,31 @@ sub terms {
     { id => $cd_ids };
 }
 
+sub field_html_params {
+    my ( $app, $field_data ) = @_;
+    my $value = $field_data->{value} || '';
+
+    # for initial_value.
+    $value = '' unless defined $value;
+    $value =~ s/[ \-:]//g;
+
+    my $date = '';
+    my $time = '';
+    if ( defined $value && $value ne '' ) {
+        $date = MT::Util::format_ts( "%Y-%m-%d", $value, $app->blog,
+            $app->user ? $app->user->preferred_language : undef );
+        $time = MT::Util::format_ts( "%H:%M:%S", $value, $app->blog,
+            $app->user ? $app->user->preferred_language : undef );
+    }
+
+    my $required = $field_data->{options}{required} ? 'required' : '';
+
+    {   date     => $date,
+        time     => $time,
+        required => $required,
+    };
+}
+
 sub field_html {
     my ( $app, $id, $value ) = @_;
 
