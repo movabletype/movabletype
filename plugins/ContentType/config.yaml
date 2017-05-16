@@ -215,7 +215,8 @@ content_field_types:
         label: Float
         data_type: float
         order: 50
-        field_html: $ContentType::MT::ContentFieldType::Float::field_html
+        field_html: field_html_float.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Float::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Float::ss_validator
         list_props:
             float:
