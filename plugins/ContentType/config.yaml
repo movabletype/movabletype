@@ -277,7 +277,8 @@ content_field_types:
         label: Date
         data_type: datetime
         order: 80
-        field_html: $ContentType::MT::ContentFieldType::Date::field_html
+        field_html: field_html_date.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Date::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::Date::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::Date::ss_validator
         list_props:
