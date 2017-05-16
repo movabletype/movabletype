@@ -237,7 +237,7 @@ content_field_types:
         label: URL
         data_type: varchar
         order: 60
-        field_html: $ContentType::MT::ContentFieldType::URL::field_html
+        field_html: field_html_url.tmpl
         ss_validator: $ContentType::MT::ContentFieldType::URL::ss_validator
         list_props:
             url:
