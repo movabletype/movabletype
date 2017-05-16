@@ -176,6 +176,19 @@ sub cfg_content_type {
         $param->{name}        = $content_type->name;
         $param->{description} = $content_type->description;
         $param->{unique_key}  = $content_type->unique_key;
+        my $fields;
+        if ( $q->param('err_msg') ) {
+            $fields = $q->param('fields');
+            if ( $fields =~ /^".*"$/ ) {
+                $fields =~ s/^"//;
+                $fields =~ s/"$//;
+                $fields = MT::Util::decode_js($fields);
+            }
+            $fields = JSON::decode_json( MT::Util::decode_url($fields) );
+        }
+        else {
+            $fields = $content_type->fields;
+        }
         my @array = map {
             $_->{content_field_id} = $_->{id};
             delete $_->{id};
@@ -227,7 +240,7 @@ sub cfg_content_type {
             }
             $_->{options} = \@options;
             $_;
-        } @{ $content_type->fields };
+        } @{$fields};
         @array = sort { $a->{order} <=> $b->{order} } @array;
         $param->{fields} = \@array;
     }
@@ -377,11 +390,30 @@ sub save_cfg_content_type {
         )
         );
 
-    my @fields = ();
+    my @fields        = ();
+    my @field_objects = ();
+    my $err_msg       = '';
     foreach my $field_id ( keys %{ $option_list->{fields} } ) {
         my $type    = $option_list->{fields}{$field_id}{type};
         my $options = $option_list->{fields}{$field_id}{options};
-        my $label   = $options->{label};
+
+        # Validation
+        unless ($err_msg) {
+            if (   $type eq 'date_and_time'
+                || $type eq 'date'
+                || $type eq 'time' )
+            {
+                my $date = $options->{initial_date} || '19700101';
+                my $time = $options->{initial_time} || '000000';
+                my $ts   = $date . '000000';
+                if ( !MT::Util::is_valid_date($ts) ) {
+                    $err_msg = $plugin->translate( "Invalid [_1]: '[_2]'",
+                        $type, $date );
+                }
+            }
+        }
+
+        my $label = $options->{label};
         if ( $type eq 'date_and_time' ) {
             my $date = delete $options->{initial_date};
             my $time = delete $options->{initial_time};
@@ -439,13 +471,9 @@ sub save_cfg_content_type {
             $content_field->related_content_type_id(undef);
         }
 
-        $content_field->save
-            or return $app->error(
-            $plugin->translate(
-                "Saving content field failed: [_1]",
-                $content_type->errstr
-            )
-            );
+        # Push content field object
+        push @field_objects, $content_field;
+
         delete $option_list->{fields}{$field_id}{new}
             if defined $option_list->{fields}{$field_id}{new};
         $option_list->{fields}{$field_id}{options} = $options;
@@ -455,6 +483,31 @@ sub save_cfg_content_type {
             unique_key => $content_field->unique_key,
             %{ $option_list->{fields}{$field_id} }
             };
+    }
+
+    # Validation error
+    return $app->redirect(
+        $app->uri(
+            'mode' => 'cfg_content_type',
+            args   => {
+                blog_id => $blog_id,
+                id      => $content_type_id,
+                fields =>
+                    MT::Util::encode_url( JSON::encode_json( \@fields ) ),
+                err_msg => $plugin->translate($err_msg),
+            }
+        )
+    ) if $err_msg;
+
+    # Save content fields
+    foreach my $content_field (@field_objects) {
+        $content_field->save
+            or return $app->error(
+            $plugin->translate(
+                "Saving content field failed: [_1]",
+                $content_type->errstr
+            )
+            );
     }
 
     # Remove fields

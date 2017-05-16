@@ -1346,7 +1346,7 @@
         'new': 0,
         'options': {
     <mt:loop name="options">
-        <mt:var name="key">: '<mt:var name="value">',
+        <mt:if name="key"><mt:var name="key">: '<mt:var name="value">',</mt:if>
     </mt:loop>
         }
       }<mt:unless name="__last__">,</mt:unless>
