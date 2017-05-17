@@ -1220,6 +1220,28 @@ $.mtValidateRules = {
             return false;
         }
     },
+    '.multiple-select': function ($e) {
+        if (!$e.attr('multiple')) {
+            return true;
+        }
+        var max = Number($e.data('mt-max-select')) || 0;
+        var min = Number($e.data('mt-min-select')) || 0;
+        if (!max && !min) {
+            return true;
+        }
+        var selectedCount = $e.children('option:selected').length;
+        if (max && max < selectedCount) {
+            this.error = true;
+            this.errstr = trans('Options less than or equal to [_1] must be selected', max);
+            return false;
+        } else if (min && min > selectedCount) {
+            this.error = true;
+            this.errstr = trans('Options greater than or equal to [_1] must be selected', min);
+            return false;
+        } else {
+            return true;
+        }
+    },
     '.content-field': function ($e) {
         if ($e.get(0).checkValidity()) {
             return true;

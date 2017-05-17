@@ -320,7 +320,8 @@ content_field_types:
         data_type: varchar
         order: 100
         data_getter: $ContentType::MT::ContentFieldType::SelectBox::data_getter
-        field_html: $ContentType::MT::ContentFieldType::SelectBox::field_html
+        field_html: field_html_select_box.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::SelectBox::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::SelectBox::ss_validator
         list_props:
             select_box:
