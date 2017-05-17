@@ -1308,7 +1308,7 @@ $.mtValidateRules = {
             return true;
         }
     },
-    '.content-field': function ($e) {
+    '.html5-form': function ($e) {
         if ($e.get(0).checkValidity()) {
             return true;
         } else {
