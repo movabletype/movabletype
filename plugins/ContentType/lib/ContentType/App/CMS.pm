@@ -542,6 +542,15 @@ sub save_cfg_content_type {
         }
     }
 
+    # Set id and unique_key to fields if not.
+    for ( my $i = 0; $i < @fields; $i++ ) {
+        my $field = $fields[$i];
+        next if $field->{id} && $field->{unique_key};
+        my $content_field = $field_objects[$i];
+        $field->{id}         = $content_field->id;
+        $field->{unique_key} = $content_field->unique_key;
+    }
+
     $content_type->fields( \@fields );
 
     $content_type->save
