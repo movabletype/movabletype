@@ -396,10 +396,28 @@ sub save_cfg_content_type {
     foreach my $field_id ( keys %{ $option_list->{fields} } ) {
         my $type    = $option_list->{fields}{$field_id}{type};
         my $options = $option_list->{fields}{$field_id}{options};
+        my $label   = $options->{label};
 
         # Validation
         unless ($err_msg) {
-            if (   $type eq 'date_and_time'
+            if ( $type eq 'integer' ) {
+                my $option_label
+                    = ( $options->{min_value} !~ /^[+\-]?\d+$/ )
+                    ? $plugin->translate('Min Value')
+                    : ( $options->{max_value} !~ /^[+\-]?\d+$/ )
+                    ? $plugin->translate('Max Value')
+                    : ( $options->{initial_value} !~ /^[+\-]?\d+$/ )
+                    ? $plugin->translate('Initial Value')
+                    : '';
+                if ($option_label) {
+                    my $field_label = $label || 'Integer';
+                    $err_msg
+                        = $plugin->translate(
+                        '[_1]\'s "[_2]" field value must be integer.',
+                        $field_label, $option_label );
+                }
+            }
+            elsif ($type eq 'date_and_time'
                 || $type eq 'date'
                 || $type eq 'time' )
             {
@@ -413,7 +431,6 @@ sub save_cfg_content_type {
             }
         }
 
-        my $label = $options->{label};
         if ( $type eq 'date_and_time' ) {
             my $date = delete $options->{initial_date};
             my $time = delete $options->{initial_time};
