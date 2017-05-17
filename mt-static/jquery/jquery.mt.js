@@ -995,6 +995,59 @@ $.mtValidator('simple', {
         $error_block.find('label.msg-error').text(msg);
     }
 });
+$.mtValidator('simple-group', {
+    removeError: function ( $target, $error_block, msg ) {
+        var $container = $target.parents('.group-container');
+        var groupInputs = $container.find('.group').toArray();
+        var invalidInputs = jQuery.grep(groupInputs, function (a) {
+            var $a = jQuery(a);
+            if ($a.attr('id') === $target.attr('id')) {
+                return false;
+            }
+            return $a.data('mtValidateLastError');
+        });
+        if ($target.is('input[type=radio],input[type="checkbox"]')) {
+            $container.siblings('.group-error').remove();
+            invalidInputs.forEach(function (input) {
+                $.data( input, 'mtValidateError', null );
+                $.data( input, 'mtValidateLastError', null );
+                $(input).addClass( this.validClass );
+                $(input).removeClass( this.errorClass );
+            });
+        } else {
+            if (invalidInputs.length === 0) {
+                $container.siblings('.group-error').remove();
+            } else {
+                var error = jQuery(invalidInputs[0]).data('mtValidateLastError');
+                $container.siblings('.group-error')
+                    .find('label.msg-error')
+                    .text(error);
+            }
+        }
+    },
+    updateError: function( $target, $error_block, msg ) {
+        $target.parents('.group-container')
+            .siblings('.group-error')
+            .find('label.msg-error')
+            .text(msg);
+    },
+    showError: function( $target, $error_block ) {
+        var $container = $target.parents('.group-container');
+        if ($container.siblings('.group-error').length === 0) {
+            $container.after($error_block);
+        }
+    },
+    wrapError: function ( $target, msg ) {
+        return $('<div />')
+            .addClass('group-error')
+            .append(
+                $('<label/>')
+                    .attr('for', $target.attr('id') )
+                    .addClass('validate-error msg-error')
+                    .text(msg)
+            );
+    }
+});
 $.mtValidator('simple2', {
     wrapError: function ( $target, msg ) {
         return $('<li />').append(
@@ -1134,6 +1187,9 @@ $.mtValidateRules = {
     '.date': function ($e) {
         return !$e.val() || /^\d{4}\-\d{2}\-\d{2}$/.test($e.val());
     },
+    '.time': function ($e) {
+        return !$e.val() || /^\d{2}:\d{2}:\d{2}$/.test($e.val());
+    },
 
     // RegExp code taken from http://bassistance.de/jquery-plugins/jquery-plugin-validation/
     '.email': function ($e) {
@@ -1153,6 +1209,113 @@ $.mtValidateRules = {
     },
     '.number': function ($e) {
         return !$e.val() || /\d/.test($e.val()) && /^\d*\.?\d*$/.test($e.val());
+    },
+    '.min-length': function ($e) {
+        var minLength = Number($e.data('mt-min-length')) || 0;
+        if ($e.val().length >= minLength) {
+            return true;
+        } else {
+            this.error = true;
+            this.errstr = $.mtValidateMessages['.min-length'].replace(/{{min}}/, minLength);
+            return false;
+        }
+    },
+    '.multiple-select': function ($e) {
+        if (!$e.attr('multiple')) {
+            return true;
+        }
+        var max = Number($e.data('mt-max-select')) || 0;
+        var min = Number($e.data('mt-min-select')) || 0;
+        if (!max && !min) {
+            return true;
+        }
+        var selectedCount = $e.children('option:selected').length;
+        if (max && max < selectedCount) {
+            this.error = true;
+            this.errstr = trans('Options less than or equal to [_1] must be selected', max);
+            return false;
+        } else if (min && min > selectedCount) {
+            this.error = true;
+            this.errstr = trans('Options greater than or equal to [_1] must be selected', min);
+            return false;
+        } else {
+            return true;
+        }
+    },
+    '.checkbox': function ($e) {
+        var multiple = $e.data('mt-multiple') ? true : false;
+        var max = Number($e.data('mt-max-select')) || 0;
+        var min = Number($e.data('mt-min-select')) || 0;
+        var required = $e.data('mt-required') ? true : false;
+        var checkboxName = $e.attr('name');
+        var checkedCount = $e.parents('.group-container')
+            .find(`input[name=${checkboxName}]:checked`).length;
+        if ( required && checkedCount === 0) {
+            this.error = true;
+            this.errstr = trans('Please select one of these options');
+            return false;
+        } else if ( !multiple && checkedCount > 1 ) {
+            this.error = true;
+            this.errstr = trans('Only 1 option can be selected');
+            return false;
+        } else if ( multiple && max && max < checkedCount ) {
+            this.error = true;
+            this.errstr = trans('Options less than or equal to [_1] must be selected', max);
+            return false;
+        } else if ( multiple && min && min > checkedCount ) {
+            this.error = true;
+            this.errstr = trans('Options greater than or equal to [_1] must be selected', min);
+            return false;
+        } else {
+            return true;
+        }
+    },
+    '.tag': function ($e) {
+        var getUniqueTags = function () {
+            var tags = {};
+            var tagDelim = $e.data('mt-tag-delim');
+            var rawTags = $e.val().split(tagDelim);
+            rawTags.forEach(function (element) {
+                var tag = element.replace(/^\s+|\s+$/g, '');
+                if (tag !== '') {
+                    tags[tag] = true;
+                }
+            });
+            return Object.keys(tags);
+        };
+        var required = $e.data('mt-required') ? true : false;
+        var multiple = $e.data('mt-multiple') ? true : false;
+        var max = Number($e.data('mt-max-tag'));
+        var min = Number($e.data('mt-min-tag'));
+        var tagCount = getUniqueTags().length;
+        if ( required && tagCount === 0 ) {
+            this.error = true;
+            this.errstr = trans('Please input any tags');
+            return false;
+        } else if ( !multiple && tagCount > 1 ) {
+            this.error = true;
+            this.errstr = trans('Only 1 tag can be input');
+            return false;
+        } else if ( multiple && max && max < tagCount ) {
+            this.error = true;
+            this.errstr = trans('Tags less than or equal to [_1] must be input', max);
+            return false;
+        } else if ( multiple && min && min > tagCount ) {
+            this.error = true;
+            this.errstr = trans('Tags greater than or equal to [_1] must be input', min);
+            return false;
+        } else {
+            return true;
+        }
+    },
+    '.html5-form': function ($e) {
+        if ($e.get(0).checkValidity()) {
+            return true;
+        } else {
+            this.error = true;
+            this.errstr = $e.get(0).validationMessage;
+            return false;
+        }
     }
 };
 
@@ -1166,11 +1329,13 @@ $.mtValidateAddMessages = function ( rules ) {
 
 $.mtValidateMessages = {
     '.date':        trans('Invalid date format'),
+    '.time':        trans('Invalid time format'),
     '.email':       trans('Invalid email address'),
     '.url':         trans('Invalid URL'),
     '.required':    trans('This field is required'),
     '.digit, .num': trans('This field must be an integer'),
-    '.number':      trans('This field must be a number')
+    '.number':      trans('This field must be a number'),
+    '.min-length':  trans('Please input [_1] characters or more', '{{min}}')
 };
 
 $.fn.extend({
@@ -1259,7 +1424,13 @@ $.fn.extend({
     }
 });
 
-$(document).on('keyup focusin focusout','input, textarea',function () {
+$(document).on('keyup change input', 'input, textarea', function () {
+    var ns = $.data( this, 'mtValidator' );
+    if ( !ns ) return true;
+    $(this).mtValid({ focus: false });
+});
+
+$(document).on('focusin focusout','input:not([type=radio]):not(.group), textarea',function () {
     var ns = $.data( this, 'mtValidator' );
     if ( !ns ) return true;
     $(this).mtValid({ focus: false });

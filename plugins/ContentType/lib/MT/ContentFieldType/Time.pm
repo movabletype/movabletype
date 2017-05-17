@@ -25,8 +25,10 @@ sub html {
         : undef );
 }
 
-sub field_html {
-    my ( $app, $id, $value ) = @_;
+sub field_html_params {
+    my ( $app, $field_data ) = @_;
+    my $value = $field_data->{value} || '';
+
     my $time = '';
     if ( defined $value && $value ne '' ) {
 
@@ -40,40 +42,11 @@ sub field_html {
             $app->user ? $app->user->preferred_language : undef );
     }
 
-    my $content_field = MT::ContentField->load($id);
-    my $required = $content_field->options->{required} ? 'required' : '';
+    my $required = $field_data->{options}{required} ? 'required' : '';
 
-    my $error_message = $app->translate('Invalid time.');
-
-    my $html = '';
-    $html .= '<span>';
-    $html .= '<span>';
-    $html
-        .= "<input type=\"text\" name=\"time-$id\" id=\"time-$id\" class=\"text time\" value=\"$time\" placeholder=\"HH:mm:ss\" mt:watch-change=\"1\" mt:raw-name=\"1\" $required />";
-    $html .= '</span> ';
-
-    $html .= <<"__JS__";
-<script>
-(function () {
-  var time = jQuery('input[name=time-${id}]').get(0);
-
-  function validateTime () {
-    var \$e = jQuery(time);
-    if (!\$e.val() || /^\\d{2}:\\d{2}:\\d{2}\$/.test(\$e.val())) {
-      time.setCustomValidity('');
-    } else {
-      time.setCustomValidity('${error_message}');
-    }
-  }
-
-  jQuery(time).on('change', validateTime);
-
-  validateTime();
-})();
-</script>
-__JS__
-
-    return $html;
+    {   time     => $time,
+        required => $required,
+    };
 }
 
 sub data_getter {

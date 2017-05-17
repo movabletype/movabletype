@@ -158,7 +158,8 @@ content_field_types:
         label: Single Line Text
         data_type: varchar
         order: 20
-        field_html: $ContentType::MT::ContentFieldType::SingleLineText::field_html
+        field_html: field_html_single_line_text.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::SingleLineText::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::SingleLineText::ss_validator
         list_props:
             single_line_text:
@@ -214,7 +215,8 @@ content_field_types:
         label: Float
         data_type: float
         order: 50
-        field_html: $ContentType::MT::ContentFieldType::Float::field_html
+        field_html: field_html_float.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Float::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Float::ss_validator
         list_props:
             float:
@@ -235,7 +237,7 @@ content_field_types:
         label: URL
         data_type: varchar
         order: 60
-        field_html: $ContentType::MT::ContentFieldType::URL::field_html
+        field_html: field_html_url.tmpl
         ss_validator: $ContentType::MT::ContentFieldType::URL::ss_validator
         list_props:
             url:
@@ -253,7 +255,8 @@ content_field_types:
         label: Date and Time
         data_type: datetime
         order: 70
-        field_html: $ContentType::MT::ContentFieldType::DateTime::field_html
+        field_html: field_html_datetime.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::DateTime::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::DateTime::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::DateTime::ss_validator
         list_props:
@@ -274,7 +277,8 @@ content_field_types:
         label: Date
         data_type: datetime
         order: 80
-        field_html: $ContentType::MT::ContentFieldType::Date::field_html
+        field_html: field_html_date.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Date::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::Date::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::Date::ss_validator
         list_props:
@@ -295,7 +299,8 @@ content_field_types:
         label: Time
         data_type: datetime
         order: 90
-        field_html: $ContentType::MT::ContentFieldType::Time::field_html
+        field_html: field_html_time.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Time::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::Time::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::Time::ss_validator
         list_props:
@@ -315,7 +320,8 @@ content_field_types:
         data_type: varchar
         order: 100
         data_getter: $ContentType::MT::ContentFieldType::SelectBox::data_getter
-        field_html: $ContentType::MT::ContentFieldType::SelectBox::field_html
+        field_html: field_html_select_box.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::SelectBox::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::SelectBox::ss_validator
         list_props:
             select_box:
@@ -337,7 +343,8 @@ content_field_types:
         label: Radio
         data_type: varchar
         order: 110
-        field_html: $ContentType::MT::ContentFieldType::Radio::field_html
+        field_html: field_html_radio.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Radio::field_html_params
         list_props:
             radio:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
@@ -356,7 +363,8 @@ content_field_types:
         data_type: varchar
         order: 120
         data_getter: $ContentType::MT::ContentFieldType::Checkbox::data_getter
-        field_html: $ContentType::MT::ContentFieldType::Checkbox::field_html
+        field_html: field_html_checkbox.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Checkbox::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Checkbox::ss_validator
         list_props:
             checkbox:
@@ -707,7 +715,8 @@ content_field_types:
         data_type: integer
         order: 180
         data_getter: $ContentType::MT::ContentFieldType::Category::data_getter
-        field_html: $ContentType::MT::ContentFieldType::Category::field_html
+        field_html: field_html_category.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Category::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Checkbox::ss_validator
         list_props:
             category:
@@ -731,7 +740,8 @@ content_field_types:
         data_type: integer
         order: 190
         data_getter: $ContentType::MT::ContentFieldType::Tag::data_getter
-        field_html: $ContentType::MT::ContentFieldType::Tag::field_html
+        field_html: field_html_tag.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Tag::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Tag::ss_validator
         list_props:
             tag:

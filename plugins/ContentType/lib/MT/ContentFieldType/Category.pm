@@ -8,94 +8,50 @@ use MT::ContentField;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 
-sub field_html {
-    my ( $app, $field_id, $value ) = @_;
+sub field_html_params {
+    my ( $app, $field_data ) = @_;
+    my $value = $field_data->{value};
     $value = ''       unless defined $value;
     $value = [$value] unless ref $value eq 'ARRAY';
 
+    my %values = map { $_ => 1 } @{$value};
+
     my @cats;
-    if ( my $field = MT::ContentField->load($field_id) ) {
+    if ( my $field
+        = MT::ContentField->load( $field_data->{content_field_id} ) )
+    {
         if ( my $cat_list
             = MT::CategoryList->load( $field->related_cat_list_id || 0 ) )
         {
-            @cats = @{ $cat_list->categories };
+            @cats = map {
+                {   cat_id        => $_->id,
+                    cat_label     => $_->label,
+                    cat_edit_link => _edit_link( $app, $_ ),
+                    $values{ $_->id }
+                    ? ( checked => 'checked="checked"' )
+                    : (),
+                }
+            } @{ $cat_list->categories };
         }
     }
 
-    my $html = '';
-    my $num  = 1;
+    my $options = $field_data->{options};
 
-    foreach my $cat (@cats) {
-        my $cat_id    = $cat->id;
-        my $cat_label = $cat->label;
-        my $edit_link = _edit_link( $app, $cat );
-
-        $html .= '<div>';
-        $html
-            .= "<input type=\"checkbox\" name=\"content-field-$field_id\" id=\"content-field-$field_id-$num\" value=\"$cat_id\"";
-        $html .=
-            ( grep { $_ eq $cat_id } @$value )
-            ? ' checked="checked"'
-            : '';
-        $html .= " mt:watch-change=\"1\" mt:raw-name=\"1\" />";
-        $html
-            .= " <label for=\"content-field-$field_id-$num\">$cat_label</label>";
-        $html .= qq{ (<a href="${edit_link}">edit</a>)};
-        $html .= '</div>';
-
-        $num++;
+    my $multiple = '';
+    if ( $options->{multiple} ) {
+        my $max = $options->{max};
+        my $min = $options->{min};
+        $multiple = 'data-mt-multiple="1"';
+        $multiple .= qq{ data-mt-max-select="${max}"} if $max;
+        $multiple .= qq{ data-mt-min-select="${min}"} if $min;
     }
 
-    my $content_field = MT::ContentField->load($field_id);
-    my $options       = $content_field->options;
+    my $required = $options->{required} ? 'data-mt-required="1"' : '';
 
-    my $max = $options->{max} || 0;
-    my $min = $options->{min} || 0;
-    my $multiple = $options->{multiple} ? 'true' : 'false';
-    my $required = $options->{required} ? 'true' : 'false';
-
-    my $required_error
-        = $app->translate('Please select one of these options.');
-    my $not_multiple_error
-        = $app->translate('Only 1 category can be selected.');
-    my $max_error = $app->translate(
-        'Options less than or equal to [_1] must be selected.', $max );
-    my $min_error = $app->translate(
-        'Options greater than or equal to [_1] must be selected.', $min );
-
-    $html .= <<"__JS__";
-<script>
-(function () {
-  var required = ${required};
-  var multiple = ${multiple};
-  var max      = ${max};
-  var min      = ${min};
-
-  var \$cats = jQuery('input[name=content-field-${field_id}]');
-
-  function validateCategories () {
-    var checkedLength = \$cats.filter(':checked').length;
-    if (required && checkedLength === 0) {
-      \$cats.get(\$cats.length - 1).setCustomValidity('${required_error}');
-    } else if (!multiple && checkedLength >= 2) {
-      \$cats.get(\$cats.length - 1).setCustomValidity('${not_multiple_error}');
-    } else if (multiple && max && checkedLength > max) {
-      \$cats.get(\$cats.length - 1).setCustomValidity('${max_error}');
-    } else if (multiple && min && checkedLength < min) {
-      \$cats.get(\$cats.length - 1).setCustomValidity('${min_error}');
-    } else {
-      \$cats.get(\$cats.length - 1).setCustomValidity('');
-    }
-  }
-
-  \$cats.on('change', validateCategories);
-
-  validateCategories();
-})();
-</script>
-__JS__
-
-    return $html;
+    {   categories => \@cats,
+        multiple   => $multiple,
+        required   => $required,
+    };
 }
 
 sub data_getter {

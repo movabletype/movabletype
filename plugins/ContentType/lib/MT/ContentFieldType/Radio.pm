@@ -2,30 +2,26 @@ package MT::ContentFieldType::Radio;
 use strict;
 use warnings;
 
-use MT::ContentField;
-
-sub field_html {
-    my ( $app, $id, $value ) = @_;
+sub field_html_params {
+    my ( $app, $field_data ) = @_;
+    my $value = $field_data->{value};
     $value = '' unless defined $value;
 
-    my $content_field = MT::ContentField->load($id);
-    my $options_values = $content_field->options->{values} || [];
-    my $required = $content_field->options->{required} ? 'required' : '';
+    my $options_values = $field_data->{options}{values} || [];
+    @{$options_values} = map {
+        {   k => $_->{key},
+            v => $_->{value},
+            ( $_->{value} eq $value )
+            ? ( checked => 'checked="checked"' )
+            : (),
+        }
+    } @{$options_values};
 
-    my $html  = '';
-    my $count = 1;
+    my $required = $field_data->{options}{required} ? 'required' : '';
 
-    foreach my $options_value ( @{$options_values} ) {
-        $html
-            .= "<input type=\"radio\" name=\"content-field-$id\" id=\"content-field-$id-$count\" class=\"radio\" value=\""
-            . $options_value->{value} . "\"";
-        $html .= ' checked="checked"' if $options_value->{value} eq $value;
-        $html .= qq{ mt:watch-change="1" mt:raw-name="1" $required />};
-        $html .= " <label for=\"content-field-$id-$count\">"
-            . $options_value->{key};
-        $count++;
-    }
-    return $html;
+    {   options_values => $options_values,
+        required       => $required,
+    };
 }
 
 1;

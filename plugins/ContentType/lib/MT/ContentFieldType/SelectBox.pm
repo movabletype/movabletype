@@ -42,8 +42,9 @@ sub filter_tmpl {
 __TMPL__
 }
 
-sub field_html {
-    my ( $app, $id, $value ) = @_;
+sub field_html_params {
+    my ( $app, $field_data ) = @_;
+    my $value = $field_data->{value};
     $value = '' unless defined $value;
 
     my %values;
@@ -54,66 +55,35 @@ sub field_html {
         $values{$value} = 1;
     }
 
-    my $content_field = MT::ContentField->load($id);
-    my $options       = $content_field->options;
-
+    my $options = $field_data->{options};
     my $options_values = $options->{values} || [];
+    @{$options_values} = map {
+        {   k => $_->{key},
+            v => $_->{value},
+            $values{ $_->{value} }
+            ? ( selected => 'selected="selected"' )
+            : (),
+        }
+    } @{$options_values};
+
     my $required = $options->{required} ? 'required' : '';
-    my $multiple = $options->{multiple};
-    my $max      = $options->{max} || 0;
-    my $min      = $options->{min} || 0;
 
-    my $html
-        = '<select name="content-field-'
-        . $id
-        . '" id="content-field-'
-        . $id
-        . '" class="select"';
-    $html .= ' multiple style="min-width: 5em; min-height: 5em;"'
-        if $content_field->options->{multiple};
-    $html .= qq{ mt:watch-change="1" mt:raw-name="1" $required>};
-
-    foreach my $options_value ( @{$options_values} ) {
-        $html .= '<option value="' . $options_value->{value} . '"';
-        $html .= ' selected="selected"'
-            if $values{ $options_value->{value} };
-        $html .= '>' . $options_value->{key} . '</option>';
-    }
-    $html .= '</select>';
-
-    if ( $multiple && ( $max || $min ) ) {
-        my $max_error = $app->translate(
-            'Options less than or equal to [_1] must be selected.', $max );
-        my $min_error = $app->translate(
-            'Options greater than or equal to [_1] must be selected.', $min );
-
-        $html .= <<"__JS__";
-<script>
-(function () {
-  var max = ${max};
-  var min = ${min};
-  var select = jQuery('#content-field-${id}').get(0);
-  var \$options = jQuery('#content-field-${id} > option');
-
-  function validateSelectedOptions () {
-    if (max && \$options.filter(':checked').length > max) {
-      select.setCustomValidity('${max_error}');
-    } else if (min && \$options.filter(':checked').length < min) {
-      select.setCustomValidity('${min_error}');
-    } else {
-      select.setCustomValidity('');
-    }
-  }
-
-  jQuery(select).on('change', validateSelectedOptions);
-
-  validateSelectedOptions();
-})();
-</script>
-__JS__
+    my $multiple       = '';
+    my $multiple_class = '';
+    if ( $options->{multiple} ) {
+        my $max = $options->{max};
+        my $min = $options->{min};
+        $multiple = 'multiple style="min-width: 10em; min-height: 10em"';
+        $multiple .= qq{ data-mt-max-select="${max}"} if $max;
+        $multiple .= qq{ data-mt-min-select="${min}"} if $min;
+        $multiple_class = 'multiple-select';
     }
 
-    return $html;
+    {   multiple       => $multiple,
+        multiple_class => $multiple_class,
+        options_values => $options_values,
+        required       => $required,
+    };
 }
 
 sub single_select_options {

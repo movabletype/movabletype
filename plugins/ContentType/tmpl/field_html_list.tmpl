@@ -1,55 +1,78 @@
 <mt:loop name="list_value">
 <div style="display: inline">
   <input type="text" name="content-field-<mt:var name="content_field_id" escape="html">" class="text long" value="<mt:var name="__value__">" mt:watch-change="1" mt:raw-name="1" style="width: 95%" />
-  <a href="javascript:void(0)" onclick="removeList(this)"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>
+  <a href="javascript:void(0)" class="remove-list-button" data-mt-content-field-id="<mt:var name="content_field_id">" <mt:var name="required">><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>
 </div>
 </mt:loop>
 
-<a href="javascript:void(0)" onclick="addList(this)"><img src="<mt:var name="static_uri">images/status_icons/create.gif" /></a>
+<a href="javascript:void(0)" class="add-list-button" data-mt-content-field-id="<mt:var name="content_field_id">" <mt:var name="required">><img src="<mt:var name="static_uri">images/status_icons/create.gif" /></a>
 
-<script>
-var fieldId = '<mt:var name="content_field_id" escape="js">';
-var required = <mt:if name="options{required}">true<mt:else>false</mt:if>;
+<mt:unless name="setup_list_js">
+<mt:var name="setup_list_js" value="1">
+<mt:setvarblock name="jq_js_include" append="1">
+;(function() {
 
-function checkRequired () {
-  if (!required) return;
+jQuery('a.add-list-button')
+  .on('click', addList)
+  .each(adjustButtons);
+jQuery('a.add-list-button').parent()
+  .on('click', 'a.remove-list-button', removeList);
+
+function removeList() {
+  var $this = jQuery(this);
+  $this.parent().remove();
+  adjustButtons.call(this);
+  setDirty(true);
+  log('found dirty form: removed list element');
+  (app.getIndirectMethod('setDirty'))();
+}
+
+function addList() {
+  var $this = jQuery(this);
+  var fieldId = $this.data('mt-content-field-id');
+  var required = $this.data('mt-required') ? true : false;
+
+  var $newDiv = generateNewListHtml(fieldId, required);
+  log(`adding watcher to content-type-${fieldId}`);
+  DOM.addEventListener($newDiv.get(0), 'change', app.getIndirectEventListener('setDirty'));
+
+  $this.before($newDiv);
+
+  adjustButtons.call(this);
+  setDirty(true);
+  log('found dirty form: added list element');
+  (app.getIndirectMethod('setDirty'))();
+}
+
+function generateNewListHtml(fieldId, required) {
+  required = required ? 'data-mt-required="1"' : '';
+
+  var newDiv = '<div style="display: inline">' + "\n";
+  newDiv    += `  <input type="text" name="content-field-${fieldId}" class="text long" value="" mt:raw-name="1" style="width: 95%" />\n`;
+  newDiv    += `  <a href="javascript:void(0)" class="remove-list-button" data-mt-content-field-id="${fieldId}" ${required}><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>\n`;
+  newDiv    += '</div>' + "\n";
+
+  return jQuery(newDiv);
+}
+
+function adjustButtons() {
+  var $this = jQuery(this);
+  if (!$this.data('mt-required')) {
+    return;
+  }
+  var fieldId = $this.data('mt-content-field-id');
   var $lists = jQuery(`input[name=content-field-${fieldId}]`);
   if ($lists.length === 1 && $lists.next('a')) {
     $lists.next('a').remove();
   } else {
     $lists.each(function (index) {
       if (jQuery(this).next('a').length > 0) return;
-      jQuery(this).after('  <a href="javascript:void(0)" onclick="removeList(this)"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>');
+      jQuery(this).after(`  <a href="javascript:void(0)" class="remove-list-button" data-mt-content-field-id="${fieldId}" data-mt-required="1"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>`);
     });
   }
 }
 
-checkRequired();
-
-function removeList(removeButton) {
-  jQuery(removeButton).parent().remove();
-  checkRequired();
-  setDirty(true);
-  log('found dirty form: removed list element');
-  (app.getIndirectMethod('setDirty'))();
-}
-
-function addList(createButton) {
-  var newDiv = '<div style="display: inline">' + "\n";
-  newDiv    += '  <input type="text" name="content-field-<mt:var name="content_field_id" escape="html">" class="text long" value="" mt:raw-name="1" style="width: 95%" />' + "\n";
-  newDiv    += '  <a href="javascript:void(0)" onclick="removeList(this)"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>' + "\n";
-  newDiv    += '</div>' + "\n";
-
-  var $newDiv = jQuery(newDiv);
-  log('adding watcher to content-type-<mt:var name="content_field_id" escape="js">');
-  DOM.addEventListener($newDiv.get(0), 'change', app.getIndirectEventListener('setDirty'));
-
-  jQuery(createButton).before($newDiv);
-
-  checkRequired();
-  setDirty(true);
-  log('found dirty form: added list element');
-  (app.getIndirectMethod('setDirty'))();
-}
-</script>
+})();
+</mt:setvarblock>
+</mt:unless>
 

@@ -4,36 +4,25 @@ use warnings;
 
 use MT::ContentField;
 
-sub field_html {
-    my ( $app, $field_id, $value ) = @_;
-    $value = '' unless defined $value;
-
-    my $content_field = MT::ContentField->load($field_id);
-
-    my $max_length = $content_field->options->{max_length};
-    $max_length = $max_length ? qq{maxlength="${max_length}"} : '';
-    my $required = $content_field->options->{required} ? 'required' : '';
-
-    my $html
-        = qq{<input type="text" name="content-field-${field_id}" class="text long" value="${value}" mt:watch-change="1" mt:raw-name="1" ${required} ${max_length} />};
-
-    if ( my $min_length = $content_field->options->{min_length} ) {
-        $html .= <<"__JS__";
-<script>
-(function () {
-  jQuery('input[name=content-field-${field_id}]').on('keyup', function () {
-    if (this.value.length < ${min_length}) {
-      this.setCustomValidity(`Please input ${min_length} characters or more.`);
-    } else {
-      this.setCustomValidity('');
+sub field_html_params {
+    my ( $app, $field_data ) = @_;
+    my $required = $field_data->{options}{required} ? 'required' : '';
+    my $max_length = $field_data->{options}{max_length};
+    if ( my $ml = $field_data->{options}{max_length} ) {
+        $max_length = qq{maxlength="${ml}"};
     }
-  });
-})();
-</script>
-__JS__
+    my $min_length_class = '';
+    my $min_length_data  = '';
+    if ( my $ml = $field_data->{options}{min_length} ) {
+        $min_length_class = 'min-length';
+        $min_length_data  = qq{data-mt-min-length="${ml}"};
     }
 
-    $html;
+    {   required         => $required,
+        max_length       => $max_length,
+        min_length_class => $min_length_class,
+        min_length_data  => $min_length_data,
+    };
 }
 
 sub ss_validator {
