@@ -1248,14 +1248,15 @@ $.mtValidateRules = {
         var min = Number($e.data('mt-min-select')) || 0;
         var required = $e.data('mt-required') ? true : false;
         var checkboxName = $e.attr('name');
-        var checkedCount = $e.parent().find(`input[name=${checkboxName}]:checked`).length;
+        var checkedCount = $e.parents('.group-container')
+            .find(`input[name=${checkboxName}]:checked`).length;
         if ( required && checkedCount === 0) {
             this.error = true;
             this.errstr = trans('Please select one of these options');
             return false;
         } else if ( !multiple && checkedCount > 1 ) {
             this.error = true;
-            this.errstr = trans('Only 1 checkbox can be selected');
+            this.errstr = trans('Only 1 option can be selected');
             return false;
         } else if ( multiple && max && max < checkedCount ) {
             this.error = true;

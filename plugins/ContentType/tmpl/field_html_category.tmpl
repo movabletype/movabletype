@@ -1,0 +1,10 @@
+<div class="group-container">
+<mt:loop name="categories">
+  <div>
+    <input type="checkbox" class="content-field group checkbox" name="content-field-<mt:var name="content_field_id" escape="html">" id="content-field-<mt:var name="content_field_id" escape="html">-<mt:var name="__counter__">" value="<mt:var name="cat_id" escape="html">" mt:watch-change="1" mt:raw-name="1" <mt:var name="checked"> <mt:var name="required"> <mt:var name="multiple">>
+    <label for="content-field-<mt:var name="content_field_id" escape="html">-<mt:var name="__counter__">"><mt:var name="cat_label" escape="html"></label>
+    (<a href="<mt:var name="cat_edit_link">">edit</a>)
+  </div>
+</mt:loop>
+</div>
+
