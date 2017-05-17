@@ -28,21 +28,18 @@ sub field_html_params {
         }
     } @{$options_values};
 
-    my $multiple       = '';
-    my $multiple_class = '';
+    my $multiple = '';
     if ( $options->{multiple} ) {
         my $max = $options->{max};
         my $min = $options->{min};
         $multiple = 'data-mt-multiple="1"';
         $multiple .= qq{ data-mt-max-select="${max}"} if $max;
         $multiple .= qq{ data-mt-min-select="${min}"} if $min;
-        $multiple_class = 'multiple-checkbox';
     }
 
     my $required = $options->{required} ? 'data-mt-required="1"' : '';
 
     {   multiple       => $multiple,
-        mutliple_class => $multiple_class,
         options_values => $options_values,
         required       => $required,
     };
