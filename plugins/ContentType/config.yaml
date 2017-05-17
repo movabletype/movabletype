@@ -740,7 +740,8 @@ content_field_types:
         data_type: integer
         order: 190
         data_getter: $ContentType::MT::ContentFieldType::Tag::data_getter
-        field_html: $ContentType::MT::ContentFieldType::Tag::field_html
+        field_html: field_html_tag.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Tag::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Tag::ss_validator
         list_props:
             tag:

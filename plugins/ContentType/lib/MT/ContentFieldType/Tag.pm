@@ -7,25 +7,10 @@ use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 use MT::Tag;
 
-sub field_html {
-    my ( $app, $field_id, $value ) = @_;
+sub field_html_params {
+    my ( $app, $field_data ) = @_;
+    my $value = $field_data->{value};
     $value = [] unless defined $value;
-
-    my $content_field = MT::ContentField->load($field_id);
-    my $options       = $content_field->options;
-
-    my $max = $options->{max} || 0;
-    my $min = $options->{min} || 0;
-    my $multiple = $options->{multiple} ? 'true' : 'false';
-    my $required = $options->{required} ? 'true' : 'false';
-
-    my $required_error     = $app->translate('Please input any tag.');
-    my $not_multiple_error = $app->translate('Only 1 tag can be input.');
-    my $max_error
-        = $app->translate( 'Tags less than or equal to [_1] must be input.',
-        $max );
-    my $min_error = $app->translate(
-        'Tags greater than or equal to [_1] must be input.', $min );
 
     my $tag_delim = _tag_delim($app);
 
@@ -38,56 +23,26 @@ sub field_html {
         $tags = $value;
     }
 
-    my $html
-        = qq{<input type="text" name="content-field-${field_id}" class="text long" value="${tags}" mt:watch-change="1" mt:raw-name="1">};
+    my $options = $field_data->{options};
 
-    return $html;
-
-    $html .= <<"__JS__";
-<script>
-(function () {
-  var max = ${max};
-  var min = ${min};
-  var multiple = ${multiple};
-  var required = ${required};
-
-  var \$text = jQuery('input[name=content-field-${field_id}]');
-
-  function validateTags () {
-    var tagCount = getUniqueTags().length;
-    if (required && tagCount === 0) {
-      \$text.get(0).setCustomValidity('${required_error}');
-    } else if (!multiple && tagCount >= 2) {
-      \$text.get(0).setCustomValidity('${not_multiple_error}');
-    } else if (multiple && max && tagCount > max) {
-      \$text.get(0).setCustomValidity('${max_error}');
-    } else if (multiple && min && tagCount < min) {
-      \$text.get(0).setCustomValidity('${min_error}');
-    } else {
-      \$text.get(0).setCustomValidity('');
+    my $multiple = '';
+    if ( $options->{multiple} ) {
+        my $max = $options->{max};
+        my $min = $options->{min};
+        $multiple = 'data-mt-multiple="1"';
+        $multiple .= qq{ data-mt-max-tag="${max}"} if $max;
+        $multiple .= qq{ data-mt-min-tag="${min}"} if $min;
     }
-  }
 
-  function getUniqueTags () {
-    var tags = {};
-    var rawTags = \$text.val().split(/${tag_delim}/);
-    rawTags.forEach(function (element) {
-      var tag = element.replace(/^\\s+|\\s+\$/g, '');
-      if (tag !== '') {
-        tags[tag] = true;
-      }
-    });
-    return Object.keys(tags);
-  }
+    my $required = $options->{required} ? 'data-mt-required="1"' : '';
 
-  \$text.on('change', validateTags);
+    my $tag_delim_data = qq{data-mt-tag-delim="${tag_delim}"};
 
-  validateTags();
-})();
-</script>
-__JS__
-
-    $html;
+    {   multiple  => $multiple,
+        required  => $required,
+        tags      => $tags,
+        tag_delim => $tag_delim_data,
+    };
 }
 
 sub data_getter {
