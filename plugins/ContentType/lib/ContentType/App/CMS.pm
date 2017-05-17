@@ -400,7 +400,22 @@ sub save_cfg_content_type {
 
         # Validation
         unless ($err_msg) {
-            if ( $type eq 'integer' ) {
+            if ( $type eq 'single_line_text' ) {
+                my $option_label
+                    = ( $options->{min_length} !~ /^[+\-]?\d+$/ )
+                    ? $plugin->translate('Min Length')
+                    : ( $options->{max_length} !~ /^[+\-]?\d+$/ )
+                    ? $plugin->translate('Max Length')
+                    : '';
+                if ($option_label) {
+                    my $field_label = $label || 'Single line text';
+                    $err_msg
+                        = $plugin->translate(
+                        '[_1]\'s "[_2]" field value must be integer.',
+                        $field_label, $option_label );
+                }
+            }
+            elsif ( $type eq 'integer' ) {
                 my $option_label
                     = ( $options->{min_value} !~ /^[+\-]?\d+$/ )
                     ? $plugin->translate('Min Value')
