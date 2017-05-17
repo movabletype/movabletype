@@ -11,7 +11,13 @@ sub field_html_params {
     my $value = $field_data->{value};
     $value = ''       unless defined $value;
     $value = [$value] unless ref $value eq 'ARRAY';
-    { list_value => $value };
+
+    my $required
+        = $field_data->{options}{required} ? 'data-mt-required="1"' : '';
+
+    {   list_value => $value,
+        required   => $required,
+    };
 }
 
 sub data_getter {
