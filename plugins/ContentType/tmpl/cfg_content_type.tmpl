@@ -1336,13 +1336,13 @@
 <mt:if name="name">
     jQuery("#setting-title").text( trans( 'Edit [_1]', '<mt:var name="name">' ) );
     var data = {};
-    data['name'] = '<mt:var name="name">';
-    data['description'] = '<mt:var name="description">';
+    data['name'] = '<mt:var name="name" escape="js">';
+    data['description'] = '<mt:var name="description" escape="js">';
     data['fields'] = {
     <mt:loop name="fields">
       '<mt:var name="content_field_id">': {
-        'type': '<mt:var name="type">',
-        'order': '<mt:var name="order">',
+        'type': '<mt:var name="type" escape="js">',
+        'order': '<mt:var name="order" escape="js">',
         'new': 0,
         'options': {
     <mt:loop name="options">
@@ -1353,7 +1353,7 @@
     </mt:loop>
     };
     <mt:loop name="fields">
-    add_field('<mt:var name="content_field_id">', '<mt:var name="type">');
+    add_field('<mt:var name="content_field_id" escape="js">', '<mt:var name="type" escape="js">');
     </mt:loop>
     localStorage.setItem("ContentType", JSON.stringify(data));
 </mt:if>
