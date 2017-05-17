@@ -1006,7 +1006,7 @@ $.mtValidator('simple-group', {
             }
             return $a.data('mtValidateLastError');
         });
-        if ($target.is('input[type=radio]')) {
+        if ($target.is('input[type=radio],input[type="checkbox"]')) {
             $container.siblings('.group-error').remove();
             invalidInputs.forEach(function (input) {
                 $.data( input, 'mtValidateError', null );
@@ -1235,6 +1235,33 @@ $.mtValidateRules = {
             this.errstr = trans('Options less than or equal to [_1] must be selected', max);
             return false;
         } else if (min && min > selectedCount) {
+            this.error = true;
+            this.errstr = trans('Options greater than or equal to [_1] must be selected', min);
+            return false;
+        } else {
+            return true;
+        }
+    },
+    '.checkbox': function ($e) {
+        var multiple = $e.data('mt-multiple') ? true : false;
+        var max = Number($e.data('mt-max-select')) || 0;
+        var min = Number($e.data('mt-min-select')) || 0;
+        var required = $e.data('mt-required') ? true : false;
+        var checkboxName = $e.attr('name');
+        var checkedCount = $e.parent().find(`input[name=${checkboxName}]:checked`).length;
+        if ( required && checkedCount === 0) {
+            this.error = true;
+            this.errstr = trans('Please select one of these options');
+            return false;
+        } else if ( !multiple && checkedCount > 1 ) {
+            this.error = true;
+            this.errstr = trans('Only 1 checkbox can be selected');
+            return false;
+        } else if ( multiple && max && max < checkedCount ) {
+            this.error = true;
+            this.errstr = trans('Options less than or equal to [_1] must be selected', max);
+            return false;
+        } else if ( multiple && min && min > checkedCount ) {
             this.error = true;
             this.errstr = trans('Options greater than or equal to [_1] must be selected', min);
             return false;

@@ -363,7 +363,8 @@ content_field_types:
         data_type: varchar
         order: 120
         data_getter: $ContentType::MT::ContentFieldType::Checkbox::data_getter
-        field_html: $ContentType::MT::ContentFieldType::Checkbox::field_html
+        field_html: field_html_checkbox.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Checkbox::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Checkbox::ss_validator
         list_props:
             checkbox:
