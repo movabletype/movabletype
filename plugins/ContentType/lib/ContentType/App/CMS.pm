@@ -458,6 +458,16 @@ sub save_cfg_content_type {
                         $field_label, $option_label, $type );
                 }
             }
+            elsif ( $type eq 'url' ) {
+                my $url = $options->{initial_value};
+                if ( defined $url && $url ne '' && !MT::Util::is_url($url) ) {
+                    my $field_label = $label || 'URL';
+                    $err_msg
+                        = MT->translate(
+                        "[_1]\'s Initial Value field is invalid.",
+                        $field_label );
+                }
+            }
             elsif ($type eq 'date_and_time'
                 || $type eq 'date'
                 || $type eq 'time' )
