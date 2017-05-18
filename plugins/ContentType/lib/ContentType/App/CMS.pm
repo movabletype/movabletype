@@ -393,7 +393,6 @@ sub save_cfg_content_type {
     my @fields        = ();
     my @field_objects = ();
     my $err_msg       = '';
-    my $max_id = List::Util::max( keys %{ $option_list->{fields} } ) + 1;
     foreach my $field_id ( keys %{ $option_list->{fields} } ) {
         my $type    = $option_list->{fields}{$field_id}{type};
         my $options = $option_list->{fields}{$field_id}{options};
@@ -472,11 +471,7 @@ sub save_cfg_content_type {
         }
         my $content_field;
         if ( $content_type_id && !$option_list->{fields}{$field_id}{new} ) {
-            $content_field = MT::ContentField->load(
-                {   content_type_id => $content_type_id,
-                    name            => $label
-                }
-            );
+            $content_field = MT::ContentField->load($field_id);
         }
         unless ($content_field) {
             $content_field = MT::ContentField->new;
@@ -510,17 +505,9 @@ sub save_cfg_content_type {
         delete $option_list->{fields}{$field_id}{new}
             if defined $option_list->{fields}{$field_id}{new};
         $option_list->{fields}{$field_id}{options} = $options;
-        my $content_field_id;
-        if ( $content_field->id ) {
-            $content_field_id = $content_field->id;
-        }
-        else {
-            $content_field_id = $max_id;
-            $max_id++;
-        }
         push @fields,
             {
-            id         => $content_field_id,
+            id => $content_field->id || $field_id,
             unique_key => $content_field->unique_key,
             %{ $option_list->{fields}{$field_id} }
             };
