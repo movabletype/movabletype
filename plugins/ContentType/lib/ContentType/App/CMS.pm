@@ -432,6 +432,32 @@ sub save_cfg_content_type {
                         $field_label, $option_label );
                 }
             }
+            elsif ( $type eq 'float' ) {
+                my ( $option_label, $type )
+                    = (    $options->{min_value}
+                        && $options->{min_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
+                    ? ( $plugin->translate('Min Value'), 'float' )
+                    : (    $options->{max_value}
+                        && $options->{max_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
+                    ? ( $plugin->translate('Max Value'), 'float' )
+                    : (    $options->{initial_value}
+                        && $options->{initial_value}
+                        !~ /^[+\-]?\d+(\.\d+)?$/ )
+                    ? ( $plugin->translate('Initial Value'), 'float' )
+                    : (    $options->{decimal_places}
+                        && $options->{decimal_places} !~ /^[+\-]?\d+$/ )
+                    ? (
+                    $plugin->translate('Number of decimal places'), 'integer'
+                    )
+                    : '';
+                if ($option_label) {
+                    my $field_label = $label || 'Float';
+                    $err_msg
+                        = $plugin->translate(
+                        '[_1]\'s "[_2]" field value must be [_3].',
+                        $field_label, $option_label, $type );
+                }
+            }
             elsif ($type eq 'date_and_time'
                 || $type eq 'date'
                 || $type eq 'time' )
