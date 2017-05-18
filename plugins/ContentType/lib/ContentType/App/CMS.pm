@@ -393,6 +393,7 @@ sub save_cfg_content_type {
     my @fields        = ();
     my @field_objects = ();
     my $err_msg       = '';
+    my $max_id = List::Util::max( keys %{ $option_list->{fields} } ) + 1;
     foreach my $field_id ( keys %{ $option_list->{fields} } ) {
         my $type    = $option_list->{fields}{$field_id}{type};
         my $options = $option_list->{fields}{$field_id}{options};
@@ -509,9 +510,17 @@ sub save_cfg_content_type {
         delete $option_list->{fields}{$field_id}{new}
             if defined $option_list->{fields}{$field_id}{new};
         $option_list->{fields}{$field_id}{options} = $options;
+        my $content_field_id;
+        if ( $content_field->id ) {
+            $content_field_id = $content_field->id;
+        }
+        else {
+            $content_field_id = $max_id;
+            $max_id++;
+        }
         push @fields,
             {
-            id         => $content_field->id,
+            id         => $content_field_id,
             unique_key => $content_field->unique_key,
             %{ $option_list->{fields}{$field_id} }
             };
