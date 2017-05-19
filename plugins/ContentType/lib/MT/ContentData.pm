@@ -217,6 +217,7 @@ sub _update_object_categories {
         }
     );
 
+    my $is_primary = 1;
     for my $cat_id (@$values) {
         my $obj_cat = MT::ObjectCategory->new;
         $obj_cat->set_values(
@@ -224,9 +225,11 @@ sub _update_object_categories {
                 category_id => $cat_id,
                 object_ds   => 'content_field',
                 object_id   => $field->{id},
+                is_primary  => $is_primary,
             }
         );
         $obj_cat->save or die $obj_cat->errstr;
+        $is_primary = 0;
     }
 }
 

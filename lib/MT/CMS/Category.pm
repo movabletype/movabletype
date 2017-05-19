@@ -491,14 +491,19 @@ sub js_add_category {
     unless ( $app->validate_magic ) {
         return $app->json_error( $app->translate("Invalid request.") );
     }
-    my $user    = $app->user;
-    my $blog_id = $app->param('blog_id');
-    my $perms   = $app->permissions;
-    my $type    = $app->param('_type') || 'category';
+    my $user             = $app->user;
+    my $blog_id          = $app->param('blog_id');
+    my $perms            = $app->permissions;
+    my $type             = $app->param('_type') || 'category';
+    my $category_list_id = undef;
+    if ( $type eq 'category' ) {
+        $category_list_id = $app->param('category_list_id') || undef;
+    }
     return $app->json_error( $app->translate("Invalid request.") )
         unless ( $type eq 'category' )
         or ( $type eq 'folder' );
     my $class = $app->model($type);
+
     if ( !$class ) {
         return $app->json_error( $app->translate("Invalid request.") );
     }
@@ -517,8 +522,13 @@ sub js_add_category {
     my $parent;
     if ( my $parent_id = $app->param('parent') ) {
         if ( $parent_id != -1 ) {    # special case for 'root' folder
-            $parent
-                = $class->load( { id => $parent_id, blog_id => $blog_id } );
+            $parent = $class->load(
+                {   id               => $parent_id,
+                    blog_id          => $blog_id,
+                    category_list_id => $category_list_id
+                        || [ \'IS NULL', 0 ],
+                }
+            );
             if ( !$parent ) {
                 return $app->json_error(
                     $app->translate("Invalid request.") );
@@ -533,6 +543,7 @@ sub js_add_category {
     $obj->basename($basename)   if $basename;
     $obj->parent( $parent->id ) if $parent;
     $obj->blog_id($blog_id);
+    $obj->category_list_id($category_list_id);
     $obj->author_id( $user->id );
     $obj->created_by( $user->id );
 
@@ -559,8 +570,15 @@ sub js_add_category {
 
     # Update category/folder order by low cost method.
     # So, broken order cannot be updated correctly.
-    my $order_field = "${type}_order";
-    my @order = split ',', ( $blog->$order_field || '' );
+    my $order_field;
+    my @order;
+    if ($category_list_id) {
+        @order = split ',', ( $obj->category_list->order || '' );
+    }
+    else {
+        $order_field = "${type}_order";
+        @order = split ',', ( $blog->$order_field || '' );
+    }
     if ($parent) {
         @order = map { $_ == $parent->id ? ( $_, $obj->id ) : $_ } @order;
     }
@@ -568,8 +586,15 @@ sub js_add_category {
         unshift @order, $obj->id;
     }
     my $new_order = join ',', @order;
-    $blog->$order_field($new_order);
-    $blog->save;    # Ignore error.
+    if ($category_list_id) {
+        my $category_list = $obj->category_list;
+        $category_list->order($new_order);
+        $category_list->save;
+    }
+    else {
+        $blog->$order_field($new_order);
+        $blog->save;    # Ignore error.
+    }
 
     return $app->json_result(
         {   id       => $obj->id,

@@ -18,11 +18,13 @@ __PACKAGE__->install_properties(
             'object_id'   => 'integer not null',
             'object_ds'   => 'string(50) not null',
             'category_id' => 'integer not null',
+            'is_primary'  => 'boolean not null',
         },
         indexes => {
             object_id   => 1,
             category_id => 1,
             object_ds   => 1,
+            is_primary  => 1,
 
             # For MTCategories
             blog_ds_tag =>

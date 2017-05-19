@@ -1,10 +1,94 @@
-<div class="group-container">
-<mt:loop name="categories">
-  <div>
-    <input type="checkbox" class="content-field group checkbox" name="content-field-<mt:var name="content_field_id" escape="html">" id="content-field-<mt:var name="content_field_id" escape="html">-<mt:var name="__counter__">" value="<mt:var name="cat_id" escape="html">" mt:watch-change="1" mt:raw-name="1" <mt:var name="checked"> <mt:var name="required"> <mt:var name="multiple">>
-    <label for="content-field-<mt:var name="content_field_id" escape="html">-<mt:var name="__counter__">"><mt:var name="cat_label" escape="html"></label>
-    (<a href="<mt:var name="cat_edit_link">">edit</a>)
-  </div>
-</mt:loop>
-</div>
+<mtapp:setting
+   id="category"
+   label="$container_label"
+   label_class="$container_label_class"
+   help_page="entries"
+   help_section="entry_categories">
+  <script type="text/javascript">
+  /* <![CDATA[ */
+      MT.App.selectedCategoryList = <$mt:if name="selected_category_loop"><$mt:var name="selected_category_loop" to_json="1"$><mt:else>[]</mt:if>;
+      MT.App.categoryList = <$mt:if name="category_tree"><$mt:var name="category_tree" to_json="1" regex_replace="/(s)(cript)/ig","$1\\$2"$><mt:else>[]</mt:if>;
+
+      Template.templates.categoryList = '<mt:section encode_js="1">
+          [# if ( !items.length ) { #]
+              <span class="disabled">[#|h trans("None selected") #]</span>
+              [#* return #]
+          [# } #]
+          <ul class="category-list">
+          [# var map = {}; #]
+          [# for ( var i = 0; i < items.length; i++ ) { #]
+              [# if ( items[ i ] == 0 && i == 0 ) { #]
+                  [#-- special case, no primary selected, but has secondaries --#]
+                  [# continue #]
+              [# } #]
+              [# var cat = cache.getItem( "cat:"+items[ i ] ); #]
+              [# if ( !cat ) continue; #]
+              [# var label; #]
+              [# if ( cat.path.length ) {
+                  label = [];
+                  for ( var j = 0; j < cat.path.length; j++ ) {
+                      var c = cache.getItem( "cat:"+cat.path[ j ] );
+                      if ( c )
+                          label.push( c.label );
+                  }
+                  label.push( cat.label );
+                  for ( var j = 0; j < label.length; j++ )
+                      label[ j ] = context.f.h( label[ j ] );
+                  label = label.join( ' &raquo; ' );
+              } else {
+                  label = context.f.h( cat.label );
+              } #]
+              <mt:if name="options{multiple}">
+              [# if ( i == 0 ) { #]
+                  <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]"><strong>[#= label #]</strong><a href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h trans("Remove") #]">&nbsp;<span>[#|h trans("Remove") #]</span></a></li>
+              [# } else { #]
+                  <li mt:focus-hover="1" mt:id="[#= cat.id #]"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h "Remove" #]">&nbsp;<span>[#|h trans("Remove") #]</span></a></li>
+              [# } #]
+              <mt:else>
+              <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
+              </mt:if>
+          [# } #]
+          </ul>
+      </mt:section>';
+
+      Template.templates.categorySelectorList = '<mt:section encode_js="1">
+              [# if ( item.path == null ) item.path = [] #]
+              <div style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
+              <mt:if name="options{can_add}">
+                  <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="add-category-new-link"><span>Add</span>&nbsp;</a>
+              </mt:if>
+                  <div style="width: [#= 165 - (item.path.length * 10) #]px;">
+                      <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" class="add-category-checkbox" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> /> [#|h item.label #]
+                  </div>
+              </div>
+      </mt:section>';
+
+      Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
+      [# div.className="add-category-form hidden" #]<input id="add-category-input-movable" class="add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
+      </mt:section>';
+
+      new Timer(function () {
+        app.categorySelector.redraw();
+      }, 50, 1);
+  /* ]]> */
+
+  </script>
+
+  <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector" class="category-selector">
+  <mt:if name="options{can_add}">
+      <div class="category-selector-header">
+          <a class="add-category-new-parent-link" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><__trans phrase="Add"></a>
+      </div>
+      <div id="add-category-form" class="add-category-form hidden">
+          <input id="add-category-input" class="add-category-input input-hint" type="text" value="" placeholder="<$mt:var name="container_label_name"$>" />
+          <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span></a>
+          <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>Cancel</span></a>
+      </div>
+  </mt:if>
+      <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-list" class="category-selector-list"></div>
+  </div><!-- /category-selector -->
+
+  <div mt:delegate="category-list" id="category-list" data-mt-category-list-id="<mt:var name="options{category_list}" escape="html">"></div>
+  <input id="category-ids" type="hidden" name="category-<mt:var name="content_field_id" escape="html">" value="<$mt:var name="selected_category_loop" glue=","$>" />
+</mtapp:setting>
 

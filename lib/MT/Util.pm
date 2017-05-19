@@ -1224,7 +1224,7 @@ sub make_unique_category_basename {
     my $base_copy = $base;
 
     my $cat_class = ref $cat;
-    return _get_basename( $cat_class, $base, $blog );
+    return _get_basename( $cat_class, $base, $blog, $cat->category_list_id );
 }
 
 sub make_unique_author_basename {
@@ -1257,12 +1257,15 @@ sub make_unique_author_basename {
 }
 
 sub _get_basename {
-    my ( $class, $base, $blog ) = @_;
+    my ( $class, $base, $blog, $category_list_id ) = @_;
     my %terms;
     my $cache_key;
     if ($blog) {
         $cache_key = sprintf '%s:%s:%s:%s', 'BN', $class, $blog->id, $base;
         $terms{blog_id} = $blog->id if $blog;
+        if ( $class eq 'MT::Category' ) {
+            $terms{category_list_id} = $category_list_id || [ \'IS NULL', 0 ];
+        }
     }
     else {
         $cache_key = sprintf '%s:%s:%s', 'BN', $class, $base;

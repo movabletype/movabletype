@@ -17,22 +17,19 @@ sub field_html_params {
     my %values = map { $_ => 1 } @{$value};
 
     my @cats;
-    if ( my $field
-        = MT::ContentField->load( $field_data->{content_field_id} ) )
+    if ( my $cat_list
+        = MT::CategoryList->load( $field_data->{options}{category_list} || 0 )
+        )
     {
-        if ( my $cat_list
-            = MT::CategoryList->load( $field->related_cat_list_id || 0 ) )
-        {
-            @cats = map {
-                {   cat_id        => $_->id,
-                    cat_label     => $_->label,
-                    cat_edit_link => _edit_link( $app, $_ ),
-                    $values{ $_->id }
-                    ? ( checked => 'checked="checked"' )
-                    : (),
-                }
-            } @{ $cat_list->categories };
-        }
+        @cats = map {
+            {   cat_id        => $_->id,
+                cat_label     => $_->label,
+                cat_edit_link => _edit_link( $app, $_ ),
+                $values{ $_->id }
+                ? ( checked => 'checked="checked"' )
+                : (),
+            }
+        } @{ $cat_list->categories };
     }
 
     my $options = $field_data->{options};
@@ -48,15 +45,59 @@ sub field_html_params {
 
     my $required = $options->{required} ? 'data-mt-required="1"' : '';
 
-    {   categories => \@cats,
-        multiple   => $multiple,
-        required   => $required,
+    my ( $category_tree, $selected_category_loop )
+        = _build_category_list( $app, $field_data );
+
+    {   categories             => \@cats,
+        category_tree          => $category_tree,
+        multiple               => $multiple,
+        required               => $required,
+        selected_category_loop => $selected_category_loop,
     };
+}
+
+sub _build_category_list {
+    my ( $app, $field_data ) = @_;
+    my $blog_id = $app->blog->id;
+
+    my %places = map { $_ => 1 } @{ $field_data->{value} || [] };
+
+    my $data = $app->_build_category_list(
+        blog_id     => $blog_id,
+        cat_list_id => $field_data->{options}{category_list},
+        markers     => 1,
+        type        => 'category',
+    );
+
+    my $cat_id = $field_data->{value}
+        && @{ $field_data->{value} } ? $field_data->{value}[0] : '';
+    my $top_cat = $cat_id;
+
+    my @sel_cats;
+    my $cat_tree = [];
+    foreach (@$data) {
+        next unless exists $_->{category_id};
+        push @$cat_tree,
+            {
+            id       => $_->{category_id},
+            label    => $_->{category_label},
+            basename => $_->{category_basename},
+            path     => $_->{category_path_ids} || [],
+            fields   => $_->{category_fields} || [],
+            };
+        push @sel_cats, $_->{category_id}
+            if $places{ $_->{category_id} }
+            && $_->{category_id} != $cat_id;
+    }
+
+    unshift @sel_cats, $top_cat if defined $top_cat && $top_cat ne '';
+
+    ( $cat_tree, \@sel_cats );
 }
 
 sub data_getter {
     my ( $app, $field_id ) = @_;
-    my @cat_ids = $app->param( 'content-field-' . $field_id );
+    my @cat_ids = split ',', $app->param("category-${field_id}");
 
     my %valid_cats
         = map { $_->id => 1 } MT::Category->load( { id => \@cat_ids },
@@ -72,7 +113,7 @@ sub html {
     my $cat_ids = $content_data->data->{ $prop->content_field_id } || [];
 
     my %cats = map { $_->id => $_ } MT::Category->load( { id => $cat_ids } );
-    my @cats = map { $cats{$_} } @$cat_ids;
+    my @cats = grep {$_} map { $cats{$_} } @$cat_ids;
 
     my @links;
     for my $cat (@cats) {

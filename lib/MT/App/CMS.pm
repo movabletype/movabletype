@@ -4613,6 +4613,10 @@ sub _build_category_list {
     my $include_markers = $param{markers};
     my $counts          = $param{counts};
     my $type            = $param{type};
+    my $cat_list_id;
+    if ( $type eq 'category' ) {
+        $cat_list_id = $param{cat_list_id};
+    }
 
     my @data;
     my %authors;
@@ -4627,12 +4631,26 @@ sub _build_category_list {
         %expanded = map { $_->id => 1 } @parents;
     }
 
-    my $meta = $type . '_order';
-    my $blog
-        = MT->model('blog')->load( { id => $blog_id }, { no_class => 1 } );
-    my $id_ord = $blog->$meta || '';
+    my $id_ord;
+    if ($cat_list_id) {
+        require MT::CategoryList;
+        if ( my $cat_list = MT::CategoryList->load($cat_list_id) ) {
+            $id_ord = $cat_list->order || '';
+        }
+    }
+    else {
+        my $meta = $type . '_order';
+        my $blog
+            = MT->model('blog')
+            ->load( { id => $blog_id }, { no_class => 1 } );
+        $id_ord = $blog->$meta || '';
+    }
+
     my @cats = $class->load(
-        { blog_id => $blog_id, category_list_id => [ \'IS NULL', 0 ] } );
+        {   blog_id          => $blog_id,
+            category_list_id => $cat_list_id || [ \'IS NULL', 0 ],
+        }
+    );
     @cats = MT::Category::_sort_by_id_list(
         $id_ord,
         \@cats,

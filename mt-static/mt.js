@@ -2620,6 +2620,9 @@ MT.App.CategorySelector = new Class( Component, {
         this.list.setOption( "checkboxSelection", true );
         this.list.addObserver( this );
 
+        var clElement = DOM.getElementsByAttributeAndValue( document, "mt:delegate", "category-list" )[0];
+        this.catListId = Number(clElement.dataset.mtCategoryListId) || 0;
+
         if ( element.match( /category/ ) ) {
             this.type = "category";
             this.list.setOption( "singleSelect", false );
@@ -2771,13 +2774,14 @@ MT.App.CategorySelector = new Class( Component, {
         DOM.addClassName( this.catForm, "hidden" );
         DOM.addClassName( this.catFormMovable, "hidden" );
         this.catInput.value = '';
-        
+
         var args = {
             __mode: "js_add_category",
             magic_token: app.form["magic_token"].value,
             blog_id: app.form["blog_id"].value || DOM.getElement("blog-id").value,
+            category_list_id: this.catListId,
             parent: parseInt( this.parentID ),
-            _type: this.type
+            _type: this.catListId ? 'category' : this.type
         };
         args.label = name;
         
@@ -2876,7 +2880,7 @@ MT.App.CategorySelector = new Class( Component, {
     listItemsSelected: function( list, ids ) {
         MT.App.selectedCategoryList = Array.fromPseudo( list.getSelectedIDs() );
         app.catList.redraw();
-        if ( !this.opening && this.type == 'folder' )
+        if ( !this.opening && this.type == 'folder' && !this.catListId )
             this.close();
     },
 

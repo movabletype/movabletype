@@ -273,8 +273,18 @@ sub categories {
     $self->cache_property(
         'categories',
         sub {
-            [ MT->model('category')
-                    ->load( { category_list_id => $self->id } ) ];
+            my $join = MT::ObjectCategory->join_on(
+                'category_id',
+                undef,
+                {   sort      => 'is_primary',
+                    direction => 'descend',
+                },
+            );
+            my @cats = MT::Category->load(
+                { category_list_id => $self->id },
+                { join             => $join },
+            );
+            \@cats;
         },
     );
 }

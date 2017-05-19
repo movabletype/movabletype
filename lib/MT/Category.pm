@@ -675,6 +675,17 @@ sub is_category {
     return $class->class eq 'category';
 }
 
+sub category_list {
+    my $self = shift;
+    $self->cache_property(
+        'cateogry_list',
+        sub {
+            require MT::CategoryList;
+            MT::CategoryList->load( $self->category_list_id || 0 );
+        },
+    );
+}
+
 1;
 __END__
 
