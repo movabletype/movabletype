@@ -402,7 +402,23 @@ sub save_cfg_content_type {
         unless ($err_msg) {
             my $content_field_types = $app->registry('content_field_types');
             my $field_label         = $content_field_types->{$type}{label};
-            if ( $type eq 'single_line_text' ) {
+            if ( !$options->{label} ) {
+                $err_msg = $plugin->translate(
+                    '[_1]\'s "Label" field is required.', $field_label );
+            }
+            elsif ( length( $options->{label} ) > 255 ) {
+                $err_msg = $plugin->translate(
+                    '[_1]\'s "Label" field should be shorter than 255 characters.',
+                    $field_label
+                );
+            }
+            elsif ( length( $options->{hint} ) > 255 ) {
+                $err_msg = $plugin->translate(
+                    '[_1]\'s "Hint" field should be shorter than 255 characters.',
+                    $field_label
+                );
+            }
+            elsif ( $type eq 'single_line_text' ) {
                 my $option_label
                     = ( $options->{min_length} !~ /^[+\-]?\d+$/ )
                     ? $plugin->translate('Min Length')
