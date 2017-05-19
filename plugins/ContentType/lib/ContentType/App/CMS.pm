@@ -400,6 +400,8 @@ sub save_cfg_content_type {
 
         # Validation
         unless ($err_msg) {
+            my $content_field_types = $app->registry('content_field_types');
+            my $field_label         = $content_field_types->{$type}{label};
             if ( $type eq 'single_line_text' ) {
                 my $option_label
                     = ( $options->{min_length} !~ /^[+\-]?\d+$/ )
@@ -408,11 +410,11 @@ sub save_cfg_content_type {
                     ? $plugin->translate('Max Length')
                     : '';
                 if ($option_label) {
-                    my $field_label = $label || 'Single line text';
-                    $err_msg
-                        = $plugin->translate(
+                    $err_msg = $plugin->translate(
                         '[_1]\'s "[_2]" field value must be integer.',
-                        $field_label, $option_label );
+                        $label || $field_label,
+                        $option_label
+                    );
                 }
             }
             elsif ( $type eq 'integer' ) {
@@ -425,11 +427,11 @@ sub save_cfg_content_type {
                     ? $plugin->translate('Initial Value')
                     : '';
                 if ($option_label) {
-                    my $field_label = $label || 'Integer';
-                    $err_msg
-                        = $plugin->translate(
+                    $err_msg = $plugin->translate(
                         '[_1]\'s "[_2]" field value must be integer.',
-                        $field_label, $option_label );
+                        $label || $field_label,
+                        $option_label
+                    );
                 }
             }
             elsif ( $type eq 'float' ) {
@@ -451,21 +453,20 @@ sub save_cfg_content_type {
                     )
                     : '';
                 if ($option_label) {
-                    my $field_label = $label || 'Float';
-                    $err_msg
-                        = $plugin->translate(
+                    $err_msg = $plugin->translate(
                         '[_1]\'s "[_2]" field value must be [_3].',
-                        $field_label, $option_label, $type );
+                        $label || $field_label,
+                        $option_label, $type
+                    );
                 }
             }
             elsif ( $type eq 'url' ) {
                 my $url = $options->{initial_value};
                 if ( defined $url && $url ne '' && !MT::Util::is_url($url) ) {
-                    my $field_label = $label || 'URL';
                     $err_msg
                         = MT->translate(
                         "[_1]\'s Initial Value field is invalid.",
-                        $field_label );
+                        $label || $field_label );
                 }
             }
             elsif ($type eq 'date_and_time'
@@ -477,7 +478,7 @@ sub save_cfg_content_type {
                 my $ts   = $date . '000000';
                 if ( !MT::Util::is_valid_date($ts) ) {
                     $err_msg = $plugin->translate( "Invalid [_1]: '[_2]'",
-                        $type, $date );
+                        $label || $field_label, $date );
                 }
             }
         }
