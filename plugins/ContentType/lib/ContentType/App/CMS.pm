@@ -403,34 +403,60 @@ sub save_cfg_content_type {
             my $content_field_types = $app->registry('content_field_types');
             my $field_label         = $content_field_types->{$type}{label};
             if ( !$options->{label} ) {
-                $err_msg = $plugin->translate(
-                    '[_1]\'s "Label" field is required.', $field_label );
+                $err_msg
+                    = $plugin->translate( '[_1]\'s "[_2]" field is required.',
+                    $field_label, 'Label' );
             }
             elsif ( length( $options->{label} ) > 255 ) {
                 $err_msg = $plugin->translate(
-                    '[_1]\'s "Label" field should be shorter than 255 characters.',
-                    $field_label
+                    '[_1]\'s "[_2]" field should be shorter than 255 characters.',
+                    $field_label, 'Label'
                 );
             }
             elsif ( length( $options->{hint} ) > 255 ) {
                 $err_msg = $plugin->translate(
-                    '[_1]\'s "Hint" field should be shorter than 255 characters.',
-                    $field_label
+                    '[_1]\'s "[_2]" field should be shorter than 255 characters.',
+                    $field_label, 'Hint'
                 );
             }
             elsif ( $type eq 'single_line_text' ) {
-                my $option_label
-                    = ( $options->{min_length} !~ /^[+\-]?\d+$/ )
-                    ? $plugin->translate('Min Length')
-                    : ( $options->{max_length} !~ /^[+\-]?\d+$/ )
-                    ? $plugin->translate('Max Length')
-                    : '';
-                if ($option_label) {
-                    $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field value must be integer.',
-                        $label || $field_label,
-                        $option_label
-                    );
+                my $min_length    = $options->{min_length};
+                my $max_length    = $options->{max_length};
+                my $initial_value = $options->{initial_value};
+                if ($min_length) {
+                    if ( $min_length !~ /^[+\-]?\d+$/
+                        || ( $min_length < 0 || $min_length > 255 ) )
+                    {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                            $label || $field_label,
+                            'Min Length',
+                            '0',
+                            '255'
+                        );
+                    }
+                }
+                if ( !$err_msg && $max_length ) {
+                    if ( $max_length !~ /^[+\-]?\d+$/
+                        || ( $max_length < 1 || $max_length > 255 ) )
+                    {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                            $label || $field_label,
+                            'Max Length',
+                            '1',
+                            '255'
+                        );
+                    }
+                }
+                if ( !$err_msg && $initial_value ) {
+                    if ( length($initial_value) > 255 ) {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field should be shorter than 255 characters.',
+                            $field_label,
+                            'Initial Value'
+                        );
+                    }
                 }
             }
             elsif ( $type eq 'integer' ) {
