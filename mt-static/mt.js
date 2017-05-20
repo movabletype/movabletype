@@ -2610,18 +2610,21 @@ MT.App.CategorySelector = new Class( Component, {
     opening: false,
     
     
-    initObject: function( element, template ) {
+    initObject: function( element, template, args ) {
         arguments.callee.applySuper( this, arguments );
 
-        this.catForm = DOM.getElement( "add-category-form" );
-        this.catInput = DOM.getElement( "add-category-input" );
+        if ( !args ) args = {};
+
+        this.catForm = DOM.getElement( args.catForm || "add-category-form" );
+        this.catInput = DOM.getElement( args.catInput || "add-category-input" );
+        this.catInputMovableId = args.catInputMovableId || "add-category-input-movable";
+
+        this.categoryListId = args.categoryListId || 0;
+        this.contentFieldId = args.contentFieldId || 0;
 
         this.list = this.addComponent( new List( element + '-list', template ) );
         this.list.setOption( "checkboxSelection", true );
         this.list.addObserver( this );
-
-        var clElement = DOM.getElementsByAttributeAndValue( document, "mt:delegate", "category-list" )[0];
-        this.catListId = Number(clElement.dataset.mtCategoryListId) || 0;
 
         if ( element.match( /category/ ) ) {
             this.type = "category";
@@ -2635,14 +2638,17 @@ MT.App.CategorySelector = new Class( Component, {
         this.list.setOption( "disableUnSelect", true );
 
         this.parentID = 0;
-        var cats = MT.App.categoryList;
-        var selcats = MT.App.selectedCategoryList;
-        var catlen = cats.length;
+        this.categoryList = args.categoryList || MT.App.categoryList;
+        this.selectedCategoryList = args.selectedCategoryList || MT.App.selectedCategoryList;
+        var catlen = this.categoryList.length;
         var selected = {};
-        for ( var i = 0; i < selcats; i++ )
-            selected[ selcats[ i ] ] = true;
+        for ( var i = 0; i < this.selectedCategoryList; i++ )
+            selected[ this.selectedCategoryList[ i ] ] = true;
         for ( var i = 0; i < catlen; i++ )
-            this.list.addItem( cats[ i ], selected.hasOwnProperty( cats[ i ] ) );
+            this.list.addItem( this.categoryList[ i ], selected.hasOwnProperty( this.categoryList[ i ] ) );
+
+        this.catList = args.catList;
+        this.catCache = args.catCache;
     },
 
     
@@ -2685,7 +2691,7 @@ MT.App.CategorySelector = new Class( Component, {
         this.opening = true;
         this.list.resetSelection();
         /* this keeps our list order if they made one a primary since the last open */
-        this.list.setSelection( MT.App.selectedCategoryList );
+        this.list.setSelection( this.selectedCategoryList );
         this.opening = false;
     },
 
@@ -2721,7 +2727,7 @@ MT.App.CategorySelector = new Class( Component, {
                     this.catFormMovable = document.createElement( "div" );
                     this.catFormMovable.innerHTML = Template.process( "categorySelectorAddForm", { div: this.catFormMovable } );
                     this.list.content.insertBefore( this.catFormMovable, item.nextSibling );
-                    this.catInputMovable = DOM.getElement( "add-category-input-movable" );
+                    this.catInputMovable = DOM.getElement( this.catInputMovableId );
                     DOM.removeClassName( this.catFormMovable, "hidden" );
                     this.parentID = id;
                     this.catInputMovable.focus();
@@ -2779,9 +2785,9 @@ MT.App.CategorySelector = new Class( Component, {
             __mode: "js_add_category",
             magic_token: app.form["magic_token"].value,
             blog_id: app.form["blog_id"].value || DOM.getElement("blog-id").value,
-            category_list_id: this.catListId,
+            category_list_id: this.categoryListId,
             parent: parseInt( this.parentID ),
-            _type: this.catListId ? 'category' : this.type
+            _type: this.categoryListId ? 'category' : this.type
         };
         args.label = name;
         
@@ -2824,7 +2830,7 @@ MT.App.CategorySelector = new Class( Component, {
             basename: basename + ( MT.App.objectType && MT.App.objectType == 'page' ? '/' : '' ),
             path: []
         };
-        var catlist = MT.App.categoryList;
+        var catlist = this.categoryList;
         parent = parseInt( parent );
 
         /* single selection, and we're about to select the new folder */
@@ -2847,7 +2853,7 @@ MT.App.CategorySelector = new Class( Component, {
             cat.path.push( parent.id );
             catlist.splice( idx, 0, cat );
             /* update the cache */
-            app.catCache.setItem( "cat:" + cat.id, cat );
+            ( this.catCache || app.catCache ).setItem( "cat:" + cat.id, cat );
             /* add puts the item at the bottom, so we hide it and move it */
             this.list.addItem( cat, true, "list-item hidden" );
             var div = this.list.getItem( cat.id );
@@ -2860,7 +2866,7 @@ MT.App.CategorySelector = new Class( Component, {
         } else {
             catlist.push( cat );
             /* update the cache */
-            app.catCache.setItem( "cat:" + cat.id, cat );
+            ( this.catCache || app.catCache ).setItem( "cat:" + cat.id, cat );
             this.list.addItem( cat, true );
             if ( catlist.length > 1 ) {
                 var div = this.list.getItem( cat.id );
@@ -2878,9 +2884,13 @@ MT.App.CategorySelector = new Class( Component, {
 
 
     listItemsSelected: function( list, ids ) {
-        MT.App.selectedCategoryList = Array.fromPseudo( list.getSelectedIDs() );
-        app.catList.redraw();
-        if ( !this.opening && this.type == 'folder' && !this.catListId )
+        this.selectedCategoryList.length = 0;
+        Array.prototype.push.apply(
+            this.selectedCategoryList,
+            Array.fromPseudo( list.getSelectedIDs() )
+        );
+        ( this.catList || app.catList ).redraw();
+        if ( !this.opening && this.type == 'folder' && !this.categoryListId )
             this.close();
     },
 
@@ -2888,8 +2898,12 @@ MT.App.CategorySelector = new Class( Component, {
     listItemsUnSelected: function( list, ids ) {
         if ( this.opening || this.type == "folder" )
             return;
-        MT.App.selectedCategoryList = Array.fromPseudo( list.getSelectedIDs() );
-        app.catList.redraw();
+        this.selectedCategoryList.length = 0;
+        Array.prototype.push.apply(
+            this.selectedCategoryList,
+            Array.fromPseudo( list.getSelectedIDs() )
+        );
+        ( this.catList || app.catList ).redraw();
     }
 
 

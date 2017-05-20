@@ -3694,30 +3694,38 @@ ul.tabs li a {
 .edit-page .add-category-toggle-link {
     position: static;
 }
-#category-list strong {
+#category-list strong,
+.category-list-container strong {
     padding-left: 13px;
     background: url(../images/status_icons/primary.png) no-repeat 0 50%;
 }
-#category-list a {
+#category-list a,
+.category-list-container a {
     text-decoration: none;
 }
-#category-list a.primary {
+#category-list a.primary,
+.category-list-container a.primary {
     padding-left: 13px;
     color: #0076BF;
 }
-#category-list .focus a.primary {
+#category-list .focus a.primary,
+.category-list-container .focus a.primary {
     background: url(../images/status_icons/primary-disabled.png) no-repeat 0 50%;
 }
-#category-list .delete {
+#category-list .delete,
+.category-list-container .delete {
     padding-right: 9px;
 }
-#category-list .focus .delete {
+#category-list .focus .delete,
+.category-list-container .focus .delete {
     background: url(../images/status_icons/close-disabled.gif) no-repeat right center;
 }
-#category-list .focus .delete:hover {
+#category-list .focus .delete:hover,
+.category-list-container .focus .delete:hover {
     background: url(../images/status_icons/close.gif) no-repeat right center;
 }
-#category-list .delete span {
+#category-list .delete span,
+.category-list-container .delete span {
     display: none;
 }
 .add-new-category-link {

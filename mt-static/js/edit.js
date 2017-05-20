@@ -290,8 +290,15 @@ MT.App = new Class( MT.App, {
 MT.App.CategoryList = new Class( Object, {
 
     
-    init: function( element ) {
+    init: function( element, args ) {
         this.element = DOM.getElement( element );
+
+        if ( !args ) args = {};
+
+        this.catCache = args.catCache;
+        this.contentFieldId = args.contentFieldId || 0;
+        this.multiple = args.multiple;
+        this.selectedCategoryList = args.selectedCategoryList || MT.App.selectedCategoryList;
     },
 
 
@@ -302,11 +309,12 @@ MT.App.CategoryList = new Class( Object, {
         
     redraw: function( catCache ) {
         if ( !catCache )
-            catCache = app.catCache;
-        var el = DOM.getElement( "category-ids" );
+            catCache = this.catCache || app.catCache;
+        var id = this.contentFieldId ? 'category-ids-' + this.contentFieldId : 'category-ids';
+        var el = DOM.getElement( id );
         if ( el )
-            el.value = MT.App.selectedCategoryList.join( "," );
-        this.element.innerHTML = Template.process( "categoryList", { items: MT.App.selectedCategoryList, cache: catCache } );
+            el.value = this.selectedCategoryList.join( "," );
+        this.element.innerHTML = Template.process( "categoryList", { items: this.selectedCategoryList, cache: catCache, multiple: this.multiple } );
     },
 
 
@@ -335,11 +343,11 @@ MT.App.CategoryList = new Class( Object, {
                 if ( !defined( id ) )
                     return;
                 /* make category primary */
-                var idx = MT.App.selectedCategoryList.indexOf( id );
+                var idx = this.selectedCategoryList.indexOf( id );
                 if ( idx == -1 )
                     return log.error('could not find cat id:'+id);
-                MT.App.selectedCategoryList.splice( idx, 1 );
-                MT.App.selectedCategoryList.splice( 0, 0, id );
+                this.selectedCategoryList.splice( idx, 1 );
+                this.selectedCategoryList.splice( 0, 0, id );
                 this.redraw();
                 app.categorySelector.redraw();
                 break;
@@ -348,10 +356,10 @@ MT.App.CategoryList = new Class( Object, {
                 if ( !defined( id ) )
                     return;
                 /* remove a category */
-                var idx = MT.App.selectedCategoryList.indexOf( id );
+                var idx = this.selectedCategoryList.indexOf( id );
                 if ( idx == -1 )
                     return log.error('could not find cat id:'+id);
-                MT.App.selectedCategoryList.splice( idx, 1 );
+                this.selectedCategoryList.splice( idx, 1 );
                 this.redraw();
                 app.categorySelector.redraw();
                 break;
