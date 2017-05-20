@@ -11,7 +11,7 @@
   var languageTag = '<mt:var name="language_tag" escape="js">';
 
   var table = new aTable(
-    `#js-table-${fieldId}`,
+    '#js-table-' + fieldId,
     {
       changeableColumns: changeableColumns,
       changeableRows: changeableRows,
@@ -22,13 +22,13 @@
   table.afterAction =
   table.afterEntered = function() {
     setDirty(true);
-    log(`found dirty form: #js-table-${fieldId}`);
+    log('found dirty form: #js-table-' + fieldId);
     (app.getIndirectMethod('setDirty'))();
   };
 
   function updateTableInputValue() {
     var tableInnerHtml = jQuery(table.getTable()).children().html();
-    jQuery(`#content-field-${fieldId}`).val(tableInnerHtml);
+    jQuery('#content-field-' + fieldId).val(tableInnerHtml);
   }
 
   jQuery(window).on('pre_autosave', function() {

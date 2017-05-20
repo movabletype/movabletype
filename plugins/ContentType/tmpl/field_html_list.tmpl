@@ -33,7 +33,7 @@ function addList() {
   var required = $this.data('mt-required') ? true : false;
 
   var $newDiv = generateNewListHtml(fieldId, required);
-  log(`adding watcher to content-type-${fieldId}`);
+  log('adding watcher to content-type-' + fieldId);
   DOM.addEventListener($newDiv.get(0), 'change', app.getIndirectEventListener('setDirty'));
 
   $this.before($newDiv);
@@ -48,8 +48,8 @@ function generateNewListHtml(fieldId, required) {
   required = required ? 'data-mt-required="1"' : '';
 
   var newDiv = '<div style="display: inline">' + "\n";
-  newDiv    += `  <input type="text" name="content-field-${fieldId}" class="text long" value="" mt:raw-name="1" style="width: 95%" />\n`;
-  newDiv    += `  <a href="javascript:void(0)" class="remove-list-button" data-mt-content-field-id="${fieldId}" ${required}><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>\n`;
+  newDiv    += '  <input type="text" name="content-field-' + fieldId + '" class="text long" value="" mt:raw-name="1" style="width: 95%" />\n';
+  newDiv    += '  <a href="javascript:void(0)" class="remove-list-button" data-mt-content-field-id="' + fieldId + '" ' + required + '><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>\n';
   newDiv    += '</div>' + "\n";
 
   return jQuery(newDiv);
@@ -61,13 +61,13 @@ function adjustButtons() {
     return;
   }
   var fieldId = $this.data('mt-content-field-id');
-  var $lists = jQuery(`input[name=content-field-${fieldId}]`);
+  var $lists = jQuery('input[name=content-field-' + fieldId + ']');
   if ($lists.length === 1 && $lists.next('a')) {
     $lists.next('a').remove();
   } else {
     $lists.each(function (index) {
       if (jQuery(this).next('a').length > 0) return;
-      jQuery(this).after(`  <a href="javascript:void(0)" class="remove-list-button" data-mt-content-field-id="${fieldId}" data-mt-required="1"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>`);
+      jQuery(this).after('  <a href="javascript:void(0)" class="remove-list-button" data-mt-content-field-id="' + fieldId + '" data-mt-required="1"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>');
     });
   }
 }

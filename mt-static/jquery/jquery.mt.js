@@ -1253,7 +1253,7 @@ $.mtValidateRules = {
         var required = $e.data('mt-required') ? true : false;
         var checkboxName = $e.attr('name');
         var checkedCount = $e.parents('.group-container')
-            .find(`input[name=${checkboxName}]:checked`).length;
+            .find('input[name=' + checkboxName + ']:checked').length;
         if ( required && checkedCount === 0) {
             this.error = true;
             this.errstr = trans('Please select one of these options');
