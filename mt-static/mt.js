@@ -2815,6 +2815,13 @@ MT.App.CategorySelector = new Class( Component, {
             return alert( obj.error );
         if ( obj.result && obj.result.id )
             this.addCategory( obj.result.id, p.label, obj.result.basename, p.arguments.parent );
+        if ( app.fieldCategorySelectors ) {
+            var that = this;
+            Object.values( app.fieldCategorySelectors ).forEach(function (sel) {
+                if ( sel.contentFieldId === that.contentFieldId ) return;
+                sel.addCategory( obj.result.id, p.label, obj.result.basename, p.arguments.parent, true );
+            });
+        }
     },
 
 
@@ -2823,7 +2830,7 @@ MT.App.CategorySelector = new Class( Component, {
     },
 
 
-    addCategory: function( id, name, basename, parent ) {
+    addCategory: function( id, name, basename, parent, notSelect ) {
         var cat = {
             id: id,
             label: name + ( MT.App.objectType && MT.App.objectType == 'page' ? '/' : '' ),
@@ -2834,7 +2841,7 @@ MT.App.CategorySelector = new Class( Component, {
         parent = parseInt( parent );
 
         /* single selection, and we're about to select the new folder */
-        if ( this.type == 'folder' )
+        if ( this.type == 'folder' && !notSelect )
             this.list.resetSelection();
 
         if ( parent != 0 ) {
@@ -2855,25 +2862,25 @@ MT.App.CategorySelector = new Class( Component, {
             /* update the cache */
             ( this.catCache || app.catCache ).setItem( "cat:" + cat.id, cat );
             /* add puts the item at the bottom, so we hide it and move it */
-            this.list.addItem( cat, true, "list-item hidden" );
+            this.list.addItem( cat, !notSelect, "list-item hidden" );
             var div = this.list.getItem( cat.id );
             div.parentNode.removeChild( div );
             var parentItem = this.list.getItem( parent.id );
             /* move it after the parent */
             this.list.content.insertBefore( div, parentItem.nextSibling );
-            this.list.toggleCheckbox( div, true ); // added checked attribute again for IE
+            this.list.toggleCheckbox( div, !notSelect ); // added checked attribute again for IE
             DOM.removeClassName( div, "hidden" );
         } else {
             catlist.push( cat );
             /* update the cache */
             ( this.catCache || app.catCache ).setItem( "cat:" + cat.id, cat );
-            this.list.addItem( cat, true );
+            this.list.addItem( cat, !notSelect );
             if ( catlist.length > 1 ) {
                 var div = this.list.getItem( cat.id );
                 div.parentNode.removeChild( div );
                 /* move it after the parent */
                 this.list.content.insertBefore( div, this.list.content.children[1] );
-                this.list.toggleCheckbox( div, true ); // added checked attribute again for IE
+                this.list.toggleCheckbox( div, !notSelect ); // added checked attribute again for IE
                 DOM.removeClassName( div, "hidden" );
             }
         }

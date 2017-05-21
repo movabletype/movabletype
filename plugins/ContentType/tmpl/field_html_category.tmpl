@@ -87,7 +87,11 @@
           app.setDelegate( "categoryList", list );
           list.redraw( catCache );
 
-          var selector = new MT.App.CategorySelector(
+          if ( !app.fieldCategorySelectors ) {
+              app.fieldCategorySelectors = {};
+          }
+
+          var selector = app.fieldCategorySelectors[contentFieldId] = new MT.App.CategorySelector(
               '<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-' + contentFieldId,
               'categorySelectorList' + contentFieldId,
               {
