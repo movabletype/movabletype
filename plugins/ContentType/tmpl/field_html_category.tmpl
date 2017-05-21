@@ -1,4 +1,5 @@
 <mt:if name="options{category_list}">
+<div class="group-container">
 <mtapp:setting
    id="category-<mt:var name="content_field_id" escape="html">"
    label="$container_label"
@@ -56,7 +57,7 @@
                   <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="add-category-new-link"><span>Add</span>&nbsp;</a>
               </mt:if>
                   <div style="width: [#= 165 - (item.path.length * 10) #]px;">
-                      <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" class="add-category-checkbox" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> /> [#|h item.label #]
+                      <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" id="content-field-<mt:var name="content_field_id">-[#= item.id #]" class="add-category-checkbox category group content-field" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> /> [#|h item.label #]
                   </div>
               </div>
       </mt:section>';
@@ -128,8 +129,9 @@
   </div><!-- /category-selector -->
 
   <div mt:delegate="category-list" id="category-list-<mt:var name="content_field_id" escape="html">" class="category-list-container"></div>
-  <input id="category-ids-<mt:var name="content_field_id" escape="js">" type="hidden" name="category-<mt:var name="content_field_id" escape="html">" value="<$mt:var name="selected_category_loop" glue=","$>" />
+  <input id="category-ids-<mt:var name="content_field_id" escape="js">" type="hidden" name="category-<mt:var name="content_field_id" escape="html">" value="<$mt:var name="selected_category_loop" glue=","$>" <mt:var name="required"> <mt:var name="multiple"> />
 </mtapp:setting>
+</div>
 <mt:else>
 <__trans phrase="Category List is not selected in this field.">
 </mt:if>

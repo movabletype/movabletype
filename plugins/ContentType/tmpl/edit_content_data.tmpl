@@ -467,10 +467,46 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     });
   });
 
+  var newCategoryClickEventAdded;
+
   jQuery('#edit-content-type-data-form').submit( function() {
-    var validate1 = jQuery('.content-field:not(.group)').mtValidate('simple');
-    var validate2 = jQuery('.content-field.group').mtValidate('simple-group');
-    if (!validate1 || !validate2) {
+    var validateSingle = jQuery('.content-field:not(.group)').mtValidate('simple');
+    var validateGroup = jQuery('.content-field.group').mtValidate('simple-group');
+
+    if ( !newCategoryClickEventAdded ) {
+      jQuery('div.category-selector-list').on('click', 'div.list-item', function () {
+          var $input = jQuery(this).find('input.content-field');
+          if ( !jQuery.data( $input.get(0), 'mtValidator' ) ) {
+              jQuery.data( $input.get(0), 'mtValidator', 'simple-group' );
+
+              var mtValidateError;
+              var mtValidateLastError;
+              jQuery(this).parents('.group-container').find('input.content-field.group').each(function (i, e) {
+                  if ( !mtValidateError && jQuery.data( e, 'mtValidateError' ) ) {
+                      mtValidateError = jQuery.data( e, 'mtValidateError' );
+                  }
+                  if ( !mtValidateLastError && jQuery.data( e, 'mtValidateLastError' ) ) {
+                      mtValidateLastError = jQuery.data( e, 'mtValidateLastError' );
+                  }
+                  if ( mtValidateError || mtValidateLastError ) {
+                      return false;
+                  }
+              });
+
+              if (mtValidateError) {
+                  jQuery.data( $input.get(0), 'mtValidateError', mtValidateError );
+              }
+              if (mtValidateLastError) {
+                  jQuery.data( $input.get(0), 'mtValidateLastError', mtValidateLastError );
+              }
+          }
+          $input.mtValid({ focus: false });
+      });
+      newCategoryClickEventAdded = true;
+    }
+
+    if ( !validateSingle || !validateGroup ) {
+      app.formValidated = true;
       return false;
     }
     setDirty(false);

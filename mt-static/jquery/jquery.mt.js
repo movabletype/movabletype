@@ -999,14 +999,13 @@ $.mtValidator('simple-group', {
     removeError: function ( $target, $error_block, msg ) {
         var $container = $target.parents('.group-container');
         var groupInputs = $container.find('.group').toArray();
-        var invalidInputs = jQuery.grep(groupInputs, function (a) {
-            var $a = jQuery(a);
-            if ($a.attr('id') === $target.attr('id')) {
+        var invalidInputs = jQuery.grep(groupInputs, function (input) {
+            if (input.getAttribute('id') === $target.attr('id')) {
                 return false;
             }
-            return $a.data('mtValidateLastError');
+            return $.data( input, 'mtValidateError' );
         });
-        if ($target.is('input[type=radio],input[type="checkbox"]')) {
+        if ($target.is('input[type=radio],input[type=checkbox]')) {
             $container.siblings('.group-error').remove();
             invalidInputs.forEach(function (input) {
                 $.data( input, 'mtValidateError', null );
@@ -1018,7 +1017,7 @@ $.mtValidator('simple-group', {
             if (invalidInputs.length === 0) {
                 $container.siblings('.group-error').remove();
             } else {
-                var error = jQuery(invalidInputs[0]).data('mtValidateLastError');
+                var error = $.data( invalidInputs[0], 'mtValidateLastError' );
                 $container.siblings('.group-error')
                     .find('label.msg-error')
                     .text(error);
@@ -1035,6 +1034,12 @@ $.mtValidator('simple-group', {
         var $container = $target.parents('.group-container');
         if ($container.siblings('.group-error').length === 0) {
             $container.after($error_block);
+        }
+        if ($target.is('input[type=radio],input[type=checkbox]')) {
+            var groupInputs = $container.find('.group').toArray();
+            groupInputs.forEach(function (input) {
+                $.data( input, 'mtValidateError', $error_block );
+            });
         }
     },
     wrapError: function ( $target, msg ) {
@@ -1254,6 +1259,36 @@ $.mtValidateRules = {
         var checkboxName = $e.attr('name');
         var checkedCount = $e.parents('.group-container')
             .find('input[name=' + checkboxName + ']:checked').length;
+        if ( required && checkedCount === 0) {
+            this.error = true;
+            this.errstr = trans('Please select one of these options');
+            return false;
+        } else if ( !multiple && checkedCount > 1 ) {
+            this.error = true;
+            this.errstr = trans('Only 1 option can be selected');
+            return false;
+        } else if ( multiple && max && max < checkedCount ) {
+            this.error = true;
+            this.errstr = trans('Options less than or equal to [_1] must be selected', max);
+            return false;
+        } else if ( multiple && min && min > checkedCount ) {
+            this.error = true;
+            this.errstr = trans('Options greater than or equal to [_1] must be selected', min);
+            return false;
+        } else {
+            return true;
+        }
+    },
+    '.category': function ($e) {
+        var $input = $e.parents('.group-container').find('[id^=category-ids-]');
+        var multiple = $input.data('mt-multiple') ? true : false;
+        var max = Number($input.data('mt-max-select')) || 0;
+        var min = Number($input.data('mt-min-select')) || 0;
+        var required = $input.data('mt-required') ? true : false;
+        var checkedCats = $.grep( $input.val().split(','), function (catId) {
+            return catId;
+        } );
+        var checkedCount = checkedCats.length;
         if ( required && checkedCount === 0) {
             this.error = true;
             this.errstr = trans('Please select one of these options');

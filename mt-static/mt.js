@@ -2816,6 +2816,32 @@ MT.App.CategorySelector = new Class( Component, {
         if ( obj.result && obj.result.id )
             this.addCategory( obj.result.id, p.label, obj.result.basename, p.arguments.parent );
         if ( app.fieldCategorySelectors ) {
+            if ( app.formValidated ) {
+                var $input = jQuery( this.list.getItem( obj.result.id ) ).find('input');
+
+                var mtValidateError;
+                var mtValidateLastError;
+                $input.parents('.group-container').find('input.content-field.group').each(function (i, e) {
+                    if ( !mtValidateError && jQuery.data( e, 'mtValidateError' ) ) {
+                        mtValidateError = jQuery.data( e, 'mtValidateError' );
+                    }
+                    if ( !mtValidateLastError && jQuery.data( e, 'mtValidateLastError' ) ) {
+                        mtValidateLastError = jQuery.data( e, 'mtValidateLastError' );
+                    }
+                    if ( mtValidateError || mtValidateLastError ) {
+                        return false;
+                    }
+                });
+                if (mtValidateError) {
+                    jQuery.data( $input.get(0), 'mtValidateError', mtValidateError );
+                }
+                if (mtValidateLastError) {
+                    jQuery.data( $input.get(0), 'mtValidateLastError', mtValidateLastError );
+                }
+
+                $input.mtValidate('simple-group');
+            }
+
             var that = this;
             Object.values( app.fieldCategorySelectors ).forEach(function (sel) {
                 if ( sel.contentFieldId === that.contentFieldId ) return;
