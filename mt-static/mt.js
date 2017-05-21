@@ -2725,7 +2725,7 @@ MT.App.CategorySelector = new Class( Component, {
                     DOM.addClassName( this.catForm, "hidden" );
                     var item = this.list.getListElementFromTarget( event.target );
                     this.catFormMovable = document.createElement( "div" );
-                    this.catFormMovable.innerHTML = Template.process( "categorySelectorAddForm", { div: this.catFormMovable } );
+                    this.catFormMovable.innerHTML = Template.process( "categorySelectorAddForm", { div: this.catFormMovable, contentFieldId: this.contentFieldId } );
                     this.list.content.insertBefore( this.catFormMovable, item.nextSibling );
                     this.catInputMovable = DOM.getElement( this.catInputMovableId );
                     DOM.removeClassName( this.catFormMovable, "hidden" );

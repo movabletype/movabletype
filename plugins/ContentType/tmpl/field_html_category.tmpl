@@ -61,7 +61,7 @@
       </mt:section>';
 
       Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
-      [# div.className="add-category-form hidden" #]<input id="add-category-input-movable" class="add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
+      [# div.className="add-category-form hidden" #]<input id="add-category-input-movable-[#= contentFieldId #]" class="add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
       </mt:section>';
 
       new Timer(function () {
