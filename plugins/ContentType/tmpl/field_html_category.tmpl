@@ -1,3 +1,4 @@
+<mt:if name="options{category_list}">
 <mtapp:setting
    id="category-<mt:var name="content_field_id" escape="html">"
    label="$container_label"
@@ -129,4 +130,7 @@
   <div mt:delegate="category-list" id="category-list-<mt:var name="content_field_id" escape="html">" class="category-list-container"></div>
   <input id="category-ids-<mt:var name="content_field_id" escape="js">" type="hidden" name="category-<mt:var name="content_field_id" escape="html">" value="<$mt:var name="selected_category_loop" glue=","$>" />
 </mtapp:setting>
+<mt:else>
+<__trans phrase="Category List is not selected in this field.">
+</mt:if>
 
