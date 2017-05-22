@@ -5,6 +5,7 @@ use warnings;
 use MT::ContentField;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
+use MT::ObjectTag;
 use MT::Tag;
 
 sub field_html_params {
@@ -38,59 +39,43 @@ sub field_html_params {
 
     my $tag_delim_data = qq{data-mt-tag-delim="${tag_delim}"};
 
-    {   multiple  => $multiple,
-        required  => $required,
-        tags      => $tags,
-        tag_delim => $tag_delim_data,
+    my @tag_list;
+    my $iter = MT::Tag->load_iter(
+        { n8d_id => [ \'IS NULL', 0 ] },
+        {   join => MT::ObjectTag->join_on(
+                'tag_id',
+                {   blog_id           => $app->blog->id,
+                    object_datasource => 'content_field',
+                },
+                { unique => 1 },
+            ),
+            sort => 'name',
+        },
+    );
+    while ( my $t = $iter->() ) {
+        push @tag_list,
+            {
+            id       => $t->id,
+            label    => $t->name,
+            basename => $t->name,
+            path     => [],
+            fields   => [],
+            };
+    }
+
+    {   multiple          => $multiple,
+        required          => $required,
+        tags              => $tags,
+        tag_delim         => $tag_delim_data,
+        tag_list          => \@tag_list,
+        selected_tag_loop => $value,
     };
 }
 
 sub data_getter {
     my ( $app, $field_id ) = @_;
-
-    my $unique_tag_names = _get_unique_tags( $app, $field_id );
-
-    my %existing_tags
-        = map { $_->name => $_ } MT::Tag->load( { name => $unique_tag_names },
-        { binary => { name => 1 } } );
-
-    my $content_field = MT::ContentField->load($field_id);
-
-    if ( $content_field->options->{can_add} ) {
-        for my $utn ( @{$unique_tag_names} ) {
-            unless ( $existing_tags{$utn} ) {
-                my $tag = MT::Tag->new;
-                $tag->name($utn);
-                $tag->save;
-
-                $existing_tags{$utn} = $tag;
-            }
-        }
-    }
-
-    my @tags = map { $existing_tags{$_}->id }
-        grep { $existing_tags{$_} } @{$unique_tag_names};
-    \@tags;
-}
-
-sub _get_unique_tags {
-    my ( $app, $field_id ) = @_;
-    my $tag_delim = _tag_delim($app);
-
-    my @tags = split $tag_delim,
-        scalar( $app->param("content-field-${field_id}") );
-
-    my @unique_tags;
-    my %exist_tags;
-    for my $tag (@tags) {
-        $tag =~ s/^\s*|\s*$//g;
-        if ( $tag ne '' ) {
-            next if $exist_tags{$tag}++;
-            push @unique_tags, $tag;
-        }
-    }
-
-    \@unique_tags;
+    my @tag_ids = $app->param("content-field-${field_id}");
+    \@tag_ids;
 }
 
 sub terms {
@@ -163,31 +148,23 @@ sub ss_validator {
     my $min         = $options->{min};
     my $can_add     = $options->{can_add};
 
-    my $unique_tags = _get_unique_tags( $app, $field_id );
+    my @tag_ids = $app->param("content-field-${field_id}");
 
-    if ( !$multiple && @{$unique_tags} >= 2 ) {
+    if ( !$multiple && @tag_ids >= 2 ) {
         return $app->errtrans( 'Only 1 tag can be input in "[_1]" field.',
             $field_label );
     }
-    if ( $multiple && $max && @{$unique_tags} > $max ) {
+    if ( $multiple && $max && @tag_ids > $max ) {
         return $app->errtrans(
             'Tags less than or equal to [_1] must be input in "[_2]" field.',
             $max, $field_label
         );
     }
-    if ( $multiple && $min && @{$unique_tags} < $min ) {
+    if ( $multiple && $min && @tag_ids < $min ) {
         return $app->errtrans(
             'Tags greater than or equal to [_1] must be input in "[_2]" field.',
             $min, $field_label
         );
-    }
-    if ( !$can_add ) {
-        my $tag_count = MT::Tag->count( { name => $unique_tags },
-            { binary => { name => 1 } } );
-        if ( $tag_count != @{$unique_tags} ) {
-            return $app->errtrans(
-                'New tag cannot be created in "[_1]" field.', $field_label );
-        }
     }
 }
 

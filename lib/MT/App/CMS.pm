@@ -320,6 +320,7 @@ sub core_methods {
         'add_map'           => "${pkg}Template::add_map",
         'js_tag_check'      => "${pkg}Tag::js_tag_check",
         'js_tag_list'       => "${pkg}Tag::js_tag_list",
+        'js_add_tag'        => "${pkg}Tag::js_add_tag",
         'convert_to_html'   => "${pkg}Tools::convert_to_html",
         'update_list_prefs' => "${pkg}Tools::update_list_prefs",
         'js_add_category'   => "${pkg}Category::js_add_category",

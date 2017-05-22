@@ -2649,6 +2649,7 @@ MT.App.CategorySelector = new Class( Component, {
 
         this.catList = args.catList;
         this.catCache = args.catCache;
+        this.isTag = args.isTag;
     },
 
     
@@ -2782,7 +2783,7 @@ MT.App.CategorySelector = new Class( Component, {
         this.catInput.value = '';
 
         var args = {
-            __mode: "js_add_category",
+            __mode: this.isTag ? "js_add_tag" : "js_add_category",
             magic_token: app.form["magic_token"].value,
             blog_id: app.form["blog_id"].value || DOM.getElement("blog-id").value,
             category_list_id: this.categoryListId,

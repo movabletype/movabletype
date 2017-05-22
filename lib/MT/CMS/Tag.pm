@@ -7,6 +7,9 @@ package MT::CMS::Tag;
 
 use strict;
 
+use MT::ObjectTag;
+use MT::Tag;
+
 sub rename_tag {
     my $app = shift;
     $app->validate_magic or return;
@@ -642,4 +645,77 @@ sub cms_pre_load_filtered_list {
         ->join_on( 'tag_id', { blog_id => $blog_id }, { unique => 1 }, );
 }
 
+sub js_add_tag {
+    my $app = shift;
+    unless ( $app->validate_magic ) {
+        return $app->json_error( $app->translate("Invalid request.") );
+    }
+    my $user    = $app->user;
+    my $blog_id = $app->param('blog_id');
+    my $perms   = $app->permissions;
+
+    my $label = $app->param('label');
+    if ( !defined($label) || ( $label =~ m/^\s*$/ ) ) {
+        return $app->json_error( $app->translate("Invalid request.") );
+    }
+
+    my $blog = $app->blog;
+    if ( !$blog ) {
+        return $app->json_error( $app->translate("Invalid request.") );
+    }
+
+    my $obj;
+    $obj = MT::Tag->load(
+        { name => $label },
+        {   binary => { name => 1 },
+            join   => MT::ObjectTag->join_on(
+                'tag_id',
+                {   blog_id           => $blog_id,
+                    object_datasource => 'content_field',
+                },
+            ),
+        },
+    );
+    if ($obj) {
+        return $app->json_error(
+            $app->translate( "The tag name '[_1]' already exists.", $label )
+        );
+    }
+
+    $obj = MT::Tag->load( { name => $label }, { binary => { name => 1 } } );
+    if ($obj) {
+        return $app->json_result(
+            {   id       => $obj->id,
+                basename => $obj->name,
+            }
+        );
+    }
+
+    $obj = MT::Tag->new;
+    my $original = $obj->clone;
+
+    $obj->name($label);
+    $obj->created_by( $user->id );
+
+    if (!$app->run_callbacks( 'cms_save_permission_filter.tag', $app, $obj ) )
+    {
+        return $app->json_error( $app->translate("Permission denied.") );
+    }
+
+    if ( !$app->run_callbacks( 'cms_pre_save.tag', $app, $obj, $original ) ) {
+        return $app->json_error( $app->errstr );
+    }
+
+    $obj->save;
+
+    $app->run_callbacks( 'cms_post_save.tag', $app, $obj, $original );
+
+    return $app->json_result(
+        {   id       => $obj->id,
+            basename => $obj->name,
+        }
+    );
+}
+
 1;
+
