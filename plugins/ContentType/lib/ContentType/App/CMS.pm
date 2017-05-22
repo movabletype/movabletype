@@ -554,7 +554,7 @@ sub save_cfg_content_type {
                         $label || $field_label, $date );
                 }
             }
-            elsif ( $type eq 'select_box' ) {
+            elsif ( $type eq 'select_box' || $type eq 'checkbox' ) {
                 my $min          = $options->{min};
                 my $max          = $options->{max};
                 my $values_count = 0;
@@ -565,24 +565,26 @@ sub save_cfg_content_type {
                 if ( $values_count == 0 ) {
                     $err_msg
                         = $plugin->translate(
-                        "Select Box's \"Values\" field is required." );
+                        "[_1]'s \"Values\" field is required.",
+                        $label || $field_label );
                 }
                 elsif ( $options->{multiple} ) {
                     if ( !$min ) {
-                        $err_msg
-                            = $plugin->translate(
-                            "Select Box's \"Min\" field is required when \"Multiple\" is checked."
-                            );
+                        $err_msg = $plugin->translate(
+                            "[_1]'s \"Min\" field is required when \"Multiple\" is checked.",
+                            $label || $field_label
+                        );
                     }
                     elsif ( !$max ) {
-                        $err_msg
-                            = $plugin->translate(
-                            "Select Box's \"Max\" field is required when \"Multiple\" is checked."
-                            );
+                        $err_msg = $plugin->translate(
+                            "[_1]'s \"Max\" field is required when \"Multiple\" is checked.",
+                            $label || $field_label
+                        );
                     }
                     elsif ( $max > $values_count ) {
                         $err_msg = $plugin->translate(
-                            "Select Box's \"Max\" field should be lower than number of \"Values\" field.",
+                            "[_1]'s \"Max\" field should be lower than number of \"Values\" field.",
+                            $label || $field_label
                         );
                     }
                     elsif ($min !~ /^[+\-]?\d+$/
