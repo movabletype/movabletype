@@ -2924,7 +2924,7 @@ MT.App.CategorySelector = new Class( Component, {
             Array.fromPseudo( list.getSelectedIDs() )
         );
         ( this.catList || app.catList ).redraw();
-        if ( !this.opening && this.type == 'folder' && !this.categoryListId )
+        if ( !this.opening && this.type == 'folder' && !this.categoryListId && !this.isTag )
             this.close();
     },
 
