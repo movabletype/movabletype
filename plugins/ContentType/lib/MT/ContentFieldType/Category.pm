@@ -60,7 +60,16 @@ sub _build_category_list {
     my ( $app, $field_data ) = @_;
     my $blog_id = $app->blog->id;
 
-    my %places = map { $_ => 1 } @{ $field_data->{value} || [] };
+    my $categories = [];
+    if ( my $category_list
+        = MT::CategoryList->load( $field_data->{options}{category_list} || 0 )
+        )
+    {
+        $categories = $category_list->categories;
+    }
+
+    my %value = map { $_ => 1 } @{ $field_data->{value} || [] };
+    my %places = map { $_->id => 1 } grep { $value{ $_->id } } @{$categories};
 
     my $data = $app->_build_category_list(
         blog_id     => $blog_id,
@@ -68,10 +77,6 @@ sub _build_category_list {
         markers     => 1,
         type        => 'category',
     );
-
-    my $cat_id = $field_data->{value}
-        && @{ $field_data->{value} } ? $field_data->{value}[0] : '';
-    my $top_cat = $cat_id;
 
     my @sel_cats;
     my $cat_tree = [];
@@ -86,11 +91,8 @@ sub _build_category_list {
             fields   => $_->{category_fields} || [],
             };
         push @sel_cats, $_->{category_id}
-            if $places{ $_->{category_id} }
-            && $_->{category_id} != $cat_id;
+            if $places{ $_->{category_id} };
     }
-
-    unshift @sel_cats, $top_cat if defined $top_cat && $top_cat ne '';
 
     ( $cat_tree, \@sel_cats );
 }
