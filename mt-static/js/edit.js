@@ -349,7 +349,7 @@ MT.App.CategoryList = new Class( Object, {
                 this.selectedCategoryList.splice( idx, 1 );
                 this.selectedCategoryList.splice( 0, 0, id );
                 this.redraw();
-                app.categorySelector.redraw();
+                this.getCategorySelector().redraw();
                 break;
             
             case "remove":
@@ -361,15 +361,15 @@ MT.App.CategoryList = new Class( Object, {
                     return log.error('could not find cat id:'+id);
                 this.selectedCategoryList.splice( idx, 1 );
                 this.redraw();
-                app.categorySelector.redraw();
+                this.getCategorySelector().redraw();
                 break;
                 
             case "openCategorySelector":
-                app.categorySelector.open( event.commandElement );
+                this.getCategorySelector().open( event.commandElement );
                 break;
 
             case "closeCategorySelector":
-                app.categorySelector.close( event.commandElement );
+                this.getCategorySelector().close( event.commandElement );
                 break;
 
             default:
@@ -377,8 +377,14 @@ MT.App.CategoryList = new Class( Object, {
 
         }
         return event.stop();
-    }
-    
+    },
 
+    getCategorySelector: function () {
+        if ( this.contentFieldId ) {
+            return app.fieldCategorySelectors[ this.contentFieldId ];
+        } else {
+            return app.categorySelector;
+        }
+    }
 } );
 
