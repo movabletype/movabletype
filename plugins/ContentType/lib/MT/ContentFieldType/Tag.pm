@@ -38,18 +38,7 @@ sub field_html_params {
     my $required = $options->{required} ? 'data-mt-required="1"' : '';
 
     my @tag_list;
-    my $iter = MT::Tag->load_iter(
-        { n8d_id => [ \'IS NULL', 0 ] },
-        {   join => MT::ObjectTag->join_on(
-                'tag_id',
-                {   blog_id           => $app->blog->id,
-                    object_datasource => 'content_field',
-                },
-                { unique => 1 },
-            ),
-            sort => 'name',
-        },
-    );
+    my $iter = MT::Tag->load_iter( { id => $value }, { sort => 'name' } );
     while ( my $t = $iter->() ) {
         push @tag_list,
             {
