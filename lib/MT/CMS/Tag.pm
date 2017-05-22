@@ -695,7 +695,6 @@ sub js_add_tag {
     my $original = $obj->clone;
 
     $obj->name($label);
-    $obj->created_by( $user->id );
 
     if (!$app->run_callbacks( 'cms_save_permission_filter.tag', $app, $obj ) )
     {

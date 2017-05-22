@@ -31,13 +31,11 @@ sub field_html_params {
         my $max = $options->{max};
         my $min = $options->{min};
         $multiple = 'data-mt-multiple="1"';
-        $multiple .= qq{ data-mt-max-tag="${max}"} if $max;
-        $multiple .= qq{ data-mt-min-tag="${min}"} if $min;
+        $multiple .= qq{ data-mt-max-select="${max}"} if $max;
+        $multiple .= qq{ data-mt-min-select="${min}"} if $min;
     }
 
     my $required = $options->{required} ? 'data-mt-required="1"' : '';
-
-    my $tag_delim_data = qq{data-mt-tag-delim="${tag_delim}"};
 
     my @tag_list;
     my $iter = MT::Tag->load_iter(
@@ -66,7 +64,6 @@ sub field_html_params {
     {   multiple          => $multiple,
         required          => $required,
         tags              => $tags,
-        tag_delim         => $tag_delim_data,
         tag_list          => \@tag_list,
         selected_tag_loop => $value,
     };
