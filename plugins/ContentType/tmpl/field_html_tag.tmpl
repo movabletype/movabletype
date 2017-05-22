@@ -37,7 +37,7 @@
                   label = context.f.h( cat.label );
               } #]
               [# if ( multiple ) { #]
-                  <li mt:focus-hover="1" mt:id="[#= cat.id #]"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h "Remove" #]">[#= label #]&nbsp;<span>[#|h trans("Remove") #]</span></a></li>
+                  <li mt:focus-hover="1" mt:id="[#= cat.id #]"><span mt:focus-hover="1">[#= label #]</span><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h "Remove" #]">&nbsp;<span>[#|h trans("Remove") #]</span></a></li>
               [# } else { #]
                   <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
               [# } #]
