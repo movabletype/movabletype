@@ -2913,7 +2913,7 @@ MT.App.CategorySelector = new Class( Component, {
         }
 
         /* recheck selection */
-        this.listItemsSelected( this.list );
+        this.listItemsSelected( this.list, [ id ] );
     },
 
 
@@ -2926,6 +2926,7 @@ MT.App.CategorySelector = new Class( Component, {
         ( this.catList || app.catList ).redraw();
         if ( !this.opening && this.type == 'folder' && !this.categoryListId && !this.isTag )
             this.close();
+        this.setDirtyIfNeeded( list, ids );
     },
 
 
@@ -2938,6 +2939,20 @@ MT.App.CategorySelector = new Class( Component, {
             Array.fromPseudo( list.getSelectedIDs() )
         );
         ( this.catList || app.catList ).redraw();
+        this.setDirtyIfNeeded( list, ids );
+    },
+
+    setDirtyIfNeeded: function ( list, ids ) {
+        if ( !ids || ids.length === 0 ) {
+            return;
+        }
+        ids.forEach( function (id) {
+            var input = list.getItem( id ).getElementsByTagName( 'input' );
+            if ( input.length > 0 && input[0].hasAttribute( 'mt:watch-change' ) ) {
+                log( 'found dirty form' );
+                (app.getIndirectMethod( 'setDirty' ))();
+            }
+        });
     }
 
 

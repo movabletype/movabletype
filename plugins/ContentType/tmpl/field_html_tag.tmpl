@@ -54,7 +54,7 @@
               [# if ( item.path == null ) item.path = [] #]
               <div style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
                   <div style="width: [#= 165 - (item.path.length * 10) #]px;">
-                      <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" id="content-field-<mt:var name="content_field_id">-[#= item.id #]" class="add-category-checkbox category group content-field" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> /> [#|h item.label #]
+                      <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" id="content-field-<mt:var name="content_field_id">-[#= item.id #]" class="add-category-checkbox category group content-field" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> mt:watch-change="1" mt:raw-name="1" /> [#|h item.label #]
                   </div>
               </div>
       </mt:section>';
