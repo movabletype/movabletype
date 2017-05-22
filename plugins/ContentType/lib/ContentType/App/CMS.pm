@@ -554,6 +554,63 @@ sub save_cfg_content_type {
                         $label || $field_label, $date );
                 }
             }
+            elsif ( $type eq 'select_box' ) {
+                my $min          = $options->{min};
+                my $max          = $options->{max};
+                my $values_count = 0;
+                while ( $options->{ 'values_key_' . ( $values_count + 1 ) } )
+                {
+                    $values_count++;
+                }
+                if ( $values_count == 0 ) {
+                    $err_msg
+                        = $plugin->translate(
+                        "Select Box's \"Values\" field is required." );
+                }
+                elsif ( $options->{multiple} ) {
+                    if ( !$min ) {
+                        $err_msg
+                            = $plugin->translate(
+                            "Select Box's \"Min\" field is required when \"Multiple\" is checked."
+                            );
+                    }
+                    elsif ( !$max ) {
+                        $err_msg
+                            = $plugin->translate(
+                            "Select Box's \"Max\" field is required when \"Multiple\" is checked."
+                            );
+                    }
+                    elsif ( $max > $values_count ) {
+                        $err_msg = $plugin->translate(
+                            "Select Box's \"Max\" field should be lower than number of \"Values\" field.",
+                        );
+                    }
+                    elsif ($min !~ /^[+\-]?\d+$/
+                        || ( $min < 0 || $min > 255 )
+                        || ( $max && $max < $min ) )
+                    {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                            $label || $field_label,
+                            'Min',
+                            '0',
+                            $max || '255'
+                        );
+                    }
+                    elsif ($max !~ /^[+\-]?\d+$/
+                        || ( $max < 1 || $max > 255 )
+                        || ( $min && $min > $max ) )
+                    {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                            $label || $field_label,
+                            'Max',
+                            $min || '1',
+                            '255'
+                        );
+                    }
+                }
+            }
         }
 
         if ( $type eq 'date_and_time' ) {
