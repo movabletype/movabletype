@@ -695,6 +695,55 @@ sub save_cfg_content_type {
                     );
                 }
             }
+            elsif ( $type eq 'table' ) {
+                my ($initial_rows, $initial_columns,
+                    $row_headers,  $column_headers
+                    )
+                    = map { $options->{$_} }
+                    qw/ initial_rows initial_columns row_headers column_headers /;
+                if ($initial_rows
+                    && ( $initial_rows !~ /^[+\-]?\d+$/
+                        || ( $initial_rows < 0 || $initial_rows > 255 ) )
+                    )
+                {
+                    $err_msg = $plugin->translate(
+                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                        $label || $field_label,
+                        'Initial Rows',
+                        '0',
+                        '255'
+                    );
+                }
+                elsif (
+                    $initial_columns
+                    && ( $initial_columns !~ /^[+\-]?\d+$/
+                        || ( $initial_columns < 0 || $initial_columns > 255 )
+                    )
+                    )
+                {
+                    $err_msg = $plugin->translate(
+                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                        $label || $field_label,
+                        'Initial Columns',
+                        '0',
+                        '255'
+                    );
+                }
+                elsif ( $row_headers && length($row_headers) > 255 ) {
+                    $err_msg = $plugin->translate(
+                        '[_1]\'s "[_2]" field should be shorter than 255 characters.',
+                        $label || $field_label,
+                        'Row Headers'
+                    );
+                }
+                elsif ( $column_headers && length($column_headers) > 255 ) {
+                    $err_msg = $plugin->translate(
+                        '[_1]\'s "[_2]" field should be shorter than 255 characters.',
+                        $label || $field_label,
+                        'Column Headers'
+                    );
+                }
+            }
         }
 
         if ( $type eq 'date_and_time' ) {
