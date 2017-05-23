@@ -630,7 +630,14 @@ sub save_cfg_content_type {
                     }
                 }
             }
-            elsif ( $type eq 'content_type' ) {
+            elsif ($type eq 'content_type'
+                || $type eq 'asset'
+                || $type eq 'audio'
+                || $type eq 'video'
+                || $type eq 'image'
+                || $type eq 'category'
+                || $type eq 'tag' )
+            {
                 if ( $options->{multiple} ) {
                     my $min = $options->{min};
                     my $max = $options->{max};
