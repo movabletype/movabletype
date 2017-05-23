@@ -597,10 +597,7 @@ sub save_cfg_content_type {
                         {
                             $err_msg = $plugin->translate(
                                 '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                                $label || $field_label,
-                                'Min',
-                                '0',
-                                $max || '255'
+                                $label || $field_label, 'Min', '0', '255'
                             );
                         }
                         elsif ($max !~ /^[+\-]?\d+$/
@@ -609,10 +606,25 @@ sub save_cfg_content_type {
                         {
                             $err_msg = $plugin->translate(
                                 '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                                $label || $field_label, 'Max', '1', '255'
+                            );
+                        }
+                        elsif ( $max && $max < $min ) {
+                            $err_msg = $plugin->translate(
+                                '[_1]\'s "[_2]" field must be [_3] than "[_4]" field.',
                                 $label || $field_label,
+                                'Min',
+                                'lower',
+                                'Max'
+                            );
+                        }
+                        elsif ( $min && $min > $max ) {
+                            $err_msg = $plugin->translate(
+                                $label || $field_label,
+                                '[_1]\'s "[_2]" field must be [_3] than "[_4]" field.',
                                 'Max',
-                                $min || '1',
-                                '255'
+                                'higher',
+                                'Min'
                             );
                         }
                     }
