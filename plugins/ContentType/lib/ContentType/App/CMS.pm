@@ -534,12 +534,23 @@ sub save_cfg_content_type {
                 }
             }
             elsif ( $type eq 'url' ) {
-                my $url = $options->{initial_value};
-                if ( defined $url && $url ne '' && !MT::Util::is_url($url) ) {
-                    $err_msg
-                        = MT->translate(
-                        "[_1]\'s Initial Value field is invalid.",
-                        $label || $field_label );
+                my $initial_value = $options->{initial_value};
+                if ( length($initial_value) > 255 ) {
+                    $err_msg = $plugin->translate(
+                        '[_1]\'s "[_2]" field should be shorter than 255 characters.',
+                        $label || $field_label,
+                        'Initial Value'
+                    );
+                }
+                elsif (defined $initial_value
+                    && $initial_value ne ''
+                    && !MT::Util::is_url($initial_value) )
+                {
+                    $err_msg = MT->translate(
+                        '[_1]\'s "[_2]" field is invalid.',
+                        $label || $field_label,
+                        'Initial Value'
+                    );
                 }
             }
             elsif ($type eq 'date_and_time'
