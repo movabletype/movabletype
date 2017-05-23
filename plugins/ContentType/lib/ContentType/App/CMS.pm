@@ -630,6 +630,42 @@ sub save_cfg_content_type {
                     }
                 }
             }
+            elsif ( $type eq 'content_type' ) {
+                if ( $options->{multiple} ) {
+                    my $min = $options->{min};
+                    my $max = $options->{max};
+                    if ( !$min ) {
+                        $err_msg = $plugin->translate(
+                            "[_1]'s \"Min\" field is required when \"Multiple\" is checked.",
+                            $label || $field_label
+                        );
+                    }
+                    elsif ( !$max ) {
+                        $err_msg = $plugin->translate(
+                            "[_1]'s \"Max\" field is required when \"Multiple\" is checked.",
+                            $label || $field_label
+                        );
+                    }
+                    elsif ($min !~ /^[+\-]?\d+$/
+                        || ( $min < 0 || $min > 255 )
+                        || ( $max && $max < $min ) )
+                    {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                            $label || $field_label, 'Min', '0', '255'
+                        );
+                    }
+                    elsif ($max !~ /^[+\-]?\d+$/
+                        || ( $max < 1 || $max > 255 )
+                        || ( $min && $min > $max ) )
+                    {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                            $label || $field_label, 'Max', '1', '255'
+                        );
+                    }
+                }
+            }
         }
 
         if ( $type eq 'date_and_time' ) {
