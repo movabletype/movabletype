@@ -10,71 +10,79 @@ window.parent.app.insertHTML( '<mt:var name="upload_html" escape="js">', '<mt:va
   <mt:var name="insert_script">
 </mt:if>
 
+<mt:if name="content_field_id">
+  <mt:setvarblock name="id_prefix">content-field-<mt:var name="content_field_id">-</mt:setvarblock>
+</mt:if>
+
 // Set dirty flag
 window.parent.app.setDirty();
  
 // remove the no assets text if it's there
-var Node = window.parent.document.getElementById("empty-asset-list");
+var Node = window.parent.document.getElementById("<mt:var name="id_prefix">empty-asset-list");
 if (Node) {
     Node.parentNode.removeChild(Node);
 } 
 
 // make sure asset list is present in an entry edit page
-var AssetList = window.parent.document.getElementById("asset-list");
+var AssetList = window.parent.document.getElementById("<mt:var name="id_prefix">asset-list");
 
 if (AssetList) {
     // make sure the asset isn't there already and that we're in the edit entry page
     var Asset;
 <mt:Assets>
-    Asset = window.parent.document.getElementById("list-asset-<mt:AssetID>");
+  <mt:setvarblock name="asset_class"><mt:AssetProperty property="class"></mt:setvarblock>
+
+    Asset = window.parent.document.getElementById("<mt:var name="id_prefix">list-asset-<mt:AssetID>");
 
     if (Asset) {
         // do nothing
     }
     else {
         // add the asset's id to the include_asset_ids hidden input
-        var asset_ids = window.parent.document.getElementById("include_asset_ids").value;
+        var asset_ids = window.parent.document.getElementById("<mt:var name="id_prefix">include_asset_ids").value;
         if ( asset_ids.length > 0 ) {
             asset_ids += ',';
         }
-        window.parent.document.getElementById("include_asset_ids").value = asset_ids + "<mt:AssetID>";
+        window.parent.document.getElementById("<mt:var name="id_prefix">include_asset_ids").value = asset_ids + "<mt:AssetID>";
 
         // create the link to the asset page with asset name as label
         var myAssetLink = window.document.createElement('a');
         myAssetLink.setAttribute('href', '<mt:var name="script_url">?__mode=view&_type=asset&blog_id=<mt:AssetBlogID>&id=<mt:AssetID>');
         myAssetLink.setAttribute('class', 'asset-title');
-        myAssetLink.appendChild(document.createTextNode('<mt:AssetFileName encode_js="1">'));
+        myAssetLink.appendChild(document.createTextNode('<mt:if name="id_prefix"><mt:AssetLabel encode_js="1"><mt:else><mt:AssetFileName encode_js="1"></mt:if>'));
 
         // create the remove link for this asset
         var myRemoveLink = window.document.createElement('a');
         myRemoveLink.setAttribute('href', 'javascript:removeAssetFromList(<mt:AssetID>)');
-        myRemoveLink.setAttribute('class', 'remove-asset');
+        myRemoveLink.setAttribute('title', '<__trans phrase="Remove this asset.">');
+        myRemoveLink.setAttribute('class', 'remove-asset icon-remove icon16 action-icon');
+        myRemoveLink.appendChild(document.createTextNode('<__trans phrase="Remove">'));
 
         // create the asset list item
         var myElement = window.document.createElement('li');
-        myElement.setAttribute('id', 'list-asset-<mt:AssetID>');
+        myElement.setAttribute('id', '<mt:var name="id_prefix">list-asset-<mt:AssetID>');
         myElement.setAttribute('class', 'asset-type-<mt:AssetProperty property="class"$>');
-        <mt:If name="asset_type" eq="image">
-            myElement.setAttribute('onmouseover', 'show(\'list-image-<mt:AssetID>\', window.parent.document)');
-            myElement.setAttribute('onmouseout','hide(\'list-image-<mt:AssetID>\', window.parent.document)');
+        <mt:If name="asset_class" eq="image">
+            myElement.setAttribute('onmouseover', 'show(\'<mt:var name="id_prefix">list-image-<mt:AssetID>\', window.parent.document)');
+            myElement.setAttribute('onmouseout','hide(\'<mt:var name="id_prefix">list-image-<mt:AssetID>\', window.parent.document)');
         </mt:If>
         myElement.appendChild(myAssetLink);
         myElement.appendChild(myRemoveLink);
 
         // I HATE IE!
         if (document.attachEvent) {
-            var oldLis = window.parent.document.getElementById("asset-list").innerHTML;
-            var newLi  = '<li id="list-asset-<mt:AssetID>" onmouseover="show(\'list-image-<mt:AssetID>\', window.parent.document)" onmouseout="hide(\'list-image-<mt:AssetID>\', window.parent.document)">' + myElement.innerHTML + '</li>';
-            window.parent.document.getElementById("asset-list").innerHTML = oldLis + newLi;
+            var oldLis = window.parent.document.getElementById("<mt:var name="id_prefix">asset-list").innerHTML;
+            var newLi  = '<li id="<mt:var name="id_prefix">list-asset-<mt:AssetID>" onmouseover="show(\'<mt:var name="id_prefix">list-image-<mt:AssetID>\', window.parent.document)" onmouseout="hide(\'<mt:var name="id_prefix">list-image-<mt:AssetID>\', window.parent.document)">' + myElement.innerHTML + '</li>';
+            window.parent.document.getElementById("<mt:var name="id_prefix">asset-list").innerHTML = oldLis + newLi;
         } 
         else {
-            window.parent.document.getElementById("asset-list").appendChild(myElement);
+            window.parent.document.getElementById("<mt:var name="id_prefix">asset-list").appendChild(myElement);
         }
 
         // create the image thumbnail if it exists
-        <mt:If name="asset_type" eq="image">
+        <mt:If name="asset_class" eq="image">
             var myImageElement = window.document.createElement('img');
-            myImageElement.setAttribute('id', 'list-image-<mt:AssetID>');
+            myImageElement.setAttribute('id', '<mt:var name="id_prefix">list-image-<mt:AssetID>');
             myImageElement.setAttribute('src', '<mt:AssetThumbnailURL width="100" encode_js="1">');
             myImageElement.setAttribute('class', 'list-image hidden');
             myElement.appendChild(myImageElement);

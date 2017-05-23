@@ -386,7 +386,8 @@ content_field_types:
         label: Asset
         data_type: integer
         order: 130
-        field_html: $ContentType::MT::ContentFieldType::Asset::field_html
+        field_html: field_html_asset.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::Asset::data_getter
         list_props:
             asset:
@@ -462,7 +463,8 @@ content_field_types:
         label: Audio
         data_type: integer
         order: 140
-        field_html: $ContentType::MT::ContentFieldType::Asset::field_html
+        field_html: field_html_asset.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::Audio::data_getter
         list_props:
             audio:
@@ -537,7 +539,8 @@ content_field_types:
         label: Video
         data_type: integer
         order: 150
-        field_html: $ContentType::MT::ContentFieldType::Asset::field_html
+        field_html: field_html_asset.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::Video::data_getter
         list_props:
             video:
@@ -612,7 +615,8 @@ content_field_types:
         label: Image
         data_type: integer
         order: 160
-        field_html: $ContentType::MT::ContentFieldType::Asset::field_html
+        field_html: field_html_asset.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::Image::data_getter
         list_props:
             image:

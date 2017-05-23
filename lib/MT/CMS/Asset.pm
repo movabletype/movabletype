@@ -463,7 +463,8 @@ sub start_upload {
     $param{search_label} = $app->translate('Assets');
     $param{search_type}  = 'asset';
 
-    $param{can_multi} = 1;
+    $param{can_multi}       = 1;
+    $param{can_change_type} = 1;
 
     # Check directory for thumbnail image
     _check_thumbnail_dir( $app, \%param );
@@ -3083,6 +3084,17 @@ sub dialog_asset_modal {
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
         && $app->param('can_multi');
 
+    if ( defined $app->param('can_change_type') ) {
+        $param{can_change_type} = $app->param('can_change_type');
+    }
+    else {
+        $param{can_change_type} = 1;
+    }
+
+    if ( defined $app->param('can_upload') && !$app->param('can_upload') ) {
+        $param{can_upload} = 0;
+    }
+
     $param{filter} = scalar $app->param('filter')
         if defined $app->param('filter');
     $param{filter_val} = scalar $app->param('filter_val')
@@ -3090,10 +3102,11 @@ sub dialog_asset_modal {
     $param{search} = $app->param('search') if defined $app->param('search');
     $param{edit_field} = scalar $app->param('edit_field')
         if defined $app->param('edit_field');
-    $param{next_mode}    = scalar $app->param('next_mode');
-    $param{no_insert}    = scalar $app->param('no_insert') ? 1 : 0;
-    $param{asset_select} = scalar $app->param('asset_select');
-    $param{require_type} = scalar $app->param('require_type');
+    $param{next_mode}        = scalar $app->param('next_mode');
+    $param{no_insert}        = scalar $app->param('no_insert') ? 1 : 0;
+    $param{asset_select}     = scalar $app->param('asset_select');
+    $param{require_type}     = scalar $app->param('require_type');
+    $param{content_field_id} = $app->param('content_field_id');
 
     if ($blog_id) {
         $param{blog_id}      = $blog_id;
@@ -3292,6 +3305,7 @@ sub insert_asset {
         'dialog/asset_insert.tmpl',
         {   upload_html => $text || '',
             edit_field => scalar $app->param('edit_field') || '',
+            content_field_id => scalar $app->param('content_field_id'),
         },
     );
 

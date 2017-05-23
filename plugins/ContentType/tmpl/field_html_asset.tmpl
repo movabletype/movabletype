@@ -1,0 +1,55 @@
+<div id="asset-field-<mt:var name="content_field_id">" class="asset-field-container" style="margin-top: 5px; margin-bottom: 5px">
+  <ul id="content-field-<mt:var name="content_field_id">-asset-list" class="asset-list" style="margin-left: 20px">
+<mt:loop name="asset_loop">
+    <li id="content-field-<mt:var name="content_field_id">-list-asset-<mt:var name="asset_id">" class="asset-file asset-type-<mt:var name="type">"<mt:if name="asset_thumb"> onmouseover="show('content-field-<mt:var name="content_field_id">-list-image-<mt:var name="asset_id">')" onmouseout="hide('content-field-<mt:var name="content_field_id">-list-image-<mt:var name="asset_id">')"</mt:if>>
+      <a href="<mt:var name="script_uri">?__mode=view&_type=asset&blog_id=<mt:var name="asset_blog_id">&id=<mt:var name="asset_id">" class="asset-title">
+        <mt:var name="asset_label">
+      </a>
+      <a href="javascript:removeAssetFromList(<mt:var name="asset_id">)" title="<__trans phrase="Remove this asset.">" class="remove-asset icon-remove icon16 action-icon">
+        <__trans phrase="Remove">
+      </a>
+ <mt:if name="asset_thumb">
+      <img id="content-field-<mt:var name="content_field_id">-list-image-<mt:var name="asset_id">" class="list-image" src="<mt:var name="asset_thumb">" style="display:none">
+ </mt:if>
+    </li>
+</mt:loop>
+<mt:unless name="asset_loop">
+  <li id="content-field-<mt:var name="content_field_id">-empty-asset-list" class="empty-asset-list">
+    <__trans phrase="No assets">
+  </li>
+</mt:unless>
+  </ul>
+  <a href="<mt:var name="script_url">?__mode=list_asset&_type=asset&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&filter=class&filter_val=<mt:var name="type">&required_type=<mt:var name="type">&content_field_id=<mt:var name="content_field_id">&can_change_type=0<mt:if name="options{multiple}">&can_multi=1</mt:if><mt:unless name="options{can_upload}">&can_upload=0</mt:unless>" class="mt-open-dialog">
+    <__trans phrase="Choose [_1]" params="<mt:var name="asset_type">">
+  </a>
+  <input type="hidden" id="content-field-<mt:var name="content_field_id">-include_asset_ids" name="content-field-<mt:var name="content_field_id">" value="<mt:loop name="asset_loop"><mt:var name="asset_id"><mt:unless name="__last__">,</mt:unless></mt:loop>">
+</div>
+
+<mt:unless name="loaded_asset_js">
+  <mt:var name="loaded_asset_js" value="1">
+  <script>
+
+function removeAssetFromList(assetId) {
+}
+
+function removeAssetItem (a) {
+  var message = '<__trans phrase="Do you want to remove this asset?">';
+  if (!window.confirm(message)) return;
+  var $a = jQuery(a);
+  var $container = $a.parents('div.asset-field-container');
+  $a.parents('li').remove();
+  addEmptyMessageIfNeeded($container);
+}
+
+function addEmptyMessageIfNeeded ($container) {
+  if ($container.find('li').length === 0) {
+    var li = window.document.createElement('li');
+    li.setAttribute('class', 'content-field-<mt:var name="content_field_id">-empty-asset-list');
+    li.appendChild(window.document.createTextNode('<__trans phrase="No assets">'));
+    $container.find('ul').appendChild(li);
+  }
+}
+
+  </script>
+</mt:unless>
+
