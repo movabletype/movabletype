@@ -7,7 +7,8 @@ use MT::ContentField;
 use MT::ContentFieldType::Common qw( get_cd_ids_by_left_join );
 
 sub field_html {
-    my ( $app, $field_id, $value ) = @_;
+    my ( $app, $field_data ) = @_;
+    my $value = $field_data->{value};
     if ( !defined $value ) {
         $value = [];
     }
@@ -15,6 +16,7 @@ sub field_html {
         $value = [$value];
     }
 
+    my $field_id      = $field_data->{content_field_id};
     my $content_field = MT::ContentField->load($field_id);
     my $ct_id         = $content_field->related_content_type_id;
     my @ct_datas = MT::ContentData->load( { content_type_id => $ct_id } );

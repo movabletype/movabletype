@@ -996,9 +996,7 @@ sub edit_content_data {
                 }
             }
             if ( 'CODE' eq ref $field_html ) {
-                $_->{field_html}
-                    = $field_html->( $app, $_->{content_field_id},
-                    $_->{value} );
+                $_->{field_html} = $field_html->( $app, $_ );
             }
             else {
                 $_->{field_html} = $field_html;

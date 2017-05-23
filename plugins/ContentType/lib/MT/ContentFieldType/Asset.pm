@@ -22,12 +22,14 @@ my %ClassTable = (
 );
 
 sub field_html {
-    my ( $app, $field_id, $value ) = @_;
+    my ( $app, $field_data ) = @_;
+    my $value = $field_data->{value};
     $value = ''       unless defined $value;
     $value = [$value] unless ref $value eq 'ARRAY';
 
+    my $field_id      = $field_data->{content_field_id};
     my $content_field = MT::ContentField->load($field_id);
-    my $required = $content_field->options->{required} ? 'required' : '';
+    my $required      = $content_field->options->{required} ? 'required' : '';
 
     my $html
         = '<input type="text" name="content-field-'
