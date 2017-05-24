@@ -3300,12 +3300,17 @@ sub insert_asset {
             push @$assets, $asset;
         }
     }
+
+    my $content_field_id = $app->param('content_field_id');
+    my $can_multi        = $app->param('can_multi');
+
     my $tmpl;
     $tmpl = $app->load_tmpl(
         'dialog/asset_insert.tmpl',
         {   upload_html => $text || '',
             edit_field => scalar $app->param('edit_field') || '',
-            content_field_id => scalar $app->param('content_field_id'),
+            content_field_id => $content_field_id,
+            $content_field_id ? ( can_multi => $can_multi ) : (),
         },
     );
 

@@ -27,6 +27,15 @@ if (Node) {
 var AssetList = window.parent.document.getElementById("<mt:var name="id_prefix">asset-list");
 
 if (AssetList) {
+<mt:if name="content_field_id">
+  <mt:unless name="can_multi">
+    jQuery(AssetList.children).each(function (i, e) {
+        AssetList.removeChild(e);
+    });
+    window.parent.document.getElementById('<mt:var name="id_prefix">include_asset_ids').value = '';
+  </mt:unless>
+</mt:if>
+
     // make sure the asset isn't there already and that we're in the edit entry page
     var Asset;
 <mt:Assets>
