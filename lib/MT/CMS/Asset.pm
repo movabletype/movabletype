@@ -463,8 +463,7 @@ sub start_upload {
     $param{search_label} = $app->translate('Assets');
     $param{search_type}  = 'asset';
 
-    $param{can_multi}       = 1;
-    $param{can_change_type} = 1;
+    $param{can_multi} = 1;
 
     # Check directory for thumbnail image
     _check_thumbnail_dir( $app, \%param );
@@ -3084,17 +3083,6 @@ sub dialog_asset_modal {
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
         && $app->param('can_multi');
 
-    if ( defined $app->param('can_change_type') ) {
-        $param{can_change_type} = $app->param('can_change_type');
-    }
-    else {
-        $param{can_change_type} = 1;
-    }
-
-    if ( defined $app->param('can_upload') && !$app->param('can_upload') ) {
-        $param{can_upload} = 0;
-    }
-
     $param{filter} = scalar $app->param('filter')
         if defined $app->param('filter');
     $param{filter_val} = scalar $app->param('filter_val')
@@ -3102,11 +3090,10 @@ sub dialog_asset_modal {
     $param{search} = $app->param('search') if defined $app->param('search');
     $param{edit_field} = scalar $app->param('edit_field')
         if defined $app->param('edit_field');
-    $param{next_mode}        = scalar $app->param('next_mode');
-    $param{no_insert}        = scalar $app->param('no_insert') ? 1 : 0;
-    $param{asset_select}     = scalar $app->param('asset_select');
-    $param{require_type}     = scalar $app->param('require_type');
-    $param{content_field_id} = $app->param('content_field_id');
+    $param{next_mode}    = scalar $app->param('next_mode');
+    $param{no_insert}    = scalar $app->param('no_insert') ? 1 : 0;
+    $param{asset_select} = scalar $app->param('asset_select');
+    $param{require_type} = scalar $app->param('require_type');
 
     if ($blog_id) {
         $param{blog_id}      = $blog_id;
@@ -3142,6 +3129,16 @@ sub dialog_asset_modal {
 
     # Set directory separator
     $param{dir_separator} = MT::Util::dir_separator;
+
+    if ( my $content_field_id = $app->param('content_field_id') ) {
+        require MT::ContentField;
+        if ( my $content_field = MT::ContentField->load($content_field_id) ) {
+            $param{content_field_id} = $content_field_id;
+            my $options = $content_field->options;
+            $param{can_multi}  = $options->{multiple}   ? 1 : 0;
+            $param{can_upload} = $options->{can_upload} ? 1 : 0;
+        }
+    }
 
     $app->load_tmpl( 'dialog/asset_modal.tmpl', \%param );
 }
@@ -3301,8 +3298,18 @@ sub insert_asset {
         }
     }
 
+    my $can_multi;
     my $content_field_id = $app->param('content_field_id');
-    my $can_multi        = $app->param('can_multi');
+    if ($content_field_id) {
+        require MT::ContentField;
+        if ( my $content_field = MT::ContentField->load($content_field_id) ) {
+            my $options = $content_field->options;
+            $can_multi = $options->{multiple} ? 1 : 0;
+        }
+        else {
+            $content_field_id = undef;
+        }
+    }
 
     my $tmpl;
     $tmpl = $app->load_tmpl(

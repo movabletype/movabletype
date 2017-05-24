@@ -6,9 +6,9 @@
   <form action="" method="get" id="modal-type-filter">
     <span><__trans phrase="Asset Type: "></span>
     <select name="asset-class" id="asset-class">
-      <option value=""<mt:if name="class_filter_loop"><mt:unless name="can_change_type"> disabled="disabled"</mt:unless></mt:if>><__trans phrase="All Types"></option>
+      <option value=""<mt:if name="class_filter_loop"><mt:if name="content_field_id"> disabled="disabled"</mt:if></mt:if>><__trans phrase="All Types"></option>
 <mt:loop name="class_filter_loop">
-      <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"<mt:else><mt:unless name="can_change_type"> disabled="disabled"</mt:unless></mt:if></mt:if>><mt:var name="label"></option>
+      <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"<mt:elseif name="content_field_id"> disabled="disabled"</mt:if></mt:if>><mt:var name="label"></option>
 </mt:loop>
     </select>
   </form>
