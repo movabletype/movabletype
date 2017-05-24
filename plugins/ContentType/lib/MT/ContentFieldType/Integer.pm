@@ -2,17 +2,16 @@ package MT::ContentFieldType::Integer;
 use strict;
 use warnings;
 
-use MT::ContentField;
-
 sub ss_validator {
-    my ( $app, $field_id ) = @_;
+    my ( $app, $field_data ) = @_;
+    my $field_id = $field_data->{id};
+
     my $value = $app->param("content-field-${field_id}");
     return
         unless defined $value
         && $value ne '';    # Do not check empty value here.
 
-    my $content_field = MT::ContentField->load($field_id);
-    my $options       = $content_field->options;
+    my $options = $field_data->{options} || {};
 
     my $field_label = $options->{label};
     my $max_value   = $options->{max_value};

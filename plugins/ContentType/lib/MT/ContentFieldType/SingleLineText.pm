@@ -2,8 +2,6 @@ package MT::ContentFieldType::SingleLineText;
 use strict;
 use warnings;
 
-use MT::ContentField;
-
 sub field_html_params {
     my ( $app, $field_data ) = @_;
     my $required = $field_data->{options}{required} ? 'required' : '';
@@ -26,20 +24,22 @@ sub field_html_params {
 }
 
 sub ss_validator {
-    my ( $app, $field_id ) = @_;
-    my $value = $app->param("content-field-${field_id}");
+    my ( $app, $field_data ) = @_;
+    my $field_id = $field_data->{id};
+    my $value    = $app->param("content-field-${field_id}");
     $value = '' unless defined $value;
 
-    my $content_field = MT::ContentField->load($field_id);
-    my $field_label   = $content_field->options->{label};
+    my $options = $field_data->{options} || {};
 
-    if ( my $max_length = $content_field->options->{max_length} ) {
+    my $field_label = $options->{label};
+
+    if ( my $max_length = $options->{max_length} ) {
         if ( length $value > $max_length ) {
             return $app->errtrans( '"[_1]" field is too long.',
                 $field_label );
         }
     }
-    if ( my $min_length = $content_field->options->{min_length} ) {
+    if ( my $min_length = $options->{min_length} ) {
         if ( length $value < $min_length ) {
             return $app->errtrans( '"[_1]" field is too short.',
                 $field_label );

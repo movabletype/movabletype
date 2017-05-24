@@ -2,10 +2,8 @@ package MT::ContentFieldType::Tag;
 use strict;
 use warnings;
 
-use MT::ContentField;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
-use MT::ObjectTag;
 use MT::Tag;
 
 sub field_html_params {
@@ -123,10 +121,9 @@ sub html {
 }
 
 sub ss_validator {
-    my ( $app, $field_id ) = @_;
-
-    my $content_field = MT::ContentField->load($field_id);
-    my $options       = $content_field->options;
+    my ( $app, $field_data ) = @_;
+    my $field_id = $field_data->{id};
+    my $options = $field_data->{options} || {};
 
     my $field_label = $options->{label};
     my $multiple    = $options->{multiple};

@@ -2,8 +2,6 @@ package MT::ContentFieldType::Float;
 use strict;
 use warnings;
 
-use MT::ContentField;
-
 sub field_html_params {
     my ( $app, $field_data ) = @_;
 
@@ -31,14 +29,15 @@ sub field_html_params {
 }
 
 sub ss_validator {
-    my ( $app, $field_id ) = @_;
+    my ( $app, $field_data ) = @_;
+    my $field_id = $field_data->{id};
+
     my $value = $app->param("content-field-${field_id}");
     return
         unless defined $value
         && $value ne '';    # Do not check empty value here.
 
-    my $content_field = MT::ContentField->load($field_id);
-    my $options       = $content_field->options;
+    my $options = $field_data->{options} || {};
 
     my $decimal_places = $options->{decimal_places} || 0;
     my $field_label    = $options->{label};

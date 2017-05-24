@@ -2,9 +2,6 @@ package MT::ContentFieldType::Checkbox;
 use strict;
 use warnings;
 
-use MT;
-use MT::ContentField;
-
 sub field_html_params {
     my ( $app, $field_data ) = @_;
     my $value = $field_data->{value};
@@ -52,11 +49,11 @@ sub data_getter {
 }
 
 sub ss_validator {
-    my ( $app, $field_id ) = @_;
-    my @values = $app->param("content-field-${field_id}");
+    my ( $app, $field_data ) = @_;
+    my $field_id = $field_data->{id};
+    my @values   = $app->param("content-field-${field_id}");
 
-    my $content_field = MT::ContentField->load($field_id);
-    my $options       = $content_field->options;
+    my $options = $field_data->{options} || {};
 
     my $field_label = $options->{label};
     my $multiple    = $options->{multiple};

@@ -1230,7 +1230,7 @@ sub save_content_data {
             }
             if ( 'CODE' eq ref $ss_validator ) {
                 $app->error(undef);
-                my $result = $ss_validator->( $app, $f->{id} );
+                my $result = $ss_validator->( $app, $f );
                 if ( my $err = $app->errstr ) {
                     $data->{blog_id}         = $blog_id;
                     $data->{content_type_id} = $content_type_id;

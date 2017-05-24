@@ -126,10 +126,10 @@ sub html {
 }
 
 sub ss_validator {
-    my ( $app, $field_id ) = @_;
+    my ( $app, $field_data ) = @_;
+    my $field_id = $field_data->{id};
 
-    my $content_field = MT::ContentField->load($field_id);
-    my $options       = $content_field->options;
+    my $options = $field_data->{options} || {};
 
     my $field_label = $options->{label};
     my $multiple    = $options->{multiple};

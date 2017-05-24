@@ -62,7 +62,8 @@ sub data_getter {
 }
 
 sub ss_validator {
-    my ( $app, $id ) = @_;
+    my ( $app, $field_data ) = @_;
+    my $id   = $field_data->{id};
     my $q    = $app->param;
     my $date = $q->param( 'date-' . $id );
     my $ts;
