@@ -1,5 +1,5 @@
 <div id="asset-field-<mt:var name="content_field_id">" class="asset-field-container" style="margin-top: 5px; margin-bottom: 5px">
-  <ul id="content-field-<mt:var name="content_field_id">-asset-list" class="asset-list" style="margin-left: 20px">
+  <ul id="content-field-<mt:var name="content_field_id">-asset-list" class="asset-list" style="margin-left: 20px; width: 300px">
 <mt:loop name="asset_loop">
     <li id="content-field-<mt:var name="content_field_id">-list-asset-<mt:var name="asset_id">" class="asset-file asset-type-<mt:var name="type">"<mt:if name="asset_thumb"> onmouseover="show('content-field-<mt:var name="content_field_id">-list-image-<mt:var name="asset_id">')" onmouseout="hide('content-field-<mt:var name="content_field_id">-list-image-<mt:var name="asset_id">')"</mt:if>>
       <a href="<mt:var name="script_uri">?__mode=view&_type=asset&blog_id=<mt:var name="asset_blog_id">&id=<mt:var name="asset_id">" class="asset-title">

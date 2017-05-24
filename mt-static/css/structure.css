@@ -3795,10 +3795,15 @@ ul#asset-list li#empty-asset-list,
 ul.asset-list li.empty-asset-list {
     padding-left: 0;
 }
-ul#asset-list li a.asset-title,
-ul.asset-list li a.asset-title {
+ul#asset-list li a.asset-title {
     display: inline-block;
     width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+ul.asset-list li a.asset-title {
+    display: inline-block;
+    width: 280px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
