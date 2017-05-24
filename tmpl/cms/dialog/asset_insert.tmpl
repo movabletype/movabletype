@@ -53,7 +53,7 @@ if (AssetList) {
 
         // create the remove link for this asset
         var myRemoveLink = window.document.createElement('a');
-        myRemoveLink.setAttribute('href', 'javascript:removeAssetFromList(<mt:AssetID>)');
+        myRemoveLink.setAttribute('href', 'javascript:removeAssetFromList(<mt:AssetID><mt:if name="id_prefix">, \'<mt:var name="id_prefix" escape="js">\'</mt:if>)');
         myRemoveLink.setAttribute('title', '<__trans phrase="Remove this asset.">');
         myRemoveLink.setAttribute('class', 'remove-asset icon-remove icon16 action-icon');
         myRemoveLink.appendChild(document.createTextNode('<__trans phrase="Remove">'));

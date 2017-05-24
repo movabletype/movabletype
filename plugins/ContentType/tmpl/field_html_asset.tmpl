@@ -5,7 +5,7 @@
       <a href="<mt:var name="script_uri">?__mode=view&_type=asset&blog_id=<mt:var name="asset_blog_id">&id=<mt:var name="asset_id">" class="asset-title">
         <mt:var name="asset_label">
       </a>
-      <a href="javascript:removeAssetFromList(<mt:var name="asset_id">)" title="<__trans phrase="Remove this asset.">" class="remove-asset icon-remove icon16 action-icon">
+      <a href="javascript:removeAssetFromList(<mt:var name="asset_id">, 'content-field-<mt:var name="content_field">-')" title="<__trans phrase="Remove this asset.">" class="remove-asset icon-remove icon16 action-icon">
         <__trans phrase="Remove">
       </a>
  <mt:if name="asset_thumb">
@@ -24,32 +24,4 @@
   </a>
   <input type="hidden" id="content-field-<mt:var name="content_field_id">-include_asset_ids" name="content-field-<mt:var name="content_field_id">" value="<mt:loop name="asset_loop"><mt:var name="asset_id"><mt:unless name="__last__">,</mt:unless></mt:loop>">
 </div>
-
-<mt:unless name="loaded_asset_js">
-  <mt:var name="loaded_asset_js" value="1">
-  <script>
-
-function removeAssetFromList(assetId) {
-}
-
-function removeAssetItem (a) {
-  var message = '<__trans phrase="Do you want to remove this asset?">';
-  if (!window.confirm(message)) return;
-  var $a = jQuery(a);
-  var $container = $a.parents('div.asset-field-container');
-  $a.parents('li').remove();
-  addEmptyMessageIfNeeded($container);
-}
-
-function addEmptyMessageIfNeeded ($container) {
-  if ($container.find('li').length === 0) {
-    var li = window.document.createElement('li');
-    li.setAttribute('class', 'content-field-<mt:var name="content_field_id">-empty-asset-list');
-    li.appendChild(window.document.createTextNode('<__trans phrase="No assets">'));
-    $container.find('ul').appendChild(li);
-  }
-}
-
-  </script>
-</mt:unless>
 

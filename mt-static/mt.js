@@ -3059,21 +3059,25 @@ function selectAll(id) {
     DOM.getElement( id ).select();
 }
 
-function removeAssetFromList(assetId) {
+function removeAssetFromList(assetId, prefix) {
+    if ( prefix == null ) {
+        prefix = '';
+    }
+
     // remove the node list item
-    var Node = document.getElementById("list-asset-" + assetId);
+    var Node = document.getElementById(prefix + "list-asset-" + assetId);
     if (Node) {
         Node.parentNode.removeChild(Node);
     } 
 
     // remove the node's thumbnail
-    var Thumb = document.getElementById("list-image-" + assetId);
+    var Thumb = document.getElementById(prefix + "list-image-" + assetId);
     if (Thumb) {
         Thumb.parentNode.removeChild(Thumb);
     }
 
     // get include_asset_ids and split it
-    var AssetList = document.getElementById("include_asset_ids").value;
+    var AssetList = document.getElementById(prefix + "include_asset_ids").value;
     var Assets = AssetList.split(",");
     var NewAssetList = "";
     for (var i = 0; i < Assets.length; i++) {
@@ -3081,7 +3085,7 @@ function removeAssetFromList(assetId) {
             NewAssetList = NewAssetList + Assets[i] + ",";
         }
     }
-    document.getElementById("include_asset_ids").value = NewAssetList;
+    document.getElementById(prefix + "include_asset_ids").value = NewAssetList;
 }
 
 function isIE11() {
