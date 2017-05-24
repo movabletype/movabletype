@@ -3783,14 +3783,16 @@ ul.tabs li a {
     background: url(../images/status_icons/create.gif) no-repeat left center;
     text-decoration: none;
 }
-ul#asset-list li {
+ul#asset-list li,
+ul.asset-list li {
     position: relative;
     padding: 5px 0 0 18px;
     line-height: 1.2;
     background-repeat: no-repeat;
     background-position: left center;
 }
-ul#asset-list li#empty-asset-list {
+ul#asset-list li#empty-asset-list,
+ul.asset-list li.empty-asset-list {
     padding-left: 0;
 }
 ul#asset-list li a.asset-title {
@@ -3799,12 +3801,20 @@ ul#asset-list li a.asset-title {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-ul#asset-list li a.remove-asset {
+ul.asset-list li a.asset-title {
+    display: inline-block;
+    width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+ul#asset-list li a.remove-asset,
+ul.asset-list li a.remove-asset {
     position: absolute;
     top: 5px;
     right: 0;
 }
-ul#asset-list li img.list-image {
+ul#asset-list li img.list-image,
+ul.asset-list li img.list-image {
     position: absolute;
     z-index: 100;
     left: -115px;
@@ -3813,16 +3823,20 @@ ul#asset-list li img.list-image {
     background-color: #666666;
     border-radius: 3px;
 }
-ul#asset-list .asset-type-file {
+ul#asset-list .asset-type-file,
+ul.asset-list .asset-type-file {
     background-image: url(../images/asset/file.gif);
 }
-ul#asset-list .asset-type-image {
+ul#asset-list .asset-type-image,
+ul.asset-list .asset-type-image {
     background-image: url(../images/asset/image.gif);
 }
-ul#asset-list .asset-type-audio {
+ul#asset-list .asset-type-audio,
+ul.asset-list .asset-type-audio {
     background-image: url(../images/asset/audio.gif);
 }
-ul#asset-list .asset-type-video {
+ul#asset-list .asset-type-video,
+ul.asset-list .asset-type-video {
     background-image: url(../images/asset/video.gif);
 }
 

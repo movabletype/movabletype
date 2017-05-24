@@ -21,23 +21,25 @@ my %ClassTable = (
     'video' => 'video',
 );
 
-sub field_html {
+sub field_html_params {
     my ( $app, $field_data ) = @_;
-    my $value = $field_data->{value};
-    $value = ''       unless defined $value;
+    my $value = $field_data->{value} || [];
     $value = [$value] unless ref $value eq 'ARRAY';
 
-    my $field_id      = $field_data->{content_field_id};
-    my $content_field = MT::ContentField->load($field_id);
-    my $required      = $content_field->options->{required} ? 'required' : '';
+    my $type       = $field_data->{type};
+    my @assets     = $app->model($type)->load( { id => $value } );
+    my @asset_loop = map {
+        {   asset_id      => $_->id,
+            asset_blog_id => $_->blog_id,
+            asset_label   => $_->label,
+            asset_thumb   => $_->thumbnail_url( Width => 100 ),
+        }
+    } @assets;
 
-    my $html
-        = '<input type="text" name="content-field-'
-        . $field_id
-        . '" class="text long" value="';
-    $html .= join ',', @$value;
-    $html .= qq{" mt:watch-change="1" mt:raw-name="1" $required />};
-    return $html;
+    {   asset_loop => @asset_loop ? \@asset_loop : undef,
+        asset_type => $app->translate($type),
+        type       => $ClassTable{$type},
+    };
 }
 
 sub data_getter {
