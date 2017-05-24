@@ -1,11 +1,11 @@
-<div id="asset-field-<mt:var name="content_field_id">" class="asset-field-container" style="margin-top: 5px; margin-bottom: 5px">
+<div id="asset-field-<mt:var name="content_field_id">" class="asset-field-container content-field" style="margin-top: 5px; margin-bottom: 5px" <mt:var name="required"> <mt:var name="multiple">>
   <ul id="content-field-<mt:var name="content_field_id">-asset-list" class="asset-list" style="margin-left: 20px; width: 300px">
 <mt:loop name="asset_loop">
     <li id="content-field-<mt:var name="content_field_id">-list-asset-<mt:var name="asset_id">" class="asset-file asset-type-<mt:var name="type">"<mt:if name="asset_thumb"> onmouseover="show('content-field-<mt:var name="content_field_id">-list-image-<mt:var name="asset_id">')" onmouseout="hide('content-field-<mt:var name="content_field_id">-list-image-<mt:var name="asset_id">')"</mt:if>>
       <a href="<mt:var name="script_uri">?__mode=view&_type=asset&blog_id=<mt:var name="asset_blog_id">&id=<mt:var name="asset_id">" class="asset-title">
         <mt:var name="asset_label">
       </a>
-      <a href="javascript:removeAssetFromList(<mt:var name="asset_id">, 'content-field-<mt:var name="content_field_id">-')" title="<__trans phrase="Remove this asset.">" class="remove-asset icon-remove icon16 action-icon">
+      <a href="javascript:removeAssetFromList(<mt:var name="asset_id">, 'content-field-<mt:var name="content_field_id">-', <mt:var name="content_field_id">)" title="<__trans phrase="Remove this asset.">" class="remove-asset icon-remove icon16 action-icon">
         <__trans phrase="Remove">
       </a>
  <mt:if name="asset_thumb">
@@ -24,4 +24,34 @@
   </a>
   <input type="hidden" id="content-field-<mt:var name="content_field_id">-include_asset_ids" name="content-field-<mt:var name="content_field_id">" value="<mt:loop name="asset_loop"><mt:var name="asset_id"><mt:unless name="__last__">,</mt:unless></mt:loop>">
 </div>
+
+<mt:unless name="loaded_asset_field_js">
+  <mt:var name="loaded_asset_field_js" value="1">
+  <mt:setvarblock name="jq_js_include" append="1">
+;(function () {
+  var originalFunc = window.removeAssetFromList;
+  window.removeAssetFromList = function (assetId, prefix, contentFieldId) {
+    originalFunc(assetId, prefix);
+
+    if (!contentFieldId) return;
+
+    var ul = document.getElementById(prefix + 'asset-list');
+    if (ul && jQuery(ul).children('li').length === 0) {
+      var li = document.createElement('li');
+      li.setAttribute('id', prefix + 'empty-asset-list');
+      li.setAttribute('class', 'empty-asset-list');
+      li.appendChild(document.createTextNode('<__trans phrase="No assets">'));
+      ul.appendChild(li);
+    }
+
+    var divId = 'asset-field-' + contentFieldId;
+    var div = document.getElementById(divId);
+    var ns = jQuery.data( div, 'mtValidator' );
+    if ( ns ) {
+      jQuery(div).mtValid({ focus: false });
+    }
+  };
+})();
+  </mt:setvarblock>
+</mt:unless>
 

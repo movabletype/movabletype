@@ -62,7 +62,7 @@ if (AssetList) {
 
         // create the remove link for this asset
         var myRemoveLink = window.document.createElement('a');
-        myRemoveLink.setAttribute('href', 'javascript:removeAssetFromList(<mt:AssetID><mt:if name="id_prefix">, \'<mt:var name="id_prefix" escape="js">\'</mt:if>)');
+        myRemoveLink.setAttribute('href', 'javascript:removeAssetFromList(<mt:AssetID><mt:if name="id_prefix">, \'<mt:var name="id_prefix" escape="js">\', <mt:var name="content_field_id" escape="js"></mt:if>)');
         myRemoveLink.setAttribute('title', '<__trans phrase="Remove this asset.">');
         myRemoveLink.setAttribute('class', 'remove-asset icon-remove icon16 action-icon');
         myRemoveLink.appendChild(document.createTextNode('<__trans phrase="Remove">'));
@@ -98,6 +98,15 @@ if (AssetList) {
         </mt:If>
     }
 </mt:Assets>
+
+<mt:if name="content_field_id">
+    var divId = 'asset-field-<mt:var name="content_field_id" escape="js">';
+    var div = window.parent.document.getElementById(divId);
+    var ns = window.parent.jQuery.data( div, 'mtValidator' );
+    if ( ns ) {
+        window.parent.jQuery(div).mtValid({ focus: false });
+    }
+</mt:if>
 }
 <mt:unless name="extension_message">
   parent.jQuery.fn.mtDialog.close();

@@ -36,8 +36,23 @@ sub field_html_params {
         }
     } @assets;
 
+    my $options = $field_data->{options} || {};
+
+    my $multiple = '';
+    if ( $options->{multiple} ) {
+        $multiple = $options->{multiple} ? 'data-mt-multiple="1"' : '';
+        my $max = $options->{max};
+        my $min = $options->{min};
+        $multiple .= qq{ data-mt-max-select="${max}"} if $max;
+        $multiple .= qq{ data-mt-min-select="${min}"} if $min;
+    }
+
+    my $required = $options->{required} ? 'data-mt-required="1"' : '';
+
     {   asset_loop => @asset_loop ? \@asset_loop : undef,
         asset_type => $app->translate($type),
+        multiple   => $multiple,
+        required   => $required,
         type       => $ClassTable{$type},
     };
 }
