@@ -502,9 +502,12 @@ sub ss_validator {
             $min, $field_label
         );
     }
-    if ( $required && !@values ) {
+    if ( !$multiple && @values > 1 ) {
         return $app->errtrans(
             'Only 1 asset can be selected in "[_1]" field.', $field_label );
+    }
+    if ( $required && !@values ) {
+        return $app->errtrans( '"[_1]" field is required.', $field_label );
     }
 }
 
