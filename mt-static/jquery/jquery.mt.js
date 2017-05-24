@@ -1309,44 +1309,6 @@ $.mtValidateRules = {
             return true;
         }
     },
-    '.tag': function ($e) {
-        var getUniqueTags = function () {
-            var tags = {};
-            var tagDelim = $e.data('mt-tag-delim');
-            var rawTags = $e.val().split(tagDelim);
-            rawTags.forEach(function (element) {
-                var tag = element.replace(/^\s+|\s+$/g, '');
-                if (tag !== '') {
-                    tags[tag] = true;
-                }
-            });
-            return Object.keys(tags);
-        };
-        var required = $e.data('mt-required') ? true : false;
-        var multiple = $e.data('mt-multiple') ? true : false;
-        var max = Number($e.data('mt-max-tag'));
-        var min = Number($e.data('mt-min-tag'));
-        var tagCount = getUniqueTags().length;
-        if ( required && tagCount === 0 ) {
-            this.error = true;
-            this.errstr = trans('Please input any tags');
-            return false;
-        } else if ( !multiple && tagCount > 1 ) {
-            this.error = true;
-            this.errstr = trans('Only 1 tag can be input');
-            return false;
-        } else if ( multiple && max && max < tagCount ) {
-            this.error = true;
-            this.errstr = trans('Tags less than or equal to [_1] must be input', max);
-            return false;
-        } else if ( multiple && min && min > tagCount ) {
-            this.error = true;
-            this.errstr = trans('Tags greater than or equal to [_1] must be input', min);
-            return false;
-        } else {
-            return true;
-        }
-    },
     '.html5-form': function ($e) {
         if ($e.get(0).checkValidity()) {
             return true;
