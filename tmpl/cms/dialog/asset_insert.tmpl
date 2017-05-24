@@ -106,6 +106,9 @@ if (AssetList) {
     if ( ns ) {
         window.parent.jQuery(div).mtValid({ focus: false });
     }
+
+    log('found dirty form');
+    window.parent.app.setDirty();
 </mt:if>
 }
 <mt:unless name="extension_message">
