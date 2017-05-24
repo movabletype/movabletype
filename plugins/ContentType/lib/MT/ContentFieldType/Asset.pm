@@ -371,7 +371,7 @@ sub html {
     my $asset_ids = $content_data->data->{$field_id} || [];
 
     my %assets = map { $_->id => $_ } MT::Asset->load( { id => $asset_ids } );
-    my @assets = map { $assets{$_} } @$asset_ids;
+    my @assets = grep ( map { $assets{$_} } @$asset_ids );
 
     my ( @labels, @thumbnails );
     for my $asset (@assets) {
