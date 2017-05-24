@@ -50,10 +50,10 @@ sub field_html_params {
     my $required = $options->{required} ? 'data-mt-required="1"' : '';
 
     {   asset_loop => @asset_loop ? \@asset_loop : undef,
-        asset_type => $app->translate($type),
+        asset_type => $ClassTable{$type},
         multiple   => $multiple,
         required   => $required,
-        type       => $ClassTable{$type},
+        translated_asset_type => $app->translate($type),
     };
 }
 
