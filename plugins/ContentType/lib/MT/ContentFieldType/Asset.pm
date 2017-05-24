@@ -476,5 +476,37 @@ sub _thumbnail_html {
     qq{<img alt="" src="${thumbnail_url}" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />};
 }
 
+sub ss_validator {
+    my ( $app, $field_data ) = @_;
+    my $field_id = $field_data->{id};
+    my $values   = $app->param("content-field-${field_id}") || '';
+    my @values   = split ',', $values;
+
+    my $options = $field_data->{options} || {};
+
+    my $field_label = $options->{label};
+    my $multiple    = $options->{multiple};
+    my $max         = $options->{max};
+    my $min         = $options->{min};
+    my $required    = $options->{required};
+
+    if ( $multiple && $max && @values > $max ) {
+        return $app->errtrans(
+            'Assets less than or equal to [_1] must be selected in "[_2]" field.',
+            $max, $field_label
+        );
+    }
+    if ( $multiple && $min && @values < $min ) {
+        return $app->errtrans(
+            'Assets greater than or equal to [_1] must be selected in "[_2]" field.',
+            $min, $field_label
+        );
+    }
+    if ( $required && !@values ) {
+        return $app->errtrans(
+            'Only 1 asset can be selected in "[_1]" field.', $field_label );
+    }
+}
+
 1;
 

@@ -386,9 +386,10 @@ content_field_types:
         label: Asset
         data_type: integer
         order: 130
+        data_getter: $ContentType::MT::ContentFieldType::Asset::data_getter
         field_html: field_html_asset.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
-        data_getter: $ContentType::MT::ContentFieldType::Asset::data_getter
+        ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
         list_props:
             asset:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
@@ -463,9 +464,10 @@ content_field_types:
         label: Audio
         data_type: integer
         order: 140
+        data_getter: $ContentType::MT::ContentFieldType::Audio::data_getter
         field_html: field_html_asset.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
-        data_getter: $ContentType::MT::ContentFieldType::Audio::data_getter
+        ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
         list_props:
             audio:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
@@ -539,9 +541,10 @@ content_field_types:
         label: Video
         data_type: integer
         order: 150
+        data_getter: $ContentType::MT::ContentFieldType::Video::data_getter
         field_html: field_html_asset.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
-        data_getter: $ContentType::MT::ContentFieldType::Video::data_getter
+        ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
         list_props:
             video:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
@@ -615,9 +618,10 @@ content_field_types:
         label: Image
         data_type: integer
         order: 160
+        data_getter: $ContentType::MT::ContentFieldType::Image::data_getter
         field_html: field_html_asset.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
-        data_getter: $ContentType::MT::ContentFieldType::Image::data_getter
+        ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
         list_props:
             image:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl

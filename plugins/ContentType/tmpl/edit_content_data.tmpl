@@ -397,7 +397,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     (decimal_places:<mt:var name="options{decimal_places}" escape="html">)
     </mt:if>
 
-    <mt:if name="type" like="^select_box|checkbox|category$">
+    <mt:if name="type" like="^select_box|checkbox|category|asset|audio|video|image$">
       <mt:if name="options{multiple}">
         <mt:if name="options{min}">
           <mt:if name="options{max}">
