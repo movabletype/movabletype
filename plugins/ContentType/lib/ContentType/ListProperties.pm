@@ -18,6 +18,9 @@ use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 use MT::ContentType;
 use MT::CMS::CategoryList;
+use MT::ListProperty;
+use MT::Util ();
+use POSIX    ();
 
 sub make_listing_screens {
     my $props = {
@@ -36,13 +39,9 @@ sub make_listing_screens {
 
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
-        my $key         = 'content_data_' . $content_type->id;
-        my $label_field = $content_type->label_field;
-
+        my $key = 'content_data_' . $content_type->id;
         $props->{$key} = {
-            $label_field
-            ? ( primary => 'content_field_' . $label_field->{id} )
-            : (),
+            primary             => 'title',
             screen_label        => 'Manage ' . $content_type->name,
             object_label        => $content_type->name,
             object_label_plural => $content_type->name,
@@ -109,23 +108,37 @@ sub make_list_properties {
     my @content_types = MT::ContentType->load();
     foreach my $content_type (@content_types) {
         my $key   = 'content_data_' . $content_type->id;
-        my $order = 200;
+        my $order = 1000;
         my $field_list_props
             = _make_field_list_props( $content_type, $order );
+
+        if ( $order < 2000 ) {
+            $order = 2000;
+        }
+        else {
+            $order = ( POSIX::floor( $order / 100 ) + 1 ) * 100;
+        }
 
         $props->{$key} = {
             id => {
                 base  => '__virtual.id',
                 order => 100,
             },
+            title => {
+                base    => '__virtual.title',
+                label   => 'Title',
+                display => 'force',
+                order   => 200,
+                html    => \&_make_content_data_title_html,
+            },
             modified_on => {
                 base    => '__virtual.modified_on',
                 display => 'force',
-                order   => 300,
+                order   => $order,
             },
             author_name => {
                 base    => '__virtual.author_name',
-                order   => 400,
+                order   => $order + 100,
                 display => 'optional',
             },
             status     => { base => 'entry.status' },
@@ -139,6 +152,41 @@ sub make_list_properties {
     }
 
     return $props;
+}
+
+sub _make_content_data_title_html {
+    my $prop = shift;
+    my ( $obj, $app ) = @_;
+    my $col       = $prop->col;
+    my $alt_label = $prop->alternative_label;
+    my $id        = $obj->id;
+    my $label     = $obj->$col;
+    $label = '' if !defined $label;
+    $label =~ s/^\s+|\s+$//g;
+    my $blog_id           = $app->blog ? $app->blog->id : 0;
+    my $datasource        = $app->param('datasource');
+    my ($content_type_id) = $datasource =~ /(\d+)$/;
+    my $edit_link         = $app->uri(
+        mode => 'edit_content_data',
+        args => {
+            id              => $id,
+            blog_id         => $blog_id,
+            content_type_id => $content_type_id,
+        },
+    );
+
+    if ( defined $label && $label ne '' ) {
+        my $can_double_encode = 1;
+        $label = MT::Util::encode_html( $label, $can_double_encode );
+        return qq{<a href="$edit_link">$label</a>};
+    }
+    else {
+        return MT->translate(
+            qq{[_1] (<a href="[_2]">id:[_3]</a>)},
+            $alt_label ? $alt_label : 'No ' . $label,
+            $edit_link, $id,
+        );
+    }
 }
 
 sub _make_field_list_props {
@@ -367,40 +415,7 @@ sub make_title_html {
 
     $label = '' unless defined $label;
 
-    my ($field)
-        = grep { $_->{id} == $prop->content_field_id }
-        @{ $content_data->content_type->fields };
-    if ( $prop->order == 200 )
-    {    # TODO: should create a new parameter for primary field.
-        my $edit_link = $app->uri(
-            mode => 'edit_content_data',
-            args => {
-                blog_id         => $content_data->blog->id,
-                content_type_id => $content_data->content_type_id,
-                id              => $content_data->id,
-            },
-        );
-        if ( $label eq '' ) {
-            my $content_data_id = $content_data->id;
-            return qq{
-                <span class="label">
-                    (<a href="${edit_link}">id:${content_data_id}</a>)
-                </span>
-            };
-        }
-        else {
-            return qq{
-                <span class="label">
-                    <a href="$edit_link">$label</a>
-                </span>
-            };
-        }
-    }
-    else {
-        return qq{
-        <span class="label">$label</span>
-        };
-    }
+    return qq{<span class="label">$label</span>};
 }
 
 sub make_content_actions {

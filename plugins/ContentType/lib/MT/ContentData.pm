@@ -25,7 +25,13 @@ __PACKAGE__->install_properties(
     {   column_defs => {
             'id'      => 'integer not null auto_increment',
             'blog_id' => 'integer not null',
-            'status'  => {
+            'title'   => {
+                type       => 'string',
+                size       => 255,
+                label      => 'Title',
+                revisioned => 1,
+            },
+            'status' => {
                 type       => 'smallint',
                 not_null   => 1,
                 label      => 'Status',

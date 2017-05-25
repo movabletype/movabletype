@@ -1025,6 +1025,8 @@ sub edit_content_data {
             );
         }
 
+        $param->{title} = $content_data->title;
+
         my $status = $q->param('status') || $content_data->status;
         $status =~ s/\D//g;
         $param->{status} = $status;
@@ -1044,6 +1046,8 @@ sub edit_content_data {
             $blog, $app->user ? $app->user->preferred_language : undef );
     }
     else {
+        $param->{title} = $app->param('title');
+
         my $def_status;
         if ( $def_status = $q->param('status') ) {
             $def_status =~ s/\D//g;
@@ -1264,6 +1268,8 @@ sub save_content_data {
     }
     $content_data->content_type_id($content_type_id);
     $content_data->data($data);
+
+    $content_data->title( scalar $app->param('title') );
 
     if ( $app->param('scheduled') ) {
         $content_data->status( MT::Entry::FUTURE() );

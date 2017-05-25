@@ -360,6 +360,13 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 
   <h2><__trans phrase="Edit <mt:var name="name" escape="html">"></h2>
 
+  <div>
+    <__trans phrase="Title"> *
+  </div>
+  <div>
+    <input type="text" name="title" class="text content-field html5-form" required maxlength="255" mt:watch-change="1" value="<mt:var name="title">">
+  </div>
+
   <mt:loop name="fields">
   <mt:if name="can_edit">
   <div>
