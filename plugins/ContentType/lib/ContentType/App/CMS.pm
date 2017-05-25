@@ -1153,6 +1153,31 @@ sub edit_content_data {
     $param->{object_label}        = $content_type->name;
     $param->{sitepath_configured} = $blog && $blog->site_path ? 1 : 0;
 
+    ## Load text filters if user displays them
+    my $filters = MT->all_text_filters;
+    $param->{text_filters} = [];
+    for my $filter ( keys %$filters ) {
+        if ( my $cond = $filters->{$filter}{condition} ) {
+            $cond = MT->handler_to_coderef($cond) if !ref($cond);
+            next unless $cond->('content-type');
+        }
+        push @{ $param->{text_filters} },
+            {
+            filter_key      => $filter,
+            filter_label    => $filters->{$filter}{label},
+            filter_docs     => $filters->{$filter}{docs},
+            };
+    }
+    $param->{text_filters} = [ sort { $a->{filter_key} cmp $b->{filter_key} }
+            @{ $param->{text_filters} } ];
+    unshift @{ $param->{text_filters} },
+        {
+        filter_key      => '0',
+        filter_label    => $app->translate('None'),
+        };
+
+    $app->setup_editor_param($param);
+
     $app->build_page( $plugin->load_tmpl('edit_content_data.tmpl'), $param );
 }
 
