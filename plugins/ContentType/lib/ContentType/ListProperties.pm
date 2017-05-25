@@ -18,7 +18,6 @@ use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 use MT::ContentType;
 use MT::CMS::CategoryList;
-use MT::ListProperty;
 use MT::Util ();
 use POSIX    ();
 
