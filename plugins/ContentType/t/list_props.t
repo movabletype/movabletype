@@ -69,7 +69,7 @@ subtest 'make_title' => sub {
     my $html
         = ContentType::ListProperties::make_title_html( $prop, $content_data,
         $app );
-    ok( $html =~ /^\s+<span class/, 'no error occurs' );
+    ok( $html =~ /^<span class/, 'no error occurs' );
 };
 
 done_testing;
