@@ -140,6 +140,7 @@ content_field_types:
         data_getter: $ContentType::MT::ContentFieldType::ContentType::data_getter
         field_html: field_html_content_type.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::ContentType::field_html_params
+        ss_validator: $ContentType::MT::ContentFieldType::ContentType::ss_validator
         list_props:
             content_type:
                 html: $ContentType::MT::ContentFieldType::ContentType::html

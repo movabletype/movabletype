@@ -143,5 +143,45 @@ sub terms_id {
     }
 }
 
+sub ss_validator {
+    my ( $app, $field_data ) = @_;
+    my $field_id = $field_data->{id};
+    my @values   = $app->param("content-field-${field_id}");
+
+    my $options = $field_data->{options} || {};
+
+    my $field_label = $options->{label};
+    my $multiple    = $options->{multiple};
+    my $max         = $options->{max};
+    my $min         = $options->{min};
+    my $required    = $options->{required};
+
+    my $content_type_name = 'Content Data';
+    my $content_field_id = $field_data->{content_field_id} || 0;
+    if ( my $content_field = MT::ContentField->load($content_field_id) ) {
+        if ( $content_field->related_content_type ) {
+            $content_type_name = $content_field->related_content_type->name;
+        }
+    }
+
+    if ( $multiple && $max && @values > $max ) {
+        return $app->errtrans(
+            '[_1] less than or equal to [_2] must be selected in "[_3]" field.',
+            $content_type_name, $max, $field_label );
+    }
+    if ( $multiple && $min && @values < $min ) {
+        return $app->errtrans(
+            '[_1] greater than or equal to [_2] must be selected in "[_3]" field.',
+            $content_type_name, $min, $field_label );
+    }
+    if ( !$multiple && @values > 1 ) {
+        return $app->errtrans( 'Only 1 [_1] can be selected in "[_2]" field.',
+            $content_type_name, $field_label );
+    }
+    if ( $required && !@values ) {
+        return $app->errtrans( '"[_1]" field is required.', $field_label );
+    }
+}
+
 1;
 
