@@ -31,8 +31,23 @@ sub field_html_params {
     my $content_type_name
         = $related_content_type ? $related_content_type->name : undef;
 
+    my $options = $field_data->{options} || {};
+
+    my $multiple = '';
+    if ( $options->{multiple} ) {
+        $multiple = $options->{multiple} ? 'data-mt-multiple="1"' : '';
+        my $max = $options->{max};
+        my $min = $options->{min};
+        $multiple .= qq{ data-mt-max-select="${max}"} if $max;
+        $multiple .= qq{ data-mt-min-select="${min}"} if $min;
+    }
+
+    my $required = $options->{required} ? 'data-mt-required="1"' : '';
+
     {   content_data_loop => \@content_data_loop,
         content_type_name => $content_type_name,
+        multiple          => $multiple,
+        required          => $required,
     };
 }
 

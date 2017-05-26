@@ -186,6 +186,15 @@ jQuery('.actions-bar button.primary').click(function() {
     $ul.append($li);
   });
 
+  var $container = parent.jQuery('#content-type-field-' + contentFieldId);
+  var ns = parent.jQuery.data($container.get(0), 'mtValidator');
+  if (ns) {
+    $container.mtValid({ focus: false });
+  }
+
+  log('found dirty form');
+  parent.app.setDirty();
+
   parent.jQuery.fn.mtDialog.close();
   return false;
 });
