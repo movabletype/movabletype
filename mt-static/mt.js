@@ -2778,6 +2778,16 @@ MT.App.CategorySelector = new Class( Component, {
         if ( defaultText && name == defaultText )
             return;
 
+        if ( this.isTag ) {
+            var existTag = jQuery.grep( this.categoryList, function (e, i) {
+                return e.label === name || e.basename === name;
+            } ).length > 0 ? true : false;
+            if ( existTag ) {
+                alert(trans('Same name tag already exists.'));
+                return;
+            }
+        }
+
         DOM.addClassName( this.catForm, "hidden" );
         DOM.addClassName( this.catFormMovable, "hidden" );
         this.catInput.value = '';

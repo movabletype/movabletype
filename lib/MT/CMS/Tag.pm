@@ -664,25 +664,8 @@ sub js_add_tag {
         return $app->json_error( $app->translate("Invalid request.") );
     }
 
-    my $obj;
-    $obj = MT::Tag->load(
-        { name => $label },
-        {   binary => { name => 1 },
-            join   => MT::ObjectTag->join_on(
-                'tag_id',
-                {   blog_id           => $blog_id,
-                    object_datasource => 'content_field',
-                },
-            ),
-        },
-    );
-    if ($obj) {
-        return $app->json_error(
-            $app->translate( "The tag name '[_1]' already exists.", $label )
-        );
-    }
-
-    $obj = MT::Tag->load( { name => $label }, { binary => { name => 1 } } );
+    my $obj
+        = MT::Tag->load( { name => $label }, { binary => { name => 1 } } );
     if ($obj) {
         return $app->json_result(
             {   id       => $obj->id,
