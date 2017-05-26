@@ -13,6 +13,7 @@ use JSON ();
 
 use MT;
 use MT::Asset;
+use MT::Author;
 use MT::ContentField;
 use MT::ContentType;
 use MT::ObjectAsset;
@@ -296,6 +297,16 @@ sub blog {
                 )
                 );
         }
+    );
+}
+
+sub author {
+    my $self = shift;
+    $self->cache_property(
+        'author',
+        sub {
+            scalar MT::Author->load( $self->author_id || 0 );
+        },
     );
 }
 

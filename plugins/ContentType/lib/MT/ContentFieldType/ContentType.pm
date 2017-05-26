@@ -6,6 +6,36 @@ use MT::ContentData;
 use MT::ContentField;
 use MT::ContentFieldType::Common qw( get_cd_ids_by_left_join );
 
+sub field_html_params {
+    my ( $app, $field_data ) = @_;
+    my $value = $field_data->{value} || [];
+    $value = [$value] unless ref $value eq 'ARRAY';
+
+    my %tmp_cd;
+    my $iter = MT::ContentData->load_iter( { id => $value } );
+    while ( my $cd = $iter->() ) {
+        $tmp_cd{ $cd->id } = $cd;
+    }
+    my @content_data = grep {$_} map { $tmp_cd{$_} } @{$value};
+    my @content_data_loop = map {
+        {   cd_id      => $_->id,
+            cd_blog_id => $_->id,
+            cd_title   => $_->title,
+        }
+    } @content_data;
+
+    my $content_field_id = $field_data->{content_field_id} || 0;
+    my $content_field = MT::ContentField->load($content_field_id);
+    my $related_content_type
+        = $content_field ? $content_field->related_content_type : undef;
+    my $content_type_name
+        = $related_content_type ? $related_content_type->name : undef;
+
+    {   content_data_loop => \@content_data_loop,
+        content_type_name => $content_type_name,
+    };
+}
+
 sub field_html {
     my ( $app, $field_data ) = @_;
     my $value = $field_data->{value};

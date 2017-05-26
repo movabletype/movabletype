@@ -1,0 +1,35 @@
+<div>
+  <ul id="content-field-<mt:var name="content_field_id" escape="html">-list-content-data" class="content-data-list">
+<mt:loop name="content_data_loop">
+    <li>
+      <input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="cd_id" escape="html">" />
+      <a href="<mt:var name="script_url">?__mode=edit_content_data&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="content_type_id" escape="html">&id=<mt:var name="cd_id" escape="html">" target="_blank"><mt:var name="cd_title" escape="html"></a>
+      <a href="javascript:void(0)" class="icon-remove icon16 action-icon" style="cursor: pointer"></a>
+    </li>
+</mt:loop>
+<mt:unless name="content_data_loop">
+    <li class="empty-content-data-list">
+      <__trans phrase="No [_1]" params="<mt:var name="content_type_name" escape="html">">
+    </li>
+</mt:unless>
+  </ul>
+  <a href="<mt:var name="script_url">?__mode=dialog_content_data_modal&blog_id=<mt:var name="blog_id">&content_field_id=<mt:var name="content_field_id">" class="mt-open-dialog">
+    <__trans phrase="Choose [_1]" params="<mt:var name="content_type_name" escape="html">">
+  </a>
+</div>
+
+<mt:unless name="loaded_content_type_field_js">
+  <mt:var name="loaded_content_type_field_js" value="1">
+  <mt:setvarblock name="jq_js_include" append="1">
+jQuery('ul.content-data-list').on('click', 'li > a.icon-remove', function () {
+  var $ul = jQuery(this).parents('ul.content-data-list');
+  jQuery(this).parent().remove();
+  if ($ul.children('li').length == 0) {
+      var $emptyLi = jQuery('<li/>').addClass('empty-content-data-list')
+                                    .text('<__trans phrase="No [_1]" params="<mt:var name="content_type_name" escape="js">">');
+      $ul.append($emptyLi);
+  }
+});
+  </mt:setvarblock>
+</mt:unless>
+

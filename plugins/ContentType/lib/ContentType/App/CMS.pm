@@ -1163,17 +1163,17 @@ sub edit_content_data {
         }
         push @{ $param->{text_filters} },
             {
-            filter_key      => $filter,
-            filter_label    => $filters->{$filter}{label},
-            filter_docs     => $filters->{$filter}{docs},
+            filter_key   => $filter,
+            filter_label => $filters->{$filter}{label},
+            filter_docs  => $filters->{$filter}{docs},
             };
     }
     $param->{text_filters} = [ sort { $a->{filter_key} cmp $b->{filter_key} }
             @{ $param->{text_filters} } ];
     unshift @{ $param->{text_filters} },
         {
-        filter_key      => '0',
-        filter_label    => $app->translate('None'),
+        filter_key   => '0',
+        filter_label => $app->translate('None'),
         };
 
     $app->setup_editor_param($param);
@@ -1518,6 +1518,104 @@ sub delete_content_data {
     }
 
     MT::CMS::Common::delete($app);
+}
+
+sub dialog_content_data_modal {
+    my $app = shift;
+
+    my ( $can_add, $can_multi, $content_type_id, $content_type_name );
+    my $content_field_id = $app->param('content_field_id');
+    if ($content_field_id) {
+        if ( my $content_field = MT::ContentField->load($content_field_id) ) {
+            my $options = $content_field->options;
+            $can_add   = $options->{can_add}  ? 1 : 0;
+            $can_multi = $options->{multiple} ? 1 : 0;
+            $content_type_id = $content_field->related_content_type_id;
+            if ( my $content_type = $content_field->related_content_type ) {
+                $content_type_name = $content_type->name;
+            }
+        }
+    }
+
+    my $param = {
+        can_add           => $can_add,
+        can_multi         => $can_multi,
+        content_field_id  => $content_field_id,
+        content_type_id   => $content_type_id,
+        content_type_name => $content_type_name,
+    };
+
+    $app->load_tmpl( 'dialog/content_data_modal.tmpl', $param );
+}
+
+sub dialog_list_content_data {
+    my $app              = shift;
+    my $blog             = $app->blog;
+    my $content_field_id = $app->param('content_field_id') || 0;
+    my $content_field    = MT::ContentField->load($content_field_id);
+
+    return $app->return_to_dashboard( redirect => 1 )
+        unless $blog && $content_field->related_content_type_id;
+
+    # TODO: permission check
+
+    my $terms = {
+        blog_id         => $blog->id,
+        content_type_id => $content_field->related_content_type_id,
+    };
+    my $args = {
+        sort      => 'modified_on',
+        direction => 'descend',
+    };
+    my $hasher = _build_content_data_hasher($app);
+
+    my $dialog    = $app->param('dialog')    ? 1 : 0;
+    my $no_insert = $app->param('no_insert') ? 1 : 0;
+
+    $app->listing(
+        {   terms    => $terms,
+            args     => $args,
+            type     => 'cd',
+            code     => $hasher,
+            template => 'include/content_data_list.tmpl',
+            params   => {
+                (   $blog
+                    ? ( blog_id      => $blog->id,
+                        blog_name    => $blog->name || '',
+                        edit_blog_id => $blog->id,
+                        ( $blog->is_blog ? ( blog_view => 1 ) : () ),
+                        )
+                    : (),
+                ),
+                can_multi => $content_field->options->{multiple} ? 1 : 0,
+                dialog_view => 1,
+                dialog      => $dialog,
+                no_insert   => $no_insert,
+            },
+        }
+    );
+}
+
+sub _build_content_data_hasher {
+    my $app = shift;
+    sub {
+        my ( $obj, $row, %param ) = @_;
+
+        $row->{id} = $obj->id;
+        $row->{title}
+            = ( defined $obj->title && $obj->title ne '' )
+            ? $obj->title
+            : $app->translate( 'No Title (id:[_1])', $obj->id );
+        $row->{modified_date} = MT::Util::format_ts( "%Y-%m-%d %H:%M:%S",
+            $obj->modified_on, $obj->blog,
+            $app->user ? $app->user->preferred_language : undef );
+        $row->{author_name}
+            = $obj->author
+            ? ( $obj->author->nickname || $obj->author->name )
+            : $app->translate('*User deleted*');
+
+        $row;
+    };
 }
 
 1;
