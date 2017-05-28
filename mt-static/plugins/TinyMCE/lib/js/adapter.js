@@ -25,6 +25,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         theme: "modern",
         skin: 'lightgray',
         menubar: false,
+        branding: false,
 
         // Buttons using both in source and wysiwyg modes.
         plugin_mt_common_buttons1: 'mt_source_mode',
