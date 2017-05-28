@@ -675,6 +675,20 @@ sub save_cfg_content_type {
                         );
                     }
                 }
+
+                if ( $type eq 'content_type' && $content_type->id ) {
+                    if ($content_type->is_parent_content_type_id(
+                            $options->{content_type}
+                        )
+                        )
+                    {
+                        $err_msg = $plugin->translate(
+                            q{[_1]'s "[_2]" field must not be parent content type.},
+                            $label || $field_label,
+                            'Content Type'
+                        );
+                    }
+                }
             }
             elsif ( $err_msg && $type eq 'tag' && $options->{initial_value} )
             {

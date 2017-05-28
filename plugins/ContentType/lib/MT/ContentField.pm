@@ -176,4 +176,13 @@ sub options {
     }
 }
 
+sub is_parent_content_type_id {
+    my $class = shift;
+    my ( $ct_id, $child_ct_id ) = @_;
+    return unless $ct_id && $child_ct_id;
+    my $parent_ct_ids
+        = __PACKAGE__->get_parent_content_type_ids($child_ct_id) || [];
+    ( grep { $_ == $ct_id } @{$parent_ct_ids} ) ? 1 : 0;
+}
+
 1;

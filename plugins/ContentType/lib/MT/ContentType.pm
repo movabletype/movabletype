@@ -304,4 +304,12 @@ sub get_related_content_type_loop {
     \@loop;
 }
 
+sub is_parent_content_type_id {
+    my $self = shift;
+    my ($content_type_id) = @_;
+    return unless $content_type_id && $self->id;
+    return MT::ContentField->is_parent_content_type_id( $content_type_id,
+        $self->id );
+}
+
 1;
