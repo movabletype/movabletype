@@ -205,22 +205,22 @@ function renderPagination(pager) {
 
   jQuery('a.start').click(function() {
     saveChecked(page);
-    loadAssetList(0);
+    loadContentDataList(0);
     return false;
   });
   jQuery('a.to-start').click(function() {
     saveChecked(page);
-    loadAssetList(prevPos);
+    loadContentDataList(prevPos);
     return false;
   });
   jQuery('a.to-end').click(function() {
     saveChecked(page);
-    loadAssetList(nextPos);
+    loadContentDataList(nextPos);
     return false;
   });
   jQuery('a.end').click(function() {
     saveChecked(page);
-    loadAssetList(last);
+    loadContentDataList(last);
     return false;
   });
 }
@@ -235,7 +235,7 @@ function saveChecked(page) {
 
 jQuery('#modal-search').submit(function () {
   checked = [];
-  loadAssetList(0);
+  loadContentDataList(0);
   jQuery('.search-reset').removeClass('hidden').show();
   return false;
 });
@@ -243,7 +243,7 @@ jQuery('#modal-search').submit(function () {
 jQuery('.search-reset').click(function () {
   checked = [];
   jQuery('#search').val('');
-  loadAssetList(0);
+  loadContentDataList(0);
   jQuery('.search-reset').addClass('hidden').hide();
 });
 
