@@ -551,10 +551,10 @@ sub save_cfg_content_type {
             {
                 my $date = $options->{initial_date} || '19700101';
                 my $time = $options->{initial_time} || '000000';
-                my $ts   = $date . time;
+                my $ts   = "$date $time";
                 if ( !MT::Util::is_valid_date($ts) ) {
                     $err_msg = $plugin->translate( "Invalid [_1]: '[_2]'",
-                        $label || $field_label, $date );
+                        $label || $field_label, $ts );
                 }
             }
             elsif ($type eq 'select_box'
