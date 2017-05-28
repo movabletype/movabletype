@@ -297,18 +297,10 @@ sub cfg_content_type {
     }
     $param->{category_lists} = \@category_lists;
 
-    my @content_types;
-    my $ct_iter = MT::ContentType->load_iter( { blog_id => $app->blog->id },
-        { fetchonly => { id => 1, name => 1 } } );
-    while ( my $ct = $ct_iter->() ) {
-        next if ( $content_type_id || 0 ) == $ct->id;
-        push @content_types,
-            {
-            id   => $ct->id,
-            name => $ct->name,
-            };
-    }
-    $param->{content_types} = \@content_types;
+    my $content_type_loop
+        = MT::ContentType->get_related_content_type_loop( $app->blog->id,
+        $content_type_id );
+    $param->{content_types} = $content_type_loop;
 
     $app->build_page( $plugin->load_tmpl('cfg_content_type.tmpl'), $param );
 }

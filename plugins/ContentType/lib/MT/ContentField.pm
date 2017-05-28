@@ -9,6 +9,7 @@ package MT::ContentField;
 use strict;
 use base qw( MT::Object );
 
+use MT;
 use MT::CategoryList;
 use MT::ContentType;
 use MT::ContentType::UniqueKey;
@@ -141,6 +142,38 @@ sub related_cat_list {
 sub options {
     my $self = shift;
     $self->content_type->get_field( $self->id )->{options} || {};
+}
+
+{
+    my %Request_cache;
+
+    sub get_parent_content_type_ids {
+        my $class = shift;
+        my ( $ct_id, $loop_count ) = @_;
+
+        $loop_count ||= 0;
+        return if $loop_count >= 3;
+
+        %Request_cache = () unless $loop_count;
+        return $Request_cache{$ct_id} if exists $Request_cache{$ct_id};
+
+        my %parent_ct_id_hash;
+        my $iter = __PACKAGE__->load_iter(
+            { related_content_type_id => $ct_id },
+            { fetchonly               => { content_type_id => 1 } },
+        );
+        while ( my $cf = $iter->() ) {
+            $parent_ct_id_hash{ $cf->content_type_id } = 1;
+        }
+        for my $parent_ct_id ( keys %parent_ct_id_hash ) {
+            my $grantparent_ct_ids
+                = __PACKAGE__->get_parent_content_type_ids( $parent_ct_id,
+                $loop_count + 1 );
+            $parent_ct_id_hash{$_} = 1 for @{ $grantparent_ct_ids || [] };
+        }
+        $Request_cache{$ct_id}
+            = %parent_ct_id_hash ? [ keys %parent_ct_id_hash ] : undef;
+    }
 }
 
 1;

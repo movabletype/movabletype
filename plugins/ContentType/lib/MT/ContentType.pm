@@ -11,6 +11,7 @@ use base qw( MT::Object );
 
 use JSON ();
 
+use MT::ContentField;
 use MT::ContentType::UniqueKey;
 
 __PACKAGE__->install_properties(
@@ -271,6 +272,36 @@ sub description {
 
 1;
 __CODE__
+}
+
+sub get_related_content_type_loop {
+    my $class = shift;
+    my ( $blog_id, $content_type_id ) = @_;
+
+    my $parent_content_type_ids;
+    if ($content_type_id) {
+        $parent_content_type_ids
+            = MT::ContentField->get_parent_content_type_ids($content_type_id);
+        push @{ $parent_content_type_ids ||= [] }, $content_type_id;
+    }
+
+    my $iter = __PACKAGE__->load_iter(
+        {   $parent_content_type_ids
+            ? ( id => { not => $parent_content_type_ids } )
+            : (),
+            blog_id => $blog_id,
+        },
+        { fetchonly => { id => 1, name => 1 } }
+    );
+    my @loop;
+    while ( my $ct = $iter->() ) {
+        push @loop,
+            {
+            id   => $ct->id,
+            name => $ct->name,
+            };
+    }
+    \@loop;
 }
 
 1;
