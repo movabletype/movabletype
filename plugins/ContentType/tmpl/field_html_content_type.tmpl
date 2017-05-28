@@ -38,6 +38,7 @@ jQuery('ul.content-data-list').on('click', 'li > a.icon-remove', function () {
     jQuery(container).mtValid({ focus: false });
   }
 
+  setDirty(true);
   log('found dirty form');
   app.setDirty();
 });

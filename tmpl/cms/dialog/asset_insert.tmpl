@@ -107,6 +107,7 @@ if (AssetList) {
         window.parent.jQuery(div).mtValid({ focus: false });
     }
 
+    window.parent.setDirty(true);
     log('found dirty form');
     window.parent.app.setDirty();
 </mt:if>

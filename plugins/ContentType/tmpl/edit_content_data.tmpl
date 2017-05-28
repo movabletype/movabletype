@@ -625,21 +625,13 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 
 <mt:setvarblock name="jq_js_include" append="1">
   jQuery(function() {
-    jQuery('input[type="text"]').keyup(function() {
-      setDirty(true);
-    });
-    jQuery('input[type="checkbox"]').click(function() {
-      setDirty(true);
-    });
-    jQuery('input[type="radio"]').click(function() {
-      setDirty(true);
-    });
-    jQuery('textarea').keyup(function() {
-      setDirty(true);
-    });
-    jQuery('select').change(function() {
-      setDirty(true);
-    });
+    jQuery('fieldset#content_data')
+      .on('keyup', 'input[type="text"],input[type="number"],textarea', function () {
+        setDirty(true);
+      })
+      .on('click', 'input[type="checkbox"],input[type="radio"],select', function () {
+        setDirty(true);
+      });
   });
 
   var newCategoryClickEventAdded;

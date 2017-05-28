@@ -192,6 +192,7 @@ jQuery('.actions-bar button.primary').click(function() {
     $container.mtValid({ focus: false });
   }
 
+  parent.setDirty(true);
   log('found dirty form');
   parent.app.setDirty();
 

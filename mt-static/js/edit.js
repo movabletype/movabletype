@@ -350,6 +350,9 @@ MT.App.CategoryList = new Class( Object, {
                 this.selectedCategoryList.splice( 0, 0, id );
                 this.redraw();
                 this.getCategorySelector().redraw();
+                if (this.contentFieldId) {
+                    setDirty(true);
+                }
                 break;
             
             case "remove":
@@ -362,6 +365,9 @@ MT.App.CategoryList = new Class( Object, {
                 this.selectedCategoryList.splice( idx, 1 );
                 this.redraw();
                 this.getCategorySelector().redraw();
+                if (this.contentFieldId) {
+                    setDirty(true);
+                }
                 break;
                 
             case "openCategorySelector":
