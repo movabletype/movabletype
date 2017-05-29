@@ -65,6 +65,7 @@ sub data_getter {
 sub ss_validator {
     my ( $app, $field_data ) = @_;
     my $time = $app->param( 'time-' . $field_data->{id} );
+    $time =~ s/\D//g;
     my $ts;
     if ( defined $time && $time ne '' ) {
         $ts = '19700101 ' . $time;

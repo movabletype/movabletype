@@ -80,21 +80,9 @@ sub data_getter_multiple {
 
 sub data_getter_asset {
     my ( $app, $field_data ) = @_;
-    my $field_id  = $field_data->{id};
+    my $field_id = $field_data->{id};
     my $asset_ids = $app->param( 'content-field-' . $field_id ) || '';
-    my @asset_ids = split ',', $asset_ids;
-
-    my $field_type   = $field_data->{type};
-    my $asset_class  = $field_type eq 'asset' ? 'file' : $field_type;
-    my %valid_assets = map { $_->id => 1 } MT::Asset->load(
-        {   id      => \@asset_ids,
-            blog_id => $app->blog->id,
-            class   => $asset_class,
-        },
-        { fetchonly => { id => 1 } },
-    );
-
-    [ grep { $valid_assets{$_} } @asset_ids ];
+    [ split ',', $asset_ids ];
 }
 
 1;

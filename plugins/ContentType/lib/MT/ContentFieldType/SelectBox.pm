@@ -99,9 +99,7 @@ sub single_select_options {
 
 sub data_getter {
     my ( $app, $field_data ) = @_;
-    my $id      = $field_data->{id};
-    my @options = $app->param("content-field-${id}");
-
+    my @options = $app->param( 'content-field-' . $field_data->{id} );
     if ( $field_data->{options}{multiple} ) {
         \@options;
     }

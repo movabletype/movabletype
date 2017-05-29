@@ -100,13 +100,29 @@ sub _build_category_list {
 sub data_getter {
     my ( $app, $field_data ) = @_;
     my $field_id = $field_data->{id};
-    my @cat_ids = split ',', $app->param("category-${field_id}");
+    [ split ',', $app->param("category-${field_id}") ];
+}
 
-    my %valid_cats
-        = map { $_->id => 1 } MT::Category->load( { id => \@cat_ids },
+sub ss_validator {
+    my ( $app, $field_data ) = @_;
+    my $field_id = $field_data->{id};
+    my @values   = $app->param("content-field-${field_id}");
+
+    my $iter = MT::Category->load_iter( { id => \@values },
         { fetchonly => { id => 1 } } );
+    my %valid_cats;
+    while ( my $cat = $iter->() ) {
+        $valid_cats{ $cat->id } = 1;
+    }
+    if ( my @invalid_cat_ids = grep { !$valid_cats{$_} } @values ) {
+        my $invalid_cat_ids = join ', ', sort(@invalid_cat_ids);
+        my $field_label = $field_data->{options}{label};
+        return $app->translate( 'Invalid Category IDs: [_1] in "[_2]" field.',
+            $invalid_cat_ids, $field_label );
+    }
 
-    [ grep { $valid_cats{$_} } @cat_ids ];
+    require MT::ContentFieldType::Checkbox;
+    MT::ContentFieldType::Checkbox::ss_validator(@_);
 }
 
 sub html {

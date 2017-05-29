@@ -499,6 +499,23 @@ sub ss_validator {
     my $min         = $options->{min};
     my $required    = $options->{required};
 
+    my $field_type = $field_data->{type};
+    my $asset_class = $field_type eq 'asset' ? 'file' : $field_type;
+
+    my $iter = MT::Asset->load_iter(
+        { id => \@values, blog_id => $app->blog->id, class => $asset_class },
+        { fetchonly => { id => 1 } },
+    );
+    my %valid_assets;
+    while ( my $asset = $iter->() ) {
+        $valid_assets{ $asset->id } = 1;
+    }
+    if ( my @invalid_asset_ids = grep { !$valid_assets{$_} } @values ) {
+        my $invalid_asset_ids = join ', ', @invalid_asset_ids;
+        return $app->translate( 'Invalid Asset Ids: [_1] in "[_2]" field.',
+            $invalid_asset_ids, $field_label );
+    }
+
     if ( $multiple && $max && @values > $max ) {
         return $app->translate(
             'Assets less than or equal to [_1] must be selected in "[_2]" field.',

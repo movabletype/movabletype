@@ -65,6 +65,7 @@ sub ss_validator {
     my ( $app, $field_data ) = @_;
     my $id   = $field_data->{id};
     my $date = $app->param( 'date-' . $id );
+    $date =~ s/\D//g;
     my $ts;
     if ( defined $date && $date ne '' ) {
         $ts = $date . '000000';
