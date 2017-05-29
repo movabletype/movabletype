@@ -139,6 +139,32 @@ sub ss_validator_multiple {
             lc($type_label), $field_label );
     }
 
+    $options->{values} ? ss_validator_values(@_) : undef;
+}
+
+sub ss_validator_values {
+    my ( $app, $field_data, $data ) = @_;
+    return undef unless defined $data && $data ne '';
+    $data = [$data] unless ref $data eq 'ARRAY';
+
+    my $options = $field_data->{options} || {};
+    my @valid_values = map { $_->{value} }
+        grep { $_ && ref $_ eq 'HASH' } @{ $options->{values} || [] };
+
+    my @invalid_values;
+    for my $d ( @{$data} ) {
+        unless ( grep { $_ eq $d } @valid_values ) {
+            push @invalid_values, $d;
+        }
+    }
+
+    if (@invalid_values) {
+        my $invalid_values = join ', ', sort(@invalid_values);
+        my $field_label = $options->{label};
+        return $app->translate( 'Invalid values in "[_1]" field: [_2]',
+            $field_label, $invalid_values );
+    }
+
     undef;
 }
 

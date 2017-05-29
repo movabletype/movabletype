@@ -354,6 +354,7 @@ content_field_types:
         order: 110
         field_html: field_html_radio.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Radio::field_html_params
+        ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_values
         list_props:
             radio:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
