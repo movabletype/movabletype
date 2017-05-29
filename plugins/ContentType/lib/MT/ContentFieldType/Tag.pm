@@ -115,7 +115,7 @@ sub html {
 }
 
 sub ss_validator {
-    my ( $app, $field_data ) = @_;
+    my ( $app, $field_data, $data ) = @_;
     my $field_id = $field_data->{id};
     my $options = $field_data->{options} || {};
 
@@ -125,19 +125,17 @@ sub ss_validator {
     my $min         = $options->{min};
     my $can_add     = $options->{can_add};
 
-    my @tag_ids = $app->param("content-field-${field_id}");
-
-    if ( !$multiple && @tag_ids >= 2 ) {
+    if ( !$multiple && @{$data} >= 2 ) {
         return $app->translate( 'Only 1 tag can be input in "[_1]" field.',
             $field_label );
     }
-    if ( $multiple && $max && @tag_ids > $max ) {
+    if ( $multiple && $max && @{$data} > $max ) {
         return $app->translate(
             'Tags less than or equal to [_1] must be input in "[_2]" field.',
             $max, $field_label
         );
     }
-    if ( $multiple && $min && @tag_ids < $min ) {
+    if ( $multiple && $min && @{$data} < $min ) {
         return $app->translate(
             'Tags greater than or equal to [_1] must be input in "[_2]" field.',
             $min, $field_label

@@ -486,10 +486,7 @@ sub _thumbnail_html {
 }
 
 sub ss_validator {
-    my ( $app, $field_data ) = @_;
-    my $field_id = $field_data->{id};
-    my $values   = $app->param("content-field-${field_id}") || '';
-    my @values   = split ',', $values;
+    my ( $app, $field_data, $data ) = @_;
 
     my $options = $field_data->{options} || {};
 
@@ -503,36 +500,36 @@ sub ss_validator {
     my $asset_class = $field_type eq 'asset' ? 'file' : $field_type;
 
     my $iter = MT::Asset->load_iter(
-        { id => \@values, blog_id => $app->blog->id, class => $asset_class },
+        { id => $data, blog_id => $app->blog->id, class => $asset_class },
         { fetchonly => { id => 1 } },
     );
     my %valid_assets;
     while ( my $asset = $iter->() ) {
         $valid_assets{ $asset->id } = 1;
     }
-    if ( my @invalid_asset_ids = grep { !$valid_assets{$_} } @values ) {
+    if ( my @invalid_asset_ids = grep { !$valid_assets{$_} } @{$data} ) {
         my $invalid_asset_ids = join ', ', @invalid_asset_ids;
         return $app->translate( 'Invalid Asset Ids: [_1] in "[_2]" field.',
             $invalid_asset_ids, $field_label );
     }
 
-    if ( $multiple && $max && @values > $max ) {
+    if ( $multiple && $max && @{$data} > $max ) {
         return $app->translate(
             'Assets less than or equal to [_1] must be selected in "[_2]" field.',
             $max, $field_label
         );
     }
-    if ( $multiple && $min && @values < $min ) {
+    if ( $multiple && $min && @{$data} < $min ) {
         return $app->translate(
             'Assets greater than or equal to [_1] must be selected in "[_2]" field.',
             $min, $field_label
         );
     }
-    if ( !$multiple && @values > 1 ) {
+    if ( !$multiple && @{$data} > 1 ) {
         return $app->tranlate(
             'Only 1 asset can be selected in "[_1]" field.', $field_label );
     }
-    if ( $required && !@values ) {
+    if ( $required && !@{$data} ) {
         return $app->translate( '"[_1]" field is required.', $field_label );
     }
 

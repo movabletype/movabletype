@@ -153,9 +153,7 @@ sub terms_id {
 }
 
 sub ss_validator {
-    my ( $app, $field_data ) = @_;
-    my $field_id = $field_data->{id};
-    my @values   = $app->param("content-field-${field_id}");
+    my ( $app, $field_data, $data ) = @_;
 
     my $options = $field_data->{options} || {};
 
@@ -173,22 +171,22 @@ sub ss_validator {
         }
     }
 
-    if ( $multiple && $max && @values > $max ) {
+    if ( $multiple && $max && @{$data} > $max ) {
         return $app->tranlsate(
             '[_1] less than or equal to [_2] must be selected in "[_3]" field.',
             $content_type_name, $max, $field_label );
     }
-    if ( $multiple && $min && @values < $min ) {
+    if ( $multiple && $min && @{$data} < $min ) {
         return $app->translate(
             '[_1] greater than or equal to [_2] must be selected in "[_3]" field.',
             $content_type_name, $min, $field_label );
     }
-    if ( !$multiple && @values > 1 ) {
+    if ( !$multiple && @{$data} > 1 ) {
         return $app->translate(
             'Only 1 [_1] can be selected in "[_2]" field.',
             $content_type_name, $field_label );
     }
-    if ( $required && !@values ) {
+    if ( $required && !@{$data} ) {
         return $app->translate( '"[_1]" field is required.', $field_label );
     }
 

@@ -43,9 +43,7 @@ sub field_html_params {
 }
 
 sub ss_validator {
-    my ( $app, $field_data ) = @_;
-    my $field_id = $field_data->{id};
-    my @values   = $app->param("content-field-${field_id}");
+    my ( $app, $field_data, $data ) = @_;
 
     my $options = $field_data->{options} || {};
 
@@ -54,26 +52,22 @@ sub ss_validator {
     my $max         = $options->{max};
     my $min         = $options->{min};
 
-    if ($multiple) {
-        if ( $max && @values > $max ) {
-            return $app->translate(
-                'Options less than or equal to [_1] must be selected in "[_2]" field.',
-                $max, $field_label
-            );
-        }
-        elsif ( $min && @values < $min ) {
-            return $app->translate(
-                'Options greater than or equal to [_1] must be selected in "[_2]" field.',
-                $min, $field_label
-            );
-        }
+    if ( $multiple && $max && @{$data} > $max ) {
+        return $app->translate(
+            'Options less than or equal to [_1] must be selected in "[_2]" field.',
+            $max, $field_label
+        );
     }
-    else {
-        if ( @values >= 2 ) {
-            return $app->translate(
-                'Only 1 checkbox can be selected in "[_1]" field.',
-                $field_label );
-        }
+    elsif ( $multiple && $min && @{$data} < $min ) {
+        return $app->translate(
+            'Options greater than or equal to [_1] must be selected in "[_2]" field.',
+            $min, $field_label
+        );
+    }
+    if ( !$multiple && @{$data} >= 2 ) {
+        return $app->translate(
+            'Only 1 checkbox can be selected in "[_1]" field.',
+            $field_label );
     }
 
     undef;

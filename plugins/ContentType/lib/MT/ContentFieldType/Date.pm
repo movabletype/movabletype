@@ -62,17 +62,17 @@ sub data_getter {
 }
 
 sub ss_validator {
-    my ( $app, $field_data ) = @_;
-    my $id   = $field_data->{id};
-    my $date = $app->param( 'date-' . $id );
-    $date =~ s/\D//g;
-    my $ts;
-    if ( defined $date && $date ne '' ) {
-        $ts = $date . '000000';
+    my ( $app, $field_data, $data ) = @_;
+
+    my $options = $field_data->{options} || {};
+    my $field_label = $options->{label};
+
+    unless ( !defined $data || $data eq '' || MT::Util::is_valid_date($data) )
+    {
+        return $app->translate( "Invalid date in '[_1]' field.",
+            $field_label );
     }
-    unless ( !defined $ts || $ts eq '' || MT::Util::is_valid_date($ts) ) {
-        return $app->translate( "Invalid date: '[_1]'", $date );
-    }
+
     undef;
 }
 

@@ -104,17 +104,14 @@ sub data_getter {
 }
 
 sub ss_validator {
-    my ( $app, $field_data ) = @_;
-    my $field_id = $field_data->{id};
-    my @values   = $app->param("content-field-${field_id}");
-
-    my $iter = MT::Category->load_iter( { id => \@values },
+    my ( $app, $field_data, $data ) = @_;
+    my $iter = MT::Category->load_iter( { id => $data },
         { fetchonly => { id => 1 } } );
     my %valid_cats;
     while ( my $cat = $iter->() ) {
         $valid_cats{ $cat->id } = 1;
     }
-    if ( my @invalid_cat_ids = grep { !$valid_cats{$_} } @values ) {
+    if ( my @invalid_cat_ids = grep { !$valid_cats{$_} } @{$data} ) {
         my $invalid_cat_ids = join ', ', sort(@invalid_cat_ids);
         my $field_label = $field_data->{options}{label};
         return $app->translate( 'Invalid Category IDs: [_1] in "[_2]" field.',

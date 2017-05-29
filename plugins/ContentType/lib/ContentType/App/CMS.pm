@@ -1595,12 +1595,12 @@ sub _validate_content_fields {
     foreach my $f ( @{ $content_type->fields } ) {
         my $content_field_type = $content_field_types->{ $f->{type} };
         my $param_name         = 'content-field-' . $f->{id};
+        my $d                  = $data->{ $f->{id} };
 
         if ( exists $f->{options}{required}
             && $f->{options}{required} )
         {
             my $has_data;
-            my $d = $data->{ $f->{id} };
             if ( ref $d eq 'ARRAY' ) {
                 $has_data = @{$d} ? 1 : 0;
             }
@@ -1624,7 +1624,7 @@ sub _validate_content_fields {
                 $ss_validator = MT->handler_to_coderef($ss_validator);
             }
             if ( 'CODE' eq ref $ss_validator ) {
-                if ( my $error = $ss_validator->( $app, $f ) ) {
+                if ( my $error = $ss_validator->( $app, $f, $d ) ) {
                     push @errors,
                         {
                         field_id => $f->{id},
@@ -1650,6 +1650,14 @@ sub validate_content_fields {
 
     return $app->json_error( $app->translate('Invalid request.') )
         unless $blog_id && $content_type;
+
+    my $content_field_types = $app->registry('content_field_types');
+    my $data                = {};
+    foreach my $f ( @{ $content_type->fields } ) {
+        my $content_field_type = $content_field_types->{ $f->{type} };
+        $data->{ $f->{id} }
+            = _get_form_data( $app, $content_field_type, $f );
+    }
 
     my $invalid_count = 0;
     my %invalid_fields;

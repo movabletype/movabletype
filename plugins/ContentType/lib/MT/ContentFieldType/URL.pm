@@ -2,16 +2,17 @@ package MT::ContentFieldType::URL;
 use strict;
 use warnings;
 
-use MT;
 use MT::Util ();
 
 sub ss_validator {
-    my ( $app, $field_data ) = @_;
-    my $str = $app->param( 'content-field-' . $field_data->{id} );
+    my ( $app, $field_data, $data ) = @_;
 
-    # TODO: should check "require" option here.
-    unless ( !defined $str || $str eq '' || MT::Util::is_url($str) ) {
-        return $app->translate( "Invalid URL: '[_1]'", $str );
+    my $options = $field_data->{options} || {};
+    my $field_label = $options->{label};
+
+    unless ( !defined $data || $data eq '' || MT::Util::is_url($data) ) {
+        return $app->translate( 'Invalid URL in "[_1]" field.',
+            $field_label );
     }
 
     undef;

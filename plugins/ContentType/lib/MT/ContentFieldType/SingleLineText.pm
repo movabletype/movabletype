@@ -24,26 +24,19 @@ sub field_html_params {
 }
 
 sub ss_validator {
-    my ( $app, $field_data ) = @_;
-    my $field_id = $field_data->{id};
-    my $value    = $app->param("content-field-${field_id}");
-    $value = '' unless defined $value;
+    my ( $app, $field_data, $data ) = @_;
+    $data = '' unless defined $data && $data ne '';
 
-    my $options = $field_data->{options} || {};
-
+    my $options     = $field_data->{options} || {};
+    my $max_length  = $options->{max_length};
+    my $min_length  = $options->{min_length};
     my $field_label = $options->{label};
 
-    if ( my $max_length = $options->{max_length} ) {
-        if ( length $value > $max_length ) {
-            return $app->translate( '"[_1]" field is too long.',
-                $field_label );
-        }
+    if ( $max_length && length $data > $max_length ) {
+        return $app->translate( '"[_1]" field is too long.', $field_label );
     }
-    if ( my $min_length = $options->{min_length} ) {
-        if ( length $value < $min_length ) {
-            return $app->translate( '"[_1]" field is too short.',
-                $field_label );
-        }
+    if ( $min_length && length $data < $min_length ) {
+        return $app->translate( '"[_1]" field is too short.', $field_label );
     }
 
     undef;
