@@ -456,44 +456,44 @@ sub save_cfg_content_type {
                 my $initial_value = $options->{initial_value};
                 if ($min_value) {
                     if (   $min_value !~ /^[+\-]?\d+$/
-                        || $min_value < -32768
-                        || $min_value > 32767 )
+                        || $min_value < -2147483648
+                        || $min_value > 2147483647 )
                     {
                         $err_msg = $plugin->translate(
                             '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                             $label || $field_label,
                             'Min Value',
-                            '-32768',
-                            '32767'
+                            '-2147483648',
+                            '2147483647'
                         );
                     }
                 }
                 elsif ( !$err_msg && $max_value ) {
                     if (   $max_value !~ /^[+\-]?\d+$/
-                        || $max_value < -32768
-                        || $max_value > 32767
+                        || $max_value < -2147483648
+                        || $max_value > 2147483647
                         || ( $min_value && $min_value > $max_value ) )
                     {
                         $err_msg = $plugin->translate(
                             '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                             $label || $field_label,
                             'Max Value',
-                            $min_value || '-32768',
-                            '32767'
+                            $min_value || '-2147483648',
+                            '2147483647'
                         );
                     }
                 }
                 elsif ( !$err_msg && $initial_value ) {
                     if (   $initial_value !~ /^[+\-]?\d+$/
-                        || $initial_value < -32768
-                        || $initial_value > 32767 )
+                        || $initial_value < -2147483648
+                        || $initial_value > 2147483647 )
                     {
                         $err_msg = $plugin->translate(
                             '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                             $label || $field_label,
                             'Initial Value',
-                            '-32768',
-                            $min_value || '32767'
+                            '-2147483648',
+                            $min_value || '2147483647'
                         );
                     }
                 }
