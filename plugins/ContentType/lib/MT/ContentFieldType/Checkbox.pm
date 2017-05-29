@@ -42,36 +42,5 @@ sub field_html_params {
     };
 }
 
-sub ss_validator {
-    my ( $app, $field_data, $data ) = @_;
-
-    my $options = $field_data->{options} || {};
-
-    my $field_label = $options->{label};
-    my $multiple    = $options->{multiple};
-    my $max         = $options->{max};
-    my $min         = $options->{min};
-
-    if ( $multiple && $max && @{$data} > $max ) {
-        return $app->translate(
-            'Options less than or equal to [_1] must be selected in "[_2]" field.',
-            $max, $field_label
-        );
-    }
-    elsif ( $multiple && $min && @{$data} < $min ) {
-        return $app->translate(
-            'Options greater than or equal to [_1] must be selected in "[_2]" field.',
-            $min, $field_label
-        );
-    }
-    if ( !$multiple && @{$data} >= 2 ) {
-        return $app->translate(
-            'Only 1 checkbox can be selected in "[_1]" field.',
-            $field_label );
-    }
-
-    undef;
-}
-
 1;
 

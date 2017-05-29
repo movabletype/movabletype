@@ -267,7 +267,7 @@ content_field_types:
         field_html: field_html_datetime.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::DateTime::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::DateTime::data_getter
-        ss_validator: $ContentType::MT::ContentFieldType::DateTime::ss_validator
+        ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_datetime
         list_props:
             date_and_time:
                 base: __virtual.date
@@ -289,7 +289,7 @@ content_field_types:
         field_html: field_html_date.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Date::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::Date::data_getter
-        ss_validator: $ContentType::MT::ContentFieldType::Date::ss_validator
+        ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_datetime
         list_props:
             date:
                 base: __virtual.date
@@ -311,7 +311,7 @@ content_field_types:
         field_html: field_html_time.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Time::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::Time::data_getter
-        ss_validator: $ContentType::MT::ContentFieldType::Time::ss_validator
+        ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_datetime
         list_props:
             time:
                 filter_tmpl: $ContentType::MT::ContentFieldType::Time::filter_tmpl
@@ -328,10 +328,10 @@ content_field_types:
         label: Select Box
         data_type: varchar
         order: 100
-        data_getter: $ContentType::MT::ContentFieldType::SelectBox::data_getter
+        data_getter: $ContentType::MT::ContentFieldType::Common::multiple
         field_html: field_html_select_box.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::SelectBox::field_html_params
-        ss_validator: $ContentType::MT::ContentFieldType::SelectBox::ss_validator
+        ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_multiple
         list_props:
             select_box:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
@@ -374,7 +374,7 @@ content_field_types:
         data_getter: $ContentType::MT::ContentFieldType::Common::data_getter_multiple
         field_html: field_html_checkbox.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Checkbox::field_html_params
-        ss_validator: $ContentType::MT::ContentFieldType::Checkbox::ss_validator
+        ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_multiple
         list_props:
             checkbox:
                 filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl

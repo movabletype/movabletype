@@ -488,15 +488,9 @@ sub _thumbnail_html {
 sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
 
-    my $options = $field_data->{options} || {};
-
+    my $options     = $field_data->{options} || {};
     my $field_label = $options->{label};
-    my $multiple    = $options->{multiple};
-    my $max         = $options->{max};
-    my $min         = $options->{min};
-    my $required    = $options->{required};
-
-    my $field_type = $field_data->{type};
+    my $field_type  = $field_data->{type};
     my $asset_class = $field_type eq 'asset' ? 'file' : $field_type;
 
     my $iter = MT::Asset->load_iter(
@@ -513,27 +507,10 @@ sub ss_validator {
             $invalid_asset_ids, $field_label );
     }
 
-    if ( $multiple && $max && @{$data} > $max ) {
-        return $app->translate(
-            'Assets less than or equal to [_1] must be selected in "[_2]" field.',
-            $max, $field_label
-        );
-    }
-    if ( $multiple && $min && @{$data} < $min ) {
-        return $app->translate(
-            'Assets greater than or equal to [_1] must be selected in "[_2]" field.',
-            $min, $field_label
-        );
-    }
-    if ( !$multiple && @{$data} > 1 ) {
-        return $app->tranlate(
-            'Only 1 asset can be selected in "[_1]" field.', $field_label );
-    }
-    if ( $required && !@{$data} ) {
-        return $app->translate( '"[_1]" field is required.', $field_label );
-    }
-
-    undef;
+    my $type_label        = $field_type;
+    my $type_label_plural = $field_type . 's';
+    MT::ContentFieldType::Common::ss_validator_multiple( @_, $type_label,
+        $type_label_plural );
 }
 
 1;

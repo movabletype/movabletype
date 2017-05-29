@@ -155,42 +155,40 @@ sub terms_id {
 sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
 
-    my $options = $field_data->{options} || {};
+    my $options         = $field_data->{options}   || {};
+    my $content_type_id = $options->{content_type} || 0;
+    my $field_label     = $options->{label};
 
-    my $field_label = $options->{label};
-    my $multiple    = $options->{multiple};
-    my $max         = $options->{max};
-    my $min         = $options->{min};
-    my $required    = $options->{required};
-
-    my $content_type_name = 'Content Data';
-    my $content_field_id = $field_data->{content_field_id} || 0;
-    if ( my $content_field = MT::ContentField->load($content_field_id) ) {
-        if ( $content_field->related_content_type ) {
-            $content_type_name = $content_field->related_content_type->name;
-        }
+    my $iter = MT::ContentData->load_iter(
+        {   id              => $data,
+            blog_id         => $app->blog->id,
+            content_type_id => $content_type_id,
+        },
+        { fetchonly => { id => 1 } },
+    );
+    my %valid_cds;
+    while ( my $cd = $iter->() ) {
+        $valid_cds{ $cd->id } = 1;
     }
-
-    if ( $multiple && $max && @{$data} > $max ) {
-        return $app->tranlsate(
-            '[_1] less than or equal to [_2] must be selected in "[_3]" field.',
-            $content_type_name, $max, $field_label );
-    }
-    if ( $multiple && $min && @{$data} < $min ) {
+    if ( my @invalid_cd_ids = grep { !$valid_cds{$_} } @{$data} ) {
+        my $invalid_cd_ids = join ', ', @invalid_cd_ids;
         return $app->translate(
-            '[_1] greater than or equal to [_2] must be selected in "[_3]" field.',
-            $content_type_name, $min, $field_label );
-    }
-    if ( !$multiple && @{$data} > 1 ) {
-        return $app->translate(
-            'Only 1 [_1] can be selected in "[_2]" field.',
-            $content_type_name, $field_label );
-    }
-    if ( $required && !@{$data} ) {
-        return $app->translate( '"[_1]" field is required.', $field_label );
+            'Invalid Content Data Ids: [_1] in "[_2]" field.',
+            $invalid_cd_ids, $field_label );
     }
 
-    undef;
+    my $content_type_name;
+    if ( my $content_type = MT::ContentType->load($content_type_id) ) {
+        $content_type_name = $content_type->name;
+    }
+    unless ( defined $content_type_name && $content_type_name ne '' ) {
+        $content_type_name = 'content data';
+    }
+
+    my $type_label        = $content_type_name;
+    my $type_label_plural = $type_label;
+    MT::ContentFieldType::Common::ss_validator_multiple( @_, $type_label,
+        $type_label_plural );
 }
 
 1;

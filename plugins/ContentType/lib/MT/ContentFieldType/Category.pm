@@ -105,6 +105,7 @@ sub data_getter {
 
 sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
+
     my $iter = MT::Category->load_iter( { id => $data },
         { fetchonly => { id => 1 } } );
     my %valid_cats;
@@ -118,8 +119,10 @@ sub ss_validator {
             $invalid_cat_ids, $field_label );
     }
 
-    require MT::ContentFieldType::Checkbox;
-    MT::ContentFieldType::Checkbox::ss_validator(@_);
+    my $type_label        = 'category';
+    my $type_label_plural = 'categories';
+    MT::ContentFieldType::Common::ss_validator_multiple( @_, $type_label,
+        $type_label_plural );
 }
 
 sub html {

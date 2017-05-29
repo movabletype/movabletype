@@ -11,6 +11,7 @@ our @EXPORT_OK = qw(
 use MT::Asset;
 use MT::ContentData;
 use MT::ContentFieldIndex;
+use MT::Util ();
 
 sub get_cd_ids_by_inner_join {
     my $prop       = shift;
@@ -83,6 +84,62 @@ sub data_getter_asset {
     my $field_id = $field_data->{id};
     my $asset_ids = $app->param( 'content-field-' . $field_id ) || '';
     [ split ',', $asset_ids ];
+}
+
+sub ss_validator_datetime {
+    my ( $app, $field_data, $data ) = @_;
+
+    unless ( !defined $data || $data eq '' || MT::Util::is_valid_date($data) )
+    {
+        my $field_type  = $field_data->{type};
+        my $field_label = $field_data->{options}{label};
+
+        return $app->translate( 'Invalid [_1] in "[_2]" field.',
+            $field_type, $field_label );
+    }
+
+    undef;
+}
+
+sub ss_validator_multiple {
+    my ( $app, $field_data, $data, $type_label, $type_label_plural ) = @_;
+
+    if ( !defined $type_label_plural ) {
+        if ( defined $type_label ) {
+            $type_label_plural = $type_label;
+        }
+        else {
+            $type_label        = 'option';
+            $type_label_plural = 'options';
+        }
+    }
+
+    my $options = $field_data->{options} || {};
+
+    my $field_label = $options->{label};
+    my $multiple    = $options->{multiple};
+    my $max         = $options->{max};
+    my $min         = $options->{min};
+
+    if ( $multiple && $max && @{$data} > $max ) {
+        return $app->translate(
+            '[_1] less than or equal to [_2] must be selected in "[_3]" field.',
+            ucfirst($type_label_plural), $max, $field_label
+        );
+    }
+    elsif ( $multiple && $min && @{$data} < $min ) {
+        return $app->translate(
+            '[_1] greater than or equal to [_2] must be selected in "[_3]" field.',
+            ucfirst($type_label_plural), $min, $field_label
+        );
+    }
+    if ( !$multiple && @{$data} >= 2 ) {
+        return $app->translate(
+            'Only 1 [_1] can be selected in "[_2]" field.',
+            lc($type_label), $field_label );
+    }
+
+    undef;
 }
 
 1;

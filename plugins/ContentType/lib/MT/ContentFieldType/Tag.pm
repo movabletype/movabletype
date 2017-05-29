@@ -116,33 +116,26 @@ sub html {
 
 sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
-    my $field_id = $field_data->{id};
+
     my $options = $field_data->{options} || {};
-
     my $field_label = $options->{label};
-    my $multiple    = $options->{multiple};
-    my $max         = $options->{max};
-    my $min         = $options->{min};
-    my $can_add     = $options->{can_add};
 
-    if ( !$multiple && @{$data} >= 2 ) {
-        return $app->translate( 'Only 1 tag can be input in "[_1]" field.',
-            $field_label );
+    my $iter
+        = MT::Tag->load_iter( { id => $data }, { fetchonly => { id => 1 } } );
+    my %valid_tags;
+    while ( my $tag = $iter->() ) {
+        $valid_tags{ $tag->id } = 1;
     }
-    if ( $multiple && $max && @{$data} > $max ) {
-        return $app->translate(
-            'Tags less than or equal to [_1] must be input in "[_2]" field.',
-            $max, $field_label
-        );
-    }
-    if ( $multiple && $min && @{$data} < $min ) {
-        return $app->translate(
-            'Tags greater than or equal to [_1] must be input in "[_2]" field.',
-            $min, $field_label
-        );
+    if ( my @invalid_tag_ids = grep { $valid_tags{$_} } @{$data} ) {
+        my $invalid_tag_ids = join ', ', sort(@invalid_tag_ids);
+        return $app->translate( 'Invalid Tag IDs: [_1] in "[_2]" field.',
+            $invalid_tag_ids, $field_label );
     }
 
-    undef;
+    my $type_label        = 'tag';
+    my $type_label_plural = 'tags';
+    MT::ContentFieldType::Common::ss_validator_multiple( @_, $type_label,
+        $type_label_plural );
 }
 
 sub _link {

@@ -97,17 +97,6 @@ sub single_select_options {
     [ map { +{ label => $_->{key}, value => $_->{value} } } @{$values} ];
 }
 
-sub data_getter {
-    my ( $app, $field_data ) = @_;
-    my @options = $app->param( 'content-field-' . $field_data->{id} );
-    if ( $field_data->{options}{multiple} ) {
-        \@options;
-    }
-    else {
-        @options ? $options[0] : undef;
-    }
-}
-
 sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
@@ -121,32 +110,6 @@ sub html {
     my @labels = map { $label_hash{$_} } @{$values};
 
     join ', ', @labels;
-}
-
-sub ss_validator {
-    my ( $app, $field_data, $data ) = @_;
-
-    my $options = $field_data->{options} || {};
-
-    my $field_label = $options->{label};
-    my $multiple    = $options->{multiple};
-    my $max         = $options->{max};
-    my $min         = $options->{min};
-
-    if ( $multiple && $max && @{$data} > $max ) {
-        return $app->translate(
-            'Options less than or equal to [_1] must be selected in "[_2]" field.',
-            $max, $field_label,
-        );
-    }
-    if ( $multiple && $min && @{$data} < $min ) {
-        return $app->translate(
-            'Options greater than or equal to [_1] must be selected in "[_2]" field.',
-            $min, $field_label,
-        );
-    }
-
-    undef;
 }
 
 1;
