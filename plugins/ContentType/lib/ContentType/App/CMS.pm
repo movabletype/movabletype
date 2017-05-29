@@ -1226,60 +1226,20 @@ sub save_content_data {
         return _autosave_content_data( $app, $data );
     }
 
-    foreach my $f (@$fields) {
-        my $content_field_type = $content_field_types->{ $f->{type} };
-        my $param_name         = 'content-field-' . $f->{id};
+    if ( my $errors = _validate_content_fields( $app, $content_type ) ) {
 
-        if ( exists $f->{options}{required}
-            && $f->{options}{required} )
-        {
-            my $has_data;
-            my $d = $data->{ $f->{id} };
-            if ( ref $d eq 'ARRAY' ) {
-                $has_data = @{$d} ? 1 : 0;
-            }
-            else {
-                $has_data = ( defined $d && $d ne '' ) ? 1 : 0;
-            }
-            unless ($has_data) {
-                my $label = $f->{options}{label};
-                my $err_msg
-                    = $app->translate(qq{"${label}" field is required.});
-                return $app->redirect(
-                    $app->uri(
-                        mode => 'edit_content_data',
-                        args => {
-                            blog_id         => $blog_id,
-                            content_type_id => $content_type_id,
-                            id              => $content_data_id,
-                            err_msg         => $err_msg,
-                        },
-                    )
-                );
-            }
-        }
-
-        if ( my $ss_validator = $content_field_type->{ss_validator} ) {
-            if ( !ref $ss_validator ) {
-                $ss_validator = MT->handler_to_coderef($ss_validator);
-            }
-            if ( 'CODE' eq ref $ss_validator ) {
-                $app->error(undef);
-                my $result = $ss_validator->( $app, $f );
-                if ( my $err = $app->errstr ) {
-                    $data->{blog_id}         = $blog_id;
-                    $data->{content_type_id} = $content_type_id;
-                    $data->{id}              = $content_data_id;
-                    $data->{err_msg}         = $err;
-                    return $app->redirect(
-                        $app->uri(
-                            'mode' => 'edit_content_data',
-                            args   => $data,
-                        )
-                    );
-                }
-            }
-        }
+        # FIXME: this does not preserve content field values.
+        return $app->redirect(
+            $app->uri(
+                mode => 'edit_content_data',
+                args => {
+                    blog_id         => $blog_id,
+                    content_type_id => $content_type_id,
+                    id              => $content_data_id,
+                    err_msg         => $errors->[0]{error},
+                },
+            )
+        );
     }
 
     my $content_data
@@ -1622,6 +1582,86 @@ sub _build_content_data_hasher {
 
         $row;
     };
+}
+
+sub _validate_content_fields {
+    my $app                 = shift;
+    my ($content_type)      = @_;
+    my $content_field_types = $app->registry('content_field_types');
+
+    my @errors;
+
+    foreach my $f ( @{ $content_type->fields } ) {
+        my $content_field_type = $content_field_types->{ $f->{type} };
+        my $data = _get_form_data( $app, $content_field_type, $f->{id} );
+        my $param_name = 'content-field-' . $f->{id};
+
+        if ( exists $f->{options}{required}
+            && $f->{options}{required} )
+        {
+            my $has_data;
+            if ( ref $data eq 'ARRAY' ) {
+                $has_data = @{$data} ? 1 : 0;
+            }
+            else {
+                $has_data = ( defined $data && $data ne '' ) ? 1 : 0;
+            }
+            unless ($has_data) {
+                my $label = $f->{options}{label};
+                push @errors,
+                    {
+                    field_id => $f->{id},
+                    error =>
+                        $app->translate(qq{"${label}" field is required.}),
+                    };
+                next;
+            }
+        }
+
+        if ( my $ss_validator = $content_field_type->{ss_validator} ) {
+            if ( !ref $ss_validator ) {
+                $ss_validator = MT->handler_to_coderef($ss_validator);
+            }
+            if ( 'CODE' eq ref $ss_validator ) {
+                $ss_validator->( $app, $f );
+                if ( my $err = $app->errstr ) {
+                    push @errors,
+                        {
+                        field_id => $f->{id},
+                        error    => $err,
+                        };
+                    $app->errstr(undef);
+                }
+            }
+        }
+    }
+
+    @errors ? \@errors : undef;
+}
+
+sub validate_content_fields {
+    my $app = shift;
+
+    # TODO: permission check
+
+    my $blog_id = $app->blog ? $app->blog->id : undef;
+    my $content_type_id = $app->param('content_type_id') || 0;
+    my $content_type = MT::ContentType->load(
+        { id => $content_type_id, blog_id => $blog_id } );
+
+    return $app->json_error( $app->translate('Invalid request.') )
+        unless $blog_id && $content_type;
+
+    my $invalid_count = 0;
+    my %invalid_fields;
+    if ( my $errors = _validate_content_fields( $app, $content_type ) ) {
+        $invalid_count = scalar @{$errors};
+        %invalid_fields = map { $_->{field_id} => $_->{error} } @{$errors};
+    }
+
+    $app->json_result(
+        { invalidCount => $invalid_count, invalidFields => \%invalid_fields }
+    );
 }
 
 1;

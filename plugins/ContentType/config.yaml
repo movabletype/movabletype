@@ -34,6 +34,9 @@ applications:
             select_list_content_type: $ContentType::ContentType::App::CMS::select_list_content_type
             select_edit_content_type: $ContentType::ContentType::App::CMS::select_edit_content_type
             edit_content_data: $ContentType::ContentType::App::CMS::edit_content_data
+            validate_content_fields:
+                code: $ContentType::ContentType::App::CMS::validate_content_fields
+                app_mode: JSON
             save_content_data: $ContentType::ContentType::App::CMS::save_content_data
             dialog_content_data_modal: $ContentType::ContentType::App::CMS::dialog_content_data_modal
             dialog_list_content_data:

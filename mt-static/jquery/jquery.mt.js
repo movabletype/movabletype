@@ -1374,6 +1374,19 @@ $.mtValidateRules = {
             this.errstr = $e.get(0).validationMessage;
             return false;
         }
+    },
+    '.ss-validator': function ($e) {
+        var contentFieldId = $e.data('mtContentFieldId');
+        if (!contentFieldId) {
+            return true;
+        }
+        if (window.ssValidateError && window.ssValidateError[contentFieldId]) {
+            this.error = true;
+            this.errstr = window.ssValidateError[contentFieldId];
+            return false;
+        } else {
+            return true;
+        }
     }
 };
 

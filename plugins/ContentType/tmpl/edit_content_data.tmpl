@@ -637,6 +637,41 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   var newCategoryClickEventAdded;
 
   jQuery('#edit-content-type-data-form').submit( function() {
+    var form = this;
+    validateInServerSide().done(function () {
+      if (validateInClientSide()) {
+        form.submit();
+      }
+    })
+    return false;
+  });
+
+  function validateInServerSide() {
+    if (jQuery('.ss-validator').length == 0) {
+      return jQuery.Deferred().resolve();
+    }
+    var data = jQuery('#edit-content-type-data-form')
+                 .serialize()
+                 .replace(/__mode=save_content_data/, '__mode=validate_content_fields');
+    return jQuery.when(
+      jQuery.ajax({
+        type: 'POST',
+        url:  '<mt:var name="script_url">',
+        data: data
+      })
+    ).done(function (data) {
+      if (data && data.result && data.result.invalidCount) {
+        window.ssValidateError = data.result.invalidFields;
+      } else {
+        window.ssValidateError = null;
+      }
+    }).fail(function () {
+      // TODO: should display error message to status position.
+      window.ssValidateError = null;
+    });
+  }
+
+  function validateInClientSide() {
     var validateSingle = jQuery('.content-field:not(.group)').mtValidate('simple');
     var validateGroup = jQuery('.content-field.group').mtValidate('simple-group');
 
@@ -672,13 +707,13 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       newCategoryClickEventAdded = true;
     }
 
-    if ( !validateSingle || !validateGroup ) {
-      app.formValidated = true;
-      return false;
+    if ( !validateSingle || !validateGroup || window.ssValidateError ) {
+        app.formValidated = true;
+        return false;
     }
     setDirty(false);
     return true;
-  });   
+  }
 
   jQuery('div.mt-edit-inputblock').mtEditInputBlock({
     edit: '<__trans phrase="Edit">',
