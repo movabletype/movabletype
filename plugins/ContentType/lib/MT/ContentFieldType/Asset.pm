@@ -506,24 +506,26 @@ sub ss_validator {
     my $required    = $options->{required};
 
     if ( $multiple && $max && @values > $max ) {
-        return $app->errtrans(
+        return $app->translate(
             'Assets less than or equal to [_1] must be selected in "[_2]" field.',
             $max, $field_label
         );
     }
     if ( $multiple && $min && @values < $min ) {
-        return $app->errtrans(
+        return $app->translate(
             'Assets greater than or equal to [_1] must be selected in "[_2]" field.',
             $min, $field_label
         );
     }
     if ( !$multiple && @values > 1 ) {
-        return $app->errtrans(
+        return $app->tranlate(
             'Only 1 asset can be selected in "[_1]" field.', $field_label );
     }
     if ( $required && !@values ) {
-        return $app->errtrans( '"[_1]" field is required.', $field_label );
+        return $app->translate( '"[_1]" field is required.', $field_label );
     }
+
+    undef;
 }
 
 1;

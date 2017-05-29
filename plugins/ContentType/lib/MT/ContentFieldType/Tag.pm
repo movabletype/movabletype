@@ -134,21 +134,23 @@ sub ss_validator {
     my @tag_ids = $app->param("content-field-${field_id}");
 
     if ( !$multiple && @tag_ids >= 2 ) {
-        return $app->errtrans( 'Only 1 tag can be input in "[_1]" field.',
+        return $app->translate( 'Only 1 tag can be input in "[_1]" field.',
             $field_label );
     }
     if ( $multiple && $max && @tag_ids > $max ) {
-        return $app->errtrans(
+        return $app->translate(
             'Tags less than or equal to [_1] must be input in "[_2]" field.',
             $max, $field_label
         );
     }
     if ( $multiple && $min && @tag_ids < $min ) {
-        return $app->errtrans(
+        return $app->translate(
             'Tags greater than or equal to [_1] must be input in "[_2]" field.',
             $min, $field_label
         );
     }
+
+    undef;
 }
 
 sub _link {

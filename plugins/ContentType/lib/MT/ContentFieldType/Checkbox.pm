@@ -62,13 +62,13 @@ sub ss_validator {
 
     if ($multiple) {
         if ( $max && @values > $max ) {
-            return $app->errtrans(
+            return $app->translate(
                 'Options less than or equal to [_1] must be selected in "[_2]" field.',
                 $max, $field_label
             );
         }
         elsif ( $min && @values < $min ) {
-            return $app->errtrans(
+            return $app->translate(
                 'Options greater than or equal to [_1] must be selected in "[_2]" field.',
                 $min, $field_label
             );
@@ -76,11 +76,13 @@ sub ss_validator {
     }
     else {
         if ( @values >= 2 ) {
-            return $app->errtrans(
+            return $app->translate(
                 'Only 1 checkbox can be selected in "[_1]" field.',
                 $field_label );
         }
     }
+
+    undef;
 }
 
 1;

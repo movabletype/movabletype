@@ -139,18 +139,20 @@ sub ss_validator {
     if ( $multiple && ( $max || $min ) ) {
         my @options = $app->param("content-field-${field_id}");
         if ( $max && @options > $max ) {
-            return $app->errtrans(
+            return $app->translate(
                 'Options less than or equal to [_1] must be selected in "[_2]" field.',
                 $max, $field_label,
             );
         }
         if ( $min && @options < $min ) {
-            return $app->errtrans(
+            return $app->translate(
                 'Options greater than or equal to [_1] must be selected in "[_2]" field.',
                 $min, $field_label,
             );
         }
     }
+
+    undef;
 }
 
 1;

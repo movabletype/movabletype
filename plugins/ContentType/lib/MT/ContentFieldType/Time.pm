@@ -69,13 +69,10 @@ sub ss_validator {
     if ( defined $time && $time ne '' ) {
         $ts = '19700101 ' . $time;
     }
-    if ( !defined $ts || $ts eq '' || MT::Util::is_valid_date($ts) ) {
-        return $ts;
+    unless ( !defined $ts || $ts eq '' || MT::Util::is_valid_date($ts) ) {
+        return $app->translate( "Invalid time: '[_1]'", $time );
     }
-    else {
-        my $err = MT->translate( "Invalid time: '[_1]'", $time );
-        return $app->error($err) if $err && $app;
-    }
+    undef;
 }
 
 sub filter_tmpl {

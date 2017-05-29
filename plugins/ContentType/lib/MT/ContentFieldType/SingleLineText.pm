@@ -35,16 +35,18 @@ sub ss_validator {
 
     if ( my $max_length = $options->{max_length} ) {
         if ( length $value > $max_length ) {
-            return $app->errtrans( '"[_1]" field is too long.',
+            return $app->translate( '"[_1]" field is too long.',
                 $field_label );
         }
     }
     if ( my $min_length = $options->{min_length} ) {
         if ( length $value < $min_length ) {
-            return $app->errtrans( '"[_1]" field is too short.',
+            return $app->translate( '"[_1]" field is too short.',
                 $field_label );
         }
     }
+
+    undef;
 }
 
 1;

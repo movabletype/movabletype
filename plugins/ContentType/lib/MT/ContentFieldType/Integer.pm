@@ -7,7 +7,7 @@ sub ss_validator {
     my $field_id = $field_data->{id};
 
     my $value = $app->param("content-field-${field_id}");
-    return
+    return undef
         unless defined $value
         && $value ne '';    # Do not check empty value here.
 
@@ -18,13 +18,13 @@ sub ss_validator {
     my $min_value   = $options->{min_value};
 
     if ( $value !~ /^[+\-]?\d+$/ ) {
-        return $app->errtrans( '"[_1]" field value must be integer.',
+        return $app->translate( '"[_1]" field value must be integer.',
             $field_label );
     }
 
     if ( defined $max_value && $max_value ne '' ) {
         if ( $value > $max_value ) {
-            return $app->errtrans(
+            return $app->translate(
                 '"[_1]" field value must be less than or equal to [_2].',
                 $field_label, $max_value );
         }
@@ -32,11 +32,13 @@ sub ss_validator {
 
     if ( defined $min_value && $min_value ne '' ) {
         if ( $value < $min_value ) {
-            return $app->errtrans(
+            return $app->translate(
                 '"[_1]" field value must be greater than or equal to [_2]',
                 $field_label, $min_value );
         }
     }
+
+    undef;
 }
 
 1;

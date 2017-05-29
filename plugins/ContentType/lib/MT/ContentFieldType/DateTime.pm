@@ -145,14 +145,11 @@ sub ss_validator {
     my $date = $q->param( 'date-' . $id );
     my $time = $q->param( 'time-' . $id );
     my $ts   = $date . $time;
-    if ( !defined $ts || $ts eq '' || MT::Util::is_valid_date($ts) ) {
-        return $ts;
-    }
-    else {
-        my $err = MT->translate( "Invalid date and time: '[_1] [_2]'",
+    unless ( !defined $ts || $ts eq '' || MT::Util::is_valid_date($ts) ) {
+        return $app->translate( "Invalid date and time: '[_1] [_2]'",
             $date, $time );
-        return $app->error($err) if $err && $app;
     }
+    undef;
 }
 
 1;

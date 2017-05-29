@@ -70,13 +70,10 @@ sub ss_validator {
     if ( defined $date && $date ne '' ) {
         $ts = $date . '000000';
     }
-    if ( !defined $ts || $ts eq '' || MT::Util::is_valid_date($ts) ) {
-        return $ts;
+    unless ( !defined $ts || $ts eq '' || MT::Util::is_valid_date($ts) ) {
+        return $app->translate( "Invalid date: '[_1]'", $date );
     }
-    else {
-        my $err = MT->translate( "Invalid date: '[_1]'", $date );
-        return $app->error($err) if $err && $app;
-    }
+    undef;
 }
 
 1;

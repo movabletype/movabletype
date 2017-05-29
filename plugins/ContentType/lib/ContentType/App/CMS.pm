@@ -1623,14 +1623,12 @@ sub _validate_content_fields {
                 $ss_validator = MT->handler_to_coderef($ss_validator);
             }
             if ( 'CODE' eq ref $ss_validator ) {
-                $ss_validator->( $app, $f );
-                if ( my $err = $app->errstr ) {
+                if ( my $error = $ss_validator->( $app, $f ) ) {
                     push @errors,
                         {
                         field_id => $f->{id},
-                        error    => $err,
+                        error    => $error,
                         };
-                    $app->errstr(undef);
                 }
             }
         }

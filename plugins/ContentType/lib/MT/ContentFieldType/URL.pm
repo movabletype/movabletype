@@ -10,13 +10,11 @@ sub ss_validator {
     my $str = $app->param( 'content-field-' . $field_data->{id} );
 
     # TODO: should check "require" option here.
-    if ( !defined $str || $str eq '' || MT::Util::is_url($str) ) {
-        return $str;
+    unless ( !defined $str || $str eq '' || MT::Util::is_url($str) ) {
+        return $app->translate( "Invalid URL: '[_1]'", $str );
     }
-    else {
-        my $err = MT->translate( "Invalid URL: '[_1]'", $str );
-        return $app->error($err) if $err && $app;
-    }
+
+    undef;
 }
 
 1;
