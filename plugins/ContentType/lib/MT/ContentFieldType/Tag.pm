@@ -56,12 +56,6 @@ sub field_html_params {
     };
 }
 
-sub data_getter {
-    my ( $app, $field_id ) = @_;
-    my @tag_ids = $app->param("content-field-${field_id}");
-    \@tag_ids;
-}
-
 sub terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;

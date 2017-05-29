@@ -50,9 +50,9 @@ sub field_html_params {
 }
 
 sub data_getter {
-    my ( $app, $id ) = @_;
-    my $q    = $app->param;
-    my $time = $q->param( 'time-' . $id );
+    my ( $app, $field_data ) = @_;
+    my $id   = $field_data->{id};
+    my $time = $app->param( 'time-' . $id );
     $time =~ s/\D//g;
     if ( defined $time && $time ne '' ) {
         return '19700101' . $time;

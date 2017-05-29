@@ -98,11 +98,11 @@ sub single_select_options {
 }
 
 sub data_getter {
-    my ( $app, $id ) = @_;
-    my @options       = $app->param("content-field-${id}");
-    my $content_field = MT::ContentField->load($id);
+    my ( $app, $field_data ) = @_;
+    my $id      = $field_data->{id};
+    my @options = $app->param("content-field-${id}");
 
-    if ( $content_field->options->{multiple} ) {
+    if ( $field_data->{options}{multiple} ) {
         \@options;
     }
     else {

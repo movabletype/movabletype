@@ -6,7 +6,6 @@ use MT;
 use MT::Asset;
 use MT::Author;
 use MT::ContentField;
-use MT::ContentFieldType::AssetCommon qw( data_getter_common );
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 use MT::FileMgr;
@@ -55,11 +54,6 @@ sub field_html_params {
         required   => $required,
         translated_asset_type => $app->translate($type),
     };
-}
-
-sub data_getter {
-    my ( $app, $field_id ) = @_;
-    data_getter_common( $app, $field_id, 'file' );
 }
 
 sub single_select_options {

@@ -140,7 +140,7 @@ content_field_types:
         label: Content Type
         data_type: integer
         order: 10
-        data_getter: $ContentType::MT::ContentFieldType::ContentType::data_getter
+        data_getter: $ContentType::MT::ContentFieldType::Common::data_getter_multiple
         field_html: field_html_content_type.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::ContentType::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::ContentType::ss_validator
@@ -371,7 +371,7 @@ content_field_types:
         label: Checkbox
         data_type: varchar
         order: 120
-        data_getter: $ContentType::MT::ContentFieldType::Checkbox::data_getter
+        data_getter: $ContentType::MT::ContentFieldType::Common::data_getter_multiple
         field_html: field_html_checkbox.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Checkbox::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Checkbox::ss_validator
@@ -395,7 +395,7 @@ content_field_types:
         label: Asset
         data_type: integer
         order: 130
-        data_getter: $ContentType::MT::ContentFieldType::Asset::data_getter
+        data_getter: $ContentType::MT::ContentFieldType::Common::data_getter_asset
         field_html: field_html_asset.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
@@ -473,7 +473,7 @@ content_field_types:
         label: Audio
         data_type: integer
         order: 140
-        data_getter: $ContentType::MT::ContentFieldType::Audio::data_getter
+        data_getter: $ContentType::MT::ContentFieldType::Common::data_getter_asset
         field_html: field_html_asset.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
@@ -550,7 +550,7 @@ content_field_types:
         label: Video
         data_type: integer
         order: 150
-        data_getter: $ContentType::MT::ContentFieldType::Video::data_getter
+        data_getter: $ContentType::MT::ContentFieldType::Common::data_getter_asset
         field_html: field_html_asset.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
@@ -627,7 +627,7 @@ content_field_types:
         label: Image
         data_type: integer
         order: 160
-        data_getter: $ContentType::MT::ContentFieldType::Image::data_getter
+        data_getter: $ContentType::MT::ContentFieldType::Common::data_getter_asset
         field_html: field_html_asset.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
@@ -756,7 +756,7 @@ content_field_types:
         label: Tag
         data_type: integer
         order: 190
-        data_getter: $ContentType::MT::ContentFieldType::Tag::data_getter
+        data_getter: $ContentType::MT::ContentFieldType::Common::data_getter_multiple
         field_html: field_html_tag.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Tag::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Tag::ss_validator
@@ -781,9 +781,9 @@ content_field_types:
         label: list
         data_type: varchar
         order: 200
+        data_getter: $ContentType::MT::ContentFieldType::Common::data_getter_multiple
         field_html: field_html_list.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::List::field_html_params
-        data_getter: $ContentType::MT::ContentFieldType::List::data_getter
         list_props:
             list:
                 base: __virtual.string

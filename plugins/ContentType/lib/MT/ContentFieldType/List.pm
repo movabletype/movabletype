@@ -20,11 +20,6 @@ sub field_html_params {
     };
 }
 
-sub data_getter {
-    my ( $app, $field_id ) = @_;
-    [ $app->param("content-field-${field_id}") ];
-}
-
 sub html {
     my $prop = shift;
     my ( $content_data, $app, $load_options ) = @_;

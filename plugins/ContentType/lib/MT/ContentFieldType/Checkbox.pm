@@ -42,12 +42,6 @@ sub field_html_params {
     };
 }
 
-sub data_getter {
-    my ( $app, $id ) = @_;
-    my @data = $app->param("content-field-${id}");
-    \@data;
-}
-
 sub ss_validator {
     my ( $app, $field_data ) = @_;
     my $field_id = $field_data->{id};

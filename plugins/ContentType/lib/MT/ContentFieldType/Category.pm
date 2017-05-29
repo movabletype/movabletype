@@ -98,7 +98,8 @@ sub _build_category_list {
 }
 
 sub data_getter {
-    my ( $app, $field_id ) = @_;
+    my ( $app, $field_data ) = @_;
+    my $field_id = $field_data->{id};
     my @cat_ids = split ',', $app->param("category-${field_id}");
 
     my %valid_cats

@@ -113,12 +113,6 @@ __JS__
     return $html;
 }
 
-sub data_getter {
-    my ( $app, $field_id ) = @_;
-    my @data = $app->param( 'content-field-' . $field_id );
-    \@data;
-}
-
 sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;

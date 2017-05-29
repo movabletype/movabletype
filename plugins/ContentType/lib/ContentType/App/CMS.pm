@@ -1219,14 +1219,15 @@ sub save_content_data {
     foreach my $f (@$fields) {
         my $content_field_type = $content_field_types->{ $f->{type} };
         $data->{ $f->{id} }
-            = _get_form_data( $app, $content_field_type, $f->{id} );
+            = _get_form_data( $app, $content_field_type, $f );
     }
 
     if ( $app->param('_autosave') ) {
         return _autosave_content_data( $app, $data );
     }
 
-    if ( my $errors = _validate_content_fields( $app, $content_type ) ) {
+    if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
+    {
 
         # FIXME: this does not preserve content field values.
         return $app->redirect(
@@ -1448,21 +1449,21 @@ sub cms_pre_load_filtered_list {
 }
 
 sub _get_form_data {
-    my ( $app, $content_field_type, $id ) = @_;
+    my ( $app, $content_field_type, $form_data ) = @_;
 
     if ( my $data_getter = $content_field_type->{data_getter} ) {
         if ( !ref $data_getter ) {
             $data_getter = MT->handler_to_coderef($data_getter);
         }
         if ( 'CODE' eq ref $data_getter ) {
-            return $data_getter->( $app, $id );
+            return $data_getter->( $app, $form_data );
         }
         else {
             return $data_getter;
         }
     }
     else {
-        my $value = $app->param( 'content-field-' . $id );
+        my $value = $app->param( 'content-field-' . $form_data->{id} );
         if ( defined $value && $value ne '' ) {
             $value;
         }
@@ -1585,26 +1586,26 @@ sub _build_content_data_hasher {
 }
 
 sub _validate_content_fields {
-    my $app                 = shift;
-    my ($content_type)      = @_;
+    my $app = shift;
+    my ( $content_type, $data ) = @_;
     my $content_field_types = $app->registry('content_field_types');
 
     my @errors;
 
     foreach my $f ( @{ $content_type->fields } ) {
         my $content_field_type = $content_field_types->{ $f->{type} };
-        my $data = _get_form_data( $app, $content_field_type, $f->{id} );
-        my $param_name = 'content-field-' . $f->{id};
+        my $param_name         = 'content-field-' . $f->{id};
 
         if ( exists $f->{options}{required}
             && $f->{options}{required} )
         {
             my $has_data;
-            if ( ref $data eq 'ARRAY' ) {
-                $has_data = @{$data} ? 1 : 0;
+            my $d = $data->{ $f->{id} };
+            if ( ref $d eq 'ARRAY' ) {
+                $has_data = @{$d} ? 1 : 0;
             }
             else {
-                $has_data = ( defined $data && $data ne '' ) ? 1 : 0;
+                $has_data = ( defined $d && $d ne '' ) ? 1 : 0;
             }
             unless ($has_data) {
                 my $label = $f->{options}{label};

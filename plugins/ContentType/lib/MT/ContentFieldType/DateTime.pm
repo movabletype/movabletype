@@ -129,10 +129,10 @@ __JS__
 }
 
 sub data_getter {
-    my ( $app, $id ) = @_;
-    my $q    = $app->param;
-    my $date = $q->param( 'date-' . $id );
-    my $time = $q->param( 'time-' . $id );
+    my ( $app, $field_data ) = @_;
+    my $id   = $field_data->{id};
+    my $date = $app->param( 'date-' . $id );
+    my $time = $app->param( 'time-' . $id );
     my $ts   = $date . $time;
     $ts =~ s/\D//g;
     return $ts;
