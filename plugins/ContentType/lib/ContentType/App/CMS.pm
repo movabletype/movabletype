@@ -401,14 +401,14 @@ sub save_cfg_content_type {
             }
             elsif ( length( $options->{label} ) > 255 ) {
                 $err_msg = $plugin->translate(
-                    '[_1]\'s "[_2]" field should be shorter than 255 characters.',
-                    $field_label, 'Label'
+                    '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
+                    $field_label, 'Label', '255'
                 );
             }
-            elsif ( length( $options->{hint} ) > 255 ) {
+            elsif ( length( $options->{hint} ) > 1024 ) {
                 $err_msg = $plugin->translate(
-                    '[_1]\'s "[_2]" field should be shorter than 255 characters.',
-                    $field_label, 'Hint'
+                    '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
+                    $field_label, 'Hint', '1024'
                 );
             }
             elsif ( $type eq 'single_line_text' ) {
@@ -417,36 +417,35 @@ sub save_cfg_content_type {
                 my $initial_value = $options->{initial_value};
                 if ($min_length) {
                     if ( $min_length !~ /^[+\-]?\d+$/
-                        || ( $min_length < 0 || $min_length > 255 ) )
+                        || ( $min_length < 0 || $min_length > 1024 ) )
                     {
                         $err_msg = $plugin->translate(
                             '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                             $label || $field_label,
                             'Min Length',
                             '0',
-                            '255'
+                            '1024'
                         );
                     }
                 }
                 if ( !$err_msg && $max_length ) {
                     if ( $max_length !~ /^[+\-]?\d+$/
-                        || ( $max_length < 1 || $max_length > 255 ) )
+                        || ( $max_length < 1 || $max_length > 1024 ) )
                     {
                         $err_msg = $plugin->translate(
                             '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                             $label || $field_label,
                             'Max Length',
                             '1',
-                            '255'
+                            '1024'
                         );
                     }
                 }
                 if ( !$err_msg && $initial_value ) {
-                    if ( length($initial_value) > 255 ) {
+                    if ( length($initial_value) > 1024 ) {
                         $err_msg = $plugin->translate(
-                            '[_1]\'s "[_2]" field should be shorter than 255 characters.',
-                            $field_label,
-                            'Initial Value'
+                            '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
+                            $field_label, 'Initial Value', '1024'
                         );
                     }
                 }
@@ -529,9 +528,10 @@ sub save_cfg_content_type {
                 my $initial_value = $options->{initial_value};
                 if ( length($initial_value) > 255 ) {
                     $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field should be shorter than 255 characters.',
+                        '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                         $label || $field_label,
-                        'Initial Value'
+                        'Initial Value',
+                        '1024'
                     );
                 }
                 elsif (defined $initial_value
@@ -695,9 +695,10 @@ sub save_cfg_content_type {
                 my $initial_value = $options->{initial_value};
                 if ( length($initial_value) > 255 ) {
                     $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field should be shorter than 255 characters.',
+                        '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                         $label || $field_label,
-                        'Initial Value'
+                        'Initial Value',
+                        '255'
                     );
                 }
             }
@@ -737,16 +738,18 @@ sub save_cfg_content_type {
                 }
                 elsif ( $row_headers && length($row_headers) > 255 ) {
                     $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field should be shorter than 255 characters.',
+                        '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                         $label || $field_label,
-                        'Row Headers'
+                        'Row Headers',
+                        '255'
                     );
                 }
                 elsif ( $column_headers && length($column_headers) > 255 ) {
                     $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field should be shorter than 255 characters.',
+                        '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                         $label || $field_label,
-                        'Column Headers'
+                        'Column Headers',
+                        '255'
                     );
                 }
             }
