@@ -104,8 +104,8 @@ sub make_list_properties {
         category_list => MT::CategoryList::list_props(),
     };
 
-    my @content_types = MT::ContentType->load();
-    foreach my $content_type (@content_types) {
+    my $iter = MT::ContentType->load_iter;
+    while ( my $content_type = $iter->() ) {
         my $key   = 'content_data_' . $content_type->id;
         my $order = 1000;
         my $field_list_props

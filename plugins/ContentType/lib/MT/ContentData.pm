@@ -19,6 +19,7 @@ use MT::ContentType;
 use MT::ObjectAsset;
 use MT::ObjectCategory;
 use MT::ObjectTag;
+use MT::Tag;
 
 use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 
@@ -92,7 +93,7 @@ sub _generate_text_html {
     my $self      = shift;
     my $data_hash = {};
     for my $field_id ( keys %{ $self->data } ) {
-        my $field = MT::ContentField->load($field_id);
+        my $field = MT::ContentField->load( $field_id || 0 );
         my $hash_key = $field ? $field->name : "field_id_${field_id}";
         $data_hash->{$hash_key} = $self->data->{$field_id};
     }
@@ -274,7 +275,7 @@ sub blog {
         sub {
             my $blog_id = $ct_data->blog_id;
             require MT::Blog;
-            MT::Blog->load($blog_id)
+            MT::Blog->load( $blog_id || 0 )
                 or $ct_data->error(
                 MT->translate(
                     "Loading blog '[_1]' failed: [_2]",
@@ -326,14 +327,16 @@ sub __load_tags {
         @tags = grep {defined} @{ MT::Tag->lookup_multi($tag_ids) };
     }
     else {
-        my @field_ids
-            = map { $_->id }
-            MT::ContentField->load(
+        my @field_ids;
+        my $cf_iter
+            = MT::ContentField->load_iter(
             { content_type_id => $obj->content_type_id },
             { fetchonly       => { id => 1 } } );
+        while ( my $cf = $cf_iter->() ) {
+            push @field_ids, $cf->id;
+        }
 
-        require MT::ObjectTag;
-        my $iter = MT::Tag->load_iter(
+        my $tag_iter = MT::Tag->load_iter(
             undef,
             {   sort => 'name',
                 join => [
@@ -347,7 +350,7 @@ sub __load_tags {
                 ],
             }
         );
-        while ( my $tag = $iter->() ) {
+        while ( my $tag = $tag_iter->() ) {
             push @tags, $tag;
         }
         $cache->set( $memkey, [ map { $_->id } @tags ], TAG_CACHE_TIME );

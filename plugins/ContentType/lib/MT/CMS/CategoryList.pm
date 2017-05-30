@@ -3,7 +3,6 @@ use strict;
 use warnings;
 
 use MT::CategoryList;
-use MT::CMS::Common;
 
 sub view {
     my $app = shift;

@@ -8,7 +8,7 @@ package MT::ObjectCategory;
 
 use strict;
 
-use MT::Blog;
+use MT;
 use base qw( MT::Object );
 
 __PACKAGE__->install_properties(

@@ -64,7 +64,7 @@ sub save {
 sub content_type {
     my $obj = shift;
     my $content_type
-        = MT->model('content_type')->load( $obj->content_type_id );
+        = MT->model('content_type')->load( $obj->content_type_id || 0 );
     return $content_type;
 }
 
@@ -96,7 +96,7 @@ sub post_save {
 sub post_remove {
     my ( $cb, $obj, $original ) = @_;
 
-    my $content_type = MT::ContentType->load( $obj->content_type_id );
+    my $content_type = MT::ContentType->load( $obj->content_type_id || 0 );
     my $perm_name
         = 'content_type:'
         . $content_type->unique_key

@@ -2,7 +2,6 @@ package MT::CMS::ContentData;
 use strict;
 use warnings;
 
-use MT::Entry;
 use MT::Log;
 
 sub post_save {

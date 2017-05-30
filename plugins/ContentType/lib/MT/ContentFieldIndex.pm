@@ -49,19 +49,6 @@ sub class_label_plural {
     MT->translate("Content Field Indexes");
 }
 
-sub load_or_new {
-    my $class = shift;
-    my ($terms) = @_;
-
-    my $cf_idx = __PACKAGE__->load($terms);
-    unless ($cf_idx) {
-        $cf_idx = __PACKAGE__->new;
-        $cf_idx->set_values($terms);
-    }
-
-    $cf_idx;
-}
-
 sub _is_valid_idx_type {
     $IdxTypes{ shift || '' };
 }

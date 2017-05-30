@@ -76,8 +76,8 @@ use MT::Util ();
 sub init_app {
     my ( $cb, $app ) = @_;
 
-    my @content_types = MT::ContentType->load();
-    foreach my $content_type (@content_types) {
+    my $iter = MT::ContentType->load_iter;
+    while ( my $content_type = $iter->() ) {
         my $obj_name = 'content_data_' . $content_type->id;
 
         $app->add_callback( "cms_pre_load_filtered_list.${obj_name}",
@@ -899,7 +899,11 @@ sub select_list_content_type {
     my $blog_id = scalar $q->param('blog_id')
         or return $app->errtrans("Invalid request.");
 
-    my @content_types = MT::ContentType->load( { blog_id => $blog_id } );
+    my @content_types;
+    my $iter = MT::ContentType->load_iter( { blog_id => $blog_id } );
+    while ( my $ct = $iter->() ) {
+        push @content_types, $ct;
+    }
     $param->{content_types} = \@content_types;
 
     $app->build_page( $plugin->load_tmpl('select_list_content_type.tmpl'),
@@ -916,9 +920,9 @@ sub select_edit_content_type {
     my $blog_id = scalar $q->param('blog_id')
         or return $app->errtrans("Invalid request.");
 
-    my @content_types = MT::ContentType->load( { blog_id => $blog_id } );
     my @array;
-    foreach my $content_type (@content_types) {
+    my $iter = MT::ContentType->load_iter( { blog_id => $blog_id } );
+    while ( my $content_type = $iter->() ) {
         my $hash = {};
         $hash->{id}      = $content_type->id;
         $hash->{blog_id} = $content_type->blog_id;

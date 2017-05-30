@@ -8,6 +8,7 @@ use MT::Blog;
 use MT::Category;
 use MT::ContentField;
 use MT::ContentType;
+use MT::ObjectCategory;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -153,10 +154,13 @@ sub _category_label_terms {
             { label  => { like => "%${string}%" } },
             { unique => 1 },
         );
-        my @cat_list_ids
-            = map { $_->id }
-            MT::CategoryList->load( { blog_id => MT->app->blog->id },
+        my @cat_list_ids;
+        my $iter
+            = MT::CategoryList->load_iter( { blog_id => MT->app->blog->id },
             { join => $cat_join, fetchonly => { id => 1 } } );
+        while ( my $cat_list = $iter->() ) {
+            push @cat_list_ids, $cat_list->id;
+        }
         @cat_list_ids ? { id => { not => \@cat_list_ids } } : ();
     }
     else {
@@ -190,10 +194,12 @@ sub _content_type_name_terms {
             },
             { join => $ct_join },
         );
-        my @cat_list_ids
-            = map { $_->id }
-            MT::CategoryList->load( $db_terms,
+        my @cat_list_ids;
+        my $iter = MT::CategoryList->load_iter( $db_terms,
             { join => $cf_join, fetchonly => { id => 1 } } );
+        while ( my $cat_list = $iter->() ) {
+            push @cat_list_ids, $cat_list->id;
+        }
         @cat_list_ids ? { id => { not => \@cat_list_ids } } : ();
     }
     else {
@@ -263,7 +269,7 @@ sub blog {
     $self->cache_property(
         'blog',
         sub {
-            MT::Blog->load( $self->blog_id );
+            MT::Blog->load( $self->blog_id || 0 );
         },
     );
 }
@@ -280,10 +286,14 @@ sub categories {
                     direction => 'descend',
                 },
             );
-            my @cats = MT::Category->load(
+            my @cats;
+            my $iter = MT::Category->load_iter(
                 { category_list_id => $self->id },
                 { join             => $join },
             );
+            while ( my $cat = $iter->() ) {
+                push @cats, $cat;
+            }
             \@cats;
         },
     );
