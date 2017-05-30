@@ -132,6 +132,7 @@ tags:
         ContentTags: $ContentType::ContentType::Tags::_hdlr_content_tags
         ContentCategories: $ContentType::ContentType::Tags::_hdlr_content_categories
     function:
+        ContentAuthorDisplayName: $ContentType::ContentType::Tags::_hdlr_content_author_display_name
         ContentCreatedDate: $ContentType::ContentType::Tags::_hdlr_content_created_date
         ContentDate: $ContentType::ContentType::Tags::_hdlr_content_date
         ContentModifiedDate: $ContentType::ContentType::Tags::_hdlr_content_modified_date

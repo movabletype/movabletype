@@ -55,7 +55,15 @@ subtest 'save' => sub {
 subtest 'content_type' => sub {
     my $got = $cd->content_type;
     ok( $got->isa('MT::ContentType'), 'get MT::ContentType instance' );
-    is( $got->id, $ct->id, '$ct->id is ' . $ct->id );
+    is( $got->id, $cd->content_type_id,
+        '$cd->content_type->id is same as $cd->content_type_id' );
+};
+
+subtest 'author' => sub {
+    my $got = $cd->author;
+    ok( $got->isa('MT::Author'), 'get MT::Author instance' );
+    is( $got->id, $cd->author_id,
+        '$cd->author->id is same as $cd->author_id' );
 };
 
 done_testing;

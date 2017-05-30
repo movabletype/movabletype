@@ -321,4 +321,12 @@ sub _hdlr_content_title {
     defined $cd->title ? $cd->title : '';
 }
 
+sub _hdlr_content_author_display_name {
+    my ($ctx) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    my $a = $cd->author;
+    return $a ? $a->nickname || '' : '';
+}
+
 1;
