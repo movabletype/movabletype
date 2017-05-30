@@ -14,24 +14,6 @@ sub field_html_params {
     $value = ''       unless defined $value;
     $value = [$value] unless ref $value eq 'ARRAY';
 
-    my %values = map { $_ => 1 } @{$value};
-
-    my @cats;
-    if ( my $cat_list
-        = MT::CategoryList->load( $field_data->{options}{category_list} || 0 )
-        )
-    {
-        @cats = map {
-            {   cat_id        => $_->id,
-                cat_label     => $_->label,
-                cat_edit_link => _edit_link( $app, $_ ),
-                $values{ $_->id }
-                ? ( checked => 'checked="checked"' )
-                : (),
-            }
-        } @{ $cat_list->categories };
-    }
-
     my $options = $field_data->{options};
 
     my $multiple = '';
@@ -48,8 +30,7 @@ sub field_html_params {
     my ( $category_tree, $selected_category_loop )
         = _build_category_list( $app, $field_data );
 
-    {   categories             => \@cats,
-        category_tree          => $category_tree,
+    {   category_tree          => $category_tree,
         multiple               => $multiple,
         required               => $required,
         selected_category_loop => $selected_category_loop,
@@ -106,7 +87,11 @@ sub data_getter {
 sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
 
-    my $iter = MT::Category->load_iter( { id => $data },
+    my $options = $field_data->{options} || {};
+
+    my $iter
+        = MT::Category->load_iter(
+        { id => $data, category_list_id => $options->{category_list} },
         { fetchonly => { id => 1 } } );
     my %valid_cats;
     while ( my $cat = $iter->() ) {
@@ -114,7 +99,7 @@ sub ss_validator {
     }
     if ( my @invalid_cat_ids = grep { !$valid_cats{$_} } @{$data} ) {
         my $invalid_cat_ids = join ', ', sort(@invalid_cat_ids);
-        my $field_label = $field_data->{options}{label};
+        my $field_label = $options->{label};
         return $app->translate( 'Invalid Category IDs: [_1] in "[_2]" field.',
             $invalid_cat_ids, $field_label );
     }
@@ -131,7 +116,12 @@ sub html {
 
     my $cat_ids = $content_data->data->{ $prop->content_field_id } || [];
 
-    my %cats = map { $_->id => $_ } MT::Category->load( { id => $cat_ids } );
+    my %cats;
+    my $iter = MT::Category->load_iter( { id => $cat_ids },
+        { fetchonly => { id => 1, blog_id => 1, label => 1 } } );
+    while ( my $cat = $iter->() ) {
+        $cats{ $cat->id } = $cat;
+    }
     my @cats = grep {$_} map { $cats{$_} } @$cat_ids;
 
     my @links;
@@ -168,12 +158,16 @@ sub terms {
         my $string = $args->{string};
         my $field  = MT::ContentField->load( $prop->content_field_id );
 
-        my @cat_ids = map { $_->id } MT::Category->load(
+        my @cat_ids;
+        my $iter = MT::Category->load_iter(
             {   label => { like => "%${string}%" },
                 category_list_id => $field->related_cat_list_id,
             },
             { fetchonly => { id => 1 } },
         );
+        while ( my $cat = $iter->() ) {
+            push @cat_ids, $cat->id;
+        }
 
         my $join_terms = { value_integer => [ \'IS NULL', @cat_ids ] };
         my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );

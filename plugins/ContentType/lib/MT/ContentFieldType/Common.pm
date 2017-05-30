@@ -8,8 +8,10 @@ our @EXPORT_OK = qw(
     get_cd_ids_by_left_join
 );
 
+use MT;
 use MT::Asset;
 use MT::ContentData;
+use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::Util ();
 
@@ -71,6 +73,51 @@ sub terms_text {
     my $join_terms = $prop->super(@_);
     my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
     { id => $cd_ids };
+}
+
+sub terms_datetime {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+
+    my $join_terms = $prop->super(@_);
+    my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+    { id => $cd_ids };
+}
+
+sub terms_multiple {
+    my $prop = shift;
+    my ( $args, $base_terms, $base_args, $opts ) = @_;
+
+    my $val       = $args->{value};
+    my $data_type = $prop->{data_type};
+
+    my $join_terms = { "value_${data_type}" => $val };
+    my $cd_ids = get_cd_ids_by_inner_join( $prop, $join_terms, undef, @_ );
+
+    if ( $args->{option} && $args->{option} eq 'is_not_selected' ) {
+        $cd_ids ? { id => { not => $cd_ids } } : ();
+    }
+    else {
+        { id => $cd_ids };
+    }
+}
+
+sub filter_tmpl_multiple {
+    return <<'__TMPL__';
+<mt:setvarblock name="select_options">
+<select class="<mt:var name="type">-option">
+  <option value="is_selected"><__trans phrase="is selected" escape="js"></option>
+  <option value="is_not_selected"><__trans phrase="is not selected" escape="js"></option>
+</select>
+</mt:setvarblock>
+<__trans phrase="In [_1] column, [_2] [_3]"
+         params="<mt:var name="label" escape="js">%%
+                 <select class="<mt:var name="type">-value">
+                 <mt:loop name="single_select_options">
+                   <option value="<mt:var name="value">"><mt:var name="label" encode_html="1" encode_js="1" encode_html="1" ></option>
+                 </mt:loop>
+                 </select>%%<mt:var name="select_options">">
+__TMPL__
 }
 
 sub data_getter_multiple {
@@ -139,7 +186,7 @@ sub ss_validator_multiple {
             lc($type_label), $field_label );
     }
 
-    $options->{values} ? ss_validator_values(@_) : undef;
+    exists $options->{values} ? ss_validator_values(@_) : undef;
 }
 
 sub ss_validator_values {
@@ -166,6 +213,78 @@ sub ss_validator_values {
     }
 
     undef;
+}
+
+sub ss_validator_number_common {
+    my ( $app, $field_data, $data ) = @_;
+
+    my $options = $field_data->{options} || {};
+
+    my $field_label = $options->{label};
+    my $max_value   = $options->{max_value};
+    my $min_value   = $options->{min_value};
+
+    if ( defined $max_value && $max_value ne '' ) {
+        if ( $data > $max_value ) {
+            return $app->translate(
+                '"[_1]" field value must be less than or equal to [_2].',
+                $field_label, $max_value );
+        }
+    }
+    if ( defined $min_value && $min_value ne '' ) {
+        if ( $data < $min_value ) {
+            return $app->translate(
+                '"[_1]" field value must be greater than or equal to [_2]',
+                $field_label, $min_value );
+        }
+    }
+
+    undef;
+}
+
+sub html_multiple {
+    my $prop = shift;
+    my ( $content_data, $app, $opts ) = @_;
+
+    my $content_field = MT::ContentField->load( $prop->content_field_id );
+    my %label_hash = map { $_->{value} => $_->{key} }
+        @{ $content_field->options->{values} };
+
+    my $values = $content_data->data->{ $prop->content_field_id } || [];
+    $values = [$values] unless ref $values eq 'ARRAY';
+    my @labels = map { $label_hash{$_} } @{$values};
+
+    join ', ', @labels;
+}
+
+sub html_datetime_common {
+    my $prop = shift;
+    my ( $obj, $app, $opts, $date_format ) = @_;
+    my $ts = $obj->data->{ $prop->{content_field_id} } or return '';
+
+    my $content_field = MT::ContentField->load( $prop->{content_field_id} )
+        or return '';
+    $date_format = eval { $content_field->options->{date_format} }
+        || $date_format;
+    return '' unless $date_format;
+
+    my $blog = $opts->{blog};
+    return MT::Util::format_ts( $date_format, $ts, $blog,
+          $app->user
+        ? $app->user->preferred_language
+        : undef );
+
+}
+
+sub single_select_options_multiple {
+    my $prop = shift;
+    my $app = shift || MT->app;
+
+    my $content_field_id = $prop->{content_field_id};
+    my $content_field    = MT::ContentField->load($content_field_id);
+    my $values           = $content_field->options->{values} || [];
+
+    [ map { +{ label => $_->{key}, value => $_->{value} } } @{$values} ];
 }
 
 1;

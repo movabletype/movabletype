@@ -273,7 +273,7 @@ content_field_types:
                 base: __virtual.date
                 col: value_datetime
                 html: $ContentType::MT::ContentFieldType::DateTime::html
-                terms: $ContentType::MT::ContentFieldType::DateTime::terms
+                terms: $ContentType::MT::ContentFieldType::Common::terms_datetime
                 use_blank: 1
                 use_future: 1
         options:
@@ -295,7 +295,7 @@ content_field_types:
                 base: __virtual.date
                 col: value_datetime
                 html: $ContentType::MT::ContentFieldType::Date::html
-                terms: $ContentType::MT::ContentFieldType::DateTime::terms
+                terms: $ContentType::MT::ContentFieldType::Common::terms_datetime
                 use_blank: 1
                 use_future: 1
         options:
@@ -334,10 +334,10 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_multiple
         list_props:
             select_box:
-                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
-                html: $ContentType::MT::ContentFieldType::SelectBox::html
-                single_select_options: $ContentType::MT::ContentFieldType::SelectBox::single_select_options
-                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+                filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
+                html: $ContentType::MT::ContentFieldType::Common::html_multiple
+                single_select_options: $ContentType::MT::ContentFieldType::Common::single_select_options_multiple
+                terms: $ContentType::MT::ContentFieldType::Common::terms_multiple
         options:
             - label
             - hint
@@ -357,10 +357,10 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_values
         list_props:
             radio:
-                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
-                html: $ContentType::MT::ContentFieldType::SelectBox::html
-                single_select_options: $ContentType::MT::ContentFieldType::SelectBox::single_select_options
-                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+                filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
+                html: $ContentType::MT::ContentFieldType::Common::html_multiple
+                single_select_options: $ContentType::MT::ContentFieldType::Common::single_select_options_multiple
+                terms: $ContentType::MT::ContentFieldType::Common::terms_multiple
         options:
             - label
             - hint
@@ -378,10 +378,10 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_multiple
         list_props:
             checkbox:
-                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
-                html: $ContentType::MT::ContentFieldType::SelectBox::html
-                single_select_options: $ContentType::MT::ContentFieldType::SelectBox::single_select_options
-                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+                filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
+                html: $ContentType::MT::ContentFieldType::Common::html_multiple
+                single_select_options: $ContentType::MT::ContentFieldType::Common::single_select_options_multiple
+                terms: $ContentType::MT::ContentFieldType::Common::terms_multiple
         options:
             - label
             - hint
@@ -402,10 +402,10 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
         list_props:
             asset:
-                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+                filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
                 html: $ContentType::MT::ContentFieldType::Asset::html
                 single_select_options: $ContentType::MT::ContentFieldType::Asset::single_select_options
-                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+                terms: $ContentType::MT::ContentFieldType::Common::terms_multiple
             author_name:
                 base: __virtual.author_name
                 display: none
@@ -480,10 +480,10 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
         list_props:
             audio:
-                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+                filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
                 html: $ContentType::MT::ContentFieldType::Asset::html
                 single_select_options: $ContentType::MT::ContentFieldType::Asset::single_select_options
-                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+                terms: $ContentType::MT::ContentFieldType::Common::terms_multiple
             author_name:
                 base: __virtual.author_name
                 display: none
@@ -557,10 +557,10 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
         list_props:
             video:
-                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+                filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
                 html: $ContentType::MT::ContentFieldType::Asset::html
                 single_select_options: $ContentType::MT::ContentFieldType::Asset::single_select_options
-                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+                terms: $ContentType::MT::ContentFieldType::Common::terms_multiple
             author_name:
                 base: __virtual.author_name
                 display: none
@@ -634,14 +634,14 @@ content_field_types:
         ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
         list_props:
             image:
-                filter_tmpl: $ContentType::MT::ContentFieldType::SelectBox::filter_tmpl
+                filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
                 html: $ContentType::MT::ContentFieldType::Asset::html
                 single_select_options: $ContentType::MT::ContentFieldType::Asset::single_select_options
                 sub_fields:
                     - class: thumbnail
                       label: Thumbnail
                       display: default
-                terms: $ContentType::MT::ContentFieldType::SelectBox::terms
+                terms: $ContentType::MT::ContentFieldType::Common::terms_multiple
             author_name:
                 base: __virtual.author_name
                 display: none

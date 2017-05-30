@@ -2,6 +2,8 @@ package MT::ContentFieldType::Float;
 use strict;
 use warnings;
 
+use MT::ContentFieldType::Common;
+
 sub field_html_params {
     my ( $app, $field_data ) = @_;
 
@@ -37,9 +39,7 @@ sub ss_validator {
     my $options = $field_data->{options} || {};
 
     my $decimal_places = $options->{decimal_places} || 0;
-    my $field_label    = $options->{label};
-    my $max_value      = $options->{max_value};
-    my $min_value      = $options->{min_value};
+    my $field_label = $options->{label};
 
     if ( $data !~ /^[+\-]?\d+(\.\d+)?$/ ) {
         return $app->translate( '"[_1]" field value must be float.',
@@ -59,23 +59,7 @@ sub ss_validator {
         }
     }
 
-    if ( defined $max_value && $max_value ne '' ) {
-        if ( $data > $max_value ) {
-            return $app->translate(
-                '"[_1]" field value must be less than or equal to [_2].',
-                $field_label, $max_value );
-        }
-    }
-
-    if ( defined $min_value && $min_value ne '' ) {
-        if ( $data < $min_value ) {
-            return $app->translate(
-                '"[_1]" field value must be greater than or equal to [_2]',
-                $field_label, $min_value );
-        }
-    }
-
-    undef;
+    MT::ContentFieldType::Common::ss_validator_common(@_);
 }
 
 1;

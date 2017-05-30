@@ -25,15 +25,18 @@ sub field_html_params {
     my $value = $field_data->{value} || [];
     $value = [$value] unless ref $value eq 'ARRAY';
 
-    my $type       = $field_data->{type};
-    my @assets     = $app->model($type)->load( { id => $value } );
-    my @asset_loop = map {
-        {   asset_id      => $_->id,
-            asset_blog_id => $_->blog_id,
-            asset_label   => $_->label,
-            asset_thumb   => $_->thumbnail_url( Width => 100 ),
-        }
-    } @assets;
+    my @asset_loop;
+    my $type = $field_data->{type};
+    my $iter = $app->model($type)->load_iter( { id => $value } );
+    while ( my $asset = $iter->() ) {
+        push @asset_loop,
+            {
+            asset_id      => $asset->id,
+            asset_blog_id => $asset->blog_id,
+            asset_label   => $asset->label,
+            asset_thumb   => $asset->thumbnail_url( Width => 100 ),
+            };
+    }
 
     my $options = $field_data->{options} || {};
 
@@ -67,11 +70,10 @@ sub single_select_options {
         },
         { unique => 1 },
     );
-    my @assets = MT::Asset->load( undef,
-        { join => $cf_idx_join, fetchonly => { id => 1, label => 1 } } );
-
     my @options;
-    for my $asset (@assets) {
+    my $iter = MT::Asset->load_iter( undef,
+        { join => $cf_idx_join, fetchonly => { id => 1, label => 1 } } );
+    while ( my $asset = $iter->() ) {
         my $label = $asset->label . ' (id:' . $asset->id . ')';
         push @options,
             {
@@ -79,6 +81,7 @@ sub single_select_options {
             value => $asset->id,
             };
     }
+
     \@options;
 }
 
@@ -108,12 +111,16 @@ sub terms_author_name {
         ];
         my $author_join = MT::Author->join_on( undef,
             [ $author_terms, { id => \'= asset_created_by' } ] );
-        my @asset_ids = map { $_->id } MT::Asset->load(
+        my @asset_ids;
+        my $iter = MT::Asset->load_iter(
             {   blog_id => MT->app->blog->id,
                 class   => $ClassTable{ $prop->idx_type },
             },
             { join => $author_join, fetchonly => { id => 1 } },
         );
+        while ( my $asset = $iter->() ) {
+            push @asset_ids, $asset->id;
+        }
         my $join_terms = { value_integer => [ \'IS NULL', @asset_ids ] };
         my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
         $cd_ids ? { id => { not => $cd_ids } } : ();
@@ -181,7 +188,8 @@ sub terms_tag {
                 id   => \'= objecttag_tag_id'
             }
         );
-        my @asset_ids = map { $_->object_id } MT::ObjectTag->load(
+        my @asset_ids;
+        my $iter = MT::ObjectTag->load_iter(
             {   blog_id           => MT->app->blog->id,
                 object_datasource => 'asset',
             },
@@ -189,6 +197,9 @@ sub terms_tag {
                 fetchonly => { object_id => 1 },
             },
         );
+        while ( my $ot = $iter->() ) {
+            push @asset_ids, $ot->object_id;
+        }
         my $join_terms = { value_integer => [ \'IS NULL', @asset_ids ] };
         my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
         $cd_ids ? { id => { not => $cd_ids } } : ();
@@ -238,7 +249,8 @@ sub terms_image_size {
             = MT::Asset->meta_pkg->join_on( 'asset_id',
             { type => $prop->meta_type, vinteger => $value },
             );
-        my @asset_ids = map { $_->id } MT::Asset->load(
+        my @asset_ids;
+        my $iter = MT::Asset->load_iter(
             {   blog_id => MT->app->blog->id,
                 class   => $ClassTable{ $prop->idx_type },
             },
@@ -246,6 +258,9 @@ sub terms_image_size {
                 fetchonly => { id => 1 },
             },
         );
+        while ( my $asset = $iter->() ) {
+            push @asset_ids, $asset->id;
+        }
         my $join_terms = { value_integer => [ \'IS NULL', @asset_ids ] };
         my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
         $cd_ids ? { id => { not => $cd_ids } } : ();
@@ -312,15 +327,19 @@ sub terms_text {
     my $option = $args->{option} || '';
 
     if ( $option eq 'not_contains' ) {
-        my $col       = $prop->col;
-        my $string    = $args->{string};
-        my @asset_ids = map { $_->id } MT::Asset->load(
+        my $col    = $prop->col;
+        my $string = $args->{string};
+        my @asset_ids;
+        my $iter = MT::Asset->load_iter(
             {   blog_id => MT->app->blog->id,
                 class   => $ClassTable{ $prop->idx_type },
                 $col => { like => "%${string}%" },
             },
             { fetchonly => { id => 1 } },
         );
+        while ( my $asset = $iter->() ) {
+            push @asset_ids, $asset->id;
+        }
         my $join_terms = { value_integer => [ \'IS NULL', @asset_ids ] };
         my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
         $cd_ids ? { id => { not => $cd_ids } } : ();
@@ -364,7 +383,11 @@ sub html {
     my $field_id  = $prop->content_field_id;
     my $asset_ids = $content_data->data->{$field_id} || [];
 
-    my %assets = map { $_->id => $_ } MT::Asset->load( { id => $asset_ids } );
+    my %assets;
+    my $iter = MT::Asset->load_iter( { id => $asset_ids } );
+    while ( my $asset = $iter->() ) {
+        $assets{ $asset->id } = $asset;
+    }
     my @assets = grep {$_} map { $assets{$_} } @$asset_ids;
 
     my ( @labels, @thumbnails );

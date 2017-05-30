@@ -12,14 +12,15 @@ sub field_html_params {
     $value = [$value] unless ref $value eq 'ARRAY';
 
     my %tmp_cd;
-    my $iter = MT::ContentData->load_iter( { id => $value } );
+    my $iter = MT::ContentData->load_iter( { id => $value },
+        { fetchonly => { id => 1, blog_id => 1, title => 1 } } );
     while ( my $cd = $iter->() ) {
         $tmp_cd{ $cd->id } = $cd;
     }
     my @content_data = grep {$_} map { $tmp_cd{$_} } @{$value};
     my @content_data_loop = map {
         {   cd_id      => $_->id,
-            cd_blog_id => $_->id,
+            cd_blog_id => $_->blog_id,
             cd_title   => $_->title,
         }
     } @content_data;
@@ -51,83 +52,33 @@ sub field_html_params {
     };
 }
 
-sub field_html {
-    my ( $app, $field_data ) = @_;
-    my $value = $field_data->{value};
-    if ( !defined $value ) {
-        $value = [];
-    }
-    elsif ( ref $value ne 'ARRAY' ) {
-        $value = [$value];
-    }
-
-    my $field_id      = $field_data->{content_field_id};
-    my $content_field = MT::ContentField->load($field_id);
-    my $ct_id         = $content_field->related_content_type_id;
-    my @ct_datas = MT::ContentData->load( { content_type_id => $ct_id } );
-    my $html     = '';
-    my $num      = 1;
-
-    foreach my $ct_data (@ct_datas) {
-        my $ct_data_id = $ct_data->id;
-        my $label      = $ct_data->label;
-        my $edit_link  = $ct_data->edit_link($app);
-
-        $html .= '<div>';
-        $html
-            .= "<input type=\"checkbox\" name=\"content-field-$field_id\" id=\"content-field-$field_id-$num\" value=\"$ct_data_id\"";
-        $html .=
-            ( grep { $_ eq $ct_data_id } @$value )
-            ? ' checked="checked"'
-            : '';
-        $html .= " mt:watch-change=\"1\" mt:raw-name=\"1\" />";
-        $html
-            .= " <label for=\"content-field-$field_id-$num\">$label</label>";
-        $html .= qq{ (<a href="${edit_link}">edit</a>)};
-        $html .= '</div>';
-        $num++;
-    }
-
-    if ( $content_field->options->{required} ) {
-        my $error_message
-            = $app->translate('Please select one of these options.');
-        $html .= <<"__JS__";
-<script>
-var \$contentTypes = jQuery('input[name=content-field-${field_id}]');
-
-function validateContentTypes () {
-  if (\$contentTypes.filter(':checked').length === 0) {
-    \$contentTypes.get(\$contentTypes.length - 1).setCustomValidity('${error_message}');
-  } else {
-    \$contentTypes.get(\$contentTypes.length - 1).setCustomValidity('');
-  }
-}
-
-\$contentTypes.on('change', validateContentTypes);
-
-validateContentTypes();
-</script>
-__JS__
-    }
-
-    return $html;
-}
-
 sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
     my $child_cd_ids = $content_data->data->{ $prop->content_field_id } || [];
 
-    my %child_cd = map { $_->id => $_ }
-        MT::ContentData->load( { id => $child_cd_ids } );
+    my %child_cd;
+    my $iter = MT::ContentData->load_iter(
+        { id => $child_cd_ids },
+        {   fetchonly => {
+                id              => 1,
+                blog_id         => 1,
+                content_type_id => 1,
+                title           => 1,
+            }
+        },
+    );
+    while ( my $cd = $iter->() ) {
+        $child_cd{ $cd->id } = $cd;
+    }
     my @child_cd = map { $child_cd{$_} } @$child_cd_ids;
 
     my @cd_links;
     for my $cd (@child_cd) {
-        my $label     = $cd->label;
+        my $title     = $cd->title;
         my $edit_link = $cd->edit_link($app);
-        push @cd_links, qq{<a href="${edit_link}">${label}</a>};
+        push @cd_links, qq{<a href="${edit_link}">${title}</a>};
     }
 
     join ', ', @cd_links;

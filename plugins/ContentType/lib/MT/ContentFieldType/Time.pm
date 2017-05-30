@@ -3,26 +3,11 @@ use strict;
 use warnings;
 
 use MT;
-use MT::ContentField;
 use MT::ContentFieldType::Common qw( get_cd_ids_by_left_join );
 use MT::Util ();
 
 sub html {
-    my $prop = shift;
-    my ( $obj, $app, $opts ) = @_;
-    my $ts = $obj->data->{ $prop->{content_field_id} } or return '';
-
-    # TODO: implement date_format option to content field.
-    my $content_field = MT::ContentField->load( $prop->{content_field_id} )
-        or return '';
-    my $date_format = eval { $content_field->options->{date_format} }
-        || '%I:%M:%S%p';
-
-    my $blog = $opts->{blog};
-    return MT::Util::format_ts( $date_format, $ts, $blog,
-          $app->user
-        ? $app->user->preferred_language
-        : undef );
+    MT::ContentFieldType::Common::html_datetime_common( @_, '%I:%M:%S%p' );
 }
 
 sub field_html_params {

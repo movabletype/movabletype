@@ -11,17 +11,6 @@ sub field_html_params {
     my $value = $field_data->{value};
     $value = [] unless defined $value;
 
-    my $tag_delim = _tag_delim($app);
-
-    my $tags;
-    if ( ref $value ) {
-        my %tags = map { $_->id => $_ } MT::Tag->load( { id => $value } );
-        $tags = join $tag_delim, ( map { $tags{$_}->name } @{$value} );
-    }
-    else {
-        $tags = $value;
-    }
-
     my $options = $field_data->{options};
 
     my $multiple = '';
@@ -50,7 +39,6 @@ sub field_html_params {
 
     {   multiple          => $multiple,
         required          => $required,
-        tags              => $tags,
         tag_list          => \@tag_list,
         selected_tag_loop => $value,
     };
@@ -99,9 +87,12 @@ sub html {
 
     my $tag_ids = $content_data->data->{ $prop->content_field_id } || [];
 
-    my %tag_names
-        = map { $_->id => $_->name } MT::Tag->load( { id => $tag_ids },
+    my %tag_names;
+    my $iter = MT::Tag->load_iter( { id => $tag_ids },
         { fetchonly => { id => 1, name => 1 } } );
+    while ( my $tag = $iter->() ) {
+        $tag_names{ $tag->id } = $tag->name;
+    }
 
     my @links;
     for my $id (@$tag_ids) {
@@ -110,7 +101,6 @@ sub html {
         push @links, qq{<a href="$link">${tag_name}</a>};
     }
 
-    my $tag_delim = _tag_delim($app);
     join ', ', @links;
 }
 
@@ -126,7 +116,7 @@ sub ss_validator {
     while ( my $tag = $iter->() ) {
         $valid_tags{ $tag->id } = 1;
     }
-    if ( my @invalid_tag_ids = grep { $valid_tags{$_} } @{$data} ) {
+    if ( my @invalid_tag_ids = grep { !$valid_tags{$_} } @{$data} ) {
         my $invalid_tag_ids = join ', ', sort(@invalid_tag_ids);
         return $app->translate( 'Invalid Tag IDs: [_1] in "[_2]" field.',
             $invalid_tag_ids, $field_label );
@@ -149,11 +139,6 @@ sub _link {
             filter_val => $tag_name,
         },
     );
-}
-
-sub _tag_delim {
-    my $app = shift;
-    chr( $app->user->entry_prefs->{tag_delim} );
 }
 
 1;

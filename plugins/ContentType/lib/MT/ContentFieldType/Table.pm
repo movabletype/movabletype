@@ -3,7 +3,6 @@ use strict;
 use warnings;
 
 use MT::ContentField;
-use MT::ContentType;
 
 sub html {
     my $prop = shift;
@@ -29,8 +28,7 @@ sub field_html_params {
 
 sub _create_empty_table {
     my ( $initial_rows, $initial_columns ) = @_;
-    my $row = '<td></td>' x $initial_columns;
-    $row = "<tr>${row}</tr>";
+    my $row = '<tr>' . ( '<td></td>' x $initial_columns ) . '</tr>';
     join "\n", ( map {$row} ( 1 .. $initial_rows ) );
 }
 
