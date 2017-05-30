@@ -133,6 +133,7 @@ tags:
         ContentCategories: $ContentType::ContentType::Tags::_hdlr_content_categories
     function:
         ContentCreatedDate: $ContentType::ContentType::Tags::_hdlr_content_created_date
+        ContentModifiedDate: $ContentType::ContentType::Tags::_hdlr_content_modified_date
         ContentID: $ContentType::ContentType::Tags::_hdlr_content_id
         Content: $ContentType::ContentType::Tags::_hdlr_content
         Entity: $ContentType::ContentType::Tags::_hdlr_entity
