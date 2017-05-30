@@ -134,6 +134,7 @@ tags:
     function:
         ContentAuthorDisplayName: $ContentType::ContentType::Tags::_hdlr_content_author_display_name
         ContentAuthorEmail: $ContentType::ContentType::Tags::_hdlr_content_author_email
+        ContentAuthorID: $ContentType::ContentType::Tags::_hdlr_content_author_id
         ContentCreatedDate: $ContentType::ContentType::Tags::_hdlr_content_created_date
         ContentDate: $ContentType::ContentType::Tags::_hdlr_content_date
         ContentModifiedDate: $ContentType::ContentType::Tags::_hdlr_content_modified_date

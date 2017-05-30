@@ -342,4 +342,12 @@ sub _hdlr_content_author_email {
         : $a->email;
 }
 
+sub _hdlr_content_author_id {
+    my ($ctx) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    my $a = $cd->author;
+    return $a ? $a->id || '' : '';
+}
+
 1;
