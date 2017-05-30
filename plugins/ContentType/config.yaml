@@ -161,7 +161,6 @@ content_field_types:
             - can_add
             - max
             - min
-            - listing_filter
             - content_type
     single_line_text:
         label: Single Line Text
@@ -469,7 +468,6 @@ content_field_types:
             - can_upload
             - max
             - min
-            - listing_filter
     audio:
         label: Audio
         data_type: integer
@@ -546,7 +544,6 @@ content_field_types:
             - can_upload
             - max
             - min
-            - listing_filter
     video:
         label: Video
         data_type: integer
@@ -623,7 +620,6 @@ content_field_types:
             - can_upload
             - max
             - min
-            - listing_filter
     image:
         label: Image
         data_type: integer
@@ -712,7 +708,6 @@ content_field_types:
             - can_upload
             - max
             - min
-            - listing_filter
     embed_text:
         label: embed text
         data_type: blob
