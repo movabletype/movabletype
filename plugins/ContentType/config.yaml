@@ -132,6 +132,7 @@ tags:
         ContentTags: $ContentType::ContentType::Tags::_hdlr_content_tags
         ContentCategories: $ContentType::ContentType::Tags::_hdlr_content_categories
     function:
+        ContentCreatedDate: $ContentType::ContentType::Tags::_hdlr_content_created_date
         ContentID: $ContentType::ContentType::Tags::_hdlr_content_id
         Content: $ContentType::ContentType::Tags::_hdlr_content
         Entity: $ContentType::ContentType::Tags::_hdlr_entity

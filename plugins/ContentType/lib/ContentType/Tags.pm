@@ -275,4 +275,12 @@ sub _hdlr_content_id {
     return $args && $args->{pad} ? ( sprintf "%06d", $cd->id ) : $cd->id;
 }
 
+sub _hdlr_content_created_date {
+    my ( $ctx, $args ) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    $args->{ts} = $cd->created_on;
+    return $ctx->build_date($args);
+}
+
 1;
