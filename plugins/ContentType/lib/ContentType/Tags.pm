@@ -306,4 +306,11 @@ sub _hdlr_content_status {
     MT::Entry::status_text( $cd->status );
 }
 
+sub _hdlr_content_title {
+    my ( $ctx, $args ) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    defined $cd->title ? $cd->title : '';
+}
+
 1;

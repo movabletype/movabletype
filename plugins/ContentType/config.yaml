@@ -136,6 +136,7 @@ tags:
         ContentModifiedDate: $ContentType::ContentType::Tags::_hdlr_content_modified_date
         ContentID: $ContentType::ContentType::Tags::_hdlr_content_id
         ContentStatus: $ContentType::ContentType::Tags::_hdlr_content_status
+        ContentTitle: $ContentType::ContentType::Tags::_hdlr_content_title
         ContentUnpublishedDate: $ContentType::ContentType::Tags::_hdlr_content_unpublished_date
         Content: $ContentType::ContentType::Tags::_hdlr_content
         Entity: $ContentType::ContentType::Tags::_hdlr_entity
