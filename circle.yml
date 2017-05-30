@@ -26,4 +26,4 @@ test:
     - rm plugins/MultiBlog/t/02.tags.t
 
   override:
-    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove -s ./t ./plugins/*/t && phpunit"
+    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove ./t ./plugins/*/t && phpunit"

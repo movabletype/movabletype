@@ -81,7 +81,7 @@ before_script:
   - rm t/90-podcoverage.t
 
 script:
-  - bash -c "PERL_HASH_SEED=0 carton exec prove -s t plugins/*/t && ./phpunit"
+  - bash -c "PERL_HASH_SEED=0 carton exec prove ./t* plugins/*/t && ./phpunit"
 
 notifications:
   slack:
