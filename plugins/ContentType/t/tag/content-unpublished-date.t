@@ -148,13 +148,13 @@ SKIP:
 
 __END__
 
-=== MT::ContentCreatedDate
+=== MT::ContentUnpublishedDate
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentUnpublishedDate></mt:Contents>
 --- expected
 May 30, 2017  7:01 PM
 
-=== MT::ContentCreatedDate with language="ja"
+=== MT::ContentUnpublishedDate with language="ja"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentUnpublishedDate language="ja"></mt:Contents>
 --- expected
