@@ -291,4 +291,12 @@ sub _hdlr_content_modified_date {
     return $ctx->build_date($args);
 }
 
+sub _hdlr_content_unpublished_date {
+    my ( $ctx, $args ) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    $args->{ts} = $cd->unpublished_on;
+    return $ctx->build_date($args);
+}
+
 1;
