@@ -847,6 +847,19 @@ sub _no_entry_error {
     );
 }
 
+sub _no_content_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+    return $_[0]->error(
+        MT->translate(
+            "You used an '[_1]' tag outside of the context of a content; "
+                . "Perhaps you mistakenly placed it outside of an 'MTContents' container tag?",
+            $tag_name
+        )
+    );
+}
+
 sub _no_website_error {
     my ($ctx) = @_;
     my $tag_name = $ctx->stash('tag');

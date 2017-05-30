@@ -268,4 +268,11 @@ sub _hdlr_content_categories {
     $res;
 }
 
+sub _hdlr_content_id {
+    my ( $ctx, $args, $cond ) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    return $args && $args->{pad} ? ( sprintf "%06d", $cd->id ) : $cd->id;
+}
+
 1;
