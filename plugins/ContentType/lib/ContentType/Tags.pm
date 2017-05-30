@@ -299,4 +299,11 @@ sub _hdlr_content_unpublished_date {
     return $ctx->build_date($args);
 }
 
+sub _hdlr_content_status {
+    my ( $ctx, $args ) = @_;
+    my $cd = $ctx->stash('content') or return $ctx->_no_content_error;
+    require MT::Entry;
+    MT::Entry::status_text( $cd->status );
+}
+
 1;
