@@ -561,9 +561,16 @@ sub save_cfg_content_type {
                 || $type eq 'checkbox'
                 || $type eq 'radio' )
             {
-                my $values_count = 0;
+                my $initial_value       = $options->{initial_value};
+                my $exist_initial_value = $initial_value eq '' ? 1 : 0;
+                my $values_count        = 0;
                 while ( $options->{ 'values_key_' . ( $values_count + 1 ) } )
                 {
+                    $exist_initial_value++
+                        if ( $initial_value ne ''
+                        && $initial_value eq
+                        $options->{ 'values_value_' . ( $values_count + 1 ) }
+                        );
                     $values_count++;
                 }
                 if ( $values_count == 0 ) {
@@ -571,6 +578,12 @@ sub save_cfg_content_type {
                         = $plugin->translate(
                         "[_1]'s \"Values\" field is required.",
                         $label || $field_label );
+                }
+                elsif ( !$exist_initial_value ) {
+                    $err_msg = $plugin->translate(
+                        "[_1]'s \"Initial Value\" field value does not exist in \"Values\" field.",
+                        $label || $field_label
+                    );
                 }
                 if ( !$err_msg && $type ne 'radio' ) {
                     my $min = $options->{min};
