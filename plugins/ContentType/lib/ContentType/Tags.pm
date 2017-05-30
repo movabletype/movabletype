@@ -8,6 +8,8 @@ package ContentType::Tags;
 
 use strict;
 
+use MT::Util ();
+
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
@@ -327,6 +329,17 @@ sub _hdlr_content_author_display_name {
         or return $ctx->_no_content_error();
     my $a = $cd->author;
     return $a ? $a->nickname || '' : '';
+}
+
+sub _hdlr_content_author_email {
+    my ( $ctx, $args ) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    my $a = $cd->author;
+    return '' unless $a && defined $a->email;
+    return $args && $args->{'spam_protect'}
+        ? MT::Util::spam_protect( $a->email )
+        : $a->email;
 }
 
 1;
