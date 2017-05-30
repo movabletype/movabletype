@@ -594,22 +594,18 @@ sub save_cfg_content_type {
                                 $label || $field_label
                             );
                         }
-                        elsif ($min !~ /^[+\-]?\d+$/
-                            || ( $min < 0 || $min > 255 )
-                            || ( $max && $max < $min ) )
-                        {
+                        elsif ( $min !~ /^[+\-]?\d+$/ ) {
                             $err_msg = $plugin->translate(
-                                '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                                $label || $field_label, 'Min', '0', '255'
+                                '[_1]\'s "[_2]" field must be an integer value.',
+                                $label || $field_label,
+                                'Min'
                             );
                         }
-                        elsif ($max !~ /^[+\-]?\d+$/
-                            || ( $max < 1 || $max > 255 )
-                            || ( $min && $min > $max ) )
-                        {
+                        elsif ( $max !~ /^[+\-]?\d+$/ ) {
                             $err_msg = $plugin->translate(
-                                '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                                $label || $field_label, 'Max', '1', '255'
+                                '[_1]\'s "[_2]" field must be an integer value.',
+                                $label || $field_label,
+                                'Max'
                             );
                         }
                         elsif ( $max && $max < $min ) {
@@ -623,8 +619,8 @@ sub save_cfg_content_type {
                         }
                         elsif ( $min && $min > $max ) {
                             $err_msg = $plugin->translate(
-                                $label || $field_label,
                                 '[_1]\'s "[_2]" field must be [_3] than "[_4]" field.',
+                                $label || $field_label,
                                 'Max',
                                 'higher',
                                 'Min'
