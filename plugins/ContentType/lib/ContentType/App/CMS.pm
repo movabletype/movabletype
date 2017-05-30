@@ -594,16 +594,16 @@ sub save_cfg_content_type {
                                 $label || $field_label
                             );
                         }
-                        elsif ( $min !~ /^[+\-]?\d+$/ ) {
+                        elsif ( $min !~ /^[+]?\d+$/ ) {
                             $err_msg = $plugin->translate(
-                                '[_1]\'s "[_2]" field must be an integer value.',
+                                '[_1]\'s "[_2]" field must be a positive integer.',
                                 $label || $field_label,
                                 'Min'
                             );
                         }
-                        elsif ( $max !~ /^[+\-]?\d+$/ ) {
+                        elsif ( $max !~ /^[+]?\d+$/ ) {
                             $err_msg = $plugin->translate(
-                                '[_1]\'s "[_2]" field must be an integer value.',
+                                '[_1]\'s "[_2]" field must be a positive integer.',
                                 $label || $field_label,
                                 'Max'
                             );
