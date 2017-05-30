@@ -4,13 +4,9 @@ use warnings;
 use Test::More;
 
 use lib qw( lib extlib t/lib );
-use MT;
 use MT::Test qw( :db );
 
-use MT::ContentData;
-use MT::ContentField;
 use MT::ContentFieldIndex;
-use MT::ContentType;
 
 subtest 'set_value' => sub {
     my $cf_idx = MT::ContentFieldIndex->new;

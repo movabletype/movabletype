@@ -4,7 +4,6 @@ use warnings;
 use Test::More;
 
 use lib qw( lib extlib t/lib );
-use MT;
 use MT::Test qw( :db );
 
 use MT::ContentType;

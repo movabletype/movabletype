@@ -957,4 +957,96 @@ sub make_group {
     return $grp;
 }
 
+sub make_category_list {
+    my $pkg    = shift;
+    my %params = @_;
+
+    my $values = {
+        blog_id => 2,
+        name    => 'Sample Category List',
+        %params,
+    };
+
+    require MT::CategoryList;
+    my $cl = MT::CategoryList->new;
+
+    $cl->$_( $values->{$_} ) for keys %{$values};
+    $cl->save or die q{Couldn't save category list record: } . $cl->errstr;
+
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+
+    $cl;
+}
+
+sub make_content_type {
+    my $pkg    = shift;
+    my %params = @_;
+
+    my $values = {
+        name        => 'Sample Content Type',
+        description => 'This is a sample.',
+        blog_id     => 2,
+        %params,
+    };
+
+    require MT::ContentType;
+    my $ct = MT::ContentType->new;
+
+    $ct->$_( $values->{$_} ) for keys %{$values};
+    $ct->save or die q{Couldn't save content type record: } . $ct->errstr;
+
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+
+    $ct;
+}
+
+sub make_content_field {
+    my $pkg    = shift;
+    my %params = @_;
+
+    my $values = {
+        blog_id     => 2,
+        type        => 'single_line_text',
+        name        => 'Sample Content Field',
+        description => 'This is a sample single_line_text field.',
+        %params,
+    };
+
+    require MT::ContentField;
+    my $cf = MT::ContentField->new;
+
+    $cf->$_( $values->{$_} ) for keys %{$values};
+    $cf->save or die q{Couldn't save content field record: } . $cf->errstr;
+
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+
+    $cf;
+}
+
+sub make_content_data {
+    my $pkg    = shift;
+    my %params = @_;
+
+    require MT::Entry;
+    my $values = {
+        blog_id        => 2,
+        title          => 'Sample Content Data',
+        status         => MT::Entry::RELEASE(),
+        author_id      => 1,
+        authored_on    => '20170530163600',
+        unpublished_on => '20170531163600',
+        %params,
+    };
+
+    require MT::ContentData;
+    my $cd = MT::ContentData->new;
+
+    $cd->$_( $values->{$_} ) for keys %{$values};
+    $cd->save or die q{Couldn't save content data record: } . $cd->errstr;
+
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+
+    $cd;
+}
+
 1;

@@ -4,39 +4,28 @@ use warnings;
 use Test::More;
 
 use lib qw( lib extlib t/lib );
-use MT;
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
 
-use MT::Blog;
 use MT::Category;
 use MT::CategoryList;
-use MT::ContentType;
-use MT::ContentField;
 
 my $blog_id = 1;
 
 subtest 'blog' => sub {
-    my $cat_list = MT::CategoryList->new;
-    $cat_list->set_values(
-        {   blog_id => 1,
-            name    => 'test blog',
-        }
+    my $cat_list = MT::Test::Permission->make_category_list(
+        blog_id => 1,
+        name    => 'test blog',
     );
-    $cat_list->save or die $cat_list->errstr;
-
     ok( $cat_list->blog, 'return $blog' );
     is( $cat_list->blog->id, $blog_id, '$blog->id is ' . $blog_id );
 };
 
 subtest 'cat_count' => sub {
-    my $cat_list = MT::CategoryList->new;
-    $cat_list->set_values(
-        {   blog_id => 1,
-            name    => 'test cat_count',
-        }
+    my $cat_list = MT::Test::Permission->make_category_list(
+        blog_id => 1,
+        name    => 'test cat_count',
     );
-    $cat_list->save or die $cat_list->errstr;
 
     my $cat1 = MT::Test::Permission->make_category(
         blog_id          => $blog_id,
@@ -63,32 +52,23 @@ subtest 'cat_count' => sub {
 };
 
 subtest 'ct_count' => sub {
-    my $cat_list = MT::CategoryList->new;
-    $cat_list->set_values(
-        {   blog_id => 1,
-            name    => 'test ct_count',
-        }
+    my $cat_list = MT::Test::Permission->make_category_list(
+        blog_id => 1,
+        name    => 'test ct_count',
     );
-    $cat_list->save or die $cat_list->errstr;
 
-    my $ct = MT::ContentType->new;
-    $ct->set_values(
-        {   blog_id => $blog_id,
-            name    => 'test content type',
-        }
+    my $ct = MT::Test::Permission->make_content_type(
+        blog_id => $blog_id,
+        name    => 'test content type',
     );
-    $ct->save or die $ct->errstr;
 
-    my $cf = MT::ContentField->new;
-    $cf->set_values(
-        {   blog_id             => $blog_id,
-            content_type_id     => $ct->id,
-            related_cat_list_id => $cat_list->id,
-            name                => 'test category field',
-            type                => 'category',
-        }
+    my $cf = MT::Test::Permission->make_content_field(
+        blog_id             => $blog_id,
+        content_type_id     => $ct->id,
+        related_cat_list_id => $cat_list->id,
+        name                => 'test category field',
+        type                => 'category',
     );
-    $cf->save or die $ct->errstr;
 
     $cat_list = MT::CategoryList->load( $cat_list->id );
     is( $cat_list->ct_count, 1, 'ct_count is 1' );
@@ -100,13 +80,10 @@ subtest 'ct_count' => sub {
 };
 
 subtest 'remove' => sub {
-    my $cat_list = MT::CategoryList->new;
-    $cat_list->set_values(
-        {   blog_id => 1,
-            name    => 'test remove',
-        }
+    my $cat_list = MT::Test::Permission->make_category_list(
+        blog_id => 1,
+        name    => 'test remove',
     );
-    $cat_list->save or die $cat_list->errstr;
 
     my $cat = MT::Test::Permission->make_category(
         blog_id          => $blog_id,

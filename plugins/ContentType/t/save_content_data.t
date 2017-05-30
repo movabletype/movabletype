@@ -9,9 +9,7 @@ use MT::Test::Permission;
 
 use MT::Author;
 use MT::ContentData;
-use MT::ContentField;
 use MT::ContentFieldIndex;
-use MT::ContentType;
 use MT::Entry;
 
 my $admin = MT::Author->load(1);
@@ -19,23 +17,17 @@ my $user  = MT::Test::Permission->make_author;
 $user->is_superuser(1);
 $user->save or die $user->errstr;
 
-my $content_type = MT::ContentType->new;
-$content_type->set_values(
-    {   blog_id => 1,
-        name    => 'test content type',
-    }
+my $content_type = MT::Test::Permission->make_content_type(
+    blog_id => 1,
+    name    => 'test content type',
 );
-$content_type->save or die $content_type->errstr;
 
-my $content_field = MT::ContentField->new;
-$content_field->set_values(
-    {   blog_id         => $content_type->blog_id,
-        content_type_id => $content_type->id,
-        name            => 'single text',
-        type            => 'single_line_text',
-    }
+my $content_field = MT::Test::Permission->make_content_field(
+    blog_id         => $content_type->blog_id,
+    content_type_id => $content_type->id,
+    name            => 'single text',
+    type            => 'single_line_text',
 );
-$content_field->save or die $content_field->errstr;
 
 my $fields = [
     {   id         => $content_field->id,
