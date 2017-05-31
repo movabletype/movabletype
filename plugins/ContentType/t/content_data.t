@@ -66,5 +66,26 @@ subtest 'author' => sub {
         '$cd->author->id is same as $cd->author_id' );
 };
 
+subtest 'unique_id' => sub {
+    my $cd = MT::ContentData->new;
+    $cd->set_values(
+        {   author_id       => 1,
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct->id,
+        }
+    );
+
+    $cd->unique_id('123');
+    is( $cd->unique_id, undef, 'canot set unique_id' );
+
+    $cd->save or die $cd->errstr;
+    ok( $cd->unique_id, 'set unique_id after save' );
+    is( length $cd->unique_id, 40, 'length of unique_id is 40' );
+
+    my $unique_id = $cd->unique_id;
+    $cd->unique_id( $unique_id . '456' );
+    is( $cd->unique_id, $unique_id, 'cannot set unique_id' );
+};
+
 done_testing;
 

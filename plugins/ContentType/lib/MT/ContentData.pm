@@ -16,6 +16,7 @@ use MT::Asset;
 use MT::Author;
 use MT::ContentField;
 use MT::ContentType;
+use MT::ContentType::UniqueID;
 use MT::ObjectAsset;
 use MT::ObjectCategory;
 use MT::ObjectTag;
@@ -46,6 +47,7 @@ __PACKAGE__->install_properties(
                 revisioned => 1,
             },
             'content_type_id' => 'integer not null',
+            'unique_id'       => 'string(40) not null',
             'data'            => {
                 type       => 'blob',
                 label      => 'Data',
@@ -100,6 +102,11 @@ sub _generate_text_html {
     eval { JSON::to_json( $data_hash, { canonical => 1, utf8 => 1 } ) };
 }
 
+sub unique_id {
+    my $self = shift;
+    $self->column('unique_id');
+}
+
 sub save {
     my $self = shift;
 
@@ -107,6 +114,12 @@ sub save {
     my $content_type        = $self->content_type
         or return $self->error(
         MT->component('ContentType')->translate('Invalid content type') );
+
+    unless ( $self->id ) {
+        my $unique_id
+            = MT::ContentType::UniqueID::generate_unique_id( $self->title );
+        $self->column( 'unique_id', $unique_id );
+    }
 
     $self->SUPER::save(@_) or return;
 

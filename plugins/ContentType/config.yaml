@@ -2,8 +2,8 @@ name: Content Type
 author_name: Six Apart, Ltd.
 author_link: http://www.sixapart.com/
 pack_link: <__trans phrase="http://www.sixapart.com/movabletype/">
-version: 0.24
-schema_version: 0.24
+version: 0.25
+schema_version: 0.25
 l10n_class: MT::ContentType::L10N
 
 permissions: $ContentType::ContentType::Permission::permissions
