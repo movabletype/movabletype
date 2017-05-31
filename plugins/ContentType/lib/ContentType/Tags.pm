@@ -274,23 +274,24 @@ sub _hdlr_content_id {
     my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    return $args && $args->{pad} ? ( sprintf "%06d", $cd->id ) : $cd->id;
+    local $ctx->{__stash}{entry} = $cd;
+    $ctx->invoke_handler( 'entryid', $args, $cond );
 }
 
 sub _hdlr_content_created_date {
-    my ( $ctx, $args ) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    $args->{ts} = $cd->created_on;
-    return $ctx->build_date($args);
+    local $ctx->{__stash}{entry} = $cd;
+    $ctx->invoke_handler( 'entrycreateddate', $args, $cond );
 }
 
 sub _hdlr_content_modified_date {
-    my ( $ctx, $args ) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    $args->{ts} = $cd->modified_on || $cd->created_on;
-    return $ctx->build_date($args);
+    local $ctx->{__stash}{entry} = $cd;
+    $ctx->invoke_handler( 'entrymodifieddate', $args, $cond );
 }
 
 sub _hdlr_content_unpublished_date {
@@ -302,115 +303,57 @@ sub _hdlr_content_unpublished_date {
 }
 
 sub _hdlr_content_date {
-    my ( $ctx, $args ) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    $args->{ts} = $cd->authored_on;
-    return $ctx->build_date($args);
+    local $ctx->{__stash}{entry} = $cd;
+    $ctx->invoke_handler( 'entrydate', $args, $cond );
 }
 
 sub _hdlr_content_status {
-    my ( $ctx, $args ) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content') or return $ctx->_no_content_error;
-    require MT::Entry;
-    MT::Entry::status_text( $cd->status );
+    local $ctx->{__stash}{entry} = $cd;
+    $ctx->invoke_handler( 'entrystatus', $args, $cond );
 }
 
 sub _hdlr_content_title {
-    my ( $ctx, $args ) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
     defined $cd->title ? $cd->title : '';
 }
 
 sub _hdlr_content_author_display_name {
-    my ($ctx) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    my $a = $cd->author;
-    return $a ? $a->nickname || '' : '';
+    local $ctx->{__stash}{entry} = $cd;
+    $ctx->invoke_handler( 'entryauthordisplayname', $args, $cond );
 }
 
 sub _hdlr_content_author_email {
-    my ( $ctx, $args ) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    my $a = $cd->author;
-    return '' unless $a && defined $a->email;
-    return $args && $args->{'spam_protect'}
-        ? MT::Util::spam_protect( $a->email )
-        : $a->email;
+    local $ctx->{__stash}{entry} = $cd;
+    $ctx->invoke_handler( 'entryauthoremail', $args, $cond );
 }
 
 sub _hdlr_content_author_id {
-    my ($ctx) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    my $a = $cd->author;
-    return $a ? $a->id || '' : '';
+    local $ctx->{__stash}{entry} = $cd;
+    $ctx->invoke_handler( 'entryauthorid', $args, $cond );
 }
 
 sub _hdlr_content_author_link {
     my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    my $a = $cd->author;
-    return '' unless $a;
-
-    my $type = $args->{type} || '';
-
-    my $displayname = MT::Util::encode_html(
-        MT::Util::remove_html( $a->nickname || '' ) );
-    my $show_email = $args->{show_email} ? 1 : 0;
-    my $show_url;
-    $show_url = 1 unless exists $args->{show_url} && !$args->{show_url};
-
-    # Open the link in a new window if requested (with new_window="1").
-    my $target = $args->{new_window} ? ' target="_blank"' : '';
-    unless ($type) {
-        if ( $show_url && $a->url && ( $displayname ne '' ) ) {
-            $type = 'url';
-        }
-        elsif ( $show_email && $a->email && ( $displayname ne '' ) ) {
-            $type = 'email';
-        }
-    }
-    if ( $type eq 'url' ) {
-        if ( $a->url && ( $displayname ne '' ) ) {
-
-            # Add vcard properties to link if requested (with hcard="1")
-            my $hcard = $args->{show_hcard} ? ' class="fn url"' : '';
-            return sprintf qq(<a%s href="%s"%s>%s</a>), $hcard,
-                MT::Util::encode_html( $a->url ), $target, $displayname;
-        }
-    }
-    elsif ( $type eq 'email' ) {
-        if ( $a->email && ( $displayname ne '' ) ) {
-
-            # Add vcard properties to email if requested (with hcard="1")
-            my $hcard = $args->{show_hcard} ? ' class="fn email"' : '';
-            my $str = "mailto:" . MT::Util::encode_html( $a->email );
-            $str = MT::Util::spam_protect($str) if $args->{'spam_protect'};
-            return sprintf qq(<a%s href="%s">%s</a>), $hcard, $str,
-                $displayname;
-        }
-    }
-    elsif ( $type eq 'archive' ) {
-        require MT::Author;
-        if ( $a->type == MT::Author::AUTHOR() ) {
-            local $ctx->{__stash}{author} = $a;
-            local $ctx->{current_archive_type} = undef;
-            if (my $link = $ctx->invoke_handler(
-                    'archivelink', { type => 'Author' }, $cond
-                )
-                )
-            {
-                return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
-                    $displayname;
-            }
-        }
-    }
-    return $displayname;
+    local $ctx->{__stash}{entry} = $cd;
+    $ctx->invoke_handler( 'entryauthorlink', $args, $cond );
 }
 
 1;
