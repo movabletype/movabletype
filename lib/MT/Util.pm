@@ -1182,11 +1182,16 @@ sub make_unique_basename {
     $title = '' if !defined $title;
     $title =~ s/^\s+|\s+$//gs;
     if ( $title eq '' ) {
-        if ( my $text = $entry->text ) {
-            $title = first_n_words( $text,
-                const('LENGTH_ENTRY_TITLE_FROM_TEXT') );
+        if ( $entry->isa('MT:Entry') ) {
+            if ( my $text = $entry->text ) {
+                $title = first_n_words( $text,
+                    const('LENGTH_ENTRY_TITLE_FROM_TEXT') );
+            }
+            $title = 'Post' if $title eq '';
         }
-        $title = 'Post' if $title eq '';
+        else {
+            $title = 'Content';
+        }
     }
     my $limit = $blog->basename_limit || 30;    # FIXME
     $limit = 15  if $limit < 15;
@@ -1198,7 +1203,11 @@ sub make_unique_basename {
     my $base_copy = $base;
 
     my $class = ref $entry;
-    return _get_basename( $class, $base, $blog );
+    my $terms;
+    if ( $class eq 'MT::ContentData' ) {
+        $terms = { content_type_id => $entry->content_type_id, };
+    }
+    return _get_basename( $class, $base, $blog, $terms );
 }
 
 sub make_unique_category_basename {
@@ -1224,7 +1233,10 @@ sub make_unique_category_basename {
     my $base_copy = $base;
 
     my $cat_class = ref $cat;
-    return _get_basename( $cat_class, $base, $blog, $cat->category_list_id );
+    my $terms
+        = { category_list_id => $cat->category_list_id || [ \'IS NULL', 0 ],
+        };
+    return _get_basename( $cat_class, $base, $blog, $terms );
 }
 
 sub make_unique_author_basename {
@@ -1257,25 +1269,23 @@ sub make_unique_author_basename {
 }
 
 sub _get_basename {
-    my ( $class, $base, $blog, $category_list_id ) = @_;
-    my %terms;
+    my ( $class, $base, $blog, $terms ) = @_;
+    $terms ||= {};
     my $cache_key;
     if ($blog) {
         $cache_key = sprintf '%s:%s:%s:%s', 'BN', $class, $blog->id, $base;
-        $terms{blog_id} = $blog->id if $blog;
-        if ( $class eq 'MT::Category' ) {
-            $terms{category_list_id} = $category_list_id || [ \'IS NULL', 0 ];
-        }
+        $terms->{blog_id} = $blog->id if $blog;
     }
     else {
         $cache_key = sprintf '%s:%s:%s', 'BN', $class, $base;
     }
+    my $column = $class eq 'MT::ContentData' ? 'identifier' : 'basename';
     my $last = MT->request($cache_key);
     if ( defined $last ) {
         $last++;
         my $test = $class->load(
-            {   basename => $base . '_' . $last,
-                %terms,
+            {   $column => $base . '_' . $last,
+                %{$terms},
             }
         );
         if ( !$test ) {
@@ -1285,7 +1295,7 @@ sub _get_basename {
     }
     else {
         ## try to load without number suffix.
-        my $test = $class->load( { basename => $base, %terms } );
+        my $test = $class->load( { $column => $base, %{$terms} } );
         if ( !$test ) {
             return $base;
         }
@@ -1296,8 +1306,8 @@ sub _get_basename {
         my %args;
         $args{start_val} = $last_id if defined $last_id;
         my $existing = $class->load(
-            {   basename => { like => $base . '_%' },
-                %terms,
+            {   $column => { like => $base . '_%' },
+                %{$terms},
             },
             {   limit     => 1,
                 sort      => 'id',
@@ -1307,13 +1317,13 @@ sub _get_basename {
         );
         last if !$existing;
         $last_id = $existing->id;
-        if ( $existing->basename =~ /^$base\_([1-9]\d*)$/ ) {
+        if ( $existing->$column =~ /^$base\_([1-9]\d*)$/ ) {
             my $num = $1;
             next if !$num;
             $base_num = $num + 1;
             my $test = $class->load(
-                {   basename => $base . '_' . $base_num,
-                    %terms,
+                {   $column => $base . '_' . $base_num,
+                    %{$terms},
                 }
             );
             last if !$test;

@@ -21,6 +21,7 @@ use MT::ObjectAsset;
 use MT::ObjectCategory;
 use MT::ObjectTag;
 use MT::Tag;
+use MT::Util;
 
 use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 
@@ -51,6 +52,12 @@ __PACKAGE__->install_properties(
             'data'            => {
                 type       => 'blob',
                 label      => 'Data',
+                revisioned => 1,
+            },
+            'identifier' => {
+                type       => 'string',
+                size       => 255,
+                label      => 'Identifier',
                 revisioned => 1,
             },
             'authored_on' => {
@@ -119,6 +126,12 @@ sub save {
         my $unique_id
             = MT::ContentType::UniqueID::generate_unique_id( $self->title );
         $self->column( 'unique_id', $unique_id );
+    }
+
+    ## If there's no identifier specified, create a unique identifier.
+    if ( !defined( $self->identifier ) || ( $self->identifier eq '' ) ) {
+        my $name = MT::Util::make_unique_basename($self);
+        $self->identifier($name);
     }
 
     $self->SUPER::save(@_) or return;

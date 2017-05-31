@@ -87,5 +87,21 @@ subtest 'unique_id' => sub {
     is( $cd->unique_id, $unique_id, 'cannot set unique_id' );
 };
 
+subtest 'identifier' => sub {
+    my $terms = {
+        title           => 'test content data',
+        author_id       => 1,
+        blog_id         => $ct->blog_id,
+        content_type_id => $ct->id,
+    };
+    my $cd1 = MT::Test::Permission->make_content_data( %{$terms} );
+    is( $cd1->identifier, 'test_content_data',
+        'identifier is "test_content_data"' );
+
+    my $cd2 = MT::Test::Permission->make_content_data( %{$terms} );
+    is( $cd2->identifier, 'test_content_data_1',
+        'identifier is "test_content_data_1"' );
+};
+
 done_testing;
 
