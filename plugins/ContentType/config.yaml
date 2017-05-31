@@ -149,6 +149,7 @@ tags:
         ContentDate: $ContentType::ContentType::Tags::_hdlr_content_date
         ContentModifiedDate: $ContentType::ContentType::Tags::_hdlr_content_modified_date
         ContentID: $ContentType::ContentType::Tags::_hdlr_content_id
+        ContentIdentifier: $ContentType::ContentType::Tags::_hdlr_content_identifier
         ContentStatus: $ContentType::ContentType::Tags::_hdlr_content_status
         ContentTitle: $ContentType::ContentType::Tags::_hdlr_content_title
         ContentUniqueID: $ContentType::ContentType::Tags::_hdlr_content_unique_id

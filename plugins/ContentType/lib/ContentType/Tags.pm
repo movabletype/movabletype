@@ -376,6 +376,23 @@ sub _hdlr_content_unique_id {
     $cd->unique_id;
 }
 
+sub _hdlr_content_identifier {
+    my ( $ctx, $args, $cond ) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    my $identifier = $cd->identifier;
+    $identifier = '' unless defined $identifier;
+    if ( my $sep = $args->{separator} ) {
+        if ( $sep eq '-' ) {
+            $identifier =~ s/_/-/g;
+        }
+        elsif ( $sep eq '_' ) {
+            $identifier =~ s/-/_/g;
+        }
+    }
+    $identifier;
+}
+
 sub _check_and_invoke {
     my ( $tag, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
