@@ -356,4 +356,12 @@ sub _hdlr_content_author_link {
     $ctx->invoke_handler( 'entryauthorlink', $args, $cond );
 }
 
+sub _hdlr_content_author_url {
+    my ( $ctx, $args, $cond ) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    local $ctx->{__stash}{entry} = $cd;
+    $ctx->invoke_handler( 'entryauthorurl', $args, $cond );
+}
+
 1;
