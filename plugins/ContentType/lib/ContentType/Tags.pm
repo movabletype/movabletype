@@ -81,7 +81,13 @@ sub _hdlr_contents {
         my $content_type = MT::ContentType->load($ct_id);
         local $ctx->{__stash}{content_type} = $content_type;
 
-        my $out = $builder->build( $ctx, $tok, $cond );
+        my $out = $builder->build(
+            $ctx, $tok,
+            {   %{$cond},
+                ContentsHeader => !$i,
+                ContentsFooter => !defined $contents[ $i + 1 ],
+            }
+        );
         $res .= $out;
         $i++;
     }
