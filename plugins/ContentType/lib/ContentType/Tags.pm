@@ -271,31 +271,19 @@ sub _hdlr_content_categories {
 }
 
 sub _hdlr_content_id {
-    my ( $ctx, $args, $cond ) = @_;
-    my $cd = $ctx->stash('content')
-        or return $ctx->_no_content_error();
-    local $ctx->{__stash}{entry} = $cd;
-    $ctx->invoke_handler( 'entryid', $args, $cond );
+    _check_and_invoke( 'entryid', @_ );
 }
 
 sub _hdlr_content_created_date {
-    my ( $ctx, $args, $cond ) = @_;
-    my $cd = $ctx->stash('content')
-        or return $ctx->_no_content_error();
-    local $ctx->{__stash}{entry} = $cd;
-    $ctx->invoke_handler( 'entrycreateddate', $args, $cond );
+    _check_and_invoke( 'entrycreateddate', @_ );
 }
 
 sub _hdlr_content_modified_date {
-    my ( $ctx, $args, $cond ) = @_;
-    my $cd = $ctx->stash('content')
-        or return $ctx->_no_content_error();
-    local $ctx->{__stash}{entry} = $cd;
-    $ctx->invoke_handler( 'entrymodifieddate', $args, $cond );
+    _check_and_invoke( 'entrymodifieddate', @_ );
 }
 
 sub _hdlr_content_unpublished_date {
-    my ( $ctx, $args ) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
     $args->{ts} = $cd->unpublished_on;
@@ -303,18 +291,11 @@ sub _hdlr_content_unpublished_date {
 }
 
 sub _hdlr_content_date {
-    my ( $ctx, $args, $cond ) = @_;
-    my $cd = $ctx->stash('content')
-        or return $ctx->_no_content_error();
-    local $ctx->{__stash}{entry} = $cd;
-    $ctx->invoke_handler( 'entrydate', $args, $cond );
+    _check_and_invoke( 'entrydate', @_ );
 }
 
 sub _hdlr_content_status {
-    my ( $ctx, $args, $cond ) = @_;
-    my $cd = $ctx->stash('content') or return $ctx->_no_content_error;
-    local $ctx->{__stash}{entry} = $cd;
-    $ctx->invoke_handler( 'entrystatus', $args, $cond );
+    _check_and_invoke( 'entrystatus', @_ );
 }
 
 sub _hdlr_content_title {
@@ -325,43 +306,31 @@ sub _hdlr_content_title {
 }
 
 sub _hdlr_content_author_display_name {
-    my ( $ctx, $args, $cond ) = @_;
-    my $cd = $ctx->stash('content')
-        or return $ctx->_no_content_error();
-    local $ctx->{__stash}{entry} = $cd;
-    $ctx->invoke_handler( 'entryauthordisplayname', $args, $cond );
+    _check_and_invoke( 'entryauthordisplayname', @_ );
 }
 
 sub _hdlr_content_author_email {
-    my ( $ctx, $args, $cond ) = @_;
-    my $cd = $ctx->stash('content')
-        or return $ctx->_no_content_error();
-    local $ctx->{__stash}{entry} = $cd;
-    $ctx->invoke_handler( 'entryauthoremail', $args, $cond );
+    _check_and_invoke( 'entryauthoremail', @_ );
 }
 
 sub _hdlr_content_author_id {
-    my ( $ctx, $args, $cond ) = @_;
-    my $cd = $ctx->stash('content')
-        or return $ctx->_no_content_error();
-    local $ctx->{__stash}{entry} = $cd;
-    $ctx->invoke_handler( 'entryauthorid', $args, $cond );
+    _check_and_invoke( 'entryauthorid', @_ );
 }
 
 sub _hdlr_content_author_link {
-    my ( $ctx, $args, $cond ) = @_;
-    my $cd = $ctx->stash('content')
-        or return $ctx->_no_content_error();
-    local $ctx->{__stash}{entry} = $cd;
-    $ctx->invoke_handler( 'entryauthorlink', $args, $cond );
+    _check_and_invoke( 'entryauthorlink', @_ );
 }
 
 sub _hdlr_content_author_url {
-    my ( $ctx, $args, $cond ) = @_;
+    _check_and_invoke( 'entryauthorurl', @_ );
+}
+
+sub _check_and_invoke {
+    my ( $tag, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
     local $ctx->{__stash}{entry} = $cd;
-    $ctx->invoke_handler( 'entryauthorurl', $args, $cond );
+    $ctx->invoke_handler( $tag, $args, $cond );
 }
 
 1;
