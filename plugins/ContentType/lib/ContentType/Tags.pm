@@ -353,6 +353,13 @@ sub _hdlr_content_author_userpic_asset {
     return $builder->build( $ctx, $tok, {%$cond} );
 }
 
+sub _hdlr_content_unique_id {
+    my ( $ctx, $args, $cond ) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    $cd->unique_id;
+}
+
 sub _check_and_invoke {
     my ( $tag, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
