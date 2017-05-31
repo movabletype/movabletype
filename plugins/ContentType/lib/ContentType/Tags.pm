@@ -337,6 +337,22 @@ sub _hdlr_content_author_userpic_url {
     _check_and_invoke( 'entryauthoruserpicurl', @_ );
 }
 
+sub _hdlr_content_author_userpic_asset {
+    my ( $ctx, $args, $cond ) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    my $author = $cd->author;
+    return '' unless $author;
+
+    my $asset = $author->userpic or return '';
+
+    my $tok     = $ctx->stash('tokens');
+    my $builder = $ctx->stash('builder');
+
+    local $ctx->{__stash}{asset} = $asset;
+    return $builder->build( $ctx, $tok, {%$cond} );
+}
+
 sub _check_and_invoke {
     my ( $tag, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')

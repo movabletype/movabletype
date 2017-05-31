@@ -127,6 +127,7 @@ content_actions: $ContentType::ContentType::ListProperties::make_content_actions
 list_actions: $ContentType::ContentType::ListProperties::make_list_actions
 tags:
     block:
+        ContentAuthorUserpicAsset: $ContentType::ContentType::Tags::_hdlr_content_author_userpic_asset
         Contents: $ContentType::ContentType::Tags::_hdlr_contents
         ContentAssets: $ContentType::ContentType::Tags::_hdlr_assets
         ContentTags: $ContentType::ContentType::Tags::_hdlr_content_tags
