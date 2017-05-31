@@ -345,6 +345,10 @@ sub _hdlr_content_blog_id {
     _check_and_invoke( 'entryblogid', @_ );
 }
 
+sub _hdlr_content_blog_name {
+    _check_and_invoke( 'entryblogname', @_ );
+}
+
 sub _hdlr_content_author_userpic_asset {
     my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
