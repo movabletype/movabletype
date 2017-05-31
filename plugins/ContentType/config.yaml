@@ -139,6 +139,7 @@ tags:
         ContentAuthorURL: $ContentType::ContentType::Tags::_hdlr_content_author_url
         ContentAuthorUsername: $ContentType::ContentType::Tags::_hdlr_content_author_username
         ContentAuthorUserpic: $ContentType::ContentType::Tags::_hdlr_content_author_userpic
+        ContentAuthorUserpicURL: $ContentType::ContentType::Tags::_hdlr_content_author_userpic_url
         ContentCreatedDate: $ContentType::ContentType::Tags::_hdlr_content_created_date
         ContentDate: $ContentType::ContentType::Tags::_hdlr_content_date
         ContentModifiedDate: $ContentType::ContentType::Tags::_hdlr_content_modified_date
