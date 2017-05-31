@@ -144,6 +144,7 @@ tags:
         ContentBlogDescription: $ContentType::ContentType::Tags::_hdlr_content_blog_description
         ContentBlogID: $ContentType::ContentType::Tags::_hdlr_content_blog_id
         ContentBlogName: $ContentType::ContentType::Tags::_hdlr_content_blog_name
+        ContentBlogURL: $ContentType::ContentType::Tags::_hdlr_content_blog_url
         ContentCreatedDate: $ContentType::ContentType::Tags::_hdlr_content_created_date
         ContentDate: $ContentType::ContentType::Tags::_hdlr_content_date
         ContentModifiedDate: $ContentType::ContentType::Tags::_hdlr_content_modified_date
