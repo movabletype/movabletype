@@ -1,11 +1,11 @@
-package MT::ContentType::UniqueKey;
+package MT::ContentType::UniqueID;
 use strict;
 use warnings;
 
 use Encode qw( encode_utf8 );
 use MT::Util qw( perl_sha1_digest_hex );
 
-sub generate_unique_key {
+sub generate_unique_id {
     my $name = shift;
     unless ( defined $name && $name ne '' ) {
         $name = 'basename';

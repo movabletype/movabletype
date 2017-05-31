@@ -12,7 +12,7 @@ use base qw( MT::Object );
 use JSON ();
 
 use MT::ContentField;
-use MT::ContentType::UniqueKey;
+use MT::ContentType::UniqueID;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -21,7 +21,7 @@ __PACKAGE__->install_properties(
             'name'        => 'string(255)',
             'description' => 'text',
             'version'     => 'integer',
-            'unique_key'  => 'blob',
+            'unique_id'   => 'string(40) not null',
             'fields'      => 'blob',
         },
         indexes     => { blog_id => 1 },
@@ -43,18 +43,18 @@ sub class_label_plural {
     MT->translate("Content Types");
 }
 
-sub unique_key {
+sub unique_id {
     my $self = shift;
-    $self->column('unique_key');
+    $self->column('unique_id');
 }
 
 sub save {
     my $self = shift;
 
     unless ( $self->id ) {
-        my $unique_key
-            = MT::ContentType::UniqueKey::generate_unique_key( $self->name );
-        $self->column( 'unique_key', $unique_key );
+        my $unique_id
+            = MT::ContentType::UniqueID::generate_unique_id( $self->name );
+        $self->column( 'unique_id', $unique_id );
     }
 
     $self->SUPER::save(@_);
@@ -127,7 +127,7 @@ sub permission {
 
 sub _create_content_data_permission {
     my $self            = shift;
-    my $permission_name = 'blog.create_content_data:' . $self->unique_key;
+    my $permission_name = 'blog.create_content_data:' . $self->unique_id;
     (   $permission_name => {
             group => $self->permission_group,
             label => 'Create Content Data',
@@ -138,7 +138,7 @@ sub _create_content_data_permission {
 
 sub _publish_content_data_permission {
     my $self            = shift;
-    my $permission_name = 'blog.publish_content_data:' . $self->unique_key;
+    my $permission_name = 'blog.publish_content_data:' . $self->unique_id;
     (   $permission_name => {
             group            => $self->permission_group,
             label            => 'Publish Content Data',
@@ -155,7 +155,7 @@ sub _publish_content_data_permission {
 
 sub _edit_all_content_data_permission {
     my $self            = shift;
-    my $permission_name = 'blog.edit_all_content_data:' . $self->unique_key;
+    my $permission_name = 'blog.edit_all_content_data:' . $self->unique_id;
     (   $permission_name => {
             group            => $self->permission_group,
             label            => 'Edit All Content Data',
@@ -215,7 +215,7 @@ sub post_remove {
 
     $obj->remove_children( { key => 'content_type_id' } );
 
-    my $perm_name = 'manage_content_type:' . $obj->unique_key;
+    my $perm_name = 'manage_content_type:' . $obj->unique_id;
     require MT::Role;
     my @roles = MT::Role->load_by_permission($perm_name);
     foreach my $role (@roles) {

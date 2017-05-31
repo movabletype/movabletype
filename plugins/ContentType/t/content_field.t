@@ -9,7 +9,7 @@ use MT::Test qw( :db );
 
 use MT::ContentField;
 
-subtest 'unique_key' => sub {
+subtest 'unique_id' => sub {
     my $cf = MT::ContentField->new;
     $cf->set_values(
         {   blog_id         => 1,
@@ -17,15 +17,16 @@ subtest 'unique_key' => sub {
         }
     );
 
-    $cf->unique_key('123');
-    is( $cf->unique_key, undef, 'cannot set unique_key' );
+    $cf->unique_id('123');
+    is( $cf->unique_id, undef, 'cannot set unique_id' );
 
     $cf->save or die $cf->errstr;
-    ok( $cf->unique_key, 'set unique_key after save' );
+    ok( $cf->unique_id, 'set unique_id after save' );
+    is( length $cf->unique_id, 40, 'length of unique_id is 40' );
 
-    my $unique_key = $cf->unique_key;
-    $cf->unique_key( $unique_key . '456' );
-    is( $cf->unique_key, $unique_key, 'cannot set unique_key' );
+    my $unique_id = $cf->unique_id;
+    $cf->unique_id( $unique_id . '456' );
+    is( $cf->unique_id, $unique_id, 'cannot set unique_id' );
 };
 
 done_testing;

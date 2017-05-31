@@ -22,12 +22,12 @@ my $cf = MT::Test::Permission->make_content_field(
 );
 
 my $fields = [
-    {   id         => $cf->id,
-        label      => 1,
-        name       => $cf->name,
-        order      => 1,
-        type       => $cf->type,
-        unique_key => $cf->unique_key,
+    {   id        => $cf->id,
+        label     => 1,
+        name      => $cf->name,
+        order     => 1,
+        type      => $cf->type,
+        unique_id => $cf->unique_id,
     }
 ];
 $ct->fields($fields);

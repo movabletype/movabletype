@@ -30,12 +30,12 @@ my $content_field = MT::Test::Permission->make_content_field(
 );
 
 my $fields = [
-    {   id         => $content_field->id,
-        label      => 1,
-        name       => $content_field->name,
-        order      => 1,
-        type       => $content_field->type,
-        unique_key => $content_field->unique_key,
+    {   id        => $content_field->id,
+        label     => 1,
+        name      => $content_field->name,
+        order     => 1,
+        type      => $content_field->type,
+        unique_id => $content_field->unique_id,
     }
 ];
 $content_type->fields($fields);

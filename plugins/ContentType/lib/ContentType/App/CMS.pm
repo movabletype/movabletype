@@ -175,7 +175,7 @@ sub cfg_content_type {
     if ($content_type) {
         $param->{name}        = $content_type->name;
         $param->{description} = $content_type->description;
-        $param->{unique_key}  = $content_type->unique_key;
+        $param->{unique_id}   = $content_type->unique_id;
         my $fields;
         if ( $q->param('err_msg') ) {
             $fields = $q->param('fields');
@@ -826,7 +826,7 @@ sub save_cfg_content_type {
         push @fields,
             {
             id => $content_field->id || $field_id,
-            unique_key => $content_field->unique_key,
+            unique_id => $content_field->unique_id,
             %{ $option_list->{fields}{$field_id} }
             };
     }
@@ -871,13 +871,13 @@ sub save_cfg_content_type {
         }
     }
 
-    # Set id and unique_key to fields if not.
+    # Set id and unique_id to fields if not.
     for ( my $i = 0; $i < @fields; $i++ ) {
         my $field = $fields[$i];
-        next if $field->{id} && $field->{unique_key};
+        next if $field->{id} && $field->{unique_id};
         my $content_field = $field_objects[$i];
-        $field->{id}         = $content_field->id;
-        $field->{unique_key} = $content_field->unique_key;
+        $field->{id}        = $content_field->id;
+        $field->{unique_id} = $content_field->unique_id;
     }
 
     $content_type->fields( \@fields );
@@ -940,10 +940,10 @@ sub select_edit_content_type {
         $hash->{id}      = $content_type->id;
         $hash->{blog_id} = $content_type->blog_id;
         $hash->{name}    = $content_type->name;
-        my $unique_key = $content_type->unique_key;
+        my $unique_id = $content_type->unique_id;
         $hash->{can_edit} = 1
             if $app->permissions->can_do(
-            'manage_content_type:' . $unique_key );
+            'manage_content_type:' . $unique_id );
         push @array, $hash;
     }
     $param->{content_types} = \@array;
@@ -1003,7 +1003,7 @@ sub edit_content_data {
     $param->{name}               = $content_type->name;
 
     my $array           = $content_type->fields;
-    my $ct_unique_key   = $content_type->unique_key;
+    my $ct_unique_id    = $content_type->unique_id;
     my $content_data_id = scalar $q->param('id');
 
     $param->{use_revision} = $blog->use_revision ? 1 : 0;
@@ -1093,12 +1093,12 @@ sub edit_content_data {
 
     my $content_field_types = $app->registry('content_field_types');
     @$array = map {
-        my $e_unique_key = $_->{unique_key};
+        my $e_unique_id = $_->{unique_id};
         $_->{can_edit} = 1
             if $app->permissions->can_do( 'content_type:'
-                . $ct_unique_key
+                . $ct_unique_id
                 . '-content_field:'
-                . $e_unique_key );
+                . $e_unique_id );
         $_->{content_field_id} = $_->{id};
         delete $_->{id};
 

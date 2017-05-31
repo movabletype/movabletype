@@ -18,7 +18,7 @@ sub _hdlr_contents {
     my $name    = $args->{name};
     my $blog_id = $args->{blog_id};
     if ($type) {
-        $terms = { unique_key => $type };
+        $terms = { unique_id => $type };
     }
     elsif ( $name && $blog_id ) {
         $terms = {
@@ -118,7 +118,7 @@ sub _hdlr_entity {
     my $type = $args->{type};
     my $name = $args->{name};
     if ($type) {
-        $terms = { unique_key => $type };
+        $terms = { unique_id => $type };
     }
     elsif ($name) {
         $terms = {

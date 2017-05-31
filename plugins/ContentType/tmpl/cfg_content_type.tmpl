@@ -48,9 +48,9 @@
     <h2 id="setting-title" ><__trans phrase="Content Type"></h2>
 
     <mtapp:setting
-       id="unique_key"
-       label="<__trans phrase="Unique Key">">
-      <mt:var name="unique_key" escape="html">
+       id="unique_id"
+       label="<__trans phrase="Unique ID">">
+      <mt:var name="unique_id" escape="html">
     </mtapp:setting>
 
   </mtapp:settinggroup>
@@ -1271,7 +1271,7 @@
       '<mt:var name="content_field_id">': {
         'type': '<mt:var name="type" escape="js">',
         'order': '<mt:var name="order" escape="js">',
-        'new': <mt:if name="unique_key">0<mt:else>1</mt:if>,
+        'new': <mt:if name="unique_id">0<mt:else>1</mt:if>,
         'options': {
     <mt:loop name="options">
         <mt:if name="key"><mt:var name="key" escape="js">: '<mt:var name="value" escape="js">',</mt:if>

@@ -12,7 +12,7 @@ use base qw( MT::Object );
 use MT;
 use MT::CategoryList;
 use MT::ContentType;
-use MT::ContentType::UniqueKey;
+use MT::ContentType::UniqueID;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -26,7 +26,7 @@ __PACKAGE__->install_properties(
             'required'                => 'boolean',
             'related_content_type_id' => 'integer',
             'related_cat_list_id'     => 'integer',
-            'unique_key'              => 'blob',
+            'unique_id'               => 'string(40) not null',
         },
         indexes     => { blog_id => 1, content_type_id => 1 },
         datasource  => 'cf',
@@ -44,18 +44,18 @@ sub class_label_plural {
     MT->translate("Content Fields");
 }
 
-sub unique_key {
+sub unique_id {
     my $self = shift;
-    $self->column('unique_key');
+    $self->column('unique_id');
 }
 
 sub save {
     my $self = shift;
 
     unless ( $self->id ) {
-        my $unique_key
-            = MT::ContentType::UniqueKey::generate_unique_key( $self->name );
-        $self->column( 'unique_key', $unique_key );
+        my $unique_id
+            = MT::ContentType::UniqueID::generate_unique_id( $self->name );
+        $self->column( 'unique_id', $unique_id );
     }
 
     $self->SUPER::save(@_);
@@ -73,9 +73,9 @@ sub permission {
     my $content_type = $obj->content_type;
     my $permitted_action
         = 'content_type:'
-        . $content_type->unique_key
+        . $content_type->unique_id
         . '-content-field:'
-        . $obj->unique_key;
+        . $obj->unique_id;
     my $name = 'blog.' . $permitted_action;
     return +{
         $name => {
@@ -99,9 +99,9 @@ sub post_remove {
     my $content_type = MT::ContentType->load( $obj->content_type_id || 0 );
     my $perm_name
         = 'content_type:'
-        . $content_type->unique_key
+        . $content_type->unique_id
         . '-content-field:'
-        . $obj->unique_key;
+        . $obj->unique_id;
     require MT::Role;
     my @roles = MT::Role->load_by_permission($perm_name);
     foreach my $role (@roles) {
