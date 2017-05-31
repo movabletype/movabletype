@@ -137,6 +137,7 @@ tags:
         ContentAuthorID: $ContentType::ContentType::Tags::_hdlr_content_author_id
         ContentAuthorLink: $ContentType::ContentType::Tags::_hdlr_content_author_link
         ContentAuthorURL: $ContentType::ContentType::Tags::_hdlr_content_author_url
+        ContentAuthorUsername: $ContentType::ContentType::Tags::_hdlr_content_author_username
         ContentCreatedDate: $ContentType::ContentType::Tags::_hdlr_content_created_date
         ContentDate: $ContentType::ContentType::Tags::_hdlr_content_date
         ContentModifiedDate: $ContentType::ContentType::Tags::_hdlr_content_modified_date
