@@ -329,6 +329,10 @@ sub _hdlr_content_author_username {
     _check_and_invoke( 'entryauthorusername', @_ );
 }
 
+sub _hdlr_content_author_userpic {
+    _check_and_invoke( 'entryauthoruserpic', @_ );
+}
+
 sub _check_and_invoke {
     my ( $tag, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
