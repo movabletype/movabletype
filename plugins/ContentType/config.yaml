@@ -166,7 +166,7 @@ tags:
         ContentTitle: $ContentType::ContentType::Tags::_hdlr_content_title
         ContentUniqueID: $ContentType::ContentType::Tags::_hdlr_content_unique_id
         ContentUnpublishedDate: $ContentType::ContentType::Tags::_hdlr_content_unpublished_date
-        ContentsCount:
+        ContentsCount: $ContentType::ContentType::Tags::_hdlr_contents_count
         SiteContentCount:
         # Content: $ContentType::ContentType::Tags::_hdlr_content
         # Entity: $ContentType::ContentType::Tags::_hdlr_entity

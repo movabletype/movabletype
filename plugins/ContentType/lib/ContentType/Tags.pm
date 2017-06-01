@@ -8,7 +8,12 @@ package ContentType::Tags;
 
 use strict;
 
-use MT::Util ();
+use MT;
+use MT::ContentData;
+use MT::ContentField;
+use MT::ContentType;
+use MT::Entry;
+use MT::Util;
 
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
@@ -32,7 +37,7 @@ sub _hdlr_contents {
                 '\'type\' or "\'name\' and \'blog_id\'" is required.')
         );
     }
-    my ($content_type) = MT::ContentType->load($terms)
+    my $content_type = MT::ContentType->load($terms)
         or return $ctx->error( MT->translate('Content Type was not found.') );
 
     my $parent      = $ctx->stash('content_type');
@@ -65,6 +70,8 @@ sub _hdlr_contents {
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
     my $vars    = $ctx->{__stash}{vars} ||= {};
+    local $ctx->{__stash}{contents}
+        = ( @contents && defined $contents[0] ) ? \@contents : undef;
     for my $content_data (@contents) {
         next if $parent && !grep { $content_data->id == $_ } @data_ids;
 
@@ -399,12 +406,80 @@ sub _hdlr_content_identifier {
     $identifier;
 }
 
+sub _hdlr_contents_count {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $count = 0;
+
+    my $contents = $ctx->stash('contents');
+    if ($contents) {
+        $count = scalar @{$contents};
+    }
+    else {
+        my %terms = (
+            blog_id => $ctx->stash('blog_id'),
+            status  => MT::Entry::RELEASE(),
+        );
+        my %args = (
+            sort      => 'authored_on',
+            direction => 'descend',
+        );
+
+        _set_content_type_load_context( $ctx, $args, $cond, \%terms, \%args )
+            or return $ctx->error( MT->translate('invalid parameter') );
+
+        my ( $days, $limit );
+        my $blog = $ctx->stash('blog');
+        if ( $blog && ( $days = $blog->days_on_index ) ) {
+            my @ago = MT::Util::offset_time_list( time - 3600 * 24 * $days,
+                $ctx->stash('blog_id') );
+            my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
+                $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
+            $terms{authored_on} = [$ago];
+            $args{range_incl}{authored_on} = 1;
+        }
+        elsif ( $blog && ( $limit = $blog->entries_on_index ) ) {
+            $args->{lastn} = $limit;
+        }
+
+        my $iter = MT::ContentData->load_iter( \%terms, \%args );
+        my $last = $args->{lastn};
+        while ( my $cd = $iter->() ) {
+            return $count if $last && $last <= $count;
+            $count++;
+        }
+    }
+
+    $ctx->count_format( $count, $args );
+}
+
 sub _check_and_invoke {
     my ( $tag, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
     local $ctx->{__stash}{entry} = $cd;
     $ctx->invoke_handler( $tag, $args, $cond );
+}
+
+sub _set_content_type_load_context {
+    my ( $ctx, $args, $cond, $cd_terms, $cd_args ) = @_;
+    if ( my $content_type_id = $args->{content_type_id} ) {
+        $cd_terms->{content_type_id} = $content_type_id;
+    }
+    elsif ( my $ct_unique_id = $args->{ct_unique_id} ) {
+        $cd_terms->{ct_unique_id} = $ct_unique_id;
+    }
+    else {
+        my $blog_id = $args->{blog_id} || $ctx->stash('blog_id');
+        my $ct_name = $args->{name};
+        return unless $blog_id && defined $ct_name && $ct_name ne '';
+        my $ct
+            = MT::ContentType->load(
+            { blog_id => $blog_id, name => $ct_name } )
+            or return;
+        $cd_terms->{content_type_id} = $ct->id;
+    }
+    1;
 }
 
 1;
