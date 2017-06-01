@@ -1258,7 +1258,7 @@
     });
 
 <mt:unless name="id">    
-    var data = JSON.parse( localStorage.getItem("ContentType") );
+    var data = JSON.parse( localStorage.getItem("ContentType") ) || {};
     jQuery("#setting-title").text( trans( 'Edit [_1]', data.name ) );
 </mt:unless>
 <mt:if name="name">
