@@ -265,6 +265,28 @@ content_field_types:
             - max_value
             - decimal_places
             - initial_value
+    number:
+        label: Number
+        data_type: float
+        order: 51
+        field_html: field_html/field_html_number.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Number::field_html_params
+        ss_validator: $ContentType::MT::ContentFieldType::Number::ss_validator
+        list_props:
+            float:
+                base: __virtual.float
+                col: value_float
+                terms: $ContentType::MT::ContentFieldType::Common::terms_text
+                use_blank: 1
+        options:
+            - label
+            - hint
+            - required
+            - display
+            - min_value
+            - max_value
+            - decimal_places
+            - initial_value
     url:
         label: URL
         data_type: varchar
