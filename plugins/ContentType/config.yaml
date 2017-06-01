@@ -127,7 +127,7 @@ content_actions: $ContentType::ContentType::ListProperties::make_content_actions
 list_actions: $ContentType::ContentType::ListProperties::make_list_actions
 tags:
     block:
-        AuthorHasContent?:
+        AuthorHasContent?: $ContentType::ContentType::Tags::_hdlr_author_has_content
         CalendarIfContents:
         CalendarIfNoContents:
         ContentAuthorUserpicAsset: $ContentType::ContentType::Tags::_hdlr_content_author_userpic_asset

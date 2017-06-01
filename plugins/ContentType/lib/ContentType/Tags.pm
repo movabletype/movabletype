@@ -485,6 +485,22 @@ sub _hdlr_author_content_count {
     return $ctx->count_format( $count, $args );
 }
 
+sub _hdlr_author_has_content {
+    my ($ctx, $args, $cond) = @_;
+    my $author = $ctx->stash('author')
+        or return $ctx->_no_author_error();
+
+    my %terms;
+    $terms{blog_id}   = $ctx->stash('blog_id');
+    $terms{author_id} = $author->id;
+    $terms{status}    = MT::Entry::RELEASE();
+
+    _set_content_type_load_context( $ctx, $args, $cond, \%terms )
+        or return $ctx->error( MT->translate('invalid parameter') );
+
+    MT::ContentData->exist( \%terms );
+}
+
 sub _check_and_invoke {
     my ( $tag, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
