@@ -390,379 +390,9 @@ sub save_cfg_content_type {
         my $options = $option_list->{fields}{$field_id}{options};
         my $label   = $options->{label};
 
-        # Validation
-        unless ($err_msg) {
-            my $content_field_types = $app->registry('content_field_types');
-            my $field_label         = $content_field_types->{$type}{label};
-            if ( !$options->{label} ) {
-                $err_msg
-                    = $plugin->translate( '[_1]\'s "[_2]" field is required.',
-                    $field_label, 'Label' );
-            }
-            elsif ( length( $options->{label} ) > 255 ) {
-                $err_msg = $plugin->translate(
-                    '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
-                    $field_label, 'Label', '255'
-                );
-            }
-            elsif ( length( $options->{hint} ) > 1024 ) {
-                $err_msg = $plugin->translate(
-                    '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
-                    $field_label, 'Hint', '1024'
-                );
-            }
-            elsif ( $type eq 'single_line_text' ) {
-                my $min_length    = $options->{min_length};
-                my $max_length    = $options->{max_length};
-                my $initial_value = $options->{initial_value};
-                if ($min_length) {
-                    if ( $min_length !~ /^[+\-]?\d+$/
-                        || ( $min_length < 0 || $min_length > 1024 ) )
-                    {
-                        $err_msg = $plugin->translate(
-                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                            $label || $field_label,
-                            'Min Length',
-                            '0',
-                            '1024'
-                        );
-                    }
-                }
-                if ( !$err_msg && $max_length ) {
-                    if ( $max_length !~ /^[+\-]?\d+$/
-                        || ( $max_length < 1 || $max_length > 1024 ) )
-                    {
-                        $err_msg = $plugin->translate(
-                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                            $label || $field_label,
-                            'Max Length',
-                            '1',
-                            '1024'
-                        );
-                    }
-                }
-                if ( !$err_msg && $initial_value ) {
-                    if ( length($initial_value) > 1024 ) {
-                        $err_msg = $plugin->translate(
-                            '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
-                            $field_label, 'Initial Value', '1024'
-                        );
-                    }
-                }
-            }
-            elsif ( $type eq 'integer' ) {
-                my $min_value     = $options->{min_value};
-                my $max_value     = $options->{max_value};
-                my $initial_value = $options->{initial_value};
-                if ($min_value) {
-                    if (   $min_value !~ /^[+\-]?\d+$/
-                        || $min_value < -2147483648
-                        || $min_value > 2147483647 )
-                    {
-                        $err_msg = $plugin->translate(
-                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                            $label || $field_label,
-                            'Min Value',
-                            '-2147483648',
-                            '2147483647'
-                        );
-                    }
-                }
-                elsif ( !$err_msg && $max_value ) {
-                    if (   $max_value !~ /^[+\-]?\d+$/
-                        || $max_value < -2147483648
-                        || $max_value > 2147483647
-                        || ( $min_value && $min_value > $max_value ) )
-                    {
-                        $err_msg = $plugin->translate(
-                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                            $label || $field_label,
-                            'Max Value',
-                            $min_value || '-2147483648',
-                            '2147483647'
-                        );
-                    }
-                }
-                elsif ( !$err_msg && $initial_value ) {
-                    if (   $initial_value !~ /^[+\-]?\d+$/
-                        || $initial_value < -2147483648
-                        || $initial_value > 2147483647 )
-                    {
-                        $err_msg = $plugin->translate(
-                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                            $label || $field_label,
-                            'Initial Value',
-                            '-2147483648',
-                            $min_value || '2147483647'
-                        );
-                    }
-                }
-            }
-            elsif ( $type eq 'float' ) {
-                my ( $option_label, $type )
-                    = (    $options->{min_value}
-                        && $options->{min_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
-                    ? ( $plugin->translate('Min Value'), 'float' )
-                    : (    $options->{max_value}
-                        && $options->{max_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
-                    ? ( $plugin->translate('Max Value'), 'float' )
-                    : (    $options->{initial_value}
-                        && $options->{initial_value}
-                        !~ /^[+\-]?\d+(\.\d+)?$/ )
-                    ? ( $plugin->translate('Initial Value'), 'float' )
-                    : (    $options->{decimal_places}
-                        && $options->{decimal_places} !~ /^[+\-]?\d+$/ )
-                    ? (
-                    $plugin->translate('Number of decimal places'), 'integer'
-                    )
-                    : '';
-                if ($option_label) {
-                    $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field value must be [_3].',
-                        $label || $field_label,
-                        $option_label, $type
-                    );
-                }
-            }
-            elsif ( $type eq 'url' ) {
-                my $initial_value = $options->{initial_value};
-                if ( length($initial_value) > 255 ) {
-                    $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
-                        $label || $field_label,
-                        'Initial Value',
-                        '1024'
-                    );
-                }
-                elsif (defined $initial_value
-                    && $initial_value ne ''
-                    && !MT::Util::is_url($initial_value) )
-                {
-                    $err_msg = MT->translate(
-                        '[_1]\'s "[_2]" field is invalid.',
-                        $label || $field_label,
-                        'Initial Value'
-                    );
-                }
-            }
-            elsif ($type eq 'date_and_time'
-                || $type eq 'date'
-                || $type eq 'time' )
-            {
-                my $date = $options->{initial_date} || '19700101';
-                my $time = $options->{initial_time} || '000000';
-                my $ts   = "$date $time";
-                if ( !MT::Util::is_valid_date($ts) ) {
-                    $err_msg = $plugin->translate( "Invalid [_1]: '[_2]'",
-                        $label || $field_label, $ts );
-                }
-            }
-            elsif ($type eq 'select_box'
-                || $type eq 'checkbox'
-                || $type eq 'radio' )
-            {
-                my $initial_value       = $options->{initial_value};
-                my $exist_initial_value = $initial_value eq '' ? 1 : 0;
-                my $values_count        = 0;
-                while ( $options->{ 'values_key_' . ( $values_count + 1 ) } )
-                {
-                    $exist_initial_value++
-                        if ( $initial_value ne ''
-                        && $initial_value eq
-                        $options->{ 'values_value_' . ( $values_count + 1 ) }
-                        );
-                    $values_count++;
-                }
-                if ( $values_count == 0 ) {
-                    $err_msg
-                        = $plugin->translate(
-                        "[_1]'s \"Values\" field is required.",
-                        $label || $field_label );
-                }
-                elsif ( !$exist_initial_value ) {
-                    $err_msg = $plugin->translate(
-                        "[_1]'s \"Initial Value\" field value does not exist in \"Values\" field.",
-                        $label || $field_label
-                    );
-                }
-                if ( !$err_msg && $type ne 'radio' ) {
-                    my $min = $options->{min};
-                    my $max = $options->{max};
-                    if ( $options->{multiple} ) {
-                        if ( !$min ) {
-                            $err_msg = $plugin->translate(
-                                "[_1]'s \"Min\" field is required when \"Multiple\" is checked.",
-                                $label || $field_label
-                            );
-                        }
-                        elsif ( !$max ) {
-                            $err_msg = $plugin->translate(
-                                "[_1]'s \"Max\" field is required when \"Multiple\" is checked.",
-                                $label || $field_label
-                            );
-                        }
-                        elsif ( $max > $values_count ) {
-                            $err_msg = $plugin->translate(
-                                "[_1]'s \"Max\" field should be lower than number of \"Values\" field.",
-                                $label || $field_label
-                            );
-                        }
-                        elsif ( $min !~ /^[+]?\d+$/ ) {
-                            $err_msg = $plugin->translate(
-                                '[_1]\'s "[_2]" field must be a positive integer.',
-                                $label || $field_label,
-                                'Min'
-                            );
-                        }
-                        elsif ( $max !~ /^[+]?\d+$/ ) {
-                            $err_msg = $plugin->translate(
-                                '[_1]\'s "[_2]" field must be a positive integer.',
-                                $label || $field_label,
-                                'Max'
-                            );
-                        }
-                        elsif ( $max && $max < $min ) {
-                            $err_msg = $plugin->translate(
-                                '[_1]\'s "[_2]" field must be [_3] than "[_4]" field.',
-                                $label || $field_label,
-                                'Min',
-                                'lower',
-                                'Max'
-                            );
-                        }
-                        elsif ( $min && $min > $max ) {
-                            $err_msg = $plugin->translate(
-                                '[_1]\'s "[_2]" field must be [_3] than "[_4]" field.',
-                                $label || $field_label,
-                                'Max',
-                                'higher',
-                                'Min'
-                            );
-                        }
-                    }
-                }
-            }
-            elsif ($type eq 'content_type'
-                || $type eq 'asset'
-                || $type eq 'audio'
-                || $type eq 'video'
-                || $type eq 'image'
-                || $type eq 'category'
-                || $type eq 'tag' )
-            {
-                if ( $options->{multiple} ) {
-                    my $min = $options->{min};
-                    my $max = $options->{max};
-                    if ( !$min ) {
-                        $err_msg = $plugin->translate(
-                            "[_1]'s \"Min\" field is required when \"Multiple\" is checked.",
-                            $label || $field_label
-                        );
-                    }
-                    elsif ( !$max ) {
-                        $err_msg = $plugin->translate(
-                            "[_1]'s \"Max\" field is required when \"Multiple\" is checked.",
-                            $label || $field_label
-                        );
-                    }
-                    elsif ($min !~ /^[+\-]?\d+$/
-                        || ( $min < 0 || $min > 255 )
-                        || ( $max && $max < $min ) )
-                    {
-                        $err_msg = $plugin->translate(
-                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                            $label || $field_label, 'Min', '0', '255'
-                        );
-                    }
-                    elsif ($max !~ /^[+\-]?\d+$/
-                        || ( $max < 1 || $max > 255 )
-                        || ( $min && $min > $max ) )
-                    {
-                        $err_msg = $plugin->translate(
-                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                            $label || $field_label, 'Max', '1', '255'
-                        );
-                    }
-                }
-
-                if ( $type eq 'content_type' && $content_type->id ) {
-                    if ($content_type->is_parent_content_type_id(
-                            $options->{content_type}
-                        )
-                        )
-                    {
-                        $err_msg = $plugin->translate(
-                            q{[_1]'s "[_2]" field must not be parent content type.},
-                            $label || $field_label,
-                            'Content Type'
-                        );
-                    }
-                }
-            }
-            elsif ( $err_msg && $type eq 'tag' && $options->{initial_value} )
-            {
-                my $initial_value = $options->{initial_value};
-                if ( length($initial_value) > 255 ) {
-                    $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
-                        $label || $field_label,
-                        'Initial Value',
-                        '255'
-                    );
-                }
-            }
-            elsif ( $type eq 'table' ) {
-                my ($initial_rows, $initial_columns,
-                    $row_headers,  $column_headers
-                    )
-                    = map { $options->{$_} }
-                    qw/ initial_rows initial_columns row_headers column_headers /;
-                if ($initial_rows
-                    && ( $initial_rows !~ /^[+\-]?\d+$/
-                        || ( $initial_rows < 0 || $initial_rows > 255 ) )
-                    )
-                {
-                    $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                        $label || $field_label,
-                        'Initial Rows',
-                        '0',
-                        '255'
-                    );
-                }
-                elsif (
-                    $initial_columns
-                    && ( $initial_columns !~ /^[+\-]?\d+$/
-                        || ( $initial_columns < 0 || $initial_columns > 255 )
-                    )
-                    )
-                {
-                    $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                        $label || $field_label,
-                        'Initial Columns',
-                        '0',
-                        '255'
-                    );
-                }
-                elsif ( $row_headers && length($row_headers) > 255 ) {
-                    $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
-                        $label || $field_label,
-                        'Row Headers',
-                        '255'
-                    );
-                }
-                elsif ( $column_headers && length($column_headers) > 255 ) {
-                    $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
-                        $label || $field_label,
-                        'Column Headers',
-                        '255'
-                    );
-                }
-            }
-        }
+        $err_msg
+            = _validate_content_field_type_options( $app, $content_type,
+            $option_list->{fields}{$field_id}, $err_msg );
 
         if ( $type eq 'date_and_time' ) {
             my $date = delete $options->{initial_date};
@@ -900,6 +530,378 @@ sub save_cfg_content_type {
             }
         )
     );
+}
+
+sub _validate_content_field_type_options {
+    my ( $app, $content_type, $field, $err_msg ) = @_;
+
+    my $plugin  = $app->component("ContentType");
+    my $type    = $field->{type};
+    my $options = $field->{options};
+    my $label   = $options->{label};
+
+    unless ($err_msg) {
+        my $content_field_types = $app->registry('content_field_types');
+        my $field_label         = $content_field_types->{$type}{label};
+        if ( !$options->{label} ) {
+            $err_msg
+                = $plugin->translate( '[_1]\'s "[_2]" field is required.',
+                $field_label, 'Label' );
+        }
+        elsif ( length( $options->{label} ) > 255 ) {
+            $err_msg = $plugin->translate(
+                '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
+                $field_label, 'Label', '255'
+            );
+        }
+        elsif ( length( $options->{hint} ) > 1024 ) {
+            $err_msg = $plugin->translate(
+                '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
+                $field_label, 'Hint', '1024'
+            );
+        }
+        elsif ( $type eq 'single_line_text' ) {
+            my $min_length    = $options->{min_length};
+            my $max_length    = $options->{max_length};
+            my $initial_value = $options->{initial_value};
+            if ($min_length) {
+                if ( $min_length !~ /^[+\-]?\d+$/
+                    || ( $min_length < 0 || $min_length > 1024 ) )
+                {
+                    $err_msg = $plugin->translate(
+                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                        $label || $field_label,
+                        'Min Length',
+                        '0',
+                        '1024'
+                    );
+                }
+            }
+            if ( !$err_msg && $max_length ) {
+                if ( $max_length !~ /^[+\-]?\d+$/
+                    || ( $max_length < 1 || $max_length > 1024 ) )
+                {
+                    $err_msg = $plugin->translate(
+                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                        $label || $field_label,
+                        'Max Length',
+                        '1',
+                        '1024'
+                    );
+                }
+            }
+            if ( !$err_msg && $initial_value ) {
+                if ( length($initial_value) > 1024 ) {
+                    $err_msg = $plugin->translate(
+                        '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
+                        $field_label, 'Initial Value', '1024'
+                    );
+                }
+            }
+        }
+        elsif ( $type eq 'integer' ) {
+            my $min_value     = $options->{min_value};
+            my $max_value     = $options->{max_value};
+            my $initial_value = $options->{initial_value};
+            if ($min_value) {
+                if (   $min_value !~ /^[+\-]?\d+$/
+                    || $min_value < -2147483648
+                    || $min_value > 2147483647 )
+                {
+                    $err_msg = $plugin->translate(
+                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                        $label || $field_label,
+                        'Min Value',
+                        '-2147483648',
+                        '2147483647'
+                    );
+                }
+            }
+            elsif ( !$err_msg && $max_value ) {
+                if (   $max_value !~ /^[+\-]?\d+$/
+                    || $max_value < -2147483648
+                    || $max_value > 2147483647
+                    || ( $min_value && $min_value > $max_value ) )
+                {
+                    $err_msg = $plugin->translate(
+                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                        $label || $field_label,
+                        'Max Value',
+                        $min_value || '-2147483648',
+                        '2147483647'
+                    );
+                }
+            }
+            elsif ( !$err_msg && $initial_value ) {
+                if (   $initial_value !~ /^[+\-]?\d+$/
+                    || $initial_value < -2147483648
+                    || $initial_value > 2147483647 )
+                {
+                    $err_msg = $plugin->translate(
+                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                        $label || $field_label,
+                        'Initial Value',
+                        '-2147483648',
+                        $min_value || '2147483647'
+                    );
+                }
+            }
+        }
+        elsif ( $type eq 'float' ) {
+            my ( $option_label, $type )
+                = (    $options->{min_value}
+                    && $options->{min_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
+                ? ( $plugin->translate('Min Value'), 'float' )
+                : (    $options->{max_value}
+                    && $options->{max_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
+                ? ( $plugin->translate('Max Value'), 'float' )
+                : (    $options->{initial_value}
+                    && $options->{initial_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
+                ? ( $plugin->translate('Initial Value'), 'float' )
+                : (    $options->{decimal_places}
+                    && $options->{decimal_places} !~ /^[+\-]?\d+$/ )
+                ? ( $plugin->translate('Number of decimal places'),
+                'integer' )
+                : '';
+            if ($option_label) {
+                $err_msg = $plugin->translate(
+                    '[_1]\'s "[_2]" field value must be [_3].',
+                    $label || $field_label,
+                    $option_label, $type
+                );
+            }
+        }
+        elsif ( $type eq 'url' ) {
+            my $initial_value = $options->{initial_value};
+            if ( length($initial_value) > 255 ) {
+                $err_msg = $plugin->translate(
+                    '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
+                    $label || $field_label,
+                    'Initial Value',
+                    '1024'
+                );
+            }
+            elsif (defined $initial_value
+                && $initial_value ne ''
+                && !MT::Util::is_url($initial_value) )
+            {
+                $err_msg = MT->translate(
+                    '[_1]\'s "[_2]" field is invalid.',
+                    $label || $field_label,
+                    'Initial Value'
+                );
+            }
+        }
+        elsif ($type eq 'date_and_time'
+            || $type eq 'date'
+            || $type eq 'time' )
+        {
+            my $date = $options->{initial_date} || '19700101';
+            my $time = $options->{initial_time} || '000000';
+            my $ts   = "$date $time";
+            if ( !MT::Util::is_valid_date($ts) ) {
+                $err_msg = $plugin->translate( "Invalid [_1]: '[_2]'",
+                    $label || $field_label, $ts );
+            }
+        }
+        elsif ($type eq 'select_box'
+            || $type eq 'checkbox'
+            || $type eq 'radio' )
+        {
+            my $initial_value       = $options->{initial_value};
+            my $exist_initial_value = $initial_value eq '' ? 1 : 0;
+            my $values_count        = 0;
+            while ( $options->{ 'values_key_' . ( $values_count + 1 ) } ) {
+                $exist_initial_value++
+                    if ( $initial_value ne ''
+                    && $initial_value eq
+                    $options->{ 'values_value_' . ( $values_count + 1 ) } );
+                $values_count++;
+            }
+            if ( $values_count == 0 ) {
+                $err_msg
+                    = $plugin->translate(
+                    "[_1]'s \"Values\" field is required.",
+                    $label || $field_label );
+            }
+            elsif ( !$exist_initial_value ) {
+                $err_msg = $plugin->translate(
+                    "[_1]'s \"Initial Value\" field value does not exist in \"Values\" field.",
+                    $label || $field_label
+                );
+            }
+            if ( !$err_msg && $type ne 'radio' ) {
+                my $min = $options->{min};
+                my $max = $options->{max};
+                if ( $options->{multiple} ) {
+                    if ( !$min ) {
+                        $err_msg = $plugin->translate(
+                            "[_1]'s \"Min\" field is required when \"Multiple\" is checked.",
+                            $label || $field_label
+                        );
+                    }
+                    elsif ( !$max ) {
+                        $err_msg = $plugin->translate(
+                            "[_1]'s \"Max\" field is required when \"Multiple\" is checked.",
+                            $label || $field_label
+                        );
+                    }
+                    elsif ( $max > $values_count ) {
+                        $err_msg = $plugin->translate(
+                            "[_1]'s \"Max\" field should be lower than number of \"Values\" field.",
+                            $label || $field_label
+                        );
+                    }
+                    elsif ( $min !~ /^[+]?\d+$/ ) {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field must be a positive integer.',
+                            $label || $field_label,
+                            'Min'
+                        );
+                    }
+                    elsif ( $max !~ /^[+]?\d+$/ ) {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field must be a positive integer.',
+                            $label || $field_label,
+                            'Max'
+                        );
+                    }
+                    elsif ( $max && $max < $min ) {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field must be [_3] than "[_4]" field.',
+                            $label || $field_label, 'Min', 'lower', 'Max'
+                        );
+                    }
+                    elsif ( $min && $min > $max ) {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field must be [_3] than "[_4]" field.',
+                            $label || $field_label, 'Max', 'higher', 'Min'
+                        );
+                    }
+                }
+            }
+        }
+        elsif ($type eq 'content_type'
+            || $type eq 'asset'
+            || $type eq 'audio'
+            || $type eq 'video'
+            || $type eq 'image'
+            || $type eq 'category'
+            || $type eq 'tag' )
+        {
+            if ( $options->{multiple} ) {
+                my $min = $options->{min};
+                my $max = $options->{max};
+                if ( !$min ) {
+                    $err_msg = $plugin->translate(
+                        "[_1]'s \"Min\" field is required when \"Multiple\" is checked.",
+                        $label || $field_label
+                    );
+                }
+                elsif ( !$max ) {
+                    $err_msg = $plugin->translate(
+                        "[_1]'s \"Max\" field is required when \"Multiple\" is checked.",
+                        $label || $field_label
+                    );
+                }
+                elsif ($min !~ /^[+\-]?\d+$/
+                    || ( $min < 0 || $min > 255 )
+                    || ( $max && $max < $min ) )
+                {
+                    $err_msg = $plugin->translate(
+                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                        $label || $field_label, 'Min', '0', '255'
+                    );
+                }
+                elsif ($max !~ /^[+\-]?\d+$/
+                    || ( $max < 1 || $max > 255 )
+                    || ( $min && $min > $max ) )
+                {
+                    $err_msg = $plugin->translate(
+                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                        $label || $field_label, 'Max', '1', '255'
+                    );
+                }
+            }
+
+            if ( $type eq 'content_type' && $content_type->id ) {
+                if ($content_type->is_parent_content_type_id(
+                        $options->{content_type}
+                    )
+                    )
+                {
+                    $err_msg = $plugin->translate(
+                        q{[_1]'s "[_2]" field must not be parent content type.},
+                        $label || $field_label,
+                        'Content Type'
+                    );
+                }
+            }
+        }
+        elsif ( $err_msg && $type eq 'tag' && $options->{initial_value} ) {
+            my $initial_value = $options->{initial_value};
+            if ( length($initial_value) > 255 ) {
+                $err_msg = $plugin->translate(
+                    '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
+                    $label || $field_label,
+                    'Initial Value',
+                    '255'
+                );
+            }
+        }
+        elsif ( $type eq 'table' ) {
+            my ($initial_rows, $initial_columns,
+                $row_headers,  $column_headers
+                )
+                = map { $options->{$_} }
+                qw/ initial_rows initial_columns row_headers column_headers /;
+            if ($initial_rows
+                && ( $initial_rows !~ /^[+\-]?\d+$/
+                    || ( $initial_rows < 0 || $initial_rows > 255 ) )
+                )
+            {
+                $err_msg = $plugin->translate(
+                    '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                    $label || $field_label,
+                    'Initial Rows',
+                    '0',
+                    '255'
+                );
+            }
+            elsif (
+                $initial_columns
+                && ( $initial_columns !~ /^[+\-]?\d+$/
+                    || ( $initial_columns < 0 || $initial_columns > 255 ) )
+                )
+            {
+                $err_msg = $plugin->translate(
+                    '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                    $label || $field_label,
+                    'Initial Columns',
+                    '0',
+                    '255'
+                );
+            }
+            elsif ( $row_headers && length($row_headers) > 255 ) {
+                $err_msg = $plugin->translate(
+                    '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
+                    $label || $field_label,
+                    'Row Headers',
+                    '255'
+                );
+            }
+            elsif ( $column_headers && length($column_headers) > 255 ) {
+                $err_msg = $plugin->translate(
+                    '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
+                    $label || $field_label,
+                    'Column Headers',
+                    '255'
+                );
+            }
+        }
+    }
+
+    return $err_msg;
 }
 
 sub select_list_content_type {
