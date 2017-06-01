@@ -465,6 +465,26 @@ sub _hdlr_site_content_count {
     return $ctx->count_format( $count, $args );
 }
 
+sub _hdlr_author_content_count {
+    my ( $ctx, $args, $cond ) = @_;
+    my $author = $ctx->stash('author');
+    unless ($author) {
+        my $cd = $ctx->stash('content');
+        $author = $cd->author if $cd;
+    }
+    return $ctx->_no_author_error() unless $author;
+
+    my ( %terms, %args );
+    $ctx->set_blog_load_context( $args, \%terms, \%args )
+        or return $ctx->error( $ctx->errstr );
+    _set_content_type_load_context( $ctx, $args, $cond, \%terms, \%args )
+        or return $ctx->error( MT->translate('invalid parameter') );
+    $terms{author_id} = $author->id;
+    $terms{status}    = MT::Entry::RELEASE();
+    my $count = MT::ContentData->count( \%terms, \%args );
+    return $ctx->count_format( $count, $args );
+}
+
 sub _check_and_invoke {
     my ( $tag, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
