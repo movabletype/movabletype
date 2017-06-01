@@ -85,6 +85,18 @@ subtest 'unique_id' => sub {
     my $unique_id = $cd->unique_id;
     $cd->unique_id( $unique_id . '456' );
     is( $cd->unique_id, $unique_id, 'cannot set unique_id' );
+
+    my $cd2 = MT::ContentData->new;
+    $cd2->set_values(
+        {   author_id       => 1,
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct->id,
+        }
+    );
+    $cd2->save or die $cd2->errstr;
+    $cd2->column( 'unique_id', $cd->unique_id );
+    $cd2->save;
+    ok( $cd2->errstr, 'unique_id column must be unique' );
 };
 
 subtest 'identifier' => sub {

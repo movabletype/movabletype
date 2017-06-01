@@ -24,7 +24,7 @@ __PACKAGE__->install_properties(
             'unique_id'   => 'string(40) not null',
             'fields'      => 'blob',
         },
-        indexes     => { blog_id => 1 },
+        indexes     => { blog_id => 1, unique_id => { unique => 1 } },
         datasource  => 'content_type',
         primary_key => 'id',
         audit       => 1,

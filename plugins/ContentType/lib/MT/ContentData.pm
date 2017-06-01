@@ -72,13 +72,13 @@ __PACKAGE__->install_properties(
             },
             'revision' => 'integer meta',
         },
-        indexes     => { content_type_id => 1 },
+        indexes     => { content_type_id => 1, unique_id => { unique => 1 } },
         defaults    => { status          => 0 },
         datasource  => 'cd',
         primary_key => 'id',
         audit       => 1,
         meta        => 1,
-        child_of    => ['MT::ContentType'],
+        child_of => ['MT::ContentType'],
     }
 );
 

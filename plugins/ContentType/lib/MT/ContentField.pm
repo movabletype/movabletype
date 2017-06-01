@@ -28,7 +28,11 @@ __PACKAGE__->install_properties(
             'related_cat_list_id'     => 'integer',
             'unique_id'               => 'string(40) not null',
         },
-        indexes     => { blog_id => 1, content_type_id => 1 },
+        indexes => {
+            blog_id         => 1,
+            content_type_id => 1,
+            unique_id       => { unique => 1 },
+        },
         datasource  => 'cf',
         primary_key => 'id',
         audit       => 1,
