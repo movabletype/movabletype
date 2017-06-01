@@ -144,9 +144,9 @@ SKIP:
 
 __END__
 
-=== MT::ContentBlogURL
+=== MT::ContentSiteURL
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentBlogURL></mt:Contents>
+<mt:Contents blog_id="1" name="test content data"><mt:ContentSiteURL></mt:Contents>
 --- expected
 https://example.com/~abby/
 

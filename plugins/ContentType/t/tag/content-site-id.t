@@ -141,9 +141,15 @@ SKIP:
 
 __END__
 
-=== MT::ContentBlogName
+=== MT::ContentSiteID
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentBlogName></mt:Contents>
+<mt:Contents blog_id="1" name="test content data"><mt:ContentSiteID></mt:Contents>
 --- expected
-First Website
+1
+
+=== MT::ContentSiteID with pad="1"
+--- template
+<mt:Contents blog_id="1" name="test content data"><mt:ContentSiteID pad="1"></mt:Contents>
+--- expected
+000001
 

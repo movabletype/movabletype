@@ -343,19 +343,19 @@ sub _hdlr_content_author_userpic_url {
     _check_and_invoke( 'entryauthoruserpicurl', @_ );
 }
 
-sub _hdlr_content_blog_description {
+sub _hdlr_content_site_description {
     _check_and_invoke( 'entryblogdescription', @_ );
 }
 
-sub _hdlr_content_blog_id {
+sub _hdlr_content_site_id {
     _check_and_invoke( 'entryblogid', @_ );
 }
 
-sub _hdlr_content_blog_name {
+sub _hdlr_content_site_name {
     _check_and_invoke( 'entryblogname', @_ );
 }
 
-sub _hdlr_content_blog_url {
+sub _hdlr_content_site_url {
     _check_and_invoke( 'entryblogurl', @_ );
 }
 

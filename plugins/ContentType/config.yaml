@@ -144,7 +144,6 @@ tags:
     function:
         AuthorContentCount:
         AuthorContentsCount:
-        BlogContentCount:
         ContentAuthorDisplayName: $ContentType::ContentType::Tags::_hdlr_content_author_display_name
         ContentAuthorEmail: $ContentType::ContentType::Tags::_hdlr_content_author_email
         ContentAuthorID: $ContentType::ContentType::Tags::_hdlr_content_author_id
@@ -153,10 +152,10 @@ tags:
         ContentAuthorUsername: $ContentType::ContentType::Tags::_hdlr_content_author_username
         ContentAuthorUserpic: $ContentType::ContentType::Tags::_hdlr_content_author_userpic
         ContentAuthorUserpicURL: $ContentType::ContentType::Tags::_hdlr_content_author_userpic_url
-        ContentBlogDescription: $ContentType::ContentType::Tags::_hdlr_content_blog_description
-        ContentBlogID: $ContentType::ContentType::Tags::_hdlr_content_blog_id
-        ContentBlogName: $ContentType::ContentType::Tags::_hdlr_content_blog_name
-        ContentBlogURL: $ContentType::ContentType::Tags::_hdlr_content_blog_url
+        ContentSiteDescription: $ContentType::ContentType::Tags::_hdlr_content_site_description
+        ContentSiteID: $ContentType::ContentType::Tags::_hdlr_content_site_id
+        ContentSiteName: $ContentType::ContentType::Tags::_hdlr_content_site_name
+        ContentSiteURL: $ContentType::ContentType::Tags::_hdlr_content_site_url
         ContentCreatedDate: $ContentType::ContentType::Tags::_hdlr_content_created_date
         ContentDate: $ContentType::ContentType::Tags::_hdlr_content_date
         ContentModifiedDate: $ContentType::ContentType::Tags::_hdlr_content_modified_date
@@ -168,7 +167,7 @@ tags:
         ContentUniqueID: $ContentType::ContentType::Tags::_hdlr_content_unique_id
         ContentUnpublishedDate: $ContentType::ContentType::Tags::_hdlr_content_unpublished_date
         ContentsCount:
-        WebsiteContentCount:
+        SiteContentCount:
         # Content: $ContentType::ContentType::Tags::_hdlr_content
         # Entity: $ContentType::ContentType::Tags::_hdlr_entity
 

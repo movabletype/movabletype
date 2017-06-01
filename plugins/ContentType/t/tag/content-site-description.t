@@ -144,9 +144,9 @@ SKIP:
 
 __END__
 
-=== MT::ContentBlogDescription
+=== MT::ContentSiteDescription
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentBlogDescription></mt:Contents>
+<mt:Contents blog_id="1" name="test content data"><mt:ContentSiteDescription></mt:Contents>
 --- expected
 test description
 
