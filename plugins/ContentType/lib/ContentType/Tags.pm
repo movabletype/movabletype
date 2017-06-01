@@ -486,7 +486,7 @@ sub _hdlr_author_content_count {
 }
 
 sub _hdlr_author_has_content {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $author = $ctx->stash('author')
         or return $ctx->_no_author_error();
 
@@ -499,6 +499,35 @@ sub _hdlr_author_has_content {
         or return $ctx->error( MT->translate('invalid parameter') );
 
     MT::ContentData->exist( \%terms );
+}
+
+sub _hdlr_content_next {
+    _hdlr_content_nextprev( 'next', @_ );
+}
+
+sub _hdlr_content_previous {
+    _hdlr_content_nextprev( 'previous', @_ );
+}
+
+sub _hdlr_content_nextprev {
+    my ( $meth, $ctx, $args, $cond ) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    my $terms = { status => MT::Entry::RELEASE() };
+    $terms->{by_author} = 1 if $args->{by_author};
+
+    # $terms->{by_category} = 1 if $args->{by_category} || $args->{by_folder};
+    my $content_data = $cd->$meth($terms);
+    my $res          = '';
+    if ($content_data) {
+        my $builder = $ctx->stash('builder');
+        local $ctx->{__stash}->{content} = $content_data;
+        local $ctx->{current_timestamp} = $content_data->authored_on;
+        my $out = $builder->build( $ctx, $ctx->stash('tokens'), $cond );
+        return $ctx->error( $builder->errstr ) unless defined $out;
+        $res .= $out;
+    }
+    $res;
 }
 
 sub _check_and_invoke {

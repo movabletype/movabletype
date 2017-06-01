@@ -404,5 +404,78 @@ sub edit_link {
     );
 }
 
+sub next {
+    my $self = shift;
+    my ($opt) = @_;
+    my $terms;
+    if ( ref $opt ) {
+        $terms = $opt;
+    }
+    else {
+        $terms = $opt ? { status => MT::Entry::RELEASE() } : {};
+    }
+    $self->_nextprev( 'next', $terms );
+}
+
+sub previous {
+    my $self = shift;
+    my ($opt) = @_;
+    my $terms;
+    if ( ref $opt ) {
+        $terms = $opt;
+    }
+    else {
+        $terms = $opt ? { status => MT::Entry::RELEASE() } : {};
+    }
+    $self->_nextprev( 'previous', $terms );
+}
+
+sub _nextprev {
+    my $obj   = shift;
+    my $class = ref($obj);
+    my ( $direction, $terms ) = @_;
+    return undef unless ( $direction eq 'next' || $direction eq 'previous' );
+    my $next = $direction eq 'next';
+
+    $terms->{author_id} = $obj->author_id if delete $terms->{by_author};
+
+    # if ( delete $terms->{by_category} ) {
+    #     if ( my $c = $obj->category ) {
+    #         $terms->{category_id} = $c->id;
+    #     }
+    #     else {
+    #         return undef;
+    #     }
+    # }
+
+    my $label = '__' . $direction;
+    $label .= ':author=' . $terms->{author_id} if exists $terms->{author_id};
+
+    # $label .= ':category=' . $terms->{category_id}
+    #     if exists $terms->{category_id};
+    return $obj->{$label} if $obj->{$label};
+
+    my $args = {};
+
+    # if ( my $cat_id = delete $terms->{category_id} ) {
+    #     my $join = MT::Placement->join_on( 'entry_id',
+    #         { category_id => $cat_id } );
+    #     $args->{join} = $join;
+    # }
+
+    my $o = $obj->nextprev(
+        direction => $direction,
+        terms     => {
+            blog_id         => $obj->blog_id,
+            content_type_id => $obj->content_type_id,
+            %$terms,
+        },
+        args => $args,
+        by   => 'modified_on',
+    );
+    MT::Util::weaken( $obj->{$label} = $o ) if $o;
+    return $o;
+}
+
 1;
 

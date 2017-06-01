@@ -133,8 +133,8 @@ tags:
         ContentAuthorUserpicAsset: $ContentType::ContentType::Tags::_hdlr_content_author_userpic_asset
         ContentField:
         ContentFields:
-        ContentNext:
-        ContentPrevious:
+        ContentNext: $ContentType::ContentType::Tags::_hdlr_content_next
+        ContentPrevious: $ContentType::ContentType::Tags::_hdlr_content_previous
         Contents: $ContentType::ContentType::Tags::_hdlr_contents
         ContentsFooter: $Core::MT::Template::Context::slurp
         ContentsHeader: $Core::MT::Template::Context::slurp
