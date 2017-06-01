@@ -6,10 +6,6 @@ use utf8;
 
 use lib qw(lib t/lib);
 
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
 use IPC::Open2;
 
 use Test::Base;

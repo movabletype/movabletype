@@ -6,10 +6,6 @@ use utf8;
 
 use lib qw(lib t/lib);
 
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
 use IPC::Open2;
 
 use Test::Base;
@@ -162,6 +158,6 @@ __END__
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentAuthorUserpic></mt:Contents>
 --- expected
-<img src="/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="25" height="25" alt="" />
+<img src="/cgi-bin/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="25" height="25" alt="" />
 
 
