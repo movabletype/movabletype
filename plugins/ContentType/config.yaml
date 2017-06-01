@@ -127,14 +127,24 @@ content_actions: $ContentType::ContentType::ListProperties::make_content_actions
 list_actions: $ContentType::ContentType::ListProperties::make_list_actions
 tags:
     block:
+        AuthorHasContent?:
         ContentAuthorUserpicAsset: $ContentType::ContentType::Tags::_hdlr_content_author_userpic_asset
+        ContentField:
+        ContentFields:
+        ContentNext:
+        ContentPrevious:
         Contents: $ContentType::ContentType::Tags::_hdlr_contents
         ContentsFooter: $Core::MT::Template::Context::slurp
         ContentsHeader: $Core::MT::Template::Context::slurp
-        ContentAssets: $ContentType::ContentType::Tags::_hdlr_assets
-        ContentTags: $ContentType::ContentType::Tags::_hdlr_content_tags
-        ContentCategories: $ContentType::ContentType::Tags::_hdlr_content_categories
+        # ContentAssets: $ContentType::ContentType::Tags::_hdlr_assets
+        # ContentTags: $ContentType::ContentType::Tags::_hdlr_content_tags
+        # ContentCategories: $ContentType::ContentType::Tags::_hdlr_content_categories
     function:
+        AuthorContentCount:
+        AuthorContentsCount:
+        BlogContentCount:
+        CalendarIfContents:
+        CalendarIfNoContents:
         ContentAuthorDisplayName: $ContentType::ContentType::Tags::_hdlr_content_author_display_name
         ContentAuthorEmail: $ContentType::ContentType::Tags::_hdlr_content_author_email
         ContentAuthorID: $ContentType::ContentType::Tags::_hdlr_content_author_id
@@ -152,12 +162,15 @@ tags:
         ContentModifiedDate: $ContentType::ContentType::Tags::_hdlr_content_modified_date
         ContentID: $ContentType::ContentType::Tags::_hdlr_content_id
         ContentIdentifier: $ContentType::ContentType::Tags::_hdlr_content_identifier
+        ContentPermalink:
         ContentStatus: $ContentType::ContentType::Tags::_hdlr_content_status
         ContentTitle: $ContentType::ContentType::Tags::_hdlr_content_title
         ContentUniqueID: $ContentType::ContentType::Tags::_hdlr_content_unique_id
         ContentUnpublishedDate: $ContentType::ContentType::Tags::_hdlr_content_unpublished_date
-        Content: $ContentType::ContentType::Tags::_hdlr_content
-        Entity: $ContentType::ContentType::Tags::_hdlr_entity
+        ContentsCount:
+        WebsiteContentCount:
+        # Content: $ContentType::ContentType::Tags::_hdlr_content
+        # Entity: $ContentType::ContentType::Tags::_hdlr_entity
 
 content_field_types:
     content_type:
