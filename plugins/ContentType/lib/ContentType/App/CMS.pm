@@ -599,76 +599,80 @@ sub _validate_content_field_type_options {
                 }
             }
         }
-        elsif ( $type eq 'integer' ) {
-            my $min_value     = $options->{min_value};
-            my $max_value     = $options->{max_value};
-            my $initial_value = $options->{initial_value};
-            if ($min_value) {
-                if (   $min_value !~ /^[+\-]?\d+$/
-                    || $min_value < -2147483648
-                    || $min_value > 2147483647 )
-                {
-                    $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                        $label || $field_label,
-                        'Min Value',
-                        '-2147483648',
-                        '2147483647'
-                    );
+        elsif ( $type eq 'number' ) {
+            if ( !$options->{decimal_places} ) {
+                my $min_value     = $options->{min_value};
+                my $max_value     = $options->{max_value};
+                my $initial_value = $options->{initial_value};
+                if ($min_value) {
+                    if (   $min_value !~ /^[+\-]?\d+$/
+                        || $min_value < -2147483648
+                        || $min_value > 2147483647 )
+                    {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                            $label || $field_label,
+                            'Min Value',
+                            '-2147483648',
+                            '2147483647'
+                        );
+                    }
+                }
+                elsif ( !$err_msg && $max_value ) {
+                    if (   $max_value !~ /^[+\-]?\d+$/
+                        || $max_value < -2147483648
+                        || $max_value > 2147483647
+                        || ( $min_value && $min_value > $max_value ) )
+                    {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                            $label || $field_label,
+                            'Max Value',
+                            $min_value || '-2147483648',
+                            '2147483647'
+                        );
+                    }
+                }
+                elsif ( !$err_msg && $initial_value ) {
+                    if (   $initial_value !~ /^[+\-]?\d+$/
+                        || $initial_value < -2147483648
+                        || $initial_value > 2147483647 )
+                    {
+                        $err_msg = $plugin->translate(
+                            '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                            $label || $field_label,
+                            'Initial Value',
+                            '-2147483648',
+                            $min_value || '2147483647'
+                        );
+                    }
                 }
             }
-            elsif ( !$err_msg && $max_value ) {
-                if (   $max_value !~ /^[+\-]?\d+$/
-                    || $max_value < -2147483648
-                    || $max_value > 2147483647
-                    || ( $min_value && $min_value > $max_value ) )
-                {
+            else {
+                my ( $option_label, $type )
+                    = (    $options->{min_value}
+                        && $options->{min_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
+                    ? ( $plugin->translate('Min Value'), 'float' )
+                    : (    $options->{max_value}
+                        && $options->{max_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
+                    ? ( $plugin->translate('Max Value'), 'float' )
+                    : (    $options->{initial_value}
+                        && $options->{initial_value}
+                        !~ /^[+\-]?\d+(\.\d+)?$/ )
+                    ? ( $plugin->translate('Initial Value'), 'float' )
+                    : (    $options->{decimal_places}
+                        && $options->{decimal_places} !~ /^[+\-]?\d+$/ )
+                    ? (
+                    $plugin->translate('Number of decimal places'), 'integer'
+                    )
+                    : '';
+                if ($option_label) {
                     $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
+                        '[_1]\'s "[_2]" field value must be [_3].',
                         $label || $field_label,
-                        'Max Value',
-                        $min_value || '-2147483648',
-                        '2147483647'
+                        $option_label, $type
                     );
                 }
-            }
-            elsif ( !$err_msg && $initial_value ) {
-                if (   $initial_value !~ /^[+\-]?\d+$/
-                    || $initial_value < -2147483648
-                    || $initial_value > 2147483647 )
-                {
-                    $err_msg = $plugin->translate(
-                        '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
-                        $label || $field_label,
-                        'Initial Value',
-                        '-2147483648',
-                        $min_value || '2147483647'
-                    );
-                }
-            }
-        }
-        elsif ( $type eq 'float' ) {
-            my ( $option_label, $type )
-                = (    $options->{min_value}
-                    && $options->{min_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
-                ? ( $plugin->translate('Min Value'), 'float' )
-                : (    $options->{max_value}
-                    && $options->{max_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
-                ? ( $plugin->translate('Max Value'), 'float' )
-                : (    $options->{initial_value}
-                    && $options->{initial_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
-                ? ( $plugin->translate('Initial Value'), 'float' )
-                : (    $options->{decimal_places}
-                    && $options->{decimal_places} !~ /^[+\-]?\d+$/ )
-                ? ( $plugin->translate('Number of decimal places'),
-                'integer' )
-                : '';
-            if ($option_label) {
-                $err_msg = $plugin->translate(
-                    '[_1]\'s "[_2]" field value must be [_3].',
-                    $label || $field_label,
-                    $option_label, $type
-                );
             }
         }
         elsif ( $type eq 'url' ) {

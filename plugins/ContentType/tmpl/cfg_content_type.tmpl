@@ -177,30 +177,30 @@
 
   </mtapp:settinggroup>
 
-  <mtapp:settinggroup id="integer-options">
+  <mtapp:settinggroup id="number-options">
 
     <mtapp:setting
-       id="integer-label"
+       id="number-label"
        label="<__trans phrase="Label">">
-      <input type="text" name="integer-label" id="integer-label" class="text med" />
+      <input type="text" name="number-label" id="number-label" class="text med" />
     </mtapp:setting>
 
     <mtapp:setting
-       id="integer-hint"
+       id="number-hint"
        label="<__trans phrase="Hint">">
-      <input type="text" name="integer-hint" id="integer-hint" class="text med" />
+      <input type="text" name="number-hint" id="number-hint" class="text med" />
     </mtapp:setting>
 
     <mtapp:setting
-       id="integer-required"
+       id="number-required"
        label="<__trans phrase="Required">">
-      <input type="checkbox" name="integer-required" id="integer-required" /> <label for="integer-required"><__trans phrase="Required or not."></label>
+      <input type="checkbox" name="number-required" id="number-required" /> <label for="number-required"><__trans phrase="Required or not."></label>
     </mtapp:setting>
 
     <mtapp:setting
-       id="integer-display"
+       id="number-display"
        label="<__trans phrase="Display">">
-      <select name="integer-display" id="integer-display">
+      <select name="number-display" id="number-display">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -209,70 +209,21 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="integer-value_range"
+       id="number-value_range"
        label="<__trans phrase="Value range">">
-      <__trans phrase="More than [_1] and less than [_2]" params="<input type="text" name="integer-min_value" id="integer-min_value" class="text num" />%%<input type="text" name="integer-max_value" id="integer-max_value" class="text num" />">
+      <__trans phrase="More than [_1] and less than [_2]" params="<input type="text" name="number-min_value" id="number-min_value" class="text num" />%%<input type="text" name="number-max_value" id="number-max_value" class="text num" />">
     </mtapp:setting>
 
     <mtapp:setting
-       id="integer-initial_value"
-       label="<__trans phrase="Initial Value">">
-      <input type="text" name="integer-initial_value" id="integer-initial_value" class="text num" />
-    </mtapp:setting>
-
-    <div id="save-block" class="icon-save icon-left">
-      <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
-    </div>
-
-  </mtapp:settinggroup>
-
-  <mtapp:settinggroup id="float-options">
-
-    <mtapp:setting
-       id="float-label"
-       label="<__trans phrase="Label">">
-      <input type="text" name="float-label" id="float-label" class="text med" />
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="float-hint"
-       label="<__trans phrase="Hint">">
-      <input type="text" name="float-hint" id="float-hint" class="text med" />
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="float-required"
-       label="<__trans phrase="Required">">
-      <input type="checkbox" name="float-required" id="float-required" /> <label for="float-required"><__trans phrase="Required or not."></label>
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="float-display"
-       label="<__trans phrase="Display">">
-      <select name="float-display" id="float-display">
-        <option value="force"><__trans phrase="Force"></option>
-        <option value="default" selected="selected"><__trans phrase="Default"></option>
-        <option value="optional"><__trans phrase="Optional"></option>
-        <option value="none"><__trans phrase="None"></option>
-      </select>
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="float-value_range"
-       label="<__trans phrase="Value range">">
-      <__trans phrase="More than [_1] and less than [_2]" params="<input type="text" name="float-min_value" id="float-min_value" class="text num" />%%<input type="text" name="float-max_value" id="float-max_value" class="text num" />">
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="float-decimal_places"
+       id="number-decimal_places"
        label="<__trans phrase="Number of decimal places">">
-      <input type="text" name="float-decimal_places" id="float-decimal_places" class="text num" />
+      <input type="text" name="number-decimal_places" id="number-decimal_places" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
-       id="float-initial_value"
+       id="number-initial_value"
        label="<__trans phrase="Initial Value">">
-      <input type="text" name="float-initial_value" id="float-initial_value" class="text num" />
+      <input type="text" name="number-initial_value" id="number-initial_value" class="text num" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
