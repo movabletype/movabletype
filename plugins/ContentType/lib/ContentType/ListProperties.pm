@@ -419,14 +419,16 @@ sub make_title_html {
 
 sub make_content_actions {
     my $props = {
-        content_type => {
-            new => {
-                label => 'Create new content type',
-                order => 100,
-                mode  => 'cfg_content_type',
-                class => 'icon-create',
-            }
-        },
+        # TODO: FogBugz:114491
+        # Hide create link temporarily and will fix in new UI.
+        # content_type => {
+        #     new => {
+        #         label => 'Create new content type',
+        #         order => 100,
+        #         mode  => 'cfg_content_type',
+        #         class => 'icon-create',
+        #     }
+        # },
     };
 
     my @content_types = MT::ContentType->load();
