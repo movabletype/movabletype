@@ -128,6 +128,8 @@ list_actions: $ContentType::ContentType::ListProperties::make_list_actions
 tags:
     block:
         AuthorHasContent?:
+        CalendarIfContents:
+        CalendarIfNoContents:
         ContentAuthorUserpicAsset: $ContentType::ContentType::Tags::_hdlr_content_author_userpic_asset
         ContentField:
         ContentFields:
@@ -143,8 +145,6 @@ tags:
         AuthorContentCount:
         AuthorContentsCount:
         BlogContentCount:
-        CalendarIfContents:
-        CalendarIfNoContents:
         ContentAuthorDisplayName: $ContentType::ContentType::Tags::_hdlr_content_author_display_name
         ContentAuthorEmail: $ContentType::ContentType::Tags::_hdlr_content_author_email
         ContentAuthorID: $ContentType::ContentType::Tags::_hdlr_content_author_id
