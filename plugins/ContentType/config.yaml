@@ -143,7 +143,6 @@ tags:
         # ContentCategories: $ContentType::ContentType::Tags::_hdlr_content_categories
     function:
         AuthorContentCount:
-        AuthorContentsCount:
         ContentAuthorDisplayName: $ContentType::ContentType::Tags::_hdlr_content_author_display_name
         ContentAuthorEmail: $ContentType::ContentType::Tags::_hdlr_content_author_email
         ContentAuthorID: $ContentType::ContentType::Tags::_hdlr_content_author_id
