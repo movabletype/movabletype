@@ -554,7 +554,7 @@ sub _validate_content_field_type_options {
                 $field_label, 'Label', '255'
             );
         }
-        elsif ( length( $options->{hint} ) > 1024 ) {
+        elsif ( length( $options->{description} ) > 1024 ) {
             $err_msg = $plugin->translate(
                 '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                 $field_label, 'Description', '1024'
