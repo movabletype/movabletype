@@ -29,8 +29,6 @@ use_ok('MT::ContentFieldType::Common');
 use_ok('MT::ContentFieldType::ContentType');
 use_ok('MT::ContentFieldType::Date');
 use_ok('MT::ContentFieldType::DateTime');
-use_ok('MT::ContentFieldType::Float');
-use_ok('MT::ContentFieldType::Integer');
 use_ok('MT::ContentFieldType::List');
 use_ok('MT::ContentFieldType::Number');
 use_ok('MT::ContentFieldType::Radio');
