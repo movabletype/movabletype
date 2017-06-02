@@ -109,9 +109,15 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="single_line_text-length"
-       label="<__trans phrase="Length">">
-      <__trans phrase="More than [_1] characters and less than [_2] characters" params="<input type="text" name="single_line_text-min_length" id="single_line_text-min_length" class="text num" />%%<input type="text" name="single_line_text-max_length" id="single_line_text-max_length" class="text num" />">
+       id="select_box-min_length"
+       label="<__trans phrase="Min Length">">
+      <input type="text" name="select_box-min_length" id="select_box-min_length" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="select_box-max_length"
+       label="<__trans phrase="Max Length">">
+      <input type="text" name="select_box-max_length" id="select_box-max_length" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -224,9 +230,15 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="number-value_range"
-       label="<__trans phrase="Value range">">
-      <__trans phrase="More than [_1] and less than [_2]" params="<input type="text" name="number-min_value" id="number-min_value" class="text num" />%%<input type="text" name="number-max_value" id="number-max_value" class="text num" />">
+       id="number-min_value"
+       label="<__trans phrase="Min Length">">
+      <input type="text" name="number-min_value" id="number-min_value" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="number-max_value"
+       label="<__trans phrase="Max Length">">
+      <input type="text" name="number-max_value" id="number-max_value" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -489,9 +501,19 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="select_box-range"
-       label="<__trans phrase="Selecting range">">
-      <__trans phrase="More than [_1] selects and less than [_2] selects" params="<input type="text" name="select_box-min" id="select_box-min" class="text num" />%%<input type="text" name="select_box-max" id="select_box-max" class="text num" />">
+       id="select_box-min"
+       label="<__trans phrase="Min">"
+       show_hint="1"
+       hint="Minimum number of selections.">
+      <input type="text" name="select_box-min" id="select_box-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="select_box-max"
+       label="<__trans phrase="Max">"
+       show_hint="1"
+       hint="Maximum number of selections.">
+      <input type="text" name="select_box-max" id="select_box-max" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -604,9 +626,19 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="checkbox-range"
-       label="<__trans phrase="Selecting range">">
-      <__trans phrase="More than [_1] selects and less than [_2] selects" params="<input type="text" name="checkbox-min" id="checkbox-min" class="text num" />%%<input type="text" name="checkbox-max" id="checkbox-max" class="text num" />">
+       id="select_box-min"
+       label="<__trans phrase="Min">"
+       show_hint="1"
+       hint="Minimum number of selections.">
+      <input type="text" name="select_box-min" id="select_box-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="select_box-max"
+       label="<__trans phrase="Max">"
+       show_hint="1"
+       hint="Maximum number of selections.">
+      <input type="text" name="select_box-max" id="select_box-max" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -718,9 +750,19 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="content_type-range"
-       label="<__trans phrase="Selecting range">">
-      <__trans phrase="More than [_1] selects and less than [_2] selects" params="<input type="text" name="content_type-min" id="content_type-min" class="text num" />%%<input type="text" name="content_type-max" id="content_type-max" class="text num" />">
+       id="select_box-min"
+       label="<__trans phrase="Min">"
+       show_hint="1"
+       hint="Minimum number of selections.">
+      <input type="text" name="select_box-min" id="select_box-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="select_box-max"
+       label="<__trans phrase="Max">"
+       show_hint="1"
+       hint="Maximum number of selections.">
+      <input type="text" name="select_box-max" id="select_box-max" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -792,9 +834,19 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="asset-range"
-       label="<__trans phrase="Selecting range">">
-      <__trans phrase="More than [_1] selects and less than [_2] selects" params="<input type="text" name="asset-min" id="asset-min" class="text num" />%%<input type="text" name="asset-max" id="asset-max" class="text num" />">
+       id="select_box-min"
+       label="<__trans phrase="Min">"
+       show_hint="1"
+       hint="Minimum number of selections.">
+      <input type="text" name="select_box-min" id="select_box-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="select_box-max"
+       label="<__trans phrase="Max">"
+       show_hint="1"
+       hint="Maximum number of selections.">
+      <input type="text" name="select_box-max" id="select_box-max" class="text num" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -856,9 +908,19 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="audio-range"
-       label="<__trans phrase="Selecting range">">
-      <__trans phrase="More than [_1] selects and less than [_2] selects" params="<input type="text" name="audio-min" id="audio-min" class="text num" />%%<input type="text" name="audio-max" id="audio-max" class="text num" />">
+       id="select_box-min"
+       label="<__trans phrase="Min">"
+       show_hint="1"
+       hint="Minimum number of selections.">
+      <input type="text" name="select_box-min" id="select_box-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="select_box-max"
+       label="<__trans phrase="Max">"
+       show_hint="1"
+       hint="Maximum number of selections.">
+      <input type="text" name="select_box-max" id="select_box-max" class="text num" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -920,9 +982,19 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="video-range"
-       label="<__trans phrase="Selecting range">">
-      <__trans phrase="More than [_1] selects and less than [_2] selects" params="<input type="text" name="video-min" id="video-min" class="text num" />%%<input type="text" name="video-max" id="video-max" class="text num" />">
+       id="select_box-min"
+       label="<__trans phrase="Min">"
+       show_hint="1"
+       hint="Minimum number of selections.">
+      <input type="text" name="select_box-min" id="select_box-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="select_box-max"
+       label="<__trans phrase="Max">"
+       show_hint="1"
+       hint="Maximum number of selections.">
+      <input type="text" name="select_box-max" id="select_box-max" class="text num" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -984,9 +1056,19 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="image-range"
-       label="<__trans phrase="Selecting range">">
-      <__trans phrase="More than [_1] selects and less than [_2] selects" params="<input type="text" name="image-min" id="image-min" class="text num" />%%<input type="text" name="image-max" id="image-max" class="text num" />">
+       id="select_box-min"
+       label="<__trans phrase="Min">"
+       show_hint="1"
+       hint="Minimum number of selections.">
+      <input type="text" name="select_box-min" id="select_box-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="select_box-max"
+       label="<__trans phrase="Max">"
+       show_hint="1"
+       hint="Maximum number of selections.">
+      <input type="text" name="select_box-max" id="select_box-max" class="text num" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -1044,9 +1126,19 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="category-range"
-       label="<__trans phrase="Selecting range">">
-      <__trans phrase="More than [_1] selects and less than [_2] selects" params="<input type="text" name="category-min" id="category-min" class="text num" />%%<input type="text" name="category-max" id="category-max" class="text num" />">
+       id="select_box-min"
+       label="<__trans phrase="Min">"
+       show_hint="1"
+       hint="Minimum number of selections.">
+      <input type="text" name="select_box-min" id="select_box-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="select_box-max"
+       label="<__trans phrase="Max">"
+       show_hint="1"
+       hint="Maximum number of selections.">
+      <input type="text" name="select_box-max" id="select_box-max" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -1114,9 +1206,19 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="tag-range"
-       label="<__trans phrase="Selecting range">">
-      <__trans phrase="More than [_1] selects and less than [_2] selects" params="<input type="text" name="tag-min" id="tag-min" class="text num" />%%<input type="text" name="tag-max" id="tag-max" class="text num" />">
+       id="select_box-min"
+       label="<__trans phrase="Min">"
+       show_hint="1"
+       hint="Minimum number of selections.">
+      <input type="text" name="select_box-min" id="select_box-min" class="text num" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="select_box-max"
+       label="<__trans phrase="Max">"
+       show_hint="1"
+       hint="Maximum number of selections.">
+      <input type="text" name="select_box-max" id="select_box-max" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
