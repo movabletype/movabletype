@@ -439,40 +439,87 @@ sub _nextprev {
 
     $terms->{author_id} = $obj->author_id if delete $terms->{by_author};
 
-    # if ( delete $terms->{by_category} ) {
-    #     if ( my $c = $obj->category ) {
-    #         $terms->{category_id} = $c->id;
-    #     }
-    #     else {
-    #         return undef;
-    #     }
-    # }
+    my ( $content_field_id, $category_id );
+    if ( my $by_category = delete $terms->{by_category} ) {
+        if ( ref $by_category eq 'HASH' ) {
+            $content_field_id = $by_category->{content_field_id};
+            $category_id => $by_category->{category_id};
+        }
+        $content_field_id ||= $obj->content_type->get_first_category_field_id
+            or return undef;
+        $category_id ||= ${ $obj->data->{$content_field_id} || [] }[0] || 0;
+    }
 
     my $label = '__' . $direction;
     $label .= ':author=' . $terms->{author_id} if exists $terms->{author_id};
-
-    # $label .= ':category=' . $terms->{category_id}
-    #     if exists $terms->{category_id};
+    $label
+        .= ":content_field_id=${content_field_id}:category_id=${category_id}"
+        if $content_field_id;
     return $obj->{$label} if $obj->{$label};
 
     my $args = {};
 
-    # if ( my $cat_id = delete $terms->{category_id} ) {
-    #     my $join = MT::Placement->join_on( 'entry_id',
-    #         { category_id => $cat_id } );
-    #     $args->{join} = $join;
-    # }
+    if ($content_field_id) {
+        my $join;
+        if ($category_id) {
+            $join = MT::ContentFieldIndex->join_on(
+                'content_data_id',
+                {   content_field_id => $content_field_id,
+                    value_integer    => $category_id,
+                },
+                { unique => 1 }
+            );
+        }
+        else {
+            $join = MT::ContentFieldIndex->join_on(
+                undef, undef,
+                {   type      => 'left',
+                    condition => {
+                        content_data_id  => \'= cd_id',
+                        content_field_id => $content_field_id,
+                        value_integer    => \'IS NULL',
+                    },
+                    unique => 1,
+                }
+            );
+        }
+        $args->{join} = $join;
+    }
 
-    my $o = $obj->nextprev(
-        direction => $direction,
-        terms     => {
-            blog_id         => $obj->blog_id,
-            content_type_id => $obj->content_type_id,
-            %$terms,
-        },
-        args => $args,
-        by   => 'modified_on',
-    );
+    my $by = delete $terms->{by_authored_on} ? 'authored_on' : 'modified_on';
+
+    my $o;
+    if ( $args->{join} ) {
+        my $desc = $next ? 'ASC' : 'DESC';
+        my $op   = $next ? '>'   : '<';
+
+        $terms->{blog_id}         = $obj->blog_id;
+        $terms->{content_type_id} = $obj->content_type_id;
+
+        $args->{sort} = [
+            { column => $by,  desc => $desc },
+            { column => 'id', desc => $desc },
+        ];
+
+        $o = MT::ContentData->load(
+            { %{$terms}, $by => { $op => $obj->$by } }, $args );
+        $o
+            ||= MT::ContentData->load(
+            { %{$terms}, $by => $obj->$by, id => { $op => $obj->id } },
+            $args );
+    }
+    else {
+        $o = $obj->nextprev(
+            direction => $direction,
+            terms     => {
+                blog_id         => $obj->blog_id,
+                content_type_id => $obj->content_type_id,
+                %$terms,
+            },
+            args => $args,
+            by   => $by,
+        );
+    }
     MT::Util::weaken( $obj->{$label} = $o ) if $o;
     return $o;
 }
