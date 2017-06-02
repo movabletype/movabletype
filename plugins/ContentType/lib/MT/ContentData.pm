@@ -455,6 +455,7 @@ sub _nextprev {
     $label
         .= ":content_field_id=${content_field_id}:category_id=${category_id}"
         if $content_field_id;
+    $label .= ':authored_on' if $terms->{by_authored_on};
     return $obj->{$label} if $obj->{$label};
 
     my $args = {};
