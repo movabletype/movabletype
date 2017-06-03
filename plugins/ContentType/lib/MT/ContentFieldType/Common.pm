@@ -287,5 +287,69 @@ sub single_select_options_multiple {
     [ map { +{ label => $_->{key}, value => $_->{value} } } @{$values} ];
 }
 
+sub tag_handler_datetime {
+    my ( $ctx, $args, $cond, $field, $value ) = @_;
+    my $tok     = $ctx->stash('tokens');
+    my $builder = $ctx->stash('builder');
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+
+    my $field_type = $field->{type};
+
+    local $args->{format} = '%x'
+        if $field_type eq 'date' && !_has_some_modifier($args);
+    local $args->{format} = '%X'
+        if $field_type eq 'time' && !_has_some_modifier($args);
+
+    local $args->{ts} = $value;
+
+    local $vars->{__raw__}   = $value;
+    local $vars->{__value__} = $ctx->build_date($args);
+
+    $builder->build( $ctx, $tok, {%$cond} );
+}
+
+sub tag_handler_multiple {
+    my ( $ctx, $args, $cond, $field, $value ) = @_;
+    my $tok     = $ctx->stash('tokens');
+    my $builder = $ctx->stash('builder');
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+    my $out = '';
+    my $i = 1;
+    my $glue = $args->{glue};
+
+    my $key_value_options = $field->{options}{values};
+    my %value_key_hash
+        = map { $_->{value} => $_->{key} } @{ $key_value_options || [] };
+
+    for my $v ( @{$value} ) {
+        local $vars->{__first__} = $i == 1;
+        local $vars->{__last__} = $i == scalar @{$value};
+        local $vars->{__odd__} = ( $i % 2 ) == 1;
+        local $vars->{__even__} = ( $i % 2 ) == 0;
+        local $vars->{__counter__} = $i;
+        local $vars->{__key__} = $value_key_hash{$v};
+        local $vars->{__value__} = $v;
+
+        my $res = $builder->build( $ctx, $tok, $cond );
+        return $ctx->error( $builder->errstr ) unless defined $res;
+
+        if ( $res ne '' ) {
+            $out .= $glue
+                if defined $glue && $i > 1 && length($out) && length($res);
+            $out .= $res;
+            $i++;
+        }
+    }
+
+    $out;
+}
+
+sub _has_some_modifier {
+    my $args = shift;
+    my %arg_keys = map { $_ => 1 } keys %{ $args || {} };
+    delete $arg_keys{$_} for qw( unique_id content_field_id label @ );
+    %arg_keys ? 1 : 0;
+}
+
 1;
 

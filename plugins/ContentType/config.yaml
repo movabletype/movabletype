@@ -132,8 +132,8 @@ tags:
         CalendarIfNoContents: $Core::MT::Template::Context::slurp
         ContentAuthorUserpicAsset: $ContentType::ContentType::Tags::_hdlr_content_author_userpic_asset
         ContentCalendar: $ContentType::ContentType::Tags::_hdlr_content_calendar
-        ContentField:
-        ContentFields:
+        ContentField: $ContentType::ContentType::Tags::_hdlr_content_field
+        ContentFields: $ContentType::ContentType::Tags::_hdlr_content_fields
         ContentNext: $ContentType::ContentType::Tags::_hdlr_content_next
         ContentPrevious: $ContentType::ContentType::Tags::_hdlr_content_previous
         Contents: $ContentType::ContentType::Tags::_hdlr_contents
@@ -284,6 +284,7 @@ content_field_types:
         field_html_params: $ContentType::MT::ContentFieldType::DateTime::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::DateTime::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_datetime
+        tag_handler: $ContentType::MT::ContentFieldType::Common::tag_handler_datetime
         list_props:
             date_and_time:
                 base: __virtual.date
@@ -306,6 +307,7 @@ content_field_types:
         field_html_params: $ContentType::MT::ContentFieldType::Date::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::Date::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_datetime
+        tag_handler: $ContentType::MT::ContentFieldType::Common::tag_handler_datetime
         list_props:
             date:
                 base: __virtual.date
@@ -328,6 +330,7 @@ content_field_types:
         field_html_params: $ContentType::MT::ContentFieldType::Time::field_html_params
         data_getter: $ContentType::MT::ContentFieldType::Time::data_getter
         ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_datetime
+        tag_handler: $ContentType::MT::ContentFieldType::Common::tag_handler_datetime
         list_props:
             time:
                 filter_tmpl: $ContentType::MT::ContentFieldType::Time::filter_tmpl
@@ -348,6 +351,7 @@ content_field_types:
         field_html: field_html/field_html_select_box.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::SelectBox::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_multiple
+        tag_handler: $ContentType::MT::ContentFieldType::Common::tag_handler_multiple
         list_props:
             select_box:
                 filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
@@ -371,6 +375,7 @@ content_field_types:
         field_html: field_html/field_html_radio.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Radio::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_values
+        tag_handler: $ContentType::MT::ContentFieldType::Common::tag_handler_multiple
         list_props:
             radio:
                 filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
@@ -392,6 +397,7 @@ content_field_types:
         field_html: field_html/field_html_checkbox.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Checkbox::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_multiple
+        tag_handler: $ContentType::MT::ContentFieldType::Common::tag_handler_multiple
         list_props:
             checkbox:
                 filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
@@ -797,6 +803,7 @@ content_field_types:
         data_getter: $ContentType::MT::ContentFieldType::Common::data_getter_multiple
         field_html: field_html/field_html_list.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::List::field_html_params
+        tag_handler: $ContentType::MT::ContentFieldType::List::tag_handler
         list_props:
             list:
                 base: __virtual.string
@@ -809,7 +816,6 @@ content_field_types:
             - hint
             - required
             - display
-            - bullet_or_numbered
     table:
         label: Table
         data_type: blob
@@ -823,6 +829,7 @@ content_field_types:
                 display: none
         field_html: field_html/field_html_table.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Table::field_html_params
+        tag_handler: $ContentType::MT::ContentFieldType::Table::tag_handler
         options:
             - label
             - hint

@@ -32,5 +32,14 @@ sub _create_empty_table {
     join "\n", ( map {$row} ( 1 .. $initial_rows ) );
 }
 
+sub tag_handler {
+    my ( $ctx, $args, $cond, $field, $value ) = @_;
+    my $tok     = $ctx->stash('tokens');
+    my $builder = $ctx->stash('builder');
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+    local $vars->{__value__} = "<table>\n${value}\n</table>";
+    $builder->build( $ctx, $tok, {%$cond} );
+}
+
 1;
 

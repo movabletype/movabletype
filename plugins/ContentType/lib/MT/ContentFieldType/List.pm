@@ -63,5 +63,36 @@ sub terms {
     }
 }
 
+sub tag_handler {
+    my ( $ctx, $args, $cond, $field, $value ) = @_;
+    my $tok     = $ctx->stash('tokens');
+    my $builder = $ctx->stash('builder');
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+    my $out     = '';
+    my $i       = 1;
+    my $glue    = $args->{glue};
+
+    for my $v ( @{$value} ) {
+        local $vars->{__first__}   = $i == 1;
+        local $vars->{__last__}    = $i == scalar @{$value};
+        local $vars->{__odd__}     = ( $i % 2 ) == 1;
+        local $vars->{__even__}    = ( $i % 2 ) == 0;
+        local $vars->{__counter__} = $i;
+        local $vars->{__value__}   = $v;
+
+        my $res = $builder->build( $ctx, $tok, $cond );
+        return $ctx->error( $builder->errstr ) unless defined $res;
+
+        if ( $res ne '' ) {
+            $out .= $glue
+                if defined $glue && $i > 1 && length($out) && length($res);
+            $out .= $res;
+            $i++;
+        }
+    }
+
+    $out;
+}
+
 1;
 

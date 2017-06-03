@@ -726,6 +726,60 @@ sub _hdlr_content_nextprev {
     $res;
 }
 
+sub _hdlr_content_field {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $content_type = $ctx->stash('content_type')
+        or return $ctx->_no_content_type_error;
+
+    my $field;
+    if ( my $unique_id = $args->{unique_id} ) {
+        ($field)
+            = grep { $_->{unique_id} eq $unique_id }
+            @{ $content_type->fields };
+    }
+    elsif ( my $content_field_id = $args->{content_field_id} ) {
+        ($field)
+            = grep { $_->{id} == $content_field_id }
+            @{ $content_type->fields };
+    }
+    elsif ( defined( my $label = $args->{label} ) ) {
+        ($field)
+            = grep { $_->{options}{label} eq $label }
+            @{ $content_type->fields };
+    }
+    $field ||= $ctx->stash('content_field')
+        or return $ctx->_no_content_field_error;
+
+    my $content_data = $ctx->stash('content')
+        or return $ctx->_no_content_error;
+    my $value = $content_data->data->{ $field->{id} };
+
+    my $field_type = MT->registry('content_field_types')->{ $field->{type} }
+        or return $ctx->error(
+        MT->translate('No Content Field Type could be found.') );
+
+    if ( my $tag_handler = $field_type->{tag_handler} ) {
+        if ( !ref $tag_handler ) {
+            $tag_handler = MT->handler_to_coderef($tag_handler);
+        }
+        return $ctx->error(
+            MT->translate( 'Invalid tag_handler of [_1].', $field->{type} ) )
+            unless ref $tag_handler eq 'CODE';
+        $tag_handler->( $ctx, $args, $cond, $field, $value );
+    }
+    else {
+        my $tok     = $ctx->stash('tokens');
+        my $builder = $ctx->stash('builder');
+        my $vars = $ctx->{__stash}{vars} ||= {};
+        local $vars->{__value__} = $value;
+        $builder->build( $ctx, $tok, {%$cond} );
+    }
+}
+
+sub _hdlr_content_fields {
+}
+
 sub _check_and_invoke {
     my ( $tag, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')

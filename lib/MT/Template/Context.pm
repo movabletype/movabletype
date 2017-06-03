@@ -889,6 +889,11 @@ sub _no_content_error {
     );
 }
 
+sub _no_content_field_error {
+    my ($ctx) = @_;
+    $ctx->error( MT->translate('No Content Field could be found.') );
+}
+
 sub _no_website_error {
     my ($ctx) = @_;
     my $tag_name = $ctx->stash('tag');
