@@ -523,12 +523,14 @@ sub set_content_type_load_context {
     else {
         my $blog_id = $args->{blog_id} || $ctx->stash('blog_id');
         my $ct_name = $args->{name};
-        return $ctx->_no_content_type_error
-            unless $blog_id && defined $ct_name && $ct_name ne '';
-        my $ct
-            = MT::ContentType->load(
-            { blog_id => $blog_id, name => $ct_name } )
-            or return $ctx->_no_content_type_error;
+        my $ct;
+        if ( $blog_id && defined $ct_name && $ct_name ne '' ) {
+            $ct
+                = MT::ContentType->load(
+                { blog_id => $blog_id, name => $ct_name } );
+        }
+        $ct ||= $ctx->stash('content_type')
+            or $ctx->_no_content_type_error;
         $cd_terms->{content_type_id} = $ct->id;
     }
     1;
