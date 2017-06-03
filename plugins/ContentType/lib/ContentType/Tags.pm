@@ -416,12 +416,14 @@ sub _hdlr_contents_count {
         $count = scalar @{$contents};
     }
     else {
+        my $by = $args->{by_modified_on} ? 'modified_on' : 'authored_on';
+
         my %terms = (
             blog_id => $ctx->stash('blog_id'),
             status  => MT::Entry::RELEASE(),
         );
         my %args = (
-            sort      => 'authored_on',
+            sort      => $by,
             direction => 'descend',
         );
 
@@ -435,8 +437,8 @@ sub _hdlr_contents_count {
                 $ctx->stash('blog_id') );
             my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
                 $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
-            $terms{authored_on} = [$ago];
-            $args{range_incl}{authored_on} = 1;
+            $terms{$by} = [$ago];
+            $args{range_incl}{$by} = 1;
         }
         elsif ( $blog && ( $limit = $blog->entries_on_index ) ) {
             $args->{lastn} = $limit;
