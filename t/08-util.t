@@ -431,9 +431,10 @@ is( days_in( 2, 2000 ), '29', 'days_in() (leap year)' );
 my $script_tag = "<script>alert('test');alert(\"test\");</script>";
 my $script_tag_encoded
     = '\\<s\\cript\\>alert(\\\'test\\\');alert(\\"test\\");\\<\\/s\\cript\\>';
-is( encode_js($script_tag),         $script_tag_encoded, 'encode_js()' );
-is( decode_js($script_tag_encoded), $script_tag,         'decode_js()' );
-is( encode_php("\\\$\"\n\r\t"),     "\\\\\$\"\n\r\t",    'encode_php()' );
+is( encode_js($script_tag), $script_tag_encoded, 'encode_js()' );
+is( 'description',          'description',       "encode_js('description')" );
+is( decode_js($script_tag_encoded), $script_tag,      'decode_js()' );
+is( encode_php("\\\$\"\n\r\t"),     "\\\\\$\"\n\r\t", 'encode_php()' );
 is( encode_php( "\\\$\"\n\r\t", 'qq' ),
     '\\\\\\$\\"\\n\\r\\t', 'encode_php() (qq)' );
 is( encode_php( "\\\$\"\n\r\t", 'here' ),

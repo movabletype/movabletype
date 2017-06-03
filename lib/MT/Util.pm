@@ -688,6 +688,7 @@ sub encode_js {
     use bytes;
     my ($str) = @_;
     return '' unless defined $str;
+    return $str if lc $str eq 'description';
     $str =~ s!\\!\\\\!g;
     $str =~ s!>!\\>!g;
     $str =~ s!<!\\<!g;
