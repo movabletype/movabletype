@@ -161,7 +161,7 @@ __END__
 --- template
 <mt:ContentsCount>
 --- error
-invalid parameter
+No Content Type could be found.
 
 === MT::ContentsCount in contents context
 --- template
@@ -192,5 +192,5 @@ invalid parameter
 --- template
 <mt:ContentsCount name="test content type 1" blog_id="2">
 --- error
-invalid parameter
+No Content Type could be found.
 

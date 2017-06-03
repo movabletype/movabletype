@@ -425,8 +425,8 @@ sub _hdlr_contents_count {
             direction => 'descend',
         );
 
-        _set_content_type_load_context( $ctx, $args, $cond, \%terms, \%args )
-            or return $ctx->error( MT->translate('invalid parameter') );
+        $ctx->set_content_type_load_context( $args, $cond, \%terms, \%args )
+            or return;
 
         my ( $days, $limit );
         my $blog = $ctx->stash('blog');
@@ -458,8 +458,8 @@ sub _hdlr_site_content_count {
     my ( %terms, %args );
     $ctx->set_blog_load_context( $args, \%terms, \%args )
         or return $ctx->error( $ctx->errstr );
-    _set_content_type_load_context( $ctx, $args, $cond, \%terms, \%args )
-        or return $ctx->error( MT->translate('invalid parameter') );
+    $ctx->set_content_type_load_context( $args, $cond, \%terms, \%args )
+        or return;
     $terms{status} = MT::Entry::RELEASE();
     my $count = MT::ContentData->count( \%terms, \%args );
     return $ctx->count_format( $count, $args );
@@ -477,8 +477,8 @@ sub _hdlr_author_content_count {
     my ( %terms, %args );
     $ctx->set_blog_load_context( $args, \%terms, \%args )
         or return $ctx->error( $ctx->errstr );
-    _set_content_type_load_context( $ctx, $args, $cond, \%terms, \%args )
-        or return $ctx->error( MT->translate('invalid parameter') );
+    $ctx->set_content_type_load_context( $args, $cond, \%terms, \%args )
+        or return;
     $terms{author_id} = $author->id;
     $terms{status}    = MT::Entry::RELEASE();
     my $count = MT::ContentData->count( \%terms, \%args );
@@ -495,8 +495,7 @@ sub _hdlr_author_has_content {
     $terms{author_id} = $author->id;
     $terms{status}    = MT::Entry::RELEASE();
 
-    _set_content_type_load_context( $ctx, $args, $cond, \%terms )
-        or return $ctx->error( MT->translate('invalid parameter') );
+    $ctx->set_content_type_load_context( $args, $cond, \%terms ) or return;
 
     MT::ContentData->exist( \%terms );
 }
@@ -550,27 +549,6 @@ sub _check_and_invoke {
         or return $ctx->_no_content_error();
     local $ctx->{__stash}{entry} = $cd;
     $ctx->invoke_handler( $tag, $args, $cond );
-}
-
-sub _set_content_type_load_context {
-    my ( $ctx, $args, $cond, $cd_terms, $cd_args ) = @_;
-    if ( my $content_type_id = $args->{content_type_id} ) {
-        $cd_terms->{content_type_id} = $content_type_id;
-    }
-    elsif ( my $ct_unique_id = $args->{ct_unique_id} ) {
-        $cd_terms->{ct_unique_id} = $ct_unique_id;
-    }
-    else {
-        my $blog_id = $args->{blog_id} || $ctx->stash('blog_id');
-        my $ct_name = $args->{name};
-        return unless $blog_id && defined $ct_name && $ct_name ne '';
-        my $ct
-            = MT::ContentType->load(
-            { blog_id => $blog_id, name => $ct_name } )
-            or return;
-        $cd_terms->{content_type_id} = $ct->id;
-    }
-    1;
 }
 
 1;

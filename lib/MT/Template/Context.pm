@@ -512,6 +512,28 @@ sub set_blog_load_context {
     1;
 }
 
+sub set_content_type_load_context {
+    my ( $ctx, $args, $cond, $cd_terms, $cd_args ) = @_;
+    if ( my $content_type_id = $args->{content_type_id} ) {
+        $cd_terms->{content_type_id} = $content_type_id;
+    }
+    elsif ( my $ct_unique_id = $args->{ct_unique_id} ) {
+        $cd_terms->{ct_unique_id} = $ct_unique_id;
+    }
+    else {
+        my $blog_id = $args->{blog_id} || $ctx->stash('blog_id');
+        my $ct_name = $args->{name};
+        return $ctx->_no_content_type_error
+            unless $blog_id && defined $ct_name && $ct_name ne '';
+        my $ct
+            = MT::ContentType->load(
+            { blog_id => $blog_id, name => $ct_name } )
+            or return $ctx->_no_content_type_error;
+        $cd_terms->{content_type_id} = $ct->id;
+    }
+    1;
+}
+
 sub compile_category_filter {
     my ( $ctx, $cat_expr, $cats, $param ) = @_;
 
@@ -845,6 +867,11 @@ sub _no_entry_error {
             $tag_name
         )
     );
+}
+
+sub _no_content_type_error {
+    my ($ctx) = @_;
+    $ctx->error( MT->translate('No Content Type could be found.') );
 }
 
 sub _no_content_error {
