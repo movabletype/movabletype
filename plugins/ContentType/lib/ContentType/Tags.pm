@@ -510,6 +510,187 @@ sub _hdlr_content_previous {
     _hdlr_content_nextprev( 'previous', @_ );
 }
 
+sub _hdlr_content_calendar {
+    my ( $ctx, $args, $cond ) = @_;
+    my $blog_id = $ctx->stash('blog_id');
+    my ($prefix);
+    my @ts = MT::Util::offset_time_list( time, $blog_id );
+    my $today = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
+    my $start_with_offset = 0;
+    if ( my $start_with = lc( $args->{weeks_start_with} || '' ) ) {
+        $start_with_offset = {
+            sun => 0,
+            mon => 6,
+            tue => 5,
+            wed => 4,
+            thu => 3,
+            fri => 2,
+            sat => 1,
+        }->{ substr( $start_with, 0, 3 ) };
+
+        if ( !defined($start_with_offset) ) {
+            return $ctx->error(
+                MT->translate(
+                    "Invalid weeks_start_with format: must be Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+                )
+            );
+        }
+    }
+    if ( $prefix = lc( $args->{month} || '' ) ) {
+        if ( $prefix eq 'this' ) {
+            my $ts = $ctx->{current_timestamp};
+            if ( not $ts and ( my $cd = $ctx->stash('content') ) ) {
+                $ts = $cd->authored_on();
+            }
+            if ( not $ts ) {
+                return $ctx->error(
+                    MT->translate(
+                        "You used an [_1] tag without a date context set up.",
+                        qq(<MTContentCalendar month="this">)
+                    )
+                );
+            }
+            $prefix = substr $ts, 0, 6;
+        }
+        elsif ( $prefix eq 'last' ) {
+            my $year  = substr $today, 0, 4;
+            my $month = substr $today, 4, 2;
+            if ( $month - 1 == 0 ) {
+                $prefix = $year - 1 . "12";
+            }
+            else {
+                $prefix = $year . $month - 1;
+            }
+        }
+        else {
+            return $ctx->error(
+                MT->translate("Invalid month format: must be YYYYMM") )
+                unless length($prefix) eq 6;
+        }
+    }
+    else {
+        $prefix = $today;
+    }
+    my ( $cat_name, $cat );
+    if ( defined $args->{category} ) {
+        $cat_name = $args->{category};
+        my $category_list_id = $args->{category_list_id};
+        $cat = MT::Category->load(
+            {   label   => $cat_name,
+                blog_id => $blog_id,
+                $category_list_id
+                ? ( category_list_id => $category_list_id )
+                : (),
+            }
+            )
+            or return $ctx->error(
+            MT->translate( "No such category '[_1]'", $cat_name ) );
+    }
+    else {
+        $cat_name = '';    ## For looking up cached calendars.
+    }
+    my $uncompiled     = $ctx->stash('uncompiled') || '';
+    my $r              = MT::Request->instance;
+    my $calendar_cache = $r->cache('content_calendar');
+    unless ($calendar_cache) {
+        $r->cache( 'content_calendar', $calendar_cache = {} );
+    }
+    if ( exists $calendar_cache->{ $blog_id . ":" . $prefix . $cat_name }
+        && $calendar_cache->{ $blog_id . ":" . $prefix . $cat_name }{'uc'} eq
+        $uncompiled )
+    {
+        return $calendar_cache->{ $blog_id . ":" . $prefix . $cat_name }
+            {output};
+    }
+    $today .= sprintf "%02d", $ts[3];
+    my ( $start, $end ) = MT::Util::start_end_month($prefix);
+    my ( $y, $m ) = unpack 'A4A2', $prefix;
+    my $days_in_month = MT::Util::days_in( $m, $y );
+    my $pad_start
+        = ( MT::Util::wday_from_ts( $y, $m, 1 ) + $start_with_offset ) % 7;
+    my $pad_end = 6 - (
+        (   MT::Util::wday_from_ts( $y, $m, $days_in_month )
+                + $start_with_offset
+        ) % 7
+    );
+    my $cd_terms = {};
+    my $cd_args  = {};
+    $ctx->set_content_type_load_context( $args, $cond, $cd_terms, $cd_args )
+        or return;
+    my $iter = MT::ContentData->load_iter(
+        {   blog_id     => $blog_id,
+            authored_on => [ $start, $end ],
+            status      => MT::Entry::RELEASE(),
+            %{$cd_terms},
+        },
+        {   range_incl => { authored_on => 1 },
+            'sort'     => 'authored_on',
+            direction  => 'ascend',
+            %{$cd_args},
+        }
+    );
+    my @left;
+    my $res          = '';
+    my $tokens       = $ctx->stash('tokens');
+    my $builder      = $ctx->stash('builder');
+    my $iter_drained = 0;
+
+    for my $day ( 1 .. $pad_start + $days_in_month + $pad_end ) {
+        my $is_padding = $day < $pad_start + 1
+            || $day > $pad_start + $days_in_month;
+        my ( $this_day, @cds ) = ('');
+        local (
+            $ctx->{__stash}{contents}, $ctx->{__stash}{calendar_day},
+            $ctx->{current_timestamp}, $ctx->{current_timestamp_end}
+        );
+        local $ctx->{__stash}{calendar_cell} = $day;
+        unless ($is_padding) {
+            $this_day = $prefix . sprintf( "%02d", $day - $pad_start );
+            my $no_loop = 0;
+            if (@left) {
+                if ( substr( $left[0]->authored_on, 0, 8 ) eq $this_day ) {
+                    @cds  = @left;
+                    @left = ();
+                }
+                else {
+                    $no_loop = 1;
+                }
+            }
+            unless ( $no_loop || $iter_drained ) {
+                while ( my $cd = $iter->() ) {
+                    next unless !$cat || $cd->is_in_category($cat);
+                    my $cd_day = substr $cd->authored_on, 0, 8;
+                    push( @left, $cd ), last
+                        unless $cd_day eq $this_day;
+                    push @cds, $cd;
+                }
+                $iter_drained++ unless @left;
+            }
+            $ctx->{__stash}{contents}     = \@cds;
+            $ctx->{current_timestamp}     = $this_day . '000000';
+            $ctx->{current_timestamp_end} = $this_day . '235959';
+            $ctx->{__stash}{calendar_day} = $day - $pad_start;
+        }
+        defined(
+            my $out = $builder->build(
+                $ctx, $tokens,
+                {   %$cond,
+                    CalendarWeekHeader   => ( $day - 1 ) % 7 == 0,
+                    CalendarWeekFooter   => $day % 7 == 0,
+                    CalendarIfContents   => !$is_padding && scalar @cds,
+                    CalendarIfNoContents => !$is_padding && !( scalar @cds ),
+                    CalendarIfToday      => ( $today eq $this_day ),
+                    CalendarIfBlank      => $is_padding,
+                }
+            )
+        ) or return $ctx->error( $builder->errstr );
+        $res .= $out;
+    }
+    $calendar_cache->{ $blog_id . ":" . $prefix . $cat_name }
+        = { output => $res, 'uc' => $uncompiled };
+    return $res;
+}
+
 sub _hdlr_content_nextprev {
     my ( $meth, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')

@@ -128,9 +128,10 @@ list_actions: $ContentType::ContentType::ListProperties::make_list_actions
 tags:
     block:
         AuthorHasContent?: $ContentType::ContentType::Tags::_hdlr_author_has_content
-        CalendarIfContents:
-        CalendarIfNoContents:
+        CalendarIfContents: $Core::MT::Template::Context::slurp
+        CalendarIfNoContents: $Core::MT::Template::Context::slurp
         ContentAuthorUserpicAsset: $ContentType::ContentType::Tags::_hdlr_content_author_userpic_asset
+        ContentCalendar: $ContentType::ContentType::Tags::_hdlr_content_calendar
         ContentField:
         ContentFields:
         ContentNext: $ContentType::ContentType::Tags::_hdlr_content_next
