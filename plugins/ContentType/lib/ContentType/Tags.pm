@@ -531,7 +531,7 @@ sub _hdlr_content_nextprev {
             $terms->{by_category} = 1;
         }
     }
-    $terms->{by_authored_on} = 1 if $args->{by_authored_on};
+    $terms->{by_modified_on} = 1 if $args->{by_modified_on};
     my $content_data = $cd->$meth($terms);
     my $res          = '';
     if ($content_data) {

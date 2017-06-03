@@ -106,12 +106,12 @@ $cd1->authored_on('201706011930');
 $cd1->modified_on('201706011930');
 $cd1->save or die $cd1->errstr;
 
-$cd2->authored_on('201705311930');
-$cd2->modified_on('201706021930');
+$cd2->authored_on('201706021930');
+$cd2->modified_on('201705311930');
 $cd2->save or die $cd2->errstr;
 
-$cd3->authored_on('201705301930');
-$cd3->modified_on('201706031930');
+$cd3->authored_on('201706031930');
+$cd3->modified_on('201705301930');
 $cd3->save or die $cd3->errstr;
 
 $vars->{cd1_id} = $cd1->id;
@@ -231,9 +231,9 @@ __END__
 --- expected
 [% cd1_id %]
 
-=== MT:ContentPrevious with by_authored_on="1"
+=== MT:ContentPrevious with by_modified_on="1"
 --- template
-<mt:Contents blog_id="1" name="test content type"><mt:ContentPrevious by_authored_on="1"><mt:ContentID></mt:ContentPrevious></mt:Contents>
+<mt:Contents blog_id="1" name="test content type"><mt:ContentPrevious by_modified_on="1"><mt:ContentID></mt:ContentPrevious></mt:Contents>
 --- expected
 [% cd2_id %][% cd3_id %]
 

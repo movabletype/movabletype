@@ -71,17 +71,15 @@ subtest 'no $opt or $opt = 1' => sub {
         content_type_id => $ct->id,
         status          => MT::Entry::RELEASE(),
     };
-    my $cd1 = MT::Test::Permission->make_content_data( %{$terms} );
-    my $cd2 = MT::Test::Permission->make_content_data( %{$terms},
-        status => MT::Entry::HOLD(), );
-    my $cd3 = MT::Test::Permission->make_content_data( %{$terms} );
-
-    $cd1->modified_on('20170602122000');
-    $cd1->save or die $cd1->errstr;
-    $cd2->modified_on('20170603122000');
-    $cd2->save or die $cd2->errstr;
-    $cd3->modified_on('20170604122000');
-    $cd3->save or die $cd3->errstr;
+    my $cd1 = MT::Test::Permission->make_content_data( %{$terms},
+        authored_on => '20170602122000' );
+    my $cd2 = MT::Test::Permission->make_content_data(
+        %{$terms},
+        authored_on => '20170603122000',
+        status      => MT::Entry::HOLD(),
+    );
+    my $cd3 = MT::Test::Permission->make_content_data( %{$terms},
+        authored_on => '20170604122000' );
 
     # no $opt
     is( $cd1->next->id,     $cd2->id, '$cd1->next is $cd2' );
@@ -94,10 +92,10 @@ subtest 'no $opt or $opt = 1' => sub {
     is( $cd3->previous(1)->id, $cd1->id, '$cd3->previous(1) is $cd1' );
 };
 
-subtest '$opt = { by_authored_on => 1 }' => sub {
+subtest '$opt = { by_modified_on => 1 }' => sub {
     MT::ContentData->remove_all;
     my $terms = {
-        title           => 'test by_authored_on',
+        title           => 'test by_modified_on',
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
@@ -106,18 +104,25 @@ subtest '$opt = { by_authored_on => 1 }' => sub {
     my $cd1 = MT::Test::Permission->make_content_data( %{$terms} );
     my $cd2 = MT::Test::Permission->make_content_data( %{$terms} );
 
-    $cd1->modified_on('20160602122000');
     $cd1->authored_on('20160602122000');
+    $cd1->modified_on('20160602122000');
     $cd1->save or die $cd1->errstr;
 
-    $cd2->modified_on('20160601122000');
-    $cd2->authored_on('20160603122000');
+    $cd2->authored_on('20160601122000');
+    $cd2->modified_on('20160603122000');
     $cd2->save or die $cd2->errstr;
 
-    is( $cd1->next( { by_authored_on => 1 } )->id,
-        $cd2->id, '$cd1->next({ by_authored_on => 1 }) is $cd2' );
-    is( $cd2->previous( { by_authored_on => 1 } )->id,
-        $cd1->id, '$cd2->previous({ by_authored_on => 1 }) is $cd1' );
+    ok( $cd1->next( { by_modified_on => 1 } ),
+        '$cd1->next({ by_modified_on => 1 }) exists'
+    );
+    is( $cd1->next( { by_modified_on => 1 } )->id,
+        $cd2->id, '$cd1->next({ by_modified_on => 1 }) is $cd2' );
+
+    ok( $cd2->previous( { by_modified_on => 1 } ),
+        '$cd2->previous({ by_modified_on }) exists'
+    );
+    is( $cd2->previous( { by_modified_on => 1 } )->id,
+        $cd1->id, '$cd2->previous({ by_modified_on => 1 }) is $cd1' );
 };
 
 subtest '$opt = { by_author => 1 }' => sub {
@@ -150,19 +155,21 @@ subtest '$opt = { by_category => 1 }' => sub {
         content_type_id => $ct->id,
         status          => MT::Entry::RELEASE(),
     };
-    my $cd1 = MT::Test::Permission->make_content_data( %{$terms},
-        data => { $cf->id => [ $category1->id ] } );
-    my $cd2 = MT::Test::Permission->make_content_data( %{$terms},
-        data => { $cf->id => [ $category2->id ] } );
-    my $cd3 = MT::Test::Permission->make_content_data( %{$terms},
-        data => { $cf->id => [ $category1->id ] } );
-
-    $cd1->modified_on('20170602134500');
-    $cd1->save or die $cd1->errstr;
-    $cd2->modified_on('20170603134500');
-    $cd2->save or die $cd2->errstr;
-    $cd3->modified_on('20170604134500');
-    $cd3->save or die $cd3->errstr;
+    my $cd1 = MT::Test::Permission->make_content_data(
+        %{$terms},
+        authored_on => '20170602134500',
+        data        => { $cf->id => [ $category1->id ] }
+    );
+    my $cd2 = MT::Test::Permission->make_content_data(
+        %{$terms},
+        authored_on => '20170603134500',
+        data        => { $cf->id => [ $category2->id ] }
+    );
+    my $cd3 = MT::Test::Permission->make_content_data(
+        %{$terms},
+        authored_on => '20170604134500',
+        data        => { $cf->id => [ $category1->id ] }
+    );
 
     is( $cd1->next( { by_category => 1 } )->id,
         $cd3->id, '$cd1->next is $cd3',
@@ -182,19 +189,21 @@ subtest '$opt = { by_category => { content_field_id => ??? } }' => sub {
         content_type_id => $ct->id,
         status          => MT::Entry::RELEASE(),
     };
-    my $cd1 = MT::Test::Permission->make_content_data( %{$terms},
-        data => { $cf->id => [ $category1->id ] } );
-    my $cd2 = MT::Test::Permission->make_content_data( %{$terms},
-        data => { $cf->id => [ $category2->id ] } );
-    my $cd3 = MT::Test::Permission->make_content_data( %{$terms},
-        data => { $cf->id => [ $category1->id ] } );
-
-    $cd1->modified_on('20170602134500');
-    $cd1->save or die $cd1->errstr;
-    $cd2->modified_on('20170603134500');
-    $cd2->save or die $cd2->errstr;
-    $cd3->modified_on('20170604134500');
-    $cd3->save or die $cd3->errstr;
+    my $cd1 = MT::Test::Permission->make_content_data(
+        %{$terms},
+        authored_on => '20170602134500',
+        data        => { $cf->id => [ $category1->id ] }
+    );
+    my $cd2 = MT::Test::Permission->make_content_data(
+        %{$terms},
+        authored_on => '20170603134500',
+        data        => { $cf->id => [ $category2->id ] }
+    );
+    my $cd3 = MT::Test::Permission->make_content_data(
+        %{$terms},
+        authored_on => '20170604134500',
+        data        => { $cf->id => [ $category1->id ] }
+    );
 
     is( $cd1->next( { by_category => { content_field_id => $cf->id } } )->id,
         $cd3->id,
@@ -218,19 +227,21 @@ subtest
         content_type_id => $ct->id,
         status          => MT::Entry::RELEASE(),
     };
-    my $cd1 = MT::Test::Permission->make_content_data( %{$terms},
-        data => { $cf->id => [ $category1->id ] } );
-    my $cd2 = MT::Test::Permission->make_content_data( %{$terms},
-        data => { $cf->id => [ $category2->id ] } );
-    my $cd3 = MT::Test::Permission->make_content_data( %{$terms},
-        data => { $cf->id => [ $category1->id ] } );
-
-    $cd1->modified_on('20170602134500');
-    $cd1->save or die $cd1->errstr;
-    $cd2->modified_on('20170603134500');
-    $cd2->save or die $cd2->errstr;
-    $cd3->modified_on('20170604134500');
-    $cd3->save or die $cd3->errstr;
+    my $cd1 = MT::Test::Permission->make_content_data(
+        %{$terms},
+        authored_on => '20170602134500',
+        data        => { $cf->id => [ $category1->id ] }
+    );
+    my $cd2 = MT::Test::Permission->make_content_data(
+        %{$terms},
+        authored_on => '20170603134500',
+        data        => { $cf->id => [ $category2->id ] }
+    );
+    my $cd3 = MT::Test::Permission->make_content_data(
+        %{$terms},
+        authored_on => '20170604134500',
+        data        => { $cf->id => [ $category1->id ] }
+    );
 
     ok( !$cd2->next(
             {   by_category => {

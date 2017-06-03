@@ -455,7 +455,7 @@ sub _nextprev {
     $label
         .= ":content_field_id=${content_field_id}:category_id=${category_id}"
         if $content_field_id;
-    $label .= ':authored_on' if $terms->{by_authored_on};
+    $label .= ':by_modified_on' if $terms->{by_modified_on};
     return $obj->{$label} if $obj->{$label};
 
     my $args = {};
@@ -487,7 +487,7 @@ sub _nextprev {
         $args->{join} = $join;
     }
 
-    my $by = delete $terms->{by_authored_on} ? 'authored_on' : 'modified_on';
+    my $by = delete $terms->{by_modified_on} ? 'modified_on' : 'authored_on';
 
     my $o;
     if ( $args->{join} ) {
