@@ -34,11 +34,64 @@ sub _create_empty_table {
 
 sub tag_handler {
     my ( $ctx, $args, $cond, $field, $value ) = @_;
+
+    my $table = _table_with_headers( $field, $value );
+    $table = "<table>\n${table}\n</table>";
+
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
     my $vars    = $ctx->{__stash}{vars} ||= {};
-    local $vars->{__value__} = "<table>\n${value}\n</table>";
+    local $vars->{__value__} = $table;
     $builder->build( $ctx, $tok, {%$cond} );
+}
+
+sub _table_with_headers {
+    my ( $field, $value ) = @_;
+    return $value unless $value;
+    my $table_with_row_headers = _add_row_headers_to_table( $field, $value );
+    my $column_headers = _create_column_headers( $field, $value );
+    $column_headers =~ s/^(<tr>)/$1<th><\/th>/;
+    "${column_headers}\n${table_with_row_headers}";
+}
+
+sub _create_column_headers {
+    my ( $field, $value ) = @_;
+    my @column_headers = split ',',
+        ( $field->{options}{column_headers} || '' )
+        or return '';
+    my $column_count = _get_column_count($value) or return '';
+    my $column_header = '';
+    for my $i ( 0 .. $column_count - 1 ) {
+        my $header = $column_headers[$i];
+        $header = '' unless defined $header;
+        $column_header .= "<th>${header}</th>";
+    }
+    "<tr>${column_header}</tr>";
+}
+
+sub _add_row_headers_to_table {
+    my ( $field, $value ) = @_;
+    return $value unless $value;
+    my @row_headers = split ',', ( $field->{options}{row_headers} || '' )
+        or return $value;
+    my @table_rows = split "\n", $value;
+    my @added_table_rows;
+    for ( my $i = 0; $i < @table_rows; $i++ ) {
+        my $row        = $table_rows[$i];
+        my $row_header = $row_headers[$i];
+        $row_header = '' unless defined $row_header;
+        $row_header = "<th>${row_header}</th>";
+        $row =~ s/^(<tr>)/$1$row_header/;
+        push @added_table_rows, $row;
+    }
+    join "\n", @added_table_rows;
+}
+
+sub _get_column_count {
+    my $value = shift or return 0;
+    my ($first_line) = split "\n", $value;
+    my @td_tag = $first_line =~ /<td>/g;
+    scalar @td_tag;
 }
 
 1;

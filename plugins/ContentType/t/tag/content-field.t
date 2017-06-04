@@ -442,8 +442,9 @@ aaa:bbb:ccc
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="table"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 <table>
-<tr><td>1</td><td></td><td></td></tr>
-<tr><td></td><td>2</td><td></td></tr>
-<tr><td></td><td></td><td>3</td></tr>
+<tr><th></th><th>1</th><th>2</th><th>3</th></tr>
+<tr><th>a</th><td>1</td><td></td><td></td></tr>
+<tr><th>b</th><td></td><td>2</td><td></td></tr>
+<tr><th>c</th><td></td><td></td><td>3</td></tr>
 </table>
 
