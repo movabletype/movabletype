@@ -117,6 +117,28 @@ my $cf_tag = MT::Test::Permission->make_content_field(
 );
 my $tag1 = MT::Test::Permission->make_tag( name => 'tag1' );
 my $tag2 = MT::Test::Permission->make_tag( name => 'tag2' );
+
+my $cf_category = MT::Test::Permission->make_content_field(
+    blog_id         => $ct->blog_id,
+    content_type_id => $ct->id,
+    name            => 'category',
+    type            => 'category',
+);
+my $category_list = MT::Test::Permission->make_category_list(
+    blog_id => $ct->blog_id,
+    name    => 'test category list',
+);
+my $category1 = MT::Test::Permission->make_category(
+    blog_id          => $category_list->blog_id,
+    category_list_id => $category_list->id,
+    label            => 'category1',
+);
+my $category2 = MT::Test::Permission->make_category(
+    blog_id          => $category_list->blog_id,
+    category_list_id => $category_list->id,
+    label            => 'category2',
+);
+
 my $fields = [
     {   id        => $cf_single_line_text->id,
         order     => 1,
@@ -234,6 +256,17 @@ my $fields = [
             min      => 1,
         },
     },
+    {   id      => $cf_category->id,
+        order   => 15,
+        type    => $cf_category->type,
+        options => {
+            label         => $cf_category->name,
+            category_list => $category_list->id,
+            multiple      => 1,
+            max           => 5,
+            min           => 1,
+        },
+    },
 ];
 $ct->fields($fields);
 $ct->save or die $ct->errstr;
@@ -257,7 +290,8 @@ my $cd = MT::Test::Permission->make_content_data(
         $cf_table->id            => "<tr><td>1</td><td></td><td></td></tr>\n"
             . "<tr><td></td><td>2</td><td></td></tr>\n"
             . "<tr><td></td><td></td><td>3</td></tr>",
-        $cf_tag->id => [ $tag2->id, $tag1->id ],
+        $cf_tag->id      => [ $tag2->id,      $tag1->id ],
+        $cf_category->id => [ $category2->id, $category1->id ],
     },
 );
 
@@ -362,87 +396,87 @@ SKIP:
 
 __END__
 
-=== MT::ContentField label="single line text"
+=== mt:ContentField label="single line text"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="single line text"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 test single line text
 
-=== MT::ContentField label="multi line text"
+=== mt:ContentField label="multi line text"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="multi line text"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 test multi line text
 aaaaa
 
-=== MT::ContentField label="number"
+=== mt:ContentField label="number"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="number"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 12345
 
-=== MT::ContentField label="url"
+=== mt:ContentField label="url"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="url"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 https://example.com/~abby
 
-=== MT::ContentField label="embed text"
+=== mt:ContentField label="embed text"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="embed text"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 abc
 def
 
-=== MT::ContentField label="date and time"
+=== mt:ContentField label="date and time"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date and time"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 June  3, 2017  6:05 PM
 
-=== MT::ContentField label="date and time" format_name="iso8601"
+=== mt:ContentField label="date and time" format_name="iso8601"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date and time" format_name="iso8601"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 2017-06-03T18:05:00+00:00
 
-=== MT::ContentField label="date"
+=== mt:ContentField label="date"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 June  5, 2017
 
-=== MT::ContentField label="date" format_name="iso8601"
+=== mt:ContentField label="date" format_name="iso8601"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date" format_name="iso8601"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 2017-06-05T00:00:00+00:00
 
-=== MT::ContentField label="time"
+=== mt:ContentField label="time"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="time"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 12:34 PM
 
-=== MT::ContentField label="time" format_name="iso8601"
+=== mt:ContentField label="time" format_name="iso8601"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="time" format_name="iso8601"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 1970-01-01T12:34:56+00:00
 
-=== MT::ContentField label="select box"
+=== mt:ContentField label="select box"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="select box"><mt:var name="__key__">,<mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 def,2
 
-=== MT::ContentField label="radio"
+=== mt:ContentField label="radio"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="radio"><mt:var name="__key__">,<mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 ghi,3
 
-=== MT::ContentField label="checkbox"
+=== mt:ContentField label="checkbox"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="checkbox"><mt:var name="__key__">,<mt:var name="__value__">
 </mt:ContentField></mt:Contents>
@@ -450,13 +484,13 @@ ghi,3
 abc,1
 ghi,3
 
-=== MT::ContentField label="list"
+=== mt:ContentField label="list"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="list" glue=":"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 aaa:bbb:ccc
 
-=== MT::ContentField label="table"
+=== mt:ContentField label="table"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="table"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
@@ -467,11 +501,19 @@ aaa:bbb:ccc
 <tr><th>c</th><td></td><td></td><td>3</td></tr>
 </table>
 
-=== MT::ContentField label="tag"
+=== mt:ContentField label="tag"
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="tag">
 <mt:TagName></mt:ContentField></mt:Contents>
 --- expected
 tag2
 tag1
+
+=== mt:ContentField label="category"
+--- template
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="category">
+<mt:CategoryLabel></mt:ContentField></mt:Contents>
+--- expected
+category2
+category1
 

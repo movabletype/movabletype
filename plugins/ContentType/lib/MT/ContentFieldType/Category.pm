@@ -7,6 +7,7 @@ use MT::CategoryList;
 use MT::ContentField;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
+use MT::Meta::Proxy;
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
@@ -186,6 +187,100 @@ sub terms {
         my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
         { id => $cd_ids };
     }
+}
+
+sub tag_handler {
+    my ( $ctx, $args, $cond, $field, $value ) = @_;
+
+    my $category_list_id = $field->{options}{category_list}
+        or return $ctx->error(
+        MT->translate('No category_list setting in content field type.') );
+
+    my $cat_terms = {
+        id               => $value,
+        category_list_id => $category_list_id,
+    };
+    my $cat_args = {};
+
+    if ( my $sort = $args->{sort} ) {
+        $cat_args->{sort} = $sort;
+        my $direction
+            = ( $args->{sort_order} || '' ) eq 'descend'
+            ? 'descend'
+            : 'ascend';
+        $cat_args->{direction} = $direction;
+    }
+
+    my $lastn = $args->{lastn};
+
+    my $iter = MT::Category->load_iter( $cat_terms, $cat_args );
+    my %categories;
+    my @ordered_categories;
+    if ( $args->{sort} ) {
+        while ( my $cat = $iter->() ) {
+            last
+                if ( defined $lastn && scalar @ordered_categories >= $lastn );
+            push @ordered_categories, $cat;
+        }
+    }
+    else {
+        while ( my $cat = $iter->() ) {
+            $categories{ $cat->id } = $cat;
+        }
+        my @category_ids;
+        if ( defined $lastn ) {
+            if ( $lastn > 0 ) {
+                if ( $lastn >= %categories ) {
+                    @category_ids = @{$value};
+                }
+                else {
+                    @category_ids = @{$value}[ 0 .. $lastn - 1 ];
+                }
+            }
+        }
+        else {
+            @category_ids = @{$value};
+        }
+        @ordered_categories = map { $categories{$_} } @category_ids;
+    }
+
+    my $res     = '';
+    my $builder = $ctx->stash('builder');
+    my $tokens  = $ctx->stash('tokens');
+    my $glue    = $args->{glue};
+    local $ctx->{inside_mt_categories} = 1;
+    my $i = 0;
+    my $vars = $ctx->{__stash}{vars} ||= {};
+    MT::Meta::Proxy->bulk_load_meta_objects( \@ordered_categories );
+
+    foreach my $cat (@ordered_categories) {
+        $i++;
+        my $last = $i == scalar(@ordered_categories);
+
+        local $ctx->{__stash}{category} = $cat;
+        local $ctx->{__stash}{entries};
+        local $ctx->{__stash}{contents};
+        local $ctx->{__stash}{category_count};
+        local $ctx->{__stash}{blog_id} = $cat->blog_id;
+        local $ctx->{__stash}{blog}    = MT::Blog->load( $cat->blog_id );
+        local $vars->{__first__}       = $i == 1;
+        local $vars->{__last__}        = $last;
+        local $vars->{__odd__}         = ( $i % 2 ) == 1;
+        local $vars->{__even__}        = ( $i % 2 ) == 0;
+        local $vars->{__counter__}     = $i;
+        defined(
+            my $out = $builder->build(
+                $ctx, $tokens,
+                {   %$cond,
+                    ArchiveListHeader => $i == 1,
+                    ArchiveListFooter => $last
+                }
+            )
+        ) or return $ctx->error( $builder->errstr );
+        $res .= $glue if defined $glue && length($res) && length($out);
+        $res .= $out;
+    }
+    $res;
 }
 
 1;

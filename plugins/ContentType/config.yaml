@@ -754,6 +754,7 @@ content_field_types:
         field_html: field_html/field_html_category.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Category::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Category::ss_validator
+        tag_handler: $ContentType::MT::ContentFieldType::Category::tag_handler
         list_props:
             category:
                 base: __virtual.string
