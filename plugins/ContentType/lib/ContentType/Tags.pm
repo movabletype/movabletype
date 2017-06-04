@@ -771,13 +771,47 @@ sub _hdlr_content_field {
     else {
         my $tok     = $ctx->stash('tokens');
         my $builder = $ctx->stash('builder');
-        my $vars = $ctx->{__stash}{vars} ||= {};
+        my $vars    = $ctx->{__stash}{vars} ||= {};
         local $vars->{__value__} = $value;
         $builder->build( $ctx, $tok, {%$cond} );
     }
 }
 
 sub _hdlr_content_fields {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $content_type = $ctx->stash('content_type')
+        or return $ctx->_no_content_type_error;
+
+    my @fields  = @{ $content_type->fields };
+    my $builder = $ctx->stash('builder');
+    my $tokens  = $ctx->stash('tokens');
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+    my $i       = 1;
+    my $res     = '';
+    for my $f (@fields) {
+        local $vars->{__first__}   = $i == 1;
+        local $vars->{__last__}    = $i == scalar @fields;
+        local $vars->{__odd__}     = ( $i % 2 ) == 1;
+        local $vars->{__even__}    = ( $i % 2 ) == 0;
+        local $vars->{__counter__} = $i;
+        $i++;
+
+        local $ctx->{__stash}{content_field} = $f;
+
+        local $vars->{content_field_id}        = $f->{id};
+        local $vars->{content_field_unique_id} = $f->{unique_id};
+        local $vars->{content_field_type}      = $f->{type};
+        local $vars->{content_field_order}     = $f->{order};
+        local $vars->{content_field_options}   = $f->{options};
+
+        my $out = $builder->build( $ctx, $tokens, {%$cond} );
+        return $ctx->error( $builder->errstr ) unless defined $out;
+
+        $res .= $out;
+    }
+
+    $res;
 }
 
 sub _check_and_invoke {
