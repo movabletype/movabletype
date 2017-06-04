@@ -141,5 +141,47 @@ sub _link {
     );
 }
 
+sub tag_handler {
+    my ( $ctx, $args, $cond, $field, $value ) = @_;
+
+    my $iter = MT::Tag->load_iter( { id => $value } );
+    my %tags;
+    while ( my $tag = $iter->() ) {
+        $tags{ $tag->id } = $tag;
+    }
+    my @ordered_tags = map { $tags{$_} } @{$value};
+
+    my $glue = $args->{glue};
+
+    local $ctx->{__stash}{tag_max_count} = undef;
+    local $ctx->{__stash}{tag_min_count} = undef;
+    local $ctx->{__stash}{all_tag_count} = undef;
+
+    my $builder = $ctx->stash('builder');
+    my $tokens  = $ctx->stash('tokens');
+    my $res     = '';
+    my $i       = 1;
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+    if ( !$args->{include_private} ) {
+        @ordered_tags = grep { !$_->is_private } @ordered_tags;
+    }
+    for my $tag (@ordered_tags) {
+        local $vars->{__first__}   = $i == 1;
+        local $vars->{__last__}    = $i == scalar @ordered_tags;
+        local $vars->{__odd__}     = ( $i % 2 ) == 1;
+        local $vars->{__even__}    = ( $i % 2 ) == 0;
+        local $vars->{__counter__} = $i;
+        $i++;
+        local $ctx->{__stash}{Tag}               = $tag;
+        local $ctx->{__stash}{tag_count}         = undef;
+        local $ctx->{__stash}{tag_content_count} = undef;
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
+            or return $ctx->error( $builder->errstr );
+        $res .= $glue if defined $glue && length($res) && length($out);
+        $res .= $out;
+    }
+    $res;
+}
+
 1;
 

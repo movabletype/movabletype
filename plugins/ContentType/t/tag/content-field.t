@@ -109,6 +109,14 @@ my $cf_table = MT::Test::Permission->make_content_field(
     name            => 'table',
     type            => 'table',
 );
+my $cf_tag = MT::Test::Permission->make_content_field(
+    blog_id         => $ct->blog_id,
+    content_type_id => $ct->id,
+    name            => 'tag',
+    type            => 'tag',
+);
+my $tag1 = MT::Test::Permission->make_tag( name => 'tag1' );
+my $tag2 = MT::Test::Permission->make_tag( name => 'tag2' );
 my $fields = [
     {   id        => $cf_single_line_text->id,
         order     => 1,
@@ -216,6 +224,16 @@ my $fields = [
             column_headers  => '1,2,3',
         },
     },
+    {   id      => $cf_tag->id,
+        order   => 14,
+        type    => $cf_tag->type,
+        options => {
+            label    => $cf_tag->name,
+            multiple => 1,
+            max      => 5,
+            min      => 1,
+        },
+    },
 ];
 $ct->fields($fields);
 $ct->save or die $ct->errstr;
@@ -238,7 +256,8 @@ my $cd = MT::Test::Permission->make_content_data(
         $cf_list->id             => [ 'aaa', 'bbb', 'ccc' ],
         $cf_table->id            => "<tr><td>1</td><td></td><td></td></tr>\n"
             . "<tr><td></td><td>2</td><td></td></tr>\n"
-            . "<tr><td></td><td></td><td>3</td></tr>"
+            . "<tr><td></td><td></td><td>3</td></tr>",
+        $cf_tag->id => [ $tag2->id, $tag1->id ],
     },
 );
 
@@ -447,4 +466,12 @@ aaa:bbb:ccc
 <tr><th>b</th><td></td><td>2</td><td></td></tr>
 <tr><th>c</th><td></td><td></td><td>3</td></tr>
 </table>
+
+=== MT::ContentField label="tag"
+--- template
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="tag">
+<mt:TagName></mt:ContentField></mt:Contents>
+--- expected
+tag2
+tag1
 

@@ -779,6 +779,7 @@ content_field_types:
         field_html: field_html/field_html_tag.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Tag::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Tag::ss_validator
+        tag_handler: $ContentType::MT::ContentFieldType::Tag::tag_handler
         list_props:
             tag:
                 base: __virtual.string
