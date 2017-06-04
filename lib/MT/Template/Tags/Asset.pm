@@ -413,11 +413,14 @@ sub _hdlr_assets {
             || '';
         my $col = lc( $args->{sort_by} || 'created_on' );
 
-        # TBD: check column being sorted; if it is numeric, use numeric sort
-        @$assets
-            = $so eq 'ascend'
-            ? sort { $a->$col() cmp $b->$col() } @$assets
-            : sort { $b->$col() cmp $a->$col() } @$assets;
+        unless ( $col eq 'none' ) {
+
+          # TBD: check column being sorted; if it is numeric, use numeric sort
+            @$assets
+                = $so eq 'ascend'
+                ? sort { $a->$col() cmp $b->$col() } @$assets
+                : sort { $b->$col() cmp $a->$col() } @$assets;
+        }
         $no_resort = 1;
         if (@filters) {
             my $i   = 0;

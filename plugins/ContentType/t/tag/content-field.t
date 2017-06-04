@@ -139,6 +139,41 @@ my $category2 = MT::Test::Permission->make_category(
     label            => 'category2',
 );
 
+my $cf_image = MT::Test::Permission->make_content_field(
+    blog_id         => $ct->blog_id,
+    content_type_id => $ct->id,
+    name            => 'image',
+    type            => 'image',
+);
+my $image1 = MT::Test::Permission->make_asset(
+    class   => 'image',
+    blog_id => $blog_id,
+    url     => 'http://narnia.na/nana/images/test.jpg',
+    file_path =>
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
+    file_name    => 'test.jpg',
+    file_ext     => 'jpg',
+    image_width  => 640,
+    image_height => 480,
+    mime_type    => 'image/jpeg',
+    label        => 'Sample Image 1',
+    description  => 'Sample photo',
+);
+my $image2 = MT::Test::Permission->make_asset(
+    class   => 'image',
+    blog_id => $blog_id,
+    url     => 'http://narnia.na/nana/images/test2.jpg',
+    file_path =>
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test2.jpg' ),
+    file_name    => 'test2.jpg',
+    file_ext     => 'jpg',
+    image_width  => 640,
+    image_height => 480,
+    mime_type    => 'image/jpeg',
+    label        => 'Sample Image 2',
+    description  => 'Sample photo',
+);
+
 my $fields = [
     {   id        => $cf_single_line_text->id,
         order     => 1,
@@ -267,6 +302,19 @@ my $fields = [
             min           => 1,
         },
     },
+    {   id      => $cf_image->id,
+        order   => 16,
+        type    => $cf_image->type,
+        options => {
+            label    => $cf_image->name,
+            multiple => 1,
+            max      => 5,
+            min      => 1,
+            multiple => 1,
+            max      => 5,
+            min      => 1,
+        },
+    },
 ];
 $ct->fields($fields);
 $ct->save or die $ct->errstr;
@@ -292,6 +340,7 @@ my $cd = MT::Test::Permission->make_content_data(
             . "<tr><td></td><td></td><td>3</td></tr>",
         $cf_tag->id      => [ $tag2->id,      $tag1->id ],
         $cf_category->id => [ $category2->id, $category1->id ],
+        $cf_image->id    => [ $image1->id, $image2->id ],
     },
 );
 
@@ -516,4 +565,12 @@ tag1
 --- expected
 category2
 category1
+
+=== mt:ContentField label="image"
+--- template
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="image"><mt:AssetLabel>
+</mt:ContentField></mt:Contents>
+--- expected
+Sample Image 1
+Sample Image 2
 

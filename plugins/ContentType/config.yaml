@@ -422,6 +422,7 @@ content_field_types:
         field_html: field_html/field_html_asset.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
+        tag_handler: $ContentType::MT::ContentFieldType::Common::tag_handler_asset
         list_props:
             asset:
                 filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
@@ -499,6 +500,7 @@ content_field_types:
         field_html: field_html/field_html_asset.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
+        tag_handler: $ContentType::MT::ContentFieldType::Common::tag_handler_asset
         list_props:
             audio:
                 filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
@@ -575,6 +577,7 @@ content_field_types:
         field_html: field_html/field_html_asset.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
+        tag_handler: $ContentType::MT::ContentFieldType::Common::tag_handler_asset
         list_props:
             video:
                 filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
@@ -651,6 +654,7 @@ content_field_types:
         field_html: field_html/field_html_asset.tmpl
         field_html_params: $ContentType::MT::ContentFieldType::Asset::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Asset::ss_validator
+        tag_handler: $ContentType::MT::ContentFieldType::Common::tag_handler_asset
         list_props:
             image:
                 filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple

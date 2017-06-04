@@ -313,22 +313,22 @@ sub tag_handler_multiple {
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
     my $vars    = $ctx->{__stash}{vars} ||= {};
-    my $out = '';
-    my $i = 1;
-    my $glue = $args->{glue};
+    my $out     = '';
+    my $i       = 1;
+    my $glue    = $args->{glue};
 
     my $key_value_options = $field->{options}{values};
     my %value_key_hash
         = map { $_->{value} => $_->{key} } @{ $key_value_options || [] };
 
     for my $v ( @{$value} ) {
-        local $vars->{__first__} = $i == 1;
-        local $vars->{__last__} = $i == scalar @{$value};
-        local $vars->{__odd__} = ( $i % 2 ) == 1;
-        local $vars->{__even__} = ( $i % 2 ) == 0;
+        local $vars->{__first__}   = $i == 1;
+        local $vars->{__last__}    = $i == scalar @{$value};
+        local $vars->{__odd__}     = ( $i % 2 ) == 1;
+        local $vars->{__even__}    = ( $i % 2 ) == 0;
         local $vars->{__counter__} = $i;
-        local $vars->{__key__} = $value_key_hash{$v};
-        local $vars->{__value__} = $v;
+        local $vars->{__key__}     = $value_key_hash{$v};
+        local $vars->{__value__}   = $v;
 
         my $res = $builder->build( $ctx, $tok, $cond );
         return $ctx->error( $builder->errstr ) unless defined $res;
@@ -342,6 +342,31 @@ sub tag_handler_multiple {
     }
 
     $out;
+}
+
+sub tag_handler_asset {
+    my ( $ctx, $args, $cond, $field, $value ) = @_;
+
+    my $asset_class = $field->{type} eq 'asset' ? 'file' : $field->{type};
+    my $asset_terms = {
+        id     => $value,
+        class  => $asset_class,
+        parent => \'IS NULL',
+    };
+    my $asset_args = { null => { parent => 1 } };
+
+    my $iter = MT::Asset->load_iter( $asset_terms, $asset_args );
+    my %assets;
+    while ( my $asset = $iter->() ) {
+        $assets{ $asset->id } = $asset;
+    }
+    my @ordered_assets = map { $assets{$_} } @{$value};
+
+    local $ctx->{__stash}{assets} = \@ordered_assets;
+    local $args->{sort_order} = 'none'
+        if !exists $args->{sort_by} && !exists $args->{sort_order};
+
+    $ctx->invoke_handler('assets', $args, $cond );
 }
 
 sub _has_some_modifier {
