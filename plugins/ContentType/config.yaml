@@ -152,16 +152,16 @@ tags:
         ContentAuthorUsername: $ContentType::ContentType::Tags::_hdlr_content_author_username
         ContentAuthorUserpic: $ContentType::ContentType::Tags::_hdlr_content_author_userpic
         ContentAuthorUserpicURL: $ContentType::ContentType::Tags::_hdlr_content_author_userpic_url
-        ContentSiteDescription: $ContentType::ContentType::Tags::_hdlr_content_site_description
-        ContentSiteID: $ContentType::ContentType::Tags::_hdlr_content_site_id
-        ContentSiteName: $ContentType::ContentType::Tags::_hdlr_content_site_name
-        ContentSiteURL: $ContentType::ContentType::Tags::_hdlr_content_site_url
         ContentCreatedDate: $ContentType::ContentType::Tags::_hdlr_content_created_date
         ContentDate: $ContentType::ContentType::Tags::_hdlr_content_date
         ContentModifiedDate: $ContentType::ContentType::Tags::_hdlr_content_modified_date
         ContentID: $ContentType::ContentType::Tags::_hdlr_content_id
         ContentIdentifier: $ContentType::ContentType::Tags::_hdlr_content_identifier
         ContentPermalink:
+        ContentSiteDescription: $ContentType::ContentType::Tags::_hdlr_content_site_description
+        ContentSiteID: $ContentType::ContentType::Tags::_hdlr_content_site_id
+        ContentSiteName: $ContentType::ContentType::Tags::_hdlr_content_site_name
+        ContentSiteURL: $ContentType::ContentType::Tags::_hdlr_content_site_url
         ContentStatus: $ContentType::ContentType::Tags::_hdlr_content_status
         ContentTitle: $ContentType::ContentType::Tags::_hdlr_content_title
         ContentUniqueID: $ContentType::ContentType::Tags::_hdlr_content_unique_id
