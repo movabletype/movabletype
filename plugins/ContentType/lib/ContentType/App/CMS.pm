@@ -791,7 +791,7 @@ sub _validate_content_field_type_options {
             || $type eq 'video'
             || $type eq 'image'
             || $type eq 'categories'
-            || $type eq 'tag' )
+            || $type eq 'tags' )
         {
             if ( $options->{multiple} ) {
                 my $min = $options->{min};
@@ -842,7 +842,7 @@ sub _validate_content_field_type_options {
                 }
             }
         }
-        elsif ( $err_msg && $type eq 'tag' && $options->{initial_value} ) {
+        elsif ( $err_msg && $type eq 'tags' && $options->{initial_value} ) {
             my $initial_value = $options->{initial_value};
             if ( length($initial_value) > 255 ) {
                 $err_msg = $plugin->translate(

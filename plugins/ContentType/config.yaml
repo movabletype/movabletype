@@ -776,21 +776,21 @@ content_field_types:
             - max
             - min
             - category_list
-    tag:
-        label: Tag
+    tags:
+        label: Tags
         data_type: integer
         order: 180
         data_getter: $ContentType::MT::ContentFieldType::Common::data_getter_multiple
-        field_html: field_html/field_html_tag.tmpl
-        field_html_params: $ContentType::MT::ContentFieldType::Tag::field_html_params
-        ss_validator: $ContentType::MT::ContentFieldType::Tag::ss_validator
-        tag_handler: $ContentType::MT::ContentFieldType::Tag::tag_handler
+        field_html: field_html/field_html_tags.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Tags::field_html_params
+        ss_validator: $ContentType::MT::ContentFieldType::Tags::ss_validator
+        tag_handler: $ContentType::MT::ContentFieldType::Tags::tag_handler
         list_props:
-            tag:
+            tags:
                 base: __virtual.string
                 col: name
-                html: $ContentType::MT::ContentFieldType::Tag::html
-                terms: $ContentType::MT::ContentFieldType::Tag::terms
+                html: $ContentType::MT::ContentFieldType::Tags::html
+                terms: $ContentType::MT::ContentFieldType::Tags::terms
                 use_blank: 1
         options:
             - label

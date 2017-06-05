@@ -1,4 +1,4 @@
-package MT::ContentFieldType::Tag;
+package MT::ContentFieldType::Tags;
 use strict;
 use warnings;
 
