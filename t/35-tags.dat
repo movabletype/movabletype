@@ -859,5 +859,6 @@
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorLink type=\"email\" show_hcard=\"1\"></MTEntries>", "e" : "<a class=\"fn email\" href=\"mailto:chuckd@example.com\">Chucky Dee</a>"}, #843
 { "r" : "1", "t" : "<MTAssets include_blogs=\"1\" limit=\"1\"><mt:AssetThumbnailURL></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg"}, #844
 { "r" : "1", "t" : "<MTCategoryLabel default='category label default'>", "e" : "category label default"}, #845
-{ "r" : "1", "t" : "<MTCategoryBaseName default='category basename default'>", "e" : "category basename default"} #846
+{ "r" : "1", "t" : "<MTCategoryBaseName default='category basename default'>", "e" : "category basename default"}, #846
+{ "r" : "1", "t" : "<MTWebSites include_websites=\"2\"><MTTopLevelCategories><MTCategoryLabel>;<$mt:SubCatsRecurse max_depth=\"1\"$></MTTopLevelCategories></MTWebSites>", "e" : "Japan;Tokyo;US;California;"} #847
 ]

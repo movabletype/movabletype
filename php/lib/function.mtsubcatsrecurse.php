@@ -18,6 +18,11 @@ function smarty_function_mtsubcatsrecurse($args, &$ctx) {
     $max_depth = $args['max_depth'];
     $depth = $ctx->stash('subCatsDepth') or 0;
 
+    # If we're too deep, return an emtry string because we're done
+    if ( $max_depth && $depth >= $max_depth ) {
+        return '';
+    }
+
     # Get the sorting info
     $sort_method = $ctx->stash('subCatsSortMethod');
     $sort_order = $ctx->stash('subCatsSortOrder');
