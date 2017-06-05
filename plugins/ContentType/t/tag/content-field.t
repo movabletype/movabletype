@@ -112,8 +112,8 @@ my $cf_table = MT::Test::Permission->make_content_field(
 my $cf_tag = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
     content_type_id => $ct->id,
-    name            => 'tag',
-    type            => 'tag',
+    name            => 'tags',
+    type            => 'tags',
 );
 my $tag1 = MT::Test::Permission->make_tag( name => 'tag1' );
 my $tag2 = MT::Test::Permission->make_tag( name => 'tag2' );
@@ -550,9 +550,9 @@ aaa:bbb:ccc
 <tr><th>c</th><td></td><td></td><td>3</td></tr>
 </table>
 
-=== mt:ContentField label="tag"
+=== mt:ContentField label="tags"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="tag">
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="tags">
 <mt:TagName></mt:ContentField></mt:Contents>
 --- expected
 tag2

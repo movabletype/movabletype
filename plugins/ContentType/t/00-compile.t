@@ -35,7 +35,7 @@ use_ok('MT::ContentFieldType::RadioButton');
 use_ok('MT::ContentFieldType::SelectBox');
 use_ok('MT::ContentFieldType::SingleLineText');
 use_ok('MT::ContentFieldType::Table');
-use_ok('MT::ContentFieldType::Tag');
+use_ok('MT::ContentFieldType::Tags');
 use_ok('MT::ContentFieldType::Time');
 use_ok('MT::ContentFieldType::URL');
 use_ok('MT::ContentType');
