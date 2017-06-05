@@ -88,14 +88,14 @@ my $cf_select_box = MT::Test::Permission->make_content_field(
 my $cf_radio = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
     content_type_id => $ct->id,
-    name            => 'radio',
-    type            => 'radio',
+    name            => 'radio button',
+    type            => 'radio_button',
 );
 my $cf_checkbox = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
     content_type_id => $ct->id,
-    name            => 'checkbox',
-    type            => 'checkbox',
+    name            => 'checkboxes',
+    type            => 'checkboxes',
 );
 my $cf_list = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
@@ -121,8 +121,8 @@ my $tag2 = MT::Test::Permission->make_tag( name => 'tag2' );
 my $cf_category = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
     content_type_id => $ct->id,
-    name            => 'category',
-    type            => 'category',
+    name            => 'categories',
+    type            => 'categories',
 );
 my $category_list = MT::Test::Permission->make_category_list(
     blog_id => $ct->blog_id,
@@ -519,15 +519,15 @@ June  5, 2017
 --- expected
 def,2
 
-=== mt:ContentField label="radio"
+=== mt:ContentField label="radio button"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="radio"><mt:var name="__key__">,<mt:var name="__value__"></mt:ContentField></mt:Contents>
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="radio button"><mt:var name="__key__">,<mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 ghi,3
 
-=== mt:ContentField label="checkbox"
+=== mt:ContentField label="checkboxes"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="checkbox"><mt:var name="__key__">,<mt:var name="__value__">
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="checkboxes"><mt:var name="__key__">,<mt:var name="__value__">
 </mt:ContentField></mt:Contents>
 --- expected
 abc,1
@@ -558,9 +558,9 @@ aaa:bbb:ccc
 tag2
 tag1
 
-=== mt:ContentField label="category"
+=== mt:ContentField label="categories"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="category">
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="categories">
 <mt:CategoryLabel></mt:ContentField></mt:Contents>
 --- expected
 category2

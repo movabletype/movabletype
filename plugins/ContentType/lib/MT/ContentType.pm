@@ -315,7 +315,7 @@ sub is_parent_content_type_id {
 sub get_first_category_field_id {
     my $self = shift;
     for my $f ( @{ $self->fields } ) {
-        if ( $f->{type} eq 'category' ) {
+        if ( $f->{type} eq 'categories' ) {
             return $f->{id};
         }
     }

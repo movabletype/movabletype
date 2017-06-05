@@ -65,8 +65,8 @@ my $ct = MT::Test::Permission->make_content_type(
 my $cf = MT::Test::Permission->make_content_field(
     blog_id             => $ct->blog_id,
     content_type_id     => $ct->id,
-    name                => 'category',
-    type                => 'category',
+    name                => 'categories',
+    type                => 'categories',
     related_cat_list_id => $category_list->id,
 );
 my $fields = [

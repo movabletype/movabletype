@@ -152,7 +152,7 @@ sub save {
         elsif ( $idx_type eq 'tag' ) {
             $self->_update_object_tags( $content_type, $f, $value );
         }
-        elsif ( $idx_type eq 'category' ) {
+        elsif ( $idx_type eq 'categories' ) {
             $self->_update_object_categories( $content_type, $f, $value );
         }
 
@@ -530,7 +530,7 @@ sub is_in_category {
     my ($cat)        = @_;
     my $content_type = $self->content_type or return;
     my @category_fields
-        = grep { $_->{type} eq 'category' } @{ $content_type->fields }
+        = grep { $_->{type} eq 'categories' } @{ $content_type->fields }
         or return;
     for my $f (@category_fields) {
         my $category_ids = $self->data->{ $f->{id} } || [];
