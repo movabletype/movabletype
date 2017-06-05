@@ -748,7 +748,7 @@ sub _hdlr_content_field {
             = grep { $_->{options}{label} eq $label }
             @{ $content_type->fields };
     }
-    $field ||= $ctx->stash('content_field')
+    $field ||= $ctx->stash('content_field') || $content_type->fields->[0]
         or return $ctx->_no_content_field_error;
 
     my $content_data = $ctx->stash('content')
