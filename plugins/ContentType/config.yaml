@@ -750,21 +750,21 @@ content_field_types:
             - hint
             - required
             - display
-    category:
-        label: Category
+    categories:
+        label: Categories
         data_type: integer
         order: 170
-        data_getter: $ContentType::MT::ContentFieldType::Category::data_getter
-        field_html: field_html/field_html_category.tmpl
-        field_html_params: $ContentType::MT::ContentFieldType::Category::field_html_params
-        ss_validator: $ContentType::MT::ContentFieldType::Category::ss_validator
-        tag_handler: $ContentType::MT::ContentFieldType::Category::tag_handler
+        data_getter: $ContentType::MT::ContentFieldType::Categories::data_getter
+        field_html: field_html/field_html_categories.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Categories::field_html_params
+        ss_validator: $ContentType::MT::ContentFieldType::Categories::ss_validator
+        tag_handler: $ContentType::MT::ContentFieldType::Categories::tag_handler
         list_props:
-            category:
+            categories:
                 base: __virtual.string
                 col: label
-                html: $ContentType::MT::ContentFieldType::Category::html
-                terms: $ContentType::MT::ContentFieldType::Category::terms
+                html: $ContentType::MT::ContentFieldType::Categories::html
+                terms: $ContentType::MT::ContentFieldType::Categories::terms
                 use_blank: 1
         options:
             - label

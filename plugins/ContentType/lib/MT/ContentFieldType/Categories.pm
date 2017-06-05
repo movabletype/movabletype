@@ -1,4 +1,4 @@
-package MT::ContentFieldType::Category;
+package MT::ContentFieldType::Categories;
 use strict;
 use warnings;
 

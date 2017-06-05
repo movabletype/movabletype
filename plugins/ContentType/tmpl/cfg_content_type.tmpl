@@ -1077,35 +1077,35 @@
 
   </mtapp:settinggroup>
 
-  <mtapp:settinggroup id="category-options">
+  <mtapp:settinggroup id="categories-options">
 
     <mtapp:setting
-       id="category-label"
+       id="categories-label"
        label="<__trans phrase="Label">"
        required="1">
-      <input type="text" name="category-label" id="category-label" class="text med" />
+      <input type="text" name="categories-label" id="categories-label" class="text med" />
     </mtapp:setting>
 
     <mtapp:setting
-       id="category-description"
+       id="categories-description"
        label="<__trans phrase="Description">"
        show_hint="1"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="category-description" id="category-description" class="text med" />
+      <input type="text" name="categories-description" id="categories-description" class="text med" />
     </mtapp:setting>
 
     <mtapp:setting
-       id="category-required"
+       id="categories-required"
        label="<__trans phrase="Required?">">
-      <input type="checkbox" name="category-required" id="category-required" /> <label for="category-required"><__trans phrase="Must the user enter data into this content field before the content data may be saved?"></label>
+      <input type="checkbox" name="categories-required" id="categories-required" /> <label for="categories-required"><__trans phrase="Must the user enter data into this content field before the content data may be saved?"></label>
     </mtapp:setting>
 
     <mtapp:setting
-       id="category-display"
+       id="categories-display"
        label="<__trans phrase="Display Options">"
        required="1"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="category-display" id="category-display">
+      <select name="categories-display" id="categories-display">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -1114,37 +1114,37 @@
     </mtapp:setting>
 
     <mtapp:setting
-      id="category-multiple"
+      id="categories-multiple"
       label="<__trans phrase="Multiple?">">
-        <input type="checkbox" name="category-multiple" id="category-multiple" />
-        <label for="category-multiple"><__trans phrase="Allow user to select multiple values."></label>
+        <input type="checkbox" name="categories-multiple" id="categories-multiple" />
+        <label for="categories-multiple"><__trans phrase="Allow user to select multiple values."></label>
     </mtapp:setting>
 
     <mtapp:setting
-       id="category-can_add">
-      <input type="checkbox" name="category-can_add" id="category-can_add" /> <label for="category-can_add"><__trans phrase="Allow user to create new content data."></label>
+       id="categories-can_add">
+      <input type="checkbox" name="categories-can_add" id="categories-can_add" /> <label for="categories-can_add"><__trans phrase="Allow user to create new content data."></label>
     </mtapp:setting>
 
     <mtapp:setting
-       id="select_box-min"
+       id="categories-min"
        label="<__trans phrase="Min">"
        show_hint="1"
        hint="Minimum number of selections.">
-      <input type="text" name="select_box-min" id="select_box-min" class="text num" />
+      <input type="text" name="categories-min" id="categories-min" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
-       id="select_box-max"
+       id="categories-max"
        label="<__trans phrase="Max">"
        show_hint="1"
        hint="Maximum number of selections.">
-      <input type="text" name="select_box-max" id="select_box-max" class="text num" />
+      <input type="text" name="categories-max" id="categories-max" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
-       id="category-category_list"
+       id="categories-category_list"
        label="<__trans phrase="Category List">">
-      <select name="category-category_list" id="category-category_list">
+      <select name="categories-category_list" id="categories-category_list">
       <mt:loop name="category_lists">
         <option value="<mt:var name="id" escape="html">"><mt:var name="name" escape="html"></option>
       </mt:loop>

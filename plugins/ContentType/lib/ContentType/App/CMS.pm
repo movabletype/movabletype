@@ -432,7 +432,7 @@ sub save_cfg_content_type {
         $content_field->description( $options->{description} );
         $content_field->required( $options->{required} );
 
-        if ( $content_field->type eq 'category' ) {
+        if ( $content_field->type eq 'categories' ) {
             $content_field->related_cat_list_id( $options->{category_list} );
         }
         else {
@@ -790,7 +790,7 @@ sub _validate_content_field_type_options {
             || $type eq 'audio'
             || $type eq 'video'
             || $type eq 'image'
-            || $type eq 'category'
+            || $type eq 'categories'
             || $type eq 'tag' )
         {
             if ( $options->{multiple} ) {
