@@ -288,12 +288,12 @@ sub single_select_options_multiple {
 }
 
 sub tag_handler_datetime {
-    my ( $ctx, $args, $cond, $field, $value ) = @_;
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
     my $vars    = $ctx->{__stash}{vars} ||= {};
 
-    my $field_type = $field->{type};
+    my $field_type = $field_data->{type};
 
     local $args->{format} = '%x'
         if $field_type eq 'date' && !_has_some_modifier($args);
@@ -309,7 +309,7 @@ sub tag_handler_datetime {
 }
 
 sub tag_handler_multiple {
-    my ( $ctx, $args, $cond, $field, $value ) = @_;
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
     my $vars    = $ctx->{__stash}{vars} ||= {};
@@ -317,7 +317,7 @@ sub tag_handler_multiple {
     my $i       = 1;
     my $glue    = $args->{glue};
 
-    my $key_value_options = $field->{options}{values};
+    my $key_value_options = $field_data->{options}{values};
     my %value_key_hash
         = map { $_->{value} => $_->{key} } @{ $key_value_options || [] };
 
@@ -345,9 +345,10 @@ sub tag_handler_multiple {
 }
 
 sub tag_handler_asset {
-    my ( $ctx, $args, $cond, $field, $value ) = @_;
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
-    my $asset_class = $field->{type} eq 'asset' ? 'file' : $field->{type};
+    my $asset_class
+        = $field_data->{type} eq 'asset' ? 'file' : $field_data->{type};
     my $asset_terms = {
         id     => $value,
         class  => $asset_class,
@@ -366,7 +367,7 @@ sub tag_handler_asset {
     local $args->{sort_order} = 'none'
         if !exists $args->{sort_by} && !exists $args->{sort_order};
 
-    $ctx->invoke_handler('assets', $args, $cond );
+    $ctx->invoke_handler( 'assets', $args, $cond );
 }
 
 sub _has_some_modifier {

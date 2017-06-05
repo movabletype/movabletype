@@ -136,12 +136,12 @@ sub save {
 
     $self->SUPER::save(@_) or return;
 
-    my $field_data = $self->data;
+    my $data = $self->data;
 
     foreach my $f ( @{ $content_type->fields } ) {
         my $idx_type  = $f->{type};
         my $data_type = $content_field_types->{$idx_type}{data_type};
-        my $value     = $field_data->{ $f->{id} };
+        my $value     = $data->{ $f->{id} };
         $value = [$value] unless ref $value eq 'ARRAY';
 
         $value = [ grep { defined $_ && $_ ne '' } @$value ];
@@ -195,11 +195,11 @@ sub save {
 
 sub _update_object_assets {
     my $self = shift;
-    my ( $content_type, $field, $values ) = @_;
+    my ( $content_type, $field_data, $values ) = @_;
 
     MT::ObjectAsset->remove(
         {   object_ds => 'content_field',
-            object_id => $field->{id},
+            object_id => $field_data->{id},
         }
     );
 
@@ -209,7 +209,7 @@ sub _update_object_assets {
             {   blog_id   => $self->blog_id,
                 asset_id  => $asset_id,
                 object_ds => 'content_field',
-                object_id => $field->{id},
+                object_id => $field_data->{id},
             }
         );
         $obj_asset->save or die $obj_asset->errstr;
@@ -218,12 +218,12 @@ sub _update_object_assets {
 
 sub _update_object_tags {
     my $self = shift;
-    my ( $content_type, $field, $values ) = @_;
+    my ( $content_type, $field_data, $values ) = @_;
 
     MT::ObjectTag->remove(
         {   blog_id           => $self->blog_id,
             object_datasource => 'content_field',
-            object_id         => $field->{id},
+            object_id         => $field_data->{id},
         }
     );
 
@@ -233,7 +233,7 @@ sub _update_object_tags {
             {   blog_id           => $self->blog_id,
                 tag_id            => $tag_id,
                 object_datasource => 'content_field',
-                object_id         => $field->{id},
+                object_id         => $field_data->{id},
             }
         );
         $obj_tag->save or die $obj_tag->errstr;
@@ -242,12 +242,12 @@ sub _update_object_tags {
 
 sub _update_object_categories {
     my $self = shift;
-    my ( $content_type, $field, $values ) = @_;
+    my ( $content_type, $field_data, $values ) = @_;
 
     MT::ObjectCategory->remove(
         {   blog_id   => $self->blog_id,
             object_ds => 'content_field',
-            object_id => $field->{id},
+            object_id => $field_data->{id},
         }
     );
 
@@ -258,7 +258,7 @@ sub _update_object_categories {
             {   blog_id     => $self->blog_id,
                 category_id => $cat_id,
                 object_ds   => 'content_field',
-                object_id   => $field->{id},
+                object_id   => $field_data->{id},
                 is_primary  => $is_primary,
             }
         );
@@ -529,10 +529,10 @@ sub is_in_category {
     my $self         = shift;
     my ($cat)        = @_;
     my $content_type = $self->content_type or return;
-    my @category_fields
+    my @category_field_data
         = grep { $_->{type} eq 'categories' } @{ $content_type->fields }
         or return;
-    for my $f (@category_fields) {
+    for my $f (@category_field_data) {
         my $category_ids = $self->data->{ $f->{id} } || [];
         if ( grep { $_ == $cat->id } @{$category_ids} ) {
             return 1;

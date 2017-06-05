@@ -107,13 +107,13 @@ sub _hdlr_content {
     my $content      = $ctx->stash('content');
     my $content_type = $ctx->stash('content_type');
 
-    my @fields
+    my @field_data
         = sort { $a->{order} <=> $b->{order} } @{ $content_type->fields };
 
     my $datas = $content->data;
 
     my $out = '';
-    foreach my $f (@fields) {
+    foreach my $f (@field_data) {
         my $data = $datas->{ $f->{id} };
         $out .= "<div>$data</div>";
     }
@@ -732,30 +732,31 @@ sub _hdlr_content_field {
     my $content_type = $ctx->stash('content_type')
         or return $ctx->_no_content_type_error;
 
-    my $field;
+    my $field_data;
     if ( my $unique_id = $args->{unique_id} ) {
-        ($field)
+        ($field_data)
             = grep { $_->{unique_id} eq $unique_id }
             @{ $content_type->fields };
     }
     elsif ( my $content_field_id = $args->{content_field_id} ) {
-        ($field)
+        ($field_data)
             = grep { $_->{id} == $content_field_id }
             @{ $content_type->fields };
     }
     elsif ( defined( my $label = $args->{label} ) ) {
-        ($field)
+        ($field_data)
             = grep { $_->{options}{label} eq $label }
             @{ $content_type->fields };
     }
-    $field ||= $ctx->stash('content_field') || $content_type->fields->[0]
+    $field_data ||= $ctx->stash('content_field') || $content_type->fields->[0]
         or return $ctx->_no_content_field_error;
 
     my $content_data = $ctx->stash('content')
         or return $ctx->_no_content_error;
-    my $value = $content_data->data->{ $field->{id} };
+    my $value = $content_data->data->{ $field_data->{id} };
 
-    my $field_type = MT->registry('content_field_types')->{ $field->{type} }
+    my $field_type
+        = MT->registry('content_field_types')->{ $field_data->{type} }
         or return $ctx->error(
         MT->translate('No Content Field Type could be found.') );
 
@@ -764,9 +765,12 @@ sub _hdlr_content_field {
             $tag_handler = MT->handler_to_coderef($tag_handler);
         }
         return $ctx->error(
-            MT->translate( 'Invalid tag_handler of [_1].', $field->{type} ) )
-            unless ref $tag_handler eq 'CODE';
-        $tag_handler->( $ctx, $args, $cond, $field, $value );
+            MT->translate(
+                'Invalid tag_handler of [_1].',
+                $field_data->{type}
+            )
+        ) unless ref $tag_handler eq 'CODE';
+        $tag_handler->( $ctx, $args, $cond, $field_data, $value );
     }
     else {
         my $tok     = $ctx->stash('tokens');
@@ -783,15 +787,15 @@ sub _hdlr_content_fields {
     my $content_type = $ctx->stash('content_type')
         or return $ctx->_no_content_type_error;
 
-    my @fields  = @{ $content_type->fields };
-    my $builder = $ctx->stash('builder');
-    my $tokens  = $ctx->stash('tokens');
-    my $vars    = $ctx->{__stash}{vars} ||= {};
-    my $i       = 1;
-    my $res     = '';
-    for my $f (@fields) {
+    my @field_data = @{ $content_type->fields };
+    my $builder    = $ctx->stash('builder');
+    my $tokens     = $ctx->stash('tokens');
+    my $vars       = $ctx->{__stash}{vars} ||= {};
+    my $i          = 1;
+    my $res        = '';
+    for my $f (@field_data) {
         local $vars->{__first__}   = $i == 1;
-        local $vars->{__last__}    = $i == scalar @fields;
+        local $vars->{__last__}    = $i == scalar @field_data;
         local $vars->{__odd__}     = ( $i % 2 ) == 1;
         local $vars->{__even__}    = ( $i % 2 ) == 0;
         local $vars->{__counter__} = $i;

@@ -189,25 +189,25 @@ sub _make_content_data_title_html {
 }
 
 sub _make_field_list_props {
-    my ( $content_type, $order, $parent_field ) = @_;
+    my ( $content_type, $order, $parent_field_data ) = @_;
     my $props               = {};
     my $content_field_types = MT->registry('content_field_types');
 
-    for my $field ( @{ $content_type->fields } ) {
-        my $idx_type   = $field->{type};
-        my $field_key  = 'content_field_' . $field->{id};
+    for my $field_data ( @{ $content_type->fields } ) {
+        my $idx_type   = $field_data->{type};
+        my $field_key  = 'content_field_' . $field_data->{id};
         my $field_type = $content_field_types->{$idx_type} or next;
 
         for my $prop_name ( keys %{ $field_type->{list_props} || {} } ) {
 
             next
-                if $parent_field
+                if $parent_field_data
                 && $prop_name ne $idx_type
                 && !( $idx_type eq 'content_type' && $prop_name eq 'id' );
 
             my $label;
             if ( $prop_name eq $idx_type ) {
-                $label = $field->{options}{label};
+                $label = $field_data->{options}{label};
             }
             else {
                 $label = $prop_name;
@@ -218,10 +218,10 @@ sub _make_field_list_props {
                     $label =~ s/^([a-z])/\u$1/g;
                     $label =~ s/_([a-z])/ \u$1/g;
                 }
-                $label = $field->{options}{label} . " ${label}";
+                $label = $field_data->{options}{label} . " ${label}";
             }
-            if ($parent_field) {
-                $label = $parent_field->{options}{label} . " ${label}";
+            if ($parent_field_data) {
+                $label = $parent_field_data->{options}{label} . " ${label}";
             }
             $label = MT->translate($label);
 
@@ -232,15 +232,19 @@ sub _make_field_list_props {
             else {
                 $prop_key = "${field_key}_${prop_name}";
             }
-            if ($parent_field) {
-                my $parent_field_key = 'content_field_' . $parent_field->{id};
+            if ($parent_field_data) {
+                my $parent_field_key
+                    = 'content_field_' . $parent_field_data->{id};
                 $prop_key = "${parent_field_key}_${prop_key}";
             }
 
-            my $display = $parent_field ? 'none' : $field->{options}{display};
+            my $display
+                = $parent_field_data
+                ? 'none'
+                : $field_data->{options}{display};
 
             $props->{$prop_key} = {
-                (   content_field_id   => $field->{id},
+                (   content_field_id   => $field_data->{id},
                     data_type          => $field_type->{data_type},
                     default_sort_order => 'ascend',
                     display            => $display,
@@ -254,7 +258,7 @@ sub _make_field_list_props {
                 %{ $field_type->{list_props}{$prop_name} },
             };
 
-            if ($parent_field) {
+            if ($parent_field_data) {
                 my $terms = $props->{$prop_key}{terms};
                 if ( $terms && !ref $terms && $terms =~ /^(sub|\$)/ ) {
                     $terms = MT->handler_to_coderef($terms);
@@ -271,7 +275,8 @@ sub _make_field_list_props {
                         return $child_ret
                             unless $child_ret && $child_ret->{id};
 
-                        local $prop->{content_field_id} = $parent_field->{id};
+                        local $prop->{content_field_id}
+                            = $parent_field_data->{id};
 
                         my $option = $args->{option} || '';
                         if (   $option eq 'not_contains'
@@ -311,11 +316,11 @@ sub _make_field_list_props {
             $order++;
         }
 
-        if ( !$parent_field && $idx_type eq 'content_type' ) {
-            my $cf = MT::ContentField->load( $field->{id} ) or next;
+        if ( !$parent_field_data && $idx_type eq 'content_type' ) {
+            my $cf = MT::ContentField->load( $field_data->{id} ) or next;
             my $related_ct = $cf->related_content_type or next;
             my $child_props
-                = _make_field_list_props( $related_ct, $order, $field );
+                = _make_field_list_props( $related_ct, $order, $field_data );
             $props = { %{$props}, %{$child_props} };
         }
     }
@@ -419,6 +424,7 @@ sub make_title_html {
 
 sub make_content_actions {
     my $props = {
+
         # TODO: FogBugz:114491
         # Hide create link temporarily and will fix in new UI.
         # content_type => {

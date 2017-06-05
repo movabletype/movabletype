@@ -176,18 +176,19 @@ sub cfg_content_type {
         $param->{name}        = $content_type->name;
         $param->{description} = $content_type->description;
         $param->{unique_id}   = $content_type->unique_id;
-        my $fields;
+        my $field_data;
         if ( $q->param('err_msg') ) {
-            $fields = $q->param('fields');
-            if ( $fields =~ /^".*"$/ ) {
-                $fields =~ s/^"//;
-                $fields =~ s/"$//;
-                $fields = MT::Util::decode_js($fields);
+            $field_data = $q->param('fields');
+            if ( $field_data =~ /^".*"$/ ) {
+                $field_data =~ s/^"//;
+                $field_data =~ s/"$//;
+                $field_data = MT::Util::decode_js($field_data);
             }
-            $fields = JSON::decode_json( MT::Util::decode_url($fields) );
+            $field_data
+                = JSON::decode_json( MT::Util::decode_url($field_data) );
         }
         else {
-            $fields = $content_type->fields;
+            $field_data = $content_type->field_data;
         }
         my @array = map {
             $_->{content_field_id} = $_->{id};
@@ -240,7 +241,7 @@ sub cfg_content_type {
             }
             $_->{options} = \@options;
             $_;
-        } @{$fields};
+        } @{$field_data};
         @array = sort { $a->{order} <=> $b->{order} } @array;
         $param->{fields} = \@array;
     }
@@ -382,7 +383,7 @@ sub save_cfg_content_type {
         )
         );
 
-    my @fields        = ();
+    my @field_data    = ();
     my @field_objects = ();
     my $err_msg       = '';
     foreach my $field_id ( keys %{ $option_list->{fields} } ) {
@@ -453,7 +454,7 @@ sub save_cfg_content_type {
         delete $option_list->{fields}{$field_id}{new}
             if defined $option_list->{fields}{$field_id}{new};
         $option_list->{fields}{$field_id}{options} = $options;
-        push @fields,
+        push @field_data,
             {
             id => $content_field->id || $field_id,
             unique_id => $content_field->unique_id,
@@ -469,7 +470,7 @@ sub save_cfg_content_type {
                 blog_id => $blog_id,
                 id      => $content_type_id,
                 fields =>
-                    MT::Util::encode_url( JSON::encode_json( \@fields ) ),
+                    MT::Util::encode_url( JSON::encode_json( \@field_data ) ),
                 err_msg => $plugin->translate($err_msg),
             }
         )
@@ -502,15 +503,15 @@ sub save_cfg_content_type {
     }
 
     # Set id and unique_id to fields if not.
-    for ( my $i = 0; $i < @fields; $i++ ) {
-        my $field = $fields[$i];
+    for ( my $i = 0; $i < @field_data; $i++ ) {
+        my $field = $field_data[$i];
         next if $field->{id} && $field->{unique_id};
         my $content_field = $field_objects[$i];
         $field->{id}        = $content_field->id;
         $field->{unique_id} = $content_field->unique_id;
     }
 
-    $content_type->fields( \@fields );
+    $content_type->fields( \@field_data );
 
     $content_type->save
         or return $app->error(
@@ -533,11 +534,11 @@ sub save_cfg_content_type {
 }
 
 sub _validate_content_field_type_options {
-    my ( $app, $content_type, $field, $err_msg ) = @_;
+    my ( $app, $content_type, $field_data, $err_msg ) = @_;
 
     my $plugin  = $app->component("ContentType");
-    my $type    = $field->{type};
-    my $options = $field->{options};
+    my $type    = $field_data->{type};
+    my $options = $field_data->{options};
     my $label   = $options->{label};
 
     unless ($err_msg) {
@@ -1231,14 +1232,14 @@ sub save_content_data {
         or return $app->errtrans("Invalid request.");
 
     my $content_type = MT::ContentType->load($content_type_id);
-    my $fields       = $content_type->fields;
+    my $field_data   = $content_type->fields;
 
     my $content_data_id = scalar $q->param('id');
 
     my $content_field_types = $app->registry('content_field_types');
 
     my $data = {};
-    foreach my $f (@$fields) {
+    foreach my $f (@$field_data) {
         my $content_field_type = $content_field_types->{ $f->{type} };
         $data->{ $f->{id} }
             = _get_form_data( $app, $content_field_type, $f );

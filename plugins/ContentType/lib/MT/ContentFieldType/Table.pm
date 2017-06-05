@@ -33,9 +33,9 @@ sub _create_empty_table {
 }
 
 sub tag_handler {
-    my ( $ctx, $args, $cond, $field, $value ) = @_;
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
-    my $table = _table_with_headers( $field, $value );
+    my $table = _table_with_headers( $field_data, $value );
     $table = "<table>\n${table}\n</table>";
 
     my $tok     = $ctx->stash('tokens');
@@ -46,18 +46,19 @@ sub tag_handler {
 }
 
 sub _table_with_headers {
-    my ( $field, $value ) = @_;
+    my ( $field_data, $value ) = @_;
     return $value unless $value;
-    my $table_with_row_headers = _add_row_headers_to_table( $field, $value );
-    my $column_headers = _create_column_headers( $field, $value );
+    my $table_with_row_headers
+        = _add_row_headers_to_table( $field_data, $value );
+    my $column_headers = _create_column_headers( $field_data, $value );
     $column_headers =~ s/^(<tr>)/$1<th><\/th>/;
     "${column_headers}\n${table_with_row_headers}";
 }
 
 sub _create_column_headers {
-    my ( $field, $value ) = @_;
+    my ( $field_data, $value ) = @_;
     my @column_headers = split ',',
-        ( $field->{options}{column_headers} || '' )
+        ( $field_data->{options}{column_headers} || '' )
         or return '';
     my $column_count = _get_column_count($value) or return '';
     my $column_header = '';
@@ -70,9 +71,9 @@ sub _create_column_headers {
 }
 
 sub _add_row_headers_to_table {
-    my ( $field, $value ) = @_;
+    my ( $field_data, $value ) = @_;
     return $value unless $value;
-    my @row_headers = split ',', ( $field->{options}{row_headers} || '' )
+    my @row_headers = split ',', ( $field_data->{options}{row_headers} || '' )
         or return $value;
     my @table_rows = split "\n", $value;
     my @added_table_rows;

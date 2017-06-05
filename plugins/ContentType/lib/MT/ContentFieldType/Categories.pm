@@ -190,9 +190,9 @@ sub terms {
 }
 
 sub tag_handler {
-    my ( $ctx, $args, $cond, $field, $value ) = @_;
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
-    my $category_list_id = $field->{options}{category_list}
+    my $category_list_id = $field_data->{options}{category_list}
         or return $ctx->error(
         MT->translate('No category_list setting in content field type.') );
 

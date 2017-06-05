@@ -142,7 +142,7 @@ sub _link {
 }
 
 sub tag_handler {
-    my ( $ctx, $args, $cond, $field, $value ) = @_;
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
     my $iter = MT::Tag->load_iter( { id => $value } );
     my %tags;
