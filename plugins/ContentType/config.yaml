@@ -368,16 +368,16 @@ content_field_types:
             - min
             - values
             - initial_value
-    radio:
-        label: Radio
+    radio_button:
+        label: Radio Button
         data_type: varchar
         order: 100
-        field_html: field_html/field_html_radio.tmpl
-        field_html_params: $ContentType::MT::ContentFieldType::Radio::field_html_params
+        field_html: field_html/field_html_radio_button.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::RadioButton::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_values
         tag_handler: $ContentType::MT::ContentFieldType::Common::tag_handler_multiple
         list_props:
-            radio:
+            radio_button:
                 filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
                 html: $ContentType::MT::ContentFieldType::Common::html_multiple
                 single_select_options: $ContentType::MT::ContentFieldType::Common::single_select_options_multiple

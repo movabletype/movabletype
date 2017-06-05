@@ -1,4 +1,4 @@
-package MT::ContentFieldType::Radio;
+package MT::ContentFieldType::RadioButton;
 use strict;
 use warnings;
 

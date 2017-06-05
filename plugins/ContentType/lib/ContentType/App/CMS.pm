@@ -209,7 +209,7 @@ sub cfg_content_type {
                 }
                 elsif (
                     (      $type eq 'select_box'
-                        || $type eq 'radio'
+                        || $type eq 'radio_button'
                         || $type eq 'checkboxes'
                     )
                     && $key eq 'values'
@@ -400,7 +400,7 @@ sub save_cfg_content_type {
             $options->{initial_value} = "$date $time";
         }
         elsif ($type eq 'select_box'
-            || $type eq 'radio'
+            || $type eq 'radio_button'
             || $type eq 'checkboxes' )
         {
             my $count  = 1;
@@ -710,7 +710,7 @@ sub _validate_content_field_type_options {
         }
         elsif ($type eq 'select_box'
             || $type eq 'checkboxes'
-            || $type eq 'radio' )
+            || $type eq 'radio_button' )
         {
             my $initial_value       = $options->{initial_value};
             my $exist_initial_value = $initial_value eq '' ? 1 : 0;
@@ -734,7 +734,7 @@ sub _validate_content_field_type_options {
                     $label || $field_label
                 );
             }
-            if ( !$err_msg && $type ne 'radio' ) {
+            if ( !$err_msg && $type ne 'radio_button' ) {
                 my $min = $options->{min};
                 my $max = $options->{max};
                 if ( $options->{multiple} ) {
