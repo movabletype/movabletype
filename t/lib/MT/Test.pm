@@ -1323,6 +1323,34 @@ It\'s a hard rain\'s a-gonna fall',
     $folder->id(22);
     $folder->save or die "Could'n sae folder record 22:" . $folder->errstr;
 
+    # Folder with sub folders
+    $folder = MT::Folder->new();
+    $folder->blog_id(2);
+    $folder->label('Product');
+    $folder->description('News');
+    $folder->author_id( $chuckd->id );
+    $folder->parent(0);
+    $folder->id(23);
+    $folder->save or die "Could'n sae folder record 21:" . $folder->errstr;
+
+    $folder = MT::Folder->new();
+    $folder->blog_id(2);
+    $folder->label('Consumer');
+    $folder->description('');
+    $folder->author_id( $chuckd->id );
+    $folder->parent(23);
+    $folder->id(24);
+    $folder->save or die "Could'n sae folder record 22:" . $folder->errstr;
+
+    $folder = MT::Folder->new();
+    $folder->blog_id(2);
+    $folder->label('Game');
+    $folder->description('');
+    $folder->author_id( $chuckd->id );
+    $folder->parent(24);
+    $folder->id(25);
+    $folder->save or die "Could'n sae folder record 22:" . $folder->errstr;
+
     $page = MT::Page->new();
     $page->set_values(
         {   blog_id     => 1,
