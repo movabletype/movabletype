@@ -210,7 +210,7 @@ sub cfg_content_type {
                 elsif (
                     (      $type eq 'select_box'
                         || $type eq 'radio'
-                        || $type eq 'checkbox'
+                        || $type eq 'checkboxes'
                     )
                     && $key eq 'values'
                     )
@@ -401,7 +401,7 @@ sub save_cfg_content_type {
         }
         elsif ($type eq 'select_box'
             || $type eq 'radio'
-            || $type eq 'checkbox' )
+            || $type eq 'checkboxes' )
         {
             my $count  = 1;
             my @values = ();
@@ -709,7 +709,7 @@ sub _validate_content_field_type_options {
             }
         }
         elsif ($type eq 'select_box'
-            || $type eq 'checkbox'
+            || $type eq 'checkboxes'
             || $type eq 'radio' )
         {
             my $initial_value       = $options->{initial_value};
@@ -1116,7 +1116,7 @@ sub edit_content_data {
         }
         else {
             # TODO: fix after updating values option.
-            if ( $_->{type} eq 'select_box' || $_->{type} eq 'checkbox' ) {
+            if ( $_->{type} eq 'select_box' || $_->{type} eq 'checkboxes' ) {
                 my $delimiter = quotemeta( $_->{options_delimiter} || ',' );
                 my @values = split $delimiter, $_->{options}{initial_value};
                 $_->{value} = \@values;

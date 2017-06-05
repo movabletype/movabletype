@@ -389,17 +389,17 @@ content_field_types:
             - display
             - values
             - initial_value
-    checkbox:
-        label: Checkbox
+    checkboxes:
+        label: Checkboxes
         data_type: varchar
         order: 110
         data_getter: $ContentType::MT::ContentFieldType::Common::data_getter_multiple
-        field_html: field_html/field_html_checkbox.tmpl
-        field_html_params: $ContentType::MT::ContentFieldType::Checkbox::field_html_params
+        field_html: field_html/field_html_checkboxes.tmpl
+        field_html_params: $ContentType::MT::ContentFieldType::Checkboxes::field_html_params
         ss_validator: $ContentType::MT::ContentFieldType::Common::ss_validator_multiple
         tag_handler: $ContentType::MT::ContentFieldType::Common::tag_handler_multiple
         list_props:
-            checkbox:
+            checkboxes:
                 filter_tmpl: $ContentType::MT::ContentFieldType::Common::filter_tmpl_multiple
                 html: $ContentType::MT::ContentFieldType::Common::html_multiple
                 single_select_options: $ContentType::MT::ContentFieldType::Common::single_select_options_multiple

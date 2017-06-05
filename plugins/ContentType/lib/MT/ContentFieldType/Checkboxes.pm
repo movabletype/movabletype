@@ -1,4 +1,4 @@
-package MT::ContentFieldType::Checkbox;
+package MT::ContentFieldType::Checkboxes;
 use strict;
 use warnings;
 
