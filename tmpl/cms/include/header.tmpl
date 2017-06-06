@@ -13,8 +13,12 @@
 </mt:if>
 <mt:unless name="optimize_ui">
   <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>bootstrap-3.3.7/css/bootstrap.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>bootstrap-3.3.7/css/bootstrap-theme.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
 <mt:else>
   <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/main.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>bootstrap-3.3.7/css/bootstrap.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>bootstrap-3.3.7/css/bootstrap-theme.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
 </mt:unless>
   <!--[if IE]>
   <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
@@ -64,6 +68,7 @@
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.pngfix.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <![endif]-->
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>bootstrap-3.3.7/js/bootstrap.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 <mt:else>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery-migrate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
@@ -76,6 +81,7 @@
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.pngfix.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <![endif]-->
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>bootstrap-3.3.7/js/bootstrap.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 </mt:unless>
 </mt:setvarblock>
 
