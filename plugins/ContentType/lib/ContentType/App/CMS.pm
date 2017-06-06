@@ -188,7 +188,7 @@ sub cfg_content_type {
                 = JSON::decode_json( MT::Util::decode_url($field_data) );
         }
         else {
-            $field_data = $content_type->field_data;
+            $field_data = $content_type->fields;
         }
         my @array = map {
             $_->{content_field_id} = $_->{id};
