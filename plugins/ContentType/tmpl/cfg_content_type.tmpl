@@ -1339,39 +1339,34 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="table-row_headers"
-       label="<__trans phrase="Row Headers">">
-      <input type="text" name="table-row_headers" id="table-row_headers" class="text long" />
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="table-changeable_rows"
-       label="<__trans phrase="Changeable Rows">">
-      <label>
-        <input type="checkbox" name="table-changeable_rows" id="table-changeable_rows" value="1" />
-        <__trans phrase="Changeable Rows">
-      </label>
-    </mtapp:setting>
-
-    <mtapp:setting
        id="table-initial_columns"
        label="<__trans phrase="Initial Columns">">
       <input type="text" name="table-initial_columns" id="table-initial_columns" class="text num" value="5" />
     </mtapp:setting>
 
     <mtapp:setting
+       id="table-row_headers"
+       label="<__trans phrase="Row Heading">"
+       show_hint="1"
+       hint="<__trans phrase=" Commma separated list">">
+      <input type="text" name="table-row_headers" id="table-row_headers" class="text long" />
+    </mtapp:setting>
+
+    <mtapp:setting
        id="table-column_headers"
-       label="<__trans phrase="Column Headers">">
+       label="<__trans phrase="Column Heading">"
+       show_hint="1"
+       hint="<__trans phrase=" Commma separated list">">
       <input type="text" name="table-column_headers" id="table-column_headers" class="text long" />
     </mtapp:setting>
 
     <mtapp:setting
-       id="table-changeable_columns"
-       label="<__trans phrase="Changeable Columns">">
-      <label>
-        <input type="checkbox" name="table-changeable_columns" id="table-changeable_columns" value="1" />
-        <__trans phrase="Changeable Columns">
-      </label>
+       id="table-increase_decrease"
+       label="<__trans phrase="Increase/Decrease">">
+      <ul id="outbound-trackback-setting-list" class="setting-list">
+      <li><input type="checkbox" name="table-increase_decrease_rows" id="table-increase_decrease_rows" value="1" /> <label><__trans phrase="Allow user to increase/decrease rows."></label></li>
+      <li><input type="checkbox" name="table-increase_decrease_columns" id="table-increase_decrease_columns" value="1" /> <label><__trans phrase="Allow user to increase/decrease columns."></label></li>
+      </ul>
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">

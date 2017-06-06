@@ -842,8 +842,8 @@ content_field_types:
             - display
             - initial_rows
             - row_headers
-            - changeable_rows
+            - increase_decrease_rows
             - initial_columns
             - column_headers
-            - changeable_columns
+            - increase_decrease_columns
 
