@@ -1168,6 +1168,7 @@ sub edit_content_data {
         }
 
         $_->{data_type} = $content_field_types->{ $_->{type} }{data_type};
+        $_->{convert_breaks} = $_->{options}{input_format};
 
         $_;
     } @$array;
