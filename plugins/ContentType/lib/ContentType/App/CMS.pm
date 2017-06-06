@@ -856,10 +856,10 @@ sub _validate_content_field_type_options {
         }
         elsif ( $type eq 'table' ) {
             my ($initial_rows, $initial_columns,
-                $row_headers,  $column_headers
+                $row_heading,  $column_heading
                 )
                 = map { $options->{$_} }
-                qw/ initial_rows initial_columns row_headers column_headers /;
+                qw/ initial_rows initial_columns row_heading column_heading /;
             if ($initial_rows
                 && ( $initial_rows !~ /^[+\-]?\d+$/
                     || ( $initial_rows < 0 || $initial_rows > 255 ) )
@@ -887,7 +887,7 @@ sub _validate_content_field_type_options {
                     '255'
                 );
             }
-            elsif ( $row_headers && length($row_headers) > 255 ) {
+            elsif ( $row_heading && length($row_heading) > 255 ) {
                 $err_msg = $plugin->translate(
                     '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                     $label || $field_label,
@@ -895,7 +895,7 @@ sub _validate_content_field_type_options {
                     '255'
                 );
             }
-            elsif ( $column_headers && length($column_headers) > 255 ) {
+            elsif ( $column_heading && length($column_heading) > 255 ) {
                 $err_msg = $plugin->translate(
                     '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                     $label || $field_label,

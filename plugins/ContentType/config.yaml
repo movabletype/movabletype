@@ -841,9 +841,9 @@ content_field_types:
             - hint
             - display
             - initial_rows
-            - row_headers
+            - row_heading
             - increase_decrease_rows
             - initial_columns
-            - column_headers
+            - column_heading
             - increase_decrease_columns
 
