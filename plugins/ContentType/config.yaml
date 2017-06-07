@@ -2,8 +2,8 @@ name: Content Type
 author_name: Six Apart, Ltd.
 author_link: http://www.sixapart.com/
 pack_link: <__trans phrase="http://www.sixapart.com/movabletype/">
-version: 0.27
-schema_version: 0.27
+version: 0.28
+schema_version: 0.28
 l10n_class: MT::ContentType::L10N
 
 permissions: $ContentType::ContentType::Permission::permissions
@@ -841,9 +841,9 @@ content_field_types:
             - hint
             - display
             - initial_rows
-            - row_headers
-            - changeable_rows
+            - row_heading
+            - increase_decrease_rows
             - initial_columns
-            - column_headers
-            - changeable_columns
+            - column_heading
+            - increase_decrease_columns
 

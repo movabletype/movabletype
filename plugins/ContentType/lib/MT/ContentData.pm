@@ -49,6 +49,7 @@ __PACKAGE__->install_properties(
             },
             'content_type_id' => 'integer not null',
             'unique_id'       => 'string(40) not null',
+            'ct_unique_id'    => 'string(40) not null',
             'data'            => {
                 type       => 'blob',
                 label      => 'Data',
@@ -72,13 +73,17 @@ __PACKAGE__->install_properties(
             },
             'revision' => 'integer meta',
         },
-        indexes     => { content_type_id => 1, unique_id => { unique => 1 } },
-        defaults    => { status          => 0 },
+        indexes => {
+            content_type_id => 1,
+            ct_unique_id    => 1,
+            unique_id       => { unique => 1 },
+        },
+        defaults    => { status => 0 },
         datasource  => 'cd',
         primary_key => 'id',
         audit       => 1,
         meta        => 1,
-        child_of => ['MT::ContentType'],
+        child_of    => ['MT::ContentType'],
     }
 );
 
@@ -114,6 +119,11 @@ sub unique_id {
     $self->column('unique_id');
 }
 
+sub ct_unique_id {
+    my $self = shift;
+    $self->column('ct_unique_id');
+}
+
 sub save {
     my $self = shift;
 
@@ -126,6 +136,8 @@ sub save {
         my $unique_id
             = MT::ContentType::UniqueID::generate_unique_id( $self->title );
         $self->column( 'unique_id', $unique_id );
+
+        $self->column( 'ct_unique_id', $content_type->unique_id );
     }
 
     ## If there's no identifier specified, create a unique identifier.
