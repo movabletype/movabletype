@@ -303,6 +303,12 @@ sub cfg_content_type {
         $content_type_id );
     $param->{content_types} = $content_type_loop;
 
+    my $tag_delim = $app->config('DefaultUserTagDelimiter') || ord(',');
+    $param->{tag_delim}
+        = $tag_delim eq ord(',') ? 'comma'
+        : $tag_delim eq ord(' ') ? 'space'
+        :                          'comma';
+
     $app->build_page( $plugin->load_tmpl('cfg_content_type.tmpl'), $param );
 }
 

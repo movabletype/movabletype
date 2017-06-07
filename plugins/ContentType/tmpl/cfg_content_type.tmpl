@@ -1244,11 +1244,12 @@
       <input type="text" name="tags-max" id="tags-max" class="text num" />
     </mtapp:setting>
 
+    <mt:setvarblock name="tags_hint"><__trans phrase="[_1] separated list" params="<$mt:var name="tag_delim"$>"></mt:setvarblock>
     <mtapp:setting
        id="tags-initial_value"
        label="<__trans phrase="Initial Value">"
        show_hint="1"
-       hint="<__trans phrase="Comma(or whitespace) separated list">">
+       hint="$tags_hint">
       <input type="text" name="tags-initial_value" id="tags-initial_value" class="text med" />
     </mtapp:setting>
 
