@@ -360,23 +360,28 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 <script type="text/javascript" src="<mt:var name="static_uri">plugins/ContentType/js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 
 <script>
-  (function($) {
-    var config = MT.Editor.TinyMCE.config;
-    $.extend(config, {
-        theme : "inlite",
-        inline : true,
-    });
-  })(jQuery);
-
   // editor load
   var editor_strategy = MT.App.EditorStrategy.Multi;
-  var _create = editor_strategy.prototype.create;
-  var _set = editor_strategy.prototype.set;
   editor_strategy.prototype.create = function(app, ids, format) {
     jQuery('.editorfield').each(function(i) {
       ids.push(this.id);
     });
-    _create.apply(this, arguments);
+    app.editors = {};
+    jQuery.each(ids, function() {
+        jQuery('#' + this).show();
+        var format = jQuery('.convert_breaks[data-target='+this+']').val();
+        app.editors[this] = new MT.EditorManager(this, {
+            format: format,
+            wrap: true
+        });
+
+        var setFormat = app.editors[this]['setFormat'];
+        app.editors[this]['setFormat'] = function(format) {
+            jQuery.each(app.editors, function() {
+                setFormat.apply(this, [format]);
+            });
+        };
+    });
   }
   editor_strategy.prototype._setWithHeight = function(app, id, height){
       jQuery(app.editorIds).each(function() {
@@ -398,36 +403,22 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 
       var field_id = response.result.field;
       jQuery('#'+field_id).html(response.result[field_id]);
-      jQuery('.convert_breaks[data-target='+field_id+']').data('orig_text_format', 'richtext');
-      jQuery('#editor-content').removeClass('editor-plaintext');
-      app.setEditorIframeHTML();
+      jQuery('.convert_breaks[data-target='+field_id+']').attr('data-orig_text_format', 'richtext');
+      jQuery('#'+field_id).parents('.editor-content').removeClass('editor-plaintext');
+      app.editor.reload();
+      // app.editor.setFormat('richtext');
+      // app.setEditorIframeHTML();
   }
   function changedTextFormat() {
       var editor_id = jQuery(this).data('target');
       var form = this.form;
       var option = this.options[this.selectedIndex].value;
 
-      var tag_name = 'textarea';
-      if(option == 'richtext'){
-        tag_name = 'div';
-      }
-      jQuery('#'+editor_id).replaceWith(function() {
-        var tag_class = jQuery(this).attr("class");
-
-        if ( tag_class == null) {
-          var tag_class_plus =[];
-        } else {
-          var tag_class_plus = 'class="'+tag_class+'"';
-        }
-        var tag_id_plus = 'id="'+editor_id+'"';
-        return '<' + tag_name + ' ' +tag_id_plus+'  '+tag_class_plus+'>'+jQuery(this).html()+'</' + tag_name + '>';
-      });
-
       var editor_name = editor_id.replace(/editor-input-/, '');
       app.setEditor(editor_name);
-      app.initEditor();
+      // app.initEditor();
 
-      var cur_text_format = jQuery(this).data('orig_text_format');
+      var cur_text_format = jQuery(this).attr('data-orig_text_format');
       if ((cur_text_format != 'richtext') && (option == 'richtext')) {
           // warn user that changing to richtext is not reversible (easily)
           if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
@@ -450,9 +441,11 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   
       if (cur_text_format == 'richtext') {
           // changing to plaintext editor
-          jQuery('#editor-content').addClass('editor-plaintext');
-          jQuery('.convert_breaks[data-target='+editor_id+']').data('orig_text_format', option);
+          jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
 
+          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
+
+          app.editor.reload();
           app.editor.setMode('textarea');
           app.editor.focus();
       } else if (option == 'richtext') {
@@ -460,12 +453,12 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           // changing to richtext editor
           // convert existing format to richtext
           var param = {
-              '__mode': 'convert_to_html',
+              '__mode': 'data_convert_to_html',
               'format': cur_text_format
           };
 
           param['field'] = editor_id;
-          param[editor_id] = jQuery('#'+editor_id).text();
+          param[editor_id] = jQuery('#'+editor_id).val();
 
           var params = {
               uri: '<mt:var name="script_url">', method: 'POST',
@@ -473,7 +466,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           };
           jQuery.post('<mt:var name="script_url">', param, convertedText);
       } else {
-          jQuery('.convert_breaks[data-target='+editor_id+']').data('orig_text_format', option);
+          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
           app.editor.setMode(option);
           app.editor.focus();
       }
@@ -588,7 +581,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       <mt:if name="type" eq="multi_line_text">
         <div class="field-convert_breaks">
           <__trans phrase="Format:">
-          <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="convert_breaks" data-target="editor-input-content-field-<mt:var name="content_field_id">">
+          <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="convert_breaks" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>">
           <mt:loop name="text_filters">
             <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
           </mt:loop>
@@ -605,7 +598,9 @@ Template.templates.autoSave = '<mt:section encode_js="1">
         </mt:if>
           <a href="#" onclick="openTFDocs(); return false" id="formatting-help-link" class="help-link<mt:unless name="show_formatting_help"> disabled</mt:unless>">?</a>
         </div>
-        <div id="editor-input-content-field-<mt:var name="content_field_id">" name="content-field-<mt:var name="content_field_id">" class="text high html5-form content-field editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></div>
+        <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
+          <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="text high html5-form content-field editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
+        </div>
       <mt:else>
         <textarea name="content-field-<mt:var name="content_field_id">" class="text high html5-form content-field" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
       </mt:if>

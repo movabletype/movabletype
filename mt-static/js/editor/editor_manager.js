@@ -164,6 +164,9 @@ $.extend(MT.EditorManager.prototype, {
 
     clearDirty: function() {
         this.currentEditor.clearDirty();
+    },
+    reload: function() {
+        this.currentEditor.reload();
     }
 });
 
