@@ -736,12 +736,12 @@ content_field_types:
             - allow_upload
             - max
             - min
-    embed_text:
-        label: embed text
+    embeded_text:
+        label: Embeded Text
         data_type: blob
         order: 160
         list_props:
-            embed_text:
+            embeded_text:
                 base: __virtual.string
                 col: value_blob
                 terms: $ContentType::MT::ContentFieldType::Common::terms_text

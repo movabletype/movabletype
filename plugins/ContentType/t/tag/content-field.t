@@ -58,8 +58,8 @@ my $cf_url = MT::Test::Permission->make_content_field(
 my $cf_embed = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
     content_type_id => $ct->id,
-    name            => 'embed text',
-    type            => 'embed_text',
+    name            => 'embeded text',
+    type            => 'embeded_text',
 );
 my $cf_datetime = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
