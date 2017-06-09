@@ -1,5 +1,5 @@
 tinyMCE.addI18n(tinymce.settings.language, {
-    "class_name": trans("Class Name")
+    "class_name": trans("Class Name"),
     "Bold": trans("Bold (Ctrl+B)"),
     "Italic": trans("Italic (Ctrl+I)"),
     "Underline": trans("Underline (Ctrl+U)"),
@@ -19,7 +19,7 @@ tinyMCE.addI18n(tinymce.settings.language, {
     "Align center": trans("Align Center"),
     "Align right": trans("Align Right"),
     "Increase indent": trans("Indent"),
-    "Decrease indent": trans("Outdent")
+    "Decrease indent": trans("Outdent"),
 
     mt_insert_link: trans('Insert Link'),
     mt_insert_html: trans('Insert HTML'),
