@@ -490,7 +490,7 @@ content_field_types:
             - required
             - display
             - multiple
-            - can_upload
+            - allow_upload
             - max
             - min
     audio:
@@ -567,7 +567,7 @@ content_field_types:
             - required
             - display
             - multiple
-            - can_upload
+            - allow_upload
             - max
             - min
     video:
@@ -644,7 +644,7 @@ content_field_types:
             - required
             - display
             - multiple
-            - can_upload
+            - allow_upload
             - max
             - min
     image:
@@ -733,7 +733,7 @@ content_field_types:
             - required
             - display
             - multiple
-            - can_upload
+            - allow_upload
             - max
             - min
     embed_text:
