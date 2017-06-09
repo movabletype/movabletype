@@ -218,15 +218,19 @@ sub cfg_content_type {
                 {
                     my $count  = 1;
                     my $values = delete $_->{options}{$key};
-                    foreach my $pair ( @{$values} ) {
+                    foreach my $trio ( @{$values} ) {
                         push @options,
                             {
-                            key   => 'values_key_' . $count,
-                            value => $pair->{key},
+                            key   => 'values_initial_' . $count,
+                            value => $trio->{initial},
+                            },
+                            {
+                            key   => 'values_label_' . $count,
+                            value => $trio->{label},
                             },
                             {
                             key   => 'values_value_' . $count,
-                            value => $pair->{value},
+                            value => $trio->{value},
                             };
                         $count++;
                     }
@@ -412,12 +416,12 @@ sub save_cfg_content_type {
         {
             my $count  = 1;
             my @values = ();
-            while ( $options->{ 'values_key_' . $count } ) {
-                my $key   = delete $options->{ 'values_key_' . $count };
+            while ( $options->{ 'values_label_' . $count } ) {
+                my $label = delete $options->{ 'values_label_' . $count };
                 my $value = delete $options->{ 'values_value_' . $count };
                 push @values,
                     {
-                    key   => $key,
+                    label => $label,
                     value => $value
                     };
                 $count++;
@@ -719,14 +723,8 @@ sub _validate_content_field_type_options {
             || $type eq 'checkboxes'
             || $type eq 'radio_button' )
         {
-            my $initial_value       = $options->{initial_value};
-            my $exist_initial_value = $initial_value eq '' ? 1 : 0;
-            my $values_count        = 0;
-            while ( $options->{ 'values_key_' . ( $values_count + 1 ) } ) {
-                $exist_initial_value++
-                    if ( $initial_value ne ''
-                    && $initial_value eq
-                    $options->{ 'values_value_' . ( $values_count + 1 ) } );
+            my $values_count = 0;
+            while ( $options->{ 'values_label_' . ( $values_count + 1 ) } ) {
                 $values_count++;
             }
             if ( $values_count == 0 ) {
@@ -734,12 +732,6 @@ sub _validate_content_field_type_options {
                     = $plugin->translate(
                     "[_1]'s \"Values\" field is required.",
                     $label || $field_label );
-            }
-            elsif ( !$exist_initial_value ) {
-                $err_msg = $plugin->translate(
-                    "[_1]'s \"Initial Value\" field value does not exist in \"Values\" field.",
-                    $label || $field_label
-                );
             }
             if ( !$err_msg && $type ne 'radio_button' ) {
                 my $min = $options->{min};

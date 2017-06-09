@@ -18,7 +18,7 @@ sub field_html_params {
     my $options = $field_data->{options};
     my $options_values = $options->{values} || [];
     @{$options_values} = map {
-        {   k => $_->{key},
+        {   l => $_->{label},
             v => $_->{value},
             $values{ $_->{value} }
             ? ( selected => 'selected="selected"' )

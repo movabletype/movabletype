@@ -9,7 +9,7 @@ sub field_html_params {
 
     my $options_values = $field_data->{options}{values} || [];
     @{$options_values} = map {
-        {   k => $_->{key},
+        {   l => $_->{label},
             v => $_->{value},
             ( $_->{value} eq $value )
             ? ( checked => 'checked="checked"' )

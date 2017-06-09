@@ -524,12 +524,6 @@
       <input type="text" name="select_box-max" id="select_box-max" class="text num" />
     </mtapp:setting>
 
-    <mtapp:setting
-       id="select_box-initial_value"
-       label="<__trans phrase="Initial Value">">
-      <input type="text" name="select_box-initial_value" id="select_box-initial_value" class="text med" />
-    </mtapp:setting>
-
     <div id="save-block" class="icon-save icon-left">
       <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
     </div>
@@ -577,12 +571,6 @@
       id="radio_button-values"
       label="<__trans phrase="Values">">
       <a href="javascript:void(0)" class="add-values-list"><img src="<mt:var name="static_uri">images/status_icons/create.gif" /></a>
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="radio_button-initial_value"
-       label="<__trans phrase="Initial Value">">
-      <input type="text" name="radio_button-initial_value" id="radio_button-initial_value" class="text med" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -655,12 +643,6 @@
       id="checkboxes-values"
       label="<__trans phrase="Values">">
       <a href="javascript:void(0)" class="add-values-list"><img src="<mt:var name="static_uri">images/status_icons/create.gif" /></a>
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="checkboxes-initial_value"
-       label="<__trans phrase="Initial Value">">
-      <input type="text" name="checkboxes-initial_value" id="checkboxes-initial_value" class="text med" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -1582,11 +1564,12 @@
       });
       var count = 1;
       jQuery('div.' + type_name + '-values').remove();
-      while (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options']['values_key_' + count]) {
+      while (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options']['values_label_' + count]) {
         var add_button = jQuery('#' + type_name + '-values-field').find('a.add-values-list');
-        var key = data['fields'][current_id]['options']['values_key_' + count];
+        var initial = data['fields'][current_id]['options']['initial_value'];
+        var label = data['fields'][current_id]['options']['values_label_' + count];
         var value = data['fields'][current_id]['options']['values_value_' + count];
-        addList(add_button, key, value);
+        addList(add_button, initial, label, value);
         count++;
       }
       setDirty(false);
@@ -1652,7 +1635,7 @@
       setDirty(true);
     });
     jQuery('a.add-values-list').unbind('click').click(function() {
-      addList(this, "", "");
+      addList(this, "", "", "");
     });
   }
 
@@ -1695,20 +1678,25 @@
     jQuery('.' + type_name + '-values').each( function(index, element) {
       var prefix = type_name + '-values_';
       var number = index + 1;
-      jQuery(this).children('[id^=' + prefix + 'key_]').attr('id', prefix + 'key_' + number);
+      jQuery(this).children('[id^=' + prefix + 'label_]').attr('id', prefix + 'label_' + number);
       jQuery(this).children('[id^=' + prefix + 'value_]').attr('id', prefix + 'value_' + number);
     });
   }
 
-  function addList( addButton, key, value ) {
+  function addList( addButton, initial, label, value ) {
     var id = jQuery(addButton).parent().parent().parent().attr("id");
     var type_name = (id.match(/(.*)-options/))[1];
     var div = jQuery('.' + type_name + '-values');
     var number = div.length + 1;
     var newDiv = '<div class="' + type_name + '-values">' + "\n";
-    newDiv += '  <input name="' + type_name + '-values_key" id="' + type_name + '-values_key_' + number + '" class="text short" value="' + key + '" placeholder="Key" />' + "\n";
+    newDiv += '  <input type="radio" name="' + type_name + '-initial_value" id="' + type_name + '-initial_value" value="' + value + '" ';
+    if ( initial === value ) {
+      newDiv += 'checked="checked" ';
+    }
+    newDiv += '/>' + "\n";
+    newDiv += '  <input type="text" name="' + type_name + '-values_label" id="' + type_name + '-values_label_' + number + '" class="text short" value="' + label + '" placeholder="Label" />' + "\n";
     newDiv += ':';
-    newDiv += '  <input name="' + type_name + '-values_value" id="' + type_name + '-values_value_' + number + '" class="text short" value="' + value + '" placeholder="Value" />' + "\n";
+    newDiv += '  <input type="text" name="' + type_name + '-values_value" id="' + type_name + '-values_value_' + number + '" class="text short" value="' + value + '" placeholder="Value" />' + "\n";
     newDiv += '  <a href="javascript:void(0)" class="remove-values-list"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>' + "\n";
     newDiv += '</div>' + "\n";
   
