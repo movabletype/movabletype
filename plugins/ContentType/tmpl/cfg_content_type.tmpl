@@ -1583,18 +1583,19 @@
       var data = JSON.parse( localStorage.getItem("ContentType") );
       options.find("input").each(function(index, element) {
         var input_type = jQuery(element).attr("type");
+        var opt_name = '';
+        var opt_val = '';
         if (input_type === 'hidden')
           return true;
         if (input_type === 'radio') {
-          if (!jQuery(element).prop('checked')) {
-            return;
-          }
-          var opt_name = (jQuery(element).attr('name').match(regexp))[1];
-          var opt_val = jQuery(element).val();
+          opt_name = (jQuery(element).attr('name').match(regexp))[1];
+          opt_val = jQuery(element).prop('checked')
+                  ? jQuery(element).val()
+                  : '';
         } else {
           var opt_id = jQuery(element).attr("id");
-          var opt_name = (opt_id.match(regexp))[1];
-          var opt_val = '';
+          opt_name = (opt_id.match(regexp))[1];
+          opt_val = '';
           if (input_type === 'checkbox') {
             opt_val = jQuery(element).prop('checked') ? 1 : 0;
           }
