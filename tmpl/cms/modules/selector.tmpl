@@ -1,0 +1,56 @@
+<mt:ignore>FIXME: should fix scope_type in Perl code.</mt:ignore>
+<mt:if name="scope_type" eq="website"><mt:var name="scope_type" value="site"></mt:if>
+<mt:setvarblock name="user_screen_name"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html"><mt:else><mt:var name="author_name" escape="html"></mt:if></mt:setvarblock>
+<nav class="navbar navbar-default selector scope <mt:var name="scope_type">" role="navigation">
+  <div class="container-fluid">
+
+    <div class="navbar-header">
+      <a href="<mt:var name="mt_url">?__mode=dashboard"><span class="mt-icon mt-icon-logo"></span></a>
+    </div>
+
+    <!-- scope labels -->
+    <ul class="nav navbar-nav navbar-left">
+    <mt:if name="scope_type" eq="user">
+      <li class="scope user"><__trans phrase="User Dashboard"></li>
+    <mt:elseif name="scope_type" eq="system">
+      <li class="scope system"><a href="<mt:var name="mt_url">?__mode=dashboard&blog_id=0"><__trans phrase="System Overview"></a></li>
+    <mt:else>
+      <li id="current-site" class="scope site"><b class="mt-navbar-arrow"></b><a<mt:if name="curr_website_can_link"> href="<mt:var name="mt_url">?__mode=dashboard&blog_id=<mt:var name="curr_website_id">"</mt:if>><span class="current-site-name"><mt:var name="curr_website_name" escape="html"></span><span class="fa fa-sitemap visible-xs"></span></a><b class="mt-navbar-arrow"></b></li>
+    </mt:if>
+    <mt:if name="scope_type" eq="blog">
+      <li id="current-blog" class="scope blog"><a href="<mt:var name="mt_url">?__mode=dashboard&blog_id=<mt:var name="curr_blog_id">"><mt:var name="curr_blog_name" escape="html"></a></li>
+    </mt:if>
+    </ul>
+
+    <!-- shortcut links -->
+    <ul class="nav navbar-nav navbar-right">
+
+      <mt:if name="blog_id">
+      <li class="shortcut-create">
+<mt:ignore>
+        [% UNLESS site.admin_is_locked %]
+</mt:ignore>
+        <a href="<mt:var name="url">?__mode=view&_type=entry&blog_id=<mt:var name="blog_id">" id="create-entry-shortcut"><span class="fa fa-pencil"></span><span><__trans phrase="New"></span></a>
+<mt:ignore>
+        [% END %]
+</mt:ignore>
+      </li>
+      <li class="open-website">
+        <a href="<mt:var name="blog_url" escape="html">" target="_blank"><span class="fa fa-external-link"></span></a>
+      </li>
+      </mt:if>
+
+      <li class="navbar-user">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="fa fa-bars"></span></a>
+        <ul class="dropdown-menu" role="menu">
+          <li class="profile"><a><img alt="<mt:var name="user_screen_name">" src="<mt:if name="author_userpic_url"><mt:var name="author_userpic_url" escape="html"><mt:else><mt:var name="static_uri">images/default-userpic-36.jpg</mt:if>" width="18" height="18"><mt:var name="user_screen_name"></a></li>
+          <li class="account"><a href="<mt:var name="mt_url">?__mode=view&_type=author&id=<mt:var name="author_id" escape="url">"><span class="glyphicon glyphicon-user"></span><__trans phrase="Account"></a></li>
+          <li class="help"><a href="<mt:var name="help_url">help/<mt:var name="template_filename" escape="html">/" target="_blank"><span class="glyphicon glyphicon-question-sign"></span><__trans phrase="Help"></a></li>
+          <li class="signout"><a href="<mt:var name="mt_url">?__mode=logout"><span class="glyphicon glyphicon-log-out"></span><__trans phrase="Sign out"></a></li>
+        </ul>
+      </li>
+    </ul>
+
+  </div>
+</nav>
+

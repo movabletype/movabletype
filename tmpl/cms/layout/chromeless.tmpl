@@ -1,0 +1,39 @@
+<mt:setvartemplate name="layout">
+<!DOCTYPE html>
+<html lang="<mt:var name="language_tag">">
+<head>
+  <meta charset="<mt:var name="language_encoding">"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="<mt:var name="static_uri">bootstrap-3.3.7/css/bootstrap.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <link rel="stylesheet" href="<mt:var name="static_uri">mt-net/bundle.min.css?27250d7" />
+<mt:igeore>
+[% FOR path IN css -%]
+  [% link_tag(path) %]
+[% END -%]
+</mt:ignore>
+  <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
+  <mt:include name="modules/icon.tmpl">
+</head>
+<body>
+  <div class="container body">
+
+    <mt:unless name="no_brand">
+    <div id="brand">
+      <img alt="Movable Type" src="<mt:var name="static_uri">mt-static/images/chromeless/mt_logo.png" />
+    </div>
+    </mt:unless>
+
+    <mt:if name="page_title">
+    <div class="page-header">
+      <h1><mt:var name="page_title"></h1>
+    </div>
+    </mt:if>
+
+    <mt:var name="content">
+  </div>
+
+</body>
+</html>
+<mt:setvartemplate>
+

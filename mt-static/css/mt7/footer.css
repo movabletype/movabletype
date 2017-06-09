@@ -1,0 +1,70 @@
+#footer {
+    position: absolute;
+    bottom: 0;
+    clear: both;
+    width: 100%;
+    height: 76px;
+    text-align: left;
+}
+
+#footer {
+    border-top: 1px solid #b2b2b2;
+    padding: 8px 0 1px;
+    background-color: #e6e6e6;
+    font-size: 85%;
+}
+#footer a {
+    color: #666666;
+}
+#footer a:hover,
+#footer a:active {
+    color: #1A1A1A;
+}
+#footer .inline-nav {
+    margin: 0 20px 10px;
+    padding: 0;
+    white-space: nowrap;
+}
+#footer .inline-nav li {
+    display: inline;
+    border: 0;
+    border-left: 2px solid #9ea1a3;
+    padding: 0 7px;
+}
+#footer .inline-nav li.first-child {
+    border: none;
+    padding-left: 0;
+}
+#version,
+#copyright {
+    margin-left: 20px;
+}
+
+.mt-beta #brand {
+    background-image: url(../images/beta_icons/beta_icon.png);
+    background-position: 152px center;
+    background-repeat: no-repeat;
+}
+.mt-beta #brand span.tips {
+    left: 197px;
+}
+.mt-beta #container {
+    padding-bottom: 180px;
+}
+.mt-beta #footer {
+    padding-top: 0;
+}
+.mt-beta #footer #msg-beta {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #c0c6c9;
+    background-color: #e6eaa8;
+    text-align: center;
+}
+.mt-beta #footer #msg-beta p {
+    display: inline-block;
+    margin: 0 auto;
+    padding: 0.8em 0 0.8em 45px;
+    background: transparent url(../images/beta_icons/beta_icon.png) left center no-repeat;
+    text-align: left;
+}
+
