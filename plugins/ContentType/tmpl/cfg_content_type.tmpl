@@ -1689,9 +1689,9 @@
     var div = jQuery('.' + type_name + '-values');
     var number = div.length + 1;
     var newDiv = '<div class="' + type_name + '-values">' + "\n";
-    newDiv += '  <input type="radio" name="' + type_name + '-initial_value" id="' + type_name + '-initial_value" value="' + value + '" ';
+    newDiv += '  <input type="radio" name="' + type_name + '-initial_value" id="' + type_name + '-initial_value_' + number + '" value="' + value + '" ';
     if ( initial === value ) {
-      newDiv += 'checked="checked" ';
+      newDiv += 'checked="checked" class="checked" ';
     }
     newDiv += '/>' + "\n";
     newDiv += '  <input type="text" name="' + type_name + '-values_label" id="' + type_name + '-values_label_' + number + '" class="text short" value="' + label + '" placeholder="Label" />' + "\n";
@@ -1704,6 +1704,16 @@
   
     jQuery('a.remove-values-list').unbind('click').click(function() {
       removeList(this);
+    });
+    jQuery('#' + type_name + '-initial_value_' + number).unbind('click').click(function() {
+      if ( jQuery(this).hasClass('checked') ) {
+        jQuery(this).prop('checked', false);
+        jQuery(this).removeClass('checked');
+      }
+      else {
+        jQuery('input[type=radio].checked').removeClass('checked');
+        jQuery(this).addClass('checked');
+      }
     });
 
     setDirty(true);
