@@ -11,6 +11,7 @@ use base qw( MT::Object );
 
 use JSON ();
 
+use MT;
 use MT::ContentField;
 use MT::ContentType::UniqueID;
 
@@ -34,6 +35,12 @@ __PACKAGE__->install_properties(
         ],
     }
 );
+
+__PACKAGE__->add_callback( 'post_save', 5, MT->component('core'),
+    \&_post_save );
+
+__PACKAGE__->add_callback( 'post_remove', 5, MT->component('core'),
+    \&_post_remove );
 
 sub class_label {
     MT->translate("Content Type");
@@ -204,13 +211,13 @@ sub all_permissions {
     return \%all_permission;
 }
 
-sub post_save {
+sub _post_save {
     my ( $cb, $obj, $original ) = @_;
 
     MT->app->reboot;
 }
 
-sub post_remove {
+sub _post_remove {
     my ( $cb, $obj, $original ) = @_;
 
     $obj->remove_children( { key => 'content_type_id' } );

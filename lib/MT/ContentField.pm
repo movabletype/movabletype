@@ -40,6 +40,12 @@ __PACKAGE__->install_properties(
     }
 );
 
+__PACKAGE__->add_callback( 'post_save', 5, MT->component('core'),
+    \&_post_save );
+
+__PACKAGE__->add_callback( 'post_remove', 5, MT->component('core'),
+    \&_post_remove );
+
 sub class_label {
     MT->translate("Content Field");
 }
@@ -91,13 +97,13 @@ sub permission {
     };
 }
 
-sub post_save {
+sub _post_save {
     my ( $cb, $obj, $original ) = @_;
 
     MT->app->reboot;
 }
 
-sub post_remove {
+sub _post_remove {
     my ( $cb, $obj, $original ) = @_;
 
     my $content_type = MT::ContentType->load( $obj->content_type_id || 0 );

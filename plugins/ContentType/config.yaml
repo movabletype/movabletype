@@ -10,12 +10,6 @@ permissions: $ContentType::ContentType::Permission::permissions
 callbacks:
     init_app: $ContentType::ContentType::App::CMS::init_app
 
-    # TODO: should add other callbacks. these are probably insufficient.
-    MT::ContentType::post_save: $Core::MT::ContentType::post_save
-    MT::ContentType::post_remove: $Core::MT::ContentType::post_remove
-    MT::ContentField::post_save: $Core::MT::ContentField::post_save
-    MT::ContentField::post_remove: $Core::MT::ContentField::post_remove
-
 applications:
     cms:
         callbacks:
