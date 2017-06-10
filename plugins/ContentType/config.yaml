@@ -120,7 +120,6 @@ object_types:
 
     category:
         category_list_id: integer
-    category_list: MT::CategoryList
 
 listing_screens: $ContentType::ContentType::ListProperties::make_listing_screens
 list_properties: $ContentType::ContentType::ListProperties::make_list_properties

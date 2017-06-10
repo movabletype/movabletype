@@ -167,6 +167,7 @@ BEGIN {
             'touch'           => 'MT::Touch',
             'failedlogin'     => 'MT::FailedLogin',
             'accesstoken'     => 'MT::AccessToken',
+            'category_list'   => 'MT::CategoryList',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
