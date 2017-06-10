@@ -2548,6 +2548,64 @@ sub core_menus {
             view    => [ "blog", 'website', 'system' ],
             display => 0,
         },
+
+        # MT7
+        'content_type' => {
+            label => 'Content Type',
+            order => 9100
+        },
+        'content_type:manage_content_type' => {
+            label      => 'Manage',
+            order      => 100,
+            mode       => 'list',
+            args       => { _type => 'content_type' },
+            permission => 'administer_website,administer_blog',
+            view       => [ 'website', 'blog' ],
+        },
+        'content_type:create_content_type' => {
+            label => 'New',
+            mode  => 'cfg_content_type_description',
+            order => 200,
+            view  => [ 'website', 'blog' ],
+        },
+        'content_data' => {
+            label => 'Content Data',
+            order => 9200,
+        },
+        'content_data:manage_content_data' => {
+            label => 'Manage',
+            order => 100,
+            mode  => 'select_list_content_type',
+            view  => [ 'website', 'blog' ],
+        },
+        'content_data:create_content_data' => {
+            label => 'New',
+            mode  => 'select_edit_content_type',
+            order => 200,
+            view  => [ 'website', 'blog' ],
+        },
+
+        'category_list' => {
+            label => 'Category Lists',
+            order => 9500,
+        },
+        'category_list:manage' => {
+            label     => 'Manage',
+            order     => 100,
+            mode      => 'list',
+            condition => '$Core::MT::CMS::CategoryList::manage_condition',
+            args      => { _type => 'category_list' },
+            view      => [ 'website', 'blog' ],
+        },
+        'category_list:create' => {
+            label      => 'New',
+            order      => 200,
+            mode       => 'view',
+            permission => 'edit_categories',
+            args       => { _type => 'category_list' },
+            view       => [ 'website', 'blog' ],
+        },
+
     };
 }
 
