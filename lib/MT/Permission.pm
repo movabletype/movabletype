@@ -9,6 +9,7 @@ package MT::Permission;
 use strict;
 
 use MT::Blog;
+use MT::ContentData;
 use MT::Object;
 @MT::Permission::ISA = qw(MT::Object);
 
@@ -582,6 +583,43 @@ sub can_upload {
 sub can_view_feedback {
     my $perms = shift;
     $perms->can_do('view_feedback');
+}
+
+sub can_edit_content_data {
+    my $self = shift;
+    my ( $content_data, $author, $status ) = @_;
+    die unless $author->isa('MT::Author');
+    return 1 if $author->is_superuser();
+    unless ( ref $content_data ) {
+        $content_data = MT::ContentData->load($content_data)
+            or return;
+    }
+
+    if (   !ref $self
+        || $self->author_id != $author->id
+        || $self->blog_id != $content_data->blog_id )
+    {
+        $self = $author->permissions( $content_data->blog_id )
+            or return;
+    }
+
+    my $content_data_name = 'content_data_' . $content_data->id;
+
+    return 1
+        if $self->can_do("edit_all_${content_data_name}");
+
+    my $own_content_data = $content_data->author_id == $author->id;
+
+    if ( defined $status ) {
+        return $own_content_data
+            ? $self->can_do("edit_own_published_${content_data_name}")
+            : $self->can_do("edit_all_published_${content_data_name}");
+    }
+    else {
+        return $own_content_data
+            ? $self->can_do("edit_own_unpublished_${content_data_name}")
+            : $self->can_do("edit_all_unpublished_${content_data_name}");
+    }
 }
 
 sub is_empty {
