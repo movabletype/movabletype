@@ -108,10 +108,6 @@ applications:
                     - website
                     - blog
 
-object_types:
-    cd: MT::ContentData
-    content_data: MT::ContentData
-
 listing_screens: $ContentType::ContentType::ListProperties::make_listing_screens
 list_properties: $ContentType::ContentType::ListProperties::make_list_properties
 content_actions: $ContentType::ContentType::ListProperties::make_content_actions

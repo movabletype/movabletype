@@ -170,6 +170,8 @@ BEGIN {
 
             # MT7
             'category_list'       => 'MT::CategoryList',
+            'cd'                  => 'MT::ContentData',
+            'content_data'        => 'MT::ContentData',
             'cf'                  => 'MT::ContentField',
             'content_field'       => 'MT::ContentField',
             'cf_idx'              => 'MT::ContentFieldIndex',
