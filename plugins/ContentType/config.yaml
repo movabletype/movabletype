@@ -23,9 +23,6 @@ applications:
             template_param.list_common: $ContentType::ContentType::App::CMS::tmpl_param_list_common
             template_param.edit_role: $ContentType::ContentType::App::CMS::tmpl_param_edit_role
 
-            cms_post_save.cd: $ContentType::MT::CMS::ContentData::post_save
-            cms_post_delete.cd: $ContentType::MT::CMS::ContentData::post_delete
-
         methods:
             cfg_content_type_description: $ContentType::ContentType::App::CMS::cfg_content_type_description
             cfg_content_type: $ContentType::ContentType::App::CMS::cfg_content_type

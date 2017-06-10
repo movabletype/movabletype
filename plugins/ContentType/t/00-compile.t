@@ -17,7 +17,6 @@ use_ok('ContentType::ListProperties');
 use_ok('ContentType::Permission');
 use_ok('ContentType::Tags');
 use_ok('ContentType::Tools');
-use_ok('MT::CMS::ContentData');
 use_ok('MT::ContentFieldType::Asset');
 use_ok('MT::ContentFieldType::Categories');
 use_ok('MT::ContentFieldType::Checkboxes');
