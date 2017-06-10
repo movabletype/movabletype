@@ -886,6 +886,12 @@ sub core_content_actions {
                 }
             },
         },
+
+        # TODO: FogBugz:114491
+        # Hide create link temporarily and will fix in new UI.
+        # 'content_type' => '$Core::MT::CMS::ContentType::content_actions',
+
+        %{ MT::CMS::ContentData::make_content_actions() },
     };
 }
 

@@ -422,41 +422,5 @@ sub make_title_html {
     return qq{<span class="label">$label</span>};
 }
 
-sub make_content_actions {
-    my $props = {
-
-        # TODO: FogBugz:114491
-        # Hide create link temporarily and will fix in new UI.
-        # content_type => {
-        #     new => {
-        #         label => 'Create new content type',
-        #         order => 100,
-        #         mode  => 'cfg_content_type',
-        #         class => 'icon-create',
-        #     }
-        # },
-    };
-
-    my @content_types = MT::ContentType->load();
-    foreach my $content_type (@content_types) {
-        my $key = 'content_data_' . $content_type->id;
-
-        $props->{$key} = {
-            new => {
-                label => 'Create new ' . $content_type->name,
-                order => 100,
-                mode  => 'edit_content_data',
-                args  => {
-                    blog_id         => $content_type->blog_id,
-                    content_type_id => $content_type->id,
-                },
-                class => 'icon-create',
-            }
-        };
-    }
-
-    return $props;
-}
-
 1;
 

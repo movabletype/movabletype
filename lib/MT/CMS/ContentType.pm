@@ -1645,6 +1645,16 @@ sub validate_content_fields {
     );
 }
 
+sub content_actions {
+    {   new => {
+            label => 'Create new content type',
+            order => 100,
+            mode  => 'cfg_content_type',
+            class => 'icon-create',
+        }
+    };
+}
+
 sub list_actions {
     {   delete => {
             label      => 'Delete',

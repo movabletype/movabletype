@@ -57,6 +57,27 @@ sub data_convert_to_html {
     return $app->json_result($result);
 }
 
+sub make_content_actions {
+    my $iter            = MT::ContentType->load_iter;
+    my $content_actions = {};
+    while ( my $ct = $iter->() ) {
+        my $key = 'content_data_' . $ct->id;
+        $content_actions->{$key} = {
+            new => {
+                label => 'Create new ' . $ct->name,
+                order => 100,
+                mode  => 'edit_content_data',
+                args  => {
+                    blog_id         => $ct->blog_id,
+                    content_type_id => $ct->id,
+                },
+                class => 'icon-create',
+            }
+        };
+    }
+    $content_actions;
+}
+
 sub make_list_actions {
     my $common_delete_action = {
         delete => {
