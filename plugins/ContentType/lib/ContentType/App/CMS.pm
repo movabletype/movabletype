@@ -30,11 +30,6 @@ use MT::Util ();
 
     no warnings 'redefine', 'once';
 
-    *MT::Author::can_manage_content_types = sub {
-        my $author = shift;
-        return $author->is_superuser(@_);
-    };
-
     *MT::Permission::can_edit_content_data = sub {
         my $self = shift;
         my ( $content_data, $author, $status ) = @_;
