@@ -38,7 +38,6 @@ use_ok('MT::ContentFieldType::Table');
 use_ok('MT::ContentFieldType::Tags');
 use_ok('MT::ContentFieldType::Time');
 use_ok('MT::ContentFieldType::URL');
-use_ok('MT::ContentType::UniqueID');
 
 test_all_modules_are_checked();
 

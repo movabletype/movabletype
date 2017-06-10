@@ -117,11 +117,6 @@ use_ok('MT::Filter');
 use_ok('MT::Page');
 use_ok('MT::Folder');
 
-# MT7
-use_ok('MT::CategoryList');
-use_ok('MT::ObjectCategory');
-use_ok('MT::ContentType');
-
 # Utility modules
 use_ok('MT::Builder');
 use_ok('MT::Callback');
@@ -131,6 +126,13 @@ use_ok('MT::DefaultTemplates');
 use_ok('MT::FileMgr');
 use_ok('MT::FileMgr::Local');
 use_ok('MT::FileMgr::FTP');
+
+# MT7
+use_ok('MT::CategoryList');
+use_ok('MT::ContentType');
+use_ok('MT::ContentType::UniqueID');
+use_ok('MT::ObjectCategory');
+
 SKIP: {
 
     if ( eval { require Net::FTPSSL } ) {
