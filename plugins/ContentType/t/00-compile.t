@@ -15,7 +15,6 @@ use_ok('ContentType::App::CMS');
 use_ok('ContentType::Feed');
 use_ok('ContentType::ListProperties');
 use_ok('ContentType::Permission');
-use_ok('ContentType::Tags');
 use_ok('ContentType::Tools');
 use_ok('MT::ContentFieldType::Asset');
 use_ok('MT::ContentFieldType::Categories');

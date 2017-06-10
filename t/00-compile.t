@@ -137,6 +137,7 @@ use_ok('MT::ContentFieldIndex');
 use_ok('MT::ContentType');
 use_ok('MT::ContentType::UniqueID');
 use_ok('MT::ObjectCategory');
+use_ok('MT::Template::Tags::ContentType');
 
 SKIP: {
 

@@ -45,51 +45,6 @@ listing_screens: $ContentType::ContentType::ListProperties::make_listing_screens
 list_properties: $ContentType::ContentType::ListProperties::make_list_properties
 content_actions: $ContentType::ContentType::ListProperties::make_content_actions
 list_actions: $ContentType::ContentType::ListProperties::make_list_actions
-tags:
-    block:
-        AuthorHasContent?: $ContentType::ContentType::Tags::_hdlr_author_has_content
-        CalendarIfContents: $Core::MT::Template::Context::slurp
-        CalendarIfNoContents: $Core::MT::Template::Context::slurp
-        ContentAuthorUserpicAsset: $ContentType::ContentType::Tags::_hdlr_content_author_userpic_asset
-        ContentCalendar: $ContentType::ContentType::Tags::_hdlr_content_calendar
-        ContentField: $ContentType::ContentType::Tags::_hdlr_content_field
-        ContentFields: $ContentType::ContentType::Tags::_hdlr_content_fields
-        ContentNext: $ContentType::ContentType::Tags::_hdlr_content_next
-        ContentPrevious: $ContentType::ContentType::Tags::_hdlr_content_previous
-        Contents: $ContentType::ContentType::Tags::_hdlr_contents
-        ContentsFooter: $Core::MT::Template::Context::slurp
-        ContentsHeader: $Core::MT::Template::Context::slurp
-        # ContentAssets: $ContentType::ContentType::Tags::_hdlr_assets
-        # ContentTags: $ContentType::ContentType::Tags::_hdlr_content_tags
-        # ContentCategories: $ContentType::ContentType::Tags::_hdlr_content_categories
-    function:
-        AuthorContentCount: $ContentType::ContentType::Tags::_hdlr_author_content_count
-        ContentAuthorDisplayName: $ContentType::ContentType::Tags::_hdlr_content_author_display_name
-        ContentAuthorEmail: $ContentType::ContentType::Tags::_hdlr_content_author_email
-        ContentAuthorID: $ContentType::ContentType::Tags::_hdlr_content_author_id
-        ContentAuthorLink: $ContentType::ContentType::Tags::_hdlr_content_author_link
-        ContentAuthorURL: $ContentType::ContentType::Tags::_hdlr_content_author_url
-        ContentAuthorUsername: $ContentType::ContentType::Tags::_hdlr_content_author_username
-        ContentAuthorUserpic: $ContentType::ContentType::Tags::_hdlr_content_author_userpic
-        ContentAuthorUserpicURL: $ContentType::ContentType::Tags::_hdlr_content_author_userpic_url
-        ContentCreatedDate: $ContentType::ContentType::Tags::_hdlr_content_created_date
-        ContentDate: $ContentType::ContentType::Tags::_hdlr_content_date
-        ContentModifiedDate: $ContentType::ContentType::Tags::_hdlr_content_modified_date
-        ContentID: $ContentType::ContentType::Tags::_hdlr_content_id
-        ContentIdentifier: $ContentType::ContentType::Tags::_hdlr_content_identifier
-        ContentPermalink:
-        ContentSiteDescription: $ContentType::ContentType::Tags::_hdlr_content_site_description
-        ContentSiteID: $ContentType::ContentType::Tags::_hdlr_content_site_id
-        ContentSiteName: $ContentType::ContentType::Tags::_hdlr_content_site_name
-        ContentSiteURL: $ContentType::ContentType::Tags::_hdlr_content_site_url
-        ContentStatus: $ContentType::ContentType::Tags::_hdlr_content_status
-        ContentTitle: $ContentType::ContentType::Tags::_hdlr_content_title
-        ContentUniqueID: $ContentType::ContentType::Tags::_hdlr_content_unique_id
-        ContentUnpublishedDate: $ContentType::ContentType::Tags::_hdlr_content_unpublished_date
-        ContentsCount: $ContentType::ContentType::Tags::_hdlr_contents_count
-        SiteContentCount: $ContentType::ContentType::Tags::_hdlr_site_content_count
-        # Content: $ContentType::ContentType::Tags::_hdlr_content
-        # Entity: $ContentType::ContentType::Tags::_hdlr_entity
 
 content_field_types:
     content_type:

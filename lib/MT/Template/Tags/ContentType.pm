@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package ContentType::Tags;
+package MT::Template::Tags::ContentType;
 
 use strict;
 
