@@ -170,8 +170,10 @@ BEGIN {
 
             # MT7
             'category_list'  => 'MT::CategoryList',
-            'objectcategory' => 'MT::ObjectCategory',
+            'cf'             => 'MT::ContentField',
+            'content_field'  => 'MT::ContentField',
             'content_type'   => 'MT::ContentType',
+            'objectcategory' => 'MT::ObjectCategory',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',

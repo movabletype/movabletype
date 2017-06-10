@@ -129,6 +129,7 @@ use_ok('MT::FileMgr::FTP');
 
 # MT7
 use_ok('MT::CategoryList');
+use_ok('MT::ContentField');
 use_ok('MT::ContentType');
 use_ok('MT::ContentType::UniqueID');
 use_ok('MT::ObjectCategory');
