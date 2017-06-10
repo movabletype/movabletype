@@ -4,7 +4,6 @@ author_link: http://www.sixapart.com/
 pack_link: <__trans phrase="http://www.sixapart.com/movabletype/">
 version: 0.28
 schema_version: 0.28
-l10n_class: MT::ContentType::L10N
 
 permissions: $ContentType::ContentType::Permission::permissions
 
