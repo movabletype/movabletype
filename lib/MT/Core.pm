@@ -168,6 +168,7 @@ BEGIN {
             'failedlogin'     => 'MT::FailedLogin',
             'accesstoken'     => 'MT::AccessToken',
             'category_list'   => 'MT::CategoryList',
+            'objectcategory'  => 'MT::ObjectCategory',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
