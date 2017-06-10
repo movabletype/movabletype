@@ -352,6 +352,9 @@ sub core_methods {
         'list_associations' => "${pkg}User::list_association",
         'list_roles'        => "${pkg}User::list_role",
         'upload_userpic'    => "${pkg}User::upload_userpic",
+
+        ## MT7
+        'view_category_list' => "${pkg}CategoryList::view",
     };
 }
 

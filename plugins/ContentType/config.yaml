@@ -43,7 +43,6 @@ applications:
                 code: $ContentType::ContentType::App::CMS::dialog_list_content_data
                 condition: sub { shift->param('dialog_view') }
 
-            view_category_list: $ContentType::MT::CMS::CategoryList::view
             data_convert_to_html: $ContentType::ContentType::Tools::data_convert_to_html
         menus:
             content_type:
