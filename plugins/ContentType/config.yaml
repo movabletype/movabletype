@@ -111,8 +111,6 @@ applications:
 object_types:
     cd: MT::ContentData
     content_data: MT::ContentData
-    content_field_index: MT::ContentFieldIndex
-    cf_idx: MT::ContentFieldIndex
 
 listing_screens: $ContentType::ContentType::ListProperties::make_listing_screens
 list_properties: $ContentType::ContentType::ListProperties::make_list_properties

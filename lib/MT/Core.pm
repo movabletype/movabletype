@@ -169,11 +169,13 @@ BEGIN {
             'accesstoken'     => 'MT::AccessToken',
 
             # MT7
-            'category_list'  => 'MT::CategoryList',
-            'cf'             => 'MT::ContentField',
-            'content_field'  => 'MT::ContentField',
-            'content_type'   => 'MT::ContentType',
-            'objectcategory' => 'MT::ObjectCategory',
+            'category_list'       => 'MT::CategoryList',
+            'cf'                  => 'MT::ContentField',
+            'content_field'       => 'MT::ContentField',
+            'cf_idx'              => 'MT::ContentFieldIndex',
+            'content_field_index' => 'MT::ContentFieldIndex',
+            'content_type'        => 'MT::ContentType',
+            'objectcategory'      => 'MT::ObjectCategory',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
