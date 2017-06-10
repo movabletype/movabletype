@@ -15,6 +15,35 @@ use MT::ContentType;
 use MT::Entry;
 use MT::Util;
 
+=head2 Contents
+
+The Contents tag is a workhorse of MT publishing. It is used for
+publishing a selection of contents in a variety of situations. Typically,
+the basic use (specified without any attributes) outputs the selection
+of contents that are appropriate for the page being published. But you
+can use this tag for publishing custom modules, index templates and
+widgets to select content in many different ways.
+
+=cut
+
+=head2 ContentsHeader
+
+The contents of this container tag will be displayed when the first
+content listed by a L<Contents> tag is reached.
+
+=for tags entries
+
+=cut
+
+=head2 ContentsFooter
+
+The contents of this container tag will be displayed when the last
+content listed by a L<Contentss> tag is reached.
+
+=for tags entries
+
+=cut
+
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
@@ -283,17 +312,60 @@ sub _hdlr_content_categories {
     $res;
 }
 
+=head2 ContentID
+
+Outputs the numeric ID for the current content in text.
+
+B<Attributes:>
+
+=over 4
+
+=item * pad (optional; default "0")
+
+Adds leading zeros to create a 6 character string. The default is 0 (false). This is equivalent to using the C<zero_pad> global filter with a value of 6.
+
+=back
+
+=cut
+
 sub _hdlr_content_id {
     _check_and_invoke( 'entryid', @_ );
 }
+
+=head2 ContentCreatedDate
+
+Outputs the creation date of the current content in context.
+See the L<Date> tag for supported attributes.
+
+=for tags date
+
+=cut
 
 sub _hdlr_content_created_date {
     _check_and_invoke( 'entrycreateddate', @_ );
 }
 
+=head2 ContentModifiedDate
+
+Outputs the modification date of the current content in context.
+See the L<Date> tag for supported attributes.
+
+=for tags date
+
+=cut
+
 sub _hdlr_content_modified_date {
     _check_and_invoke( 'entrymodifieddate', @_ );
 }
+
+=head2 ContentUnpublishedDate
+
+Outputs the unpublishing date of the current content in context.
+See the L<Date> tag for supported attributes.
+
+=for tags date
+
+=cut
 
 sub _hdlr_content_unpublished_date {
     my ( $ctx, $args, $cond ) = @_;
@@ -303,13 +375,36 @@ sub _hdlr_content_unpublished_date {
     return $ctx->build_date($args);
 }
 
+=head2 ContentDate
+
+Outputs the 'authored' date of the current content in context.
+See the L<Date> tag for supported attributes.
+
+=for tags date
+
+=cut
+
 sub _hdlr_content_date {
     _check_and_invoke( 'entrydate', @_ );
 }
 
+=head2 ContentStatus
+
+Intended for application template use only. Displays the status of the
+content in context. This will output one of "Draft", "Publish", "Review"
+or "Future".
+
+=cut
+
 sub _hdlr_content_status {
     _check_and_invoke( 'entrystatus', @_ );
 }
+
+=head2 ContentTitle
+
+Outputs the title of the current content in context.
+
+=cut
 
 sub _hdlr_content_title {
     my ( $ctx, $args, $cond ) = @_;
@@ -318,53 +413,212 @@ sub _hdlr_content_title {
     defined $cd->title ? $cd->title : '';
 }
 
+=head2 ContentAuthorDisplayName
+
+Outputs the display name of the author for the current content in context.
+If the author has not provided a display name for publishing, this tag
+will output an empty string.
+
+=cut
+
 sub _hdlr_content_author_display_name {
     _check_and_invoke( 'entryauthordisplayname', @_ );
 }
+
+=head2 ContentAuthorEmail
+
+Outputs the email address of the author for the current content in context.
+B<NOTE: it is not recommended to publish e-mail addresses for MT users.>
+
+B<Attributes:>
+
+=over 4
+
+=item * spam_protect (optional; default "0")
+
+If specified, this will apply a light obfuscation of the email address,
+by encoding any characters that will identify it as an email address
+(C<:>, C<@>, and C<.>) into HTML entities.
+
+=back
+
+=cut
 
 sub _hdlr_content_author_email {
     _check_and_invoke( 'entryauthoremail', @_ );
 }
 
+=head2 ContentAuthorID
+
+Outputs the numeric ID of the author for the current content in context.
+
+=cut
+
 sub _hdlr_content_author_id {
     _check_and_invoke( 'entryauthorid', @_ );
 }
+
+=head2 ContentAuthorLink
+
+Outputs a linked author name suitable for publishing in the 'byline'
+of a content.
+
+B<Attributes:>
+
+=over 4
+
+=item * new_window
+
+If specified, the published link is given a C<target> attribute of '_blank'.
+
+=item * show_email (optional; default "0")
+
+If set, will allow publishing of an email address if the URL field
+for the author is empty.
+
+=item * spam_protect (optional)
+
+If specified, this will apply a light obfuscation of any email address
+published, by encoding any characters that will identify it as an email
+address (C<:>, C<@>, and C<.>) into HTML entities.
+
+=item * type (optional)
+
+Accepted values: C<url>, C<email>, C<archive>. Note: an 'archive' type
+requires publishing of "Author" archives.
+
+=item * show_hcard (optional; default "0")
+
+If present, adds additional CSS class names to the link tag published,
+identifying the link as a url or email address depending on the type of
+link published.
+
+=back
+
+=cut
 
 sub _hdlr_content_author_link {
     _check_and_invoke( 'entryauthorlink', @_ );
 }
 
+=head2 ContentAuthorURL
+
+Outputs the Site URL field from the author's profile for the
+current content in context.
+
+=cut
+
 sub _hdlr_content_author_url {
     _check_and_invoke( 'entryauthorurl', @_ );
 }
+
+=head2 ContentAuthorUsername
+
+Outputs the username of the author for the content currently in context.
+B<NOTE: it is not recommended to publish MT usernames.>
+
+=cut
 
 sub _hdlr_content_author_username {
     _check_and_invoke( 'entryauthorusername', @_ );
 }
 
+=head2 ContentAuthorUserpic
+
+Outputs the HTML for the userpic of the author for the current content
+in context.
+
+=cut
+
 sub _hdlr_content_author_userpic {
     _check_and_invoke( 'entryauthoruserpic', @_ );
 }
+
+=head2 ContentAuthorUserpicURL
+
+Outputs the URL for the userpic image of the author for the current content
+in context.
+
+=cut
 
 sub _hdlr_content_author_userpic_url {
     _check_and_invoke( 'entryauthoruserpicurl', @_ );
 }
 
+=head2 ContentSiteDescription
+
+Returns the site description of the site to which the content in context
+belongs. The site description is set in the General Site Settings.
+
+B<Example:>
+
+    <$mt:ContentSiteDescription$>
+
+=for tags sites, contents
+
+=cut
+
 sub _hdlr_content_site_description {
     _check_and_invoke( 'entryblogdescription', @_ );
 }
+
+=head2 ContentSiteID
+
+The numeric system ID of the site that is parent to the content currently
+in context.
+
+B<Example:>
+
+    <$mt:ContentSiteID$>
+
+=for tags contents, sites
+
+=cut
 
 sub _hdlr_content_site_id {
     _check_and_invoke( 'entryblogid', @_ );
 }
 
+=head2 ContentSiteName
+
+Returns the site name of the site to which the content in context belongs.
+The site name is set in the General Site Settings.
+
+B<Example:>
+
+    <$mt:ContentSiteName$>
+
+=for tags contents, sites
+
+=cut
+
 sub _hdlr_content_site_name {
     _check_and_invoke( 'entryblogname', @_ );
 }
 
+=head2 ContentSiteURL
+
+Returns the site URL for the site to which the content in context belongs.
+
+B<Example:>
+
+    <$mt:ContentSiteURL$>
+
+=for tags sites, contents
+
+=cut
+
 sub _hdlr_content_site_url {
     _check_and_invoke( 'entryblogurl', @_ );
 }
+
+=head2 ContentAuthorUserpicAsset
+
+A block tag providing an asset context for the userpic of the
+author for the current content in context. See the L<Assets> tag
+for more information about publishing assets.
+
+=cut
 
 sub _hdlr_content_author_userpic_asset {
     my ( $ctx, $args, $cond ) = @_;
@@ -382,12 +636,35 @@ sub _hdlr_content_author_userpic_asset {
     return $builder->build( $ctx, $tok, {%$cond} );
 }
 
+=head2 ContentUniqueID
+
+Outputs the unique_id field for the current content in context.
+
+=cut
+
 sub _hdlr_content_unique_id {
     my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
     $cd->unique_id;
 }
+
+=head2 ContentIdentifier
+
+Outputs the identifier field for the current content in context.
+
+B<Attributes:>
+
+=over 4
+
+=item * separator (optional)
+
+Accepts either "-" or "_". If unspecified, the raw basename value is
+returned.
+
+=back
+
+=cut
 
 sub _hdlr_content_identifier {
     my ( $ctx, $args, $cond ) = @_;
@@ -405,6 +682,18 @@ sub _hdlr_content_identifier {
     }
     $identifier;
 }
+
+=head2 ContentsCount
+
+Returns the count of a list of contents that are currently in context
+(ie: used in an archive template, or inside an L<Contents> tag). If no
+content list context exists, it will fallback to the list that would be
+selected for a generic L<Contents> tag (respecting number of days or
+entries configured to publish on the blog's main index template).
+
+=for tags count
+
+=cut
 
 sub _hdlr_contents_count {
     my ( $ctx, $args, $cond ) = @_;
@@ -455,6 +744,15 @@ sub _hdlr_contents_count {
     $ctx->count_format( $count, $args );
 }
 
+=head2 SiteContentCount
+
+Returns the number of published contents associated with the site
+currently in context.
+
+=for tags multiblog, count, sites, contents
+
+=cut
+
 sub _hdlr_site_content_count {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
@@ -466,6 +764,15 @@ sub _hdlr_site_content_count {
     my $count = MT::ContentData->count( \%terms, \%args );
     return $ctx->count_format( $count, $args );
 }
+
+=head2 AuthorContentCount
+
+Returns the number of published contents associated with the author
+currently in context.
+
+=for tags authors
+
+=cut
 
 sub _hdlr_author_content_count {
     my ( $ctx, $args, $cond ) = @_;
@@ -487,6 +794,24 @@ sub _hdlr_author_content_count {
     return $ctx->count_format( $count, $args );
 }
 
+=head2 ContentPermalink
+
+TODO: This tag has not been implemented yet.
+
+=cut
+
+sub _hdlr_content_permalink {
+}
+
+=head2 AuthorHasContent
+
+A conditional tag that is true when the author currently in context
+has written one or more contents that have been published.
+
+=for tags authors, contents
+
+=cut
+
 sub _hdlr_author_has_content {
     my ( $ctx, $args, $cond ) = @_;
     my $author = $ctx->stash('author')
@@ -502,13 +827,56 @@ sub _hdlr_author_has_content {
     MT::ContentData->exist( \%terms );
 }
 
+=head2 ContentNext
+
+A block tag providing a context for the content immediately following the
+current content in context (in terms of authored date).
+
+=cut
+
 sub _hdlr_content_next {
     _hdlr_content_nextprev( 'next', @_ );
 }
 
+=head2 ContentPrevious
+
+A block tag providing a context for the content immediately preceding the
+current content in context (in terms of authored date).
+
+=cut
+
 sub _hdlr_content_previous {
     _hdlr_content_nextprev( 'previous', @_ );
 }
+
+=head2 ContentCalendar
+
+A container tag representing a calendar month that lists a single
+calendar "cell" in the calendar display for content.
+
+=for tags calendar
+
+=cut
+
+=head2 CalendarIfContents
+
+A conditional tag that will display its contents if there are any
+contents for this day in the site.
+
+=for tags contentcalendar, contents
+
+=cut
+
+=head2 CalendarIfNoContents
+
+A conditional tag that will display its contents if there are not contents
+for this day in the site. This tag predates the introduction of L<Else>,
+a tag that could be used with L<CalendarIfContents> to replace
+C<CalendarIfNoContents>.
+
+=for tags contentcalendar, contents
+
+=cut
 
 sub _hdlr_content_calendar {
     my ( $ctx, $args, $cond ) = @_;
@@ -726,6 +1094,12 @@ sub _hdlr_content_nextprev {
     $res;
 }
 
+=head2 ContentField
+
+A container tag that lists all of the field values which the content field has.
+
+=cut
+
 sub _hdlr_content_field {
     my ( $ctx, $args, $cond ) = @_;
 
@@ -780,6 +1154,14 @@ sub _hdlr_content_field {
         $builder->build( $ctx, $tok, {%$cond} );
     }
 }
+
+=head2 ContentFields
+
+A container tag that lists all of the fields which the content has.
+This tagset creates a content_field context within which contentfield tag
+may be used.
+
+=cut
 
 sub _hdlr_content_fields {
     my ( $ctx, $args, $cond ) = @_;

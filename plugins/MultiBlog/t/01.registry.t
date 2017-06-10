@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use lib qw(lib);
+use lib qw( lib extlib );
 
 use Test::More;
 use MT;
@@ -49,7 +49,7 @@ my %registries = (
             OtherBlog          => qr/MultiBlog::Tags::MultiBlog/,
             MultiBlogLocalBlog => qr/MultiBlog::Tags::MultiBlogLocalBlog/,
             'MultiBlogIfLocalBlog?' =>
-              qr/MultiBlog::Tags::MultiBlogIfLocalBlog/,
+                qr/MultiBlog::Tags::MultiBlogIfLocalBlog/,
         }
     },
 );
