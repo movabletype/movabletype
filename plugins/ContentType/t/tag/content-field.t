@@ -55,11 +55,11 @@ my $cf_url = MT::Test::Permission->make_content_field(
     name            => 'url',
     type            => 'url',
 );
-my $cf_embed = MT::Test::Permission->make_content_field(
+my $cf_embedded_text = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
     content_type_id => $ct->id,
-    name            => 'embeded text',
-    type            => 'embeded_text',
+    name            => 'embedded text',
+    type            => 'embedded_text',
 );
 my $cf_datetime = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
@@ -199,11 +199,11 @@ my $fields = [
         options   => { label => $cf_url->name },
         unique_id => $cf_url->unique_id,
     },
-    {   id        => $cf_embed->id,
+    {   id        => $cf_embedded_text->id,
         order     => 5,
-        type      => $cf_embed->type,
-        options   => { label => $cf_embed->name },
-        unique_id => $cf_embed->unique_id,
+        type      => $cf_embedded_text->type,
+        options   => { label => $cf_embedded_text->name },
+        unique_id => $cf_embedded_text->unique_id,
     },
     {   id        => $cf_datetime->id,
         order     => 6,
@@ -327,7 +327,7 @@ my $cd = MT::Test::Permission->make_content_data(
         $cf_multi_line_text->id  => "test multi line text\naaaaa",
         $cf_number->id           => '12345',
         $cf_url->id              => 'https://example.com/~abby',
-        $cf_embed->id            => "abc\ndef",
+        $cf_embedded_text->id    => "abc\ndef",
         $cf_datetime->id         => '20170603180500',
         $cf_date->id             => '20170605000000',
         $cf_time->id             => '19700101123456',
@@ -340,7 +340,7 @@ my $cd = MT::Test::Permission->make_content_data(
             . "<tr><td></td><td></td><td>3</td></tr>",
         $cf_tag->id      => [ $tag2->id,      $tag1->id ],
         $cf_category->id => [ $category2->id, $category1->id ],
-        $cf_image->id    => [ $image1->id, $image2->id ],
+        $cf_image->id    => [ $image1->id,    $image2->id ],
     },
 );
 
@@ -470,9 +470,9 @@ aaaaa
 --- expected
 https://example.com/~abby
 
-=== mt:ContentField label="embed text"
+=== mt:ContentField label="embedded text"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="embed text"><mt:var name="__value__"></mt:ContentField></mt:Contents>
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="embedded text"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 abc
 def
