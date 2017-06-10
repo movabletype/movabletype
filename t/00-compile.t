@@ -49,6 +49,7 @@ use_ok('MT::CMS::User');
 use_ok('MT::CMS::Website');
 use_ok('MT::CMS::Theme');
 use_ok('MT::CMS::Filter');
+use_ok('MT::CMS::NewUI');
 
 # Supporting applications
 use_ok('MT::App::ActivityFeeds');
