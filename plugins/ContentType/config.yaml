@@ -10,11 +10,6 @@ permissions: $ContentType::ContentType::Permission::permissions
 callbacks:
     init_app: $Core::MT::CMS::ContentType::init_app
 
-applications:
-    cms:
-        methods:
-            data_convert_to_html: $ContentType::ContentType::Tools::data_convert_to_html
-
 listing_screens: $ContentType::ContentType::ListProperties::make_listing_screens
 list_properties: $ContentType::ContentType::ListProperties::make_list_properties
 content_actions: $ContentType::ContentType::ListProperties::make_content_actions

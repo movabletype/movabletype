@@ -377,6 +377,8 @@ sub core_methods {
             condition => sub { shift->param('dialog_view') },
         },
 
+        'data_convert_to_html' => "${pkg}ContentData::data_convert_to_html",
+
         'view_category_list' => "${pkg}CategoryList::view",
 
     };
