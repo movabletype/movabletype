@@ -116,8 +116,11 @@ use_ok('MT::Website');
 use_ok('MT::Filter');
 use_ok('MT::Page');
 use_ok('MT::Folder');
+
+# MT7
 use_ok('MT::CategoryList');
 use_ok('MT::ObjectCategory');
+use_ok('MT::ContentType');
 
 # Utility modules
 use_ok('MT::Builder');

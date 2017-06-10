@@ -12,8 +12,8 @@ callbacks:
     init_app: $ContentType::ContentType::App::CMS::init_app
 
     # TODO: should add other callbacks. these are probably insufficient.
-    MT::ContentType::post_save: $ContentType::MT::ContentType::post_save
-    MT::ContentType::post_remove: $ContentType::MT::ContentType::post_remove
+    MT::ContentType::post_save: $Core::MT::ContentType::post_save
+    MT::ContentType::post_remove: $Core::MT::ContentType::post_remove
     MT::ContentField::post_save: $ContentType::MT::ContentField::post_save
     MT::ContentField::post_remove: $ContentType::MT::ContentField::post_remove
 
@@ -109,7 +109,6 @@ applications:
                     - blog
 
 object_types:
-    content_type: MT::ContentType
     cd: MT::ContentData
     content_data: MT::ContentData
     cf: MT::ContentField
