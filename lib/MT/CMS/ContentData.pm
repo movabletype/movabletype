@@ -2,6 +2,7 @@ package MT::CMS::ContentData;
 use strict;
 use warnings;
 
+use MT::ContentType;
 use MT::Log;
 
 sub post_save {
@@ -54,6 +55,25 @@ sub data_convert_to_html {
         field  => $field,
     };
     return $app->json_result($result);
+}
+
+sub make_list_actions {
+    my $common_delete_action = {
+        delete => {
+            label      => 'Delete',
+            order      => 100,
+            code       => '$Core::MT::CMS::ContentType::delete_content_data',
+            button     => 1,
+            js_message => 'delete',
+        }
+    };
+    my $iter         = MT::ContentType->load_iter;
+    my $list_actions = {};
+    while ( my $ct = $iter->() ) {
+        my $key = 'content_data_' . $ct->id;
+        $list_actions->{$key} = $common_delete_action;
+    }
+    $list_actions;
 }
 
 1;

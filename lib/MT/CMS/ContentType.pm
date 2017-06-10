@@ -1645,4 +1645,15 @@ sub validate_content_fields {
     );
 }
 
+sub list_actions {
+    {   delete => {
+            label      => 'Delete',
+            order      => 100,
+            mode       => 'delete',
+            button     => 1,
+            js_message => 'delete',
+        }
+    };
+}
+
 1;

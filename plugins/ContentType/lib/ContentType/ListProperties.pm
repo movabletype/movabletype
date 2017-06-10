@@ -458,37 +458,5 @@ sub make_content_actions {
     return $props;
 }
 
-sub make_list_actions {
-    my $props = {
-        content_type => {
-            delete => {
-                label      => 'Delete',
-                order      => 100,
-                mode       => 'delete',
-                button     => 1,
-                js_message => 'delete',
-            }
-        },
-        category_list => MT::CMS::CategoryList::list_actions(),
-    };
-
-    my @content_types = MT::ContentType->load();
-    foreach my $content_type (@content_types) {
-        my $key = 'content_data_' . $content_type->id;
-
-        $props->{$key} = {
-            delete => {
-                label  => 'Delete',
-                order  => 100,
-                code   => '$Core::MT::CMS::ContentType::delete_content_data',
-                button => 1,
-                js_message => 'delete',
-            }
-        };
-    }
-
-    return $props;
-}
-
 1;
 

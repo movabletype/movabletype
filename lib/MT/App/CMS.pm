@@ -9,6 +9,7 @@ package MT::App::CMS;
 use strict;
 use base qw( MT::App );
 
+use MT::CMS::ContentData;
 use MT::Util qw( format_ts epoch2ts perl_sha1_digest_hex perl_sha1_digest
     remove_html );
 use MT::App::CMS::Common;
@@ -1850,6 +1851,9 @@ sub core_list_actions {
                 button => 1,
             },
         },
+        'category_list' => '$Core::MT::CMS::CategoryList::list_actions',
+        'content_type'  => '$Core::MT::CMS::ContentType::list_actions',
+        %{ MT::CMS::ContentData::make_list_actions() },
     };
 }
 
