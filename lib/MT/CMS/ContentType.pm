@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package ContentType::App::CMS;
+package MT::CMS::ContentType;
 
 use strict;
 use warnings;

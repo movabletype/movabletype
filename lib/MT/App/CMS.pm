@@ -354,7 +354,31 @@ sub core_methods {
         'upload_userpic'    => "${pkg}User::upload_userpic",
 
         ## MT7
+        'cfg_content_type_description' =>
+            "${pkg}ContentType::cfg_content_type_description",
+        'cfg_content_type'      => "${pkg}ContentType::cfg_content_type",
+        'save_cfg_content_type' => "${pkg}ContentType::save_cfg_content_type",
+
+     # 'cfg_content_type_data' => " ${pkg}ContentType::cfg_content_type_data",
+        'select_list_content_type' =>
+            "${pkg}ContentType::select_list_content_type",
+        'select_edit_content_type' =>
+            "${pkg}ContentType::select_edit_content_type",
+        'edit_content_data'       => "${pkg}ContentType::edit_content_data",
+        'validate_content_fields' => {
+            code     => " ${pkg}ContentType::validate_content_fields",
+            app_mode => 'JSON',
+        },
+        'save_content_data' => "${pkg}ContentType::save_content_data",
+        'dialog_content_data_modal' =>
+            "${pkg}ContentType::dialog_content_data_modal",
+        'dialog_list_content_data' => {
+            code      => "${pkg}ContentType::dialog_list_content_data",
+            condition => sub { shift->param('dialog_view') },
+        },
+
         'view_category_list' => "${pkg}CategoryList::view",
+
     };
 }
 
@@ -608,6 +632,14 @@ sub init_plugins {
             $pkg
                 . 'view_permission_filter.template' =>
                 "${pfx}Template::can_view",
+
+            # MT7
+            $pkg
+                . 'template_param.list_common' =>
+                "${pfx}ContentType::tmpl_param_list_common",
+            $pkg
+                . 'template_param.edit_role' =>
+                "${pfx}ContentType::tmpl_param_eidt_role",
         }
     );
 

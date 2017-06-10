@@ -8,31 +8,11 @@ schema_version: 0.28
 permissions: $ContentType::ContentType::Permission::permissions
 
 callbacks:
-    init_app: $ContentType::ContentType::App::CMS::init_app
+    init_app: $Core::MT::CMS::ContentType::init_app
 
 applications:
     cms:
-        callbacks:
-            template_param.list_common: $ContentType::ContentType::App::CMS::tmpl_param_list_common
-            template_param.edit_role: $ContentType::ContentType::App::CMS::tmpl_param_edit_role
-
         methods:
-            cfg_content_type_description: $ContentType::ContentType::App::CMS::cfg_content_type_description
-            cfg_content_type: $ContentType::ContentType::App::CMS::cfg_content_type
-            save_cfg_content_type: $ContentType::ContentType::App::CMS::save_cfg_content_type
-            # cfg_content_type_data: $ContentType::ContentType::App::CMS::cfg_content_type_data
-            select_list_content_type: $ContentType::ContentType::App::CMS::select_list_content_type
-            select_edit_content_type: $ContentType::ContentType::App::CMS::select_edit_content_type
-            edit_content_data: $ContentType::ContentType::App::CMS::edit_content_data
-            validate_content_fields:
-                code: $ContentType::ContentType::App::CMS::validate_content_fields
-                app_mode: JSON
-            save_content_data: $ContentType::ContentType::App::CMS::save_content_data
-            dialog_content_data_modal: $ContentType::ContentType::App::CMS::dialog_content_data_modal
-            dialog_list_content_data:
-                code: $ContentType::ContentType::App::CMS::dialog_list_content_data
-                condition: sub { shift->param('dialog_view') }
-
             data_convert_to_html: $ContentType::ContentType::Tools::data_convert_to_html
 
 listing_screens: $ContentType::ContentType::ListProperties::make_listing_screens
