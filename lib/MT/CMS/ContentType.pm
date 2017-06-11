@@ -34,13 +34,6 @@ sub init_app {
 
         $app->add_callback( "cms_pre_load_filtered_list.${obj_name}",
             0, $app, \&cms_pre_load_filtered_list );
-
-        # feed
-        $app->add_callback( "ActivityFeed.${obj_name}", 5, $app,
-            '$ContentType::ContentType::Feed::feed_content_data' );
-        $app->add_callback( "ActivityFeed.filter_object.${obj_name}",
-            5, $app, '$ContentType::ContentType::Feed::filter_content_data' );
-        $content_type->generate_object_log_class;
     }
     return 1;
 }

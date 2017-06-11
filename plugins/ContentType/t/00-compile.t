@@ -11,7 +11,6 @@ use MT::Test;
 
 use Test::More;
 
-use_ok('ContentType::Feed');
 use_ok('ContentType::ListProperties');
 use_ok('ContentType::Permission');
 
