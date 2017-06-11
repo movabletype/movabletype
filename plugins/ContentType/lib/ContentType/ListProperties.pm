@@ -21,65 +21,6 @@ use MT::CMS::CategoryList;
 use MT::Util ();
 use POSIX    ();
 
-sub make_listing_screens {
-    my $props = {
-        content_type => {
-            screen_label        => 'Manage Content Type',
-            object_label        => 'Content Type',
-            object_label_plural => 'Content Types',
-            object_type         => 'content_type',
-            scope_mode          => 'this',
-            use_filters         => 0,
-            view                => [ 'website', 'blog' ],
-            primary             => 'name',
-        },
-        category_list => MT::CMS::CategoryList::list_screens(),
-    };
-
-    my @content_types = MT::ContentType->load();
-    foreach my $content_type (@content_types) {
-        my $key = 'content_data_' . $content_type->id;
-        $props->{$key} = {
-            primary             => 'title',
-            screen_label        => 'Manage ' . $content_type->name,
-            object_label        => $content_type->name,
-            object_label_plural => $content_type->name,
-            object_type         => 'content_data',
-            scope_mode          => 'this',
-            use_filters         => 0,
-            view                => [ 'website', 'blog' ],
-            feed_link           => sub {
-
-                # TODO: fix permission
-                my ($app) = @_;
-                return 1 if $app->user->is_superuser;
-
-                if ( $app->blog ) {
-                    return 1
-                        if $app->user->can_do( "get_${key}_feed",
-                        at_least_one => 1 );
-                }
-                else {
-                    my $iter = MT->model('permission')->load_iter(
-                        {   author_id => $app->user->id,
-                            blog_id   => { not => 0 },
-                        }
-                    );
-                    my $cond;
-                    while ( my $p = $iter->() ) {
-                        $cond = 1, last
-                            if $p->can_do("get_${key}_feed");
-                    }
-                    return $cond ? 1 : 0;
-                }
-                0;
-            },
-        };
-    }
-
-    return $props;
-}
-
 sub make_list_properties {
     my $props = {
         content_type => {

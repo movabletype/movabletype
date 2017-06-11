@@ -1682,7 +1682,25 @@ BEGIN {
                 data_api_condition  => sub {1},
                 data_api_scope_mode => 'this',
             },
-            template => { data_api_scope_mode => 'strict', },
+            template      => { data_api_scope_mode => 'strict', },
+            category_list => {
+                object_label     => 'Category List',
+                primary          => 'name',
+                view             => [ 'website', 'blog' ],
+                default_sort_key => 'name',
+                permission       => 'access_to_category_list_list',
+                scope_mode       => 'this',
+            },
+            content_type => {
+                screen_label        => 'Manage Content Type',
+                object_label        => 'Content Type',
+                object_label_plural => 'Content Types',
+                object_type         => 'content_type',
+                scope_mode          => 'this',
+                use_filters         => 0,
+                view                => [ 'website', 'blog' ],
+                primary             => 'name',
+            },
         },
         summaries => {
             'author' => {

@@ -1646,4 +1646,62 @@ sub list_actions {
     };
 }
 
+sub init_content_type {
+    my ( $cb, $app ) = @_;
+    my $core = $app->component('core');
+
+    my $core_listing_screens         = $core->registry('listing_screens');
+    my $content_data_listing_screens = _make_content_data_listing_screens();
+    for my $key ( keys %{$content_data_listing_screens} ) {
+        $core_listing_screens->{$key} = $content_data_listing_screens->{$key};
+    }
+}
+
+sub _make_content_data_listing_screens {
+    my $props = {};
+
+    my $iter = MT->model('content_type')->load_iter;
+    while ( my $ct = $iter->() ) {
+        my $key = 'content_data_' . $ct->id;
+        $props->{$key} = {
+            primary             => 'title',
+            screen_label        => 'Manage ' . $ct->name,
+            object_label        => $ct->name,
+            object_label_plural => $ct->name,
+            object_type         => 'content_data',
+            scope_mode          => 'this',
+            use_filters         => 0,
+            view                => [ 'website', 'blog' ],
+            feed_link           => sub {
+
+                # TODO: fix permission
+                my ($app) = @_;
+                return 1 if $app->user->is_superuser;
+
+                if ( $app->blog ) {
+                    return 1
+                        if $app->user->can_do( "get_${key}_feed",
+                        at_least_one => 1 );
+                }
+                else {
+                    my $iter = MT->model('permission')->load_iter(
+                        {   author_id => $app->user->id,
+                            blog_id   => { not => 0 },
+                        }
+                    );
+                    my $cond;
+                    while ( my $p = $iter->() ) {
+                        $cond = 1, last
+                            if $p->can_do("get_${key}_feed");
+                    }
+                    return $cond ? 1 : 0;
+                }
+                0;
+            },
+        };
+    }
+
+    return $props;
+}
+
 1;

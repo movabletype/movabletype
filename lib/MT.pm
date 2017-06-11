@@ -1351,6 +1351,8 @@ sub init_debug_mode {
                 'api_upload_file' => \&core_upload_file_to_sync,
                 'post_init' =>
                     '$Core::MT::Summary::Triggers::post_init_add_triggers',
+                'init_app' =>
+                    '$Core::MT::CMS::ContentType::init_content_type',
             }
         );
         $callbacks_added = 1;

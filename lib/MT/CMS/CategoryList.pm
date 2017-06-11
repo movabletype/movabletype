@@ -22,16 +22,6 @@ sub view {
     $app->forward('list');
 }
 
-sub list_screens {
-    {   object_label => 'Category List',
-        primary      => 'name',
-        view             => [ 'website', 'blog' ],
-        default_sort_key => 'name',
-        permission       => 'access_to_category_list_list',
-        scope_mode       => 'this',
-    };
-}
-
 sub list_actions {
     {   delete => {
             label         => 'Delete',
