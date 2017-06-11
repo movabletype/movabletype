@@ -455,7 +455,7 @@ sub _nextprev {
     if ( my $by_category = delete $terms->{by_category} ) {
         if ( ref $by_category eq 'HASH' ) {
             $content_field_id = $by_category->{content_field_id};
-            $category_id => $by_category->{category_id};
+            $category_id      = $by_category->{category_id};
         }
         $content_field_id ||= $obj->content_type->get_first_category_field_id
             or return undef;
