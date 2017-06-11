@@ -12,8 +12,10 @@ use base qw( MT::Object );
 use JSON ();
 
 use MT;
+use MT::CategoryList;
 use MT::ContentField;
 use MT::ContentType::UniqueID;
+use MT::Util;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -48,6 +50,81 @@ sub class_label {
 
 sub class_label_plural {
     MT->translate("Content Types");
+}
+
+sub list_props {
+    {   id => {
+            base  => '__virtual.id',
+            order => 100,
+        },
+        name => {
+            base      => '__virtual.name',
+            order     => 200,
+            link_mode => 'cfg_content_type',
+            html      => \&_make_name_html,
+        },
+        category_list => {
+            base                  => '__virtual.single_select',
+            terms                 => \&_cl_terms,
+            single_select_options => \&_cl_single_select_options,
+            label                 => 'Category List',
+            display               => 'none',
+        },
+    };
+}
+
+sub _cl_terms {
+    my $prop = shift;
+    my ( $args, $db_terms, $db_args ) = @_;
+    my $cf_join = MT::ContentField->join_on(
+        'content_type_id',
+        {   type                => 'category',
+            related_cat_list_id => $args->{value},
+        },
+    );
+    $db_args->{joins} ||= [];
+    push @{ $db_args->{joins} }, $cf_join;
+    return;
+}
+
+sub _cl_single_select_options {
+    my $prop = shift;
+    my @options;
+    my $iter = MT::CategoryList->load_iter(
+        { blog_id   => MT->app->blog->id },
+        { fetchonly => { id => 1, name => 1 } },
+    );
+    while ( my $cl = $iter->() ) {
+        my $id   = $cl->id;
+        my $name = $cl->name;
+        push @options, { label => "${name} (id:${id})", value => $id };
+    }
+    \@options;
+}
+
+sub _make_name_html {
+    my ( $prop, $obj, $app ) = @_;
+    my $q       = $app->param;
+    my $blog_id = $q->param('blog_id');
+    my $mode    = $prop->{link_mode};
+
+    my $name      = MT::Util::encode_html( $obj->name );
+    my $icon_url  = MT->static_path . 'images/nav_icons/color/settings.gif';
+    my $edit_link = $app->uri(
+        mode => $mode,
+        args => {
+            id      => $obj->id,
+            blog_id => $blog_id,
+        },
+    );
+    return qq{
+        <span class="icon settings">
+          <img src="$icon_url" />
+        </span>
+        <span class="sync-name">
+          <a href="$edit_link">$name</a>
+        </span>
+    };
 }
 
 sub unique_id {
