@@ -245,7 +245,7 @@ __END__
 
 === MT:ContentPrevious with by_category="1" category_id="???"
 --- template
-<mt:Contents blog_id="1" name="test content type"><mt:ContentPrevious by_category="1" category_id="[% cat2_id %]"><mt:ContentID></mt:ContentPrevious></mt:Contents>
+<mt:Contents blog_id="1" name="test content type"><mt:ContentPrevious by_category="1" category_id="[% cat1_id %]"><mt:ContentID></mt:ContentPrevious></mt:Contents>
 --- expected
-[% cd1_id %]
+[% cd1_id %][% cd1_id %]
 
