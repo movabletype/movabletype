@@ -2690,16 +2690,17 @@ sub load_core_permissions {
         'blog.administer_blog' => {
             'group'        => 'blog_admin',
             'inherit_from' => [
-                'blog.comment',            'blog.create_post',
-                'blog.edit_all_posts',     'blog.edit_assets',
-                'blog.edit_categories',    'blog.edit_config',
-                'blog.edit_notifications', 'blog.edit_tags',
-                'blog.edit_templates',     'blog.manage_pages',
-                'blog.manage_users',       'blog.publish_post',
-                'blog.rebuild',            'blog.save_image_defaults',
-                'blog.send_notifications', 'blog.set_publish_paths',
-                'blog.upload',             'blog.view_blog_log',
-                'blog.manage_feedback',    'blog.manage_themes',
+                'blog.comment',             'blog.create_post',
+                'blog.edit_all_posts',      'blog.edit_assets',
+                'blog.edit_categories',     'blog.edit_config',
+                'blog.edit_notifications',  'blog.edit_tags',
+                'blog.edit_templates',      'blog_edit_content_types',
+                'blog.manage_pages',        'blog.manage_users',
+                'blog.publish_post',        'blog.rebuild',
+                'blog.save_image_defaults', 'blog.send_notifications',
+                'blog.set_publish_paths',   'blog.upload',
+                'blog.view_blog_log',       'blog.manage_feedback',
+                'blog.manage_themes',
             ],
             'label'            => 'Manage Blog',
             'order'            => 300,
@@ -2991,6 +2992,11 @@ sub load_core_permissions {
                 'delete_comments_via_list'              => 1,
             }
         },
+        'blog.edit_content_types' => {
+            group => 'blog_design',
+            label => 'Edit Content Types',
+            order => 300,
+        },
         'blog.manage_pages' => {
             'group'            => 'auth_pub',
             'label'            => 'Manage Pages',
@@ -3167,7 +3173,7 @@ sub load_core_permissions {
             'inherit_from' => [
                 'system.create_blog',    'system.create_website',
                 'system.edit_templates', 'system.manage_plugins',
-                'system.view_log',
+                'system.view_log',       'system.manage_content_types',
             ],
             'order'            => 0,
             'permitted_action' => {
@@ -3272,7 +3278,13 @@ sub load_core_permissions {
                 'access_to_system_dashboard' => 1,
                 'use_tools:search'           => 1,
             }
-        }
+        },
+        'system.manage_content_types' => {
+            group            => 'sys_admin',
+            label            => 'Manage Content Types',
+            order            => 500,
+            permitted_action => { create_conten_type => 1 },
+        },
     };
 }
 

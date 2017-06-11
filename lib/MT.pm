@@ -39,7 +39,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.0',              '__PRODUCT_VERSION_ID__',
+        '7.0',                '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -825,8 +825,14 @@ sub init_schema {
 }
 
 sub init_permissions {
+    my $app = shift;
+
     require MT::Permission;
     MT::Permission->init_permissions;
+
+    $app->component('core')
+        ->registry( 'permissions',
+        $app->model('content_type')->all_permissions );
 }
 
 sub init_config {

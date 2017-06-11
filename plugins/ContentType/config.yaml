@@ -5,8 +5,6 @@ pack_link: <__trans phrase="http://www.sixapart.com/movabletype/">
 version: 0.28
 schema_version: 0.28
 
-permissions: $ContentType::ContentType::Permission::permissions
-
 listing_screens: $ContentType::ContentType::ListProperties::make_listing_screens
 list_properties: $ContentType::ContentType::ListProperties::make_list_properties
 

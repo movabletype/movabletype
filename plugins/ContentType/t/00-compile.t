@@ -12,7 +12,6 @@ use MT::Test;
 use Test::More;
 
 use_ok('ContentType::ListProperties');
-use_ok('ContentType::Permission');
 
 test_all_modules_are_checked();
 
