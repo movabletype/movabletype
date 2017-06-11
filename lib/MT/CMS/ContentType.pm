@@ -25,19 +25,6 @@ use MT::Entry;
 use MT::Log;
 use MT::Util ();
 
-sub init_app {
-    my ( $cb, $app ) = @_;
-
-    my $iter = MT::ContentType->load_iter;
-    while ( my $content_type = $iter->() ) {
-        my $obj_name = 'content_data_' . $content_type->id;
-
-        $app->add_callback( "cms_pre_load_filtered_list.${obj_name}",
-            0, $app, \&cms_pre_load_filtered_list );
-    }
-    return 1;
-}
-
 sub tmpl_param_list_common {
     my ( $cb, $app, $param, $tmpl ) = @_;
     if (   $app->mode eq 'list'

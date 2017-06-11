@@ -7,9 +7,6 @@ schema_version: 0.28
 
 permissions: $ContentType::ContentType::Permission::permissions
 
-callbacks:
-    init_app: $Core::MT::CMS::ContentType::init_app
-
 listing_screens: $ContentType::ContentType::ListProperties::make_listing_screens
 list_properties: $ContentType::ContentType::ListProperties::make_list_properties
 

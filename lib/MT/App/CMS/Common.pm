@@ -315,8 +315,23 @@ sub init_core_callbacks {
             # MT7
             $pkg . 'post_save.cd'   => "${pfx}ContentData::post_save",
             $pkg . 'post_delete.cd' => "${pfx}ContentData::post_delete",
+            _generate_content_data_callbacks($app),
         }
     );
+}
+
+sub _generate_content_data_callbacks {
+    my $app = shift;
+    my $pkg = $app->id . '_';
+    my $pfx = '$Core::MT::CMS::';
+    my %callbacks;
+    my $iter = MT->model('content_type')->load_iter;
+    while ( my $ct = $iter->() ) {
+        my $cd_name = 'content_data_' . $ct->id;
+        $callbacks{"${pkg}pre_load_filtered_list.${cd_name}"}
+            = "${pfx}ContentType::cms_pre_load_filtered_list";
+    }
+    %callbacks;
 }
 
 1;
