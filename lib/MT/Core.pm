@@ -2459,6 +2459,8 @@ BEGIN {
                 content => '<$mt:WidgetSet name="$0"$>',
             },
         },
+        content_field_types =>
+            '$Core::MT::ContentFieldType::core_content_field_types',
     };
 }
 

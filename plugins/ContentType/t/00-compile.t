@@ -14,22 +14,6 @@ use Test::More;
 use_ok('ContentType::Feed');
 use_ok('ContentType::ListProperties');
 use_ok('ContentType::Permission');
-use_ok('MT::ContentFieldType::Asset');
-use_ok('MT::ContentFieldType::Categories');
-use_ok('MT::ContentFieldType::Checkboxes');
-use_ok('MT::ContentFieldType::Common');
-use_ok('MT::ContentFieldType::ContentType');
-use_ok('MT::ContentFieldType::Date');
-use_ok('MT::ContentFieldType::DateTime');
-use_ok('MT::ContentFieldType::List');
-use_ok('MT::ContentFieldType::Number');
-use_ok('MT::ContentFieldType::RadioButton');
-use_ok('MT::ContentFieldType::SelectBox');
-use_ok('MT::ContentFieldType::SingleLineText');
-use_ok('MT::ContentFieldType::Table');
-use_ok('MT::ContentFieldType::Tags');
-use_ok('MT::ContentFieldType::Time');
-use_ok('MT::ContentFieldType::URL');
 
 test_all_modules_are_checked();
 
