@@ -45,7 +45,7 @@ my @count_specs = (
             my $query_log = $profiler->query_log;
 
             # 2 content type logs and 2 entry logs.
-            is( scalar @$query_log, 4, '4 query logs' );
+            is( scalar @$query_log, 3, '3 query logs' );
             like( $query_log->[-1], qr/LIMIT 1$/, 'Has LIMIT statement' );
         },
     },
