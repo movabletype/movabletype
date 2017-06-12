@@ -325,7 +325,8 @@ sub _generate_content_data_callbacks {
     my $pkg = $app->id . '_';
     my $pfx = '$Core::MT::CMS::';
     my %callbacks;
-    my $iter = MT->model('content_type')->load_iter;
+    my $iter = eval { MT->model('content_type')->load_iter }
+        || sub { };    # FIXME: An error occurs on mt-app when installing.
     while ( my $ct = $iter->() ) {
         my $cd_name = 'content_data_' . $ct->id;
         $callbacks{"${pkg}pre_load_filtered_list.${cd_name}"}
