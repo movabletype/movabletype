@@ -5,5 +5,3 @@ pack_link: <__trans phrase="http://www.sixapart.com/movabletype/">
 version: 0.28
 schema_version: 0.28
 
-list_properties: $ContentType::ContentType::ListProperties::make_list_properties
-

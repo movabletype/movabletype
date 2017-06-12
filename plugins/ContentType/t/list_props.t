@@ -8,6 +8,7 @@ use lib qw( lib extlib t/lib );
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
 
+use MT::ContentData;
 use MT::ListProperty;
 use ContentType::ListProperties;
 
@@ -38,9 +39,11 @@ my $fields = [
 $content_type->fields($fields);
 $content_type->save or die $content_type->errstr;
 
-subtest 'make_list_properties' => sub {
-    my $props = ContentType::ListProperties::make_list_properties;
+subtest 'make_list_props' => sub {
+    my $props = MT::ContentData::make_list_props();
     ok( $props && ref $props eq 'HASH', 'make_list_properties returns hash' );
+    MT->registry( 'list_properties', $props )
+        ;    # registry will be updated after rebooting.
 };
 
 subtest 'make_title' => sub {
@@ -54,8 +57,7 @@ subtest 'make_title' => sub {
     my $app = MT->instance;
 
     my $html
-        = ContentType::ListProperties::make_title_html( $prop, $content_data,
-        $app );
+        = MT::ContentData::_make_title_html( $prop, $content_data, $app );
     ok( $html =~ /^<span class/, 'no error occurs' );
 };
 

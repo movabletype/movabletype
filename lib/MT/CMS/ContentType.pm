@@ -1656,6 +1656,12 @@ sub init_content_type {
         $core_listing_screens->{$key} = $content_data_listing_screens->{$key};
     }
 
+    my $core_list_props = $core->registry('list_properties');
+    my $content_data_list_props = MT::ContentData::make_list_props();
+    for my $key ( keys %{ $content_data_list_props } ) {
+        $core_list_props->{$key} = $content_data_list_props->{$key};
+    }
+
     _add_content_data_callbacks($app);
 }
 
