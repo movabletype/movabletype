@@ -10,7 +10,6 @@ use MT::Test::Permission;
 
 use MT::ContentData;
 use MT::ListProperty;
-use ContentType::ListProperties;
 
 my $content_type = MT::Test::Permission->make_content_type(
     blog_id => 1,
