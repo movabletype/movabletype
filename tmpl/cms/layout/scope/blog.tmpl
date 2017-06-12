@@ -1,7 +1,7 @@
 <mt:setvartemplate name="layout">
 <mt:setvarblock name="scope"><mt:if name="is_blog">blog<mt:else>site</mt:if></mt:setvarblock>
 <!DOCTYPE html>
-<html lang="<mt:var name="language_tag">">
+<html lang="<mt:var name="language_tag">"<mt:if name="screen_id"> data-screen-id="<mt:var name="screen_id">"</mt:if>>
 <head>
   <meta charset="<mt:var name="language_encoding">"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
