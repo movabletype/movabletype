@@ -1,3 +1,3 @@
-tinyMCE.addI18n(tinymce.settings.language + '.mt_fullscreen', {
-    fullscreen: trans('Fullscreen')
+tinyMCE.addI18n(tinymce.settings.language, {
+    mt_fullscreen: trans('Fullscreen')
 });

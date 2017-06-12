@@ -21,6 +21,7 @@ my $components = {
                 MT/Template/Tags/Category.pm
                 MT/Template/Tags/Comment.pm
                 MT/Template/Tags/Commenter.pm
+                MT/Template/Tags/ContentType.pm
                 MT/Template/Tags/Entry.pm
                 MT/Template/Tags/Filters.pm
                 MT/Template/Tags/Folder.pm

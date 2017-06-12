@@ -168,6 +168,17 @@ BEGIN {
             'failedlogin'     => 'MT::FailedLogin',
             'accesstoken'     => 'MT::AccessToken',
 
+            # MT7
+            'category_list'       => 'MT::CategoryList',
+            'cd'                  => 'MT::ContentData',
+            'content_data'        => 'MT::ContentData',
+            'cf'                  => 'MT::ContentField',
+            'content_field'       => 'MT::ContentField',
+            'cf_idx'              => 'MT::ContentFieldIndex',
+            'content_field_index' => 'MT::ContentFieldIndex',
+            'content_type'        => 'MT::ContentType',
+            'objectcategory'      => 'MT::ObjectCategory',
+
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
             'ts_error'      => 'MT::TheSchwartz::Error',
@@ -1248,28 +1259,30 @@ BEGIN {
                     },
                 },
             },
-            website      => '$Core::MT::Website::list_props',
-            blog         => '$Core::MT::Blog::list_props',
-            entry        => '$Core::MT::Entry::list_props',
-            page         => '$Core::MT::Page::list_props',
-            asset        => '$Core::MT::Asset::list_props',
-            category     => '$Core::MT::Category::list_props',
-            folder       => '$Core::MT::Folder::list_props',
-            comment      => '$Core::MT::Comment::list_props',
-            ping         => '$Core::MT::TBPing::list_props',
-            author       => '$Core::MT::Author::list_props',
-            member       => '$Core::MT::Author::member_list_props',
-            commenter    => '$Core::MT::Author::commenter_list_props',
-            tag          => '$Core::MT::Tag::list_props',
-            banlist      => '$Core::MT::IPBanList::list_props',
-            association  => '$Core::MT::Association::list_props',
-            role         => '$Core::MT::Role::list_props',
-            notification => '$Core::MT::Notification::list_props',
-            log          => '$Core::MT::Log::list_props',
-            filter       => '$Core::MT::Filter::list_props',
-            permission   => '$Core::MT::Permission::list_props',
-            template     => '$Core::MT::Template::list_props',
-            templatemap  => '$Core::MT::TemplateMap::list_props',
+            website       => '$Core::MT::Website::list_props',
+            blog          => '$Core::MT::Blog::list_props',
+            entry         => '$Core::MT::Entry::list_props',
+            page          => '$Core::MT::Page::list_props',
+            asset         => '$Core::MT::Asset::list_props',
+            category      => '$Core::MT::Category::list_props',
+            folder        => '$Core::MT::Folder::list_props',
+            comment       => '$Core::MT::Comment::list_props',
+            ping          => '$Core::MT::TBPing::list_props',
+            author        => '$Core::MT::Author::list_props',
+            member        => '$Core::MT::Author::member_list_props',
+            commenter     => '$Core::MT::Author::commenter_list_props',
+            tag           => '$Core::MT::Tag::list_props',
+            banlist       => '$Core::MT::IPBanList::list_props',
+            association   => '$Core::MT::Association::list_props',
+            role          => '$Core::MT::Role::list_props',
+            notification  => '$Core::MT::Notification::list_props',
+            log           => '$Core::MT::Log::list_props',
+            filter        => '$Core::MT::Filter::list_props',
+            permission    => '$Core::MT::Permission::list_props',
+            template      => '$Core::MT::Template::list_props',
+            templatemap   => '$Core::MT::TemplateMap::list_props',
+            category_list => '$Core::MT::CategoryList::list_props',
+            content_type  => '$Core::MT::ContentType::list_props',
         },
         system_filters => {
             entry     => '$Core::MT::Entry::system_filters',
@@ -1671,7 +1684,25 @@ BEGIN {
                 data_api_condition  => sub {1},
                 data_api_scope_mode => 'this',
             },
-            template => { data_api_scope_mode => 'strict', },
+            template      => { data_api_scope_mode => 'strict', },
+            category_list => {
+                object_label     => 'Category List',
+                primary          => 'name',
+                view             => [ 'website', 'blog' ],
+                default_sort_key => 'name',
+                permission       => 'access_to_category_list_list',
+                scope_mode       => 'this',
+            },
+            content_type => {
+                screen_label        => 'Manage Content Type',
+                object_label        => 'Content Type',
+                object_label_plural => 'Content Types',
+                object_type         => 'content_type',
+                scope_mode          => 'this',
+                use_filters         => 0,
+                view                => [ 'website', 'blog' ],
+                primary             => 'name',
+            },
         },
         summaries => {
             'author' => {
@@ -2448,6 +2479,8 @@ BEGIN {
                 content => '<$mt:WidgetSet name="$0"$>',
             },
         },
+        content_field_types =>
+            '$Core::MT::ContentFieldType::core_content_field_types',
     };
 }
 
@@ -2677,16 +2710,17 @@ sub load_core_permissions {
         'blog.administer_blog' => {
             'group'        => 'blog_admin',
             'inherit_from' => [
-                'blog.comment',            'blog.create_post',
-                'blog.edit_all_posts',     'blog.edit_assets',
-                'blog.edit_categories',    'blog.edit_config',
-                'blog.edit_notifications', 'blog.edit_tags',
-                'blog.edit_templates',     'blog.manage_pages',
-                'blog.manage_users',       'blog.publish_post',
-                'blog.rebuild',            'blog.save_image_defaults',
-                'blog.send_notifications', 'blog.set_publish_paths',
-                'blog.upload',             'blog.view_blog_log',
-                'blog.manage_feedback',    'blog.manage_themes',
+                'blog.comment',             'blog.create_post',
+                'blog.edit_all_posts',      'blog.edit_assets',
+                'blog.edit_categories',     'blog.edit_config',
+                'blog.edit_notifications',  'blog.edit_tags',
+                'blog.edit_templates',      'blog_edit_content_types',
+                'blog.manage_pages',        'blog.manage_users',
+                'blog.publish_post',        'blog.rebuild',
+                'blog.save_image_defaults', 'blog.send_notifications',
+                'blog.set_publish_paths',   'blog.upload',
+                'blog.view_blog_log',       'blog.manage_feedback',
+                'blog.manage_themes',
             ],
             'label'            => 'Manage Blog',
             'order'            => 300,
@@ -2978,6 +3012,11 @@ sub load_core_permissions {
                 'delete_comments_via_list'              => 1,
             }
         },
+        'blog.edit_content_types' => {
+            group => 'blog_design',
+            label => 'Edit Content Types',
+            order => 300,
+        },
         'blog.manage_pages' => {
             'group'            => 'auth_pub',
             'label'            => 'Manage Pages',
@@ -3154,7 +3193,7 @@ sub load_core_permissions {
             'inherit_from' => [
                 'system.create_blog',    'system.create_website',
                 'system.edit_templates', 'system.manage_plugins',
-                'system.view_log',
+                'system.view_log',       'system.manage_content_types',
             ],
             'order'            => 0,
             'permitted_action' => {
@@ -3259,7 +3298,13 @@ sub load_core_permissions {
                 'access_to_system_dashboard' => 1,
                 'use_tools:search'           => 1,
             }
-        }
+        },
+        'system.manage_content_types' => {
+            group            => 'sys_admin',
+            label            => 'Manage Content Types',
+            order            => 500,
+            permitted_action => { create_conten_type => 1 },
+        },
     };
 }
 

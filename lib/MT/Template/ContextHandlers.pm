@@ -343,6 +343,33 @@ sub core_tags {
             ## Misc
             'IfImageSupport?' =>
                 '$Core::MT::Template::Tags::Misc::_hdlr_if_image_support',
+
+            ## Content Type
+            'AuthorHasContent?' =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_author_has_content',
+            CalendarIfContents   => \&slurp,
+            CalendarIfNoContents => \&slurp,
+            ContentAuthorUserpicAsset =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic_asset',
+            ContentCalendar =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_calendar',
+            ContentField =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_field',
+            ContentFields =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_fields',
+            ContentNext =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_next',
+            ContentPrevious =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_previous',
+            Contents =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_contents',
+            ContentsFooter => \&slurp,
+            ContentsHeader => \&slurp,
+
+# ContentAssets => '$Core::MT::Template::Tags::ContentType::_hdlr_assets',
+# ContentTags => '$Core::MT::Template::Tags::ContentType::_hdlr_content_tags',
+# ContentCategories => '$Core::MT::Template::Tags::ContentType::_hdlr_content_categories',
+
         },
         function => {
 
@@ -953,6 +980,62 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Misc::_hdlr_captcha_fields',
             'StatsSnippet' =>
                 '$Core::MT::Template::Tags::Misc::_hdlr_stats_snippet',
+
+            # Content Type
+            AuthorContentCount =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_author_content_count',
+            ContentAuthorDisplayName =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_display_name',
+            ContentAuthorEmail =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_email',
+            ContentAuthorID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_id',
+            ContentAuthorLink =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_link',
+            ContentAuthorURL =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_url',
+            ContentAuthorUsername =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_username',
+            ContentAuthorUserpic =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic',
+            ContentAuthorUserpicURL =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic_url',
+            ContentCreatedDate =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_created_date',
+            ContentDate =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_date',
+            ContentModifiedDate =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_date',
+            ContentID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_id',
+            ContentIdentifier =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_identifier',
+            ContentPermalink =>
+                '$Core::MT::Teplate::Tags::ContentType::_hdlr_content_permalink',
+            ContentSiteDescription =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_site_description',
+            ContentSiteID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_site_id',
+            ContentSiteName =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_site_name',
+            ContentSiteURL =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_site_url',
+            ContentStatus =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_status',
+            ContentTitle =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_title',
+            ContentUniqueID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_unique_id',
+            ContentUnpublishedDate =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_unpublished_date',
+            ContentsCount =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_contents_count',
+            SiteContentCount =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_site_content_count',
+
+         # Content => '$Core::MT::Template::Tags::ContentType::_hdlr_content',
+         # Entity => '$Core::MT::Template::Tags::ContentType::_hdlr_entity',
+
         },
         modifier => {
             'numify'  => '$Core::MT::Template::Tags::Filters::_fltr_numify',

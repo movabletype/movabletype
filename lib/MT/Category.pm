@@ -14,15 +14,16 @@ use MT::Blog;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'          => 'integer not null auto_increment',
-            'blog_id'     => 'integer not null',
-            'label'       => 'string(100) not null',
-            'author_id'   => 'integer',
-            'ping_urls'   => 'text',
-            'description' => 'text',
-            'parent'      => 'integer',
-            'allow_pings' => 'boolean',
-            'basename'    => 'string(255)',
+            'id'               => 'integer not null auto_increment',
+            'blog_id'          => 'integer not null',
+            'label'            => 'string(100) not null',
+            'author_id'        => 'integer',
+            'ping_urls'        => 'text',
+            'description'      => 'text',
+            'parent'           => 'integer',
+            'allow_pings'      => 'boolean',
+            'basename'         => 'string(255)',
+            'category_list_id' => 'integer not null',
 
             # META
             'show_fields' => 'text meta',
@@ -35,8 +36,9 @@ __PACKAGE__->install_properties(
             blog_class    => { columns => [ 'blog_id', 'class' ], },
         },
         defaults => {
-            parent      => 0,
-            allow_pings => 0,
+            parent           => 0,
+            allow_pings      => 0,
+            category_list_id => 0,
         },
         class_type    => 'category',
         child_of      => 'MT::Blog',

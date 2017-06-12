@@ -1054,6 +1054,17 @@ sub can_edit_templates {
     }
 }
 
+sub can_manage_content_types {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_manage_content_types(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_manage_content_types(@_);
+    }
+}
+
 sub blog_perm {
     my $author = shift;
     my ($blog_id) = @_;

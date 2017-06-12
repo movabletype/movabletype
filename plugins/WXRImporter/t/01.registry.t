@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use lib qw(lib);
+use lib qw( lib extlib );
 
 use Test::More;
 use MT;

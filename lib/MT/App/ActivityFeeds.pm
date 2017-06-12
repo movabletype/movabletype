@@ -50,8 +50,24 @@ sub init_core_callbacks {
             'ActivityFeed.filter_object.page'    => \&_filter_page,
             'ActivityFeed.filter_object.comment' => \&_filter_comment,
             'ActivityFeed.filter_object.ping'    => \&_filter_ping,
+
+            # Content Data
+            $app->_generate_content_data_callbacks,
         }
     );
+}
+
+sub _generate_content_data_callbacks {
+    require MT::ContentType;
+    my %callbacks;
+    my $iter = MT::ContentType->load_iter;
+    while ( my $ct = $iter->() ) {
+        my $cd_name = 'content_data_' . $ct->id;
+        $callbacks{"ActivityFeed.${cd_name}"} = \&_feed_content_data;
+        $callbacks{"ActivityFeed.filter_object.${cd_name}"}
+            = \&_filter_content_data;
+    }
+    %callbacks;
 }
 
 # authenticate with user package using the web services password instead
@@ -788,6 +804,70 @@ sub _feed_page {
     $$feed = $app->process_log_feed( $terms, $param );
 }
 
+sub _feed_content_data {
+    my ( $cb, $app, $view, $feed ) = @_;
+
+    my $user = $app->user;
+
+    my $blog;
+
+    # verify user has permission to view content data for given site
+    my $blog_id = $app->param('blog_id');
+    if ($blog_id) {
+        if ( !$user->is_superuser ) {
+            my $perm = MT->model('permission')
+                ->load( { author_id => $user->id, blog_id => $blog_id } );
+            return $cb->error( $app->translate("No permissions.") )
+                unless ( $perm && $perm->can_do("get_${view}_feed") )
+                ;    # TODO: fix permission
+        }
+
+        $blog = MT->model('blog')->load($blog_id) or return;
+    }
+    else {
+        if ( !$user->is_superuser ) {
+
+       # limit activity log view to only weblogs this user has permissions for
+            my @perms
+                = MT->model('permission')->load( { author_id => $user->id } );
+            return $cb->error( $app->translate("No permissions.") )
+                unless @perms;
+            my @blog_list = map { $_->blog_id }
+                grep { $_->can_do("get_${view}_feed") }
+                @perms;    # TODO: fix permission
+            $blog_id = join ',', @blog_list;
+        }
+    }
+
+    my ($content_type_id) = $view =~ /content_data_(\d+)/;
+    my $content_type = MT->model('content_type')->load($content_type_id);
+
+    my $link = $app->base
+        . $app->mt_uri(
+        mode => 'list',
+        args => {
+            '_type' => $view,
+            ( $blog ? ( blog_id => $blog_id ) : () )
+        }
+        );
+    my $param = {
+        feed_link  => $link,
+        feed_title => $blog
+        ? $app->translate( '[_1] "[_2]" Content Data',
+            $blog->name, $content_type->name )
+        : $app->translate( 'All "[_1]" Content Data', $content_type->name )
+    };
+
+    # user has permissions to view this type of feed... continue
+    my $terms = $app->apply_log_filter(
+        {   filter     => 'class',
+            filter_val => $view,
+            $blog_id ? ( blog_id => $blog_id ) : (),
+        }
+    );
+    $$feed = $app->process_log_feed( $terms, $param );
+}
+
 sub _filter_entry {
     my ( $cb, $app, $item ) = @_;
     my $user = $app->user;
@@ -891,6 +971,41 @@ sub _filter_ping {
         || $perm->can_do('view_all_trackback');
     $item->{'log.tbping.can_change_status'}
         = $perm->can_do('edit_trackback_status') ? 1 : 0;
+
+    return 1;
+}
+
+sub _filter_content_data {
+    my ( $cb, $app, $item ) = @_;
+    my $user = $app->user;
+    my $view = $app->param('view');
+
+    return 0 if !exists $item->{'log.cd.id'};
+
+    my $content_data = MT->model('content_data')->load( $item->{'log.cd.id'} )
+        or return 0;
+
+    my $own  = $content_data->author_id == $user->id;
+    my $perm = $user->permissions( $content_data->blog_id )
+        or return 0;
+
+    if (   !$app->can_do('get_all_system_feed')
+        && !$perm->can_do('get_system_feed') )
+    {
+        return 0
+            if !$own
+            && !$perm->can_do("edit_all_${view}");    # TODO: fix permission
+    }
+
+    $item->{'log.cd.can_edit'}
+        = $perm->can_edit_content_data( $content_data, $user,
+        ( $content_data->status eq MT::Entry::RELEASE() ? 1 : () ) ) ? 1 : 0;
+
+    # TODO: fix permission
+    $item->{'log.cd.can_change_status'}
+        = $perm->can_do("publish_all_${view}") ? 1
+        : $own && $perm->can_do("publish_own_${view}") ? 1
+        :                                                0;
 
     return 1;
 }

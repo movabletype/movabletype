@@ -7,9 +7,7 @@
  */
 ;(function($) {
     $.each(['plugin', 'advanced', 'core'], function() {
-        tinymce
-            .ScriptLoader
-            .add(tinymce.PluginManager.urls['mt'] + '/langs/' + this + '.js');
+        tinymce.ScriptLoader.add(tinymce.PluginManager.urls['mt'] + '/langs/plugin.js');
     });
 
     tinymce.Editor.prototype.addMTButton = function(name, opts) {
@@ -96,7 +94,7 @@
 
             var index = 1;
             if( ed.inline ) {
-                $.each(['source', 'wysiwyg'], function(i, k) {
+                $.each(['wysiwyg'], function(i, k) {
                     var p = 'plugin_mt_' + k + '_insert_toolbar';
                     plugin.buttonSettings +=
                         (plugin.buttonSettings ? ',' : '') + ed.settings[p];
@@ -198,7 +196,7 @@
             var plugin         = this;
             var id             = ed.id;
             var idLengbth      = id.length;
-            var blogId         = $('#blog-id').val() || 0;
+            var blogId         = $('[name=blog_id]').val() || 0;
             var proxies        = {};
             var hiddenControls = [];
             var $container     = null;
@@ -289,7 +287,7 @@
                             'window': this
                         };
                         callback(context, function() {
-                            win.tinyMCEPopup.close();
+                            tinymce.activeEditor.windowManager.close()
 
                             //Move focus if webkit so that navigation back will read the item.
                             if (tinymce.isWebKit) {
@@ -337,7 +335,7 @@
                     close();
                 };
 
-                c["$contents"].find('form').on('submit', onSubmit);
+                c["$contents"].find('.mce-btn.mce-primary').on('click', onSubmit);
 
                 if (! proxies.source.isSupported('createLink', ed.mtEditorStatus['format'], 'target')) {
                     c['$contents']
@@ -575,7 +573,7 @@
 
             // Register buttons
             ed.addButton('mt_insert_html', {
-                title : 'mt.insert_html',
+                tooltip : 'mt_insert_html',
                 onclick : function() {
 
                     win = ed.windowManager.open({
@@ -609,7 +607,7 @@
             });
 
             ed.addMTButton('mt_insert_image', {
-                title : 'mt.insert_image',
+                tooltip : 'mt_insert_image',
                 onclick : function() {
                     ed.execCommand('mtSaveBookmark');
                     openDialog(
@@ -620,7 +618,7 @@
             });
 
             ed.addMTButton('mt_insert_file', {
-                title : 'mt.insert_file',
+                tooltip : 'mt_insert_file',
                 onclick : function() {
                     ed.execCommand('mtSaveBookmark');
                     openDialog(
@@ -631,7 +629,7 @@
             });
 
             ed.addMTButton('mt_source_bold', {
-                title : 'mt.source_bold',
+                tooltip : 'mt_source_bold',
                 text : 'strong',
                 mtButtonClass: 'text',
                 onclickFunctions : {
@@ -640,7 +638,7 @@
             });
 
             ed.addMTButton('mt_source_italic', {
-                title : 'mt.source_italic',
+                tooltip : 'mt_source_italic',
                 text : 'em',
                 mtButtonClass: 'text',
                 onclickFunctions : {
@@ -649,7 +647,7 @@
             });
 
             ed.addMTButton('mt_source_blockquote', {
-                title : 'mt.source_blockquote',
+                tooltip : 'mt_source_blockquote',
                 text : 'blockquote',
                 mtButtonClass: 'text',
                 onclickFunctions : {
@@ -658,7 +656,7 @@
             });
 
             ed.addMTButton('mt_source_unordered_list', {
-                title : 'mt.source_unordered_list',
+                tooltip : 'mt_source_unordered_list',
                 text : 'ul',
                 mtButtonClass: 'text',
                 onclickFunctions : {
@@ -667,7 +665,7 @@
             });
 
             ed.addMTButton('mt_source_ordered_list', {
-                title : 'mt.source_ordered_list',
+                tooltip : 'mt_source_ordered_list',
                 text : 'ol',
                 mtButtonClass: 'text',
                 onclickFunctions : {
@@ -676,7 +674,7 @@
             });
 
             ed.addMTButton('mt_source_list_item', {
-                title : 'mt.source_list_item',
+                tooltip : 'mt_source_list_item',
                 text : 'li',
                 mtButtonClass: 'text',
                 onclickFunctions : {
@@ -685,7 +683,7 @@
             });
 
             ed.addMTButton('mt_source_link', {
-                title : 'mt.insert_link',
+                tooltip : 'mt_insert_link',
                 onclickFunctions : {
                     source: function(cmd, ui, val) {
                         ed.execCommand('mceLink');
@@ -695,7 +693,7 @@
             });
 
             ed.addMTButton('mt_source_template', {
-                title : 'template.desc',
+                tooltip : 'template.desc',
                 onclickFunctions : {
                     source: function(cmd, ui, val) {
                         tinymce._setActive(ed);
@@ -706,7 +704,7 @@
             });
 
             ed.addMTButton('mt_source_mode', {
-                title : 'mt.source_mode',
+                tooltip : 'mt_source_mode',
                 onclickFunctions : {
                     wysiwyg: function() {
                         ed.execCommand('mtSetFormat', 'none.tinymce_temp');
@@ -727,18 +725,18 @@
             ed.on('NodeChange', function() {
                 var s = ed.mtEditorStatus;
 
-                if (ed.mtEditorStatus['mode'] == 'source' &&
-                    ed.mtEditorStatus['format'] != 'none.tinymce_temp'
+                if (s.mode == 'source' &&
+                    s.format != 'none.tinymce_temp'
                 ) {
-                    $('#' + id + '_mt_source_mode').css('display', 'none');
+                    $(ed.container).find('.mce-i-mt_source_mode').parents('.mce-toolbar').css('display', 'none');
                 }
                 else {
-                    $('#' + id + '_mt_source_mode').css('display', '');
+                    $(ed.container).find('.mce-i-mt_source_mode').parents('.mce-toolbar').css('display', '');
                 }
 
                 var active =
-                    ed.mtEditorStatus['mode'] == 'source' &&
-                    ed.mtEditorStatus['format'] == 'none.tinymce_temp';
+                    s.mode == 'source' &&
+                    s.format == 'none.tinymce_temp';
                 // cm.setActive('mt_source_mode', active);
 
                 if (! ed.mtProxies['source']) {

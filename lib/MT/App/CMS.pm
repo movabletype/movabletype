@@ -9,6 +9,7 @@ package MT::App::CMS;
 use strict;
 use base qw( MT::App );
 
+use MT::CMS::ContentData;
 use MT::Util qw( format_ts epoch2ts perl_sha1_digest_hex perl_sha1_digest
     remove_html );
 use MT::App::CMS::Common;
@@ -354,6 +355,35 @@ sub core_methods {
         'list_associations' => "${pkg}User::list_association",
         'list_roles'        => "${pkg}User::list_role",
         'upload_userpic'    => "${pkg}User::upload_userpic",
+
+        ## MT7
+        'cfg_content_type_description' =>
+            "${pkg}ContentType::cfg_content_type_description",
+        'cfg_content_type'      => "${pkg}ContentType::cfg_content_type",
+        'save_cfg_content_type' => "${pkg}ContentType::save_cfg_content_type",
+
+     # 'cfg_content_type_data' => " ${pkg}ContentType::cfg_content_type_data",
+        'select_list_content_type' =>
+            "${pkg}ContentType::select_list_content_type",
+        'select_edit_content_type' =>
+            "${pkg}ContentType::select_edit_content_type",
+        'edit_content_data'       => "${pkg}ContentType::edit_content_data",
+        'validate_content_fields' => {
+            code     => " ${pkg}ContentType::validate_content_fields",
+            app_mode => 'JSON',
+        },
+        'save_content_data' => "${pkg}ContentType::save_content_data",
+        'dialog_content_data_modal' =>
+            "${pkg}ContentType::dialog_content_data_modal",
+        'dialog_list_content_data' => {
+            code      => "${pkg}ContentType::dialog_list_content_data",
+            condition => sub { shift->param('dialog_view') },
+        },
+
+        'data_convert_to_html' => "${pkg}ContentData::data_convert_to_html",
+
+        'view_category_list' => "${pkg}CategoryList::view",
+
     };
 }
 
@@ -607,6 +637,14 @@ sub init_plugins {
             $pkg
                 . 'view_permission_filter.template' =>
                 "${pfx}Template::can_view",
+
+            # MT7
+            $pkg
+                . 'template_param.list_common' =>
+                "${pfx}ContentType::tmpl_param_list_common",
+            $pkg
+                . 'template_param.edit_role' =>
+                "${pfx}ContentType::tmpl_param_eidt_role",
         }
     );
 
@@ -850,6 +888,12 @@ sub core_content_actions {
                 }
             },
         },
+
+        # TODO: FogBugz:114491
+        # Hide create link temporarily and will fix in new UI.
+        # 'content_type' => '$Core::MT::CMS::ContentType::content_actions',
+
+        %{ MT::CMS::ContentData::make_content_actions() },
     };
 }
 
@@ -1815,6 +1859,9 @@ sub core_list_actions {
                 button => 1,
             },
         },
+        'category_list' => '$Core::MT::CMS::CategoryList::list_actions',
+        'content_type'  => '$Core::MT::CMS::ContentType::list_actions',
+        %{ MT::CMS::ContentData::make_list_actions() },
     };
 }
 
@@ -2547,6 +2594,64 @@ sub core_menus {
             view    => [ "blog", 'website', 'system' ],
             display => 0,
         },
+
+        # MT7
+        'content_type' => {
+            label => 'Content Type',
+            order => 9100
+        },
+        'content_type:manage_content_type' => {
+            label      => 'Manage',
+            order      => 100,
+            mode       => 'list',
+            args       => { _type => 'content_type' },
+            permission => 'administer_website,administer_blog',
+            view       => [ 'website', 'blog' ],
+        },
+        'content_type:create_content_type' => {
+            label => 'New',
+            mode  => 'cfg_content_type_description',
+            order => 200,
+            view  => [ 'website', 'blog' ],
+        },
+        'content_data' => {
+            label => 'Content Data',
+            order => 9200,
+        },
+        'content_data:manage_content_data' => {
+            label => 'Manage',
+            order => 100,
+            mode  => 'select_list_content_type',
+            view  => [ 'website', 'blog' ],
+        },
+        'content_data:create_content_data' => {
+            label => 'New',
+            mode  => 'select_edit_content_type',
+            order => 200,
+            view  => [ 'website', 'blog' ],
+        },
+
+        'category_list' => {
+            label => 'Category Lists',
+            order => 9500,
+        },
+        'category_list:manage' => {
+            label     => 'Manage',
+            order     => 100,
+            mode      => 'list',
+            condition => '$Core::MT::CMS::CategoryList::manage_condition',
+            args      => { _type => 'category_list' },
+            view      => [ 'website', 'blog' ],
+        },
+        'category_list:create' => {
+            label      => 'New',
+            order      => 200,
+            mode       => 'view',
+            permission => 'edit_categories',
+            args       => { _type => 'category_list' },
+            view       => [ 'website', 'blog' ],
+        },
+
     };
 }
 
