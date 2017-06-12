@@ -30,7 +30,7 @@ sub tmpl_param_list_common {
     if (   $app->mode eq 'list'
         && $app->param('_type') =~ /^content_data_\d+$/ )
     {
-        my $component = MT->component('ContentType');
+        my $component = MT->component('core');
         my $filename
             = File::Spec->catfile( $component->path, 'tmpl', 'listing',
             'content_data_list_header.tmpl' );
@@ -79,19 +79,14 @@ __TMPL__
 
 sub cfg_content_type_description {
     my ( $app, $param ) = @_;
-    my $q      = $app->param;
-    my $plugin = $app->component("ContentType");
-    my $cfg    = $app->config;
-
-    $app->build_page( $plugin->load_tmpl('cfg_content_type_description.tmpl'),
+    $app->build_page( $app->load_tmpl('cfg_content_type_description.tmpl'),
         $param );
 }
 
 sub cfg_content_type {
     my ( $app, $param ) = @_;
-    my $q      = $app->param;
-    my $plugin = $app->component("ContentType");
-    my $cfg    = $app->config;
+    my $q   = $app->param;
+    my $cfg = $app->config;
 
     require MT::Promise;
     my $content_type_id = $q->param('id');
@@ -245,15 +240,14 @@ sub cfg_content_type {
         : $tag_delim eq ord(' ') ? 'space'
         :                          'comma';
 
-    $app->build_page( $plugin->load_tmpl('cfg_content_type.tmpl'), $param );
+    $app->build_page( $app->load_tmpl('cfg_content_type.tmpl'), $param );
 }
 
 sub save_cfg_content_type {
-    my ($app)  = @_;
-    my $q      = $app->param;
-    my $plugin = $app->component("ContentType");
-    my $cfg    = $app->config;
-    my $param  = {};
+    my ($app) = @_;
+    my $q     = $app->param;
+    my $cfg   = $app->config;
+    my $param = {};
 
     $app->validate_magic
         or return $app->errtrans("Invalid request.");
@@ -291,7 +285,7 @@ sub save_cfg_content_type {
             args   => {
                 blog_id => $blog_id,
                 id      => $content_type_id,
-                err_msg => $plugin->translate("Name is required."),
+                err_msg => $app->translate("Name is required."),
             }
         )
     ) unless $name;
@@ -302,7 +296,7 @@ sub save_cfg_content_type {
             args   => {
                 blog_id => $blog_id,
                 id      => $content_type_id,
-                err_msg => $plugin->translate(
+                err_msg => $app->translate(
                     "Name \"[_1]\" is already used.", $name
                 ),
             }
@@ -319,7 +313,7 @@ sub save_cfg_content_type {
 
     $content_type->save
         or return $app->error(
-        $plugin->translate(
+        $app->translate(
             "Saving content type failed: [_1]",
             $content_type->errstr
         )
@@ -413,7 +407,7 @@ sub save_cfg_content_type {
                 id      => $content_type_id,
                 fields =>
                     MT::Util::encode_url( JSON::encode_json( \@field_data ) ),
-                err_msg => $plugin->translate($err_msg),
+                err_msg => $app->translate($err_msg),
             }
         )
     ) if $err_msg;
@@ -422,7 +416,7 @@ sub save_cfg_content_type {
     foreach my $content_field (@field_objects) {
         $content_field->save
             or return $app->error(
-            $plugin->translate(
+            $app->translate(
                 "Saving content field failed: [_1]",
                 $content_type->errstr
             )
@@ -436,7 +430,7 @@ sub save_cfg_content_type {
         if ( my $content_field = MT::ContentField->load($field_id) ) {
             $content_field->remove
                 or return $app->error(
-                $plugin->translate(
+                $app->translate(
                     "Removing content type failed: [_1]",
                     $content_type->errstr
                 )
@@ -457,7 +451,7 @@ sub save_cfg_content_type {
 
     $content_type->save
         or return $app->error(
-        $plugin->translate(
+        $app->translate(
             "Saving content type failed: [_1]",
             $content_type->errstr
         )
@@ -478,7 +472,6 @@ sub save_cfg_content_type {
 sub _validate_content_field_type_options {
     my ( $app, $content_type, $field_data, $err_msg ) = @_;
 
-    my $plugin  = $app->component("ContentType");
     my $type    = $field_data->{type};
     my $options = $field_data->{options};
     my $label   = $options->{label};
@@ -487,18 +480,17 @@ sub _validate_content_field_type_options {
         my $content_field_types = $app->registry('content_field_types');
         my $field_label         = $content_field_types->{$type}{label};
         if ( !$options->{label} ) {
-            $err_msg
-                = $plugin->translate( '[_1]\'s "[_2]" field is required.',
+            $err_msg = $app->translate( '[_1]\'s "[_2]" field is required.',
                 $field_label, 'Label' );
         }
         elsif ( length( $options->{label} ) > 255 ) {
-            $err_msg = $plugin->translate(
+            $err_msg = $app->translate(
                 '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                 $field_label, 'Label', '255'
             );
         }
         elsif ( length( $options->{description} ) > 1024 ) {
-            $err_msg = $plugin->translate(
+            $err_msg = $app->translate(
                 '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                 $field_label, 'Description', '1024'
             );
@@ -511,7 +503,7 @@ sub _validate_content_field_type_options {
                 if ( $min_length !~ /^[+\-]?\d+$/
                     || ( $min_length < 0 || $min_length > 1024 ) )
                 {
-                    $err_msg = $plugin->translate(
+                    $err_msg = $app->translate(
                         '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                         $label || $field_label,
                         'Min Length',
@@ -524,7 +516,7 @@ sub _validate_content_field_type_options {
                 if ( $max_length !~ /^[+\-]?\d+$/
                     || ( $max_length < 1 || $max_length > 1024 ) )
                 {
-                    $err_msg = $plugin->translate(
+                    $err_msg = $app->translate(
                         '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                         $label || $field_label,
                         'Max Length',
@@ -535,7 +527,7 @@ sub _validate_content_field_type_options {
             }
             if ( !$err_msg && $initial_value ) {
                 if ( length($initial_value) > 1024 ) {
-                    $err_msg = $plugin->translate(
+                    $err_msg = $app->translate(
                         '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                         $field_label, 'Initial Value', '1024'
                     );
@@ -552,7 +544,7 @@ sub _validate_content_field_type_options {
                         || $min_value < -2147483648
                         || $min_value > 2147483647 )
                     {
-                        $err_msg = $plugin->translate(
+                        $err_msg = $app->translate(
                             '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                             $label || $field_label,
                             'Min Value',
@@ -567,7 +559,7 @@ sub _validate_content_field_type_options {
                         || $max_value > 2147483647
                         || ( $min_value && $min_value > $max_value ) )
                     {
-                        $err_msg = $plugin->translate(
+                        $err_msg = $app->translate(
                             '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                             $label || $field_label,
                             'Max Value',
@@ -581,7 +573,7 @@ sub _validate_content_field_type_options {
                         || $initial_value < -2147483648
                         || $initial_value > 2147483647 )
                     {
-                        $err_msg = $plugin->translate(
+                        $err_msg = $app->translate(
                             '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                             $label || $field_label,
                             'Initial Value',
@@ -595,22 +587,21 @@ sub _validate_content_field_type_options {
                 my ( $option_label, $type )
                     = (    $options->{min_value}
                         && $options->{min_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
-                    ? ( $plugin->translate('Min Value'), 'float' )
+                    ? ( $app->translate('Min Value'), 'float' )
                     : (    $options->{max_value}
                         && $options->{max_value} !~ /^[+\-]?\d+(\.\d+)?$/ )
-                    ? ( $plugin->translate('Max Value'), 'float' )
+                    ? ( $app->translate('Max Value'), 'float' )
                     : (    $options->{initial_value}
                         && $options->{initial_value}
                         !~ /^[+\-]?\d+(\.\d+)?$/ )
-                    ? ( $plugin->translate('Initial Value'), 'float' )
+                    ? ( $app->translate('Initial Value'), 'float' )
                     : (    $options->{decimal_places}
                         && $options->{decimal_places} !~ /^[+\-]?\d+$/ )
-                    ? (
-                    $plugin->translate('Number of decimal places'), 'integer'
-                    )
+                    ? ( $app->translate('Number of decimal places'),
+                    'integer' )
                     : '';
                 if ($option_label) {
-                    $err_msg = $plugin->translate(
+                    $err_msg = $app->translate(
                         '[_1]\'s "[_2]" field value must be [_3].',
                         $label || $field_label,
                         $option_label, $type
@@ -621,7 +612,7 @@ sub _validate_content_field_type_options {
         elsif ( $type eq 'url' ) {
             my $initial_value = $options->{initial_value};
             if ( length($initial_value) > 255 ) {
-                $err_msg = $plugin->translate(
+                $err_msg = $app->translate(
                     '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                     $label || $field_label,
                     'Initial Value',
@@ -647,7 +638,7 @@ sub _validate_content_field_type_options {
             my $time = $options->{initial_time} || '000000';
             my $ts   = "$date $time";
             if ( !MT::Util::is_valid_date($ts) ) {
-                $err_msg = $plugin->translate( "Invalid [_1]: '[_2]'",
+                $err_msg = $app->translate( "Invalid [_1]: '[_2]'",
                     $label || $field_label, $ts );
             }
         }
@@ -661,8 +652,7 @@ sub _validate_content_field_type_options {
             }
             if ( $values_count == 0 ) {
                 $err_msg
-                    = $plugin->translate(
-                    "[_1]'s \"Values\" field is required.",
+                    = $app->translate( "[_1]'s \"Values\" field is required.",
                     $label || $field_label );
             }
             if ( !$err_msg && $type ne 'radio_button' ) {
@@ -670,45 +660,45 @@ sub _validate_content_field_type_options {
                 my $max = $options->{max};
                 if ( $options->{multiple} ) {
                     if ( !$min ) {
-                        $err_msg = $plugin->translate(
+                        $err_msg = $app->translate(
                             "[_1]'s \"Min\" field is required when \"Multiple\" is checked.",
                             $label || $field_label
                         );
                     }
                     elsif ( !$max ) {
-                        $err_msg = $plugin->translate(
+                        $err_msg = $app->translate(
                             "[_1]'s \"Max\" field is required when \"Multiple\" is checked.",
                             $label || $field_label
                         );
                     }
                     elsif ( $max > $values_count ) {
-                        $err_msg = $plugin->translate(
+                        $err_msg = $app->translate(
                             "[_1]'s \"Max\" field should be lower than number of \"Values\" field.",
                             $label || $field_label
                         );
                     }
                     elsif ( $min !~ /^[+]?\d+$/ ) {
-                        $err_msg = $plugin->translate(
+                        $err_msg = $app->translate(
                             '[_1]\'s "[_2]" field must be a positive integer.',
                             $label || $field_label,
                             'Min'
                         );
                     }
                     elsif ( $max !~ /^[+]?\d+$/ ) {
-                        $err_msg = $plugin->translate(
+                        $err_msg = $app->translate(
                             '[_1]\'s "[_2]" field must be a positive integer.',
                             $label || $field_label,
                             'Max'
                         );
                     }
                     elsif ( $max && $max < $min ) {
-                        $err_msg = $plugin->translate(
+                        $err_msg = $app->translate(
                             '[_1]\'s "[_2]" field must be [_3] than "[_4]" field.',
                             $label || $field_label, 'Min', 'lower', 'Max'
                         );
                     }
                     elsif ( $min && $min > $max ) {
-                        $err_msg = $plugin->translate(
+                        $err_msg = $app->translate(
                             '[_1]\'s "[_2]" field must be [_3] than "[_4]" field.',
                             $label || $field_label, 'Max', 'higher', 'Min'
                         );
@@ -728,13 +718,13 @@ sub _validate_content_field_type_options {
                 my $min = $options->{min};
                 my $max = $options->{max};
                 if ( !$min ) {
-                    $err_msg = $plugin->translate(
+                    $err_msg = $app->translate(
                         "[_1]'s \"Min\" field is required when \"Multiple\" is checked.",
                         $label || $field_label
                     );
                 }
                 elsif ( !$max ) {
-                    $err_msg = $plugin->translate(
+                    $err_msg = $app->translate(
                         "[_1]'s \"Max\" field is required when \"Multiple\" is checked.",
                         $label || $field_label
                     );
@@ -743,7 +733,7 @@ sub _validate_content_field_type_options {
                     || ( $min < 0 || $min > 255 )
                     || ( $max && $max < $min ) )
                 {
-                    $err_msg = $plugin->translate(
+                    $err_msg = $app->translate(
                         '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                         $label || $field_label, 'Min', '0', '255'
                     );
@@ -752,7 +742,7 @@ sub _validate_content_field_type_options {
                     || ( $max < 1 || $max > 255 )
                     || ( $min && $min > $max ) )
                 {
-                    $err_msg = $plugin->translate(
+                    $err_msg = $app->translate(
                         '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                         $label || $field_label, 'Max', '1', '255'
                     );
@@ -765,7 +755,7 @@ sub _validate_content_field_type_options {
                     )
                     )
                 {
-                    $err_msg = $plugin->translate(
+                    $err_msg = $app->translate(
                         q{[_1]'s "[_2]" field must not be parent content type.},
                         $label || $field_label,
                         'Content Type'
@@ -776,7 +766,7 @@ sub _validate_content_field_type_options {
         elsif ( $err_msg && $type eq 'tags' && $options->{initial_value} ) {
             my $initial_value = $options->{initial_value};
             if ( length($initial_value) > 255 ) {
-                $err_msg = $plugin->translate(
+                $err_msg = $app->translate(
                     '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                     $label || $field_label,
                     'Initial Value',
@@ -795,7 +785,7 @@ sub _validate_content_field_type_options {
                     || ( $initial_rows < 0 || $initial_rows > 255 ) )
                 )
             {
-                $err_msg = $plugin->translate(
+                $err_msg = $app->translate(
                     '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                     $label || $field_label,
                     'Initial Rows',
@@ -809,7 +799,7 @@ sub _validate_content_field_type_options {
                     || ( $initial_columns < 0 || $initial_columns > 255 ) )
                 )
             {
-                $err_msg = $plugin->translate(
+                $err_msg = $app->translate(
                     '[_1]\'s "[_2]" field must be an integer value between [_3] and [_4].',
                     $label || $field_label,
                     'Initial Columns',
@@ -818,7 +808,7 @@ sub _validate_content_field_type_options {
                 );
             }
             elsif ( $row_heading && length($row_heading) > 255 ) {
-                $err_msg = $plugin->translate(
+                $err_msg = $app->translate(
                     '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                     $label || $field_label,
                     'Row Headers',
@@ -826,7 +816,7 @@ sub _validate_content_field_type_options {
                 );
             }
             elsif ( $column_heading && length($column_heading) > 255 ) {
-                $err_msg = $plugin->translate(
+                $err_msg = $app->translate(
                     '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                     $label || $field_label,
                     'Column Headers',
@@ -840,11 +830,10 @@ sub _validate_content_field_type_options {
 }
 
 sub select_list_content_type {
-    my ($app)  = @_;
-    my $q      = $app->param;
-    my $plugin = $app->component("ContentType");
-    my $cfg    = $app->config;
-    my $param  = {};
+    my ($app) = @_;
+    my $q     = $app->param;
+    my $cfg   = $app->config;
+    my $param = {};
 
     my $blog_id = scalar $q->param('blog_id')
         or return $app->errtrans("Invalid request.");
@@ -856,16 +845,15 @@ sub select_list_content_type {
     }
     $param->{content_types} = \@content_types;
 
-    $app->build_page( $plugin->load_tmpl('select_list_content_type.tmpl'),
+    $app->build_page( $app->load_tmpl('select_list_content_type.tmpl'),
         $param );
 }
 
 sub select_edit_content_type {
-    my ($app)  = @_;
-    my $q      = $app->param;
-    my $plugin = $app->component("ContentType");
-    my $cfg    = $app->config;
-    my $param  = {};
+    my ($app) = @_;
+    my $q     = $app->param;
+    my $cfg   = $app->config;
+    my $param = {};
 
     my $blog_id = scalar $q->param('blog_id')
         or return $app->errtrans("Invalid request.");
@@ -885,17 +873,16 @@ sub select_edit_content_type {
     }
     $param->{content_types} = \@array;
 
-    $app->build_page( $plugin->load_tmpl('select_edit_content_type.tmpl'),
+    $app->build_page( $app->load_tmpl('select_edit_content_type.tmpl'),
         $param );
 }
 
 sub edit_content_data {
-    my ($app)  = @_;
-    my $q      = $app->param;
-    my $blog   = $app->blog;
-    my $plugin = $app->component("ContentType");
-    my $cfg    = $app->config;
-    my $param  = {};
+    my ($app) = @_;
+    my $q     = $app->param;
+    my $blog  = $app->blog;
+    my $cfg   = $app->config;
+    my $param = {};
     my $data;
 
     my $blog_id = scalar $q->param('blog_id')
@@ -1082,7 +1069,7 @@ sub edit_content_data {
         if ( my $field_html = $content_field_type->{field_html} ) {
             if ( !ref $field_html ) {
                 if ( $field_html =~ /\.tmpl$/ ) {
-                    $field_html = $plugin->load_tmpl($field_html);
+                    $field_html = $app->load_tmpl($field_html);
                     $field_html = $field_html->text if $field_html;
                 }
                 else {
@@ -1138,16 +1125,15 @@ sub edit_content_data {
 
     $app->setup_editor_param($param);
 
-    $app->build_page( $plugin->load_tmpl('edit_content_data.tmpl'), $param );
+    $app->build_page( $app->load_tmpl('edit_content_data.tmpl'), $param );
 }
 
 sub save_content_data {
-    my ($app)  = @_;
-    my $blog   = $app->blog;
-    my $q      = $app->param;
-    my $plugin = $app->component("ContentType");
-    my $cfg    = $app->config;
-    my $param  = {};
+    my ($app) = @_;
+    my $blog  = $app->blog;
+    my $q     = $app->param;
+    my $cfg   = $app->config;
+    my $param = {};
 
     $app->validate_magic
         or return $app->errtrans("Invalid request.");
@@ -1352,7 +1338,7 @@ sub save_content_data {
 
     $content_data->save
         or return $app->error(
-        $plugin->translate(
+        $app->translate(
             "Saving [_1] failed: [_2]", $content_type->name,
             $content_data->errstr
         )
@@ -1656,9 +1642,9 @@ sub init_content_type {
         $core_listing_screens->{$key} = $content_data_listing_screens->{$key};
     }
 
-    my $core_list_props = $core->registry('list_properties');
+    my $core_list_props         = $core->registry('list_properties');
     my $content_data_list_props = MT::ContentData::make_list_props();
-    for my $key ( keys %{ $content_data_list_props } ) {
+    for my $key ( keys %{$content_data_list_props} ) {
         $core_list_props->{$key} = $content_data_list_props->{$key};
     }
 

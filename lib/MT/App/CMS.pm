@@ -639,12 +639,10 @@ sub init_plugins {
                 "${pfx}Template::can_view",
 
             # MT7
-            $pkg
-                . 'template_param.list_common' =>
+            'template_param.list_common' =>
                 "${pfx}ContentType::tmpl_param_list_common",
-            $pkg
-                . 'template_param.edit_role' =>
-                "${pfx}ContentType::tmpl_param_eidt_role",
+            'template_param.edit_role' =>
+                "${pfx}ContentType::tmpl_param_edit_role",
         }
     );
 

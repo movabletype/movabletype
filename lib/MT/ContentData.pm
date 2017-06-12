@@ -9,7 +9,7 @@ package MT::ContentData;
 use strict;
 use base qw( MT::Object MT::Revisable );
 
-use JSON ();
+use JSON  ();
 use POSIX ();
 
 use MT;
@@ -134,8 +134,7 @@ sub save {
 
     my $content_field_types = MT->registry('content_field_types');
     my $content_type        = $self->content_type
-        or return $self->error(
-        MT->component('ContentType')->translate('Invalid content type') );
+        or return $self->error( MT->translate('Invalid content type') );
 
     unless ( $self->id ) {
         my $unique_id
@@ -191,7 +190,7 @@ sub save {
 
             $cf_idx->set_value( $data_type, $v )
                 or return $self->error(
-                MT->component('ContentType')->translate(
+                MT->translate(
                     'Saving content field index failed: Invalid field type "[_1]"',
                     $data_type
                 )
@@ -199,7 +198,7 @@ sub save {
 
             $cf_idx->save
                 or return $self->error(
-                MT->component('ContentType')->translate(
+                MT->translate(
                     "Saving content field index failed: [_1]",
                     $cf_idx->errstr
                 )
@@ -561,7 +560,7 @@ sub is_in_category {
 sub make_list_props {
     my $props = {};
 
-    my $iter = MT::ContentType->load_iter ;
+    my $iter = MT::ContentType->load_iter;
     while ( my $content_type = $iter->() ) {
         my $key   = 'content_data_' . $content_type->id;
         my $order = 1000;
