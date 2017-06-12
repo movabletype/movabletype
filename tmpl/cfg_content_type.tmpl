@@ -1506,9 +1506,6 @@
       delete data['fields'][current_id];
       localStorage.setItem("ContentType", JSON.stringify(data));
       setDirty(true);
-      if (! jQuery('.content-field-header')[1] ) {
-        jQuery('a.delete-link').toggleClass('hidden');
-      }
       return false;
     });
     jQuery('a.edit-link').click(function() {
