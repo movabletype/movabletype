@@ -32,7 +32,7 @@ sub tmpl_param_list_common {
     {
         my $component = MT->component('core');
         my $filename
-            = File::Spec->catfile( $component->path, 'tmpl', 'listing',
+            = File::Spec->catfile( $component->path, 'tmpl', 'cms', 'listing',
             'content_data_list_header.tmpl' );
         push @{ $param->{list_headers} },
             {
