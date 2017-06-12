@@ -1655,6 +1655,23 @@ sub init_content_type {
     for my $key ( keys %{$content_data_listing_screens} ) {
         $core_listing_screens->{$key} = $content_data_listing_screens->{$key};
     }
+
+    _add_content_data_callbacks($app);
+}
+
+sub _add_content_data_callbacks {
+    my $app       = shift;
+    my $pkg       = $app->id . '_';
+    my $pfx       = '$Core::MT::CMS::';
+    my $callbacks = {};
+    my $iter      = eval { MT->model('content_type')->load_iter }
+        || sub { };    # FIXME: An error occurs on mt-app when installing.
+    while ( my $ct = $iter->() ) {
+        my $cd_name = 'content_data_' . $ct->id;
+        $callbacks->{"${pkg}pre_load_filtered_list.${cd_name}"}
+            = "${pfx}ContentType::cms_pre_load_filtered_list";
+    }
+    $app->_register_core_callbacks($callbacks);
 }
 
 sub _make_content_data_listing_screens {
