@@ -1487,6 +1487,7 @@
 
   function set_events() {
     jQuery('a.delete-link').unbind('click').click(function() {
+      all_options_hidden();
       if (! confirm(trans('Are you sure you want to remove this settings?'))) {
         return false;
       }
@@ -1519,10 +1520,16 @@
       options.css( 'display', 'block' );
       jQuery("#current_field_id").val(current_id);
       var data = JSON.parse( localStorage.getItem("ContentType") );
-      if (!data['fields'] || !data['fields'][current_id] || !data['fields'][current_id]['options'])
-          return true;
       var regexp = new RegExp(type_name + '-(.*)');
       options.find("input").each(function(index, element) {
+        // Clear
+        if (input_type === 'checkbox' || input_type === 'radio') {
+          jQuery(element).prop("checked", false);
+        }
+        else {
+          jQuery(element).val('');
+        }
+
         var input_type = jQuery(element).attr("type");
         if (input_type === 'hidden')
           return true;
@@ -1549,12 +1556,18 @@
         }
       });
       options.find("select").each(function(index, element) {
+        // Clear
+        jQuery(element).val('');
+
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
         if (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options'][opt_name])
           jQuery(element).val(data['fields'][current_id]['options'][opt_name]);
       });
       options.find("textarea").each(function(index, element) {
+        // Clear
+        jQuery(element).val('');
+
         var opt_id = jQuery(element).attr("id");
         var opt_name = (opt_id.match(regexp))[1];
         if (data['fields'][current_id] && data['fields'][current_id]['options'] && data['fields'][current_id]['options'][opt_name])
@@ -1604,12 +1617,6 @@
         if (!data['fields'][current_id]['options'])
           data['fields'][current_id]['options'] = {};
         data['fields'][current_id]['options'][opt_name] = opt_val;
-        if (input_type === 'checkbox' || input_type === 'radio') {
-          jQuery(element).prop("checked", false);
-        }
-        else {
-          jQuery(element).val('');
-        }
         if ( opt_name === 'label' )
           jQuery('#content-field-block-' + current_id).find('#content-field-label').text(opt_val);
       });
@@ -1620,7 +1627,6 @@
         if (!data['fields'][current_id]['options'])
           data['fields'][current_id]['options'] = {};
         data['fields'][current_id]['options'][opt_name] = opt_val;
-        jQuery(element).val('');
       });
       options.find("textarea").each(function(index, element) {
         var opt_id = jQuery(element).attr("id");
@@ -1629,7 +1635,6 @@
         if (!data['fields'][current_id]['options'])
           data['fields'][current_id]['options'] = {};
         data['fields'][current_id]['options'][opt_name] = opt_val;
-        jQuery(element).val('');
       });
       localStorage.setItem("ContentType", JSON.stringify(data));
       options.css( 'display', 'none' );
