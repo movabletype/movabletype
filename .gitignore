@@ -44,6 +44,7 @@ t/db/mt.db
 t/archive/
 t/update/
 
+*.DS_Store
 *.swp
 *.swo
 /mt.pid
