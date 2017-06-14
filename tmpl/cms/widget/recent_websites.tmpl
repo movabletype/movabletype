@@ -62,20 +62,12 @@
                 </ul>
             </div>
             <div class="col-md-2">
-              <div class="row">
-                <div class="col-md-12">
-                <mt:if name="can_create_new_entry">
-                  <a class="button btn btn-default pull-right" href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;blog_id=<mt:var name="website_id">"><__trans phrase="New Entry"></a>
-                </mt:if>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-12">
-                <mt:if name="can_create_new_page">
-                  <a class="button btn btn-default pull-right" href="<mt:var name="script_url">?__mode=view&_type=page&amp;blog_id=<mt:var name="website_id">"><__trans phrase="New Page"></a>
-                </mt:if>
-                </div>
-              </div>
+              <mt:if name="can_create_new_entry">
+              <a class="button btn btn-default pull-right" href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;blog_id=<mt:var name="website_id">"><__trans phrase="New Entry"></a>
+              </mt:if>
+              <mt:if name="can_create_new_page">
+              <a class="button btn btn-default pull-right" href="<mt:var name="script_url">?__mode=view&_type=page&amp;blog_id=<mt:var name="website_id">"><__trans phrase="New Page"></a>
+              </mt:if>
             </div>
         </div>
     </mt:loop>

@@ -1,5 +1,6 @@
 <mt:setvartemplate name="layout">
 <mt:setvarblock name="scope"><mt:if name="is_blog">blog<mt:else>site</mt:if></mt:setvarblock>
+<mt:setvarblock name="related_content"><$mt:var name="related_content" trim="1"$></mt:setvarblock>
 <!DOCTYPE html>
 <html lang="<mt:var name="language_tag">"<mt:if name="screen_id"> data-screen-id="<mt:var name="screen_id">"</mt:if>>
 <head>
