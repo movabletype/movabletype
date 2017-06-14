@@ -530,7 +530,7 @@ sub set_content_type_load_context {
                 { blog_id => $blog_id, name => $ct_name } );
         }
         $ct ||= $ctx->stash('content_type')
-            or $ctx->_no_content_type_error;
+            or return $ctx->_no_content_type_error;
         $cd_terms->{content_type_id} = $ct->id;
     }
     1;
