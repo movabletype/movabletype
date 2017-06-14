@@ -47,12 +47,15 @@
 <mt:if name="widget_options"><mt:var name="add_widget_form"></mt:if>
 </mt:setvartemplate>
 
+<mt:setvarblock name="related_content">
+<mt:if name="sidebar"><div id="widget-container-sidebar">
+  <mt:section id="sidebar" class="widget-container"><mt:var name="sidebar"></mt:section>
+</div></mt:if>
+<mt:if name="select_widget_form"><mt:var name="select_widget_form" set="sidebar"></mt:if>
+</mt:setvarblock>
+
 <mt:setvarblock name="content">
-  <div class="row">
-    <div id="widget-container-main" class="col-md-12">
-      <mt:section id="main" class="widget-container"><mt:var name="main"></mt:section>
-    </div>
-  </div>
+  <mt:section id="main" class="widget-container"><mt:var name="main"></mt:section>
   <mt:var name="select_widget_form" set="main">
 
   <mt:include name="modules/libjs.tmpl">

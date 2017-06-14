@@ -22,17 +22,29 @@
   <div class="container body">
     <div class="row">
       <mt:include name="modules/sidebar.tmpl">
-      <div class="main col-md-10">
-        <mt:if name="page_title">
-        <div class="row">
-          <div class="col-md-12 page-header">
-            <h1><mt:var name="page_title"></h1>
+      <mt:if name="related_content">
+        <div class="main col-md-12">
+          <mt:include name="modules/page_title.tmpl">
+          <div class="row">
+            <div class="col-md-9">
+              <mt:var name="content">
+            </div>
+            <div class="col-md-3">
+              <mt:var name="related_content">
+            </div>
           </div>
         </div>
-        </mt:if>
-        <mt:var name="content">
-        <mt:var name="js_include">
-      </div>
+      <mt:else>
+        <div class="main col-md-10">
+          <mt:include name="modules/page_title.tmpl">
+          <div class="row">
+            <div class="col-md-12">
+              <mt:var name="content">
+            </div>
+          </div>
+        </div>
+      </mt:if>
+      <mt:var name="js_include">
     </div>
   </div>
   <mt:include name="modules/footer.tmpl">
