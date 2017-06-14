@@ -1,0 +1,63 @@
+<mt:if name="scope_type" like="(blog|website)">
+  <mt:setvarblock name="html_title"><__trans phrase="Dashboard"></mt:setvarblock>
+  <mt:setvarblock name="page_title"><$mt:var name="blog_name" escape="html"$></mt:setvarblock>
+<mt:else name="scope_type" eq="system">
+  <mt:setvarblock name="page_title"><__trans phrase="System Overview"></mt:setvarblock>
+<mt:else>
+  <mt:setvarblock name="html_title"><__trans phrase="Dashboard"></mt:setvarblock>
+</mt:if>
+
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/widget.css" />
+</mt:setvarblock>
+
+<mt:setvartemplate name="select_widget_form">
+<mt:var name="widget_options" value="0">
+<mt:setvarblock name="add_widget_form">
+<form method="POST" action="<mt:var name="script_url">" class="listing">
+  <input type="hidden" name="__mode" value="update_widget_prefs" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="widget_action" value="add" />
+  <input type="hidden" name="widget_scope" value="<mt:var name="widget_scope" escape="html">" />
+  <input type="hidden" name="widget_set" value="<mt:var name="set">" />
+  <div class="actions-bar buttons">
+    <select name="widget_id">
+      <option value=""><__trans phrase="Select a Widget..."></option>
+    <mt:loop name="all_widget_loop">
+    <mt:if name="widget_set">
+      <mt:if name="widget_set" eq="$set">
+      <mt:var name="widget_options" value="1">
+      <option value="<mt:var name="widget_id" escape="html">"><mt:var name="widget_label" escape="html"></option>
+      </mt:if>
+    <mt:else>
+      <mt:var name="widget_options" value="1">
+      <option value="<mt:var name="widget_id" escape="html">"><mt:var name="widget_label" escape="html"></option>
+    </mt:if>
+    </mt:loop>
+    </select>
+    <button
+       type="submit"
+       class="button">
+      <__trans phrase="Add">
+    </button>
+  </div>
+</form>
+</mt:setvarblock>
+<mt:if name="widget_options"><mt:var name="add_widget_form"></mt:if>
+</mt:setvartemplate>
+
+<mt:setvarblock name="content">
+  <div class="row">
+    <div id="widget-container-main" class="col-md-12">
+      <mt:section id="main" class="widget-container"><mt:var name="main"></mt:section>
+    </div>
+  </div>
+  <mt:var name="select_widget_form" set="main">
+
+  <mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
+
