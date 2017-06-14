@@ -845,7 +845,7 @@ sub select_list_content_type {
     }
     $param->{content_types} = \@content_types;
 
-    $app->build_page( $app->load_tmpl('select_list_content_type.tmpl'),
+    $app->build_page( $app->load_tmpl('content_data/select_list.tmpl'),
         $param );
 }
 
@@ -873,7 +873,7 @@ sub select_edit_content_type {
     }
     $param->{content_types} = \@array;
 
-    $app->build_page( $app->load_tmpl('select_edit_content_type.tmpl'),
+    $app->build_page( $app->load_tmpl('content_data/select_edit.tmpl'),
         $param );
 }
 
