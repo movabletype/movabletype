@@ -1,3 +1,8 @@
+.widget .panel-heading {
+    padding: 6px 13px;
+    font-weight: 600;
+}
+
 .blog-container .row.odd {
     background-color: #fbfbfb;
 }
@@ -18,8 +23,9 @@
     padding-left: 0;
 }
 
-.widget .panel-heading {
-    padding: 6px 13px;
-    font-weight: 600;
+.favorite-blogs-widget .blog-container {
+    max-height: 455px;
+    overflow: auto;
+    padding-left: 15px;
 }
 
