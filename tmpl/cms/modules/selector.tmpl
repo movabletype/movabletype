@@ -11,7 +11,7 @@
     <!-- scope labels -->
     <ul class="nav navbar-nav navbar-left">
     <mt:if name="scope_type" eq="user">
-      <li class="scope user"><__trans phrase="User Dashboard"></li>
+      <li class="scope user"><a><__trans phrase="User Dashboard"></a></li>
     <mt:elseif name="scope_type" eq="system">
       <li class="scope system"><a href="<mt:var name="mt_url">?__mode=dashboard&blog_id=0"><__trans phrase="System Overview"></a></li>
     <mt:else>
@@ -35,11 +35,41 @@
         [% END %]
 </mt:ignore>
       </li>
+      <li class="rebuild-site">
+        <a href="<$mt:var name="mt_url"$>?__mode=rebuild_confirm&blog_id=<$mt:var name="blog_id"$>" class="mt-rebuild">
+          <img src="<mt:var name="static_uri">images/nav-icon-publish.png" />
+        </a>
+      </li>
       <li class="open-website">
         <a href="<mt:var name="blog_url" escape="html">" target="_blank"><span class="fa fa-external-link"></span></a>
       </li>
       </mt:if>
 
+      <li class="cms-search">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <img src="<mt:var name="static_uri">images/search-submit.png" />
+        </a>
+        <ul class="dropdown-menu" role="menu">
+          <li>
+            <form id="basic-search" class="basic-search" name="quicksearch" method="get" action="<$mt:var name="mt_url"$>">
+              <input type="hidden" name="__mode" value="search_replace" />
+              <input type="hidden" name="_type" value="<mt:if name="search_type"><mt:var name="search_type"><mt:else><mt:if name="object_type"><$mt:var name="object_type"$><mt:else>entry</mt:if></mt:if>" />
+            <mt:if name="blog_id">
+              <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
+            </mt:if>
+              <input type="hidden" name="do_search" value="1" />
+              <input type="hidden" name="quicksearch" value="1" />
+              <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
+              <div class="form-inline">
+                <div class="form-group">
+                  <input accesskey="q" type="text" name="search" id="quick-search" autocomplete="off" class="form-control search-query input-hint" placeholder="<__trans phrase="Search"><mt:if name="search_label"> <$mt:var name="search_label"$><mt:else> <__trans phrase="Entries"></mt:if>" value="" title="<__trans phrase="Search (q)">" />
+                </div>
+                <button type="submit" class="button btn btn-default"><__trans phrase="Search [_1]" params="<mt:if name="search_label"> <$mt:var name="search_label"$><mt:else> <__trans phrase="Entries"></mt:if>"></button>
+              </div>
+            </form>
+          </li>
+        </ul>
+      </li>
       <li class="navbar-user">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="fa fa-bars"></span></a>
         <ul class="dropdown-menu" role="menu">
