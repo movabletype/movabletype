@@ -92,9 +92,7 @@ sub dashboard {
     $app->build_blog_selector($param);
     $app->load_widget_list( 'dashboard', $scope, $param );
     $param = $app->load_widgets( 'dashboard', $scope, $param );
-    my $tmpl_file
-        = $app->param('old') ? 'dashboard.tmpl' : 'dashboard/dashboard.tmpl';
-    return $app->load_tmpl( $tmpl_file, $param );
+    return $app->load_tmpl( 'dashboard/dashboard.tmpl', $param );
 }
 
 sub personal_stats_widget {
