@@ -24,6 +24,7 @@ use MT::DateTime;
 use MT::Entry;
 use MT::Log;
 use MT::Util ();
+use MT::Serialize;
 
 sub tmpl_param_list_common {
     my ( $cb, $app, $param, $tmpl ) = @_;
@@ -1014,7 +1015,8 @@ sub edit_content_data {
     }
 
     $data = $content_data->data if $content_data && !$data;
-
+    my $convert_breaks
+        = MT::Serialize->unserialize( $content_data->convert_breaks );
     my $content_field_types = $app->registry('content_field_types');
     @$array = map {
         my $e_unique_id = $_->{unique_id};
@@ -1085,8 +1087,15 @@ sub edit_content_data {
         }
 
         $_->{data_type} = $content_field_types->{ $_->{type} }{data_type};
-        $_->{convert_breaks} = $_->{options}{input_format};
-
+        if ( $_->{type} eq 'multi_line_text' ) {
+            if ( exists $$convert_breaks->{ $_->{content_field_id} } ) {
+                $_->{convert_breaks}
+                    = $$convert_breaks->{ $_->{content_field_id} };
+            }
+            else {
+                $_->{convert_breaks} = $_->{options}{input_format};
+            }
+        }
         $_;
     } @$array;
 
@@ -1155,11 +1164,16 @@ sub save_content_data {
 
     my $content_field_types = $app->registry('content_field_types');
 
-    my $data = {};
+    my $convert_breaks = {};
+    my $data           = {};
     foreach my $f (@$field_data) {
         my $content_field_type = $content_field_types->{ $f->{type} };
         $data->{ $f->{id} }
             = _get_form_data( $app, $content_field_type, $f );
+        if ( $f->{type} eq 'multi_line_text' ) {
+            $convert_breaks->{ $f->{id} } = $q->param(
+                'content-field-' . $f->{id} . '_convert_breaks' );
+        }
     }
 
     if ( $app->param('_autosave') ) {
@@ -1333,6 +1347,8 @@ sub save_content_data {
             $content_data->unpublished_on(undef);
         }
     }
+    $content_data->convert_breaks(
+        MT::Serialize->serialize( \$convert_breaks ) );
 
     $app->run_callbacks( 'cms_pre_save.cd', $app, $content_data, $orig );
 
