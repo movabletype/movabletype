@@ -3404,7 +3404,7 @@ sub _hdlr_app_new_widget {
     my $cgi = $app->uri;
     if ( $hosted_widget && ( !$insides !~ m/<form\s/i ) ) {
         $insides = <<"EOT";
-        <form id="$id-form" method="post" action="$cgi" onclick="return false">
+        <form id="$id-form" method="post" action="$cgi">
         <input type="hidden" name="__mode" value="update_widget_prefs" />
         <input type="hidden" name="widget_id" value="$id" />
         $blog_field
