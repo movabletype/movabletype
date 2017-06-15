@@ -406,8 +406,6 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       jQuery('.convert_breaks[data-target='+field_id+']').attr('data-orig_text_format', 'richtext');
       jQuery('#'+field_id).parents('.editor-content').removeClass('editor-plaintext');
       app.editor.reload();
-      // app.editor.setFormat('richtext');
-      // app.setEditorIframeHTML();
   }
   function changedTextFormat() {
       var editor_id = jQuery(this).data('target');
@@ -469,6 +467,53 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
           app.editor.setMode(option);
           app.editor.focus();
+          if(option == "blockeditor"){
+            var add_field = jQuery('<div class="add_field icon-mini-left addnew"><__trans phrase="Create New" escape="js"></div>');
+            var block_field = jQuery('<div class="block_field sortable"></div>');
+            block_field.sortable({
+                items: '.sort-enabled',
+                placeholder: 'placeholder',
+                distance: 3,
+                opacity: 0.8,
+                cursor: 'move',
+                forcePlaceholderSize: true,
+                handle: '.field-header',
+                containment: '.block_field',
+            });
+
+
+            jQuery('#' + editor_id).parents('.editor-content').after(block_field);
+            block_field.after(add_field);
+            add_field.on('click', function(){
+              var add_menu = jQuery('<div><span class="add">H</span><span class="add">Image</span><span class="add">Embed</span><span class="add">Horizon</span></div>');
+              jQuery(this).after(add_menu);
+              add_menu.find('span').on('click', function(){
+                var type = jQuery(this).text();
+                var edit_field_class = editor_id + '_addfield';
+                var label = jQuery('<div class="field-header ui-sortable-handle first-child"><label class="' + edit_field_class + '_label icon-delete icon-right">' + type + '</label></div>');
+                label.on('click', '.icon-delete', function(){
+                  label.parent('.field').remove();
+                });
+                var edit_field_input = jQuery('<input type="text" class="text short html5-form content-field">');
+                if(type == 'H') {
+                  var select_header = jQuery('<select><option>H1</option><option>H2</option><option>H3</option></select>');
+                  edit_field_input = jQuery.merge(select_header, edit_field_input);
+                } else if ( type == 'Image' ){
+                  edit_field_input = jQuery('<a href="<mt:var name="script_url">?__mode=dialog_list_asset&amp;edit_field=' + edit_field_class + '&amp;blog_id=' + jQuery('[name=blog_id]').val() + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image" class="mt-open-dialog">edit Image</a>');
+                } else if ( type == 'Horizon' ){
+                  edit_field_input = jQuery('<hr>');
+                }
+                var count = jQuery('.' + edit_field_class).length;
+                var edit_field = jQuery('<div class="field field-top-label sort-enabled"></div>')
+                .append(label)
+                .append(edit_field_input);
+                block_field.append(edit_field);
+                edit_field_input.wrap('<div class="field-content"></div>');
+                jQuery('a.mt-open-dialog').mtDialog();
+                add_menu.remove();
+              })
+            })
+          }
       }
   }
 
@@ -585,6 +630,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           <mt:loop name="text_filters">
             <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
           </mt:loop>
+          <option value="blockeditor">blockeditor</option>
           </select>
           <$mt:setvar name="show_formatting_help" value="1"$>
         <mt:if name="convert_breaks" eq="richtext">
