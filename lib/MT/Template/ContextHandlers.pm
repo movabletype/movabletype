@@ -3343,6 +3343,64 @@ EOT
 EOT
 }
 
+=head2 App:NewWidget
+
+An application template tag that produces HTML for displaying a MT CMS
+dashboard widget. Custom widget templates should utilize this tag to wrap
+their widget content.
+
+B<Attributes:>
+
+=over 4
+
+=item * id (optional)
+
+If specified, will be used as the 'id' attribute for the outermost C<div>
+tag for the widget. If unspecified, will use the 'widget_id' template
+variable instead.
+
+=item * label (required)
+
+The label to display above the widget.
+
+=item * label_link (optional)
+
+If specified, this link will wrap the label for the widget.
+
+=item * label_onclick
+
+If specified, this JavaScript code will be assigned to the 'onclick'
+attribute of a link tag wrapping the widget label.
+
+=item * class (optional)
+
+If unspecified, will use the id of the widget. This class is included in the
+'class' attribute of the outermost C<div> tag for the widget.
+
+=item * header_action
+
+=item * can_close (optional; default "0")
+
+Identifies whether widget may be closed or not.
+
+=item * tabbed (optional; default "0")
+
+If specified, the widget will be assigned an attribute that gives it
+a tabbed interface.
+
+=back
+
+B<Example:>
+
+    <mtapp:NewWidget class="widget my-widget"
+        label="<__trans phrase="All About Me">" can_close="1">
+        (contents of widget go here)
+    </mtapp:NewWidget>
+
+=for tags application
+
+=cut
+
 sub _hdlr_app_new_widget {
     my ( $ctx, $args, $cond ) = @_;
     my $hosted_widget = $ctx->var('widget_id') ? 1 : 0;
@@ -3523,6 +3581,30 @@ sub _hdlr_app_statusmsg {
     <div$id class="$class"><p class="msg-text">$msg $rebuild</p>$close</div>
 EOT
 }
+
+=head2 App:NewStatusMsg
+
+An application template tag that outputs a MT status message.
+
+B<Attributes:>
+
+=over 4
+
+=item * id (optional)
+
+=item * class (optional; default "info")
+
+=item * rebuild (optional)
+
+Accepted values: "all", "index".
+
+=item * can_close (optional; default "1")
+
+=back
+
+=for tags application
+
+=cut
 
 sub _hdlr_app_new_statusmsg {
     my ( $ctx, $args, $cond ) = @_;
