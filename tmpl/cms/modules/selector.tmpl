@@ -6,6 +6,88 @@
 
     <div class="navbar-header">
       <a href="<mt:var name="mt_url">?__mode=dashboard"><span class="mt-icon mt-icon-logo"></span></a>
+      <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" id="scope_selector"><b class="caret"></b></a>
+      <ul id="scope_selector_menu" class="dropdown-menu">
+      <mt:if name="scope_type" ne="user">
+        <li>
+          <a href="<$mt:var name="mt_url"$>?__mode=dashboard"><__trans phrase="User Dashboard"></a>
+        </li>
+      </mt:if>
+      <mt:if name="scope_type" ne="system">
+        <li class="system-overview">
+          <a href="<$mt:var name="mt_url">?blog_id=0&amp;<$mt:var name="return_args" escape="html"$>"><__trans phrase="System Overview"></a>
+        </li>
+      </mt:if>
+      <mt:if name="fav_website_loop">
+        <li role="separator" class="divider"></li>
+        <li class="dropdown-header"><__trans phrase="Websites"></li>
+        <mt:loop name="fav_website_loop">
+        <li>
+          <mt:if name="fav_website_can_link">
+          <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;<$mt:var name="return_args" escape="html"$>"><mt:var name="fav_website_name" escape="html"></a>
+          <mt:else>
+          <mt:var name="fav_website_name" escape="html">
+          </mt:if>
+        </li>
+          <mt:if name="__last__">
+            <mt:unless name="selector_hide_website_chooser">
+        <li id="select-website" class="select-another">
+          <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link"><__trans phrase="Select another website..."></a>
+        </li>
+            </mt:unless>
+          </mt:if>
+        </mt:loop>
+      <mt:else>
+        <mt:unless name="selector_hide_website_chooser">
+        <li class="dropdown-header"><__trans phrase="Websites"></li>
+        <li>
+          <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link"><__trans phrase="Select another website..."></a>
+        </li>
+        </mt:unless>
+      </mt:if>
+      <mt:if name="fav_blog_loop">
+      <li role="separator" class="divider"></li>
+      <li class="dropdown-header"><__trans phrase="Blogs"></li>
+      <mt:loop name="fav_blog_loop">
+      <li>
+        <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;<$mt:var name="return_args" escape="html"$>" class="scope-link"><mt:var name="fav_blog_name" escape="html"> <span class="parent"><__trans phrase="(on [_1])" params="<mt:var name="fav_parent_name" escape="html" escape="html">"></span></a>
+      </li>
+      <mt:if name="__last__">
+      <mt:unless name="selector_hide_blog_chooser">
+      <li id="select-blog" class="select-another">
+        <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link"><__trans phrase="Select another blog..."></a>
+      </li>
+      </mt:unless>
+      </mt:if>
+      </mt:loop>
+      <mt:else>
+      <mt:unless name="selector_hide_blog_chooser">
+      <li class="dropdown-header"><__trans phrase="Blogs"></li>
+      <li id="select-blog" class="select-another">
+        <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link"><__trans phrase="Select another blog..."></a>
+      </li>
+      </mt:unless>
+      </mt:if>
+      <mt:if name="can_create_website">
+      <li role="separator" class="divider"></li>
+      <li id="create-website">
+        <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0" class="create-link website"><__trans phrase="Create Website"></a>
+      </li>
+      </mt:if>
+      <mt:if name="can_create_blog">
+      <mt:if name="scope_type" eq="website">
+      <li role="separator" class="divider"></li>
+      <li id="create-blog">
+        <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="blog_id"$>" class="create-link website"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">"></a>
+      </li>
+      <mt:elseif name="scope_type" eq="blog">
+      <li role="separator" class="divider"></li>
+      <li id="create-blog">
+        <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="curr_website_id"$>" class="create-link blog"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">"></a>
+      </li>
+      </mt:if>
+      </mt:if>
+      </ul>
     </div>
 
     <!-- scope labels -->
