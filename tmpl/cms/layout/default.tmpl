@@ -25,26 +25,30 @@
     <div class="row">
       <mt:include name="modules/sidebar.tmpl">
       <mt:if name="related_content">
-        <div class="main col-md-12">
-          <mt:include name="modules/page_title.tmpl">
-          <div class="row">
-            <div class="col-md-9">
-              <mt:var name="content">
-            </div>
-            <div class="col-md-3">
-              <mt:var name="related_content">
-            </div>
+      <div class="main col-md-12">
+        <mt:include name="modules/notification_indicator.tmpl">
+        <mt:include name="modules/system_msg.tmpl">
+        <mt:include name="modules/page_title.tmpl">
+        <div class="row">
+          <div class="col-md-9">
+            <mt:var name="content">
+          </div>
+          <div class="col-md-3">
+            <mt:var name="related_content">
           </div>
         </div>
+      </div>
       <mt:else>
-        <div class="main col-md-10">
-          <mt:include name="modules/page_title.tmpl">
-          <div class="row">
-            <div class="col-md-12">
-              <mt:var name="content">
-            </div>
+      <div class="main col-md-10">
+        <mt:include name="modules/notification_indicator.tmpl">
+        <mt:include name="modules/system_msg.tmpl">
+        <mt:include name="modules/page_title.tmpl">
+        <div class="row">
+          <div class="col-md-12">
+            <mt:var name="content">
           </div>
         </div>
+      </div>
       </mt:if>
       <mt:var name="js_include">
     </div>

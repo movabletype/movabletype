@@ -50,7 +50,9 @@ sub core_tags {
             'App:NewWidget' =>
                 \&MT::Template::Tags::App::_hdlr_app_new_widget,
             'App:StatusMsg' => \&MT::Template::Tags::App::_hdlr_app_statusmsg,
-            'App:Listing'   => \&MT::Template::Tags::App::_hdlr_app_listing,
+            'App:NewStatusMsg' =>
+                \&MT::Template::Tags::App::_hdlr_app_new_statusmsg,
+            'App:Listing' => \&MT::Template::Tags::App::_hdlr_app_listing,
             'App:SettingGroup' =>
                 \&MT::Template::Tags::App::_hdlr_app_setting_group,
             'App:Form' => \&MT::Template::Tags::App::_hdlr_app_form,
@@ -3519,6 +3521,65 @@ sub _hdlr_app_statusmsg {
     $class = defined $class ? qq{msg msg-$class} : "msg";
     return $ctx->build(<<"EOT");
     <div$id class="$class"><p class="msg-text">$msg $rebuild</p>$close</div>
+EOT
+}
+
+sub _hdlr_app_new_statusmsg {
+    my ( $ctx, $args, $cond ) = @_;
+    my $app     = MT->instance;
+    my $id      = $args->{id};
+    my $class   = $args->{class} || 'info';
+    my $msg     = $ctx->slurp;
+    my $rebuild = $args->{rebuild} || '';
+    my $no_link = $args->{no_link} || '';
+    my $blog_id = $ctx->var('blog_id');
+    my $blog    = $ctx->stash('blog');
+    if ( !$blog && $blog_id ) {
+        $blog = MT->model('blog')->load($blog_id);
+    }
+    if ( $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
+        my $link_l
+            = $no_link
+            ? ''
+            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">';
+        my $link_r = $no_link ? '' : '</a>';
+        my $obj_type
+            = $rebuild eq 'blog'
+            ? MT->translate('blog(s)')
+            : MT->translate('website(s)');
+        $rebuild
+            = qq{<__trans phrase="[_1]Publish[_2] your [_3] to see these changes take effect." params="$link_l%%$link_r%%$obj_type">};
+    }
+    elsif (
+        $blog && $app->user
+        and $app->user->can_do(
+            'rebuild',
+            at_least_one => 1,
+            blog_id      => $blog->id,
+        )
+        )
+    {
+        $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
+        $rebuild
+            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">}
+            if $rebuild eq 'all';
+        $rebuild
+            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">}
+            if $rebuild eq 'index';
+    }
+    else {
+        $rebuild = '';
+    }
+    $id    = defined $id    ? qq{ id="$id"}          : "";
+    $class = defined $class ? qq{alert alert-$class} : "alert alert-info";
+    my $close = '';
+    if ( $id && ( $args->{can_close} || ( !exists $args->{can_close} ) ) ) {
+        $class .= ' alert-dismissable';
+        $close
+            = qq{<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>};
+    }
+    return $ctx->build(<<"EOT");
+    <div$id class="$class">$msg $rebuild $close</div>
 EOT
 }
 
