@@ -3531,7 +3531,7 @@ sub build_widgets {
         = @params{qw( set param widgets widget_cfgs order passthru_param )};
     $widget_cfgs    ||= {};
     $order          ||= [ keys %$widgets ];
-    $passthru_param ||= [qw( html_head js_include )];
+    $passthru_param ||= [qw( html_head css_include js_include )];
 
     my $blog = $app->blog;
     my $blog_id;
