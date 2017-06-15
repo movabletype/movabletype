@@ -1,11 +1,10 @@
-<div class="panel panel-default">
-  <div class="panel-heading"><__trans phrase="News"></div>
-  <div class="panel-body">
-  <mt:if name="news_html">
-    <$mt:var name="news_html"$>
-  <mt:else>
-    <p><__trans phrase="No Movable Type news available."></p>
-  </mt:if>
+<mtapp:newwidget class="news-widget" tabbed="1" label="<__trans phrase="News">" can_close="1">
+  <div id="mt-news-panel">
+    <mt:if name="news_html">
+      <$mt:var name="news_html"$>
+    <mt:else>
+      <p><__trans phrase="No Movable Type news available."></p>
+    </mt:if>
   </div>
-</div>
+</mtapp:newwidget>
 

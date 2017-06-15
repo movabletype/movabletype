@@ -34,3 +34,13 @@
 .personal-stats-widget .icon-draft {
     background-image: url(../../images/nav_icons/mini/entry-new.gif);
 }
+
+#mt-news-panel ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#mt-news-panel ul li {
+    margin-bottom: 5px;
+}
+

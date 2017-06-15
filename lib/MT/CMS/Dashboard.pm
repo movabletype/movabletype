@@ -92,7 +92,8 @@ sub dashboard {
     $app->build_blog_selector($param);
     $app->load_widget_list( 'dashboard', $scope, $param );
     $param = $app->load_widgets( 'dashboard', $scope, $param );
-    my $tmpl_file = $app->param('old') ? 'dashboard.tmpl' : 'dashboard/dashboard.tmpl';
+    my $tmpl_file
+        = $app->param('old') ? 'dashboard.tmpl' : 'dashboard/dashboard.tmpl';
     return $app->load_tmpl( $tmpl_file, $param );
 }
 
@@ -269,6 +270,7 @@ sub mt_news_widget {
     my ( $tmpl, $param ) = @_;
 
     $param->{news_html} = get_newsbox_content($app) || '';
+    $param->{news_html} =~ s/class="button"/class="button btn btn-default"/;
 }
 
 sub get_newsbox_content {

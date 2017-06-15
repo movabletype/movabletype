@@ -11,6 +11,13 @@
 <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/widget.css" />
 </mt:setvarblock>
 
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.mtremovewidget.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script>
+jQuery('button.remove-widget').mtRemoveWidget();
+</script>
+</mt:setvarblock>
+
 <mt:setvartemplate name="select_widget_form">
 <mt:var name="widget_options" value="0">
 <mt:setvarblock name="add_widget_form">

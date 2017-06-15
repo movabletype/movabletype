@@ -45,8 +45,10 @@ sub core_tags {
             Section      => \&MT::Template::Tags::System::_hdlr_section,
 
             ## App
-            'App:Setting'   => \&MT::Template::Tags::App::_hdlr_app_setting,
-            'App:Widget'    => \&MT::Template::Tags::App::_hdlr_app_widget,
+            'App:Setting' => \&MT::Template::Tags::App::_hdlr_app_setting,
+            'App:Widget'  => \&MT::Template::Tags::App::_hdlr_app_widget,
+            'App:NewWidget' =>
+                \&MT::Template::Tags::App::_hdlr_app_new_widget,
             'App:StatusMsg' => \&MT::Template::Tags::App::_hdlr_app_statusmsg,
             'App:Listing'   => \&MT::Template::Tags::App::_hdlr_app_listing,
             'App:SettingGroup' =>
@@ -3337,6 +3339,103 @@ EOT
   <div class="widget-footer">$widget_footer</div>$corners
 </div>
 EOT
+}
+
+sub _hdlr_app_new_widget {
+    my ( $ctx, $args, $cond ) = @_;
+    my $hosted_widget = $ctx->var('widget_id') ? 1 : 0;
+    my $id            = $args->{id} || $ctx->var('widget_id') || '';
+    my $label         = $args->{label};
+    my $class         = $args->{class} || $id;
+    my $label_link    = $args->{label_link} || "";
+    my $label_onclick = $args->{label_onclick} || "";
+    my $header_action = $args->{header_action} || "";
+    my $closable      = $args->{can_close} ? 1 : 0;
+    if ($closable) {
+        $header_action
+            = qq{<button type="button" class="close remove-widget"><span>&times;</span></button>};
+    }
+    my $widget_header = "";
+    if ( $label_link && $label_onclick ) {
+        $widget_header
+            = "\n<a href=\"$label_link\" onclick=\"$label_onclick\"><span>$label</span></a>";
+    }
+    elsif ($label_link) {
+        $widget_header = "\n<a href=\"$label_link\"><span>$label</span></a>";
+    }
+    else {
+        $widget_header = "\n<span>$label</span>";
+    }
+    my $token    = $ctx->var('magic_token')     || '';
+    my $scope    = $ctx->var('widget_scope')    || 'system';
+    my $singular = $ctx->var('widget_singular') || '';
+
+    # Make certain widget_id is set
+    my $vars = $ctx->{__stash}{vars};
+    local $vars->{widget_id}     = $id;
+    local $vars->{widget_header} = '';
+    local $vars->{widget_footer} = '';
+    my $app = MT->instance;
+    my $blog = $app->can('blog') ? $app->blog : $ctx->stash('blog');
+    my $blog_field
+        = $blog
+        ? qq{<input type="hidden" name="blog_id" value="}
+        . $blog->id . q{" />}
+        : "";
+    local $vars->{blog_id} = $blog->id if $blog;
+    my $insides = $ctx->slurp( $args, $cond );
+    my $widget_footer = ( $ctx->var('widget_footer') || '' );
+    my $var_header    = ( $ctx->var('widget_header') || '' );
+
+    if ( $var_header =~ m/<h2[ >]/i ) {
+        $widget_header = $var_header;
+    }
+    else {
+        $widget_header .= $var_header;
+    }
+    my $corners
+        = $args->{corners}
+        ? '<div class="corners"><b></b><u></u><s></s><i></i></div>'
+        : "";
+    my $tabbed       = $args->{tabbed} ? ' mt:delegate="tab-container"' : "";
+    my $header_class = $tabbed         ? 'widget-header-tabs'           : '';
+    my $return_args = $app->make_return_args;
+    $return_args = encode_html($return_args);
+    my $cgi = $app->uri;
+    if ( $hosted_widget && ( !$insides !~ m/<form\s/i ) ) {
+        $insides = <<"EOT";
+        <form id="$id-form" method="post" action="$cgi" onclick="return false">
+        <input type="hidden" name="__mode" value="update_widget_prefs" />
+        <input type="hidden" name="widget_id" value="$id" />
+        $blog_field
+        <input type="hidden" name="widget_action" value="save" />
+        <input type="hidden" name="widget_scope" value="$scope" />
+        <input type="hidden" name="widget_singular" value="$singular" />
+        <input type="hidden" name="magic_token" value="$token" />
+        <input type="hidden" name="return_args" value="$return_args" />
+$insides
+        </form>
+EOT
+    }
+    my $widget = <<"EOT";
+<div id="$id" class="panel panel-default widget $class"$tabbed>
+  <div class="panel-heading widget-header $header_class">
+    <div class="widget-action">$header_action</div>
+    <div class="widget-label">$widget_header</div>
+  </div>
+  <div class="panel-body widget-content">
+    $insides
+  </div>
+EOT
+    if ($widget_footer) {
+        $widget .= <<"EOT";
+  <div class="panel-footer widget-footer">$widget_footer</div>$corners
+EOT
+    }
+    $widget .= <<"EOT";
+</div>
+EOT
+    $widget;
 }
 
 ###########################################################################
