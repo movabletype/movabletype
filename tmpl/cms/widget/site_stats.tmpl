@@ -1,31 +1,34 @@
 <mt:unless name="no_permission">
 
-<div class="panel panel-default">
-  <div class="panel-heading"><__trans phrase="Site Stats"></div>
-  <div class="panel-body">
-    <div class="row up-column">
-      <div class="col-md-10 stats-for">
-      <mt:if name="object_loop">
-        <__trans phrase="Stats for [_1]", params="<mt:if name="object_loop"><select id="select_blog_id"><mt:loop name="object_loop"><option value="<mt:var name="id">"><mt:var name="name" escape="html"></option></mt:loop></select></mt:if>">
-      </mt:if>
-      </div>
-      <div id="statistics_settings_link" class="col-md-2">
-      <mt:unless name="is_smartphone_devices">
-        <a class="pull-right" href="<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Statistics Settings"></a>
-      </mt:unless>
-      </div>
-    </div>
-    <div class="clear"></div>
-    <div class="row down-column">
-      <div class="col-md-12 down-column-contents">
-        <div id="graph"></div>
-      </div>
-    </div>
+<mtapp:newwidget
+  class="site-stats-widget"
+  label="<__trans phrase="Site Stats">"
+  can_close="1">
+<div class="row up-column">
+  <div class="col-md-10 stats-for">
+  <mt:if name="object_loop">
+    <__trans phrase="Stats for [_1]", params="<mt:if name="object_loop"><select id="select_blog_id"><mt:loop name="object_loop"><option value="<mt:var name="id">"><mt:var name="name" escape="html"></option></mt:loop></select></mt:if>">
+  </mt:if>
+  </div>
+  <div id="statistics_settings_link" class="col-md-2">
+  <mt:unless name="is_smartphone_devices">
+    <a href="<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Statistics Settings"></a>
+  </mt:unless>
   </div>
 </div>
+<div class="clear"></div>
+<div class="row down-column">
+  <div class="col-md-12 down-column-contents">
+    <div id="graph"></div>
+  </div>
+</div>
+</mtapp:newwidget>
+
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>chart-api/mtchart.css">
+</mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<link rel="stylesheet" href="<$mt:var name="static_uri"$>chart-api/mtchart.css">
 <script src="<$mt:var name="static_uri"$>chart-api/mtchart.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -164,4 +167,5 @@
   /* ]]> */
 </script>
 </mt:setvarblock>
+
 </mt:unless>

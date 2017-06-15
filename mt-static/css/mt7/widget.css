@@ -18,3 +18,8 @@
     padding-left: 0;
 }
 
+.widget .panel-heading {
+    padding: 6px 13px;
+    font-weight: 600;
+}
+
