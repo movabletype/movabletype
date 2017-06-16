@@ -508,6 +508,7 @@ sub _validate_content_field_type_options {
     unless ($err_msg) {
         my $content_field_types = $app->registry('content_field_types');
         my $field_label         = $content_field_types->{$type}{label};
+
         if ( !$options->{label} ) {
             $err_msg = $app->translate( '[_1]\'s "[_2]" field is required.',
                 $field_label, 'Label' );
@@ -524,7 +525,21 @@ sub _validate_content_field_type_options {
                 $field_label, 'Description', '1024'
             );
         }
-        elsif ( $type eq 'single_line_text' ) {
+        return $err_msg if $err_msg;
+
+        if ( my $ss_validator
+            = $content_field_types->{$type}{options_ss_validator} )
+        {
+            if ( !ref $ss_validator ) {
+                $ss_validator = MT->handler_to_coderef($ss_validator);
+            }
+            if ( 'CODE' eq ref $ss_validator ) {
+                $err_msg = $ss_validator->( $app, $type, $options );
+            }
+        }
+        return $err_msg if $err_msg;
+
+        if ( $type eq 'single_line_text' ) {
             my $min_length    = $options->{min_length};
             my $max_length    = $options->{max_length};
             my $initial_value = $options->{initial_value};
