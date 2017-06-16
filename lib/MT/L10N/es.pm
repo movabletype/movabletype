@@ -1011,6 +1011,7 @@ use vars qw( @ISA %Lexicon );
 	'Association' => 'Asociación',
 	'Associations' => 'Asociaciones',
 	'Permissions with role: [_1]' => 'Permisos con rol: [_1]',
+	'Username is [_1]' => 'Nombre de usuario es [_1]',
 	'Permissions for [_1]' => 'Permisos de [_1]',
 	'association' => 'Asociación',
 	'associations' => 'Asociaciones',

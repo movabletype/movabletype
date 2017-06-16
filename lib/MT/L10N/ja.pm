@@ -1049,6 +1049,7 @@ use vars qw( @ISA %Lexicon );
 	'Association' => '関連付け',
 	'Associations' => '関連付け',
 	'Permissions with role: [_1]' => '[_1]の権限',
+	'Username is [_1]' => 'ユーザー名が[_1]である',
 	'Permissions for [_1]' => '[_1]の権限',
 	'association' => '関連付け',
 	'associations' => '関連付け',
