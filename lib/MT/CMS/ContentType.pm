@@ -241,6 +241,34 @@ sub cfg_content_type {
         : $tag_delim eq ord(' ') ? 'space'
         :                          'comma';
 
+    # Content Field Options
+    foreach my $key ( keys %$content_field_types ) {
+
+        if ( my $options_html = $content_field_types->{$key}{options_html} ) {
+            if ( !ref $options_html ) {
+                if ( $options_html =~ /\.tmpl$/ ) {
+                    my $plugin = $content_field_types->{$key}{plugin};
+                    $options_html
+                        = $plugin->id eq 'core'
+                        ? $app->load_tmpl($options_html)
+                        : $plugin->load_tmpl($options_html);
+                    $options_html = $options_html->text if $options_html;
+                }
+                else {
+                    $options_html = MT->handler_to_coderef($options_html);
+                }
+            }
+            if ( 'CODE' eq ref $options_html ) {
+                push @{ $param->{options_htmls} },
+                    { id => $key, html => $options_html->( $app, $key ) };
+            }
+            else {
+                push @{ $param->{options_htmls} },
+                    { id => $key, html => $options_html };
+            }
+        }
+    }
+
     $app->build_page( $app->load_tmpl('cfg_content_type.tmpl'), $param );
 }
 

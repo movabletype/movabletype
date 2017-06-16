@@ -1353,6 +1353,12 @@
 
   </mtapp:settinggroup>
 
+  <mt:if name="options_htmls">
+    <mt:loop name="options_htmls">
+    <mt:var name="html" mteval="1">
+    </mt:loop>
+  </mt:if>
+
   <mt:setvarblock name="action_buttons">
     <button
        type="button"
