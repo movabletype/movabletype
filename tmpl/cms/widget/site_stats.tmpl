@@ -6,9 +6,12 @@
   can_close="1">
 <div class="row up-column">
   <div class="col-md-10 stats-for">
-  <mt:if name="object_loop">
-    <__trans phrase="Stats for [_1]", params="<mt:if name="object_loop"><select id="select_blog_id"><mt:loop name="object_loop"><option value="<mt:var name="id">"><mt:var name="name" escape="html"></option></mt:loop></select></mt:if>">
-  </mt:if>
+    <mt:if name="object_loop">
+    <label class="form-label">
+      <__trans phrase="Stats for [_1]">
+      <select id="select_blog_id" class="form-control"><mt:loop name="object_loop"><option value="<mt:var name="id">"><mt:var name="name" escape="html"></option></mt:loop></select>
+    </label>
+    </mt:if>
   </div>
   <div id="statistics_settings_link" class="col-md-2">
   <mt:unless name="is_smartphone_devices">
