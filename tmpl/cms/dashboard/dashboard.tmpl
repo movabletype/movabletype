@@ -21,7 +21,7 @@ jQuery('button.remove-widget').mtRemoveWidget();
 <mt:setvartemplate name="select_widget_form">
 <mt:var name="widget_options" value="0">
 <mt:setvarblock name="add_widget_form">
-<form method="POST" action="<mt:var name="script_url">" class="listing">
+<form method="POST" action="<mt:var name="script_url">" class="listing form-inline">
   <input type="hidden" name="__mode" value="update_widget_prefs" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
@@ -29,7 +29,7 @@ jQuery('button.remove-widget').mtRemoveWidget();
   <input type="hidden" name="widget_scope" value="<mt:var name="widget_scope" escape="html">" />
   <input type="hidden" name="widget_set" value="<mt:var name="set">" />
   <div class="actions-bar buttons">
-    <select name="widget_id">
+    <select name="widget_id" class="form-control">
       <option value=""><__trans phrase="Select a Widget..."></option>
     <mt:loop name="all_widget_loop">
     <mt:if name="widget_set">
@@ -45,7 +45,7 @@ jQuery('button.remove-widget').mtRemoveWidget();
     </select>
     <button
        type="submit"
-       class="button">
+       class="button btn btn-default">
       <__trans phrase="Add">
     </button>
   </div>
