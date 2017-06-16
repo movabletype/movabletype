@@ -1016,7 +1016,9 @@ sub edit_content_data {
 
     $data = $content_data->data if $content_data && !$data;
     my $convert_breaks
-        = MT::Serialize->unserialize( $content_data->convert_breaks );
+        = $content_data
+        ? MT::Serialize->unserialize( $content_data->convert_breaks )
+        : undef;
     my $content_field_types = $app->registry('content_field_types');
     @$array = map {
         my $e_unique_id = $_->{unique_id};
@@ -1088,7 +1090,9 @@ sub edit_content_data {
 
         $_->{data_type} = $content_field_types->{ $_->{type} }{data_type};
         if ( $_->{type} eq 'multi_line_text' ) {
-            if ( exists $$convert_breaks->{ $_->{content_field_id} } ) {
+            if ( $convert_breaks
+                && exists $$convert_breaks->{ $_->{content_field_id} } )
+            {
                 $_->{convert_breaks}
                     = $$convert_breaks->{ $_->{content_field_id} };
             }
