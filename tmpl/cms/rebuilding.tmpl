@@ -1,4 +1,73 @@
-<mt:setvarblock name="html_head" append="1">
+<mt:if name="is_full_screen">
+  <mt:setvar name="screen_class" value="rebuilding-screen">
+  <mt:setvar name="top_nav_loop" value="0">
+  <mt:setvarblock name="page_title"><__trans phrase="Publishing..."></mt:setvarblock>
+<mt:else>
+  <mt:setvar name="screen_type" value="popup-screen">
+  <mt:setvarblock name="html_title"><__trans phrase="Publishing [_1]..." params="<mt:var name="blog_name" escape="html" escape="html">"></mt:setvarblock>
+  <mt:setvarblock name="page_title"><__trans phrase="Publishing <em>[_1]</em>..." params="<mt:var name="blog_name" escape="html" escape="html">"></mt:setvarblock>
+</mt:if>
+
+<mt:setvarblock name="rebuilding_message">
+<mt:if name="is_one_index">
+<__trans phrase="Publishing [_1]..." params="<mt:var name="build_type_name" escape="html"> ">
+<mt:else>
+  <mt:if name="is_individual">
+<__trans phrase="Publishing [_1] [_2]..." params="<mt:var name="build_type_name" escape="html">%%<mt:var name="indiv_range" escape="html"> ">
+  <mt:else>
+    <mt:if name="is_entry">
+      <mt:if name="dynamic">
+<__trans phrase="Publishing [_1] dynamic links..." params="<mt:var name="build_type_name" escape="html"> ">
+      <mt:else>
+<__trans phrase="Publishing [_1]..." params="<mt:var name="build_type_name" escape="html"> ">
+      </mt:if>
+    <mt:else>
+      <mt:if name="dynamic">
+<__trans phrase="Publishing [_1] dynamic links..." params="<mt:var name="build_type_name" escape="html"> ">
+      <mt:else>
+        <mt:if name="build_type_name">
+          <mt:if name="archives">
+<__trans phrase="Publishing [_1] archives..." params="<mt:var name="build_type_name" escape="html"> ">
+          <mt:else>
+<__trans phrase="Publishing [_1] templates..." params="<mt:var name="build_type_name" escape="html"> ">
+          </mt:if>
+        <mt:else>
+<__trans phrase="Publishing...">
+        </mt:if>
+      </mt:if>
+    </mt:if>
+  </mt:if>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="content">
+<div class="row">
+  <div class="col-md-12">
+    <img src="<mt:var name="static_uri">images/ani-rebuild.gif" />
+    <mt:var name="rebuilding_message">
+  </div>
+</div>
+
+<mt:if name="total">
+  <mt:if name="complete">
+<div class="progress">
+  <div class="progress-bar" style="width: <mt:var name="complete">%;">
+    <span class="sr-only"><mt:var name="complete">% Complete</span>
+  </div>
+</div>
+<p><__trans phrase="Complete [_1]%" params="<$mt:var name="complete"$>"></p>
+  <mt:else>
+<div class="progress progress-indeterminate">
+  <div class="progress-bar">
+  </div>
+</div>
+  </mt:if>
+</mt:if>
+
+<mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 function doRedirect () {
@@ -13,105 +82,14 @@ setTimeout('doRedirect()', 200);
 </script>
 </mt:setvarblock>
 
-<mt:if name="is_full_screen">
-  <mt:setvar name="screen_class" value="rebuilding-screen">
-  <mt:setvar name="top_nav_loop" value="0">
-  <mt:setvarblock name="page_title"><__trans phrase="Publishing..."></mt:setvarblock>
-  <mt:include name="include/header.tmpl" id="header_include">
-<mt:else>
-  <mt:setvar name="screen_type" value="popup-screen">
-  <mt:setvarblock name="html_title"><__trans phrase="Publishing [_1]..." params="<mt:var name="blog_name" escape="html" escape="html">"></mt:setvarblock>
-  <mt:setvarblock name="page_title"><__trans phrase="Publishing <em>[_1]</em>..." params="<mt:var name="blog_name" escape="html" escape="html">"></mt:setvarblock>
-  <mt:include name="include/chromeless_header.tmpl">
-</mt:if>
-
-<mt:if name="is_one_index">
-<mtapp:statusmsg
-   id="is_one_index"
-   class="publishing"
-   can_close="0">
-  <__trans phrase="Publishing [_1]..." params="<mt:var name="build_type_name" escape="html"> ">
-</mtapp:statusmsg>
-<mt:else>
-  <mt:if name="is_individual">
-<mtapp:statusmsg
-   id="is_individual"
-   class="publishing"
-   can_close="0">
-  <__trans phrase="Publishing [_1] [_2]..." params="<mt:var name="build_type_name" escape="html">%%<mt:var name="indiv_range" escape="html"> ">
-</mtapp:statusmsg>
-  <mt:else>
-    <mt:if name="is_entry">
-      <mt:if name="dynamic">
-<mtapp:statusmsg
-   id="is_entry"
-   class="publishing"
-   can_close="0">
-  <__trans phrase="Publishing [_1] dynamic links..." params="<mt:var name="build_type_name" escape="html"> ">
-</mtapp:statusmsg>
-      <mt:else>
-<mtapp:statusmsg
-   id="publishing"
-   class="publishing"
-   can_close="0">
-  <__trans phrase="Publishing [_1]..." params="<mt:var name="build_type_name" escape="html"> ">
-</mtapp:statusmsg>
-      </mt:if>
-    <mt:else>
-      <mt:if name="dynamic">
-<mtapp:statusmsg
-   id="dynamic"
-   class="publishing"
-   can_close="0">
-  <__trans phrase="Publishing [_1] dynamic links..." params="<mt:var name="build_type_name" escape="html"> ">
-</mtapp:statusmsg>
-      <mt:else>
-        <mt:if name="build_type_name">
-          <mt:if name="archives">
-<mtapp:statusmsg
-   id="build_type_name"
-   class="publishing"
-   can_close="0">
-  <__trans phrase="Publishing [_1] archives..." params="<mt:var name="build_type_name" escape="html"> ">
-</mtapp:statusmsg>
-          <mt:else>
-<mtapp:statusmsg
-   id="build_type_name"
-   class="publishing"
-   can_close="0">
-  <__trans phrase="Publishing [_1] templates..." params="<mt:var name="build_type_name" escape="html"> ">
-</mtapp:statusmsg>
-          </mt:if>
-        <mt:else>
-<mtapp:statusmsg
-    id="generic"
-    class="publishing"
-    can_close="0">
-  <__trans phrase="Publishing...">
-</mtapp:statusmsg>
-        </mt:if>
-      </mt:if>
-    </mt:if>
-  </mt:if>
-</mt:if>
-
-<mt:if name="total">
-<script>
-jQuery(function() {
-  jQuery( "#progressbar" ).progressbar({
-    value: <mt:var name="complete">
-  });
-});
-</script>
-<div id="progressbar" class="progressbar<mt:unless name="complete"> indeterminate</mt:unless>">
-</div>
-<mt:if name="complete">
-<p><__trans phrase="Complete [_1]%" params="<$mt:var name="complete"$>"></p>
-</mt:if>
-</mt:if>
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/rebuilding.css">
+</mt:setvarblock>
 
 <mt:if name="is_full_screen">
-  <mt:include name="include/footer.tmpl">
+  <mt:include name="layout/default.tmpl">
 <mt:else>
-  <mt:include name="include/chromeless_footer.tmpl">
+  <mt:include name="layout/chromeless.tmpl">
 </mt:if>
+<mt:var name="layout">
+
