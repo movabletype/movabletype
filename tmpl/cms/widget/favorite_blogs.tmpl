@@ -25,7 +25,7 @@
                 <mt:var name="website_description" remove_html="1">
               </div>
             </mt:if>
-            <ul id="website-<mt:var name="website_id">-control" class="blog-control">
+            <ul id="website-<mt:var name="website_id">-control" class="list-inline blog-control">
               <li>
               <mt:if name="can_access_to_blog_list">
                 <a href="<mt:var name="script_url">?__mode=list&amp;_type=blog&amp;blog_id=<mt:var name="website_id">"><__trans phrase="Blogs"></a>
@@ -115,7 +115,7 @@
                <mt:var name="blog_description" remove_html="1">
             </div>
             </mt:if>
-            <ul id="blog-<mt:var name="blog_id">-control" class="blog-control">
+            <ul id="blog-<mt:var name="blog_id">-control" class="list-inline blog-control">
               <li>
               <mt:if name="can_access_to_entry_list">
                 <a href="<mt:var name="script_url">?__mode=list&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=my_posts_on_this_context"><__trans phrase="Entries"></a>

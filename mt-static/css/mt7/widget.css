@@ -7,20 +7,9 @@
     background-color: #fbfbfb;
 }
 
-.blog-container ul {
-    padding: 0;
-}
-
-.blog-container li {
-    display: inline;
+.blog-container li:not(:first-child) {
     border: 0;
     border-left: 2px solid #9ea1a3;
-    padding: 0 7px;
-}
-
-.blog-container li:first-child {
-    border: none;
-    padding-left: 0;
 }
 
 .favorite-blogs-widget .blog-container {
