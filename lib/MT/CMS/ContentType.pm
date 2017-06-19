@@ -1116,7 +1116,11 @@ sub edit_content_data {
         if ( my $field_html = $content_field_type->{field_html} ) {
             if ( !ref $field_html ) {
                 if ( $field_html =~ /\.tmpl$/ ) {
-                    $field_html = $app->load_tmpl($field_html);
+                    my $plugin = $content_field_type->{plugin};
+                    $field_html
+                        = $plugin->id eq 'core'
+                        ? $app->load_tmpl($field_html)
+                        : $plugin->load_tmpl($field_html);
                     $field_html = $field_html->text if $field_html;
                 }
                 else {
