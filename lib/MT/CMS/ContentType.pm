@@ -703,7 +703,7 @@ sub _validate_content_field_type_options {
                 my $min = $options->{min};
                 my $max = $options->{max};
                 if ( $options->{multiple} ) {
-                    if ( !$min ) {
+                    if ( !$min && $min eq '' ) {
                         $err_msg = $app->translate(
                             "[_1]'s \"Min\" field is required when \"Multiple\" is checked.",
                             $label || $field_label
