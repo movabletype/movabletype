@@ -19,7 +19,13 @@ test:
   pre:
     - cp ./t/mysql-test.cfg ./mt-config.cgi
 
+    # skip UI tests
+    - rm t/110-cms-permission-blog.t
+    - rm t/110-cms-permission-website.t
     - rm t/115-cms-entry.t
+    - rm t/116-cms-website.t
+    - rm t/117-cms-tag.t
+
     - rm t/34-sqlite.t
     - rm t/62-asset-editor.t
     - rm t/90-podcoverage.t
