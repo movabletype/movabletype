@@ -1,0 +1,117 @@
+<mt:unless name="page_title">
+<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:var name="object_label_plural">"></mt:setvarblock>
+</mt:unless>
+
+<mt:if name="build_user_menus">
+<mt:setvarblock name="related_content">
+  <mtapp:newwidget
+     id="user-properties"
+     label="<__trans phrase="User properties">">
+    <mt:include name="include/users_content_nav.tmpl">
+  </mtapp:newwidget>
+</mt:setvarblock>
+</mt:if>
+
+<mt:if name="use_actions">
+  <mt:if name="content_actions">
+    <mt:setvarblock name="content_header">
+    <ul id="content-actions" class="list-inline action-link-list">
+    <mt:loop name="content_actions">
+      <li><a href="<mt:var name="url">" class="icon-left<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id"> id="<mt:var name="id">"</mt:if><mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>><mt:var name="label"></a></li>
+    </mt:loop>
+    </ul>
+    </mt:setvarblock>
+  </mt:if>
+</mt:if>
+
+<mt:setvarblock name="listing_footer_content"><mt:if name="feed_url">
+  <mt:if name="object_type_feed">
+  <li class="footer-link-item list-group-item"><a href="<$mt:var name="feed_url" escape="html"$>" class="icon-feed icon-left" title="<$mt:var name="feed_name" escape="html"$>" target="_blank"><$mt:var name="object_type_feed"$></a></li>
+  </mt:if>
+</mt:if></mt:setvarblock>
+
+<mt:loop name="list_headers">
+  <mt:if name="filename">
+    <mt:include name="$filename" component="$component">
+  </mt:if>
+</mt:loop>
+
+<mt:setvarblock name="system_msg" append="1">
+<div id="msg-block"></div>
+</mt:setvarblock>
+
+<mt:setvarblock name="display_options">
+<mt:setvar name="show_display_options_link" value="1">
+<div id="display-options-detail" class="collapse panel panel-default display-options-detail detail">
+  <div class="panel-body">
+    <mtapp:setting
+       id="per_page"
+       label="<__trans phrase="_DISPLAY_OPTIONS_SHOW">"
+       label_class="top-label">
+      <select id="row" class="form-control" name="limit" style="width: 100px;">
+        <option value="25"<mt:if name="limit_25"> selected="selected"</mt:if>><__trans phrase="25 rows"></option>
+        <option value="50"<mt:if name="limit_50"> selected="selected"</mt:if>><__trans phrase="50 rows"></option>
+        <option value="100"<mt:if name="limit_100"> selected="selected"</mt:if>><__trans phrase="100 rows"></option>
+        <option value="200"<mt:if name="limit_200"> selected="selected"</mt:if>><__trans phrase="200 rows"></option>
+      </select>
+    </mtapp:setting>
+    <mtapp:setting
+       id="display_columns"
+       label="<__trans phrase="Column">"
+       label_class="top-label">
+      <ul id="disp_cols" class="list-inline multiple-selection">
+      <mt:loop name="list_columns">
+        <li class="<mt:if name="force_display"> hidden</mt:if>">
+          <input
+             type="checkbox"
+             value="<mt:var name="id" escape="html">"
+             name="custom_prefs"
+             class="main<mt:if name="is_default"> show-default</mt:if>"
+             id="custom-prefs-<$mt:var name="id" escape="html"$>"
+             <mt:if name="display">checked="checked"</mt:if> />
+            <label for="custom-prefs-<$mt:var name="id" escape="html"$>"><mt:var name="label"></label>
+        </li>
+        <mt:loop name="sub_fields">
+        <li class="sub-field">
+          <input
+             type="checkbox"
+             value="<mt:var name="class">"
+             name="custom_prefs"
+             class="sub<mt:if name="is_default"> show-default</mt:if>"
+             id="custom-prefs-<$mt:var name="id" escape="html"$>.<mt:var name="class">"
+             <mt:if name="display">checked="checked"</mt:if> />
+            <label for="custom-prefs-<$mt:var name="id" escape="html"$>.<mt:var name="class">"><mt:var name="label"></label>
+        </li>
+        </mt:loop>
+      </mt:loop>
+      </ul>
+    </mtapp:setting>
+    <div class="actions-bar actions-bar-bottom">
+      <a href="#" id="reset-display-options"><__trans phrase="Reset defaults"></a>
+    </div>
+  </div>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="content">
+
+  <mt:include name="modules/list_actions.tmpl">
+
+  <mt:if name="listing_footer_content">
+  <div class="panel panel-default">
+    <ul id="listing-footer" class="footer-links mod list-group">
+    <mt:var name="listing_footer_content">
+    </ul>
+  </div>
+  </mt:if>
+
+  <mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/list_common.css" />
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
+

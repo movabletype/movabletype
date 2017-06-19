@@ -1,0 +1,41 @@
+<mt:if name="use_actions">
+<div class="row">
+  <div class="col-md-12">
+    <ul class="list-inline">
+    <mt:if name="button_actions">
+      <mt:loop name="button_actions">
+        <li>
+          <button class="btn btn-default">
+            <__trans phrase="<mt:var name="label">">
+          </button>
+        </li>
+      </mt:loop>
+    </mt:if>
+    <mt:if name="has_list_actions">
+      <mt:if name="has_pulldown_actions">
+        <li>
+          <div class="dropdown">
+            <button class="btn btn-default" data-toggle="dropdown">
+              <__trans phrase="More actions...">
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <mt:loop name="list_actions">
+                <li><a href="#"><mt:var name="label"></a></li>
+              </mt:loop>
+              <mt:if name="more_list_actions">
+                <li class="dropdown-header"><__trans phrase="Plugin Actions"></li>
+                <mt:loop name="more_list_actions">
+                  <li><a href="#"><mt:var name="label"></a></li>
+                </mt:loop>
+              </mt:if>
+            </ul>
+          </div>
+        </li>
+      </mt:if>
+    </mt:if>
+    </ul>
+  </div>
+</div>
+</mt:if>
+

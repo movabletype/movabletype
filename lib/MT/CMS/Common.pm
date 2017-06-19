@@ -1327,7 +1327,10 @@ sub list {
         }
     }
     else {
-        $template = 'list_common.tmpl';
+        $template
+            = $app->param('old')
+            ? 'list_common.tmpl'
+            : 'list_common_new.tmpl';
     }
 
     my $feed_link = $screen_settings->{feed_link};
