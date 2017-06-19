@@ -274,8 +274,8 @@ sub list_props {
                 my $author = MT->model('author')->load($val)
                     or
                     return $prop->error( MT->translate('Invalid parameter') );
-                my $label = MT->translate( 'Username is [_1]',
-                    $author->name, );
+                my $label = MT->translate( 'User is [_1]',
+                    $author->nickname, );
                 return $label;
             },
             label_via_param => sub {
