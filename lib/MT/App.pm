@@ -699,6 +699,9 @@ sub set_x_frame_options_header {
     my $app             = shift;
     my $x_frame_options = $app->config->XFrameOptions;
 
+    # If set as NONE MT should not output X-Frame-Options header.
+    return if lc X-Frame-Options eq 'none';
+
     # Use default value when invalid value is set.
     unless ( lc $x_frame_options eq 'deny'
         || lc $x_frame_options eq 'sameorigin'
