@@ -863,9 +863,8 @@ sub remove_user_assoc {
 
         MT::Association->remove( { blog_id => $blog_id, author_id => $id } );
 
-        # these too, just in case there are no real associations
-        # (ie, commenters)
-        $perm->remove if $perm;
+        # Rebuild permissions because the user may belong to several groups
+        $perm->rebuild if $perm;
     }
 
     $app->add_return_arg( saved => 1 );
