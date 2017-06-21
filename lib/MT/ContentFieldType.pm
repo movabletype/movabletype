@@ -50,7 +50,7 @@ sub _content_type_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 multiple
@@ -83,7 +83,7 @@ sub _single_line_text_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 min_length
@@ -109,7 +109,7 @@ sub _multi_line_text_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 initial_value
@@ -138,7 +138,7 @@ sub _number_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 min_value
@@ -167,7 +167,7 @@ sub _url_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 initial_value
@@ -202,7 +202,7 @@ sub _date_time_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 initial_value
@@ -237,7 +237,7 @@ sub _date_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 initial_value
@@ -270,7 +270,7 @@ sub _time_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 initial_value
@@ -305,7 +305,7 @@ sub _select_box_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 multiple
@@ -343,7 +343,7 @@ sub _radio_button_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 values
@@ -380,7 +380,7 @@ sub _checkboxes_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 multiple
@@ -487,7 +487,7 @@ sub _asset_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 multiple
@@ -592,7 +592,7 @@ sub _audio_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 multiple
@@ -697,7 +697,7 @@ sub _video_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 multiple
@@ -820,7 +820,7 @@ sub _image_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 multiple
@@ -847,7 +847,7 @@ sub _embedded_text_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 )
@@ -878,7 +878,7 @@ sub _categories_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 multiple
@@ -914,7 +914,7 @@ sub _tags_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 multiple
@@ -949,7 +949,7 @@ sub _list_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 required
                 display
                 )
@@ -977,7 +977,7 @@ sub _table_registry {
         options => [
             qw(
                 label
-                hint
+                description
                 display
                 initial_rows
                 row_heading

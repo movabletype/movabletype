@@ -241,6 +241,34 @@ sub cfg_content_type {
         : $tag_delim eq ord(' ') ? 'space'
         :                          'comma';
 
+    # Content Field Options
+    foreach my $key ( keys %$content_field_types ) {
+
+        if ( my $options_html = $content_field_types->{$key}{options_html} ) {
+            if ( !ref $options_html ) {
+                if ( $options_html =~ /\.tmpl$/ ) {
+                    my $plugin = $content_field_types->{$key}{plugin};
+                    $options_html
+                        = $plugin->id eq 'core'
+                        ? $app->load_tmpl($options_html)
+                        : $plugin->load_tmpl($options_html);
+                    $options_html = $options_html->text if $options_html;
+                }
+                else {
+                    $options_html = MT->handler_to_coderef($options_html);
+                }
+            }
+            if ( 'CODE' eq ref $options_html ) {
+                push @{ $param->{options_htmls} },
+                    { id => $key, html => $options_html->( $app, $key ) };
+            }
+            else {
+                push @{ $param->{options_htmls} },
+                    { id => $key, html => $options_html };
+            }
+        }
+    }
+
     $app->build_page( $app->load_tmpl('cfg_content_type.tmpl'), $param );
 }
 
@@ -480,6 +508,7 @@ sub _validate_content_field_type_options {
     unless ($err_msg) {
         my $content_field_types = $app->registry('content_field_types');
         my $field_label         = $content_field_types->{$type}{label};
+
         if ( !$options->{label} ) {
             $err_msg = $app->translate( '[_1]\'s "[_2]" field is required.',
                 $field_label, 'Label' );
@@ -496,7 +525,21 @@ sub _validate_content_field_type_options {
                 $field_label, 'Description', '1024'
             );
         }
-        elsif ( $type eq 'single_line_text' ) {
+        return $err_msg if $err_msg;
+
+        if ( my $ss_validator
+            = $content_field_types->{$type}{options_ss_validator} )
+        {
+            if ( !ref $ss_validator ) {
+                $ss_validator = MT->handler_to_coderef($ss_validator);
+            }
+            if ( 'CODE' eq ref $ss_validator ) {
+                $err_msg = $ss_validator->( $app, $type, $options );
+            }
+        }
+        return $err_msg if $err_msg;
+
+        if ( $type eq 'single_line_text' ) {
             my $min_length    = $options->{min_length};
             my $max_length    = $options->{max_length};
             my $initial_value = $options->{initial_value};
@@ -660,7 +703,7 @@ sub _validate_content_field_type_options {
                 my $min = $options->{min};
                 my $max = $options->{max};
                 if ( $options->{multiple} ) {
-                    if ( !$min ) {
+                    if ( !$min && $min eq '' ) {
                         $err_msg = $app->translate(
                             "[_1]'s \"Min\" field is required when \"Multiple\" is checked.",
                             $label || $field_label
@@ -1073,7 +1116,11 @@ sub edit_content_data {
         if ( my $field_html = $content_field_type->{field_html} ) {
             if ( !ref $field_html ) {
                 if ( $field_html =~ /\.tmpl$/ ) {
-                    $field_html = $app->load_tmpl($field_html);
+                    my $plugin = $content_field_type->{plugin};
+                    $field_html
+                        = $plugin->id eq 'core'
+                        ? $app->load_tmpl($field_html)
+                        : $plugin->load_tmpl($field_html);
                     $field_html = $field_html->text if $field_html;
                 }
                 else {

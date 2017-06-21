@@ -16,21 +16,19 @@
   <div class="container body">
 
     <mt:unless name="no_brand">
-    <div id="brand">
-      <img alt="Movable Type" src="<mt:var name="static_uri">mt-static/images/chromeless/mt_logo.png" />
+    <div class="row">
+      <div id="brand" class="col-md-12">
+        <img alt="Movable Type" src="<mt:var name="static_uri">images/chromeless/mt_logo.png" />
+      </div>
     </div>
     </mt:unless>
 
-    <mt:if name="page_title">
-    <div class="page-header">
-      <h1><mt:var name="page_title"></h1>
-    </div>
-    </mt:if>
+    <mt:include name="modules/page_title.tmpl">
 
     <mt:var name="content">
   </div>
   <mt:var name="js_include">
 </body>
 </html>
-<mt:setvartemplate>
+</mt:setvartemplate>
 
