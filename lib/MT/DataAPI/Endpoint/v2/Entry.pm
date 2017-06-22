@@ -130,7 +130,12 @@ sub create {
             or return $app->error( $new_entry->errstr );
     }
 
-    $post_save->();
+    my $do_publish
+        = defined scalar $app->param('publish')
+        ? scalar $app->param('publish')
+        : 1;
+    $post_save->()
+        if $do_publish;
 
     # Remove autosave object
     remove_autosave_session_obj( $app, $new_entry->class );
@@ -239,7 +244,12 @@ sub update {
             or return $app->error( $new_entry->errstr );
     }
 
-    $post_save->();
+    my $do_publish
+        = defined scalar $app->param('publish')
+        ? scalar $app->param('publish')
+        : 1;
+    $post_save->()
+        if $do_publish;
 
     # Remove autosave object
     remove_autosave_session_obj( $app, $new_entry->class, $new_entry->id );
