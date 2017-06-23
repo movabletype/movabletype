@@ -1632,8 +1632,13 @@ sub save_filter {
             0 == length(
                 $obj ? $accessor->('password') : scalar $app->param('pass')
             )
-            );
+        );
     }
+
+    # Password strength check
+    my $msg = $app->verify_password_strength( $accessor->('name'), $accessor->('password') );
+    return $eh->error( $msg ) if $msg;
+
     my $email = $accessor->('email');
     return $eh->error(
         MT->translate("Email Address is required for password reset.") )
@@ -1657,6 +1662,7 @@ sub save_filter {
         return $eh->error( MT->translate("URL is invalid.") )
             if !is_url($url) || ( $url =~ m/[<>]/ );
     }
+
     1;
 }
 
