@@ -1062,6 +1062,10 @@ sub edit_content_data {
         = $content_data
         ? MT::Serialize->unserialize( $content_data->convert_breaks )
         : undef;
+    my $blockeditor_data
+        = $content_data
+        ? $content_data->block_editor_data()
+        : undef;
     my $content_field_types = $app->registry('content_field_types');
     @$array = map {
         my $e_unique_id = $_->{unique_id};
@@ -1150,7 +1154,8 @@ sub edit_content_data {
         $_;
     } @$array;
 
-    $param->{fields} = $array;
+    $param->{fields}            = $array;
+    $param->{block_editor_data} = $blockeditor_data;
 
     foreach my $name (qw( saved err_msg content_type_id id )) {
         $param->{$name} = $q->param($name) if $q->param($name);
@@ -1400,6 +1405,8 @@ sub save_content_data {
     }
     $content_data->convert_breaks(
         MT::Serialize->serialize( \$convert_breaks ) );
+
+    $content_data->block_editor_data( $app->param('blockeditor-data') );
 
     $app->run_callbacks( 'cms_pre_save.cd', $app, $content_data, $orig );
 

@@ -76,8 +76,9 @@ __PACKAGE__->install_properties(
                 label      => 'Unpublished Date',
                 revisioned => 1,
             },
-            'revision'       => 'integer meta',
-            'convert_breaks' => 'string meta',
+            'revision'          => 'integer meta',
+            'convert_breaks'    => 'string meta',
+            'block_editor_data' => 'string meta',
         },
         indexes => {
             content_type_id => 1,
