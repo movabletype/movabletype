@@ -1143,16 +1143,21 @@ sub list {
         if ( my $subfields = $prop->sub_fields ) {
             for my $sub (@$subfields) {
                 my $sdisp = $sub->{display} || 'optional';
-                push @subfields,
-                    {
-                      display => $sdisp eq 'force' ? 1
+                my $display
+                    = $sdisp eq 'force'   ? 1
                     : $sdisp eq 'none'    ? 0
                     : scalar %cols        ? $cols{ $id . '.' . $sub->{class} }
                     : $sdisp eq 'default' ? 1
-                    : 0,
+                    :                       0;
+                push @subfields,
+                    {
+                    display    => $display,
+                    id         => $id . '.' . $sub->{class},
                     class      => $sub->{class},
+                    parent_id  => $id,
                     label      => $app->translate( $sub->{label} ),
                     is_default => $sdisp eq 'default' ? 1 : 0,
+                    checked    => $display,
                     };
             }
         }
@@ -1167,6 +1172,7 @@ sub list {
             sorted    => $prop->id eq $default_sort ? 1 : 0,
             display   => $show,
             is_default => $force || $default,
+            checked => $show,
             force_display      => $force,
             default_sort_order => $prop->default_sort_order || 'ascend',
             order              => $prop->order,
@@ -1261,23 +1267,24 @@ sub list {
     require JSON;
     my $json = JSON->new->utf8(0);
 
-    $param{common_listing}   = 1;
-    $param{blog_id}          = $blog_id || '0';
-    $param{filters}          = $json->encode($filters);
-    $param{initial_filter}   = $json->encode($initial_filter);
-    $param{allpass_filter}   = $json->encode($allpass_filter);
-    $param{system_messages}  = $json->encode( \@messages );
-    $param{filters_raw}      = $filters;
-    $param{default_sort_key} = $default_sort;
-    $param{list_columns}     = \@list_columns;
-    $param{filter_types}     = \@filter_types;
-    $param{object_type}      = $type;
-    $param{page_title}       = $screen_settings->{screen_label};
-    $param{list_headers}     = \@list_headers;
-    $param{build_user_menus} = $screen_settings->{has_user_properties};
-    $param{use_filters}      = 1;
-    $param{use_actions}      = 1;
-    $param{object_label}     = $screen_settings->{object_label}
+    $param{common_listing}    = 1;
+    $param{blog_id}           = $blog_id || '0';
+    $param{filters}           = $json->encode($filters);
+    $param{initial_filter}    = $json->encode($initial_filter);
+    $param{allpass_filter}    = $json->encode($allpass_filter);
+    $param{system_messages}   = $json->encode( \@messages );
+    $param{filters_raw}       = $filters;
+    $param{default_sort_key}  = $default_sort;
+    $param{list_columns}      = \@list_columns;
+    $param{list_columns_json} = $json->encode( \@list_columns );
+    $param{filter_types}      = \@filter_types;
+    $param{object_type}       = $type;
+    $param{page_title}        = $screen_settings->{screen_label};
+    $param{list_headers}      = \@list_headers;
+    $param{build_user_menus}  = $screen_settings->{has_user_properties};
+    $param{use_filters}       = 1;
+    $param{use_actions}       = 1;
+    $param{object_label}      = $screen_settings->{object_label}
         || $obj_class->class_label;
     $param{object_label_plural}
         = $screen_settings->{object_label_plural}

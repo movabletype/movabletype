@@ -17,7 +17,11 @@
     <mt:setvarblock name="content_header">
     <ul id="content-actions" class="list-inline action-link-list">
     <mt:loop name="content_actions">
-      <li><a href="<mt:var name="url">" class="icon-left<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id"> id="<mt:var name="id">"</mt:if><mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>><mt:var name="label"></a></li>
+      <li>
+        <a href="<mt:var name="url">" class="icon-left<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id"> id="<mt:var name="id">"</mt:if><mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>>
+          <mt:var name="label">
+        </a>
+      </li>
     </mt:loop>
     </ul>
     </mt:setvarblock>
@@ -26,7 +30,11 @@
 
 <mt:setvarblock name="listing_footer_content"><mt:if name="feed_url">
   <mt:if name="object_type_feed">
-  <li class="footer-link-item list-group-item"><a href="<$mt:var name="feed_url" escape="html"$>" class="icon-feed icon-left" title="<$mt:var name="feed_name" escape="html"$>" target="_blank"><$mt:var name="object_type_feed"$></a></li>
+  <li class="footer-link-item list-group-item">
+    <a href="<$mt:var name="feed_url" escape="html"$>" class="icon-feed icon-left" title="<$mt:var name="feed_name" escape="html"$>" target="_blank">
+      <$mt:var name="object_type_feed"$>
+    </a>
+  </li>
   </mt:if>
 </mt:if></mt:setvarblock>
 
@@ -40,68 +48,23 @@
 <div id="msg-block"></div>
 </mt:setvarblock>
 
-<mt:setvarblock name="display_options">
 <mt:setvar name="show_display_options_link" value="1">
-<div id="display-options-detail" class="collapse panel panel-default display-options-detail detail">
-  <div class="panel-body">
-    <mtapp:setting
-       id="per_page"
-       label="<__trans phrase="_DISPLAY_OPTIONS_SHOW">"
-       label_class="top-label">
-      <select id="row" class="form-control" name="limit" style="width: 100px;">
-        <option value="25"<mt:if name="limit_25"> selected="selected"</mt:if>><__trans phrase="25 rows"></option>
-        <option value="50"<mt:if name="limit_50"> selected="selected"</mt:if>><__trans phrase="50 rows"></option>
-        <option value="100"<mt:if name="limit_100"> selected="selected"</mt:if>><__trans phrase="100 rows"></option>
-        <option value="200"<mt:if name="limit_200"> selected="selected"</mt:if>><__trans phrase="200 rows"></option>
-      </select>
-    </mtapp:setting>
-    <mtapp:setting
-       id="display_columns"
-       label="<__trans phrase="Column">"
-       label_class="top-label">
-      <ul id="disp_cols" class="list-inline multiple-selection">
-      <mt:loop name="list_columns">
-        <li class="<mt:if name="force_display"> hidden</mt:if>">
-          <input
-             type="checkbox"
-             value="<mt:var name="id" escape="html">"
-             name="custom_prefs"
-             class="main<mt:if name="is_default"> show-default</mt:if>"
-             id="custom-prefs-<$mt:var name="id" escape="html"$>"
-             <mt:if name="display">checked="checked"</mt:if> />
-            <label for="custom-prefs-<$mt:var name="id" escape="html"$>"><mt:var name="label"></label>
-        </li>
-        <mt:loop name="sub_fields">
-        <li class="sub-field">
-          <input
-             type="checkbox"
-             value="<mt:var name="class">"
-             name="custom_prefs"
-             class="sub<mt:if name="is_default"> show-default</mt:if>"
-             id="custom-prefs-<$mt:var name="id" escape="html"$>.<mt:var name="class">"
-             <mt:if name="display">checked="checked"</mt:if> />
-            <label for="custom-prefs-<$mt:var name="id" escape="html"$>.<mt:var name="class">"><mt:var name="label"></label>
-        </li>
-        </mt:loop>
-      </mt:loop>
-      </ul>
-    </mtapp:setting>
-    <div class="actions-bar actions-bar-bottom">
-      <a href="#" id="reset-display-options"><__trans phrase="Reset defaults"></a>
-    </div>
-  </div>
-</div>
-</mt:setvarblock>
 
 <mt:setvarblock name="content">
 
-  <mt:include name="modules/list_actions.tmpl">
+  <div data-is="list-top">
+    <mt:include name="modules/list_actions.tmpl">
+  </div>
 
   <mt:if name="listing_footer_content">
-  <div class="panel panel-default">
-    <ul id="listing-footer" class="footer-links mod list-group">
-    <mt:var name="listing_footer_content">
-    </ul>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <ul id="listing-footer" class="footer-links mod list-group">
+        <mt:var name="listing_footer_content">
+        </ul>
+      </div>
+    </div>
   </div>
   </mt:if>
 
@@ -110,6 +73,57 @@
 
 <mt:setvarblock name="css_include" append="1">
 <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/list_common.css" />
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+
+<mt:if name="optimize_ui">
+  <script type="text/javascript" src="<mt:var name="static_uri">riot-3.6.0/riot.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/listing/tag/listing.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:else>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-top.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/display-options.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-table.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">riot-3.6.0/riot+compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:if>
+
+<script>
+var listColumns = <mt:var name="list_columns_json">;
+var listSortBy = '<mt:var name="default_sort_key">';
+
+<mt:if name="limit_25">
+var listLimit = 25;
+<mt:elseif name="limit_50">
+var listLimit = 50;
+<mt:elseif name="limit_100">
+var listLimit = 100;
+<mt:elseif name="limit_200">
+var listLimit = 200;
+</mt:if>
+
+var listClient = new ListClient({
+  url: '<mt:var name="script_url">',
+  siteId: '<mt:var name="blog_id">',
+  datasource: '<mt:var name="list_type" escape="js">',
+  magicToken: '<mt:var name="magic_token">'
+});
+
+<mt:if name="zero_state">
+var zeroStateLabel = '<mt:var name="zero_state" escape="js">';
+<mt:else>
+var zeroStateLabel = '<mt:var name="object_label" lower_case="1" escape="js">';
+</mt:if>
+
+riot.mount('list-top', {
+  listClient: listClient,
+  columns: listColumns,
+  limit: listLimit,
+  page: 1,
+  sortBy: listSortBy,
+  zeroStateLabel: zeroStateLabel
+})
+</script>
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

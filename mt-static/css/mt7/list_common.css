@@ -1,1 +1,4 @@
-
+table#listing thead,
+table#listing tfoot {
+    background-color: #f2f2f2;
+}
