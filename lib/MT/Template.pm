@@ -56,7 +56,8 @@ __PACKAGE__->install_properties(
                 revisioned => 1
             },
             'identifier' => {
-                type       => 'string(50)',
+                type       => 'string',
+                size       => 50,
                 revisioned => 1
             },
             'build_type' => {
