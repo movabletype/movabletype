@@ -1,18 +1,18 @@
 <list-table>
   <thead data-is="list-table-header"
-    checked-all-object-on-page={ opts.checkedAllObjectOnPage }
-    checked-all-object={ opts.checkedAllObject }
-    columns={ opts.columns }
-    sort-by={ opts.sortBy }
-    sort-order={ opts.sortOrder }
+    store={ opts.store }
   >
   </thead>
+  <tbody if={ opts.store.isLoading }>
+    <tr>
+      <td colspan={ opts.store.columns.length + 1 }>
+        { trans('Loading...') }
+      </td>
+    </tr>
+  </tbody>
   <tbody data-is="list-table-body"
-    checked-all-object-on-page={ opts.checkedAllObjectOnPage }
-    checked-all-object={ opts.checkedAllObject }
-    columns={ opts.columns }
-    count={ opts.count }
-    objects={ opts.objects }
+    if={ !opts.store.isLoading && opts.store.objects }
+    store={ opts.store }
     zero-state-label={ opts.zeroStateLabel }
   >
   </tbody>
@@ -22,88 +22,94 @@
   <tr>
     <th>
       <input type="checkbox"
-        checked={ opts.checkedAllObjectOnPage }
-        onchange={ toggleCheckboxes } />
+        checked={ opts.store.checkedAllRowsOnPage }
+        onchange={ toggleAllRowsOnPage } />
     </th>
-    <th each={ opts.columns }
+    <th each={ opts.store.columns }
       if={ checked }
       data-id={ id }
       class={
         primary: primary,
         sortable: sortable,
-        sorted: parent.opts.sortBy == id
+        sorted: parent.opts.store.sortBy == id
       }
     >
       <a href="javascript:void(0)"
         if={ sortable }
-        onclick={ changeSort }
+        onclick={ toggleSortColumn }
       >
         { label }
       </a>
       <virtual if={ !sortable }>{ label }</virtual>
       <span class="caret"
         style="transform: scaleY(-1);"
-        if={ sortable && ( parent.opts.sortBy != id || parent.opts.sortOrder == 'ascend') }>
+        if={ sortable && (
+          parent.opts.store.sortBy != id
+          || parent.opts.store.sortOrder == 'ascend'
+        ) }>
       </span>
       <span class="caret"
-        if={ sortable && ( parent.opts.sortBy != id || parent.opts.sortOrder == 'descend') }>
+        if={ sortable && (
+          parent.opts.store.sortBy != id
+          || parent.opts.store.sortOrder == 'descend'
+        ) }>
       </span>
     </th>
   </tr>
 
   <script>
-    changeSort(e) {
-      ListTop.changeSort(e.target.parentElement.dataset.id)
-      ListTop.render()
+    toggleAllRowsOnPage(e) {
+      opts.store.trigger('toggle_all_rows_on_page')
     }
 
-    toggleCheckboxes(e) {
-      ListTop.updateAllObjectChecked(e.target.checked)
+    toggleSortColumn(e) {
+      const columnId = e.currentTarget.parentElement.dataset.id
+      opts.store.trigger('toggle_sort_column', columnId)
     }
   </script>
 </list-table-header>
 
 <list-table-body>
-  <tr if={ opts.objects.length == 0 }>
-    <td colspan={ opts.columns.length + 1 }>
+  <tr if={ opts.store.objects.length == 0 }>
+    <td colspan={ opts.store.columns.length + 1 }>
       { trans('No [_1] could be found.', opts.zeroStateLabel) }
     </td>
   </tr>
   <tr style="background-color: #ffffff;"
-    if={ opts.checkedAllObjectOnPage && !opts.checkedAllObject }
+    if={ opts.store.pageMax > 1 && opts.store.checkedAllRowsOnPage && !opts.store.checkedAllRows }
   >
-    <td colspan={ opts.objects.length + 1 }>
-      <a href="#" onclick={ checkAllObject }>
-        { trans('Select all [_1] items', opts.count) }
+    <td colspan={ opts.store.objects.length + 1 }>
+      <a href="javascript:void(0);" onclick={ checkAllRows }>
+        { trans('Select all [_1] items', opts.store.count) }
       </a>
     </td>
   </tr>
-  <tr class="success" if={ opts.checkedAllObject }>
-    <td colspan={ opts.objects.length + 1 }>
-      { trans('All [_1] items are selected', opts.count) }
+  <tr class="success" if={ opts.store.pageMax > 1 && opts.store.checkedAllRows }>
+    <td colspan={ opts.store.objects.length + 1 }>
+      { trans('All [_1] items are selected', opts.store.count) }
     </td>
   </tr>
   <tr data-is="list-table-row"
-    each={ obj, index in opts.objects }
+    each={ obj, index in opts.store.objects }
+    onclick={ parent.toggleRow }
     class={ obj.checked ? 'warning' : '' }
     data-index={ index }
-    columns={ parent.opts.columns }
     checked={ obj.checked }
     object={ obj.object }
-    onclick={ parent.toggleCheckbox }>
+    store={ parent.opts.store }
+  >
   </tr>
 
   <script>
-    toggleCheckbox(e) {
+    toggleRow(e) {
       if (e.target.tagName == 'A') {
-        return
+        return false
       }
-      const index = $(e.target).parents('tr').data('index')
-      ListTop.toggleObjectChecked(index)
+      opts.store.trigger('toggle_row', e.currentTarget.dataset.index)
     }
 
-    checkAllObject(e) {
-      ListTop.checkAllObject()
+    checkAllRows(e) {
+      opts.store.trigger('check_all_rows')
     }
   </script>
 </list-table-body>
@@ -118,7 +124,10 @@
   <td data-is="list-table-column"
     each={ content, index in opts.object }
     if={ index > 0 }
-    class={ parent.opts.columns[0].id == 'id' ? parent.opts.columns[index+1].id : parent.opts.columns[index].id }
+    class={ (parent.opts.store.columns[0].id == 'id' && !parent.opts.store.columns[0].checked)
+      ? parent.opts.store.columns[index+1].id
+      : parent.opts.store.columns[index].id
+    }
     content={ content }>
   </td>
 </list-table-row>
@@ -130,4 +139,3 @@
     this.root.innerHTML = opts.content
   </script>
 </list-table-column>
-

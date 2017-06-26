@@ -3,19 +3,15 @@
     if (!args) {
       args = {};
     }
-    this.url = args.url || '';
+    this.url = args.url;
     this.siteId = args.siteId || 0;
-    this.datasource = args.datasource || '';
-    this.magicToken = args.magicToken || '';
+    this.datasource = args.datasource;
+    this.objectType = args.objectType;
+    this.magicToken = args.magicToken;
+    this.returnArgs = args.returnArgs;
   };
 
-  ListClient.prototype = Object.create(ListClient, {
-    generatePostData: { value: generatePostData },
-    saveListPrefs: { value: saveListPrefs },
-    sendRequest: { value: sendRequest }
-  });
-
-  function sendRequest(args) {
+  ListClient.prototype.filteredList = function (args) {
     if (!args) {
       args = {};
     }
@@ -25,14 +21,11 @@
       data: this.generatePostData(args),
       dataType: 'json'
     }).done(args.success)
-    .fail(args.success)
-    .always(args.always);
-  }
+      .fail(args.fail)
+      .always(args.always);
+  };
 
-  function filteredList() {
-  }
-
-  function saveListPrefs(args) {
+  ListClient.prototype.saveListPrefs = function (args) {
     if (!args) {
       args = {};
     }
@@ -48,11 +41,14 @@
       data: data,
       dataType: 'json'
     }).done(args.success)
-    .fail(args.fail)
-    .always(args.always);
-  }
+      .fail(args.fail)
+      .always(args.always);
+  };
 
-  function generatePostData(args) {
+  ListClient.prototype.generatePostData = function (args) {
+    if (!args) {
+      args = {};
+    }
     var data = {
       __mode: 'filtered_list',
       blog_id: this.siteId,
@@ -66,10 +62,9 @@
       fid: args.fid
     };
     return data;
-  }
+  };
 
   function serializeColumns(columns) {
     return Array.isArray(columns) ? columns.join(',') : columns;
   }
 })(window, jQuery);
-

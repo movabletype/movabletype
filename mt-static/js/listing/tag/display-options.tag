@@ -14,8 +14,7 @@
   <div class="row">
     <div data-is="display-options-detail"
       class="col-md-12"
-      columns={ opts.columns }
-      limit={ opts.limit }>
+      store={ opts.store }
     </div>
   </div>
 </display-options>
@@ -25,16 +24,18 @@
     <div class="panel-body">
       <div data-is="display-options-limit"
         id="per_page-field"
-        limit={ opts.limit }>
+        store={ opts.store }
+      >
       </div>
 
       <div id="display_columns-field"
         data-is="display-options-columns"
-        columns={ opts.columns }>
+        store={ opts.store }
+      >
       </div>
 
       <div class="actions-bar actions-bar-bottom">
-        <a href="#" id="reset-display-options" onclick={ resetColumns }>
+        <a href="javascript:void(0);" id="reset-display-options" onclick={ resetColumns }>
           { trans('Reset defaults') }
         </a>
       </div>
@@ -43,8 +44,7 @@
 
   <script>
     resetColumns(e) {
-      ListTop.resetColumns()
-      ListTop.render()
+      opts.store.trigger('reset_columns')
     }
   </script>
 </display-options-detail>
@@ -58,7 +58,7 @@
       class="form-control"
       style="width: 100px;"
       ref="limit"
-      value={ opts.limit }
+      value={ opts.store.limit }
       onchange={ changeLimit }
     >
       <option value="25">{ trans('25 rows') }</option>
@@ -70,8 +70,7 @@
 
   <script>
     changeLimit(e) {
-      ListTop.limit = this.refs.limit.value
-      ListTop.render()
+      opts.store.trigger('update_limit', this.refs.limit.value)
     }
   </script>
 </display-options-limit>
@@ -82,13 +81,13 @@
   </div>
   <div class="field-content">
     <ul id="disp_cols" class="list-inline">
-      <virtual each={ column in opts.columns }>
+      <virtual each={ column in opts.store.columns }>
         <li hide={ column.force_display }>
           <label>
             <input type="checkbox"
               id={ column.id }
               checked={ column.checked }
-              onchange={ changeColumn }
+              onchange={ toggleColumn }
             />
             { column.label }
           </label>
@@ -103,7 +102,7 @@
               pid={ subField.parent_id }
               class={ subField.class }
               checked={ subField.checked }
-              onchange={ changeSubField }
+              onchange={ toggleSubField }
             />
             { subField.label }
           </label>
@@ -113,15 +112,12 @@
   </div>
 
   <script>
-    changeColumn(e) {
-      ListTop.updateColumn(e.target.id, e.target.checked)
-      ListTop.render()
+    toggleColumn(e) {
+      opts.store.trigger('toggle_column', e.currentTarget.id)
     }
 
-    changeSubField(e) {
-      ListTop.updateColumn(e.target.id, e.target.checked)
-      ListTop.saveListPrefs()
+    toggleSubField(e) {
+      opts.store.trigger('toggle_sub_field', e.currentTarget.id)
     }
   </script>
 </display-options-columns>
-

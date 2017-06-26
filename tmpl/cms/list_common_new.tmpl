@@ -18,7 +18,11 @@
     <ul id="content-actions" class="list-inline action-link-list">
     <mt:loop name="content_actions">
       <li>
-        <a href="<mt:var name="url">" class="icon-left<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id"> id="<mt:var name="id">"</mt:if><mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>>
+        <a href="<mt:var name="url">"
+          class="icon-left<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"
+          <mt:if name="id"> id="<mt:var name="id">"</mt:if>
+          <mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>
+        >
           <mt:var name="label">
         </a>
       </li>
@@ -31,7 +35,11 @@
 <mt:setvarblock name="listing_footer_content"><mt:if name="feed_url">
   <mt:if name="object_type_feed">
   <li class="footer-link-item list-group-item">
-    <a href="<$mt:var name="feed_url" escape="html"$>" class="icon-feed icon-left" title="<$mt:var name="feed_name" escape="html"$>" target="_blank">
+    <a href="<$mt:var name="feed_url" escape="html"$>"
+      class="icon-feed icon-left"
+      title="<$mt:var name="feed_name" escape="html"$>"
+      target="_blank"
+    >
       <$mt:var name="object_type_feed"$>
     </a>
   </li>
@@ -52,9 +60,7 @@
 
 <mt:setvarblock name="content">
 
-  <div data-is="list-top">
-    <mt:include name="modules/list_actions.tmpl">
-  </div>
+  <div data-is="list-top"></div>
 
   <mt:if name="listing_footer_content">
   <div class="row">
@@ -77,6 +83,7 @@
 
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_action_client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 
 <mt:if name="optimize_ui">
   <script type="text/javascript" src="<mt:var name="static_uri">riot-3.6.0/riot.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
@@ -84,48 +91,164 @@
 <mt:else>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-top.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/display-options.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-actions.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-table.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+
+  <script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_data.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_store.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+
   <script type="text/javascript" src="<mt:var name="static_uri">riot-3.6.0/riot+compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:if>
 
 <script>
-var listColumns = <mt:var name="list_columns_json">;
-var listSortBy = '<mt:var name="default_sort_key">';
+(function () {
+  var listColumns = <mt:var name="list_columns_json">;
+  var listSortBy = '<mt:var name="default_sort_key">';
 
-<mt:if name="limit_25">
-var listLimit = 25;
-<mt:elseif name="limit_50">
-var listLimit = 50;
-<mt:elseif name="limit_100">
-var listLimit = 100;
-<mt:elseif name="limit_200">
-var listLimit = 200;
-</mt:if>
+  <mt:if name="limit_25">
+  var listLimit = 25;
+  <mt:elseif name="limit_50">
+  var listLimit = 50;
+  <mt:elseif name="limit_100">
+  var listLimit = 100;
+  <mt:elseif name="limit_200">
+  var listLimit = 200;
+  </mt:if>
 
-var listClient = new ListClient({
-  url: '<mt:var name="script_url">',
-  siteId: '<mt:var name="blog_id">',
-  datasource: '<mt:var name="list_type" escape="js">',
-  magicToken: '<mt:var name="magic_token">'
-});
+  var listClient = new ListClient({
+    url: '<mt:var name="script_url">',
+    siteId: '<mt:var name="blog_id">',
+    datasource: '<mt:var name="list_type" escape="js">',
+    objectType: '<mt:var name="object_type" escape="js">',
+    magicToken: '<mt:var name="magic_token">',
+    returnArgs: '<mt:var name="return_args">'
+  });
 
-<mt:if name="zero_state">
-var zeroStateLabel = '<mt:var name="zero_state" escape="js">';
-<mt:else>
-var zeroStateLabel = '<mt:var name="object_label" lower_case="1" escape="js">';
-</mt:if>
+  var listActionClient = new ListActionClient({
+    url: listClient.url,
+    siteId: listClient.siteId,
+    datasource: listClient.datasource,
+    objectType: listClient.objectType,
+    magicToken: listClient.magicToken,
+    returnArgs: listClient.returnArgs
+  });
 
-riot.mount('list-top', {
-  listClient: listClient,
-  columns: listColumns,
-  limit: listLimit,
-  page: 1,
-  sortBy: listSortBy,
-  zeroStateLabel: zeroStateLabel
-})
+  <mt:if name="zero_state">
+  var zeroStateLabel = '<mt:var name="zero_state" escape="js">';
+  <mt:else>
+  var zeroStateLabel = '<mt:var name="object_label" lower_case="1" escape="js">';
+  </mt:if>
+
+  var buttonActions = {};
+  <mt:loop name="button_actions">
+  buttonActions['<mt:var name="key">'] = {
+    type:'core',
+    js_message: '<__trans phrase="<mt:var name="js_message">" escape="js">'
+    <mt:if name="action_mode">,mode:'<mt:var name="action_mode">'</mt:if>
+    <mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if>
+    <mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if>
+    <mt:if name="no_prompt">,no_prompt:"<mt:var name="no_prompt" escape="js">"</mt:if>
+    <mt:if name="dialog">,dialog:1</mt:if>
+    <mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if>
+    <mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if>
+    <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
+    <mt:if name="xhr">, xhr:true</mt:if>
+    <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+  };
+  </mt:loop>
+
+  var listActions = {};
+  <mt:loop name="list_actions">
+  listActions['<mt:var name="key">'] = {
+    type:'core'
+    <mt:if name="action_mode">,mode:'<mt:var name="action_mode">'</mt:if>
+    <mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if>
+    <mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if>
+    <mt:if name="no_prompt">,no_prompt:"<mt:var name="no_prompt" escape="js">"</mt:if>
+    <mt:if name="dialog">,dialog:1</mt:if>
+    <mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if>
+    <mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if>
+    <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
+    <mt:if name="xhr">, xhr:true</mt:if>
+    <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+  };
+  </mt:loop>
+
+  var moreListActions = {};
+  <mt:loop name="more_list_actions">
+  moreListActions['<mt:var name="key">'] = {
+    type:'core'
+    <mt:if name="action_mode">,mode:'<mt:var name="action_mode">'</mt:if>
+    <mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if>
+    <mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if>
+    <mt:if name="no_prompt">,no_prompt:"<mt:var name="no_prompt" escape="js">"</mt:if>
+    <mt:if name="dialog">,dialog:1</mt:if>
+    <mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if>
+    <mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if>
+    <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
+    <mt:if name="xhr">, xhr:true</mt:if>
+    <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+    };
+  </mt:loop>
+
+  <mt:if name="has_list_actions">
+  var hasListActions = true;
+  <mt:else>
+  var hasListActions = false;
+  </mt:if>
+
+  <mt:if name="has_pulldown_actions">
+  var hasPulldownActions = true;
+  <mt:else>
+  var hasPulldownActions = false;
+  </mt:if>
+
+  <mt:if name="use_actions">
+  var useActions = true;
+  <mt:else>
+  var useActions = false;
+  </mt:if>
+
+  <mt:if name="action_label">
+  var singular = '<mt:var name="action_label">';
+  <mt:else>
+  var singular = '<mt:var name="object_label" lower_case="1" escape="js">';
+  </mt:if>
+
+  <mt:if name="action_label_plural">
+  var plural = '<mt:var name="action_label_plural">';
+  <mt:else>
+  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  </mt:if>
+
+  var listStore = new ListStore({
+    listClient: listClient,
+
+    columns: listColumns,
+    limit: listLimit,
+    page: 1,
+    sortBy: listSortBy
+  });
+
+  riot.mount('list-top', {
+    listActionClient: listActionClient,
+
+    zeroStateLabel: zeroStateLabel,
+
+    buttonActions: buttonActions,
+    hasListActions: hasListActions,
+    hasPulldownActions: hasPulldownActions,
+    listActions: listActions,
+    moreListActions: moreListActions,
+    plural: plural,
+    useActions: useActions,
+    singular: singular,
+    store: listStore
+  })
+})();
 </script>
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">
 <mt:var name="layout">
-

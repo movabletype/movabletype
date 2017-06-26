@@ -12,15 +12,15 @@
         </mt:if>
     </mt:if>
     <mt:if name="request.saved">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="saved"
             class="success"
             rebuild="$rebuild">
             <__trans phrase="Your changes have been saved.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="request.saved_deleted">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="saved-deleted"
             class="success"
             rebuild="$rebuild">
@@ -29,7 +29,7 @@
             <mt:else>
                 <__trans phrase="The page has been deleted from the database.">
             </mt:if>
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
     </div>
 </mt:setvarblock>
