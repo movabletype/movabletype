@@ -285,10 +285,22 @@ sub list_actions {
         $actions->{$a}{key}  = $a;
         $actions->{$a}{core} = 1
             unless UNIVERSAL::isa( $actions->{$a}{plugin}, 'MT::Plugin' );
-        $actions->{$a}{js_message} = $actions->{$a}{label}
-            unless $actions->{$a}{js_message};
+
+        if ( !$actions->{$a}{js_message} ) {
+            if ( exists $actions->{$a}{js_message_handler} ) {
+                my $code = $app->handler_to_coderef(
+                    $actions->{$a}{js_message_handler} );
+                $actions->{$a}{js_message} = $code->()
+                    if 'CODE' eq ref($code);
+            }
+            else {
+                $actions->{$a}{js_message} = $actions->{$a}{label}
+            }
+        }
+
         $actions->{$a}{action_mode} = $actions->{$a}{mode}
             if $actions->{$a}{mode};
+
         if ( exists $actions->{$a}{continue_prompt_handler} ) {
             my $code = $app->handler_to_coderef(
                 $actions->{$a}{continue_prompt_handler} );
