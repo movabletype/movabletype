@@ -82,6 +82,13 @@ class MT {
         }
     }
 
+    public function __destruct() {
+        if ( isset($this->db) ) {
+            $this->db()->db()->Close();
+            $this->db = null;
+        }
+    }
+
     public static function get_instance($blog_id = null, $cfg_file = null) {
         if (is_null(MT::$_instance)) {
             MT::$_instance = new MT($blog_id, $cfg_file);
