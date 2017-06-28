@@ -1,16 +1,16 @@
 <mt:setvarblock name="system_msg" append="1">
     <mt:if name="request.saved_deleted">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="saved-deleted"
             class="success">
             <__trans phrase="You have successfully revoked the given permission(s).">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="request.saved">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="saved"
             class="success">
             <__trans phrase="You have successfully granted the given permission(s).">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
 </mt:setvarblock>

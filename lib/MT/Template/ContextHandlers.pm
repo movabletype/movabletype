@@ -3142,7 +3142,7 @@ sub _hdlr_app_setting {
         $label = '';    # zero it out, because the user turned it off
     }
     if ( $hint && $show_hint ) {
-        $hint = "\n<div class=\"hint\">$hint$help</div>";
+        $hint = "\n<div class=\"hint text-muted\">$hint$help</div>";
     }
     else {
         $hint = ''

@@ -2,10 +2,17 @@
 <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>bootstrap-3.3.7/js/bootstrap.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 
-<script type="text/javascript" src="<mt:var name="static_uri">js/lexicon.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.mtrebuild.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script>
+<mt:include name="modules/mt_js_variables.tmpl">
 
-jQuery('a.mt-rebuild').mtRebuild();
+<script type="text/javascript" src="<mt:var name="static_uri">js/lexicon.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.mt-modal.js?v=<mt:var name-"mt_version_id" escape="url">"></script>
+<script>
+$('.mt-modal').mtModal();
+$('[data-mt-modal-close]').mtModalClose();
 </script>
 
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.mt-rebuild.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script>
+$('a.mt-rebuild').mtRebuild();
+</script>

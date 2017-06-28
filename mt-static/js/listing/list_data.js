@@ -34,9 +34,13 @@
   };
 
   ListData.prototype.getCheckedRowCount = function () {
-    return this.objects.filter(function (object) {
-      return object.checked;
-    }).length;
+    if (this.checkedAllRows) {
+      return this.count;
+    } else {
+      return this.objects.filter(function (object) {
+        return object.checked;
+      }).length;
+    }
   };
 
   ListData.prototype.getColumn = function (columnId) {

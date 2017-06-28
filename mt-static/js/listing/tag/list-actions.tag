@@ -48,7 +48,7 @@
       this.selectedAction = this.getAction(this.selectedActionId)
       this.selectedActionPhrase = this.selectedAction.js_message || trans('act upon')
 
-      const requestArgs = {}
+      const args = {}
 
       if (!this.checkCount()) {
         return false
@@ -57,7 +57,7 @@
       if (this.selectedAction.input) {
         const input = prompt(this.selectedAction.input)
         if (input) {
-          requestArgs.itemsetActionInput = input
+          args.itemsetActionInput = input
         } else {
           return false
         }
@@ -75,18 +75,30 @@
         }
       }
 
-      this.sendRequest(requestArgs)
+      const requestArgs = this.generateRequestArguments(args)
+
+      if (this.selectedAction.xhr) {
+      } else if (this.selectedAction.dialog) {
+        const requestData = opts.listActionClient.generateRequestData(requestArgs)
+        requestData.dialog = 1
+        const url = MT.App.ScriptURL + '?' + $.param(requestData, true);
+        $.fn.mtModal.open(url, { large: true });
+      } else {
+        this.sendRequest(requestArgs)
+      }
     }
 
-    sendRequest(args) {
-      opts.listActionClient.post(
-        $.extend({
-          action: this.selectedAction,
-          actionName: this.selectedActionId,
-          allSelected: opts.store.checkedAllRows,
-          ids: opts.store.getCheckedRowIds()
-        }, args)
-      )
+    sendRequest(postArgs) {
+      opts.listActionClient.post(postArgs)
+    }
+
+    generateRequestArguments(args) {
+      return $.extend({
+        action: this.selectedAction,
+        actionName: this.selectedActionId,
+        allSelected: opts.store.checkedAllRows,
+        ids: opts.store.getCheckedRowIds()
+      }, args)
     }
 
     getAction(actionId) {

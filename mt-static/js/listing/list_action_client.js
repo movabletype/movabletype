@@ -22,7 +22,7 @@
       action: this.url,
       method: 'POST'
     });
-    var data = this.generatePostData(args);
+    var data = this.generateRequestData(args);
     Object.keys(data).forEach(function (name) {
       var values = [].concat(data[name]);
       values.forEach(function (value) {
@@ -37,7 +37,7 @@
     return $form;
   };
 
-  ListActionClient.prototype.generatePostData = function (args) {
+  ListActionClient.prototype.generateRequestData = function (args) {
     var data = {
       __mode: args.action.mode || 'itemset_action',
       _type: this.objectType,
@@ -55,14 +55,5 @@
       data.id = args.ids;
     }
     return data;
-  };
-
-  ListActionClient.prototype.addinputToForm = function ($form, name, value) {
-    var $input = $('<input>').attr({
-      type: 'hidden',
-      name: name,
-      value: value
-    });
-    $form.append($input)
   };
 })(window, jQuery);
