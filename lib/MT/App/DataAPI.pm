@@ -2152,6 +2152,26 @@ sub core_endpoints {
             },
             error_codes => { 403 => 'Do not have permission to upload.', },
         },
+        {   id        => 'create_entry',
+            route     => '/sites/:site_id/entries',
+            resources => ['entry'],
+            verb      => 'POST',
+            version   => 3,
+            handler   => "${pkg}v3::Entry::create",
+            default_params => { save_revision => 1, },
+            error_codes =>
+                { 403 => 'Do not have permission to create an entry.', },
+        },
+        {   id        => 'update_entry',
+            route     => '/sites/:site_id/entries/:entry_id',
+            resources => ['entry'],
+            verb      => 'PUT',
+            version   => 3,
+            handler   => "${pkg}v3::Entry::update",
+            default_params => { save_revision => 1, },
+            error_codes =>
+                { 403 => 'Do not have permission to update an entry.', },
+        },
     ];
 }
 
