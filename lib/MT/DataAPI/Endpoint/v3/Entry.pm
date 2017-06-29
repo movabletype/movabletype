@@ -9,6 +9,11 @@ package MT::DataAPI::Endpoint::v3::Entry;
 use strict;
 use warnings;
 
+use MT::Entry;
+use MT::DataAPI::Endpoint::Common;
+use MT::DataAPI::Endpoint::Entry;
+use MT::DataAPI::Resource;
+
 sub create {
     my ( $app, $endpoint ) = @_;
 
