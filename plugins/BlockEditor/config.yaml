@@ -1,0 +1,26 @@
+id: BlockEditor
+name: BlockEditor
+version: 1.0
+author_link: http://www.movabletype.org/
+author_name: Six Apart, Ltd.
+description: <MT_TRANS phrase="Block Editor.">
+l10n_class: BlockEditor::L10N
+
+text_filters:
+    blockeditor:
+        label: 'Block Editor'
+
+
+callbacks:
+  MT::App::CMS::template_param.edit_content_data: $BlockEditor::BlockEditor::App::param_edit_content_data
+
+blockeditor_fields: 
+  header:
+    label: 'H'
+    # path: "plugins/sample/sample.js"
+  image:
+    label: 'image'
+  horizon:
+    label: 'Horizon'
+  embed:
+    label: 'Embed'

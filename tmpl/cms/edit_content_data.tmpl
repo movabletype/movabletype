@@ -395,11 +395,11 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       });
   }
 
-  var block_editor_data_json = '<mt:var name="block_editor_data">;';
+  var block_editor_data_json = '<mt:var name="block_editor_data">';
   var block_editor_data  = {};
-  if(block_editor_data_json){
+  <mt:if name="block_editor_data">if(block_editor_data_json){
     block_editor_data = JSON.parse(block_editor_data_json);
-  }
+  }</mt:if>
   function generate_unique_id(){
     return new Date().getTime().toString(16)  + Math.floor(Math.random()*9999).toString(16)
   }
@@ -471,76 +471,15 @@ Template.templates.autoSave = '<mt:section encode_js="1">
                   arguments: param, load: convertedText
           };
           jQuery.post('<mt:var name="script_url">', param, convertedText);
+      } else if ( cur_text_format == 'blockeditor' ) {
+        // changing to other editor
+        jQuery('#' + editor_id).blockeditor('destoroy', block_editor_data[editor_id]);
       } else {
           jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
           app.editor.setMode(option);
           app.editor.focus();
           if(option == "blockeditor"){
-            block_editor_data[editor_id] = {};
-
-            var block_field = jQuery('<div class="block_field sortable"></div>');
-            jQuery('#' + editor_id).parents('.editor-content').after(block_field);
-
-            var add_field = jQuery('<div class="add_field icon-mini-left addnew"><__trans phrase="Create New" escape="js"></div>');
-            block_field.sortable({
-              items: '.sort-enabled',
-              placeholder: 'placeholder',
-              distance: 3,
-              opacity: 0.8,
-              cursor: 'move',
-              forcePlaceholderSize: true,
-              handle: '.field-header',
-              containment: '.block_field',
-              update : function(ev, ui) {
-                var order = jQuery(this).sortable("toArray");
-                jQuery.each( order, function( index, id_wrap_str ) {
-                  var id = id_wrap_str.replace('-wrapper','');
-                  block_editor_data[editor_id][id].order = index + 1;
-                });
-              }
-            });
-
-            block_field.after(add_field);
-            add_field.on('click', function(){
-              var add_menu = jQuery('<div class="add_menu"><span class="add">H</span><span class="add">Image</span><span class="add">Embed</span><span class="add">Horizon</span></div>');
-              jQuery('.add_menu').remove();
-              jQuery(this).after(add_menu);
-              add_menu.find('span').on('click', function(){
-                var id = generate_unique_id();
-                var type = jQuery(this).text();
-                var edit_field_class = editor_id + '_addfield';
-                var label = jQuery('<div class="field-header ui-sortable-handle first-child"><label class="' + edit_field_class + '_label icon-delete icon-right">' + type + '</label></div>');
-                label.on('click', '.icon-delete', function(){
-                  label.parent('.field').remove();
-                });
-                var edit_field_input = jQuery('<textarea id="' + id + '" class="text short html5-form content-field ' + edit_field_class + '"></textarea>');
-                if(type == 'H') {
-                  var select_header = jQuery('<select name="' + id + '-element"><option value="h1">H1</option><option value="h2">H2</option><option value="h3">H3</option></select>');
-                  edit_field_input = jQuery.merge(select_header, edit_field_input);
-                } else if ( type == 'Image' ){
-                  edit_field_input = jQuery('<div class="asset_field"><a href="<mt:var name="script_url">?__mode=dialog_list_asset&amp;edit_field=' + id + '&amp;blog_id=' + jQuery('[name=blog_id]').val() + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image" class="mt-open-dialog">edit Image</a><input type="hidden" name="' + id + '" id="' + id + '" value=""></div>');
-                } else if ( type == 'Horizon' ){
-                  edit_field_input = jQuery('<div class="hr_field"><hr><input type="hidden" name="' + id + '" id="' + id + '" value="hr"></div>');
-                }
-                var count = jQuery('.' + edit_field_class).length;
-                var edit_field = jQuery('<div id="' + id + '-wrapper" class="field field-top-label sort-enabled"></div>')
-                .append(label)
-                .append(edit_field_input);
-                block_field.append(edit_field);
-                edit_field_input.wrap('<div class="field-content"></div>');
-                jQuery('a.mt-open-dialog').mtDialog();
-                add_menu.remove();
-                block_editor_data[editor_id][id] = {
-                  'type': type,
-                  'order': count + 1,
-                  'value': ''
-                };
-                if( type == 'H' ) {
-                  block_editor_data[editor_id][id].elem = 'h1';
-                }
-                block_field.sortable('refresh');
-              })
-            })
+            jQuery('#' + editor_id).blockeditor(block_editor_data[editor_id]);
           }
       }
   }
@@ -564,6 +503,10 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   jQuery(document).on('click', '.field-convert_breaks .help-link', openTFDocs);
 </script>
 </mt:setvarblock>
+
+<!-- blockeditor -->
+<mt:var name="blockeditor_tmpl">
+<!-- //blockeditor -->
 
 <mt:include name="include/header.tmpl" id="header_include">
 
@@ -658,7 +601,6 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           <mt:loop name="text_filters">
             <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
           </mt:loop>
-          <option value="blockeditor"<mt:if name="convert_breaks" eq="blockeditor"$> selected="selected"</mt:if>>blockeditor</option>
           </select>
           <$mt:setvar name="show_formatting_help" value="1"$>
         <mt:if name="convert_breaks" eq="richtext">
@@ -709,6 +651,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     var form = this;
     validateInServerSide().done(function () {
       if (validateInClientSide()) {
+        var block_editor_data = jQuery('#' + editor_id).blockeditor.get_data();
         var block_data_json = JSON.stringify(block_editor_data);
         jQuery(form).append(jQuery('<input type="hidden" name="blockeditor-data">').val(block_data_json))
         form.submit();
