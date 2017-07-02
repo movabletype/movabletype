@@ -6,23 +6,24 @@
     var block_field;
     var add_field;
     var add_menu;
-    var _init = function(data){
-        var _create_field = function(editor_id, input_field){
-          block_field.append(input_field);
-          add_menu.remove();
-          block_field.sortable('refresh');
-          _update_data(editor_id);
-        };
-        var _update_data = function(editor_id){
-            var datas = manager.get_data.apply(manager);
-            var order = block_field.sortable("toArray");
-            jQuery.each( order, function( index, id_wrap_str ) {
-              var id = id_wrap_str.replace('-wrapper','');
-              block_editor_data[editor_id][id] = datas[id];
-              block_editor_data[editor_id][id].order = index + 1;
-            });
-        }
+    var _create_field = function(editor_id, input_field){
+      block_field.append(input_field);
+      add_menu.remove();
+      block_field.sortable('refresh');
+      _update_data(editor_id);
+    };
+    var _update_data = function(editor_id){
+        var datas = manager.get_data.apply(manager);
+        var order = block_field.sortable("toArray");
+        jQuery.each( order, function( index, id_wrap_str ) {
+          var id = id_wrap_str.replace('-wrapper','');
+          block_editor_data[editor_id][id] = datas[id];
+          block_editor_data[editor_id][id].order = index + 1;
+        });
+    }
 
+
+    var _init = function(data){
         return this.each(function(){
             var $this = $(this);
             var editor_id = $this.attr('id');
@@ -62,12 +63,15 @@
         });
     };
     var _destoroy = function(editor_id){
-        block_field.remove();
+        if(block_field)
+          block_field.remove();
         block_editor_data[editor_id] = null;
         return this;
     };
-    var _get = function(){
-        return this;
+    var _get_data = function(){
+        var editor_id = this.attr('id');
+        _update_data(editor_id);
+        return block_editor_data[this.attr('id')];
     };
     var _set = function(){
         return this;
@@ -75,10 +79,9 @@
     var methods = {
         init: _init,
         destoroy: _destoroy,
-        get: _get,  
+        get_data: _get_data,  
         set: _set,
     }
-    var block_editor_data = [];
 
     $.fn.blockeditor = function(method){
         if ( methods[method] ) {

@@ -474,6 +474,9 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       } else if ( cur_text_format == 'blockeditor' ) {
         // changing to other editor
         jQuery('#' + editor_id).blockeditor('destoroy', block_editor_data[editor_id]);
+        jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
+        app.editor.setMode(option);
+        app.editor.focus();
       } else {
           jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
           app.editor.setMode(option);
@@ -651,9 +654,16 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     var form = this;
     validateInServerSide().done(function () {
       if (validateInClientSide()) {
-        var block_editor_data = jQuery('#' + editor_id).blockeditor.get_data();
-        var block_data_json = JSON.stringify(block_editor_data);
-        jQuery(form).append(jQuery('<input type="hidden" name="blockeditor-data">').val(block_data_json))
+        var block_editor_data = {};
+        jQuery('.editorfield').each(function(i) {
+          var format = jQuery('.convert_breaks[data-target='+this.id+']').val();
+          if(format=="blockeditor"){
+            block_editor_data[this.id] = jQuery('#'+this.id).blockeditor('get_data');
+          }
+        });
+        if(Object.keys(block_editor_data).length > 0) {
+          jQuery(form).append(jQuery('<input type="hidden" name="blockeditor-data">').val(JSON.stringify(block_editor_data)))
+        }
         form.submit();
       }
     })

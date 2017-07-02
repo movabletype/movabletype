@@ -31,7 +31,7 @@ $.extend(BEF.Header.prototype, BEF.prototype, {
     get_html: function(){
         var self = this;
         var elm = self.select_header.val();
-        return jQuery(elm).append(self.edit_field_input.html()).html();
+        return jQuery(elm).append(self.edit_field_input.val()).html();
     }
 });
 

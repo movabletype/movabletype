@@ -23,12 +23,12 @@ $.extend(BEF.Embed.prototype, BEF.prototype, {
         var self = this;
         return {
             'type': self.get_type(),
-            'value': self.edit_field_input.html(),
+            'value': self.edit_field_input.val(),
         }
     },
     get_html: function(){
         var self = this;
-        return self.edit_field_input.html();
+        return self.edit_field_input.val();
     }
 });
 
