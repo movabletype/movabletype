@@ -453,6 +453,18 @@ Template.templates.autoSave = '<mt:section encode_js="1">
               return;
           }
       }
+      if ((cur_text_format == 'blockeditor') && (option != 'blockeditor')) {
+          // warn user that changing to plaintext is not reversible (easily)
+          if (!confirm("<__trans phrase="Changing to plain text is not possible to return to the block edit." escape="js">")) {
+              // revert selection
+              for (var i = 0; i < this.options.length; i++) {
+                  if (this.options[i].value == cur_text_format)
+                      this.selectedIndex = i;
+              }
+              app.editor.focus();
+              return;
+          }
+      }
       if (url = docs[option]) {
           if (url.indexOf('http://') == -1)
               url = HelpBaseURI + url;
