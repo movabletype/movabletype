@@ -20,9 +20,10 @@ sub param_edit_content_data {
         $hash->{type}  = $_;
         $hash->{label} = $blockeditor_fields->{$_}{label};
         $hash->{path}  = $blockeditor_fields->{$_}{path};
+        $hash->{order} = $blockeditor_fields->{$_}{order};
         $hash;
     } keys %$blockeditor_fields;
-
+    @blockeditor_fields_array = sort { $a->{order} <=> $b->{order} } @blockeditor_fields_array;
     $param->{blockeditor_fields} = \@blockeditor_fields_array;
 
     my $editor_tmpl = plugin()->load_tmpl('editor.tmpl');

@@ -22,9 +22,13 @@ blockeditor_fields:
   header:
     label: 'H'
     # path: "plugins/sample/sample.js"
+    order: 10
   image:
     label: 'image'
+    order: 20
   horizon:
     label: 'Horizon'
+    order: 30
   embed:
     label: 'Embed'
+    order: 40
