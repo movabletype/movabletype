@@ -29,4 +29,30 @@ sub param_edit_content_data {
     $param->{blockeditor_tmpl} = $editor_tmpl;
 }
 
+sub block_editor_asset {
+    my $app = shift;
+    my ($param) = @_;
+
+    $app->validate_magic() or return;
+
+    my ( $id, $asset );
+    if ( $asset = $param->{asset} ) {
+        $id = $asset->id;
+    }
+    else {
+        $id = $param->{asset_id} || scalar $app->param('id');
+        $asset = $app->model('asset')->lookup($id);
+    }
+
+    my $thumb_html = $asset->as_html( { include => 1 } );
+
+    plugin()->load_tmpl(
+        'cms/dialog/asset_insert.tmpl',
+        {   asset_id   => $id,
+            edit_field => $app->param('edit_field') || '',
+            asset_html => $thumb_html,
+        },
+    );
+}
+
 1;

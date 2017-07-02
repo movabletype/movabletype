@@ -78,7 +78,7 @@ __PACKAGE__->install_properties(
             },
             'revision'          => 'integer meta',
             'convert_breaks'    => 'string meta',
-            'block_editor_data' => 'string meta',
+            'block_editor_data' => 'text meta',
         },
         indexes => {
             content_type_id => 1,

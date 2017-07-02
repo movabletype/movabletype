@@ -10,6 +10,10 @@ text_filters:
     blockeditor:
         label: 'Block Editor'
 
+applications:
+  cms:
+    methods:
+      block_editor_asset: $BlockEditor::BlockEditor::App::block_editor_asset
 
 callbacks:
   MT::App::CMS::template_param.edit_content_data: $BlockEditor::BlockEditor::App::param_edit_content_data

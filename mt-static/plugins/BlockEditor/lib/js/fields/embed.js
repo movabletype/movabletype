@@ -17,6 +17,7 @@ $.extend(BEF.Embed.prototype, BEF.prototype, {
         var self = this;
         self.id = id;
         self.edit_field_input = $('<textarea id="' + id + '" class="text short html5-form content-field"></textarea>');
+        self.edit_field_input.val(data["value"]);
         return self.edit_field_input;
     },
     get_data: function(){
