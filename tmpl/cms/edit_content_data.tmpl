@@ -470,6 +470,18 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           app.editor.reload();
           app.editor.setMode('textarea');
           app.editor.focus();
+      } else if(cur_text_format == 'blockeditor') {
+          // changing to plaintext editor
+          jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
+
+          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
+
+          app.editor.setMode('textarea');
+          app.editor.insertContent(jQuery('#'+editor_id).blockeditor('get_html'));
+          jQuery('#'+editor_id).blockeditor('destroy');
+          jQuery('#' + editor_id).parents('.editor-content').removeClass('hidden');
+          app.editor.focus();
+
       } else if (option == 'richtext') {
           app.saveHTML(false);
           // changing to richtext editor
@@ -489,7 +501,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           jQuery.post('<mt:var name="script_url">', param, convertedText);
       } else if ( cur_text_format == 'blockeditor' ) {
         // changing to other editor
-        jQuery('#' + editor_id).blockeditor('destoroy', block_editor_data[editor_id]);
+        jQuery('#' + editor_id).blockeditor('destroy');
         jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
         app.editor.setMode(option);
         app.editor.focus();
@@ -499,6 +511,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           app.editor.focus();
           if(option == "blockeditor"){
             jQuery('#' + editor_id).blockeditor(block_editor_data[editor_id]);
+            jQuery('#' + editor_id).parents('.editor-content').addClass('hidden');
           }
       }
   }

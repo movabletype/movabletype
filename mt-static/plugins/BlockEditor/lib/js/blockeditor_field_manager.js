@@ -14,9 +14,9 @@ $.extend(MT.BlockEditorFieldManager, {
 // Instance method
 $.extend(MT.BlockEditorFieldManager.prototype, {
     field_instances: {},
+    edit_id: "",
     init: function(id){
         this.editor_id = id;
-        this.block_editor_data = [];
         return this;
     },
     get_fields: function(){
@@ -76,6 +76,15 @@ $.extend(MT.BlockEditorFieldManager.prototype, {
             field_contens[field_order-1] = self.create_field(field_class, field_id, data[field_id]);
         });
         return field_contens;
+    },
+    get_html: function(){
+        var self = this;
+        var htmls = [];
+        Object.keys(self.field_instances).forEach(function(field_id){
+            var field = self.field_instances[field_id];
+            htmls.push(field.get_html());
+        });
+        return htmls;
     },
 });
 

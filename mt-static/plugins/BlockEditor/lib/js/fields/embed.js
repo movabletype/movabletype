@@ -29,7 +29,7 @@ $.extend(BEF.Embed.prototype, BEF.prototype, {
     },
     get_html: function(){
         var self = this;
-        return self.edit_field_input.val();
+        return self.edit_field_input.html();
     }
 });
 

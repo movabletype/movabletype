@@ -33,7 +33,7 @@ $.extend(BEF.Header.prototype, BEF.prototype, {
     get_html: function(){
         var self = this;
         var elm = self.select_header.val();
-        return $(elm).append(self.edit_field_input.val()).html();
+        return '<' + elm + '>' + self.edit_field_input.val() + '</' + elm + '>';
     }
 });
 
