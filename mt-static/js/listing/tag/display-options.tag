@@ -24,14 +24,14 @@
   <div id="display-options-detail" class="collapse panel panel-default">
     <div class="panel-body">
       <div data-is="display-options-limit" id="per_page-field"></div>
-
-      <div data-is="display-options-columns" id="display_columns-field"></div>
-
-      <div class="actions-bar actions-bar-bottom">
-        <a href="javascript:void(0);" id="reset-display-options" onclick={ resetColumns }>
-          { trans('Reset defaults') }
-        </a>
-      </div>
+      <virtual if={ !listTop.opts.disableUserDisplayOption }>
+        <div data-is="display-options-columns" id="display_columns-field"></div>
+        <div class="actions-bar actions-bar-bottom">
+          <a href="javascript:void(0);" id="reset-display-options" onclick={ resetColumns }>
+            { trans('Reset defaults') }
+          </a>
+        </div>
+      </virtual>
     </div>
   </div>
 

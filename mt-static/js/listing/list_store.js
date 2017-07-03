@@ -157,6 +157,10 @@
       this.toggleSortColumn(this.sortBy);
     }
 
+    if (this.disableUserDisplayOption) {
+      this.resetColumns();
+    }
+
     this.updateIsLoading(true);
     this.trigger('refresh_view');
 

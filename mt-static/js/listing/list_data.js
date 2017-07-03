@@ -23,6 +23,8 @@
     this.checkedAllRows = false;
 
     this.isLoading = false;
+
+    this.disableUserDisplayOption = args.disableUserDisplayOption;
   };
 
   ListData.prototype.DefaultLimit = 50;
