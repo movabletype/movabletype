@@ -24,7 +24,7 @@
 
     this.isLoading = false;
 
-    this.disableUserDisplayOption = args.disableUserDisplayOption;
+    this.disableUserDispOption = args.disableUserDispOption;
   };
 
   ListData.prototype.DefaultLimit = 50;

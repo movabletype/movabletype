@@ -54,11 +54,11 @@
     </mtapp:setting>
 
     <mtapp:setting
-      id="user_display_option"
+      id="user_disp_option"
       label="<__trans phrase="User Display Option">"
     >
       <label>
-        <input id="user_display_option" type="checkbox" name="user_display_option" value="1"<mt:if name="user_display_option"> checked="checked"</mt:if> onchange="setDirty(true);" />
+        <input id="user_disp_option" type="checkbox" name="user_disp_option" value="1"<mt:if name="user_disp_option"> checked="checked"</mt:if> onchange="setDirty(true);" />
         <__trans phrase="Enable User Display Option">
       </label>
     </mtapp:setting>
@@ -1429,14 +1429,14 @@
     setDirty(false);
     var datalist = localStorage.getItem("ContentType");
     var id = jQuery("#id").val();
-    var userDisplayOption = jQuery('#user_display_option:checked').length > 0 ? 1 : 0;
+    var userDispOption = jQuery('#user_disp_option:checked').length > 0 ? 1 : 0;
     jQuery('<form/>', {action: "<mt:var name="script_url">", method: 'post'})
-    .append(jQuery('<input/>', {type: 'hidden', name: '__mode',              value: 'save_cfg_content_type'}))
-    .append(jQuery('<input/>', {type: 'hidden', name: 'magic_token',         value: '<mt:var name="magic_token">'}))
-    .append(jQuery('<input/>', {type: 'hidden', name: 'blog_id',             value: '<mt:var name="blog_id">'}))
-    .append(jQuery('<input/>', {type: 'hidden', name: 'id',                  value: '<mt:var name="id">'}))
-    .append(jQuery('<input/>', {type: 'hidden', name: 'data',                value: datalist}))
-    .append(jQuery('<input/>', {type: 'hidden', name: 'user_display_option', value: userDisplayOption}))
+    .append(jQuery('<input/>', {type: 'hidden', name: '__mode',           value: 'save_cfg_content_type'}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'magic_token',      value: '<mt:var name="magic_token">'}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'blog_id',          value: '<mt:var name="blog_id">'}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'id',               value: '<mt:var name="id">'}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'data',             value: datalist}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'user_disp_option', value: userDispOption}))
     .appendTo(document.body)
     .submit();
   });

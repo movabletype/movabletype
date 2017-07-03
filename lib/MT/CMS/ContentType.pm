@@ -33,8 +33,7 @@ sub tmpl_param_list_common {
     {
         my $content_type_id = $1;
         my $content_type    = MT::ContentType->load($content_type_id);
-        $param->{disable_user_display_option}
-            = !$content_type->user_display_option;
+        $param->{disable_user_disp_option} = !$content_type->user_disp_option;
 
         my $component = MT->component('core');
         my $filename
@@ -106,10 +105,10 @@ sub cfg_content_type {
 
     my $content_type = $obj_promise->force();
     if ($content_type) {
-        $param->{name}                = $content_type->name;
-        $param->{description}         = $content_type->description;
-        $param->{unique_id}           = $content_type->unique_id;
-        $param->{user_display_option} = $content_type->user_display_option;
+        $param->{name}             = $content_type->name;
+        $param->{description}      = $content_type->description;
+        $param->{unique_id}        = $content_type->unique_id;
+        $param->{user_disp_option} = $content_type->user_disp_option;
         my $field_data;
         if ( $q->param('err_msg') ) {
             $field_data = $q->param('fields');
@@ -345,7 +344,7 @@ sub save_cfg_content_type {
 
     $content_type->blog_id($blog_id);
     $content_type->name($name);
-    $content_type->user_display_option( $app->param('user_display_option') );
+    $content_type->user_disp_option( $app->param('user_disp_option') );
 
     $content_type->save
         or return $app->error(

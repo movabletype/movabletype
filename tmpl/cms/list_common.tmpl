@@ -247,10 +247,10 @@
 
   var localeCalendarHeader = [ <__trans phrase="_LOCALE_CALENDAR_HEADER_"> ];
 
-  <mt:if name="disable_user_display_option">
-  var disableUserDisplayOption = true;
+  <mt:if name="disable_user_disp_option">
+  var disableUserDispOption = true;
   <mt:else>
-  var disableUserDisplayOption = false;
+  var disableUserDispOption = false;
   </mt:if>
 
   var listStore = new ListStore({
@@ -265,7 +265,7 @@
     currentFilter: initialFilter,
     filters: filters,
 
-    disableUserDisplayOption: disableUserDisplayOption
+    disableUserDispOption: disableUserDispOption
   });
 
   riot.mount('list-top', {
@@ -289,7 +289,7 @@
 
     localeCalendarHeader: localeCalendarHeader,
     objectLabel: objectLabel,
-    disableUserDisplayOption: disableUserDisplayOption
+    disableUserDispOption: disableUserDispOption
   });
 })();
 </script>

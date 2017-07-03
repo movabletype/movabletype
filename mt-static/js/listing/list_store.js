@@ -157,7 +157,7 @@
       this.toggleSortColumn(this.sortBy);
     }
 
-    if (this.disableUserDisplayOption) {
+    if (this.disableUserDispOption) {
       this.resetColumns();
     }
 

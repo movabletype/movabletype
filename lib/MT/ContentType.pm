@@ -19,14 +19,14 @@ use MT::Util;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'                  => 'integer not null auto_increment',
-            'blog_id'             => 'integer not null',
-            'name'                => 'string(255)',
-            'description'         => 'text',
-            'version'             => 'integer',
-            'unique_id'           => 'string(40) not null',
-            'fields'              => 'blob',
-            'user_display_option' => 'boolean',
+            'id'               => 'integer not null auto_increment',
+            'blog_id'          => 'integer not null',
+            'name'             => 'string(255)',
+            'description'      => 'text',
+            'version'          => 'integer',
+            'unique_id'        => 'string(40) not null',
+            'fields'           => 'blob',
+            'user_disp_option' => 'boolean',
         },
         indexes     => { blog_id => 1, unique_id => { unique => 1 } },
         datasource  => 'content_type',

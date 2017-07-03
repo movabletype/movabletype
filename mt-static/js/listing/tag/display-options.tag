@@ -24,7 +24,7 @@
   <div id="display-options-detail" class="collapse panel panel-default">
     <div class="panel-body">
       <div data-is="display-options-limit" id="per_page-field"></div>
-      <virtual if={ !listTop.opts.disableUserDisplayOption }>
+      <virtual if={ !listTop.opts.disableUserDispOption }>
         <div data-is="display-options-columns" id="display_columns-field"></div>
         <div class="actions-bar actions-bar-bottom">
           <a href="javascript:void(0);" id="reset-display-options" onclick={ resetColumns }>
