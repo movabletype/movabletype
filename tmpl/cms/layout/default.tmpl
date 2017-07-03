@@ -7,7 +7,7 @@
   <meta charset="<mt:var name="language_encoding">"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <mt:var name="html_head">
+
   <link rel="stylesheet" href="<mt:var name="static_uri">bootstrap-3.3.7/css/bootstrap.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
   <link rel="stylesheet" href="//cdn.movabletype.net/libs/font-awesome/4.5.0/css/font-awesome.min.css" />
   <link rel="stylesheet" href="//cdn.movabletype.net/libs/select2/4.0.1/css/select2.min.css" />
@@ -16,8 +16,11 @@
   <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/selector.css" />
   <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/footer.css" />
   <mt:var name="css_include">
+
   <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
   <mt:include name="modules/icon.tmpl">
+
+  <mt:var name="html_head">
 </head>
 <body>
   <mt:include name="modules/selector.tmpl">
@@ -31,6 +34,7 @@
         <div class="row">
           <div class="col-md-9">
             <mt:include name="modules/page_title.tmpl">
+            <mt:include name="modules/content_header.tmpl">
             <mt:var name="content">
           </div>
           <div class="col-md-3">
@@ -43,11 +47,8 @@
         <mt:include name="modules/notification_indicator.tmpl">
         <mt:include name="modules/system_msg.tmpl">
         <mt:include name="modules/page_title.tmpl">
-        <div class="row">
-          <div class="col-md-12">
-            <mt:var name="content">
-          </div>
-        </div>
+        <mt:include name="modules/content_header.tmpl">
+        <mt:var name="content">
       </div>
       </mt:if>
       <mt:var name="js_include">
@@ -57,4 +58,3 @@
 </body>
 </html>
 </mt:setvartemplate>
-

@@ -1,67 +1,67 @@
 <mt:setvarblock name="system_msg" append="1">
     <mt:if name="request.saved">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="saved"
             class="success"
             rebuild="all"
             can_close="0">
             <__trans phrase="Your changes have been saved.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="request.approved">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="approved"
             class="success">
             <__trans phrase="The selected comment(s) has been approved.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="request.emptied">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="emptied"
             class="success">
             <__trans phrase="All comments reported as spam have been removed.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="request.unapproved">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="unapproved"
             class="success">
             <__trans phrase="The selected comment(s) has been unapproved.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="request.junked">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="junked"
             class="success">
             <__trans phrase="The selected comment(s) has been reported as spam.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="request.unjunked">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="unjunked"
             class="success">
             <__trans phrase="The selected comment(s) has been recovered from spam.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="request.saved_deleted">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="saved-deleted"
             class="success">
             <__trans phrase="The selected comment(s) has been deleted from the database.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="request.unauth">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="unaugh"
             class="alert">
             <__trans phrase="One or more comments you selected were submitted by an unauthenticated commenter. These commenters cannot be banned or trusted.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="request.no_junk_found">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="no-junk-found"
             class="info">
             <__trans phrase="No comments appear to be spam.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
 </mt:setvarblock>

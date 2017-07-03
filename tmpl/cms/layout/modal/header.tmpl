@@ -1,4 +1,3 @@
-<mt:setvartemplate name="layout">
 <!DOCTYPE html>
 <html lang="<mt:var name="language_tag">"<mt:if name="screen_id"> data-screen-id="<mt:var name="screen_id">"</mt:if>>
 <head>
@@ -16,21 +15,3 @@
   <mt:var name="html_head">
 </head>
 <body>
-  <div class="container body">
-
-    <mt:unless name="no_brand">
-    <div class="row">
-      <div id="brand" class="col-md-12">
-        <img alt="Movable Type" src="<mt:var name="static_uri">images/chromeless/mt_logo.png" />
-      </div>
-    </div>
-    </mt:unless>
-
-    <mt:include name="modules/page_title.tmpl">
-
-    <mt:var name="content">
-  </div>
-  <mt:var name="js_include">
-</body>
-</html>
-</mt:setvartemplate>
