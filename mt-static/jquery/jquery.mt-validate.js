@@ -278,7 +278,7 @@ $.mtValidator('default', {
     wrapError: function ( $target, msg ) {
         return $('<label style="position: absolute;" />')
             .attr('for', $target.attr('id') || '')
-            .addClass('msg-error msg-balloon validate-error')
+            .addClass('msg-error msg-balloon validate-error label label-default')
             .text(msg);
     },
     showError: function( $target, $error_block ) {

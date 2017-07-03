@@ -9,13 +9,15 @@
     this.page = args.page || this.DefaultPage;
     this.sortBy = args.sortBy;
     this.sortOrder = args.sortOrder;
-    this.fid = args.fid || this.DefaultFid;
+
+    this.filters = args.filters;
+    this.currentFilter = args.currentFilter;
+    this.allpassFilter = args.allpassFilter;
 
     this.objects = null;
     this.count = null;
     this.editableCount = null;
     this.pageMax = null;
-    this.filters = null;
 
     this.checkedAllRowsOnPage = false;
     this.checkedAllRows = false;
@@ -25,12 +27,44 @@
 
   ListData.prototype.DefaultLimit = 50;
   ListData.prototype.DefaultPage = 1;
-  ListData.prototype.DefaultFid = '_allpass';
+
+  ListData.prototype.addFilterItem = function (filterItem) {
+    if (this.currentFilter.id == this.allpassFilter.id) {
+      this.createNewFilter('Unknown Filter');
+    }
+    this.currentFilter.items.push({ type: filterItem });
+  };
+
+  ListData.prototype.addFilterItemContent = function (itemIndex, contentIndex) {
+    if (this.currentFilter.items[itemIndex].type != 'pack') {
+      var items = [ this.currentFilter.items[itemIndex] ];
+      this.currentFilter.items[itemIndex] = {
+        type: 'pack',
+        args: { op: 'and', items: items }
+      };
+    }
+    var type = this.currentFilter.items[itemIndex].args.items[0].type;
+    this.currentFilter.items[itemIndex].args.items.splice(
+      contentIndex + 1,
+      0,
+      { type: type, args: {} }
+    );
+    this.currentFilter.items[itemIndex] = JSON.parse(
+      JSON.stringify(this.currentFilter.items[itemIndex])
+    );
+  };
 
   ListData.prototype.checkAllRows = function () {
     var nextState = true;
     this.updateAllRowsOnPage(nextState);
     this.checkedAllRows = nextState;
+  };
+
+  ListData.prototype.createNewFilter = function (filterLabel) {
+    this.currentFilter = {
+      items: [],
+      label: trans( filterLabel || 'New Filter' )
+    };
   };
 
   ListData.prototype.getCheckedRowCount = function () {
@@ -44,14 +78,9 @@
   };
 
   ListData.prototype.getColumn = function (columnId) {
-    var returnColumn = null;
-    this.columns.some(function (column) {
-      if (column.id == columnId) {
-        returnColumn = column;
-        return false;
-      }
-    });
-    return returnColumn;
+    return this.columns.filter(function (column) {
+      return column.id == columnId;
+    })[0];
   };
 
   ListData.prototype.getCheckedColumnIds = function () {
@@ -77,22 +106,61 @@
     });
   };
 
+  ListData.prototype.getFilter = function (filterId) {
+    if (!filterId || !this.filters) {
+      return;
+    }
+    const selectedFilters = this.filters.filter(function (filter) {
+      return filter.id == filterId;
+    });
+    if (selectedFilters.length > 0) {
+      return selectedFilters[0];
+    } else {
+      return null;
+    }
+  };
+
+  ListData.prototype.getNewFilterLabel = function (objectLabel) {
+    var temp_base = 1;
+    var temp;
+    while ( 1 ) {
+      temp = trans('[_1] - Filter [_2]', objectLabel, temp_base++);
+      const hasSameLabel = this.filters.some(function (f) { return f.label == temp });
+      if (!hasSameLabel) {
+        break;
+      }
+    }
+    return temp;
+  };
+
   ListData.prototype.getSubField = function (subFieldId) {
     var returnSubField = null;
     this.columns.some(function (column) {
       return column.sub_fields.some(function (subField) {
         if (subField.id == subFieldId) {
           returnSubField = subField;
-          return false;
+          return true;
         }
       });
     });
     return returnSubField;
   };
 
+  ListData.prototype.hasSystemFilter = function () {
+    return this.filters.some(function (filter) {
+      return filter.can_save == '0';
+    });
+  };
+
   ListData.prototype.isCheckedAllRowsOnPage = function () {
     return this.objects.every(function (object) {
       return object.checked;
+    });
+  };
+
+  ListData.prototype.isFilterItemSelected = function (type) {
+    return this.currentFilter.items.some(function (item) {
+      return item.type == type;
     });
   };
 
@@ -106,6 +174,46 @@
       this.page = page;
     }
     return moved;
+  };
+
+  ListData.prototype.removeFilterItemByIndex = function (itemIndex) {
+    this.currentFilter.items.splice(itemIndex, 1);
+  };
+
+  ListData.prototype.removeFilterItemContent = function (itemIndex, contentIndex) {
+    this.currentFilter.items[itemIndex].args.items.splice(contentIndex, 1);
+  };
+
+  ListData.prototype.setFilter = function (filter) {
+    if (!filter) {
+      return false;
+    }
+    var changed;
+    if (filter == this.currentFilter) {
+      changed = false;
+    } else {
+      this.currentFilter = filter;
+      changed = true;
+    }
+    return changed;
+  };
+
+  ListData.prototype.setFilterById = function (filterId) {
+    let filter
+    if (filterId == this.allpassFilter.id) {
+      filter = this.allpassFilter
+    } else {
+      filter = this.getFilter(filterId)
+    }
+    if (!filter) {
+      return false;
+    }
+    this.setFilter(filter);
+  };
+
+  ListData.prototype.setDeleteFilterResult = function (result) {
+    this.setFilterById(result.id);
+    this.filters = result.filters;
   };
 
   ListData.prototype.setResult = function (result) {
@@ -127,9 +235,15 @@
     this.editableCount = result.editable_count;
     this.pageMax = result.page_max;
     this.filters = result.filters;
+    this.setFilterById(result.id);
 
     this.checkedAllRows = false;
     this.checkedAllRowsOnPage = false;
+  };
+
+  ListData.prototype.setSaveFilterResult = function (result) {
+    this.filters = result.filters;
+    this.setFilterById(this.currentFilter.id);
   };
 
   ListData.prototype.toggleAllRowsOnPage = function () {

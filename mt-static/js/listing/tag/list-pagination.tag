@@ -2,15 +2,15 @@
   <ul class="list-inline">
     <li>
       <button class="btn btn-default"
-        disabled={ opts.store.page <= 1 }
-        data-page={ opts.store.page - 1 }
+        disabled={ store.page <= 1 }
+        data-page={ store.page - 1 }
         onclick={ movePage }
       >
         &lt; { trans('Prev') }
       </button>
     </li>
     <li>
-      <virtual if={ opts.store.page - 3 >= 1 }>
+      <virtual if={ store.page - 3 >= 1 }>
         <a href="javascript:void(0);"
           data-page={ 1 }
           onclick={ movePage }
@@ -22,52 +22,52 @@
         ...
       </virtual>
 
-      <virtual if={ opts.store.page - 2 >= 1 }>
+      <virtual if={ store.page - 2 >= 1 }>
         <a href="javascript:void(0);"
-          data-page={ opts.store.page - 2 }
+          data-page={ store.page - 2 }
           onclick={ movePage }
         >
-          { opts.store.page - 2 }
+          { store.page - 2 }
         </a>
       </virtual>
 
-      <virtual if={ opts.store.page - 1 >= 1 }>
+      <virtual if={ store.page - 1 >= 1 }>
         <a href="javascript:void(0);"
-          data-page={ opts.store.page - 1 }
+          data-page={ store.page - 1 }
           onclick={ movePage }
         >
-          { opts.store.page - 1 }
+          { store.page - 1 }
         </a>
       </virtual>
 
-      <span class="label label-primary">{ opts.store.page }</span>
+      <span class="label label-primary">{ store.page }</span>
 
-      <virtual if={ opts.store.page + 1 <= opts.store.pageMax }>
+      <virtual if={ store.page + 1 <= store.pageMax }>
         <a href="javascript:void(0);"
-          data-page={ opts.store.page + 1 }
+          data-page={ store.page + 1 }
           onclick={ movePage }
         >
-          { opts.store.page + 1 }
+          { store.page + 1 }
         </a>
       </virtual>
 
-      <virtual if={ opts.store.page + 2 <= opts.store.pageMax }>
+      <virtual if={ store.page + 2 <= store.pageMax }>
         <a href="javascript:void(0);"
-          data-page={ opts.store.page + 2 }
+          data-page={ store.page + 2 }
           onclick={ movePage }
         >
-          { opts.store.page + 2 }
+          { store.page + 2 }
         </a>
       </virtual>
 
-      <virtual if={ opts.store.page + 3 <= opts.store.pageMax }>
+      <virtual if={ store.page + 3 <= store.pageMax }>
         ...
         <a href="javascript:void(0);"
-          data-page={ opts.store.pageMax }
+          data-page={ store.pageMax }
           onclick={ movePage }
         >
           <span class="label label-default">
-            { opts.store.pageMax }
+            { store.pageMax }
           </span>
         </a>
       </virtual>
@@ -75,16 +75,16 @@
     <li>
       [ <input type="number"
           min="1"
-          max={ opts.store.pageMax }
-          value={ opts.store.page }
+          max={ store.pageMax }
+          value={ store.page }
           class="text-center"
           style="width: 50px;"
-          onkeyup={ movePage } /> / { opts.store.pageMax } ]
+          onkeyup={ movePage } /> / { store.pageMax } ]
     </li>
     <li>
       <button class="btn btn-default"
-        disabled={ opts.store.page >= opts.store.pageMax }
-        data-page={ opts.store.page + 1 }
+        disabled={ store.page >= store.pageMax }
+        data-page={ store.page + 1 }
         onclick={ movePage }
       >
         { trans('Next') } &gt;
@@ -93,6 +93,8 @@
   </ul>
 
   <script>
+    this.mixin('listTop')
+
     movePage(e) {
       let nextPage
       if (e.target.tagName == "INPUT") {
@@ -106,7 +108,7 @@
       if (!nextPage) {
         return false
       }
-      opts.store.trigger('move_page', nextPage)
+      this.store.trigger('move_page', nextPage)
     }
   </script>
 </list-pagination>

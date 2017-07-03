@@ -11,18 +11,107 @@
     this.returnArgs = args.returnArgs;
   };
 
+  ListClient.prototype.sendRequest = function (args, data) {
+    $.ajax(this.url, {
+      type: 'POST',
+      contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+      data: data,
+      dataType: 'json'
+    }).done(args.done)
+      .fail(args.fail)
+      .always(args.always);
+  };
+
+  ListClient.prototype.deleteFilter = function (args) {
+    if (!args) {
+      args = {};
+    }
+    var data = {
+      __mode: 'delete_filter',
+      datasource: this.datasource,
+      blog_id: this.siteId,
+      id: args.id,
+      magic_token: this.magicToken
+    };
+    if (args.changed) {
+      data = $.extend(data, {
+        columns: serializeColumns(args.columns),
+        limit: args.limit,
+        page: args.page,
+        sort_by: args.sortBy,
+        sort_order: args.sortOrder
+      });
+      if (args.filter.id) {
+        data.fid = args.filter.id;
+      }
+    } else {
+      data.list = 0;
+    }
+    this.sendRequest(args, data);
+  };
+
   ListClient.prototype.filteredList = function (args) {
     if (!args) {
       args = {};
     }
-    $.ajax(this.url, {
-      type: 'POST',
-      contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-      data: this.generatePostData(args),
-      dataType: 'json'
-    }).done(args.success)
-      .fail(args.fail)
-      .always(args.always);
+    var data = {
+      __mode: 'filtered_list',
+      blog_id: this.siteId,
+      columns: serializeColumns(args.columns),
+      datasource: this.datasource,
+      items: JSON.stringify(args.filter.items),
+      limit: args.limit,
+      magic_token: this.magicToken,
+      page: args.page,
+      sort_by: args.sortBy,
+      sort_order: args.sortOrder
+    };
+    if (args.filter.id && !args.noFilterId) {
+      data.fid = args.filter.id;
+    }
+    this.sendRequest(args, data);
+  };
+
+  ListClient.prototype.renameFilter = function (args) {
+    if (!args) {
+      args = {};
+    }
+    var data = {
+      __mode: 'save_filter',
+      blog_id: this.siteId,
+      datasource: this.datasource,
+      label: args.filter.label,
+      items: JSON.stringify(args.filter.items),
+      list: 0,
+      magic_token: this.magicToken
+    };
+    if (args.filter.id) {
+      data.fid = args.filter.id;
+    }
+    this.sendRequest(args, data);
+  };
+
+  ListClient.prototype.saveFilter = function (args) {
+    if (!args) {
+      args = {};
+    }
+    var data = {
+      __mode: 'save_filter',
+      blog_id: this.siteId,
+      columns: serializeColumns(args.columns),
+      datasource: this.datasource,
+      label: args.filter.label,
+      items: JSON.stringify(args.filter.items),
+      limit: args.limit,
+      magic_token: this.magicToken,
+      page: args.page,
+      sort_by: args.sortBy,
+      sort_order: args.sortOrder
+    };
+    if (args.filter.id) {
+      data.fid = args.filter.id;
+    }
+    this.sendRequest(args, data);
   };
 
   ListClient.prototype.saveListPrefs = function (args) {
@@ -31,40 +120,19 @@
     }
     var data = {
       __mode: 'save_list_prefs',
-      datasource: this.datasource,
       blog_id: this.siteId,
       columns: serializeColumns(args.columns),
+      datasource: this.datasource,
       limit: args.limit
     };
-    $.ajax(this.url, {
-      type: 'POST',
-      data: data,
-      dataType: 'json'
-    }).done(args.success)
-      .fail(args.fail)
-      .always(args.always);
-  };
-
-  ListClient.prototype.generatePostData = function (args) {
-    if (!args) {
-      args = {};
-    }
-    var data = {
-      __mode: 'filtered_list',
-      blog_id: this.siteId,
-      datasource: this.datasource,
-      magic_token: this.magicToken,
-      columns: serializeColumns(args.columns),
-      limit: args.limit,
-      page: args.page,
-      sort_by: args.sortBy,
-      sort_order: args.sortOrder,
-      fid: args.fid
-    };
-    return data;
+    this.sendRequest(args, data);
   };
 
   function serializeColumns(columns) {
-    return Array.isArray(columns) ? columns.join(',') : columns;
+    if (Array.isArray(columns)) {
+      return columns.join(',');
+    } else {
+      return columns;
+    }
   }
 })(window, jQuery);

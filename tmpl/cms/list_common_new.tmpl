@@ -58,6 +58,8 @@
 
 <mt:setvar name="show_display_options_link" value="1">
 
+<mt:include name="include/basic_filter_forms.tmpl">
+
 <mt:setvarblock name="content">
 
   <div data-is="list-top"></div>
@@ -78,7 +80,8 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="css_include" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/list_common.css" />
+<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/list_common.css?v=<mt:var name="mt_version_id" escape="url">" />
+<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/datepicker.css?v=<mt:var name="mt_version_id" escape="url">" />
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
@@ -93,6 +96,7 @@
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/display-options.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-actions.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-filter.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-table.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
 
   <script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_data.js?v=<mt:var name="mt_version_id" escape="url">"></script>
@@ -100,6 +104,8 @@
 
   <script type="text/javascript" src="<mt:var name="static_uri">riot-3.6.0/riot+compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:if>
+
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.mt-validate.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 
 <script>
 (function () {
@@ -222,13 +228,36 @@
   var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
   </mt:if>
 
+  var objectLabel = '<mt:var name="object_label" escape="js">';
+
+  var filterTypes = [];
+  <mt:loop name="filter_types">
+  filterTypes.push({
+    baseType: '<mt:var name="base_type">',
+    <mt:if name="editable">editable: true,</mt:if>
+    field: '<mt:var name="field" mteval="1" regex_replace="/\n*/g":"">',
+    label: '<mt:var name="label">',
+    <mt:if name="singleton">singleton: true,</mt:if>
+    type: '<mt:var name="type">'
+  });
+  </mt:loop>
+  var filters = <mt:var name="filters">;
+  var initialFilter = <mt:var name="initial_filter">;
+  var allpassFilter = <mt:var name="allpass_filter">;
+
+  var localeCalendarHeader = [ <__trans phrase="_LOCALE_CALENDAR_HEADER_"> ];
+
   var listStore = new ListStore({
     listClient: listClient,
 
     columns: listColumns,
     limit: listLimit,
     page: 1,
-    sortBy: listSortBy
+    sortBy: listSortBy,
+
+    allpassFilter: allpassFilter,
+    currentFilter: initialFilter,
+    filters: filters
   });
 
   riot.mount('list-top', {
@@ -244,8 +273,15 @@
     plural: plural,
     useActions: useActions,
     singular: singular,
-    store: listStore
-  })
+    store: listStore,
+
+    allpassFilter: allpassFilter,
+    initialFilter: initialFilter,
+    filterTypes: filterTypes,
+
+    localeCalendarHeader: localeCalendarHeader,
+    objectLabel: objectLabel
+  });
 })();
 </script>
 </mt:setvarblock>

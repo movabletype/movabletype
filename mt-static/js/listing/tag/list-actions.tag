@@ -1,6 +1,6 @@
 <list-actions>
   <ul class="list-inline">
-    <li each={ action, key in opts.buttonActions }>
+    <li each={ action, key in listTop.opts.buttonActions }>
       <button class="btn btn-default"
         data-action-id={ key }
         onclick={ doAction }
@@ -8,14 +8,14 @@
         { action.label }
       </button>
     </li>
-    <li if={ opts.hasListActions && opts.hasPulldownActions }>
+    <li if={ listTop.opts.hasListActions && listTop.opts.hasPulldownActions }>
       <div class="dropdown">
         <button class="btn btn-default" data-toggle="dropdown">
           { trans('More actions...') }
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
-          <li each={ action, key in opts.listActions }>
+          <li each={ action, key in listTop.opts.listActions }>
             <a href="javascript:void(0);"
               data-action-id={ key }
               onclick={ doAction }
@@ -23,10 +23,12 @@
               { action.label }
             </a>
           </li>
-          <li if={ Object.keys(opts.moreListActions).length > 0 } class="dropdown-header">
+          <li if={ Object.keys(listTop.opts.moreListActions).length > 0 }
+            class="dropdown-header"
+          >
             { trans('Plugin Actions') }
           </li>
-          <li each={ action, key in opts.moreListActions }>
+          <li each={ action, key in listTop.opts.moreListActions }>
             <a href="javascript:void(0);"
               data-action-id={ key }
               onclick={ doAction }
@@ -40,6 +42,8 @@
   </ul>
 
   <script>
+    this.mixin('listTop')
+
     this.selectedActionId = null
     this.selectedAction = null
 
@@ -79,7 +83,7 @@
 
       if (this.selectedAction.xhr) {
       } else if (this.selectedAction.dialog) {
-        const requestData = opts.listActionClient.generateRequestData(requestArgs)
+        const requestData = this.listTop.opts.listActionClient.generateRequestData(requestArgs)
         requestData.dialog = 1
         const url = MT.App.ScriptURL + '?' + $.param(requestData, true);
         $.fn.mtModal.open(url, { large: true });
@@ -89,27 +93,27 @@
     }
 
     sendRequest(postArgs) {
-      opts.listActionClient.post(postArgs)
+      this.listTop.opts.listActionClient.post(postArgs)
     }
 
     generateRequestArguments(args) {
       return $.extend({
         action: this.selectedAction,
         actionName: this.selectedActionId,
-        allSelected: opts.store.checkedAllRows,
-        ids: opts.store.getCheckedRowIds()
+        allSelected: this.store.checkedAllRows,
+        ids: this.store.getCheckedRowIds()
       }, args)
     }
 
     getAction(actionId) {
-      return opts.buttonActions[actionId]
-        || opts.listActions[actionId]
-        || opts.moreListActions[actionId]
+      return this.listTop.opts.buttonActions[actionId]
+        || this.listTop.opts.listActions[actionId]
+        || this.listTop.opts.moreListActions[actionId]
         || null;
     }
 
     getCheckedRowCount() {
-      return opts.store.getCheckedRowCount()
+      return this.store.getCheckedRowCount()
     }
 
     checkCount() {
@@ -133,7 +137,7 @@
     alertNoSelectedError() {
       alert(trans(
         'You did not select any [_1] to [_2].',
-        opts.plural,
+        this.listTop.opts.plural,
         this.selectedActionPhrase
       ))
     }
@@ -142,7 +146,7 @@
       alert(trans(
         'You can only act upon a minimum of [_1] [_2].',
         this.selectedAction.min,
-        opts.plural
+        this.listTop.opts.plural
       ))
     }
 
@@ -150,7 +154,7 @@
       alert(trans(
         'You can only act upon a maximum of [_1] [_2].',
         this.selectedAction.max,
-        opts.plural
+        this.listTop.opts.plural
       ))
     }
 
@@ -160,14 +164,14 @@
       if (checkedRowCount == 1) {
         return trans(
           'Are you sure you want to [_2] this [_1]?',
-          opts.singular,
+          this.listTop.opts.singular,
           this.selectedActionPhrase
         )
       } else {
         return trans(
           'Are you sure you want to [_3] the [_1] selected [_2]?',
           checkedRowCount,
-          opts.plural,
+          this.listTop.opts.plural,
           this.selectedActionPhrase
         );
       }

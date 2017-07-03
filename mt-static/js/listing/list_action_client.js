@@ -56,4 +56,12 @@
     }
     return data;
   };
+
+  ListActionClient.prototype.removeFilterKeyFromReturnArgs = function () {
+    this.returnArgs.replace(/[&?]filter_key=[^&]*/, '');
+  };
+
+  ListActionClient.prototype.removeFilterItemFromReturnArgs = function () {
+    this.returnArgs.replace(/[&?]filter(_val)?=[^&]*/g, '');
+  };
 })(window, jQuery);
