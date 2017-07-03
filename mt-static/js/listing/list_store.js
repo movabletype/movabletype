@@ -130,7 +130,7 @@
         },
         fail: function (jqXHR, textStatus) {},
         always: function () {
-          this.updateIsLoading(false);
+          self.updateIsLoading(false);
           self.trigger('refresh_current_filter')
           self.trigger('refresh_view');
         }
