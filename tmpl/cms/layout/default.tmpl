@@ -27,8 +27,8 @@
   <div class="container body">
     <div class="row">
       <mt:include name="modules/sidebar.tmpl">
+      <div class="main col-md-10">
       <mt:if name="related_content">
-      <div class="main col-md-12">
         <mt:include name="modules/notification_indicator.tmpl">
         <mt:include name="modules/system_msg.tmpl">
         <div class="row">
@@ -41,16 +41,14 @@
             <mt:var name="related_content">
           </div>
         </div>
-      </div>
       <mt:else>
-      <div class="main col-md-10">
         <mt:include name="modules/notification_indicator.tmpl">
         <mt:include name="modules/system_msg.tmpl">
         <mt:include name="modules/page_title.tmpl">
         <mt:include name="modules/content_header.tmpl">
         <mt:var name="content">
-      </div>
       </mt:if>
+      </div>
       <mt:var name="js_include">
     </div>
   </div>

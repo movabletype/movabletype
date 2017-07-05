@@ -50,14 +50,16 @@
     <mtapp:setting
        id="email"
        label="<__trans phrase="Email Address">"
-       label_class="top-label form-group">
+       label_class="top-label form-group"
+       no_grid="1">
       <input type="text" name="email" id="email" class="form-control text full" value="<mt:var name="email" escape="html">" />
     </mtapp:setting>
   <mt:if name="not_unique_email">
     <mtapp:setting
        id="name"
        label="<__trans phrase="Username">"
-       label_class="top-label form-group">
+       label_class="top-label form-group"
+       no_grid="1">
       <input type="text" name="name" id="name" class="form-control text full" value="<mt:var name="name" escape="html">" />
     </mtapp:setting>
   </mt:if>
