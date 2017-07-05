@@ -1,7 +1,7 @@
 <mtapp:setting
    id="default_access_allowed"
    label="<__trans phrase="Default system aggregation policy">">
-  <ul>
+  <ul class="list-unstyled">
     <li><input type="radio" value="1" name="default_access_allowed" id="default_access_allowed" class="rb"<mt:if name="default_access_allowed"> checked="checked"</mt:if> onclick="hide('mb-disallow');show('mb-allow');" /> <__trans phrase="Allow"></li>
     <li><input type="radio" value="0" name="default_access_allowed" id="default_access_allowed" class="rb"<mt:unless name="default_access_allowed"> checked="checked"</mt:unless> onclick="hide('mb-allow');show('mb-disallow');" /> <__trans phrase="Disallow"></li>
   </ul>

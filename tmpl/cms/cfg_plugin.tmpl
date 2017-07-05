@@ -9,7 +9,7 @@
 
 <mt:setvarblock name="related_content">
   <mt:unless name="blog_view">
-    <mtapp:widget
+    <mtapp:newwidget
        id="plugin_system"
        label="<__trans phrase="Plugin System">">
       <mt:if name="plugin_loop">
@@ -28,7 +28,7 @@
            onclick="return activatePlugin(0, '*')"
            type="submit"
            title="<__trans phrase="Disable plugin functionality">"
-           class="desable button">
+           class="desable button btn btn-default">
           <__trans phrase="Disable Plugins">
         </button>
               <mt:else>
@@ -36,7 +36,7 @@
            onclick="return activatePlugin(1, '*')"
            type="submit"
            title="<__trans phrase="Enable plugin functionality">"
-           class="enable button">
+           class="enable button btn btn-default">
           <__trans phrase="Enable Plugins">
         </button>
               </mt:if>
@@ -46,12 +46,12 @@
           </mt:unless>
         </mt:if>
       </mt:if>
-    </mtapp:widget>
+    </mtapp:newwidget>
   </mt:unless>
 </mt:setvarblock>
 
 <mt:setvarblock name="content_header">
-<ul class="action-link-list">
+<ul class="list-inline action-link-list">
   <li><a href="<__trans phrase="_PLUGIN_DIRECTORY_URL">" class="icon-left icon-related" target="_blank"><__trans phrase="Find Plugins"></a></li>
 </ul>
 </mt:setvarblock>
@@ -60,62 +60,62 @@
 <mt:setvarblock name="system_msg">
   <mt:if name="blog_id">
     <mt:if name="saved">
-      <mtapp:statusmsg
+      <mtapp:newstatusmsg
          id="saved"
          class="success">
         <__trans phrase="Your plugin settings have been saved.">
-      </mtapp:statusmsg>
+      </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="reset">
-      <mtapp:statusmsg
+      <mtapp:newstatusmsg
          id="reset"
          class="success">
         <__trans phrase="Your plugin settings have been reset.">
-      </mtapp:statusmsg>
+      </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="switched">
       <mt:if name="mod_perl">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
            id="switched"
            class="success">
           <__trans phrase="Your plugins have been reconfigured. Since you're running mod_perl, you must restart your web server for these changes to take effect.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
       <mt:else>
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
            id="switched"
            class="success">
           <__trans phrase="Your plugins have been reconfigured.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
       </mt:if>
     </mt:if>
   <mt:else>
     <mt:if name="saved">
-      <mtapp:statusmsg
+      <mtapp:newstatusmsg
          id="saved"
          class="success">
         <__trans phrase="Your plugin settings have been saved.">
-      </mtapp:statusmsg>
+      </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="reset">
-      <mtapp:statusmsg
+      <mtapp:newstatusmsg
          id="reset"
          class="success">
         <__trans phrase="Your plugin settings have been reset.">
-      </mtapp:statusmsg>
+      </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="switched">
       <mt:if name="mod_perl">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
            id="switched"
            class="success">
           <__trans phrase="Your plugins have been reconfigured. Since you're running mod_perl, you will need to restart your web server for these changes to take effect.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
       <mt:else>
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
            id="switched"
            class="success">
           <__trans phrase="Your plugins have been reconfigured.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
       </mt:if>
     </mt:if>
   </mt:if>
@@ -125,6 +125,13 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 var plugin_ids = [];
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
 var last_shown;
 <mt:if name="can_config">
 function resetPlugin(f) {
@@ -150,83 +157,176 @@ function activatePlugin(flag, plugin_sig) {
         }
     }
     if (confirm(question)) {
-        var f = getByID("plugin_control");
+        var f = MT.Util.getByID("plugin_control");
         f['plugin_sig'].value = plugin_sig;
         f['state'].value = flag == 0 ? 'off' : 'on';
         f.submit();
     }
     return false;
-};
+}
+
+if ( location.hash ) {
+    // Open plugin contents.
+    jQuery('div'+location.hash+' .plugin-name').trigger('click');
+
+    // If there is Settings tab, open it.
+    if ( jQuery('a'+location.hash+'-config') ) {
+        var last_tab_index = jQuery(location.hash+'-content li.tab').length - 1;
+        jQuery(location.hash+'-content').tabs( 'option', 'active', last_tab_index );
+    }
+}
+
+jQuery('.collapse').on('show.bs.collapse', function (e) {
+  jQuery('.collapse').collapse('hide');
+});
+
+function junkScoreNudge(amount, id, max) {
+    if (max == undefined) max = 10;
+    var fld = MT.Util.getByID(id);
+    score = fld.value;
+    score.replace(/\+/, '');
+    score = parseFloat(score) + amount;
+    if (isNaN(score)) score = amount;
+    if (score > max) score = max;
+    if (score < 0) score = 0;
+    fld.value = score;
+    return false;
+}
+
+function toggleAdvancedPrefs(evt, c) {
+    evt = evt || window.event;
+    var id;
+    var obj;
+    if (!c || (typeof c != 'string')) {
+        c = c || evt.target || evt.srcElement;
+        id = c.id || c.name;
+        obj = c;
+    } else {
+        id = c;
+    }
+    var div = MT.Util.getByID( id + '-advanced');
+    if (div) {
+        if (obj) {
+            var shiftKey = evt ? evt.shiftKey : undefined;
+                if (evt && shiftKey && obj.type == 'checkbox')
+                obj.checked = true;
+            var on = obj.type == 'checkbox' ? obj.checked : obj.value != 0;
+            if (on && shiftKey) {
+                if (div.style.display == "block")
+                    div.style.display = "none";
+                else
+                    div.style.display = "block";
+            } else {
+                div.style.display = "none";
+            }
+        } else {
+            if (div.style.display == "block")
+                div.style.display = "none";
+            else
+                div.style.display = "block";
+        }
+    }
+    return false;
+}
+
 </mt:if>
 /* ]]> */
 </script>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
+<mt:setvarblock name="content">
 <!-- START mt:loop name="plugin_groups" -->
 <mt:loop name="plugin_loop">
   <mt:if name="plugin_folder">
     <mt:if name="__first__">
 <div class="plugin-group">
-  <h2 class="plugin-group-name"><mt:var name="plugin_folder"></h2>
+  <h3 class="plugin-group-name"><mt:var name="plugin_folder"></h3>
   <div class="plugin-list">
     <mt:else>
   <!-- /Plugin List --></div>
 <!-- /Plugin Group --></div>
 <div class="plugin-group">
-  <h2 class="plugin-group-name"><mt:var name="plugin_folder"></h2>
-  <div class="plugin-list">
+  <h3 class="plugin-group-name"><mt:var name="plugin_folder"></h3>
+  <div class="panel-group plugin-list">
     </mt:if>
   <mt:else>
-    <div id="plugin-<mt:var name="plugin_id">" class="plugin<mt:if name="plugin_disabled"> plugin-disabled disabled</mt:if>">
+    <div id="plugin-<mt:var name="plugin_id">" class="panel panel-default plugin<mt:if name="plugin_disabled"> plugin-disabled disabled</mt:if>">
       <script type="text/javascript">
       /* <![CDATA[ */
       plugin_ids.push('<mt:var name="plugin_id">');
       /* ]]> */
       </script>
-      <div class="plugin-header">
-        <h4 class="plugin-name">
-    <mt:if name="plugin_disabled">
-          <span class="plugin-name-disabled"><$mt:var name="plugin_name" escape="html"$> <mt:if name="plugin_version"><span class="plugin-version"><mt:var name="plugin_version"></span></mt:if></span>
-    <mt:else>
-          <a href="#" title="<__trans phrase="Settings for [_1]" params="<mt:var name="plugin_name" escape="html">">"<mt:unless name="plugin_error"> style="background-image: url('<mt:var name="plugin_icon">')"</mt:unless>><$mt:var name="plugin_name" escape="html"$> <mt:if name="plugin_version"><span class="plugin-version"><mt:var name="plugin_version"></span></mt:if></a>
-    </mt:if>
-        </h4>
-    <mt:if name="can_config">
-        <div class="plugin-status">
-      <mt:unless name="blog_view">
-        <mt:if name="plugin_error">
-          <span class="alert-error-inline icon-left icon-error"><__trans phrase="Failed to Load"></span> <a class="button" href="javascript:void(0)" onclick="activatePlugin(0, '<mt:var name="plugin_sig" escape="js">'); return false;"><__trans phrase="Disable"></a>
+      <div class="panel-heading plugin-header">
+        <div class="row">
+          <div class="col-md-8">
+            <h4 class="plugin-name">
+        <mt:if name="plugin_disabled">
+              <span><img src="<mt:var name="static_uri">images/plugin-error.gif" /></span>
+              <span class="plugin-name-disabled">
+                <$mt:var name="plugin_name" escape="html"$>
+                <mt:if name="plugin_version">
+                  <span class="plugin-version">
+                    <mt:var name="plugin_version">
+                  </span>
+                </mt:if>
+              </span>
         <mt:else>
-          <mt:unless name="plugin_disabled">
-          <span class="icon-left icon-success"><__trans phrase="Enabled"></span> <a class="button" href="javascript:void(0)" onclick="return activatePlugin(0, '<mt:var name="plugin_sig" escape="js">')"><__trans phrase="Disable"></a>
+              <mt:unless name="plugin_error">
+                <span><img src="<mt:var name="plugin_icon">" /></span>
+              </mt:unless>
+              <a href="#plugin-<mt:var name="plugin_id">-content" title="<__trans phrase="Settings for [_1]" params="<mt:var name="plugin_name" escape="html">">" data-toggle="collapse">
+                <$mt:var name="plugin_name" escape="html"$>
+                <mt:if name="plugin_version">
+                  <span class="plugin-version">
+                    <mt:var name="plugin_version">
+                  </span>
+                </mt:if>
+              </a>
+        </mt:if>
+            </h4>
+          </div>
+          <div class="col-md-4 text-right">
+        <mt:if name="can_config">
+            <div class="plugin-status">
+          <mt:unless name="blog_view">
+            <mt:if name="plugin_error">
+              <span class="alert-error-inline icon-left icon-error"><__trans phrase="Failed to Load"></span> <a class="button" href="javascript:void(0)" onclick="activatePlugin(0, '<mt:var name="plugin_sig" escape="js">'); return false;"><__trans phrase="Disable"></a>
+            <mt:else>
+              <mt:unless name="plugin_disabled">
+              <span class="icon-left icon-success"><__trans phrase="Enabled"></span>
+              <a class="button btn btn-default" href="javascript:void(0)" onclick="return activatePlugin(0, '<mt:var name="plugin_sig" escape="js">')">
+                <__trans phrase="Disable">
+              </a>
+              <mt:else>
+              <span class="icon-left icon-neutral"><__trans phrase="Disabled"></span>
+                <mt:if name="use_plugins">
+              <a class="button btn btn-default" href="javascript:void(0)" onclick="activatePlugin(1, '<mt:var name="plugin_sig" escape="js">'); return false;">
+                <__trans phrase="Enable">
+              </a>
+                </mt:if>
+              </mt:unless>
+            </mt:if>
           <mt:else>
-          <span class="icon-left icon-neutral"><__trans phrase="Disabled"></span>
-            <mt:if name="use_plugins">
-          <a class="button" href="javascript:void(0)" onclick="activatePlugin(1, '<mt:var name="plugin_sig" escape="js">'); return false;"><__trans phrase="Enable"></a>
+            <mt:if name="plugin_error">
+              <span class="alert-error-inline icon-left icon-error"><__trans phrase="Failed to Load"></span>
+            <mt:else>
+              <mt:unless name="plugin_disabled">
+              <span class="icon-left icon-success"><__trans phrase="Enabled"></span>
+              <mt:else>
+              <span class="icon-left icon-neutral"><__trans phrase="Disabled"></span>
+              </mt:unless>
             </mt:if>
           </mt:unless>
+            </div>
         </mt:if>
-      <mt:else>
-        <mt:if name="plugin_error">
-          <span class="alert-error-inline icon-left icon-error"><__trans phrase="Failed to Load"></span>
-        <mt:else>
-          <mt:unless name="plugin_disabled">
-          <span class="icon-left icon-success"><__trans phrase="Enabled"></span>
-          <mt:else>
-          <span class="icon-left icon-neutral"><__trans phrase="Disabled"></span>
-          </mt:unless>
-        </mt:if>
-      </mt:unless>
-        </div>        
-    </mt:if>
+           </div>
+        </div>
       <!-- /Plugin Header --></div>
 
     <mt:unless name="plugin_disabled">
       <mt:if name="mt_debug">
         <mt:if name="plugin_compat_errors">
-          <mtapp:statusmsg
+          <mtapp:newstatusmsg
              id="plugin-compact-errors"
              class="error"
              can_close="0">
@@ -236,45 +336,68 @@ function activatePlugin(flag, plugin_sig) {
               <li><$mt:var name="__value__"$></li>
             </mt:loop>
             </ul>
-          </mtapp:statusmsg>
+          </mtapp:newstatusmsg>
         </mt:if>
       </mt:if>
       <mt:if name="plugin_error">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
            id="plugin-error"
            class="error"
            can_close="0">
           <__trans phrase="Plugin error:"><br /><code style="white-space: pre"><mt:var name="plugin_error"></code>
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
       </mt:if>
 
-      <div id="plugin-<mt:var name="plugin_id">-content" class="plugin-content">
-        <ul class="plugin-tabs-list tabs"> <!-- Plugin Tab -->
-          <li class="tab"><a href="#plugin-<mt:var name="plugin_id">-info" class="icon-mini-left icon-mini-comments"><__trans phrase="Info"></a></li>
+      <div id="plugin-<mt:var name="plugin_id">-content" class="panel-collapse collapse plugin-content">
+      <div class="panel-body">
+        <ul class="nav nav-tabs plugin-tabs-list tabs"> <!-- Plugin Tab -->
+          <li class="tab active">
+            <a href="#plugin-<mt:var name="plugin_id">-info" class="icon-mini-left icon-mini-comments" data-toggle="tab">
+              <__trans phrase="Info">
+            </a>
+          </li>
       <mt:if name="plugin_resources">
-          <li class="tab"><a href="#plugin-<mt:var name="plugin_id">-resources" class="icon-mini-left icon-mini-templates"><__trans phrase="Resources"></a></li>
+          <li class="tab">
+            <a href="#plugin-<mt:var name="plugin_id">-resources" class="icon-mini-left icon-mini-templates" data-toggle="tab">
+              <__trans phrase="Resources">
+            </a>
+          </li>
       </mt:if>
       <mt:if name="can_config">
         <mt:if name="plugin_config_html">
-          <li class="tab"><a href="#plugin-<mt:var name="plugin_id">-config" class="icon-mini-left icon-mini-settings"><__trans phrase="Settings"></a></li>
+          <li class="tab">
+            <a href="#plugin-<mt:var name="plugin_id">-config" class="icon-mini-left icon-mini-settings" data-toggle="tab">
+              <__trans phrase="Settings">
+            </a>
+          </li>
         </mt:if>
         <mt:if name="plugin_config_link">
           <mt:if name="plugin_config_html">
-          <li class="tab"><a href="<mt:var name="plugin_page">" class="icon-mini-left icon-mini-settings"><__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">"></a></li>
+          <li class="tab">
+            <a href="<mt:var name="plugin_page">" class="icon-mini-left icon-mini-settings" data-toggle="tab">
+              <__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">">
+            </a>
+          </li>
           <mt:else>
-          <li class="tab"><a href="<mt:var name="plugin_page">" class="icon-mini-left icon-mini-settings"><__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">"></a></li>
+          <li class="tab">
+            <a href="<mt:var name="plugin_page">" class="icon-mini-left icon-mini-settings" data-toggle="tab">
+              <__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">">
+            </a>
+          </li>
           </mt:if>
         </mt:if>
       </mt:if>
         </ul>
-      
+
+      <div class="tab-content">
+
       <mt:if name="plugin_infos">
-      <div id="plugin-<mt:var name="plugin_id">-info">
+      <div id="plugin-<mt:var name="plugin_id">-info" class="tab-pane active">
       <mt:if name="plugin_desc">
         <p><mt:var name="plugin_desc"></p>
       </mt:if>
         <div class="plugin-metadata">
-          <ul class="plugin-metadata-list">
+          <ul class="list-inline plugin-metadata-list">
       <mt:if name="plugin_doc_link">
             <li><a href="<mt:var name="plugin_doc_link">" class="icon-mini-left icon-mini-docs" title="<__trans phrase="Documentation for [_1]" params="<mt:var name="plugin_name" escape="html">">"><__trans phrase="Documentation"></a></li>
       </mt:if>
@@ -290,8 +413,8 @@ function activatePlugin(flag, plugin_sig) {
       </mt:if>
 
       <mt:if name="plugin_resources">
-        <div id="plugin-<mt:var name="plugin_id">-resources" class="resources">
-          <ul>
+        <div id="plugin-<mt:var name="plugin_id">-resources" class="tab-pane<mt:unless name="plugin_infos"> active</mt:unless> resources">
+          <ul class="list-unstyled">
         <mt:if name="plugin_tags">
             <li><strong><__trans phrase="Tags:"></strong>
           <mt:loop name="plugin_tags">
@@ -326,7 +449,7 @@ function activatePlugin(flag, plugin_sig) {
 
       <mt:if name="can_config">
         <mt:if name="plugin_config_html">
-        <div id="plugin-<mt:var name="plugin_id">-config" class="config">
+        <div id="plugin-<mt:var name="plugin_id">-config" class="tab-pane<mt:unless name="plugin_infos"><mt:unless name="plugin_resources"> active</mt:unless></mt:unless> config">
           <form method="post" action="<mt:var name="script_url">" id="plugin-<mt:var name="plugin_id">-form">
             <input type="hidden" name="__mode" value="save_plugin_config" />
           <mt:if name="blog_id">
@@ -343,14 +466,14 @@ function activatePlugin(flag, plugin_sig) {
               <button
                  mt:mode="save_plugin_config"
                  type="submit"
-                 class="save action primary button">
+                 class="save action primary button btn btn-primary">
                 <__trans phrase="Save Changes">
               </button>
           <mt:if name="plugin_settings_id">
               <button
                  onclick="resetPlugin(getByID('plugin-<mt:var name="plugin_id">-form')); return false"
                  type="submit"
-                 class="reset action button">
+                 class="reset action button btn btn-default">
                 <__trans phrase="Reset to Defaults">
               </button>
           </mt:if>
@@ -359,6 +482,8 @@ function activatePlugin(flag, plugin_sig) {
         <!-- /Plugin Config --></div>
         </mt:if>
       </mt:if>
+      </div>
+      </div>
       <!-- /Plugin Content --></div>
     </mt:unless>
     <!-- /Plugin --></div>
@@ -369,43 +494,24 @@ function activatePlugin(flag, plugin_sig) {
   </mt:if>
 <mt:else>
   <mt:if name="blog_view">
-    <mtapp:statusmsg
+    <mtapp:newstatusmsg
        id="no-plugin"
        class="info"
        can_close="0">
       <__trans phrase="No plugins with blog-level configuration settings are installed.">
-    </mtapp:statusmsg>
+    </mtapp:newstatusmsg>
   <mt:else>
-    <mtapp:statusmsg
+    <mtapp:newstatusmsg
        id="no-plugin"
        class="info"
        can_close="0">
       <__trans phrase="No plugins with configuration settings are installed.">
-    </mtapp:statusmsg>
+    </mtapp:newstatusmsg>
   </mt:if>
 </mt:loop>
 
-<mt:setvarblock name="jq_js_include" append="1">
-    jQuery('.plugin-name').click(function() {
-        jQuery('.plugin').not(jQuery(this).parents('.plugin')).removeClass('plugin-expanded');
-        jQuery(this).parents('.plugin').toggleClass('plugin-expanded');
-        return false;
-    });
-
-    jQuery.each(plugin_ids, function() {
-        jQuery('#plugin-'+this+'-content').tabs();
-    });
-
-    if ( location.hash ) {
-        // Open plugin contents.
-        jQuery('div'+location.hash+' .plugin-name').trigger('click');
-
-        // If there is Settings tab, open it.
-        if ( jQuery('a'+location.hash+'-config') ) {
-            var last_tab_index = jQuery(location.hash+'-content li.tab').length - 1;
-            jQuery(location.hash+'-content').tabs( 'option', 'active', last_tab_index );
-        }
-    }
+<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
