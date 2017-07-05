@@ -8,8 +8,14 @@
     var opts = $.extend(defaults, options);
     initModal();
     return this.each(function() {
+        var eachOpts;
+        if (this.dataset.hasOwnProperty('mtModalLarge')) {
+          eachOpts = $.extend({ large: true }, opts);
+        } else {
+          eachOpts = opts;
+        }
         $(this).on('click', function() {
-          openModal(this.href, opts);
+          openModal(this.href, eachOpts);
           return false;
         });
     });
