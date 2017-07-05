@@ -1,6 +1,7 @@
 <mt:setvartemplate name="layout">
 <mt:setvarblock name="scope"><mt:if name="is_blog">blog<mt:else>site</mt:if></mt:setvarblock>
 <mt:setvarblock name="related_content"><$mt:var name="related_content" trim="1"$></mt:setvarblock>
+<mt:if name="author_name"><mt:unless name="is_full_screen"><mt:if name="top_nav_loop"><mt:setvar name="has_menu" value="1"></mt:if></mt:unless></mt:if>
 <!DOCTYPE html>
 <html lang="<mt:var name="language_tag">"<mt:if name="screen_id"> data-screen-id="<mt:var name="screen_id">"</mt:if>>
 <head>
@@ -26,8 +27,12 @@
   <mt:include name="modules/selector.tmpl">
   <div class="container body">
     <div class="row">
+      <mt:if name="has_menu">
       <mt:include name="modules/sidebar.tmpl">
       <div class="main col-md-10">
+      <mt:else>
+      <div class="main col-md-12">
+      </mt:if>
       <mt:if name="related_content">
         <mt:include name="modules/notification_indicator.tmpl">
         <mt:include name="modules/system_msg.tmpl">
