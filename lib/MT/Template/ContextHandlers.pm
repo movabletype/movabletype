@@ -3173,16 +3173,30 @@ sub _hdlr_app_setting {
     my $class = $args->{class} || "";
     $class = ( $class eq '' ) ? 'hidden' : $class . ' hidden' unless $shown;
 
-    return $ctx->build(<<"EOT");
-<div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
-    <div class="col-md-2 field-header">
-      <label id="$id-label" for="$id" class="control-label pull-right">$label$req</label>
+    if ( $args->{no_grid} ) {
+        return $ctx->build(<<"EOT");
+    <div id="$id-field" class="field$req_class $label_class $class"$indent_css>
+        <div class="field-header">
+          <label id="$id-label" for="$id">$label$req</label>
+        </div>
+        <div class="field-content $content_class">
+          $insides$hint$warning
+        </div>
     </div>
-    <div class="col-md-8 field-content $content_class">
-      $insides$hint$warning
-    </div>
-</div>
 EOT
+    }
+    else {
+        return $ctx->build(<<"EOT");
+    <div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
+        <div class="col-md-2 field-header">
+          <label id="$id-label" for="$id" class="control-label text-right pull-right">$label$req</label>
+        </div>
+        <div class="col-md-8 field-content $content_class">
+          $insides$hint$warning
+        </div>
+    </div>
+EOT
+    }
 }
 
 ###########################################################################
@@ -3946,7 +3960,7 @@ sub _hdlr_app_setting_group {
 
     my $insides = $ctx->slurp( $args, $cond );
     return <<"EOT";
-<fieldset id="$id"$class>
+<fieldset id="$id"$class class="form-group">
     $insides
 </fieldset>
 EOT

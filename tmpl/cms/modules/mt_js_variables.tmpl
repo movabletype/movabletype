@@ -8,6 +8,18 @@ MT.App = {
   StaticURI: '<mt:var name="static_uri">'
 };
 
+if (typeof MT.Util === 'undefined') {
+    MT.Util = {};
+}
+
+MT.Util.getByID = function (n, d) {
+    if (!d) d = document;
+    if (d.getElementById)
+        return d.getElementById(n);
+    else if (d.all)
+        return d.all[n];
+};
+
 if (typeof MT.Validator === 'undefined') {
     MT.Validator = {};
 }
