@@ -3124,15 +3124,8 @@ sub _hdlr_app_setting {
     my $warning       = $args->{warning} || "";
     my $show_warning  = $args->{show_warning} || 0;
     my $indent        = $args->{indent};
-    my $help;
+    my $help          = "";
 
-    # Formatting for help link, placed at the end of the hint.
-    if ( $help = $args->{help_page} || "" ) {
-        my $section = $args->{help_section} || '';
-        $section = qq{, '$section'} if $section;
-        $help
-            = qq{ <a href="javascript:void(0)" onclick="return openManual('$help'$section)" class="help-link">?</a><br />};
-    }
     my $label_help = "";
     if ( $label && $show_label ) {
 
@@ -3181,11 +3174,11 @@ sub _hdlr_app_setting {
     $class = ( $class eq '' ) ? 'hidden' : $class . ' hidden' unless $shown;
 
     return $ctx->build(<<"EOT");
-<div id="$id-field" class="field$req_class $label_class $class"$indent_css>
-    <div class="field-header">
-      <label id="$id-label" for="$id">$label$req</label>
+<div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
+    <div class="col-md-2 field-header">
+      <label id="$id-label" for="$id" class="control-label pull-right">$label$req</label>
     </div>
-    <div class="field-content $content_class">
+    <div class="col-md-8 field-content $content_class">
       $insides$hint$warning
     </div>
 </div>

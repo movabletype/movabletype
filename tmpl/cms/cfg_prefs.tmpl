@@ -448,7 +448,7 @@ function setLicense() {
 
   <h2><__trans phrase="Archive Settings"></h2>
   <mtapp:settinggroup id="archive-option-settings">
-    
+
     <mtapp:setting
        id="file_extension"
        label="<__trans phrase="File Extension">"
@@ -537,7 +537,7 @@ function setLicense() {
        label="<__trans phrase="Revision history">">
       <label for="use-revision"><input type="checkbox" value="1" name="use_revision" id="use-revision"<mt:if name="use_revision"> checked="checked"</mt:if><mt:unless name="master_revision_switch"> disabled="disabled"</mt:unless> /> <__trans phrase="Enable revision history"></label>
     </mtapp:setting>
-    
+
     <div id="use-revision-option" class="setting-option">
       <mt:setvarblock name="revisions_entry_label"><__trans phrase="Number of revisions per entry/page"></mt:setvarblock>
       <mtapp:setting
@@ -545,7 +545,7 @@ function setLicense() {
          label="<mt:var name="revisions_entry_label">">
         <input type="text" name="max_revisions_entry" id="max_revisions_entry" class="text num" value="<mt:var name="max_revisions_entry" escape="html">" />
       </mtapp:setting>
-  
+
       <mtapp:setting
          id="max_revisions_cd"
          label="<__trans phrase="Number of revisions per content data">">
