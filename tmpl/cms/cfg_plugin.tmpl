@@ -176,8 +176,8 @@ if ( location.hash ) {
     }
 }
 
-jQuery('.collapse').on('show.bs.collapse', function (e) {
-  jQuery('.collapse').collapse('hide');
+jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
+  jQuery('.collapse.plugin-content').collapse('hide');
 });
 
 function junkScoreNudge(amount, id, max) {
