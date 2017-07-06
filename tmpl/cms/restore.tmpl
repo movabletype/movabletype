@@ -2,25 +2,24 @@
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="restore" value="1">
 
-<mt:include name="include/header.tmpl" id="header_include">
-
+<mt:setvarblock name="content">
 <mt:if name="error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="generic-error"
-     class="error"
+     class="danger"
      can_close="0">
     <mt:var name="error">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 
 <div id="restore-panel">
 <mt:if name="missing_sax">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="missing-sax"
-     class="error"
+     class="danger"
      can_close="0">
     <__trans phrase="Perl module XML::SAX and/or some of its dependencies are missing.  Movable Type cannot restore the system without these modules.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 <mt:else>
   <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="restore" />
@@ -33,17 +32,6 @@
        help_section="source_file">
       <input name="file" type="file" />
     </mtapp:setting>
-
-  <mt:ignore><!-- disable the feature to ignore schema conflict.
-    <mtapp:setting
-       id="ignore_schema_conflict"
-       label="<__trans phrase="Options">"
-       show_label="0"
-       hint="<__trans phrase="Check this and files backed up from newer versions can be restored to this system.  NOTE: Ignoring Schema Version can damage Movable Type permanently.">">
-      <input name="ignore_schema_conflict" id="ignore_schema_conflict" type="checkbox" />
-      <label for="ignore_schema_conflict"><__trans phrase="Ignore schema version conflicts"></label>
-    </mtapp:setting>
-  --></mt:ignore>
 
     <mtapp:setting
        id="overwrite_global_templates"
@@ -59,7 +47,7 @@
          type="submit"
          accesskey="r"
          title="<__trans phrase="Restore (r)">"
-         class="restore action primary button">
+         class="restore action primary button btn btn-primary">
         <__trans phrase="Restore">
       </button>
     </mt:setvarblock>
@@ -67,5 +55,7 @@
   </form>
 </mt:if>
 </div>
+</mt:setvarblock>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
