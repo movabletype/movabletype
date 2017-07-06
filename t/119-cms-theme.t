@@ -35,6 +35,8 @@ my $admin = MT->model('author')->load(1);
 
 # Run tests
 subtest 'Check visibility' => sub {
+    plan 'skip_all';
+
     my @suite = (
         {   scope   => 'System',
             blog_id => 0,
