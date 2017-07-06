@@ -1636,7 +1636,7 @@ sub save_filter {
     }
 
     # Password strength check
-    my $msg = $app->verify_password_strength( $accessor->('name'), $accessor->('password') );
+    my $msg = $app->verify_password_strength( $accessor->('name'), ( $obj ? $accessor->('password') : scalar $app->param('pass') ) );
     return $eh->error( $msg ) if $msg;
 
     my $email = $accessor->('email');
