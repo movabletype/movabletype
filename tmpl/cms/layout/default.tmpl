@@ -1,63 +1,26 @@
 <mt:setvartemplate name="layout">
-<mt:setvarblock name="scope"><mt:if name="is_blog">blog<mt:else>site</mt:if></mt:setvarblock>
-<mt:setvarblock name="related_content"><$mt:var name="related_content" trim="1"$></mt:setvarblock>
-<mt:if name="author_name"><mt:unless name="is_full_screen"><mt:if name="top_nav_loop"><mt:setvar name="has_menu" value="1"></mt:if></mt:unless></mt:if>
-<!DOCTYPE html>
-<html lang="<mt:var name="language_tag">"<mt:if name="screen_id"> data-screen-id="<mt:var name="screen_id">"</mt:if>>
-<head>
-  <meta charset="<mt:var name="language_encoding">"/>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <mt:include name="layout/default/header.tmpl">
 
-  <link rel="stylesheet" href="<mt:var name="static_uri">bootstrap-3.3.7/css/bootstrap.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
-  <link rel="stylesheet" href="//cdn.movabletype.net/libs/font-awesome/4.5.0/css/font-awesome.min.css" />
-  <link rel="stylesheet" href="//cdn.movabletype.net/libs/select2/4.0.1/css/select2.min.css" />
-  <link rel="stylesheet" href="<mt:var name="static_uri">mt-net/icons.css?517cb0a" />
-  <link rel="stylesheet" href="<mt:var name="static_uri">mt-net/bundle.min.css?27250d7" />
-  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/selector.css" />
-  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/footer.css" />
-  <mt:var name="css_include">
-
-  <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
-  <mt:include name="modules/icon.tmpl">
-
-  <mt:var name="html_head">
-</head>
-<body style="margin-bottom: 100px;">
-  <mt:include name="modules/selector.tmpl">
-  <div class="container body">
+  <mt:if name="related_content">
+    <mt:include name="modules/notification_indicator.tmpl">
+    <mt:include name="modules/system_msg.tmpl">
     <div class="row">
-      <mt:if name="has_menu">
-      <mt:include name="modules/sidebar.tmpl">
-      <div class="main col-md-10">
-      <mt:else>
-      <div class="main col-md-12">
-      </mt:if>
-      <mt:if name="related_content">
-        <mt:include name="modules/notification_indicator.tmpl">
-        <mt:include name="modules/system_msg.tmpl">
-        <div class="row">
-          <div class="col-md-9">
-            <mt:include name="modules/page_title.tmpl">
-            <mt:include name="modules/content_header.tmpl">
-            <mt:var name="content">
-          </div>
-          <div class="col-md-3">
-            <mt:var name="related_content">
-          </div>
-        </div>
-      <mt:else>
-        <mt:include name="modules/notification_indicator.tmpl">
-        <mt:include name="modules/system_msg.tmpl">
+      <div class="col-md-9">
         <mt:include name="modules/page_title.tmpl">
         <mt:include name="modules/content_header.tmpl">
         <mt:var name="content">
-      </mt:if>
       </div>
-      <mt:var name="js_include">
+      <div class="col-md-3">
+        <mt:var name="related_content">
+      </div>
     </div>
-  </div>
-  <mt:include name="modules/footer.tmpl">
-</body>
-</html>
+  <mt:else>
+    <mt:include name="modules/notification_indicator.tmpl">
+    <mt:include name="modules/system_msg.tmpl">
+    <mt:include name="modules/page_title.tmpl">
+    <mt:include name="modules/content_header.tmpl">
+    <mt:var name="content">
+  </mt:if>
+
+  <mt:include name="layout/default/footer.tmpl">
 </mt:setvartemplate>
