@@ -196,8 +196,8 @@
            label="<__trans phrase="Allow HTML">"
            help_page="blog_settings_feedback"
            help_section="allow_html">
-          <input type="checkbox" name="allow_comment_html" id="allow_comment_html" value="1"<mt:if name="allow_comment_html"> checked="checked"</mt:if> class="cb" />
-          <label for="allow_comment_html">
+          <label>
+            <input type="checkbox" name="allow_comment_html" id="allow_comment_html" value="1"<mt:if name="allow_comment_html"> checked="checked"</mt:if> class="cb" />
             <__trans phrase="Allow commenters to include a limited set of HTML tags in their comments. Otherwise all HTML will be stripped out.">
           </label>
         </mtapp:setting>
@@ -313,8 +313,8 @@
            id="use_comment_confirmation"
            label="<__trans phrase="Use Comment Confirmation Page">"
            hint="<__trans phrase="Use comment confirmation page">">
-          <input type="checkbox" name="use_comment_confirmation" id="use_comment_confirmation"<mt:if name="use_comment_confirmation"> checked="checked"</mt:if> value="1" />
-          <label for="use_comment_confirmation">
+          <label>
+            <input type="checkbox" name="use_comment_confirmation" id="use_comment_confirmation"<mt:if name="use_comment_confirmation"> checked="checked"</mt:if> value="1" />
             <__trans phrase="Each commenter's browser will be redirected to a comment confirmation page after their comment is accepted.">
           </label>
         </mtapp:setting>

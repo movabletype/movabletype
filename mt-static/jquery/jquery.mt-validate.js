@@ -197,6 +197,7 @@ $.mtValidator('simple-group', {
 });
 $.mtValidator('simple2', {
     wrapError: function ( $target, msg ) {
+        $target.parent().addClass('has-error');
         return $('<li />').append(
             $('<label/>')
                 .attr('for', $target.attr('id') )
@@ -208,8 +209,8 @@ $.mtValidator('simple2', {
         var ins = true;
         if ( $('div#'+id+'-msg-block ul').length == 0 ) {
             var $block = $('<div/>')
-                .addClass('validate-error msg-error')
-                .append( $('<ul />') );
+                .addClass('text-danger validate-error msg-error')
+                .append( $('<ul class="list-unstyled" />') );
 
             $('div#'+id+'-msg-block').append( $block );
         } else {
@@ -226,6 +227,7 @@ $.mtValidator('simple2', {
         }
     },
     removeError: function( $target, $error_block ) {
+        $target.parent().removeClass('has-error');
         var id = $target.parents().find('div.field-content').first().parent().attr('id');
         $error_block.remove();
         if ( $('div#'+id+'-msg-block ul li').length == 0 ) {
