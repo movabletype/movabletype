@@ -1155,7 +1155,9 @@ sub edit_content_data {
     } @$array;
 
     $param->{fields}            = $array;
-    $param->{block_editor_data} = $blockeditor_data;
+    if($blockeditor_data){
+        $param->{block_editor_data} = JSON::decode_json( MT::Util::decode_url($blockeditor_data) );
+    }
 
     foreach my $name (qw( saved err_msg content_type_id id )) {
         $param->{$name} = $q->param($name) if $q->param($name);

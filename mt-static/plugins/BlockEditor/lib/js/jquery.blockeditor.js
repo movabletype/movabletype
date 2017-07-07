@@ -30,12 +30,12 @@
               block_field.siblings('.' + add_menu_class).remove();
               var add_menu = $('<div class="' + add_menu_class + '"></div>');
               var manager = managers[editor_id];
-              var buttons = manager.create_button.apply(manager, [_create_field, editor_id]);
+              var buttons = manager.create_button.call(manager, _create_field);
               buttons.forEach(function(button){
                 add_menu.append(button);
               });
               $(this).after(add_menu);
-            })
+            });
 
             $this.parents('.editor-content').after(block_field);
 

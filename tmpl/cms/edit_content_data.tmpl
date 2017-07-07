@@ -395,16 +395,15 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       });
   }
 
-  var block_editor_data_json = '<mt:var name="block_editor_data">';
-  var block_editor_data  = {};
-  <mt:if name="block_editor_data">if(block_editor_data_json){
-    block_editor_data = JSON.parse(block_editor_data_json);
-    // jQuery(function(){
-    //   Object.keys(block_editor_data).forEach(function(editor_id){
-    //     jQuery('#' + editor_id).blockeditor(block_editor_data[editor_id]);
-    //   });
-    // });
-  }</mt:if>
+  var block_editor_data = {<mt:loop name="block_editor_data">
+    '<mt:var name="__key__">': {
+      <mt:loop name="__value__">'<mt:var name="__key__">':{<mt:loop name="__value__">
+        '<mt:var name="__key__">':'<mt:var name="__value__">'<mt:unless name="__last__">,</mt:unless></mt:loop>
+      }<mt:unless name="__last__">,</mt:unless></mt:loop>
+    }<mt:unless name="__last__">,</mt:unless>
+  </mt:loop>};
+  
+
   jQuery(function(){
     jQuery('.convert_breaks :selected[value=blockeditor]').each(function(){
       var target_id = jQuery(this).parent().attr('data-target');
@@ -548,9 +547,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 </script>
 </mt:setvarblock>
 
-<!-- blockeditor -->
 <mt:var name="blockeditor_tmpl">
-<!-- //blockeditor -->
 
 <mt:include name="include/header.tmpl" id="header_include">
 
@@ -704,6 +701,8 @@ Template.templates.autoSave = '<mt:section encode_js="1">
         });
         if(Object.keys(block_editor_data).length > 0) {
           jQuery(form).append(jQuery('<input type="hidden" name="blockeditor-data">').val(JSON.stringify(block_editor_data)))
+        } else {
+          jQuery(form).append(jQuery('<input type="hidden" name="blockeditor-data">').val(''))
         }
         form.submit();
       }
