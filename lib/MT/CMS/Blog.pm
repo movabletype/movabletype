@@ -3282,7 +3282,7 @@ sub clone {
         $param->{'system_msg'} = 1;
     }
 
-    my $tmpl = $app->load_tmpl( "dialog/clone_blog.tmpl", $param );
+    my $tmpl = $app->load_tmpl( 'dialog/clone_blog.tmpl', $param );
 
     return $tmpl;
 }
@@ -3359,30 +3359,24 @@ sub print_status_page {
     # Set up and commence app output
     $app->{no_print_body} = 1;
     $app->send_http_header;
-    my $html_head = <<'SCRIPT';
-<script type="text/javascript">
-function progress(str, id) {
-    var el = getByID(id);
-    if (el) el.innerHTML = str;
-}
-</script>
-SCRIPT
 
-    $app->print_encode(
-        $app->build_page(
-            'dialog/header.tmpl',
-            {   page_title => $app->translate("Clone Blog"),
-                html_head  => $html_head
-            }
-        )
-    );
-    $app->print_encode( $app->translate_templatized(<<"HTML") );
-<h2><__trans phrase="Cloning blog '[_1]'..." params="$blog_name_encode"></h2>
+    $app->print_encode( $app->build_page('layout/modal/header.tmpl') );
 
-<div class="modal_width" id="dialog-clone-weblog">
+    my $page_title = $app->translate('Clone Blog');
+    $app->print_encode( $app->translate_templatized(<<"HTML" ) );
 
-<div id="clone-process" class="process-msg">
-<ul>
+<div class="modal-header">
+    <button type="button" class="close" data-mt-modal-close>
+        <span>&times;</span>
+    </button>
+    <h4 class="modal-title">$page_title</h4>
+</div>
+
+<div class="modal-body">
+    <h2><__trans phrase="Cloning blog '[_1]'..." params="$blog_name_encode"></h2>
+    <div class="modal_width panel panel-default" id="dialog-clone-weblog" style="background-color: #fafafa;">
+        <div id="clone-process" class="process-msg panel-body">
+            <ul class="list-unstyled">
 HTML
 
     my $new_blog;
@@ -3477,38 +3471,28 @@ HTML
         );
 
         $app->print_encode( $app->translate_templatized(<<"HTML") );
-</ul>
-</div>
-
-<p><strong><__trans phrase="Finished!"></strong></p>
-
-<form method="GET">
-    <div class="actions-bar">
-        <button
-            type="submit"
-            accesskey="x"
-            class="close action primary button mt-close-dialog-url"
-            ><__trans phrase="Close"></button>
+            </ul>
+        </div>
     </div>
-</form>
-
+    <p><strong><__trans phrase="Finished!"></strong></p>
 </div>
 
-<script type="text/javascript">
-/* <![CDATA[ */
-jQuery(function() {
-    jQuery('button.mt-close-dialog-url').click(function() {
-        parent.jQuery.fn.mtDialog.close('$return_url');
-    });
-});
-/* ]]> */
-</script>
-
-
+<div class="modal-footer">
+    <form method="GET">
+        <div class="actions-bar">
+            <button
+                type="submit"
+                accesskey="x"
+                data-mt-modal-close='$return_url'
+                class="btn btn-primary mt-close-dialog-url"
+                ><__trans phrase="Close"></button>
+        </div>
+    </form>
+</div>
 HTML
     }
 
-    $app->print_encode( $app->build_page('dialog/footer.tmpl') );
+    $app->print_encode( $app->build_page( 'layout/modal/footer.tmpl' ) );
 }
 
 sub _progress {
@@ -3519,9 +3503,26 @@ sub _progress {
     if ( $id && $ids->{$id} ) {
         require MT::Util;
         my $str_js = MT::Util::encode_js($str);
-        $app->print_encode(
-            qq{<script type="text/javascript">progress('$str_js', '$id');</script>\n}
-        );
+        $app->print_encode(<<"SCRIPT");
+<script type="text/javascript">
+function progress(str, id) {
+    var el = getByID(id);
+    if (el) el.innerHTML = str;
+}
+
+if (typeof getByID !== 'function') {
+    function getByID(n, d) {
+        if (!d) d = document;
+        if (d.getElementById)
+            return d.getElementById(n);
+        else if (d.all)
+            return d.all[n];
+    }
+}
+
+progress('$str_js', '$id');
+</script>
+SCRIPT
     }
     elsif ($id) {
         $ids->{$id} = 1;

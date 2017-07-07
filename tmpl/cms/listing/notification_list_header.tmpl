@@ -1,41 +1,41 @@
 <mt:setvarblock name="system_msg" append="1">
 <mt:if name="request.error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="request.saved">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="saved"
      class="success">
     <__trans phrase="You have added [_1] to your address book." params="<strong><$mt:var name="saved" escape="html"$></strong>">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="request.saved_deleted">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="saved-deleted"
      class="success">
     <__trans phrase="You have successfully deleted the selected contacts from your address book.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="content_header" append="1">
 <form class="create-inline" id="create-inline-notification" style="display: none;">
-    <mtapp:setting
+    <mtapp:newsetting
        id="email"
        required="1"
        label="<__trans phrase="Email">">
       <input type="text" name="email" id="email" class="text required email" value="<mt:var name="email" escape="html">" />
-    </mtapp:setting>
-    <mtapp:setting
+    </mtapp:newsetting>
+    <mtapp:newsetting
        id="website"
        label="<__trans phrase="Website URL">">
       <input type="text" name="url" id="url" class="text url" value="<mt:var name="url" escape="html">">
-    </mtapp:setting>
+    </mtapp:newsetting>
     <div class="actions-bar settings-actions-bar">
         <button
            type="submit"
@@ -185,7 +185,7 @@
         setCreateMode();
         return false;
     });
-    
+
     jQuery('#listing-table')
       .on('click','.start-edit',function(){
         jQuery(this).attr('href').match(/#(\d+)/);
@@ -207,4 +207,3 @@
       });
 
 </mt:setvarblock>
-

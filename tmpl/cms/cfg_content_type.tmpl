@@ -2,7 +2,7 @@
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="screen_id" value="manage-content-type">
 <mt:setvar name="screen_class" value="content-type">
-    
+
 <mt:setvarblock name="system_msg">
 <div id="msg-block"></div>
   <mt:if name="saved">
@@ -21,7 +21,7 @@
     </mtapp:statusmsg>
   </mt:if>
 </mt:setvarblock>
-        
+
 <mt:setvarblock name="list_actions">
 <div class="button-actions actions">
   <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
@@ -51,6 +51,16 @@
        id="unique_id"
        label="<__trans phrase="Unique ID">">
       <mt:var name="unique_id" escape="html">
+    </mtapp:setting>
+
+    <mtapp:setting
+      id="user_disp_option"
+      label="<__trans phrase="User Display Option">"
+    >
+      <label>
+        <input id="user_disp_option" type="checkbox" name="user_disp_option" value="1"<mt:if name="user_disp_option"> checked="checked"</mt:if> onchange="setDirty(true);" />
+        <__trans phrase="Enable User Display Option">
+      </label>
     </mtapp:setting>
 
   </mtapp:settinggroup>
@@ -1367,7 +1377,7 @@
        title="<__trans phrase="Save changes to these settings (s)">"
        class="save action primary button disabled">
       <__trans phrase="Save Changes">
-    </button> 
+    </button>
   </mt:setvarblock>
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
@@ -1382,7 +1392,7 @@
       setDirty(true);
     });
 
-<mt:unless name="id">    
+<mt:unless name="id">
     var data = JSON.parse( localStorage.getItem("ContentType") ) || {};
     jQuery("#setting-title").text( trans( 'Edit [_1]', data.name ) );
 </mt:unless>
@@ -1419,12 +1429,14 @@
     setDirty(false);
     var datalist = localStorage.getItem("ContentType");
     var id = jQuery("#id").val();
+    var userDispOption = jQuery('#user_disp_option:checked').length > 0 ? 1 : 0;
     jQuery('<form/>', {action: "<mt:var name="script_url">", method: 'post'})
-    .append(jQuery('<input/>', {type: 'hidden', name: '__mode',      value: 'save_cfg_content_type'}))
-    .append(jQuery('<input/>', {type: 'hidden', name: 'magic_token', value: '<mt:var name="magic_token">'}))
-    .append(jQuery('<input/>', {type: 'hidden', name: 'blog_id',     value: '<mt:var name="blog_id">'}))
-    .append(jQuery('<input/>', {type: 'hidden', name: 'id',          value: '<mt:var name="id">'}))
-    .append(jQuery('<input/>', {type: 'hidden', name: 'data',        value: datalist}))
+    .append(jQuery('<input/>', {type: 'hidden', name: '__mode',           value: 'save_cfg_content_type'}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'magic_token',      value: '<mt:var name="magic_token">'}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'blog_id',          value: '<mt:var name="blog_id">'}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'id',               value: '<mt:var name="id">'}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'data',             value: datalist}))
+    .append(jQuery('<input/>', {type: 'hidden', name: 'user_disp_option', value: userDispOption}))
     .appendTo(document.body)
     .submit();
   });
@@ -1708,9 +1720,9 @@
     newDiv += '  <input type="text" name="' + type_name + '-values_value" id="' + type_name + '-values_value_' + number + '" class="text short" value="' + value + '" placeholder="Value" />' + "\n";
     newDiv += '  <a href="javascript:void(0)" class="remove-values-list"><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>' + "\n";
     newDiv += '</div>' + "\n";
-  
+
     jQuery(addButton).before(newDiv);
-  
+
     jQuery('a.remove-values-list').unbind('click').click(function() {
       removeList(this);
     });

@@ -6,12 +6,12 @@
    label="<__trans phrase="IP Address Lookups">"
    hint=""
    show_hint="0">
-  <ul>
+  <ul class="list-unstyled">
     <li><input type="radio" name="ipbl_mode" id="ipbl_mode_moderate" value="0"<mt:unless name="ipbl_mode"> checked="checked"</mt:unless> onclick="toggleSubPrefs(this)" /> <__trans phrase="Off"></li>
     <li><input type="radio" name="ipbl_mode" id="ipbl_mode_ipban" value="2"<mt:if name="ipbl_mode_2"> checked="checked"</mt:if> onclick="toggleSubPrefs(this)" /> <__trans phrase="Moderate feedback from blacklisted IP addresses"></li>
-    <li><input type="radio" name="ipbl_mode" id="ipbl_mode_junk" value="1"<mt:if name="ipbl_mode_1"> checked="checked"</mt:if> onclick="toggleSubPrefs(this);toggleAdvancedPrefs(event,this);" /> <__trans phrase="Junk feedback from blacklisted IP addresses"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'ipbl_mode_junk')"><__trans phrase="Adjust scoring"></a>)<span id="ipbl_mode_junk-advanced" class="setting-advanced"><__trans phrase="Score weight:">
+    <li><input type="radio" name="ipbl_mode" id="ipbl_mode_junk" value="1"<mt:if name="ipbl_mode_1"> checked="checked"</mt:if> onclick="toggleSubPrefs(this);toggleAdvancedPrefs(event,this);" /> <__trans phrase="Junk feedback from blacklisted IP addresses"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'ipbl_mode_junk')"><__trans phrase="Adjust scoring"></a>)<span id="ipbl_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;"><__trans phrase="Score weight:">
     <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(-1, 'sl_ipbl_weight')"><!-- <__trans phrase="Less"> --><img src="<mt:var name="static_uri">images/decrease.gif" alt="<__trans phrase="Decrease">" /></a>
-    <input type="text" name="ipbl_weight" id="sl_ipbl_weight" class="text num" value="<mt:var name="ipbl_weight" escape="html">" />
+    <input type="text" name="ipbl_weight" id="sl_ipbl_weight" class="form-control text num" value="<mt:var name="ipbl_weight" escape="html">" />
     <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(1,'sl_ipbl_weight')"><img src="<mt:var name="static_uri">images/increase.gif" alt="<__trans phrase="Increase">" /><!-- <__trans phrase="More"> --></a>
     <!-- <span class="hint">Applies a negative rating to feedback matching this test.</span> -->
     </span></li>
@@ -22,7 +22,7 @@
   <mtapp:setting
      id="sll_ipbl_service"
      label="<__trans phrase="IP Blacklist Services">">
-    <textarea name="ipbl_service" id="sll_ipbl_service" class="text low"><mt:var name="ipbl_service" escape="html"></textarea>
+    <textarea name="ipbl_service" id="sll_ipbl_service" class="form-control text low"><mt:var name="ipbl_service" escape="html"></textarea>
   </mtapp:setting>
 </div>
 
@@ -30,12 +30,12 @@
 <mtapp:setting
    id="domain_name_lookups"
    label="<__trans phrase="Domain Name Lookups">">
-  <ul>
+  <ul class="list-unstyled">
     <li><input type="radio" name="domainbl_mode" id="domainbl_moderate" value="0"<mt:unless name="domainbl_mode"> checked="checked"</mt:unless> onclick="toggleSubPrefs(this)" /> <__trans phrase="Off"></li>
     <li><input type="radio" name="domainbl_mode" id="domainbl_mode_ipban" value="2"<mt:if name="domainbl_mode"> checked="checked"</mt:if> onclick="toggleSubPrefs(this)" /> <__trans phrase="Moderate feedback containing blacklisted domains"></li>
-    <li><input type="radio" name="domainbl_mode" id="domainbl_mode_junk" value="1"<mt:if name="domainbl_mode_1"> checked="checked"</mt:if> onclick="toggleSubPrefs(this);toggleAdvancedPrefs(event,this)" /> <__trans phrase="Junk feedback containing blacklisted domains"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'domainbl_mode_junk')"><__trans phrase="Adjust scoring"></a>)<span id="domainbl_mode_junk-advanced" class="setting-advanced"><__trans phrase="Score weight:">
+    <li><input type="radio" name="domainbl_mode" id="domainbl_mode_junk" value="1"<mt:if name="domainbl_mode_1"> checked="checked"</mt:if> onclick="toggleSubPrefs(this);toggleAdvancedPrefs(event,this)" /> <__trans phrase="Junk feedback containing blacklisted domains"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'domainbl_mode_junk')"><__trans phrase="Adjust scoring"></a>)<span id="domainbl_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;"><__trans phrase="Score weight:">
     <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(-1, 'sl_domainbl_weight')"><!-- <__trans phrase="Less"> --><img src="<mt:var name="static_uri">images/decrease.gif" alt="<__trans phrase="Decrease">" /></a>
-    <input type="text" name="domainbl_weight" id="sl_domainbl_weight" class="text num" value="<mt:var name="domainbl_weight" escape="html">" />
+    <input type="text" name="domainbl_weight" id="sl_domainbl_weight" class="form-control text num" value="<mt:var name="domainbl_weight" escape="html">" />
     <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(1,'sl_domainbl_weight')"><img src="<mt:var name="static_uri">images/increase.gif" alt="<__trans phrase="Increase">" width="12" height="8" /><!-- <__trans phrase="More"> --></a>
     </span></li>
   </ul>
@@ -45,7 +45,7 @@
   <mtapp:setting
      id="sll_domainbl_service"
      label="<__trans phrase="Domain Blacklist Services">">
-    <textarea name="domainbl_service" id="sll_domainbl_service" class="text low"><mt:var name="domainbl_service" escape="html"></textarea>
+    <textarea name="domainbl_service" id="sll_domainbl_service" class="form-control text low"><mt:var name="domainbl_service" escape="html"></textarea>
   </mtapp:setting>
 </div>
 
@@ -53,12 +53,12 @@
 <mtapp:setting
    id="tborigin_mode"
    label="<__trans phrase="Advanced TrackBack Lookups">">
-  <ul>
+  <ul class="list-unstyled">
     <li><input type="radio" name="tborigin_mode" id="tborigin_moderate" value="0"<mt:unless name="tborigin_mode"> checked="checked"</mt:unless> /> <__trans phrase="Off"></li>
     <li><input type="radio" name="tborigin_mode" id="tborigin_mode_ipban" value="2"<mt:if name="tborigin_mode_2"> checked="checked"</mt:if> /> <__trans phrase="Moderate TrackBacks from suspicious sources"></li>
-    <li><input type="radio" name="tborigin_mode" id="tborigin_mode_junk" value="1"<mt:if name="tborigin_mode_1"> checked="checked"</mt:if> onclick="toggleAdvancedPrefs(event,this)" /> <__trans phrase="Junk TrackBacks from suspicious sources"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'tborigin_mode_junk')"><__trans phrase="Adjust scoring"></a>)<span id="tborigin_mode_junk-advanced" class="setting-advanced"><__trans phrase="Score weight:">
+    <li><input type="radio" name="tborigin_mode" id="tborigin_mode_junk" value="1"<mt:if name="tborigin_mode_1"> checked="checked"</mt:if> onclick="toggleAdvancedPrefs(event,this)" /> <__trans phrase="Junk TrackBacks from suspicious sources"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'tborigin_mode_junk')"><__trans phrase="Adjust scoring"></a>)<span id="tborigin_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;"><__trans phrase="Score weight:">
     <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(-1, 'sl_tborigin_weight')"><!-- <__trans phrase="Less"> --><img src="<mt:var name="static_uri">images/decrease.gif" alt="<__trans phrase="Decrease">" /></a>
-    <input type="text" name="tborigin_weight" id="sl_tborigin_weight" class="text num" value="<mt:var name="tborigin_weight" escape="html">" />
+    <input type="text" name="tborigin_weight" id="sl_tborigin_weight" class="form-control text num" value="<mt:var name="tborigin_weight" escape="html">" />
     <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(1,'sl_tborigin_weight')"><img src="<mt:var name="static_uri">images/increase.gif" alt="<__trans phrase="Increase">" /><!-- <__trans phrase="More"> --></a>
     </span></li>
   </ul>
@@ -70,5 +70,5 @@
    label="<__trans phrase="Lookup Whitelist">"
    hint="<__trans phrase="To prevent lookups for specific IP addresses or domains, list each on a line by itself.">"
    show_hint="1">
-  <textarea name="whitelist" id="sll_whitelist" class="text high"><mt:var name="whitelist" escape="html"></textarea>
+  <textarea name="whitelist" id="sll_whitelist" class="form-control text high" rows="10"><mt:var name="whitelist" escape="html"></textarea>
 </mtapp:setting>

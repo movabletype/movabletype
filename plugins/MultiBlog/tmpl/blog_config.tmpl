@@ -52,7 +52,7 @@ function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerN
    label="<__trans phrase="Content Privacy">"
    hint="<__trans phrase="Specify whether other blogs in the installation may publish content from this blog. This setting takes precedence over the default system aggregation policy found in the system-level MultiBlog configuration.">"
    show_hint="0">
-  <select name="blog_content_accessible" id="blog_content_accessible">
+  <select name="blog_content_accessible" id="blog_content_accessible" class="form-control">
     <option value="0"><__trans phrase="Use system default"></option>
     <option value="2"<mt:if name="blog_content_accessible_2"> selected="selected"</mt:if>><__trans phrase="Allow"></option>
     <option value="1"<mt:if name="blog_content_accessible_1"> selected="selected"</mt:if>><__trans phrase="Disallow"></option>
@@ -62,13 +62,14 @@ function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerN
 <mtapp:setting
    id="default_mtmultiblog_action"
    label="<__trans phrase="MTMultiBlog tag default arguments">"
+   class="form-inline"
    hint="<__trans phrase="Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or 'all' (include_blogs only) are acceptable values.">"
    show_hint="1">
-  <select name="default_mtmultiblog_action" id="default_mtmultiblog_action">
+  <select name="default_mtmultiblog_action" id="default_mtmultiblog_action" class="form-control">
     <option value="1"<mt:if name="default_mtmultiblog_action_1"> selected="selected"</mt:if>><__trans phrase="Include blogs"></option>
     <option value="0"<mt:if name="default_mtmultiblog_action_0"> selected="selected"</mt:if>><__trans phrase="Exclude blogs"></option>
   </select>
-  <input name="default_mtmulitblog_blogs" type="text" value="<mt:var name="default_mtmulitblog_blogs">" />
+  <input class="form-control" name="default_mtmulitblog_blogs" type="text" value="<mt:var name="default_mtmulitblog_blogs">" />
 </mtapp:setting>
 
 <mtapp:setting
@@ -78,14 +79,14 @@ function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerN
    show_hint="0">
   <input type="hidden" name="rebuild_triggers" id="rebuild_triggers" value="<mt:var name="rebuild_triggers">" />
   <input type="hidden" name="old_rebuild_triggers" id="old_rebuild_triggers" value="<mt:var name="rebuild_triggers">" />
-  <p><a href="<mt:var name="script_url">?__mode=multiblog_add_trigger&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create mt-open-dialog"><__trans phrase="Create Rebuild Trigger"></a></p>
+  <p><a href="<mt:var name="script_url">?__mode=multiblog_add_trigger&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create mt-open-dialog mt-modal-open" data-mt-modal-large><__trans phrase="Create Rebuild Trigger"></a></p>
   <mt:unless name="rebuilds_loop">
-    <mtapp:statusmsg
+    <mtapp:newstatusmsg
        id="info"
        class="info"
        can_close="0">
       <__trans phrase="You have not defined any rebuild triggers.">
-    </mtapp:statusmsg>
+    </mtapp:newstatusmsg>
   </mt:unless>
   <div id="multiblog_blog_list" class="listing hide_actions<mt:unless name="rebuilds_loop"> hidden</mt:unless>"></div>
 </mtapp:setting>

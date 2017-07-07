@@ -2,17 +2,15 @@
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="backup" value="1">
 
-<mt:include name="include/header.tmpl" id="header_include">
-
-<a href="javascript:void(0)" onclick="return openManual('backup_restore', 'backup_restore_main')" class="help-link">?</a>
+<mt:setvarblock name="content">
 
 <mt:if name="error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="generic-error"
-     class="error"
+     class="danger"
      can_close="0">
     <mt:var name="error">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 
 <div id="backup-panel">
@@ -32,7 +30,7 @@
       <input type="hidden" id="selected_blog_ids" name="backup_what" value="" />
       <span id="selected_blogs"><__trans phrase="Everything"></span>
       <span id="selected_blogs_link" class="hidden"><a href="javascript:void(0);" onclick="document.getElementById( 'selected_blogs_link').className='hidden';var e=document.getElementById('selected_blogs');e.innerHTML='<__trans phrase="Everything" escape="js">';return false;"><__trans phrase="Reset"></a> |</span>
-      <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;multi=1&amp;idfield=selected_blog_ids&amp;namefield=selected_blogs" class="mt-open-dialog"><__trans phrase="Choose websites..."></a>
+      <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;multi=1&amp;idfield=selected_blog_ids&amp;namefield=selected_blogs" class="mt-open-dialog mt-modal-open" data-mt-modal-large><__trans phrase="Choose websites..."></a>
     </mtapp:setting>
   </mt:if>
 
@@ -42,7 +40,7 @@
        hint="<__trans phrase="The type of archive format to use.">"
        help_page="backup_restore"
        help_section="backup_format">
-      <ul class="multiple-selection">
+      <ul class="list-inline multiple-selection">
       <mt:loop name="archive_formats">
         <li>
           <input type="radio" id="<mt:var name="key">" name="backup_archive_format" value="<mt:var name="key">"<mt:if name="__first__"> checked="checked"</mt:if> /><label for="<mt:var name="key" escape="html">"> <mt:var name="label" escape="html"></label>
@@ -59,7 +57,7 @@
        hint="<__trans phrase="Approximate file size per backup file.">"
        help_page="backup_restore"
        help_section="backup_num_size">
-      <select name="size_limit" id="size_limit">
+      <select name="size_limit" id="size_limit" class="form-control">
         <option value="0" selected="selected"><__trans phrase="No size limit"></option>
       <mt:if name="OVER_300">
         <option value="300">300KB</option>
@@ -75,13 +73,13 @@
       </mt:if>
       </select>
     </mtapp:setting>
-    
+
     <mt:setvarblock name="action_buttons">
       <button
          type="submit"
          accesskey="b"
          title="<__trans phrase="Make Backup (b)">"
-         class="action primary button">
+         class="action primary button btn btn-primary">
         <__trans phrase="Make Backup">
       </button>
     </mt:setvarblock>
@@ -89,16 +87,8 @@
   </form>
 </div>
 
-<mt:ignore>    
-<!-- THE FOLLOWING CODE NEEDS TO BE ADDED TO THE onload EVENT FOR THIS PAGE. -->
-<!-- This edit was made to allow use of the common footer. -->
-<mt:if name="open_dialog">
-<script type="text/javascript">
-/* <![CDATA[ */
-jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=dialog_restore_upload&amp;magic_token=<mt:var name="magic_token" escape="url">&amp;files=<mt:var name="files" escape="url">&amp;assets=<mt:var name="assets" escape="url">&amp;current_file=<mt:var name="filename" escape="url">&amp;last=<mt:var name="last" escape="url">&amp;schema_version=<mt:var name="schema_version" escape="url">&amp;redirect=1;');
-/* ]]> */
-</script>
-</mt:if>
-</mt:ignore>
+<mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

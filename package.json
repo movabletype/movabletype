@@ -1,0 +1,25 @@
+{
+  "name": "movabletype",
+  "version": "1.0.0",
+  "description": "Welcome to Movable Type",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "install": "npm run build-riot",
+    "build-riot": "riot mt-static/js/listing/tag mt-static/js/listing/listing.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/movabletype/movabletype.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/movabletype/movabletype/issues"
+  },
+  "homepage": "https://github.com/movabletype/movabletype#readme",
+  "devDependencies": {
+    "riot": "^3.6.0"
+  }
+}

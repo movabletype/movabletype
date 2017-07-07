@@ -1,6 +1,9 @@
 <$mt:setvar name="page_title" value="<__trans phrase="Restoring...">"$>
 <$mt:setvar name="screen_type" value="restore-publishing-config"$>
+
 <mt:setvarblock name="html_head" append="1">
+<mt:include name="modules/libjs.tmpl">
+
 <script type="text/javascript">
 /* <![CDATA[ */
 function progress(str, id) {
@@ -11,8 +14,14 @@ function progress(str, id) {
 </script>
 </mt:setvarblock>
 
-<mt:include name="dialog/header.tmpl">
+<mt:include name="layout/modal/header.tmpl">
 
-<div class="modal_width dialog import-process">
+<div class="modal-header">
+  <button type="button" class="close" data-mt-modal-close>
+    <span>&times;</span>
+  </button>
+  <h4 class="modal-title"><mt:var name="page_title"></h4>
+</div>
+<div class="modal-body">
   <div id="progressbar" class="progressbar indeterminate"></div>
   <pre><mt:var name="name" escape="html">

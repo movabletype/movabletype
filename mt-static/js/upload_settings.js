@@ -39,15 +39,15 @@ function is_valid_path(path_, custom){
 }
 
 function uploadDestinationSelect(sel) {
-    var edit = getByID('upload_destination_custom');
+    var edit = MT.Util.getByID('upload_destination_custom');
     var map  = sel.options[sel.selectedIndex].value;
     if (map == '') {
         // Hide and disable Upload Destination selectbox.
-        DOM.addClassName(sel, 'hidden');
+        jQuery(sel).addClass('hidden');
         sel.setAttribute('disabled', 'disabled');
 
         // Show and enable custom Upload Destination textbox.
-        DOM.removeClassName(edit, 'hidden');
+        jQuery(edit).removeClass('hidden');
         edit.removeAttribute('disabled');
         edit.focus();
 
@@ -90,4 +90,3 @@ jQuery(function() {
         '.upload-destination': trans('You must set a path begining with %s or %a.')
     });
 });
-

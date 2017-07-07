@@ -48,3 +48,6 @@ t/update/
 *.swp
 *.swo
 /mt.pid
+
+/node_modules/
+

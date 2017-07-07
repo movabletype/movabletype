@@ -1,9 +1,9 @@
-  </pre> 
+  </pre>
 </div>
 
 <script type="text/javascript">
 /* <![CDATA[ */
-var progress = getByID("progressbar");
+var progress = MT.Util.getByID("progressbar");
 if (progress) {
     progress.style.display = "none";
 }
@@ -42,7 +42,7 @@ var timer;
 
 function submit_form() {
     window.clearTimeout(timer);
-    var p = getByID('download_message');
+    var p = MT.Util.getByID('download_message');
     if (p)
         p.style.display = 'none';
     var f = document['file_download'];
@@ -61,4 +61,4 @@ timer = window.setTimeout("submit_form()", 3000);
 <p><strong><__trans phrase="An error occurred during the backup process: [_1]" params="<mt:var name="error">"></strong></p>
 </mt:if>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default/footer.tmpl">

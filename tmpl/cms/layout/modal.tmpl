@@ -1,0 +1,29 @@
+<mt:setvarblock name="layout">
+  <mt:include name="layout/modal/header.tmpl">
+
+  <mt:if name="content">
+    <mt:var name="content">
+  <mt:else>
+    <mt:var name="form_header">
+    <div class="modal-header">
+      <button type="button" class="close" data-mt-modal-close>
+        <span>&times;</span>
+      </button>
+      <mt:if name="modal_header">
+        <mt:var name="modal_header">
+      <mt:elseif name="page_title">
+        <h4 class="modal-title"><mt:var name="page_title"></h4>
+      </mt:if>
+    </div>
+    <div class="modal-body">
+      <mt:var name="modal_body">
+    </div>
+    <div class="modal-footer">
+      <mt:var name="modal_footer">
+      <mt:var name="action_buttons">
+    </div>
+    <mt:var name="form_footer">
+  </mt:if>
+
+  <mt:include name="layout/modal/footer.tmpl">
+</mt:setvarblock>

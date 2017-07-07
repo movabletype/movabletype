@@ -1,11 +1,8 @@
 <mt:setvarblock name="page_title"><__trans phrase="System Information"></mt:setvarblock>
 <mt:setvar name="system-information" value="1">
 
-
-
-<mt:include name="include/header.tmpl" id="header_include">
-
-<ul>
+<mt:setvarblock name="content">
+<ul class="list-unstyled">
   <li>
     <strong><__trans phrase="Total Users"></strong>: <mt:var name="user_count">
   </li>
@@ -14,7 +11,7 @@
   </li>
 </ul>
 
-<ul>
+<ul class="list-unstyled">
   <li>
     <strong><__trans phrase="Memcache Status"></strong>: 
     <mt:setvarblock name="memcached_server_string"><mt:if name="memcached_enabled"><__trans phrase="configured"><mt:else><__trans phrase="disabled"></mt:if></mt:setvarblock><__trans phrase="Memcache is [_1]." params="<em><mt:var name="memcached_server_string"></em>">
@@ -41,7 +38,8 @@
     label="System Info (MTCheck)"
     label_class="top-label"
     show_label="0"
-    hint="">
+    hint=""
+    no_grid="1">
     <div class="info">
         <mt:if name="syscheck_html">
           <mt:var name="syscheck_html">
@@ -52,7 +50,11 @@
     </div>
 </mtapp:setting>
 
-<mt:setvarblock name="jq_js_include" append="1">
+<mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
   jQuery('.msg-warning').each( function(){
     var $this = jQuery(this);
     var $detail = $this.find('span.exception');
@@ -65,6 +67,9 @@
       }
     });
   });
+</script>
 </mt:setVarBlock>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
+

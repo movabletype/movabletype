@@ -1,17 +1,23 @@
 <mt:setvarblock name="page_title"><__trans phrase="Restore"></mt:setvarblock>
 <mt:setvar name="restore" value="1">
-<mt:include name="include/header.tmpl" force_header="1" id="header_include">
+
+<mt:setvarblock name="html_head" append="1">
+<mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/default/header.tmpl">
 
 <script type="text/javascript">
 /* <![CDATA[ */
 function progress(str, id) {
-    var el = getByID(id);
+    var el = MT.Util.getByID(id);
     if (el) el.innerHTML = str;
 }
 /* ]]> */
 </script>
 
+<mt:include name="modules/page_title.tmpl">
+
 <div class="import-process">
   <div id="progressbar" class="progressbar indeterminate"></div>
   <pre class="progress-log"><__trans phrase="Restoring Movable Type">
-
