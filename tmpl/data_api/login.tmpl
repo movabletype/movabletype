@@ -1,4 +1,5 @@
 <mt:setvar name="page_title" value="<__trans phrase="Sign in">">
+<mt:setvar name="no_page_header" value="1">
 <mt:setvar name="complete" value="1">
 <mt:setvar name="screen_id" value="sign-in">
 <mt:setvar name="screen_class" value="sign-in">
@@ -6,16 +7,18 @@
 <meta name='robots' content='noindex,nofollow' />
 </mt:setvarblock>
 
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/login.css" />
+</mt:setvarblock>
+
 <mt:SetVarBlock name="js_include" append="1">
-<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cookie.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">data-api/v1/js/mt-data-api.js?v=<mt:var name="mt_version_id" escape="url">">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js-cookie-2.1.4/js.cookie.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
 (function() {
 
 function redirectWithCookie(jsonText) {
-    Cookie.bake(MT.DataAPI.accessTokenKey, jsonText, undefined, '/');
+    Cookies.set(MT.DataAPI.accessTokenKey, jsonText);
     var url = '<mt:var name="redirect_url" encode_js="1" />#_login';
     location.href = url;
 }
@@ -89,8 +92,7 @@ jQuery(function($) {
 </script>
 </mt:SetVarBlock>
 
-<mt:include name="include/chromeless_header.tmpl">
-
+<mt:setvarblock name="content">
 <input type="hidden" name="redirectUrl" id="redirect_url" value="<mt:var name="redirect_url" escape="html">" />
 
 <form method="post" action="<mt:var name="script_url">/v<mt:var name="api_version" />/authentication" id="login_form">
@@ -103,66 +105,81 @@ jQuery(function($) {
 
   <div id="msg-block"></div>
 
+  <div class="row">
+    <div class="col-md-12">
+
 <mt:if name="logged_out">
   <mt:if name="delegate_auth">
-    <mtapp:statusmsg
+    <mtapp:newstatusmsg
        id="delegate_auth_logout"
        class="info"
        can_close="0">
       <__trans phrase="Your Movable Type session has ended.">
-    </mtapp:statusmsg>
+    </mtapp:newstatusmsg>
   <mt:else>
-    <mtapp:statusmsg
+    <mtapp:newstatusmsg
        id="session_end_logout"
        class="info"
        can_close="0">
       <__trans phrase="Your Movable Type session has ended. If you wish to sign in again, you can do so below.">
-    </mtapp:statusmsg>
+    </mtapp:newstatusmsg>
   </mt:if>
 <mt:else>
   <mt:if name="login_again">
-    <mtapp:statusmsg
+    <mtapp:newstatusmsg
        id="action_logout"
        class="info"
        can_close="0">
       <__trans phrase="Your Movable Type session has ended. Please sign in again to continue this action.">
-    </mtapp:statusmsg>
+    </mtapp:newstatusmsg>
   <mt:else>
     <mt:if name="error">
-      <mtapp:statusmsg
+      <mtapp:newstatusmsg
          id="generic-error"
-         class="error"
+         class="danger"
          can_close="0">
         <mt:var name="error">
-      </mtapp:statusmsg>
+      </mtapp:newstatusmsg>
     </mt:if>
   </mt:if>
 </mt:if>
-<mtapp:statusmsg
+<mtapp:newstatusmsg
    id="login-error"
-   class="error hidden"
+   class="danger hidden"
    can_close="0">
      <__trans phrase="Invalid login.">
-</mtapp:statusmsg>
+</mtapp:newstatusmsg>
+
+  </div>
+</div>
 
 <mt:unless name="delegate_auth">
   <mt:var name="login_fields">
-  <div class="actions-bar actions-bar-login">
-    <button
-       type="submit"
-       id="sign-in-button"
-       accesskey="s"
-       title="<__trans phrase="Sign In (s)">"
-       class="sign-in action primary button">
-      <__trans phrase="Sign In">
-    </button>
+  <div class="row actions-bar actions-bar-login">
+    <div class="col-md-4">
+      <button
+         type="submit"
+         id="sign-in-button"
+         accesskey="s"
+         title="<__trans phrase="Sign In (s)">"
+         class="sign-in action primary button btn btn-primary">
+        <__trans phrase="Sign In">
+      </button>
+    </div>
     <mt:if name="can_recover_password">
-      <div id="forget-password">
-        <a href="<mt:var name="mt_url">?__mode=start_recover"><__trans phrase="Forgot your password?"></a>
+      <div id="forget-password" class="col-md-8">
+        <a class="pull-right" href="<mt:var name="mt_url">?__mode=start_recover">
+          <__trans phrase="Forgot your password?">
+        </a>
       </div>
     </mt:if>
   </div>
 
 </mt:unless>
 </form>
-<mt:include name="include/chromeless_footer.tmpl">
+
+<mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">
