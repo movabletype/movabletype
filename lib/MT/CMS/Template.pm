@@ -480,19 +480,10 @@ sub edit {
             || $obj_type eq 'archive'
             || $obj_type eq 'ct' )
         {
-            my $pblshr
-                = $obj_type eq 'ct'
-                ? 'ContentTypePublisher'
-                : 'WeblogPublisher';
-            my $class = 'MT::' . $pblshr;
-            eval "require $class;";
-            my $publisher = $app->request($pblshr)
-                || $app->request( $pblshr, eval "new $class()" );
-            #my @at = $app->publisher->archive_types;
+            my $publisher = _get_publisher( $app, $obj_type );
             my @at = $publisher->archive_types;
             my @archive_types;
             for my $at (@at) {
-                #my $archiver      = $app->publisher->archiver($at);
                 my $archiver      = $publisher->archiver($at);
                 my $archive_label = $archiver->archive_label;
                 $archive_label = $at unless $archive_label;
@@ -1607,7 +1598,8 @@ sub _populate_archive_loop {
             : $map_obj->file_template ? $map_obj->file_template
             :                           '';
 
-        my $archiver = $app->publisher->archiver($at);
+        my $publisher = _get_publisher( $app, $obj->type );
+        my $archiver = $publisher->archiver($at);
         next unless $archiver;
         $map->{archive_label} = $archiver->archive_label;
         my $tmpls     = $archiver->default_archive_templates;
@@ -3277,6 +3269,19 @@ sub save_template_prefs {
         $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
         );
     return $app->json_result( { success => 1 } );
+}
+
+sub _get_publisher {
+    my ( $app, $type ) = @_;
+
+    my $publisher
+        = $type eq 'ct'
+        ? 'ContentTypePublisher'
+        : 'WeblogPublisher';
+    my $class = 'MT::' . $publisher;
+    eval "require $class;";
+    $app->request($publisher)
+        || $app->request( $publisher, eval "new $class()" );
 }
 
 1;

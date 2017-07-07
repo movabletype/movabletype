@@ -4,24 +4,24 @@
 #
 # $Id$
 
-package MT::ArchiveType::ContentType;
+package MT::ArchiveType::ContentTypeAuthorMonthly;
 
 use strict;
-use base qw( MT::ArchiveType );
+use base qw( MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeMonthly );
 
 use MT::Util qw( remove_html encode_html );
 
 sub name {
-    return 'ContentType';
+    return 'ContentType-Author-Monthly';
 }
 
 sub archive_label {
-    return MT->translate("CONTENTTYPE_ADV");
+    return MT->translate("CONTENTTYPE-AUTHOR-MONTHLY_ADV");
 }
 
 sub template_params {
     return {
-        archive_class => "contenttype-archive",
+        archive_class => "contenttype-author-monthly-archive",
     };
 }
 
@@ -34,3 +34,4 @@ sub archive_title {
 }
 
 1;
+

@@ -4,24 +4,24 @@
 #
 # $Id$
 
-package MT::ArchiveType::ContentType;
+package MT::ArchiveType::ContentTypeCategoryDaily;
 
 use strict;
-use base qw( MT::ArchiveType );
+use base qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeDaily );
 
 use MT::Util qw( remove_html encode_html );
 
 sub name {
-    return 'ContentType';
+    return 'ContentType-Category-Daily';
 }
 
 sub archive_label {
-    return MT->translate("CONTENTTYPE_ADV");
+    return MT->translate("CONTENTTYPE-CATEGORY-DAILY_ADV");
 }
 
 sub template_params {
     return {
-        archive_class => "contenttype-archive",
+        archive_class => "contenttype-category-daily-archive",
     };
 }
 
@@ -34,3 +34,5 @@ sub archive_title {
 }
 
 1;
+
+

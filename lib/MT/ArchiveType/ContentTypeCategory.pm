@@ -4,24 +4,24 @@
 #
 # $Id$
 
-package MT::ArchiveType::ContentType;
+package MT::ArchiveType::ContentTypeCategory;
 
 use strict;
-use base qw( MT::ArchiveType );
+use base qw( MT::ArchiveType::ContentType );
 
 use MT::Util qw( remove_html encode_html );
 
 sub name {
-    return 'ContentType';
+    return 'ContentType-Category';
 }
 
 sub archive_label {
-    return MT->translate("CONTENTTYPE_ADV");
+    return MT->translate("CONTENTTYPE-CATEGORY_ADV");
 }
 
 sub template_params {
     return {
-        archive_class => "contenttype-archive",
+        archive_class => "contenttype-category-archive",
     };
 }
 
@@ -34,3 +34,5 @@ sub archive_title {
 }
 
 1;
+
+

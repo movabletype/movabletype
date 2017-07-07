@@ -7,7 +7,7 @@
 package MT::ArchiveType::ContentTypeMonthly;
 
 use strict;
-use base qw( MT::ArchiveType );
+use base qw( MT::ArchiveType::Date );
 
 use MT::Util qw( remove_html encode_html );
 

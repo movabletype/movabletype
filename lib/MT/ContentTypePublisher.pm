@@ -57,6 +57,24 @@ sub core_archive_types {
         'ContentType-Monthly' => 'MT::ArchiveType::ContentTypeMonthly',
         'ContentType-Weekly'  => 'MT::ArchiveType::ContentTypeWeekly',
         'ContentType-Daily'   => 'MT::ArchiveType::ContentTypeDaily',
+        'ContentType-Author'  => 'MT::ArchiveType::ContentTypeAuthor',
+        'ContentType-Author-Yearly' =>
+            'MT::ArchiveType::ContentTypeAuthorYearly',
+        'ContentType-Author-Monthly' =>
+            'MT::ArchiveType::ContentTypeAuthorMonthly',
+        'ContentType-Author-Weekly' =>
+            'MT::ArchiveType::ContentTypeAuthorWeekly',
+        'ContentType-Author-Daily' =>
+            'MT::ArchiveType::ContentTypeAuthorDaily',
+        'ContentType-Category' => 'MT::ArchiveType::ContentTypeCategory',
+        'ContentType-Category-Yearly' =>
+            'MT::ArchiveType::ContentTypeCategoryYearly',
+        'ContentType-Category-Monthly' =>
+            'MT::ArchiveType::ContentTypeCategoryMonthly',
+        'ContentType-Category-Weekly' =>
+            'MT::ArchiveType::ContentTypeCategoryWeekly',
+        'ContentType-Category-Daily' =>
+            'MT::ArchiveType::ContentTypeCategoryDaily',
     };
 
 }
