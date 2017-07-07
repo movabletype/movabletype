@@ -9,6 +9,8 @@
     <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry"></a></li>
     <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry Listing"></a></li>
     <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Page"></a></li>
+  <mt:elseif name="template_type" eq="ct">
+    <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=ct&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Content Type template"></a></li>
   <mt:elseif name="template_type" eq="module">
     <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create template module"></a></li>
   <mt:elseif name="template_type" eq="index">

@@ -477,12 +477,23 @@ sub edit {
             || $obj_type eq 'page'
             || $obj_type eq 'author'
             || $obj_type eq 'category'
-            || $obj_type eq 'archive' )
+            || $obj_type eq 'archive'
+            || $obj_type eq 'ct' )
         {
-            my @at = $app->publisher->archive_types;
+            my $pblshr
+                = $obj_type eq 'ct'
+                ? 'ContentTypePublisher'
+                : 'WeblogPublisher';
+            my $class = 'MT::' . $pblshr;
+            eval "require $class;";
+            my $publisher = $app->request($pblshr)
+                || $app->request( $pblshr, eval "new $class()" );
+            #my @at = $app->publisher->archive_types;
+            my @at = $publisher->archive_types;
             my @archive_types;
             for my $at (@at) {
-                my $archiver      = $app->publisher->archiver($at);
+                #my $archiver      = $app->publisher->archiver($at);
+                my $archiver      = $publisher->archiver($at);
                 my $archive_label = $archiver->archive_label;
                 $archive_label = $at unless $archive_label;
                 $archive_label = $archive_label->()
@@ -597,7 +608,8 @@ sub edit {
         elsif ($template_type eq 'archive'
             || $template_type eq 'individual'
             || $template_type eq 'category'
-            || $template_type eq 'page' )
+            || $template_type eq 'page'
+            || $template_type eq 'ct' )
         {
             $tab                           = 'archive';
             $param->{template_group_trans} = $app->translate('archive');
@@ -636,6 +648,7 @@ sub edit {
             || $template_type eq 'archive'
             || $template_type eq 'category'
             || $template_type eq 'page'
+            || $template_type eq 'ct'
             || $template_type eq 'individual';
         $param->{has_outfile} = $template_type eq 'index';
         $param->{has_rebuild} = ( ( $template_type eq 'index' )
@@ -952,6 +965,11 @@ sub list {
                 'archive' => {
                     label => $app->translate("Archive Templates"),
                     type  => [ 'archive', 'individual', 'page', 'category' ],
+                    order => 200,
+                },
+                'ct' => {
+                    label => $app->translate("Content Type Templates"),
+                    type  => ['ct'],
                     order => 200,
                 },
                 'module' => {

@@ -121,6 +121,14 @@ sub author_based {
     return $obj->_getset( 'author_based', @_ );
 }
 
+sub contenttype_based {
+    my $obj = shift;
+    if ( ref $obj ne __PACKAGE__ ) {
+        return $obj->isa('MT::ArchiveType::ContentType');
+    }
+    return $obj->_getset( 'contenttype_based', @_ );
+}
+
 sub archive_entries_count {
     my $self = shift;
 
@@ -133,6 +141,7 @@ sub archive_entries_count {
     my $ts       = $params->{Timestamp};
     my $cat      = $params->{Category};
     my $auth     = $params->{Author};
+    my $ct       = $params->{ContentType};
     my ( $start, $end );
     if ($ts) {
         my $archiver = MT->publisher->archiver($at);
