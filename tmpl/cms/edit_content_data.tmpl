@@ -412,6 +412,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
         target_data = block_editor_data[target_id];
       }
       jQuery('#' + target_id).blockeditor(target_data);
+      jQuery('#' + target_id).parents('.editor-content').addClass('hidden');
     })
   });
 

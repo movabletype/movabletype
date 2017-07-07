@@ -2,7 +2,10 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 var $field = parent.jQuery( '#<mt:var name="edit_field" escape="js">' );
-if ($field) $field.val('<mt:var name="asset_id" escape="JS">');
+if ($field){
+    $field.val('<mt:var name="asset_id" escape="JS">');
+    parent.jQuery( '#<mt:var name="edit_field" escape="js">-preview' ).append('<mt:var name="asset_html">');
+}
 parent.jQuery.fn.mtDialog.close();
 /* ]]> */
 </script>
