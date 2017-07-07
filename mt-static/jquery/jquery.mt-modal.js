@@ -24,10 +24,7 @@
   $.fn.mtModalClose = function () {
     return this.each(function () {
       $(this).on('click', function () {
-        var $modal = window.parent.$('.mt-modal');
-        if ($modal.length > 0) {
-          $modal.modal('hide');
-        }
+        $.fn.mtModal.close();
       });
 
       var url = $(this).data().mtModalClose;
@@ -50,6 +47,13 @@
     var opts = $.extend(defaults, options);
     initModal();
     openModal(url, opts);
+  };
+
+  $.fn.mtModal.close = function () {
+    var $modal = window.parent.$('.mt-modal');
+    if ($modal.length > 0) {
+      $modal.modal('hide');
+    }
   };
 
   function getModalHtml() {
@@ -87,6 +91,12 @@
     }
 
     var $modal = $('.mt-modal');
+
+    if (opts.full) {
+      $modal.find('.modal-dialog').css('width', '100%');
+    } else {
+      $modal.find('.modal-dialog').css('width', '');
+    }
 
     if (opts.large) {
       $modal.find('.modal').addClass('bs-example-modal-lg');

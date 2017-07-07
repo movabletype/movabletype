@@ -235,27 +235,42 @@ jQuery('.image-editor a').click(function(event) {
     if (isDirty) {
         var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?" escape="js">';
         if ( confirm(msg) ) {
-            jQuery(this).mtDialog.open(jQuery(this).attr('href'));
+            jQuery.fn.mtModal.open(jQuery(this).attr('href'), { full: true });
             isDirty = false;
         }
     }
     else {
-        jQuery(this).mtDialog.open(jQuery(this).attr('href'));
+        jQuery.fn.mtModal.open(jQuery(this).attr('href'), { full: true });
     }
     return false;
 });
 
-jQuery('button.close-dialog').click(function() {
+function closeModalWithCheck() {
     if (isDirty) {
         var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to close this dialog?" escape="js">';
         if ( confirm(msg) ) {
-            parent.jQuery.fn.mtDialog.close();
+            return true;
         }
     } else {
-        parent.jQuery.fn.mtDialog.close();
+        return true;
     }
-
     return false;
+}
+
+jQuery('button.close-dialog').click(function() {
+    if (!closeModalWithCheck()) {
+        return false;
+    }
+    window.parent.jQuery('.mt-modal').off('hide.bs.modal');
+    window.parent.jQuery.fn.mtDialog.close();
+    return false;
+});
+
+window.parent.jQuery('.mt-modal').on('hide.bs.modal', function (e) {
+    if (!closeModalWithCheck()) {
+        return false;
+    }
+    window.parent.jQuery('.mt-modal').off('hide.bs.modal');
 });
 </script>
 </mt:setvarblock>
