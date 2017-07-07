@@ -48,7 +48,8 @@
 </form>
 </mt:setvarblock>
 
-<mt:setvarblock name="jq_js_include" append="1">
+<mt:setvarblock name="js_include" append="1">
+<script>
 
     jQuery.mtValidateRules['.ipaddress'] = function( $e ){
         return /^(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])$/.test($e.val()) };
@@ -97,4 +98,6 @@
         openCreateMode();
         return false;
     });
+
+</script>
 </mt:setvarblock>

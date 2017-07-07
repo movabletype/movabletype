@@ -120,11 +120,13 @@
   var listLimit = 200;
   </mt:if>
 
+  var objectType = '<mt:var name="object_type" escape="js">';
+
   var listClient = new ListClient({
     url: '<mt:var name="script_url">',
     siteId: '<mt:var name="blog_id">',
     datasource: '<mt:var name="list_type" escape="js">',
-    objectType: '<mt:var name="object_type" escape="js">',
+    objectType: objectType,
     magicToken: '<mt:var name="magic_token">',
     returnArgs: '<mt:var name="return_args">'
   });
@@ -287,9 +289,68 @@
 
     localeCalendarHeader: localeCalendarHeader,
     objectLabel: objectLabel,
+    objectType: objectType,
     disableUserDispOption: disableUserDispOption
   });
 })();
+
+var initial_load = true;
+
+function handleMessages( data, additional_class ) {
+  if ( initial_load ) {
+    initial_load = false;
+  }
+  else {
+    jQuery('#msg-block .msg-success').remove();
+    jQuery('#msg-container .msg-success').remove();
+  }
+
+  if ( data.error ) {
+    var error_cls = 'error';
+    if ( additional_class ) error_cls += ' ' + additional_class;
+    showMessage( data.error, error_cls);
+    return false;
+  }
+  if ( !data.result ) return false;
+  var messages = data.result.messages;
+  if ( !data.result.messages ) return true;
+  for ( var i=0; i < messages.length; i++ ) {
+    var msg   = messages[i];
+    var cls = msg.cls;
+    if ( additional_class ) cls += ' ' + additional_class;
+    showMessage(msg.msg, cls);
+  }
+  return true;
+}
+
+function showMessage( content, cls ){
+  var error_block;
+  if ( typeof content == 'object' ) {
+    jQuery('#msg-block').append(
+      error_block = jQuery('<div>')
+      .attr('class', 'msg msg-' + cls )
+      .append(
+        jQuery('<p />')
+          .attr('class', 'msg-text')
+          .append(content)
+          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>')
+      )
+    );
+  }
+  else {
+    jQuery('#msg-block').append(
+      error_block = jQuery('<div />')
+      .attr('class', 'msg msg-' + cls )
+      .append(
+        jQuery('<p />')
+          .attr('class', 'msg-text')
+          .append(content)
+          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>')
+      )
+    );
+  }
+  return error_block;
+}
 </script>
 </mt:setvarblock>
 

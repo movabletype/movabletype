@@ -12,8 +12,8 @@
       <div class="panel panel-default">
         <virtual data-is="list-filter"></virtual>
         <table data-is="list-table"
-          id="listing"
-          class="table table-striped table-hover"
+          id="{ opts.objectType }-table"
+          class="table table-striped table-hover listing-table list-{ opts.objectType }"
         >
         </table>
       </div>
