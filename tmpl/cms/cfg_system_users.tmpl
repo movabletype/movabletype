@@ -4,48 +4,48 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error" escape="html">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="saved">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="saved"
      class="success">
     <__trans phrase="Your settings have been saved.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="config_warning">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="info"
      class="info"
      can_close="0">
     <mt:var name="config_warning">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 </mt:setvarblock>
 
-<mt:setvarblock name="html_head" append="1">
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 function clearWebsiteLocation() {
-    var el_name = getByID("new_user_default_website_name");
-    var el_id = getByID("new_user_default_website_id");
+    var el_name = MT.Util.getByID("new_user_default_website_name");
+    var el_id = MT.Util.getByID("new_user_default_website_id");
     if (el_name && el_id) {
         el_id.value = "";
         el_name.innerHTML = "<__trans phrase="(No website selected)">";
     }
-    var el_id_link = getByID("select-website-link");
+    var el_id_link = MT.Util.getByID("select-website-link");
     if (el_id_link) {
         el_id_link.innerHTML = "<__trans phrase="Select website">";
     }
 }
 function clearNotifyUsers() {
-    var el_name = getByID("notify_user_name");
-    var el_id = getByID("notify_user_id");
+    var el_name = MT.Util.getByID("notify_user_name");
+    var el_id = MT.Util.getByID("notify_user_id");
     if (el_name && el_id) {
         el_id.value = "";
         el_name.innerHTML = "<__trans phrase="(None selected)">";
@@ -55,15 +55,14 @@ function clearNotifyUsers() {
 </script>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
+<mt:setvarblock name="content">
 <form id="cfg_user_settings" action="<mt:var name="script_url">" method="post">
   <input type="hidden" name="__mode" value="save_cfg_system_users" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
 <mt:unless name="external_user_management">
-  <h2><__trans phrase="User Registration"></h2>
+  <h5><__trans phrase="User Registration"></h5>
   <mtapp:settinggroup id="external-user-management">
     <mtapp:setting
        id="registration"
@@ -83,22 +82,26 @@ function clearNotifyUsers() {
       </mt:if>
       </span>
       <mt:unless name="commenter_registration_readonly">
-      <a href="<mt:var name="script_url">?__mode=dialog_select_sysadmin&amp;multi=1&amp;idfield=notify_user_id&amp;namefield=notify_user_name" class="mt-open-dialog"><__trans phrase="Select system administrators"></a>
+      <a href="<mt:var name="script_url">?__mode=dialog_select_sysadmin&amp;multi=1&amp;idfield=notify_user_id&amp;namefield=notify_user_name" class="mt-open-dialog mt-modal-open">
+        <__trans phrase="Select system administrators">
+      </a>
       </mt:unless>
     <mt:if name="system_no_email">
-      <div class="alert-warning-inline icon-left icon-warning"><__trans phrase="Note: System Email Address is not set in System > General Settings. Emails will not be sent."></div>
+      <div class="alert-warning-inline icon-left icon-warning">
+        <__trans phrase="Note: System Email Address is not set in System > General Settings. Emails will not be sent.">
+        </div>
     </mt:if>
     </mtapp:setting>
   </mtapp:settinggroup>
 </mt:unless>
 
 <mt:if name="auth_mode_mt">
-  <h2><__trans phrase="Password Validation"></h2>
+  <h5><__trans phrase="Password Validation"></h5>
   <mtapp:settinggroup id="password-validation">
     <mtapp:setting
        id="password-validation-options"
        label="<__trans phrase="Options">">
-      <ul id="password-validation-options-setting-list" class="setting-list">
+      <ul id="password-validation-options-setting-list" class="list-unstyled setting-list">
         <li>
           <input type="checkbox" name="combo_upper_lower" id="combo-upper-lower"<mt:if name="combo_upper_lower"> checked="checked"</mt:if><mt:if name="user_password_validation_readonly"> disabled="disabled"</mt:if>> <label for="combo-upper-lower"><__trans phrase="Should contain uppercase and lowercase letters."></label>
         </li>
@@ -113,12 +116,12 @@ function clearNotifyUsers() {
     <mtapp:setting
        id="minimum-length"
        label="<__trans phrase="Minimun Length">">
-         <input type="text" name="minimum_length" id="minimum-length" class="positive-num num" value="<mt:var name="minimum_length">"<mt:if name="user_password_min_length_readonly"> disabled="disabled"</mt:if>>
+         <input type="text" name="minimum_length" id="minimum-length" class="form-control positive-num num" value="<mt:var name="minimum_length">"<mt:if name="user_password_min_length_readonly"> disabled="disabled"</mt:if>>
     </mtapp:setting>
   </mtapp:settinggroup>
 
-  <mt:setvarblock name="jq_js_include" append="1">
-
+  <mt:setvarblock name="js_include" append="1">
+<script>
     jQuery.mtValidateAddRules({
       '.positive-num': function ($e) {
         return /^\d+$/.test($e.val()) && ($e.val() > 0);
@@ -140,11 +143,11 @@ function clearNotifyUsers() {
         });
         return ok;
     });
-
+</script>
   </mt:setvarblock>
 </mt:if>
 
-  <h2><__trans phrase="New User Defaults"></h2>
+  <h5><__trans phrase="New User Defaults"></h5>
   <mtapp:settinggroup id="new-user-defaults">
     <mtapp:setting
        id="personal_weblog"
@@ -153,7 +156,7 @@ function clearNotifyUsers() {
       <input type="checkbox" id="personal_weblog" name="personal_weblog"<mt:if name="personal_weblog"> checked="checked"</mt:if><mt:if name="personal_weblog_readonly"> disabled="disabled"</mt:if> />
       <label for="personal_weblog"><__trans phrase="Automatically create a new blog for each new user."></label>
     </mtapp:setting>
-    
+
     <mtapp:setting
        id="new_user_default_website_id"
        label="<__trans phrase="Personal Blog Location">"
@@ -170,7 +173,9 @@ function clearNotifyUsers() {
       </mt:if>
       </span>
       <mt:unless name="new_user_default_website_id_readonly">
-        <a id="select-website-link" href="<mt:var name="script_url">?__mode=dialog_select_website&amp;multi=0&amp;idfield=new_user_default_website_id&amp;namefield=new_user_default_website_name" class="mt-open-dialog"><mt:if name="new_user_default_website_id"><__trans phrase="Change website"><mt:else><__trans phrase="Select website"></mt:if></a>
+        <a id="select-website-link" href="<mt:var name="script_url">?__mode=dialog_select_website&amp;multi=0&amp;idfield=new_user_default_website_id&amp;namefield=new_user_default_website_name" class="mt-open-dialog mt-modal-open"><mt:if name="new_user_default_website_id">
+          <__trans phrase="Change website"><mt:else><__trans phrase="Select website"></mt:if>
+        </a>
       </mt:unless>
     </mtapp:setting>
 
@@ -181,7 +186,7 @@ function clearNotifyUsers() {
       <input type="hidden" id="new_user_theme_id" name="new_user_theme_id" value="<mt:var name="new_user_theme_id" escape="html">"<mt:if name="new_user_blog_theme_readonly">disabled="disabled"</mt:if> />
       <div id="new_user_theme_thumb">
       <mt:if name="new_user_theme_thumbnail">
-        <img id="new_user_theme_thumb" src="<mt:var name="new_user_theme_thumbnail">" width="<mt:var name="new_user_theme_thumbnail_w">" height="<mt:var name="new_user_theme_thumbnail_h">" />
+        <img id="new_user_theme_thumb" class="img-thumbnail" src="<mt:var name="new_user_theme_thumbnail">" width="<mt:var name="new_user_theme_thumbnail_w">" height="<mt:var name="new_user_theme_thumbnail_h">" />
       </mt:if>
       </div>
       <div id="new_user_theme_name">
@@ -192,7 +197,9 @@ function clearNotifyUsers() {
       </mt:if>
       </div>
     <mt:unless name="new_user_blog_theme_readonly">
-      <a id="select-theme-link" href="<mt:var name="script_url">?__mode=dialog_select_theme&amp;multi=0&amp;idfield=new_user_theme_id&amp;namefield=new_user_theme_name&amp;imagefield=new_user_theme_thumb" class="mt-open-dialog"><mt:if name="new_user_theme"><__trans phrase="Change theme"><mt:else><__trans phrase="Select theme"></mt:if></a>
+      <a id="select-theme-link" href="<mt:var name="script_url">?__mode=dialog_select_theme&amp;multi=0&amp;idfield=new_user_theme_id&amp;namefield=new_user_theme_name&amp;imagefield=new_user_theme_thumb" class="mt-open-dialog mt-modal-open" data-mt-modal-large><mt:if name="new_user_theme">
+        <__trans phrase="Change theme"><mt:else><__trans phrase="Select theme"></mt:if>
+      </a>
     </mt:unless>
     </mtapp:setting>
 
@@ -200,7 +207,7 @@ function clearNotifyUsers() {
        id="default_language"
        label="<__trans phrase="Default User Language">"
        hint="<__trans phrase="Choose the default language to apply to all new users.">">
-      <select id="default_language" name="default_language"<mt:if name="default_language_readonly"> disabled="disabled"</mt:if>>
+      <select id="default_language" class="form-control" name="default_language"<mt:if name="default_language_readonly"> disabled="disabled"</mt:if>>
       <mt:loop name="languages">
         <option value="<mt:var name="l_tag">" <mt:if name="l_selected">selected="selected"</mt:if>><mt:var name="l_name" escape="html"></option>
       </mt:loop>
@@ -213,7 +220,7 @@ function clearNotifyUsers() {
        hint="<__trans phrase="Select your time zone from the pulldown menu.">"
        help_page="blog_settings_general"
        help_section="blog_timezone">
-      <select name="default_time_zone" id="default_time_zone"<mt:if name="default_time_zone_readonly"> disabled="disabled"</mt:if>>
+      <select name="default_time_zone" class="form-control" id="default_time_zone"<mt:if name="default_time_zone_readonly"> disabled="disabled"</mt:if>>
       <mt:if name="server_offset_">
         <option value=""><__trans phrase="Time zone not selected"></option>
       </mt:if>
@@ -254,7 +261,7 @@ function clearNotifyUsers() {
        id="tag_delim"
        label="<__trans phrase="Default Tag Delimiter">"
        hint="<__trans phrase="Define the default delimiter for entering tags.">">
-      <select name="default_user_tag_delimiter" id="tag_delim" <mt:if name="default_user_tag_delimiter_readonly">disabled="disabled"</mt:if>>
+      <select name="default_user_tag_delimiter" class="form-control" id="tag_delim" <mt:if name="default_user_tag_delimiter_readonly">disabled="disabled"</mt:if>>
         <option value="comma"<mt:if name="tag_delim_comma"> selected="selected"</mt:if>><__trans phrase="Comma"></option>
         <option value="space"<mt:if name="tag_delim_space"> selected="selected"</mt:if>><__trans phrase="Space"></option>
       </select>
@@ -266,11 +273,15 @@ function clearNotifyUsers() {
      type="submit"
      accesskey="s"
      title="<__trans phrase="Save changes to these settings (s)">"
-     class="save action primary button">
+     class="save action primary button btn btn-primary">
     <__trans phrase="Save Changes">
   </button>
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

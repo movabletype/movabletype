@@ -1,20 +1,20 @@
 <mt:setvarblock name="system_msg" append="1">
     <mt:if name="request.saved">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="saved"
             class="success"
             rebuild="all"
             can_close="0">
             <__trans phrase="Your tag changes and additions have been made.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
     <mt:if name="request.saved_deleted">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
             id="saved-deleted"
             rebuild="all"
             class="success">
             <__trans phrase="You have successfully deleted the selected tags.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
 </mt:setvarblock>
 

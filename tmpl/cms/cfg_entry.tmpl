@@ -3,48 +3,49 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="saved">
   <mt:if name="can_rebuild">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="saved"
      class="success"
      rebuild="all"
      can_close="1">
     <__trans phrase="Your preferences have been saved.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
   <mt:else>
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="saved"
      class="success"
      can_close="1">
     <__trans phrase="Your preferences have been saved.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
   </mt:if>
 </mt:if>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
 <mt:setvarblock name="o"><mt:if name="is_website">website<mt:else>blog</mt:if></mt:setvarblock>
+
+<mt:setvarblock name="content">
 <mtapp:form id="cfg_entry" name="cfg_entry" mode="save" object_type="$o">
   <input type="hidden" name="cfg_screen" value="cfg_entry" />
-  <h2><__trans phrase="Publishing Defaults"></h2>
+  <h5><__trans phrase="Publishing Defaults"></h5>
   <mtapp:settinggroup id="display-settings">
     <mtapp:setting
        id="list_on_index"
        label="<__trans phrase="Listing Default">"
        hint="<__trans phrase="Select the number of days of entries or the exact number of entries you would like displayed on your blog.">"
        help_page="blog_settings_general"
-       help_section="entries_to_display">
-      <input type="text" name="list_on_index" id="list_on_index" class="text num" value="<mt:var name="list_on_index" escape="html">" />
-      <select name="days_or_posts" id="days_or_posts">
+       help_section="entries_to_display"
+       class="form-inline">
+      <input type="text" name="list_on_index" id="list_on_index" class="form-control text num" value="<mt:var name="list_on_index" escape="html">" />
+      <select name="days_or_posts" id="days_or_posts" class="form-control">
         <option value="days"<mt:if name="days"> selected="selected"</mt:if>><__trans phrase="Days"></option>
         <option value="posts"<mt:if name="posts"> selected="selected"</mt:if>><__trans phrase="Posts"></option>
       </select>
@@ -57,7 +58,7 @@
        hint="<__trans phrase="Select whether you want your entries displayed in ascending (oldest at top) or descending (newest at top) order.">"
        help_page="blog_settings_general"
        help_section="entry_order">
-      <select name="sort_order_posts" id="sort_order_posts">
+      <select name="sort_order_posts" id="sort_order_posts" class="form-control">
         <option value="ascend"<mt:if name="sort_order_posts_ascend"> selected="selected"</mt:if>><__trans phrase="Ascending"></option>
         <option value="descend"<mt:if name="sort_order_posts_descend"> selected="selected"</mt:if>><__trans phrase="Descending"></option>
       </select>
@@ -69,7 +70,7 @@
        hint="<__trans phrase="Enter the number of words that should appear in an auto-generated excerpt.">"
        help_page="blog_settings_general"
        help_section="excerpt_length">
-      <input type="text" name="words_in_excerpt" id="words_in_excerpt" class="text num" value="<mt:var name="words_in_excerpt" escape="html">" />
+      <input type="text" name="words_in_excerpt" id="words_in_excerpt" class="form-control text num" value="<mt:var name="words_in_excerpt" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -78,7 +79,7 @@
        hint="<__trans phrase="Select the language in which you would like dates on your blog displayed.">"
        help_page="blog_settings_general"
        help_section="date_language">
-      <select name="date_language" id="date_language">
+      <select name="date_language" id="date_language" class="form-control">
         <option value="cz"<mt:if name="date_language_cz"> selected="selected"</mt:if>><__trans phrase="Czech"></option>
         <option value="dk"<mt:if name="date_language_dk"> selected="selected"</mt:if>><__trans phrase="Danish"></option>
         <option value="nl"<mt:if name="date_language_nl"> selected="selected"</mt:if>><__trans phrase="Dutch"></option>
@@ -106,18 +107,18 @@
        hint="<__trans phrase="Specifies the default length of an auto-generated basename. The range for this setting is 15 to 250.">"
        help_page="blog_settings_entry_defaults"
        help_section="basename_length">
-      <input type="text" name="basename_limit" id="basename_limit" class="text num" maxlength="3" value="<mt:var name="basename_limit" escape="html">" />
+      <input type="text" name="basename_limit" id="basename_limit" class="form-control text num" maxlength="3" value="<mt:var name="basename_limit" escape="html">" />
     </mtapp:setting>
   </mtapp:settinggroup>
 
-  <h2><__trans phrase="Compose Defaults"></h2>
+  <h5><__trans phrase="Compose Defaults"></h5>
   <mtapp:settinggroup id="entry-settings">
 
     <mtapp:setting
        id="status_default"
        label="<__trans phrase="Status">"
        hint="<__trans phrase="Specifies the default Post Status when creating a new entry.">">
-      <select name="status_default" id="status_default">
+      <select name="status_default" id="status_default" class="form-control">
         <option value="1"<mt:if name="STATUS_DEFAULT_1"> selected="selected"</mt:if>><__trans phrase="Unpublished"></option>
         <option value="2"<mt:if name="STATUS_DEFAULT_2"> selected="selected"</mt:if>><__trans phrase="Published"></option>
       </select>
@@ -129,7 +130,7 @@
        hint="<__trans phrase="Specifies the default Text Formatting option when creating a new entry.">"
        help_page="blog_settings_entry_defaults"
        help_section="text_formatting">
-      <select name="convert_paras" id="convert_paras">
+      <select name="convert_paras" id="convert_paras" class="form-control">
       <mt:loop name="text_filters">
         <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
       </mt:loop>
@@ -146,7 +147,7 @@
     <mt:unless name="system_allow_comments">
       <p>
         <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
-        <span class="alert-warning-inline">
+        <span class="text-warning alert-warning-inline">
       <mt:if name="is_blog">
           <__trans phrase="Note: This option is currently ignored since comments are disabled either blog or system-wide.">
       <mt:else>
@@ -167,7 +168,7 @@
     <mt:unless name="system_allow_pings">
       <p>
         <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
-        <span class="alert-warning-inline">
+        <span class="text-warning alert-warning-inline">
       <mt:if name="is_blog">
           <__trans phrase="Note: This option is currently ignored since TrackBacks are disabled either blog or system-wide.">
       <mt:else>
@@ -183,7 +184,7 @@
        id="entry_prefs"
        label="<__trans phrase="Entry Fields">"
        hint="<__trans phrase="_USAGE_ENTRYPREFS">">
-      <ul class="fixed-width multiple-selection">
+      <ul class="list-inline fixed-width multiple-selection">
         <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <label for="entry-prefs-title"><__trans phrase="Title"></label></li>
         <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-body" value="text" checked="checked" disabled="disabled" class="cb" /> <label for="entry-prefs-body"><__trans phrase="Body"></label></li>
         <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-category" value="category"<mt:if name="entry_disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-category"><__trans phrase="Categories"></label></li>
@@ -201,7 +202,7 @@
      id="entry_prefs"
      label="<__trans phrase="Page Fields">"
      hint="<__trans phrase="_USAGE_ENTRYPREFS">">
-    <ul class="fixed-width multiple-selection">
+    <ul class="list-inline fixed-width multiple-selection">
       <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <label for="page-prefs-title"><__trans phrase="Title"></label></li>
       <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-body" value="text" checked="checked" disabled="disabled" class="cb" /> <label for="page-prefs-body"><__trans phrase="Body"></label></li>
       <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-excerpt" value="excerpt" <mt:if name="page_disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-excerpt"><__trans phrase="Excerpt"></label></li>
@@ -214,25 +215,25 @@
     </mtapp:setting>
   </mtapp:settinggroup>
 
-  <h2><__trans phrase="WYSIWYG Editor Setting"></h2>
+  <h5><__trans phrase="WYSIWYG Editor Setting"></h5>
   <mtapp:settinggroup id="wysiwyg-editor-setting">
     <mtapp:setting
        id="content_css"
        label="<__trans phrase="Content CSS">"
        hint="<__trans phrase="Content CSS will be applied when WYSIWYG editor does support. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css">"
        show_hint="1">
-       <input type="text" name="content_css" value="<mt:var name="content_css" escape="html">" placeholder="http://www.example.com/path/to/cssfile.css" />
+       <input type="text" name="content_css" class="form-control" value="<mt:var name="content_css" escape="html">" placeholder="http://www.example.com/path/to/cssfile.css" />
     </mtapp:setting>
   </mtapp:settinggroup>
 
-  <h2><__trans phrase="Punctuation Replacement Setting"></h2>
+  <h5><__trans phrase="Punctuation Replacement Setting"></h5>
   <mtapp:settinggroup id="smart-replace-setting">
 
-    <p class="hint"><__trans phrase="Replace UTF-8 characters frequently used by word processors with their more common web equivalents."></p>
+    <p class="text-muted hint"><__trans phrase="Replace UTF-8 characters frequently used by word processors with their more common web equivalents."></p>
     <mtapp:setting
        id="nwc_smart_replace"
        label="<__trans phrase="Punctuation Replacement">">
-      <ul>
+      <ul class="list-unstyled">
         <li><input type="radio" value="2" name="nwc_smart_replace" id="nwc_replace_none" onclick="DOM.addClassName(DOM.getElement('replace-fields-field'), 'hidden');"<mt:if name="nwc_smart_replace_2"> checked="checked"</mt:if>> <label for="nwc_replace_none"><__trans phrase="No substitution"></label></li>
         <li><input type="radio" value="1" name="nwc_smart_replace" id="nwc_replace_entities" onclick="DOM.removeClassName(DOM.getElement('replace-fields-field'), 'hidden');"<mt:if name="nwc_smart_replace_1"> checked="checked"</mt:if>> <label for="nwc_replace_entities"><__trans phrase="Character entities (&amp#8221;, &amp#8220;, etc.)"></label></li>
         <li><input type="radio" value="0" name="nwc_smart_replace" id="nwc_replace_ascii" onclick="DOM.removeClassName(DOM.getElement('replace-fields-field'), 'hidden');"<mt:if name="nwc_smart_replace_0"> checked="checked"</mt:if>> <label for="nwc_replace_ascii"><__trans phrase="ASCII equivalents (&quot;, ', ..., -, --)"></label></li>
@@ -243,7 +244,7 @@
     <mtapp:setting
        id="replace-fields"
        label="<__trans phrase="Replace Fields">">
-      <ul class="multiple-selection">
+      <ul class="list-inline multiple-selection">
         <li><input type="checkbox" value="1" name="nwc_title" id="nwc_title"<mt:if name="nwc_title"> checked="checked"</mt:if> class="cb"/> <label for="nwc_title"><__trans phrase="Title"></label></li>
         <li><input type="checkbox" value="1" name="nwc_text" id="nwc_text"<mt:if name="nwc_text"> checked="checked"</mt:if> class="cb"/> <label for="nwc_text"><__trans phrase="Body"></label></li>
         <li><input type="checkbox" value="1" name="nwc_text_more" id="nwc_text_more"<mt:if name="nwc_text_more"> checked="checked"</mt:if> class="cb"/> <label for="nwc_text_more"><__trans phrase="Extended"></label></li>
@@ -255,22 +256,23 @@
   </mt:unless>
   </mtapp:settinggroup>
 
-  <h2><__trans phrase="Image default insertion options"></h2>
+  <h5><__trans phrase="Image default insertion options"></h5>
   <mtapp:settinggroup id="default-insert-options">
 
     <mtapp:setting
        id="image_default_thumb"
-       label="<__trans phrase="Use thumbnail">">
+       label="<__trans phrase="Use thumbnail">"
+       class="form-inline">
       <input type="checkbox" name="image_default_thumb" id="image_default_thumb" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
     <label for="image_default_thumb"><__trans phrase="Use thumbnail"></label>
-    (<label for="image_default_width"><__trans phrase="width:"></label> <input type="text" name="image_default_width" id="image_default_width" class="text num" value="<mt:var name="thumb_width" escape="html">"/> <__trans phrase="pixels">)
+    (<label for="image_default_width"><__trans phrase="width:"></label> <input type="text" name="image_default_width" id="image_default_width" class="form-control text num" value="<mt:var name="thumb_width" escape="html">"/> <__trans phrase="pixels">)
       <div id="image_default_thumb-field-msg-block" style="display: none;"></div>
     </mtapp:setting>
 
     <mtapp:setting
        id="image_default_align"
        label="<__trans phrase="Alignment">">
-      <ul id="alignment-<mt:var name="id">">
+      <ul id="alignment-<mt:var name="id">" class="list-inline">
         <li style="display: inline-block">
           <input type="radio" name="image_default_align" id="image_default_align-none" class="rb" value="none" <mt:if name="align_none">checked="checked" </mt:if>/>
           <label for="image_default_align-none" class="icon-left icon-left-xwide icon-align icon-align-none"><__trans phrase="None"></label>
@@ -303,14 +305,18 @@
         type="submit"
         accesskey="s"
         title="<__trans phrase="Save changes to these settings (s)">"
-        class="save action primary button">
+        class="save action primary button btn btn-primary">
       <__trans phrase="Save Changes">
     </button>
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </mtapp:form>
 
-<mt:setvarblock name="jq_js_include" append="1">
+<mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
     jQuery.mtValidateAddRules({
         "#basename_limit": function($e) {
             if ( $e.val() < 15 || $e.val() > 250 ) {
@@ -353,7 +359,8 @@
         jQuery("#image_default_width").mtUnvalidate();
       }
     });
+</script>
 </mt:setvarblock>
 
-
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

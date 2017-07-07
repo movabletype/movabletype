@@ -941,7 +941,8 @@ sub save_cfg_system_web_services {
 sub upgrade {
     my $app = shift;
 
-    if ( $ENV{FAST_CGI} ||  MT->config->PIDFilePath ) {
+    if ( $ENV{FAST_CGI} || MT->config->PIDFilePath ) {
+
         # don't enter the upgrade loop.
         $app->reboot;
     }
