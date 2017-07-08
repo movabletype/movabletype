@@ -2082,7 +2082,7 @@ sub update_ping_list {
                 my $translation = $mt->translate($phrase, @p);
                 if (exists $args{escape}) {
                     if (lc($args{escape}) eq 'html') {
-                        $translation = MT::Util::encode_html($translation);
+                        #$translation = MT::Util::encode_html($translation);
                     } elsif (lc($args{escape}) eq 'url') {
                         $translation = MT::Util::encode_url($translation);
                     } else {
