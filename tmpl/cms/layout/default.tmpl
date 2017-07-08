@@ -1,7 +1,8 @@
 <mt:setvartemplate name="layout">
   <mt:include name="layout/default/header.tmpl">
 
-  <mt:if name="related_content">
+  <mt:setvarblock name="has_info"><mt:if name="object_nav">1<mt:elseif name="related_content">1</mt:if></mt:setvarblock>
+  <mt:if name="has_info">
     <mt:include name="modules/notification_indicator.tmpl">
     <mt:include name="modules/system_msg.tmpl">
     <div class="row">
@@ -11,7 +12,18 @@
         <mt:var name="content">
       </div>
       <div class="col-md-3">
-        <mt:var name="related_content">
+        <mt:if name="object_nav">
+          <div class="row">
+            <div class="col-md-12">
+              <mt:var name="object_nav">
+            </div>
+          </div>
+        </mt:if>
+        <div class="row">
+          <div class="col-md-12">
+            <mt:var name="related_content">
+          </div>
+        </div>
       </div>
     </div>
   <mt:else>

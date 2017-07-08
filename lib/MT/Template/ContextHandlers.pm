@@ -3615,9 +3615,13 @@ Accepted values: "all", "index".
 
 sub _hdlr_app_new_statusmsg {
     my ( $ctx, $args, $cond ) = @_;
-    my $app     = MT->instance;
-    my $id      = $args->{id};
-    my $class   = $args->{class} || 'info';
+    my $app = MT->instance;
+    my $id  = $args->{id};
+
+    my $class = $args->{class} || 'info';
+    $class = 'warning' if $class eq 'alert';
+    $class = 'danger'  if $class eq 'error';
+
     my $msg     = $ctx->slurp;
     my $rebuild = $args->{rebuild} || '';
     my $no_link = $args->{no_link} || '';
