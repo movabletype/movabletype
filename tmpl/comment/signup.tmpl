@@ -1,21 +1,26 @@
 <mt:setvarblock name="page_title"><__trans phrase="Create an account"></mt:setvarblock>
-<mt:include name="include/chromeless_header.tmpl">
 
+<mt:setvarblock name="html_head" append="1">
+<mt:include name="modules/libjs.tmpl">
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.mt-validate.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:setvarblock>
+
+<mt:setvarblock name="content">
 <mt:if name="error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="generic-error"
-     class="error"
+     class="danger"
      can_close="0">
     <mt:var name="error">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:If name="message">
-    <mt:App:StatusMsg
+    <mt:App:newStatusMsg
         id="message"
-        class="alert"
+        class="warning"
         can_close="0">
         <$mt:Var name="message"$>
-    </mt:App:StatusMsg>
+    </mt:App:newStatusMsg>
 </mt:If>
 
 <mt:setvarblock name="common_fields" id="common_fields">
@@ -24,16 +29,18 @@
    label="<__trans phrase="Display Name">"
    label_class="top-label"
    required="1"
-   hint="<__trans phrase="The name appears on your comment.">">
-  <input type="text" name="nickname" id="nickname" class="text full" value="<mt:var name="nickname" escape="html">" />
+   hint="<__trans phrase="The name appears on your comment.">"
+   no_grid="1">
+  <input type="text" name="nickname" id="nickname" class="form-control text full" value="<mt:var name="nickname" escape="html">" />
 </mtapp:setting>
 <mtapp:setting
    id="email"
    label="<__trans phrase="Email Address">"
    label_class="top-label"
    required="1"
-   hint="<__trans phrase="Your email address.">">
-  <input type="text" name="email" id="email" class="text full" value="<mt:var name="email" escape="html">" />
+   hint="<__trans phrase="Your email address.">"
+   no_grid="1">
+  <input type="text" name="email" id="email" class="form-control text full" value="<mt:var name="email" escape="html">" />
 </mtapp:setting>
 </mt:setvarblock>
 
@@ -49,8 +56,9 @@
      label="<__trans phrase="Username">"
      label_class="top-label"
      required="1"
-     hint="<__trans phrase="Your login name.">">
-    <input type="text" name="username" id="username" class="text full" value="<mt:var name="username" escape="html">" />
+     hint="<__trans phrase="Your login name.">"
+     no_grid="1">
+    <input type="text" name="username" id="username" class="form-control text full" value="<mt:var name="username" escape="html">" />
   </mtapp:setting>
 
   <$mt:var name="common_fields"$>
@@ -61,8 +69,9 @@
      label_class="top-label"
      required="1"
      hint="<__trans phrase="Select a password for yourself."> (<$mt:PasswordValidationRule$>)"
-     show_hint="1">
-    <input type="password" name="password" id="password" class="text password" value="" />
+     show_hint="1"
+     no_grid="1">
+    <input type="password" name="password" id="password" class="form-control text password" value="" />
   </mtapp:setting>
   <script type="text/javascript">
   /* <![CDATA[ */
@@ -74,15 +83,17 @@
      label="<__trans phrase="Password Confirm">"
      label_class="top-label"
      required="1"
-     hint="<__trans phrase="Repeat the password for confirmation.">">
-    <input type="password" name="pass_verify" id="pass_verify" class="text password" value="" />
+     hint="<__trans phrase="Repeat the password for confirmation.">"
+     no_grid="1">
+    <input type="password" name="pass_verify" id="pass_verify" class="form-control text password" value="" />
   </mtapp:setting>
   <mtapp:setting
      id="url"
      label="<__trans phrase="Website URL">"
      label_class="top-label"
-     hint="<__trans phrase="The URL of your website. (Optional)">">
-    <input type="text" name="url" id="url" class="text password" value="<mt:var name="url" escape="html">" />
+     hint="<__trans phrase="The URL of your website. (Optional)">"
+     no_grid="1">
+    <input type="text" name="url" id="url" class="form-control text password" value="<mt:var name="url" escape="html">" />
   </mtapp:setting>
   <mt:if name="captcha_fields">
     <div class="setting">
@@ -97,8 +108,9 @@
      label="<__trans phrase="Username">"
      label_class="top-label"
      required="1"
-     hint="<__trans phrase="Your login name.">">
-    <input type="text" name="username" id="username" class="text full" value="<mt:var name="username" escape="html">" />
+     hint="<__trans phrase="Your login name.">"
+     no_grid="1">
+    <input type="text" name="username" id="username" class="form-control text full" value="<mt:var name="username" escape="html">" />
   </mtapp:setting>
 
     <$mt:var name="common_fields"$>
@@ -127,13 +139,19 @@
     <button
        type="submit"
        accesskey="s"
-       class="action primary button">
+       class="action primary button btn btn-primary">
       <__trans phrase="Register">
     </button>
   </div>
 </form>
+</mt:setvarblock>
 
-<mt:setvarblock name="jq_js_include" append="1">
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/login.css" />
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
     function isContainsMultiByte ( val ) {
         var i = 0;
         while (i < val.length) {
@@ -169,6 +187,8 @@
         if ( !jQuery("#password").mtValidate('simple') ) return false;
         if ( !jQuery("#pass_verify").mtValidate('simple') ) return false;
     });
+</script>
 </mt:setvarblock>
 
-<mt:include name="include/chromeless_footer.tmpl">
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">

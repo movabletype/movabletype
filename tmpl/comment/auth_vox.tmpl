@@ -7,16 +7,22 @@
     <fieldset>
         <mtapp:setting
             id="vox_display"
-            class="has-auth-icon"
-            label="<__trans phrase="Your Vox Blog URL">">
-            http:// <input type="text" name="openid_userid" style="background-image: url(<mt:var name="static_uri">images/comment/vox_logo.png);width:230px;" />.vox.com
+            class="form-inline has-auth-icon"
+            label="<__trans phrase="Your Vox Blog URL">"
+            no_grid="1">
+            http:// <input type="text" name="openid_userid" class="form-control" style="background-image: url(<mt:var name="static_uri">images/comment/vox_logo.png);width:230px;" />.vox.com
         </mtapp:setting>
         <div class="actions-bar actions-bar-login">
             <button
                 type="submit"
-                class="sign-in action primary button"
+                class="sign-in action primary button btn btn-primary"
                 ><__trans phrase="Sign in"></button>
         </div>
-        <p><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png"> <a href="http://www.vox.com/"><__trans phrase="Learn more about Vox."></a></p>
+        <p>
+          <img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png">
+          <a href="http://www.vox.com/">
+            <__trans phrase="Learn more about Vox.">
+          </a>
+        </p>
     </fieldset>
 </form>
