@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1077,6 +1077,7 @@ use vars qw( @ISA %Lexicon );
 	'Bad AuthenticationModule config' => 'AuthenticationModuleの設定が正しくありません',
 
 ## lib/MT/Auth/MT.pm
+	'Password contains invalid character.' => 'パスワードに利用できない文字が含まれています。',
 	'Missing required module' => '必要なモジュールが見つかりません',
 
 ## lib/MT/Auth/OpenID.pm
@@ -2769,10 +2770,9 @@ use vars qw( @ISA %Lexicon );
 	'Image error: [_1]' => '画像でエラーが発生しました: [_1]',
 
 ## lib/MT/Util/Log.pm
+	'Unknown Logger Level: [_1]' => '不正なログレベルです: [_1]',
 	'Invalid Log module' => '不正なログモジュールが指定されています',
 	'Cannot load Log module: [_1]' => 'ログモジュールをロードできません: [_1]',
-	'Failed to write log: [_1]' => 'ログの書き込みに失敗しました: [_1]',
-	'Unknown Logger Level: [_1]' => '不正なログレベルです: [_1]',
 
 ## lib/MT/Util/YAML.pm
 	'Invalid YAML module' => '不正なYAMLモジュールが指定されています',
@@ -3161,6 +3161,7 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/theme.yaml
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
 	'Classic Website' => 'クラシックウェブサイト',
+
 ## themes/pico/templates/about_this_page.mtml
 
 ## themes/pico/templates/archive_index.mtml
@@ -3251,6 +3252,8 @@ use vars qw( @ISA %Lexicon );
 	'Pico' => 'Pico',
 	'Pico Styles' => 'Picoスタイル',
 	'A collection of styles compatible with Pico themes.' => 'Picoテーマと互換のあるスタイルです。',
+
+
 ## search_templates/comments.tmpl
 	'Search for new comments from:' => 'コメントを検索:',
 	'the beginning' => '最初から',
@@ -4048,6 +4051,7 @@ use vars qw( @ISA %Lexicon );
 	'Save changes to this author (s)' => 'ユーザーへの変更を保存 (s)',
 	'_USAGE_PASSWORD_RESET' => 'ユーザーのパスワードを再設定できます。パスワードがランダムに生成され、[_1]にメールで送信されます。',
 	'Initiate Password Recovery' => 'パスワードの再設定',
+	'You must use half-width character for password.' => 'パスワードには全角文字を利用できません。',
 
 ## tmpl/cms/edit_blog.tmpl
 	'Create Blog' => 'ブログの作成',
@@ -4736,7 +4740,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/template_table.tmpl
 	'Create Archive Template:' => 'アーカイブテンプレートの作成:',
-	'Entry Listing' => '記事リスト',
 	'Create template module' => 'テンプレートモジュールの作成',
 	'Create index template' => 'インデックステンプレートの作成',
 	'Publish selected templates (a)' => '選択されたテンプレートを公開 (a)',
@@ -5523,30 +5526,41 @@ use vars qw( @ISA %Lexicon );
 ## addons/Cloud.pack/lib/Cloud/App/CMS.pm
 	'Owner' => '管理者',
 	'Creator' => '制作者',
+	'FTP passowrd for [_1] has successfully been updated.' => '[_1]用 FTP パスワードが更新されました。',
 	'Unable to reset [_1] FTPS password.' => 'FTPSパスワードのリセットが出来ませんでした。',
 	'Failed to update [_1]: some of [_2] were changed after you opened this screen.' => 'いくつかの[_2]がすでに更新されていたため、[_1]の更新に失敗しました。',
 	'Basic Authentication setting' => 'Basic認証の設定',
 	'Cannot access to this uri: [_1]' => '[_1]が存在しません。',
+	'Basic authentication for site has successfully been updated.' => 'Basic認証の設定が更新されました。',
 	'Unable to update Basic Authentication settings.' => 'Basic認証の設定を保存する事が出来ませんでした。',
 	'Administration Screen Setting' => '管理画面の設定',
 	'The URL you specified is not available.' => '指定されたURLは利用できません。',
 	'Unable to update Admin Screen URL settings.' => '管理画面のURLを変更できませんでした。',
+	'The URL for administration screen has successfully been updated.' => '管理画面のURLが変更されました。',
 	'Cannot delete basicauth_admin file.' => 'Basic認証の設定を削除する事が出来ませんでした。',
+	'Basic authentication for administration screen has successfully been cleared.' => '管理画面のBasic認証設定が削除されました。',
 	'User ID is required.' => 'ユーザー名は必須です。',
 	'Password is required.' => 'パスワードは必須です。',
+	'Unable to update basic authentication for administration screen.' => '管理画面のBasic認証設定を更新できません。',
 	'Unable to write temporary file.' => '一時保存ファイルの書き込みが出来ませんでした。',
+	'Basic authentication for administration screen has successfully been updated.' => '管理画面のBasic認証設定が更新されました。',
 	'Cannot delete ip_restriction_[_1] file.' => 'アクセス制限の設定を削除することができませんでした。',
+	'IP restriction for administration screen has successfully been cleared.' => '管理画面のアクセス制限が解除されました。',
 	'[_1] is not a valid IP address.' => '[_1] は正しいIPアドレスではありません。',
 	'Unable to write allowed IP addresses file.' => 'アクセス許可リストファイルの書き込みができませんでした。',
+	'IP restriction white list for administration screen  has successfully been updated.' => '管理画面のアクセス制限が更新されました。',
 	'HTTP Redirect setting' => 'URLリダイレクトの設定',
+	'HTTP redirect settings has successfully updated.' => 'URLリダイレクトの設定が更新されました。',
 	'Unable to update HTTP Redirect settings.' => 'URLリダイレクトの設定を保存することが出来ませんでした。',
 	'Update SSL Certification' => 'サーバー証明書の更新',
 	'__SSL_CERT_UPDATE' => '更新',
 	'__SSL_CERT_INSTALL' => '導入',
 	'Cannot copy default cert file.' => '既定のサーバー証明書のコピーに失敗しました。',
 	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
+	'SSL certification has successfully been updated.' => 'サーバー証明書が更新されました。',
 	'Unable to update SSL certification.' => 'サーバー証明書の更新をする事が出来ませんでした。',
 	'Config Directive' => '環境変数',
+	'Movable Type environment settings has successfully been updated.' => 'MT環境変数の設定が更新されました。',
 	'Restoring Backup Data' => 'バックアップデータの復元',
 	'backup data' => 'バックアップデータ',
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
@@ -5554,6 +5568,7 @@ use vars qw( @ISA %Lexicon );
 	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを保存できません。',
 	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを作成できません。',
 	'Unable to write AUTOUPDATE file: [_1]' => '自動アップデートの設定を保存することが出来ませんでした。',
+	'Auto update settings has successfully been updated.' => '自動アップデートの設定が更新されました。',
 	'IP Restriction settings' => 'アクセス制限の設定',
 	'Domain, Path and IP addresses are required.' => 'ドメイン名、パス名、IPアドレスは必須です。',
 	'\'[_1]\' does not exist.' => '\'[_1]\' が見つかりません。',
@@ -5561,7 +5576,8 @@ use vars qw( @ISA %Lexicon );
 	'Unable to create acl path: [_1]' => '設定ファイルの書き込みディレクトリを作成できません: [_1]',
 	'Cannot write to acl directory: [_1]' => '設定ファイルの書き込みディレクトリに書き込めません: [_1]',
 	'Cannot write to acl file: [_1]' => '設定ファイルを書き込めません: [_1]',
-	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered  is not a valid.' => 'アクセス制限の設定を、適用することができません。おそらく、入力されたパスまたはIPアドレスが有効ではない可能性があります。',
+	'IP restriction for site has successfully been updated.' => 'アクセス制限の設定が更新されました。',
+	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered is not a valid.' => 'アクセス制限の設定を、適用することができません。おそらく、入力されたパスまたはIPアドレスが有効ではない可能性があります。',
 	'Unable to remove acl file.' => 'アクセス制限リストファイルの削除ができません。',
 
 ## addons/Cloud.pack/lib/Cloud/Template.pm
@@ -6796,6 +6812,8 @@ use vars qw( @ISA %Lexicon );
 	'The sync setting with the same name already exists.' => '同名のサーバー配信設定がすでに存在します。',
 	'Reached the upper limit of the parallel execution.' => '同時に実行できる配信の上限に達しているため、即時配信を実行できません。',
 	'Process ID can\'t be acquired.' => 'プロセスIDを取得できません。',
+	'Sync setting \'[_1]\' (ID: [_2]) edited by [_3].' => '[_3] が、サーバー配信の設定 \'[_1]\' (ID: [_2]) を保存しました。',
+	'Sync setting \'[_1]\' (ID: [_2]) deleted by [_3].' => '[_3] が、サーバー配の信設定 \'[_1]\' (ID: [_2]) を削除しました。',
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'FTPサーバー \'[_1]\' への接続中にエラーが発生しました: [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'FTPサーバーのカレントディレクトリが取得できませんでした。',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした',
@@ -7128,17 +7146,6 @@ use vars qw( @ISA %Lexicon );
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
 	'Failed.' => '失敗',
 
-## plugins/mixiComment/lib/mixiComment/App.pm
-	'mixi reported that you failed to login.  Try again.' => 'ログインに失敗しました。',
-
-## plugins/mixiComment/mixiComment.pl
-	'Allows commenters to sign in to Movable Type using their own mixi username and password via OpenID.' => 'mixiのアカウントを使ってMovable Typeにサインインし、コメントできるようにします。',
-	'mixi' => 'ミクシィ',
-
-## plugins/mixiComment/tmpl/config.tmpl
-	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'すでにmixiのIDを登録してあります。ブログに関連付けるmixiのIDを変えたい場合は、<a href="[_1]">ここをクリックしてmixiにログイン</a>してください。マイミクだけでなくすべてのmixiユーザーからのコメントを受け付けたいときは、初期化ボタンをクリックして設定を消去してください。',
-	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'マイミクからのみコメントを受け付ける設定にするには、<a href="[_1]">ここをクリックしてまずmixiにログイン</a>してください。',
-
 ## plugins/spamlookup/lib/spamlookup.pm
 	'Failed to resolve IP address for source URL [_1]' => 'ソースURL[_1]の解決に失敗しました。',
 	'Moderating: Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'ドメインのIPアドレス「[_2]」と送信元「[_1]」のIPアドレス「[_3]」が合致しないため、「未公開」にします。',
@@ -7216,6 +7223,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 311
+## New words: 418
 
 1;

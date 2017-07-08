@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -86,33 +86,34 @@ __PACKAGE__->install_properties(
             ## end of fields for mt-upgrade.cgi
 
             # meta properties
-            'image_default_wrap_text'   => 'integer meta',
-            'image_default_align'       => 'string meta',
-            'image_default_thumb'       => 'integer meta',
-            'image_default_width'       => 'integer meta',
-            'image_default_wunits'      => 'string meta',
-            'image_default_constrain'   => 'integer meta',
-            'image_default_popup'       => 'integer meta',
-            'commenter_authenticators'  => 'string meta',
-            'require_typekey_emails'    => 'integer meta',
-            'nofollow_urls'             => 'integer meta',
-            'follow_auth_links'         => 'integer meta',
-            'update_pings'              => 'string meta',
-            'captcha_provider'          => 'string meta',
-            'publish_queue'             => 'integer meta',
-            'nwc_smart_replace'         => 'integer meta',
-            'nwc_replace_field'         => 'string meta',
-            'template_set'              => 'string meta',
-            'page_layout'               => 'string meta',
-            'include_system'            => 'string meta',
-            'include_cache'             => 'integer meta',
-            'max_revisions_entry'       => 'integer meta',
-            'max_revisions_template'    => 'integer meta',
-            'theme_export_settings'     => 'hash meta',
-            'category_order'            => 'text meta',
-            'folder_order'              => 'text meta',
-            'publish_empty_archive'     => 'boolean meta',
-            'upload_destination'        => 'boolean meta', # not really boolean but blob field is good.
+            'image_default_wrap_text'  => 'integer meta',
+            'image_default_align'      => 'string meta',
+            'image_default_thumb'      => 'integer meta',
+            'image_default_width'      => 'integer meta',
+            'image_default_wunits'     => 'string meta',
+            'image_default_constrain'  => 'integer meta',
+            'image_default_popup'      => 'integer meta',
+            'commenter_authenticators' => 'string meta',
+            'require_typekey_emails'   => 'integer meta',
+            'nofollow_urls'            => 'integer meta',
+            'follow_auth_links'        => 'integer meta',
+            'update_pings'             => 'string meta',
+            'captcha_provider'         => 'string meta',
+            'publish_queue'            => 'integer meta',
+            'nwc_smart_replace'        => 'integer meta',
+            'nwc_replace_field'        => 'string meta',
+            'template_set'             => 'string meta',
+            'page_layout'              => 'string meta',
+            'include_system'           => 'string meta',
+            'include_cache'            => 'integer meta',
+            'max_revisions_entry'      => 'integer meta',
+            'max_revisions_template'   => 'integer meta',
+            'theme_export_settings'    => 'hash meta',
+            'category_order'           => 'text meta',
+            'folder_order'             => 'text meta',
+            'publish_empty_archive'    => 'boolean meta',
+            'upload_destination' =>
+                'boolean meta',   # not really boolean but blob field is good.
             'extra_path'                => 'string meta',
             'allow_to_change_at_upload' => 'boolean meta',
             'operation_if_exists'       => 'integer meta',

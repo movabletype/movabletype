@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -26,39 +26,39 @@ define('MULTIBLOG_ACCESS_ALLOWED', 2);
 global $multiblog_orig_handlers;
 $multiblog_orig_handlers = array();
 $multiblog_orig_handlers['mtblogpingcount']
-    = $ctx->add_tag('blogpingcount', 'multiblog_MTBlogPingCount');
+    = $ctx->add_override_tag('function', 'blogpingcount', 'multiblog_MTBlogPingCount');
 $multiblog_orig_handlers['mtblogcommentcount']
-    = $ctx->add_tag('blogcommentcount', 'multiblog_MTBlogCommentCount');
+    = $ctx->add_override_tag('function', 'blogcommentcount', 'multiblog_MTBlogCommentCount');
 $multiblog_orig_handlers['mtblogcategorycount']
-    = $ctx->add_tag('blogcategorycount', 'multiblog_MTBlogCategoryCount');
+    = $ctx->add_override_tag('function', 'blogcategorycount', 'multiblog_MTBlogCategoryCount');
 $multiblog_orig_handlers['mtblogentrycount']
-    = $ctx->add_tag('blogentrycount', 'multiblog_MTBlogEntryCount');
+    = $ctx->add_override_tag('function', 'blogentrycount', 'multiblog_MTBlogEntryCount');
 $multiblog_orig_handlers['mtassets']
-    = $ctx->add_container_tag('assets', 'multiblog_block_wrapper');
+    = $ctx->add_override_tag('block', 'assets', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtauthors']
-    = $ctx->add_container_tag('authors', 'multiblog_block_wrapper');
+    = $ctx->add_override_tag('block', 'authors', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtentries']
-    = $ctx->add_container_tag('entries', 'multiblog_block_wrapper');
+    = $ctx->add_override_tag('block', 'entries', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtcomments']
-    = $ctx->add_container_tag('comments', 'multiblog_block_wrapper');
+    = $ctx->add_override_tag('block', 'comments', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtcategories']
-    = $ctx->add_container_tag('categories', 'multiblog_block_wrapper');
+    = $ctx->add_override_tag('block', 'categories', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtpages']
-    = $ctx->add_container_tag('pages', 'multiblog_block_wrapper');
+    = $ctx->add_override_tag('block', 'pages', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtfolders']
-    = $ctx->add_container_tag('folders', 'multiblog_block_wrapper');
+    = $ctx->add_override_tag('block', 'folders', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtpings']
-    = $ctx->add_container_tag('pings', 'multiblog_block_wrapper');
+    = $ctx->add_override_tag('block', 'pings', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtblogs']
-    = $ctx->add_container_tag('blogs', 'multiblog_block_wrapper');
+    = $ctx->add_override_tag('block', 'blogs', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtwebsites']
-    = $ctx->add_container_tag('websites', 'multiblog_block_wrapper');
+    = $ctx->add_override_tag('block', 'websites', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mttags']
-    = $ctx->add_container_tag('tags', 'multiblog_block_wrapper');
+    = $ctx->add_override_tag('block', 'tags', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtinclude']
-    = $ctx->add_tag('include', 'multiblog_MTInclude');
+    = $ctx->add_override_tag('function', 'include', 'multiblog_MTInclude');
 $multiblog_orig_handlers['mttagsearchlink']
-    = $ctx->add_tag('tagsearchlink', 'multiblog_MTTagSearchLink');
+    = $ctx->add_override_tag('function', 'tagsearchlink', 'multiblog_MTTagSearchLink');
 
 $ctx->add_conditional_tag('mtmultiblogiflocalblog');
 
@@ -121,7 +121,7 @@ function multiblog_function_wrapper($tag, $args, &$_smarty_tpl) {
 
     $localvars = array('local_blog_id');
     $ctx->localize($localvars);
-    
+
     # Load multiblog access control list
     $incl = $args['include_blogs']
          || $args['include_websites']
@@ -144,7 +144,7 @@ function multiblog_function_wrapper($tag, $args, &$_smarty_tpl) {
         $include_blogs = $ctx->stash('multiblog_include_blog_ids');
         if (isset($include_blogs))
             $args['include_blogs'] = $include_blogs;
-        
+
         $exclude_blogs = $ctx->stash('multiblog_exclude_blog_ids');
         if (isset($exclude_blogs))
             $args['exclude_blogs'] = $exclude_blogs;
@@ -168,6 +168,7 @@ function multiblog_block_wrapper($args, $content, &$_smarty_tpl, &$repeat) {
 
     if (!isset($content)) {
         $ctx->localize($localvars);
+        $ctx->set_override_context( true );
 
         if (
             ($tag === 'mtblogs' || $tag === 'mtwebsites')
@@ -220,8 +221,10 @@ function multiblog_block_wrapper($args, $content, &$_smarty_tpl, &$repeat) {
     $result = call_user_func_array($fn, array($args, $content, &$_smarty_tpl, &$repeat));
 
     # Restore localized variables if last loop
-    if (!$repeat)
+    if (!$repeat) {
         $ctx->restore($localvars);
+        $ctx->set_override_context( false );
+    }
     return $result;
 }
 

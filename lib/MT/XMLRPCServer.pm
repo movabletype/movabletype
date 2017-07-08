@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -570,7 +570,8 @@ sub _edit_entry {
     my ( $blog_id, $entry_id, $user, $pass, $item, $publish )
         = @param{qw( blog_id entry_id user pass item publish )};
 
-    _validate_params( [ $blog_id, $entry_id, $user, $pass, $publish ] ) or return;
+    _validate_params( [ $blog_id, $entry_id, $user, $pass, $publish ] )
+        or return;
     my $values;
     foreach my $k ( keys %$item ) {
         if ( 'categories' eq $k || 'mt_tb_ping_urls' eq $k ) {
@@ -869,7 +870,8 @@ sub _get_entries {
     my ( $blog_id, $user, $pass, $num, $titles_only )
         = @param{qw( blog_id user pass num titles_only )};
 
-    _validate_params( [ $blog_id, $user, $pass, $num, $titles_only ] ) or return;
+    _validate_params( [ $blog_id, $user, $pass, $num, $titles_only ] )
+        or return;
 
     my $obj_type = $param{page} ? 'page' : 'entry';
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
@@ -990,7 +992,8 @@ sub _delete_entry {
     my ( $blog_id, $entry_id, $user, $pass, $publish )
         = @param{qw( blog_id entry_id user pass publish )};
 
-    _validate_params( [ $blog_id, $entry_id, $user, $pass, $publish ] ) or return;
+    _validate_params( [ $blog_id, $entry_id, $user, $pass, $publish ] )
+        or return;
 
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my $obj_type = $param{page} ? 'page' : 'entry';

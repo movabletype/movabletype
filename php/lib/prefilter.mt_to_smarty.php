@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2016 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -61,8 +61,6 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
     while(preg_match('/<MT:?Ignore\b[^>]*?>((?!<MT:?Ignore\b[^>]*?>).)*?<\/MT:?Ignore>/is', $tpl_source)){
         $tpl_source = preg_replace('/<MT:?Ignore\b[^>]*?>((?!<MT:?Ignore\b[^>]*?>).)*?<\/MT:?Ignore>/is', '', $tpl_source);
     }
-    
-
 
 
     if ($parts = preg_split('!(<(?:\$?|/)MT(?:(?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)+?)(?:\$?|/)>)!is', $tpl_source, -1,
@@ -112,7 +110,13 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                         $quote = '';
                     }
                     if ($ctx->global_attr[$attr]) {
-                        if($attr != 'setvar'){
+                        if( (preg_match('!^MTVar!i', $mttag ) || preg_match('!^MTGetVar!i', $mttag ) )
+                            && (
+                                (isset($attrs['name']) && preg_match('/\[.*\]/i', $attrs['name'] ))
+                                || (isset($attrs['index']) || isset($attrs['key']) ))
+                            && $attr == 'setvar'){
+                            $attrargs .= ' ' . $attr . '=' . $quote . $attrs[$attr] . $quote;
+                        } else {
                             $modargs .= '|';
                             if ($ctx->global_attr[$attr] != '1') {
                                 $modargs .= $ctx->global_attr[$attr];
@@ -123,8 +127,6 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                             if (isset($arglist[$a][4])) {
                                $modargs .= _parse_modifier($arglist[$a][4]);
                             }
-                        } else {
-                            $attrargs .= ' ' . $attr . '=' . $quote . $attrs[$attr] . $quote;
                         }
                     } else {
                         // reconstruct attribute in case we modified
