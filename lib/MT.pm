@@ -2047,7 +2047,7 @@ sub update_ping_list {
         #  * encode the translated string from translate()
         #  * decode again for return
         $text = Encode::encode( 'utf8', $text )
-            if Encode::is_utf8($text);
+            unless Encode::is_utf8($text);
         while (1) {
             return '' unless $text;
             $text
@@ -2091,7 +2091,7 @@ sub update_ping_list {
                     }
                 }
                 $translation = Encode::encode('utf8', $translation)
-                    if Encode::is_utf8($translation);
+                    unless Encode::is_utf8($translation);
                 $translation;
             }
             !igem or last;
@@ -3357,7 +3357,7 @@ L<ERROR HANDLING> for more information.
 
 =head2 MT->new( %args )
 
-Returns a I<MT> singleton instance. Returns C<undef> on failure. 
+Returns a I<MT> singleton instance. Returns C<undef> on failure.
 If no active instance exists, will set that object as active instance.
 
 I<new> will also read your MT configuration file (provided that it can find it--if
@@ -3510,7 +3510,7 @@ early; prior to loading any addons or plugins.
 
 =head2 MT->run_tasks
 
-Invokes the task system through L<MT::TaskMgr> to run any registered tasks 
+Invokes the task system through L<MT::TaskMgr> to run any registered tasks
 that are pending execution. See L<MT::TaskMgr> for further documentation.
 
 =head2 MT->find_addons( $type )
@@ -3772,15 +3772,15 @@ I<$entry>, you would use
 
 Registers a new callback handler for a particular registered callback.
 
-The first parameter is the name of the callback method. 
-The second parameter is a priority (a number in the range of 1-10) 
-which will control the order that the handler is executed in relation 
+The first parameter is the name of the callback method.
+The second parameter is a priority (a number in the range of 1-10)
+which will control the order that the handler is executed in relation
 to other handlers. (callbacks with priority 1 will be called first) If
 two handlers register with the same priority, they will be executed in
-the order that they registered. It is also possible to register callacks 
-with priority 0 and 11, but only one of each. The third parameter is a 
-C<MT::Plugin> object reference that is associated with the handler (this 
-parameter is optional). The fourth parameter is a code reference that is 
+the order that they registered. It is also possible to register callacks
+with priority 0 and 11, but only one of each. The third parameter is a
+C<MT::Plugin> object reference that is associated with the handler (this
+parameter is optional). The fourth parameter is a code reference that is
 invoked to handle the callback. For example:
 
     MT->add_callback('BuildFile', 1, undef, \&rebuild_file_hdlr);
@@ -3811,7 +3811,7 @@ Removes a callback that was previously registered.
 =head2 MT->register_callbacks([...])
 
 Registers several callbacks simultaneously. Each element in the array
-parameter given should be a hashref containing these elements: C<name>, 
+parameter given should be a hashref containing these elements: C<name>,
 C<priority>, C<plugin> and C<code>.
 
 =head2 MT->run_callbacks($meth[, $arg1, $arg2, ...])
@@ -3903,7 +3903,7 @@ For example:
 
 =head2 MT->model( $id )
 
-Returns a Perl package name for the database-backed MT object type 
+Returns a Perl package name for the database-backed MT object type
 identified by C<$id>. For example:
 
     # Assigns (by default) 'MT::Blog' to $blog_class
@@ -3912,7 +3912,7 @@ identified by C<$id>. For example:
 It is a recommended practice to utilize the model method to derive the
 implementation package name, instead of hardcoding Perl package names.
 
-A list of names to be used with this function can be found in the 
+A list of names to be used with this function can be found in the
 MT::Core module, but also plugins can add more names.
 
 =head2 MT->all_models( $id )
@@ -3950,14 +3950,14 @@ and C<version_number> methods as they report the API version information.
 
 =head2 MT->VERSION
 
-Returns the API version of MT. 
+Returns the API version of MT.
 
-Used internally to load suitable API 'compatibility' module, if a plugin 
+Used internally to load suitable API 'compatibility' module, if a plugin
 declares:
 
     use MT 4;
 
-in which case will attempt to load a module named "MT::Compat::v4". 
+in which case will attempt to load a module named "MT::Compat::v4".
 This module would contain compatibility support for MT 4-based plugins.
 
 =head2 MT->version_id
@@ -4036,10 +4036,10 @@ If the file cannot be found, it returns undef.
 
 =head2 $app->load_tmpl($tmpl_source[, @params][, $hashref])
 
-Loads a L<MT::Template> template using the either a filename as tmpl_source, 
-or a reference to a string. See the documentation for the C<build_page> 
-method to learn about how templates are located. The optional C<@params> 
-are passed to the L<MT::Template> constructor. The optional C<$hashref> is added 
+Loads a L<MT::Template> template using the either a filename as tmpl_source,
+or a reference to a string. See the documentation for the C<build_page>
+method to learn about how templates are located. The optional C<@params>
+are passed to the L<MT::Template> constructor. The optional C<$hashref> is added
 to the template's context.
 
 =head2 $app->load_global_tmpl($args[, $blog_id])

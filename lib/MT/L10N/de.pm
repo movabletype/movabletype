@@ -5712,7 +5712,7 @@ use vars qw( @ISA %Lexicon );
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec
 tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque
 pellentesque nulla. Maecenas condimentum quam. Vestibulum pretium
-fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae,	
+fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae,
 vulputate et, dignissim at, pede. Integer pellentesque orci at nibh.
 Morbi ante.</p>
 
