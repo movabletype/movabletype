@@ -815,6 +815,10 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Asset::_hdlr_asset_description',
             AssetCount =>
                 '$Core::MT::Template::Tags::Asset::_hdlr_asset_count',
+            EntryAssetCount =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_entry_asset_count',
+            PageAssetCount =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_entry_asset_count',
 
             ## Userpic
             AuthorUserpic =>

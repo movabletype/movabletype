@@ -1330,11 +1330,50 @@ B<Example:>
 sub _hdlr_asset_count {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
+
     $terms{blog_id} = $ctx->stash('blog_id') if $ctx->stash('blog_id');
     $terms{parent}  = \'is NULL';
     $terms{class}   = $args->{type} || '*';
     my $count = MT::Asset->count( \%terms, \%args );
     return $ctx->count_format( $count, $args );
+}
+
+sub _hdlr_entry_asset_count {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $e = $ctx->stash("entry")
+        or return $ctx->_no_entry_error();;
+
+    my $assets = $e->assets;
+
+    return 0 unless $assets && @$assets[0];
+    return scalar @$assets unless ($args->{type} || $args->{file_ext});
+
+    my @filters;
+    my @result;
+    if ( my $type = $args->{type} ) {
+        my @types = split( ',', $args->{type} );
+        push @filters,
+            sub { my $a = $_[0]->class; grep( m/$a/, @types ) };
+    }
+
+    # Added a file_ext filter to the filters list.
+    if ( my $ext = $args->{file_ext} ) {
+        my @exts = split( ',', $args->{file_ext} );
+        push @filters,
+            sub { my $a = $_[0]->file_ext; grep( m/$a/, @exts ) };
+    }
+
+    my @result = ();
+
+    ASSET2: foreach my $e (@$assets) {
+        for (@filters) {
+            next ASSET2 unless $_->($e);
+        }
+        push @result, $e;
+    }
+
+    return scalar @result;
 }
 
 ###########################################################################
