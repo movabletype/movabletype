@@ -581,7 +581,7 @@ sub translate_templatized {
     #  * encode the translated string from translate()
     #  * decode again for return
     $text = Encode::encode( 'utf8', $text )
-        unless Encode::is_utf8($text);
+        if Encode::is_utf8($text);
     my @cstack;
     while (1) {
         $text
@@ -612,7 +612,7 @@ sub translate_templatized {
             my $translation = $c->translate($phrase, @p);
             if (exists $args{escape}) {
                 if (lc($args{escape}) eq 'html') {
-                    # $translation = MT::Util::encode_html($translation);
+                    $translation = MT::Util::encode_html($translation);
                 } elsif (lc($args{escape}) eq 'url') {
                     $translation = MT::Util::encode_url($translation);
                 } else {
@@ -621,7 +621,7 @@ sub translate_templatized {
                 }
             }
             $translation = Encode::encode('utf8', $translation)
-                unless Encode::is_utf8($translation);
+                if Encode::is_utf8($translation);
             $translation;
         }
         !igem or last;

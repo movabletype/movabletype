@@ -2047,7 +2047,7 @@ sub update_ping_list {
         #  * encode the translated string from translate()
         #  * decode again for return
         $text = Encode::encode( 'utf8', $text )
-            unless Encode::is_utf8($text);
+            if Encode::is_utf8($text);
         while (1) {
             return '' unless $text;
             $text
@@ -2082,7 +2082,7 @@ sub update_ping_list {
                 my $translation = $mt->translate($phrase, @p);
                 if (exists $args{escape}) {
                     if (lc($args{escape}) eq 'html') {
-                        #$translation = MT::Util::encode_html($translation);
+                        $translation = MT::Util::encode_html($translation);
                     } elsif (lc($args{escape}) eq 'url') {
                         $translation = MT::Util::encode_url($translation);
                     } else {
@@ -2091,7 +2091,7 @@ sub update_ping_list {
                     }
                 }
                 $translation = Encode::encode('utf8', $translation)
-                    unless Encode::is_utf8($translation);
+                    if Encode::is_utf8($translation);
                 $translation;
             }
             !igem or last;
