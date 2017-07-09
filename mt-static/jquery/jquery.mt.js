@@ -984,19 +984,24 @@ $.mtValidator('top', {
 });
 $.mtValidator('simple', {
     wrapError: function ( $target, msg ) {
+        $target.parent().addClass('has-error');
         return $('<div />').append(
             $('<label/>')
                 .attr('for', $target.attr('id') )
-                .addClass('validate-error msg-error')
+                .addClass('validate-error msg-error text-danger')
                 .text(msg)
             );
+    },
+    removeError: function ( $target, $error_block ) {
+        $error_block.remove();
+        $target.parent().removeClass('has-error');
     },
     updateError: function( $target, $error_block, msg ) {
         $error_block.find('label.msg-error').text(msg);
     }
 });
 $.mtValidator('simple-group', {
-    removeError: function ( $target, $error_block, msg ) {
+    removeError: function ( $target, $error_block ) {
         var $container = $target.parents('.group-container');
         var groupInputs = $container.find('.group').toArray();
         var invalidInputs = jQuery.grep(groupInputs, function (input) {
@@ -1055,6 +1060,7 @@ $.mtValidator('simple-group', {
 });
 $.mtValidator('simple2', {
     wrapError: function ( $target, msg ) {
+        $target.parent().addClass('has-error');
         return $('<li />').append(
             $('<label/>')
                 .attr('for', $target.attr('id') )
@@ -1066,8 +1072,8 @@ $.mtValidator('simple2', {
         var ins = true;
         if ( $('div#'+id+'-msg-block ul').length == 0 ) {
             var $block = $('<div/>')
-                .addClass('validate-error msg-error')
-                .append( $('<ul />') );
+                .addClass('text-danger validate-error msg-error')
+                .append( $('<ul class="list-unstyled" />') );
 
             $('div#'+id+'-msg-block').append( $block );
         } else {
@@ -1084,6 +1090,7 @@ $.mtValidator('simple2', {
         }
     },
     removeError: function( $target, $error_block ) {
+        $target.parent().removeClass('has-error');
         var id = $target.parents().find('div.field-content').first().parent().attr('id');
         $error_block.remove();
         if ( $('div#'+id+'-msg-block ul li').length == 0 ) {
@@ -1105,10 +1112,11 @@ $.mtValidator('simple2', {
 });
 jQuery.mtValidator('url_path_subdomain', {
     wrapError: function ( $target, msg ) {
+        $target.parent().addClass('has-error');
         return jQuery('<div />').append(
             jQuery('<label/>')
                 .attr('for', $target.attr('id') )
-                .addClass('validate-error msg-error')
+                .addClass('validate-error msg-error text-danger')
                 .text(msg)
             );
     },
@@ -1125,6 +1133,7 @@ jQuery.mtValidator('url_path_subdomain', {
             .find('label.msg-error:hidden:first')
             .closest('div')
             .show();
+        $target.parent().removeClass('has-error');
     },
     updateError: function( $target, $error_block, msg ) {
         $error_block.find('label.msg-error').text(msg);
@@ -1134,7 +1143,7 @@ $.mtValidator('default', {
     wrapError: function ( $target, msg ) {
         return $('<label style="position: absolute;" />')
             .attr('for', $target.attr('id') || '')
-            .addClass('msg-error msg-balloon validate-error')
+            .addClass('msg-error msg-balloon validate-error label label-default')
             .text(msg);
     },
     showError: function( $target, $error_block ) {
@@ -1593,5 +1602,138 @@ $.fn.mtEditInputBlock = function(options) {
       });
     });
 };
+
+/*
+ * mtModal
+ *
+ */
+$.fn.mtModal = function (options) {
+  var defaults = {
+      loadingimage: MT.App.StaticURI + 'images/indicator.gif',
+      esckeyclose: true
+  };
+  var opts = $.extend(defaults, options);
+  initModal();
+  return this.each(function() {
+      var eachOpts;
+      if (this.dataset.hasOwnProperty('mtModalLarge')) {
+        eachOpts = $.extend({ large: true }, opts);
+      } else {
+        eachOpts = opts;
+      }
+      $(this).on('click', function() {
+        openModal(this.href, eachOpts);
+        return false;
+      });
+  });
+};
+
+$.fn.mtModalClose = function () {
+  return this.each(function () {
+    $(this).on('click', function () {
+      $.fn.mtModal.close();
+    });
+
+    var url = $(this).data().mtModalClose;
+    if (url) {
+      var $modal = window.parent.$('.mt-modal');
+      if ($modal.length > 0) {
+        $modal.on('hide.bs.modal', function () {
+          window.parent.location = url;
+        });
+      }
+    }
+  });
+};
+
+$.fn.mtModal.open = function (url, options) {
+  var defaults = {
+      loadingimage: MT.App.StaticURI + 'images/indicator.gif',
+      esckeyclose: true
+  };
+  var opts = $.extend(defaults, options);
+  initModal();
+  openModal(url, opts);
+};
+
+$.fn.mtModal.close = function () {
+  var $modal = window.parent.$('.mt-modal');
+  if ($modal.length > 0) {
+    $modal.modal('hide');
+  }
+};
+
+function getModalHtml() {
+  return '<div class="modal fade mt-modal">'
+    + '<div class="modal-dialog">'
+    + '<div class="modal-content embed-responsive">'
+    + '<iframe class="embed-responsive-item"></iframe>'
+    + '</div>'
+    + '</div>'
+    + '</div>';
+}
+
+function initModal() {
+  var $modal = $('.mt-modal');
+  if ($modal.length == 0) {
+    var modalHtml = getModalHtml();
+    $(document.body).append(modalHtml);
+
+    // Disable drag & drop on overlay.
+    $modal.on('dragover drop', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    $('iframe').load(resizeModal);
+    $(window).on('resize', resizeModal);
+  }
+}
+
+function openModal(href, opts) {
+  if (opts.form) {
+    openModalWithForm(href, opts);
+  } else {
+    openModalWithoutForm(href, opts);
+  }
+
+  var $modal = $('.mt-modal');
+
+  if (opts.full) {
+    $modal.find('.modal-dialog').css('width', '100%');
+  } else {
+    $modal.find('.modal-dialog').css('width', '');
+  }
+
+  if (opts.large) {
+    $modal.find('.modal').addClass('bs-example-modal-lg');
+    $modal.find('.modal-dialog').addClass('modal-lg');
+  } else {
+    $modal.find('.modal').removeClass('bs-example-modal-lg');
+    $modal.find('.modal-dialog').removeClass('modal-lg');
+  }
+
+  $modal.find('iframe').attr('src', href);
+
+  $modal.modal({ keyboard: opts.esckeyclose });
+}
+
+function openModalWithForm(href, opts) {
+
+}
+
+function openModalWithoutForm(href, opts) {
+
+}
+
+function resizeModal() {
+  var modalHeight;
+  if ($('iframe').contents().find('body .modal-body').length > 0) {
+    modalHeight = $('iframe').contents().find('body').outerHeight(true);
+  } else {
+    modalHeight = $('iframe').contents().find('body > *:first').outerHeight(true);
+  }
+  $('.mt-modal .modal-content').css('padding-bottom', modalHeight);
+}
 
 })(jQuery);

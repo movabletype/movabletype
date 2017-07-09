@@ -3877,7 +3877,7 @@ sub _hdlr_app_listing {
     my $view = $ctx->var('view_expanded') ? ' expanded' : ' compact';
 
     my $table = <<TABLE;
-        <table id="$id-table" class="legacy listing-table $listing_class $id-table$view">
+        <table id="$id-table" class="table table-striped legacy listing-table $listing_class $id-table$view">
 $insides
         </table>
 TABLE
@@ -4210,12 +4210,12 @@ sub _hdlr_app_action_bar {
     my $buttons = $ctx->var('action_buttons') || '';
     my $buttons_html
         = $buttons =~ /\S/
-        ? qq{<div class="button-actions actions">$buttons</div>}
+        ? qq{<div class="pull-left button-actions actions">$buttons</div>}
         : '';
 
     return $ctx->build(<<EOT);
 $form_id
-<div id="actions-bar-$pos" class="actions-bar actions-bar-$pos $pager_class">
+<div id="actions-bar-$pos" class="row form-inline actions-bar actions-bar-$pos $pager_class">
     $pager
     $buttons_html
 <mt:include name="include/itemset_action_widget.tmpl">

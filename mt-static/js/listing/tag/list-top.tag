@@ -50,9 +50,9 @@
         column.sub_fields.forEach((subField) => {
           const selector = `td.${subField.parent_id} .${subField.class}`
           if (subField.checked) {
-            $(selector).show()
+            jQuery(selector).show()
           } else {
-            $(selector).hide()
+            jQuery(selector).hide()
           }
         })
       })

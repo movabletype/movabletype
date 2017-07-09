@@ -66,116 +66,6 @@
 </mt:if>
 </mt:setvarblock>
 
-<mt:setvarblock name="js_include" append="1">
-<script>
-function countMarked (f, nameRestrict) {
-    var count = 0;
-    var e = f.id;
-    if (!e) return 0;
-    if (e.type && e.type == 'hidden') return 1;
-    if (e.value && e.checked)
-        count++;
-    else
-    if (nameRestrict) {
-        for (i=0; i<e.length; i++)
-            if (e[i].checked && (e[i].name == nameRestrict))
-                count++;
-    } else {
-        for (i=0; i<e.length; i++)
-            if (e[i].checked)
-                count++;
-    }
-   return count;
-}
-
-function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
-                                  mode, args, phrase) {
-    var count = countMarked(f, nameRestrict);
-    if (!count) {
-        alert(trans('You did not select any [_1] [_2].', plural, phrase));
-        return false;
-    }
-    f.target = f.target || "_top";
-    if (f.elements['itemset_action_input'])
-        f.elements['itemset_action_input'].value = '';
-    f.elements["__mode"].value = mode;
-    if (args) {
-        var opt;
-        var input;
-        if (opt = itemset_options[args['action_name']]) {
-            if (opt['min'] && (count < opt['min'])) {
-                alert(trans('You can only act upon a minimum of [_1] [_2].', opt['min'], plural));
-                return false;
-            } else if (opt['max'] && (count > opt['max'])) {
-                alert(trans('You can only act upon a maximum of [_1] [_2].', opt['max'], plural));
-                return false;
-            } else if (opt['input']) {
-                if (input = prompt(opt['input'])) {
-                    f.elements['itemset_action_input'].value = input;
-                } else {
-                    return false;
-                }
-            } else if (opt['continue_prompt']) {
-                if (!confirm(opt['continue_prompt'])) {
-                    return false;
-                }
-            }
-        }
-        for (var arg in args) {
-            if (f.elements[arg]) f.elements[arg].value = args[arg];
-            if (arg == 'search' && f.elements['return_args'].value) {
-                f.elements['return_args'].value += '&do_search=1&search='+encodeURIComponent(args[arg]);
-            }
-        }
-        if (opt && opt['dialog']) {
-            var q = jQuery(f).serialize();
-            var url = ScriptURI+'?'+q;
-            jQuery.fn.mtModal.open(url);
-            return false;
-        }
-    }
-    f.submit();
-}
-
-function doRemoveItems (f, singular, plural, nameRestrict, args, params) {
-    if (params && (typeof(params) == 'string')) {
-        params = { 'mode': params };
-    } else if (!params) {
-        params = {}
-    }
-    var verb = params['verb'] || trans('delete');
-    var mode = params['mode'] || 'delete';
-    var object_type;
-    if (params['type']) {
-        object_type = params['type'];
-    } else {
-        for (var i = 0; i < f.childNodes.length; i++) {
-            if (f.childNodes[i].name == '_type') {
-                object_type = f.childNodes[i].value;
-                break;
-            }
-        }
-    }
-    var count = countMarked(f, nameRestrict);
-    if (!count) {
-        alert(params['none_prompt'] || trans('You did not select any [_1] to [_2].', plural, verb));
-        return false;
-    }
-    var singularMessage = params['singular_prompt'] || trans('Are you sure you want to [_2] this [_1]?');
-    var pluralMessage = params['plural_prompt'] || trans('Are you sure you want to [_3] the [_1] selected [_2]?');
-    if (object_type == 'role') {
-        singularMessage = trans('Are you certain you want to remove this role? By doing so you will be taking away the permissions currently assigned to any users and groups associated with this role.');
-        pluralMessage = trans('Are you certain you want to remove these [_1] roles? By doing so you will be taking away the permissions currently assigned to any users and groups associated with these roles.');
-    }
-    if (confirm(count == 1 ? trans(singularMessage, singular, verb) : trans(pluralMessage, count, plural, verb))) {
-        return doForMarkedInThisWindow(f, singular, plural, nameRestrict, mode, args);
-    } else {
-        return false;
-    }
-}
-</script>
-</mt:setvarblock>
-
 <mt:setvartemplate name="action_buttons">
 <button
    type="submit"
@@ -186,7 +76,7 @@ function doRemoveItems (f, singular, plural, nameRestrict, args, params) {
 </button>
 <mt:if name="can_delete_comment">
 <button
-   onclick="return doRemoveItems(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">', 'id', {'return_args' : '__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id">'})"
+   onclick="return MT.Util.doRemoveItems(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">', 'id', {'return_args' : '__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id">'})"
    type="submit"
    accesskey="x"
    title="<__trans phrase="Delete this comment (x)">"

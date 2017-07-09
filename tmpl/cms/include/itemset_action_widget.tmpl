@@ -11,7 +11,7 @@
 
 <mt:if name="has_pulldown_actions">
 <div class="plugin-actions actions">
-  <select class="action_selector" name="plugin_action_selector" onchange="updatePluginAction(this)">
+  <select class="form-control action_selector" name="plugin_action_selector" onchange="updatePluginAction(this)">
     <option value="0"><__trans phrase="More actions..."></option>
     <mt:loop name="list_actions">
       <option value="<mt:var name="key">"><mt:var name="label"></option>
@@ -30,13 +30,13 @@
   <mt:if name="form_id">
   <button
      type="button"
-     class="button mt-<mt:var name="form_id">-action">
+     class="btn btn-default button mt-<mt:var name="form_id">-action">
     <__trans phrase="Go">
   </button>
   <mt:else>
   <button
      type="button"
-     class="button mt-<mt:var name="object_type">-listing-form-action">
+     class="btn btn-default button mt-<mt:var name="object_type">-listing-form-action">
     <__trans phrase="Go">
   </button>
   </mt:if>
