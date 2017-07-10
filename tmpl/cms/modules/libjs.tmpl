@@ -51,19 +51,4 @@
 
 <script type="text/javascript" src="<$mt:var name="static_uri"$>bootstrap-3.3.7/js/bootstrap.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 
-<mt:include name="modules/mt_js_variables.tmpl">
-
 <script type="text/javascript" src="<mt:var name="static_uri">js/mt/util.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-
-<script>
-(function($) {
-  $(window).load(function () {
-    // modal
-    $('.mt-modal-open').mtModal();
-    $('[data-mt-modal-close]').mtModalClose();
-
-    // rebuild
-    $('a.mt-rebuild').mtRebuild();
-  });
-})(jQuery);
-</script>

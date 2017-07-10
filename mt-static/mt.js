@@ -3009,8 +3009,10 @@ function showMsg(message, id, type, rebuild, blogID) {
         msg.setAttribute("id", id);
         DOM.addClassName(msg, 'msg');
         DOM.addClassName(msg, 'msg-'+type);
+        DOM.addClassName(msg, 'alert');
+        DOM.addClassName(msg, 'alert-' + type);
     }
-    msg.innerHTML = message + '<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon">' + trans('Close') + '</span>';
+    msg.innerHTML = message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
     if (rebuild == 'all')
         msg.innerHTML += ' ' + trans('[_1]Publish[_2] your site to see these changes take effect.', '<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild(\''+blogID+'\');">', '</a>');
     if (rebuild == 'index')

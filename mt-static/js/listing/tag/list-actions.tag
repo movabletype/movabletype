@@ -85,7 +85,7 @@
       } else if (this.selectedAction.dialog) {
         const requestData = this.listTop.opts.listActionClient.generateRequestData(requestArgs)
         requestData.dialog = 1
-        const url = MT.App.ScriptURL + '?' + jQuery.param(requestData, true);
+        const url = ScriptURI + '?' + jQuery.param(requestData, true)
         jQuery.fn.mtModal.open(url, { large: true });
       } else {
         this.sendRequest(requestArgs)

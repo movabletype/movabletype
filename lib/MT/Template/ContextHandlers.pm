@@ -3124,6 +3124,7 @@ sub _hdlr_app_setting {
     my $warning       = $args->{warning} || "";
     my $show_warning  = $args->{show_warning} || 0;
     my $indent        = $args->{indent};
+    my $no_header     = $args->{no_header};
     my $help          = "";
 
     my $label_help = "";
@@ -3180,6 +3181,15 @@ sub _hdlr_app_setting {
           <label id="$id-label" for="$id">$label$req</label>
         </div>
         <div class="field-content $content_class">
+          $insides$hint$warning
+        </div>
+    </div>
+EOT
+    }
+    elsif ( $args->{no_header} ) {
+        return $ctx->build(<<"EOT");
+    <div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
+        <div class="col-md-12 field-content $content_class">
           $insides$hint$warning
         </div>
     </div>
