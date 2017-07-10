@@ -1,7 +1,10 @@
 <mt:setvarblock name="page_title"><__trans phrase="Select a [_1] Style" params="<mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if>"></mt:setvarblock>
+
 <mt:setvarblock name="html_head" append="1">
 <!-- stylecatcher -->
 <link rel="stylesheet" type="text/css" title="Default Layout" href="<mt:var name="plugin_static_uri">templates.css" />
+
+<mt:include name="modules/libjs.tmpl">
 
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/mixer.js"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/mixer/tagmatch.js"></script>
@@ -16,7 +19,7 @@
     var selected;
     var blog_id = '<mt:var name="blog_id" escape="js">';
     var dynamic_blog = <mt:if name="dynamic_blog">true<mt:else>false</mt:if>;
-    var mixer;          
+    var mixer;
     var matchCategory = /^category-/;
     var categories = [];
     var firstCategoryId;
@@ -88,7 +91,7 @@
         var element = getByID( "categories" );
         if( !element )
             return;
-        
+
         categories.length = 0;
         var elements = element.childNodes;
         for( var i = 0; i < elements.length; i++ )
@@ -97,13 +100,13 @@
             var categoryId = element.id;
             if( !categoryId )
                 continue;
-            
+
             if( !firstCategoryId ) {
                 if (element.style.display != 'none') {
                     firstCategoryId = categoryId;
                 }
             }
-            
+
             var displayId = categoryId.replace( matchCategory, "display-" );
             var display = getByID( displayId );
 
@@ -147,7 +150,7 @@
                 }
                 TC.addClassName( element, "category-selected" );
                 display.style.display = "block";
-                
+
                 if( titleElement )
                     titleElement.innerHTML = trans(element.firstChild.nextSibling.innerHTML);
             }
@@ -508,7 +511,8 @@
 </script>
 <!-- end stylecatcher script section -->
 </mt:setvarblock>
-<mt:include name="include/header.tmpl" id="header_include">
+
+<mt:setvarblock name="content">
 
 <div id="msg-block">
 </div>
@@ -529,8 +533,8 @@
 
 <p id="status-message" class="message" style="display: none"></p>
 
-<div id="template-picker">
-    <div id="categories-wrapper">
+<div id="template-picker" class="row">
+    <div id="categories-wrapper" class="col-md-2">
         <h2>
             <span id="find-category">
                 <a href="javascript:void(0)" id="find-button" onclick="return downloadStyles()" class="icon-right icon-create" title="Download new styles">&nbsp;</a>
@@ -542,41 +546,47 @@
             <__trans phrase="Categories">
         </h2>
 
-        <div class="scrollbox" id="categories">
-            <div class="category" id="category-current" title="<__trans phrase="Current theme for your weblog">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/top-rated.gif" alt="Your Current Style" /><span><__trans phrase="Current Style"></span>
-            </div>
-            <div class="category" id="category-my-designs" title="<__trans phrase="Locally saved themes">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/my-designs.gif" alt="my-designs" /><span><__trans phrase="Saved Styles"></span>
-            </div>
-            <div class="category" id="category-mt-designs" title="<__trans phrase="Default Styles">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/gear.gif" alt="mt-designs" /><span><__trans phrase="Default Styles"></span>
-            </div>
-            <div class="category" id="category-more" title="<__trans phrase="Single themes from the web">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/featured.gif" alt="my-designs" /><span><__trans phrase="More Styles"></span>
-            </div>
-            <mt:loop name="style_library">
-            <div class="category" id="category-repo-<mt:var name="key">" title="<mt:var name="description_label" escape="html">"><img src="<mt:var name="plugin_static_uri">images/featured.gif" alt="more-designs" /><span><mt:var name="label" escape="html"></span>
-            </div>
-            </mt:loop>
+        <div class="panel panel-default" style="height: 410px;">
+          <div class="panel-body scrollbox" id="categories">
+              <div class="category" id="category-current" title="<__trans phrase="Current theme for your weblog">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/top-rated.gif" alt="Your Current Style" /><span><__trans phrase="Current Style"></span>
+              </div>
+              <div class="category" id="category-my-designs" title="<__trans phrase="Locally saved themes">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/my-designs.gif" alt="my-designs" /><span><__trans phrase="Saved Styles"></span>
+              </div>
+              <div class="category" id="category-mt-designs" title="<__trans phrase="Default Styles">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/gear.gif" alt="mt-designs" /><span><__trans phrase="Default Styles"></span>
+              </div>
+              <div class="category" id="category-more" title="<__trans phrase="Single themes from the web">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/featured.gif" alt="my-designs" /><span><__trans phrase="More Styles"></span>
+              </div>
+              <mt:loop name="style_library">
+              <div class="category" id="category-repo-<mt:var name="key">" title="<mt:var name="description_label" escape="html">"><img src="<mt:var name="plugin_static_uri">images/featured.gif" alt="more-designs" /><span><mt:var name="label" escape="html"></span>
+              </div>
+              </mt:loop>
+          </div>
         </div>
     </div>
 
-    <div id="templates-wrapper">
+    <div id="templates-wrapper" class="col-md-6">
         <h2 id="selected-category-title"><__trans phrase="Templates"></h2>
-        <div class="scrollbox" id="display-current" style="display: none;"></div>
-        <div class="scrollbox" id="display-my-designs" style="display: none;"></div>
-        <div class="scrollbox" id="display-mt-designs" style="display: none;"></div>
-        <div class="scrollbox" id="display-more" style="display: none;"></div>
-        <mt:loop name="style_library">
-        <div class="scrollbox" id="display-repo-<mt:var name="key">" style="display: none;"></div>
-        </mt:loop>
+        <div class="panel panel-default" style="height: 410px;">
+          <div class="panel-body" style="height: 408px; overflow: auto;">
+            <div class="scrollbox" id="display-current" style="display: none;"></div>
+            <div class="scrollbox" id="display-my-designs" style="display: none;"></div>
+            <div class="scrollbox" id="display-mt-designs" style="display: none;"></div>
+            <div class="scrollbox" id="display-more" style="display: none;"></div>
+            <mt:loop name="style_library">
+            <div class="scrollbox" id="display-repo-<mt:var name="key">" style="display: none;"></div>
+            </mt:loop>
+          </div>
+        </div>
     </div>
 
-    <div id="details-wrapper">
+    <div id="details-wrapper" class="col-md-4">
         <h2><__trans phrase="Selected Design"></h2>
-        <div id="display-details">
-        <div id="select-design-controls" class="actions-bar">
+        <div id="display-details" class="panel panel-default" style="height: 410px;">
+        <div id="select-design-controls" class="panel-body actions-bar">
             <form method="get" action="">
                 <p>
                     <label for="layout-list"><__trans phrase="Layout">:</label>
-                    <select id="layout-list" onchange="updateApplyButton()">
+                    <select id="layout-list" class="form-control" onchange="updateApplyButton()">
                     </select>
                 </p>
 
@@ -587,7 +597,7 @@
                     id="apply-button"
                     title="<__trans phrase="Apply Design"> (s)"
                     onclick="applyDesign()"
-                    class="apply action primary button"><__trans phrase="Apply Design"></button>
+                    class="btn btn-primary apply action primary button"><__trans phrase="Apply Design"></button>
                 </span>
             </form>
         </div>
@@ -603,4 +613,7 @@
 
 </div>
 
-<mt:include name="include/footer.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

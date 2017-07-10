@@ -1,15 +1,15 @@
 /* - Generic */
-h2 { 
+h2 {
     font-size: 14px;
     margin-bottom: 5px;
 }
 
-a { 
+a {
     text-decoration: none;
 }
 
 /* -- tc-mixer */
-.tc-mixer-entry { 
+.tc-mixer-entry {
     display: block;
     float: left;
     height: 120px;
@@ -19,26 +19,26 @@ a {
     overflow: hidden;
     cursor: pointer;
 }
-.tc-mixer-selected { 
+.tc-mixer-selected {
     background-color: #dcdddd;
     -khtml-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
 }
-.tc-mixer-selected .title { 
+.tc-mixer-selected .title {
     font-weight: bold;
 }
-.tc-mixer-disabled { 
+.tc-mixer-disabled {
     visibility: hidden;
 }
 
-.tc-mixer-entry .label { 
+.tc-mixer-entry .label {
     display: none; margin-right: 4px;
 }
-.tc-mixer-entry .content { 
+.tc-mixer-entry .content {
     display: none;
 }
-.tc-mixer-entry .title .content { 
+.tc-mixer-entry .title .content {
     display: block;
     width: 120px;
     height: 2.75em;
@@ -57,7 +57,7 @@ a {
     background-color: #fff;
 }
 
-#display-details .tc-mixer-entry { 
+#display-details .tc-mixer-entry {
     display: block;
     float: none;
     height: auto;
@@ -66,7 +66,7 @@ a {
     border: 0;
     overflow: hidden;
 }
-#display-details .tc-mixer-selected { 
+#display-details .tc-mixer-selected {
     background: transparent;
     -khtml-border-radius: 0;
     -webkit-border-radius: 0;
@@ -79,6 +79,7 @@ a {
     zoom: 1;
 }
 
+/*
 #categories-wrapper {
     position: relative;
     float: left;
@@ -101,34 +102,39 @@ a {
     width: 300px;
     z-index: 2;
 }
+*/
 
 /* - scroll box */
+/*
 .scrollbox {
     display: block;
     position: relative;
     top: 0;
     left: 0;
     width: auto;
-    height: 410px;
+    height: 400px;
     margin: 0;
     padding: 4px;
     border: 1px solid #c8c2be;
     background-color: #fff;
     overflow: auto;
 }
+*/
 
-#templates-wrapper #selected-category-title, 
-#templates-wrapper .scrollbox { 
+/*
+#templates-wrapper #selected-category-title,
+#templates-wrapper .scrollbox {
     margin-right: 299px;
     margin-left: 175px;
 }
+*/
 
-#categories-wrapper .scrollbox { 
+#categories-wrapper .scrollbox {
     -khtml-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
 }
-#templates-wrapper .scrollbox { 
+#templates-wrapper .scrollbox {
     -webkit-border-top-left-radius: 5px;
     -webkit-border-bottom-left-radius: 5px;
     -khtml-border-top-left-radius: 5px;
@@ -138,7 +144,7 @@ a {
 }
 
 /* - category selectors */
-span#find-category { 
+span#find-category {
     display: inline;
     float: right;
     margin-right: 5px;
@@ -153,26 +159,26 @@ span#find-category {
     border: 0;
     cursor: pointer;
 }
-.category img { 
+.category img {
     border: 0;
     margin-right: 6px;
     vertical-align: middle;
 }
-.category-selected { 
+.category-selected {
     background: #dcdddd;
 }
 .category-disabled {
     color: #7b7c7d;
 }
 
-.category { 
+.category {
     -khtml-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
 }
 
 /* - display detailes */
-#display-details { 
+#display-details {
     position: relative;
     left: 0;
     top: 0;
@@ -184,7 +190,8 @@ span#find-category {
     background-color: #f3f3f3;
 }
 
-#display-details { 
+/*
+#display-details {
     -webkit-border-top-right-radius: 5px;
     -webkit-border-bottom-right-radius: 5px;
     -khtml-border-top-right-radius: 5px;
@@ -192,6 +199,7 @@ span#find-category {
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
 }
+*/
 
 #display-details  img {
     width: 278px;
@@ -209,27 +217,27 @@ span#find-category {
     font-weight: bold;
 }
 
-#display-details .author { 
+#display-details .author {
     margin-bottom: 5px;
 }
-#display-details .author .label, 
-#display-details .author .content { 
+#display-details .author .label,
+#display-details .author .content {
     display: inline;
     height: auto;
 }
 
-#display-details .url { 
+#display-details .url {
     margin-bottom: 5px;
 }
-#display-details .url a { 
+#display-details .url a {
     text-decoration: underline;
 }
-#display-details .url .content { 
+#display-details .url .content {
     display: inline;
     height: auto;
 }
 
-#select-design-controls { 
+#select-design-controls {
     position: absolute;
     width: 280px;
     top: auto;
@@ -240,6 +248,6 @@ span#find-category {
 #select-design-controls select {
     z-index: 10;
 }
-#select-design-controls button { 
+#select-design-controls button {
     margin-right: 0;
 }

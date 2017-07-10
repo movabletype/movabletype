@@ -3010,6 +3010,11 @@ function showMsg(message, id, type, rebuild, blogID) {
         DOM.addClassName(msg, 'msg');
         DOM.addClassName(msg, 'msg-'+type);
         DOM.addClassName(msg, 'alert');
+        if (type == 'alert') {
+            type = 'warning';
+        } else if (type == 'error') {
+            type = 'danger';
+        }
         DOM.addClassName(msg, 'alert-' + type);
     }
     msg.innerHTML = message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
