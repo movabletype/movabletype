@@ -2,23 +2,57 @@
   <h5 class="tmpl-type-name"><mt:var name="template_type_label"></h5>
 <mt:unless name="template_type" like="/system|email|backup/">
   <mt:if name="template_type" eq="archive">
-  <__trans phrase="Create Archive Template:">
-  </mt:if>
-  <mt:if name="template_type" eq="archive">
-  <ul class="multiple-selection">
-    <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry"></a></li>
-    <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry Listing"></a></li>
-    <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Page"></a></li>
+  <ul class="list-inline multiple-selection">
+    <mt:if name="template_type" eq="archive">
+    <li><__trans phrase="Create Archive Template:"></li>
+    </mt:if>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+        <__trans phrase="Entry">
+      </a>
+    </li>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+        <__trans phrase="Entry Listing">
+      </a>
+    </li>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+        <__trans phrase="Page">
+      </a>
+    </li>
   </ul>
   <mt:elseif name="template_type" eq="module">
-  <ul class="multiple-selection">
-    <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create template module"></a></li>
+  <ul class="list-inline multiple-selection">
+    <mt:if name="template_type" eq="archive">
+    <li><__trans phrase="Create Archive Template:"></li>
+    </mt:if>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+        <__trans phrase="Create template module">
+      </a>
+    </li>
   </ul>
   <mt:elseif name="template_type" eq="index">
-  <ul class="multiple-selection">
-    <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create index template"></a></li>
+  <ul class="list-inline multiple-selection">
+    <mt:if name="template_type" eq="archive">
+    <li><__trans phrase="Create Archive Template:"></li>
+    </mt:if>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+        <__trans phrase="Create index template">
+      </a>
+    </li>
   </ul>
   <mt:elseif name="create_link">
+    <mt:if name="template_type" eq="archive">
+    <li><__trans phrase="Create Archive Template:"></li>
+    </mt:if>
     <mt:var name="create_link">
   </mt:if>
 </mt:unless>
@@ -128,11 +162,13 @@
       <mt:if name="outfile">
         <mt:var name="outfile" escape="html"> <mt:if name="published_url"><a href="<mt:var name="published_url" escape="html" >" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/status_icons/view.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a></mt:if>
         <mt:else name="template_type" eq="archive">
-        <ul>
+        <ul class="list-unstyled">
         <mt:loop name="archive_types">
           <mt:loop name="archive_tmpl_loop">
             <mt:if name="selected">
-          <li class="archive-path-item"><mt:var name="name" escape="html"><mt:var name="build_type" value="$map_build_type"></li>
+          <li class="archive-path-item">
+            <mt:var name="name" escape="html"><mt:var name="build_type" value="$map_build_type">
+          </li>
             </mt:if>
           </mt:loop>
         </mt:loop>
@@ -165,7 +201,7 @@
       </td>
     <mt:else name="template_type" eq="archive">
       <td class="col publishing-method">
-        <ul>
+        <ul class="list-unstyled">
         <mt:loop name="archive_types">
           <mt:loop name="archive_tmpl_loop">
             <mt:if name="selected">
@@ -190,18 +226,26 @@
       </td>
     <mt:else name="template_type" like="(module|widget)">
       <mt:if name="blog_id">
-      <td class="col ssi-method si status-<mt:if name="use_ssi">enabled<mt:else>disabled</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="" width="9" height="9" title="" /></td>
-      <td class="col cache-method si status-<mt:if name="use_cache">cached<mt:else>uncached</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="" width="9" height="9" title="" /></td>
+      <td class="col ssi-method si status-<mt:if name="use_ssi">enabled<mt:else>disabled</mt:if>">
+        <img src="<mt:var name="static_uri">images/status_icons/neutral.gif" alt="" width="9" height="9" title="" />
+      </td>
+      <td class="col cache-method si status-<mt:if name="use_cache">cached<mt:else>uncached</mt:if>">
+        <img src="<mt:var name="static_uri">images/status_icons/neutral.gif" alt="" width="9" height="9" title="" />
+      </td>
       </mt:if>
     </mt:if>
     <mt:unless name="screen_id" eq="search-replace">
-      <td class="col linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
+      <td class="col linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>">
+        <img src="<mt:var name="static_uri">images/status_icons/neutral.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> />
+      </td>
     </mt:unless>
     <mt:unless name="blog_view">
       <td class="col view">
       <mt:if name="outfile">
         <mt:if name="published_url">
-        <a href="<mt:var name="published_url" escape="html">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/status_icons/view.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a>
+        <a href="<mt:var name="published_url" escape="html">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">">
+          <img src="<mt:var name="static_uri">images/status_icons/view.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" />
+        </a>
         </mt:if>
       <mt:else>
         <span><__trans phrase="-"></span>

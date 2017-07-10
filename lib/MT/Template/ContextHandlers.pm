@@ -4111,10 +4111,10 @@ sub _hdlr_app_page_actions {
     return '' if ( ref($loop) ne 'ARRAY' ) || ( !@$loop );
     my $mt = '&amp;magic_token=' . $app->current_magic;
     return $ctx->build( <<EOT, $cond );
-    <mtapp:widget
+    <mtapp:newwidget
         id="page_actions"
         label="<__trans phrase="Actions">">
-                <ul>
+                <ul class="list-unstyled">
         <mt:loop name="page_actions">
             <mt:if name="page">
                     <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>><mt:var name="label"></a></li>
@@ -4123,7 +4123,7 @@ sub _hdlr_app_page_actions {
             </mt:if></mt:if>
         </mt:loop>
                 </ul>
-    </mtapp:widget>
+    </mtapp:newwidget>
 EOT
 }
 
