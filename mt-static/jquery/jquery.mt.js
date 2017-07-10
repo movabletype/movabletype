@@ -137,7 +137,7 @@ $.mtEditSiteUrl = function(options) {
         if (!$path.hasClass('show-input')) {
             $path
                 .before('<span class="'+this+'_url_path-text path-text"></span>')
-                .after('<button type="button" id="mt-set-'+this+'_url_path" class="button mt-edit-field-button">'+opts.edit+'</button>')
+                .after('<button type="button" id="mt-set-'+this+'_url_path" class="btn btn-default button mt-edit-field-button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+this+'_url_path-text').text($path.val());
             $subdomain.parents('.field-content').find('.subdomain').hide();
@@ -152,7 +152,7 @@ $.mtEditSiteUrl = function(options) {
                 .before('<span class="'+this+'_url_path-text path-text">'+$subdomain.val()+'</span>');
             if ($('button#mt-set-'+this+'_url_path').length === 0) {
                 $path
-                    .after('<button type="button" id="mt-set-'+this+'_url_path" class="button mt-edit-field-button">'+opts.edit+'</button>')
+                    .after('<button type="button" id="mt-set-'+this+'_url_path" class="btn btn-default button mt-edit-field-button">'+opts.edit+'</button>')
                     .hide();
             }
         }
@@ -223,7 +223,6 @@ $.mtUseAbsolute = function() {
     });
 };
 
-
 /*
  * mtEditSitePath
  *
@@ -243,7 +242,7 @@ $.mtEditSitePath = function(options) {
         if ( !$absolute_path.hasClass('show-input') ) {
             $absolute_path
                 .before('<span class="'+id+'_path_absolute-text path-text"></span>')
-                .after('<button type="button" id="mt-set-'+id+'_path_absolute" class="button mt-edit-field-button">'+opts.edit+'</button>')
+                .after('<button type="button" id="mt-set-'+id+'_path_absolute" class="btn btn-default button mt-edit-field-button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+id+'_path_absolute-text').text($absolute_path.val());
         }
@@ -252,7 +251,7 @@ $.mtEditSitePath = function(options) {
         if ( !$path.hasClass('show-input') ) {
             $path
                 .before('<span class="'+id+'_path-text path-text"></span>')
-                .after('<button type="button" id="mt-set-'+id+'_path" class="button mt-edit-field-button">'+opts.edit+'</button>')
+                .after('<button type="button" id="mt-set-'+id+'_path" class="btn btn-default button mt-edit-field-button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+id+'_path-text').text($path.val());
 
@@ -778,14 +777,14 @@ $.fn.mtEditInput = function(options) {
         if ($input.val() && !$input.hasClass('show-input')) {
             $input
                 .before('<span class="'+id+'-text"></span>')
-                .after('<button type="button" id="mt-set-'+id+'" class="mt-edit-field-button button">'+opts.edit+'</button>')
+                .after('<button type="button" id="mt-set-'+id+'" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+id+'-text').text($input.val());
         }
         if (!$input.val() && $input.hasClass('hide-input')) {
             $input
                 .before('<span class="'+id+'-text"></span>')
-                .after('<button type="button" id="mt-set-'+id+'" class="mt-edit-field-button button">'+opts.edit+'</button>')
+                .after('<button type="button" id="mt-set-'+id+'" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>')
                 .hide();
         }
         $('button#mt-set-'+id).click(function() {
