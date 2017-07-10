@@ -4,24 +4,23 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="saved">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="saved"
      class="success">
     <__trans phrase="Your changes have been saved.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
+<mt:setvarblock name="content">
 <div id="edit-form">
   <form id="manager" name="manager" method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="save_widget" />
@@ -36,7 +35,7 @@
        id="name"
        label="<__trans phrase="Widget Set Name">"
        label_class="no-header">
-      <input type="text" name="name" id="name" class="text full title required" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Widget Set Name">" />
+      <input type="text" name="name" id="name" class="form-control text full title required" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Widget Set Name">" />
     </mtapp:setting>
 
     <mt:setvarblock name="action_buttons">
@@ -44,59 +43,63 @@
          type="submit"
          accesskey="s"
          title="<__trans phrase="Save changes to this widget set (s)">"
-         class="save action primary button">
+         class="btn btn-primary save action primary button">
         <__trans phrase="Save Changes">
       </button>
     </mt:setvarblock>
 
     <mt:include name="include/actions_bar.tmpl" bar_position="top" hide_pager="1" settings_bar="1">
 
-    <div id="widget-manager" class="line">
+    <div id="widget-manager" class="row line">
       <p class="description"><__trans phrase="Drag and drop the widgets that belong in this Widget Set into the 'Installed Widgets' column."></p>
-      <div id="available-column" class="unit size1of2">
-        <mtapp:widget
+      <div id="available-column" class="col-md-6 unit size1of2">
+        <mtapp:newwidget
            id="available-widgets"
            label="<__trans phrase="Available Widgets">">
           <div id="available-column-items" class="connectSortable">
           <mt:loop name="available">
-            <div id="module-<mt:var name="id" escape="html">" class="widget widget-item">
-              <div class="widget-header">
-                <div class="widget-action">
-                  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
+            <div id="module-<mt:var name="id" escape="html">" class="panel panel-default widget widget-item" style="cursor: move;">
+              <div class="row panel-body widget-header">
+                <div class="col-md-10 widget-label">
+                  <h4><mt:var name="name" escape="html"></h4>
                 </div>
-                <div class="widget-label">
-                  <h3><mt:var name="name" escape="html"></h3>
+                <div class="col-md-2 text-right widget-action">
+                  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
                 </div>
               </div>
             </div>
           </mt:loop>
           </div>
-        </mtapp:widget>
+        </mtapp:newwidget>
       </div>
-      <div id="installed-column" class="unit size1of2">
-        <mtapp:widget
+      <div id="installed-column" class="col-md-6 unit size1of2">
+        <mtapp:newwidget
            id="installed-widgets"
            label="<__trans phrase="Installed Widgets">">
           <div id="installed-column-items" class="connectSortable">
           <mt:loop name="installed">
-            <div id="module-<mt:var name="id" escape="html">" class="widget widget-item">
-              <div class="widget-header">
-                <div class="widget-action">
-                  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
+            <div id="module-<mt:var name="id" escape="html">" class="panel panel-default widget widget-item" style="cursor: move;">
+              <div class="row panel-body widget-header">
+                <div class="col-md-10 widget-label">
+                  <h4><mt:var name="name" escape="html"></h4>
                 </div>
-                <div class="widget-label">
-                  <h3><mt:var name="name" escape="html"></h3>
+                <div class="col-md-2 text-right widget-action">
+                  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
                 </div>
               </div>
             </div>
           </mt:loop>
           </div>
-        </mtapp:widget>
+        </mtapp:newwidget>
       </div>
     </div>
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
   </form>
 </div>
+
+<mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
+
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery(' #installed-column-items, #available-column-items ').sortable({
         connectWith: '.connectSortable',
@@ -128,4 +131,5 @@
     });
 </mt:setvarblock>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
