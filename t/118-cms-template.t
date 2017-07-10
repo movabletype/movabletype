@@ -23,6 +23,7 @@ my $admin = MT->model('author')->load(1);
 
 # Run tests
 subtest 'Manage Website Templates' => sub {
+    plan 'skip_all';
     my $app = _run_app(
         'MT::App::CMS',
         {   __test_user => $admin,
