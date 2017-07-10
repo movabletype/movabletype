@@ -1635,7 +1635,7 @@ $.fn.mtModalClose = function () {
 
     var url = $(this).data().mtModalClose;
     if (url) {
-      var $modal = window.parent.$('.mt-modal');
+      var $modal = window.parent.jQuery('.mt-modal');
       if ($modal.length > 0) {
         $modal.on('hide.bs.modal', function () {
           window.parent.location = url;
@@ -1656,7 +1656,7 @@ $.fn.mtModal.open = function (url, options) {
 };
 
 $.fn.mtModal.close = function () {
-  var $modal = window.parent.$('.mt-modal');
+  var $modal = window.parent.jQuery('.mt-modal');
   if ($modal.length > 0) {
     $modal.modal('hide');
   }
