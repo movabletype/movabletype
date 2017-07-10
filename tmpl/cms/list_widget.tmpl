@@ -63,7 +63,12 @@ function init() {
 
 <mt:setvarblock name="listing_header">
 <h5><__trans phrase="Widget Sets"></h5>
-<p><a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Widget Set"></a></p>
+<p>
+  <a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+    <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+    <__trans phrase="Create Widget Set">
+  </a>
+</p>
 </mt:setvarblock>
 
 <mt:setvarblock name="content">
@@ -108,7 +113,12 @@ function init() {
 </mtapp:listing>
 
 <mt:setvarblock name="create_link">
-<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create widget template"></a></p>
+<p>
+  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+    <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+    <__trans phrase="Create widget template">
+  </a>
+</p>
 </mt:setvarblock>
 
 <mt:include name="include/template_table.tmpl"
