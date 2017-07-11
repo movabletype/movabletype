@@ -67,10 +67,6 @@ function toggleSubPrefs(c) {
     return false;
 }
 
-jQuery('input.mt-edit-field').mtEditInput({
-    edit: '<__trans phrase="Edit">'
-});
-
 function validate(form) {
     if ( !form.label.value.match(/\S/,'') ) {
         alert('<__trans phrase="You must specify a label for the category." escape="singlequotes">');
