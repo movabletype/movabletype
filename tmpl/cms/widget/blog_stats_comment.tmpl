@@ -15,10 +15,16 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="tabs" append="1">
-  <li id="comment-tab" class="tab <mt:if name="tab" eq="comment">selected-tab</mt:if>" mt:tab="comment" mt:command="select-tab" onclick="blogStatsTabSelect('comment')"><a  href="javascript:void(0)"><span><__trans phrase="Comments"></span></a></li>
+  <li id="comment-tab" class="tab <mt:if name="tab" eq="comment">active</mt:if>">
+    <a  href="#comment-panel" data-toggle="tab">
+      <span>
+        <__trans phrase="Comments">
+      </span>
+    </a>
+  </li>
 </mt:setvarblock>
 
-<div id="comment-panel" class="blog-stats-widget-panel <mt:unless name="tab" eq="comment">hidden</mt:unless>" mt:tab-content="comment">
+<div id="comment-panel" class="tab-pane blog-stats-widget-panel <mt:if name="tab" eq="comment">active</mt:if>">
 <mt:if name="stat_url">
   <script type="text/javascript">
     /* <![CDATA[ */
@@ -48,11 +54,11 @@
     </mt:if>
   </mt:if>
 <mt:else>
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="zero-state"
      class="info zero-state"
      can_close="0">
     <__trans phrase="No comments available.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:comments>
 </div>

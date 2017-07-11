@@ -15,10 +15,16 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="tabs" append="1">
-  <li id="entry-tab" class="tab <mt:if name="tab" eq="entry">selected-tab</mt:if>" mt:tab="entry" mt:command="select-tab" onclick="return blogStatsTabSelect('entry');"><a href="javascript:void(0)" ><span><__trans phrase="Entries"></span></a></li>
+  <li id="entry-tab" class="tab <mt:if name="tab" eq="entry">active</mt:if>">
+    <a href="#entry-panel" data-toggle="tab">
+      <span>
+        <__trans phrase="Entries">
+      </span>
+    </a>
+  </li>
 </mt:setvarblock>
 
-<div id="entry-panel" class="blog-stats-widget-panel <mt:unless name="tab" eq="entry">hidden</mt:unless>" mt:tab-content="entry">
+<div id="entry-panel" class="tab-pane blog-stats-widget-panel <mt:if name="tab" eq="entry">active</mt:if>">
 <mt:if name="stat_url">
   <script type="text/javascript">
     /* <![CDATA[ */
@@ -44,13 +50,13 @@
         <a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:entryid>&amp;blog_id=<mt:blogid>"><mt:entrytitle escape="html"></a>
         <mt:else>
         <__trans phrase="No Title"> (<a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:entryid>&amp;blog_id=<mt:blogid>">id:<mt:entryid></a>)
-        </mt:if>      
+        </mt:if>
       <mt:else>
         <mt:if tag="entrytitle">
           <mt:entrytitle escape="html">
         <mt:else>
           <__trans phrase="No Title"> (id:<mt:entryid>)
-        </mt:if>      
+        </mt:if>
       </mt:if>
       </h4>
     </div>
@@ -80,11 +86,11 @@
     </mt:if>
   </mt:if>
 <mt:else>
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="zero-state"
      class="info zero-state"
      can_close="0">
     <__trans phrase="No entries have been created in this blog. <a href="[_1]">Create a entry</a>" params="<mt:var name="mt_url">?__mode=view&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:entries>
 </div>
