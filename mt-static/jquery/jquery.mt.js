@@ -731,7 +731,7 @@ $.fn.mtRebasename = function(options) {
         var $input = $('input#basename'),
             dirify_text = $input.hide().val();
         $input.hide().before('<span class="basename-text"></span>');
-        $input.parent('span.basename').after('<button type="button" id="mt-set-basename" class="mt-edit-field-button button">'+opts.edit+'</button>');
+        $input.parent('span.basename').after('<button type="button" id="mt-set-basename" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>');
         if (opts.basename) {
             $('span.basename-text').text(opts.basename);
         } else {
@@ -1586,7 +1586,7 @@ $.fn.mtEditInputBlock = function(options) {
       if (!$div.hasClass('show-input')) {
           $div
               .before('<span class="'+id+'-text"></span>')
-              .after('<button type="button" id="mt-edit-'+id+'" class="button mt-edit-field-button">'+opts.edit+'</button>')
+              .after('<button type="button" id="mt-edit-'+id+'" class="btn btn-default button mt-edit-field-button">'+opts.edit+'</button>')
               .hide();
           $('span.'+id+'-text').text(opts.text);
           $div.hide();

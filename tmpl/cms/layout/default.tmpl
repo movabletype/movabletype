@@ -1,10 +1,15 @@
 <mt:setvartemplate name="layout">
   <mt:include name="layout/default/header.tmpl">
 
+  <mt:if name="form_header">
+    <mt:var name="form_header">
+  </mt:if>
+
   <mt:setvarblock name="has_info"><mt:if name="object_nav">1<mt:elseif name="related_content">1</mt:if></mt:setvarblock>
   <mt:if name="has_info">
     <mt:include name="modules/notification_indicator.tmpl">
     <mt:include name="modules/system_msg.tmpl">
+    <mt:include name="modules/display_options.tmpl">
     <div class="row">
       <div class="col-md-9">
         <mt:include name="modules/page_title.tmpl">
@@ -29,9 +34,14 @@
   <mt:else>
     <mt:include name="modules/notification_indicator.tmpl">
     <mt:include name="modules/system_msg.tmpl">
+    <mt:include name="modules/display_options.tmpl">
     <mt:include name="modules/page_title.tmpl">
     <mt:include name="modules/content_header.tmpl">
     <mt:var name="content">
+  </mt:if>
+
+  <mt:if name="form_footer">
+    <mt:var name="form_footer">
   </mt:if>
 
   <mt:include name="layout/default/footer.tmpl">
