@@ -6,16 +6,12 @@
 </mt:setvarblock>
 
 <mt:if name="compat_upload_template">
-  <mt:include name="include/header.tmpl" id="header_include">
-
   <mt:include name="include/asset_upload.tmpl">
-
-  <mt:include name="include/footer.tmpl" id="footer_include">
 <mtelse>
   <mt:setvarblock name="content">
     <mt:include name="include/async_asset_upload.tmpl">
   </mt:setvarblock>
-
-  <mt:include name="layout/default.tmpl">
-  <mt:var name="layout">
 </mt:if>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

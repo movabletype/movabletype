@@ -1,3 +1,4 @@
+<mt:setvarblock name="content">
 <form method="get" action="<mt:var name="script_url">">
   <input type="hidden" name="__mode" value="upload_file" />
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
@@ -21,19 +22,19 @@
 
   <div class="error-message">
   <mt:if name="extension_message">
-    <mtapp:statusmsg
+    <mtapp:newstatusmsg
        id="extension-changed"
        class="success"
        can_close="0">
       <mt:var name="extension_message" escape="html">
-    </mtapp:statusmsg>
+    </mtapp:newstatusmsg>
   </mt:if>
-    <mtapp:statusmsg
+    <mtapp:newstatusmsg
        id="error-message"
        class="alert"
        can_close="0">
       <__trans phrase="A file named '[_1]' already exists. Do you want to overwrite this file?" params="<mt:var name="fname" escape="html">">
-    </mtapp:statusmsg>
+    </mtapp:newstatusmsg>
   </div>
   <mt:setvarblock name="action_buttons">
     <button
@@ -43,7 +44,7 @@
        type="submit"
        accesskey="s"
        title="<__trans phrase="Yes (s)">"
-       class="action primary button">
+       class="action primary button btn btn-primary">
       <__trans phrase="Yes"></button>
     <button
        onclick="submit_form(this.form, 'no');"
@@ -51,8 +52,11 @@
        value="1"
        type="submit"
        title="<__trans phrase="No">"
-       class="action button">
+       class="action button btn btn-default">
       <__trans phrase="No"></button>
   </mt:setvarblock>
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
+
+<mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
