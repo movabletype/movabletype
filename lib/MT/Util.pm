@@ -1338,11 +1338,11 @@ sub strip_index {
 
 sub strip_protocol {
     my ( $link, $args ) = @_;
-    if ($args->{relative} eq 'protocol') {
+    if ($args->{relative} && $args->{relative} eq 'protocol') {
         $link =~ s/https?://;
     }
     elsif ($args->{relative} eq 'host') {
-        $link =~ s/https?:\/\///;
+        $link =~ s/https?:\/\///i;
         $link =~ s/[^\/]+(\/)/$1/;
     }
     return $link;
