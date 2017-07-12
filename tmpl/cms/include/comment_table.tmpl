@@ -4,7 +4,7 @@
 <button
    accesskey="a"
    title="<__trans phrase="Publish selected comments (a)">"
-   class="button mt-publish-items">
+   class="button mt-publish-items btn btn-default">
   <__trans phrase="Publish">
 </button>
     </mt:if>
@@ -12,7 +12,7 @@
 <button
    accesskey="x"
    title="<__trans phrase="Delete selected comments (x)">"
-   class="button mt-delete-items">
+   class="button mt-delete-items btn btn-default">
   <__trans phrase="Delete">
 </button>
 </mt:setvarblock>
@@ -53,7 +53,7 @@
       <td class="col si <mt:if name="visible">status-publish<mt:elseif name="junk_status" eq="-1">status-spam<mt:else>status-pending</mt:if>">
         <img src="<mt:var name="static_uri">images/spacer.gif" alt="" class="status-icon" width="9" height="9" />
       </td>
-      <td class="col comment" colspan="<mt:unless name="is_blog"><mt:if name="show_ip_info">5<mt:else>4</mt:if><mt:else><mt:if name="show_ip_info">4<mt:else>3</mt:if></mt:unless>">
+      <td class="col comment">
   <mt:var name="comment_long" escape="html">
   <mt:if name="has_edit_access">
         <span class="actions-link">
@@ -63,12 +63,7 @@
   <mt:if name="reply_count">
         <__trans phrase="([quant,_1,reply,replies])" params="<mt:var name="reply_count">">
   </mt:if>
-      </td>
-    </tr>
-    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave" <mt:if name="visible"> onmouseover="show('replyto_<mt:var name="id" escape="js">');" onmouseout="hide('replyto_<mt:var name="id" escape="js">');"</mt:if>>
-      <td class="col">&nbsp;</td>
-      <td class="col">&nbsp;</td>
-      <td class="col commenter status-<mt:if name="commenter_approved">trusted<mt:else><mt:if name="commenter_banned">banned<mt:else>authenticated</mt:if></mt:if>">
+  <br/>
   <mt:if name="commenter_id">
     <mt:if name="commenter_approved">
       <mt:setvar name="commenter_status" value="<__trans phrase="Trusted">">
@@ -80,7 +75,7 @@
       </mt:if>
     </mt:if>
     <mt:if name="auth_icon_url">
-        <img style="background-image: none" src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" />
+      <img style="background-image: none" src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" />
     </mt:if>
     <mt:if name="can_edit_commenter">
         <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="icon-right-wide icon-<mt:if name="commenter_approved">trusted<mt:else><mt:if name="commenter_banned">banned<mt:else>authenticated</mt:if></mt:if>" title="<__trans phrase="Edit this [_1] commenter" params="<$mt:var name="commenter_status" escape="html"$>">"><mt:var name="author" escape="html"></a>
@@ -89,9 +84,9 @@
     </mt:if>
   <mt:else>
     <mt:if name="author">
-      <a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<mt:var name="author" escape="url">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Search for comments by this commenter">"><mt:var name="author_display" escape="html"></a>
+        <a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<mt:var name="author" escape="url">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Search for comments by this commenter">"><mt:var name="author_display" escape="html"></a>
     <mt:else>
-      [<__trans phrase="Anonymous">]
+        [<__trans phrase="Anonymous">]
     </mt:if>
   </mt:if>
       </td>
@@ -105,7 +100,7 @@
     <mt:if name="can_edit_entry">
         <a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class" escape="url">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="entry_id" escape="url">" title="<mt:if name="entry_class" eq="entry"><__trans phrase="View this entry"><mt:else><__trans phrase="View this page"></mt:if>"><mt:var name="entry_title" escape="html"></a>
     <mt:else>
-      <mt:var name="entry_title" escape="html">
+        <mt:var name="entry_title" escape="html">
     </mt:if>
   <mt:else>
         &nbsp;
@@ -115,12 +110,12 @@
         <span title="<mt:var name="created_on_time_formatted">">
   <mt:if name="created_on_relative">
     <mt:if name="dates_relative">
-      <mt:var name="created_on_relative">
+          <mt:var name="created_on_relative">
     <mt:else>
-      <mt:var name="created_on_formatted">
+          <mt:var name="created_on_formatted">
     </mt:if>
   <mt:else>
-    <mt:var name="created_on_formatted">
+          <mt:var name="created_on_formatted">
   </mt:if>
         </span>
       </td>

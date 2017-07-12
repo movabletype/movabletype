@@ -3175,7 +3175,7 @@ sub _hdlr_app_setting {
     $class = ( $class eq '' ) ? 'hidden' : $class . ' hidden' unless $shown;
 
     if ( $args->{no_grid} ) {
-        if ($args->{no_header}) {
+        if ( $args->{no_header} ) {
             return $ctx->build(<<"EOT");
     <div id="$id-field" class="field$req_class $label_class $class"$indent_css>
         <div class="field-content $content_class">
@@ -3183,7 +3183,8 @@ sub _hdlr_app_setting {
         </div>
     </div>
 EOT
-        } else {
+        }
+        else {
             return $ctx->build(<<"EOT");
     <div id="$id-field" class="field$req_class $label_class $class"$indent_css>
         <div class="field-header">

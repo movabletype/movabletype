@@ -4,7 +4,7 @@
 <button
    accesskey="p"
    title="<__trans phrase="Publish selected [_1] (p)" params="<$mt:var name="object_label_plural"$>">"
-   class="button mt-publish-trachbacks">
+   class="button mt-publish-trachbacks btn btn-default">
   <__trans phrase="Publish">
 </button>
     </mt:if>
@@ -12,7 +12,7 @@
 <button
    accesskey="x"
    title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
-   class="button mt-delete-trachbacks">
+   class="button mt-delete-trachbacks btn btn-default">
   <__trans phrase="Delete">
 </button>
 </mt:setvarblock>
@@ -57,7 +57,7 @@
         <img src="<mt:var name="static_uri">images/spacer.gif" alt="" class="status-icon" width="9" height="9" />
       </td>
   </mt:unless>
-      <td class="col excerpt" colspan="<mt:unless name="is_blog"><mt:if name="show_ip_info">5<mt:else>4</mt:if><mt:else><mt:if name="show_ip_info">4<mt:else>3</mt:if></mt:unless>">
+      <td class="col excerpt">
   <mt:if name="excerpt">
     <mt:var name="excerpt" escape="html">
     <mt:if name="has_edit_access">
@@ -68,14 +68,9 @@
   <mt:else>
         &nbsp;
   </mt:if>
+        <br/>
+        <mt:var name="blog_name" escape="html">: <a href="<mt:var name="source_url" escape="html">" title="<__trans phrase="Go to the source entry of this TrackBack">"><mt:var name="title" escape="html"></a> &#187;
       </td>
-    </tr>
-    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave">
-      <td class="col">&nbsp;</td>
-  <mt:unless name="tab_junk">
-      <td class="col">&nbsp;</td>
-  </mt:unless>
-      <td class="col from"><mt:var name="blog_name" escape="html">: <a href="<mt:var name="source_url" escape="html">" title="<__trans phrase="Go to the source entry of this TrackBack">"><mt:var name="title" escape="html"></a> &#187;</td>
   <mt:unless name="is_blog">
       <td class="col blog"><a href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html"></td>
   </mt:unless>

@@ -1,7 +1,7 @@
 <mt:setvar name="page_title" value="<__trans phrase="Trackback">">
 <mt:setvar name="screen_class" value="pinging-screen">
-<mt:include name="include/header.tmpl" id="header_include">
 
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 function doRedirect () {
@@ -10,8 +10,10 @@ function doRedirect () {
 setTimeout('doRedirect()', 1000);
 /* ]]> */
 </script>
+</mt:setvarblock>
 
-<mtapp:statusmsg
+<mt:setvarblock name="content">
+<mtapp:newstatusmsg
    id="pinging"
    class="info"
    can_close="0">
@@ -21,6 +23,8 @@ setTimeout('doRedirect()', 1000);
     <li><mt:var name="url" escape="html"></li>
   </mt:loop>
   </ul>
-</mtapp:statusmsg>
+</mtapp:newstatusmsg>
+</mt:setvarblock>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

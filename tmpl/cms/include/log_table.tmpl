@@ -21,12 +21,17 @@
     <tr class="<mt:if name="log_detail">log-detail-parent </mt:if><mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="log_detail"> id="log-detail-parent-<$mt:var name="id"$>"</mt:if>>
       <td class="col log-message">
       <mt:if name="log_detail">
-         <span class="toggle-link icon-left icon-spinner detail-link"><mt:var name="log_message" escape="html"></span>
+         <a href="#log-detail-<mt:var name="id">" data-toggle="collapse" class="toggle-link icon-left icon-spinner detail-link">
+           <mt:var name="log_message" escape="html">
+         </a>
       <mt:else>
-        <mt:var name="log_message" escape="html"> 
+        <mt:var name="log_message" escape="html">
       </mt:if>
       <mt:if name="system_overview_nav">
         <mt:if name="log_ip"> (<__trans phrase="IP: [_1]" params="<$mt:var name="log_ip"$>">)</mt:if>
+      </mt:if>
+      <mt:if name="log_detail">
+        <pre id="log-detail-<mt:var name="id">" class="collapse"><code><mt:var name="log_detail" escape="html"></code></pre>
       </mt:if>
       </td>
     <mt:unless name="is_blog">
@@ -58,12 +63,6 @@
         </span>
       </td>
     </tr>
-  <mt:if name="log_detail">
-    <tr class="log-detail hidden <mt:if name="__odd__">odd<mt:else>even</mt:if>" id="log-detail-<$mt:var name="id"$>">
-      <td class="col detail" colspan="<mt:unless name="is_blog">4<mt:else>3</mt:unless>">
-        <pre><code><mt:var name="log_detail" escape="html"></code></pre>
-      </td>
-    </tr>
   </mt:if>
 <mt:if name="__last__">
   </tbody>
@@ -75,4 +74,3 @@
         jQuery(this).toggleClass('active').next('tr.log-detail').toggleClass('hidden');
     });
 </mt:setvarblock>
-
