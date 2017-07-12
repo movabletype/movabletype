@@ -1364,7 +1364,7 @@ sub _hdlr_entry_asset_count {
             sub { my $a = $_[0]->file_ext; grep( m/$a/, @exts ) };
     }
 
-    my @result = ();
+    @result = ();
 
     ASSET2: foreach my $e (@$assets) {
         for (@filters) {
