@@ -719,6 +719,44 @@
 
 <mt:setvarblock name="css_include" append="1">
 <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/datepicker.css?v=<mt:var name="mt_version_id" escape="url">" />
+<style>
+.sort-enabled {
+    margin-bottom: 15px;
+    padding: 0;
+    border: 1px solid #c0c6c9;
+    background-color: #fff;
+    border-radius: 3px;
+}
+.sort-enabled:hover {
+    border: 1px solid #adadad;
+    border-top-color: #cfd0d0;
+    border-left-color: #cfd0d0;
+}
+.sort-enabled .field-header {
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    border-bottom: 1px solid #fff;
+    background-image: url(<mt:var name="static_uri">images/sort_handle.png);
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    border-radius: 3px 3px 0 0;
+}
+.sort-enabled .field-header:hover {
+    cursor: move;
+}
+.sort-enabled .field-header label {
+    margin-left: 20px;
+}
+.sort-enabled .field-content {
+    padding: 0 10px 10px;
+}
+
+.placeholder {
+    margin-bottom: 15px;
+    border: 1px dashed #c0c6c9;
+    background-color: #fbfbfb;
+}
+</style>
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
@@ -1228,14 +1266,15 @@
 <mt:if name="field_html">
   <mtapp:setting
      id="$field_id"
-     class="sort-enabled"
+     class="panel panel-default panel-body sort-enabled"
      label="$label_encoded"
      label_class="$label_class"
      hint="$desc_encoded"
      shown="$show_field"
      content_class="$content_class"
      show_hint="$show_hint"
-     required="$required">
+     required="$required"
+     no_grid="1">
     <$mt:var name="field_html"$>
   </mtapp:setting>
 <mt:else>
@@ -1317,13 +1356,14 @@
     </mt:if>
     <mtapp:setting
        id="tags"
-       class="sort-enabled"
+       class="panel panel-default panel-body sort-enabled"
        shown="$show_field"
        label="<__trans phrase="Tags">"
        label_class="top-label"
        hint="$tags_hint"
        help_page="entries"
-       help_section="entry_tags">
+       help_section="entry_tags"
+       no_grid="1">
       <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
       <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
       <div id="tags-suggestion">
@@ -1334,24 +1374,26 @@
   <mt:else eq="excerpt">
     <mtapp:setting
        id="excerpt"
-       class="sort-enabled"
+       class="panel panel-default panel-body sort-enabled"
        shown="$show_field"
        label="$field_label"
        label_class="top-label"
        help_page="entries"
-       help_section="excerpt">
+       help_section="excerpt"
+       no_grid="1">
       <textarea name="excerpt" id="excerpt" class="form-control text full low" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
     </mtapp:setting>
 
   <mt:else eq="keywords">
     <mtapp:setting
        id="keywords"
-       class="sort-enabled"
+       class="panel panel-default panel-body sort-enabled"
        shown="$show_field"
        label="$field_label"
        label_class="top-label"
        help_page="entries"
-       help_section="keywords">
+       help_section="keywords"
+       no_grid="1">
       <input type="text" name="keywords" id="keywords" class="form-control text full" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
     </mtapp:setting>
 
