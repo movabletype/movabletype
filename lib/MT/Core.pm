@@ -2714,7 +2714,7 @@ sub load_core_permissions {
                 'blog.edit_all_posts',      'blog.edit_assets',
                 'blog.edit_categories',     'blog.edit_config',
                 'blog.edit_notifications',  'blog.edit_tags',
-                'blog.edit_templates',      'blog_edit_content_types',
+                'blog.edit_templates',      'blog.edit_content_types',
                 'blog.manage_pages',        'blog.manage_users',
                 'blog.publish_post',        'blog.rebuild',
                 'blog.save_image_defaults', 'blog.send_notifications',
