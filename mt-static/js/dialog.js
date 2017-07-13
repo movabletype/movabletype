@@ -160,9 +160,9 @@ SelectionList = new Class(Object, {
             l.replace(/\s/g, '&nbsp;');
             var link = doc.createElement("span");
             link.setAttribute("id","selected-"+p);
-            link.setAttribute("class","sticky-label selected-item");
+            link.setAttribute("class","label label-default sticky-label selected-item");
             link.onclick = makeclosure(p);
-            link.innerHTML = l + "&nbsp;<span class='remove clickable'>x</span>";
+            link.innerHTML = l + "&nbsp;<span class='badge remove clickable' style='cursor: pointer;'>x</span>";
             this.container.appendChild(link);
             this.container.appendChild(doc.createTextNode(' '));
         }
@@ -277,6 +277,8 @@ ListingPanel = new Class(Panel, {
     init: function(name, searchtype) {
         ListingPanel.superClass.init.apply(this, arguments);
 
+        this.footerElement = TC.getElementsByClassName("modal-footer")[0];
+
         // for closures
         var self = this;
 
@@ -319,7 +321,7 @@ ListingPanel = new Class(Panel, {
         }
 
         var next = TC.getElementsByTagAndClassName("button",
-            "next", this.element);
+            "next", this.footerElement);
         if (next && next.length) {
             this.nextButton = next[0];
             this.nextButton.onclick = function() {
@@ -328,7 +330,7 @@ ListingPanel = new Class(Panel, {
         }
 
         var previous = TC.getElementsByTagAndClassName("button",
-            "previous", this.element);
+            "previous", this.footerElement);
         if (previous && previous.length) {
             this.previousButton = previous[0];
             this.previousButton.onclick = function() {
@@ -337,7 +339,7 @@ ListingPanel = new Class(Panel, {
         }
 
         var cancel = TC.getElementsByTagAndClassName("button",
-            "cancel", this.element);
+            "cancel", this.footerElement);
         if (cancel && cancel.length) {
             this.cancelButton = cancel[0];
             this.cancelButton.onclick = function() {
@@ -346,7 +348,7 @@ ListingPanel = new Class(Panel, {
         }
 
         var close = TC.getElementsByTagAndClassName("button",
-            "close", this.element);
+            "close-button", this.footerElement);
         if (close && close.length) {
             this.closeButton = close[0];
             this.closeButton.onclick = function() {
