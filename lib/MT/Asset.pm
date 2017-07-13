@@ -166,9 +166,9 @@ sub list_props {
                                 ( $thumb_size - $thumbnail_height ) / 2 );
 
                             push @rows, qq{
-                                <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
-                                <div class="thumbnail picture small">
-                                  <img alt="" src="$thumbnail_url" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                                <div class="pull-left">
+                                    <img alt="" src="$thumbnail_url" class="img-thumbnail" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                                    <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
@@ -179,17 +179,17 @@ sub list_props {
                                 . $class_type
                                 . '-warning-45.png';
                             push @rows, qq{
-                                <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
-                                <div class="file-type missing picture small">
-                                  <img alt="$class_type" src="$img" class="asset-type-icon asset-type-$class_type" />
+                                <div class="pull-left">
+                                    <img alt="$class_type" src="$img" class="img-thumbnail asset-type-icon asset-type-$class_type" />
+                                    <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
                         else {
                             push @rows, qq{
-                                <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
-                                <div class="file-type $class_type picture small">
-                                  <img alt="$class_type" src="$img" class="asset-type-icon asset-type-$class_type" />
+                                <div class="pull-left">
+                                    <img alt="$class_type" src="$img" class="img-thumbnail asset-type-icon asset-type-$class_type" />
+                                    <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
@@ -201,9 +201,9 @@ sub list_props {
                             . $class_type
                             . '-warning-45.png';
                         push @rows, qq{
-                            <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
-                            <div class="file-type missing picture small">
-                              <img alt="$class_type" src="$img" class="asset-type-icon asset-type-$class_type" />
+                            <div class="pull-left">
+                                <img alt="$class_type" src="$img" class="img-thumbnail asset-type-icon asset-type-$class_type" />
+                                <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
                             </div>
                         };
                     }
@@ -1029,7 +1029,7 @@ MT::Asset
 
     $asset = MT::Asset->load( $asset_id );
     print $asset->as_html();
-    
+
     $asset_pkg = MT::Asset->handler_for_file($basename);
     $asset = $asset_pkg->new();
     $asset->file_path($filepath);
@@ -1111,7 +1111,7 @@ translated keys, making it ready for presentation
 =head2 $asset_pkt->extensions
 
 an internal function used by can_handle to decide if this module
-can handle a specific file. 
+can handle a specific file.
 
 subclasses are expected to override this method and supply their
 own list of handled extensions
@@ -1134,8 +1134,8 @@ a general file. subclasses should override them with relevant information
 
 =head2 $asset->thumbnail_url( %params )
 
-Tries to retrive thumbnail url base on the thumbnail_file method, or 
-if fails stock_icon_url. %params is passed directly to them. 
+Tries to retrive thumbnail url base on the thumbnail_file method, or
+if fails stock_icon_url. %params is passed directly to them.
 
 If %param contains a 'Pseudo' key, will return the URL with %r, %s or %a
 in the beginning, as explained in $asset->url
@@ -1171,13 +1171,13 @@ Remove all the thumbnails generated for $asset
 =head2 $asset->_make_cache_path( [ $path, $pseudo ] )
 
 Returns a suitable place for caching asset-related files. for example,
-thumbnails. This place is basically root_path/cache-directory, where 
-root_path changes if the asset is blog-related, archives or in the 
+thumbnails. This place is basically root_path/cache-directory, where
+root_path changes if the asset is blog-related, archives or in the
 site-root. also cache-directory is taken from $path, or if not
 supplied it is taken from the AssetCacheDir configuration directive,
 added with the year and the month $asset was created on.
 
-If $pseudo is true, returns a path starting with %r, %s or %a, 
+If $pseudo is true, returns a path starting with %r, %s or %a,
 as explained in $asset->url
 
 =head2 $asset->remove()

@@ -110,20 +110,34 @@
         }
         </mt:if>
         blogStatsTabs = new Array('comment','entry'<mt:if name="tag_cloud">,'tag'</mt:if>);
+
         /* ]]> */
     </script>
     <mt:var name="tab_html_head">
 </mt:setvarblock>
 
-<mtapp:widget
+<mt:setvarblock name="js_include" append="1">
+<script>
+  jQuery(window).load(function () {
+    var $tabs = jQuery('ul#blog-stats-widget-tabs');
+    if ($tabs.children('li.active').length == 0) {
+      $tabs.find('li:first-child > a').trigger('click');
+    }
+  });
+</script>
+</mt:setvarblock>
+
+<mtapp:newwidget
    tabbed="1"
    label="Blog Stats"
    can_close="1"
    class="blog-stats-widget object-list-widget">
   <input type="hidden" name="tab" value="<mt:var name="tab" escape="html">" />
-  <ul id="blog-stats-widget-tabs" class="tabs">
+  <ul id="blog-stats-widget-tabs" class="nav nav-tabs tabs">
     <mt:var name="tabs">
   </ul>
-  <mt:var name="blog_stats">
-</mtapp:widget>
+  <div class="tab-content">
+    <mt:var name="blog_stats">
+  </div>
+</mtapp:newwidget>
 </mt:if>

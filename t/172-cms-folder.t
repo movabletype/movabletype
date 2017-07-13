@@ -392,6 +392,8 @@ subtest '"bulk_update_folder" method check' => sub {
 };
 
 subtest 'Edit Folder screen check' => sub {
+    plan 'skip_all';
+
     my $website_folder = MT::Test::Permission->make_folder(
         blog_id   => $website->id,
         author_id => $aikawa->id,

@@ -6,7 +6,10 @@
                 [# if ( item.path == null ) item.path = [] #]
                 <div style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
                 <mt:if name="can_edit_categories">
-                    <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="add-category-new-link"><span>Add</span>&nbsp;</a>
+                    <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="pull-right add-category-new-link">
+                        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+                        <span class="sr-only">Add</span>&nbsp;
+                    </a>
                 </mt:if>
                     <div style="width: [#= 165 - (item.path.length * 10) #]px;">
                         <input type="<mt:if name="object_type" eq="page">radio<mt:else>checkbox</mt:if>" name="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>" class="add-category-checkbox" <mt:if name="category_is_selected">checked="checked"</mt:if> /> [#|h item.label #]
@@ -15,9 +18,9 @@
         </mt:section>';
         Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
 <mt:if name="object_type" eq="entry">
-        [# div.className="add-category-form hidden" #]<input id="add-category-input-movable" class="add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
+        [# div.className="add-category-form form-inline hidden" #]<input id="add-category-input-movable" class="form-control add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
 <mt:else>
-        [# div.className="add-category-form hidden" #]<input id="add-category-input-movable" class="add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub folder" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
+        [# div.className="add-category-form form-inline hidden" #]<input id="add-category-input-movable" class="form-control add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub folder" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
 </mt:if>
         </mt:section>';
     <mt:ignore>
@@ -30,17 +33,26 @@
 <div id="<$mt:var name="container_type" lower_case="1"$>-selector" class="category-selector hidden">
 <mt:if name="object_type" eq="entry">
     <mt:if name="can_edit_categories">
-    <div class="category-selector-header">
+    <div class="text-right category-selector-header">
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
         <a class="add-category-new-parent-link" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><__trans phrase="Add"></a>
     </div>
     </mt:if>
 </mt:if>
 <mt:if name="can_edit_categories">
-    <div id="add-category-form" class="add-category-form hidden">
-        <input id="add-category-input" class="add-category-input input-hint" type="text" value="" placeholder="<$mt:var name="container_label_name"$>" />
-        <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span></a>
-        <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>Cancel</span></a>
+    <div id="add-category-form" class="form-inline add-category-form hidden">
+        <input id="add-category-input" class="form-control add-category-input input-hint" type="text" value="" placeholder="<$mt:var name="container_label_name"$>" />
+        <a href="javascript:void(0);" mt:command="add" class="add-category-save-link">
+          <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+          <span class="sr-only">Add</span>
+        </a>
+        <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link">
+          <img src="<mt:var name="static_uri">images/status_icons/error.gif" />
+          <span class="sr-only">Cancel</span>
+        </a>
     </div>
 </mt:if>
-    <div id="<$mt:var name="container_type" lower_case="1"$>-selector-list" class="category-selector-list"></div>
+    <div class="panel panel-default" style="height: 120px; overflow: auto; overflow-x: hidden;">
+      <div id="<$mt:var name="container_type" lower_case="1"$>-selector-list" class="panel-body category-selector-list"></div>
+    </div>
 </div><!-- /category-selector -->

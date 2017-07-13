@@ -1,5 +1,10 @@
 <mt:setvarblock name="page_title"><__trans phrase="Search &amp; Replace"></mt:setvarblock>
-<mt:setvarblock name="html_head" append="1">
+
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/datepicker.css?v=<mt:var name="mt_version_id" escape="url">" />
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 function toggleVisibility(c, s) {
@@ -97,8 +102,7 @@ function blurDateFields(s) {
 </script>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
+<mt:setvarblock name="content">
 <div id="search-form">
   <form id="search_form" name="search_form" method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="search_replace" />
@@ -122,9 +126,15 @@ function blurDateFields(s) {
     <input type="hidden" name="filter_val" value="<mt:var name="filter_val" escape="html">" />
 
     <div id="search-tabs">
-      <ul id="search-tabs-list" class="search-tabs-list tabs">
+      <ul id="search-tabs-list" class="nav nav-tabs search-tabs-list tabs">
       <mt:loop name="search_tabs">
-        <li id="results-<mt:var name="key" escape="html">-tab" class="tab"><a href="#<mt:var name="key" escape="html">"><span><mt:var name="label" escape="html"></span></a></li>
+        <li id="results-<mt:var name="key" escape="html">-tab" class="tab<mt:if name="object_type" eq="$key"> active</mt:if>">
+          <a href="#" data-mt-object-type="<mt:var name="key" escape="html">" onclick="reSearch(this.dataset.mtObjectType); return false;">
+            <span>
+              <mt:var name="label" escape="html">
+            </span>
+          </a>
+        </li>
       </mt:loop>
       </ul>
     </div>
@@ -133,9 +143,19 @@ function blurDateFields(s) {
     <mt:if name="have_results">
       <mt:if name="can_replace">
       <div id="search-bar-toggle" class="mod">
-      <ul class="multiple-selection">
-          <li><label for="search-replace-toggle-search"><input type="radio" id="search-replace-toggle-search" name="search-replace-toggle" value="search" checked="checked" class="rb" onclick="toggleSearchAndReplace(this)" /> <__trans phrase="Search Again"></label></li>
-          <li><label for="search-replace-toggle-replace"><input type="radio" id="search-replace-toggle-replace" name="search-replace-toggle" value="replace" class="rb" onclick="toggleSearchAndReplace(this)" /> <__trans phrase="Search &amp; Replace"></label></li>
+      <ul class="list-inline multiple-selection">
+          <li>
+            <label for="search-replace-toggle-search">
+              <input type="radio" id="search-replace-toggle-search" name="search-replace-toggle" value="search" checked="checked" class="rb" onclick="toggleSearchAndReplace(this)" />
+              <__trans phrase="Search Again">
+            </label>
+          </li>
+          <li>
+            <label for="search-replace-toggle-replace">
+              <input type="radio" id="search-replace-toggle-replace" name="search-replace-toggle" value="replace" class="rb" onclick="toggleSearchAndReplace(this)" />
+              <__trans phrase="Search &amp; Replace">
+            </label>
+          </li>
         </ul>
       </div>
       </mt:if>
@@ -146,10 +166,11 @@ function blurDateFields(s) {
            id="search"
            label="<__trans phrase="Search">"
            label_class="top-label"
-           help_section="search-alt">
-          <input type="text" name="search" id="search" class="text query" value="<mt:var name="search" escape="html">" />
+           help_section="search-alt"
+           no_grid="1">
+          <input type="text" name="search" id="search" class="form-control text query" value="<mt:var name="search" escape="html">" />
         </mtapp:setting>
-        <ul id="search-bar-advanced-search" class="multiple-selection">
+        <ul id="search-bar-advanced-search" class="list-inline multiple-selection">
           <li><label for="case"><input type="checkbox" id="case" name="case" value="1"<mt:if name="case"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Case Sensitive"></label></li>
           <li><label for="is_regex"><input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Regex Match"></label></li>
           <li><label for="is_limited"><input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="cb" onclick="toggleVisibility(this, 'limited-fields')" /> <__trans phrase="Limited Fields"></label></li>
@@ -162,19 +183,26 @@ function blurDateFields(s) {
         </ul>
         <div id="limited-fields" class="mod advanced-options"<mt:unless name="is_limited"> style="display: none;"</mt:unless>>
         <mt:if name="search_cols">
-          <div id="<mt:var name="object_type">-fields">
-            <ul class="multiple-selection">
+          <div id="<mt:var name="object_type">-fields" class="panel panel-default panel-body">
+            <ul class="list-inline multiple-selection">
             <mt:loop name="search_cols">
-              <li><label for="search_cols-<mt:var name="field" escape="html">"><input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if> class="cb" /> <mt:var name="label" escape="html"></label></li>
+              <li>
+                <label for="search_cols-<mt:var name="field" escape="html">">
+                  <input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if> class="cb" />
+                  <mt:var name="label" escape="html">
+                </label>
+              </li>
             </mt:loop>
             </ul>
           </div>
         </mt:if>
         </div>
-        <div id="date-range" class="mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
+        <div id="date-range" class="panel panel-default panel-body form-inline mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
           <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="from">0<mt:else>1</mt:if>" />
-          <label for="datefrom"><__trans phrase="_DATE_FROM">:</label> <input placeholder="YYYY-MM-DD" type="text" name="from" id="from" class="text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">
-          <label for="dateto"><__trans phrase="_DATE_TO">:</label> <input placeholder="YYYY-MM-DD" type="text" name="to" id="to" class="text-date text date" value="<mt:if name="to"><mt:var name="to" escape="html"></mt:if>">
+          <label for="datefrom"><__trans phrase="_DATE_FROM">:</label>
+          <input placeholder="YYYY-MM-DD" type="text" name="from" id="from" class="form-control text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">
+          <label for="dateto"><__trans phrase="_DATE_TO">:</label>
+          <input placeholder="YYYY-MM-DD" type="text" name="to" id="to" class="form-control text-date text date" value="<mt:if name="to"><mt:var name="to" escape="html"></mt:if>">
         </div>
         <div class="actions-bar">
           <button
@@ -183,7 +211,7 @@ function blurDateFields(s) {
              accesskey="s"
              title="<__trans phrase="Submit search (s)">"
              id="search-button"
-             class="search action primary button">
+             class="search action primary button btn btn-primary">
             <__trans phrase="Search">
           </button>
         </div>
@@ -196,23 +224,25 @@ function blurDateFields(s) {
            id="search-alt"
            label="<__trans phrase="Search For">"
            label_class="top-label"
-           help_section="search-alt">
-          <input type="text" name="search-alt" id="search-alt" class="text query disabled" disabled value="<mt:var name="search" escape="html">" readonly="readonly" />
+           help_section="search-alt"
+           no_grid="1">
+          <input type="text" name="search-alt" id="search-alt" class="form-control text query disabled" disabled value="<mt:var name="search" escape="html">" readonly="readonly" />
         </mtapp:setting>
         <!-- Replace -->
         <mtapp:setting
            id="replace"
            label="<__trans phrase="Replace With">"
            label_class="top-label"
-           help_section="replace">
-          <textarea name="replace" id="replace" class="text low"><mt:var name="replace" escape="html"></textarea>
+           help_section="replace"
+           no_grid="1">
+          <textarea name="replace" id="replace" class="form-control text low"><mt:var name="replace" escape="html"></textarea>
         </mtapp:setting>
         <div class="actions-bar">
           <button
              onclick="doReplace(); return false"
              type="submit"
              id="replace-button"
-             class="replace action primary button">
+             class="replace action primary button btn btn-primary">
             <__trans phrase="Replace Checked">
           </button>
         </div>
@@ -231,30 +261,30 @@ function blurDateFields(s) {
       <mt:setvar name="rebuild_type" value="all">
       <mt:setvar name="no_link" value="0">
     </mt:if>
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="replace-count"
      class="success"
      rebuild="$rebuild_type"
      no_link="$no_link"
      can_close="0">
     <__trans phrase="Successfully replaced [quant,_1,record,records]." params="<mt:var name="replace_count">">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 
 <mt:if name="have_more">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="have-more-count"
      class="success">
     <__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a>
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 <mt:else>
   <mt:unless name="replace_count">
     <mt:if name="have_results">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="result-count"
      class="success">
     <__trans phrase="[quant,_1,result,results] found" params="<mt:var name="count_matches">">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
     </mt:if>
   </mt:unless>
 </mt:if>
@@ -264,30 +294,21 @@ function blurDateFields(s) {
 </mt:if>
 
 <mt:if name="error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error" escape="html">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 
+<mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(function() {
-    var index = jQuery('#search-tabs-list li').index(jQuery('#results-<mt:var name="object_type">-tab'));
-    if ( index < 0 ) {
-        index = 0;
-    }
-    jQuery('#search-tabs').tabs({
-        active: index,
-        beforeActivate: function(event, ui) {
-            var type = ui.newTab.attr('aria-controls');
-            reSearch(type);
-            return false;
-        }
-    });
-
     jQuery.mtCheckbox();
 <mt:unless name="have_results">
     jQuery('#search').focus();
@@ -295,5 +316,7 @@ jQuery(function() {
 });
 /* ]]> */
 </script>
+</mt:setvarblock>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

@@ -1,30 +1,17 @@
-<script>
-window.MT = {};
-MT.App = {
-  HelpBaseUrl: '<mt:var name="help_url">',
-  SiteId: <mt:var name="blog_id" _default="0">,
-  ScriptBaseURL: '<mt:var name="script_base_url">',
-  ScriptURL: '<mt:var name="script_url">',
-  StaticURI: '<mt:var name="static_uri">'
-};
-
-if (typeof MT.Util === 'undefined') {
+;(function (window) {
+  if (typeof MT.Util === 'undefined') {
     MT.Util = {};
-}
+  }
 
-MT.Util.getByID = function (n, d) {
+  MT.Util.getByID = function (n, d) {
     if (!d) d = document;
     if (d.getElementById)
         return d.getElementById(n);
     else if (d.all)
         return d.all[n];
-};
+  };
 
-if (typeof MT.Validator === 'undefined') {
-    MT.Validator = {};
-}
-
-MT.Util.dirify_table = {
+  MT.Util.dirify_table = {
     "\u00C0": 'A',    // A`
     "\u00E0": 'a',    // a`
     "\u00C1": 'A',    // A'
@@ -215,65 +202,204 @@ MT.Util.dirify_table = {
     "\u017C": 'z',    // latin small letter z with dot above
     "\u0179": 'Z',    // latin capital letter z with acute
     "\u017A": 'z'     // latin small letter z with acute
-};
+  };
 
-MT.Util.dirify = function (s) {
-    s = s.replace(/<[^>]+>/g, '');
-    for (var p in MT.Util.dirify_table)
-        if (s.indexOf(p) != -1)
-            s = s.replace(new RegExp(p, "g"), MT.Util.dirify_table[p]);
-    s = s.toLowerCase();
-    s = s.replace(/&[^;\s]+;/g, '');
-    s = s.replace(/[^-a-z0-9_ ]/g, '');
-    s = s.replace(/\s+/g, '_');
-    s = s.replace(/_+$/, '');
-    s = s.replace(/_+/g, '_');
-    return s;
-}
+  MT.Util.dirify = function (s) {
+      s = s.replace(/<[^>]+>/g, '');
+      for (var p in MT.Util.dirify_table)
+          if (s.indexOf(p) != -1)
+              s = s.replace(new RegExp(p, "g"), MT.Util.dirify_table[p]);
+      s = s.toLowerCase();
+      s = s.replace(/&[^;\s]+;/g, '');
+      s = s.replace(/[^-a-z0-9_ ]/g, '');
+      s = s.replace(/\s+/g, '_');
+      s = s.replace(/_+$/, '');
+      s = s.replace(/_+/g, '_');
+      return s;
+  }
 
-$.extend(MT.Validator, {
-    urlSubdomain: function(subdomain) {
-        return subdomain.match(/^[a-z0-9]([a-z0-9-\.]*[a-z0-9])?$/);
-    },
+  MT.Util.countMarked = function (f, nameRestrict) {
+      var count = 0;
+      var e = f.id;
+      if (!e) return 0;
+      if (e.type && e.type == 'hidden') return 1;
+      if (e.value && e.checked)
+          count++;
+      else
+      if (nameRestrict) {
+          for (i=0; i<e.length; i++)
+              if (e[i].checked && (e[i].name == nameRestrict))
+                  count++;
+      } else {
+          for (i=0; i<e.length; i++)
+              if (e[i].checked)
+                  count++;
+      }
+     return count;
+  };
 
-    urlPath: function(path) {
-        if (path.indexOf(' ') != -1) {
-            return false;
-        }
-        return path.match(/^[^\s<>\#%"\,\{\}\\|\\\^\[\]`]*$/);
-    },
+  MT.Util.doForMarkedInThisWindow = function (f, singular, plural, nameRestrict,
+                                    mode, args, phrase) {
+      var count = MT.Util.countMarked(f, nameRestrict);
+      if (!count) {
+          alert(trans('You did not select any [_1] [_2].', plural, phrase));
+          return false;
+      }
+      f.target = f.target || "_top";
+      if (f.elements['itemset_action_input'])
+          f.elements['itemset_action_input'].value = '';
+      f.elements["__mode"].value = mode;
+      if (args) {
+          var opt;
+          var input;
+          if (opt = itemset_options[args['action_name']]) {
+              if (opt['min'] && (count < opt['min'])) {
+                  alert(trans('You can only act upon a minimum of [_1] [_2].', opt['min'], plural));
+                  return false;
+              } else if (opt['max'] && (count > opt['max'])) {
+                  alert(trans('You can only act upon a maximum of [_1] [_2].', opt['max'], plural));
+                  return false;
+              } else if (opt['input']) {
+                  if (input = prompt(opt['input'])) {
+                      f.elements['itemset_action_input'].value = input;
+                  } else {
+                      return false;
+                  }
+              } else if (opt['continue_prompt']) {
+                  if (!confirm(opt['continue_prompt'])) {
+                      return false;
+                  }
+              }
+          }
+          for (var arg in args) {
+              if (f.elements[arg]) f.elements[arg].value = args[arg];
+              if (arg == 'search' && f.elements['return_args'].value) {
+                  f.elements['return_args'].value += '&do_search=1&search='+encodeURIComponent(args[arg]);
+              }
+          }
+          if (opt && opt['dialog']) {
+              var q = jQuery(f).serialize();
+              var url = ScriptURI+'?'+q;
+              jQuery.fn.mtModal.open(url);
+              return false;
+          }
+      }
+      f.submit();
+  };
 
-    url: function(url) {
-        if (url.indexOf(' ') != -1) {
-            return false;
-        }
-        return url.match(/^https?:\/\/[a-z0-9-\.]+\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/);
-    },
+  MT.Util.doRemoveItems = function (f, singular, plural, nameRestrict, args, params) {
+      if (params && (typeof(params) == 'string')) {
+          params = { 'mode': params };
+      } else if (!params) {
+          params = {}
+      }
+      var verb = params['verb'] || trans('delete');
+      var mode = params['mode'] || 'delete';
+      var object_type;
+      if (params['type']) {
+          object_type = params['type'];
+      } else {
+          for (var i = 0; i < f.childNodes.length; i++) {
+              if (f.childNodes[i].name == '_type') {
+                  object_type = f.childNodes[i].value;
+                  break;
+              }
+          }
+      }
+      var count = countMarked(f, nameRestrict);
+      if (!count) {
+          alert(params['none_prompt'] || trans('You did not select any [_1] to [_2].', plural, verb));
+          return false;
+      }
+      var singularMessage = params['singular_prompt'] || trans('Are you sure you want to [_2] this [_1]?');
+      var pluralMessage = params['plural_prompt'] || trans('Are you sure you want to [_3] the [_1] selected [_2]?');
+      if (object_type == 'role') {
+          singularMessage = trans('Are you certain you want to remove this role? By doing so you will be taking away the permissions currently assigned to any users and groups associated with this role.');
+          pluralMessage = trans('Are you certain you want to remove these [_1] roles? By doing so you will be taking away the permissions currently assigned to any users and groups associated with these roles.');
+      }
+      if (confirm(count == 1 ? trans(singularMessage, singular, verb) : trans(pluralMessage, count, plural, verb))) {
+          return MT.Util.doForMarkedInThisWindow(f, singular, plural, nameRestrict, mode, args);
+      } else {
+          return false;
+      }
+  };
 
-    path: function(path, isBlog) {
-        var str = path.replace(/[ "%<>\[\\\]\^`{\|}~]/g, ""); //"
-        str = encodeURI(str);
-        if (str.indexOf('%') != -1) {
-            return false;
-        }
-        if (str.match(/\.\./)) {
-            return false;
-        }
-
-        if (isBlog) {
-            if ( path.match(/^\//) || path.match(/^[a-zA-Z]:\\/)  || path.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
-                return false;
+  MT.Util.doPluginAction = function (f, plural, args, phrase) {
+    if (!f) {
+        var forms = document.getElementsByTagName( "form" );
+        for ( var i = 0; i < forms.length; i++ ) {
+            var pas = truth( forms[ i ][ 'plugin_action_selector' ] );
+            if (pas) {
+                f = forms[ i ];
+                break;
             }
         }
-
-        return true;
-    },
-
-    absolutePath: function(path) {
-        if ( path.match(/^\//) || path.match(/^[a-zA-Z]:\\/)  || path.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
-            return true;
-        }
-        return false;
     }
-});
-</script>
+    if (!f)
+        return;
+    var sel = f['plugin_action_selector'];
+    if (sel.length && sel[0].options) sel = sel[0];
+    var action = sel.options[sel.selectedIndex].value;
+    if (action == '0' || action == '') {
+        alert(trans('You must select an action.'));
+        return;
+    }
+    if (itemset_options[action]) {
+        if (itemset_options[action]['js']) {
+            return eval(itemset_options[action]['js'] + '(f,action);');
+        }
+    }
+    args['action_name'] = action;
+    return MT.Util.doForMarkedInThisWindow(f, '', plural, 'id', 'itemset_action', args, phrase);
+  };
+
+  MT.Util.getOwnerDocument = function (element) {
+    if( !element )
+      return document;
+    if( element.ownerDocument )
+      return element.ownerDocument;
+    if( element.getElementById )
+      return element
+    return document;
+  };
+
+  MT.Util.getComputedStyle = function (element) {
+    if( element.currentStyle )
+      return element.currentStyle;
+    var style = {};
+    var owner = MT.Util.getOwnerDocument( element );
+    if( owner && owner.defaultView && owner.defaultView.getComputedStyle ) {
+      try {
+        style = owner.defaultView.getComputedStyle( e, null );
+      } catch( e ) {}
+    }
+    return style;
+  };
+
+  MT.Util.getElementsByTagAndClassName = function ( tagName, className, root ) {
+  	root = MT.Util.elementOrId( root );
+  	if( !root )
+  		root = document;
+  	var allElements = root.getElementsByTagName( tagName );
+  	var elements = [];
+  	for( var i = 0; i < allElements.length; i++ )
+  	{
+  		var element = allElements[ i ];
+  		if( !element )
+  			continue;
+      if ( $(element).hasClass(className) )
+    		elements[ elements.length ] = element;
+  	}
+  	return elements;
+  }
+
+  MT.Util.elementOrId = function( element ) {
+  	if( !element )
+  		return null;
+  	if( typeof element == "string" )
+  		element = document.getElementById( element );
+  	return element;
+  }
+
+
+})(window);

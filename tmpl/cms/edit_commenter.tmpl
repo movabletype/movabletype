@@ -3,37 +3,110 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="saved_commenter">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="saved-commenter"
      class="success">
     <__trans phrase="Your changes have been saved.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="trusted">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="trusted"
      class="success">
     <__trans phrase="The commenter has been trusted.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="banned">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="banned"
      class="success">
     <__trans phrase="The commenter has been banned.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="related_content">
-<mtapp:widget
+<mtapp:newwidget
    id="useful-links"
    label="<__trans phrase="Useful links">">
-  <ul>
+  <ul class="list-unstyled">
     <li><a href="<mt:var name="script_url">?__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter=commenter_id&amp;filter_val=<mt:var name="id" escape="url">"><__trans phrase="Comments from [_1]" params="<mt:var name="nickname" escape="html" escape="html">"></a></li>
   </ul>
-</mtapp:widget>
+</mtapp:newwidget>
 <mtapp:PageActions>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
+function countMarked (f, nameRestrict) {
+    var count = 0;
+    var e = f.id;
+    if (!e) return 0;
+    if (e.type && e.type == 'hidden') return 1;
+    if (e.value && e.checked)
+        count++;
+    else
+    if (nameRestrict) {
+        for (i=0; i<e.length; i++)
+            if (e[i].checked && (e[i].name == nameRestrict))
+                count++;
+    } else {
+        for (i=0; i<e.length; i++)
+            if (e[i].checked)
+                count++;
+    }
+   return count;
+}
+
+function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
+                                  mode, args, phrase) {
+    var count = countMarked(f, nameRestrict);
+    if (!count) {
+        alert(trans('You did not select any [_1] [_2].', plural, phrase));
+        return false;
+    }
+    f.target = f.target || "_top";
+    if (f.elements['itemset_action_input'])
+        f.elements['itemset_action_input'].value = '';
+    f.elements["__mode"].value = mode;
+    if (args) {
+        var opt;
+        var input;
+        if (opt = itemset_options[args['action_name']]) {
+            if (opt['min'] && (count < opt['min'])) {
+                alert(trans('You can only act upon a minimum of [_1] [_2].', opt['min'], plural));
+                return false;
+            } else if (opt['max'] && (count > opt['max'])) {
+                alert(trans('You can only act upon a maximum of [_1] [_2].', opt['max'], plural));
+                return false;
+            } else if (opt['input']) {
+                if (input = prompt(opt['input'])) {
+                    f.elements['itemset_action_input'].value = input;
+                } else {
+                    return false;
+                }
+            } else if (opt['continue_prompt']) {
+                if (!confirm(opt['continue_prompt'])) {
+                    return false;
+                }
+            }
+        }
+        for (var arg in args) {
+            if (f.elements[arg]) f.elements[arg].value = args[arg];
+            if (arg == 'search' && f.elements['return_args'].value) {
+                f.elements['return_args'].value += '&do_search=1&search='+encodeURIComponent(args[arg]);
+            }
+        }
+        if (opt && opt['dialog']) {
+            var q = jQuery(f).serialize();
+            var url = ScriptURI+'?'+q;
+            jQuery.fn.mtModal.open(url);
+            return false;
+        }
+    }
+    f.submit();
+}
+</script>
 </mt:setvarblock>
 
 <mt:setvarblock name="action_buttons">
@@ -47,7 +120,7 @@
      type="submit"
      accesskey="t"
      title="<__trans phrase="Trust user (t)">"
-     class="action button">
+     class="action button btn btn-default">
     <__trans phrase="Trust">
   </button>
         <mt:else>
@@ -56,7 +129,7 @@
      type="submit"
      accesskey="t"
      title="<__trans phrase="Untrust user (t)">"
-     class="action button">
+     class="action button btn btn-default">
     <__trans phrase="Untrust">
   </button>
         </mt:unless>
@@ -67,7 +140,7 @@
      type="submit"
      accesskey="b"
      title="<__trans phrase="Ban user (b)">"
-     class="action button">
+     class="action button btn btn-default">
     <__trans phrase="Ban">
   </button>
       <mt:else>
@@ -76,7 +149,7 @@
      type="submit"
      accesskey="b"
      title="<__trans phrase="Unban user (b)">"
-     class="action button">
+     class="action button btn btn-default">
     <__trans phrase="Unban">
   </button>
       </mt:unless>
@@ -86,7 +159,7 @@
      type="submit"
      accesskey="t"
      title="<__trans phrase="Trust user (t)">"
-     class="action button">
+     class="action button btn btn-default">
     <__trans phrase="Trust">
   </button>
   <button
@@ -94,7 +167,7 @@
      type="submit"
      accesskey="b"
      title="<__trans phrase="Ban user (b)">"
-     class="action button">
+     class="action button btn btn-default">
     <__trans phrase="Ban">
   </button>
     </mt:if>
@@ -102,23 +175,7 @@
 </mt:if>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
-<mt:unless name="tab_commenter">
-<script type="text/javascript">
-/* <![CDATA[ */
-var tableSelect;
-function init()
-{
-        // setup
-        tableSelect = new TC.TableSelect( "selector" );
-        tableSelect.rowSelect = true;
-}
-TC.attachLoadEvent(init);
-/* ]]> */
-</script>
-</mt:unless>
-
+<mt:setvarblock name="content">
 <form method="post" action="<mt:var name="script_url">">
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
@@ -137,21 +194,25 @@ TC.attachLoadEvent(init);
      hint="<__trans phrase="The Name of the commenter">"
      show_hint="0">
     <mt:var name="nickname" escape="html">
-    <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="nickname" escape="url">"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
+    <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="nickname" escape="url">">
+      <img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" />
+    </a>
   </mtapp:setting>
-    
+
   <mtapp:setting
      id="identity"
      label="<__trans phrase="Identity">"
      hint="<__trans phrase="The Identity of the commenter">"
      show_hint="0">
   <mt:if name="url">
-    <a href="<mt:var name="url" escape="html">" target="_blank"><mt:var name="name" escape="html"> <img alt="<__trans phrase="View">" src="<mt:var name="static_uri">images/status_icons/view.gif" /></a>
+    <a href="<mt:var name="url" escape="html">" target="_blank"><mt:var name="name" escape="html">
+      <img alt="<__trans phrase="View">" src="<mt:var name="static_uri">images/status_icons/view.gif" />
+    </a>
   <mt:else>
     <mt:var name="name" escape="html">
   </mt:if>
   </mtapp:setting>
-    
+
   <mtapp:setting
      id="email"
      label="<__trans phrase="Email Address">"
@@ -165,22 +226,26 @@ TC.attachLoadEvent(init);
   <mt:if name="is_email_hidden">
     &nbsp;
   <mt:else>
-    <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
+    <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">">
+      <img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" />
+    </a>
   </mt:if>
   </mtapp:setting>
-    
+
   <mtapp:setting
      id="url"
      label="<__trans phrase="Website URL">"
      hint="<__trans phrase="The Website URL of the commenter">"
      show_hint="0">
   <mt:if name="url">
-    <a href="<mt:var name="url" escape="html">"><mt:var name="url" escape="html">  <img alt="<__trans phrase="View">" src="<mt:var name="static_uri">images/status_icons/view.gif" /></a>
+    <a href="<mt:var name="url" escape="html">"><mt:var name="url" escape="html">
+      <img alt="<__trans phrase="View">" src="<mt:var name="static_uri">images/status_icons/view.gif" />
+    </a>
   <mt:else>
     &nbsp;
   </mt:if>
   </mtapp:setting>
-    
+
   <mtapp:setting
      id="status"
      label="<__trans phrase="Status">"
@@ -196,10 +261,14 @@ TC.attachLoadEvent(init);
     </mt:if>
   </mt:if>
   </mtapp:setting>
-    
+
   <mt:if name="position_actions_bottom">
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
   </mt:if>
 </form>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
