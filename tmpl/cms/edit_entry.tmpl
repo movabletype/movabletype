@@ -63,7 +63,7 @@
 <mt:unless name="recovered_object">
   <mt:if name="autosaved_object_exists">
     <mt:unless name="error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="recovered-object"
      class="info">
   <mt:if name="object_type" eq="entry">
@@ -71,12 +71,12 @@
   <mt:else>
     <__trans phrase="A saved version of this page was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
   </mt:if>
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
     </mt:unless>
   </mt:if>
 </mt:unless>
 <mt:if name="saved_added">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="saved-added"
      class="success">
   <mt:if name="object_type" eq="entry">
@@ -85,48 +85,48 @@
     <__trans phrase="This page has been saved.">
   </mt:if>
     <$mt:var name="view_link"$>
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="saved_changes">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="saved-changes"
      class="success">
     <__trans phrase="Your changes have been saved.">
     <$mt:var name="view_link"$>
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="ping_errors">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="ping-errors"
      class="alert">
     <__trans phrase="One or more errors occurred when sending update pings or TrackBacks."> <mt:if name="can_view_log"><__trans phrase="_USAGE_VIEW_LOG" params="<$mt:var name="script_url"$>?__mode=list&amp;_type=log&amp;blog_id=<$mt:var name="blog_id"$>"></mt:if>
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="saved_prefs">
-  <mtapp:statusmsg    
+  <mtapp:newstatusmsg
      id="saved-prefs"
      class="success">
     <__trans phrase="Your customization preferences have been saved, and are visible in the form below.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="saved_comment">
-  <mtapp:statusmsg    
+  <mtapp:newstatusmsg
      id="saved-comment"
      class="success"
      rebuild="all"
      can_close="0">
     <__trans phrase="Your changes to the comment have been saved.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="saved_notify">
-  <mtapp:statusmsg    
+  <mtapp:newstatusmsg
      id="saved-notify"
      class="success">
     <__trans phrase="Your notification has been sent.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="recovered_object">
-  <mtapp:statusmsg    
+  <mtapp:newstatusmsg
      id="recovered-object"
      class="success">
   <mt:if name="object_type" eq="entry">
@@ -134,10 +134,10 @@
   <mt:else>
     <__trans phrase="You have successfully recovered your saved page.">
   </mt:if>
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="recovered_failed">
-  <mtapp:statusmsg    
+  <mtapp:newstatusmsg
      id="recovered-failed"
      class="error"
      can_close="0">
@@ -146,50 +146,50 @@
   <mt:else>
     <__trans phrase="An error occurred while trying to recover your saved page.">
   </mt:if>
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="saved_deleted">
-  <mtapp:statusmsg    
+  <mtapp:newstatusmsg
      id="saved-deleted"
      class="success">
   <__trans phrase="You have successfully deleted the checked comment(s).">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="saved_deleted_ping">
-  <mtapp:statusmsg    
+  <mtapp:newstatusmsg
      id="saved-deleted-ping"
      class="success">
     <__trans phrase="You have successfully deleted the checked TrackBack(s).">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="loaded_revision">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="loaded_revision"
      class="info">
     <__trans phrase="Restored revision (Date:[_1]).  The current status is: [_2]" params="<$mt:var name="rev_date" escape="html"$>%%<span class="icon-left-wide icon-<$mt:var name="current_status_text" lower_case="1">"><$mt:var name="current_status_label"$></span>">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
   <mt:if name="missing_tags_rev">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="missing_tags_rev"
      class="info">
     <__trans phrase="Some of tags in the revision could not be loaded because they have been removed.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
   </mt:if>
   <mt:if name="missing_cats_rev">
-    <mtapp:statusmsg
+    <mtapp:newstatusmsg
        id="missing_cats_rev"
        class="info">
       <__trans phrase="Some [_1] in the revision could not be loaded because they have been removed." params="<mt:if name="object_type" eq="entry">categories<mt:else>folders</mt:if>">
-    </mtapp:statusmsg>
+    </mtapp:newstatusmsg>
   </mt:if>
 </mt:if>
 <mt:if name="error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error" escape="html">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="junk_log_loop">
   <div id="junk-message" class="msg msg-alert">
@@ -254,7 +254,8 @@
    label="$container_label"
    label_class="$container_label_class"
    help_page="entries"
-   help_section="entry_categories">
+   help_section="entry_categories"
+   no_header="1">
   <script type="text/javascript">
   /* <![CDATA[ */
       MT.App.selectedCategoryList = <$mt:if name="selected_category_loop"><$mt:var name="selected_category_loop" to_json="1"$><mt:else>[]</mt:if>;
@@ -262,10 +263,10 @@
 
       Template.templates.categoryList = '<mt:section encode_js="1">
           [# if ( !items.length ) { #]
-              <span class="disabled">[#|h trans("None selected") #]</span>
+              <span class="text-muted disabled">[#|h trans("None selected") #]</span>
               [#* return #]
           [# } #]
-          <ul class="<$mt:var name="container_type" lower_case="1"$>-list">
+          <ul class="list-unstyled <$mt:var name="container_type" lower_case="1"$>-list">
           [# var map = {}; #]
           [# for ( var i = 0; i < items.length; i++ ) { #]
               [# if ( items[ i ] == 0 && i == 0 ) { #]
@@ -279,7 +280,7 @@
                   label = [];
                   for ( var j = 0; j < cat.path.length; j++ ) {
                       var c = cache.getItem( "cat:"+cat.path[ j ] );
-                      if ( c ) 
+                      if ( c )
                           label.push( <mt:if name="object_type" ne="page">c.label<mt:else>c.basename</mt:if> );
                   }
                   label.push( <mt:if name="object_type" ne="page">cat.label<mt:else>cat.basename</mt:if> );
@@ -305,7 +306,9 @@
   </script>
 <mt:if name="object_type" eq="page">
   <div mt:delegate="category-list" id="category-list"></div>
-  <a href="javascript:void(0);" class="change-folder-link" mt:command="open-category-selector" title="<__trans phrase="Add folder">"><__trans phrase="Change Folder"/></a>
+  <a href="javascript:void(0);" class="change-folder-link" mt:command="open-category-selector" title="<__trans phrase="Add folder">">
+    <__trans phrase="Change Folder"/>
+  </a>
 </mt:if>
 <mt:include name="include/category_selector.tmpl">
 <mt:if name="object_type" eq="entry">
@@ -316,7 +319,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="related_content">
-<mtapp:widget
+<mtapp:newwidget
    id="entry-status-widget"
    class="status-widget"
    label="<__trans phrase="Status">">
@@ -344,7 +347,9 @@
   <div class="revision-info">
       <mt:if name="rev_date">
     <p><__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">"></p>
-    <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog" title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label">">"><__trans phrase="View revisions"></a>
+    <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label">">">
+      <__trans phrase="View revisions">
+    </a>
       <mt:else>
     <p class="zero-state"><__trans phrase="No revision(s) associated with this [_1]" params="<mt:var name="object_label" lower_case="1" escape="html">"></p>
       </mt:if>
@@ -361,8 +366,8 @@
   </ul>
     </mt:if>
   </mt:if>
-</mtapp:widget>
-<mtapp:widget
+</mtapp:newwidget>
+<mtapp:newwidget
    id="entry-publishing-widget"
    label="<__trans phrase="Publishing">">
 <mt:if name="new_object">
@@ -412,14 +417,15 @@
      label="<__trans phrase="Status">"
      label_class="top-label"
      help_page="entries"
-     help_section="status">
+     help_section="status"
+     no_grid="1">
   <mt:unless name="sitepath_configured">
     <input type="hidden" name="status" id="status" value="1" />
     <span><__trans phrase="Unpublished"></span>
     <span class="alert-warning-inline"><img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" /> <a href="<$mt:var name="script_url"$>?__mode=cfg_archives&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mt:if name="object_type" eq="entry"><__trans phrase="You must configure this blog before you can publish this entry."><mt:else><__trans phrase="You must configure this blog before you can publish this page."></mt:if></a></span>
   <mt:else>
     <mt:if name="can_publish_post">
-    <select name="status" id="status" class="full" onchange="highlightSwitch(this)">
+    <select name="status" id="status" class="form-control full" onchange="highlightSwitch(this)">
       <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>><__trans phrase="Unpublished (Draft)"></option>
       <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
     <mt:if name="status_review">
@@ -471,9 +477,12 @@
      label="$authored_on_label"
      label_class="top-label"
      help_page="entries"
-     help_section="date">
-    <div class="date-time-fields">
-      <input type="text" id="created-on" class="text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/><span class="separator"> <__trans phrase="@"></span> <input type="text" class="text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>"  placeholder="HH:mm:ss"/>
+     help_section="date"
+     no_grid="1">
+    <div class="form-inline date-time-fields">
+      <input type="text" id="created-on" class="form-control text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/>
+      <span class="separator"> <__trans phrase="@"></span>
+      <input type="text" class="form-control text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>"  placeholder="HH:mm:ss"/>
     </div>
   </mtapp:setting>
 
@@ -484,10 +493,13 @@
      label="$unpublished_on_label"
      label_class="top-label"
      help_page="entries"
-     help_section="date">
+     help_section="date"
+     no_grid="1">
     <div class="date-time-fields">
-      <div id="unpublished-on" class="mt-edit-inputblock<$mt:if name="show_input_unpublished_on"> show-input</mt:if>">
-        <input type="text" id="unpublished-on-date" class="text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" /><span class="separator"> <__trans phrase="@"></span> <input type="text" id="unpublished-on-time" class="text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" placeholder="HH:mm:ss" />
+      <div id="unpublished-on" class="form-inline mt-edit-inputblock<$mt:if name="show_input_unpublished_on"> show-input</mt:if>">
+        <input type="text" id="unpublished-on-date" class="form-control text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" />
+        <span class="separator"> <__trans phrase="@"></span>
+        <input type="text" id="unpublished-on-time" class="form-control text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" placeholder="HH:mm:ss" />
       </div>
     </div>
   </mtapp:setting>
@@ -496,14 +508,15 @@
      id="basename"
      label="$basename_label"
      label_class="top-label"
-     help_page="entries">
+     help_page="entries"
+     no_grid="1">
   <mt:if name="can_publish_post">
     <span class="basename">
-    <input type="text" name="basename" id="basename" class="text full" value="<$mt:var name="basename" escape="html"$>" /><mt:if name="object_type" eq="page"><span class="file-extension"><mt:var name="file_extension" escape="html"></span></mt:if>
+    <input type="text" name="basename" id="basename" class="form-control text full" value="<$mt:var name="basename" escape="html"$>" /><mt:if name="object_type" eq="page"><span class="file-extension"><mt:var name="file_extension" escape="html"></span></mt:if>
      <input type="hidden" name="basename_manual" id="basename_manual" value="0" />
     </span>
     <mt:if name="object_type" eq="entry">
-      <p class="alert-warning-inline" id="basename-warning" style="display: none">
+      <p class="text-warning alert-warning-inline" id="basename-warning" style="display: none">
         <img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
       <mt:if name="new_object">
         <__trans phrase="Warning: If you set the basename manually, it may conflict with another entry.">
@@ -525,35 +538,38 @@
   <mtapp:setting
      id="revision-note"
      label="<__trans phrase="Change note">"
-     label_class="top-label">
-    <input type="text" name="revision-note" id="revision-note" class="text full" value="<mt:var name="revision-note" escape="html">" />
+     label_class="top-label"
+     no_grid="1">
+    <input type="text" name="revision-note" id="revision-note" class="form-control text full" value="<mt:var name="revision-note" escape="html">" />
   </mtapp:setting>
 </mt:if>
 
   <div class="actions-bar">
-    <div class="save-action">
-      <button
-         name="status"
-         type="submit"
-         title="<mt:var name="button_title">"
-         class="publish action primary button">
-        <mt:var name="button_text">
-      </button>
-    </div>
-    <div class="preview-action">
-      <button
-         name="preview_entry"
-         type="submit"
-         accesskey="v"
-         title="<mt:var name="preview_button_title">"
-         class="preview action button">
-        <__trans phrase="Preview">
-      </button>
-    </div>
+    <ul class="list-inline">
+      <li class="save-action">
+        <button
+           name="status"
+           type="submit"
+           title="<mt:var name="button_title">"
+           class="publish action primary button btn btn-primary">
+          <mt:var name="button_text">
+        </button>
+      </li>
+      <li class="preview-action">
+        <button
+           name="preview_entry"
+           type="submit"
+           accesskey="v"
+           title="<mt:var name="preview_button_title">"
+           class="preview action button btn btn-default">
+          <__trans phrase="Preview">
+        </button>
+      </li>
+    </ul>
   </div>
 
 <mt:if name="id">
-<div class="delete-action">
+<div class="text-right delete-action">
   <a
      href="javascript:void(0)"
      mt:command="do-remove-items"
@@ -582,26 +598,30 @@
     </a>
   </p>
 </mt:unless>
-</mtapp:widget>
+</mtapp:newwidget>
 
 <div id="category-field"<mt:unless name="disp_prefs_show_category"> class="hidden"</mt:unless>>
 <mt:if name="object_type" eq="entry">
   <mt:setvarblock name="header_action">
-  <a href="javascript:void(0)" class="category-toggle-link toggle-link" id="open-category-selector1" mt:command="open-category-selector" mt:close-el="close-category-selector1" title="<__trans phrase="Add category">"><__trans phrase="edit"/></a>
-  <a href="javascript:void(0)" class="category-toggle-link toggle-link hidden" mt:command="close-category-selector" id="close-category-selector1"><__trans phrase="close"></a>
+  <a href="javascript:void(0)" class="pull-right category-toggle-link toggle-link" id="open-category-selector1" mt:command="open-category-selector" mt:close-el="close-category-selector1" title="<__trans phrase="Add category">">
+    <__trans phrase="edit"/>
+  </a>
+  <a href="javascript:void(0)" class="pull-right category-toggle-link toggle-link hidden" mt:command="close-category-selector" id="close-category-selector1">
+    <__trans phrase="close">
+  </a>
   </mt:setvarblock>
-  <mtapp:widget
+  <mtapp:newwidget
      id="entry-category-widget"
      label="<__trans phrase="Categories">"
      label_class="top-label"
      header_action="$header_action">
     <mt:var name="category_setting">
-  </mtapp:widget>
+  </mtapp:newwidget>
 </mt:if>
 </div>
 
 <div id="feedback-field"<mt:unless name="disp_prefs_show_feedback"> class="hidden"</mt:unless>>
-  <mtapp:widget
+  <mtapp:newwidget
      id="entry-feedback-widget"
      label="<__trans phrase="Comments">">
     <mtapp:setting
@@ -609,18 +629,25 @@
        label="<__trans phrase="Accept">"
        label_class="no-header"
        help_page="entries"
-       help_section="accept_comments">
-      <ul>
+       help_section="accept_comments"
+       no_header="1">
+      <ul class="list-unstyled">
         <li>
-          <input type="checkbox" name="allow_comments" id="allow_comments" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <label for="allow_comments"><__trans phrase="Accept Comments"></label>
+          <input type="checkbox" name="allow_comments" id="allow_comments" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" />
+          <label for="allow_comments"><__trans phrase="Accept Comments"></label>
         <mt:unless name="new_object">
-          <span class="comments-link feedback-count"><__trans phrase="<a href="[_2]">[_1]</a>" params="<$mt:var name="num_comments"$>%%<$mt:var name="script_url">?__mode=list&_type=comment&amp;filter=entry&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"></span>
+          <span class="comments-link feedback-count">
+            <__trans phrase="<a href="[_2]">[_1]</a>" params="<$mt:var name="num_comments"$>%%<$mt:var name="script_url">?__mode=list&_type=comment&amp;filter=entry&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>">
+          </span>
         </mt:unless>
         </li>
         <li>
-          <input type="checkbox" name="allow_pings" id="allow_pings" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" /> <label for="allow_pings"><__trans phrase="Accept Trackbacks"></label>
+          <input type="checkbox" name="allow_pings" id="allow_pings" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" />
+          <label for="allow_pings"><__trans phrase="Accept Trackbacks"></label>
         <mt:unless name="new_object">
-          <span class="pings-link feedback-count"><__trans phrase="<a href="[_2]">[_1]</a>" params="<$mt:var name="num_pings"$>%%<$mt:var name="script_url">?__mode=list&amp;_type=ping&amp;filter=entry_id&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"></span>
+          <span class="pings-link feedback-count">
+            <__trans phrase="<a href="[_2]">[_1]</a>" params="<$mt:var name="num_pings"$>%%<$mt:var name="script_url">?__mode=list&amp;_type=ping&amp;filter=entry_id&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>">
+          </span>
         </mt:unless>
         </li>
       </ul>
@@ -642,22 +669,26 @@
        hint="$ping_urls_hint"
        show_hint="$show_ping_urls_hint"
        help_page="entries"
-       help_section="urls_to_ping">
-      <textarea name="to_ping_urls" id="to_ping_urls" class="text full low" cols="" rows=""><$mt:var name="to_ping_urls" escape="html"$></textarea>
+       help_section="urls_to_ping"
+       no_grid="1">
+      <textarea name="to_ping_urls" id="to_ping_urls" class="form-control text full low" cols="" rows=""><$mt:var name="to_ping_urls" escape="html"$></textarea>
     </mtapp:setting>
-  </mtapp:widget>
+  </mtapp:newwidget>
 </div>
 
 <mt:if name="object_type" like="(entry|page)">
 <div id="assets-field"<mt:unless name="disp_prefs_show_assets"> class="hidden"</mt:unless>>
   <mt:setvarblock name="widget_label"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></mt:setvarblock>
-  <mtapp:widget
+  <mtapp:newwidget
      id="asset_container"
      label="$widget_label">
-    <div class="asset-list-header">
-      <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog"><__trans phrase="Add"></a>
+    <div class="text-right asset-list-header">
+      <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog mt-modal-open">
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+        <__trans phrase="Add">
+      </a>
     </div>
-    <ul id="asset-list" name="asset-list">
+    <ul id="asset-list" class="list-unstyled" name="asset-list">
     <mt:if name="asset_loop">
     <mt:loop name="asset_loop">
       <li id="list-asset-<mt:var name="asset_id">" class="asset-file asset-type-<mt:var name="asset_type" escape="html" lower_case="1">"<mt:if name="asset_thumb"> onmouseover="show('list-image-<mt:var name="asset_id">')" onmouseout="hide('list-image-<mt:var name="asset_id">')"</mt:if>>
@@ -666,7 +697,7 @@
         </a>
         <a href="javascript:removeAssetFromList(<mt:var name="asset_id">)" title="<__trans phrase="Remove this asset.">" class="remove-asset icon-remove icon16 action-icon"><__trans phrase="Remove"></a>
       <mt:if name="asset_thumb">
-        <img id="list-image-<mt:var name="asset_id">" class="list-image" src="<mt:var name="asset_thumb">" style="display:none" /> 
+        <img id="list-image-<mt:var name="asset_id">" class="list-image" src="<mt:var name="asset_thumb">" style="display:none" />
       </mt:if>
       </li>
     </mt:loop>
@@ -675,7 +706,7 @@
     </mt:if>
     </ul>
     <input type="hidden" id="include_asset_ids" name="include_asset_ids" value="<mt:loop name="asset_loop"><mt:var name="asset_id"><mt:unless name="__last__">,</mt:unless></mt:loop>" />
-  </mtapp:widget>
+  </mtapp:newwidget>
 </div>
 </mt:if>
 
@@ -684,6 +715,48 @@
 <mt:else>
     <$MTApp:PageActions from="edit_entry"$>
 </mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/datepicker.css?v=<mt:var name="mt_version_id" escape="url">" />
+<style>
+.sort-enabled {
+    margin-bottom: 15px;
+    padding: 0;
+    border: 1px solid #c0c6c9;
+    background-color: #fff;
+    border-radius: 3px;
+}
+.sort-enabled:hover {
+    border: 1px solid #adadad;
+    border-top-color: #cfd0d0;
+    border-left-color: #cfd0d0;
+}
+.sort-enabled .field-header {
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    border-bottom: 1px solid #fff;
+    background-image: url(<mt:var name="static_uri">images/sort_handle.png);
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    border-radius: 3px 3px 0 0;
+}
+.sort-enabled .field-header:hover {
+    cursor: move;
+}
+.sort-enabled .field-header label {
+    margin-left: 20px;
+}
+.sort-enabled .field-content {
+    padding: 0 10px 10px;
+}
+
+.placeholder {
+    margin-bottom: 15px;
+    border: 1px dashed #c0c6c9;
+    background-color: #fbfbfb;
+}
+</style>
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
@@ -702,6 +775,7 @@
 </mt:unless>
 
 <mt:setvarblock name="html_head" append="1">
+<mt:include name="modules/libjs.tmpl">
 <script type="text/javascript">
     /* <![CDATA[ */
     if (typeof(Editor) == 'undefined') {
@@ -739,7 +813,7 @@
       customizable_fields.push('feedback');
       customizable_fields.push('assets');
       var default_fields = [<mt:loop name="disp_prefs_default_fields" glue=",">'<mt:var name="name" escape="js">'</mt:loop>];
-      
+
       function saveEntryFieldOptions(options) {
           var defaults = {
               data: '',
@@ -766,7 +840,7 @@
               alert("Error: " + response.error);
               return;
           }
-      
+
           form.text.value = response.result.text;
           form.text_more.value = response.result.text_more;
           orig_text_format = cur_text_format = 'richtext';
@@ -799,7 +873,7 @@
           } else {
               jQuery('#formatting-help-link').addClass('disabled');
           }
-      
+
           if (cur_text_format == 'richtext') {
               // changing to plaintext editor
               jQuery('#editor-content').addClass('editor-plaintext');
@@ -851,7 +925,7 @@
           } else {
               jQuery('#formatting-help-link').addClass('disabled');
           }
-      
+
           if (option == 'richtext') {
               app.saveHTML(false);
               // changing to richtext editor
@@ -875,7 +949,7 @@
           }
       }
       </mt:unless>
-      
+
       function setDefaultFieldGroup() {
           var i, j, selected_fields, disable_fields, field_object;
 
@@ -893,10 +967,10 @@
           };
 
           sendEntryPrefs();
-      
+
           return false;
       }
-      
+
       var tag_delim = '<$mt:var name="auth_pref_tag_delim"$>';
       function setDirty () {
           log.warn('deprecated function setDirty(), call app.setDirty instead');
@@ -906,10 +980,10 @@
           log.warn('deprecated function clearDirty(), call app.clearDirty instead');
           app.clearDirty();
       }
-      
+
       // array of tag names
       var tagList;
-      
+
       function rebasename(title) {
           if (!orig_basename) {
               dir_title = dirify(title.value);
@@ -922,22 +996,22 @@
               }
           }
       }
-      
+
       RegExp.escape = (function() {
         var specials = [
           '/', '.', '*', '+', '?', '|',
           '(', ')', '[', ']', '{', '}', '\\'
         ];
-      
+
         sRE = new RegExp(
           '(\\' + specials.join('|\\') + ')', 'g'
         );
-        
+
         return function(text) {
           return text.replace(sRE, '\\$1');
         }
       })();
-      
+
       function tagSplit(str) {
           var delim = RegExp.escape(tag_delim);
           var delim_scan = new RegExp('^((([\'"])(.*?)\\3[^' + delim + ']*?|.*?)(' + delim + '\\s*|$))', '');
@@ -952,7 +1026,7 @@
           }
           return tags;
       }
-      
+
       document.onkeyup = function(e) {
           if (!e) e = window.event;
           if (e.ctrlKey) {
@@ -985,7 +1059,7 @@
               // return openManual('entries', 'entry_text_formatting');
           }
       }
-      
+
       function toggleFile() {
           var fld = getByID("basename");
           if (fld) {
@@ -1001,7 +1075,7 @@
               img.style.display = 'none';
           return false;
       }
-      
+
       var orig_basename;
       var tbTableSelect;
       var cmtTableSelect;
@@ -1019,7 +1093,7 @@
           <mt:unless name="id">jQuery('#title').focus();</mt:unless>
           jQuery('#convert_breaks').change(changedTextFormat);
       }
-      
+
       var tagPos = 0;
       function initTags() {
           /* browsers don't want to cache the tags field, so we use a hidden input field to cache them */
@@ -1032,13 +1106,13 @@
               DOM.addEventListener( v, "change", function() { log('caching tags'); t.value = v.value; } );
           }
           if (!tagList || tagList.length == 0) return;
-      
+
           autoTag = new TC.TagComplete("tags", tagList);
           autoTag.delimiter = tag_delim;
       }
-      
+
       TC.attachLoadEvent( init );
-      
+
       function highlightSwitch(selection) {
           var descriptionObject = getByID('created_on-label');
           var highlightObject = getByID('created_on-date');
@@ -1053,7 +1127,7 @@
           }
           return false;
       }
-      
+
           Template.templates.autoSave = '<mt:section encode_js="1">
           [# if ( saving ) { #]
               [#= trans("Auto-saving..." ) #]
@@ -1065,7 +1139,7 @@
               <__trans phrase="Remove">
               <__trans phrase="Make primary">
           </mt:ignore>
-      
+
       function listPreviousPings () {
           window.open('<mt:var name="script_url">?__mode=pinged_urls&entry_id=<mt:var name="id" escape="html">&blog_id=<mt:var name="blog_id" escape="html">', 'urls', 'width=400,height=400,resizable=yes,scrollbars=yes');
       }
@@ -1100,7 +1174,7 @@
   </script>
 </mt:setvarblock>
 
-<mt:setvarblock name="html_body" append="1">
+<mt:setvarblock name="content">
 <mt:if name="dirty">
   <script type="text/javascript">
     /* <![CDATA[ */
@@ -1108,51 +1182,81 @@
     /* ]]> */
   </script>
 </mt:if>
-</mt:setvarblock>
 
 <mt:setvarblock name="display_options">
 <$mt:setvar name="show_display_options_link" value="1"$>
-<div id="display-options-detail" class="mod display-options-detail detail">
-  <input type="hidden" id="entry_prefs" name="entry_prefs" value="<mt:if name="disp_prefs_default">Default<mt:else>Custom</mt:if>">
-  <mtapp:setting
-     id="entry_fields"
-     label="<__trans phrase="Fields">"
-     label_class="display-options">
-    <ul id="entry-pref-field-list" class="multiple-selection">
-    <mt:loop name="field_loop">
-      <mt:unless name="system_field"><mt:unless name="lock_field"><li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li><mt:else><li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li></mt:unless></mt:unless>
-    </mt:loop>
-    </ul>
-  </mtapp:setting>
+<div id="display-options-detail" class="panel panel-default collapse mod display-options-detail detail">
+  <div class="panel-body">
+    <input type="hidden" id="entry_prefs" name="entry_prefs" value="<mt:if name="disp_prefs_default">Default<mt:else>Custom</mt:if>">
+    <mtapp:setting
+       id="entry_fields"
+       label="<__trans phrase="Fields">"
+       label_class="display-options"
+       no_grid="1">
+      <ul id="entry-pref-field-list" class="list-inline multiple-selection">
+      <mt:loop name="field_loop">
+        <mt:unless name="system_field"><mt:unless name="lock_field"><li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li><mt:else><li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li></mt:unless></mt:unless>
+      </mt:loop>
+      </ul>
+    </mtapp:setting>
 
-  <mtapp:setting
-     id="metadata_fields"
-     label="<__trans phrase="Metadata">"
-     label_class="display-options">
-    <ul class="multiple-selection">
-    <mt:if name="object_type" ne="page">
-      <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Categories"></label></li>
-    </mt:if>
-      <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Comments"></label></li>
-      <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label></li>
-    </ul>
-  </mtapp:setting>
-  <div class="actions-bar actions-bar-bottom">
-    <a href="javascript:void(0)" onclick="return setDefaultFieldGroup();" title="<__trans phrase="Reset display options to blog defaults">" ><__trans phrase="Reset defaults"></a>
+    <mtapp:setting
+       id="metadata_fields"
+       label="<__trans phrase="Metadata">"
+       label_class="display-options"
+       no_grid="1">
+      <ul class="list-inline multiple-selection">
+      <mt:if name="object_type" ne="page">
+        <li>
+          <label>
+            <input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="cb" />
+            <__trans phrase="Categories">
+          </label>
+        </li>
+      </mt:if>
+        <li>
+          <label>
+            <input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" />
+            <__trans phrase="Comments">
+          </label>
+        </li>
+        <li>
+          <label>
+            <input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" />
+            <__trans phrase="[_1] Assets" params="<mt:var name="object_label">">
+          </label>
+        </li>
+      </ul>
+    </mtapp:setting>
+    <div class="actions-bar actions-bar-bottom">
+      <a href="javascript:void(0)" onclick="return setDefaultFieldGroup();" title="<__trans phrase="Reset display options to blog defaults">" >
+        <__trans phrase="Reset defaults">
+      </a>
+    </div>
   </div>
 </div>
 </mt:setvarblock>
 
 <mt:unless name="new_object">
 <mt:setvarblock name="object_nav">
-  <ul class="object-nav">
-    <li id="previous-link"><mt:if name="previous_entry_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>">&lsaquo; <__trans phrase="Prev"></a><mt:else><span>&lsaquo; <__trans phrase="Prev"></span></mt:if></li>
-    <li id="next-link"><mt:if name="next_entry_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="next_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Next"> &rsaquo;</a><mt:else><span><__trans phrase="Next"> &rsaquo;</span></mt:if></li>
+  <ul class="list-inline text-right object-nav">
+    <li id="previous-link">
+      <mt:if name="previous_entry_id">
+        <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>">&lsaquo; <__trans phrase="Prev"></a>
+      <mt:else>
+        <span>&lsaquo; <__trans phrase="Prev"></span>
+      </mt:if>
+    </li>
+    <li id="next-link">
+      <mt:if name="next_entry_id">
+        <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="next_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Next"> &rsaquo;</a>
+      <mt:else>
+        <span><__trans phrase="Next"> &rsaquo;</span>
+      </mt:if>
+    </li>
   </ul>
 </mt:setvarblock>
 </mt:unless>
-
-<mt:include name="include/header.tmpl" id="header_include">
 
 <div id="sortable" class="sortable">
 <mt:loop id="content_fields" name="field_loop">
@@ -1162,14 +1266,15 @@
 <mt:if name="field_html">
   <mtapp:setting
      id="$field_id"
-     class="sort-enabled"
+     class="panel panel-default panel-body sort-enabled"
      label="$label_encoded"
      label_class="$label_class"
      hint="$desc_encoded"
      shown="$show_field"
      content_class="$content_class"
      show_hint="$show_hint"
-     required="$required">
+     required="$required"
+     no_grid="1">
     <$mt:var name="field_html"$>
   </mtapp:setting>
 <mt:else>
@@ -1179,8 +1284,9 @@
      label="<__trans phrase="Title">"
      label_class="no-header"
      help_page="entries"
-     help_section="entry_title">
-    <input type="text" name="title" id="title" class="title text full" value="<$mt:var name="title" escape="html"$>" placeholder="<__trans phrase="Title">" maxlength="255" mt:watch-change="1" />
+     help_section="entry_title"
+     no_header="1">
+    <input type="text" name="title" id="title" class="form-control title text full" value="<$mt:var name="title" escape="html"$>" placeholder="<__trans phrase="Title">" maxlength="255" mt:watch-change="1" />
   </mtapp:setting>
     <mt:unless name="new_object">
   <mtapp:setting
@@ -1188,14 +1294,15 @@
      label="Permalink"
      label_class="no-header"
      help_page="entries"
-     help_section="permalink">
+     help_section="permalink"
+     no_header="1">
     <strong><__trans phrase="Permalink:"></strong> <mt:var name="entry_permalink">
       <mt:if name="status_publish">
         <mt:if name="entry_permalink">
-      <a class="button" href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View"></a>
+      <a class="btn btn-default button" href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View"></a>
         </mt:if>
         <mt:if name="can_send_notifications">
-      <a href="<mt:var name="script_url">?__mode=entry_notify&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;entry_id=<mt:var name="id" escape="url">" class="button<mt:unless name="from_email"> disabled<mt:else> mt-open-dialog</mt:unless>"<mt:unless name="from_email"> onclick="return false;"</mt:unless>><__trans phrase="Share"></a>
+      <a href="<mt:var name="script_url">?__mode=entry_notify&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;entry_id=<mt:var name="id" escape="url">" class="btn btn-default button<mt:unless name="from_email"> disabled<mt:else> mt-open-dialog mt-modal-open</mt:unless>"<mt:unless name="from_email"> onclick="return false;"</mt:unless>><__trans phrase="Share"></a>
         </mt:if>
       </mt:if>
   </mtapp:setting>
@@ -1212,9 +1319,9 @@
           <div class="tab" mt:command="set-editor-extended" mt:tab="extended">
             <label><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Extended"></a></label>
           </div>
-          <div id="field-convert_breaks">
+          <div id="field-convert_breaks" class="form-inline">
             <__trans phrase="Format:">
-            <select name="convert_breaks" id="convert_breaks">
+            <select name="convert_breaks" id="convert_breaks" class="form-control">
             <mt:loop name="text_filters">
               <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
             </mt:loop>
@@ -1229,7 +1336,6 @@
           <mt:if name="convert_breaks" eq="__default__">
             <$mt:setvar name="show_formatting_help" value="0"$>
           </mt:if>
-            <a href="#" onclick="openTFDocs(); return false" id="formatting-help-link" class="help-link<mt:unless name="show_formatting_help"> disabled</mt:unless>">?</a>
           </div>
         </div>
       </div>
@@ -1250,14 +1356,15 @@
     </mt:if>
     <mtapp:setting
        id="tags"
-       class="sort-enabled"
+       class="panel panel-default panel-body sort-enabled"
        shown="$show_field"
        label="<__trans phrase="Tags">"
        label_class="top-label"
        hint="$tags_hint"
        help_page="entries"
-       help_section="entry_tags">
-      <input type="text" name="tags" id="tags" class="text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
+       help_section="entry_tags"
+       no_grid="1">
+      <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
       <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
       <div id="tags-suggestion">
         <div id="tags_completion"></div>
@@ -1267,25 +1374,27 @@
   <mt:else eq="excerpt">
     <mtapp:setting
        id="excerpt"
-       class="sort-enabled"
+       class="panel panel-default panel-body sort-enabled"
        shown="$show_field"
        label="$field_label"
        label_class="top-label"
        help_page="entries"
-       help_section="excerpt">
-      <textarea name="excerpt" id="excerpt" class="text full low" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
+       help_section="excerpt"
+       no_grid="1">
+      <textarea name="excerpt" id="excerpt" class="form-control text full low" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
     </mtapp:setting>
 
   <mt:else eq="keywords">
     <mtapp:setting
        id="keywords"
-       class="sort-enabled"
+       class="panel panel-default panel-body sort-enabled"
        shown="$show_field"
        label="$field_label"
        label_class="top-label"
        help_page="entries"
-       help_section="keywords">
-      <input type="text" name="keywords" id="keywords" class="text full" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
+       help_section="keywords"
+       no_grid="1">
+      <input type="text" name="keywords" id="keywords" class="form-control text full" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
     </mtapp:setting>
 
   </mt:if>
@@ -1304,6 +1413,8 @@
 
 <mt:setvarblock name="form_footer">
 </form>
+</mt:setvarblock>
+
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
@@ -1394,5 +1505,6 @@
     });
 
 </mt:setvarblock>
-<mt:include name="include/footer.tmpl" id="footer_include">
-  
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

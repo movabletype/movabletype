@@ -1,19 +1,19 @@
 <mt:if name="request.not_refreshed">
-    <mtapp:statusmsg
+    <mtapp:newstatusmsg
        id="not-refreshed"
        class="error"
        can_close="0">
       <__trans phrase="Some templates were not refreshed.">
-    </mtapp:statusmsg>
+    </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="request.not_deleted">
     <mt:if name="object_type" eq="website">
-        <mtapp:statusmsg
+        <mtapp:newstatusmsg
            id="not-deleted"
            class="error"
            can_close="0">
           <__trans phrase="Some websites were not deleted. You need to delete blogs under the website first.">
-        </mtapp:statusmsg>
+        </mtapp:newstatusmsg>
     </mt:if>
 </mt:if>
 
@@ -23,7 +23,7 @@
      type="button"
      accesskey="x"
      title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_type_plural" lower_case="1">">"
-     class="button mt-delete-items">
+     class="button mt-delete-items btn btn-default">
     <__trans phrase="Delete">
   </button>
 </mt:if>

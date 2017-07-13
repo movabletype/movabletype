@@ -1,8 +1,7 @@
 <mt:loop tmpl_groups>
 <div id="template-group-<mt:var name="template_type">" class="template-group">
   <div id="template-group-<mt:var name="template_type">-header" class="template-group-header">
-    <h3><a href="javascript:void(0);" onclick="return toggleActive('template-group-<mt:var name="template_type">-content');"><mt:var name="template_type_label"></a></h3>
-    <div class="template-group-summary">
+    <div class="pull-right template-group-summary">
     <mt:if name="template_type" eq="widgetset">
       <mt:setvar name="tmpl_type_name" value="<__trans phrase="widget sets">">
     <mt:elseif name="template_type" eq="module">
@@ -12,6 +11,7 @@
     </mt:if>
       <__trans phrase="<span class="count">[_1]</span> [_2] are included" params="group_checked_count%%<mt:var name="tmpl_type_name">">
     </div>
+    <h5><a href="javascript:void(0);" onclick="return toggleActive('template-group-<mt:var name="template_type">-content');"><mt:var name="template_type_label"></a></h5>
   </div>
 
   <div class="template-group-content" id="template-group-<mt:var name="template_type">-content">
@@ -79,6 +79,15 @@
   </div>
 </div>
 </mt:loop>
+
+<style>
+div.template-group-content {
+  display: none;
+}
+div.template-group-content.active {
+  display: block;
+}
+</style>
 
 <script type="text/javascript">
 function resetCheckedTemplateCount () {

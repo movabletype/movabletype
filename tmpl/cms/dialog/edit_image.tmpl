@@ -1,5 +1,6 @@
 <mt:setvar name="page_title" value="<__trans phrase="Edit Image">">
 
+<mt:ignore>
 <mt:setvarblock name="html_head" prepend="1">
 <style type="text/css">
 div#editor {
@@ -62,6 +63,7 @@ button.history {
 }
 </style>
 </mt:setvarblock>
+</mt:ignore>
 
 <mt:setvarblock name="js_include" append="1">
   <mt:if name="mt_debug">
@@ -78,26 +80,27 @@ button.history {
   <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/image_editor.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:setvarblock>
 
-<mt:include name="dialog/header.tmpl">
+<mt:setvarblock name="modal_body">
+  <div class="container-fluid">
 
-    <div id="image-editor">
+    <div id="image-editor" class="row">
 
-      <div id="image">
+      <div id="image" class="col-sm-8">
         <img src="<mt:var name="script_url">?__mode=thumbnail_image&blog_id=<mt:var name="blog_id" escape="url">&id=<mt:var name="id" escape="url">&ts=<mt:var name="modified_on" escape="url">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
       </div>
 
-      <div id="editor">
+      <div id="editor" class="col-sm-4">
 
         <div id="editor-resize">
-          <div class="editor-resize-column">
+          <div class="form-inline editor-resize-column">
             <label for="resize-width"><__trans phrase="W:"></label>
-            <input id="resize-width" class="text resize" type="text" value="<mt:var name="image_width">" />
+            <input id="resize-width" class="form-control text resize" type="text" value="<mt:var name="image_width">" />
             <label for="resize-height"><__trans phrase="H:"></label>
-            <input id="resize-height" class="text resize" type="text" value="<mt:var name="image_height">" />
-            <button id="resize-apply" class="button resize enable-submit disabled" disabled="disabled"><__trans phrase="Apply"></button>
-            <button id="resize-reset" class="button resize disabled" disabled="disabled"><__trans phrase="Reset"></button>
+            <input id="resize-height" class="form-control text resize" type="text" value="<mt:var name="image_height">" />
+            <button id="resize-apply" class="btn btn-default button resize enable-submit disabled" disabled="disabled"><__trans phrase="Apply"></button>
+            <button id="resize-reset" class="btn btn-default button resize disabled" disabled="disabled"><__trans phrase="Reset"></button>
           </div>
-          <div class="editor-resize-subcolumn">
+          <div class="form-inline editor-resize-subcolumn">
             <input id="keep-aspect-ratio" class="checkbox" type="checkbox" value="1" checked="checked" />
             <label for="keep-aspect-ratio"><__trans phrase="Keep aspect ratio"></label>
           </div>
@@ -105,14 +108,14 @@ button.history {
 
         <div id="editor-metadata">
           <mt:if name="has_metadata">
-          <div class="editor-metadata-column">
+          <div class="form-inline editor-metadata-column">
             <input id="remove-all-metadata" class="checkbox enable-submit" type="checkbox" />
             <label for="remove-all-metadata"><__trans phrase="Remove All metadata"></label>
           </div>
           </mt:if>
 
           <mt:if name="has_gps_metadata">
-          <div class="editor-metadata-column">
+          <div class="form-inline editor-metadata-column">
             <input id="remove-gps-metadata" class="checkbox enable-submit" type="checkbox" />
             <label for="remove-gps-metadata"><__trans phrase="Remove GPS metadata"></label>
           </div>
@@ -121,32 +124,37 @@ button.history {
 
         <div id="editor-button">
           <div class="editor-button-column">
-            <button class="button editor-button enable-submit" title="<__trans phrase="Rotate right">" onclick="image.rotate(90);">
+            <button class="btn btn-default button editor-button enable-submit" title="<__trans phrase="Rotate right">" onclick="image.rotate(90);">
               <img alt="Rotate right" src="<mt:var name="static_uri">images/image_editor/rotate_right@2x.png" width="24" height="24" />
             </button>
-            <button class="button editor-button enable-submit" title="<__trans phrase="Rotate left">" onclick="image.rotate(-90);">
+            <button class="btn btn-default button editor-button enable-submit" title="<__trans phrase="Rotate left">" onclick="image.rotate(-90);">
               <img alt="Rotate left" src="<mt:var name="static_uri">images/image_editor/rotate_left@2x.png" width="24" height="24" />
             </button>
-            <button class="button editor-button enable-submit" title="<__trans phrase="Flip horizontal">" onclick="image.flipHorizontal();">
+            <button class="btn btn-default button editor-button enable-submit" title="<__trans phrase="Flip horizontal">" onclick="image.flipHorizontal();">
               <img alt="Flip horizontal" src="<mt:var name="static_uri">images/image_editor/flip_horizontal@2x.png" width="24" height="24" />
             </button>
-            <button class="button editor-button enable-submit" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
+            <button class="btn btn-default button editor-button enable-submit" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
               <img alt="Flip vertical" src="<mt:var name="static_uri">images/image_editor/flip_vertical@2x.png" width="24" height="24" />
             </button>
-            <button id="crop" class="button editor-button enable-submit disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
+            <button id="crop" class="btn btn-default button editor-button enable-submit disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
               <img alt="Crop" src="<mt:var name="static_uri">images/image_editor/crop@2x.png" width="24" height="24" />
             </button>
           </div>
 
           <div class="editor-button-column">
-            <button id="undo" class="button history disabled" disabled="disabled" onclick="image.undo();"><__trans phrase="Undo"></button>
-            <button id="redo" class="button history disabled" disabled="disabled" onclick="image.redo();"><__trans phrase="Redo"></button>
+            <button id="undo" class="btn btn-default button history disabled" disabled="disabled" onclick="image.undo();"><__trans phrase="Undo"></button>
+            <button id="redo" class="btn btn-default button history disabled" disabled="disabled" onclick="image.redo();"><__trans phrase="Redo"></button>
           </div>
         </div>
 
       </div><!-- /editor -->
 
     </div><!-- /image-editor -->
+
+  </div>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_footer">
 
     <div class="dialog actions-bar actions-bar-bottom">
       <form action="<mt:var name="script_url">" method="post" target="_parent">
@@ -164,19 +172,22 @@ button.history {
            type="submit"
            accesskey="s"
            title="<__trans phrase="Save (s)">"
-           class="action primary button close disabled"
+           class="action primary button disabled btn btn-primary"
            disabled="disabled">
           <__trans phrase="Save"></button>
         <button
            type="submit"
            accesskey="x"
-           class="cancel action button image-editor-close-dialog"
+           class="cancel action button image-editor-close-dialog btn btn-default"
            title="<__trans phrase="Cancel (x)">">
           <__trans phrase="Cancel"></button>
       </form>
     </div>
 
-<mt:setvarblock name="jq_js_include" append="1">
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
     jQuery(document).ready(function() {
 
         // This is true while resizing image.
@@ -240,7 +251,7 @@ button.history {
         jQuery('input#resize-width').keyup(function(event) {
             var resizeWidth = jQuery(this).val();
             var $resizeHeight = jQuery('input#resize-height');
- 
+
             // Do nothing when there is no change.
             if (!resizing && +resizeWidth === image.width) {
                 return;
@@ -248,7 +259,7 @@ button.history {
 
             // Resizing now.
             resizing = true;
- 
+
             // Change the status of resize buttons.
             if (+resizeWidth === 0 || +resizeWidth > image.width) {
                 disableButton('button#resize-apply');
@@ -256,24 +267,24 @@ button.history {
                 enableButton('button#resize-apply');
             }
             enableButton('button#resize-reset');
- 
+
             // Trigger apply button when the button is enabled and enter key is pushed.
             if (event.keyCode === 13 && jQuery('button#resize-apply:enabled').length) {
                 jQuery('button#resize-apply').trigger('click');
                 return;
             }
- 
+
             // Do not update resize-height when "Keep aspect ratio" checked.
             if (jQuery('input#keep-aspect-ratio:checked').length === 0) {
                 return;
             }
- 
+
             // Also change resize-height empty.
             if (resizeWidth === '') {
                 $resizeHeight.val('');
                 return;
             }
- 
+
             // Update resize-height.
             var height = Math.ceil(+resizeWidth * image.height / image.width);
             $resizeHeight.val(height);
@@ -357,17 +368,33 @@ button.history {
         });
 
         // Confirm before closing dialog.
-        jQuery('button.image-editor-close-dialog').click(function() {
-            if (isDirty || resizing || image.getPlugin('crop').hasFocus()) {
-                var message = '<__trans phrase="You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?">';
-                if (confirm(message)) {
-                    parent.jQuery.fn.mtDialog.close();
-                }
-            } else {
-                parent.jQuery.fn.mtDialog.close();
-            }
+        function closeModalWithCheck() {
+          if (isDirty || resizing || image.getPlugin('crop').hasFocus()) {
+              var message = '<__trans phrase="You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?">';
+              if (confirm(message)) {
+                  return true;
+              }
+          } else {
+              return true;
+          }
 
+          return false;
+        }
+
+        jQuery('button.image-editor-close-dialog').on('click', function () {
+          if (!closeModalWithCheck()) {
             return false;
+          }
+          window.parent.jQuery('.mt-modal').off('hide.bs.modal');
+          jQuery.fn.mtModal.close();
+          return false;
+        });
+
+        window.parent.jQuery('.mt-modal').on('hide.bs.modal', function (e) {
+          if (!closeModalWithCheck()) {
+            return false;
+          }
+          window.parent.jQuery('.mt-modal').off('hide.bs.modal');
         });
 
         // Cancel cropping when clicking escape key.
@@ -421,6 +448,8 @@ button.history {
                 .attr('disabled', 'disabled');
         }
     });
+</script>
 </mt:setvarblock>
 
-<mt:include name="dialog/footer.tmpl">
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

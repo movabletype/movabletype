@@ -8,13 +8,16 @@
 
 <mt:setvarblock name="list_actions">
         <div class="button-actions actions">
-          <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
+          <button type="button" class="btn btn-primary save action primary button disabled" disabled="disabled">
+            <__trans phrase="Save Changes">
+          </button>
         </div>
         <div class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /> <__trans phrase="Loading..."></div>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
 <mt:include name="include/basic_filter_forms.tmpl">
+
+<mt:setvarblock name="content">
 
 <div class="listing line">
   <div class="unit size1of1">
@@ -29,27 +32,29 @@
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
 
       <mt:if name="is_category_list">
-      <div>
-        <label>
-          <__trans phrase="List Name">:
-          <input type="text" class="text label" id="list_name" name="list_name" value="<mt:var name="list_name">" />
-        </label>
-      </div>
+        <div class="form-inline">
+          <label>
+            <__trans phrase="List Name">:
+            <input type="text" class="form-control text" id="list_name" name="list_name" value="<mt:var name="list_name">" />
+          </label>
+        </div>
       </mt:if>
 
       <div id="actions-bar-top" class="actions-bar actions-bar-top line">
         <mt:var name="list_actions">
       </div>
 
-      <div id="area-action" class="mod sortable-header">
-        <select id="itemlist" name="itemlist" class="disabled" disabled="disabled">
-          <option id="opt-0" value="0"><__trans phrase="Top Level"></option>
-        </select>
-        <input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short disabled" disabled="disabled" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">">
-        <button type="submit" class="add button disabled" disabled="disabled"><__trans phrase="Add"></button>
-      </div>
+      <div class="panel panel-default">
+        <div id="area-action" class="panel-heading form-inline mod sortable-header">
+          <select id="itemlist" name="itemlist" class="form-control disabled" disabled="disabled">
+            <option id="opt-0" value="0"><__trans phrase="Top Level"></option>
+          </select>
+          <input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short disabled" disabled="disabled" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">">
+          <button type="submit" class="btn btn-default add button disabled" disabled="disabled"><__trans phrase="Add"></button>
+        </div>
 
-      <div id="root" class="sortable"></div>
+        <div id="root" class="panel-body sortable"></div>
+      </div>
 
       <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
         <mt:var name="list_actions">
@@ -90,6 +95,16 @@
     </button>
   </div>
 </div>
+
+<mt:include name="modules/libjs.tmpl">
+</mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/list_category.css?v=<mt:var name="mt_version_id" escape="url">" />
+<mt:ignore>
+<link rel="stylesheet" href="<mt:var name="static_uri">css/sortable.css" />
+</mt:ignore>
+</mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
 var indicator = jQuery('div.indicator').hide();
@@ -154,7 +169,7 @@ function loginAgain(fn) {
                 dialog.find('#password').val('');
                 dialog
                   .find('#msg-block')
-                  .append('<div class="msg msg-error"><__trans phrase="Invalid login." escape="js"></div>');
+                  .append('<div class="alert alert-danger msg msg-error"><__trans phrase="Invalid login." escape="js"></div>');
               }
             });
             return false;
@@ -167,10 +182,11 @@ function handleMessages( data ) {
   jQuery('#msg-block').empty();
   if ( data.error ) {
     jQuery('#msg-block').append(
-      '<div class="msg msg-error"><p class="msg-text">'
+      '<div class="alert alert-danger msg msg-error">'
+      + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+      + '<p class="msg-text">'
       + data.error
       + '</p>'
-      + '<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>'
       + '</div>');
     return false;
   }
@@ -181,11 +197,18 @@ function handleMessages( data ) {
     var msg   = messages[i];
     var text  = msg.msg;
     var cls   = msg.cls;
+    var alertCls = cls;
+    if (alertCls == 'alert') {
+      alertCls = 'warning';
+    } else if (alertCls == 'error') {
+      alertCls = 'danger;'
+    }
     jQuery('#msg-block').append(
-      '<div class="msg msg-' + cls + '"><p class="msg-text">'
+      '<div class="alert alert-' + alertCls + ' msg msg-' + cls + '">'
+      + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+      + '<p class="msg-text">'
       + text
       + '</p>'
-      + '<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>'
       + '</div>');
   }
   return true;
@@ -216,15 +239,15 @@ jQuery('div#area-action input[name=category_label]').focus( function() {
 
 // id and parent should be numbers
 function createItem(id, parent, label, basename, number) {
-  var line = '<span class="sort-tab"></span>';
+  var line = '<span class="sort-tab">&nbsp;</span>';
   line += '<span class="item-label">'+label+'</span>';
   if ( basename )
     line += '<span class="item-basename"><span class="item-basename-text-container"><span class="item-basename-text">'+basename+'</span></span></span>';
   line += ' <span class="item-ctrl"></span>';
   <mt:unless name="is_category_list">
-  line += ' <span class="count">'+number+'</span>';
+  line += ' <span class="pull-right count">'+number+'</span>';
   </mt:unless>
-  var $item = jQuery('<div id="cat-'+id+'" class="pcat-'+parent+'" />').append(line);
+  var $item = jQuery('<div id="cat-'+id+'" class="panel panel-default panel-body pcat-'+parent+'" />').append(line);
   return $item;
 }
 
@@ -251,19 +274,19 @@ function initItem($item) {
       var $label = $element.find('.item-label a').length ? $element.find('.item-label a') : $element.find('.item-label');
       var $basename = $element.find('.item-basename-text');
       var $children = $element.children().hide();
-      var $form = jQuery('<div class="edit-form"/>')
-        .append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short label" placeholder="<__trans phrase="Label" escape="js">" />'));
-      $form.find('.label').val($label.text());
-      $form.append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="text short basename" placeholder="<__trans phrase="Basename" escape="js">" />'));
+      var $form = jQuery('<div class="form-inline edit-form"/>')
+        .append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short cat-label" placeholder="<__trans phrase="Label" escape="js">" />'));
+      $form.find('.cat-label').val($label.text());
+      $form.append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="form-control text short basename" placeholder="<__trans phrase="Basename" escape="js">" />'));
       $form.find('.basename').val($basename.text());
 <mt:if name="object_type" eq="category">
-      jQuery.mtValidateRules['.label'] = function ($e) {
+      jQuery.mtValidateRules['.cat-label'] = function ($e) {
         if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required." escape="js">');
         if ( $e.val().length > 100 ) return this.raise('<__trans phrase="Label is too long." escape="js">');
         return hasDupe(parent, catid, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level." escape="js">') : true;
       };
 <mt:else>
-      jQuery.mtValidateRules['.label'] = function ($e) {
+      jQuery.mtValidateRules['.cat-label'] = function ($e) {
         if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required." escape="js">');
         return true;
       };
@@ -274,19 +297,19 @@ function initItem($item) {
         return hasDupe(parent, catid, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level." escape="js">') : true;
       };
 
-      jQuery('<button type="submit" class="rename button"><__trans phrase="Rename" escape="js"></button>')
+      jQuery('<button type="submit" class="btn btn-default rename button"><__trans phrase="Rename" escape="js"></button>')
         .bind('click', function() {
-          if ( !$element.find('input.label, input.basename').mtValidate() ) return false;
+          if ( !$element.find('input.cat-label, input.basename').mtValidate() ) return false;
           fixInteractions({ closeInlineForms: false });
           $basename.text( $element.find('input.basename').val() );
-          $label.text( $element.find('input.label').val() );
+          $label.text( $element.find('input.cat-label').val() );
           $children.show();
           initItem($item);
           setItemList();
           setDirty(true);
         })
         .appendTo($form);
-      jQuery('<button type="button" class="cancel button"><__trans phrase="Cancel" escape="js"></button>')
+      jQuery('<button type="button" class="btn btn-default cancel button"><__trans phrase="Cancel" escape="js"></button>')
         .bind('click', function() {
           fixInteractions({ closeInlineForms: false });
           $children.show();
@@ -294,13 +317,13 @@ function initItem($item) {
         })
         .appendTo($form);
       $form.appendTo($element);
-      $form.find('.label, .basename').bind('keypress', function (e) {
+      $form.find('.cat-label, .basename').bind('keypress', function (e) {
         if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
           $form.find('button.rename').click();
           return false;
         }
       });
-      $form.find('.label').focus();
+      $form.find('.cat-label').focus();
       return false;
     });
 
@@ -310,9 +333,9 @@ function initItem($item) {
       fixInteractions({ sortable: false });
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
       var parent = $element.attr('id').slice(4);
-      var $form = jQuery('<div class="mod add-form"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
+      var $form = jQuery('<div class="panel panel-default panel-body form-inline mod add-form"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
       $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_label" lower_case="1">_label]').focus();
-      jQuery('<button type="button" class="add button"><__trans phrase="Add" escape="js"></button>')
+      jQuery('<button type="button" class="btn btn-default add button"><__trans phrase="Add" escape="js"></button>')
         .bind('click', function() {
           var label = jQuery(this).parent('.add-form').find('input').val();
           // sort of hack to do HTML escape.
@@ -323,7 +346,7 @@ function initItem($item) {
           }
         })
         .appendTo($form);
-      jQuery('<button type="button" class="cancel button"><__trans phrase="Cancel" escape="js"></button>')
+      jQuery('<button type="button" class="btn btn-default cancel button"><__trans phrase="Cancel" escape="js"></button>')
         .bind('click', function() {
             fixInteractions({ closeInlineForms: false });
             jQuery('#msg-block').empty();
@@ -398,15 +421,15 @@ function makeBasename( parent, id, label ) {
 function addItem(parent, label) {
   jQuery('#msg-block .additem-error').remove();
   if ( hasDupe( parent, 0, label) ) {
-    jQuery('#msg-block').append('<div class="msg msg-error additem-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
+    jQuery('#msg-block').append('<div class="alert alert-danger msg msg-error additem-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
     return false;
   }
   if ( !label.length ) {
-    jQuery('#msg-block').append('<div class="msg msg-error additem-error">'+trans("Label is required.")+'</div>');
+    jQuery('#msg-block').append('<div class="alert alert-danger msg msg-error additem-error">'+trans("Label is required.")+'</div>');
     return false;
   }
   if ( label.length > 100 ){
-    jQuery('#msg-block').append("<div class='msg msg-error additem-error'><__trans phrase="Label is too long." escapse="js"></div>");
+    jQuery('#msg-block').append("<div class='alert alert-danger msg msg-error additem-error'><__trans phrase="Label is too long." escapse="js"></div>");
     return false;
   }
   var id = 'x'+dummy;
@@ -502,7 +525,7 @@ function initMoving() {
         var label = (count == 1)
           ? '<mt:var name="object_label" lower_case="1" escape="js">'
           : '<mt:var name="object_label_plural" lower_case="1" escape="js">';
-        jQuery('<span class="with"> + '+count+' '+label+' </span>').insertAfter($item.find('.item-basename'));
+        jQuery('<span class="badge"> + '+count+' '+label+' </span>').insertAfter($item.find('.item-basename'));
       }
       $item.find('.item-ctrl').hide();
     },
@@ -516,9 +539,10 @@ function initMoving() {
         return;
       }
       function _stop() {
-        $item.find('.with').remove();
+        $item.find('.badge').remove();
         $item.find('.item-basename, .plus, .delete').show();
         $item.attr('class', ('pcat-'+place));
+        $item.addClass('panel panel-default panel-body');
         initItem($item);
         var $last = $item;
         jQuery('.pcat-'+catid).each(function() {
@@ -527,6 +551,7 @@ function initMoving() {
           $this.attr('class').match(/\bpcat-(\w+)\b/);
           var parent = RegExp.$1;
           $this.attr('class', ('pcat-'+parent));
+          $this.addClass('panel panel-default panel-body');
           initItem($this);
           $this.insertAfter($last).show();
           $last = $this;
@@ -586,7 +611,7 @@ function initMoving() {
             jQuery('.sortable').sortable('cancel');
             $item.attr('class', original_class);
             jQuery('.pcat-'+catid).show();
-            $item.find('.with').remove();
+            $item.find('.badge').remove();
             $item.find('.plus, .delete').show();
             initItem($item);
             setHoverAction(jQuery('.pcat-'+catid));
@@ -885,4 +910,6 @@ jQuery(window).bind('listReady', function() {
 });
 renderNestedList();
 </mt:setvarblock>
-<mt:include name="include/footer.tmpl">
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

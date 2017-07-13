@@ -1,8 +1,10 @@
 <mt:setvarblock name="page_title"><mt:if name="blog_id"><__trans phrase="Manage [_1] Widgets" params="<mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if>"><mt:else><__trans phrase="Manage Global Widgets"></mt:if></mt:setvarblock>
 <mt:var name="position_actions_top" value="1">
 
-<mt:setvarblock name="html_head" append="1">
-<script type="text/javascript" src="<mt:var name="static_uri">/js/widget.js"></script>
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/tableselect.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/widget.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
 var widgetSetTableSelect;
@@ -20,51 +22,56 @@ function init() {
 
 <mt:setvarblock name="action_buttons">
 <button
-   onclick="doRemoveItems(getByID('template-listing-form'), '<__trans phrase="Widget Set" escape="js">', '<__trans phrase="Widget Sets" escape="js">', '', '', 'delete_widget'); return false;"
+   onclick="MT.Util.doRemoveItems(MT.Util.getByID('template-listing-form'), '<__trans phrase="Widget Set" escape="js">', '<__trans phrase="Widget Sets" escape="js">', '', '', 'delete_widget'); return false;"
    accesskey="x"
    title="<__trans phrase="Delete selected Widget Sets (x)">"
-   class="button">
+   class="btn btn-default button">
   <__trans phrase="Delete">
 </button>
 </mt:setvarblock>
 
 <mt:setvarblock name="related_content">
 <mt:if name="object_loop">
-  <mtapp:widget id="tips" label="<__trans phrase="Helpful Tips">">
+  <mtapp:newwidget id="tips" label="<__trans phrase="Helpful Tips">">
     <p><__trans phrase="To add a widget set to your templates, use the following syntax:"></p>
     <p><__trans phrase="<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>"></p>
-  </mtapp:widget>
+  </mtapp:newwidget>
 </mt:if>
 <$MTApp:PageActions from="list_template"$>
 </mt:setvarblock>
 
 <mt:setvarblock name="system_msg">
 <mt:if name="rebuild">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="saved-msg"
      class="success"
      rebuild="all"
      can_close="0">
     <__trans phrase="Your changes to the widget set have been saved.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="deleted">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="delete-msg"
      class="info"
      rebuild="all"
      can_close="0">
     <__trans phrase="You have successfully deleted the selected widget set(s) from your blog.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
 <mt:setvarblock name="listing_header">
-<h2><__trans phrase="Widget Sets"></h2>
-<p><a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Widget Set"></a></p>
+<h5><__trans phrase="Widget Sets"></h5>
+<p>
+  <a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+    <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+    <__trans phrase="Create Widget Set">
+  </a>
+</p>
 </mt:setvarblock>
+
+<mt:setvarblock name="content">
 
 <mtapp:listing hide_pager="1">
 <mt:if name="__first__">
@@ -96,17 +103,22 @@ function init() {
     <div class="listing-header">
       <mt:var name="listing_header">
     </div>
-    <mtapp:statusmsg
+    <mtapp:newstatusmsg
        id="zero-state"
        class="info zero-state"
        can_close="0">
       <__trans phrase="No widget sets could be found.">
-    </mtapp:statusmsg>
+    </mtapp:newstatusmsg>
   </div>
 </mtapp:listing>
 
 <mt:setvarblock name="create_link">
-<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create widget template"></a></p>
+<p>
+  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+    <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+    <__trans phrase="Create widget template">
+  </a>
+</p>
 </mt:setvarblock>
 
 <mt:include name="include/template_table.tmpl"
@@ -117,9 +129,15 @@ function init() {
     list_actions="$widget_list_actions"
     more_list_actions="$widget_more_list_actions">
 
-<mt:setvarblock name="jq_js_include" append="1">
-    init();
-    jQuery.mtCheckbox();
+<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
-<mt:include name="include/footer.tmpl">
+<mt:setvarblock name="js_include" append="1">
+<script>
+    init();
+    jQuery.mtCheckbox();
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

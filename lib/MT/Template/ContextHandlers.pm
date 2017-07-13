@@ -3124,6 +3124,7 @@ sub _hdlr_app_setting {
     my $warning       = $args->{warning} || "";
     my $show_warning  = $args->{show_warning} || 0;
     my $indent        = $args->{indent};
+    my $no_header     = $args->{no_header};
     my $help          = "";
 
     my $label_help = "";
@@ -3174,7 +3175,17 @@ sub _hdlr_app_setting {
     $class = ( $class eq '' ) ? 'hidden' : $class . ' hidden' unless $shown;
 
     if ( $args->{no_grid} ) {
-        return $ctx->build(<<"EOT");
+        if ( $args->{no_header} ) {
+            return $ctx->build(<<"EOT");
+    <div id="$id-field" class="field$req_class $label_class $class"$indent_css>
+        <div class="field-content $content_class">
+          $insides$hint$warning
+        </div>
+    </div>
+EOT
+        }
+        else {
+            return $ctx->build(<<"EOT");
     <div id="$id-field" class="field$req_class $label_class $class"$indent_css>
         <div class="field-header">
           <label id="$id-label" for="$id">$label$req</label>
@@ -3184,14 +3195,24 @@ sub _hdlr_app_setting {
         </div>
     </div>
 EOT
+        }
+    }
+    elsif ( $args->{no_header} ) {
+        return $ctx->build(<<"EOT");
+    <div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
+        <div class="col-md-12 col-sm-12 field-content $content_class">
+          $insides$hint$warning
+        </div>
+    </div>
+EOT
     }
     else {
         return $ctx->build(<<"EOT");
     <div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
-        <div class="col-md-2 field-header">
+        <div class="col-md-2 col-sm-2 field-header">
           <label id="$id-label" for="$id" class="control-label text-right pull-right">$label$req</label>
         </div>
-        <div class="col-md-8 field-content $content_class">
+        <div class="col-md-8 col-sm-8 field-content $content_class">
           $insides$hint$warning
         </div>
     </div>
@@ -3615,9 +3636,13 @@ Accepted values: "all", "index".
 
 sub _hdlr_app_new_statusmsg {
     my ( $ctx, $args, $cond ) = @_;
-    my $app     = MT->instance;
-    my $id      = $args->{id};
-    my $class   = $args->{class} || 'info';
+    my $app = MT->instance;
+    my $id  = $args->{id};
+
+    my $class = $args->{class} || 'info';
+    $class = 'warning' if $class eq 'alert';
+    $class = 'danger'  if $class eq 'error';
+
     my $msg     = $ctx->slurp;
     my $rebuild = $args->{rebuild} || '';
     my $no_link = $args->{no_link} || '';
@@ -3873,7 +3898,7 @@ sub _hdlr_app_listing {
     my $view = $ctx->var('view_expanded') ? ' expanded' : ' compact';
 
     my $table = <<TABLE;
-        <table id="$id-table" class="legacy listing-table $listing_class $id-table$view">
+        <table id="$id-table" class="table table-striped legacy listing-table $listing_class $id-table$view">
 $insides
         </table>
 TABLE
@@ -4107,19 +4132,19 @@ sub _hdlr_app_page_actions {
     return '' if ( ref($loop) ne 'ARRAY' ) || ( !@$loop );
     my $mt = '&amp;magic_token=' . $app->current_magic;
     return $ctx->build( <<EOT, $cond );
-    <mtapp:widget
+    <mtapp:newwidget
         id="page_actions"
         label="<__trans phrase="Actions">">
-                <ul>
+                <ul class="list-unstyled">
         <mt:loop name="page_actions">
             <mt:if name="page">
                     <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>><mt:var name="label"></a></li>
             <mt:else><mt:if name="link">
-                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog"</mt:if>><mt:var name="label"></a></li>
+                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open"</mt:if>><mt:var name="label"></a></li>
             </mt:if></mt:if>
         </mt:loop>
                 </ul>
-    </mtapp:widget>
+    </mtapp:newwidget>
 EOT
 }
 
@@ -4206,12 +4231,12 @@ sub _hdlr_app_action_bar {
     my $buttons = $ctx->var('action_buttons') || '';
     my $buttons_html
         = $buttons =~ /\S/
-        ? qq{<div class="button-actions actions">$buttons</div>}
+        ? qq{<div class="pull-left button-actions actions">$buttons</div>}
         : '';
 
     return $ctx->build(<<EOT);
 $form_id
-<div id="actions-bar-$pos" class="actions-bar actions-bar-$pos $pager_class">
+<div id="actions-bar-$pos" class="row form-inline actions-bar actions-bar-$pos $pager_class">
     $pager
     $buttons_html
 <mt:include name="include/itemset_action_widget.tmpl">

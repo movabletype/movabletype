@@ -573,6 +573,8 @@ subtest 'Test on website' => sub {
 };
 
 subtest 'Edit Category screen check' => sub {
+    plan 'skip_all';
+
     my $website_category = MT::Test::Permission->make_category(
         blog_id   => $website->id,
         author_id => $aikawa->id,

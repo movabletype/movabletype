@@ -28,7 +28,7 @@
       })
     }
 
-    $.mtValidateRules['[name=filter_name], .rename-filter-input'] = function ($e) {
+    jQuery.mtValidateRules['[name=filter_name], .rename-filter-input'] = function ($e) {
       if (self.validateFilterName($e.val())) {
         return true
       } else {
@@ -42,11 +42,11 @@
     })
 
     this.store.on('open_filter_detail', () => {
-      $('#list-filter-collapse').collapse('show')
+      jQuery('#list-filter-collapse').collapse('show')
     })
 
     this.store.on('close_filter_detail', () => {
-      $('#list-filter-collapse').collapse('hide')
+      jQuery('#list-filter-collapse').collapse('hide')
     })
 
     addFilterItem(filterType) {
@@ -423,12 +423,12 @@
         $node.parents('.item-content').find('.date-options span.date-option').hide()
         $node.parents('.item-content').find('.date-option.'+type).show()
       }
-      $(this.root).find('.filter-date').each((index, element) => {
-        const $node = $(element)
+      jQuery(this.root).find('.filter-date').each((index, element) => {
+        const $node = jQuery(element)
         dateOption($node)
         $node.on('change', () => { dateOption($node) })
       })
-      $(this.root).find('input.date').datepicker({
+      jQuery(this.root).find('input.date').datepicker({
         dateFormat: 'yy-mm-dd',
         dayNamesMin: this.listFilterTop.opts.localeCalendarHeader,
         monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
@@ -567,7 +567,7 @@
     }
 
     closeModal() {
-      $('#select-filter').modal('hide')
+      jQuery('#select-filter').modal('hide')
     }
 
     createNewFilter(e) {
@@ -723,23 +723,23 @@
     this.mixin('listFilterTop')
 
     closeModal(e) {
-      $(this.refs.modal).modal('hide')
+      jQuery(this.refs.modal).modal('hide')
     }
 
     openModal(args) {
       if (!args) {
         args = {}
       }
-      $(this.refs.filterName).mtUnvalidate()
+      jQuery(this.refs.filterName).mtUnvalidate()
       if (args.filterLabel) {
         this.refs.filterName.value = args.filterLabel
       }
       this.saveAs = args.saveAs
-      $(this.refs.modal).modal()
+      jQuery(this.refs.modal).modal()
     }
 
     saveFilter(e) {
-      if (!$(this.refs.filterName).mtValidate('simple')) {
+      if (!jQuery(this.refs.filterName).mtValidate('simple')) {
         return false
       }
       this.listFilterTop.getItemValues()

@@ -495,9 +495,9 @@ sub js_add_category {
     my $blog_id          = $app->param('blog_id');
     my $perms            = $app->permissions;
     my $type             = $app->param('_type') || 'category';
-    my $category_list_id = undef;
+    my $category_list_id = 0;
     if ( $type eq 'category' ) {
-        $category_list_id = $app->param('category_list_id') || undef;
+        $category_list_id = $app->param('category_list_id') || 0;
     }
     return $app->json_error( $app->translate("Invalid request.") )
         unless ( $type eq 'category' )

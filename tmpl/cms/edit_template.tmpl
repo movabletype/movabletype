@@ -22,46 +22,46 @@
 <mt:setvarblock name="system_msg">
 <mt:unless name="recovered_object">
   <mt:if name="autosaved_object_exists">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="autosaved-object-exists"
      class="info">
     <__trans phrase="A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;_recover=1&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if>%%<mt:If name="blog_id"><mt:date ts="$autosaved_object_ts" relative="1" offset_blog_id="<$mt:var name="blog_id"$>"></mt:If>">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
   </mt:if>
 </mt:unless>
 <mt:if name="recovered_object">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="recovered-object"
      class="success">
     <__trans phrase="You have successfully recovered your saved [_1]." params="<mt:var name="object_label">">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="recovered_failed">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="recovered-failed"
      class="error"
      can_close="0">
     <__trans phrase="An error occurred while trying to recover your saved [_1]." params="<mt:var name="object_label">">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="loaded_revision">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="loaded_revision"
      class="info">
     <__trans phrase="Restored revision (Date:[_1])." params="<$mt:var name="rev_date" escape="html"$>">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="saved">
   <mt:if name="error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <__trans phrase="Your changes have been saved.">
       <mt:var name="error">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
   <mt:else>
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="saved"
      class="success">
     <__trans phrase="Your changes have been saved.">
@@ -74,37 +74,37 @@
         </mt:if>
       </mt:unless>
     </mt:unless>
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
   </mt:if>
 <mt:else>
   <mt:if name="error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
   </mt:if>
 </mt:if>
 <mt:if name="message">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="message"
      class="alert">
     <mt:var name="message">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="saved_rebuild">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="saved-rebuild"
      class="success">
     <__trans phrase="Your [_1] has been published." params="<mt:var name="name" escape="html" escape="html">">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="related_content">
 <mt:if name="use_revision">
-<mtapp:widget
+<mtapp:newwidget
    id="template-status-widget"
    class="status-widget"
    label="<__trans phrase="Status">">
@@ -120,13 +120,13 @@
     </mt:if>
     </div>
   </mt:if>
-</mtapp:widget>
+</mtapp:newwidget>
 </mt:if>
 
-<mtapp:widget
+<mtapp:newwidget
    id="useful-links"
    label="<__trans phrase="Useful Links">">
-  <ul>
+  <ul class="list-unstyled">
   <mt:if name="type" eq="backup">
     <li><a href="<mt:var name="script_url">?__mode=list_template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
   </mt:if>
@@ -151,13 +151,13 @@
     <li><a href="<mt:var name="published_url" escape="html" />" class="icon-left icon-related" target="<__trans phrase="_external_link_target">"><__trans phrase="View Published Template"></a></li>
   </mt:if>
   </ul>
-</mtapp:widget>
+</mtapp:newwidget>
 
 <mt:if name="have_includes">
-<mtapp:widget
+<mtapp:newwidget
    id="template-includes"
    label="<__trans phrase="Included Templates">">
-  <ul>
+  <ul class="list-unstyled">
   <mt:loop name="include_loop">
   <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:if name="scope_type" eq="system">global<mt:else><mt:var name="scope_type"></mt:if><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
     <li>
@@ -199,25 +199,25 @@
     </li>
   </mt:loop>
   </ul>
-</mtapp:widget>
+</mtapp:newwidget>
 </mt:if>
 
-<mtapp:widget
+<mtapp:newwidget
    id="tag-list"
    class="hidden"
    label="<__trans phrase="Template Tag Docs">"
    label_link="$link_doc">
   <div id="tag-list-inner">
   </div>
-</mtapp:widget>
+</mtapp:newwidget>
 
-<mtapp:widget
+<mtapp:newwidget
    id="badtag-list"
    class="hidden"
    label="<__trans phrase="Unrecognized Tags">">
   <div id="badtag-list-inner">
   </div>
-</mtapp:widget>
+</mtapp:newwidget>
 
 <$MTApp:PageActions from="edit_template"$>
 </mt:setvarblock>
@@ -229,7 +229,7 @@
      accesskey="s"
      tabindex="12"
      title="<__trans phrase="Save (s)">"
-     class="save action primary button">
+     class="btn btn-primary save action primary button">
     <__trans phrase="Save"></button>
 <mt:else>
   <button
@@ -237,7 +237,7 @@
      accesskey="s"
      tabindex="12"
      title="<__trans phrase="Save Changes (s)">"
-     class="save action primary button">
+     class="btn btn-primary save action primary button">
     <__trans phrase="Save Changes"></button>
 </mt:if>
 <mt:if name="can_preview">
@@ -247,7 +247,7 @@
      accesskey="v"
      tabindex="13"
      title="<__trans phrase="Preview">"
-     class="preview action button">
+     class="btn btn-default preview action button">
     <__trans phrase="Preview"></button>
 </mt:if>
 <mt:unless name="build_type_0">
@@ -259,7 +259,7 @@
      accesskey="r"
      tabindex="14"
      title="<__trans phrase="Save and Publish this template (r)">"
-     class="publish action button">
+     class="btn btn-default publish action button">
     <__trans phrase="Save &amp; Publish"></button>
       </mt:if>
     </mt:if>
@@ -268,6 +268,17 @@
 </mt:setvartemplate>
 
 <mt:setvarblock name="html_head" append="1">
+<mt:include name="modules/libjs.tmpl">
+
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/lib/codemirror.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>codemirror/lib/codemirror.css">
+
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/xml.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/javascript.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/css.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/htmlmixed.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>codemirror/mt/mt.css">
+
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -275,7 +286,7 @@ var tag_inserts = {};
 
 if ( !window.Editor )
     Editor = { strings: {} };
-Editor.strings.unsavedChanges = '<__trans phrase="You have unsaved changes to this template that will be lost." escape="js">'; 
+Editor.strings.unsavedChanges = '<__trans phrase="You have unsaved changes to this template that will be lost." escape="js">';
 
 var fieldStorage = {};
 var dirty = false;
@@ -295,7 +306,7 @@ function documentTags( useTextInput ) {
     var str;
     var area = DOM.getElement('text');
     str = area.value;
-    
+
     if ( !defined( str ) )
         str = '';
 
@@ -348,7 +359,7 @@ function documentTags( useTextInput ) {
     // if we found tags to list, display the tag-list widget, otherwise
     // hide it
     if (list != '') {
-        list = '<ul>' + list + '</ul>';
+        list = '<ul class="list-unstyled">' + list + '</ul>';
         DOM.getElement("tag-list-inner").innerHTML = list;
         DOM.removeClassName("tag-list", "hidden");
     } else {
@@ -357,7 +368,7 @@ function documentTags( useTextInput ) {
     // if we found invalid tags, display them in badtag-list, otherwise
     // hide it
     if (bad_list != '') {
-        bad_list = '<ul>' + bad_list + '</ul>';
+        bad_list = '<ul class="list-unstyled">' + bad_list + '</ul>';
         DOM.getElement("badtag-list-inner").innerHTML = bad_list;
         DOM.removeClassName("badtag-list", "hidden");
     } else {
@@ -428,7 +439,7 @@ function saveArchiveMapChange(param) {
 }
 function savedArchiveMapChange(c) {
     var res = c.responseText;
-    if (res == '') 
+    if (res == '')
         message = '<__trans phrase="Error occurred while updating archive maps." escape="js">';
     else
         message = '<__trans phrase="Archive map has been successfully updated." escape="js">';
@@ -526,7 +537,7 @@ function toggleCache(id) {
 </script>
 </mt:setvarblock>
 
-<mt:setvarblock name="html_body" append="1">
+<mt:setvarblock name="content">
 <mt:if name="dirty">
   <script type="text/javascript">
   /* <![CDATA[ */
@@ -534,9 +545,6 @@ function toggleCache(id) {
   /* ]]> */
   </script>
 </mt:if>
-</mt:setvarblock>
-
-<mt:include name="include/header.tmpl" id="header_include">
 
 <form name="template-listing-form" id="template-listing-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewinnewwindow"> mt:once="1"</mt:unless> mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
@@ -559,12 +567,13 @@ function toggleCache(id) {
      label="<__trans phrase="Template Name">"
      label_class="no-header"
      help_page="templates"
-     help_section="template_name">
+     help_section="template_name"
+     no_header="1">
   <mt:if name="has_name">
-    <input type="text" name="name" id="title" class="title text full" tabindex="1" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Template Name">"  maxlength="255" mt:watch-change="1" />
+    <input type="text" name="name" id="title" class="form-control title text full" tabindex="1" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Template Name">"  maxlength="255" mt:watch-change="1" />
   <mt:else>
     <input type="hidden" name="name" value="<$mt:var name="name" escape="html"$>" />
-    <input type="text" name="name_display" id="title" class="title text full" value="<$mt:var name="name" escape="html">" disabled="disabled" />
+    <input type="text" name="name_display" id="title" class="form-control title text full" value="<$mt:var name="name" escape="html">" disabled="disabled" />
   </mt:if>
   </mtapp:setting>
 
@@ -579,12 +588,20 @@ function toggleCache(id) {
      label="$template_name"
      label_class="no-header"
      help_page="templates"
-     help_section="template_name">
-    <div id="template-editor-toolbar" class="template editor-toolbar toolbar">
-      <button type="button" id="syntaxon" class="command-highlight-on toolbar button active" title="<__trans phrase="Syntax highlighting On">"><span class="button-label"><__trans phrase="Syntax highlighting On"></span></button><button type="button" id="syntaxoff" class="command-highlight-off toolbar button" title="<__trans phrase="Syntax highlighting Off">"><span class="button-label"><__trans phrase="Syntax highlighting Off"></span></button>
-    </div>
-    <div id="textarea-enclosure" class="editor">
-      <textarea name="text" id="text" class="monospace text full" tabindex="3" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" ><mt:var name="text" escape="html"></textarea>
+     help_section="template_name"
+     no_header="1">
+    <div class="panel panel-default">
+      <div id="template-editor-toolbar" class="panel-heading template editor-toolbar toolbar">
+        <button type="button" id="syntaxon" class="command-highlight-on toolbar button active" title="<__trans phrase="Syntax highlighting On">">
+          <span class="button-label"><__trans phrase="Syntax highlighting On"></span>
+        </button>
+        <button type="button" id="syntaxoff" class="command-highlight-off toolbar button" title="<__trans phrase="Syntax highlighting Off">">
+          <span class="button-label"><__trans phrase="Syntax highlighting Off"></span>
+        </button>
+      </div>
+      <div id="textarea-enclosure" class="editor">
+        <textarea name="text" style="height: 550px;" id="text" class="form-control monospace text full" tabindex="3" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" ><mt:var name="text" escape="html"></textarea>
+      </div>
     </div>
   </mtapp:setting>
 
@@ -596,31 +613,37 @@ function toggleCache(id) {
   <$mt:setvar name="template_options_active" value="1"$>
 </mt:if>
 
-  <div id="template-options"<mt:if name="template_options_active"> class="active"</mt:if>>
-    <div id="template-options-header" class="line">
-      <div class="template-options-toggle">
-        <a href="javascript:void(0);" class="icon-left icon-spinner" onclick="return toggleActive('template-options');"><__trans phrase="Template Options"></a>
-      </div>
-      <div class="template-options-summary">
-      <mt:unless name="new_object">
-        <mt:if name="has_outfile">
-        <__trans phrase="Output file: <strong>[_1]</strong>" params="<mt:var name="outfile" escape="html" escape="html">">
+  <div id="template-options" class="panel panel-default<mt:if name="template_options_active"> active</mt:if>">
+    <div id="template-options-header" class="panel-heading line">
+      <div class="row">
+        <div class="col-md-8 template-options-toggle">
+          <a href="#template-options-content" class="icon-left icon-spinner" data-toggle="collapse">
+            <span class="caret"></span>
+            <__trans phrase="Template Options">
+          </a>
+        </div>
+        <div class="col-md-4 text-right template-options-summary">
+        <mt:unless name="new_object">
+          <mt:if name="has_outfile">
+          <__trans phrase="Output file: <strong>[_1]</strong>" params="<mt:var name="outfile" escape="html" escape="html">">
+          </mt:if>
+        </mt:unless>
+        <mt:if name="enabled_archive_types">
+          <__trans phrase="Enabled Mappings: [_1]" params="<mt:var name="enabled_archive_types">">
         </mt:if>
-      </mt:unless>
-      <mt:if name="enabled_archive_types">
-        <__trans phrase="Enabled Mappings: [_1]" params="<mt:var name="enabled_archive_types">">
-      </mt:if>
+        </div>
       </div>
     </div>
-    <div id="template-options-content">
+    <div id="template-options-content" class="panel-body collapse">
     <mt:if name="has_outfile">
       <mtapp:setting
          id="outfile"
          label="<__trans phrase="Output File">"
          label_class="top-label"
          help_page="templates"
-         help_section="output_file">
-        <input type="text" name="outfile" id="outfile" class="text" tabindex="4" value="<mt:var name="outfile" escape="html">" mt:watch-change="1" />
+         help_section="output_file"
+         no_grid="1">
+        <input type="text" name="outfile" id="outfile" class="form-control text" tabindex="4" value="<mt:var name="outfile" escape="html">" mt:watch-change="1" />
       </mtapp:setting>
     </mt:if>
     <mt:if name="type" eq="index">
@@ -629,8 +652,9 @@ function toggleCache(id) {
          label_class="top-label"
          id="identifier"
          help_page="templates"
-         help_section="template_type">
-        <select name="identifier" id="identifier" tabindex="5">
+         help_section="template_type"
+         no_grid="1">
+        <select name="identifier" id="identifier" tabindex="5" class="form-control">
           <option value="" <mt:unless name="identifier">selected="selected"</mt:unless>><__trans phrase="Custom Index Template"></option>
         <mt:loop name="index_identifiers">
           <option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><$mt:var name="label" escape="html"$> (<$mt:var name="key" escape="html"$>)</option>
@@ -644,8 +668,9 @@ function toggleCache(id) {
          label="<__trans phrase="Link to File">"
          label_class="top-label"
          help_page="templates"
-         help_section="linked_templates">
-        <input type="text" name="linked_file" id="linked_file" class="text" tabindex="8" value="<mt:var name="linked_file" escape="html">" maxlength="255" mt:watch-change="1" />
+         help_section="linked_templates"
+         no_grid="1">
+        <input type="text" name="linked_file" id="linked_file" class="form-control text" tabindex="8" value="<mt:var name="linked_file" escape="html">" maxlength="255" mt:watch-change="1" />
       </mtapp:setting>
 
 <mt:setvarblock name="publishing_hint"><__trans phrase="Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>"></mt:setvarblock>
@@ -656,12 +681,18 @@ function toggleCache(id) {
        label="<__trans phrase="Archive Mapping">"
        label_class="top-label"
        content_class="field-content-text"
-       show_hint="0">
-      <p><a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Archive Mapping"></a></p>
+       show_hint="0"
+       no_grid="1">
+      <p>
+        <a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create">
+          <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+          <__trans phrase="Create Archive Mapping">
+        </a>
+      </p>
       <div id="msg-block"></div>
-      <div class="create-inline" id="create-inline-mapping">
+      <div class="form-inline create-inline" id="create-inline-mapping" style="display: none;">
         <label for="new_archive_type"><strong><__trans phrase="Type"></strong></label>
-        <select name="new_archive_type" id="new_archive_type" tabindex="9">
+        <select name="new_archive_type" id="new_archive_type" tabindex="9" class="form-control">
         <mt:loop name="archive_types">
           <option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
         </mt:loop>
@@ -669,11 +700,11 @@ function toggleCache(id) {
         &nbsp;
         <span class="buttons">
           <a href="javascript:void(0)"
-             class="button"
+             class="btn btn-default button"
              onclick="addMap(); return false;">
             <__trans phrase="Add"></a>
           <a href="javascript:void(0)"
-             class="button"
+             class="btn btn-default button"
              onclick="cancelCreateMode(); return false">
             <__trans phrase="Cancel"></a>
         </span>
@@ -692,8 +723,9 @@ function toggleCache(id) {
        hint="$publishing_hint"
        show_hint="1"
        help_page="templates"
-       help_section="enable_dynamic_publishing">
-      <select name="build_type" id="build-type" class="half-width">
+       help_section="enable_dynamic_publishing"
+       no_grid="1">
+      <select name="build_type" id="build-type" class="form-control fhalf-width">
         <option value="1"<mt:if name="build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically (default)"></option>
       <mt:if name="publish_queue_available">
         <option value="4"<mt:if name="build_type_4"> selected="selected"</mt:if>><__trans phrase="Via Publish Queue"></option>
@@ -781,12 +813,13 @@ function toggleCache(id) {
   <mtapp:setting
      id="revision-note"
      label="<__trans phrase="Change note">"
-     label_class="top-label">
-    <input type="text" name="revision-note" id="revision-note" class="text full" value="<mt:var name="revision-note" escape="html">"<mt:if name="save_revision" eq="0"> style="display:none"</mt:if> />
+     label_class="top-label"
+     no_grid="1">
+    <input type="text" name="revision-note" id="revision-note" class="form-control text full" value="<mt:var name="revision-note" escape="html">"<mt:if name="save_revision" eq="0"> style="display:none"</mt:if> />
   </mtapp:setting>
 </mt:if>
 
-  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" pull_right="1">
 
   <div id="autosave-notification-<$mt:var name="bar_position" escape="html" default="top"$>" class="autosave-notification"></div>
 </form>
@@ -798,16 +831,9 @@ function toggleCache(id) {
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 </form>
 
-<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/lib/codemirror.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<link rel="stylesheet" href="<$mt:var name="static_uri"$>codemirror/lib/codemirror.css">
+</mt:setvarblock>
 
-<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/xml.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/javascript.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/css.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/htmlmixed.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<link rel="stylesheet" href="<$mt:var name="static_uri"$>codemirror/mt/mt.css">
-
-
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 App.singletonConstructor =
@@ -869,6 +895,8 @@ function saveTemplatePrefs( sync ) {
 
 /* ]]> */
 </script>
+</mt:setvarblock>
+
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('button.save, button.publish').click(function() {
         syncEditor();
@@ -933,4 +961,6 @@ function saveTemplatePrefs( sync ) {
     });
 
 </mt:setvarblock>
-<mt:include name="include/footer.tmpl">
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

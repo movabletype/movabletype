@@ -55,7 +55,7 @@ sub list_props {
                 my ( $obj, $app ) = @_;
                 my $name = MT::Util::encode_html( $obj->name );
                 my $id   = $obj->id;
-                return qq{<a href="#tagid-$id" class="edit-tag">$name</a>};
+                return qq{<a href="#tagid-$id" class="edit-tag" onclick="editTagName(this);">$name</a>};
             },
         },
         _blog => {
