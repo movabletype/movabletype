@@ -1709,6 +1709,9 @@ sub add_map {
             archive_type => $at
         }
     );
+    my $content_type_id = $q->param('content_type_id');
+    my $cat_field_id    = $q->param('cat_field_id');
+    my $dt_field_id     = $q->param('dt_field_id');
 
     $app->model('template')
         ->load( { id => $template_id, blog_id => $blog_id } )
@@ -1720,6 +1723,9 @@ sub add_map {
     $map->template_id($template_id);
     $map->blog_id($blog_id);
     $map->archive_type($at);
+    $map->content_type_id($content_type_id) if $content_type_id;
+    $map->cat_field_id($cat_field_id)       if $cat_field_id;
+    $map->dt_field_id($dt_field_id)         if $dt_field_id;
     $map->save
         or return $app->error(
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
