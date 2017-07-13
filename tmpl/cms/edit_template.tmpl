@@ -227,7 +227,7 @@
   <button
      type="submit"
      accesskey="s"
-     tabindex="12"
+     tabindex="13"
      title="<__trans phrase="Save (s)">"
      class="btn btn-primary save action primary button">
     <__trans phrase="Save"></button>
@@ -235,7 +235,7 @@
   <button
      type="submit"
      accesskey="s"
-     tabindex="12"
+     tabindex="13"
      title="<__trans phrase="Save Changes (s)">"
      class="btn btn-primary save action primary button">
     <__trans phrase="Save Changes"></button>
@@ -245,7 +245,7 @@
      name="preview_template"
      type="submit"
      accesskey="v"
-     tabindex="13"
+     tabindex="14"
      title="<__trans phrase="Preview">"
      class="btn btn-default preview action button">
     <__trans phrase="Preview"></button>
@@ -257,7 +257,7 @@
   <button
      type="submit"
      accesskey="r"
-     tabindex="14"
+     tabindex="15"
      title="<__trans phrase="Save and Publish this template (r)">"
      class="btn btn-default publish action button">
     <__trans phrase="Save &amp; Publish"></button>
@@ -705,7 +705,7 @@ function toggleCache(id) {
         </div>
         <div>
           <label for="content_type_id"><strong><__trans phrase="Content Type"></strong></label>
-          <select name="content_type_id" id="content_type_id">
+          <select name="content_type_id" id="content_type_id" tabindex="10" class="form-control">
           <mt:loop name="content_types">
             <option value="<mt:var name="id">"><mt:var name="name"></option>
           </mt:loop>
@@ -713,12 +713,12 @@ function toggleCache(id) {
         </div>
         <div>
           <label for="cat_field_id"><strong><__trans phrase="Category Field"></strong></label>
-          <select name="cat_field_id" id="cat_field_id">
+          <select name="cat_field_id" id="cat_field_id" tabindex="11" class="form-control">
           </select>
         </div>
         <div>
           <label for="dt_field_id"><strong><__trans phrase="Date & Time Field"></strong></label>
-          <select name="dt_field_id" id="dt_field_id">
+          <select name="dt_field_id" id="dt_field_id" tabindex="12" class="form-control">
           </select>
         </div>
         <div>
