@@ -25,7 +25,7 @@ BEGIN {
 
 use Test::More;
 use lib 't/lib';
-use MT::Test;
+use MT::Test ();
 use Test::Class;
 
 BEGIN {
