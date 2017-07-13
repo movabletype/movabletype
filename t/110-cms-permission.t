@@ -19,15 +19,7 @@ use MT::Test qw( :app :db :data );
 my $mt = MT->instance;
 make_data();
 
-# Now, Ready to start test
-my $test_count = 142;
-$test_count += 4
-    if $mt->component('commercial');
-$test_count += 4
-    if $mt->component('enterprise');
-
 use Test::More;
-plan tests => $test_count;
 
 my ( $app, $out );
 my $blog  = MT::Blog->load(1);
@@ -1271,6 +1263,8 @@ ok( $out, "Delete entry (different)" );
 location_params_have( $out, { __mode => 'dashboard', permission => 1 },
     "Delete entry (different): result"
 );
+
+done_testing;
 
 sub make_data {
 
