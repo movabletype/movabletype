@@ -8,7 +8,7 @@ use base qw( Exporter );
 
 our $VERSION = 0.9;
 our @EXPORT
-    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks );
+    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks location_params_have query_params_have );
 
 use strict;
 
@@ -22,6 +22,8 @@ use MT;
 use MT::Mail;
 
 use Cwd qw( abs_path );
+use URI;
+use URI::QueryParam;
 
 # Speed-up tests on Windows.
 if ( $^O eq 'MSWin32' ) {
@@ -1738,6 +1740,26 @@ sub _run_tasks {
 
     require MT::TaskMgr;
     MT::TaskMgr->run_tasks(@$tasks);
+}
+
+sub location_params_have {
+    my ($out, $expects, $message) = @_;
+    my ($location_url) = $out =~ /^Location:\s*(\S+)/m;
+    unless ( $location_url ) {
+        fail "$message: no Location url";
+        return;
+    }
+    query_params_have( $location_url, $expects, $message );
+}
+
+sub query_params_have {
+    my ($url, $expects, $message) = @_;
+    my $uri = URI->new($url);
+    my $fail = 0;
+    for my $key ( sort keys %$expects ) {
+        is $uri->query_param($key) => $expects->{$key}, "$key: $expects->{$key}" or $fail++;
+    }
+    ok !$fail, $message;
 }
 
 1;
