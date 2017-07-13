@@ -129,16 +129,6 @@ h1.dialog-title {
 }
 </style>
 
-<mt:if name="dialog">
-  <mt:if name="filter_val" eq="image">
-<h1 class="dialog-title"><__trans phrase="Upload new image"></h1>
-  <mt:elseif name="is_image">
-<h1 class="dialog-title"><__trans phrase="Upload new image"></h1>
-  <mt:else>
-<h1 class="dialog-title"><__trans phrase="Upload new asset"></h1>
-  </mt:if>
-</mt:if>
-
 <form>
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
   <button class="action button primary btn btn-primary" id="open-file-dialog">
@@ -244,7 +234,7 @@ function resize_upload_overlay() {
 
   // Change "width" and "left" properties when dialog width is bigger than parent frame width.
   if (isDialog) {
-    offset_left = top.jQuery('#mt-dialog-iframe').offset().left;
+    offset_left = top.jQuery('iframe.embed-responsive-item').offset().left;
     if (offset_left < 0) {
 
       // width

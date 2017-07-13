@@ -3200,7 +3200,7 @@ EOT
     elsif ( $args->{no_header} ) {
         return $ctx->build(<<"EOT");
     <div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
-        <div class="col-md-12 field-content $content_class">
+        <div class="col-md-12 col-sm-12 field-content $content_class">
           $insides$hint$warning
         </div>
     </div>
@@ -3209,10 +3209,10 @@ EOT
     else {
         return $ctx->build(<<"EOT");
     <div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
-        <div class="col-md-2 field-header">
+        <div class="col-md-2 col-sm-2 field-header">
           <label id="$id-label" for="$id" class="control-label text-right pull-right">$label$req</label>
         </div>
-        <div class="col-md-8 field-content $content_class">
+        <div class="col-md-8 col-sm-8 field-content $content_class">
           $insides$hint$warning
         </div>
     </div>
