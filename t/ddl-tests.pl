@@ -48,6 +48,8 @@ BEGIN {
         if $@;
 }
 
+MT::Test->import;
+
 package Ddltest;
 use base qw( MT::Object );
 
