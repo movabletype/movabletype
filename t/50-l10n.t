@@ -4,6 +4,7 @@ use warnings;
 use Test::More;
 
 use lib qw( lib extlib t/lib );
+use MT::Test;
 use MT;
 use MT::L10N;
 

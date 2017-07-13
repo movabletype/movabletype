@@ -7,6 +7,7 @@ use File::Spec;
 use Test::More;
 
 use lib qw( lib extlib t/lib );
+use MT::Test;
 use MT::ConfigMgr;
 use MT::Image;
 
