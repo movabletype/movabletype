@@ -384,6 +384,9 @@ sub core_methods {
 
         'view_category_list' => "${pkg}CategoryList::view",
 
+        'get_archive_mapping_content_fields' =>
+            "${pkg}Template::get_archive_mapping_content_fields",
+
     };
 }
 

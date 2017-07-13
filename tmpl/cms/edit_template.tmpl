@@ -660,13 +660,35 @@ function toggleCache(id) {
       <p><a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Archive Mapping"></a></p>
       <div id="msg-block"></div>
       <div class="create-inline" id="create-inline-mapping">
+        <mt:if name="type" eq="ct"><div></mt:if>
         <label for="new_archive_type"><strong><__trans phrase="Type"></strong></label>
         <select name="new_archive_type" id="new_archive_type" tabindex="9">
         <mt:loop name="archive_types">
           <option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
         </mt:loop>
         </select>
-        &nbsp;
+        <mt:if name="type" eq="ct">
+        </div>
+        <div>
+          <label for="content_type_id"><strong><__trans phrase="Content Type"></strong></label>
+          <select name="content_type_id" id="content_type_id">
+          <mt:loop name="content_types">
+            <option value="<mt:var name="id">"><mt:var name="name"></option>
+          </mt:loop>
+          </select>
+        </div>
+        <div>
+          <label for="cat_field_id"><strong><__trans phrase="Category Field"></strong></label>
+          <select name="cat_field_id" id="cat_field_id">
+          </select>
+        </div>
+        <div>
+          <label for="dt_field_id"><strong><__trans phrase="Date & Time Field"></strong></label>
+          <select name="dt_field_id" id="dt_field_id">
+          </select>
+        </div>
+        <div>
+        </mt:if>
         <span class="buttons">
           <a href="javascript:void(0)"
              class="button"
@@ -677,6 +699,7 @@ function toggleCache(id) {
              onclick="cancelCreateMode(); return false">
             <__trans phrase="Cancel"></a>
         </span>
+        <mt:if name="type" eq="ct"></div></mt:if>
       </div>
       <div id="template-maps">
         <mt:include name="include/archive_maps.tmpl">
@@ -931,6 +954,64 @@ function saveTemplatePrefs( sync ) {
     jQuery(window).bind('pre_autosave', function(){
         syncEditor();
     });
+    <mt:if name="type" eq="ct">
+    jQuery("#new_archive_type").change(function(){
+      getContentFields();
+    });
+
+    jQuery("#content_type_id").change(function(){
+      getContentFields();
+    });
+
+    function getContentFields() {
+      var archive_type    = jQuery("#new_archive_type").val();
+      var content_type_id = jQuery("#content_type_id").val();
+      jQuery.ajax(
+        {
+          type: 'POST',
+          contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+          url:  '<mt:var name="script_url">',
+          dataType: 'json',
+          data: {
+            __mode: 'get_archive_mapping_content_fields',
+            magic_token: '<mt:var name="magic_token">',
+            blog_id: '<mt:var name="blog_id">',
+            archive_type: archive_type,
+            content_type_id: content_type_id
+          },
+        }
+      ).done(
+        function(data) {
+          if (data.result.error) {
+            alert(data.result.errmsg);
+          }
+          var categories     = data.result.fields.categories;
+          var date_and_times = data.result.fields.date_and_times;
+          jQuery('#cat_field_id').children().remove();
+          jQuery('#dt_field_id').children().remove();
+          jQuery.each(categories, function(index, value){
+            $option = jQuery('<option>').val(value.id).text(value.label);
+            jQuery('#cat_field_id').append($option);
+          });
+          jQuery.each(date_and_times, function(index, value){
+            $option = jQuery('<option>').val(value.id).text(value.label);
+            jQuery('#dt_field_id').append($option);
+          });
+        }
+      ).fail(
+        function(xhr, status, errorThrown) {
+          if (xhr.status !== 200) {
+            if ( status === 'error' && xhr.status === 0 ){
+              alert('<__trans phrase="Unknown error occurred.">');
+            }
+            else {
+              alert(status+': '+xhr.status+' '+errorThrown);
+            }
+          }
+        }
+      );
+    }
+    </mt:if>
 
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">

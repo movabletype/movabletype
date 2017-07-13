@@ -549,6 +549,14 @@ sub edit {
         #$param->{ 'schedule_period_' . $period } = 1;
         #$param->{schedule_interval} = $interval;
         $param->{type} = 'custom' if $param->{type} eq 'module';
+
+        # Content Type
+        if ( $obj_type eq 'ct' ) {
+            my $iter = MT::ContentType->load_iter( { blog_id => $blog_id } );
+            while ( my $ct = $iter->() ) {
+                push @{ $param->{content_types} }, $ct;
+            }
+        }
     }
     else {
         my $new_tmpl = $q->param('create_new_template');
@@ -3282,6 +3290,32 @@ sub _get_publisher {
     eval "require $class;";
     $app->request($publisher)
         || $app->request( $publisher, eval "new $class()" );
+}
+
+sub get_archive_mapping_content_fields {
+    my $app     = shift;
+    my $q       = $app->param;
+    my $blog_id = $q->param('blog_id');
+    my $at      = $q->param('archive_type');
+    my $ct_id   = $q->param('content_type_id');
+
+    my $ct     = MT::ContentType->load($ct_id);
+    my $fields = $ct->fields;
+
+    my $result = {};
+    if ( $at =~ /[Daily|Weekly|Monthly|Yearly]/ ) {
+        @{ $result->{date_and_times} }
+            = map { { id => $_->{id}, label => $_->{options}{label} } }
+            grep { $_->{type} eq 'date_and_time' } @$fields;
+    }
+
+    if ( $at =~ /Category/ ) {
+        @{ $result->{categories} }
+            = map { { id => $_->{id}, label => $_->{options}{label} } }
+            grep { $_->{type} eq 'categories' } @$fields;
+    }
+
+    return $app->json_result( { success => 1, fields => $result } );
 }
 
 1;
