@@ -91,7 +91,7 @@ BEGIN {
 }
 
 # Suppress output when "MailTransfer debug"
-{
+unless ( $ENV{MT_TEST_MAIL} ) {
     no warnings 'redefine';
     *MT::Mail::_send_mt_debug = sub {1};
 }
