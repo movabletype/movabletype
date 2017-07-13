@@ -63,6 +63,7 @@ $.extend(MT.BlockEditorFieldManager.prototype, {
         });
         if(data["class_name"] && data["class_name"] != ''){
             field_instance.set_class_name(data["class_name"]);
+            field_options.find('.field_class').val(data["class_name"]);
         }
         if ('get_field_options' in field_instance) {
             field_options = field_instance.get_field_options(field_options);

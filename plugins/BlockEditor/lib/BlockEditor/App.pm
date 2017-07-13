@@ -23,7 +23,8 @@ sub param_edit_content_data {
         $hash->{order} = $blockeditor_fields->{$_}{order};
         $hash;
     } keys %$blockeditor_fields;
-    @blockeditor_fields_array = sort { $a->{order} <=> $b->{order} } @blockeditor_fields_array;
+    @blockeditor_fields_array
+        = sort { $a->{order} <=> $b->{order} } @blockeditor_fields_array;
     $param->{blockeditor_fields} = \@blockeditor_fields_array;
 
     my $editor_tmpl = plugin()->load_tmpl('editor.tmpl');
@@ -31,29 +32,31 @@ sub param_edit_content_data {
 }
 
 sub block_editor_asset {
-    my $app = shift;
-    my ($param) = @_;
+    my $app    = shift;
+    my (%args) = @_;
+    my $assets = $args{assets};
 
     $app->validate_magic() or return;
 
-    my ( $id, $asset );
-    if ( $asset = $param->{asset} ) {
-        $id = $asset->id;
-    }
-    else {
-        $id = $param->{asset_id} || scalar $app->param('id');
-        $asset = $app->model('asset')->lookup($id);
+    if ( !$assets ) {
+        my $ids = $app->param('id');
+        return $app->errtrans('Invalid request.') unless $ids;
+
+        my @ids = split ',', $ids;
+        return $app->errtrans('Invalid request.') unless @ids;
+        my @assets = $app->model('asset')->load( { id => \@ids } );
+
+        # Sort by @ids order.
+        my %assets = map { $_->id => $_ } @assets;
+        @assets = map { $assets{$_} } @ids;
+
+        $assets = \@assets;
     }
 
-    my $thumb_html = $asset->as_html( { include => 1 } );
+    my $params->{assets} = $assets;
+    $params->{edit_field} = $app->param('edit_field') || '';
 
-    plugin()->load_tmpl(
-        'cms/dialog/asset_insert.tmpl',
-        {   asset_id   => $id,
-            edit_field => $app->param('edit_field') || '',
-            asset_html => $thumb_html,
-        },
-    );
+    plugin()->load_tmpl( 'cms/dialog/asset_insert.tmpl', $params );
 }
 
 1;

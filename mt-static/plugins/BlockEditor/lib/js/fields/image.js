@@ -8,7 +8,7 @@
     $.extend(BEF.Image.prototype, BEF.prototype, {
         id: '',
         input_field: '',
-        options: [],
+        options: {},
 
         get_id: function () {
             return self.id;
@@ -26,8 +26,13 @@
             if (data.preview_html && data.preview_html != "") {
                 self.preview_field.append(data.preview_html);
             }
-            self.input_field.append(self.preview_field);
+            self.input_field.find('a').append(self.preview_field);
             self.input_field.find('a.mt-open-dialog').mtDialog();
+
+            if(data.options && Object.keys(data.options).length > 0){
+                self.options = data.options;
+            }
+
             return self.input_field;
         },
         get_field_options: function (field_options) {
@@ -43,6 +48,10 @@
                 };
             }();
             self.options_field.on('change', 'input', callback);
+            if(self.options.alt){
+                option_alt.find('input').val(self.options.alt);
+            }
+
             return field_options.append(self.options_field);
         },
         set_option: function (name, val) {
@@ -63,13 +72,16 @@
                 'class_name': self.class_names.join(' '),
                 'type': self.get_type(),
                 'value': self.input_field.find('#' + self.id).val(),
-                'preview_html': self.preview_field.html(),
+                'preview_html': self.get_html(),
                 'html': self.get_html(),
-                'options': this.options,
+                'options': self.options,
             };
         },
         get_html: function () {
             var self = this;
+            Object.keys(self.options).forEach(function(key){
+                self.preview_field.find('img').attr(key, self.options[key]);
+            })
             return self.preview_field.html();
         }
     });

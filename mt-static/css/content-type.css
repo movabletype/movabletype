@@ -64,6 +64,12 @@
     cursor: pointer;
     margin: 0 3px;
 }
+.asset_field img {
+    max-width: 300px;
+}
+.field_options {
+    margin-bottom: 10px;
+}
 
 /* - Clearfix */
 .setting-item {

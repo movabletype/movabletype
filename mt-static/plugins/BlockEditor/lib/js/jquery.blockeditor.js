@@ -47,7 +47,7 @@
               cursor: 'move',
               forcePlaceholderSize: true,
               handle: '.field-header',
-              containment: '.block_field',
+              containment: block_field,
             });
             block_field.after(add_field);
 

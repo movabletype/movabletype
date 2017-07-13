@@ -21,26 +21,6 @@
             this.input_field = $('<div class="hr_field"><hr><input type="hidden" name="' + id + '" id="' + id + '" value="hr"></div>');
             return this.input_field;
         },
-        get_field_options: function (field_options) {
-            var self = this;
-            var option_color = $('<label>color<input type="color" name="field_option_background-color"></label>');
-
-            var callback = function () {
-                return function () {
-                    var name = $(this).attr('name');
-                    var val = $(this).val();
-                    self.set_option.call(self, name, val);
-                };
-            }();
-            var options = $('<div class="options"></div>');
-            options.append(option_color);
-            options.on('change', 'input', callback);
-            return field_options.append(options);
-        },
-        set_option: function (name, val) {
-            var style_name = name.replace('field_option_', '');
-            this.options[style_name] = val;
-        },
         set_class_name: function (val) {
             var self = this;
             var class_names = val.split(' ');
