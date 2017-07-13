@@ -1016,8 +1016,8 @@ function saveTemplatePrefs( sync ) {
           if (data.result.error) {
             alert(data.result.errmsg);
           }
-          var categories     = data.result.fields.categories;
-          var date_and_times = data.result.fields.date_and_times;
+          var categories     = data.result.fields.categories || [];
+          var date_and_times = data.result.fields.date_and_times || [];
           jQuery('#cat_field_id').children().remove();
           jQuery('#dt_field_id').children().remove();
           jQuery.each(categories, function(index, value){
