@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::ContentTypePublisher;
+package MT::ContentPublisher;
 
 use strict;
 use base qw( MT::WeblogPublisher );

@@ -3290,7 +3290,7 @@ sub _get_publisher {
 
     my $publisher
         = $type eq 'ct'
-        ? 'ContentTypePublisher'
+        ? 'ContentPublisher'
         : 'WeblogPublisher';
     my $class = 'MT::' . $publisher;
     eval "require $class;";

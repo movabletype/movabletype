@@ -3324,8 +3324,8 @@ sub load_archive_types {
 }
 
 sub load_ct_archive_types {
-    require MT::ContentTypePublisher;
-    return MT::ContentTypePublisher->core_archive_types;
+    require MT::ContentPublisher;
+    return MT::ContentPublisher->core_archive_types;
 }
 
 sub PerformanceLoggingPath {
