@@ -3483,7 +3483,7 @@ HTML
             <button
                 type="submit"
                 accesskey="x"
-                data-mt-modal-close='$return_url'
+                onclick="jQuery.fn.mtModal.close('$return_url'); return false;"
                 class="btn btn-primary mt-close-dialog-url"
                 ><__trans phrase="Close"></button>
         </div>
