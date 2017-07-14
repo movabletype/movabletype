@@ -7,7 +7,8 @@
 package MT::ArchiveType::ContentTypeCategoryDaily;
 
 use strict;
-use base qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeDaily );
+use base
+    qw( MT::ArchiveType::CategoryDaily MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeDaily );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -20,9 +21,7 @@ sub archive_label {
 }
 
 sub template_params {
-    return {
-        archive_class => "contenttype-category-daily-archive",
-    };
+    return { archive_class => "contenttype-category-daily-archive" };
 }
 
 sub archive_file {
@@ -34,5 +33,4 @@ sub archive_title {
 }
 
 1;
-
 

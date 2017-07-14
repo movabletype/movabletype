@@ -7,7 +7,8 @@
 package MT::ArchiveType::ContentTypeAuthorYearly;
 
 use strict;
-use base qw( MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeYearly );
+use base
+    qw( MT::ArchiveType::AuthorYearly MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeYearly );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -20,9 +21,7 @@ sub archive_label {
 }
 
 sub template_params {
-    return {
-        archive_class => "contenttype-author-yearly-archive",
-    };
+    return { archive_class => "contenttype-author-yearly-archive" };
 }
 
 sub archive_file {

@@ -7,7 +7,8 @@
 package MT::ArchiveType::ContentTypeAuthorDaily;
 
 use strict;
-use base qw( MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeDaily );
+use base
+    qw( MT::ArchiveType::AuthorDaily MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeDaily );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -20,9 +21,7 @@ sub archive_label {
 }
 
 sub template_params {
-    return {
-        archive_class => "contenttype-author-daily-archive",
-    };
+    return { archive_class => "contenttype-author-daily-archive" };
 }
 
 sub archive_file {

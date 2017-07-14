@@ -7,7 +7,7 @@
 package MT::ArchiveType::ContentTypeYearly;
 
 use strict;
-use base qw( MT::ArchiveType::Date );
+use base qw( MT::ArchiveType::Yearly );
 
 use MT::Util qw( remove_html encode_html );
 

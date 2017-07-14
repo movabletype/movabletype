@@ -7,7 +7,8 @@
 package MT::ArchiveType::ContentTypeCategoryWeekly;
 
 use strict;
-use base qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeWeekly );
+use base
+    qw( MT::ArchiveType::CategoryWeekly MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeWeekly );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -20,9 +21,7 @@ sub archive_label {
 }
 
 sub template_params {
-    return {
-        archive_class => "contenttype-category-weekly-archive",
-    };
+    return { archive_class => "contenttype-category-weekly-archive" };
 }
 
 sub archive_file {
@@ -34,5 +33,4 @@ sub archive_title {
 }
 
 1;
-
 

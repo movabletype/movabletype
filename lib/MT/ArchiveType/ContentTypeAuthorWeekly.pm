@@ -7,7 +7,8 @@
 package MT::ArchiveType::ContentTypeAuthorWeekly;
 
 use strict;
-use base qw( MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeWeekly );
+use base
+    qw( MT::ArchiveType::AuthorWeekly MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeWeekly );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -20,9 +21,7 @@ sub archive_label {
 }
 
 sub template_params {
-    return {
-        archive_class => "contenttype-author-weekly-archive",
-    };
+    return { archive_class => "contenttype-author-weekly-archive" };
 }
 
 sub archive_file {

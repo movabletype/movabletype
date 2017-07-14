@@ -7,7 +7,7 @@
 package MT::ArchiveType::ContentTypeCategory;
 
 use strict;
-use base qw( MT::ArchiveType::ContentType );
+use base qw( MT::ArchiveType::Category );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -20,9 +20,7 @@ sub archive_label {
 }
 
 sub template_params {
-    return {
-        archive_class => "contenttype-category-archive",
-    };
+    return { archive_class => "contenttype-category-archive" };
 }
 
 sub archive_file {
@@ -34,5 +32,4 @@ sub archive_title {
 }
 
 1;
-
 

@@ -7,7 +7,8 @@
 package MT::ArchiveType::ContentTypeAuthorMonthly;
 
 use strict;
-use base qw( MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeMonthly );
+use base
+    qw( MT::ArchiveType::AuthorMonthly MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeMonthly );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -20,9 +21,7 @@ sub archive_label {
 }
 
 sub template_params {
-    return {
-        archive_class => "contenttype-author-monthly-archive",
-    };
+    return { archive_class => "contenttype-author-monthly-archive" };
 }
 
 sub archive_file {

@@ -7,7 +7,7 @@
 package MT::ArchiveType::ContentType;
 
 use strict;
-use base qw( MT::ArchiveType );
+use base qw( MT::ArchiveType::Individual );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -20,9 +20,7 @@ sub archive_label {
 }
 
 sub template_params {
-    return {
-        archive_class => "contenttype-archive",
-    };
+    return { archive_class => "contenttype-archive" };
 }
 
 sub archive_file {
