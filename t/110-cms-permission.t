@@ -39,7 +39,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Create a new asset" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Create a new Asset: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Create a new Asset: result" );
 
 # Delete Asset
 # __mode=delete&_type=asset&blog_id=1&id=1
@@ -55,7 +55,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete asset" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete asset: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete asset: result" );
 
 # Update an asset
 # __mode=save&_type=asset&blog_id=1&id=1
@@ -71,7 +71,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Update an asset" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Update an asset: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Update an asset: result" );
 
 # Create a new Author
 # __mode=save&_type=author&name=new_author&type=1
@@ -87,7 +87,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Create a new author" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Create a new Author: result" );
 
 # Delete Author
@@ -103,7 +103,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete author" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete author: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete author: result" );
 
 # Create a new Association
 # __mode=save&_type=association&type=1
@@ -133,7 +133,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete association" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete association: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete association: result" );
 
 # Create a new Blog
 # __mode=save&_type=blog&name=BlogName
@@ -148,7 +148,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Create a new blog" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Create a new Blog: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Create a new Blog: result" );
 
 # Delete Blog
 # __mode=delete&_type=blog&id=1
@@ -163,7 +163,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete blog" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete blog: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete blog: result" );
 
 # Create a new Website
 # __mode=save&_type=website&name=WebsiteName
@@ -178,7 +178,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Create a new website" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Create a new Website: result" );
 
 # Delete Website
@@ -194,7 +194,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete website" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete website: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete website: result" );
 
 # Create a new Category
 # __mode=save&_type=category&label=CategoryName&blog_id=1
@@ -226,7 +226,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete category" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete category: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete category: result" );
 
 # Create a new Folder
 # __mode=save&_type=folder&label=FolderName&blog_id=1
@@ -258,7 +258,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete folder" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete folder: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete folder: result" );
 
 # Update Folder
 # __mode=save&_type=folder&label=FolderName&blog_id=1
@@ -275,7 +275,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Update a  folder" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Update a Folder: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Update a Folder: result" );
 
 # Create a new Comment
 # __mode=save&_type=comment&&blog_id=1&entry_id=1
@@ -307,7 +307,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete comment" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete comment: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete comment: result" );
 
 # Create a new Entry
 # __mode=save&_type=entry&&blog_id=1&author_id=1&status=1
@@ -324,7 +324,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Create a new entry" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Create a new Entry: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Create a new Entry: result" );
 
 # Delete Entry
 # __mode=delete&_type=entry&id=1&blog_id=1
@@ -340,7 +340,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete entry" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete entry: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete entry: result" );
 
 # Update an Entry
 # __mode=save&_type=entry&&blog_id=1&author_id=1&status=1&id=1
@@ -358,7 +358,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Update an entry" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Update anEntry: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Update anEntry: result" );
 
 # Create a new Page
 # __mode=save&_type=page&&blog_id=1&author_id=1&status=1
@@ -375,7 +375,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Create a new page" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Create a new Page: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Create a new Page: result" );
 
 # Delete Page
 # __mode=delete&_type=page&id=20&blog_id=1
@@ -391,7 +391,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete page" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete page: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete page: result" );
 
 # Update a Page
 # __mode=save&_type=page&&blog_id=1&author_id=1&status=1&id=20
@@ -409,7 +409,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Update an page" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Update an Page: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Update an Page: result" );
 
 # Create a new Banlist
 # __mode=save&_type=banlist&&blog_id=1&ip=1.1.1.1
@@ -425,7 +425,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Create a new banlist" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Create a new Banlist: result" );
 
 # Delete Banlist
@@ -442,7 +442,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete banlist" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete banlist: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete banlist: result" );
 
 # Create a new Notification
 # __mode=save&_type=notification&&blog_id=1
@@ -457,7 +457,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Create a new notification" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Create a new Notification: result"
 );
 
@@ -475,7 +475,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete notification" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Delete notification: result" );
 
 # Create a new Role
@@ -491,7 +491,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Create a new role" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Create a new Role: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Create a new Role: result" );
 
 # Delete Role
 # __mode=delete&_type=role&id=1
@@ -506,7 +506,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete role" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete role: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete role: result" );
 
 # Create a new Config
 # __mode=save&_type=config
@@ -815,7 +815,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete tag" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete tag: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete tag: result" );
 
 # Create a new Ping
 # __mode=save&_type=ping&blog_id=1&ip=1.1.1.1&tb_id=1
@@ -832,7 +832,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Create a new ping" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Create a new Ping: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Create a new Ping: result" );
 
 # Delete Ping
 # __mode=delete&_type=ping&id=1
@@ -847,7 +847,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete ping" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete ping: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete ping: result" );
 
 # Create a new Touch
 # __mode=save&_type=touch
@@ -924,7 +924,7 @@ $app  = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Create a new template" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Create a new Template: result" );
 
 # Delete Template
@@ -940,7 +940,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                                      "Delete template" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete template: result" );
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete template: result" );
 
 # Create a new Templatemap
 # __mode=save&_type=templatemap&blog_id=1&archive_type=Author&template_id=1
@@ -1011,7 +1011,7 @@ if ( $mt->component('commercial') ) {
     );
     $out = delete $app->{__test_output};
     ok( $out,                                      "Delete field" );
-    location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete field: result" );
+    location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete field: result" );
 }
 
 if ( $mt->component('enterprise') ) {
@@ -1029,7 +1029,7 @@ if ( $mt->component('enterprise') ) {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Create a new group" );
-    location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+    location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
         "Create a new Group: result" );
 
     # Delete Group
@@ -1045,7 +1045,7 @@ if ( $mt->component('enterprise') ) {
     );
     $out = delete $app->{__test_output};
     ok( $out,                                      "Delete group" );
-    location_params_have( $out, { __mode => 'dashboard', permission => 1 }, "Delete group: result" );
+    location_param_contains( $out, { __mode => 'dashboard', permission => 1 }, "Delete group: result" );
 }
 
 ### Other user
@@ -1083,7 +1083,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete website (different)" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Delete website (different): result"
 );
 
@@ -1102,7 +1102,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete blog (different)" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Delete blog (different): result"
 );
 
@@ -1123,7 +1123,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Update a category (different)" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     " Update a category (different): result"
 );
 
@@ -1141,7 +1141,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete category (different)" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Delete category (different): result"
 );
 
@@ -1162,7 +1162,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Update a folder (different)" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     " Update a folder (different): result"
 );
 
@@ -1180,7 +1180,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete folfer (different)" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Delete folder (different): result"
 );
 
@@ -1202,7 +1202,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Update an page (different)" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Update an Page(different): result"
 );
 
@@ -1220,7 +1220,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete page (different)" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Delete page (different): result"
 );
 
@@ -1242,7 +1242,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Update an entry (different)" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Update an Entry(different): result"
 );
 
@@ -1260,7 +1260,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete entry (different)" );
-location_params_have( $out, { __mode => 'dashboard', permission => 1 },
+location_param_contains( $out, { __mode => 'dashboard', permission => 1 },
     "Delete entry (different): result"
 );
 
