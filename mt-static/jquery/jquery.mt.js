@@ -1655,10 +1655,13 @@ $.fn.mtModal.open = function (url, options) {
   openModal(url, opts);
 };
 
-$.fn.mtModal.close = function () {
+$.fn.mtModal.close = function (url) {
   var $modal = window.parent.jQuery('.mt-modal');
   if ($modal.length > 0) {
     $modal.modal('hide');
+  }
+  if (url) {
+      window.location = url;
   }
 };
 
