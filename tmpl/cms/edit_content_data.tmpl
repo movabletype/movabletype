@@ -395,7 +395,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       });
   }
 
-  var block_editor_data_json = "<mt:var name="block_editor_data" encode_json="1">";
+  var block_editor_data_json = '<mt:var name="block_editor_data" encode_js="1">';
   var block_editor_data  = {};
   <mt:if name="block_editor_data">if(block_editor_data_json){
     block_editor_data = JSON.parse(block_editor_data_json);
