@@ -6,17 +6,22 @@ use JSON ();
 
 sub data_getter {
     my ( $app, $field_data ) = @_;
-    my $field_id         = $field_data->{id};
-    my $blockeditor_data = $app->param('blockeditor-data');
-    my $data;
+    my $field_id  = $field_data->{id};
+    my $data_json = $app->param('blockeditor-data');
+    my $data_obj;
     my $html = "";
-    if ($blockeditor_data) {
-        $data = JSON->new->utf8(0)->decode($blockeditor_data);
+    my @blockdatas;
+    if ($data_json) {
+        $data_obj = JSON->new->utf8(0)->decode($data_json);
         my $editor_id = 'editor-input-content-field-' . $field_id;
         while ( my ( $block_id, $block_data )
-            = each( %{ $data->{$editor_id} } ) )
+            = each( %{ $data_obj->{$editor_id} } ) )
         {
-            $html .= $block_data->{html};
+            push( @blockdatas, $block_data );
+        }
+        @blockdatas = sort { $a->{order} <=> $b->{order} } @blockdatas;
+        foreach my $val (@blockdatas) {
+            $html .= $val->{html};
         }
     }
     return $html;
