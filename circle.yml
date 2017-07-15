@@ -27,7 +27,6 @@ test:
     - rm t/117-cms-tag.t
     - rm t/35-tags-app.t
 
-    - rm t/34-sqlite.t
     - rm t/62-asset-editor.t
 
     - rm plugins/MultiBlog/t/02.tags.t
