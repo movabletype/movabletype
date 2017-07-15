@@ -12,6 +12,7 @@ BEGIN {
         or plan skip_all => join( ' or ', @modules ) . ' is not installed';
 }
 
+use MT::Test;
 use MT::DateTime;
 use Time::Local qw(timegm);
 use MT::Util qw(week2ymd);
