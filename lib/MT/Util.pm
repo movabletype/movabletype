@@ -435,7 +435,7 @@ our %Languages;
 
 sub format_ts {
     my ( $format, $ts, $blog, $lang, $is_mail ) = @_;
-    return '' unless defined $ts;
+    return '' unless defined $ts and $ts ne '';
     my %f;
     unless ($lang) {
         $lang
@@ -458,7 +458,7 @@ sub format_ts {
     }
     else {
         my $L = $Languages{$lang};
-        my @ts = @f{qw( Y m d H M S )} = unpack 'A4A2A2A2A2A2', $ts;
+        my @ts = @f{qw( Y m d H M S )} = map { $_ || 0 } unpack 'A4A2A2A2A2A2', $ts;
         $f{w} = wday_from_ts( @ts[ 0 .. 2 ] );
         $f{j} = yday_from_ts( @ts[ 0 .. 2 ] );
         $f{'y'} = substr $f{Y}, 2;
