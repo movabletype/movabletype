@@ -33,7 +33,7 @@ my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
 isa_ok( $mt, 'MT' );
 
 my $backup_data = '';
-my $printer = sub { $backup_data .= $_[0] };
+my $printer = sub { $backup_data .= $_[0]; return length( $_[0] ) };
 
 my $inst = MT::BackupRestore->core_backup_instructions();
 my %skip = map { $_ => 1 } grep { $inst->{$_}{skip} } keys %$inst;
