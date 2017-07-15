@@ -28,7 +28,6 @@ test:
     - rm t/35-tags-app.t
 
     - rm t/62-asset-editor.t
-    - rm t/90-podcoverage.t
 
     - rm plugins/MultiBlog/t/02.tags.t
 
