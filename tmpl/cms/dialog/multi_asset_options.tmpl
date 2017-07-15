@@ -66,14 +66,14 @@
      type="submit"
      accesskey="s"
      title="<__trans phrase="Finish (s)">"
-     class="action primary button">
+     class="action primary button btn btn-primary">
     <__trans phrase="Finish"></button>
   <button
      type="submit"
      accesskey="x"
      title="<__trans phrase="Cancel (x)">"
      data-mt-modal-close
-     class="cancel action button mt-close-dialog"
+     class="cancel action button mt-close-dialog btn btn-default"
      onclick="cancel_click(this)">
     <__trans phrase="Cancel"></button>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
@@ -181,8 +181,8 @@
       return true;
   }
   function cancel_upload(frm) {
-      frm['__mode'].value = 'cancel_upload'
-      parent.jQuery.fn.mtDialog.close();
+      frm['__mode'].value = 'cancel_upload';
+      jQuery.fn.mtModal.close();
       return true;
   }
   /* ]]> */

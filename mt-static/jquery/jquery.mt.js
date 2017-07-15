@@ -1629,19 +1629,17 @@ $.fn.mtModal = function (options) {
 
 $.fn.mtModalClose = function () {
   return this.each(function () {
+    var url = $(this).data().mtModalClose;
     $(this).on('click', function () {
       $.fn.mtModal.close();
-    });
-
-    var url = $(this).data().mtModalClose;
-    if (url) {
-      var $modal = window.parent.jQuery('.mt-modal');
-      if ($modal.length > 0) {
-        $modal.on('hide.bs.modal', function () {
+      if (url) {
+        var $modal = window.parent.jQuery('.mt-modal');
+        if ($modal.length > 0) {
           window.parent.location = url;
-        });
+        }
       }
-    }
+      return false;
+    });
   });
 };
 
