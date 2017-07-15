@@ -28,6 +28,7 @@ sub start_document {
     my $data = shift;
 
     $self->{start} = 1;
+    no warnings 'redefine';
     *_decode = sub { $_[0] }
         unless $self->{is_pp};
 
