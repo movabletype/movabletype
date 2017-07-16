@@ -3280,14 +3280,19 @@ sub run {
                         . "</li>\n"
                         . $trace;
                     if ( $trace ne '' ) {
-                        $trace = '<ul>' . $trace . '</ul>';
-                        my $panel
-                            = "<div class=\"debug-panel\">" . "<h3>"
-                            . $app->translate("Warnings and Log Messages")
-                            . "</h3>"
-                            . "<div class=\"debug-panel-inner\">"
-                            . $trace
-                            . "</div></div>";
+                        my $debug_panel_header = $app->translate('Warnings and Log Messages');
+                        my $panel = <<"__HTML__";
+                            <div class="panel debug-panel text-danger" style="margin: 0 -15px;">
+                              <div class="panel-heading bg-danger">
+                                <h3 class="panel-title">$debug_panel_header</h3>
+                              </div>
+                              <div class="panel-body debug-panel-inner">
+                                <ul class="list-unstyled">
+                                  $trace
+                                </ul>
+                              </div>
+                            </div>
+__HTML__
                         $body =~ s!(</body>)!$panel$1!i;
                     }
                 }
@@ -4468,7 +4473,7 @@ into:
 
     *::template_source
 
-as a wildcard callback name to capture any C<MT::Template> files that are 
+as a wildcard callback name to capture any C<MT::Template> files that are
 loaded regardless of application.
 
 =item <package>::template_param
@@ -4616,7 +4621,7 @@ with the C<validate_magic> method.
 =head2 $app->make_magic_token
 
 Creates a new "magic token" string which is a random set of characters.
-The 
+The
 
 =head2 $app->add_return_arg(%param)
 
@@ -4974,7 +4979,7 @@ C<param> method works identically with this one.
 
 =head2 $app->param_hash
 
-Returns a hash (not a reference) containing all of the query parameter 
+Returns a hash (not a reference) containing all of the query parameter
 names and their values. Example:
 
     my %data = $app->param_hash;
