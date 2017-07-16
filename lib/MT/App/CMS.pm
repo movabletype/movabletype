@@ -40,8 +40,6 @@ sub core_methods {
     my $app = shift;
     my $pkg = '$Core::MT::CMS::';
     return {
-        'test_page' => "${pkg}NewUI::test_page", # TODO: remove before release
-
         'tools'     => "${pkg}Tools::system_check",
         'dashboard' => "${pkg}Dashboard::dashboard",
         'menu'      => "${pkg}Dashboard::dashboard",
