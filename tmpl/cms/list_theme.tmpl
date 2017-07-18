@@ -164,12 +164,12 @@
     <mt:if name="errors">
     <div id="theme-<mt:var name="id">-errors" class="theme-errors theme-info">
       <h4><__trans phrase="Theme Errors"></h4>
-      <mtapp:statusmsg
+      <mtapp:newstatusmsg
          id="saved-added"
          class="error"
          can_close="0">
         <__trans phrase="This theme cannot be applied to the website due to [_1] errors" params="<mt:var name="error_count">">
-      </mtapp:statusmsg>
+      </mtapp:newstatusmsg>
       <ul>
       <mt:loop name="errors">
         <li><mt:var name="__value__" escape="html"></li>
@@ -180,12 +180,12 @@
     <mt:if name="warnings">
     <div id="theme-<mt:var name="id">-warnings" class="theme-warnings theme-info">
       <h4><__trans phrase="Theme Warnings"></h4>
-      <mtapp:statusmsg
+      <mtapp:newstatusmsg
          id="saved-added"
          class="alert"
          can_close="0">
         <__trans phrase="Portions of this theme cannot be applied to the website. [_1] elements will be skipped." params="<mt:var name="warning_count">">
-      </mtapp:statusmsg>
+      </mtapp:newstatusmsg>
       <ul>
       <mt:loop name="warnings">
         <li><mt:var name="__value__"></li>
@@ -209,12 +209,12 @@
 </div>
 </div>
 <mt:else>
-<mtapp:statusmsg
+<mtapp:newstatusmsg
    id="no-theme"
    class="info"
    can_close="0">
   <__trans phrase="No themes are installed.">
-</mtapp:statusmsg>
+</mtapp:newstatusmsg>
 </mt:loop>
 </mt:setvartemplate>
 
