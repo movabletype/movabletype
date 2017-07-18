@@ -2318,16 +2318,17 @@ sub _upload_file {
         $local_file = File::Spec->catfile( $param{support_path},
             $unique_stem . $type );
         if ( $fmgr->exists($local_file) ) {
-            if ( $q->param('operation_if_exists') == 1 ) {
+            my $operation_if_exists = $q->param('operation_if_exists') || 0;
+            if ( $operation_if_exists == 1 ) {
 
                 # Auto-rename
                 _rename_filename( $app, $path_info );
             }
-            elsif ( $q->param('operation_if_exists') == 2 ) {
+            elsif ( $operation_if_exists == 2 ) {
 
                 # Overwrite, do nothing
             }
-            elsif ( $q->param('operation_if_exists') == 3 ) {
+            elsif ( $operation_if_exists == 3 ) {
 
                 # Call cancel handler
                 return $cancel_handler->(
