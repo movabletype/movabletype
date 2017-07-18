@@ -397,7 +397,8 @@ sub asset_userpic {
             }
 
            # Delete the author's userpic thumb (if any); it'll be regenerated.
-            if ( $user->userpic_asset_id != $asset->id ) {
+
+            if ( !defined $user->userpic_asset_id or $user->userpic_asset_id != $asset->id ) {
                 my $old_file = $user->userpic_file();
                 my $fmgr     = MT::FileMgr->new('Local');
                 if ( $fmgr->exists($old_file) ) {
