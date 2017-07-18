@@ -104,7 +104,7 @@
 
 <mt:setvarblock name="related_content">
 <mt:if name="use_revision">
-<mtapp:newwidget
+<mtapp:widget
    id="template-status-widget"
    class="status-widget"
    label="<__trans phrase="Status">">
@@ -120,10 +120,10 @@
     </mt:if>
     </div>
   </mt:if>
-</mtapp:newwidget>
+</mtapp:widget>
 </mt:if>
 
-<mtapp:newwidget
+<mtapp:widget
    id="useful-links"
    label="<__trans phrase="Useful Links">">
   <ul class="list-unstyled">
@@ -151,10 +151,10 @@
     <li><a href="<mt:var name="published_url" escape="html" />" class="icon-left icon-related" target="<__trans phrase="_external_link_target">"><__trans phrase="View Published Template"></a></li>
   </mt:if>
   </ul>
-</mtapp:newwidget>
+</mtapp:widget>
 
 <mt:if name="have_includes">
-<mtapp:newwidget
+<mtapp:widget
    id="template-includes"
    label="<__trans phrase="Included Templates">">
   <ul class="list-unstyled">
@@ -199,25 +199,25 @@
     </li>
   </mt:loop>
   </ul>
-</mtapp:newwidget>
+</mtapp:widget>
 </mt:if>
 
-<mtapp:newwidget
+<mtapp:widget
    id="tag-list"
    class="hidden"
    label="<__trans phrase="Template Tag Docs">"
    label_link="$link_doc">
   <div id="tag-list-inner">
   </div>
-</mtapp:newwidget>
+</mtapp:widget>
 
-<mtapp:newwidget
+<mtapp:widget
    id="badtag-list"
    class="hidden"
    label="<__trans phrase="Unrecognized Tags">">
   <div id="badtag-list-inner">
   </div>
-</mtapp:newwidget>
+</mtapp:widget>
 
 <$MTApp:PageActions from="edit_template"$>
 </mt:setvarblock>

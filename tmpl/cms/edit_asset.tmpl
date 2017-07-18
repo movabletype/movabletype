@@ -46,7 +46,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="related_content">
-<mtapp:newwidget
+<mtapp:widget
    id="asset-stats-widget"
    class="stats-widget"
    label="<__trans phrase="Stats">">
@@ -56,10 +56,10 @@
     <li><__trans phrase="[_1] - Modified by [_2]" params="<$mt:date ts="$modified_on_ts" relative="1" _default="$modified_on_formatted" format="%b %e %Y"$>%%<$mt:var name="modified_by" escape="html" escape="html"$>"></li>
   </mt:if>
   </ul>
-</mtapp:newwidget>
+</mtapp:widget>
 
 <mt:if name="show_appears_in_widget">
-<mtapp:newwidget
+<mtapp:widget
    id="appears-in"
    label="<__trans phrase="Appears in...">">
   <ul class="list-unstyled">
@@ -70,11 +70,11 @@
   <mt:if name="appears_in_uneditables">
     <span class="hint"><__trans phrase="This asset has been used by other users."></span>
   </mt:if>
-</mtapp:newwidget>
+</mtapp:widget>
 </mt:if>
 
 <mt:if name="related">
-  <mtapp:newwidget
+  <mtapp:widget
      id="related-assets"
      label="<__trans phrase="Related Assets">">
   <mt:loop name="related">
@@ -102,7 +102,7 @@
       </div>
     </div>
   </mt:loop>
-</mtapp:newwidget>
+</mtapp:widget>
 </mt:if>
   <mtApp:PageActions>
 </mt:setvarblock>

@@ -32,10 +32,10 @@ function init() {
 
 <mt:setvarblock name="related_content">
 <mt:if name="object_loop">
-  <mtapp:newwidget id="tips" label="<__trans phrase="Helpful Tips">">
+  <mtapp:widget id="tips" label="<__trans phrase="Helpful Tips">">
     <p><__trans phrase="To add a widget set to your templates, use the following syntax:"></p>
     <p><__trans phrase="<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>"></p>
-  </mtapp:newwidget>
+  </mtapp:widget>
 </mt:if>
 <$MTApp:PageActions from="list_template"$>
 </mt:setvarblock>

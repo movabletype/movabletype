@@ -1,7 +1,7 @@
 <mt:setvarblock name="page_title"><mt:if name="blog_id"><__trans phrase="Manage [_1] Templates" params="<mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if>"><mt:else><__trans phrase="Manage Global Templates"></mt:if></mt:setvarblock>
 
 <mt:setvarblock name="related_content">
-    <mtapp:newwidget
+    <mtapp:widget
         id="quickfilters"
         label="<__trans phrase="Quickfilters">">
         <mt:if name="filter_key" eq="backup_templates">
@@ -22,8 +22,8 @@
         </mt:if>
         </ul>
         <$mtapp:ListFilters$>
-    </mtapp:newwidget>
-    <mtapp:newwidget
+    </mtapp:widget>
+    <mtapp:widget
         id="useful-links"
         label="<__trans phrase="Useful links">">
         <ul class="list-unstyled">
@@ -32,7 +32,7 @@
             <li><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Publishing Settings"></a></li>
         </mt:if>
         </ul>
-    </mtapp:newwidget>
+    </mtapp:widget>
     <$MTApp:PageActions from="list_template"$>
 </mt:setvarblock>
 

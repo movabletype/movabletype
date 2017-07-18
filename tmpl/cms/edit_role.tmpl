@@ -20,13 +20,13 @@
 
 <mt:if name="id">
 <mt:setvarblock name="related_content">
-  <mtapp:newwidget
+  <mtapp:widget
     id="useful-links"
     label="<__trans phrase="Useful links">">
     <ul class="list-unstyled action-link-list">
       <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=association&amp;filter=role_id&amp;filter_val=<mt:var name="id" escape="url">&amp;blog_id=0"><mt:if name="members" eq="1"><__trans phrase="Association (1)"><mt:else><__trans phrase="Associations ([_1])" params="<mt:var name="members">"></mt:if></a></li>
     </ul>
-  </mtapp:newwidget>
+  </mtapp:widget>
 </mt:setvarblock>
 </mt:if>
 
