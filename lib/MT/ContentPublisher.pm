@@ -16,7 +16,11 @@ use File::Basename;
 our %ArchiveTypes;
 
 sub init_archive_types {
-    my $types = MT->registry("ct_archive_types") || {};
+    my ( $app, $type ) = @_;
+    my $types
+        = $type eq 'ct'
+        ? MT->registry("ct_archive_types") || {}
+        : MT->registry("archive_types") || {};
     my $mt = MT->instance;
     while ( my ( $type, $typedata ) = each %$types ) {
         if ( 'HASH' eq ref $typedata ) {
@@ -27,7 +31,7 @@ sub init_archive_types {
 }
 
 sub archive_types {
-    init_archive_types() unless %ArchiveTypes;
+    init_archive_types(@_) unless %ArchiveTypes;
     keys %ArchiveTypes;
 }
 
