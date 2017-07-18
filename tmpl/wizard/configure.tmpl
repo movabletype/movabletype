@@ -1,5 +1,10 @@
 <mt:setvarblock name="page_title"><__trans phrase="Database Configuration"></mt:setvarblock>
-<mt:include name="include/chromeless_header.tmpl">
+
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/login.css" />
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
 <form id="configure_form" method="post">
   <input type="hidden" name="__mode" value="" />
   <input type="hidden" name="step" value="configure" />
@@ -7,7 +12,7 @@
   <input type="hidden" name="default_language" value="<mt:var name="default_language" escape="html">" />
   <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
 <mt:if name="connect_error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="connect_error"
      class="error"
      can_close="0">
@@ -17,15 +22,15 @@
         <p><mt:var name="error_more" escape="html"></p>
       </div>
     </mt:if>
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 <mt:else>
   <mt:if name="error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="error"
      class="error"
      can_close="0">
     <mt:var name="error" escape="html">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
   </mt:if>
 </mt:if>
 
@@ -37,14 +42,14 @@
        name="continue"
        type="submit"
        onclick="go('next_step');"
-       class="continue action primary button">
+       class="continue action primary button btn btn-primary">
       <__trans phrase="Continue">
     </button>
     <button
        name="back"
        type="submit"
        onclick="needValidate = false; this.form.reset(); go('previous_step');"
-       class="goback action button">
+       class="goback action button btn btn-default">
       <__trans phrase="Back">
     </button>
   </div>
@@ -56,8 +61,9 @@
       <mtapp:setting
          id="dbtype"
          label="<__trans phrase="Database Type">"
-         label_class="top-label">
-        <select id="dbtype" name="dbtype">
+         label_class="top-label"
+         no_grid="1">
+        <select id="dbtype" class="form-control" name="dbtype">
         <mt:unless name="one_db">
           <option value=""><__trans phrase="Select One..."></option>
         </mt:unless>
@@ -83,9 +89,10 @@
            label="<mt:var name="label">"
            label_class="top-label"
            hint="<mt:var name="hint">"
-           show_hint="<mt:var name="show_hint" default="0">">
+           show_hint="<mt:var name="show_hint" default="0">"
+           no_grid="1">
         <mt:if name="element" eq="select">
-          <select id="<mt:var name="id">" name="<mt:var name="id">">
+          <select id="<mt:var name="id">" class="form-control" name="<mt:var name="id">">
           <mt:loop name="option_loop">
             <option value="<mt:var name="value">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label"></option>
           </mt:loop>
@@ -94,7 +101,7 @@
           <input
              type="<mt:var name="type">"
              name="<mt:var name="id">"
-             class="<mt:var name="type"><mt:if name="type" eq="text"> full<mt:elseif name="type" eq="password"> text short</mt:if>"
+             class="form-control <mt:var name="type"><mt:if name="type" eq="text"> full<mt:elseif name="type" eq="password"> text short</mt:if>"
              value="<mt:if name="$id"><mt:var name="$id" escape="html"><mt:else><mt:var name="default" escape="html"></mt:if>" />
         </mt:if>
         </mtapp:setting>
@@ -107,8 +114,9 @@
           <mtapp:setting
              id="<mt:var name="id">"
              label="<mt:var name="label">"
-             label_class="top-label">
-            <input type="<mt:var name="type">" name="<mt:var name="id">" class="<mt:var name="type"><mt:if name="type" eq="text"> full</mt:if>" value="<mt:if name="$id"><mt:var name="$id" escape="html"><mt:else><mt:var name="default" escape="html"></mt:if>" />
+             label_class="top-label"
+             no_grid="1">
+            <input type="<mt:var name="type">" name="<mt:var name="id">" class="form-control <mt:var name="type"><mt:if name="type" eq="text"> full</mt:if>" value="<mt:if name="$id"><mt:var name="$id" escape="html"><mt:else><mt:var name="default" escape="html"></mt:if>" />
           </mtapp:setting>
         </mt:loop>
         </div>
@@ -122,14 +130,14 @@
            type="submit"
            value="1"
            onclick="go('test');"
-           class="action primary button">
+           class="action primary button btn btn-primary">
           <__trans phrase="Test Connection">
         </button>
         <button
            name="back"
            type="submit"
            onclick="needValidate = false; this.form.reset(); go('previous_step');"
-           class="goback action button">
+           class="goback action button btn btn-default">
           <__trans phrase="Back">
         </button>
       </div>
@@ -139,7 +147,7 @@
            name="back"
            type="submit"
            onclick="needValidate = false; this.form.reset(); go('previous_step');"
-           class="goback action button">
+           class="goback action button btn btn-default">
           <__trans phrase="Back">
         </button>
       </div>
@@ -151,7 +159,7 @@
            name="continue"
            type="submit"
            onclick="go('next_step');"
-           class="continue action primary button">
+           class="continue action primary button btn btn-primary">
           <__trans phrase="Continue">
         </button>
         <button
@@ -159,20 +167,23 @@
            type="submit"
            value="1"
            onclick="go('test');"
-           class="action button">
+           class="action button btn btn-default">
           <__trans phrase="Test Connection">
         </button>
         <button
            name="back"
            type="submit"
            onclick="needValidate = false; this.form.reset(); go('previous_step');"
-           class="goback action button">
+           class="goback action button btn btn-default">
           <__trans phrase="Back">
         </button>
       </div>
     </mt:if>
   </div>
 </form>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 var needValidate = true;
@@ -220,6 +231,7 @@ var database = new Array();
 </mt:loop>
 /* ]]> */
 </script>
+</mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
 <mt:unless name="success">
@@ -263,4 +275,7 @@ var database = new Array();
     jQuery('.msg').mtToggleField();
 </mt:if>
 </mt:setvarblock>
-<mt:include name="include/chromeless_footer.tmpl">
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">
+

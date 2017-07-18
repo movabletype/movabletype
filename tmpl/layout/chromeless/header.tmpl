@@ -27,4 +27,18 @@
     </div>
     </mt:unless>
 
+    <div id="nav">
+  <mt:if name="wizard_steps">
+    <mt:unless name="complete">
+      <mt:if name="step" ne="pre_start">
+    <mt:loop name="wizard_steps">
+    <mt:unless name="__last__">
+      <div class="step<mt:if name="active">_active</mt:if>"></div>
+    </mt:unless>
+    </mt:loop>
+      </mt:if>
+    </mt:unless>
+  </mt:if>
+    </div>
+
     <mt:include name="modules/page_title.tmpl">
