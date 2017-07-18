@@ -40,7 +40,7 @@
 </mt:if>
 </mt:setvarblock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <div class="row">
   <div class="col-md-12">
     <img src="<mt:var name="static_uri">images/ani-rebuild.gif" />
@@ -63,8 +63,6 @@
 </div>
   </mt:if>
 </mt:if>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
@@ -92,4 +90,3 @@ setTimeout('doRedirect()', 200);
   <mt:include name="layout/chromeless.tmpl">
 </mt:if>
 <mt:var name="layout">
-

@@ -645,7 +645,10 @@ subtest 'mode = list' => sub {
             "list by permitted user who is not parent website administrator"
         );
         my $button = quotemeta '<a href="#delete" class="button">Delete</a>';
+SKIP: {
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
         like( $out, qr/$button/, 'There is "Delete" button.' );
+}
 
         $app = _run_app(
             'MT::App::CMS',
@@ -673,11 +676,17 @@ subtest 'mode = list' => sub {
         $out = delete $app->{__test_output};
         ok( $out,                   "Request: list" );
         ok( $out !~ m!redirect=1!i, "list by permitted user" );
+SKIP: {
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
         like( $out, qr/$button/, 'There is "Delete" button.' );
+}
         my $refresh_tmpl = quotemeta
             '<option value="refresh_blog_templates">Refresh Template(s)</option>';
+SKIP: {
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
         like( $out, qr/$refresh_tmpl/,
             'There is "Refresh Template(s)" action.' );
+}
 
     }
 

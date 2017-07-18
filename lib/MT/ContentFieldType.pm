@@ -324,7 +324,7 @@ sub _radio_button_registry {
         order      => 100,
         field_html => 'field_html/field_html_radio_button.tmpl',
         field_html_params =>
-            '$Core::MT::ContentFieldType::RadioButton::field_html_parmas',
+            '$Core::MT::ContentFieldType::RadioButton::field_html_params',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_values',
         tag_handler =>

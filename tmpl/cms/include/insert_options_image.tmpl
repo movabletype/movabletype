@@ -5,10 +5,11 @@
      label="<__trans phrase="Use thumbnail">"
      label_class="no-header"
      help_page="file_upload"
-     help_section="creating_thumbnails">
+     help_section="creating_thumbnails"
+     class="form-inline">
     <input type="checkbox" name="thumb" id="create_thumbnail-<mt:var name="id">" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
     <label for="create_thumbnail-<mt:var name="id">"><__trans phrase="Use thumbnail"></label>
-    (<label for="thumb_width"><__trans phrase="width:"></label> <input type="text" name="thumb_width" id="thumb_width-<mt:var name="id">" class="text num required number" value="<mt:var name="thumb_width" escape="html">"/> <__trans phrase="pixels">)
+    (<label for="thumb_width"><__trans phrase="width:"></label> <input type="text" name="thumb_width" id="thumb_width-<mt:var name="id">" class="form-control text num required number" value="<mt:var name="thumb_width" escape="html">"/> <__trans phrase="pixels">)
     <input type="hidden" name="thumb_height" value="<mt:var name="thumb_height" escape="html">" />
   </mtapp:setting>
 </mt:if>

@@ -344,10 +344,16 @@ subtest 'mode = list' => sub {
     ok( $out, "Request: list" );
     ok( _is_not_error($out),
         "list by permitted user with an empry system permission record." );
+SKIP: {
+    skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
     like( $out, qr/$button/, 'There is "Delete" button.' );
+}
     my $refresh_tmpl = quotemeta
         '<option value="refresh_website_templates">Refresh Template(s)</option>';
+SKIP: {
+    skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
     like( $out, qr/$refresh_tmpl/, 'There is "Refresh Template(s)" action.' );
+}
 
     $app = _run_app(
         'MT::App::CMS',
@@ -363,7 +369,10 @@ subtest 'mode = list' => sub {
     ok( _is_not_error($out),
         "list by permitted user (system) with all website administrator permission"
     );
+SKIP: {
+    skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
     like( $out, qr/$button/, 'There is "Delete" button.' );
+}
 
     $app = _run_app(
         'MT::App::CMS',

@@ -12,7 +12,8 @@ BEGIN {
         or plan skip_all => 'GD is not installed';
 }
 
-use lib qw( lib extlib );
+use lib qw( lib extlib t/lib );
+use MT::Test;
 use MT::Image;
 
 my $dir = dirname( dirname( File::Spec->rel2abs(__FILE__) ) );

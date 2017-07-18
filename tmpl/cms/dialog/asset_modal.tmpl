@@ -104,7 +104,7 @@
       type="submit"
       accesskey="x"
       class="cancel action button mt-close-dialog btn btn-default"
-      onclick="jQuery.fn.mtModal.close(); return false;"
+      data-mt-modal-close
       title="<__trans phrase="Cancel (x)">">
       <__trans phrase="Cancel">
     </button>
@@ -128,22 +128,6 @@ jQuery('.left-menu-item').click( function() {
   jQuery('.actions-bar button.primary')
     .attr('disabled', 'disabled')
     .addClass('disabled');
-/*
-  jQuery('div.panel')
-    .addClass('hidden')
-    .hide();
-  jQuery(currentPanel)
-    .removeClass('hidden')
-    .show()
-    .trigger(event);
-  jQuery(this)
-    .parent('li')
-    .siblings()
-    .removeClass('active');
-  jQuery(this)
-    .parent('li')
-    .addClass('active');
-*/
 });
 
 jQuery('.actions-bar button.primary').click(function() {

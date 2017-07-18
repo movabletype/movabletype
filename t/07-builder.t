@@ -320,7 +320,7 @@ is( scalar keys %{ $tokens->[0][1] }, 0, "Has no attributes" );
 is( $builder->build( $ctx, $tokens ),
     'foo', "Building produces expected result" );
 
-note("Testing optional '$' syntax for function tags");
+note("Testing optional '\$' syntax for function tags");
 $tokens = $builder->compile( $ctx, '<mtfoo>' );
 note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );

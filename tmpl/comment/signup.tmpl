@@ -1,10 +1,6 @@
 <mt:setvarblock name="page_title"><__trans phrase="Create an account"></mt:setvarblock>
 
-<mt:setvarblock name="html_head" append="1">
-<mt:include name="modules/libjs.tmpl">
-</mt:setvarblock>
-
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <mt:if name="error">
   <mtapp:newstatusmsg
      id="generic-error"

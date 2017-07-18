@@ -10,6 +10,7 @@ use Plack::Test;
 use HTTP::Request::Common;
 
 use lib qw( lib extlib t/lib );
+use MT::Test;
 use MT;
 use MT::PSGI;
 

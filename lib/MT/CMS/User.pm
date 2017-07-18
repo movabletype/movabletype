@@ -1085,8 +1085,9 @@ sub dialog_select_author {
                 ),
             },
             code     => $hasher,
-            template => 'dialog/select_users.tmpl',
-            params   => {
+            template => $app->param('json') ? 'include/listing_panel.tmpl'
+            : 'dialog/select_users.tmpl',
+            params => {
                 (   $entry_type eq 'entry'
                     ? ( dialog_title =>
                             $app->translate("Select a entry author") )

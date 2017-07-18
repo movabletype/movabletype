@@ -76,10 +76,6 @@ before_script:
   # Some tests need mt-config.cgi.
   - cp ./t/mysql-test.cfg ./mt-config.cgi
 
-  # Remove failed tests.
-  - rm t/34-sqlite.t
-  - rm t/90-podcoverage.t
-
 script:
   - bash -c "PERL_HASH_SEED=0 carton exec prove ./t* plugins/*/t && ./phpunit"
 

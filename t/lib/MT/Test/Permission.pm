@@ -748,7 +748,7 @@ sub make_tag {
 
     my $values = {
         name       => 'Tag',
-        n8d_id     => 'tag',
+        n8d_id     => 0,
         is_private => 0,
     };
 

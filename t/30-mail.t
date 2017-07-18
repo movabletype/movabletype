@@ -3,9 +3,11 @@ use warnings;
 
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $ENV{MT_TEST_MAIL} = 1;
 };
 
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use MT::Test;
 use MT;
 use MT::Mail;
 use Test::More;
