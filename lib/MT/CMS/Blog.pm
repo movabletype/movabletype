@@ -90,10 +90,11 @@ sub edit {
         my @cmtauth_loop;
         foreach ( keys %cmtauth ) {
             $cmtauth{$_}->{key} = $_;
+            $cmtauth{$_}->{order} ||= 0;
             if ( UNIVERSAL::isa( $cmtauth{$_}->{plugin}, 'MT::Plugin' ) ) {
 
                 # force plugin auth schemes to show after native auth schemes
-                $cmtauth{$_}{order} = ( $cmtauth{$_}{order} || 0 ) + 100;
+                $cmtauth{$_}{order} = $cmtauth{$_}{order} + 100;
             }
             push @cmtauth_loop, $cmtauth{$_};
         }
