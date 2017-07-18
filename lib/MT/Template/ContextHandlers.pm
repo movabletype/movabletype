@@ -3542,7 +3542,7 @@ sub _hdlr_app_new_statusmsg {
             = qq{<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>};
     }
     return $ctx->build(<<"EOT");
-    <div$id class="$class">$msg $rebuild $close</div>
+    <div$id class="$class">$close $msg $rebuild</div>
 EOT
 }
 
