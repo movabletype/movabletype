@@ -1631,7 +1631,7 @@ sub save_filter {
     if ( !$accessor->('id') ) {    # it's a new object
         return $eh->error( $app->translate("User requires password") )
             if (
-            0 == length(
+            !length(
                 $obj ? $accessor->('password') : scalar $app->param('pass')
             )
             );
