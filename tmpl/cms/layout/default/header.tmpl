@@ -18,9 +18,9 @@
   <mt:var name="css_include">
 
   <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
-  <mt:include name="modules/icon.tmpl">
+  <mt:include name="include/icon.tmpl">
 
-  <mt:include name="modules/libjs.tmpl">
+  <mt:include name="include/libjs.tmpl">
 
   <script type="text/javascript">
   /* <![CDATA[ */
@@ -43,11 +43,11 @@
   <mt:var name="js_include">
 </head>
 <body style="margin-bottom: 100px;">
-  <mt:include name="modules/selector.tmpl">
+  <mt:include name="include/selector.tmpl">
   <div class="container body">
     <div class="row">
       <mt:if name="has_menu">
-      <mt:include name="modules/sidebar.tmpl">
+      <mt:include name="include/sidebar.tmpl">
       <div class="main col-md-10">
       <mt:else>
       <div class="main col-md-12">
