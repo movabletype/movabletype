@@ -241,7 +241,7 @@ sub can_delete {
 sub save_filter {
     my $eh    = shift;
     my ($app) = @_;
-    my $email = lc $app->param('email');
+    my $email = lc( $app->param('email') || '' );
     $email =~ s/(^\s+|\s+$)//gs;
     my $blog_id = $app->param('blog_id');
     if ( !is_valid_email($email) ) {
