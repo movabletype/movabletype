@@ -58,7 +58,8 @@ sub send_notify {
     if ( $q->param('send_excerpt') ) {
         $params{send_excerpt} = 1;
     }
-    $params{message} = wrap_text( $q->param('message'), $cols, '', '' );
+    my $message = $q->param('message');
+    $params{message} = defined $message ? wrap_text( $message, $cols, '', '' ) : '';
     if ( $q->param('send_body') ) {
         $params{send_body} = 1;
     }
