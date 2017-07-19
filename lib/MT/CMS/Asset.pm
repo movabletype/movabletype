@@ -1130,7 +1130,7 @@ sub asset_insert_text {
     require MT::Asset;
     my $asset = MT::Asset->load($id)
         or return $app->errtrans( "Cannot load file #[_1].", $id );
-    $param->{enclose} = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
+    $param->{enclose} = ( $app->param('edit_field') || '' ) =~ /^customfield/ ? 1 : 0;
     return $asset->as_html($param);
 }
 
