@@ -277,7 +277,8 @@ ListingPanel = new Class(Panel, {
     init: function(name, searchtype) {
         ListingPanel.superClass.init.apply(this, arguments);
 
-        this.footerElements = TC.getElementsByClassName("modal-footer");
+        var panelId = name + '-panel';
+        this.footerElement = TC.getElementsByClassName("modal-footer", panelId)[0];
 
         // for closures
         var self = this;
@@ -320,43 +321,41 @@ ListingPanel = new Class(Panel, {
             };
         }
 
-        this.footerElements.forEach(function (footerElement) {
-            var next = TC.getElementsByTagAndClassName("button",
-                "next", footerElement);
-            if (next && next.length) {
-                self.nextButton = next[0];
-                self.nextButton.onclick = function() {
-                    self.parent.nextPanel();
-                };
-            }
+        var next = TC.getElementsByTagAndClassName("button",
+            "next", this.footerElement);
+        if (next && next.length) {
+            this.nextButton = next[0];
+            this.nextButton.onclick = function() {
+                self.parent.nextPanel();
+            };
+        }
 
-            var previous = TC.getElementsByTagAndClassName("button",
-                "previous", footerElement);
-            if (previous && previous.length) {
-                self.previousButton = previous[0];
-                self.previousButton.onclick = function() {
-                    self.parent.previousPanel();
-                };
-            }
+        var previous = TC.getElementsByTagAndClassName("button",
+            "previous", this.footerElement);
+        if (previous && previous.length) {
+            this.previousButton = previous[0];
+            this.previousButton.onclick = function() {
+                self.parent.previousPanel();
+            };
+        }
 
-            var cancel = TC.getElementsByTagAndClassName("button",
-                "cancel", footerElement);
-            if (cancel && cancel.length) {
-                self.cancelButton = cancel[0];
-                self.cancelButton.onclick = function() {
-                    self.parent.close(false);
-                };
-            }
+        var cancel = TC.getElementsByTagAndClassName("button",
+            "cancel", this.footerElement);
+        if (cancel && cancel.length) {
+            this.cancelButton = cancel[0];
+            this.cancelButton.onclick = function() {
+                self.parent.close(false);
+            };
+        }
 
-            var close = TC.getElementsByTagAndClassName("button",
-                "close-button", footerElement);
-            if (close && close.length) {
-                self.closeButton = close[0];
-                self.closeButton.onclick = function() {
-                    self.parent.close(true);
-                };
-            }
-        });
+        var close = TC.getElementsByTagAndClassName("button",
+            "close-button", this.footerElement);
+        if (close && close.length) {
+            this.closeButton = close[0];
+            this.closeButton.onclick = function() {
+                self.parent.close(true);
+            };
+        }
 
         var selector = TC.getElementsByTagAndClassName("div",
             "selector", this.element);

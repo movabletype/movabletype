@@ -23,12 +23,16 @@ parameters:
 
 <!-- Listing Panel -->
 <div id="<mt:var name="panel_type">-panel" class="hidden">
+<mt:if name="use_page_content">
+  <div class="panel-body">
+</mt:if>
+
   <div class="panel-header">
   <mt:if name="panel_title">
-    <h2 class="title panel"><mt:var name="panel_title"></h2>
+    <h4 class="title"><mt:var name="panel_title"></h4>
   </mt:if>
   <mt:if name="panel_has_steps">
-    <div class="progress"><__trans phrase="Step [_1] of [_2]" params="<mt:var name="panel_number">%%<mt:var name="panel_total">"></div>
+    <div class="text-right"><__trans phrase="Step [_1] of [_2]" params="<mt:var name="panel_number">%%<mt:var name="panel_total">"></div>
   </mt:if>
   <mt:if name="panel_multi">
     <div class="selected-items">
@@ -166,6 +170,13 @@ parameters:
     </form>
   </div>
 </mt:setvarblock>
+
+<mt:if name="use_page_content">
+  </div>
+  <div class="modal-footer">
+    <mt:var name="modal_footer">
+  </div>
+</mt:if>
 
 </div>
 </mt:unless>
