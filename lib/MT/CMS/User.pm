@@ -1632,12 +1632,16 @@ sub save_filter {
             0 == length(
                 $obj ? $accessor->('password') : scalar $app->param('pass')
             )
-        );
+            );
     }
 
     # Password strength check
-    my $msg = $app->verify_password_strength( $accessor->('name'), $accessor->('password') );
-    return $eh->error( $msg ) if $msg;
+    # Why the name of password field is different in each forms...
+    if ( scalar $app->param('pass') || scalar $app->param('password') ) {
+        my $msg = $app->verify_password_strength( $accessor->('name'),
+            scalar $app->param('pass') );
+        return $eh->error($msg) if $msg;
+    }
 
     my $email = $accessor->('email');
     return $eh->error(
