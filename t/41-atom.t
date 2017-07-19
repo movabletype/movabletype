@@ -388,7 +388,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
 
             print "######### RESPONSE #########\n";
             print "# " . $resp->code . " " . $resp->message . "\n";
-            my $content = $resp->content;
+            my $content = $resp->content || '';
             $content =~ s/^/# /gm;
             print $content;
             print "#########~RESPONSE #########\n";
@@ -521,7 +521,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
 
             print "######### RESPONSE #########\n";
             print "# " . $resp->code . " " . $resp->message . "\n";
-            my $content = $resp->content;
+            my $content = $resp->content || '';
             $content =~ s/^/# /gm;
             print $content;
             print "#########~RESPONSE #########\n";
@@ -578,7 +578,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
 
             print "######### RESPONSE #########\n";
             print "# " . $resp->code . " " . $resp->message . "\n";
-            my $content = $resp->content;
+            my $content = $resp->content || '';
             $content =~ s/^/# /gm;
             print $content;
             print "#########~RESPONSE #########\n";
