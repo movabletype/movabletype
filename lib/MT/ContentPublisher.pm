@@ -83,4 +83,49 @@ sub core_archive_types {
 
 }
 
+sub rebuild {
+    my $mt = shift;
+    $mt->SUPER::rebuild(@_);
+}
+
+sub rebuild_categories {
+    my $mt = shift;
+    $mt->SUPER::rebuild_categories(@_);
+}
+
+sub rebuild_authors {
+    my $mt = shift;
+    $mt->SUPER::rebuild_authors(@_);
+}
+
+sub rebuild_deleted_entry {
+    my $mt = shift;
+    $mt->SUPER::rebuild_deleted_entry(@_);
+}
+
+sub rebuild_entry {
+    my $mt = shift;
+    $mt->SUPER::rebuild_entry(@_);
+}
+
+sub rebuild_archives {
+    my $mt = shift;
+    $mt->SUPER::rebuild_archives(@_);
+}
+
+sub rebuild_file {
+    my $mt = shift;
+    $mt->SUPER::rebuild_file(@_);
+}
+
+sub rebuild_indexes {
+    my $mt = shift;
+    $mt->SUPER::rebuild_indexes(@_);
+}
+
+sub rebuild_from_fileinfo {
+    my $mt = shift;
+    $mt->SUPER::rebuild_from_fileinfo(@_);
+}
+
 1;
