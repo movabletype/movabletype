@@ -4597,7 +4597,7 @@ sub rebuild_these {
     else {
         my @blogs      = $app->param('blog_ids');
         my $start_time = $app->param('start_time');
-        $app->publisher->start_time($start_time);
+        $app->publisher->start_time($start_time) if $start_time;
         my %blogs = map { $_ => () } @blogs;
         my @set = keys %$rebuild_set;
         my @rest;

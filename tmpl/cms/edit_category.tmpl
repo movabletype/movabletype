@@ -22,14 +22,14 @@
 </MTSetVarBlock>
 
 <mt:setvarblock name="related_content">
-    <mtapp:newwidget
+    <mtapp:widget
         id="useful-links"
         label="<__trans phrase="Useful links">">
         <ul class="list-unstyled">
             <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=category&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Manage Categories"></a></li>
             <mt:if name="can_create_post"><li><a href="<mt:var name="script_url">?__mode=list&_type=entry&amp;blog_id=<$mt:var name="blog_id" escape="url"$>&amp;filter=category_id&amp;filter_val=<$mt:var name="id" escape="url"$>"><__trans phrase="Manage entries in this category"></a></li></mt:if>
         </ul>
-    </mtapp:newwidget>
+    </mtapp:widget>
     <$mtapp:PageActions$>
 </mt:setvarblock>
 
@@ -228,8 +228,6 @@ function toggleFile() {
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
 </form>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">

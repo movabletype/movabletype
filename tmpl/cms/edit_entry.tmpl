@@ -319,7 +319,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="related_content">
-<mtapp:newwidget
+<mtapp:widget
    id="entry-status-widget"
    class="status-widget"
    label="<__trans phrase="Status">">
@@ -366,8 +366,8 @@
   </ul>
     </mt:if>
   </mt:if>
-</mtapp:newwidget>
-<mtapp:newwidget
+</mtapp:widget>
+<mtapp:widget
    id="entry-publishing-widget"
    label="<__trans phrase="Publishing">">
 <mt:if name="new_object">
@@ -598,7 +598,7 @@
     </a>
   </p>
 </mt:unless>
-</mtapp:newwidget>
+</mtapp:widget>
 
 <div id="category-field"<mt:unless name="disp_prefs_show_category"> class="hidden"</mt:unless>>
 <mt:if name="object_type" eq="entry">
@@ -610,18 +610,18 @@
     <__trans phrase="close">
   </a>
   </mt:setvarblock>
-  <mtapp:newwidget
+  <mtapp:widget
      id="entry-category-widget"
      label="<__trans phrase="Categories">"
      label_class="top-label"
      header_action="$header_action">
     <mt:var name="category_setting">
-  </mtapp:newwidget>
+  </mtapp:widget>
 </mt:if>
 </div>
 
 <div id="feedback-field"<mt:unless name="disp_prefs_show_feedback"> class="hidden"</mt:unless>>
-  <mtapp:newwidget
+  <mtapp:widget
      id="entry-feedback-widget"
      label="<__trans phrase="Comments">">
     <mtapp:setting
@@ -673,13 +673,13 @@
        no_grid="1">
       <textarea name="to_ping_urls" id="to_ping_urls" class="form-control text full low" cols="" rows=""><$mt:var name="to_ping_urls" escape="html"$></textarea>
     </mtapp:setting>
-  </mtapp:newwidget>
+  </mtapp:widget>
 </div>
 
 <mt:if name="object_type" like="(entry|page)">
 <div id="assets-field"<mt:unless name="disp_prefs_show_assets"> class="hidden"</mt:unless>>
   <mt:setvarblock name="widget_label"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></mt:setvarblock>
-  <mtapp:newwidget
+  <mtapp:widget
      id="asset_container"
      label="$widget_label">
     <div class="text-right asset-list-header">
@@ -706,7 +706,7 @@
     </mt:if>
     </ul>
     <input type="hidden" id="include_asset_ids" name="include_asset_ids" value="<mt:loop name="asset_loop"><mt:var name="asset_id"><mt:unless name="__last__">,</mt:unless></mt:loop>" />
-  </mtapp:newwidget>
+  </mtapp:widget>
 </div>
 </mt:if>
 
@@ -775,7 +775,6 @@
 </mt:unless>
 
 <mt:setvarblock name="html_head" append="1">
-<mt:include name="modules/libjs.tmpl">
 <script type="text/javascript">
     /* <![CDATA[ */
     if (typeof(Editor) == 'undefined') {

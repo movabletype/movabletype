@@ -1,6 +1,6 @@
 <mt:loop name="list_value">
-<div style="display: inline">
-  <input type="text" name="content-field-<mt:var name="content_field_id" escape="html">" class="text long" value="<mt:var name="__value__">" mt:watch-change="1" mt:raw-name="1" style="width: 95%" />
+<div class="form-inline" style="display: inline;">
+  <input type="text" name="content-field-<mt:var name="content_field_id" escape="html">" class="form-control text long" value="<mt:var name="__value__">" mt:watch-change="1" mt:raw-name="1" style="width: 95%" />
   <a href="javascript:void(0)" class="remove-list-button" data-mt-content-field-id="<mt:var name="content_field_id">" <mt:var name="required">><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>
 </div>
 </mt:loop>
@@ -47,8 +47,8 @@ function addList() {
 function generateNewListHtml(fieldId, required) {
   required = required ? 'data-mt-required="1"' : '';
 
-  var newDiv = '<div style="display: inline">' + "\n";
-  newDiv    += '  <input type="text" name="content-field-' + fieldId + '" class="text long" value="" mt:raw-name="1" style="width: 95%" />\n';
+  var newDiv = '<div class="form-inline" style="display: inline;">' + "\n";
+  newDiv    += '  <input type="text" name="content-field-' + fieldId + '" class="form-control text long" value="" mt:raw-name="1" style="width: 95%" />\n';
   newDiv    += '  <a href="javascript:void(0)" class="remove-list-button" data-mt-content-field-id="' + fieldId + '" ' + required + '><img src="<mt:var name="static_uri">images/status_icons/close.gif" /></a>\n';
   newDiv    += '</div>' + "\n";
 
@@ -75,4 +75,3 @@ function adjustButtons() {
 })();
 </mt:setvarblock>
 </mt:unless>
-

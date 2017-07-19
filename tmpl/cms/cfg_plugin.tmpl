@@ -9,7 +9,7 @@
 
 <mt:setvarblock name="related_content">
   <mt:unless name="blog_view">
-    <mtapp:newwidget
+    <mtapp:widget
        id="plugin_system"
        label="<__trans phrase="Plugin System">">
       <mt:if name="plugin_loop">
@@ -46,7 +46,7 @@
           </mt:unless>
         </mt:if>
       </mt:if>
-    </mtapp:newwidget>
+    </mtapp:widget>
   </mt:unless>
 </mt:setvarblock>
 
@@ -509,8 +509,6 @@ function toggleAdvancedPrefs(evt, c) {
     </mtapp:newstatusmsg>
   </mt:if>
 </mt:loop>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

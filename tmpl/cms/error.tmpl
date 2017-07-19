@@ -72,11 +72,10 @@
     /* <![CDATA[ */
     // show the close button if error is in modal or popup
     if ( window != window.parent || window.opener || is_toplevel_new_window() )
-        document.getElementById("close-button").className = "close action button";
+        document.getElementById("close-button").className = "action button btn btn-default";
     /* ]]> */
 </script>
 </mt:setvarblock>
 
 <mt:include name="layout/chromeless.tmpl">
 <mt:var name="layout">
-

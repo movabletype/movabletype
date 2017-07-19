@@ -77,11 +77,11 @@
 
 <mt:setvarblock name="related_content">
 <mt:unless name="new_object">
-  <mtapp:newwidget
+  <mtapp:widget
      id="user-properties"
      label="<__trans phrase="User properties">">
     <mt:include name="include/users_content_nav.tmpl">
-  </mtapp:newwidget>
+  </mtapp:widget>
 </mt:unless>
 </mt:setvarblock>
 
@@ -214,13 +214,11 @@ jQuery('#profile').submit(function(eventObject) {
     if ( !jQuery("#pass_verify").mtValidate('simple') ) return false;
 });
 
-<mt:unless name="new_object">
-jQuery('#change-password-link').click(function(event) {
-    jQuery(this).parents('#show_password-field').next('#password-fields').show().focus();
-    jQuery(this).parents('#show_password-field').hide();
+function showPasswordField() {
+    jQuery('#change-password-link').parents('#show_password-field').next('#password-fields').show().focus();
+    jQuery('#change-password-link').parents('#show_password-field').hide();
     event.preventDefault();
-});
-</mt:unless>
+}
 
 /* ]]> */
 </script>
@@ -331,7 +329,7 @@ jQuery('#change-password-link').click(function(event) {
     <mtapp:setting
        id="show_password"
        label="<__trans phrase="Password">">
-      <a href="#" id="change-password-link" class="toggle-link"><__trans phrase="Change Password"></a>
+      <a href="#" id="change-password-link" class="toggle-link" onclick="showPasswordField();"><__trans phrase="Change Password"></a>
     </mtapp:setting>
       </mt:unless>
     <div id="password-fields"<mt:unless name="new_object"> style="display: none;"</mt:unless>>
@@ -519,8 +517,6 @@ jQuery('#change-password-link').click(function(event) {
     </mt:unless>
   </mt:unless>
 </mt:if>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

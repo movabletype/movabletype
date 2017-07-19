@@ -1,4 +1,4 @@
-<mtapp:newwidget class="news-widget" tabbed="1" label="<__trans phrase="News">" can_close="1">
+<mtapp:widget class="news-widget" tabbed="1" label="<__trans phrase="News">" can_close="1">
   <div id="mt-news-panel">
     <mt:if name="news_html">
       <$mt:var name="news_html"$>
@@ -6,7 +6,7 @@
       <p><__trans phrase="No Movable Type news available."></p>
     </mt:if>
   </div>
-</mtapp:newwidget>
+</mtapp:widget>
 
 <mt:setvarblock name="css_include" append="1">
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/mt7/widget/mt_news.css">

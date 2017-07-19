@@ -32,10 +32,10 @@ function init() {
 
 <mt:setvarblock name="related_content">
 <mt:if name="object_loop">
-  <mtapp:newwidget id="tips" label="<__trans phrase="Helpful Tips">">
+  <mtapp:widget id="tips" label="<__trans phrase="Helpful Tips">">
     <p><__trans phrase="To add a widget set to your templates, use the following syntax:"></p>
     <p><__trans phrase="<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>"></p>
-  </mtapp:newwidget>
+  </mtapp:widget>
 </mt:if>
 <$MTApp:PageActions from="list_template"$>
 </mt:setvarblock>
@@ -128,8 +128,6 @@ function init() {
     has_pulldown_actions="$widget_has_pulldown_actions"
     list_actions="$widget_list_actions"
     more_list_actions="$widget_more_list_actions">
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">

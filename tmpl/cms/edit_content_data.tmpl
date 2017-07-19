@@ -3,41 +3,41 @@
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="screen_id" value="edit-content-type-data">
 <mt:setvar name="screen_class" value="edit-content-type-data">
-    
+
 <mt:setvarblock name="system_msg">
 <div id="msg-block">
 <mt:if name="recovered_object">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="recovered-object"
      class="success">
     <__trans phrase="You have successfully recovered your saved content data.">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 <mt:else>
   <mt:if name="autosaved_object_exists">
     <mt:unless name="error">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="recovered-object"
      class="info">
     <__trans phrase="A saved version of this content data was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=edit_content_data&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="content_type_id">&amp;content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
     </mt:unless>
   </mt:if>
 </mt:if>
 
 <mt:if name="saved">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="saved"
      class="success">
     <__trans phrase="[_1] has been saved." params="<mt:var name="name">">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 <mt:if name="err_msg">
-  <mtapp:statusmsg
+  <mtapp:newstatusmsg
      id="err_msg"
      class="error"
      can_close="0">
     <mt:var name="err_msg">
-  </mtapp:statusmsg>
+  </mtapp:newstatusmsg>
 </mt:if>
 </div>
 </mt:setvarblock>
@@ -161,14 +161,15 @@
      label="<__trans phrase="Status">"
      label_class="top-label"
      help_page="entries"
-     help_section="status">
+     help_section="status"
+     no_grid="1">
   <mt:unless name="sitepath_configured">
     <input type="hidden" name="status" id="status" value="1" />
     <span><__trans phrase="Unpublished"></span>
     <span class="alert-warning-inline"><img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" /> <a href="<$mt:var name="script_url"$>?__mode=cfg_archives&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="You must configure this blog before you can publish this content data."></a></span>
   <mt:else>
     <mt:if name="can_publish_post">
-    <select name="status" id="status" class="full" onchange="highlightSwitch(this)">
+    <select name="status" id="status" class="form-control full" onchange="highlightSwitch(this)">
       <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>><__trans phrase="Unpublished (Draft)"></option>
       <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
     <mt:if name="status_review">
@@ -220,9 +221,12 @@
      label="$authored_on_label"
      label_class="top-label"
      help_page="entries"
-     help_section="date">
-    <div class="date-time-fields">
-      <input type="text" id="created-on" class="text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/><span class="separator"> <__trans phrase="@"></span> <input type="text" class="text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>"  placeholder="HH:mm:ss"/>
+     help_section="date"
+     no_grid="1">
+    <div class="form-inline date-time-fields">
+      <input type="text" id="created-on" class="form-control text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/>
+      <span class="separator"> <__trans phrase="@"></span>
+      <input type="text" class="form-control text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>"  placeholder="HH:mm:ss"/>
     </div>
   </mtapp:setting>
 
@@ -233,10 +237,13 @@
      label="$unpublished_on_label"
      label_class="top-label"
      help_page="entries"
-     help_section="date">
-    <div class="date-time-fields">
+     help_section="date"
+     no_grid="1">
+    <div class="form-inline date-time-fields">
       <div id="unpublished-on" class="mt-edit-inputblock<$mt:if name="show_input_unpublished_on"> show-input</mt:if>">
-        <input type="text" id="unpublished-on-date" class="text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" /><span class="separator"> <__trans phrase="@"></span> <input type="text" id="unpublished-on-time" class="text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" placeholder="HH:mm:ss" />
+        <input type="text" id="unpublished-on-date" class="form-control text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" />
+        <span class="separator"> <__trans phrase="@"></span>
+        <input type="text" id="unpublished-on-time" class="form-control text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" placeholder="HH:mm:ss" />
       </div>
     </div>
   </mtapp:setting>
@@ -249,31 +256,34 @@
   <mtapp:setting
      id="revision-note"
      label="<__trans phrase="Change note">"
-     label_class="top-label">
-    <input type="text" name="revision-note" id="revision-note" class="text full" value="<mt:var name="revision-note" escape="html">" />
+     label_class="top-label"
+     no_grid="1">
+    <input type="text" name="revision-note" id="revision-note" class="form-control text full" value="<mt:var name="revision-note" escape="html">" />
   </mtapp:setting>
 </mt:if>
 
   <div class="actions-bar">
-    <div class="save-action">
-      <button
-         name="status"
-         type="submit"
-         title="<mt:var name="button_title">"
-         class="publish action primary button">
-        <mt:var name="button_text">
-      </button>
-    </div>
-    <div class="preview-action">
-      <button
-         name="preview_entry"
-         type="submit"
-         accesskey="v"
-         title="<mt:var name="preview_button_title">"
-         class="preview action button">
-        <__trans phrase="Preview">
-      </button>
-    </div>
+    <ul class="list-inline save-action">
+      <li>
+        <button
+           name="status"
+           type="submit"
+           title="<mt:var name="button_title">"
+           class="publish action primary button btn btn-primary">
+          <mt:var name="button_text">
+        </button>
+      </li>
+      <li class="preview-action">
+        <button
+           name="preview_entry"
+           type="submit"
+           accesskey="v"
+           title="<mt:var name="preview_button_title">"
+           class="preview action button btn btn-default">
+          <__trans phrase="Preview">
+        </button>
+      </li>
+    </ul>
   </div>
 
 <mt:if name="id">
@@ -438,7 +448,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       } else {
           jQuery('#formatting-help-link').addClass('disabled');
       }
-  
+
       if (cur_text_format == 'richtext') {
           // changing to plaintext editor
           jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
@@ -492,8 +502,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 </script>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
+<mt:setvarblock name="page_content">
 <mtapp:settinggroup id="content_data">
 
   <h2><__trans phrase="Edit <mt:var name="name" escape="html">"></h2>
@@ -502,7 +511,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     <__trans phrase="Title"> *
   </div>
   <div>
-    <input type="text" name="title" class="text content-field html5-form" required maxlength="255" mt:watch-change="1" value="<mt:var name="title">">
+    <input type="text" name="title" class="form-control text content-field html5-form" required maxlength="255" mt:watch-change="1" value="<mt:var name="title">">
   </div>
 
   <mt:loop name="fields">
@@ -576,7 +585,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     <mt:if name="field_html">
       <mt:var name="field_html" mteval="1">
     <mt:elseif name="data_type" eq="varchar">
-      <input type="text" name="content-field-<mt:var name="content_field_id">" class="text long html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>/>
+      <input type="text" name="content-field-<mt:var name="content_field_id">" class="form-control text long html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>/>
     <mt:elseif name="data_type" eq="blob">
       <mt:if name="type" eq="multi_line_text">
         <div class="field-convert_breaks">
@@ -602,12 +611,12 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="text high html5-form content-field editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
         </div>
       <mt:else>
-        <textarea name="content-field-<mt:var name="content_field_id">" class="text high html5-form content-field" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
+        <textarea name="content-field-<mt:var name="content_field_id">" class="form-control text high html5-form content-field" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
       </mt:if>
     <mt:elseif name="data_type" eq="integer">
-      <input type="number" name="content-field-<mt:var name="content_field_id">" class="text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
+      <input type="number" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
     <mt:elseif name="data_type" eq="float">
-      <input type="number" step="any" name="content-field-<mt:var name="content_field_id">" class="text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
+      <input type="number" step="any" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
     </mt:if>
       <div class="hint"><mt:var name="options{description}" escape="html"></div>
   </div>
@@ -617,6 +626,10 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 </mtapp:settinggroup>
 
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+<div id="autosave-notification-<$mt:var name="bar_position" escape="html" default="top"$>" class="autosave-notification"></div>
+
+</mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
   jQuery(function() {
@@ -743,6 +756,5 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   setSaveButtonText();
 </mt:setvarblock>
 
-<div id="autosave-notification-<$mt:var name="bar_position" escape="html" default="top"$>" class="autosave-notification"></div>
-
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

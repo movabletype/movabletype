@@ -146,7 +146,7 @@ sub list_props {
                     );
                     my $reply_str = MT->translate('Reply');
                     $reply_link
-                        = qq{<a href="$reply_url" class="reply action-link open-dialog-link mt-open-dialog">$reply_str</a>};
+                        = qq{<a href="$reply_url" class="reply action-link open-dialog-link mt-open-dialog" onclick="jQuery.fn.mtModal.open('$reply_url', { large: true }); return false;">$reply_str</a>};
                 }
 
                 return qq{

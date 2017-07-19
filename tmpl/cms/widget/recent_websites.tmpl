@@ -1,4 +1,4 @@
-<mtapp:newwidget class="favorite-blogs-widget" label="<__trans phrase="Websites">" can_close="1">
+<mtapp:widget class="favorite-blogs-widget" label="<__trans phrase="Websites">" can_close="1">
   <mt:if name="website_object_loop">
     <div id="favorite-website-container" class="blog-container">
     <mt:loop name="website_object_loop">
@@ -82,4 +82,4 @@
       <__trans phrase="No website could be found. [_1]" params="<mt:if name="can_create_website"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0"><__trans phrase="Create a new"></a></mt:if>">
     </mtapp:newstatusmsg>
   </mt:if>
-</mtapp:newwidget>
+</mtapp:widget>

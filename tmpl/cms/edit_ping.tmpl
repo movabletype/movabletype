@@ -81,14 +81,14 @@
 </mt:setvartemplate>
 
 <mt:setvarblock name="related_content">
-<mtapp:newwidget
+<mtapp:widget
    id="useful-links"
    label="<__trans phrase="Useful links">">
   <ul class="list-unstyled">
     <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Manage TrackBacks"></a></li>
     <li><mt:if name="entry_permalink"><a href="<mt:var name="entry_permalink">" target="<__trans phrase="_external_link_target">"><__trans phrase="View [_1]" params="<mt:var name="target_label">"></a></mt:if></li>
   </ul>
-</mtapp:newwidget>
+</mtapp:widget>
 
 <mtapp:PageActions>
 </mt:setvarblock>
@@ -224,8 +224,6 @@
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
 </mt:if>
 </form>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">
