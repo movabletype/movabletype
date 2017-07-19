@@ -1934,13 +1934,15 @@ sub post_save {
 
     for my $blog_field ( keys %blog_fields ) {
 
-        if ( $obj->$blog_field() ne $original->$blog_field() ) {
-            my $old
-                = defined $original->$blog_field()
-                ? $original->$blog_field()
-                : "none";
-            my $new
-                = defined $obj->$blog_field() ? $obj->$blog_field() : "none";
+        my $old
+            = defined $original->$blog_field()
+            ? $original->$blog_field()
+            : "";
+        my $new
+            = defined $obj->$blog_field() ? $obj->$blog_field() : "";
+        if ( $new ne $old ) {
+            $old = "none" if $old eq "";
+            $new = "none" if $new eq "";
             push(
                 @meta_messages,
                 $app->translate(
