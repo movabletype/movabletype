@@ -1537,8 +1537,11 @@ sub save {
         $orig_obj = $obj->clone;
     }
 
-    my $primary_category_old = $orig_obj->category;
-    my $categories_old       = $orig_obj->categories;
+    my ( $primary_category_old, $categories_old );
+    if ( $orig_obj->id ) {
+        $primary_category_old = $orig_obj->category;
+        $categories_old       = $orig_obj->categories;
+    }
     my $status_old           = $id ? $obj->status : 0;
     my $names                = $obj->column_names;
 
