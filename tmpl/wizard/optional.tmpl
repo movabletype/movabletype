@@ -35,20 +35,20 @@
   <div id="settings"<mt:if name="success"> style="display: none;"</mt:if>>
     <p class="intro"><__trans phrase="Periodically Movable Type will send email for password recovery, to inform authors of new comments, and other events. If not using Sendmail (default on unix servers), an SMTP Server must be specified."></p>
   <mt:if name="send_error">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="send_error"
        class="error"
        can_close="0">
       <__trans phrase="An error occurred while attempting to send mail: "><mt:var name="error" escape="html">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   <mt:else>
     <mt:if name="error">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="error"
        class="error"
        can_close="0">
       <mt:var name="error" escape="html">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
     </mt:if>
   </mt:if>
   
@@ -155,20 +155,20 @@
                  label_class="top-label"
                  no_grid="1">
               <mt:unless name="has_net_smtp_ssl">
-                <mtapp:newstatusmsg
+                <mtapp:statusmsg
                    id="no_smtp_auth_ssl"
                    class="info"
                    can_close="0">
                   <__trans phrase="Cannot use [_1]." params="SSL"> <mt:var name="has_net_smtp_ssl_msg" escape="html">
-                </mtapp:newstatusmsg>
+                </mtapp:statusmsg>
               </mt:unless>
               <mt:unless name="has_net_smtp_tls">
-                <mtapp:newstatusmsg
+                <mtapp:statusmsg
                    id="no_smtp_auth_tls"
                    class="info"
                    can_close="0">
                   <__trans phrase="Cannot use [_1]." params="STARTTLS"> <mt:var name="has_net_smtp_tls_msg" escape="html">
-                </mtapp:newstatusmsg>
+                </mtapp:statusmsg>
               </mt:unless>
               <mt:if name="can_use_ssl">
                 <select id="smtp_ssl" class="form-control" name="smtp_ssl">

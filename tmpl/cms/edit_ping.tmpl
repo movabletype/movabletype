@@ -3,18 +3,18 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="Your changes have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="approved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="approved"
      class="success">
     <__trans phrase="The TrackBack has been approved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="is_junk">
   <mt:if name="junk_log_loop">
@@ -50,12 +50,12 @@
     </div>
   </div>
   <mt:else>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="junk-message"
      class="alert"
      can_close="0">
     <__trans phrase="This trackback was classified as spam.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 </mt:if>
 </mt:setvarblock>

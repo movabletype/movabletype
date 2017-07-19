@@ -59,12 +59,12 @@ div.warning#version-warning {
   <div id="welcome"<mt:if name="version_warning"> style="display: none;"</mt:if>>
     <p class="intro"><__trans phrase="Please create an administrator account for your system. When you are done, Movable Type will initialize your database."></p>
   <mt:if name="error">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="generic-error"
        class="error"
        can_close="0">
       <mt:var name="error" escape="html">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   </mt:if>
   
     <form id="install_form" method="post" action="<mt:var name="script_url">">

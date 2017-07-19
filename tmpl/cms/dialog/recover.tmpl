@@ -4,20 +4,20 @@
 
 <mt:setvarblock name="page_content">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="error"
      class="danger"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="not_unique_email">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="not-unique-email"
      class="warning"
      can_close="0">
     <__trans phrase="The email address provided is not unique.  Please enter your username.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 
 <mt:if name="recovered">

@@ -22,19 +22,19 @@
 
   <div class="error-message">
   <mt:if name="extension_message">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="extension-changed"
        class="success"
        can_close="0">
       <mt:var name="extension_message" escape="html">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   </mt:if>
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="error-message"
        class="alert"
        can_close="0">
       <__trans phrase="A file named '[_1]' already exists. Do you want to overwrite this file?" params="<mt:var name="fname" escape="html">">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   </div>
   <mt:setvarblock name="action_buttons">
     <button

@@ -3,29 +3,29 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
   <mt:if name="can_rebuild">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success"
      rebuild="all"
      can_close="1">
     <__trans phrase="Your preferences have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   <mt:else>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success"
      can_close="1">
     <__trans phrase="Your preferences have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 </mt:if>
 </mt:setvarblock>

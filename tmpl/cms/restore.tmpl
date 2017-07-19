@@ -4,22 +4,22 @@
 
 <mt:setvarblock name="page_content">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="danger"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 
 <div id="restore-panel">
 <mt:if name="missing_sax">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="missing-sax"
      class="danger"
      can_close="0">
     <__trans phrase="Perl module XML::SAX and/or some of its dependencies are missing.  Movable Type cannot restore the system without these modules.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 <mt:else>
   <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="restore" />

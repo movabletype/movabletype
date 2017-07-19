@@ -48,9 +48,7 @@ sub core_tags {
             'App:Setting'   => \&MT::Template::Tags::App::_hdlr_app_setting,
             'App:Widget'    => \&MT::Template::Tags::App::_hdlr_app_widget,
             'App:StatusMsg' => \&MT::Template::Tags::App::_hdlr_app_statusmsg,
-            'App:NewStatusMsg' =>
-                \&MT::Template::Tags::App::_hdlr_app_new_statusmsg,
-            'App:Listing' => \&MT::Template::Tags::App::_hdlr_app_listing,
+            'App:Listing'   => \&MT::Template::Tags::App::_hdlr_app_listing,
             'App:SettingGroup' =>
                 \&MT::Template::Tags::App::_hdlr_app_setting_group,
             'App:Form' => \&MT::Template::Tags::App::_hdlr_app_form,
@@ -3402,88 +3400,6 @@ Accepted values: "all", "index".
 =cut
 
 sub _hdlr_app_statusmsg {
-    my ( $ctx, $args, $cond ) = @_;
-    my $app     = MT->instance;
-    my $id      = $args->{id};
-    my $class   = $args->{class} || 'info';
-    my $msg     = $ctx->slurp;
-    my $rebuild = $args->{rebuild} || '';
-    my $no_link = $args->{no_link} || '';
-    my $blog_id = $ctx->var('blog_id');
-    my $blog    = $ctx->stash('blog');
-    if ( !$blog && $blog_id ) {
-        $blog = MT->model('blog')->load($blog_id);
-    }
-    if ( $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
-        my $link_l
-            = $no_link
-            ? ''
-            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">';
-        my $link_r = $no_link ? '' : '</a>';
-        my $obj_type
-            = $rebuild eq 'blog'
-            ? MT->translate('blog(s)')
-            : MT->translate('website(s)');
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your [_3] to see these changes take effect." params="$link_l%%$link_r%%$obj_type">};
-    }
-    elsif (
-        $blog && $app->user
-        and $app->user->can_do(
-            'rebuild',
-            at_least_one => 1,
-            blog_id      => $blog->id,
-        )
-        )
-    {
-        $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">}
-            if $rebuild eq 'all';
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">}
-            if $rebuild eq 'index';
-    }
-    else {
-        $rebuild = '';
-    }
-    my $close = '';
-    if ( $id && ( $args->{can_close} || ( !exists $args->{can_close} ) ) ) {
-        $close
-            = qq{<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>};
-    }
-    $id    = defined $id    ? qq{ id="$id"}      : "";
-    $class = defined $class ? qq{msg msg-$class} : "msg";
-    return $ctx->build(<<"EOT");
-    <div$id class="$class"><p class="msg-text">$msg $rebuild</p>$close</div>
-EOT
-}
-
-=head2 App:NewStatusMsg
-
-An application template tag that outputs a MT status message.
-
-B<Attributes:>
-
-=over 4
-
-=item * id (optional)
-
-=item * class (optional; default "info")
-
-=item * rebuild (optional)
-
-Accepted values: "all", "index".
-
-=item * can_close (optional; default "1")
-
-=back
-
-=for tags application
-
-=cut
-
-sub _hdlr_app_new_statusmsg {
     my ( $ctx, $args, $cond ) = @_;
     my $app = MT->instance;
     my $id  = $args->{id};

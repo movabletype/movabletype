@@ -13,14 +13,14 @@
 <mt:setvarblock name="system_msg">
 <div id="msg-block">
 <mt:if name="uninstalled_theme_name">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="theme_uninstalled"
      class="success">
     <__trans phrase="Theme [_1] has been uninstalled." params="<mt:var name="uninstalled_theme_name">" escape="html">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="applied">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="theme_applied"
      class="success"
      rebuild="all"
@@ -30,16 +30,16 @@
 <mt:else>
     <__trans phrase="Theme [_1] has been applied." params="<mt:var name="current_theme_name" escape="html" escape="html">">
 </mt:if>
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="refreshed">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="theme_applied"
      class="success"
      rebuild="all"
      can_close="0">
      <__trans phrase="You have successfully refreshed your templates." escape="html">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </div>
 </mt:setvarblock>
@@ -164,12 +164,12 @@
     <mt:if name="errors">
     <div id="theme-<mt:var name="id">-errors" class="theme-errors theme-info">
       <h4><__trans phrase="Theme Errors"></h4>
-      <mtapp:newstatusmsg
+      <mtapp:statusmsg
          id="saved-added"
          class="error"
          can_close="0">
         <__trans phrase="This theme cannot be applied to the website due to [_1] errors" params="<mt:var name="error_count">">
-      </mtapp:newstatusmsg>
+      </mtapp:statusmsg>
       <ul>
       <mt:loop name="errors">
         <li><mt:var name="__value__" escape="html"></li>
@@ -180,12 +180,12 @@
     <mt:if name="warnings">
     <div id="theme-<mt:var name="id">-warnings" class="theme-warnings theme-info">
       <h4><__trans phrase="Theme Warnings"></h4>
-      <mtapp:newstatusmsg
+      <mtapp:statusmsg
          id="saved-added"
          class="alert"
          can_close="0">
         <__trans phrase="Portions of this theme cannot be applied to the website. [_1] elements will be skipped." params="<mt:var name="warning_count">">
-      </mtapp:newstatusmsg>
+      </mtapp:statusmsg>
       <ul>
       <mt:loop name="warnings">
         <li><mt:var name="__value__"></li>
@@ -209,12 +209,12 @@
 </div>
 </div>
 <mt:else>
-<mtapp:newstatusmsg
+<mtapp:statusmsg
    id="no-theme"
    class="info"
    can_close="0">
   <__trans phrase="No themes are installed.">
-</mtapp:newstatusmsg>
+</mtapp:statusmsg>
 </mt:loop>
 </mt:setvartemplate>
 

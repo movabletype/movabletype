@@ -4,68 +4,68 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="error"
      class="error"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="no_writedir">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="no-writedir"
      class="error"
      can_close="0">
     <__trans phrase="Error: Movable Type was not able to create a directory for publishing your [_1]. If you create this directory yourself, grant write permission to the web server." params="<mt:var name="object_label" lower_case="1">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 <mt:else>
   <mt:if name="no_cachedir">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="no-cachedir"
      class="error"
      can_close="0">
     <__trans phrase="Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your site directory." params="templates_c">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   <mt:else>
     <mt:if name="no_writecache">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="no-writecache"
      class="error"
      can_close="0">
     <__trans phrase="Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your site directory." params="templates_c">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
     <mt:else>
       <mt:if name="no_cache_path">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="no-cache-path"
      class="error"
      can_close="0">
     <__trans phrase="Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your site directory." params="cache">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
       <mt:else>
         <mt:if name="no_write_cache_path">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="no-write-cache-path"
      class="error"
      can_close="0">
     <__trans phrase="Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your site directory." params="cache">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
         <mt:else>
           <mt:if name="saved">
             <mt:if name="can_rebuild">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success"
      rebuild="all"
      can_close="0">
     <__trans phrase="Your preferences have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
             <mt:else>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="Your preferences have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
             </mt:if>
           </mt:if>
         </mt:if>
@@ -599,12 +599,12 @@
   <mtapp:settinggroup id="revision-history-settings">
     <h5><__trans phrase="Revision History"></h5>
   <mt:unless name="master_revision_switch">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="master_revision_off"
        class="error"
        can_close="0">
       <__trans phrase="Note: Revision History is currently disabled at the system level.">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   </mt:unless>
 
     <mtapp:setting

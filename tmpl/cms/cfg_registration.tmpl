@@ -4,15 +4,15 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <mt:if name="is_blog">
@@ -20,7 +20,7 @@
     <mt:else>
     <__trans phrase="Your website preferences have been saved.">
     </mt:if>
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 

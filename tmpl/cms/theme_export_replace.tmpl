@@ -32,17 +32,17 @@ function submit_form(f, command) {
 
     <div class="error-message">
     <mt:if name="extension_message">
-        <mtapp:newstatusmsg
+        <mtapp:statusmsg
             id="extension-changed"
             class="success">
             <mt:var name="extension_message" escape="html">
-        </mtapp:newstatusmsg>
+        </mtapp:statusmsg>
     </mt:if>
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
         id="error-message"
         class="alert">
         <__trans phrase="Export theme folder already exists '[_1]'. You can overwrite a existing theme, or cancel to change the Basename?" params="<mt:var name="theme_folder" escape="html">">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
     </div>
     <mt:setvarblock name="action_buttons">
         <button

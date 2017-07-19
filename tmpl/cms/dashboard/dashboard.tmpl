@@ -64,19 +64,19 @@ jQuery('button.remove-widget').mtRemoveWidget();
 
 <mt:setvarblock name="system_msg">
 <mt:if name="saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="info">
     <__trans phrase="Your Dashboard has been updated.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="permission">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="permissions"
      class="error"
      can_close="0">
     <__trans phrase="You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 

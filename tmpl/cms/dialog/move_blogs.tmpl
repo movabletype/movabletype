@@ -36,12 +36,12 @@ function init() {
 </mt:setvarblock>
 
 <mt:setvarblock name="modal_body">
-<mtapp:newstatusmsg
+<mtapp:statusmsg
     id="moved-warning"
     class="alert"
     can_close="0">
     <__trans phrase="Warning: You need to copy uploaded assets to the new path manually. It is also recommended not to delete files in the old path to avoid broken links.">
-</mtapp:newstatusmsg>
+</mtapp:statusmsg>
 
 <form name="blogs" id="members" action="<mt:var name="script_url">" method="post" target="_top">
 <input type="hidden" name="__mode" value="start_move_blogs" />

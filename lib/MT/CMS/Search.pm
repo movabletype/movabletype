@@ -1411,12 +1411,12 @@ sub _default_results_table_template {
     }
     else {
         return <<TMPL;
-        <mtapp:newstatusmsg
+        <mtapp:statusmsg
                 id="no-$plural"
                 class="info"
                 can_close="0">
                 <__trans phrase="No [_1] were found that match the given criteria." params="$plural">
-            </mtapp:newstatusmsg>
+            </mtapp:statusmsg>
 TMPL
     }
 }

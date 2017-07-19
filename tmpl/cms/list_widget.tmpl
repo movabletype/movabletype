@@ -42,22 +42,22 @@ function init() {
 
 <mt:setvarblock name="system_msg">
 <mt:if name="rebuild">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved-msg"
      class="success"
      rebuild="all"
      can_close="0">
     <__trans phrase="Your changes to the widget set have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="deleted">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="delete-msg"
      class="info"
      rebuild="all"
      can_close="0">
     <__trans phrase="You have successfully deleted the selected widget set(s) from your blog.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 
@@ -103,12 +103,12 @@ function init() {
     <div class="listing-header">
       <mt:var name="listing_header">
     </div>
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="zero-state"
        class="info zero-state"
        can_close="0">
       <__trans phrase="No widget sets could be found.">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   </div>
 </mtapp:listing>
 

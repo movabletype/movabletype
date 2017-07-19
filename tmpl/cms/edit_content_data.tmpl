@@ -7,37 +7,37 @@
 <mt:setvarblock name="system_msg">
 <div id="msg-block">
 <mt:if name="recovered_object">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="recovered-object"
      class="success">
     <__trans phrase="You have successfully recovered your saved content data.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 <mt:else>
   <mt:if name="autosaved_object_exists">
     <mt:unless name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="recovered-object"
      class="info">
     <__trans phrase="A saved version of this content data was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=edit_content_data&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="content_type_id">&amp;content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
     </mt:unless>
   </mt:if>
 </mt:if>
 
 <mt:if name="saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="[_1] has been saved." params="<mt:var name="name">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="err_msg">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="err_msg"
      class="error"
      can_close="0">
     <mt:var name="err_msg">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </div>
 </mt:setvarblock>
