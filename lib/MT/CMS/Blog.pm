@@ -752,7 +752,7 @@ sub rebuild_pages {
         $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $order = $q->param('type');
     my @order = split /,/, $order;
-    my $next  = $q->param('next');
+    my $next  = $q->param('next') || 0;
     my $done  = 0;
     my $type  = $order[$next];
 
