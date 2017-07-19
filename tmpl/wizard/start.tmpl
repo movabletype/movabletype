@@ -105,20 +105,18 @@ label {
     <h2><__trans phrase="Configure Static Web Path"></h2>
 
   <mt:if name="uri_invalid">
-  <mtapp:statusmsg
-     id="uri_invalid"
-     class="error"
-     can_close="0">
-    <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_uri_to" escape="html" escape="html"$>">
-  </mtapp:statusmsg>
+  <div id="uri_invalid" class="msg msg-error">
+    <p class="msg-text">
+      <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_uri_to" escape="html" escape="html"$>">
+    </p>
+  </div>
   </mt:if>
   <mt:if name="file_invalid">
-  <mtapp:statusmsg
-     id="file_invalid"
-     class="error"
-     can_close="0">
-    <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_file_to" escape="html" escape="html"$>">
-  </mtapp:statusmsg>
+  <div id="file_invalid" class="msg msg-error">
+    <p class="msg-text">
+      <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_file_to" escape="html" escape="html"$>">
+    </p>
+  </div>
   </mt:if>
 
     <p><__trans phrase="Movable Type ships with directory named [_1] which contains a number of important files such as images, javascript files and stylesheets." params="<strong>mt-static</strong>"></p>
