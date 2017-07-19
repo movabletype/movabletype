@@ -55,7 +55,11 @@ __PACKAGE__->install_properties(
                 label      => 'Dynamicity',
                 revisioned => 1
             },
-            'identifier' => 'string(50)',
+            'identifier' => {
+                type       => 'string',
+                size       => 50,
+                revisioned => 1
+            },
             'build_type' => {
                 type       => 'smallint',
                 label      => 'Build Type',

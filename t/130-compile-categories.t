@@ -16,17 +16,17 @@ my $cclass = $mt->model('category');
 $cclass->driver->Disabled(1) if $cclass->driver->can('Disabled');
 
 my %cats_hash = map { ( $_->id, $_ ) } $cclass->load( { blog_id => 1 } );
-add_category( 23, 'aaa',       0,  1 );
-add_category( 24, 'subsubfoo', 3,  1 );
-add_category( 25, 'bbb',       0,  1 );
-add_category( 26, 'aaa',       25, 1 );
-add_category( 27, 'foo',       26, 1 );
-add_category( 28, 'buz buz',   0,  1 );
-add_category( 29, 'a(b)',      0,  1 );
-add_category( 30, 'a/b',       0,  1 );
-add_category( 31, 'a',         0,  1 );
-add_category( 32, 'abc123',    0,  1 );
-add_category( 33, '#32',       0,  1 );
+add_category( 26, 'aaa',       0,  1 );
+add_category( 27, 'subsubfoo', 3,  1 );
+add_category( 28, 'bbb',       0,  1 );
+add_category( 29, 'aaa',       28, 1 );
+add_category( 30, 'foo',       29, 1 );
+add_category( 31, 'buz buz',   0,  1 );
+add_category( 32, 'a(b)',      0,  1 );
+add_category( 33, 'a/b',       0,  1 );
+add_category( 34, 'a',         0,  1 );
+add_category( 35, 'abc123',    0,  1 );
+add_category( 36, '#32',       0,  1 );
 
 # foreach my $c (values %cats_hash) {
 # 	print STDERR "id: ", $c->id, " parent: ", $c->parent, " name: ", $c->label, "\n";
@@ -47,7 +47,7 @@ $expr = $ctx->compile_category_filter( undef, \@cats, { children => 1 } );
 @cats = sort { $a->id <=> $b->id } @cats;
 is_deeply(
     [ map $_->id, @cats ],
-    [ 1, 3, 24 ],
+    [ 1, 3, 27 ],
     "child categories were added"
 );
 ok( $expr->( { 1 => 1 } ), "expr contains parent" );
@@ -56,142 +56,142 @@ ok( $expr->( { 3 => 1 } ), "expr contains child" );
 @cats = @cats_hash{ 2, 3 };
 $expr = $ctx->compile_category_filter( undef, \@cats, { children => 1 } );
 @cats = sort { $a->id <=> $b->id } @cats;
-is_deeply( [ map $_->id, @cats ], [ 2, 3, 24 ], "nothing else was added" );
+is_deeply( [ map $_->id, @cats ], [ 2, 3, 27 ], "nothing else was added" );
 ok( $expr->( { 2 => 1 } ), "expr contains 2" );
 ok( $expr->( { 3 => 1 } ), "expr contains 3" );
 ok( !$expr->( { 1 => 1 } ), "expr not contains 1" );
 
-@cats = @cats_hash{ 2, 23 };
+@cats = @cats_hash{ 2, 26 };
 $expr = $ctx->compile_category_filter( "bar AND aaa", \@cats,
     { children => 1 } );
 @cats = sort { $a->id <=> $b->id } @cats;
-is_deeply( [ map $_->id, @cats ], [ 2, 23 ], "nothing else was added" );
-ok( !$expr->( { 23 => 1 } ), "expr needs more then 23" );
+is_deeply( [ map $_->id, @cats ], [ 2, 26 ], "nothing else was added" );
+ok( !$expr->( { 26 => 1 } ), "expr needs more then 26" );
 ok( !$expr->( { 3  => 1 } ), "expr needs more then 3" );
-ok( $expr->( { 2 => 1, 23 => 1 } ), "expr true for 2 AND 3" );
+ok( $expr->( { 2 => 1, 26 => 1 } ), "expr true for 2 AND 3" );
 
-@cats = @cats_hash{ 2, 24 };
+@cats = @cats_hash{ 2, 27 };
 $expr = $ctx->compile_category_filter( "bar OR subsubfoo",
     \@cats, { children => 1 } );
 @cats = sort { $a->id <=> $b->id } @cats;
-is_deeply( [ map $_->id, @cats ], [ 2, 24 ], "nothing else was added" );
+is_deeply( [ map $_->id, @cats ], [ 2, 27 ], "nothing else was added" );
 ok( $expr->( { 2  => 1 } ), "expr true for 2" );
-ok( $expr->( { 24 => 1 } ), "expr true for 24" );
-ok( $expr->( { 2 => 1, 24 => 1 } ), "expr true for 2 AND 3" );
+ok( $expr->( { 27 => 1 } ), "expr true for 27" );
+ok( $expr->( { 2 => 1, 27 => 1 } ), "expr true for 2 AND 3" );
 
 @cats = values %cats_hash;
 $expr = $ctx->compile_category_filter( "bar AND aaa", \@cats );
 ok( !$expr->( { 2  => 1 } ), "expr false for 2" );
-ok( !$expr->( { 23 => 1 } ), "expr false for 23" );
-ok( $expr->( { 23 => 1, 2 => 1 } ), "expr true for 2 AND 23" );
+ok( !$expr->( { 26 => 1 } ), "expr false for 26" );
 ok( $expr->( { 26 => 1, 2 => 1 } ), "expr true for 2 AND 26" );
+ok( $expr->( { 29 => 1, 2 => 1 } ), "expr true for 2 AND 29" );
 
 @cats = values %cats_hash;
 $expr = $ctx->compile_category_filter( "bar AND aaa", \@cats,
     { children => 1 } );
 ok( !$expr->( { 2  => 1 } ), "expr false for 2" );
-ok( !$expr->( { 23 => 1 } ), "expr false for 23" );
-ok( $expr->( { 23 => 1, 2 => 1 } ), "expr true for 2 AND 23" );
+ok( !$expr->( { 26 => 1 } ), "expr false for 23" );
 ok( $expr->( { 26 => 1, 2 => 1 } ), "expr true for 2 AND 26" );
-ok( $expr->( { 27 => 1, 2 => 1 } ), "expr true for 2 AND 27" );
-ok( !$expr->( { 27 => 1, 23 => 1 } ), "expr false for 27 AND 23" );
+ok( $expr->( { 29 => 1, 2 => 1 } ), "expr true for 2 AND 29" );
+ok( $expr->( { 30 => 1, 2 => 1 } ), "expr true for 2 AND 30" );
+ok( !$expr->( { 30 => 1, 26 => 1 } ), "expr false for 30 AND 26" );
 
 @cats = values %cats_hash;
 $expr = $ctx->compile_category_filter( "foo", \@cats, { children => 1 } );
-foreach ( 1, 3, 24, 27 ) {
+foreach ( 1, 3, 27, 30 ) {
     ok( $expr->( { $_ => 1 } ), "expr true for $_" );
 }
-foreach ( 2, 25, 26, 23 ) {
+foreach ( 2, 28, 29, 26 ) {
     ok( !$expr->( { $_ => 1 } ), "expr false for $_" );
 }
 
 @cats = values %cats_hash;
 $expr = $ctx->compile_category_filter( "bbb/aaa", \@cats, { children => 1 } );
-ok( !$expr->( { 1 => 1, 25 => 1 } ), "expr false for 1, 25" );
-ok( $expr->( { 26 => 1 } ), "expr true for 26" );
-ok( $expr->( { 27 => 1 } ), "expr true for 27" );
+ok( !$expr->( { 1 => 1, 28 => 1 } ), "expr false for 1, 28" );
+ok( $expr->( { 29 => 1 } ), "expr true for 29" );
+ok( $expr->( { 30 => 1 } ), "expr true for 30" );
 
 @cats = values %cats_hash;
 $expr = $ctx->compile_category_filter( "bbb/aaa", \@cats );
-ok( !$expr->( { 1 => 1, 25 => 1, 27 => 1 } ), "expr false for 1, 25, 27" );
-ok( $expr->( { 26 => 1 } ), "expr true for 26" );
+ok( !$expr->( { 1 => 1, 28 => 1, 30 => 1 } ), "expr false for 1, 28, 30" );
+ok( $expr->( { 29 => 1 } ), "expr true for 29" );
 
 @cats = values %cats_hash;
 $expr = $ctx->compile_category_filter( "bbb/aaa OR foo", \@cats );
-ok( !$expr->( { 3 => 1, 25 => 1, 23 => 1 } ), "expr false for 3, 25, 23" );
-foreach ( 1, 26, 27 ) {
+ok( !$expr->( { 3 => 1, 28 => 1, 26 => 1 } ), "expr false for 3, 28, 26" );
+foreach ( 1, 29, 30 ) {
     ok( $expr->( { $_ => 1 } ), "expr true for $_" );
 }
 
 @cats = values %cats_hash;
 $expr = $ctx->compile_category_filter( "bbb/aaa OR foo",
     \@cats, { children => 1 } );
-foreach ( 2, 25 ) {
+foreach ( 2, 28 ) {
     ok( !$expr->( { $_ => 1 } ), "expr false for $_" );
 }
-foreach ( 1, 3, 24, 26, 27 ) {
+foreach ( 1, 3, 27, 29, 30 ) {
     ok( $expr->( { $_ => 1 } ), "expr true for $_" );
 }
 
 $cat_filter = "NOT (aaa OR bbb)";
-@cats = ( @cats_hash{ 2, 23, 25 } );
+@cats = ( @cats_hash{ 2, 26, 28 } );
 $expr
     = $ctx->compile_category_filter( $cat_filter, \@cats, { children => 1 } );
 @cats = sort { $a->id <=> $b->id } @cats;
 ok( $expr->( { 2 => 1 } ), "$cat_filter: expr true for 2" );
-ok( !$expr->( { 23 => 1 } ), "$cat_filter: expr false for 23" );
-ok( !$expr->( { 25 => 1 } ), "$cat_filter: expr false for 25" );
+ok( !$expr->( { 26 => 1 } ), "$cat_filter: expr false for 26" );
+ok( !$expr->( { 28 => 1 } ), "$cat_filter: expr false for 28" );
 
 $cat_filter = "NOT (buz buz OR bbb)";
-@cats = ( @cats_hash{ 2, 23, 25, 28 } );
+@cats = ( @cats_hash{ 2, 26, 28, 31 } );
 $expr
     = $ctx->compile_category_filter( $cat_filter, \@cats, { children => 1 } );
 @cats = sort { $a->id <=> $b->id } @cats;
 ok( $expr->( { 2  => 1 } ), "$cat_filter: expr true for 2" );
-ok( $expr->( { 23 => 1 } ), "$cat_filter: expr false for 23" );
-ok( !$expr->( { 25 => 1 } ), "$cat_filter: expr false for 25" );
+ok( $expr->( { 26 => 1 } ), "$cat_filter: expr false for 26" );
 ok( !$expr->( { 28 => 1 } ), "$cat_filter: expr false for 28" );
+ok( !$expr->( { 31 => 1 } ), "$cat_filter: expr false for 31" );
 
 $cat_filter = "buz buz OR bar";
-@cats = ( @cats_hash{ 2, 28 } );
+@cats = ( @cats_hash{ 2, 31 } );
 $expr
     = $ctx->compile_category_filter( $cat_filter, \@cats, { children => 1 } );
 @cats = sort { $a->id <=> $b->id } @cats;
 is_deeply(
     [ map $_->id, @cats ],
-    [ 2,          28 ],
+    [ 2,          31 ],
     "$cat_filter: nothing else was added"
 );
 ok( $expr->( { 2  => 1 } ), "$cat_filter: expr true for 2" );
-ok( $expr->( { 28 => 1 } ), "$cat_filter: expr true for 28" );
-ok( $expr->( { 2 => 1, 28 => 1 } ), "$cat_filter: expr true for 2 AND 28" );
+ok( $expr->( { 31 => 1 } ), "$cat_filter: expr true for 31" );
+ok( $expr->( { 2 => 1, 31 => 1 } ), "$cat_filter: expr true for 2 AND 31" );
 
 $cat_filter = "a(b)";
-@cats       = ( $cats_hash{29} );
+@cats       = ( $cats_hash{32} );
 $expr       = $ctx->compile_category_filter( $cat_filter, \@cats );
 is_deeply( [ map $_->id, @cats ],
-    [29], "$cat_filter: nothing else was added" );
-ok( $expr->( { 29 => 1 } ), "$cat_filter: expr true for 29" );
+    [32], "$cat_filter: nothing else was added" );
+ok( $expr->( { 32 => 1 } ), "$cat_filter: expr true for 32" );
 
 $cat_filter = "a/b";
-@cats       = ( $cats_hash{30} );
+@cats       = ( $cats_hash{33} );
 $expr       = $ctx->compile_category_filter( $cat_filter, \@cats );
 is_deeply( [ map $_->id, @cats ],
-    [30], "$cat_filter: nothing else was added" );
-ok( $expr->( { 30 => 1 } ), "$cat_filter: expr true for 30" );
+    [33], "$cat_filter: nothing else was added" );
+ok( $expr->( { 33 => 1 } ), "$cat_filter: expr true for 33" );
 
 $cat_filter = "a(b) OR a/b";
-@cats       = ( @cats_hash{ 29, 30 } );
+@cats       = ( @cats_hash{ 32, 33 } );
 $expr       = $ctx->compile_category_filter( $cat_filter, \@cats );
 @cats       = sort { $a->id <=> $b->id } @cats;
 is_deeply(
     [ map $_->id, @cats ],
-    [ 29,         30 ],
+    [ 32,         33 ],
     "$cat_filter: nothing else was added"
 );
-ok( $expr->( { 29 => 1 } ), "$cat_filter: expr true for 29" );
-ok( $expr->( { 30 => 1 } ), "$cat_filter: expr true for 30" );
-ok( $expr->( { 29 => 1, 30 => 1 } ), "$cat_filter: expr true for 29 AND 30" );
+ok( $expr->( { 32 => 1 } ), "$cat_filter: expr true for 32" );
+ok( $expr->( { 33 => 1 } ), "$cat_filter: expr true for 33" );
+ok( $expr->( { 32 => 1, 33 => 1 } ), "$cat_filter: expr true for 32 AND 33" );
 
 my @suite = (
 
@@ -208,15 +208,15 @@ my @suite = (
     # Case 109353
     { cats => [], cat_filter => '1', expr_ok => [] },
 
-    { cats => [ $cats_hash{32} ], cat_filter => 'abc123', expr_ok => [32] },
-    { cats => [ $cats_hash{33} ], cat_filter => '#32',    expr_ok => [33] },
+    { cats => [ $cats_hash{35} ], cat_filter => 'abc123', expr_ok => [35] },
+    { cats => [ $cats_hash{36} ], cat_filter => '#32',    expr_ok => [36] },
     {   cats       => [ values %cats_hash ],
         cat_filter => 'Test1 OR abc123',
-        expr_ok    => [32]
+        expr_ok    => [35]
     },
     {   cats       => [ values %cats_hash ],
         cat_filter => 'Test1 OR #32',
-        expr_ok    => [33]
+        expr_ok    => [36]
     },
     {   cats       => [ values %cats_hash ],
         cat_filter => 'Test1 AND abc123',
@@ -228,11 +228,11 @@ my @suite = (
     },
     {   cats       => [ values %cats_hash ],
         cat_filter => 'NOT abc123',
-        expr_ok    => [ grep { $_ != 32 } keys %cats_hash ]
+        expr_ok    => [ grep { $_ != 35 } keys %cats_hash ]
     },
     {   cats       => [ values %cats_hash ],
         cat_filter => 'NOT #32',
-        expr_ok    => [ grep { $_ != 33 } keys %cats_hash ]
+        expr_ok    => [ grep { $_ != 36 } keys %cats_hash ]
     },
 
     {   cats       => [ values %cats_hash ],

@@ -269,7 +269,15 @@ sub list_props {
             col             => 'author_id',
             display         => 'none',
             filter_editable => 0,
-            label           => 'Author',
+            label           => sub {
+                my ( $prop, $app, $val ) = @_;
+                my $author = MT->model('author')->load($val)
+                    or
+                    return $prop->error( MT->translate('Invalid parameter') );
+                my $label = MT->translate( 'User is [_1]',
+                    $author->nickname, );
+                return $label;
+            },
             label_via_param => sub {
                 my ( $prop, $app, $val ) = @_;
                 my $author = MT->model('author')->load($val)
