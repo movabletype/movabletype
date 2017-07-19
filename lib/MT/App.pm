@@ -3914,8 +3914,9 @@ sub return_uri {
 sub call_return {
     my $app = shift;
     $app->add_return_arg(@_) if @_;
+    my $connection = $app->get_header('Connection') || '';
     $app->redirect( $app->return_uri,
-        ( $app->get_header('Connection') eq 'close' ? ( UseMeta => 1 ) : () )
+        ( $connection eq 'close' ? ( UseMeta => 1 ) : () )
     );
 }
 
