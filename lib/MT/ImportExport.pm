@@ -64,7 +64,7 @@ sub import_contents {
     my $t_end          = $param{title_end};
     my $allow_comments = $blog->allow_comments_default;
     my $allow_pings    = $blog->allow_pings_default ? 1 : 0;
-    my $convert_breaks = $param{ConvertBreaks};
+    my $convert_breaks = $param{ConvertBreaks} || 0;
     $convert_breaks = $blog->convert_paras if $convert_breaks == -1;
     my $def_status = $param{default_status} || $blog->status_default;
     my ( %authors, %categories );
