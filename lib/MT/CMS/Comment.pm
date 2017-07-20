@@ -944,7 +944,7 @@ sub pre_save {
         return 1 unless $entry->author_id == $app->user->id;
     }
 
-    my $status = $app->param('status');
+    my $status = $app->param('status') || '';
     if ( $status eq 'publish' ) {
         $obj->approve;
     }
