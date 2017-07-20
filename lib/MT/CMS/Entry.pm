@@ -1164,14 +1164,14 @@ sub _build_entry_preview {
         $entry->{__tag_objects} = \@tags;
     }
 
-    my $ao_date = $q->param('authored_on_date');
-    my $ao_time = $q->param('authored_on_time');
+    my $ao_date = $q->param('authored_on_date') || '';
+    my $ao_time = $q->param('authored_on_time') || '';
     my $ao_ts   = $ao_date . $ao_time;
     $ao_ts =~ s/\D//g;
     $entry->authored_on($ao_ts);
 
-    my $uo_date = $q->param('unpublished_on_date');
-    my $uo_time = $q->param('unpublished_on_time');
+    my $uo_date = $q->param('unpublished_on_date') || '';
+    my $uo_time = $q->param('unpublished_on_time') || '';
     my $uo_ts   = $uo_date . $uo_time;
     $uo_ts =~ s/\D//g;
     $entry->unpublished_on($uo_ts);
