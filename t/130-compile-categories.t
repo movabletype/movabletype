@@ -245,7 +245,7 @@ foreach my $test (@suite) {
     $expr
         = $ctx->compile_category_filter( $test->{cat_filter}, $test->{cats} );
     ok( $expr, 'expr is defined' );
-    foreach my $cat_id ( keys %cats_hash ) {
+    foreach my $cat_id ( sort keys %cats_hash ) {
         if ( grep { $cat_id == $_ } @{ $test->{expr_ok} } ) {
             ok( $expr->( { $cat_id => 1 } ), 'expr true for ' . $cat_id );
         }

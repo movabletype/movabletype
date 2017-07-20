@@ -132,7 +132,7 @@ my %xml_tests = (
         '&amp;#0; &amp;#2; &#67; &amp;#x2; &#x67; &amp;#x19; &amp;#25',
 );
 
-for my $test ( keys %xml_tests ) {
+for my $test ( sort keys %xml_tests ) {
     if ( ref( $xml_tests{$test} ) eq 'ARRAY' ) {
         is( encode_xml($test), $xml_tests{$test}[0] );    #65 #69 #73
         is( decode_xml( $xml_tests{$test}[0] ), $test );  #66 #70 #74

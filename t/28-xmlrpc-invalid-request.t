@@ -183,7 +183,7 @@ sub _meta_weblog_post {
             if ( $i == $items_col ) {
 
                 my $base_items = $base_params->[$items_col];
-                for my $key ( keys %$base_items ) {
+                for my $key ( sort keys %$base_items ) {
                     next if $key eq 'categories' || $key eq 'mt_tb_ping_urls';
 
                     my $params = clone($base_params);
