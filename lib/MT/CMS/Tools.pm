@@ -1120,7 +1120,7 @@ sub backup {
     my $q        = $app->param;
     my $blog_id  = $q->param('blog_id');
     my $perms    = $app->permissions;
-    my $blog_ids = $q->param('backup_what');
+    my $blog_ids = $q->param('backup_what') || '';
     my @blog_ids = split ',', $blog_ids;
 
     require MT::Util::Log;
