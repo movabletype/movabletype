@@ -3908,7 +3908,9 @@ sub query_string {
 }
 
 sub return_uri {
-    $_[0]->uri . '?' . $_[0]->return_args;
+    my ( $uri, $query ) = ( $_[0]->uri, $_[0]->return_args );
+    return $uri if !defined $query or $query eq "";
+    $uri . '?' . $query;
 }
 
 sub call_return {
