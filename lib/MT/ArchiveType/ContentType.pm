@@ -31,4 +31,48 @@ sub archive_file {
 sub archive_title {
 }
 
+sub default_archive_templates {
+    return [
+        {   label    => MT->translate('yyyy/mm/base-name.html'),
+            template => '%y/%m/%-f',
+            default  => 1
+        },
+        {   label    => MT->translate('yyyy/mm/base_name.html'),
+            template => '%y/%m/%f'
+        },
+        {   label    => MT->translate('yyyy/mm/base-name/index.html'),
+            template => '%y/%m/%-b/%i'
+        },
+        {   label    => MT->translate('yyyy/mm/base_name/index.html'),
+            template => '%y/%m/%b/%i'
+        },
+        {   label    => MT->translate('yyyy/mm/dd/base-name.html'),
+            template => '%y/%m/%d/%-f'
+        },
+        {   label    => MT->translate('yyyy/mm/dd/base_name.html'),
+            template => '%y/%m/%d/%f'
+        },
+        {   label    => MT->translate('yyyy/mm/dd/base-name/index.html'),
+            template => '%y/%m/%d/%-b/%i'
+        },
+        {   label    => MT->translate('yyyy/mm/dd/base_name/index.html'),
+            template => '%y/%m/%d/%b/%i'
+        },
+        {   label    => MT->translate('category/sub-category/base-name.html'),
+            template => '%-c/%-f'
+        },
+        {   label =>
+                MT->translate('category/sub-category/base-name/index.html'),
+            template => '%-c/%-b/%i'
+        },
+        {   label    => MT->translate('category/sub_category/base_name.html'),
+            template => '%c/%f'
+        },
+        {   label =>
+                MT->translate('category/sub_category/base_name/index.html'),
+            template => '%c/%b/%i'
+        },
+    ];
+}
+
 1;
