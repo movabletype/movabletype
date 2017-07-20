@@ -1855,7 +1855,7 @@ sub post_save {
 
     my $dynamic = 0;
     my $q       = $app->param;
-    my $type    = $q->param('type');
+    my $type    = $q->param('type') || '';
 
     # FIXME: enumeration of types
     if (   $type eq 'custom'
