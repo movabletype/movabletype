@@ -484,9 +484,11 @@ function addMap() {
         + '&blog_id=' + frm['blog_id'].value
         + '&template_id=<mt:var name="id" escape="url">'
         + '&new_archive_type=' + f['new_archive_type'].value
+        <mt:if name="type" eq="ct">
         + '&content_type_id=' + f['content_type_id'].value
         + '&cat_field_id=' + f['cat_field_id'].value
         + '&dt_field_id=' + f['dt_field_id'].value
+        </mt:if>
         + '&magic_token=<mt:var name="magic_token" escape="url">';
     saveArchiveMapChange(param);
 }
