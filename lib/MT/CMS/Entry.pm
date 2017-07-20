@@ -1151,7 +1151,8 @@ sub _build_entry_preview {
         $entry->cache_property( 'categories', undef, [] );
     }
     my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
-    my @tag_names = MT::Tag->split( $tag_delim, $q->param('tags') );
+    my $tags = $q->param('tags');
+    my @tag_names = ( defined $tags and $tags ne '' ) ? MT::Tag->split( $tag_delim, $tags ) : ();
     if (@tag_names) {
         my @tags;
         foreach my $tag_name (@tag_names) {
