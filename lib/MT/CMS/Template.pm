@@ -480,7 +480,13 @@ sub edit {
             || $obj_type eq 'archive'
             || $obj_type eq 'ct' )
         {
-            my @at = $app->publisher->archive_types($obj_type);
+            my @at = $app->publisher->archive_types;
+            if ( $obj_type eq 'ct' ) {
+                @at = grep { $_ =~ /^ContentType/ } @at;
+            }
+            else {
+                @at = grep { $_ !~ /^ContentType/ } @at;
+            }
             my @archive_types;
             for my $at (@at) {
                 my $archiver      = $app->publisher->archiver($at);

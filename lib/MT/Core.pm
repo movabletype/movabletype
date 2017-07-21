@@ -2305,12 +2305,11 @@ BEGIN {
                 },
             },
         },
-        web_services     => undef,
-        stats_providers  => undef,
-        archive_types    => \&load_archive_types,
-        ct_archive_types => \&load_ct_archive_types,
-        tags             => \&load_core_tags,
-        text_filters     => {
+        web_services    => undef,
+        stats_providers => undef,
+        archive_types   => \&load_archive_types,
+        tags            => \&load_core_tags,
+        text_filters    => {
             '__default__' => {
                 label   => 'Convert Line Breaks',
                 handler => 'MT::Util::html_text_transform',
@@ -3321,11 +3320,6 @@ sub init_registry {
 sub load_archive_types {
     require MT::WeblogPublisher;
     return MT::WeblogPublisher->core_archive_types;
-}
-
-sub load_ct_archive_types {
-    require MT::ContentPublisher;
-    return MT::ContentPublisher->core_archive_types;
 }
 
 sub PerformanceLoggingPath {

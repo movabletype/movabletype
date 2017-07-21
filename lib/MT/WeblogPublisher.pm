@@ -83,22 +83,45 @@ sub init {
 
 sub core_archive_types {
     return {
-        'Yearly'           => 'MT::ArchiveType::Yearly',
-        'Monthly'          => 'MT::ArchiveType::Monthly',
-        'Weekly'           => 'MT::ArchiveType::Weekly',
-        'Individual'       => 'MT::ArchiveType::Individual',
-        'Page'             => 'MT::ArchiveType::Page',
-        'Daily'            => 'MT::ArchiveType::Daily',
-        'Category'         => 'MT::ArchiveType::Category',
-        'Author'           => 'MT::ArchiveType::Author',
-        'Author-Yearly'    => 'MT::ArchiveType::AuthorYearly',
-        'Author-Monthly'   => 'MT::ArchiveType::AuthorMonthly',
-        'Author-Weekly'    => 'MT::ArchiveType::AuthorWeekly',
-        'Author-Daily'     => 'MT::ArchiveType::AuthorDaily',
-        'Category-Yearly'  => 'MT::ArchiveType::CategoryYearly',
-        'Category-Monthly' => 'MT::ArchiveType::CategoryMonthly',
-        'Category-Daily'   => 'MT::ArchiveType::CategoryDaily',
-        'Category-Weekly'  => 'MT::ArchiveType::CategoryWeekly',
+        'Yearly'              => 'MT::ArchiveType::Yearly',
+        'Monthly'             => 'MT::ArchiveType::Monthly',
+        'Weekly'              => 'MT::ArchiveType::Weekly',
+        'Individual'          => 'MT::ArchiveType::Individual',
+        'Page'                => 'MT::ArchiveType::Page',
+        'Daily'               => 'MT::ArchiveType::Daily',
+        'Category'            => 'MT::ArchiveType::Category',
+        'Author'              => 'MT::ArchiveType::Author',
+        'Author-Yearly'       => 'MT::ArchiveType::AuthorYearly',
+        'Author-Monthly'      => 'MT::ArchiveType::AuthorMonthly',
+        'Author-Weekly'       => 'MT::ArchiveType::AuthorWeekly',
+        'Author-Daily'        => 'MT::ArchiveType::AuthorDaily',
+        'Category-Yearly'     => 'MT::ArchiveType::CategoryYearly',
+        'Category-Monthly'    => 'MT::ArchiveType::CategoryMonthly',
+        'Category-Daily'      => 'MT::ArchiveType::CategoryDaily',
+        'Category-Weekly'     => 'MT::ArchiveType::CategoryWeekly',
+        'ContentType'         => 'MT::ArchiveType::ContentType',
+        'ContentType-Yearly'  => 'MT::ArchiveType::ContentTypeYearly',
+        'ContentType-Monthly' => 'MT::ArchiveType::ContentTypeMonthly',
+        'ContentType-Weekly'  => 'MT::ArchiveType::ContentTypeWeekly',
+        'ContentType-Daily'   => 'MT::ArchiveType::ContentTypeDaily',
+        'ContentType_Author'  => 'MT::ArchiveType::ContentTypeAuthor',
+        'ContentType_Author-Yearly' =>
+            'MT::ArchiveType::ContentTypeAuthorYearly',
+        'ContentType_Author-Monthly' =>
+            'MT::ArchiveType::ContentTypeAuthorMonthly',
+        'ContentType_Author-Weekly' =>
+            'MT::ArchiveType::ContentTypeAuthorWeekly',
+        'ContentType_Author-Daily' =>
+            'MT::ArchiveType::ContentTypeAuthorDaily',
+        'ContentType_Category' => 'MT::ArchiveType::ContentTypeCategory',
+        'ContentType_Category-Yearly' =>
+            'MT::ArchiveType::ContentTypeCategoryYearly',
+        'ContentType_Category-Monthly' =>
+            'MT::ArchiveType::ContentTypeCategoryMonthly',
+        'ContentType_Category-Weekly' =>
+            'MT::ArchiveType::ContentTypeCategoryWeekly',
+        'ContentType_Category-Daily' =>
+            'MT::ArchiveType::ContentTypeCategoryDaily',
     };
 
 }

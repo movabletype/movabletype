@@ -16,11 +16,7 @@ use File::Basename;
 our %ArchiveTypes;
 
 sub init_archive_types {
-    my ( $app, $type ) = @_;
-    my $types
-        = $type eq 'ct'
-        ? MT->registry("ct_archive_types") || {}
-        : MT->registry("archive_types") || {};
+    my $types = MT->registry("archive_types") || {};
     my $mt = MT->instance;
     while ( my ( $type, $typedata ) = each %$types ) {
         if ( 'HASH' eq ref $typedata ) {
@@ -52,35 +48,6 @@ sub archiver {
         }
     }
     return $archiver;
-}
-
-sub core_archive_types {
-    return {
-        'ContentType'         => 'MT::ArchiveType::ContentType',
-        'ContentType-Yearly'  => 'MT::ArchiveType::ContentTypeYearly',
-        'ContentType-Monthly' => 'MT::ArchiveType::ContentTypeMonthly',
-        'ContentType-Weekly'  => 'MT::ArchiveType::ContentTypeWeekly',
-        'ContentType-Daily'   => 'MT::ArchiveType::ContentTypeDaily',
-        'ContentType_Author'  => 'MT::ArchiveType::ContentTypeAuthor',
-        'ContentType_Author-Yearly' =>
-            'MT::ArchiveType::ContentTypeAuthorYearly',
-        'ContentType_Author-Monthly' =>
-            'MT::ArchiveType::ContentTypeAuthorMonthly',
-        'ContentType_Author-Weekly' =>
-            'MT::ArchiveType::ContentTypeAuthorWeekly',
-        'ContentType_Author-Daily' =>
-            'MT::ArchiveType::ContentTypeAuthorDaily',
-        'ContentType_Category' => 'MT::ArchiveType::ContentTypeCategory',
-        'ContentType_Category-Yearly' =>
-            'MT::ArchiveType::ContentTypeCategoryYearly',
-        'ContentType_Category-Monthly' =>
-            'MT::ArchiveType::ContentTypeCategoryMonthly',
-        'ContentType_Category-Weekly' =>
-            'MT::ArchiveType::ContentTypeCategoryWeekly',
-        'ContentType_Category-Daily' =>
-            'MT::ArchiveType::ContentTypeCategoryDaily',
-    };
-
 }
 
 sub rebuild {
