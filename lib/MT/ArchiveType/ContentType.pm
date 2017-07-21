@@ -26,6 +26,24 @@ sub template_params {
 sub archive_file {
     my $obj = shift;
     my ( $ctx, %param ) = @_;
+    my $timestamp = $param{Timestamp};
+    my $file_tmpl = $param{Template};
+    my $blog      = $ctx->{__stash}{blog};
+    my $content   = $ctx->{__stash}{content};
+
+    my $file;
+    Carp::confess("archive_file_for ContentType archive needs an content")
+        unless $content;
+    if ($file_tmpl) {
+        $ctx->{current_timestamp} = $content->authored_on;
+    }
+    else {
+        my $basename = $content->identifier();
+        $basename ||= dirify( $content->label() );
+        $file = sprintf( "%04d/%02d/%s",
+            unpack( 'A4A2', $content->authored_on ), $basename );
+    }
+    $file;
 }
 
 sub archive_title {
