@@ -247,7 +247,7 @@ PERMCHECK: {
         return 1;
     }
 
-    my $status = $app->param('status');
+    my $status = $app->param('status') || '';
     if ( $status eq 'publish' ) {
         $obj->approve;
         if ( $original->junk_status != $obj->junk_status ) {
