@@ -2035,7 +2035,7 @@ sub save_entries {
     MT::Util::Log->info('--- Start save_entries.');
 
     my $perms   = $app->permissions;
-    my $type    = $app->param('_type');
+    my $type    = $app->param('_type') || '';
     my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;
