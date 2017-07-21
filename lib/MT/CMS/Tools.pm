@@ -630,7 +630,9 @@ sub save_cfg_system_general {
             'Debug mode is [_1]',
             $app->param('system_debug_mode')
         )
-    ) if ( $app->param('system_debug_mode') =~ /\d+/ );
+        )
+        if ( defined $app->param('system_debug_mode')
+        and $app->param('system_debug_mode') =~ /\d+/ );
     if ( not $cfg->HidePerformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
             push( @meta_messages,
@@ -646,7 +648,9 @@ sub save_cfg_system_general {
                 'Performance log path is [_1]',
                 $app->param('system_performance_logging_path')
             )
-        ) if ( $app->param('system_performance_logging_path') =~ /\w+/ );
+            )
+            if ( defined $app->param('system_performance_logging_path')
+            and $app->param('system_performance_logging_path') =~ /\w+/ );
         push(
             @meta_messages,
             $app->translate(
@@ -654,15 +658,17 @@ sub save_cfg_system_general {
                 $app->param('system_performance_logging_threshold')
             )
             )
-            if (
-            $app->param('system_performance_logging_threshold') =~ /\d+/ );
+            if ( defined $app->param('system_performance_logging_threshold')
+            and $app->param('system_performance_logging_threshold')
+            =~ /\d+/ );
     }
 
     # actually assign the changes
     $app->config( 'EmailAddressMain',
         ( scalar $app->param('system_email_address') ), 1 );
     $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
-        if ( $app->param('system_debug_mode') =~ /\d+/ );
+        if ( defined $app->param('system_debug_mode')
+        and $app->param('system_debug_mode') =~ /\d+/ );
     if ( not $cfg->HidePerformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
             $app->config( 'PerformanceLogging', 1, 1 );
@@ -672,11 +678,13 @@ sub save_cfg_system_general {
         }
         $app->config( 'PerformanceLoggingPath',
             $app->param('system_performance_logging_path'), 1 )
-            if ( $app->param('system_performance_logging_path') =~ /\w+/ );
+            if ( defined $app->param('system_performance_logging_path')
+            and $app->param('system_performance_logging_path') =~ /\w+/ );
         $app->config( 'PerformanceLoggingThreshold',
             $app->param('system_performance_logging_threshold'), 1 )
-            if (
-            $app->param('system_performance_logging_threshold') =~ /\d+/ );
+            if ( defined $app->param('system_performance_logging_threshold')
+            and $app->param('system_performance_logging_threshold')
+            =~ /\d+/ );
     }
 
     if ( not $cfg->HideBaseSitePath ) {
