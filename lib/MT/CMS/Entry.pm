@@ -2179,11 +2179,11 @@ PERMCHECK: {
                 $entry->$col($ts);
             };
 
-            my $co = $q->param( 'created_on_' . $id );
+            my $co = $q->param( 'created_on_' . $id ) || '';
             $date_closure->(
                 $co, 'authored_on', MT->translate('authored on')
             ) or return;
-            $co = $q->param( 'modified_on_' . $id );
+            $co = $q->param( 'modified_on_' . $id ) || '';
             $date_closure->(
                 $co, 'modified_on', MT->translate('modified on')
             ) or return;
