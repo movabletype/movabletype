@@ -325,7 +325,7 @@ sub _radio_button_registry {
         order      => 100,
         field_html => 'field_html/field_html_radio_button.tmpl',
         field_html_params =>
-            '$Core::MT::ContentFieldType::RadioButton::field_html_parmas',
+            '$Core::MT::ContentFieldType::RadioButton::field_html_params',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_values',
         tag_handler =>
@@ -865,13 +865,13 @@ sub _categories_registry {
         field_html_params =>
             '$Core::MT::ContentFieldType::Categories::field_html_params',
         ss_validator =>
-            '$Core::MT::ContentFieldType::Categroies::ss_validator',
+            '$Core::MT::ContentFieldType::Categories::ss_validator',
         tag_handler => '$Core::MT::ContentFieldType::Categories::tag_handler',
         list_props  => {
             categories => {
                 base      => '__virtual.string',
                 col       => 'label',
-                html      => '$Core::MT::ContentFieldType::Categroies::html',
+                html      => '$Core::MT::ContentFieldType::Categories::html',
                 terms     => '$Core::MT::ContentFieldType::Categories::terms',
                 use_blank => 1,
             },

@@ -10,7 +10,9 @@
   <mt:var name="css_include">
 
   <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
-  <mt:include name="modules/icon.tmpl">
+  <mt:include name="include/icon.tmpl">
+
+  <mt:include name="include/chromeless_libjs.tmpl">
 
   <mt:var name="html_head">
 </head>
@@ -25,4 +27,18 @@
     </div>
     </mt:unless>
 
-    <mt:include name="modules/page_title.tmpl">
+    <div id="nav">
+  <mt:if name="wizard_steps">
+    <mt:unless name="complete">
+      <mt:if name="step" ne="pre_start">
+    <mt:loop name="wizard_steps">
+    <mt:unless name="__last__">
+      <div class="step<mt:if name="active">_active</mt:if>"></div>
+    </mt:unless>
+    </mt:loop>
+      </mt:if>
+    </mt:unless>
+  </mt:if>
+    </div>
+
+    <mt:include name="include/page_title.tmpl">

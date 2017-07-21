@@ -28,6 +28,7 @@ sub start_document {
     my $data = shift;
 
     $self->{start} = 1;
+    no warnings 'redefine';
     *_decode = sub { $_[0] }
         unless $self->{is_pp};
 
@@ -611,9 +612,9 @@ sub end_element {
                 my $role = $class->load( { name => $obj->name } );
                 if ($role) {
                     my $old_perms = join '',
-                        sort { $a <=> $b } split( ',', $obj->permissions );
+                        sort { $a cmp $b } split( ',', $obj->permissions );
                     my $cur_perms = join '',
-                        sort { $a <=> $b } split( ',', $role->permissions );
+                        sort { $a cmp $b } split( ',', $role->permissions );
                     if ( $old_perms eq $cur_perms ) {
                         $self->{objects}->{"$class#$old_id"} = $role;
                         $exists = 1;

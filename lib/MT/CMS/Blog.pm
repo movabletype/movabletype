@@ -90,10 +90,11 @@ sub edit {
         my @cmtauth_loop;
         foreach ( keys %cmtauth ) {
             $cmtauth{$_}->{key} = $_;
+            $cmtauth{$_}->{order} ||= 0;
             if ( UNIVERSAL::isa( $cmtauth{$_}->{plugin}, 'MT::Plugin' ) ) {
 
                 # force plugin auth schemes to show after native auth schemes
-                $cmtauth{$_}{order} = ( $cmtauth{$_}{order} || 0 ) + 100;
+                $cmtauth{$_}{order} = $cmtauth{$_}{order} + 100;
             }
             push @cmtauth_loop, $cmtauth{$_};
         }
@@ -3483,7 +3484,7 @@ HTML
             <button
                 type="submit"
                 accesskey="x"
-                data-mt-modal-close='$return_url'
+                onclick="jQuery.fn.mtModal.close('$return_url'); return false;"
                 class="btn btn-primary mt-close-dialog-url"
                 ><__trans phrase="Close"></button>
         </div>

@@ -813,13 +813,14 @@ BEGIN {
                             ? 'author_id'
                             : 'created_by';
                         my %author_id
-                            = map { $_->$col => 1 if $_->$col } @$objs;
+                            = map { ( $_->$col ) ? ( $_->$col => 1 ) : () } @$objs;
                         my @authors = MT->model('author')
                             ->load( { id => [ keys %author_id ] } );
                         my %nickname
-                            = map { $_->id => $_->nickname } @authors;
+                            = map { $_->id => defined $_->nickname ? $_->nickname : '' } @authors;
+                        $nickname{0} = ''; # fallback
                         return sort {
-                            $nickname{ $a->$col } cmp $nickname{ $b->$col }
+                            $nickname{ $a->$col || 0 } cmp $nickname{ $b->$col || 0 }
                         } @$objs;
                     },
                 },
@@ -2714,7 +2715,7 @@ sub load_core_permissions {
                 'blog.edit_all_posts',      'blog.edit_assets',
                 'blog.edit_categories',     'blog.edit_config',
                 'blog.edit_notifications',  'blog.edit_tags',
-                'blog.edit_templates',      'blog_edit_content_types',
+                'blog.edit_templates',      'blog.edit_content_types',
                 'blog.manage_pages',        'blog.manage_users',
                 'blog.publish_post',        'blog.rebuild',
                 'blog.save_image_defaults', 'blog.send_notifications',

@@ -3,18 +3,18 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="Your changes have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="approved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="approved"
      class="success">
     <__trans phrase="The TrackBack has been approved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="is_junk">
   <mt:if name="junk_log_loop">
@@ -50,12 +50,12 @@
     </div>
   </div>
   <mt:else>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="junk-message"
      class="alert"
      can_close="0">
     <__trans phrase="This trackback was classified as spam.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 </mt:if>
 </mt:setvarblock>
@@ -81,14 +81,14 @@
 </mt:setvartemplate>
 
 <mt:setvarblock name="related_content">
-<mtapp:newwidget
+<mtapp:widget
    id="useful-links"
    label="<__trans phrase="Useful links">">
   <ul class="list-unstyled">
     <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Manage TrackBacks"></a></li>
     <li><mt:if name="entry_permalink"><a href="<mt:var name="entry_permalink">" target="<__trans phrase="_external_link_target">"><__trans phrase="View [_1]" params="<mt:var name="target_label">"></a></mt:if></li>
   </ul>
-</mtapp:newwidget>
+</mtapp:widget>
 
 <mtapp:PageActions>
 </mt:setvarblock>
@@ -100,7 +100,7 @@
 </ul>
 </mt:setvarblock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 
 <form method="post" action="<mt:var name="script_url">">
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
@@ -224,8 +224,6 @@
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
 </mt:if>
 </form>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

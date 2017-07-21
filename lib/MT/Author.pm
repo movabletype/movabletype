@@ -1120,11 +1120,6 @@ sub permissions {
         }
         elsif ( @perm == 1 ) {
             $perm = $perm[0];
-            if ( !$perm->blog_id ) {
-                $perm->blog_id( $obj->id );
-                delete $perm->{column_values}{blog_id};
-                delete $perm->{changed_cols}{blog_id};
-            }
         }
         elsif ( @perm > 2 ) {
 

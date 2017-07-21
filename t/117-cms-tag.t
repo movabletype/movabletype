@@ -138,7 +138,10 @@ subtest 'Test in website scope' => sub {
         my $checkbox = quotemeta(
             '<label for="custom-prefs-entry_count">Entries</label>');
         $checkbox = qr/$checkbox/;
+SKIP: {
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
         like( $out, $checkbox, 'Has "Entries" setting in Display Options' );
+}
 
         done_testing();
     };

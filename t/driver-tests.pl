@@ -45,6 +45,11 @@ BEGIN {
 
     my $db = $1
         if $ENV{MT_CONFIG} =~ m/(.*)-test(?:-disable-object-cache)?.cfg/;
+
+    if ( $db ne 'mysql' ) {
+        plan skip_all => "Test for '$db' is not actively maintained";
+    }
+
     my $module = $modules{$db};
     eval "require $module;";
     plan skip_all => "Database driver '$module' not found."

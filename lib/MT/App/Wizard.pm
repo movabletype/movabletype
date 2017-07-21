@@ -1321,18 +1321,18 @@ sub cgipath {
     my $app = shift;
 
     # these work for Apache... need to test for IIS...
-    my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
+    my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST} || '';
     $host =~ s/:\d+//;    # eliminate any port that may be present
     my $port = $ENV{SERVER_PORT};
 
     # REQUEST_URI for CGI-compliant servers; SCRIPT_NAME for IIS.
-    my $uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
+    my $uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME} || '';
     $uri =~ s!/mt-wizard(\.f?cgi|\.f?pl)(\?.*)?$!/!;
 
     my $cgipath = '';
-    $cgipath = $port == 443 ? 'https' : 'http';
+    $cgipath = ( $port and $port == 443 ) ? 'https' : 'http';
     $cgipath .= '://' . $host;
-    $cgipath .= ( $port == 443 || $port == 80 ) ? '' : ':' . $port;
+    $cgipath .= ( !$port || $port == 443 || $port == 80 ) ? '' : ':' . $port;
     $cgipath .= $uri;
 
     $cgipath;
@@ -1408,12 +1408,12 @@ sub is_valid_static_path {
         $path = $static_uri . 'mt.js';
     }
     elsif ( $static_uri =~ m#^/# ) {
-        my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
+        my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST} || '';
         $host =~ s/:\d+//;    # eliminate any port that may be present
         my $port = $ENV{SERVER_PORT};
-        $path = $port == 443 ? 'https' : 'http';
+        $path = ( $port and $port == 443 ) ? 'https' : 'http';
         $path .= '://' . $host;
-        $path .= ( $port == 443 || $port == 80 ) ? '' : ':' . $port;
+        $path .= ( !$port || $port == 443 || $port == 80 ) ? '' : ':' . $port;
         $path .= $static_uri . 'mt.js';
     }
     else {

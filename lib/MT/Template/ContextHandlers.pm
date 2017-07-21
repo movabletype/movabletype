@@ -45,14 +45,10 @@ sub core_tags {
             Section      => \&MT::Template::Tags::System::_hdlr_section,
 
             ## App
-            'App:Setting' => \&MT::Template::Tags::App::_hdlr_app_setting,
-            'App:Widget'  => \&MT::Template::Tags::App::_hdlr_app_widget,
-            'App:NewWidget' =>
-                \&MT::Template::Tags::App::_hdlr_app_new_widget,
+            'App:Setting'   => \&MT::Template::Tags::App::_hdlr_app_setting,
+            'App:Widget'    => \&MT::Template::Tags::App::_hdlr_app_widget,
             'App:StatusMsg' => \&MT::Template::Tags::App::_hdlr_app_statusmsg,
-            'App:NewStatusMsg' =>
-                \&MT::Template::Tags::App::_hdlr_app_new_statusmsg,
-            'App:Listing' => \&MT::Template::Tags::App::_hdlr_app_listing,
+            'App:Listing'   => \&MT::Template::Tags::App::_hdlr_app_listing,
             'App:SettingGroup' =>
                 \&MT::Template::Tags::App::_hdlr_app_setting_group,
             'App:Form' => \&MT::Template::Tags::App::_hdlr_app_form,
@@ -3292,155 +3288,6 @@ sub _hdlr_app_widget {
     my $closable      = $args->{can_close} ? 1 : 0;
     if ($closable) {
         $header_action
-            = qq{<a title="<__trans phrase="Remove this widget">" onclick="javascript:removeWidget('$id'); return false;" href="javascript:void(0);" class="widget-close-link"><span>close</span></a>};
-    }
-    my $widget_header = "";
-    if ( $label_link && $label_onclick ) {
-        $widget_header
-            = "\n<h2><a href=\"$label_link\" onclick=\"$label_onclick\"><span>$label</span></a></h2>";
-    }
-    elsif ($label_link) {
-        $widget_header
-            = "\n<h2><a href=\"$label_link\"><span>$label</span></a></h2>";
-    }
-    else {
-        $widget_header = "\n<h2><span>$label</span></h2>";
-    }
-    my $token    = $ctx->var('magic_token')     || '';
-    my $scope    = $ctx->var('widget_scope')    || 'system';
-    my $singular = $ctx->var('widget_singular') || '';
-
-    # Make certain widget_id is set
-    my $vars = $ctx->{__stash}{vars};
-    local $vars->{widget_id}     = $id;
-    local $vars->{widget_header} = '';
-    local $vars->{widget_footer} = '';
-    my $app = MT->instance;
-    my $blog = $app->can('blog') ? $app->blog : $ctx->stash('blog');
-    my $blog_field
-        = $blog
-        ? qq{<input type="hidden" name="blog_id" value="}
-        . $blog->id . q{" />}
-        : "";
-    local $vars->{blog_id} = $blog->id if $blog;
-    my $insides = $ctx->slurp( $args, $cond );
-    my $widget_footer = ( $ctx->var('widget_footer') || '' );
-    my $var_header    = ( $ctx->var('widget_header') || '' );
-
-    if ( $var_header =~ m/<h2[ >]/i ) {
-        $widget_header = $var_header;
-    }
-    else {
-        $widget_header .= $var_header;
-    }
-    my $corners
-        = $args->{corners}
-        ? '<div class="corners"><b></b><u></u><s></s><i></i></div>'
-        : "";
-    my $tabbed       = $args->{tabbed} ? ' mt:delegate="tab-container"' : "";
-    my $header_class = $tabbed         ? 'widget-header-tabs'           : '';
-    my $return_args = $app->make_return_args;
-    $return_args = encode_html($return_args);
-    my $cgi = $app->uri;
-    if ( $hosted_widget && ( !$insides !~ m/<form\s/i ) ) {
-        $insides = <<"EOT";
-        <form id="$id-form" method="post" action="$cgi" onsubmit="updateWidget('$id'); return false">
-        <input type="hidden" name="__mode" value="update_widget_prefs" />
-        <input type="hidden" name="widget_id" value="$id" />
-        $blog_field
-        <input type="hidden" name="widget_action" value="save" />
-        <input type="hidden" name="widget_scope" value="$scope" />
-        <input type="hidden" name="widget_singular" value="$singular" />
-        <input type="hidden" name="magic_token" value="$token" />
-        <input type="hidden" name="return_args" value="$return_args" />
-$insides
-        </form>
-EOT
-    }
-    return <<"EOT";
-<div id="$id" class="widget $class"$tabbed>
-  <div class="widget-header $header_class">
-    <div class="widget-action">$header_action</div>
-    <div class="widget-label">$widget_header</div>
-  </div>
-  <div class="widget-content">
-    $insides
-  </div>
-  <div class="widget-footer">$widget_footer</div>$corners
-</div>
-EOT
-}
-
-=head2 App:NewWidget
-
-An application template tag that produces HTML for displaying a MT CMS
-dashboard widget. Custom widget templates should utilize this tag to wrap
-their widget content.
-
-B<Attributes:>
-
-=over 4
-
-=item * id (optional)
-
-If specified, will be used as the 'id' attribute for the outermost C<div>
-tag for the widget. If unspecified, will use the 'widget_id' template
-variable instead.
-
-=item * label (required)
-
-The label to display above the widget.
-
-=item * label_link (optional)
-
-If specified, this link will wrap the label for the widget.
-
-=item * label_onclick
-
-If specified, this JavaScript code will be assigned to the 'onclick'
-attribute of a link tag wrapping the widget label.
-
-=item * class (optional)
-
-If unspecified, will use the id of the widget. This class is included in the
-'class' attribute of the outermost C<div> tag for the widget.
-
-=item * header_action
-
-=item * can_close (optional; default "0")
-
-Identifies whether widget may be closed or not.
-
-=item * tabbed (optional; default "0")
-
-If specified, the widget will be assigned an attribute that gives it
-a tabbed interface.
-
-=back
-
-B<Example:>
-
-    <mtapp:NewWidget class="widget my-widget"
-        label="<__trans phrase="All About Me">" can_close="1">
-        (contents of widget go here)
-    </mtapp:NewWidget>
-
-=for tags application
-
-=cut
-
-sub _hdlr_app_new_widget {
-    my ( $ctx, $args, $cond ) = @_;
-    my $hosted_widget = $ctx->var('widget_id') ? 1 : 0;
-    my $id            = $args->{id} || $ctx->var('widget_id') || '';
-    my $label         = $args->{label};
-    my $class         = $args->{class} || $id;
-    my $label_link    = $args->{label_link} || "";
-    my $label_onclick = $args->{label_onclick} || "";
-    my $header_action = $args->{header_action} || "";
-    my $closable      = $args->{can_close} ? 1 : 0;
-    if ($closable) {
-        $header_action
             = qq{<button type="button" class="close remove-widget"><span>&times;</span></button>};
     }
     my $widget_header = "";
@@ -3554,88 +3401,6 @@ Accepted values: "all", "index".
 
 sub _hdlr_app_statusmsg {
     my ( $ctx, $args, $cond ) = @_;
-    my $app     = MT->instance;
-    my $id      = $args->{id};
-    my $class   = $args->{class} || 'info';
-    my $msg     = $ctx->slurp;
-    my $rebuild = $args->{rebuild} || '';
-    my $no_link = $args->{no_link} || '';
-    my $blog_id = $ctx->var('blog_id');
-    my $blog    = $ctx->stash('blog');
-    if ( !$blog && $blog_id ) {
-        $blog = MT->model('blog')->load($blog_id);
-    }
-    if ( $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
-        my $link_l
-            = $no_link
-            ? ''
-            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">';
-        my $link_r = $no_link ? '' : '</a>';
-        my $obj_type
-            = $rebuild eq 'blog'
-            ? MT->translate('blog(s)')
-            : MT->translate('website(s)');
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your [_3] to see these changes take effect." params="$link_l%%$link_r%%$obj_type">};
-    }
-    elsif (
-        $blog && $app->user
-        and $app->user->can_do(
-            'rebuild',
-            at_least_one => 1,
-            blog_id      => $blog->id,
-        )
-        )
-    {
-        $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">}
-            if $rebuild eq 'all';
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">}
-            if $rebuild eq 'index';
-    }
-    else {
-        $rebuild = '';
-    }
-    my $close = '';
-    if ( $id && ( $args->{can_close} || ( !exists $args->{can_close} ) ) ) {
-        $close
-            = qq{<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>};
-    }
-    $id    = defined $id    ? qq{ id="$id"}      : "";
-    $class = defined $class ? qq{msg msg-$class} : "msg";
-    return $ctx->build(<<"EOT");
-    <div$id class="$class"><p class="msg-text">$msg $rebuild</p>$close</div>
-EOT
-}
-
-=head2 App:NewStatusMsg
-
-An application template tag that outputs a MT status message.
-
-B<Attributes:>
-
-=over 4
-
-=item * id (optional)
-
-=item * class (optional; default "info")
-
-=item * rebuild (optional)
-
-Accepted values: "all", "index".
-
-=item * can_close (optional; default "1")
-
-=back
-
-=for tags application
-
-=cut
-
-sub _hdlr_app_new_statusmsg {
-    my ( $ctx, $args, $cond ) = @_;
     my $app = MT->instance;
     my $id  = $args->{id};
 
@@ -3693,7 +3458,7 @@ sub _hdlr_app_new_statusmsg {
             = qq{<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>};
     }
     return $ctx->build(<<"EOT");
-    <div$id class="$class">$msg $rebuild $close</div>
+    <div$id class="$class">$close $msg $rebuild</div>
 EOT
 }
 
@@ -4132,7 +3897,7 @@ sub _hdlr_app_page_actions {
     return '' if ( ref($loop) ne 'ARRAY' ) || ( !@$loop );
     my $mt = '&amp;magic_token=' . $app->current_magic;
     return $ctx->build( <<EOT, $cond );
-    <mtapp:newwidget
+    <mtapp:widget
         id="page_actions"
         label="<__trans phrase="Actions">">
                 <ul class="list-unstyled">
@@ -4140,11 +3905,11 @@ sub _hdlr_app_page_actions {
             <mt:if name="page">
                     <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>><mt:var name="label"></a></li>
             <mt:else><mt:if name="link">
-                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open"</mt:if>><mt:var name="label"></a></li>
+                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open" data-mt-modal-large</mt:if>><mt:var name="label"></a></li>
             </mt:if></mt:if>
         </mt:loop>
                 </ul>
-    </mtapp:newwidget>
+    </mtapp:widget>
 EOT
 }
 

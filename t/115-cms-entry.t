@@ -206,14 +206,20 @@ subtest 'Test in website scope' => sub {
         ok( $out, "Request: website dashboard" );
 
         my @labels = _get_entries_menu_labels($out);
+SKIP: {
+        skip "new UI", 2 unless $ENV{MT_TEST_NEW_UI};
         array_any_ok( 'New', @labels,
             '"Entries New" menu in website scope exists if admin' );
         array_any_ok( 'Manage', @labels,
             '"Entries Manage" menu in website scope exists if admin' );
+}
 
         my $fav_action_entry = 'fav-action-entry';
+SKIP: {
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
         like( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if admin' );
+}
 
         $app = _run_app(
             'MT::App::CMS',
@@ -226,14 +232,20 @@ subtest 'Test in website scope' => sub {
         ok( $out, "Request: website dashboard" );
 
         @labels = _get_entries_menu_labels($out);
+SKIP: {
+        skip "new UI", 2 unless $ENV{MT_TEST_NEW_UI};
         array_any_ok( 'New', @labels,
             '"Entries New" menu in website scope exists if permitted user' );
         array_any_ok( 'Manage', @labels,
             '"Entries Manage" menu in website scope exists if permitted user'
         );
+}
 
+SKIP: {
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
         like( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if permitted user' );
+}
 
         $app = _run_app(
             'MT::App::CMS',
@@ -270,8 +282,11 @@ subtest 'Test in website scope' => sub {
         array_none_ok( 'New', @labels,
             '"Entries New" menu in website scope does not exist if child blog'
         );
+SKIP: {
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
         array_any_ok( 'Manage', @labels,
             '"Entries Manage" menu in website scope exists if child blog' );
+}
 
         unlike( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if child blog' );
@@ -338,7 +353,10 @@ subtest 'Test in website scope' => sub {
         my $column
             = quotemeta('<span class="col-label">Website/Blog Name</span>');
         $column = qr/$column/;
+SKIP: {
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
         like( $out, $column, '"Website/Blog Name" column exists' );
+}
 
         local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
         $app = _run_app(

@@ -2,15 +2,15 @@
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="backup" value="1">
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="danger"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 
 <div id="backup-panel">
@@ -86,8 +86,6 @@
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
   </form>
 </div>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

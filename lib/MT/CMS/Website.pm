@@ -543,10 +543,12 @@ sub dialog_move_blogs {
     $app->listing(
         {   type     => 'website',
             code     => $hasher,
-            template => 'dialog/move_blogs.tmpl',
-            terms    => $terms,
-            args     => $args,
-            params   => {
+            template => $app->param('json')
+            ? 'include/listing_panel.tmpl'
+            : 'dialog/move_blogs.tmpl',
+            terms  => $terms,
+            args   => $args,
+            params => {
                 dialog_title  => $app->translate("Select Website"),
                 items_prompt  => $app->translate("Selected Website"),
                 search_prompt => $app->translate(

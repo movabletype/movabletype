@@ -3,7 +3,11 @@
   <script type="text/javascript">
   /* <![CDATA[ */
   jQuery(function() {
-  <mt:var name="jq_js_include">
+      <mt:var name="jq_js_include">
+
+      // modal
+      jQuery('.mt-modal-open').mtModal();
+      jQuery('[data-mt-modal-close]').mtModalClose();
   });
   /* ]]> */
   </script>

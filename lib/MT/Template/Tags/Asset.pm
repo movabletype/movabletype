@@ -1178,8 +1178,8 @@ sub _hdlr_asset_thumbnail_url {
     }
 
     if ( !$args->{force} ) {
-        delete $arg{Width}  if $arg{Width} > $a->image_width;
-        delete $arg{Height} if $arg{Height} > $a->image_height;
+        delete $arg{Width}  if $arg{Width} and $arg{Width} > $a->image_width;
+        delete $arg{Height} if $arg{Height} and $arg{Height} > $a->image_height;
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
@@ -1284,8 +1284,8 @@ sub _hdlr_asset_thumbnail_link {
     $arg{Square} = $args->{square} if $args->{square};
 
     if ( !$args->{force} ) {
-        delete $arg{Width}  if $arg{Width} > $a->image_width;
-        delete $arg{Height} if $arg{Height} > $a->image_height;
+        delete $arg{Width}  if $arg{Width} and $arg{Width} > $a->image_width;
+        delete $arg{Height} if $arg{Height} and $arg{Height} > $a->image_height;
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);

@@ -3,7 +3,7 @@
 <mt:setvar name="screen_class" value="sign-in">
 <mt:setvar name="no_page_header" value="1">
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <mt:if name="auth_loop">
 <mtapp:setting
    id="comment_signin_options"
@@ -22,20 +22,20 @@
 </mt:if>
 
 <mt:if name="message">
-<mtapp:newstatusmsg
+<mtapp:statusmsg
    id="message"
    class="warning"
    can_close="0">
   <mt:var name="message">
-</mtapp:newstatusmsg>
+</mtapp:statusmsg>
 </mt:if>
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="error"
      class="danger"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 
 <mt:if name="enabled_MovableType">
@@ -106,8 +106,6 @@
 </div>
 </mt:loop>
 </mt:if>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:setvarblock name="css_include" append="1">

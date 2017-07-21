@@ -18,70 +18,70 @@
 
 <mt:setvarblock name="system_msg" id="system_msg">
 <mt:if name="saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="This profile has been updated.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="recovered">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="recovered"
      class="success">
     <__trans phrase="A new password has been generated and sent to the email address [_1]." params="<mt:var name="email" escape="html">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="unlocked">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="unlocked"
      class="success">
     <__trans phrase="This profile has been unlocked.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="danger"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="editing_other_profile">
   <mt:if name="status_pending">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="user-pending"
        class="alert"
        can_close="0">
       <__trans phrase="This user was classified as pending.">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   <mt:else>
     <mt:unless name="status_enabled">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="user-disabled"
        class="alert"
        can_close="0">
       <__trans phrase="This user was classified as disabled.">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
     </mt:unless>
   </mt:if>
 </mt:if>
 <mt:if name="locked_out">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="user-locked-out"
      class="alert"
      can_close="0">
     <__trans phrase="This user was locked out."><mt:if name="recover_lockout_link"> <__trans phrase="If you want to unlock this user click the 'Unlock' link. <a href="[_1]">Unlock</a>" params="<mt:var name="recover_lockout_link">"></mt:if>
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="related_content">
 <mt:unless name="new_object">
-  <mtapp:newwidget
+  <mtapp:widget
      id="user-properties"
      label="<__trans phrase="User properties">">
     <mt:include name="include/users_content_nav.tmpl">
-  </mtapp:newwidget>
+  </mtapp:widget>
 </mt:unless>
 </mt:setvarblock>
 
@@ -214,19 +214,17 @@ jQuery('#profile').submit(function(eventObject) {
     if ( !jQuery("#pass_verify").mtValidate('simple') ) return false;
 });
 
-<mt:unless name="new_object">
-jQuery('#change-password-link').click(function(event) {
-    jQuery(this).parents('#show_password-field').next('#password-fields').show().focus();
-    jQuery(this).parents('#show_password-field').hide();
+function showPasswordField() {
+    jQuery('#change-password-link').parents('#show_password-field').next('#password-fields').show().focus();
+    jQuery('#change-password-link').parents('#show_password-field').hide();
     event.preventDefault();
-});
-</mt:unless>
+}
 
 /* ]]> */
 </script>
 </mt:setvarblock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <form name="profile" id="profile" method="post" action="<mt:var name="script_url">">
   <input type="hidden" name="__mode" value="save" />
   <input type="hidden" name="_type" value="author" />
@@ -331,7 +329,7 @@ jQuery('#change-password-link').click(function(event) {
     <mtapp:setting
        id="show_password"
        label="<__trans phrase="Password">">
-      <a href="#" id="change-password-link" class="toggle-link"><__trans phrase="Change Password"></a>
+      <a href="#" id="change-password-link" class="toggle-link" onclick="showPasswordField();"><__trans phrase="Change Password"></a>
     </mtapp:setting>
       </mt:unless>
     <div id="password-fields"<mt:unless name="new_object"> style="display: none;"</mt:unless>>
@@ -519,8 +517,6 @@ jQuery('#change-password-link').click(function(event) {
     </mt:unless>
   </mt:unless>
 </mt:if>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

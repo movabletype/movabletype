@@ -261,12 +261,12 @@
 <mt:else>
   <div id="<$mt:var name="template_type" default="template" escape="html"$>-listing" class="listing zero-state-listing zero-state">
     <mt:var name="listing_header">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="zero-state"
        class="info zero-state"
        can_close="0">
       <__trans phrase="No [_1] could be found." params="<$mt:var name="template_type_label" lower_case="1"$>">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   </div>
 </mtapp:listing>
 

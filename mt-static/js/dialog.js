@@ -277,7 +277,8 @@ ListingPanel = new Class(Panel, {
     init: function(name, searchtype) {
         ListingPanel.superClass.init.apply(this, arguments);
 
-        this.footerElement = TC.getElementsByClassName("modal-footer")[0];
+        var panelId = name + '-panel';
+        this.footerElement = TC.getElementsByClassName("modal-footer", panelId)[0];
 
         // for closures
         var self = this;

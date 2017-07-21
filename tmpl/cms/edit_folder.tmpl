@@ -3,32 +3,32 @@
 
 <MTSetVarBlock name="system_msg">
     <mt:if name="error">
-        <mtapp:newstatusmsg
+        <mtapp:statusmsg
             id="generic-error"
             class="error"
             can_close="0">
             <mt:var name="error">
-        </mtapp:newstatusmsg>
+        </mtapp:statusmsg>
     </mt:if>
     <mt:if name="saved">
-        <mtapp:newstatusmsg
+        <mtapp:statusmsg
             id="saved"
             class="success"
             rebuild="all"
             can_close="0">
             <__trans phrase="Your changes have been saved.">
-        </mtapp:newstatusmsg>
+        </mtapp:statusmsg>
     </mt:if>
 </MTSetVarBlock>
 <mt:setvarblock name="useful_links">
-    <mtapp:newwidget
+    <mtapp:widget
         id="useful-links"
         label="<__trans phrase="Useful links">">
         <ul class="list-unstyled">
             <li><a href="<mt:var name="script_url">?__mode=list&amp;_type==folder&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"><__trans phrase="Manage Folders"></a></li>
             <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=page&amp;blog_id=<$mt:var name="blog_id" escape="url"$>&amp;filter=category_id&amp;filter_val=<$mt:var name="id" escape="url"$>"><__trans phrase="Manage pages in this folder"></a></li>
         </ul>
-    </mtapp:newwidget>
+    </mtapp:widget>
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
@@ -65,7 +65,7 @@ function toggleFile() {
 </script>
 </mt:setvarblock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <div id="folder-details-content">
 
     <form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
@@ -121,7 +121,6 @@ function toggleFile() {
 
 <$MTApp:PageActions$>
 
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

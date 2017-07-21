@@ -10,6 +10,7 @@ BEGIN {
 }
 
 use Test::Base;
+plan skip_all => "new UI" unless $ENV{MT_TEST_NEW_UI};
 plan tests => 1 * blocks;
 
 use MT;

@@ -10,7 +10,6 @@
 </mt:if>
 
 <mt:setvarblock name="js_include" append="1">
-  <mt:include name="modules/libjs.tmpl">
   <script type="text/javascript" src="<mt:var name="static_uri">js/assetdetail.js?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="text/javascript" src="<mt:var name="static_uri">js/upload_settings.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:setvarblock>
@@ -104,7 +103,7 @@
       type="submit"
       accesskey="x"
       class="cancel action button mt-close-dialog btn btn-default"
-      onclick="jQuery.fn.mtModal.close(); return false;"
+      data-mt-modal-close
       title="<__trans phrase="Cancel (x)">">
       <__trans phrase="Cancel">
     </button>
@@ -128,22 +127,6 @@ jQuery('.left-menu-item').click( function() {
   jQuery('.actions-bar button.primary')
     .attr('disabled', 'disabled')
     .addClass('disabled');
-/*
-  jQuery('div.panel')
-    .addClass('hidden')
-    .hide();
-  jQuery(currentPanel)
-    .removeClass('hidden')
-    .show()
-    .trigger(event);
-  jQuery(this)
-    .parent('li')
-    .siblings()
-    .removeClass('active');
-  jQuery(this)
-    .parent('li')
-    .addClass('active');
-*/
 });
 
 jQuery('.actions-bar button.primary').click(function() {

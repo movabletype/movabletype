@@ -1,6 +1,6 @@
 <mt:setvarblock name="page_title"><__trans phrase="Insert Options"></mt:setvarblock>
-<mt:include name="dialog/header.tmpl">
 
+<mt:setvarblock name="css_include" append="1">
 <style>
  .asset-detail-panel {
      border: 1px solid #c0c6c9;
@@ -15,7 +15,7 @@
      border-radius: 3px;
      margin-bottom: 1em;
  }
- 
+
  .asset-detail-panel .toggle-selector {
      float: right;
      line-height: 1.5em;
@@ -28,8 +28,13 @@
      border-bottom: solid 1px #c0c6c9;
  }
 </style>
+</mt:setvarblock>
 
+<mt:setvarblock name="form_header">
 <form id="asset-detail-panel-form">
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
   <div id="asset_details">
 <mt:loop name="options_loop" >
     <div id="entry-prefs-<mt:var name="id">" class="asset-detail-panel" data-asset-id="<mt:var name="id">">
@@ -54,24 +59,27 @@
     </div>
 </mtloop>
   </div>
+</mt:setvarblock>
 
-<mt:setvarblock name="action_buttons">
+<mt:setvarblock name="modal_footer">
   <button
      type="submit"
      accesskey="s"
      title="<__trans phrase="Finish (s)">"
-     class="action primary button">
+     class="action primary button btn btn-primary">
     <__trans phrase="Finish"></button>
   <button
      type="submit"
      accesskey="x"
      title="<__trans phrase="Cancel (x)">"
-     class="cancel action button mt-close-dialog"
+     data-mt-modal-close
+     class="cancel action button mt-close-dialog btn btn-default"
      onclick="cancel_click(this)">
     <__trans phrase="Cancel"></button>
-</mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</mt:setvarblock>
 
+<mt:setvarblock name="form_footer">
 </form>
 
 <form id="asset-detail-form" action="<mt:var name="script_url">" method="post">
@@ -84,6 +92,7 @@
   <input type="hidden" name="new_entry" value="1" />
 </mt:if>
 </form>
+</mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
   jQuery('input[name="include"]').click(function() {
@@ -140,7 +149,7 @@
 
   jQuery('input[name="thumb_width"]').keypress(function(event){
     var key = event.charCode || event.keyCode;
-    if (( key == null) || ( key == 0 ) || ( key == 8 ) || 
+    if (( key == null) || ( key == 0 ) || ( key == 8 ) ||
         ( key == 9 ) || ( key == 13 ) || ( key == 27 ))
         return true;
     if (key > 60000) // handles range of special keys such as arrow keys
@@ -163,6 +172,7 @@
   });
 </mt:setvarblock>
 
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
   /* <![CDATA[ */
   function cancel_click(btn) {
@@ -171,11 +181,13 @@
       return true;
   }
   function cancel_upload(frm) {
-      frm['__mode'].value = 'cancel_upload'
-      parent.jQuery.fn.mtDialog.close();
+      frm['__mode'].value = 'cancel_upload';
+      jQuery.fn.mtModal.close();
       return true;
   }
   /* ]]> */
 </script>
+</mt:setvarblock>
 
-<mt:include name="dialog/footer.tmpl">
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

@@ -23,12 +23,12 @@ if (progress) {
 </p>
 </mt:unless>
 <mt:else>
-<mtapp:newstatusmsg
+<mtapp:statusmsg
    id="error"
    class="danger"
    can_close="0">
   <__trans phrase="An error occurred during the import process: [_1]. Please check your import file." params="<mt:var name="error">">
-</mtapp:newstatusmsg>
+</mtapp:statusmsg>
 </mt:if>
 
 <mt:include name="layout/default/footer.tmpl">

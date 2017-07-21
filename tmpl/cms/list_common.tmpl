@@ -5,11 +5,11 @@
 
 <mt:if name="build_user_menus">
 <mt:setvarblock name="related_content">
-  <mtapp:newwidget
+  <mtapp:widget
      id="user-properties"
      label="<__trans phrase="User properties">">
     <mt:include name="include/users_content_nav.tmpl">
-  </mtapp:newwidget>
+  </mtapp:widget>
 </mt:setvarblock>
 </mt:if>
 
@@ -20,7 +20,8 @@
     <mt:loop name="content_actions">
       <li>
         <a href="<mt:var name="url">"
-          class="icon-left<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"
+          class="icon-left<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog mt-modal-open</mt:if>"
+          <mt:if name="dialog">data-mt-modal-large</mt:if>
           <mt:if name="id"> id="<mt:var name="id">"</mt:if>
           <mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>
         >
@@ -59,7 +60,7 @@
 
 <mt:include name="include/basic_filter_forms.tmpl">
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 
   <div data-is="list-top"></div>
 
@@ -74,8 +75,6 @@
     </div>
   </div>
   </mt:if>
-
-  <mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:setvarblock name="css_include" append="1">

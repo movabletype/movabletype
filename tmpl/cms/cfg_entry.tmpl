@@ -3,36 +3,36 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
   <mt:if name="can_rebuild">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success"
      rebuild="all"
      can_close="1">
     <__trans phrase="Your preferences have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   <mt:else>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success"
      can_close="1">
     <__trans phrase="Your preferences have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 </mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="o"><mt:if name="is_website">website<mt:else>blog</mt:if></mt:setvarblock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <mtapp:form id="cfg_entry" name="cfg_entry" mode="save" object_type="$o">
   <input type="hidden" name="cfg_screen" value="cfg_entry" />
   <h5><__trans phrase="Publishing Defaults"></h5>
@@ -311,8 +311,6 @@
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </mtapp:form>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">

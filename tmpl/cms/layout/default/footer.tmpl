@@ -1,9 +1,8 @@
         </div>
-        <mt:var name="js_include">
       </div>
     </div>
 
-    <mt:include name="modules/footer.tmpl">
+    <mt:include name="include/footer.tmpl">
 
     <div id="bootstrapper" class="hidden"></div>
 
@@ -83,5 +82,7 @@
     })(jQuery);
     /* ]]> */
     </script>
+
+    <mt:if name="mt_debug"><mt:Include name="include/debug_hover.tmpl"></mt:if>
   </body>
 </html>

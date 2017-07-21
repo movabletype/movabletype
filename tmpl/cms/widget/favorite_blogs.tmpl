@@ -1,4 +1,4 @@
-<mtapp:newwidget
+<mtapp:widget
    class="favorite-blogs-widget tabbed"
    can_close="1">
 <input type="hidden" name="tab" value="<mt:var name="tab" escape="html">" />
@@ -88,12 +88,12 @@
       </div>
       </mt:if>
     <mt:else>
-      <mtapp:newstatusmsg
+      <mtapp:statusmsg
         id="zero-state"
         class="info zero-state"
         can_close="0">
         <__trans phrase="No website could be found. [_1]" params="<mt:if name="can_create_website"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0"><__trans phrase="Create a new"></a></mt:if>">
-      </mtapp:newstatusmsg>
+      </mtapp:statusmsg>
     </mt:if>
   </div>
   <div class="tab-pane" id="favorite-blog">
@@ -168,16 +168,16 @@
         </div>
       </mt:if>
     <mt:else>
-      <mtapp:newstatusmsg
+      <mtapp:statusmsg
         id="zero-state"
         class="info zero-state"
         can_close="0">
         <__trans phrase="No blogs could be found.">
-      </mtapp:newstatusmsg>
+      </mtapp:statusmsg>
     </mt:if>
   </div>
 </div>
-</mtapp:newwidget>
+</mtapp:widget>
 
 <mt:setvarblock name="js_include" append="1">
 <script src="<mt:var name="static_uri">jquery/jquery.mtfavoriteblogswidget.js"></script>

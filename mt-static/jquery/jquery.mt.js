@@ -1608,7 +1608,7 @@ $.fn.mtEditInputBlock = function(options) {
  */
 $.fn.mtModal = function (options) {
   var defaults = {
-      loadingimage: MT.App.StaticURI + 'images/indicator.gif',
+      loadingimage: StaticURI + 'images/indicator.gif',
       esckeyclose: true
   };
   var opts = $.extend(defaults, options);
@@ -1629,25 +1629,23 @@ $.fn.mtModal = function (options) {
 
 $.fn.mtModalClose = function () {
   return this.each(function () {
+    var url = $(this).data().mtModalClose;
     $(this).on('click', function () {
       $.fn.mtModal.close();
-    });
-
-    var url = $(this).data().mtModalClose;
-    if (url) {
-      var $modal = window.parent.jQuery('.mt-modal');
-      if ($modal.length > 0) {
-        $modal.on('hide.bs.modal', function () {
+      if (url) {
+        var $modal = window.parent.jQuery('.mt-modal');
+        if ($modal.length > 0) {
           window.parent.location = url;
-        });
+        }
       }
-    }
+      return false;
+    });
   });
 };
 
 $.fn.mtModal.open = function (url, options) {
   var defaults = {
-      loadingimage: MT.App.StaticURI + 'images/indicator.gif',
+      loadingimage: StaticURI + 'images/indicator.gif',
       esckeyclose: true
   };
   var opts = $.extend(defaults, options);
@@ -1687,7 +1685,7 @@ function initModal() {
       e.stopPropagation();
     });
 
-    $('iframe').load(resizeModal);
+    $('iframe.embed-responsive-item').load(resizeModal);
     $(window).on('resize', resizeModal);
   }
 }
@@ -1715,7 +1713,7 @@ function openModal(href, opts) {
     $modal.find('.modal-dialog').removeClass('modal-lg');
   }
 
-  $modal.find('iframe').attr('src', href);
+  $modal.find('iframe.embed-responsive-item').attr('src', href);
 
   $modal.modal({ keyboard: opts.esckeyclose });
 }
@@ -1730,10 +1728,14 @@ function openModalWithoutForm(href, opts) {
 
 function resizeModal() {
   var modalHeight;
-  if ($('iframe').contents().find('body .modal-body').length > 0) {
-    modalHeight = $('iframe').contents().find('body').outerHeight(true);
+  var $iframeContents = $('iframe.embed-responsive-item').contents();
+  if ($iframeContents.find('body .modal-body').length > 0) {
+    modalHeight = $iframeContents.find('body').outerHeight(true);
   } else {
-    modalHeight = $('iframe').contents().find('body > *:first').outerHeight(true);
+    modalHeight = $iframeContents.find('body > *:first').outerHeight(true);
+  }
+  if ( modalHeight < 500 ) {
+    modalHeight = 500;
   }
   $('.mt-modal .modal-content').css('padding-bottom', modalHeight);
 }

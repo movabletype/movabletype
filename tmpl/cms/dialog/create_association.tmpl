@@ -1,6 +1,5 @@
 <$mt:setvar name="screen_type" value="dialog-screen dialog-grant-role"$>
 <mt:setvarblock name="page_title"><mt:var name="dialog_title"></mt:setvarblock>
-<mt:include name="dialog/header.tmpl">
 
 <!--
 This dialog presents a list of roles for selection. The user may
@@ -31,6 +30,7 @@ all but the first will be hidden. The "continue" button will toggle from
 one page to the following page.
 -->
 
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
 
@@ -54,7 +54,7 @@ function dialog_closed(ok) {
         // commit!
         frm.submit();
     } else {
-        parent.jQuery.fn.mtDialog.close();
+        jQuery.fn.mtModal.close();
     }
 }
 
@@ -69,7 +69,7 @@ function returnRoleSelection(ok) {
         });
         parent.jQuery('input#new_created_user_role').val( ids.join(",") );
     }
-    parent.jQuery.fn.mtDialog.close();
+    jQuery.fn.mtModal.close();
 }
 
 
@@ -87,6 +87,9 @@ function init() {
 TC.attachLoadEvent(init);
 /* ]]> */
 </script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
 
 <form name="grant" id="grant" method="post" target="_top" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="grant_role" />
@@ -100,13 +103,21 @@ TC.attachLoadEvent(init);
     <input type="hidden" name="<mt:var name="panel_type">" value="" /></mt:loop>
 </form>
 
+<div class="modal-header">
+    <button type="button" class="close" data-mt-modal-close>
+        <span>&times;</span>
+    </button>
+    <h4 class="modal-title"><mt:var name="page_title"></h4>
+</div>
+
 <mt:if name="missing_data">
+<div class="modal-body">
     <mt:if name="missing_role">
         <mtapp:statusmsg
             id="generic-info"
             class="info"
             can_close="0">
-            <__trans phrase="No roles exist in this installation. [_1]Create a role</a>" params="<a href="javascript:void(0)" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_full_url">?__mode=view&amp;_type=role');">">
+            <__trans phrase="No roles exist in this installation. [_1]Create a role</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=role');">">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_group">
@@ -114,7 +125,7 @@ TC.attachLoadEvent(init);
             id="generic-info"
             class="info"
             can_close="0">
-            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href="javascript:void(0)" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_full_url">?__mode=view&amp;_type=group');">">
+            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=group');">">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_author">
@@ -122,7 +133,7 @@ TC.attachLoadEvent(init);
             id="generic-info"
             class="info"
             can_close="0">
-            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href="javascript:void(0)" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_full_url">?__mode=view&amp;_type=author');">">
+            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=author');">">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_blog">
@@ -130,23 +141,28 @@ TC.attachLoadEvent(init);
             id="generic-info"
             class="info"
             can_close="0">
-            <__trans phrase="No blogs exist in this installation. [_1]Create a blog</a>" params="<a href="javascript:void(0)" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_full_url">?__mode=view&amp;_type=blog');">">
+            <__trans phrase="No blogs exist in this installation. [_1]Create a blog</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=blog');">">
         </mtapp:statusmsg>
     </mt:if>
-<div class="actions-bar">
+</div>
+<div class="modal-footer actions-bar">
     <form onsubmit="return false" onclick="window.focus();">
         <button
            type="submit"
            accesskey="x"
-           class="cancel action primary button"
+           class="cancel action primary button btn btn-primary"
            title="<__trans phrase="Close (x)">"
            ><__trans phrase="Close"></button>
     </form>
 </div>
 <mt:else>
     <mt:loop name="panel_loop">
-        <mt:include name="include/listing_panel.tmpl">
+      <mt:include name="include/listing_panel.tmpl" use_page_content="1">
     </mt:loop>
 </mt:if>
 
-<mt:include name="dialog/footer.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">
+

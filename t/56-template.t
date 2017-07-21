@@ -3,8 +3,9 @@
 use strict;
 use warnings;
 
-use lib 'extlib', 'lib';
+use lib 'extlib', 'lib', 't/lib';
 
+use MT::Test;
 use Test::More;
 use MT::Template;
 

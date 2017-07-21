@@ -1,25 +1,25 @@
 <mt:setvarblock name="system_msg" append="1">
 <mt:if name="request.error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="request.saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="You have added [_1] to your address book." params="<strong><$mt:var name="saved" escape="html"$></strong>">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="request.saved_deleted">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved-deleted"
      class="success">
     <__trans phrase="You have successfully deleted the selected contacts from your address book.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 

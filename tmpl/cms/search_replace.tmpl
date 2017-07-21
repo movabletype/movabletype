@@ -102,7 +102,7 @@ function blurDateFields(s) {
 </script>
 </mt:setvarblock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <div id="search-form">
   <form id="search_form" name="search_form" method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="search_replace" />
@@ -261,30 +261,30 @@ function blurDateFields(s) {
       <mt:setvar name="rebuild_type" value="all">
       <mt:setvar name="no_link" value="0">
     </mt:if>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="replace-count"
      class="success"
      rebuild="$rebuild_type"
      no_link="$no_link"
      can_close="0">
     <__trans phrase="Successfully replaced [quant,_1,record,records]." params="<mt:var name="replace_count">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 
 <mt:if name="have_more">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="have-more-count"
      class="success">
     <__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a>
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 <mt:else>
   <mt:unless name="replace_count">
     <mt:if name="have_results">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="result-count"
      class="success">
     <__trans phrase="[quant,_1,result,results] found" params="<mt:var name="count_matches">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
     </mt:if>
   </mt:unless>
 </mt:if>
@@ -294,15 +294,13 @@ function blurDateFields(s) {
 </mt:if>
 
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error" escape="html">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">

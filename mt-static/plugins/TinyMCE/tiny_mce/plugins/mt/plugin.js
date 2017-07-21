@@ -274,8 +274,9 @@
 
             function openDialog(mode, param) {
                 createSessionHistoryFallback(location.href);
-                $.fn.mtDialog.open(
-                    ScriptURI + '?' + '__mode=' + mode + '&amp;' + param
+                $.fn.mtModal.open(
+                    ScriptURI + '?' + '__mode=' + mode + '&amp;' + param,
+                    { large: true }
                 );
             }
 

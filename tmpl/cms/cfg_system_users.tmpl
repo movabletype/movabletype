@@ -4,27 +4,27 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error" escape="html">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="Your settings have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="config_warning">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="info"
      class="info"
      can_close="0">
     <mt:var name="config_warning">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 
@@ -55,7 +55,7 @@ function clearNotifyUsers() {
 </script>
 </mt:setvarblock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <form id="cfg_user_settings" action="<mt:var name="script_url">" method="post">
   <input type="hidden" name="__mode" value="save_cfg_system_users" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
@@ -279,8 +279,6 @@ function clearNotifyUsers() {
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

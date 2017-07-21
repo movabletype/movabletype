@@ -25,7 +25,7 @@ BEGIN {
 
 use Test::More;
 use lib 't/lib';
-use MT::Test;
+use MT::Test ();
 use Test::Class;
 
 BEGIN {
@@ -47,6 +47,8 @@ BEGIN {
     plan skip_all => "Database driver '$module' not found."
         if $@;
 }
+
+MT::Test->import;
 
 package Ddltest;
 use base qw( MT::Object );

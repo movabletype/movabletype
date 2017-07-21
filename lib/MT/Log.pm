@@ -103,11 +103,15 @@ sub list_props {
                 $desc = ''        if $msg eq $desc;
                 $desc = MT::Util::encode_html($desc);
                 $msg  = MT::Util::encode_html($msg);
+                my $id = $obj->id;
                 return $desc
                     ? qq{
                     <div class="log-message can-select">
-                      <a href="#" class="toggle-link icon-left icon-spinner detail-link">$msg</a>
-                      <div class="log-metadata detail">
+                      <a href="#log-detail-$id" class="toggle-link icon-left icon-spinner detail-link" data-toggle="collapse">
+                        <span class="caret"></span>
+                        $msg
+                      </a>
+                      <div id="log-detail-$id" class="collapse log-metadata detail">
                         <pre>$desc</pre>
                       </div>
                     </div>

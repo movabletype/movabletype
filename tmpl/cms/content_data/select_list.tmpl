@@ -1,7 +1,7 @@
 <mt:setvar name="screen_id" value="select-content-type">
 <mt:setvar name="page_title" value="<__trans phrase="Select List Content Type">">
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <mtapp:settinggroup id="content_type">
 <ul>
   <mt:loop name="content_types">
@@ -13,10 +13,7 @@
   </mt:loop>
 </ul>
 </mtapp:settinggroup>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">
 <mt:var name="layout">
-

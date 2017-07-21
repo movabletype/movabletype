@@ -4,52 +4,52 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error" escape="html">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="Your settings have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="config_warning">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="info"
      class="info"
      can_close="0">
     <mt:var name="config_warning">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="image_driver" eq="imager">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="info"
      class="info"
      can_close="0">
     <__trans phrase="Imager does not support ImageQualityPng.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="email_sent"
      class="success"
      can_close="0">
     <__trans phrase="A test mail was sent.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 <mt:if name="warning_sitepath_limit">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="warning_sitepath_limit"
      class="info">
     <__trans phrase="One or more of your websites or blogs are not following the base site path (value of BaseSitePath) restriction.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <form id="sys_conf" action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
   <input type="hidden" name="__mode" value="save_cfg_system_general" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
@@ -291,13 +291,13 @@
         <h4 class="modal-title"><__trans phrase="Send Mail To"></h4>
       </div>
       <div class="modal-body">
-        <mtapp:newstatusmsg
+        <mtapp:statusmsg
            id="email_sent_error"
            class="danger"
            can_close="0"
         >
           <p></p>
-        </mtapp:newstatusmsg>
+        </mtapp:statusmsg>
         <mtapp:setting
            id="to_email_address"
            label="<__trans phrase="Send Mail To">"
@@ -314,8 +314,6 @@
     </div>
   </div>
 </div>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">

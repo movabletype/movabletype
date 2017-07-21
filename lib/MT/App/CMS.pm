@@ -40,8 +40,6 @@ sub core_methods {
     my $app = shift;
     my $pkg = '$Core::MT::CMS::';
     return {
-        'test_page' => "${pkg}NewUI::test_page", # TODO: remove before release
-
         'tools'     => "${pkg}Tools::system_check",
         'dashboard' => "${pkg}Dashboard::dashboard",
         'menu'      => "${pkg}Dashboard::dashboard",
@@ -4596,7 +4594,7 @@ sub rebuild_these {
     else {
         my @blogs      = $app->param('blog_ids');
         my $start_time = $app->param('start_time');
-        $app->publisher->start_time($start_time);
+        $app->publisher->start_time($start_time) if $start_time;
         my %blogs = map { $_ => () } @blogs;
         my @set = keys %$rebuild_set;
         my @rest;

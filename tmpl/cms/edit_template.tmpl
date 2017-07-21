@@ -22,46 +22,46 @@
 <mt:setvarblock name="system_msg">
 <mt:unless name="recovered_object">
   <mt:if name="autosaved_object_exists">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="autosaved-object-exists"
      class="info">
     <__trans phrase="A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;_recover=1&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if>%%<mt:If name="blog_id"><mt:date ts="$autosaved_object_ts" relative="1" offset_blog_id="<$mt:var name="blog_id"$>"></mt:If>">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 </mt:unless>
 <mt:if name="recovered_object">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="recovered-object"
      class="success">
     <__trans phrase="You have successfully recovered your saved [_1]." params="<mt:var name="object_label">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="recovered_failed">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="recovered-failed"
      class="error"
      can_close="0">
     <__trans phrase="An error occurred while trying to recover your saved [_1]." params="<mt:var name="object_label">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="loaded_revision">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="loaded_revision"
      class="info">
     <__trans phrase="Restored revision (Date:[_1])." params="<$mt:var name="rev_date" escape="html"$>">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
   <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <__trans phrase="Your changes have been saved.">
       <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   <mt:else>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="Your changes have been saved.">
@@ -74,37 +74,37 @@
         </mt:if>
       </mt:unless>
     </mt:unless>
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 <mt:else>
   <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 </mt:if>
 <mt:if name="message">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="message"
      class="alert">
     <mt:var name="message">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved_rebuild">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved-rebuild"
      class="success">
     <__trans phrase="Your [_1] has been published." params="<mt:var name="name" escape="html" escape="html">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="related_content">
 <mt:if name="use_revision">
-<mtapp:newwidget
+<mtapp:widget
    id="template-status-widget"
    class="status-widget"
    label="<__trans phrase="Status">">
@@ -120,10 +120,10 @@
     </mt:if>
     </div>
   </mt:if>
-</mtapp:newwidget>
+</mtapp:widget>
 </mt:if>
 
-<mtapp:newwidget
+<mtapp:widget
    id="useful-links"
    label="<__trans phrase="Useful Links">">
   <ul class="list-unstyled">
@@ -151,10 +151,10 @@
     <li><a href="<mt:var name="published_url" escape="html" />" class="icon-left icon-related" target="<__trans phrase="_external_link_target">"><__trans phrase="View Published Template"></a></li>
   </mt:if>
   </ul>
-</mtapp:newwidget>
+</mtapp:widget>
 
 <mt:if name="have_includes">
-<mtapp:newwidget
+<mtapp:widget
    id="template-includes"
    label="<__trans phrase="Included Templates">">
   <ul class="list-unstyled">
@@ -199,25 +199,25 @@
     </li>
   </mt:loop>
   </ul>
-</mtapp:newwidget>
+</mtapp:widget>
 </mt:if>
 
-<mtapp:newwidget
+<mtapp:widget
    id="tag-list"
    class="hidden"
    label="<__trans phrase="Template Tag Docs">"
    label_link="$link_doc">
   <div id="tag-list-inner">
   </div>
-</mtapp:newwidget>
+</mtapp:widget>
 
-<mtapp:newwidget
+<mtapp:widget
    id="badtag-list"
    class="hidden"
    label="<__trans phrase="Unrecognized Tags">">
   <div id="badtag-list-inner">
   </div>
-</mtapp:newwidget>
+</mtapp:widget>
 
 <$MTApp:PageActions from="edit_template"$>
 </mt:setvarblock>
@@ -268,8 +268,6 @@
 </mt:setvartemplate>
 
 <mt:setvarblock name="html_head" append="1">
-<mt:include name="modules/libjs.tmpl">
-
 <script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/lib/codemirror.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>codemirror/lib/codemirror.css">
 
@@ -537,7 +535,7 @@ function toggleCache(id) {
 </script>
 </mt:setvarblock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <mt:if name="dirty">
   <script type="text/javascript">
   /* <![CDATA[ */
@@ -819,7 +817,7 @@ function toggleCache(id) {
   </mtapp:setting>
 </mt:if>
 
-  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" pull_right="1">
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" pull_right_action="1">
 
   <div id="autosave-notification-<$mt:var name="bar_position" escape="html" default="top"$>" class="autosave-notification"></div>
 </form>

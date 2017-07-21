@@ -5,16 +5,16 @@
 <mt:setvarblock name="system_msg">
 <div id="msg-block">
   <mt:if name="save_success">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="saved-theme"
        class="success">
       <__trans phrase="Theme package have been saved.">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   </mt:if>
 </div>
 </mt:setvarblock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <form id="theme_settings" method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
   <input type="hidden" name="__mode" value="do_export_theme" />
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
@@ -126,8 +126,6 @@
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
 </form>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">

@@ -12,12 +12,12 @@ if (progress) {
 
 <mt:if name="restore_end">
     <mt:if name="error">
-        <mtapp:newstatusmsg
+        <mtapp:statusmsg
            id="restore-error"
            class="danger"
            can_close="0">
           <__trans phrase="An error occurred during the restore process: [_1] Please check your restore file." params="<mt:var name="error">">
-        </mtapp:newstatusmsg>
+        </mtapp:statusmsg>
 </div>
 <div class="modal-footer actions-bar">
     <form action="" method="get" onsubmit="return false" onclick="window.focus();">
@@ -31,12 +31,12 @@ if (progress) {
     </form>
 </div>
     <mt:else>
-        <mtapp:newstatusmsg
+        <mtapp:statusmsg
            id="restore-success"
            class="success"
            can_close="0">
           <__trans phrase="All data restored successfully!">
-        </mtapp:newstatusmsg>
+        </mtapp:statusmsg>
 </div>
 <div class="modal-footer actions-bar">
     <form action="" method="get" onsubmit="return false" onclick="window.focus();">

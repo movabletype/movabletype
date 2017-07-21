@@ -12,8 +12,8 @@ setTimeout('doRedirect()', 1000);
 </script>
 </mt:setvarblock>
 
-<mt:setvarblock name="content">
-<mtapp:newstatusmsg
+<mt:setvarblock name="page_content">
+<mtapp:statusmsg
    id="pinging"
    class="info"
    can_close="0">
@@ -23,7 +23,7 @@ setTimeout('doRedirect()', 1000);
     <li><mt:var name="url" escape="html"></li>
   </mt:loop>
   </ul>
-</mtapp:newstatusmsg>
+</mtapp:statusmsg>
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

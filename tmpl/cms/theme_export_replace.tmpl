@@ -1,6 +1,6 @@
 <mt:setvar name="page_title" value="<__trans phrase="Export Theme">">
 
-<mt:setvarblock name="html_head" append="1">
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 function submit_form(f, command) {
@@ -11,8 +11,7 @@ function submit_form(f, command) {
 </script>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
+<mt:setvarblock name="page_content">
 <form method="get" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="do_export_theme" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
@@ -53,7 +52,7 @@ function submit_form(f, command) {
            type="submit"
            accesskey="s"
            title="<__trans phrase="Overwrite">"
-           class="action primary button">
+           class="action primary button btn btn-primary">
           <__trans phrase="Overwrite">
         </button>
         <button
@@ -62,11 +61,14 @@ function submit_form(f, command) {
            value="1"
            type="submit"
            title="<__trans phrase="Cancel">"
-           class="action button">
+           class="action button btn btn-default">
           <__trans phrase="Cancel">
         </button>
     </mt:setvarblock>
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
+</mt:setvarblock>
 
-<mt:include name="include/footer.tmpl" id="footer_include">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
+

@@ -1,7 +1,8 @@
 <div class="group-container">
   <mt:loop name="options_values">
-  <input type="checkbox" name="content-field-<mt:var name="content_field_id" escape="html">" id="content-field-<mt:var name="content_field_id" escape="html">-<mt:var name="__counter__">" class="checkbox content-field group" value="<mt:var name="v">" <mt:var name="checked"> mt:watch-change="1" mt:raw-name="1" <mt:var name="multiple"> <mt:var name="required">>
-  <label for="content-field-<mt:var name="content_field_id" escape="html">-<mt:var name="__counter__">"><mt:var name="l" escape="html"></label>
+  <label class="form-inline">
+    <input type="checkbox" name="content-field-<mt:var name="content_field_id" escape="html">" id="content-field-<mt:var name="content_field_id" escape="html">-<mt:var name="__counter__">" class="checkbox content-field group" value="<mt:var name="v">" <mt:var name="checked"> mt:watch-change="1" mt:raw-name="1" <mt:var name="multiple"> <mt:var name="required">>
+    <mt:var name="l" escape="html">
+  </label>
   </mt:loop>
 </div>
-

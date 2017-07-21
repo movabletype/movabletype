@@ -14,17 +14,20 @@
 </mt:setvarblock>
 
 <mt:setvar name="complete" value="1">
-<mt:include name="include/chromeless_header.tmpl">
 
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/login.css" />
 <style type="text/css">
 div.warning#version-warning {
     position: relative;
     padding: 1em;
 }
 </style>
+</mt:setvarblock>
 
 <mt:setvar name="version_warning">
 
+<mt:setvarblock name="page_content">
 <div class="upgrade">
 <mt:if name="version_warning">
   <div class="warning" id="version-warning">
@@ -52,7 +55,7 @@ div.warning#version-warning {
     </div>
   </div>
   </mt:if>
-  
+
   <div id="welcome"<mt:if name="version_warning"> style="display: none;"</mt:if>>
     <p class="intro"><__trans phrase="Please create an administrator account for your system. When you are done, Movable Type will initialize your database."></p>
   <mt:if name="error">
@@ -63,7 +66,7 @@ div.warning#version-warning {
       <mt:var name="error" escape="html">
     </mtapp:statusmsg>
   </mt:if>
-  
+
     <form id="install_form" method="post" action="<mt:var name="script_url">">
       <input type="hidden" name="__mode" value="init_user" />
     <mt:if name="auth_mode_ldap">
@@ -74,24 +77,27 @@ div.warning#version-warning {
          id="admin_username"
          label="<__trans phrase="Username">"
          label_class="top-label"
-         hint="<__trans phrase="The name used by this user to login.">">
-        <input type="text" id="admin_username" class="text full required" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+         hint="<__trans phrase="The name used by this user to login.">"
+         no_grid="1">
+        <input type="text" id="admin_username" class="form-control text full required" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
       </mtapp:setting>
-    
+
       <mtapp:setting
          id="admin_nickname"
          label="<__trans phrase="Display Name">"
          label_class="top-label"
-         hint="<__trans phrase="The name used when published.">">
-        <input type="text" name="admin_nickname" id="admin_nickname" class="text full required" value="<mt:var name="admin_nickname" escape="html">" />
+         hint="<__trans phrase="The name used when published.">"
+         no_grid="1">
+        <input type="text" name="admin_nickname" id="admin_nickname" class="form-control text full required" value="<mt:var name="admin_nickname" escape="html">" />
       </mtapp:setting>
-    
+
       <mtapp:setting
          id="admin_email"
          label="<__trans phrase="Email Address">"
          label_class="top-label"
-         hint="<__trans phrase="The user&rsquo;s email address.">">
-        <input type="text" id="admin_email" class="text full required email" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
+         hint="<__trans phrase="The user&rsquo;s email address.">"
+         no_grid="1">
+        <input type="text" id="admin_email" class="form-control text full required email" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
       </mtapp:setting>
 
       <mt:unless name="config.emailaddressmain">
@@ -100,9 +106,12 @@ div.warning#version-warning {
              lebel="<__trans phrase="System Email">"
              label_class="no-header"
              hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
-             show_hint="1">
-            <input type="checkbox" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" />
-            <label for="use_system_email"><__trans phrase="Use this as system email address"></label>
+             show_hint="1"
+             no_grid="1">
+            <label class="form-inline">
+              <input type="checkbox" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" />
+              <__trans phrase="Use this as system email address">
+            </label>
           </mtapp:setting>
       </mt:unless>
 
@@ -110,8 +119,9 @@ div.warning#version-warning {
          id="preferred_language"
          label="<__trans phrase="Language">"
          label_class="top-label"
-         hint="<__trans phrase="The user&rsquo;s preferred language.">">
-        <select name="preferred_language" id="preferred_language"><mt:loop name="languages">
+         hint="<__trans phrase="The user&rsquo;s preferred language.">"
+         no_grid="1">
+        <select name="preferred_language" id="preferred_language" class="form-control"><mt:loop name="languages">
           <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
       </mtapp:setting>
@@ -121,16 +131,18 @@ div.warning#version-warning {
          label="<__trans phrase="Password">"
          label_class="top-label"
          hint="<__trans phrase="Select a password for your account."> (<$mt:PasswordValidationRule$>)"
-         show_hint="1">
-        <input type="password" id="admin_password" class="text password required" name="admin_password" />
+         show_hint="1"
+         no_grid="1">
+        <input type="password" id="admin_password" class="form-control text password required" name="admin_password" />
       </mtapp:setting>
-    
+
       <mtapp:setting
          id="admin_password_confirm"
          label="<__trans phrase="Confirm Password">"
          label_class="top-label"
-         hint="<__trans phrase="Repeat the password for confirmation.">">
-        <input type="password" id="admin_password_confirm" class="text password" name="admin_password_confirm" />
+         hint="<__trans phrase="Repeat the password for confirmation.">"
+         no_grid="1">
+        <input type="password" id="admin_password_confirm" class="form-control text password" name="admin_password_confirm" />
       </mtapp:setting>
       <script type="text/javascript">
       /* <![CDATA[ */
@@ -138,22 +150,24 @@ div.warning#version-warning {
       /* ]]> */
       </script>
     </mt:if>
-    
+
     <mt:if name="auth_mode_ldap">
       <mtapp:setting
          id="admin_username"
          label="<__trans phrase="Username">"
          label_class="top-label"
-         hint="<__trans phrase="Your LDAP username.">">
-        <input type="text" id="admin_username" class="text full" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+         hint="<__trans phrase="Your LDAP username.">"
+         no_grid="1">
+        <input type="text" id="admin_username" class="form-control text full" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
       </mtapp:setting>
 
       <mtapp:setting
          id="preferred_language"
          label="<__trans phrase="Language">"
          label_class="top-label"
-         hint="<__trans phrase="The user&rsquo;s preferred language.">">
-        <select name="preferred_language" id="preferred_language"><mt:loop name="languages">
+         hint="<__trans phrase="The user&rsquo;s preferred language.">"
+         no_grid="1">
+        <select name="preferred_language" id="preferred_language" class="form-control"><mt:loop name="languages">
           <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
       </mtapp:setting>
@@ -162,25 +176,28 @@ div.warning#version-warning {
          id="admin_password"
          label="<__trans phrase="Password">"
          label_class="top-label"
-         hint="<__trans phrase="Enter your LDAP password.">">
-        <input type="password" id="admin_password" class="text password" name="admin_password" />
+         hint="<__trans phrase="Enter your LDAP password.">"
+         no_grid="1">
+        <input type="password" id="admin_password" class="form-control text password" name="admin_password" />
       </mtapp:setting>
     </mt:if>
-    
+
       <div class="actions-bar">
         <input type="hidden" name="continue" value="1" />
         <button
            type="submit"
            accesskey="s"
            title="<__trans phrase="Continue (s)">"
-           class="save action primary button">
+           class="save action primary button btn btn-primary">
           <__trans phrase="Continue">
         </button>
       </div>
     </form>
   </div>
 </div>
+</mt:setvarblock>
 
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 function dismiss(id) {
@@ -214,4 +231,7 @@ jQuery(function() {
 });
 /* ]]> */
 </script>
-<mt:include name="include/chromeless_footer.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">

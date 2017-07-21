@@ -1,25 +1,21 @@
 <mt:setvarblock name="page_title"><__trans phrase="Create an account"></mt:setvarblock>
 
-<mt:setvarblock name="html_head" append="1">
-<mt:include name="modules/libjs.tmpl">
-</mt:setvarblock>
-
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="danger"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:If name="message">
-    <mt:App:newStatusMsg
+    <mt:App:StatusMsg
         id="message"
         class="warning"
         can_close="0">
         <$mt:Var name="message"$>
-    </mt:App:newStatusMsg>
+    </mt:App:StatusMsg>
 </mt:If>
 
 <mt:setvarblock name="common_fields" id="common_fields">

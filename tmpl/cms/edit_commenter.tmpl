@@ -3,36 +3,36 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="saved_commenter">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved-commenter"
      class="success">
     <__trans phrase="Your changes have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="trusted">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="trusted"
      class="success">
     <__trans phrase="The commenter has been trusted.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="banned">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="banned"
      class="success">
     <__trans phrase="The commenter has been banned.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="related_content">
-<mtapp:newwidget
+<mtapp:widget
    id="useful-links"
    label="<__trans phrase="Useful links">">
   <ul class="list-unstyled">
     <li><a href="<mt:var name="script_url">?__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter=commenter_id&amp;filter_val=<mt:var name="id" escape="url">"><__trans phrase="Comments from [_1]" params="<mt:var name="nickname" escape="html" escape="html">"></a></li>
   </ul>
-</mtapp:newwidget>
+</mtapp:widget>
 <mtapp:PageActions>
 </mt:setvarblock>
 
@@ -175,7 +175,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
 </mt:if>
 </mt:setvarblock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <form method="post" action="<mt:var name="script_url">">
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
@@ -266,8 +266,6 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
   </mt:if>
 </form>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

@@ -13,14 +13,14 @@
 <mt:setvarblock name="system_msg">
 <div id="msg-block">
 <mt:if name="uninstalled_theme_name">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="theme_uninstalled"
      class="success">
     <__trans phrase="Theme [_1] has been uninstalled." params="<mt:var name="uninstalled_theme_name">" escape="html">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="applied">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="theme_applied"
      class="success"
      rebuild="all"
@@ -30,16 +30,16 @@
 <mt:else>
     <__trans phrase="Theme [_1] has been applied." params="<mt:var name="current_theme_name" escape="html" escape="html">">
 </mt:if>
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="refreshed">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="theme_applied"
      class="success"
      rebuild="all"
      can_close="0">
      <__trans phrase="You have successfully refreshed your templates." escape="html">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </div>
 </mt:setvarblock>
@@ -226,7 +226,7 @@
 </script>
 </mt:setvarblock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 <mt:if name="blog_id">
 <div id="current-theme-group" class="theme-group">
   <h4 class="theme-group-name"><__trans phrase="Current Theme"></h4>
@@ -248,8 +248,6 @@
   <mt:setvar name="loop_for" value="available_theme_loop" /><mt:var name="theme_loop_tmpl">
   </div>
 </div>
-
-<mt:include name="modules/libjs.tmpl">
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
