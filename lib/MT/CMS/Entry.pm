@@ -1831,7 +1831,7 @@ sub save {
     ## look if any assets have been included/removed from this entry
     require MT::Asset;
     require MT::ObjectAsset;
-    my $include_asset_ids = $app->param('include_asset_ids');
+    my $include_asset_ids = $app->param('include_asset_ids') || '';
     my @asset_ids         = split( ',', $include_asset_ids );
     my $obj_assets        = ();
     my @obj_assets        = MT::ObjectAsset->load(
