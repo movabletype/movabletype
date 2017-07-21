@@ -610,7 +610,11 @@ function uploadFile( formData, uploadBlock ) {
   uploadBlock.setCancelUpload(xhr);
   return d.promise();
 }
+/* ]]> */
+</script>
+</mt:setvarblock>
 
+<mt:setvarblock name="jq_js_include" append="1">
 jQuery('#open-file-dialog').click( function() {
   jQuery('#file').click();
   return false;
@@ -660,7 +664,4 @@ jQuery('#upload-asset-panel').on('changePanel', function() {
 });
 </mt:if>
 jQuery('form').find('input:visible').first().focus();
-
-/* ]]> */
-</script>
 </mt:setvarblock>

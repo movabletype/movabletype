@@ -6,7 +6,7 @@
                 [# if ( item.path == null ) item.path = [] #]
                 <div style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
                 <mt:if name="can_edit_categories">
-                    <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="pull-right add-category-new-link">
+                    <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="float-right add-category-new-link">
                         <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
                         <span class="sr-only">Add</span>&nbsp;
                     </a>
@@ -52,7 +52,7 @@
         </a>
     </div>
 </mt:if>
-    <div class="panel panel-default" style="height: 120px; overflow: auto; overflow-x: hidden;">
-      <div id="<$mt:var name="container_type" lower_case="1"$>-selector-list" class="panel-body category-selector-list"></div>
+    <div class="card" style="height: 120px; overflow: auto; overflow-x: hidden;">
+      <div id="<$mt:var name="container_type" lower_case="1"$>-selector-list" class="card-block category-selector-list"></div>
     </div>
 </div><!-- /category-selector -->

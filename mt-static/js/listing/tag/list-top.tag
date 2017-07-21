@@ -9,7 +9,7 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <div class="panel panel-default">
+      <div class="card">
         <virtual data-is="list-filter"></virtual>
         <table data-is="list-table"
           id="{ opts.objectType }-table"

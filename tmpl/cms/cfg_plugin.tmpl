@@ -176,10 +176,6 @@ if ( location.hash ) {
     }
 }
 
-jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
-  jQuery('.collapse.plugin-content').collapse('hide');
-});
-
 function junkScoreNudge(amount, id, max) {
     if (max == undefined) max = 10;
     var fld = MT.Util.getByID(id);
@@ -234,6 +230,12 @@ function toggleAdvancedPrefs(evt, c) {
 </script>
 </mt:setvarblock>
 
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
+  jQuery('.collapse.plugin-content').collapse('hide');
+});
+</mt:setvarblock>
+
 <mt:setvarblock name="page_content">
 <!-- START mt:loop name="plugin_groups" -->
 <mt:loop name="plugin_loop">
@@ -247,16 +249,16 @@ function toggleAdvancedPrefs(evt, c) {
 <!-- /Plugin Group --></div>
 <div class="plugin-group">
   <h3 class="plugin-group-name"><mt:var name="plugin_folder"></h3>
-  <div class="panel-group plugin-list">
+  <div class="plugin-list">
     </mt:if>
   <mt:else>
-    <div id="plugin-<mt:var name="plugin_id">" class="panel panel-default plugin<mt:if name="plugin_disabled"> plugin-disabled disabled</mt:if>">
+    <div id="plugin-<mt:var name="plugin_id">" class="card plugin<mt:if name="plugin_disabled"> plugin-disabled disabled</mt:if>">
       <script type="text/javascript">
       /* <![CDATA[ */
       plugin_ids.push('<mt:var name="plugin_id">');
       /* ]]> */
       </script>
-      <div class="panel-heading plugin-header">
+      <div class="card-header plugin-header">
         <div class="row">
           <div class="col-md-8">
             <h4 class="plugin-name">
@@ -348,39 +350,39 @@ function toggleAdvancedPrefs(evt, c) {
         </mtapp:statusmsg>
       </mt:if>
 
-      <div id="plugin-<mt:var name="plugin_id">-content" class="panel-collapse collapse plugin-content">
-      <div class="panel-body">
+      <div id="plugin-<mt:var name="plugin_id">-content" class="collapse plugin-content">
+      <div class="card-block">
         <ul class="nav nav-tabs plugin-tabs-list tabs"> <!-- Plugin Tab -->
-          <li class="tab active">
-            <a href="#plugin-<mt:var name="plugin_id">-info" class="icon-mini-left icon-mini-comments" data-toggle="tab">
+          <li class="nav-item tab">
+            <a href="#plugin-<mt:var name="plugin_id">-info" class="nav-link active icon-mini-left icon-mini-comments" data-toggle="tab">
               <__trans phrase="Info">
             </a>
           </li>
       <mt:if name="plugin_resources">
-          <li class="tab">
-            <a href="#plugin-<mt:var name="plugin_id">-resources" class="icon-mini-left icon-mini-templates" data-toggle="tab">
+          <li class="nav-item tab">
+            <a href="#plugin-<mt:var name="plugin_id">-resources" class="nav-link icon-mini-left icon-mini-templates" data-toggle="tab">
               <__trans phrase="Resources">
             </a>
           </li>
       </mt:if>
       <mt:if name="can_config">
         <mt:if name="plugin_config_html">
-          <li class="tab">
-            <a href="#plugin-<mt:var name="plugin_id">-config" class="icon-mini-left icon-mini-settings" data-toggle="tab">
+          <li class="nav-item tab">
+            <a href="#plugin-<mt:var name="plugin_id">-config" class="nav-link icon-mini-left icon-mini-settings" data-toggle="tab">
               <__trans phrase="Settings">
             </a>
           </li>
         </mt:if>
         <mt:if name="plugin_config_link">
           <mt:if name="plugin_config_html">
-          <li class="tab">
-            <a href="<mt:var name="plugin_page">" class="icon-mini-left icon-mini-settings" data-toggle="tab">
+          <li class="nav-item tab">
+            <a href="<mt:var name="plugin_page">" class="nav-link icon-mini-left icon-mini-settings" data-toggle="tab">
               <__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">">
             </a>
           </li>
           <mt:else>
-          <li class="tab">
-            <a href="<mt:var name="plugin_page">" class="icon-mini-left icon-mini-settings" data-toggle="tab">
+          <li class="nav-item tab">
+            <a href="<mt:var name="plugin_page">" class="nav-link icon-mini-left icon-mini-settings" data-toggle="tab">
               <__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">">
             </a>
           </li>

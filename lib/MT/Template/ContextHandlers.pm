@@ -3353,18 +3353,18 @@ $insides
 EOT
     }
     my $widget = <<"EOT";
-<div id="$id" class="panel panel-default widget $class"$tabbed>
-  <div class="panel-heading widget-header $header_class">
+<div id="$id" class="card widget $class"$tabbed>
+  <div class="card-header widget-header $header_class">
     <div class="widget-action">$header_action</div>
     <div class="widget-label">$widget_header</div>
   </div>
-  <div class="panel-body widget-content">
+  <div class="card-block widget-content">
     $insides
   </div>
 EOT
     if ($widget_footer) {
         $widget .= <<"EOT";
-  <div class="panel-footer widget-footer">$widget_footer</div>$corners
+  <div class="card-footer widget-footer">$widget_footer</div>$corners
 EOT
     }
     $widget .= <<"EOT";

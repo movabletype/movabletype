@@ -454,7 +454,12 @@ function showPasswordField() {
        label="<__trans phrase="Permissions">">
       <ul class="list-inline inline-list">
       <mt:loop name="loaded_permissions">
-        <li><input name="<mt:var name="id">" id="<mt:var name="id">" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this, '<mt:var name="children">')" /> <label for="<mt:var name="id">"><mt:var name="label"></label></li>
+        <li class="list-inline-item">
+          <input name="<mt:var name="id">" id="<mt:var name="id">" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this, '<mt:var name="children">')" />
+          <label for="<mt:var name="id">">
+            <mt:var name="label">
+          </label>
+        </li>
       </mt:loop>
       </ul>
     </mtapp:setting>

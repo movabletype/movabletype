@@ -1,14 +1,13 @@
 <display-options>
   <div class="row">
     <div class="col-md-12">
-      <a href="#"
-        class="btn btn-default pull-right"
+      <button
+        class="btn btn-default dropdown-toggle float-right"
         data-toggle="collapse"
         data-target="#display-options-detail"
       >
         { trans('Display Options') }
-        <span class="caret"></span>
-      </a>
+      </button>
     </div>
   </div>
   <div class="row">
@@ -21,8 +20,8 @@
 </display-options>
 
 <display-options-detail>
-  <div id="display-options-detail" class="collapse panel panel-default">
-    <div class="panel-body">
+  <div id="display-options-detail" class="collapse">
+    <div class="card card-block">
       <div data-is="display-options-limit" id="per_page-field"></div>
       <virtual if={ !listTop.opts.disableUserDispOption }>
         <div data-is="display-options-columns" id="display_columns-field"></div>
@@ -79,7 +78,7 @@
   <div class="field-content">
     <ul id="disp_cols" class="list-inline">
       <virtual each={ column in store.columns }>
-        <li hide={ column.force_display }>
+        <li hide={ column.force_display } class="list-inline-item">
           <label>
             <input type="checkbox"
               id={ column.id }

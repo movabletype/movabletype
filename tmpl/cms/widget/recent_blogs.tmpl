@@ -17,21 +17,21 @@
           </div>
           </mt:if>
           <ul id="blog-<mt:var name="blog_id">-control" class="list-inline blog-control">
-            <li>
+            <li class="list-inline-item">
             <mt:if name="can_access_to_entry_list">
               <a href="<mt:var name="script_url">?__mode=list&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="blog_entry_count">"></a>
             <mt:else>
               <__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="blog_entry_count">">
             </mt:if>
             </li>
-            <li>
+            <li class="list-inline-item">
             <mt:if name="can_access_to_page_list">
               <a href="<mt:var name="script_url">?__mode=list&amp;_type=page&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="[quant,_1,page,pages]" params="<mt:var name="blog_page_count">"></a>
             <mt:else>
               <__trans phrase="[quant,_1,page,pages]" params="<mt:var name="blog_page_count">">
             </mt:if>
             </li>
-            <li>
+            <li class="list-inline-item">
             <mt:if name="can_access_to_comment_list">
               <a href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="blog_comment_count">"></a>
             <mt:else>
@@ -39,17 +39,17 @@
             </mt:if>
             </li>
             <mt:if name="can_access_to_template_list">
-            <li>
+            <li class="list-inline-item">
               <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Templates"></a>
             </li>
             </mt:if>
             <mt:if name="can_access_to_blog_setting_screen">
-            <li>
+            <li class="list-inline-item">
               <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Settings"></a>
             </li>
             </mt:if>
             <mt:if name="can_use_tools_search">
-            <li>
+            <li class="list-inline-item">
               <a href="<mt:var name="script_url">?__mode=search_replace&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Search"></a>
             </li>
             </mt:if>
@@ -57,7 +57,7 @@
         </div>
         <div class="col-md-2">
           <mt:if name="can_create_new_entry">
-            <a class="button btn btn-default pull-right" href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="New Entry"></a>
+            <a class="button btn btn-default float-right" href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="New Entry"></a>
           </mt:if>
         </div>
       </div>

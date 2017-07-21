@@ -1,45 +1,44 @@
 <list-actions>
-  <ul class="list-inline">
-    <li each={ action, key in listTop.opts.buttonActions }>
-      <button class="btn btn-default"
-        data-action-id={ key }
-        onclick={ doAction }
+  <div class="btn-group btn-group-space">
+    <button each={ action, key in listTop.opts.buttonActions }
+      class="btn btn-default"
+      data-action-id={ key }
+      onclick={ doAction }
+    >
+      { action.label }
+    </button>
+    <virtual if={ listTop.opts.hasListActions && listTop.opts.hasPulldownActions }>
+      <button class="btn btn-default dropdown-toggle"
+        data-toggle="dropdown"
       >
-        { action.label }
+        { trans('More actions...') }
+        <span class="caret"></span>
       </button>
-    </li>
-    <li if={ listTop.opts.hasListActions && listTop.opts.hasPulldownActions }>
-      <div class="dropdown">
-        <button class="btn btn-default" data-toggle="dropdown">
-          { trans('More actions...') }
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-          <li each={ action, key in listTop.opts.listActions }>
-            <a href="javascript:void(0);"
-              data-action-id={ key }
-              onclick={ doAction }
-            >
-              { action.label }
-            </a>
-          </li>
-          <li if={ Object.keys(listTop.opts.moreListActions).length > 0 }
-            class="dropdown-header"
-          >
-            { trans('Plugin Actions') }
-          </li>
-          <li each={ action, key in listTop.opts.moreListActions }>
-            <a href="javascript:void(0);"
-              data-action-id={ key }
-              onclick={ doAction }
-            >
-              { action.label }
-            </a>
-          </li>
-        </ul>
+      <div class="dropdown-menu dropdown-menu-right">
+        <a each={ action, key in listTop.opts.listActions }
+          class="dropdown-item"
+          href="javascript:void(0);"
+          data-action-id={ key }
+          onclick={ doAction }
+        >
+          { action.label }
+        </a>
+        <h6 if={ Object.keys(listTop.opts.moreListActions).length > 0 }
+          class="dropdown-header"
+        >
+          { trans('Plugin Actions') }
+        </h6>
+        <a each={ action, key in listTop.opts.moreListActions }
+          class="dropdown-item"
+          href="javascript:void(0);"
+          data-action-id={ key }
+          onclick={ doAction }
+        >
+          { action.label }
+        </a>
       </div>
-    </li>
-  </ul>
+    </virtual>
+  </div>
 
   <script>
     this.mixin('listTop')
