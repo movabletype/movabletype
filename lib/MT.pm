@@ -1712,9 +1712,9 @@ sub component {
 sub publisher {
     my $mt = shift;
     $mt = $mt->instance unless ref $mt;
-    require MT::WeblogPublisher;
-    $mt->request('WeblogPublisher')
-        || $mt->request( 'WeblogPublisher', new MT::WeblogPublisher() );
+    require MT::ContentPublisher;
+    $mt->request('ContentPublisher')
+        || $mt->request( 'ContentPublisher', new MT::ContentPublisher() );
 }
 
 sub rebuild {
