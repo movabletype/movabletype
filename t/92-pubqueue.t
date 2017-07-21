@@ -34,7 +34,7 @@ my @blogs = MT::Blog->load();
 foreach my $blog (@blogs) {
 
     my $job_count = 0;
-    my @tmpls = MT::Template->load( { blog_id => $blog->id } );
+    my @tmpls = sort {$a->name cmp $b->name} MT::Template->load( { blog_id => $blog->id } );
     ok( @tmpls, "Templates exist for this blog" );
 
     for ( my $i = 0; $i < scalar(@tmpls); $i++ ) {

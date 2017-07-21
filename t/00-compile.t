@@ -565,7 +565,7 @@ sub test_all_modules_are_checked {
     }
     if ( keys %$in_test ) {
         $res .= " " if $res;
-        $res .= "Modules not on HD: " . join( ", ", keys %$in_test );
+        $res .= "Modules not on HD: " . join( ", ", sort keys %$in_test );
     }
     if ($res) {
         ok( 0, $res );

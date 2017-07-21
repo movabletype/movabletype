@@ -231,7 +231,7 @@ subtest 'Test on website' => sub {
 
         require MT::Util;
         my $to_json = sub {
-            my $ret = MT::Util::to_json(shift);
+            my $ret = MT::Util::to_json(shift, {canonical => 1});
             return $ret;
         };
 

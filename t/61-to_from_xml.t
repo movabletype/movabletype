@@ -101,7 +101,7 @@ require MIME::Base64;
 
 sub checkthemout {
     my ( $oldies, $objects ) = @_;
-    foreach my $name ( keys %$oldies ) {
+    foreach my $name ( sort keys %$oldies ) {
         my $old_objects = $oldies->{$name};
         my %meta;
         for my $old (@$old_objects) {
@@ -244,7 +244,7 @@ sub checkthemout {
                 $meta{ ref($obj) } = \%metacolumns;
             }
             my $metacolumns = $meta{ ref($obj) };
-            foreach my $metacol ( keys %$metacolumns ) {
+            foreach my $metacol ( sort keys %$metacolumns ) {
                 if ( my $type = $metacolumns->{$metacol} ) {
                     if ( 'vblob' eq $type ) {
                         if (   defined( $old->$metacol )

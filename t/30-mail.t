@@ -36,7 +36,7 @@ my @base64_encode_suite = (
 for my $data (@base64_encode_suite) {
     my ( $headers, $body ) = send_mail( {}, $data->{input} );
     is( $body, $data->{expected}, $data->{name} . ' : body' );
-    foreach my $key ( keys %{ $data->{headers} } ) {
+    foreach my $key ( sort keys %{ $data->{headers} } ) {
         like(
             $headers->{$key},
             $data->{headers}{$key},
