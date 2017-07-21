@@ -820,7 +820,9 @@ sub save_cfg_system_general {
         },
         )
     {
-        if ( $app->param( $hash->{key} ) =~ $hash->{regex} ) {
+        my $param = $app->param( $hash->{key} );
+        $param = '' unless defined $param;
+        if ( $param =~ $hash->{regex} ) {
             my $value = $1;
             if ( $hash->{filter} ) {
                 $hash->{filter}->($value);
