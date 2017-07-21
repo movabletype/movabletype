@@ -679,9 +679,9 @@ sub pre_save {
         return $eh->error(
             $app->translate(
                 "The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.",
-                $_->label
+                $_->basename
             )
-        ) if $_->basename eq $obj->basename;
+        ) if defined $obj->basename and $_->basename eq $obj->basename;
     }
     return $eh->error(
         $app->translate( "The name '[_1]' is too long!", $obj->label ) )
