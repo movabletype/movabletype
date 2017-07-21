@@ -740,7 +740,8 @@ sub save_cfg_system_general {
         push( @meta_messages,
             $app->translate('Prohibit notification pings is off') );
     }
-    if ( $app->param('trackback_send') eq 'any' ) {
+    my $trackback_send = $app->param('trackback_send') || '';
+    if ( $trackback_send eq 'any' ) {
         push(
             @meta_messages,
             $app->translate(
@@ -749,7 +750,7 @@ sub save_cfg_system_general {
             )
         );
     }
-    elsif ( $app->param('trackback_send') eq 'off' ) {
+    elsif ( $trackback_send eq 'off' ) {
         push(
             @meta_messages,
             $app->translate(
@@ -758,7 +759,7 @@ sub save_cfg_system_general {
             )
         );
     }
-    elsif ( $app->param('trackback_send') eq 'local' ) {
+    elsif ( $trackback_send eq 'local' ) {
         push(
             @meta_messages,
             $app->translate(
@@ -767,7 +768,7 @@ sub save_cfg_system_general {
             )
         );
     }
-    elsif ( $app->param('trackback_send') eq 'selected' ) {
+    elsif ( $trackback_send eq 'selected' ) {
         push(
             @meta_messages,
             $app->translate(
