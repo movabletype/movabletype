@@ -408,9 +408,9 @@ sub _hdlr_assets {
     else {
         my $blog = $ctx->stash('blog');
         my $so
-            = lc( $args->{sort_order} )
+            = lc( $args->{sort_order}
             || ( $blog ? $blog->sort_order_posts : undef )
-            || '';
+            || '' );
         my $col = lc( $args->{sort_by} || 'created_on' );
 
         unless ( $col eq 'none' ) {
