@@ -401,7 +401,7 @@ sub empty_junk {
             or return $app->permission_denied();
     }
 
-    my $type  = $app->param('_type');
+    my $type  = $app->param('_type') || '';
     my $class = $app->model($type);
     my $arg   = {};
     require MT::Comment;
