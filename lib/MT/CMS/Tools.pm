@@ -278,17 +278,11 @@ sub new_password {
         elsif ( $new_password ne $again ) {
             $param->{'error'} = $app->translate('Passwords do not match');
         }
-        elsif ( ref $app eq 'MT::App::Community' ) {
 
-            # community people may change the template, and not include the
-            # needed password validation tags
-            $param->{'error'} = eval {
+        $param->{'error'} = eval {
+            $app->verify_password_strength( $user->name, $new_password );
+        };
 
-                # might be an old version that does not have this function
-                MT::App::Community::__verify_password_strength( $app, $user,
-                    $new_password );
-            };
-        }
         if ( not $param->{'error'} ) {
             my $redirect = $user->password_reset_return_to || '';
 

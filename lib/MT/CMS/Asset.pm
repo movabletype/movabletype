@@ -139,7 +139,7 @@ sub edit {
             }
         );
         if ($user) {
-            $param->{created_by} = $user->name;
+            $param->{created_by} = $user->nickname;
         }
         else {
             $param->{created_by} = $app->translate('(user deleted)');
@@ -151,7 +151,7 @@ sub edit {
                 }
             );
             if ($user) {
-                $param->{modified_by} = $user->name;
+                $param->{modified_by} = $user->nickname;
             }
             else {
                 $param->{modified_by} = $app->translate('(user deleted)');

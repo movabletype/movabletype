@@ -246,7 +246,7 @@ sub delete {
 
     $app->run_callbacks( 'data_api_post_delete.entry', $app, $entry );
 
-    if ( %recipe && $app->config('RebuildAtDelete') ) {
+    if ( $app->config('RebuildAtDelete') ) {
         $app->run_callbacks('pre_build');
         MT::Util::start_background_task(
             sub {

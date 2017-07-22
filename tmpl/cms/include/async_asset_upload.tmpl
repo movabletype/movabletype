@@ -129,7 +129,17 @@ h1.dialog-title {
 }
 </style>
 
-<form>
+<mt:if name="dialog">
+  <mt:if name="filter_val" eq="image">
+<h1 class="dialog-title"><__trans phrase="Upload new image"></h1>
+  <mt:elseif name="is_image">
+<h1 class="dialog-title"><__trans phrase="Upload new image"></h1>
+  <mt:else>
+<h1 class="dialog-title"><__trans phrase="Upload new asset"></h1>
+  </mt:if>
+</mt:if>
+
+<form id="upload">
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
   <button class="action button primary btn btn-primary" id="open-file-dialog">
     <img src="<mt:var name="static_uri">images/upload/ico_nowuploading_s@2x.png" width="12" height="10">
@@ -358,18 +368,6 @@ function createFormData(file) {
   fd.append('edit_field', '<mt:var name="edit_field" escape="html">');
   fd.append('require_type', '<mt:var name="require_type" escape="html">');
   fd.append('magic_token', '<mt:var name="magic_token">');
-
-  var normalizeOrientation = 0;
-  if ( jQuery('#normalize_orientation').prop('checked') ) {
-    normalizeOrientation = 1;
-  }
-  fd.append('normalize_orientation', normalizeOrientation);
-  fd.append('operation_if_exists', jQuery('#operation_if_exists').val() );
-  fd.append('auto_rename_non_ascii', jQuery('#auto_rename_non_ascii').prop('checked')? 1 : 0 );
-
-  fd.append('destination', jQuery('#destination:enabled, #upload_destination_custom:enabled').val() );
-  fd.append('extra_path', jQuery('#extra_path').val() );
-
 <mt:if name="no_insert">
   fd.append('no_insert', '<mt:var name="no_insert">');
 </mt:if>
@@ -379,7 +377,29 @@ function createFormData(file) {
 <mt:if name="dialog">
   fd.append('dialog', '<mt:var name="dialog">');
 </mt:if>
-    return fd;
+
+  fd.append('destination', jQuery('#destination:enabled, #upload_destination_custom:enabled').val() );
+
+  jQuery("form#upload :input").each(function(){
+    var $fld = $(this);
+
+    if ( $fld.type === 'file'
+      || $fld.type === 'submit'
+      || $fld.name === 'destination' ) {
+        return true;
+    }
+
+    if ( $fld.type === 'checkbox' || $fld.type === 'radio' ) {
+      if ( $fld.checked === true ) {
+          fd.append( $fld.name, $fld.value );
+      }
+    }
+    else {
+      fd.append( $fld.name, $fld.value );
+    }
+  });
+
+  return fd;
 }
 
 var numOfRows = 0;

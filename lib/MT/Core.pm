@@ -1975,6 +1975,7 @@ BEGIN {
             'SignOffURL' =>
                 { default => 'https://www.typekey.com/t/typekey/logout?', },
             'IdentityURL' => { default => "http://profile.typekey.com/", },
+            'ReturnToURL' => undef,
             'DynamicComments'           => { default => 0, },
             'SignOnPublicKey'           => { default => '', },
             'ThrottleSeconds'           => { default => 20, },
