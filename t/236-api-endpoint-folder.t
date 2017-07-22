@@ -7,6 +7,7 @@ use lib qw(lib extlib t/lib);
 
 use Test::More;
 use MT::Test::DataAPI;
+use MT::Test::Permission;
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -258,8 +259,13 @@ sub suite {
         {    # Insufficient folders.
             path   => '/v2/sites/1/folders/permutate',
             method => 'POST',
-            params =>
-                { folders => [ map { +{ id => $_ } } qw/ 23 22 21 / ], },
+            params => sub {
+                my @folders = $app->model('folder')->load( { blog_id => 1 },
+                    { sort => 'id', direction => 'descend' } );
+                my @folder_ids = map { { id => $_->id } } @folders;
+                pop @folder_ids;
+                { folders => \@folder_ids };
+            },
             code   => 400,
             result => sub {
                 +{  error => {
@@ -272,8 +278,12 @@ sub suite {
         {    # Not logged in.
             path   => '/v2/sites/1/folders/permutate',
             method => 'POST',
-            params =>
-                { folders => [ map { +{ id => $_ } } qw/ 23 22 21 20 / ], },
+            params => sub {
+                my @folders = $app->model('folder')->load( { blog_id => 1 },
+                    { sort => 'id', direction => 'descend' } );
+                my @folder_ids = map { { id => $_->id } } @folders;
+                { folders => \@folder_ids };
+            },
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
@@ -281,8 +291,12 @@ sub suite {
         {    # No permissions.
             path   => '/v2/sites/1/folders/permutate',
             method => 'POST',
-            params =>
-                { folders => [ map { +{ id => $_ } } qw/ 23 22 21 20 / ], },
+            params => sub {
+                my @folders = $app->model('folder')->load( { blog_id => 1 },
+                    { sort => 'id', direction => 'descend' } );
+                my @folder_ids = map { { id => $_->id } } @folders;
+                { folders => \@folder_ids };
+            },
             restrictions => { 1 => [qw/ save_folder /], },
             code         => 403,
             error => 'Do not have permission to permutate folders.',
@@ -291,8 +305,12 @@ sub suite {
         # permutate_folder - normal tests
         {   path   => '/v2/sites/1/folders/permutate',
             method => 'POST',
-            params =>
-                { folders => [ map { +{ id => $_ } } qw/ 23 22 21 20 / ], },
+            params => sub {
+                my @folders = $app->model('folder')->load( { blog_id => 1 },
+                    { sort => 'id', direction => 'descend' } );
+                my @folder_ids = map { { id => $_->id } } @folders;
+                { folders => \@folder_ids };
+            },
             callbacks => [
                 {   name =>
                         'MT::App::DataAPI::data_api_post_bulk_save.folder',
@@ -378,27 +396,59 @@ sub suite {
 
         # list_parent_folders - normal tests
         {   setup => sub {
-                my $folder = $app->model('folder')->load(23);
-                $folder->parent(21);
-                $folder->save or die $folder->errstr;
+                my $parent_folder
+                    = MT::Test::Permission->make_folder( blog_id => 1 );
+                $parent_folder->id(30);
+                $parent_folder->save or die $parent_folder->errstr;
+
+                my $child_folder = MT::Test::Permission->make_folder(
+                    blog_id => 1,
+                    parent  => $parent_folder->id,
+                );
+                $child_folder->id(31);
+                $child_folder->save or die $child_folder->errstr;
             },
-            path   => '/v2/sites/1/folders/23/parents',
-            method => 'GET',
+            path     => '/v2/sites/1/folders/31/parents',
+            method   => 'GET',
+            complete => sub {
+                my ( $data, $body, $headers ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is( $got->{totalResults}, 1,  'totalResults 1' );
+                is( $got->{items}[0]{id}, 30, 'id 30' );
+            },
         },
 
         # list_sibling_folders - normal tests
         {   setup => sub {
-                my $folder = $app->model('folder')->load(20);
-                $folder->parent(21);
-                $folder->save or die $folder->errstr;
+                my $sibling_folder = MT::Test::Permission->make_folder(
+                    blog_id => 1,
+                    parent  => 30,
+                );
+                $sibling_folder->id(32);
+                $sibling_folder->save or die $sibling_folder->errstr;
             },
-            path   => '/v2/sites/1/folders/23/siblings',
-            method => 'GET',
+            path     => '/v2/sites/1/folders/31/siblings',
+            method   => 'GET',
+            complete => sub {
+                my ( $data, $body, $headers ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is( $got->{totalResults}, 1,  'totalResults 1' );
+                is( $got->{items}[0]{id}, 32, 'id 32' );
+            },
         },
 
         # list_child_folders - normal tests
-        {   path   => '/v2/sites/1/folders/21/children',
-            method => 'GET',
+        {   path     => '/v2/sites/1/folders/30/children',
+            method   => 'GET',
+            complete => sub {
+                my ( $data, $body, $headers ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is( $got->{totalResults}, 2, 'totalResults 2' );
+                my @got_ids
+                    = sort ( $got->{items}[0]{id}, $got->{items}[1]{id} );
+                my @expected_ids = ( 31, 32 );
+                is_deeply( \@got_ids, \@expected_ids, 'id 31, 32' );
+            },
         },
     ];
 }
