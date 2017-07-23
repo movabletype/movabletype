@@ -38,8 +38,7 @@
         { label }
       </a>
       <virtual if={ !sortable }>{ label }</virtual>
-      <span class="caret"
-        style="transform: scaleY(-1);"
+      <span class="caret caret-reverse"
         if={ sortable && (
           parent.store.sortBy != id
           || parent.store.sortOrder == 'ascend'

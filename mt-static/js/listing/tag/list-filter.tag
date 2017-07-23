@@ -299,61 +299,55 @@
 </list-filter-detail>
 
 <list-filter-item>
-  <div class="row filteritem">
-    <div class="col-md-11">
-      <div if={ opts.item.type == 'pack' }>
-        <div each={ item, index in opts.item.args.items }
-          if={ filterTypeHash[item.type] }
-          data-mt-list-item-content-index={ index }
-          class={ 'filtertype type-' + item.type }
-        >
-          <div class="item-content">
-            <virtual data-is="list-filter-item-field"
-              field={ filterTypeHash[item.type].field }
-              item={ item }
-            >
-            </virtual>
-            <button class="btn btn-default"
-              if={ !filterTypeHash[item.type].singleton }
-              onclick={ addFilterItemContent }
-            >
-              &plus;
-            </button>
-            <button class="btn btn-default"
-              if={ !filterTypeHash[item.type].singleton
-                && parent.opts.item.args.items.length > 1 }
-              onclick={ removeFilterItemContent }
-            >
-              &minus;
-            </button>
-          </div>
+  <div class="input-group filteritem">
+    <div if={ opts.item.type == 'pack' }>
+      <div each={ item, index in opts.item.args.items }
+        if={ filterTypeHash[item.type] }
+        data-mt-list-item-content-index={ index }
+        class={ 'filtertype type-' + item.type }
+      >
+        <div class="item-content">
+          <virtual data-is="list-filter-item-field"
+            field={ filterTypeHash[item.type].field }
+            item={ item }
+          >
+          </virtual>
+          <button class="btn btn-default"
+            if={ !filterTypeHash[item.type].singleton }
+            onclick={ addFilterItemContent }
+          >
+            &plus;
+          </button>
+          <button class="btn btn-default"
+            if={ !filterTypeHash[item.type].singleton
+              && parent.opts.item.args.items.length > 1 }
+            onclick={ removeFilterItemContent }
+          >
+            &minus;
+          </button>
         </div>
       </div>
-
-      <virtual if={ opts.item.type != 'pack' && filterTypeHash[opts.item.type] }>
-        <div data-mt-list-item-content-index="0"
-          class={ 'filtertype type-' + opts.item.type }
-        >
-          <div class="item-content">
-            <virtual data-is="list-filter-item-field"
-              field={ filterTypeHash[opts.item.type].field }
-              item={ opts.item }
-            >
-            </virtual>
-            <button class="btn btn-default"
-              if={ !filterTypeHash[opts.item.type].singleton }
-              onclick={ addFilterItemContent }
-            >
-              &plus;
-            </button>
-          </div>
+    </div>
+    <virtual if={ opts.item.type != 'pack' && filterTypeHash[opts.item.type] }>
+      <div data-mt-list-item-content-index="0"
+        class={ 'filtertype type-' + opts.item.type }
+      >
+        <div class="item-content">
+          <virtual data-is="list-filter-item-field"
+            field={ filterTypeHash[opts.item.type].field }
+            item={ opts.item }
+          >
+          </virtual>
+          <button class="btn btn-default"
+            if={ !filterTypeHash[opts.item.type].singleton }
+            onclick={ addFilterItemContent }
+          >
+            &plus;
+          </button>
         </div>
-      </virtual>
-    </div>
-
-    <div class="col-md-1">
-      <button class="close float-right" onclick={ removeFilterItem }>&times;</button>
-    </div>
+      </div>
+    </virtual>
+    <button class="close float-right" onclick={ removeFilterItem }>&times;</button>
   </div>
 
   <script>

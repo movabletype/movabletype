@@ -588,8 +588,8 @@ function toggleCache(id) {
      help_page="templates"
      help_section="template_name"
      no_header="1">
-    <div class="panel panel-default">
-      <div id="template-editor-toolbar" class="panel-heading template editor-toolbar toolbar">
+    <div class="card">
+      <div id="template-editor-toolbar" class="card-header template editor-toolbar toolbar">
         <button type="button" id="syntaxon" class="command-highlight-on toolbar button active" title="<__trans phrase="Syntax highlighting On">">
           <span class="button-label"><__trans phrase="Syntax highlighting On"></span>
         </button>
@@ -611,8 +611,8 @@ function toggleCache(id) {
   <$mt:setvar name="template_options_active" value="1"$>
 </mt:if>
 
-  <div id="template-options" class="panel panel-default<mt:if name="template_options_active"> active</mt:if>">
-    <div id="template-options-header" class="panel-heading line">
+  <div id="template-options" class="card<mt:if name="template_options_active"> active</mt:if>">
+    <div id="template-options-header" class="card-header line">
       <div class="row">
         <div class="col-md-8 template-options-toggle">
           <a href="#template-options-content" class="icon-left icon-spinner" data-toggle="collapse">
@@ -632,7 +632,7 @@ function toggleCache(id) {
         </div>
       </div>
     </div>
-    <div id="template-options-content" class="panel-body collapse">
+    <div id="template-options-content" class="card-block collapse">
     <mt:if name="has_outfile">
       <mtapp:setting
          id="outfile"

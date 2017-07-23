@@ -12,7 +12,6 @@
         data-toggle="dropdown"
       >
         { trans('More actions...') }
-        <span class="caret"></span>
       </button>
       <div class="dropdown-menu dropdown-menu-right">
         <a each={ action, key in listTop.opts.listActions }

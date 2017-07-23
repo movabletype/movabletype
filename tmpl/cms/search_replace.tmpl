@@ -208,7 +208,7 @@ function blurDateFields(s) {
         </ul>
         <div id="limited-fields" class="mod advanced-options"<mt:unless name="is_limited"> style="display: none;"</mt:unless>>
         <mt:if name="search_cols">
-          <div id="<mt:var name="object_type">-fields" class="panel panel-default panel-body">
+          <div id="<mt:var name="object_type">-fields" class="card card-block">
             <ul class="list-inline multiple-selection">
             <mt:loop name="search_cols">
               <li>
@@ -222,7 +222,7 @@ function blurDateFields(s) {
           </div>
         </mt:if>
         </div>
-        <div id="date-range" class="panel panel-default panel-body form-inline mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
+        <div id="date-range" class="card card-block form-inline mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
           <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="from">0<mt:else>1</mt:if>" />
           <label for="datefrom"><__trans phrase="_DATE_FROM">:</label>
           <input placeholder="YYYY-MM-DD" type="text" name="from" id="from" class="form-control text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">

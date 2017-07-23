@@ -406,7 +406,7 @@ var numOfRows = 0;
 function createUploadBlock () {
   numOfRows++;
 
-  this.uploadBlockPanel = jQuery('<div class="panel panel-default"><div class="panel-body"></div></div>');
+  this.uploadBlockPanel = jQuery('<div class="card"><div class="card-block"></div></div>');
   this.uploadBlock  = jQuery('<div class="row upload-status-block" id="upload-status_' + numOfRows + '"></div>').appendTo(this.uploadBlockPanel.children());
 
   this.leftPanel    = jQuery('<div class="col-md-11 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
