@@ -863,9 +863,8 @@ sub remove_user_assoc {
 
         MT::Association->remove( { blog_id => $blog_id, author_id => $id } );
 
-        # these too, just in case there are no real associations
-        # (ie, commenters)
-        $perm->remove if $perm;
+        # Rebuild permissions because the user may belong to several groups
+        $perm->rebuild if $perm;
     }
 
     $app->add_return_arg( saved => 1 );
@@ -1636,6 +1635,15 @@ sub save_filter {
             )
             );
     }
+
+    # Password strength check
+    # Why the name of password field is different in each forms...
+    if ( scalar $app->param('pass') || scalar $app->param('password') ) {
+        my $msg = $app->verify_password_strength( $accessor->('name'),
+            scalar $app->param('pass') );
+        return $eh->error($msg) if $msg;
+    }
+
     my $email = $accessor->('email');
     return $eh->error(
         MT->translate("Email Address is required for password reset.") )
@@ -1659,6 +1667,7 @@ sub save_filter {
         return $eh->error( MT->translate("URL is invalid.") )
             if !is_url($url) || ( $url =~ m/[<>]/ );
     }
+
     1;
 }
 
