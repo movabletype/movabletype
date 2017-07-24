@@ -2895,7 +2895,7 @@ sub prepare_dynamic_publishing {
 
     # IIS itself does not handle .htaccess,
     # but IISPassword (3rd party) does and dies with this.
-    if ( $ENV{SERVER_SOFTWARE} =~ /Microsoft-IIS/
+    if ( ( $ENV{SERVER_SOFTWARE} || '' ) =~ /Microsoft-IIS/
         && MT->config->EnableAutoRewriteOnIIS )
     {
 
