@@ -91,6 +91,7 @@
         <li
           each={ subField in column.sub_fields }
           hide={ subField.force_display }
+          class="list-inline-item"
         >
           <label>
             <input type="checkbox"

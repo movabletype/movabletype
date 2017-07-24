@@ -346,22 +346,32 @@
     <mt:if name="use_revision">
   <div class="revision-info">
       <mt:if name="rev_date">
-    <p><__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">"></p>
+    <p>
+      <__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">">
+    </p>
     <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label">">">
       <__trans phrase="View revisions">
     </a>
       <mt:else>
-    <p class="zero-state"><__trans phrase="No revision(s) associated with this [_1]" params="<mt:var name="object_label" lower_case="1" escape="html">"></p>
+    <p class="zero-state">
+      <__trans phrase="No revision(s) associated with this [_1]" params="<mt:var name="object_label" lower_case="1" escape="html">">
+    </p>
       </mt:if>
   </div>
     <mt:else>
   <ul>
-    <li><__trans phrase="[_1] - Created by [_2]" params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted" format="%b %e %Y"$>%%<$mt:var name="created_by" escape="html" escape="html"$>"></li>
+    <li>
+      <__trans phrase="[_1] - Created by [_2]" params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted" format="%b %e %Y"$>%%<$mt:var name="created_by" escape="html" escape="html"$>">
+    </li>
       <mt:if name="status_publish">
-    <li><__trans phrase="[_1] - Published by [_2]" params="<$MTDate ts="$authored_on_ts" relative="1" _default="$authored_on_formatted" format="%b %e %Y"$>%%<$mt:var name="authored_by" escape="html" escape="html"$>"></li>
+    <li>
+      <__trans phrase="[_1] - Published by [_2]" params="<$MTDate ts="$authored_on_ts" relative="1" _default="$authored_on_formatted" format="%b %e %Y"$>%%<$mt:var name="authored_by" escape="html" escape="html"$>">
+    </li>
       </mt:if>
       <mt:if name="modified_by">
-    <li><__trans phrase="[_1] - Edited by [_2]" params="<$MTDate ts="$modified_on_ts" relative="1" _default="$modified_on_formatted" format="%b %e %Y"$>%%<$mt:var name="modified_by" escape="html" escape="html"$>"></li>
+    <li>
+      <__trans phrase="[_1] - Edited by [_2]" params="<$MTDate ts="$modified_on_ts" relative="1" _default="$modified_on_formatted" format="%b %e %Y"$>%%<$mt:var name="modified_by" escape="html" escape="html"$>">
+    </li>
       </mt:if>
   </ul>
     </mt:if>
@@ -426,40 +436,61 @@
   <mt:else>
     <mt:if name="can_publish_post">
     <select name="status" id="status" class="form-control full" onchange="highlightSwitch(this)">
-      <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>><__trans phrase="Unpublished (Draft)"></option>
-      <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
+      <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>>
+        <__trans phrase="Unpublished (Draft)">
+      </option>
+      <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>>
+        <__trans phrase="Published">
+      </option>
     <mt:if name="status_review">
-      <option value="3" selected="selected"><__trans phrase="Unpublished (Review)"></option>
+      <option value="3" selected="selected">
+        <__trans phrase="Unpublished (Review)">
+      </option>
     <mt:else name="status_spam">
-      <option value="5" selected="selected"><__trans phrase="Unpublished (Spam)"></option>
+      <option value="5" selected="selected">
+        <__trans phrase="Unpublished (Spam)">
+      </option>
     </mt:if>
     <mt:if name="new_object">
-      <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>><__trans phrase="Scheduled"></option>
+      <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>>
+        <__trans phrase="Scheduled">
+      </option>
     <mt:else>
       <mt:unless name="status_publish">
-      <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>><__trans phrase="Scheduled"></option>
+      <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>>
+        <__trans phrase="Scheduled">
+      </option>
       </mt:unless>
     </mt:if>
     <mt:if name="status_unpublish">
-      <option value="6" selected="selected"><__trans phrase="Unpublished (End)"></option>
+      <option value="6" selected="selected">
+        <__trans phrase="Unpublished (End)">
+      </option>
     </mt:if>
     </select>
     <mt:else>
       <mt:if name="new_object">
-    <input type="hidden" name="status" id="status" value="1" /><span><__trans phrase="Unpublished"></span>
+    <input type="hidden" name="status" id="status" value="1" />
+    <span><__trans phrase="Unpublished"></span>
       <mt:else>
         <mt:if name="status_draft">
-    <input type="hidden" name="status" id="status" value="1" /><span><__trans phrase="Unpublished (Draft)"></span>
+    <input type="hidden" name="status" id="status" value="1" />
+    <span><__trans phrase="Unpublished (Draft)"></span>
         <mt:else name="status_publish">
-    <input type="hidden" name="status" id="status" value="2" /><span><__trans phrase="Published"></span>
+    <input type="hidden" name="status" id="status" value="2" />
+    <span><__trans phrase="Published"></span>
         <mt:else name="status_future">
-    <input type="hidden" name="status" id="status" value="4" /><span><__trans phrase="Scheduled"></span>
+    <input type="hidden" name="status" id="status" value="4" />
+    <span><__trans phrase="Scheduled"></span>
         <mt:else name="status_review">
-    <input type="hidden" name="status" id="status" value="3" /><span><__trans phrase="Unpublished (Review)"></span>
+    <input type="hidden" name="status" id="status" value="3" />
+    <span><__trans phrase="Unpublished (Review)"></span>
         <mt:else name="status_spam">
-    <input type="hidden" name="status" id="status" value="5" /><span><__trans phrase="Unpublished (Spam)"></span>
+    <input type="hidden" name="status" id="status" value="5" />
+    <span><__trans phrase="Unpublished (Spam)"></span>
         <mt:else name="status_unpublish">
-    <input type="hidden" name="status" id="status" value="6" /><span><__trans phrase="Unpublished (End)"></span>
+    <input type="hidden" name="status" id="status" value="6" />
+    <span><__trans phrase="Unpublished (End)"></span>
         </mt:if>
       </mt:if>
     </mt:if>
@@ -1249,14 +1280,14 @@
 <mt:unless name="new_object">
 <mt:setvarblock name="object_nav">
   <ul class="list-inline text-right object-nav">
-    <li id="previous-link">
+    <li id="previous-link" class="list-inline-item">
       <mt:if name="previous_entry_id">
         <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>">&lsaquo; <__trans phrase="Prev"></a>
       <mt:else>
         <span>&lsaquo; <__trans phrase="Prev"></span>
       </mt:if>
     </li>
-    <li id="next-link">
+    <li id="next-link" class="list-inline-item">
       <mt:if name="next_entry_id">
         <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="next_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Next"> &rsaquo;</a>
       <mt:else>

@@ -253,7 +253,6 @@
           <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
               { trans('Select Filter Item...') }
-              <span class="caret"></span>
             </button>
             <div class="dropdown-menu">
               <a each={ listTop.opts.filterTypes }
