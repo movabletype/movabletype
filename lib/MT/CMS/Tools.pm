@@ -1844,7 +1844,7 @@ sub adjust_sitepath {
     my $q         = $app->param;
     my $tmp_dir   = $q->param('tmp_dir');
     my $error     = $q->param('error') || q();
-    my %asset_ids = split ',', $q->param('asset_ids');
+    my %asset_ids = split ',', $q->param('asset_ids') || '';
 
     $app->{no_print_body} = 1;
 
