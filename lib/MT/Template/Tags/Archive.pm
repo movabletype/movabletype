@@ -1043,6 +1043,12 @@ sub _hdlr_archive_file {
             if !$e;
         $f = $e->basename;
     }
+    if ( !$at || ( $archiver->contenttype_based ) ) {
+        my $c = $ctx->stash('content');
+        return $ctx->error( MT->translate("Could not determine content") )
+            if !$c;
+        $f = $c->identifier;
+    }
     else {
         $f = $ctx->stash('_basename') || $ctx->{config}->IndexBasename;
     }
