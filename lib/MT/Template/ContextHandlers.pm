@@ -3153,9 +3153,18 @@ sub _hdlr_app_setting {
     else {
         $label_class = 'field-' . $label_class;
     }
-    my $indent_css = "";
+
+    my $style = "";
     if ($indent) {
-        $indent_css = " style=\"padding-left: " . $indent . "px;\"";
+        if ( !$shown ) {
+            $style = qq{ style="padding-left: ${indent}px; display: none;"};
+        }
+        else {
+            $style = qq{ style="padding-left: ${indent}px;"};
+        }
+    }
+    elsif ( !$shown ) {
+        $style = ' style="display: none;"';
     }
 
     # 'Required' indicator plus CSS class
@@ -3168,12 +3177,11 @@ sub _hdlr_app_setting {
     # $insides =~ s/(<\/textarea>)\s*$/$1<\/div>/g;
 
     my $class = $args->{class} || "";
-    $class = ( $class eq '' ) ? 'hidden' : $class . ' hidden' unless $shown;
 
     if ( $args->{no_grid} ) {
         if ( $args->{no_header} ) {
             return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field$req_class $label_class $class"$indent_css>
+    <div id="$id-field" class="field$req_class $label_class $class"$style>
         <div class="field-content $content_class">
           $insides$hint$warning
         </div>
@@ -3182,7 +3190,7 @@ EOT
         }
         else {
             return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field$req_class $label_class $class"$indent_css>
+    <div id="$id-field" class="field$req_class $label_class $class"$style>
         <div class="field-header">
           <label id="$id-label" for="$id">$label$req</label>
         </div>
@@ -3195,7 +3203,7 @@ EOT
     }
     elsif ( $args->{no_header} ) {
         return $ctx->build(<<"EOT");
-    <div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
+    <div id="$id-field" class="row form-group field$req_class $label_class $class"$style>
         <div class="col-md-12 col-sm-12 field-content $content_class">
           $insides$hint$warning
         </div>
@@ -3204,7 +3212,7 @@ EOT
     }
     else {
         return $ctx->build(<<"EOT");
-    <div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
+    <div id="$id-field" class="row form-group field$req_class $label_class $class"$style>
         <div class="col-md-2 col-sm-2 field-header">
           <label id="$id-label" for="$id" class="control-label text-right pull-right">$label$req</label>
         </div>

@@ -606,29 +606,27 @@
 </list-filter-select-modal>
 
 <list-filter-buttons>
-  <div class="btn-group btn-group-space">
-    <button class="btn btn-primary"
-      disabled={ listFilterTop.currentFilter.items.length == 0 }
-      onclick={ applyFilter }
-    >
-      { trans('Apply') }
-    </button>
-    <button class="btn btn-default"
-      disabled={ listFilterTop.currentFilter.items.length == 0
-        || listFilterTop.currentFilter.can_save == '0'
-      }
-      onclick={ saveFilter }
-    >
-      { trans('Save') }
-    </button>
-    <button if={ listFilterTop.currentFilter.id && listFilterTop.currentFilter.items.length > 0 }
-      class="btn btn-default"
-      onclick={ saveAsFilter }
-    >
-      { trans('Save As') }
-    </button>
-    <list-filter-save-modal></list-filter-save-modal>
-  </div>
+  <button class="btn btn-primary"
+    disabled={ listFilterTop.currentFilter.items.length == 0 }
+    onclick={ applyFilter }
+  >
+    { trans('Apply') }
+  </button>
+  <button class="btn btn-default"
+    disabled={ listFilterTop.currentFilter.items.length == 0
+      || listFilterTop.currentFilter.can_save == '0'
+    }
+    onclick={ saveFilter }
+  >
+    { trans('Save') }
+  </button>
+  <button if={ listFilterTop.currentFilter.id && listFilterTop.currentFilter.items.length > 0 }
+    class="btn btn-default"
+    onclick={ saveAsFilter }
+  >
+    { trans('Save As') }
+  </button>
+  <list-filter-save-modal></list-filter-save-modal>
 
   <script>
     this.mixin('listTop')

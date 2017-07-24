@@ -1,42 +1,42 @@
 <list-actions>
-  <div class="btn-group btn-group-space">
-    <button each={ action, key in listTop.opts.buttonActions }
-      class="btn btn-default"
-      data-action-id={ key }
-      onclick={ doAction }
+  <button each={ action, key in listTop.opts.buttonActions }
+    class="btn btn-default mx-1"
+    data-action-id={ key }
+    onclick={ doAction }
+  >
+    { action.label }
+  </button>
+  <div if={ listTop.opts.hasListActions && listTop.opts.hasPulldownActions }
+    class="btn-group"
+  >
+    <button class="btn btn-default dropdown-toggle"
+      data-toggle="dropdown"
     >
-      { action.label }
+      { trans('More actions...') }
     </button>
-    <virtual if={ listTop.opts.hasListActions && listTop.opts.hasPulldownActions }>
-      <button class="btn btn-default dropdown-toggle"
-        data-toggle="dropdown"
+    <div class="dropdown-menu">
+      <a each={ action, key in listTop.opts.listActions }
+        class="dropdown-item"
+        href="javascript:void(0);"
+        data-action-id={ key }
+        onclick={ doAction }
       >
-        { trans('More actions...') }
-      </button>
-      <div class="dropdown-menu dropdown-menu-right">
-        <a each={ action, key in listTop.opts.listActions }
-          class="dropdown-item"
-          href="javascript:void(0);"
-          data-action-id={ key }
-          onclick={ doAction }
-        >
-          { action.label }
-        </a>
-        <h6 if={ Object.keys(listTop.opts.moreListActions).length > 0 }
-          class="dropdown-header"
-        >
-          { trans('Plugin Actions') }
-        </h6>
-        <a each={ action, key in listTop.opts.moreListActions }
-          class="dropdown-item"
-          href="javascript:void(0);"
-          data-action-id={ key }
-          onclick={ doAction }
-        >
-          { action.label }
-        </a>
-      </div>
-    </virtual>
+        { action.label }
+      </a>
+      <h6 if={ Object.keys(listTop.opts.moreListActions).length > 0 }
+        class="dropdown-header"
+      >
+        { trans('Plugin Actions') }
+      </h6>
+      <a each={ action, key in listTop.opts.moreListActions }
+        class="dropdown-item"
+        href="javascript:void(0);"
+        data-action-id={ key }
+        onclick={ doAction }
+      >
+        { action.label }
+      </a>
+    </div>
   </div>
 
   <script>

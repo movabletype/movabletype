@@ -575,12 +575,12 @@
   </mtapp:setting>
 </mt:if>
 
-  <div class="btn-group btn-group-space">
+  <div class="d-flex justify-content-center">
     <button
        name="status"
        type="submit"
        title="<mt:var name="button_title">"
-       class="publish action primary button btn btn-primary">
+       class="publish action primary button btn btn-primary mx-1">
       <mt:var name="button_text">
     </button>
     <button
@@ -588,7 +588,7 @@
        type="submit"
        accesskey="v"
        title="<mt:var name="preview_button_title">"
-       class="preview action button btn btn-default">
+       class="preview action button btn btn-default mx-1">
       <__trans phrase="Preview">
     </button>
   </div>
@@ -601,7 +601,6 @@
      mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
      mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
      mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">"
-     type="submit"
      title="<mt:var name="delete_button_title">"
      class="delete"
      accesskey="x">
@@ -625,13 +624,13 @@
 </mt:unless>
 </mtapp:widget>
 
-<div id="category-field"<mt:unless name="disp_prefs_show_category"> class="hidden"</mt:unless>>
+<div id="category-field"<mt:unless name="disp_prefs_show_category"> style="display: none;"</mt:unless>>
 <mt:if name="object_type" eq="entry">
   <mt:setvarblock name="header_action">
   <a href="javascript:void(0)" class="float-right category-toggle-link toggle-link" id="open-category-selector1" mt:command="open-category-selector" mt:close-el="close-category-selector1" title="<__trans phrase="Add category">">
     <__trans phrase="edit"/>
   </a>
-  <a href="javascript:void(0)" class="float-right category-toggle-link toggle-link hidden" mt:command="close-category-selector" id="close-category-selector1">
+  <a href="javascript:void(0)" class="float-right category-toggle-link toggle-link" style="display: none;" mt:command="close-category-selector" id="close-category-selector1">
     <__trans phrase="close">
   </a>
   </mt:setvarblock>
@@ -645,7 +644,7 @@
 </mt:if>
 </div>
 
-<div id="feedback-field"<mt:unless name="disp_prefs_show_feedback"> class="hidden"</mt:unless>>
+<div id="feedback-field"<mt:unless name="disp_prefs_show_feedback"> style="display: none;"</mt:unless>>
   <mtapp:widget
      id="entry-feedback-widget"
      label="<__trans phrase="Comments">">
@@ -702,7 +701,7 @@
 </div>
 
 <mt:if name="object_type" like="(entry|page)">
-<div id="assets-field"<mt:unless name="disp_prefs_show_assets"> class="hidden"</mt:unless>>
+<div id="assets-field"<mt:unless name="disp_prefs_show_assets"> style="display: none;"</mt:unless>>
   <mt:setvarblock name="widget_label"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></mt:setvarblock>
   <mtapp:widget
      id="asset_container"
@@ -981,11 +980,9 @@
               val = customizable_fields[i];
               if ( jQuery.inArray( val, default_fields ) > -1 ) {
                   jQuery('#custom-prefs-'+val).prop('checked', true);
-                  jQuery('div#'+val+'-field').removeClass('hidden');
                   jQuery('div#'+val+'-field').show();
               } else {
                   jQuery('#custom-prefs-'+val).prop('checked', false);
-                  jQuery('div#'+val+'-field').addClass('hidden');
                   jQuery('div#'+val+'-field').hide();
               }
           };
@@ -1534,10 +1531,8 @@
     jQuery('div#display-options-detail :checkbox').click(function() {
         var $field_block = jQuery('div#'+this.value+'-field');
         if ( this.checked ) {
-            $field_block.removeClass('hidden');
             $field_block.show();
         } else {
-            $field_block.addClass('hidden');
             $field_block.hide();
         }
         jQuery('#entry_prefs').val('Custom');

@@ -243,7 +243,7 @@ function createItem(id, parent, label, basename, number) {
     line += '<span class="item-basename"><span class="item-basename-text-container"><span class="item-basename-text">'+basename+'</span></span></span>';
   line += ' <span class="item-ctrl"></span>';
   <mt:unless name="is_category_list">
-  line += ' <span class="float-right count">'+number+'</span>';
+  line += ' <span class="count" style="margin-left: auto;">'+number+'</span>';
   </mt:unless>
   var $item = jQuery('<div id="cat-'+id+'" class="card card-block flex-row pcat-'+parent+'" />').append(line);
   return $item;
@@ -260,7 +260,7 @@ function initItem($item) {
     .addClass('lv-'+nest.length)
     .addClass('sortable-item');
   $item.find('.item-ctrl, .edit-form').remove();
-  $item.append('<span class="item-ctrl" />');
+  jQuery('<span class="item-ctrl" />').insertBefore($item.find('.count'));
 
   jQuery('<a href="#" class="item-action edit-link clickable"><__trans phrase="Rename" escape="js"></a>')
     .appendTo($item.find('.item-ctrl'))

@@ -43,11 +43,11 @@ function uploadDestinationSelect(sel) {
     var map  = sel.options[sel.selectedIndex].value;
     if (map == '') {
         // Hide and disable Upload Destination selectbox.
-        jQuery(sel).addClass('hidden');
+        jQuery(sel).hide();
         sel.setAttribute('disabled', 'disabled');
 
         // Show and enable custom Upload Destination textbox.
-        jQuery(edit).removeClass('hidden');
+        jQuery(edit).show();
         edit.removeAttribute('disabled');
         edit.focus();
 
@@ -57,7 +57,7 @@ function uploadDestinationSelect(sel) {
         );
 
         // Hide extra path textbox.
-        jQuery('.upload-extra-path').addClass('hidden');
+        jQuery('.upload-extra-path').hide();
 
         // Add slash and the value in extra path textbox to custom Upload Destination textbox
         // if extra path textbox has value.
