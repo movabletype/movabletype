@@ -2541,7 +2541,7 @@ sub dialog_adjust_sitepath {
     my $tmp_dir    = $q->param('tmp_dir');
     my $error      = $q->param('error') || q();
     my $uploaded   = $q->param('restore_upload') || 0;
-    my @blog_ids   = split ',', $q->param('blog_ids');
+    my @blog_ids   = split ',', $q->param('blog_ids') || '';
     my $asset_ids  = $q->param('asset_ids');
     my $blog_class = $app->model('blog');
     my @blogs      = $blog_class->load( { id => \@blog_ids } );
