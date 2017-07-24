@@ -4571,7 +4571,7 @@ sub rebuild_these {
                 $app->rebuild_indexes( Blog => $blog )
                     or return $app->publish_error();
             }
-            my $blog_id = int( $app->param('blog_id') );
+            my $blog_id = int( $app->param('blog_id') || 0 );
             my $this_blog;
             $this_blog = MT::Blog->load($blog_id) if $blog_id;
             $app->run_callbacks( 'rebuild', $this_blog );
