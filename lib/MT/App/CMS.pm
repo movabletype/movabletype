@@ -4518,7 +4518,7 @@ sub _entry_prefs_from_params {
     my $disp     = $q->param('entry_prefs') || '';
     my @fields;
     if ( lc $disp eq 'custom' ) {
-        @fields = split /,/, $q->param( $prefix . 'custom_prefs' );
+        @fields = split /,/, $q->param( $prefix . 'custom_prefs' ) || '';
     }
     elsif ($disp) {
         push @fields, $disp;
