@@ -3545,7 +3545,7 @@ sub cms_pre_load_filtered_list {
     delete $terms->{blog_id};
     $terms->{parent_id} = $load_options->{blog_id}
         if $app->blog;
-    $terms->{class} = 'blog' unless $terms->{class} eq '*';
+    $terms->{class} = 'blog' unless $terms->{class} and $terms->{class} eq '*';
 
     my $user = $load_options->{user} || $app->user;
     return   if $user->is_superuser;
