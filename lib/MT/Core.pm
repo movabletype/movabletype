@@ -3318,8 +3318,8 @@ sub init_registry {
 # Config handlers for these settings...
 
 sub load_archive_types {
-    require MT::WeblogPublisher;
-    return MT::WeblogPublisher->core_archive_types;
+    require MT::ContentPublisher;
+    return MT::ContentPublisher->core_archive_types;
 }
 
 sub PerformanceLoggingPath {
