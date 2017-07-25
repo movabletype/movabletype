@@ -799,7 +799,10 @@ sub save_cfg_system_users {
         && !$app->config->is_readonly('UserPasswordMinLength') )
     {
         my $pass_min_len = $app->param('minimum_length');
-        if ( !$pass_min_len or ( $pass_min_len =~ m/\D/ ) or ( $pass_min_len < 1 ) ) {
+        if (   !$pass_min_len
+            or ( $pass_min_len =~ m/\D/ )
+            or ( $pass_min_len < 1 ) )
+        {
             return $app->errtrans(
                 'Minimum password length must be an integer and greater than zero.'
             );
@@ -1141,8 +1144,9 @@ sub dialog_select_sysadmin {
                 ),
             },
             code     => $hasher,
-            template => 'dialog/select_users.tmpl',
-            params   => {
+            template => $app->param('json') ? 'include/listing_panel.tmpl'
+            : 'dialog/select_users.tmpl',
+            params => {
                 dialog_title =>
                     $app->translate("Select a System Administrator"),
                 items_prompt =>

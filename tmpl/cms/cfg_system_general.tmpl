@@ -59,11 +59,17 @@
      id="system_email_address"
      required="1"
      label="<__trans phrase="System Email Address">">
-    <div class="form-inline">
+    <div class="input-group">
       <input type="text"<mt:if name="config_warnings_emailaddressmain"> disabled="disabled"</mt:if> name="system_email_address" id="system_email_address" class="form-control text med required email"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> style="width: 50%;" />
-      <a href="#" id="send-test-email" class="button btn btn-default" data-toggle="modal" data-target="#test-email-dialog"><__trans phrase="Send Test Mail"></a>
+      <div class="input-group-btn">
+        <button id="send-test-email" class="button btn btn-default" data-toggle="modal" data-target="#test-email-dialog" onclick="return false;">
+          <__trans phrase="Send Test Mail">
+        </button>
+      </div>
     </div>
-    <p class="text-muted hint"><__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events."></p>
+    <p class="text-muted hint">
+      <__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">
+    </p>
   </mt:app:setting>
 
   <mtapp:settinggroup id="system-support-settings">
@@ -214,7 +220,7 @@
       </mt:if>
     </span>
     <mt:unless name="config_warnings_lockoutnotifyto">
-    <a href="<mt:var name="script_url">?__mode=dialog_select_sysadmin&amp;multi=1&amp;idfield=lockout-notify-ids&amp;namefield=lockout-notify-names" class="mt-open-dialog mt-modal-open">
+    <a href="<mt:var name="script_url">?__mode=dialog_select_sysadmin&amp;multi=1&amp;idfield=lockout-notify-ids&amp;namefield=lockout-notify-names" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
       <__trans phrase="Select">
     </a>
     </mt:unless>
@@ -284,7 +290,7 @@
 </form>
 
 <div id="test-email-dialog" class="modal fade" tabindex="-1">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><__trans phrase="Send Mail To"></h5>
