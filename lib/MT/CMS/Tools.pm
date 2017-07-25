@@ -1484,7 +1484,7 @@ sub backup_download {
         $sess->remove;
     }
     else {
-        $newfilename = $app->param('name');
+        $newfilename = $app->param('name') || '';
         return
             if $newfilename
             !~ /Movable_Type-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-Backup(?:-\d+)?\.\w+/;
