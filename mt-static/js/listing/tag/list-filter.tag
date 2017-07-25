@@ -672,7 +672,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{ trans( saveAs ? 'Save As Filter' : 'Save Filter' ) }</h5>
-          <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
         <div class="modal-body">
           <div style="padding-bottom: 30px;">
@@ -685,18 +687,12 @@
           </div>
         </div>
         <div class="modal-footer">
-          <ul class="list-inline">
-            <li>
-              <button class="btn btn-primary" onclick={ saveFilter }>
-                { trans('Save') }
-              </button>
-            </li>
-            <li>
-              <button class="btn btn-default" onclick={ closeModal }>
-                { trans('Cancel') }
-              </button>
-            </li>
-          </ul>
+          <button class="btn btn-primary" onclick={ saveFilter }>
+            { trans('Save') }
+          </button>
+          <button class="btn btn-default" onclick={ closeModal }>
+            { trans('Cancel') }
+          </button>
         </div>
       </div>
     </div>
