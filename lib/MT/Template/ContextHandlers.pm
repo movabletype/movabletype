@@ -3294,6 +3294,7 @@ sub _hdlr_app_widget {
     my $label_onclick = $args->{label_onclick} || "";
     my $header_action = $args->{header_action} || "";
     my $closable      = $args->{can_close} ? 1 : 0;
+    my $hidden        = $args->{hidden};
     if ($closable) {
         $header_action
             = qq{<button type="button" class="close remove-widget"><span>&times;</span></button>};
@@ -3342,6 +3343,10 @@ sub _hdlr_app_widget {
         : "";
     my $tabbed       = $args->{tabbed} ? ' mt:delegate="tab-container"' : "";
     my $header_class = $tabbed         ? 'widget-header-tabs'           : '';
+    my $style        = '';
+    if ($hidden) {
+        $style = ' style="display: none;"';
+    }
     my $return_args = $app->make_return_args;
     $return_args = encode_html($return_args);
     my $cgi = $app->uri;
@@ -3361,7 +3366,7 @@ $insides
 EOT
     }
     my $widget = <<"EOT";
-<div id="$id" class="card widget $class"$tabbed>
+<div id="$id" class="card widget $class"$tabbed$style>
   <div class="card-header widget-header $header_class">
     <div class="widget-action">$header_action</div>
     <div class="widget-label">$widget_header</div>

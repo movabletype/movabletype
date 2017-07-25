@@ -204,7 +204,7 @@
 
 <mtapp:widget
    id="tag-list"
-   class="hidden"
+   hidden="1"
    label="<__trans phrase="Template Tag Docs">"
    label_link="$link_doc">
   <div id="tag-list-inner">
@@ -213,7 +213,7 @@
 
 <mtapp:widget
    id="badtag-list"
-   class="hidden"
+   hidden="1"
    label="<__trans phrase="Unrecognized Tags">">
   <div id="badtag-list-inner">
   </div>
@@ -359,18 +359,18 @@ function documentTags( useTextInput ) {
     if (list != '') {
         list = '<ul class="list-unstyled">' + list + '</ul>';
         DOM.getElement("tag-list-inner").innerHTML = list;
-        DOM.removeClassName("tag-list", "hidden");
+        jQuery('#tag-list').show();
     } else {
-        DOM.addClassName("tag-list", "hidden");
+        jQuery('#tag-list').hide();
     }
     // if we found invalid tags, display them in badtag-list, otherwise
     // hide it
     if (bad_list != '') {
         bad_list = '<ul class="list-unstyled">' + bad_list + '</ul>';
         DOM.getElement("badtag-list-inner").innerHTML = bad_list;
-        DOM.removeClassName("badtag-list", "hidden");
+        jQuery('#badtag-list').show();
     } else {
-        DOM.addClassName("badtag-list", "hidden");
+        jQuery('#badtag-list').hide();
     }
 }
 
@@ -391,8 +391,8 @@ function archiveFileSelect(sel) {
     var edit = getByID(fld);
     var map = sel.options[sel.selectedIndex].value;
     if (map == '') {
-        DOM.addClassName(sel, "hidden");
-        DOM.removeClassName(edit, "hidden");
+        jQuery(sel).hide();
+        jQuery(edit).show();
         edit.focus();
     } else {
         edit.value = map;
