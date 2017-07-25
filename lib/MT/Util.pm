@@ -1215,12 +1215,18 @@ sub make_unique_category_basename {
     my ($cat) = @_;
     require MT::Blog;
     my $blog  = MT::Blog->load( $cat->blog_id );
+    my $name  = '';
     my $label = $cat->label;
-    $label = '' if !defined $label;
-    $label =~ s/^\s+|\s+$//gs;
-
-    my $name = MT::Util::dirify($label)
-        || ( $cat->basename_prefix(1) . $cat->id );
+    if ( defined $label ) {
+        $label =~ s/^\s+|\s+$//gs;
+        $name = MT::Util::dirify($label);
+    }
+    if ( $name eq '' ) {
+        $name
+            = $cat->id
+            ? $cat->basename_prefix(1) . $cat->id
+            : $cat->basename_prefix(0);
+    }
 
     my $limit
         = ( $blog && $blog->basename_limit ) ? $blog->basename_limit : 30;
