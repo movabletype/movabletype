@@ -942,7 +942,7 @@ sub post_remove_widget {
     );
     my @resave;
     while ( my $ws = $iter->() ) {
-        my @mods = split( ',', $ws->modulesets );
+        my @mods = split( ',', $ws->modulesets || '' );
         if ( grep { $_ == $tmpl->id } @mods ) {
             push @resave, $ws;
         }
