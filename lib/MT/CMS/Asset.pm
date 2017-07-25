@@ -1558,7 +1558,7 @@ sub _upload_file_compat {
     );
     if ( $blog_id = $q->param('blog_id') ) {
         unless ($has_overwrite) {
-            if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
+            if ( my $ext_new = MT::Image->get_image_type($fh) ) {
                 my $ext_old
                     = (
                     File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ )
@@ -2095,7 +2095,7 @@ sub _upload_file {
         File::Basename::basename($basename) );
 
     # Change to real file extension
-    if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
+    if ( my $ext_new = MT::Image->get_image_type($fh) ) {
         my $ext_old
             = ( File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
             [2];
