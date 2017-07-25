@@ -13,6 +13,7 @@ function returnSelectedTheme(ok, id) {
         var el_name = $parent_html.find('#<mt:var name="namefield" escape="js">')[0];
         $parent_html.find('#<mt:var name="imagefield" escape="js">').empty().append(
             '<img src="' + themes[id]['thumb']
+                + '" class="img-thumbnail'
                 + '" width="' + themes[id]['thumb_w']
                 + '" height="' + themes[id]['thumb_h'] + '" />'
         );
@@ -32,18 +33,20 @@ function returnSelectedTheme(ok, id) {
 <ul id="available-themes" class="list-group select-theme">
 <mt:loop name="theme_loop">
     <li id="theme-<mt:var name="id">" class="list-group-item theme<mt:if name="current"> current-theme</mt:if>">
-        <div class="pull-left">
-            <a href="javascript:returnSelectedTheme(1,'<mt:var name="theme_id">')" class="pull-left">
-                <img class="img-thumbnail" alt="<$mt:var name="label" escape="html"$>" src="<mt:var name="thumbnail_url">" />
-            </a>
+      <div class="row">
+        <div class="col-md-3 d-flex justify-content-center align-self-center">
+          <a href="javascript:returnSelectedTheme(1,'<mt:var name="theme_id">')">
+              <img class="img-thumbnail" alt="<$mt:var name="label" escape="html"$>" src="<mt:var name="thumbnail_url">" />
+          </a>
         </div>
-        <div class="theme-meta">
+        <div class="col-md-9 theme-meta">
             <h4><mt:var name="label" escape="html"></h4>
             <p class="theme-description description"><mt:var name="description" escape="html"></p>
             <span class="action-link">
                 <a href="javascript:returnSelectedTheme(1,'<mt:var name="theme_id">')"><__trans phrase="Select"></a>
             </span>
         </div>
+      </div>
     </li>
 </mt:loop>
 </ul>
