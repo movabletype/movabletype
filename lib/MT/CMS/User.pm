@@ -1691,7 +1691,7 @@ sub pre_save {
     }
 
     my ( $delim, $delim2 ) = $app->param('tag_delim');
-    $delim = $delim ? $delim : $delim2;
+    $delim ||= $delim2 || '';
     if ( $delim =~ m/comma/i ) {
         $delim = ord(',');
     }
