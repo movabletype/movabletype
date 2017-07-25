@@ -829,7 +829,7 @@ sub thumbnail_url {
             }
             $file = MT::Util::encode_url($file);
             $site_url = MT::Util::caturl( $site_url, $path, $file );
-            $site_url .= '?ts=' . $asset->modified_on if $param{Ts};
+            $site_url .= '?ts=' . $asset->modified_on if $param{Ts} and $asset->modified_on;
             return ( $site_url, $w, $h );
         }
     }
