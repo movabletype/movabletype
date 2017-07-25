@@ -276,27 +276,25 @@
   </div>
 </mtapp:listing>
 
-<mt:setvarblock name="js_include" append="1">
-<script>
-    jQuery('button.mt-delete-<mt:var name="template_type" default="template" escape="js" remove_html="1">-templates').mtDeleteItems({
-        id: '<$mt:var name="template_type" default="template" escape="js"$>-listing-form',
-        singular: '<mt:var name="object_label" lower_case="1" escape="js">',
-        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
-        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>}
-    });
-    jQuery('button.mt-publish-<mt:var name="template_type" default="template" escape="js" remove_html="1">-templates').mtPublishItems({
-        id: '<$mt:var name="template_type" default="template" escape="js"$>-listing-form',
-        singular: '<__trans phrase="template" escape="js">',
-        plural: '<__trans phrase="templates" escape="js">',
-        mode: <mt:if name="template_type">'publish_<mt:var name="template_type" escape="js">_templates'<mt:else>'publish_templates_from_search'</mt:if>,
-        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
-        phrase: '<__trans phrase="to publish" escape="js">'
-    });
-    jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
-        id: '<mt:var name="form_id">',
-        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js" lower_case="1"></mt:if>',
-        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
-        phrase: '<__trans phrase="to act upon" escape="js">'
-    });
-</script>
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('button.mt-delete-<mt:var name="template_type" default="template" escape="js" remove_html="1">-templates').mtDeleteItems({
+    id: '<$mt:var name="template_type" default="template" escape="js"$>-listing-form',
+    singular: '<mt:var name="object_label" lower_case="1" escape="js">',
+    plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
+    args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>}
+});
+jQuery('button.mt-publish-<mt:var name="template_type" default="template" escape="js" remove_html="1">-templates').mtPublishItems({
+    id: '<$mt:var name="template_type" default="template" escape="js"$>-listing-form',
+    singular: '<__trans phrase="template" escape="js">',
+    plural: '<__trans phrase="templates" escape="js">',
+    mode: <mt:if name="template_type">'publish_<mt:var name="template_type" escape="js">_templates'<mt:else>'publish_templates_from_search'</mt:if>,
+    args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
+    phrase: '<__trans phrase="to publish" escape="js">'
+});
+jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
+    id: '<mt:var name="form_id">',
+    plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js" lower_case="1"></mt:if>',
+    args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
+    phrase: '<__trans phrase="to act upon" escape="js">'
+});
 </mt:setvarblock>
