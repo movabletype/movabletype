@@ -1236,8 +1236,6 @@ sub make_unique_category_basename {
     $base =~ s/_+$//;
     $base = $cat->basename_prefix(0)
         if $base eq '';    #FIXME when does this happen?
-    my $i         = 1;
-    my $base_copy = $base;
 
     my $cat_class = ref $cat;
     my $terms
@@ -1268,8 +1266,6 @@ sub make_unique_author_basename {
     $limit = 250 if $limit > 250;
     my $base = substr( $name, 0, $limit );
     $base =~ s/_+$//;
-    my $i         = 1;
-    my $base_copy = $base;
 
     my $author_class = ref $author;
     return _get_basename( $author_class, $base );
