@@ -93,6 +93,8 @@ sub preprocess_native_tags {
             if $ctx->stash('multiblog_include_blog_ids');
         $args->{exclude_blogs} = $ctx->stash('multiblog_exclude_blog_ids')
             if $ctx->stash('multiblog_exclude_blog_ids');
+        $args->{include_with_website} = $ctx->stash('multiblog_include_with_website')
+            if $ctx->stash('multiblog_include_with_website');
     }
 
     # Remove local blog ID from MTTags since it is cross-blog

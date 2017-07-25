@@ -195,6 +195,10 @@ sub context {
             'multiblog_exclude_blog_ids',
             join( ',', $args->{exclude_blogs} )
         ) if $args->{exclude_blogs};
+        $ctx->stash(
+            'multiblog_include_with_website',
+            $args->{include_with_website}
+        ) if $args->{include_with_website};
     }
 
     # Evaluate container contents and return output

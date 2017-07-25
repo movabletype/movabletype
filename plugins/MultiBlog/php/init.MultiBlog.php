@@ -148,6 +148,10 @@ function multiblog_function_wrapper($tag, $args, &$_smarty_tpl) {
         $exclude_blogs = $ctx->stash('multiblog_exclude_blog_ids');
         if (isset($exclude_blogs))
             $args['exclude_blogs'] = $exclude_blogs;
+
+        $include_with_website = $ctx->stash('multiblog_include_with_website');
+        if (isset($include_with_website))
+            $args['include_with_website'] = $include_with_website;
     }
 
     # Call original tag handler with new multiblog args
@@ -190,6 +194,10 @@ function multiblog_block_wrapper($args, $content, &$_smarty_tpl, &$repeat) {
             $excl = $ctx->stash('multiblog_exclude_blog_ids');
             if (isset($excl))
                 $args['exclude_blogs'] = $excl;
+
+            $include_with_website = $ctx->stash('multiblog_include_with_website');
+            if (isset($include_with_website))
+                $args['include_with_website'] = $include_with_website;
         }
 
         # Load multiblog access control list
