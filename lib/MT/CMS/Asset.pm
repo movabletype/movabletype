@@ -1595,7 +1595,7 @@ sub _upload_file_compat {
                 'Movable Type was unable to write to the "Upload Destination". Please make sure that the webserver can write to this folder.'
             )
         ) unless -d $root_path;
-        $relative_path = $q->param('extra_path');
+        $relative_path = $q->param('extra_path') || '';
         $middle_path = $q->param('middle_path') || '';
         my $relative_path_save = $relative_path;
         if ( $middle_path ne '' ) {
