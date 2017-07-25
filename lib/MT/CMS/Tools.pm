@@ -1221,7 +1221,7 @@ sub backup {
     if ( !( $size || $num_assets ) ) {
         $splitter = sub { };
 
-        if ( '0' eq $archive ) {
+        if ( !$archive ) {
             ( $fh, my $filepath )
                 = File::Temp::tempfile( 'xml.XXXXXXXX', DIR => $temp_dir );
             binmode $fh, ":encoding(utf8)";
@@ -1381,7 +1381,7 @@ sub backup {
                 url      => $url,
                 filename => "$file.manifest"
                 };
-            if ( '0' eq $archive ) {
+            if ( !$archive ) {
                 for my $f (@files) {
                     $f->{filename}
                         = MT::FileMgr::Local::_syserr( $f->{filename} )
