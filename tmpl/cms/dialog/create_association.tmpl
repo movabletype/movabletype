@@ -104,10 +104,10 @@ TC.attachLoadEvent(init);
 </form>
 
 <div class="modal-header">
-    <button type="button" class="close" data-mt-modal-close>
-        <span>&times;</span>
-    </button>
     <h4 class="modal-title"><mt:var name="page_title"></h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+      <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 
 <mt:if name="missing_data">
@@ -156,13 +156,14 @@ TC.attachLoadEvent(init);
     </form>
 </div>
 <mt:else>
+<div class="modal-body">
     <mt:loop name="panel_loop">
       <mt:include name="include/listing_panel.tmpl" use_page_content="1">
     </mt:loop>
+</div>
 </mt:if>
 
 </mt:setvarblock>
 
 <mt:include name="layout/modal.tmpl">
 <mt:var name="layout">
-
