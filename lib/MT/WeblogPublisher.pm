@@ -1054,12 +1054,13 @@ sub _rebuild_entry_archive_type {
             ? $param{File}
             : $mt->archive_file_for( $entry, $blog, $at, $param{Category},
             $map, $ts, $param{Author} );
-        if ( $file eq '' ) {
+        if ( !defined($file) ) {
+            $mt->error( MT->translate( $blog->errstr() ) );
+            return 1;
+        }
+        elsif ( $file eq '' ) {
 
             # np
-        }
-        elsif ( !defined($file) ) {
-            return $mt->error( MT->translate( $blog->errstr() ) );
         }
         else {
             push @map_build, $map unless $done->{$file};
