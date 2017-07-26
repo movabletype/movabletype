@@ -772,7 +772,7 @@ sub save_cfg_system_users {
         1 );
     $app->config( 'DefaultUserLanguage', $app->param('default_language'), 1 );
     $app->config( 'DefaultUserTagDelimiter',
-        $app->param('default_user_tag_delimiter') || undef, 1 );
+        scalar $app->param('default_user_tag_delimiter'), 1 );
     my $registration = $cfg->CommenterRegistration;
 
     if ( my $reg = $app->param('registration') ) {

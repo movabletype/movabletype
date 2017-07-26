@@ -84,7 +84,7 @@ sub core_parameters {
 sub _filter_terms {
     my $app = shift;
 
-    my $class_param = scalar $app->param('class') || undef;
+    my $class_param = scalar $app->param('class');
     my $class
         = $class_param
         && ( 'entry' eq lc $class_param || 'page' eq lc $class_param )
