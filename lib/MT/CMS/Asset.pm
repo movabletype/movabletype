@@ -483,7 +483,7 @@ sub start_upload {
 sub js_upload_file {
     my $app = shift;
 
-    my $is_userpic = $app->param('type') eq 'userpic' ? 1 : 0;
+    my $is_userpic = ( $app->param('type') || '' ) eq 'userpic' ? 1 : 0;
     my $user_id = $app->param('user_id');
     if ($is_userpic) {
         return $app->error(
