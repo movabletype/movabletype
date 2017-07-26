@@ -44,7 +44,7 @@ package main;
 
 my $file = new MT::TestAsset;
 my $image = new MT::TestAsset::Image;
-my $audio = new MT::TestAsset::Audio;
+my $audio = new MT::TestAsset::Audio title => 'AudioTitle';
 
 ok($file->has_column('title'), 'file has title column');
 ok($image->has_column('title'), 'image has title column');
