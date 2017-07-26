@@ -91,7 +91,7 @@ sub make_website {
     $website->save() or die "Couldn't save website: " . $website->errstr;
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory($themedir);
+    MT->config->ThemesDirectory( [$themedir] );
 
     require MT::Theme;
     my $classic_website = MT::Theme->load('classic_website')
@@ -151,7 +151,7 @@ sub make_blog {
     $blog->save() or die "Couldn't save blog: " . $blog->errstr;
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory($themedir);
+    MT->config->ThemesDirectory( [$themedir] );
 
     require MT::Theme;
     my $classic_blog = MT::Theme->load('classic_blog')

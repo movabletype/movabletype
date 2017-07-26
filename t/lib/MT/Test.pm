@@ -134,7 +134,7 @@ sub init_app {
     $app->instance( $cfg ? ( Config => $cfg ) : () );
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        File::Spec->rel2abs( $app->config->SearchTemplatePath ) );
+        [ File::Spec->rel2abs( $app->config->SearchTemplatePath ) ] );
 
     # kill __test_output for a new request
     require MT;
@@ -438,7 +438,7 @@ sub init_data {
     rmtree('t/site') if ( -d 't/site' );
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory($themedir);
+    MT->config->ThemesDirectory( [$themedir] );
     require MT::Theme;
 
     require MT::Website;
@@ -1683,7 +1683,7 @@ sub _run_app {
     MT->set_instance($app);
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        abs_path( $app->config->SeachTemplatePath ) );
+        [ abs_path( $app->config->SeachTemplatePath ) ] );
 
     # nix upgrade required
     # seems to be hanging around when it doesn't need to be
