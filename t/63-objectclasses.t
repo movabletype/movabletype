@@ -18,6 +18,7 @@ __PACKAGE__->install_properties({
     },
     primary_key => 'id',
     class_type => 'file',
+    datasource => 'asset',
 });
 
 package MT::TestAsset::Image;
