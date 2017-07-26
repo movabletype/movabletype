@@ -1193,7 +1193,7 @@ PERMCHECK: {
         return $app->permission_denied();
     }
 
-    my $type = $app->param('_type');
+    my $type = $app->param('_type') || '';
     my ( $user, $role );
     if ( $author_id && $author_id ne 'PSEUDO' ) {
         $user = MT::Author->load($author_id);
