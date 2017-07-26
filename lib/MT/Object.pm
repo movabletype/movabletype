@@ -1222,8 +1222,8 @@ sub add_callback {
 
 sub init {
     my $obj = shift;
-    $obj->SUPER::init(@_);
     $obj->set_defaults();
+    $obj->SUPER::init(@_);
     return $obj;
 }
 
