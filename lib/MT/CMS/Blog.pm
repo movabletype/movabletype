@@ -1029,6 +1029,30 @@ sub rebuild_pages {
                         }
                     );
                 }
+                elsif ( $archiver->contenttype_based ) {
+                    require MT::ContentData;
+                    my $terms = {
+                        status  => MT::Entry::RELEASE(),
+                        blog_id => $blog_id,
+                    };
+                    $total = MT::ContentData->count($terms);
+                }
+                elsif ( $archiver->contenttype_category_based ) {
+                    require MT::ContentData;
+                    my $terms = {
+                        status  => MT::Entry::RELEASE(),
+                        blog_id => $blog_id,
+                    };
+                    $total = MT::ContentData->count($terms);
+                }
+                elsif ( $archiver->contenttype_author_based ) {
+                    require MT::ContentData;
+                    my $terms = {
+                        status  => MT::Entry::RELEASE(),
+                        blog_id => $blog_id,
+                    };
+                    $total = MT::ContentData->count($terms);
+                }
             }
         }
 
@@ -3493,7 +3517,7 @@ HTML
 HTML
     }
 
-    $app->print_encode( $app->build_page( 'layout/modal/footer.tmpl' ) );
+    $app->print_encode( $app->build_page('layout/modal/footer.tmpl') );
 }
 
 sub _progress {

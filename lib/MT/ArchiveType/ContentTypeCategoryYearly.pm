@@ -8,7 +8,7 @@ package MT::ArchiveType::ContentTypeCategoryYearly;
 
 use strict;
 use base
-    qw( MT::ArchiveType::CategoryYearly MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeYearly );
+    qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeYearly );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -18,6 +18,18 @@ sub name {
 
 sub archive_label {
     return MT->translate("CONTENTTYPE-CATEGORY-YEARLY_ADV");
+}
+
+sub default_archive_templates {
+    return [
+        {   label    => 'category/sub-category/yyyy/index.html',
+            template => '%-c/%y/%i',
+            default  => 1
+        },
+        {   label    => 'category/sub_category/yyyy/index.html',
+            template => '%c/%y/%i'
+        },
+    ];
 }
 
 sub template_params {

@@ -8,7 +8,7 @@ package MT::ArchiveType::ContentTypeCategoryWeekly;
 
 use strict;
 use base
-    qw( MT::ArchiveType::CategoryWeekly MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeWeekly );
+    qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeWeekly );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -18,6 +18,18 @@ sub name {
 
 sub archive_label {
     return MT->translate("CONTENTTYPE-CATEGORY-WEEKLY_ADV");
+}
+
+sub default_archive_templates {
+    return [
+        {   label    => 'category/sub-category/yyyy/mm/day-week/index.html',
+            template => '%-c/%y/%m/%d-week/%i',
+            default  => 1,
+        },
+        {   label    => 'category/sub_category/yyyy/mm/day-week/index.html',
+            template => '%c/%y/%m/%d-week/%i'
+        },
+    ];
 }
 
 sub template_params {

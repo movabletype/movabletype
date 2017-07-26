@@ -313,6 +313,40 @@ sub rebuild {
                         Author   => $content_data->author,
                     ) or return;
                 }
+                elsif ( $archiver->contenttype_category_based ) {
+                    $mt->_rebuild_content_archive_type(
+                        ContentData => $content_data,
+                        Blog        => $blog,
+                        ArchiveType => $at,
+                        $param{TemplateMap}
+                        ? ( TemplateMap => $param{TemplateMap} )
+                        : (),
+                        $param{TemplateID}
+                        ? ( TemplateID =>
+                                $param{TemplateID} )
+                        : (),
+                        NoStatic => $param{NoStatic},
+                        Force    => ( $param{Force} ? 1 : 0 ),
+                        Author   => $content_data->author,
+                    ) or return;
+                }
+                if ( $archiver->contenttype_author_based ) {
+                    $mt->_rebuild_content_archive_type(
+                        ContentData => $content_data,
+                        Blog        => $blog,
+                        ArchiveType => $at,
+                        $param{TemplateMap}
+                        ? ( TemplateMap => $param{TemplateMap} )
+                        : (),
+                        $param{TemplateID}
+                        ? ( TemplateID =>
+                                $param{TemplateID} )
+                        : (),
+                        NoStatic => $param{NoStatic},
+                        Force    => ( $param{Force} ? 1 : 0 ),
+                        Author   => $content_data->author,
+                    ) or return;
+                }
             }
         }
     }

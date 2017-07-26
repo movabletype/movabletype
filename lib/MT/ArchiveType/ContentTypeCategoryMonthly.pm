@@ -8,7 +8,7 @@ package MT::ArchiveType::ContentTypeCategoryMonthly;
 
 use strict;
 use base
-    qw( MT::ArchiveType::CategoryMonthly MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeMonthly );
+    qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeMonthly );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -18,6 +18,18 @@ sub name {
 
 sub archive_label {
     return MT->translate("CONTENTTYPE-CATEGORY-MONTHLY_ADV");
+}
+
+sub default_archive_templates {
+    return [
+        {   label    => 'category/sub-category/yyyy/mm/index.html',
+            template => '%-c/%y/%m/%i',
+            default  => 1
+        },
+        {   label    => 'category/sub_category/yyyy/mm/index.html',
+            template => '%c/%y/%m/%i'
+        },
+    ];
 }
 
 sub template_params {

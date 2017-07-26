@@ -7,7 +7,7 @@
 package MT::ArchiveType::ContentTypeCategory;
 
 use strict;
-use base qw( MT::ArchiveType::Category );
+use base qw( MT::ArchiveType );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -17,6 +17,18 @@ sub name {
 
 sub archive_label {
     return MT->translate("CONTENTTYPE-CATEGORY_ADV");
+}
+
+sub default_archive_templates {
+    return [
+        {   label    => MT->translate('category/sub-category/index.html'),
+            template => '%-c/%i',
+            default  => 1
+        },
+        {   label    => MT->translate('category/sub_category/index.html'),
+            template => '%c/%i'
+        }
+    ];
 }
 
 sub template_params {

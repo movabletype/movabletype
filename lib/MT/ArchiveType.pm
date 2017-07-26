@@ -129,6 +129,30 @@ sub contenttype_based {
     return $obj->_getset( 'contenttype_based', @_ );
 }
 
+sub contenttype_category_based {
+    my $obj = shift;
+    if ( ref $obj ne __PACKAGE__ ) {
+        return $obj->isa('MT::ArchiveType::ContentTypeCategory');
+    }
+    return $obj->_getset( 'contenttype_category_based', @_ );
+}
+
+sub contenttype_author_based {
+    my $obj = shift;
+    if ( ref $obj ne __PACKAGE__ ) {
+        return $obj->isa('MT::ArchiveType::ContentTypeAuthor');
+    }
+    return $obj->_getset( 'contenttype_author_based', @_ );
+}
+
+sub contenttype_date_based {
+    my $obj = shift;
+    if ( ref $obj ne __PACKAGE__ ) {
+        return $obj->isa('MT::ArchiveType::ContentTypeDate');
+    }
+    return $obj->_getset( 'contenttype_date_based', @_ );
+}
+
 sub archive_entries_count {
     my $self = shift;
 

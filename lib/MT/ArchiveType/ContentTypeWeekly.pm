@@ -7,7 +7,7 @@
 package MT::ArchiveType::ContentTypeWeekly;
 
 use strict;
-use base qw( MT::ArchiveType::Weekly );
+use base qw( MT::ArchiveType::ContentTypeDate );
 
 use MT::Util qw( remove_html encode_html );
 

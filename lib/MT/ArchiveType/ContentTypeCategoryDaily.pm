@@ -8,7 +8,7 @@ package MT::ArchiveType::ContentTypeCategoryDaily;
 
 use strict;
 use base
-    qw( MT::ArchiveType::CategoryDaily MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeDaily );
+    qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeDaily );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -18,6 +18,18 @@ sub name {
 
 sub archive_label {
     return MT->translate("CONTENTTYPE-CATEGORY-DAILY_ADV");
+}
+
+sub default_archive_templates {
+    return [
+        {   label    => 'category/sub-category/yyyy/mm/dd/index.html',
+            template => '%-c/%y/%m/%d/%i',
+            default  => 1
+        },
+        {   label    => 'category/sub_category/yyyy/mm/dd/index.html',
+            template => '%c/%y/%m/%d/%i'
+        },
+    ];
 }
 
 sub template_params {
