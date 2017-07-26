@@ -97,7 +97,7 @@ sub fields {
 
                 my $size = scalar(@$objs);
                 for ( my $i = 0; $i < $size; $i++ ) {
-                    my $p = $parents->{ $objs->[$i]->tb_id } || undef;
+                    my $p = $parents->{ $objs->[$i]->tb_id };
 
                     $hashs->[$i]{entry} = $p
                         && $p->entry_id ? +{ id => $p->entry_id } : undef;

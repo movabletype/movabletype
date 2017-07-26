@@ -1893,7 +1893,7 @@ sub _get_options_html {
     if ( my $p = $authenticator->{login_form_params} ) {
         $p = $app->handler_to_coderef($p);
         if ($p) {
-            my $params = $p->( $key, $blog_id, $entry_id || undef, $static, );
+            my $params = $p->( $key, $blog_id, $entry_id, $static, );
             $tmpl->param($params) if $params;
         }
     }
@@ -3168,8 +3168,7 @@ sub run {
 
                     my $set
                         = $meth_info->{permission}
-                        || $meth_info->{permit_action}
-                        || undef;
+                        || $meth_info->{permit_action};
 
                     if ($set) {
                         my $user    = $app->user;
@@ -3366,7 +3365,7 @@ sub handlers_for_mode {
                 return undef unless $cond->($app);
             }
 
-            my $handler = $hdlr->{code} || $hdlr->{handler} || undef;
+            my $handler = $hdlr->{code} || $hdlr->{handler};
             if ( $handler && $handler !~ m/->/ ) {
                 $hdlr->{component} = $1
                     if $hdlr->{code} =~ m/^\$?(\w+)::/;

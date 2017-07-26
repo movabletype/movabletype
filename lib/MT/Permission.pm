@@ -254,7 +254,7 @@ sub global_perms {
         for my $perm_name (@perms) {
             $cur_rest =~ s/'$perm_name',?//i;
         }
-        $perms->restrictions( $cur_rest || undef );
+        $perms->restrictions( $cur_rest );
     }
 
     # Clears all permissions or those in a particular set

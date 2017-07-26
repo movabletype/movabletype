@@ -2656,7 +2656,7 @@ sub cms_pre_load_filtered_list {
     my $user = $app->user;
     return if $user->is_superuser;
 
-    my $load_blog_ids = $load_options->{blog_ids} || undef;
+    my $load_blog_ids = $load_options->{blog_ids};
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(

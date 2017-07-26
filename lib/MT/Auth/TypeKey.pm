@@ -134,8 +134,7 @@ sub _validate_signature {
 
     my $dsa_key;
     require MT::Session;
-    $dsa_key = eval { MT::Session->load( { id => 'KY', kind => 'KY' } ); }
-        || undef;
+    $dsa_key = eval { MT::Session->load( { id => 'KY', kind => 'KY' } ); };
     if ($dsa_key) {
         if ( $dsa_key->start() < time - 24 * 60 * 60 ) {
             $dsa_key = undef;
