@@ -688,7 +688,7 @@ sub edit {
     require MT::Promise;
     my $obj_promise = MT::Promise::delay(
         sub {
-            return $class->load($id) || undef;
+            return $class->load($id);
         }
     );
 
@@ -2024,7 +2024,7 @@ sub build_revision_table {
     my $class = $app->model($type);
     my $param = $args{param};
     my $obj   = $args{object};
-    my $blog  = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
+    my $blog  = $obj->blog || MT::Blog->load( $q->param('blog_id') );
     my $lang  = $app->user ? $app->user->preferred_language : undef;
 
     my $js = $param->{rev_js};
@@ -2104,7 +2104,7 @@ sub list_revision {
     require MT::Promise;
     my $obj_promise = MT::Promise::delay(
         sub {
-            return $class->load($id) || undef;
+            return $class->load($id);
         }
     );
 
@@ -2113,7 +2113,7 @@ sub list_revision {
         || return $app->permission_denied();
 
     my $obj  = $obj_promise->force();
-    my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
+    my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') );
     my $js   = "parent.location.href='" . $app->uri;
     if ( $type eq 'cd' ) {
         $js .= '?__mode=edit_content_data&amp;content_type_id='

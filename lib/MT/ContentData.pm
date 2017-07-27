@@ -306,7 +306,7 @@ sub content_type {
     $self->cache_property(
         'content_type',
         sub {
-            MT::ContentType->load( $self->content_type_id || 0 ) || undef;
+            MT::ContentType->load( $self->content_type_id || 0 );
         },
     );
 }

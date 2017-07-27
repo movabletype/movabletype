@@ -4781,7 +4781,7 @@ sub _hdlr_section {
     my $enc = MT->config->PublishCharset || 'UTF-8';
 
     # make cache id
-    my $cache_id = $args->{cache_prefix} || undef;
+    my $cache_id = $args->{cache_prefix} || '';
 
     my $tmpl = $ctx->{__stash}{template};
     $cache_id .= ':' . $tmpl->id if $tmpl && $tmpl->id;

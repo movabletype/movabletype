@@ -660,7 +660,7 @@ sub save_cfg_system_general {
 
     # actually assign the changes
     $app->config( 'EmailAddressMain',
-        ( $app->param('system_email_address') || undef ), 1 );
+        ( scalar $app->param('system_email_address') ), 1 );
     $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
         if ( $app->param('system_debug_mode') =~ /\d+/ );
     if ( not $cfg->HidePerformanceLoggingSettings ) {
@@ -1868,7 +1868,7 @@ sub adjust_sitepath {
             || q();
         $site_url_subdomain .= '.'
             if $site_url_subdomain && $site_url_subdomain !~ /\.$/;
-        my $parent_id = scalar $q->param("parent_id_$id") || undef;
+        my $parent_id = scalar $q->param("parent_id_$id");
         my $site_path_absolute = scalar $q->param("site_path_absolute_$id")
             || q();
         my $use_absolute = scalar $q->param("use_absolute_$id") || q();

@@ -2739,7 +2739,7 @@ sub build_email {
     my $mt = $class->instance;
 
     # basically, try to load from database
-    my $blog = $param->{blog} || undef;
+    my $blog = $param->{blog};
     my $id = $file;
     $id =~ s/(\.tmpl|\.mtml)$//;
 

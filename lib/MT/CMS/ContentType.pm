@@ -98,8 +98,7 @@ sub cfg_content_type {
     my $obj_promise     = MT::Promise::delay(
         sub {
             return undef unless $content_type_id;
-            return MT::ContentType->load( { id => $content_type_id } )
-                || undef;
+            return MT::ContentType->load( { id => $content_type_id } );
         }
     );
 

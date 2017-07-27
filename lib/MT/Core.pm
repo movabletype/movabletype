@@ -417,9 +417,9 @@ BEGIN {
                         my $blog = MT->app ? MT->app->blog : undef;
                         require MT::Util;
                         my $now = MT::Util::epoch2ts( $blog, time() );
-                        my $from   = $args->{from}   || undef;
-                        my $to     = $args->{to}     || undef;
-                        my $origin = $args->{origin} || undef;
+                        my $from   = $args->{from}   || '';
+                        my $to     = $args->{to}     || '';
+                        my $origin = $args->{origin} || '';
                         $from =~ s/\D//g;
                         $to =~ s/\D//g;
                         $origin =~ s/\D//g;

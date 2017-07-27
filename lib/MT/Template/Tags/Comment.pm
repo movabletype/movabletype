@@ -34,7 +34,7 @@ sub _comment_follow {
             my $cmntr = $ctx->stash('commenter');
             unless ($cmntr) {
                 if ( $c->commenter_id ) {
-                    $cmntr = MT::Author->load( $c->commenter_id ) || undef;
+                    $cmntr = MT::Author->load( $c->commenter_id );
                 }
             }
             if ( !defined $cmntr
@@ -225,7 +225,7 @@ sub _hdlr_comments {
             }
         }
         if ($need_join) {
-            my $scored_by = $args->{scored_by} || undef;
+            my $scored_by = $args->{scored_by};
             if ($scored_by) {
                 require MT::Author;
                 my $author = MT::Author->load( { name => $scored_by } )
