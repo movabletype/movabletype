@@ -600,10 +600,7 @@ function toggleHidden( id ) {
     var id = DOM.getElement( id );
     if ( !id )
         return false;
-    if ( DOM.hasClassName( id, 'hidden' ) )
-        DOM.removeClassName( id, 'hidden' );
-    else
-        DOM.addClassName( id, 'hidden' );
+    jQuery(id).toggle()
     return false;
 }
 
@@ -611,12 +608,12 @@ function toggle( id ) {
     var id = DOM.getElement( id );
     if ( !id )
         return false;
-    if ( DOM.hasClassName( id, 'hidden' ) ) {
-        DOM.removeClassName( id, 'hidden' );
-        DOM.addClassName( id, 'active' );
+    if ( jQuery(id).is(':hidden') ) {
+      jQuery(id).show();
+      DOM.addClassName( id, 'active' );
     } else {
-        DOM.removeClassName( id, 'active' );
-        DOM.addClassName( id, 'hidden' );
+      jQuery(id).hide();
+      DOM.removeClassName( id, 'active' );
     }
     return false;
 }
@@ -654,10 +651,10 @@ function tabToggle(selectedTab, tabs) {
 function show(id, d, style) {
     var el = getByID(id, d);
     if (!el) return;
-    if ( DOM.hasClassName( el, "hidden" ) ) {
-        DOM.removeClassName ( el, "hidden");
-    } else {
-        el.style.display = style ? style : 'block';
+    if ( jQuery(el).is(':hidden') ) {
+        jQuery(el).show();
+    } else if (style) {
+        el.style.display = style;
     }
     /* hack */
     if ( DOM.hasClassName( el, "autolayout-height-parent" ) )
@@ -667,11 +664,7 @@ function show(id, d, style) {
 function hide(id, d) {
     var el = getByID(id, d);
     if (!el) return;
-    if ( DOM.hasClassName( el, "hidden" ) ) {
-        return false;
-    } else {
-        DOM.addClassName ( el, "hidden");
-    }
+    jQuery(el).hide();
     if ( window.app )
         app.reflow();
 }
