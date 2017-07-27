@@ -1244,7 +1244,7 @@ MT::TBPing->add_callback(
 sub archive_file {
     my $entry = shift;
     my ($at)  = @_;
-    my $blog  = $entry->blog() || return;
+    my $blog  = $entry->blog() || return '';
     unless ($at) {
         $at = $blog->archive_type_preferred || $blog->archive_type;
         return '' if !$at || $at eq 'None';
@@ -1260,7 +1260,9 @@ sub archive_file {
             last;
         }
     }
-    archive_file_for( $entry, $blog, $at );
+    my $file = archive_file_for( $entry, $blog, $at );
+    $file = '' unless defined $file;
+    $file;
 }
 
 sub archive_url {
