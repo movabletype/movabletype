@@ -611,7 +611,7 @@ function toggleCache(id) {
   <$mt:setvar name="template_options_active" value="1"$>
 </mt:if>
 
-  <div id="template-options" class="card<mt:if name="template_options_active"> active</mt:if>">
+  <div id="template-options" class="card">
     <div id="template-options-header" class="card-header line">
       <div class="row">
         <div class="col-md-8 template-options-toggle">
@@ -632,7 +632,7 @@ function toggleCache(id) {
         </div>
       </div>
     </div>
-    <div id="template-options-content" class="card-block collapse">
+    <div id="template-options-content" class="card-block collapse<mt:if name="template_options_active"> show</mt:if>">
     <mt:if name="has_outfile">
       <mtapp:setting
          id="outfile"
