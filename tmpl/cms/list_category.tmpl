@@ -260,7 +260,11 @@ function initItem($item) {
     .addClass('lv-'+nest.length)
     .addClass('sortable-item');
   $item.find('.item-ctrl, .edit-form').remove();
+<mt:if name="is_category_list">
+  $item.append('<span class="item-ctrl" />');
+<mt:else>
   jQuery('<span class="item-ctrl" />').insertBefore($item.find('.count'));
+</mt:if>
 
   jQuery('<a href="#" class="item-action edit-link clickable"><__trans phrase="Rename" escape="js"></a>')
     .appendTo($item.find('.item-ctrl'))
