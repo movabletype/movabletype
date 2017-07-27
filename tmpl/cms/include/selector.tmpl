@@ -48,7 +48,7 @@ nav.blog {
     </mt:if>
     <mt:if name="__last__">
       <mt:unless name="selector_hide_website_chooser">
-          <a class="dropdown-item" href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link">
+          <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="dropdown-item text-right mt-open-dialog mt-modal-open scope-link" data-mt-modal-large>
             <__trans phrase="Select another website...">
           </a>
       </mt:unless>
@@ -59,7 +59,7 @@ nav.blog {
           <h6 class="dropdown-header">
             <__trans phrase="Websites">
           </h6>
-          <a class="dropdown-item" href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link">
+          <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="dropdown-item text-right mt-open-dialog mt-modal-open scope-link" data-mt-modal-large>
             <__trans phrase="Select another website...">
           </a>
   </mt:unless>
@@ -78,7 +78,7 @@ nav.blog {
           </a>
     <mt:if name="__last__">
       <mt:unless name="selector_hide_blog_chooser">
-          <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link">
+          <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="dropdown-item text-right mt-open-dialog mt-modal-open scope-link" data-mt-modal-large>
             <__trans phrase="Select another blog...">
           </a>
       </mt:unless>
@@ -89,7 +89,7 @@ nav.blog {
           <h6 class="dropdown-header">
             <__trans phrase="Blog">
           </h6>
-          <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link">
+          <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="dropdown-item text-right mt-open-dialog mt-modal-open scope-link" data-mt-modal-large>
             <__trans phrase="Select another blog...">
           </a>
   </mt:unless>
