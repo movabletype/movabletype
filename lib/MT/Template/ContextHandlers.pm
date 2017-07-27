@@ -3418,8 +3418,11 @@ sub _hdlr_app_statusmsg {
     my $id  = $args->{id};
 
     my $class = $args->{class} || 'info';
-    $class = 'warning' if $class eq 'alert';
-    $class = 'danger'  if $class eq 'error';
+    $class =~ s/\balert\b/warning/;
+    $class =~ s/\berror\b/danger/;
+
+    my $hidden = $args->{hidden};
+    my $style = $hidden ? ' style="display: none;"' : '';
 
     my $msg     = $ctx->slurp;
     my $rebuild = $args->{rebuild} || '';
@@ -3471,7 +3474,7 @@ sub _hdlr_app_statusmsg {
             = qq{<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>};
     }
     return $ctx->build(<<"EOT");
-    <div$id class="$class">$close $msg $rebuild</div>
+    <div$id class="$class"$style>$close $msg $rebuild</div>
 EOT
 }
 
