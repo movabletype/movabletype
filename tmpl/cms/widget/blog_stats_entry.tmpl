@@ -15,8 +15,8 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="tabs" append="1">
-  <li id="entry-tab" class="tab <mt:if name="tab" eq="entry">active</mt:if>">
-    <a href="#entry-panel" data-toggle="tab">
+  <li id="entry-tab" class="nav-item tab">
+    <a href="#entry-panel" class="nav-link<mt:if name="tab" eq="entry"> active</mt:if>" data-toggle="tab">
       <span>
         <__trans phrase="Entries">
       </span>
@@ -36,7 +36,7 @@
   <h4 class="tab-panel-header"><__trans phrase="Most Recent Entries"></h4>
 <mt:entries>
   <mt:setvarblock name="entry_type" id="entry_type"></mt:setvarblock>
-  <div id="entry-<mt:entryid>" class="entry content entry-<mt:if name="__odd__">odd odd<mt:else>even even</mt:if> entry-status-<mt:entrystatus lower_case="1"><mt:if name="entry_type"> entry-<mt:var name="entry_type"></mt:if>">
+  <div id="entry-<mt:entryid>" class="bg-faded entry content entry-<mt:if name="__odd__">odd odd<mt:else>even even</mt:if> entry-status-<mt:entrystatus lower_case="1"><mt:if name="entry_type"> entry-<mt:var name="entry_type"></mt:if>">
     <div class="entry-header"><mt:entryauthorid setvar="entry_author_id">
       <h4 class="entry-title">
       <mt:if name="editable">
