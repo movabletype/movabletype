@@ -2775,7 +2775,7 @@ sub upload_info {
         if ( $@ && $@ =~ /^Undefined subroutine/ ) {
             $fh = $q->param($param_name);
         }
-        $no_upload = !$fh;
+        return unless $fh;
         $info      = $q->uploadInfo($fh);
     }
 
