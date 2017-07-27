@@ -164,7 +164,8 @@
      id="blog-name"
      required="1"
      label="<__trans phrase="Blog Name">"
-     label_class="top-label">
+     label_class="top-label"
+     no_grid="1">
     <input type="text" name="new_blog_name" id="blog-name" class="text full required form-control" value="<mt:var name="new_blog_name" escape="html">" />
   </mtapp:setting>
   </fieldset>
@@ -178,7 +179,8 @@
      label="<__trans phrase="Blog URL">"
      label_class="top-label"
      hint="<__trans phrase="Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/blog/">"
-     show_hint="1">
+     show_hint="1"
+     no_grid="1">
   <mt:if name="site_url_subdomain">
     <div class="site-url content-path form-inline">
       <mt:var name="website_scheme">://
@@ -217,7 +219,8 @@
      required="1"
      label="<__trans phrase="Blog Root">"
      label_class="top-label"
-     show_hint="1">
+     show_hint="1"
+     no_grid="1">
     <div class="relative-site_path content-path form-inline">
       <span class="website-path"><mt:var name="parent_path" escape="html"></span>
       <input type="text" name="site_path" id="site_path" class="blog-path-text text path form-control" value="<mt:unless name="use_absolute"><mt:var name="site_path" escape="html"></mt:unless>" />
@@ -240,10 +243,11 @@
      show_label="0"
      hint="<__trans phrase="Select this option only if you need to publish your archives outside of your Blog Root.">"
      help_page="blog_settings_publishing"
-     help_section="advanced_archive_publishing">
+     help_section="advanced_archive_publishing"
+     no_grid="1">
     <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="cb" /> <label for="enable_archive_paths"><__trans phrase="Publish archives outside of Blog Root"></label>
   </mtapp:setting>
-  <div id="enable_archive_paths_prefs"<mt:unless name="enable_archive_paths"> class="hidden"</mt:unless>>
+  <div id="enable_archive_paths_prefs"<mt:unless name="enable_archive_paths"> style="display: none;"</mt:unless>>
     <mtapp:setting
        id="archive_url"
        class="url-field"
@@ -253,7 +257,8 @@
        hint="<__trans phrase="Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/">"
        show_hint="1"
        help_page="blog_settings_publishing"
-       help_section="archive_url">
+       help_section="archive_url"
+       no_grid="1">
     <mt:if name="archive_url_subdomain">
       <div class="archive-url content-path form-inline">
         <span class="archive-url-domain">
@@ -324,7 +329,8 @@
        label="<__trans phrase="Archive Root">"
        label_class="top-label"
        help_page="blog_settings_publishing"
-       help_section="archive_path">
+       help_section="archive_path"
+       no_grid="1">
       <div class="relative-site_path content-path form-inline">
         <span class="website-path"><mt:var name="parent_path" escape="html"></span>
         <input type="text" name="archive_path" id="archive_path" value="<mt:unless name="use_absolute_archive"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text text path form-control" />
@@ -352,7 +358,8 @@
      class="field-no-header"
      label="<__trans phrase="Exclusions">"
      label_class="top-label"
-     hint="<__trans phrase="Mark the settings that you want cloning to skip">">
+     hint="<__trans phrase="Mark the settings that you want cloning to skip">"
+     no_grid="1">
     <ul id="clone-prefs-fields" class="list-unstyled">
       <li>
         <input type="checkbox" name="clone_prefs_entries_pages" id="clone-prefs-entries-pages" <mt:if name="clone_prefs_entries_pages">checked="<mt:var name="clone_prefs_entries_pages" escape="html">"</mt:if> class="cb" />
@@ -755,18 +762,16 @@
 </script>
 </mt:setvarblock>
 
-<mt:setvarblock name="js_include" append="1">
-  <script>
-  jQuery.mtUseSubdomain();
-  jQuery.mtUseAbsolute();
-  jQuery('button.goback').click(function() {
-    jQuery('form#clone-verification-form > input[name=clone]').val(0);
-  });
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery.mtUseSubdomain();
+jQuery.mtUseAbsolute();
+jQuery('button.goback').click(function() {
+  jQuery('form#clone-verification-form > input[name=clone]').val(0);
+});
 
-  jQuery('input#enable_archive_paths').click(function() {
-    jQuery('div#enable_archive_paths_prefs').toggleClass('hidden');
-  });
-  </script>
+jQuery('input#enable_archive_paths').click(function() {
+  jQuery('div#enable_archive_paths_prefs').toggle();
+});
 </mt:setvarblock>
 
 <mt:include name="layout/modal.tmpl">

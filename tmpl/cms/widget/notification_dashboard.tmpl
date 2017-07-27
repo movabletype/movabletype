@@ -7,17 +7,17 @@
 </mt:setvarblock>
 <div class="panel-group" id="notification_accordion">
 <mt:loop name="loop_notification_dashboard">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div class="panel-title">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
         <a data-toggle="collapse" data-parent="#notification_accordion" href="#collapse<mt:var name="__index__">">
           <img src="<mt:var name="static_uri">images/status_icons/<mt:if name="level"><mt:var name="level"><mt:else>warning</mt:if>.gif" />
           <mt:var name="text">
         </a>
       </div>
     </div>
-    <div id="collapse<mt:var name="__index__">" class="panel-collapse collapse">
-      <div class="panel-body">
+    <div id="collapse<mt:var name="__index__">" class="collapse">
+      <div class="card-block">
         <mt:var name="detail">
       </div>
     </div>

@@ -92,15 +92,19 @@ button.history {
       <div id="editor" class="col-sm-4">
 
         <div id="editor-resize">
-          <div class="form-inline editor-resize-column">
-            <label for="resize-width"><__trans phrase="W:"></label>
-            <input id="resize-width" class="form-control text resize" type="text" value="<mt:var name="image_width">" />
-            <label for="resize-height"><__trans phrase="H:"></label>
-            <input id="resize-height" class="form-control text resize" type="text" value="<mt:var name="image_height">" />
+          <div class="editor-resize-column form-inline">
+            <div class="form-group float-right">
+              <label for="resize-width"><__trans phrase="W:"></label>
+              <input id="resize-width" class="form-control text resize" type="text" value="<mt:var name="image_width">" />
+            </div>
+            <div class="form-group">
+              <label for="resize-height"><__trans phrase="H:"></label>
+              <input id="resize-height" class="form-control text resize" type="text" value="<mt:var name="image_height">" />
+            </div>
             <button id="resize-apply" class="btn btn-default button resize enable-submit disabled" disabled="disabled"><__trans phrase="Apply"></button>
             <button id="resize-reset" class="btn btn-default button resize disabled" disabled="disabled"><__trans phrase="Reset"></button>
           </div>
-          <div class="form-inline editor-resize-subcolumn">
+          <div class="form-group editor-resize-subcolumn">
             <input id="keep-aspect-ratio" class="checkbox" type="checkbox" value="1" checked="checked" />
             <label for="keep-aspect-ratio"><__trans phrase="Keep aspect ratio"></label>
           </div>

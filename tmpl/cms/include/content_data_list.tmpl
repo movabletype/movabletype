@@ -22,14 +22,14 @@
       <div id="listing-table-overlay" class="overlay"></div>
       <table id="content-data-table" class="listing-table list-content-data">
   <mt:setvarblock name="table_header_footer">
-          <th class="col head cb">&nbsp;</th>
-          <th class="col head title primary string">
+          <th class="head cb">&nbsp;</th>
+          <th class="head title primary string">
             <span class="col-label"><__trans phrase="Title"></span>
           </th>
-          <th class="col head string" style="width: 20%">
+          <th class="head string" style="width: 20%">
             <span class="col-label"><__trans phrase="Date Modified"></span>
           </th>
-          <th class="col head string">
+          <th class="head string">
             <span class="col-label"><__trans phrase="Author"></span>
           </th>
   </mt:setvarblock>
@@ -39,22 +39,22 @@
         <tbody>
 <mt:loop name="object_loop">
           <tr id="content-data-<mt:var name="id" escape="html">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="col cb">
+            <td class="cb">
               <input type="hidden" id="content-data-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
               <input type="<mt:if name="can_multi">checkbox<mt:else>radio</mt:if>" name="id" value="<mt:var name="id" escape="html">" class="select" id="content-data-select-<mt:var name="id" escape="html">" />
             </td>
-            <td class="col content-data-title primary"><mt:var name="title" escape="html"></td>
-            <td class="col content-data-modified-date">
+            <td class="content-data-title primary"><mt:var name="title" escape="html"></td>
+            <td class="content-data-modified-date">
               <mt:var name="modified_date" escape="html">
             </td>
-            <td class="col content-data-author">
+            <td class="content-data-author">
               <mt:var name="author_name" escape="html">
             </td>
           </tr>
 </mt:loop>
 <mt:unless name="object_loop">
           <tr class="odd">
-            <td class="col fullwidth-row" colspan="4">
+            <td class="fullwidth-row" colspan="4">
               <__trans phrase="No [_1] could be found." params="<mt:var name="content_type_name" _default="Content Data">">
             </td>
           </tr>
@@ -269,4 +269,3 @@ loadContentDataList(0);
 </mt:setvarblock>
 
 </mt:unless>
-

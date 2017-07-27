@@ -40,18 +40,18 @@
       <div id="listing-table-overlay" class="overlay"></div>
       <table id="asset-table" class="table table-striped listing-table list-asset">
         <thead>
-          <th class="col head cb">&nbsp;</th>
-          <th class="col head si file-status">
+          <th class="head cb">&nbsp;</th>
+          <th class="head si file-status">
             <img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" />
           </th>
-          <th class="col head primary string" style="table-cell;"><span class="col-label"><__trans phrase="label"></span></th>
+          <th class="head primary string" style="table-cell;"><span class="col-label"><__trans phrase="label"></span></th>
         </thead>
         <tfoot>
-          <th class="col head cb">&nbsp;</th>
-          <th class="col head si file-status">
+          <th class="head cb">&nbsp;</th>
+          <th class="head si file-status">
             <img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" />
           </th>
-          <th class="col head primary string" style="table-cell;"><span class="col-label"><__trans phrase="label"></span></th>
+          <th class="head primary string" style="table-cell;"><span class="col-label"><__trans phrase="label"></span></th>
         </tfoot>
 </mt:unless>
         <tbody>
@@ -59,20 +59,20 @@
   <mt:loop name="object_loop">
           <tr id="asset-<mt:var name="id" escape="html">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
     <mt:if name="can_multi">
-            <td class="col cb">
+            <td class="cb">
               <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
               <input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" id="asset-select-<mt:var name="id" escape="html">" />
             </td>
     <mt:else>
-            <td class="col cb">
+            <td class="cb">
               <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
               <input type="radio" name="id" value="<mt:var name="id" escape="html">" class="select" id="asset-select-<mt:var name="id" escape="html">" />
             </td>
     </mt:if>
-            <td class="col si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">
+            <td class="si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">
                <img src="<mt:var name="static_uri">images/spacer.gif" <mt:if name="file_is_missing">alt="<__trans phrase="Pending">"<mt:else>alt="<__trans phrase="Published">"</mt:if> width="9" height="9" />
             </td>
-            <td class="col asset-label primary">
+            <td class="asset-label primary">
     <mt:if name="has_thumbnail">
               <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name" escape="html"$>">
                 <$mt:var name="label" escape="html"$>
@@ -86,7 +86,7 @@
   </mt:loop>
 <mt:else>
           <tr class="odd">
-            <td class="col fullwidth-row" colspan="3">
+            <td class="fullwidth-row" colspan="3">
               <__trans phrase="No [_1] could be found." params="<mt:if name="upload_mode" eq="upload_userpic"><__trans phrase="Userpic"><mt:else><__trans phrase="Assets"></mt:if>">
             </td>
           </tr>
@@ -95,7 +95,7 @@
 <mt:unless name="json">
       </table>
     </div>
-    <div id="actions-bar" class="pull-right line">
+    <div id="actions-bar" class="float-right line">
   <mt:var name="list_actions">
     </div>
   </div>

@@ -29,7 +29,7 @@
        help_section="backup_what">
       <input type="hidden" id="selected_blog_ids" name="backup_what" value="" />
       <span id="selected_blogs"><__trans phrase="Everything"></span>
-      <span id="selected_blogs_link" class="hidden"><a href="javascript:void(0);" onclick="document.getElementById( 'selected_blogs_link').className='hidden';var e=document.getElementById('selected_blogs');e.innerHTML='<__trans phrase="Everything" escape="js">';return false;"><__trans phrase="Reset"></a> |</span>
+      <span id="selected_blogs_link" style="display: none;"><a href="javascript:void(0);" onclick="document.getElementById( 'selected_blogs_link').style.display='none';var e=document.getElementById('selected_blogs');e.innerHTML='<__trans phrase="Everything" escape="js">';return false;"><__trans phrase="Reset"></a> |</span>
       <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;multi=1&amp;idfield=selected_blog_ids&amp;namefield=selected_blogs" class="mt-open-dialog mt-modal-open" data-mt-modal-large><__trans phrase="Choose websites..."></a>
     </mtapp:setting>
   </mt:if>
@@ -42,12 +42,22 @@
        help_section="backup_format">
       <ul class="list-inline multiple-selection">
       <mt:loop name="archive_formats">
-        <li>
-          <input type="radio" id="<mt:var name="key">" name="backup_archive_format" value="<mt:var name="key">"<mt:if name="__first__"> checked="checked"</mt:if> /><label for="<mt:var name="key" escape="html">"> <mt:var name="label" escape="html"></label>
+        <li class="list-inline-item">
+          <input type="radio" id="<mt:var name="key">" name="backup_archive_format" value="<mt:var name="key">"<mt:if name="__first__"> checked="checked"</mt:if> />
+          <label for="<mt:var name="key" escape="html">">
+            <mt:var name="label" escape="html">
+          </label>
         </li>
-          <mt:if name="__last__"><mt:setvar name="format_available"></mt:if>
+        <mt:if name="__last__">
+          <mt:setvar name="format_available">
+        </mt:if>
       </mt:loop>
-        <li><input type="radio" id="no_archive" name="backup_archive_format" value="0"<mt:unless name="format_available"> checked="checked"</mt:unless> /><label for="no_archive"> <__trans phrase="Don't compress"></label></li>
+        <li class="list-inline-item">
+          <input type="radio" id="no_archive" name="backup_archive_format" value="0"<mt:unless name="format_available"> checked="checked"</mt:unless> />
+          <label for="no_archive">
+            <__trans phrase="Don't compress">
+          </label>
+        </li>
       </ul>
     </mtapp:setting>
 

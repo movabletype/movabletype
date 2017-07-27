@@ -88,13 +88,13 @@ function selectBlog() {
       <ul class="list-unstyled">
         <li>
           <label>
-            <input type="radio" id="import_as_me-on" name="import_as_me" value="1" <mt:if name="password_needed">onclick="$('#setpassworddiv').hide();"</mt:if> checked="checked">
+            <input type="radio" id="import_as_me-on" name="import_as_me" value="1" <mt:if name="password_needed">onclick="jQuery('#setpassworddiv').hide();"</mt:if> checked="checked">
             <__trans phrase="Import as me">
           </label>
         </li>
         <li>
           <label>
-            <input type="radio" id="import_as_me-off" name="import_as_me" value="0" <mt:if name="password_needed">onclick="$('#setpassworddiv').show();"</mt:if>>
+            <input type="radio" id="import_as_me-off" name="import_as_me" value="0" <mt:if name="password_needed">onclick="jQuery('#setpassworddiv').show();"</mt:if>>
             <__trans phrase="Preserve original user">
           </label>
         </li>
@@ -132,7 +132,7 @@ function selectBlog() {
        hint="<__trans phrase="If your import file is located on your computer, you can upload it here.  Otherwise, Movable Type will automatically look in the 'import' folder of your Movable Type directory.">"
        help_page="entry_import"
        help_section="source_file">
-      <input name="file" id="file" type="file" />
+      <input name="file" id="file" type="file" class="form-control-file" />
     </mtapp:setting>
 
     <mtapp:setting

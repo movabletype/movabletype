@@ -168,7 +168,7 @@ h1.dialog-title {
           </option>
         </mt:loop>
         </select>
-        <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination hidden" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" />
+        <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" style="display: none;" />
         <span class="upload-extra-path">
           / <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
         </span>
@@ -406,7 +406,7 @@ var numOfRows = 0;
 function createUploadBlock () {
   numOfRows++;
 
-  this.uploadBlockPanel = jQuery('<div class="panel panel-default"><div class="panel-body"></div></div>');
+  this.uploadBlockPanel = jQuery('<div class="card"><div class="card-block"></div></div>');
   this.uploadBlock  = jQuery('<div class="row upload-status-block" id="upload-status_' + numOfRows + '"></div>').appendTo(this.uploadBlockPanel.children());
 
   this.leftPanel    = jQuery('<div class="col-md-11 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
@@ -630,7 +630,11 @@ function uploadFile( formData, uploadBlock ) {
   uploadBlock.setCancelUpload(xhr);
   return d.promise();
 }
+/* ]]> */
+</script>
+</mt:setvarblock>
 
+<mt:setvarblock name="jq_js_include" append="1">
 jQuery('#open-file-dialog').click( function() {
   jQuery('#file').click();
   return false;
@@ -680,7 +684,4 @@ jQuery('#upload-asset-panel').on('changePanel', function() {
 });
 </mt:if>
 jQuery('form').find('input:visible').first().focus();
-
-/* ]]> */
-</script>
 </mt:setvarblock>

@@ -77,9 +77,9 @@ function init() {
 <mt:if name="__first__">
   <mt:setvarblock name="table_header">
     <tr>
-      <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-      <th class="col head widgetmanager-name primary"><span class="col-label"><__trans phrase="Name"></span></th>
-      <th class="col head widgetmanager-widgets primary"><span class="col-label"><__trans phrase="Installed Widgets"></span></th>
+      <th class="head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+      <th class="head widgetmanager-name primary"><span class="col-label"><__trans phrase="Name"></span></th>
+      <th class="head widgetmanager-widgets primary"><span class="col-label"><__trans phrase="Installed Widgets"></span></th>
     </tr>
   </mt:setvarblock>
   <thead>
@@ -91,9 +91,9 @@ function init() {
   <tbody>
 </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-      <td class="col cb"><input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" /></td>
-      <td class="col widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" escape="url">"><mt:var name="widgetmanager" escape="html"></a></td>
-      <td class="col widgetmanager-widgets"><mt:var name="names" escape="html"></td>
+      <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" /></td>
+      <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" escape="url">"><mt:var name="widgetmanager" escape="html"></a></td>
+      <td class="widgetmanager-widgets"><mt:var name="names" escape="html"></td>
     </tr>
 <mt:if name="__last__">
   </tbody>

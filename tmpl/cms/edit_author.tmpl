@@ -157,12 +157,8 @@ function removedUserpic(data) {
     }
 
     MT.Util.getByID('userpic_asset_id').value = '0';
-    if (!jQuery('#userpic-preview').hasClass('hidden')) {
-      toggleHidden('userpic-preview');
-    }
-    if (!jQuery('#remove-userpic').hasClass('hidden')) {
-      toggleHidden('remove-userpic');
-    }
+    jQuery('#userpic-preview').hide();
+    jQuery('#remove-userpic').hide();
     return false
 }
 
@@ -250,11 +246,17 @@ function showPasswordField() {
        label_class="left-label <mt:var name="user_status">"
        hint="<__trans phrase="Status of user in the system. Disabling a user prevents that person from using the system but preserves their content and history.">">
       <select name="status" id="status" class="form-control half-width" onchange="toggleDisabled(this.value);">
-        <option <mt:if name="status_enabled">selected="selected"</mt:if> value="1"><__trans phrase="_USER_ENABLED"></option>
+        <option <mt:if name="status_enabled">selected="selected"</mt:if> value="1">
+          <__trans phrase="_USER_ENABLED">
+        </option>
       <mt:if name="status_pending">
-        <option selected="selected" value="3"><__trans phrase="_USER_PENDING"></option>
+        <option selected="selected" value="3">
+          <__trans phrase="_USER_PENDING">
+        </option>
       </mt:if>
-        <option <mt:unless name="status_enabled"><mt:unless name="status_pending">selected="selected"</mt:unless></mt:unless> value="2"><__trans phrase="_USER_DISABLED"></option>
+        <option <mt:unless name="status_enabled"><mt:unless name="status_pending">selected="selected"</mt:unless></mt:unless> value="2">
+          <__trans phrase="_USER_DISABLED">
+        </option>
       </select>
     </mtapp:setting>
   </mt:if>
@@ -264,7 +266,12 @@ function showPasswordField() {
        required="1"
        label="<__trans phrase="Username">"
        hint="<__trans phrase="The username used to login.">">
-      <input type="text" name="name" id="name" class="form-control text" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> /><mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth"><input name="name" type="hidden" value="<mt:var name="name" escape="html">" /></mt:unless></mt:unless>
+      <input type="text" name="name" id="name" class="form-control text" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> />
+      <mt:unless name="auth_mode_mt">
+        <mt:unless name="new_user_external_auth">
+          <input name="name" type="hidden" value="<mt:var name="name" escape="html">" />
+        </mt:unless>
+      </mt:unless>
     </mtapp:setting>
 
   <mt:if name="external_id">
@@ -284,7 +291,10 @@ function showPasswordField() {
        label="<__trans phrase="Display Name">"
        show_hint="1"
        hint="<__trans phrase="The name displayed when content from this user is published.">">
-      <input type="text" name="nickname" id="nickname" class="form-control text" value="<mt:var name="nickname" escape="html">" <mt:if name="nickname_readonly">disabled="disabled"</mt:if> /><mt:if name="nickname_readonly"><input name="nickname" type="hidden" value="<mt:var name="nickname" escape="html">" /></mt:if>
+      <input type="text" name="nickname" id="nickname" class="form-control text" value="<mt:var name="nickname" escape="html">" <mt:if name="nickname_readonly">disabled="disabled"</mt:if> />
+      <mt:if name="nickname_readonly">
+        <input name="nickname" type="hidden" value="<mt:var name="nickname" escape="html">" />
+      </mt:if>
     </mtapp:setting>
 
     <mtapp:setting
@@ -292,7 +302,10 @@ function showPasswordField() {
        required="$auth_mode_mt"
        label="<__trans phrase="Email Address">"
        hint="<__trans phrase="The email address associated with this user.">">
-       <input type="text" name="email" id="email" class="form-control text" value="<mt:var name="email" escape="html">" <mt:if name="email_readonly">disabled="disabled"</mt:if> /><mt:if name="email_readonly"><input name="email" type="hidden" value="<mt:var name="email" escape="html">" /></mt:if>
+       <input type="text" name="email" id="email" class="form-control text" value="<mt:var name="email" escape="html">" <mt:if name="email_readonly">disabled="disabled"</mt:if> />
+       <mt:if name="email_readonly">
+        <input name="email" type="hidden" value="<mt:var name="email" escape="html">" />
+       </mt:if>
     </mtapp:setting>
 
     <mtapp:setting
@@ -310,13 +323,13 @@ function showPasswordField() {
        label="<__trans phrase="Userpic">"
        hint="<__trans phrase="The image associated with this user.">">
       <input type="hidden" name="userpic_asset_id" id="userpic_asset_id" value="<mt:var name="userpic_asset_id" default="0" escape="html">" />
-      <div id="userpic-preview"<mt:unless name="userpic"> class="hidden"</mt:unless>>
+      <div id="userpic-preview"<mt:unless name="userpic"> style="display: none;"</mt:unless>>
         <span id="userpic-preview-userpic"><mt:var name="userpic"></span>
       </div>
       <a href="<mt:var name="script_url">?__mode=dialog_list_asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;filter=userpic&amp;filter_val=<mt:var name="id" escape="url">&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
         <__trans phrase="Select Userpic">
       </a>
-      <span id="remove-userpic"<mt:unless name="userpic"> class="hidden"</mt:unless>>
+      <span id="remove-userpic"<mt:unless name="userpic"> style="display: none;"</mt:unless>>
         <a href="javascript:void(0)" onclick="removeUserpic()"><__trans phrase="Remove Userpic"></a>
         <span id="ajax-message"></span>
       </span>
@@ -454,7 +467,12 @@ function showPasswordField() {
        label="<__trans phrase="Permissions">">
       <ul class="list-inline inline-list">
       <mt:loop name="loaded_permissions">
-        <li><input name="<mt:var name="id">" id="<mt:var name="id">" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this, '<mt:var name="children">')" /> <label for="<mt:var name="id">"><mt:var name="label"></label></li>
+        <li class="list-inline-item">
+          <input name="<mt:var name="id">" id="<mt:var name="id">" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this, '<mt:var name="children">')" />
+          <label for="<mt:var name="id">">
+            <mt:var name="label">
+          </label>
+        </li>
       </mt:loop>
       </ul>
     </mtapp:setting>

@@ -45,7 +45,7 @@ function returnBlogSelection(ok) {
             el_name.innerHTML = blog_name + ' (' + inp.value + ')';
 </mt:if>
         if ( el_link )
-            DOM.removeClassName( el_link, "hidden" );
+            jQuery(el_link).show();
         jQuery.fn.mtModal.close();
     } else if (return_url) {
         var inputs = dialog.panels[0].tableSelect.selected();

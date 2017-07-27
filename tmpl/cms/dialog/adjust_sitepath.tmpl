@@ -2,9 +2,6 @@
 <$mt:setvar name="screen_type" value="restore-confirm-publishing-config"$>
 
 <mt:setvarblock name="js_include" append="1">
-<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.mt-use-absolute.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.mt-use-subdomain.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-
 <script type="text/javascript">
 /* <![CDATA[ */
 var websites_path = Array();
@@ -51,10 +48,10 @@ function changeParent (ws) {
     if ( matches && matches.length ) {
         jQuery('.parent_site_url_scheme_'+blog_id).text(matches[1] + '://');
         jQuery('.parent_site_url_domain_'+blog_id).text(matches[2]);
-        jQuery('#site_url'+blog_id+'-field').removeClass('hidden');
-        jQuery('#site_path'+blog_id+'-field').removeClass('hidden');
-        jQuery('#archive_url'+blog_id+'-field').removeClass('hidden');
-        jQuery('#archive_path'+blog_id+'-field').removeClass('hidden');
+        jQuery('#site_url'+blog_id+'-field').show();
+        jQuery('#site_path'+blog_id+'-field').show();
+        jQuery('#archive_url'+blog_id+'-field').show();
+        jQuery('#archive_path'+blog_id+'-field').show();
     }
 }
 
@@ -165,14 +162,15 @@ function init() {
         <mt:setvarblock name="site_url_id">site_url<mt:var name="id"></mt:setvarblock>
         <mtapp:setting
            id="$site_url_id"
-           class="form-inline url-field hidden"
+           class="url-field"
+           shown="0"
            label="<__trans phrase="Blog URL">"
            label_class="top-label"
            hint="<__trans phrase="Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/blog/">"
            show_hint="1"
            no_grid="1">
         <mt:if name="old_site_url_subdomain">
-          <div class="site-url content-path">
+          <div class="site-url content-path form-inline">
             <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span>
             <span class="subdomain">
               <input type="text" name="site_url_subdomain_<mt:var name="id" escape="html">" id="site_url_subdomain_<mt:var name="id" escape="html">" class="form-control blog-subdomain-text text path" value="<mt:var name="old_site_url_subdomain" escape="html">" />.
@@ -189,7 +187,7 @@ function init() {
             <label for="use_subdomain_<mt:var name="id">"><__trans phrase="Use subdomain"></label>
           </div>
         <mt:elseif name="old_site_url_path">
-          <div class="site-url content-path">
+          <div class="site-url content-path form-inline">
             <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span>
             <span class="subdomain">
               <input type="text" name="site_url_subdomain_<mt:var name="id" escape="html">" id="site_url_subdomain_<mt:var name="id" escape="html">" class="form-control blog-subdomain-text text path" value="<mt:var name="old_site_url_subdomain" escape="html">" />.
@@ -206,7 +204,7 @@ function init() {
             <label for="use_subdomain_<mt:var name="id">"><__trans phrase="Use subdomain"></label>
           </div>
         <mt:else>
-          <div class="site-url content-path">
+          <div class="site-url content-path form-inline">
             <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span>
             <span class="subdomain">
               <input type="text" name="site_url_subdomain_<mt:var name="id" escape="html">" id="site_url_subdomain_<mt:var name="id" escape="html">" class="form-control blog-subdomain-text text path" value="<mt:var name="old_site_url_subdomain" escape="html">" />.
@@ -228,14 +226,15 @@ function init() {
         <mt:setvarblock name="site_path_id">site_path<mt:var name="id"></mt:setvarblock>
         <mtapp:setting
            id="$site_path_id"
-           class="site-path-field hidden"
+           class="site-path-field"
+           shown="0"
            label="<__trans phrase="Blog Root">"
            label_class="top-label"
            no_grid="1">
         <mt:if name="old_site_path">
           <input type="hidden" name="old_site_path_<mt:var name="id" escape="html">" id="old_site_path_<mt:var name="id" escape="html">" value="<mt:var name="old_site_path" escape="html">" />
         </mt:if>
-          <div class="form-inline relative-site_path content-path">
+          <div class="relative-site_path content-path form-inline">
             <span class="website-path">
               <span class="parent_site_path_<mt:var name="id">">&nbsp;</span>
             </span>
@@ -263,7 +262,8 @@ function init() {
         <mt:setvarblock name="archive_url_id">archive_url<mt:var name="id"></mt:setvarblock>
         <mtapp:setting
            id="$archive_url_id"
-           class="form-inline url-field hidden"
+           class="url-field"
+           shown="0"
            label="<__trans phrase="Archive URL">"
            label_class="top-label"
            hint="<__trans phrase="Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/">"
@@ -311,12 +311,13 @@ function init() {
         <mt:setvarblock name="archive_path_id">archive_path<mt:var name="id"></mt:setvarblock>
         <mtapp:setting
            id="$archive_path_id"
-           class="form-inline site-path-field hidden"
+           class="site-path-field"
+           shown="0"
            label="<__trans phrase="Archive Root">"
            label_class="top-label"
            no_grid="1">
           <input type="hidden" name="old_archive_path_<mt:var name="id" escape="html">" id="old_archive_path_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" />
-          <div class="relative-site_path content-path">
+          <div class="relative-site_path content-path form-inline">
             <span class="website-path">
               <span class="parent_site_path_<mt:var name="id">">&nbsp;</span>
             </span>
@@ -391,7 +392,11 @@ function init() {
         return true;
     }
     </mt:if>
+/* ]]> */
+</script>
+</mt:setvarblock>
 
+<mt:setvarblock name="jq_js_include" append="1">
     init();
 
     jQuery.mtValidateAddRules({
@@ -556,9 +561,6 @@ function init() {
 
     jQuery.mtUseSubdomain();
     jQuery.mtUseAbsolute();
-
-/* ]]> */
-</script>
 </mt:setvarblock>
 
 <mt:include name="layout/modal.tmpl">

@@ -116,10 +116,10 @@
 
         <mt:setvarblock name="table_header">
           <tr>
-            <th class="col head cb">&nbsp;</th>
-            <th class="col head si file-status"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
-            <th class="col head asset-label primary"><span class="col-label"><__trans phrase="Asset Name"></span></th>
-            <th class="col head info num"><span class="col-label"><__trans phrase="Size"></span></th>
+            <th class="head cb">&nbsp;</th>
+            <th class="head si file-status"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+            <th class="head asset-label primary"><span class="col-label"><__trans phrase="Asset Name"></span></th>
+            <th class="head info num"><span class="col-label"><__trans phrase="Size"></span></th>
           </tr>
         </mt:setvarblock>
 
@@ -133,11 +133,11 @@
           <tbody>
           <mt:loop name="object_loop">
             <tr id="asset-<mt:var name="id" escape="html">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-              <td class="col cb"><input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" /><input type="radio" name="id" value="<mt:var name="id" escape="html">" class="select" id="asset-radio-<mt:var name="id" escape="html">" /></td>
-              <td class="col si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">
+              <td class="cb"><input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" /><input type="radio" name="id" value="<mt:var name="id" escape="html">" class="select" id="asset-radio-<mt:var name="id" escape="html">" /></td>
+              <td class="si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">
                 <img src="<mt:var name="static_uri">images/spacer.gif" <mt:if name="file_is_missing">alt="<__trans phrase="Pending">"<mt:else>alt="<__trans phrase="Published">"</mt:if> width="9" height="9" />
               </td>
-              <td class="col asset-label primary">
+              <td class="asset-label primary">
                 <mt:if name="has_thumbnail">
                   <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name" escape="html"$>"><$mt:var name="label" escape="html"$></a>
                   <div id="asset-<mt:var name="id" escape="html">-preview" class="asset-preview"></div>
@@ -145,7 +145,7 @@
                   <mt:var name="label" escape="html">
                 </mt:if>
               </td>
-              <td class="col info num">
+              <td class="info num">
                 <span class="detail">
                 <mt:if name="file_size_formatted">
                   <span class="float_desc" title="<mt:var name="file_size">"><mt:var name="file_size_formatted"></span>
@@ -162,7 +162,7 @@
       </form>
       <div class="pagination"></div>
     </div>
-  
+
     <div class="dialog actions-bar actions-bar-bottom">
       <form action="" method="get" onsubmit="return false">
         <button
@@ -189,7 +189,7 @@
        can_close="0">
       <__trans phrase="No assets could be found.">
     </mtapp:statusmsg>
-  
+
   <mt:unless name="json">
     <div class="actions-bar">
       <form action="" method="get" onsubmit="return false">

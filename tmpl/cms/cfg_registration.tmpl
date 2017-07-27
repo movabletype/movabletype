@@ -62,9 +62,9 @@
       <span class="items">
     <mt:if name="new_roles">
     <mt:loop name="new_roles">
-      <span id="selected-role-<mt:var name="role_id">" class="sticky-label selected-item">
+      <span id="selected-role-<mt:var name="role_id">" class="badge badge-default sticky-label selected-item">
         <mt:var name="role_name" escape="html">&nbsp;
-        <span class="remove clickable">x</span>
+        <span class="tag-pill remove clickable">x</span>
       </span>
     </mt:loop>
     <mt:else>
@@ -133,21 +133,19 @@
 </form>
 </mt:setvarblock>
 
-<mt:setvarblock name="js_include" append="1">
-<script>
-    jQuery('#new_created_user_role-field').on('click','span.remove',function() {
-        jQuery(this).parent().remove();
-        if ( jQuery('span.items').children().length == 0 ) {
-            jQuery('span.items').append('<__trans phrase="(No role selected)">');
-        }
-        var ids = new Array();
-        jQuery('span.items').children().each( function () {
-            jQuery(this).attr('id').match(/selected-role-(\d+)/);
-            ids.push( RegExp.$1 );
-        });
-        jQuery('input#new_created_user_role').val(ids.join(","));
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('#new_created_user_role-field').on('click','span.remove',function() {
+    jQuery(this).parent().remove();
+    if ( jQuery('span.items').children().length == 0 ) {
+        jQuery('span.items').append('<__trans phrase="(No role selected)">');
+    }
+    var ids = new Array();
+    jQuery('span.items').children().each( function () {
+        jQuery(this).attr('id').match(/selected-role-(\d+)/);
+        ids.push( RegExp.$1 );
     });
-</script>
+    jQuery('input#new_created_user_role').val(ids.join(","));
+});
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

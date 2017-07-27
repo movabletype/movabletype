@@ -817,7 +817,7 @@ my $ver
 my $perl_ver_check = '';
 if ( $] < 5.008001 ) {    # our minimal requirement for support
     $perl_ver_check = <<EOT;
-<div class="bg-warning msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.8.1"></p></div>
+<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.8.1"></p></div>
 EOT
 }
 
@@ -989,10 +989,10 @@ MSG
             my $msg
                 = $ver
                 ? trans_templ(
-                qq{<div class="bg-warning msg msg-warning"><p class="msg-text"><__trans phrase="Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed." params="$mod"> }
+                qq{<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed." params="$mod"> }
                 )
                 : trans_templ(
-                qq{<div class="bg-warning msg msg-warning"><p class="msg-text"><__trans phrase="Your server does not have [_1] installed, or [_1] requires another module that is not installed." params="$mod"> }
+                qq{<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="Your server does not have [_1] installed, or [_1] requires another module that is not installed." params="$mod"> }
                 );
             print_encode($desc);
             print_encode($msg);
@@ -1021,7 +1021,7 @@ MSG
                     if ( $DBD::mysql::VERSION == 3.0000 ) {
                         print_encode(
                             trans_templ(
-                                qq{<div class="bg-warning msg msg-warning"><p class="msg-text"><__trans phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available."></p></div>}
+                                qq{<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available."></p></div>}
                             )
                         );
                     }
@@ -1029,7 +1029,7 @@ MSG
                 if ( !$dbi_is_okay ) {
                     print_encode(
                         trans_templ(
-                            qq{<div class="bg-warning msg msg-warning"><p class="msg-text"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements."></p></div>}
+                            qq{<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements."></p></div>}
                         )
                     );
                 }

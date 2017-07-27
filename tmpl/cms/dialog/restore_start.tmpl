@@ -15,11 +15,14 @@ function progress(str, id) {
 <mt:include name="layout/modal/header.tmpl">
 
 <div class="modal-header">
-  <button type="button" class="close" data-mt-modal-close>
-    <span>&times;</span>
+  <h5 class="modal-title">
+    <mt:var name="page_title">
+  </h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+    <span aria-hidden="true">&times;</span>
   </button>
-  <h4 class="modal-title"><mt:var name="page_title"></h4>
 </div>
 <div class="modal-body">
   <div id="progressbar" class="progressbar indeterminate"></div>
-  <pre><mt:var name="name" escape="html">
+  <div class="card card-block" style="height: 300px; overflow: auto;">
+    <pre><mt:var name="name" escape="html">

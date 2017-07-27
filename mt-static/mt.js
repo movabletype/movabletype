@@ -694,17 +694,17 @@ function toggleSubPrefs(c) {
         if (c.type) {
             var on = c.type == 'checkbox' ? c.checked : c.value != 0;
             if (on) {
-                TC.removeClassName(div, "hidden");
+                jQuery(div).show();
             } else {
-                TC.addClassName(div, "hidden");
+                jQuery(div).hide();
             }
             // div.style.display = on ? "block" : "none";
         } else {
             var on = div.style.display && div.style.display != "none";
             if (on) {
-                TC.addClassName(div, "hidden");
+                jQuery(div).hide();
             } else {
-                TC.removeClassName(div, "hidden");
+                jQuery(div).show();
             }
             // div.style.display = on ? "none" : "block";
         }
@@ -2676,13 +2676,13 @@ MT.App.CategorySelector = new Class( Component, {
     open: function( el ) {
         if ( el ) {
            this.openingEl = el;
-           DOM.addClassName( el, "hidden" );
+           jQuery(el).hide();
            var closeEl = el.getAttribute( "mt:close-el" );
            if ( closeEl )
-               DOM.removeClassName( closeEl, "hidden" );
+               jQuery('#' + closeEl).show();
         }
         DOM.addClassName( "category-field", "selector-active" );
-        DOM.removeClassName( this.element, "hidden" );
+        jQuery(this.element).show();
         this.redraw();
     },
 
@@ -2699,11 +2699,11 @@ MT.App.CategorySelector = new Class( Component, {
 
     close: function( el ) {
         if ( el )
-            DOM.addClassName( el, "hidden" );
-        DOM.addClassName( this.element, "hidden" );
+            jQuery(el).hide();
+        jQuery(this.element).hide();
         DOM.removeClassName( "category-field", "selector-active" );
         if ( this.openingEl )
-            DOM.removeClassName( this.openingEl, "hidden" );
+            jQuery(this.openingEl).show();
     },
 
 
@@ -2723,17 +2723,17 @@ MT.App.CategorySelector = new Class( Component, {
                 if ( id ) {
                     /* adding a sub cat/folder */
                     this.catInput.value = '';
-                    DOM.addClassName( this.catForm, "hidden" );
+                    jQuery(this.catForm).hide();
                     var item = this.list.getListElementFromTarget( event.target );
                     this.catFormMovable = document.createElement( "div" );
                     this.catFormMovable.innerHTML = Template.process( "categorySelectorAddForm", { div: this.catFormMovable, contentFieldId: this.contentFieldId } );
                     this.list.content.insertBefore( this.catFormMovable, item.nextSibling );
                     this.catInputMovable = DOM.getElement( this.catInputMovableId );
-                    DOM.removeClassName( this.catFormMovable, "hidden" );
+                    jQuery(this.catFormMovable).show();
                     this.parentID = id;
                     this.catInputMovable.focus();
                 } else {
-                    DOM.removeClassName( this.catForm, "hidden" );
+                    jQuery(this.catForm).show();
                     this.catInput.focus();
                 }
                 break;
@@ -2741,7 +2741,7 @@ MT.App.CategorySelector = new Class( Component, {
             case "cancel":
                 this.removeMovable();
                 /* hide it */
-                DOM.addClassName( this.catForm, "hidden" );
+                jQuery(this.catForm).hide();
                 break;
 
             case "add":
@@ -2788,8 +2788,8 @@ MT.App.CategorySelector = new Class( Component, {
             }
         }
 
-        DOM.addClassName( this.catForm, "hidden" );
-        DOM.addClassName( this.catFormMovable, "hidden" );
+        jQuery(this.catForm).hide();
+        jQuery(this.catFormMovable).hide();
         this.catInput.value = '';
 
         var args = {
@@ -2899,14 +2899,15 @@ MT.App.CategorySelector = new Class( Component, {
             /* update the cache */
             ( this.catCache || app.catCache ).setItem( "cat:" + cat.id, cat );
             /* add puts the item at the bottom, so we hide it and move it */
-            this.list.addItem( cat, !notSelect, "list-item hidden" );
+            this.list.addItem( cat, !notSelect, "list-item" );
+            jQuery(this.list.items[ this.list.items.length - 1 ]).hide();
             var div = this.list.getItem( cat.id );
             div.parentNode.removeChild( div );
             var parentItem = this.list.getItem( parent.id );
             /* move it after the parent */
             this.list.content.insertBefore( div, parentItem.nextSibling );
             this.list.toggleCheckbox( div, !notSelect ); // added checked attribute again for IE
-            DOM.removeClassName( div, "hidden" );
+            jQuery(div).show();
         } else {
             catlist.push( cat );
             /* update the cache */
@@ -2918,7 +2919,7 @@ MT.App.CategorySelector = new Class( Component, {
                 /* move it after the parent */
                 this.list.content.insertBefore( div, this.list.content.children[1] );
                 this.list.toggleCheckbox( div, !notSelect ); // added checked attribute again for IE
-                DOM.removeClassName( div, "hidden" );
+                jQuery(div).show();
             }
         }
 

@@ -3367,10 +3367,10 @@ sub print_status_page {
     $app->print_encode( $app->translate_templatized(<<"HTML" ) );
 
 <div class="modal-header">
-    <button type="button" class="close" data-mt-modal-close>
-        <span>&times;</span>
+    <h5 class="modal-title">$page_title</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+      <span aria-hidden="true">&times;</span>
     </button>
-    <h4 class="modal-title">$page_title</h4>
 </div>
 
 <div class="modal-body">
@@ -3493,7 +3493,7 @@ HTML
 HTML
     }
 
-    $app->print_encode( $app->build_page( 'layout/modal/footer.tmpl' ) );
+    $app->print_encode( $app->build_page('layout/modal/footer.tmpl') );
 }
 
 sub _progress {
