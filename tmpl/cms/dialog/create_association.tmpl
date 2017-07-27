@@ -65,7 +65,7 @@ function returnRoleSelection(ok) {
         var ids = new Array();
         jQuery('input[name=role-cb]:checked').each( function() {
             ids.push(this.value);
-            parent.jQuery('span.items').append('<span id="selected-role-'+this.value+'" class="sticky-label selected-item">'+jQuery('tr#role-'+this.value+' > td.panel-label > label').text()+'&nbsp;<span class="remove clickable">x</span></span>');
+            parent.jQuery('span.items').append('<span id="selected-role-'+this.value+'" class="badge badge-default sticky-label selected-item">'+jQuery('tr#role-'+this.value+' > td.panel-label > label').text()+'&nbsp;<span class="tag-pill remove clickable">x</span></span>');
         });
         parent.jQuery('input#new_created_user_role').val( ids.join(",") );
     }
@@ -104,7 +104,7 @@ TC.attachLoadEvent(init);
 </form>
 
 <div class="modal-header">
-    <h4 class="modal-title"><mt:var name="page_title"></h4>
+    <h5 class="modal-title"><mt:var name="page_title"></h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
       <span aria-hidden="true">&times;</span>
     </button>

@@ -694,17 +694,17 @@ function toggleSubPrefs(c) {
         if (c.type) {
             var on = c.type == 'checkbox' ? c.checked : c.value != 0;
             if (on) {
-                TC.removeClassName(div, "hidden");
+                jQuery(div).show();
             } else {
-                TC.addClassName(div, "hidden");
+                jQuery(div).hide();
             }
             // div.style.display = on ? "block" : "none";
         } else {
             var on = div.style.display && div.style.display != "none";
             if (on) {
-                TC.addClassName(div, "hidden");
+                jQuery(div).hide();
             } else {
-                TC.removeClassName(div, "hidden");
+                jQuery(div).show();
             }
             // div.style.display = on ? "none" : "block";
         }
