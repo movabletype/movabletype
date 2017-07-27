@@ -454,7 +454,7 @@ $tmpl->type('custom');
 $tmpl->save or die "Couldn't save template record 1: " . $tmpl->errstr;
 
 $mt->rebuild(
-    BlogId        => 1,
+    BlogID        => 1,
     EntryCallback => sub { print "- Rebuilding entry " . $_[0]->id . "\n" }
 );
 
