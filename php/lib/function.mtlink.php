@@ -21,7 +21,7 @@ function smarty_function_mtlink($args, &$ctx) {
         if (isset($_template_links[$cache_key])) {
             $link = $_template_links[$cache_key];
         } else {
-            $tmpl = $ctx->mt->db()->load_index_template($ctx, $name);
+            $tmpl = $ctx->mt->db()->load_index_template($ctx, $name, $blog->id);
             $site_url = $blog->site_url();
             if (!preg_match('!/$!', $site_url)) $site_url .= '/';
             $link = $site_url . $tmpl->template_outfile;

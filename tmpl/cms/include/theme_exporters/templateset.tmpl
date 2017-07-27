@@ -1,7 +1,7 @@
 <mt:loop tmpl_groups>
 <div id="template-group-<mt:var name="template_type">" class="template-group">
   <div id="template-group-<mt:var name="template_type">-header" class="template-group-header">
-    <div class="pull-right template-group-summary">
+    <div class="float-right template-group-summary">
     <mt:if name="template_type" eq="widgetset">
       <mt:setvar name="tmpl_type_name" value="<__trans phrase="widget sets">">
     <mt:elseif name="template_type" eq="module">
@@ -20,13 +20,13 @@
 
     <mt:setvarblock name="table_header">
       <tr>
-        <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-        <th class="col head template-name primary"><span class="col-label"><__trans phrase="Template Name"></span></th>
+        <th class="head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+        <th class="head template-name primary"><span class="col-label"><__trans phrase="Template Name"></span></th>
       <mt:if name="template_type" eq="index">
-        <th class="col head output-file"><span class="col-label"><__trans phrase="Output File"></span></th>
+        <th class="head output-file"><span class="col-label"><__trans phrase="Output File"></span></th>
       </mt:if>
       <mt:if name="template_type" eq="archive">
-        <th class="col head output-file"><span class="col-label"><__trans phrase="Archive Path"></span></th>
+        <th class="head output-file"><span class="col-label"><__trans phrase="Archive Path"></span></th>
       </mt:if>
       </tr>
     </mt:setvarblock>
@@ -41,7 +41,7 @@
     </mt:if>
 
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> template-<$mt:var name="template_type" default="template" escape="html"$>">
-          <td class="col cb">
+          <td class="cb">
             <input
                type="checkbox"
                name="template_set_export_ids"
@@ -51,9 +51,9 @@
                <mt:if name="checked">checked="checked"</mt:if>
                />
           </td>
-          <td class="col template-name"><mt:var name="tmpl_label" escape="html"></td>
+          <td class="template-name"><mt:var name="tmpl_label" escape="html"></td>
         <mt:if name="template_type" like="/(index|archive)/">
-          <td class="col output-file">
+          <td class="output-file">
           <mt:if name="outfile">
             <mt:var name="outfile" escape="html"> <mt:if name="published_url"><a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/status_icons/view.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a></mt:if>
           <mt:else name="template_type" eq="archive">

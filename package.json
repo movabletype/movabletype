@@ -21,5 +21,9 @@
   "homepage": "https://github.com/movabletype/movabletype#readme",
   "devDependencies": {
     "riot": "^3.6.0"
+  },
+  "dependencies": {
+    "bootstrap": "^4.0.0-alpha.6",
+    "tether": "^1.4.0"
   }
 }

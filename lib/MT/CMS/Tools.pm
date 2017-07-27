@@ -278,17 +278,11 @@ sub new_password {
         elsif ( $new_password ne $again ) {
             $param->{'error'} = $app->translate('Passwords do not match');
         }
-        elsif ( ref $app eq 'MT::App::Community' ) {
 
-            # community people may change the template, and not include the
-            # needed password validation tags
-            $param->{'error'} = eval {
+        $param->{'error'} = eval {
+            $app->verify_password_strength( $user->name, $new_password );
+        };
 
-                # might be an old version that does not have this function
-                MT::App::Community::__verify_password_strength( $app, $user,
-                    $new_password );
-            };
-        }
         if ( not $param->{'error'} ) {
             my $redirect = $user->password_reset_return_to || '';
 
@@ -666,7 +660,7 @@ sub save_cfg_system_general {
 
     # actually assign the changes
     $app->config( 'EmailAddressMain',
-        ( $app->param('system_email_address') || undef ), 1 );
+        ( scalar $app->param('system_email_address') ), 1 );
     $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
         if ( $app->param('system_debug_mode') =~ /\d+/ );
     if ( not $cfg->HidePerformanceLoggingSettings ) {
@@ -1874,7 +1868,7 @@ sub adjust_sitepath {
             || q();
         $site_url_subdomain .= '.'
             if $site_url_subdomain && $site_url_subdomain !~ /\.$/;
-        my $parent_id = scalar $q->param("parent_id_$id") || undef;
+        my $parent_id = scalar $q->param("parent_id_$id");
         my $site_path_absolute = scalar $q->param("site_path_absolute_$id")
             || q();
         my $use_absolute = scalar $q->param("use_absolute_$id") || q();

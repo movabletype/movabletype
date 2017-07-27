@@ -520,9 +520,11 @@ use_ok('MT::DataAPI::Endpoint::v2::User');
 
 use_ok('MT::DataAPI::Endpoint::v3::Auth');
 use_ok('MT::DataAPI::Endpoint::v3::Asset');
+use_ok('MT::DataAPI::Endpoint::v3::Entry');
 
 use_ok('MT::DataAPI::Resource::v3::Blog');
 use_ok('MT::DataAPI::Resource::v3::Website');
+use_ok('MT::DataAPI::Resource::v3::User');
 
 use_ok('MT::App::Search::Common');
 
@@ -565,7 +567,7 @@ sub test_all_modules_are_checked {
     }
     if ( keys %$in_test ) {
         $res .= " " if $res;
-        $res .= "Modules not on HD: " . join( ", ", keys %$in_test );
+        $res .= "Modules not on HD: " . join( ", ", sort keys %$in_test );
     }
     if ($res) {
         ok( 0, $res );

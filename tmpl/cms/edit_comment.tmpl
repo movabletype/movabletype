@@ -37,9 +37,9 @@
         <table class="table table-striped legacy spam-log-listing-table listing-table" style="background-color: #ffffff;">
           <thead>
             <tr>
-              <th id="jl-test" class="col head"><span class="col-label"><__trans phrase="Test"></span></th>
-              <th id="jl-score" class="col head"><span class="col-label"><__trans phrase="Score"></span></th>
-              <th id="jl-results" class="col head"><span class="col-label"><__trans phrase="Results"></span></th>
+              <th id="jl-test" class="head"><span class="col-label"><__trans phrase="Test"></span></th>
+              <th id="jl-score" class="head"><span class="col-label"><__trans phrase="Score"></span></th>
+              <th id="jl-results" class="head"><span class="col-label"><__trans phrase="Results"></span></th>
             </tr>
           </thead>
           <tbody>
@@ -117,9 +117,29 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="object_nav">
-<ul class="list-inline pull-right object-nav">
-  <li id="previous-link"><mt:if name="previous_comment_id"><a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="previous_comment_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">">&lsaquo; <__trans phrase="Prev"></a><mt:else><span>&lsaquo; <__trans phrase="Prev"></span></mt:if></li>
-  <li id="next-link"><mt:if name="next_comment_id"><a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="next_comment_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Next"> &rsaquo;</a><mt:else><span><__trans phrase="Next"> &rsaquo;</span></mt:if></li>
+<ul class="list-inline float-right object-nav">
+  <li id="previous-link" class="list-inline-item">
+    <mt:if name="previous_comment_id">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="previous_comment_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">">
+        &lsaquo; <__trans phrase="Prev">
+      </a>
+    <mt:else>
+      <span>
+        &lsaquo; <__trans phrase="Prev">
+      </span>
+    </mt:if>
+  </li>
+  <li id="next-link" class="list-inline-item">
+    <mt:if name="next_comment_id">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="next_comment_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">">
+        <__trans phrase="Next"> &rsaquo;
+      </a>
+    <mt:else>
+      <span>
+        <__trans phrase="Next"> &rsaquo;
+      </span>
+    </mt:if>
+  </li>
 </ul>
 </mt:setvarblock>
 
@@ -196,9 +216,7 @@
      label="<__trans phrase="Commenter Status">">
     <mt:if name="commenter_approved">
       <mt:if name="can_edit_commenters">
-    <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">">
-      <img src="<mt:var name="static_uri">images/status_icons/trusted.gif" alt="<__trans phrase="Trusted">" />
-    </a>
+    <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">"><img src="<mt:var name="static_uri">images/status_icons/trusted.gif" alt="<__trans phrase="Trusted">" /></a>
       <mt:else>
     <img src="<mt:var name="static_uri">images/status_icons/trusted.gif" alt="<__trans phrase="Trusted">" />
       </mt:if>

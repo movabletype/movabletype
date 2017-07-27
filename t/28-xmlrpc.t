@@ -1387,7 +1387,7 @@ my @apis = (
 
             # __sanitize__ may come from the community pack
             @$result = grep { $_->{key} ne '__sanitize__' } @$result;
-            foreach my $res (@$result) {
+            foreach my $res (sort @$result) {
                 is( 1, delete( $tf{ $res->{key} } ), $res->{key} );
             }
             ok( !%tf );

@@ -160,9 +160,9 @@ SelectionList = new Class(Object, {
             l.replace(/\s/g, '&nbsp;');
             var link = doc.createElement("span");
             link.setAttribute("id","selected-"+p);
-            link.setAttribute("class","label label-default sticky-label selected-item");
+            link.setAttribute("class","badge badge-default sticky-label selected-item");
             link.onclick = makeclosure(p);
-            link.innerHTML = l + "&nbsp;<span class='badge remove clickable' style='cursor: pointer;'>x</span>";
+            link.innerHTML = l + "&nbsp;<span class='tag-pill remove clickable' style='cursor: pointer;'>x</span>";
             this.container.appendChild(link);
             this.container.appendChild(doc.createTextNode(' '));
         }
@@ -194,10 +194,10 @@ Panel = new Class(Object, {
         this.element = TC.elementOrId(name + "-panel");
     },
     show: function() {
-        TC.removeClassName(this.element, "hidden");
+        jQuery(this.element).show();
     },
     hide: function() {
-        TC.addClassName(this.element, "hidden");
+        jQuery(this.element).hide();
     }
 });
 
@@ -306,7 +306,7 @@ ListingPanel = new Class(Panel, {
             this.searchField.form.onsubmit = function() {
                 self.datasource.search(self.searchField.value);
                 if (self.searchReset)
-                    TC.removeClassName(self.searchReset, "hidden");
+                    jQuery(self.searchReset).show();
                 return false;
             };
         }
@@ -316,7 +316,7 @@ ListingPanel = new Class(Panel, {
             this.searchReset.onclick = function() {
                 self.datasource.navigate(0);
                 self.searchField.value = "";
-                TC.addClassName(self.searchReset, "hidden");
+                jQuery(self.searchReset).hide();
                 return false;
             };
         }

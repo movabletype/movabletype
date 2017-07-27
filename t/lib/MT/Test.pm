@@ -134,7 +134,7 @@ sub init_app {
     $app->instance( $cfg ? ( Config => $cfg ) : () );
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        File::Spec->rel2abs( $app->config->SearchTemplatePath ) );
+        [ File::Spec->rel2abs( $app->config->SearchTemplatePath ) ] );
 
     # kill __test_output for a new request
     require MT;
@@ -438,7 +438,7 @@ sub init_data {
     rmtree('t/site') if ( -d 't/site' );
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory($themedir);
+    MT->config->ThemesDirectory( [$themedir] );
     require MT::Theme;
 
     require MT::Website;
@@ -829,6 +829,75 @@ It\'s a hard rain\'s a-gonna fall',
         $cat->parent(1);
         $cat->id(3);
         $cat->save or die "Couldn't save category record 3: " . $cat->errstr;
+    }
+
+    # Categories and sub categories
+    $cat = MT::Category->load( { label => 'US', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('US');
+        $cat->description('The United States of America');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(0);
+        $cat->id(4);
+        $cat->save or die "Couldn't save category record 4: " . $cat->errstr;
+    }
+    $cat = MT::Category->load( { label => 'California', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('California');
+        $cat->description('');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(4);
+        $cat->id(5);
+        $cat->save or die "Couldn't save category record 5: " . $cat->errstr;
+    }
+    $cat = MT::Category->load( { label => 'San Fransico', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('San Fransisco');
+        $cat->description('');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(5);
+        $cat->id(6);
+        $cat->save or die "Couldn't save category record 6: " . $cat->errstr;
+    }
+
+    $cat = MT::Category->load( { label => 'Japan', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('Japan');
+        $cat->description('Japan');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(0);
+        $cat->id(7);
+        $cat->save or die "Couldn't save category record 7: " . $cat->errstr;
+    }
+    $cat = MT::Category->load( { label => 'Tokyo', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('Tokyo');
+        $cat->description('');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(7);
+        $cat->id(8);
+        $cat->save or die "Couldn't save category record 8: " . $cat->errstr;
+    }
+    $cat = MT::Category->load( { label => 'Chiyoda', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('Chiyoda');
+        $cat->description('');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(8);
+        $cat->id(9);
+        $cat->save or die "Couldn't save category record 9: " . $cat->errstr;
     }
 
     require MT::Placement;
@@ -1256,6 +1325,34 @@ It\'s a hard rain\'s a-gonna fall',
     $folder->id(22);
     $folder->save or die "Could'n sae folder record 22:" . $folder->errstr;
 
+    # Folder with sub folders
+    $folder = MT::Folder->new();
+    $folder->blog_id(2);
+    $folder->label('Product');
+    $folder->description('News');
+    $folder->author_id( $chuckd->id );
+    $folder->parent(0);
+    $folder->id(23);
+    $folder->save or die "Could'n sae folder record 21:" . $folder->errstr;
+
+    $folder = MT::Folder->new();
+    $folder->blog_id(2);
+    $folder->label('Consumer');
+    $folder->description('');
+    $folder->author_id( $chuckd->id );
+    $folder->parent(23);
+    $folder->id(24);
+    $folder->save or die "Could'n sae folder record 22:" . $folder->errstr;
+
+    $folder = MT::Folder->new();
+    $folder->blog_id(2);
+    $folder->label('Game');
+    $folder->description('');
+    $folder->author_id( $chuckd->id );
+    $folder->parent(24);
+    $folder->id(25);
+    $folder->save or die "Could'n sae folder record 22:" . $folder->errstr;
+
     $page = MT::Page->new();
     $page->set_values(
         {   blog_id     => 1,
@@ -1586,7 +1683,7 @@ sub _run_app {
     MT->set_instance($app);
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        abs_path( $app->config->SeachTemplatePath ) );
+        [ abs_path( $app->config->SeachTemplatePath ) ] );
 
     # nix upgrade required
     # seems to be hanging around when it doesn't need to be

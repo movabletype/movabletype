@@ -44,8 +44,8 @@
         <mt:var name="list_actions">
       </div>
 
-      <div class="panel panel-default">
-        <div id="area-action" class="panel-heading form-inline mod sortable-header">
+      <div class="card">
+        <div id="area-action" class="card-header form-inline mod sortable-header">
           <select id="itemlist" name="itemlist" class="form-control disabled" disabled="disabled">
             <option id="opt-0" value="0"><__trans phrase="Top Level"></option>
           </select>
@@ -53,7 +53,7 @@
           <button type="submit" class="btn btn-default add button disabled" disabled="disabled"><__trans phrase="Add"></button>
         </div>
 
-        <div id="root" class="panel-body sortable"></div>
+        <div id="root" class="card-block sortable"></div>
       </div>
 
       <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
@@ -243,9 +243,9 @@ function createItem(id, parent, label, basename, number) {
     line += '<span class="item-basename"><span class="item-basename-text-container"><span class="item-basename-text">'+basename+'</span></span></span>';
   line += ' <span class="item-ctrl"></span>';
   <mt:unless name="is_category_list">
-  line += ' <span class="pull-right count">'+number+'</span>';
+  line += ' <span class="count" style="margin-left: auto;">'+number+'</span>';
   </mt:unless>
-  var $item = jQuery('<div id="cat-'+id+'" class="panel panel-default panel-body pcat-'+parent+'" />').append(line);
+  var $item = jQuery('<div id="cat-'+id+'" class="card card-block flex-row pcat-'+parent+'" />').append(line);
   return $item;
 }
 
@@ -260,7 +260,11 @@ function initItem($item) {
     .addClass('lv-'+nest.length)
     .addClass('sortable-item');
   $item.find('.item-ctrl, .edit-form').remove();
+<mt:if name="is_category_list">
   $item.append('<span class="item-ctrl" />');
+<mt:else>
+  jQuery('<span class="item-ctrl" />').insertBefore($item.find('.count'));
+</mt:if>
 
   jQuery('<a href="#" class="item-action edit-link clickable"><__trans phrase="Rename" escape="js"></a>')
     .appendTo($item.find('.item-ctrl'))
@@ -331,7 +335,7 @@ function initItem($item) {
       fixInteractions({ sortable: false });
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
       var parent = $element.attr('id').slice(4);
-      var $form = jQuery('<div class="panel panel-default panel-body form-inline mod add-form"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
+      var $form = jQuery('<div class="card card-block flex-row form-inline mod add-form"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
       $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_label" lower_case="1">_label]').focus();
       jQuery('<button type="button" class="btn btn-default add button"><__trans phrase="Add" escape="js"></button>')
         .bind('click', function() {
@@ -540,7 +544,7 @@ function initMoving() {
         $item.find('.badge').remove();
         $item.find('.item-basename, .plus, .delete').show();
         $item.attr('class', ('pcat-'+place));
-        $item.addClass('panel panel-default panel-body');
+        $item.addClass('card card-block flex-row');
         initItem($item);
         var $last = $item;
         jQuery('.pcat-'+catid).each(function() {
@@ -549,7 +553,7 @@ function initMoving() {
           $this.attr('class').match(/\bpcat-(\w+)\b/);
           var parent = RegExp.$1;
           $this.attr('class', ('pcat-'+parent));
-          $this.addClass('panel panel-default panel-body');
+          $this.addClass('card card-block flex-row');
           initItem($this);
           $this.insertAfter($last).show();
           $last = $this;

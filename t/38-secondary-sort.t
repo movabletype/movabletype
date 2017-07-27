@@ -19,7 +19,7 @@ my $driver = MT::Object->driver();
 my $object_types = MT->registry('object_types');
 my @model = grep { !ref $_ } values %$object_types;
 
-for my $model (@model) {
+for my $model (sort @model) {
 
     my $pk = $model->primary_key_tuple();
     next unless $pk && ref($pk) eq 'ARRAY' && @$pk;
@@ -71,7 +71,7 @@ for my $model (@model) {
         # Join
         {
             my $child_classes = $model->properties->{child_classes};
-            for my $child_class ( keys %$child_classes ) {
+            for my $child_class ( sort keys %$child_classes ) {
 
                 # No sort
                 {

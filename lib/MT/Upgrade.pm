@@ -1117,7 +1117,7 @@ sub core_update_records {
     my $offset = $param{offset};
     my $count  = $param{count};
     if ( !$count ) {
-        $count = $class->count( $param{terms} || undef );
+        $count = $class->count( $param{terms} );
     }
     return unless $count;
     if ($offset) {
@@ -1141,7 +1141,7 @@ sub core_update_records {
     return 1 if $DryRun;
 
     if ( !$sql || !$driver->sql($sql) ) {
-        my $iter = $class->load_iter( $param{terms} || undef,
+        my $iter = $class->load_iter( $param{terms},
             { offset => $offset, limit => $MAX_ROWS + 1 } );
         my $start = time;
         my @list;

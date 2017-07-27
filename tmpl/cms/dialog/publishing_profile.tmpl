@@ -42,13 +42,13 @@ function init() {
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
     <div class="modal-header">
-        <button type="button" class="close" data-mt-modal-close>
-            <span>&times;</span>
+        <h5 class="modal-title"><mt:var name="page_title"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+          <span aria-hidden="true">&times;</span>
         </button>
-        <h4 class="modal-title"><mt:var name="page_title"></h4>
     </div>
 
-    <div id="profile-panel" class="hidden">
+    <div id="profile-panel" style="display: none;">
 
         <div class="modal-body">
 
@@ -136,12 +136,18 @@ function init() {
 
     </div>
 
-    <div id="confirm-panel" class="hidden">
+    <div id="confirm-panel" style="display: none;">
         <div class="modal-body">
 
-        <p><__trans phrase="This new publishing profile will update your publishing settings."></p>
+        <p>
+          <__trans phrase="This new publishing profile will update your publishing settings.">
+        </p>
 
-        <p><strong><__trans phrase="Are you sure you wish to continue?"></strong></p>
+        <p>
+          <strong>
+            <__trans phrase="Are you sure you wish to continue?">
+          </strong>
+        </p>
 
         </div>
 
@@ -184,4 +190,3 @@ jQuery(function() {
 
 <mt:include name="layout/modal.tmpl">
 <mt:var name="layout">
-

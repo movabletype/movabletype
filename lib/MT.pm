@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 4;
+        $RELEASE_NUMBER = 5;
     }
 
     $DebugMode = 0;
@@ -2739,7 +2739,7 @@ sub build_email {
     my $mt = $class->instance;
 
     # basically, try to load from database
-    my $blog = $param->{blog} || undef;
+    my $blog = $param->{blog};
     my $id = $file;
     $id =~ s/(\.tmpl|\.mtml)$//;
 

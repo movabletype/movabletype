@@ -2952,7 +2952,7 @@ sub edit_widget {
     require MT::Promise;
     my $obj_promise = MT::Promise::delay(
         sub {
-            return $tmpl_class->load($id) || undef;
+            return $tmpl_class->load($id);
         }
     );
 

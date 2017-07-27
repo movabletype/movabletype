@@ -192,9 +192,9 @@ sub do_import {
         ($import_as_me)
         ? ( ImportAs => $author )
         : ( ParentAuthor => $author ),
-        NewAuthorPassword => ( $q->param('password')       || undef ),
-        DefaultCategoryID => ( $q->param('default_cat_id') || undef ),
-        ConvertBreaks     => ( $q->param('convert_breaks') || undef ),
+        NewAuthorPassword => ( scalar $q->param('password') ),
+        DefaultCategoryID => ( scalar $q->param('default_cat_id') ),
+        ConvertBreaks     => ( scalar $q->param('convert_breaks') ),
         (%options) ? (%options) : (),
     );
 

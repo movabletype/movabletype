@@ -15,8 +15,8 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="tabs" append="1">
-  <li id="comment-tab" class="tab <mt:if name="tab" eq="comment">active</mt:if>">
-    <a  href="#comment-panel" data-toggle="tab">
+  <li id="comment-tab" class="tab nav-item">
+    <a  href="#comment-panel" class="nav-link<mt:if name="tab" eq="comment"> active</mt:if>" data-toggle="tab">
       <span>
         <__trans phrase="Comments">
       </span>
@@ -35,7 +35,7 @@
 </mt:if>
   <h4 class="tab-panel-header"><__trans phrase="Most Recent Comments"></h4>
 <mt:comments sort_order="descend">
-  <div id="comment-<mt:commentid>" class="comment content comment-<mt:if name="__odd__">odd odd<mt:else>even even</mt:if> comment-<mt:commentifmoderated>status-publish<mt:else>status-pending</mt:commentifmoderated>">
+  <div id="comment-<mt:commentid>" class="bg-faded comment content comment-<mt:if name="__odd__">odd odd<mt:else>even even</mt:if> comment-<mt:commentifmoderated>status-publish<mt:else>status-pending</mt:commentifmoderated>">
     <div class="comment-content">
       <mt:commentbody>
     </div>

@@ -21,8 +21,9 @@ my $alive = eval {
     my $m = MT::Memcached->instance;
     $m->set( __FILE__, __FILE__, 1 );
 };
+plan skip_all => 'memcached is not alive' unless $alive;
 
-if ($alive) {
+{
     my $mock = Test::MockObject->new;
     my $set_count;
     $mock->fake_module( 'MT::Memcached::ExpirableProxy',

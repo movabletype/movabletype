@@ -1215,12 +1215,18 @@ sub make_unique_category_basename {
     my ($cat) = @_;
     require MT::Blog;
     my $blog  = MT::Blog->load( $cat->blog_id );
+    my $name  = '';
     my $label = $cat->label;
-    $label = '' if !defined $label;
-    $label =~ s/^\s+|\s+$//gs;
-
-    my $name = MT::Util::dirify($label)
-        || ( $cat->basename_prefix(1) . $cat->id );
+    if ( defined $label ) {
+        $label =~ s/^\s+|\s+$//gs;
+        $name = MT::Util::dirify($label);
+    }
+    if ( $name eq '' ) {
+        $name
+            = $cat->id
+            ? $cat->basename_prefix(1) . $cat->id
+            : $cat->basename_prefix(0);
+    }
 
     my $limit
         = ( $blog && $blog->basename_limit ) ? $blog->basename_limit : 30;
@@ -1230,8 +1236,6 @@ sub make_unique_category_basename {
     $base =~ s/_+$//;
     $base = $cat->basename_prefix(0)
         if $base eq '';    #FIXME when does this happen?
-    my $i         = 1;
-    my $base_copy = $base;
 
     my $cat_class = ref $cat;
     my $terms
@@ -1262,8 +1266,6 @@ sub make_unique_author_basename {
     $limit = 250 if $limit > 250;
     my $base = substr( $name, 0, $limit );
     $base =~ s/_+$//;
-    my $i         = 1;
-    my $base_copy = $base;
 
     my $author_class = ref $author;
     return _get_basename( $author_class, $base );

@@ -107,12 +107,13 @@ sub list_props {
                 return $desc
                     ? qq{
                     <div class="log-message can-select">
-                      <a href="#log-detail-$id" class="toggle-link icon-left icon-spinner detail-link" data-toggle="collapse">
-                        <span class="caret"></span>
+                      <a href="#log-detail-$id" class="dropdown-toggle toggle-link icon-left icon-spinner detail-link" data-toggle="collapse" aria-expanded="false">
                         $msg
                       </a>
                       <div id="log-detail-$id" class="collapse log-metadata detail">
-                        <pre>$desc</pre>
+                        <div class="card card-block">
+                          <pre style="overflow: auto; white-space: pre-wrap; word-wrap: break-word;">$desc</pre>
+                        </div>
                       </div>
                     </div>
                 }

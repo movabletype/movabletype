@@ -14,7 +14,7 @@ function get_parent_categories(&$cat, &$ctx, &$list, $class = 'category') {
         if ($parent) {
             $cat->parent_category = $parent;
             array_unshift($list, 0); $list[0] =& $parent;
-            get_parent_categories($parent, $ctx, $list);
+            get_parent_categories($parent, $ctx, $list, $class);
         }
     }
 }

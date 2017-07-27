@@ -170,7 +170,7 @@ subtest "Check filtered_list method of Trackback in a category of website" => su
             },
         }
     );
-    my $json = MT::Util::to_json( \@param );
+    my $json = MT::Util::to_json( \@param, { canonical => 1 } );
 
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
     $app = _run_app(

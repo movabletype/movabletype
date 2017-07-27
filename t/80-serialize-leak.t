@@ -26,7 +26,7 @@ my $data2 = [
 ];
 $data2->[1]->{z} = $data2;
 
-for my $label ( keys %sers ) {
+for my $label ( sort keys %sers ) {
     my $ser = $sers{$label};
     note "Checking leaks for $label\n";
 
