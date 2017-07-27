@@ -336,7 +336,7 @@
       <label for="enable_archive_paths"><__trans phrase="Publish archives outside of [_1] Root" params="<mt:var name="object_label" capitalize="1">"></label>
     </mtapp:setting>
 
-    <div id="enable_archive_paths_prefs"<mt:unless name="enable_archive_paths"> class="hidden"</mt:unless>>
+    <div id="enable_archive_paths_prefs"<mt:unless name="enable_archive_paths"> style="display: none;"</mt:unless>>
       <mtapp:setting
          id="archive_url"
          class="url-field"
@@ -651,11 +651,11 @@
         <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
       </mt:loop>
       </select>
-      <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination hidden" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" />
+      <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" style="display: none;" />
       <span class="upload-extra-path">
         / <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
       </span>
-      <div class="option" >
+      <div class="form-group option">
         <input type="checkbox" name="allow_to_change_at_upload" id="allow_to_change_at_upload" value="1"<mt:if name="allow_to_change_at_upload"> checked="checked"</mt:if> class="cb" />
         <label for="allow_to_change_at_upload"><__trans phrase="Allow to change at upload"></label>
       </div>
@@ -735,7 +735,7 @@ if (e) e.style.display = 'block';
 
 jQuery(window).load(function () {
     jQuery('input#enable_archive_paths').change(function() {
-        jQuery('div#enable_archive_paths_prefs').toggleClass('hidden');
+        jQuery('div#enable_archive_paths_prefs').toggle();
     });
 
     jQuery.mtValidateAddRules({
