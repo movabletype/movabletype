@@ -1914,7 +1914,7 @@ $Languages{en_US} = $Languages{en_us} = $Languages{"en-us"} = $Languages{en};
 $Languages{ja} = $Languages{jp};
 
 sub browser_language {
-    my @browser_langs = $ENV{HTTP_ACCEPT_LANGUAGE} =~ m{
+    my @browser_langs = ( $ENV{HTTP_ACCEPT_LANGUAGE} || '' ) =~ m{
     	(
     		[a-z]{2}      # en
     		(?:-[a-z]{2})?  # -us
