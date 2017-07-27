@@ -462,7 +462,7 @@ sub category_do_add {
         $app->run_callbacks( 'cms_save_permission_filter.' . $type,
             $app, undef )
             || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            $app->translate( "Permission denied" ) );
     }
 
     my $filter_result
