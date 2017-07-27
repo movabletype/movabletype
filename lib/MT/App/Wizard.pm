@@ -1321,7 +1321,7 @@ sub cgipath {
     my $app = shift;
 
     # these work for Apache... need to test for IIS...
-    my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST} || '';
+    my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST} || 'localhost';
     $host =~ s/:\d+//;    # eliminate any port that may be present
     my $port = $ENV{SERVER_PORT};
 
@@ -1408,7 +1408,7 @@ sub is_valid_static_path {
         $path = $static_uri . 'mt.js';
     }
     elsif ( $static_uri =~ m#^/# ) {
-        my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST} || '';
+        my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST} || 'localhost';
         $host =~ s/:\d+//;    # eliminate any port that may be present
         my $port = $ENV{SERVER_PORT};
         $path = ( $port and $port == 443 ) ? 'https' : 'http';
@@ -1422,7 +1422,7 @@ sub is_valid_static_path {
 
     # If the hostname of $path is same with $app->cgipath,
     # do not verify SSL certificate.
-    my ($cgihost) = ( $app->cgipath =~ m/^(https?:\/\/[^\/]+)\// );
+    my ($cgihost) = ( $app->cgipath =~ m/^(https?:\/\/[^\/]+)(?:\/|$)/ );
     $cgihost =~ s/^http:/https:/;
     my $ssl_verify_peer = $path !~ m/^$cgihost/ ? 1 : 0;
     my %ssl_opts = (
