@@ -2679,7 +2679,7 @@ MT.App.CategorySelector = new Class( Component, {
            jQuery(el).hide();
            var closeEl = el.getAttribute( "mt:close-el" );
            if ( closeEl )
-               jQuery(closeEl).show();
+               jQuery('#' + closeEl).show();
         }
         DOM.addClassName( "category-field", "selector-active" );
         jQuery(this.element).show();
