@@ -296,24 +296,7 @@ sub rebuild {
                 # match the kind of entry we've loaded
                 next unless $archiver;
 
-                if ( $archiver->contenttype_based ) {
-                    $mt->_rebuild_content_archive_type(
-                        ContentData => $content_data,
-                        Blog        => $blog,
-                        ArchiveType => $at,
-                        $param{TemplateMap}
-                        ? ( TemplateMap => $param{TemplateMap} )
-                        : (),
-                        $param{TemplateID}
-                        ? ( TemplateID =>
-                                $param{TemplateID} )
-                        : (),
-                        NoStatic => $param{NoStatic},
-                        Force    => ( $param{Force} ? 1 : 0 ),
-                        Author   => $content_data->author,
-                    ) or return;
-                }
-                elsif ( $archiver->contenttype_category_based ) {
+                if ( $archiver->contenttype_category_based ) {
                     my @cats = MT::Category->load(
                         { object_id => $content_data->id } );
                     foreach my $cat (@cats) {
@@ -334,7 +317,7 @@ sub rebuild {
                         ) or return;
                     }
                 }
-                if ( $archiver->contenttype_author_based ) {
+                elsif ( $archiver->contenttype_author_based ) {
                     $mt->_rebuild_content_archive_type(
                         ContentData => $content_data,
                         Blog        => $blog,
@@ -349,6 +332,22 @@ sub rebuild {
                         NoStatic => $param{NoStatic},
                         Force    => ( $param{Force} ? 1 : 0 ),
                         Author   => $content_data->author,
+                    ) or return;
+                }
+                elsif ( $archiver->contenttype_based ) {
+                    $mt->_rebuild_content_archive_type(
+                        ContentData => $content_data,
+                        Blog        => $blog,
+                        ArchiveType => $at,
+                        $param{TemplateMap}
+                        ? ( TemplateMap => $param{TemplateMap} )
+                        : (),
+                        $param{TemplateID}
+                        ? ( TemplateID =>
+                                $param{TemplateID} )
+                        : (),
+                        NoStatic => $param{NoStatic},
+                        Force    => ( $param{Force} ? 1 : 0 ),
                     ) or return;
                 }
             }
@@ -427,7 +426,8 @@ sub rebuild_file {
         return 1 if $mod_time && $mod_time >= $mt->start_time;
     }
 
-    if ( $archiver->category_based ) {
+    if ( $archiver->category_based || $archiver->contenttype_category_based )
+    {
         $category = $args{Category};
         die "Category archive type requires Category parameter"
             unless $args{Category};
