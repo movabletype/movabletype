@@ -1042,7 +1042,7 @@ sub rebuild_pages {
                     require MT::CategoryList;
                     my @cat_list
                         = MT::CategoryList->load( { blog_id => $blog->id } );
-                    my $total
+                    $total
                         = MT::Category->count(
                         { category_list_id => [ map { $_->id } @cat_list ] }
                         );
