@@ -1038,12 +1038,14 @@ sub rebuild_pages {
                     $total = MT::ContentData->count($terms);
                 }
                 elsif ( $archiver->contenttype_category_based ) {
-                    require MT::ContentData;
-                    my $terms = {
-                        status  => MT::Entry::RELEASE(),
-                        blog_id => $blog_id,
-                    };
-                    $total = MT::ContentData->count($terms);
+                    require MT::Category;
+                    require MT::CategoryList;
+                    my @cat_list
+                        = MT::CategoryList->load( { blog_id => $blog->id } );
+                    my $total
+                        = MT::Category->count(
+                        { category_list_id => [ map { $_->id } @cat_list ] }
+                        );
                 }
                 elsif ( $archiver->contenttype_author_based ) {
                     require MT::ContentData;
