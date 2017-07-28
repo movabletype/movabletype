@@ -3296,16 +3296,18 @@ sub run {
                     if ( $trace ne '' ) {
                         my $debug_panel_header = $app->translate('Warnings and Log Messages');
                         my $panel = <<"__HTML__";
-                            <div class="panel debug-panel text-danger" style="margin: 0 -15px;">
-                              <div class="panel-heading bg-danger">
-                                <h3 class="panel-title">$debug_panel_header</h3>
+                          <div class="col-md-12">
+                            <div class="card debug-panel" style="margin: 0 -15px;">
+                              <div class="card-header text-white" style="background: #EF7678;">
+                                <h4 class="card-title">$debug_panel_header</h4>
                               </div>
-                              <div class="panel-body debug-panel-inner">
+                              <div class="card-block debug-panel-inner" style="background: #FFE0E0;">
                                 <ul class="list-unstyled">
                                   $trace
                                 </ul>
                               </div>
                             </div>
+                          </div>
 __HTML__
                         $body =~ s!(</body>)!$panel$1!i;
                     }
