@@ -102,15 +102,7 @@ sub suite {
             path   => '/v2/sites/1/entries/import',
             method => 'POST',
             code   => 500,
-            result => sub {
-                return +{
-                    error => {
-                        code => 500,
-                        message =>
-                            'An error occurred during the import process: . Please check your import file.',
-                    },
-                };
-            },
+            error  => qr/^An error occurred during the import process: /,
         },
         {    # import_as_me=0 and no password.
             path   => '/v2/sites/1/entries/import',
