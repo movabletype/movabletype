@@ -2410,7 +2410,7 @@ sub save_entry_prefs {
         or return $app->error( $app->translate("No permissions") );
     $app->validate_magic() or return;
     my $q          = $app->param;
-    my $prefs      = $app->_entry_prefs_from_params;
+    my $prefs      = $app->_entry_prefs_from_params('');
     my $disp       = $q->param('entry_prefs');
     my $sort_only  = $q->param('sort_only');
     my $prefs_type = $q->param('_type') . '_prefs';

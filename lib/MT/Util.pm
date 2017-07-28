@@ -89,7 +89,7 @@ sub leap_year {
 sub iso2ts {
     my ( $blog, $iso ) = @_;
     return undef
-        unless $iso
+        unless $iso and $iso
         =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/;
     my ( $y, $mo, $d, $h, $m, $s, $offset )
         = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
@@ -1914,7 +1914,7 @@ $Languages{en_US} = $Languages{en_us} = $Languages{"en-us"} = $Languages{en};
 $Languages{ja} = $Languages{jp};
 
 sub browser_language {
-    my @browser_langs = $ENV{HTTP_ACCEPT_LANGUAGE} =~ m{
+    my @browser_langs = ( $ENV{HTTP_ACCEPT_LANGUAGE} || '' ) =~ m{
     	(
     		[a-z]{2}      # en
     		(?:-[a-z]{2})?  # -us

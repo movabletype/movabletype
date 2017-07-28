@@ -4530,7 +4530,8 @@ sub _entry_prefs_from_params {
     if ( my $body_height = $q->param('text_height') ) {
         push @fields, 'body:' . $body_height;
     }
-    return join( ',', @fields ) . '|' . $q->param('bar_position');
+    return
+        join( ',', @fields ) . '|' . ( $q->param('bar_position') || 'top' );
 }
 
 # rebuild_set is a hash whose keys are entry IDs

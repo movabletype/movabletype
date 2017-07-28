@@ -572,6 +572,7 @@ CODE
 sub translate_templatized {
     my $c = shift;
     my ($text) = @_;
+    return "" unless defined $text;
 
     # Here, the text must be handled as binary ( non utf-8 ) data,
     # because regexp for utf-8 string is too heavy.

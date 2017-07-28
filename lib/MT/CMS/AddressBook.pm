@@ -101,7 +101,7 @@ sub send_notify {
             "No valid recipients were found for the entry notification.")
         );
     my $address;
-    if ($author) {
+    if ($author and $author->email) {
         $address
             = defined $author->nickname
             ? $author->nickname . ' <' . $author->email . '>'

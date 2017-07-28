@@ -101,7 +101,7 @@ sub start_element {
                     $name );
             }
             else {
-                if ( $self->{current_class} ne $class ) {
+                if ( !$self->{current_class} or $self->{current_class} ne $class ) {
                     if ( my $c = $self->{current_class} ) {
                         my $state   = $self->{state};
                         my $records = $self->{records};

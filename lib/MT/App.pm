@@ -2775,7 +2775,7 @@ sub upload_info {
         if ( $@ && $@ =~ /^Undefined subroutine/ ) {
             $fh = $q->param($param_name);
         }
-        $no_upload = !$fh;
+        return unless $fh;
         $info      = $q->uploadInfo($fh);
     }
 
@@ -3908,7 +3908,9 @@ sub query_string {
 }
 
 sub return_uri {
-    $_[0]->uri . '?' . $_[0]->return_args;
+    my ( $uri, $query ) = ( $_[0]->uri, $_[0]->return_args );
+    return $uri if !defined $query or $query eq "";
+    $uri . '?' . $query;
 }
 
 sub call_return {

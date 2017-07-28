@@ -463,7 +463,7 @@ PERMCHECK: {
                 $app->user ? $app->user->preferred_language : undef
                 );
         }
-        push @col, $log->ip;
+        push @col, $log->ip || '';
         my $blog;
         if ( $log->blog_id ) {
             $blog = $blogs{ $log->blog_id }
@@ -479,6 +479,7 @@ PERMCHECK: {
             push @col, '';
         }
         my $msg = $log->message;
+        $msg = '' unless defined $msg;
         $msg =~ s/"/\\"/gs;
         $msg =~ s/[\r\n]+/ /gs;
         push @col, '"' . $msg . '"';

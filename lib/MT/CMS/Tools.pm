@@ -1263,8 +1263,8 @@ sub backup {
         open $fh, ">$filename";
         my $url
             = $app->uri
-            . "?__mode=backup_download&name=$file-1.xml&magic_token="
-            . $app->current_magic;
+            . "?__mode=backup_download&name=$file-1.xml";
+        $url .= "&magic_token=" . $app->current_magic if defined($app->current_magic);
         $url .= "&blog_id=$blog_id" if defined($blog_id);
         push @files,
             {
@@ -1290,8 +1290,8 @@ sub backup {
             open $fh, ">$filename";
             my $url
                 = $app->uri
-                . "?__mode=backup_download&name=$file-$findex.xml&magic_token="
-                . $app->current_magic;
+                . "?__mode=backup_download&name=$file-$findex.xml";
+            $url .= "&magic_token=" . $app->current_magic if defined($app->current_magic);
             $url .= "&blog_id=$blog_id" if defined($blog_id);
             push @files,
                 {
@@ -1348,9 +1348,8 @@ sub backup {
                 my $url
                     = $app->uri
                     . "?__mode=backup_download&assetname="
-                    . MT::Util::encode_url($name)
-                    . "&magic_token="
-                    . $app->current_magic;
+                    . MT::Util::encode_url($name);
+                $url .= "&magic_token=" . $app->current_magic if defined($app->current_magic);
                 $url .= "&blog_id=$blog_id" if defined($blog_id);
                 push @files,
                     {
@@ -1362,8 +1361,8 @@ sub backup {
             close $fh;
             my $url
                 = $app->uri
-                . "?__mode=backup_download&name=$file.manifest&magic_token="
-                . $app->current_magic;
+                . "?__mode=backup_download&name=$file.manifest";
+            $url .= "&magic_token=" . $app->current_magic if defined($app->current_magic);
             $url .= "&blog_id=$blog_id" if defined($blog_id);
             push @files,
                 {

@@ -1934,13 +1934,15 @@ sub post_save {
 
     for my $blog_field ( keys %blog_fields ) {
 
-        if ( $obj->$blog_field() ne $original->$blog_field() ) {
-            my $old
-                = defined $original->$blog_field()
-                ? $original->$blog_field()
-                : "none";
-            my $new
-                = defined $obj->$blog_field() ? $obj->$blog_field() : "none";
+        my $old
+            = defined $original->$blog_field()
+            ? $original->$blog_field()
+            : "";
+        my $new
+            = defined $obj->$blog_field() ? $obj->$blog_field() : "";
+        if ( $new ne $old ) {
+            $old = "none" if $old eq "";
+            $new = "none" if $new eq "";
             push(
                 @meta_messages,
                 $app->translate(
@@ -2893,7 +2895,7 @@ sub prepare_dynamic_publishing {
 
     # IIS itself does not handle .htaccess,
     # but IISPassword (3rd party) does and dies with this.
-    if ( $ENV{SERVER_SOFTWARE} =~ /Microsoft-IIS/
+    if ( ( $ENV{SERVER_SOFTWARE} || '' ) =~ /Microsoft-IIS/
         && MT->config->EnableAutoRewriteOnIIS )
     {
 
@@ -3543,7 +3545,7 @@ sub cms_pre_load_filtered_list {
     delete $terms->{blog_id};
     $terms->{parent_id} = $load_options->{blog_id}
         if $app->blog;
-    $terms->{class} = 'blog' unless $terms->{class} eq '*';
+    $terms->{class} = 'blog' unless $terms->{class} and $terms->{class} eq '*';
 
     my $user = $load_options->{user} || $app->user;
     return   if $user->is_superuser;

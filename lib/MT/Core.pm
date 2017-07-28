@@ -1128,9 +1128,10 @@ BEGIN {
                                     MT->translate('*Website/Blog deleted*');
                                 next;
                             }
-                            if ((   my $site
-                                    = $blog_site_map{ $blog->parent_id }
-                                )
+                            my $site;
+                            if ($blog->parent_id
+                                && ( $site
+                                    = $blog_site_map{ $blog->parent_id } )
                                 && $prop->site_name
                                 )
                             {

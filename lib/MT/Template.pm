@@ -368,7 +368,7 @@ sub build {
         return $tmpl->error(
             MT->translate(
                 "Publish error in template '[_1]': [_2]",
-                $tmpl->name || $tmpl->{__file},
+                $tmpl->name || $tmpl->{__file} || "?",
                 $error
             )
         );
@@ -437,7 +437,7 @@ sub build {
         return $tmpl->error(
             MT->translate(
                 "Publish error in template '[_1]': [_2]",
-                $tmpl->name || $tmpl->{__file},
+                $tmpl->name || $tmpl->{__file} || "?",
                 $build->errstr
             )
         );
@@ -942,7 +942,7 @@ sub post_remove_widget {
     );
     my @resave;
     while ( my $ws = $iter->() ) {
-        my @mods = split( ',', $ws->modulesets );
+        my @mods = split( ',', $ws->modulesets || '' );
         if ( grep { $_ == $tmpl->id } @mods ) {
             push @resave, $ws;
         }

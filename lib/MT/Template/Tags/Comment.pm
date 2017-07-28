@@ -1647,7 +1647,7 @@ sub _hdlr_comment_reply_link {
         MT::Util::encode_html( MT::Util::encode_js($name) ), 1 );
     my $onclick
         = sprintf( $args->{onclick} || "mtReplyCommentOnClick(%d, '%s')",
-        $comment->id, $name );
+        $comment->id || 0, $name );
 
     return
         sprintf(

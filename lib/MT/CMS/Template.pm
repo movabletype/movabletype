@@ -1761,13 +1761,15 @@ sub pre_save {
     my ( $app, $obj ) = @_;
 
     ## Strip linefeed characters.
-    ( my $text = $obj->column('text') ) =~ tr/\r//d;
+    if ( my $text = $obj->column('text') ) {
+        $text =~ tr/\r//d;
 
-    if ( $text =~ m/<(MT|_)_trans/i ) {
-        $text = $app->translate_templatized($text);
+        if ( $text =~ m/<(MT|_)_trans/i ) {
+            $text = $app->translate_templatized($text);
+        }
+
+        $obj->text($text);
     }
-
-    $obj->text($text);
 
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
 

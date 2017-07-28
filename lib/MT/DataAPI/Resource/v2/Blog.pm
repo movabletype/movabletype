@@ -154,6 +154,9 @@ sub fields {
                     $subdomain .= '.' if $subdomain !~ /\.$/;
                     $subdomain =~ s/\.{2,}/\./g;
                 }
+                else {
+                    $subdomain = '';
+                }
                 my $path = $hash->{url};
                 return "$subdomain/::/$path";
             },

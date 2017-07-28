@@ -1499,7 +1499,7 @@ It\'s a hard rain\'s a-gonna fall',
         MT::Comment->count( { entry_id => 24, visible => 1 } ) || 0 );
     $page->save() or die "Couldn't save page record 24: " . $page->errstr;
 
-    MT->instance->rebuild( BlogId => 1, );
+    MT->instance->rebuild( BlogID => 1, );
 
     ### Make ObjectAsset mappings
     require MT::ObjectAsset;
