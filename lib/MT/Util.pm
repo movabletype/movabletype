@@ -2591,7 +2591,7 @@ sub make_string_csv {
 sub convert_word_chars {
     my ( $s, $smart_replace ) = @_;
 
-    return '' unless $s;
+    return '' if !defined($s) || ( $s eq '' );
     return $s if $smart_replace == 2;
 
     if ($smart_replace) {

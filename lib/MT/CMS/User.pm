@@ -69,6 +69,8 @@ sub edit {
         $param->{can_modify_password}
             = ( $param->{editing_other_profile} || $param->{is_me} )
             && MT::Auth->password_exists;
+        $param->{can_modify_api_password}
+            = ( $param->{editing_other_profile} || $param->{is_me} );
         $param->{can_recover_password} = MT::Auth->can_recover_password;
         $param->{languages}
             = MT::I18N::languages_list( $app, $obj->preferred_language )
@@ -93,8 +95,9 @@ sub edit {
         $param->{create_personal_weblog}
             = $app->config->NewUserAutoProvisioning ? 1 : 0
             unless exists $param->{create_personal_weblog};
-        $param->{can_modify_password}  = MT::Auth->password_exists;
-        $param->{can_recover_password} = MT::Auth->can_recover_password;
+        $param->{can_modify_password}     = MT::Auth->password_exists;
+        $param->{can_modify_api_password} = 0;
+        $param->{can_recover_password}    = MT::Auth->can_recover_password;
     }
 
     # Make permission list
@@ -792,7 +795,9 @@ sub save_cfg_system_users {
         1
     );
 
-    if ( 'MT' eq uc $app->config('AuthenticationModule') ) {
+    if ( 'MT' eq uc $app->config('AuthenticationModule')
+        && !$app->config->is_readonly('UserPasswordMinLength') )
+    {
         my $pass_min_len = $app->param('minimum_length');
         if ( ( $pass_min_len =~ m/\D/ ) or ( $pass_min_len < 1 ) ) {
             return $app->errtrans(
@@ -858,9 +863,8 @@ sub remove_user_assoc {
 
         MT::Association->remove( { blog_id => $blog_id, author_id => $id } );
 
-        # these too, just in case there are no real associations
-        # (ie, commenters)
-        $perm->remove if $perm;
+        # Rebuild permissions because the user may belong to several groups
+        $perm->rebuild if $perm;
     }
 
     $app->add_return_arg( saved => 1 );
@@ -1630,6 +1634,15 @@ sub save_filter {
             )
             );
     }
+
+    # Password strength check
+    # Why the name of password field is different in each forms...
+    if ( scalar $app->param('pass') || scalar $app->param('password') ) {
+        my $msg = $app->verify_password_strength( $accessor->('name'),
+            scalar $app->param('pass') );
+        return $eh->error($msg) if $msg;
+    }
+
     my $email = $accessor->('email');
     return $eh->error(
         MT->translate("Email Address is required for password reset.") )
@@ -1653,6 +1666,7 @@ sub save_filter {
         return $eh->error( MT->translate("URL is invalid.") )
             if !is_url($url) || ( $url =~ m/[<>]/ );
     }
+
     1;
 }
 
