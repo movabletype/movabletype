@@ -352,6 +352,11 @@ sub create_default_roles {
             role_mask   => 2**0,
             perms       => ['comment'],
         },
+        {   name        => MT->translate('ContentType'),
+            description => MT->translate('Can manage content types, edit their own content types.'),
+            role_mask   => 2**0,
+            perms       => ['manage_content_type,edit_content_types'],
+        },
     );
 
     require MT::Role;

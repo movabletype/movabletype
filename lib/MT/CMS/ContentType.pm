@@ -52,34 +52,14 @@ sub tmpl_param_list_common {
 sub tmpl_param_edit_role {
     my ( $cb, $app, $param, $tmpl ) = @_;
 
+    my @content_types;
+    my $iter = MT::ContentType->load_iter;
+    while ( my $ct = $iter->() ) {
+        push @content_types, $ct;
+    }
+    $param->{content_types} = \@content_types;
     $param->{content_type_perm_groups} = MT::ContentType->permission_groups;
 
-    # Insert content type permission template.
-    my $privileges_settinggroup_node
-        = $tmpl->getElementById('role-privileges');
-    my $content_type_permission_node = $tmpl->createElement( 'loop',
-        { name => 'content_type_perm_groups' } );
-    $content_type_permission_node->innerHTML(
-        _content_type_permission_tmpl() );
-    $privileges_settinggroup_node->appendChild($content_type_permission_node);
-}
-
-sub _content_type_permission_tmpl {
-    return <<'__TMPL__';
-    <mt:setvarblock name="ct_perm_group"><mt:var name="__VALUE__"></mt:setvarblock>
-    <mtapp:setting
-      id="<mt:var name="ct_perm_group">"
-      label="<mt:var name="ct_perm_group">"
-    >
-      <ul class="fixed-width multiple-selection">
-      <mt:loop name="loaded_permissions">
-      <mt:if name="group" eq="$ct_perm_group">
-        <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
-      </mt:if>
-      </mt:loop>
-      </ul>
-    </mtapp:setting>
-__TMPL__
 }
 
 sub cfg_content_type_description {
@@ -1783,6 +1763,32 @@ sub _make_content_data_listing_screens {
     }
 
     return $props;
+}
+
+sub select_list_content_fields {
+    my ($app) = @_;
+    my $q     = $app->param;
+    my $param = {};
+
+    my $blog_id = scalar $q->param('blog_id')
+        or return $app->errtrans("Invalid request.");
+    my $content_type_id = scalar $q->param('content_type_id')
+        or return $app->errtrans("Invalid request.");
+
+    my $content_type = MT::ContentType->load($content_type_id);
+    my $field_data   = $content_type->fields;
+
+    my @array = map {
+        my $id = $_->{id};
+        $_->{id} = $id;
+        $_->{name} = $_->{type};
+        $_->{locked} => 1 if($locked{$id});
+        $_;
+    } @{$field_data};
+    $param->{content_fields} = \@array;
+
+    $app->build_page( $app->load_tmpl('dialog/select_content_fields.tmpl'),
+        $param );
 }
 
 1;

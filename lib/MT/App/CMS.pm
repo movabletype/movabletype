@@ -382,6 +382,8 @@ sub core_methods {
 
         'view_category_list' => "${pkg}CategoryList::view",
 
+        'select_list_content_fields' =>
+            "${pkg}ContentType::select_list_content_fields",
     };
 }
 
