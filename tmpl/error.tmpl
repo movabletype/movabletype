@@ -1,7 +1,7 @@
 <mt:setvar name="error_page" value="1">
 <mt:setvarblock name="page_title"><__trans phrase="Movable Type"></mt:setvarblock>
-<mt:include name="include/chromeless_header.tmpl">
 
+<mt:setvarblock name="page_content">
 <mt:if name="error_config_file">
   <h2><__trans phrase="Missing Configuration File"></h2>
   <p><__trans phrase="_ERROR_CONFIG_FILE"></p>
@@ -30,5 +30,7 @@
     </mt:if>
   </mt:if>
 </mt:if>
+</mt:setvarblock>
 
-<mt:include name="include/chromeless_footer.tmpl">
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">
