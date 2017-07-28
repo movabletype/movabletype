@@ -1,6 +1,6 @@
 .ui-datepicker {
     display: none;
-    width: 200px;
+    width: 220px;
     border: 1px solid #c0c6c9;
     background-color: #fff;
     padding: 2px;
@@ -8,6 +8,7 @@
 .ui-datepicker .ui-datepicker-header {
     position: relative;
     background-color: #0076BF;
+    line-height: 0.7;
 }
 .ui-datepicker .ui-datepicker-title {
     line-height: 22px;
@@ -25,6 +26,7 @@
     margin-bottom: 2px;
     color: white;
     text-align: center;
+    cursor: pointer;
 }
 .ui-datepicker .ui-datepicker-prev {
     left: 2px;
@@ -80,4 +82,3 @@
 .ui-datepicker .ui-datepicker-next {
     border-radius: 2px;
 }
-
