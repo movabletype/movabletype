@@ -170,11 +170,12 @@ sub can_save {
         return 0
             if $tbitem->author_id != $app->user->id;
 
+        my $status = $app->param('status') || '';
         my $status_is_changed
             = $obj ? $obj->get_status_text ne $original->get_status_text
-            : $p->is_junk      ? ( 'junk' ne $app->param('status') )
-            : $p->is_moderated ? ( 'moderate' ne $app->param('status') )
-            : $p->is_published ? ( 'publish' ne $app->param('status') )
+            : $p->is_junk      ? ( 'junk' ne $status )
+            : $p->is_moderated ? ( 'moderate' ne $status )
+            : $p->is_published ? ( 'publish' ne $status )
             :                    1;
 
         return $status_is_changed
@@ -247,7 +248,7 @@ PERMCHECK: {
         return 1;
     }
 
-    my $status = $app->param('status');
+    my $status = $app->param('status') || '';
     if ( $status eq 'publish' ) {
         $obj->approve;
         if ( $original->junk_status != $obj->junk_status ) {

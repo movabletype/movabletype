@@ -483,7 +483,7 @@ sub start_upload {
 sub js_upload_file {
     my $app = shift;
 
-    my $is_userpic = $app->param('type') eq 'userpic' ? 1 : 0;
+    my $is_userpic = ( $app->param('type') || '' ) eq 'userpic' ? 1 : 0;
     my $user_id = $app->param('user_id');
     if ($is_userpic) {
         return $app->error(
@@ -1130,7 +1130,7 @@ sub asset_insert_text {
     require MT::Asset;
     my $asset = MT::Asset->load($id)
         or return $app->errtrans( "Cannot load file #[_1].", $id );
-    $param->{enclose} = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
+    $param->{enclose} = ( $app->param('edit_field') || '' ) =~ /^customfield/ ? 1 : 0;
     return $asset->as_html($param);
 }
 
@@ -1558,7 +1558,7 @@ sub _upload_file_compat {
     );
     if ( $blog_id = $q->param('blog_id') ) {
         unless ($has_overwrite) {
-            if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
+            if ( my $ext_new = MT::Image->get_image_type($fh) ) {
                 my $ext_old
                     = (
                     File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ )
@@ -1595,7 +1595,7 @@ sub _upload_file_compat {
                 'Movable Type was unable to write to the "Upload Destination". Please make sure that the webserver can write to this folder.'
             )
         ) unless -d $root_path;
-        $relative_path = $q->param('extra_path');
+        $relative_path = $q->param('extra_path') || '';
         $middle_path = $q->param('middle_path') || '';
         my $relative_path_save = $relative_path;
         if ( $middle_path ne '' ) {
@@ -2095,7 +2095,7 @@ sub _upload_file {
         File::Basename::basename($basename) );
 
     # Change to real file extension
-    if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
+    if ( my $ext_new = MT::Image->get_image_type($fh) ) {
         my $ext_old
             = ( File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
             [2];

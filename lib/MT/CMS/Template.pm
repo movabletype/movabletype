@@ -1857,7 +1857,7 @@ sub post_save {
 
     my $dynamic = 0;
     my $q       = $app->param;
-    my $type    = $q->param('type');
+    my $type    = $q->param('type') || '';
 
     # FIXME: enumeration of types
     if (   $type eq 'custom'
@@ -2150,7 +2150,7 @@ sub refresh_all_templates {
 
     my @id;
     if ( $app->param('blog_id') ) {
-        if ( 'refresh_blog_templates' eq $app->param('plugin_action_selector')
+        if ( 'refresh_blog_templates' eq ( $app->param('plugin_action_selector') || '' )
             )
         {
             ## called from website wide blog listing screen.

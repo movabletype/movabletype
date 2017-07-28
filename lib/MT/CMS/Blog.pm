@@ -752,7 +752,7 @@ sub rebuild_pages {
         $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $order = $q->param('type');
     my @order = split /,/, $order;
-    my $next  = $q->param('next');
+    my $next  = $q->param('next') || 0;
     my $done  = 0;
     my $type  = $order[$next];
 
@@ -1699,7 +1699,7 @@ sub pre_save {
             $param{words_in_excerpt} = 40
                 unless defined $param{words_in_excerpt}
                 && $param{words_in_excerpt} ne '';
-            if ( $app->param('days_or_posts') eq 'days' ) {
+            if ( ( $app->param('days_or_posts') || '' ) eq 'days' ) {
                 $obj->days_on_index( $app->param('list_on_index') );
                 $obj->entries_on_index(0);
             }

@@ -172,7 +172,7 @@ sub do_import {
     require MT::Comment;
     require MT::TBPing;
 
-    my $import_type = $q->param('import_type');
+    my $import_type = $q->param('import_type') || '';
     require MT::Import;
     my $imp      = MT::Import->new;
     my $importer = $imp->importer($import_type);

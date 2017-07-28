@@ -1695,7 +1695,7 @@ sub comment_listing {
         $limit = 100;
     }
     my $direction = 'ascend';
-    if ( $app->param('direction') eq 'descend' ) {
+    if ( $app->param('direction') and $app->param('direction') eq 'descend' ) {
         $direction = 'descend';
     }
     my $method = $app->param('method');

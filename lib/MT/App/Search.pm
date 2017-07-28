@@ -710,7 +710,7 @@ sub first_blog_id {
     else {
 
         # if IncludeBlogs is empty or all, get the first blog id available
-        if (   $q->param('IncludeBlogs') eq ''
+        if (   !$q->param('IncludeBlogs')
             || $q->param('IncludeBlogs') eq 'all' )
         {
             my @blogs = $app->model('blog')

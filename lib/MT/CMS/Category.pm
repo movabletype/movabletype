@@ -255,7 +255,7 @@ sub bulk_update {
             sort { $a->id <=> $b->id } @old_objects
     );
     require Digest::MD5;
-    if ( $app->param('checksum') ne Digest::MD5::md5_hex($text) ) {
+    if ( ( $app->param('checksum') || '' ) ne Digest::MD5::md5_hex($text) ) {
         return $app->json_error(
             $app->translate(
                 'Failed to update [_1]: Some of [_2] were changed after you opened this page.',
