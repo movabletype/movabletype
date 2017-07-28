@@ -117,13 +117,13 @@ sub _hdlr_contents {
         my $content_type = MT::ContentType->load($ct_id);
         local $ctx->{__stash}{content_type} = $content_type;
 
-        my $out = $builder->build(
+        defined(my $out = $builder->build(
             $ctx, $tok,
             {   %{$cond},
                 ContentsHeader => !$i,
                 ContentsFooter => !defined $contents[ $i + 1 ],
             }
-        );
+        )) or return $ctx->error( $builder->errstr );
         $res .= $out;
         $i++;
     }
@@ -371,7 +371,7 @@ sub _hdlr_content_unpublished_date {
     my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    $args->{ts} = $cd->unpublished_on;
+    $args->{ts} = $cd->unpublished_on or return '';
     return $ctx->build_date($args);
 }
 
