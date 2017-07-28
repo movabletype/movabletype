@@ -274,7 +274,7 @@ sub _hdlr_assets {
         }
 
         if ($need_join) {
-            my $scored_by = $args->{scored_by} || undef;
+            my $scored_by = $args->{scored_by};
             if ($scored_by) {
                 require MT::Author;
                 my $author = MT::Author->load( { name => $scored_by } )
@@ -408,9 +408,9 @@ sub _hdlr_assets {
     else {
         my $blog = $ctx->stash('blog');
         my $so
-            = lc( $args->{sort_order} )
+            = lc( $args->{sort_order}
             || ( $blog ? $blog->sort_order_posts : undef )
-            || '';
+            || '' );
         my $col = lc( $args->{sort_by} || 'created_on' );
 
         unless ( $col eq 'none' ) {

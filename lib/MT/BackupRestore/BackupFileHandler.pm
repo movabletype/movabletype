@@ -101,7 +101,7 @@ sub start_element {
                     $name );
             }
             else {
-                if ( $self->{current_class} ne $class ) {
+                if ( !$self->{current_class} or $self->{current_class} ne $class ) {
                     if ( my $c = $self->{current_class} ) {
                         my $state   = $self->{state};
                         my $records = $self->{records};
@@ -133,17 +133,15 @@ sub start_element {
                         = $class =~ /^MT::Asset/
                         ? 'file_path'
                         : 'upload_path';
-                    my ($separator)
-                        = ( $column_data{$key} =~ m!^%\w(/|\\)! );
-                    if ( $separator eq '/' && $is_mswin32 ) {
-
-                        # *nix => Windows
-                        $column_data{$key} =~ s!/!\\!g;
-                    }
-                    elsif ( $separator eq '\\' && !$is_mswin32 ) {
-
-                        # Windows => *nix
-                        $column_data{$key} =~ s!\\!/!g;
+                    if ( $column_data{$key} ) {
+                        if ( $is_mswin32 and $column_data{$key} =~ m!^%\w/! ) {
+                            # *nix => Windows
+                            $column_data{$key} =~ s!/!\\!g;
+                        }
+                        elsif ( !$is_mswin32 and $column_data{$key} =~ m!^%\w\\! ) {
+                            # Windows => *nix
+                            $column_data{$key} =~ s!\\!/!g;
+                        }
                     }
                 }
 

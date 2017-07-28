@@ -3,18 +3,18 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="Your changes have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="approved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="approved"
      class="success">
     <__trans phrase="The TrackBack has been approved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="is_junk">
   <mt:if name="junk_log_loop">
@@ -31,9 +31,9 @@
         <table class="table table-striped legacy spam-log-listing-table listing-table" style="background-color: #ffffff;">
           <thead>
             <tr>
-              <th id="jl-test" class="col head"><span class="col-label"><__trans phrase="Test"></span></th>
-              <th id="jl-score" class="col head"><span class="col-label"><__trans phrase="Score"></span></th>
-              <th id="jl-results" class="col head"><span class="col-label"><__trans phrase="Results"></span></th>
+              <th id="jl-test" class="head"><span class="col-label"><__trans phrase="Test"></span></th>
+              <th id="jl-score" class="head"><span class="col-label"><__trans phrase="Score"></span></th>
+              <th id="jl-results" class="head"><span class="col-label"><__trans phrase="Results"></span></th>
             </tr>
           </thead>
           <tbody>
@@ -50,12 +50,12 @@
     </div>
   </div>
   <mt:else>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="junk-message"
      class="alert"
      can_close="0">
     <__trans phrase="This trackback was classified as spam.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 </mt:if>
 </mt:setvarblock>
@@ -94,9 +94,29 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="object_nav">
-<ul class="list-inline pull-right object-nav">
-  <li id="previous-link"><mt:if name="previous_ping_id"><a href="<mt:var name="script_url">?__mode=view&amp;_type=ping&amp;id=<mt:var name="previous_ping_id">&amp;blog_id=<mt:var name="blog_id">">&lsaquo; <__trans phrase="Prev"></a><mt:else><span>&lsaquo; <__trans phrase="Prev"></span></mt:if></li>
-  <li id="next-link"><mt:if name="next_ping_id"><a href="<mt:var name="script_url">?__mode=view&amp;_type=ping&amp;id=<mt:var name="next_ping_id">&amp;blog_id=<mt:var name="blog_id">">><__trans phrase="Next"> &rsaquo;</a><mt:else><span><__trans phrase="Next"> &rsaquo;</span></mt:if></li>
+<ul class="list-inline float-right object-nav">
+  <li id="previous-link" class="list-inline-item">
+    <mt:if name="previous_ping_id">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=ping&amp;id=<mt:var name="previous_ping_id">&amp;blog_id=<mt:var name="blog_id">">
+        &lsaquo; <__trans phrase="Prev">
+      </a>
+    <mt:else>
+      <span>
+        &lsaquo; <__trans phrase="Prev">
+      </span>
+    </mt:if>
+  </li>
+  <li id="next-link" class="list-inline-item">
+    <mt:if name="next_ping_id">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=ping&amp;id=<mt:var name="next_ping_id">&amp;blog_id=<mt:var name="blog_id">">>
+        <__trans phrase="Next"> &rsaquo;
+      </a>
+    <mt:else>
+      <span>
+        <__trans phrase="Next"> &rsaquo;
+      </span>
+    </mt:if>
+  </li>
 </ul>
 </mt:setvarblock>
 

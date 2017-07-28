@@ -139,7 +139,7 @@ sub edit {
             }
         );
         if ($user) {
-            $param->{created_by} = $user->name;
+            $param->{created_by} = $user->nickname;
         }
         else {
             $param->{created_by} = $app->translate('(user deleted)');
@@ -151,7 +151,7 @@ sub edit {
                 }
             );
             if ($user) {
-                $param->{modified_by} = $user->name;
+                $param->{modified_by} = $user->nickname;
             }
             else {
                 $param->{modified_by} = $app->translate('(user deleted)');
@@ -332,13 +332,14 @@ sub insert {
 
     my $text = $app->param('no_insert') ? "" : _process_post_upload($app);
     return unless defined $text;
-    my $file_ext_changes = $app->param('changed_file_ext');
-    my ( $ext_from, $ext_to ) = split( ",", $file_ext_changes )
-        if $file_ext_changes;
-    my $extension_message
-        = $app->translate( "Extension changed from [_1] to [_2]",
-        $ext_from, $ext_to )
-        if ( $ext_from && $ext_to );
+    my $extension_message;
+    if ( my $file_ext_changes = $app->param('changed_file_ext') ) {
+        my ( $ext_from, $ext_to ) = split( ",", $file_ext_changes );
+        $extension_message
+            = $app->translate( "Extension changed from [_1] to [_2]",
+            $ext_from, $ext_to )
+            if ( $ext_from && $ext_to );
+    }
     my $tmpl;
 
     my $id = $app->param('id') or return $app->errtrans("Invalid request.");
@@ -482,7 +483,7 @@ sub start_upload {
 sub js_upload_file {
     my $app = shift;
 
-    my $is_userpic = $app->param('type') eq 'userpic' ? 1 : 0;
+    my $is_userpic = ( $app->param('type') || '' ) eq 'userpic' ? 1 : 0;
     my $user_id = $app->param('user_id');
     if ($is_userpic) {
         return $app->error(
@@ -577,13 +578,14 @@ sub js_upload_file {
     }
 
     # Check extension auto-change
-    my $file_ext_changes = $app->param('changed_file_ext');
-    my ( $ext_from, $ext_to ) = split( ",", $file_ext_changes )
-        if $file_ext_changes;
-    my $extension_message
-        = $app->translate( "Extension changed from [_1] to [_2]",
-        $ext_from, $ext_to )
-        if ( $ext_from && $ext_to );
+    my $extension_message;
+    if ( my $file_ext_changes = $app->param('changed_file_ext') ) {
+        my ( $ext_from, $ext_to ) = split( ",", $file_ext_changes );
+        $extension_message
+            = $app->translate( "Extension changed from [_1] to [_2]",
+            $ext_from, $ext_to )
+            if ( $ext_from && $ext_to );
+    }
 
     my $metadata = {
         id        => $asset->id,
@@ -675,9 +677,9 @@ sub complete_insert {
         $param->{height} = $asset->image_height;
     }
     my ( $extension_message, $ext_from, $ext_to );
-    if ( $app->param('changed_file_ext') ) {
+    if ( my $file_ext_changes = $app->param('changed_file_ext') ) {
         ( $ext_from, $ext_to )
-            = split( ",", $app->param('changed_file_ext') );
+            = split( ",", $file_ext_changes );
         $extension_message
             = $app->translate( "Extension changed from [_1] to [_2]",
             $ext_from, $ext_to )
@@ -1128,7 +1130,7 @@ sub asset_insert_text {
     require MT::Asset;
     my $asset = MT::Asset->load($id)
         or return $app->errtrans( "Cannot load file #[_1].", $id );
-    $param->{enclose} = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
+    $param->{enclose} = ( $app->param('edit_field') || '' ) =~ /^customfield/ ? 1 : 0;
     return $asset->as_html($param);
 }
 
@@ -1556,7 +1558,7 @@ sub _upload_file_compat {
     );
     if ( $blog_id = $q->param('blog_id') ) {
         unless ($has_overwrite) {
-            if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
+            if ( my $ext_new = MT::Image->get_image_type($fh) ) {
                 my $ext_old
                     = (
                     File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ )
@@ -1593,7 +1595,7 @@ sub _upload_file_compat {
                 'Movable Type was unable to write to the "Upload Destination". Please make sure that the webserver can write to this folder.'
             )
         ) unless -d $root_path;
-        $relative_path = $q->param('extra_path');
+        $relative_path = $q->param('extra_path') || '';
         $middle_path = $q->param('middle_path') || '';
         my $relative_path_save = $relative_path;
         if ( $middle_path ne '' ) {
@@ -1741,12 +1743,15 @@ sub _upload_file_compat {
                     );
                 close $tmp_fh;
                 my ( $vol, $path, $tmp ) = File::Spec->splitpath($tmp_file);
-                my ( $ext_from, $ext_to )
-                    = split( ",", $app->param('changed_file_ext') );
-                my $extension_message
-                    = $app->translate( "Extension changed from [_1] to [_2]",
-                    $ext_from, $ext_to )
-                    if ( $ext_from && $ext_to );
+                my $extension_message;
+                if ( my $file_ext_changes = $app->param('changed_file_ext') ) {
+                    my ( $ext_from, $ext_to )
+                        = split( ",", $file_ext_changes );
+                    $extension_message
+                        = $app->translate( "Extension changed from [_1] to [_2]",
+                        $ext_from, $ext_to )
+                        if ( $ext_from && $ext_to );
+                }
                 return $exists_handler->(
                     $app,
                     temp              => $tmp,
@@ -1758,7 +1763,7 @@ sub _upload_file_compat {
                     middle_path       => $middle_path,
                     fname             => $basename,
                     no_insert         => $q->param('no_insert') || "",
-                    extension_message => $extension_message,
+                    ( $extension_message ? ( extension_message => $extension_message ) : () ),
                 );
             }
         }
@@ -2090,7 +2095,7 @@ sub _upload_file {
         File::Basename::basename($basename) );
 
     # Change to real file extension
-    if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
+    if ( my $ext_new = MT::Image->get_image_type($fh) ) {
         my $ext_old
             = ( File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
             [2];
@@ -2651,7 +2656,7 @@ sub cms_pre_load_filtered_list {
     my $user = $app->user;
     return if $user->is_superuser;
 
-    my $load_blog_ids = $load_options->{blog_ids} || undef;
+    my $load_blog_ids = $load_options->{blog_ids};
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(

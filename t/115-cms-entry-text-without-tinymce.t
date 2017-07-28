@@ -113,7 +113,7 @@ for my $type (qw(entry page)) {
             my $p = MT::Util::to_json(
                 {   param => $data->{param},
                     ( $data->{config} ? ( config => $data->{config} ) : () )
-                }
+                }, { canonical => 1 },
             );
             subtest $p => sub {
                 local $app->config->{__var}{ lc('GlobalSanitizeSpec') }

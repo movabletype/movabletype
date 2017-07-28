@@ -1054,12 +1054,13 @@ sub _rebuild_entry_archive_type {
             ? $param{File}
             : $mt->archive_file_for( $entry, $blog, $at, $param{Category},
             $map, $ts, $param{Author} );
-        if ( $file eq '' ) {
+        if ( !defined($file) ) {
+            $mt->error( MT->translate( $blog->errstr() ) );
+            return 1;
+        }
+        elsif ( $file eq '' ) {
 
             # np
-        }
-        elsif ( !defined($file) ) {
-            return $mt->error( MT->translate( $blog->errstr() ) );
         }
         else {
             push @map_build, $map unless $done->{$file};
@@ -2304,13 +2305,13 @@ sub _delete_archive_file {
 
         return join ':',
             (
-            $entry     ? $entry->id  : '0',
-            $blog      ? $blog->id   : '0',
-            $at        ? $at         : 'None',
-            $cat       ? $cat->id    : '0',
-            $map       ? $map->id    : '0',
-            $timestamp ? $timestamp  : '0',
-            $author    ? $author->id : '0'
+            $entry && $entry->id    ? $entry->id  : '0',
+            $blog && $blog->id      ? $blog->id   : '0',
+            $at                     ? $at         : 'None',
+            $cat && $cat->id        ? $cat->id    : '0',
+            $map && $map->id        ? $map->id    : '0',
+            $timestamp              ? $timestamp  : '0',
+            $author && $author->id  ? $author->id : '0'
             );
     }
 

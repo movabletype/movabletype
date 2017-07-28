@@ -75,6 +75,10 @@ sub core_resources {
             {   version          => 2,
                 fields           => "${pkg}v2::User::fields",
                 updatable_fields => "${pkg}v2::User::updatable_fields",
+            },
+            {   version          => 3,
+                fields           => "${pkg}v3::User::fields",
+                updatable_fields => "${pkg}v3::User::updatable_fields",
             }
         ],
         'author' => 'user',

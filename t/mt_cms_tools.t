@@ -25,7 +25,7 @@ plan tests => 8;
     require MT::App::CMS;
     my $app = MT::App::CMS->instance;
     note( 'Object types are: '
-            . join( q{, }, keys %{ MT->registry('object_types') } ) );
+            . join( q{, }, sort keys %{ MT->registry('object_types') } ) );
 
     require MT::CMS::Tools;
     my $ret = MT::CMS::Tools::upgrade($app);

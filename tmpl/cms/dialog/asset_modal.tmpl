@@ -18,16 +18,16 @@
 <div class="row">
   <div id="content-body-left" class="col-md-2 col-sm-2">
     <div>
-      <ul class="nav nav-pills nav-stacked">
+      <ul class="nav nav-pills flex-column">
   <mt:if name="can_upload">
-        <li class="active">
-          <a href="#upload-asset-panel" class="left-menu-item" data-panel-id="#upload-asset-panel" data-toggle="tab">
+        <li class="nav-item">
+          <a href="#upload-asset-panel" class="nav-link active left-menu-item" data-panel-id="#upload-asset-panel" data-toggle="tab">
             <__trans phrase="Upload">
           </a>
         </li>
   </mtif>
-        <li<mt:unless name="can_upload"> class="active"</mt:unless>>
-          <a href="#list-asset-panel" class="left-menu-item" data-panel-id="#list-asset-panel" data-toggle="tab">
+        <li class="nav-item">
+          <a href="#list-asset-panel" class="nav-link left-menu-item<mt:unless name="can_upload"> active</mt:unless>" data-panel-id="#list-asset-panel" data-toggle="tab">
             <__trans phrase="Library">
           </a>
         </li>

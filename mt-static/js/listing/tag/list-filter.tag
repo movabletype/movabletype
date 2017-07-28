@@ -1,7 +1,7 @@
 <list-filter>
-  <div data-is="list-filter-header" class="panel-heading"></div>
-  <div id="list-filter-collapse" class="panel-collapse collapse">
-    <div data-is="list-filter-detail" id="filter-detail" class="panel-body">
+  <div data-is="list-filter-header" class="card-header"></div>
+  <div id="list-filter-collapse" class="collapse">
+    <div data-is="list-filter-detail" id="filter-detail" class="card-block">
     </div>
   </div>
 
@@ -150,8 +150,8 @@
           .append(
             jQuery('<p />')
               .attr('class', 'msg-text alert alert-danger alert-dismissable')
+              .append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
               .append(content)
-              .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon close" data-dismiss="alert">&times;</span>')
           )
         )
       }
@@ -162,8 +162,8 @@
           .append(
             jQuery('<p />')
               .attr('class', 'msg-text alert alert-danger alert-dismissable')
+              .append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
               .append(content)
-              .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon close" data-dismissable="alert">&times;</span>')
           )
         )
       }
@@ -199,10 +199,10 @@
   <div class="row">
     <div class="col-md-11">
       <ul class="list-inline">
-        <li>
+        <li class="list-inline-item">
           { trans('Filter:') }
         </li>
-        <li>
+        <li class="list-inline-item">
           <a href="#"
             id="opener"
             data-toggle="modal"
@@ -212,7 +212,7 @@
           </a>
           <virtual data-is="list-filter-select-modal"></virtual>
         </li>
-        <li>
+        <li class="list-inline-item">
           <a href="#"
             id="allpass-filter"
             if={ listFilterTop.isAllpassFilter() == false }
@@ -225,12 +225,10 @@
     </div>
     <div class="col-md-1">
       <button id="toggle-filter-detail"
-        class="btn btn-default pull-right"
+        class="btn btn-default dropdown-toggle float-right"
         data-toggle="collapse"
         href="#list-filter-collapse"
-      >
-        <span class="caret"></span>
-      </button>
+      ></button>
     </div>
   </div>
 
@@ -251,25 +249,22 @@
   <div class="row">
     <div class="col-md-12">
       <ul class="list-inline">
-        <li>
+        <li class="list-inline-item">
           <div class="dropdown">
-            <button class="btn btn-default" data-toggle="dropdown">
+            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
               { trans('Select Filter Item...') }
-              <span class="caret"></span>
             </button>
-            <ul class="dropdown-menu">
-              <li each={ listTop.opts.filterTypes }
+            <div class="dropdown-menu">
+              <a each={ listTop.opts.filterTypes }
                 if={ editable }
-                class={ disabled: parent.listFilterTop.isFilterItemSelected(type) }
+                class={ disabled: parent.listFilterTop.isFilterItemSelected(type), dropdown-item: true }
+                href="#"
+                data-mt-filter-type={ type }
+                onclick={ addFilterItem }
               >
-                <a href="#"
-                  data-mt-filter-type={ type }
-                  onclick={ addFilterItem }
-                >
-                  { label }
-                </a>
-              </li>
-            </ul>
+                { label }
+              </a>
+            </div>
           </div>
         </li>
       </ul>
@@ -303,61 +298,55 @@
 </list-filter-detail>
 
 <list-filter-item>
-  <div class="row filteritem">
-    <div class="col-md-11">
-      <div if={ opts.item.type == 'pack' }>
-        <div each={ item, index in opts.item.args.items }
-          if={ filterTypeHash[item.type] }
-          data-mt-list-item-content-index={ index }
-          class={ 'filtertype type-' + item.type }
-        >
-          <div class="item-content">
-            <virtual data-is="list-filter-item-field"
-              field={ filterTypeHash[item.type].field }
-              item={ item }
-            >
-            </virtual>
-            <button class="btn btn-default"
-              if={ !filterTypeHash[item.type].singleton }
-              onclick={ addFilterItemContent }
-            >
-              &plus;
-            </button>
-            <button class="btn btn-default"
-              if={ !filterTypeHash[item.type].singleton
-                && parent.opts.item.args.items.length > 1 }
-              onclick={ removeFilterItemContent }
-            >
-              &minus;
-            </button>
-          </div>
+  <div class="input-group filteritem">
+    <div if={ opts.item.type == 'pack' }>
+      <div each={ item, index in opts.item.args.items }
+        if={ filterTypeHash[item.type] }
+        data-mt-list-item-content-index={ index }
+        class={ 'filtertype type-' + item.type }
+      >
+        <div class="item-content">
+          <virtual data-is="list-filter-item-field"
+            field={ filterTypeHash[item.type].field }
+            item={ item }
+          >
+          </virtual>
+          <button class="btn btn-default"
+            if={ !filterTypeHash[item.type].singleton }
+            onclick={ addFilterItemContent }
+          >
+            &plus;
+          </button>
+          <button class="btn btn-default"
+            if={ !filterTypeHash[item.type].singleton
+              && parent.opts.item.args.items.length > 1 }
+            onclick={ removeFilterItemContent }
+          >
+            &minus;
+          </button>
         </div>
       </div>
-
-      <virtual if={ opts.item.type != 'pack' && filterTypeHash[opts.item.type] }>
-        <div data-mt-list-item-content-index="0"
-          class={ 'filtertype type-' + opts.item.type }
-        >
-          <div class="item-content">
-            <virtual data-is="list-filter-item-field"
-              field={ filterTypeHash[opts.item.type].field }
-              item={ opts.item }
-            >
-            </virtual>
-            <button class="btn btn-default"
-              if={ !filterTypeHash[opts.item.type].singleton }
-              onclick={ addFilterItemContent }
-            >
-              &plus;
-            </button>
-          </div>
+    </div>
+    <virtual if={ opts.item.type != 'pack' && filterTypeHash[opts.item.type] }>
+      <div data-mt-list-item-content-index="0"
+        class={ 'filtertype type-' + opts.item.type }
+      >
+        <div class="item-content">
+          <virtual data-is="list-filter-item-field"
+            field={ filterTypeHash[opts.item.type].field }
+            item={ opts.item }
+          >
+          </virtual>
+          <button class="btn btn-default"
+            if={ !filterTypeHash[opts.item.type].singleton }
+            onclick={ addFilterItemContent }
+          >
+            &plus;
+          </button>
         </div>
-      </virtual>
-    </div>
-
-    <div class="col-md-1">
-      <button class="close pull-right" onclick={ removeFilterItem }>&times;</button>
-    </div>
+      </div>
+    </virtual>
+    <button class="close float-right" onclick={ removeFilterItem }>&times;</button>
   </div>
 
   <script>
@@ -489,12 +478,12 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header">
+          <h5 class="modal-title">{ trans( 'Select Filter' ) }</h5>
           <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
-          <h4 class="modal-title">{ trans( 'Select Filter' ) }</h4>
         </div>
         <div class="modal-body">
           <div class="filter-list-block">
-            <h5 class="filter-list-label">{ trans( 'My Filters' ) }</h5>
+            <h6 class="filter-list-label">{ trans( 'My Filters' ) }</h6>
             <ul id="user-filters" class="list-unstyled editable">
               <li class="filter line"
                 each={ store.filters }
@@ -506,7 +495,7 @@
                   <a href="#" onclick={ applyFilter }>
                     { label }
                   </a>
-                  <div class="pull-right">
+                  <div class="float-right">
                     <a href="#" onclick={ startEditingFilter }>[{ trans( 'rename' ) }]</a>
                     <a href="#" onclick={ removeFilter }>[{ trans( 'remove' ) }]</a>
                   </div>
@@ -535,7 +524,7 @@
             </ul>
           </div>
           <div class="filter-list-block" if={ store.hasSystemFilter() }>
-            <h5 class="filter-list-label">{ trans( 'Built in Filters' ) }</h5>
+            <h6 class="filter-list-label">{ trans( 'Built in Filters' ) }</h6>
             <ul id="built-in-filters" class="list-unstyled">
               <li class="filter line"
                 each={ store.filters }
@@ -617,32 +606,27 @@
 </list-filter-select-modal>
 
 <list-filter-buttons>
-  <ul class="list-inline">
-    <li>
-      <button class="btn btn-primary"
-        disabled={ listFilterTop.currentFilter.items.length == 0 }
-        onclick={ applyFilter }
-      >
-        { trans('Apply') }
-      </button>
-    </li>
-    <li>
-      <button class="btn btn-default"
-        disabled={ listFilterTop.currentFilter.items.length == 0
-          || listFilterTop.currentFilter.can_save == '0'
-        }
-        onclick={ saveFilter }
-      >
-        { trans('Save') }
-      </button>
-      <list-filter-save-modal></list-filter-save-modal>
-    </li>
-    <li if={ listFilterTop.currentFilter.id && listFilterTop.currentFilter.items.length > 0 }>
-      <button class="btn btn-default" onclick={ saveAsFilter }>
-        { trans('Save As') }
-      </button>
-    </li>
-  </ul>
+  <button class="btn btn-primary"
+    disabled={ listFilterTop.currentFilter.items.length == 0 }
+    onclick={ applyFilter }
+  >
+    { trans('Apply') }
+  </button>
+  <button class="btn btn-default"
+    disabled={ listFilterTop.currentFilter.items.length == 0
+      || listFilterTop.currentFilter.can_save == '0'
+    }
+    onclick={ saveFilter }
+  >
+    { trans('Save') }
+  </button>
+  <button if={ listFilterTop.currentFilter.id && listFilterTop.currentFilter.items.length > 0 }
+    class="btn btn-default"
+    onclick={ saveAsFilter }
+  >
+    { trans('Save As') }
+  </button>
+  <list-filter-save-modal></list-filter-save-modal>
 
   <script>
     this.mixin('listTop')
@@ -687,12 +671,14 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-          <h4 class="modal-title">{ trans( saveAs ? 'Save As Filter' : 'Save Filter' ) }</h4>
+          <h5 class="modal-title">{ trans( saveAs ? 'Save As Filter' : 'Save Filter' ) }</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
         <div class="modal-body">
           <div style="padding-bottom: 30px;">
-            <h5>{ trans('Filter Label') }</h5>
+            <h6>{ trans('Filter Label') }</h6>
             <input type="text"
               class="text full required form-control"
               name="filter_name"
@@ -701,18 +687,12 @@
           </div>
         </div>
         <div class="modal-footer">
-          <ul class="list-inline">
-            <li>
-              <button class="btn btn-primary" onclick={ saveFilter }>
-                { trans('Save') }
-              </button>
-            </li>
-            <li>
-              <button class="btn btn-default" onclick={ closeModal }>
-                { trans('Cancel') }
-              </button>
-            </li>
-          </ul>
+          <button class="btn btn-primary" onclick={ saveFilter }>
+            { trans('Save') }
+          </button>
+          <button class="btn btn-default" onclick={ closeModal }>
+            { trans('Cancel') }
+          </button>
         </div>
       </div>
     </div>

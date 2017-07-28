@@ -13,7 +13,7 @@
     </li>
 </mt:unless>
   </ul>
-  <a href="<mt:var name="script_url">?__mode=dialog_content_data_modal&blog_id=<mt:var name="blog_id">&content_field_id=<mt:var name="content_field_id">" class="mt-open-dialog">
+  <a href="<mt:var name="script_url">?__mode=dialog_content_data_modal&blog_id=<mt:var name="blog_id">&content_field_id=<mt:var name="content_field_id">" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
     <__trans phrase="Choose [_1]" params="<mt:var name="content_type_name" escape="html">">
   </a>
 </div>
@@ -44,4 +44,3 @@ jQuery('ul.content-data-list').on('click', 'li > a.icon-remove', function () {
 });
   </mt:setvarblock>
 </mt:unless>
-

@@ -215,7 +215,7 @@ sub _hdlr_archives {
     my $save_tse;
     my $tmpl = $ctx->stash('template');
 
-    if ( ( $tmpl && $tmpl->type eq 'archive' )
+    if ( ( $tmpl && ( $tmpl->type || '' ) eq 'archive' )
         && $archiver->date_based )
     {
         my $uncompiled = $ctx->stash('uncompiled') || '';

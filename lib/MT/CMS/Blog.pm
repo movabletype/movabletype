@@ -752,7 +752,7 @@ sub rebuild_pages {
         $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $order = $q->param('type');
     my @order = split /,/, $order;
-    my $next  = $q->param('next');
+    my $next  = $q->param('next') || 0;
     my $done  = 0;
     my $type  = $order[$next];
 
@@ -1725,7 +1725,7 @@ sub pre_save {
             $param{words_in_excerpt} = 40
                 unless defined $param{words_in_excerpt}
                 && $param{words_in_excerpt} ne '';
-            if ( $app->param('days_or_posts') eq 'days' ) {
+            if ( ( $app->param('days_or_posts') || '' ) eq 'days' ) {
                 $obj->days_on_index( $app->param('list_on_index') );
                 $obj->entries_on_index(0);
             }
@@ -1960,13 +1960,15 @@ sub post_save {
 
     for my $blog_field ( keys %blog_fields ) {
 
-        if ( $obj->$blog_field() ne $original->$blog_field() ) {
-            my $old
-                = defined $original->$blog_field()
-                ? $original->$blog_field()
-                : "none";
-            my $new
-                = defined $obj->$blog_field() ? $obj->$blog_field() : "none";
+        my $old
+            = defined $original->$blog_field()
+            ? $original->$blog_field()
+            : "";
+        my $new
+            = defined $obj->$blog_field() ? $obj->$blog_field() : "";
+        if ( $new ne $old ) {
+            $old = "none" if $old eq "";
+            $new = "none" if $new eq "";
             push(
                 @meta_messages,
                 $app->translate(
@@ -2919,7 +2921,7 @@ sub prepare_dynamic_publishing {
 
     # IIS itself does not handle .htaccess,
     # but IISPassword (3rd party) does and dies with this.
-    if ( $ENV{SERVER_SOFTWARE} =~ /Microsoft-IIS/
+    if ( ( $ENV{SERVER_SOFTWARE} || '' ) =~ /Microsoft-IIS/
         && MT->config->EnableAutoRewriteOnIIS )
     {
 
@@ -3393,10 +3395,10 @@ sub print_status_page {
     $app->print_encode( $app->translate_templatized(<<"HTML" ) );
 
 <div class="modal-header">
-    <button type="button" class="close" data-mt-modal-close>
-        <span>&times;</span>
+    <h5 class="modal-title">$page_title</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+      <span aria-hidden="true">&times;</span>
     </button>
-    <h4 class="modal-title">$page_title</h4>
 </div>
 
 <div class="modal-body">
@@ -3569,7 +3571,7 @@ sub cms_pre_load_filtered_list {
     delete $terms->{blog_id};
     $terms->{parent_id} = $load_options->{blog_id}
         if $app->blog;
-    $terms->{class} = 'blog' unless $terms->{class} eq '*';
+    $terms->{class} = 'blog' unless $terms->{class} and $terms->{class} eq '*';
 
     my $user = $load_options->{user} || $app->user;
     return   if $user->is_superuser;

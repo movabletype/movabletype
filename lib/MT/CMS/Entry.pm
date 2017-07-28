@@ -1151,7 +1151,8 @@ sub _build_entry_preview {
         $entry->cache_property( 'categories', undef, [] );
     }
     my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
-    my @tag_names = MT::Tag->split( $tag_delim, $q->param('tags') );
+    my $tags = $q->param('tags');
+    my @tag_names = ( defined $tags and $tags ne '' ) ? MT::Tag->split( $tag_delim, $tags ) : ();
     if (@tag_names) {
         my @tags;
         foreach my $tag_name (@tag_names) {
@@ -1164,14 +1165,14 @@ sub _build_entry_preview {
         $entry->{__tag_objects} = \@tags;
     }
 
-    my $ao_date = $q->param('authored_on_date');
-    my $ao_time = $q->param('authored_on_time');
+    my $ao_date = $q->param('authored_on_date') || '';
+    my $ao_time = $q->param('authored_on_time') || '';
     my $ao_ts   = $ao_date . $ao_time;
     $ao_ts =~ s/\D//g;
     $entry->authored_on($ao_ts);
 
-    my $uo_date = $q->param('unpublished_on_date');
-    my $uo_time = $q->param('unpublished_on_time');
+    my $uo_date = $q->param('unpublished_on_date') || '';
+    my $uo_time = $q->param('unpublished_on_time') || '';
     my $uo_ts   = $uo_date . $uo_time;
     $uo_ts =~ s/\D//g;
     $entry->unpublished_on($uo_ts);
@@ -1537,8 +1538,11 @@ sub save {
         $orig_obj = $obj->clone;
     }
 
-    my $primary_category_old = $orig_obj->category;
-    my $categories_old       = $orig_obj->categories;
+    my ( $primary_category_old, $categories_old );
+    if ( $orig_obj->id ) {
+        $primary_category_old = $orig_obj->category;
+        $categories_old       = $orig_obj->categories;
+    }
     my $status_old           = $id ? $obj->status : 0;
     my $names                = $obj->column_names;
 
@@ -1827,7 +1831,7 @@ sub save {
     ## look if any assets have been included/removed from this entry
     require MT::Asset;
     require MT::ObjectAsset;
-    my $include_asset_ids = $app->param('include_asset_ids');
+    my $include_asset_ids = $app->param('include_asset_ids') || '';
     my @asset_ids         = split( ',', $include_asset_ids );
     my $obj_assets        = ();
     my @obj_assets        = MT::ObjectAsset->load(
@@ -2031,7 +2035,7 @@ sub save_entries {
     MT::Util::Log->info('--- Start save_entries.');
 
     my $perms   = $app->permissions;
-    my $type    = $app->param('_type');
+    my $type    = $app->param('_type') || '';
     my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;
@@ -2175,11 +2179,11 @@ PERMCHECK: {
                 $entry->$col($ts);
             };
 
-            my $co = $q->param( 'created_on_' . $id );
+            my $co = $q->param( 'created_on_' . $id ) || '';
             $date_closure->(
                 $co, 'authored_on', MT->translate('authored on')
             ) or return;
-            $co = $q->param( 'modified_on_' . $id );
+            $co = $q->param( 'modified_on_' . $id ) || '';
             $date_closure->(
                 $co, 'modified_on', MT->translate('modified on')
             ) or return;
@@ -2407,7 +2411,7 @@ sub save_entry_prefs {
         or return $app->error( $app->translate("No permissions") );
     $app->validate_magic() or return;
     my $q          = $app->param;
-    my $prefs      = $app->_entry_prefs_from_params;
+    my $prefs      = $app->_entry_prefs_from_params('');
     my $disp       = $q->param('entry_prefs');
     my $sort_only  = $q->param('sort_only');
     my $prefs_type = $q->param('_type') . '_prefs';

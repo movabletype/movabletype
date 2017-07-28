@@ -285,10 +285,22 @@ sub list_actions {
         $actions->{$a}{key}  = $a;
         $actions->{$a}{core} = 1
             unless UNIVERSAL::isa( $actions->{$a}{plugin}, 'MT::Plugin' );
-        $actions->{$a}{js_message} = $actions->{$a}{label}
-            unless $actions->{$a}{js_message};
+
+        if ( !$actions->{$a}{js_message} ) {
+            if ( exists $actions->{$a}{js_message_handler} ) {
+                my $code = $app->handler_to_coderef(
+                    $actions->{$a}{js_message_handler} );
+                $actions->{$a}{js_message} = $code->()
+                    if 'CODE' eq ref($code);
+            }
+            else {
+                $actions->{$a}{js_message} = $actions->{$a}{label}
+            }
+        }
+
         $actions->{$a}{action_mode} = $actions->{$a}{mode}
             if $actions->{$a}{mode};
+
         if ( exists $actions->{$a}{continue_prompt_handler} ) {
             my $code = $app->handler_to_coderef(
                 $actions->{$a}{continue_prompt_handler} );
@@ -698,6 +710,9 @@ sub response_content {
 sub set_x_frame_options_header {
     my $app             = shift;
     my $x_frame_options = $app->config->XFrameOptions;
+
+    # If set as NONE MT should not output X-Frame-Options header.
+    return if lc $x_frame_options eq 'none';
 
     # Use default value when invalid value is set.
     unless ( lc $x_frame_options eq 'deny'
@@ -1878,7 +1893,7 @@ sub _get_options_html {
     if ( my $p = $authenticator->{login_form_params} ) {
         $p = $app->handler_to_coderef($p);
         if ($p) {
-            my $params = $p->( $key, $blog_id, $entry_id || undef, $static, );
+            my $params = $p->( $key, $blog_id, $entry_id, $static, );
             $tmpl->param($params) if $params;
         }
     }
@@ -2760,7 +2775,7 @@ sub upload_info {
         if ( $@ && $@ =~ /^Undefined subroutine/ ) {
             $fh = $q->param($param_name);
         }
-        $no_upload = !$fh;
+        return unless $fh;
         $info      = $q->uploadInfo($fh);
     }
 
@@ -3153,8 +3168,7 @@ sub run {
 
                     my $set
                         = $meth_info->{permission}
-                        || $meth_info->{permit_action}
-                        || undef;
+                        || $meth_info->{permit_action};
 
                     if ($set) {
                         my $user    = $app->user;
@@ -3282,16 +3296,18 @@ sub run {
                     if ( $trace ne '' ) {
                         my $debug_panel_header = $app->translate('Warnings and Log Messages');
                         my $panel = <<"__HTML__";
-                            <div class="panel debug-panel text-danger" style="margin: 0 -15px;">
-                              <div class="panel-heading bg-danger">
-                                <h3 class="panel-title">$debug_panel_header</h3>
+                          <div class="col-md-12">
+                            <div class="card debug-panel" style="margin: 0 -15px;">
+                              <div class="card-header text-white" style="background: #EF7678;">
+                                <h4 class="card-title">$debug_panel_header</h4>
                               </div>
-                              <div class="panel-body debug-panel-inner">
+                              <div class="card-block debug-panel-inner" style="background: #FFE0E0;">
                                 <ul class="list-unstyled">
                                   $trace
                                 </ul>
                               </div>
                             </div>
+                          </div>
 __HTML__
                         $body =~ s!(</body>)!$panel$1!i;
                     }
@@ -3351,7 +3367,7 @@ sub handlers_for_mode {
                 return undef unless $cond->($app);
             }
 
-            my $handler = $hdlr->{code} || $hdlr->{handler} || undef;
+            my $handler = $hdlr->{code} || $hdlr->{handler};
             if ( $handler && $handler !~ m/->/ ) {
                 $hdlr->{component} = $1
                     if $hdlr->{code} =~ m/^\$?(\w+)::/;
@@ -3894,14 +3910,17 @@ sub query_string {
 }
 
 sub return_uri {
-    $_[0]->uri . '?' . $_[0]->return_args;
+    my ( $uri, $query ) = ( $_[0]->uri, $_[0]->return_args );
+    return $uri if !defined $query or $query eq "";
+    $uri . '?' . $query;
 }
 
 sub call_return {
     my $app = shift;
     $app->add_return_arg(@_) if @_;
+    my $connection = $app->get_header('Connection') || '';
     $app->redirect( $app->return_uri,
-        ( $app->get_header('Connection') eq 'close' ? ( UseMeta => 1 ) : () )
+        ( $connection eq 'close' ? ( UseMeta => 1 ) : () )
     );
 }
 

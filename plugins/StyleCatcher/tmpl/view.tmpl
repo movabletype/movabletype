@@ -3,8 +3,11 @@
 <mt:setvarblock name="html_head" append="1">
 <!-- stylecatcher -->
 <link rel="stylesheet" type="text/css" title="Default Layout" href="<mt:var name="plugin_static_uri">templates.css" />
-
-<mt:include name="modules/libjs.tmpl">
+<style>
+.hidden {
+  display: none;
+}
+</style>
 
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/mixer.js"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/mixer/tagmatch.js"></script>
@@ -163,7 +166,7 @@
         // select first theme in category
         mixer.name = '';
         var select_design = getByID("select-design-controls");
-        TC.addClassName(select_design, "hidden");
+        jQuery(select_design).hide();
         mixer.display();
         mixer.remix();
     }
@@ -200,7 +203,7 @@
         }
         showDetails();
         var select_design = getByID("select-design-controls");
-        TC.removeClassName(select_design, "hidden");
+        jQuery(select_design).show();
         updateApplyButton();
     }
 
@@ -341,8 +344,8 @@
 
     function stylesLoaded(client, styles, repo_id) {
         var btn = getByID("find-button");
-        TC.addClassName(TC.elementOrId("loading-styles"), "hidden");
-        TC.removeClassName(btn, "hidden");
+        jQuery('#loading-styles').hide();
+        jQuery(btn).show();
 
         var repo_num;
         var cat;
@@ -491,8 +494,8 @@
 
     function getStyles(repo_id, url) {
         var btn = getByID("find-button");
-        TC.addClassName(btn, "hidden");
-        TC.removeClassName(TC.elementOrId("loading-styles"), "hidden");
+        jQuery(btn).hide();
+        jQuery('#loading-styles').show();
 
         var client = TC.Client.call({
             'load': function(c,s) { stylesLoaded(c,s,repo_id) },
@@ -512,7 +515,7 @@
 <!-- end stylecatcher script section -->
 </mt:setvarblock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 
 <div id="msg-block">
 </div>
@@ -534,11 +537,11 @@
 <p id="status-message" class="message" style="display: none"></p>
 
 <div id="template-picker" class="row">
-    <div id="categories-wrapper" class="col-md-2">
+    <div id="categories-wrapper" class="col-md-3">
         <h2>
             <span id="find-category">
                 <a href="javascript:void(0)" id="find-button" onclick="return downloadStyles()" class="icon-right icon-create" title="Download new styles">&nbsp;</a>
-                    <span class="hidden" id="loading-styles">
+                    <span id="loading-styles" style="display: none;">
                         <img src="<mt:var name="static_uri">images/indicator.white.gif" height="16" width="16" alt="" />
                     </span>
             </span>
@@ -546,8 +549,8 @@
             <__trans phrase="Categories">
         </h2>
 
-        <div class="panel panel-default" style="height: 410px;">
-          <div class="panel-body scrollbox" id="categories">
+        <div class="card" style="height: 410px;">
+          <div class="card-block scrollbox" id="categories">
               <div class="category" id="category-current" title="<__trans phrase="Current theme for your weblog">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/top-rated.gif" alt="Your Current Style" /><span><__trans phrase="Current Style"></span>
               </div>
               <div class="category" id="category-my-designs" title="<__trans phrase="Locally saved themes">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/my-designs.gif" alt="my-designs" /><span><__trans phrase="Saved Styles"></span>
@@ -564,10 +567,10 @@
         </div>
     </div>
 
-    <div id="templates-wrapper" class="col-md-6">
+    <div id="templates-wrapper" class="col-md-5">
         <h2 id="selected-category-title"><__trans phrase="Templates"></h2>
-        <div class="panel panel-default" style="height: 410px;">
-          <div class="panel-body" style="height: 408px; overflow: auto;">
+        <div class="card" style="height: 410px;">
+          <div class="card-block" style="height: 408px; overflow: auto;">
             <div class="scrollbox" id="display-current" style="display: none;"></div>
             <div class="scrollbox" id="display-my-designs" style="display: none;"></div>
             <div class="scrollbox" id="display-mt-designs" style="display: none;"></div>
@@ -580,34 +583,31 @@
     </div>
 
     <div id="details-wrapper" class="col-md-4">
-        <h2><__trans phrase="Selected Design"></h2>
-        <div id="display-details" class="panel panel-default" style="height: 410px;">
-        <div id="select-design-controls" class="panel-body actions-bar">
-            <form method="get" action="">
-                <p>
-                    <label for="layout-list"><__trans phrase="Layout">:</label>
-                    <select id="layout-list" class="form-control" onchange="updateApplyButton()">
-                    </select>
-                </p>
-
-                <span class="button-actions actions">
-                <button
-                    type="button"
-                    accesskey="s"
-                    id="apply-button"
-                    title="<__trans phrase="Apply Design"> (s)"
-                    onclick="applyDesign()"
-                    class="btn btn-primary apply action primary button"><__trans phrase="Apply Design"></button>
-                </span>
-            </form>
-        </div>
-
+      <h2><__trans phrase="Selected Design"></h2>
+      <div id="display-details" class="card" style="height: 410px;">
         <div id="display-details-content"></div>
 
+        <div id="select-design-controls" class="card-block p-0 actions-bar">
+          <form method="get" action="" class="form-inline">
+            <p class="form-group">
+              <label for="layout-list"><__trans phrase="Layout">:</label>
+              <select id="layout-list" class="form-control" onchange="updateApplyButton()">
+              </select>
+            </p>
 
+            <span class="button-actions actions">
+              <button
+                  type="button"
+                  accesskey="s"
+                  id="apply-button"
+                  title="<__trans phrase="Apply Design"> (s)"
+                  onclick="applyDesign()"
+                  class="btn btn-primary apply action primary button"><__trans phrase="Apply Design"></button>
+            </span>
+          </form>
+        </div>
+      </div>
     </div>
-
-</div>
 
 </div>
 

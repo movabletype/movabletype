@@ -23,9 +23,12 @@ sub build_post_save_sub {
         ? archive_file_for( $orig_entry, $blog, $archive_type )
         : undef;
 
-    my $primary_category_old = $orig_entry->category;
-    my $categories_old       = $orig_entry->categories;
-    my $categories_old_ids   = join( ',', map { $_->id } @$categories_old );
+    my ( $primary_category_old, $categories_old, $categories_old_ids );
+    if ( $orig_entry->id ) {
+        $primary_category_old = $orig_entry->category;
+        $categories_old       = $orig_entry->categories;
+        $categories_old_ids   = join( ',', map { $_->id } @$categories_old );
+    }
 
     my ( $previous_old, $next_old );
     if ( $orig_entry->id && $entry->authored_on != $orig_entry->authored_on )
@@ -243,7 +246,7 @@ sub delete {
 
     $app->run_callbacks( 'data_api_post_delete.entry', $app, $entry );
 
-    if ( %recipe && $app->config('RebuildAtDelete') ) {
+    if ( $app->config('RebuildAtDelete') ) {
         $app->run_callbacks('pre_build');
         MT::Util::start_background_task(
             sub {

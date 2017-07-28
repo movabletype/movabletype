@@ -1695,7 +1695,7 @@ sub comment_listing {
         $limit = 100;
     }
     my $direction = 'ascend';
-    if ( $app->param('direction') eq 'descend' ) {
+    if ( $app->param('direction') and $app->param('direction') eq 'descend' ) {
         $direction = 'descend';
     }
     my $method = $app->param('method');
@@ -2007,20 +2007,31 @@ sub save_commenter_profile {
             );
             return $app->build_page( 'profile.tmpl', \%param );
         }
-        if ( $param{password} ne $param{pass_verify} ) {
-            $param{error} = $app->translate('Passwords do not match.');
-            return $app->build_page( 'profile.tmpl', \%param );
-        }
-        require MT::Auth;
-        if ($param{password}
-            && not MT::Auth->is_valid_password(
-                $cmntr, scalar( $q->param('old_pass') )
-            )
-            )
-        {
-            $param{error}
-                = $app->translate('Failed to verify the current password.');
-            return $app->build_page( 'profile.tmpl', \%param );
+        if ( $param{password} ) {
+            if ( $param{password} ne $param{pass_verify} ) {
+                $param{error} = $app->translate('Passwords do not match.');
+                return $app->build_page( 'profile.tmpl', \%param );
+            }
+
+            require MT::Auth;
+            if (not MT::Auth->is_valid_password(
+                    $cmntr, scalar( $q->param('old_pass') )
+                )
+                )
+            {
+                $param{error}
+                    = $app->translate(
+                    'Failed to verify the current password.');
+                return $app->build_page( 'profile.tmpl', \%param );
+            }
+            elsif (my $msg = $app->verify_password_strength(
+                    $cmntr->name, $param{password}
+                )
+                )
+            {
+                $param{error} = $msg;
+                return $app->build_page( 'profile.tmpl', \%param );
+            }
         }
     }
     my $email = $param{email};

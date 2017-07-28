@@ -1473,7 +1473,7 @@
   });
 
   function add_field(id, type) {
-    var data = JSON.parse( localStorage.getItem("ContentType") );
+    var data = JSON.parse( localStorage.getItem("ContentType") ) || {};
     var label = data['fields'] && data['fields'][id] && data['fields'][id]['options'] && data['fields'][id]['options']['label']
               ? data['fields'][id]['options']['label'] : type;
     var field = '<div id="content-field-block-' + id + '" class="field field-top-label sort-enabled">';
@@ -1741,4 +1741,4 @@
   }
 </mt:setvarblock>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="include/old_footer.tmpl">

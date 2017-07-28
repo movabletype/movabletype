@@ -12,7 +12,7 @@
   <input type="hidden" name="default_language" value="<mt:var name="default_language" escape="html">" />
   <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
 <mt:if name="connect_error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="connect_error"
      class="error"
      can_close="0">
@@ -22,15 +22,15 @@
         <p><mt:var name="error_more" escape="html"></p>
       </div>
     </mt:if>
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 <mt:else>
   <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="error"
      class="error"
      can_close="0">
     <mt:var name="error" escape="html">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 </mt:if>
 

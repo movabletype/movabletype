@@ -22,13 +22,17 @@ parameters:
 </mt:ignore>
 
 <!-- Listing Panel -->
-<div id="<mt:var name="panel_type">-panel" class="hidden">
+<div id="<mt:var name="panel_type">-panel" style="display: none;">
+<mt:if name="use_page_content">
+  <div class="panel-body">
+</mt:if>
+
   <div class="panel-header">
   <mt:if name="panel_title">
-    <h2 class="title panel"><mt:var name="panel_title"></h2>
+    <h4 class="title"><mt:var name="panel_title"></h4>
   </mt:if>
   <mt:if name="panel_has_steps">
-    <div class="progress"><__trans phrase="Step [_1] of [_2]" params="<mt:var name="panel_number">%%<mt:var name="panel_total">"></div>
+    <div class="text-right"><__trans phrase="Step [_1] of [_2]" params="<mt:var name="panel_number">%%<mt:var name="panel_total">"></div>
   </mt:if>
   <mt:if name="panel_multi">
     <div class="selected-items">
@@ -41,7 +45,7 @@ parameters:
   <form action="" method="get" id="modal-search" class="form-inline">
     <input type="text" class="form-control search-input text med" value="" placeholder="<__trans phrase="Search">" />
     <input type="image" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
-    <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
+    <a href="javascript:void(0)" class="search-reset" style="display: none;"><__trans phrase="Reset"></a>
   </form>
 </mt:if>
 
@@ -50,9 +54,9 @@ parameters:
       <table class="table table-striped legacy listing-table list-heading">
       <mt:setvarblock name="table_header">
         <tr>
-          <th class="col head cb"><mt:if name="panel_multi"><input type="checkbox" value="all" class="select" /><mt:else>&nbsp;</mt:if></th>
-          <th class="col head panel-label primary"><span class="col-label"><mt:var name="panel_label"></span></th>
-          <th class="col head panel-description primary"><span class="col-label"><mt:var name="panel_description"></span></th>
+          <th class="head cb"><mt:if name="panel_multi"><input type="checkbox" value="all" class="select" /><mt:else>&nbsp;</mt:if></th>
+          <th class="head panel-label primary"><span class="col-label"><mt:var name="panel_label"></span></th>
+          <th class="head panel-description primary"><span class="col-label"><mt:var name="panel_description"></span></th>
         </tr>
       </mt:setvarblock>
         <thead>
@@ -68,9 +72,9 @@ parameters:
         <mt:loop name="object_loop">
           <mt:unless name="disabled">
           <tr id="<mt:var name="panel_type">-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="col cb"><input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" /></td>
-            <td class="col panel-label"><label><mt:var name="label" escape="html"></label></td>
-            <td class="col panel-description">
+            <td class="cb"><input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" /></td>
+            <td class="panel-label"><label><mt:var name="label" escape="html"></label></td>
+            <td class="panel-description">
             <mt:ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:ignore>
               <mt:if name="link"><span class="view-site-link"><a href="<mt:var name="link" escape="html">" target="_blank"><img src="<mt:var name="static_uri">images/spacer.gif" title="<__trans phrase="Go to [_1]" params="<mt:var name="label" escape="html" escape="html">">" width="13" height="9" alt="" /></a></span></mt:if>
               <mt:if name="link"><span class="float_desc"></mt:if><mt:var name="description" remove_html="1"><mt:if name="link"></span></mt:if>
@@ -79,9 +83,9 @@ parameters:
         <mt:if name="blogs">
         <mt:loop name="blogs">
           <tr id="<mt:var name="panel_type">-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="col cb"><input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" /></td>
-            <td class="col panel-label sub-label"><label><mt:var name="label" escape="html"></label></td>
-            <td class="col panel-description">
+            <td class="cb"><input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" /></td>
+            <td class="panel-label sub-label"><label><mt:var name="label" escape="html"></label></td>
+            <td class="panel-description">
             <mt:Ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:Ignore>
               <mt:if name="link"><span class="view-site-link"><a href="<mt:var name="link" escape="html">" target="_blank"><img src="<mt:var name="static_uri">images/spacer.gif" title="<__trans phrase="Go to [_1]" params="<mt:var name="label" escape="html" escape="html">">" width="13" height="9" alt="" /></a></span></mt:if>
               <mt:if name="link"><span class="float_desc"></mt:if><mt:var name="description" remove_html="1"><mt:if name="link"></span></mt:if>
@@ -100,27 +104,25 @@ parameters:
 <mt:else>
 
   <mt:if name="search">
-      <mtapp:newstatusmsg
+      <mtapp:statusmsg
          id="search"
          class="info"
          can_close="0">
         <__trans phrase="Sorry, there were no results for your search. Please try searching again.">
-      </mtapp:newstatusmsg>
+      </mtapp:statusmsg>
   <mt:else>
-      <mtapp:newstatusmsg
+      <mtapp:statusmsg
          id="no-data"
          class="info"
          can_close="0">
         <__trans phrase="Sorry, there is no data for this object set.">
-      </mtapp:newstatusmsg>
+      </mtapp:statusmsg>
   </mt:if>
 </mt:if>
 
 <mt:unless name="json">
     </form>
-    <div class="row">
-      <div class="col-md-12 pull-right pagination"></div>
-    </div>
+    <div class="text-right pagination" style="display: block;"></div>
   </div>
   <mt:if name="after_listing_panel">
   <div class="listing-panel-options">
@@ -166,6 +168,13 @@ parameters:
     </form>
   </div>
 </mt:setvarblock>
+
+<mt:if name="use_page_content">
+  </div>
+  <div class="modal-footer">
+    <mt:var name="modal_footer">
+  </div>
+</mt:if>
 
 </div>
 </mt:unless>

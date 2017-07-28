@@ -169,11 +169,11 @@ sub save {
         }
 
         unless ( $obj->id ) {
-            my $subdomain = $q->param('site_url_subdomain');
+            my $subdomain = $q->param('site_url_subdomain') || '';
             $subdomain = '' if !$q->param('use_subdomain');
             $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
             $subdomain =~ s/\.{2,}/\./g;
-            my $path = $q->param('site_url_path');
+            my $path = $q->param('site_url_path') || '';
             $values{site_url} = "$subdomain/::/$path";
 
             $values{site_path} = $app->param('site_path_absolute')
@@ -688,7 +688,7 @@ sub edit {
     require MT::Promise;
     my $obj_promise = MT::Promise::delay(
         sub {
-            return $class->load($id) || undef;
+            return $class->load($id);
         }
     );
 
@@ -1546,7 +1546,7 @@ sub filtered_list {
     my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
     my @cols = grep {/^[^\.]+$/} split( ',', $cols );
     my @subcols = grep {/\./} split( ',', $cols );
-    my $class = MT->model( $setting->{object_type} ) || MT->model($ds);
+    my $class = MT->model( $setting->{object_type} || $ds );
     if ( $class->has_column('id') ) {
         unshift @cols,    '__id';
         unshift @subcols, '__id';
@@ -2024,7 +2024,7 @@ sub build_revision_table {
     my $class = $app->model($type);
     my $param = $args{param};
     my $obj   = $args{object};
-    my $blog  = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
+    my $blog  = $obj->blog || MT::Blog->load( $q->param('blog_id') );
     my $lang  = $app->user ? $app->user->preferred_language : undef;
 
     my $js = $param->{rev_js};
@@ -2104,7 +2104,7 @@ sub list_revision {
     require MT::Promise;
     my $obj_promise = MT::Promise::delay(
         sub {
-            return $class->load($id) || undef;
+            return $class->load($id);
         }
     );
 
@@ -2113,7 +2113,7 @@ sub list_revision {
         || return $app->permission_denied();
 
     my $obj  = $obj_promise->force();
-    my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
+    my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') );
     my $js   = "parent.location.href='" . $app->uri;
     if ( $type eq 'cd' ) {
         $js .= '?__mode=edit_content_data&amp;content_type_id='

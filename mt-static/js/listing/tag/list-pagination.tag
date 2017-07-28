@@ -1,6 +1,6 @@
 <list-pagination>
   <ul class="list-inline">
-    <li>
+    <li class="list-inline-item">
       <button class="btn btn-default"
         disabled={ store.page <= 1 }
         data-page={ store.page - 1 }
@@ -9,7 +9,7 @@
         &lt; { trans('Prev') }
       </button>
     </li>
-    <li>
+    <li class="list-inline-item">
       <virtual if={ store.page - 3 >= 1 }>
         <a href="javascript:void(0);"
           data-page={ 1 }
@@ -72,7 +72,7 @@
         </a>
       </virtual>
     </li>
-    <li>
+    <li class="list-inline-item">
       [ <input type="number"
           min="1"
           max={ store.pageMax }
@@ -81,7 +81,7 @@
           style="width: 50px;"
           onkeyup={ movePage } /> / { store.pageMax } ]
     </li>
-    <li>
+    <li class="list-inline-item">
       <button class="btn btn-default"
         disabled={ store.page >= store.pageMax }
         data-page={ store.page + 1 }

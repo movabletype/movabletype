@@ -3,21 +3,21 @@
 
 <MTSetVarBlock name="system_msg">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="danger"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success"
      rebuild="all"
      can_close="0">
     <__trans phrase="Your changes have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </MTSetVarBlock>
 

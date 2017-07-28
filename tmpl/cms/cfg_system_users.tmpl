@@ -4,27 +4,27 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error" escape="html">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="Your settings have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="config_warning">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="info"
      class="info"
      can_close="0">
     <mt:var name="config_warning">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 
@@ -82,7 +82,7 @@ function clearNotifyUsers() {
       </mt:if>
       </span>
       <mt:unless name="commenter_registration_readonly">
-      <a href="<mt:var name="script_url">?__mode=dialog_select_sysadmin&amp;multi=1&amp;idfield=notify_user_id&amp;namefield=notify_user_name" class="mt-open-dialog mt-modal-open">
+      <a href="<mt:var name="script_url">?__mode=dialog_select_sysadmin&amp;multi=1&amp;idfield=notify_user_id&amp;namefield=notify_user_name" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
         <__trans phrase="Select system administrators">
       </a>
       </mt:unless>
@@ -173,8 +173,12 @@ function clearNotifyUsers() {
       </mt:if>
       </span>
       <mt:unless name="new_user_default_website_id_readonly">
-        <a id="select-website-link" href="<mt:var name="script_url">?__mode=dialog_select_website&amp;multi=0&amp;idfield=new_user_default_website_id&amp;namefield=new_user_default_website_name" class="mt-open-dialog mt-modal-open"><mt:if name="new_user_default_website_id">
-          <__trans phrase="Change website"><mt:else><__trans phrase="Select website"></mt:if>
+        <a id="select-website-link" href="<mt:var name="script_url">?__mode=dialog_select_website&amp;multi=0&amp;idfield=new_user_default_website_id&amp;namefield=new_user_default_website_name" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+          <mt:if name="new_user_default_website_id">
+            <__trans phrase="Change website">
+          <mt:else>
+            <__trans phrase="Select website">
+          </mt:if>
         </a>
       </mt:unless>
     </mtapp:setting>

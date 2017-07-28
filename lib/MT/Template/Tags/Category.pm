@@ -1186,7 +1186,7 @@ sub _hdlr_is_ancestor {
         {   blog_id => $blog_id,
             label   => $args->{'child'}
         }
-    ) || undef;
+    );
     while ( my $child = $iter->() ) {
         if ( $cat->is_ancestor($child) ) {
             $iter->end;

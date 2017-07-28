@@ -504,6 +504,7 @@ sub import {
     MT::CMS::Import::do_import($app) or return;
 
     if ( !$param->{import_success} ) {
+        chomp $param->{error};
         return $app->error(
             $app->translate(
                 'An error occurred during the import process: [_1]. Please check your import file.',

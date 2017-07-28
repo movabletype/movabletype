@@ -417,9 +417,9 @@ BEGIN {
                         my $blog = MT->app ? MT->app->blog : undef;
                         require MT::Util;
                         my $now = MT::Util::epoch2ts( $blog, time() );
-                        my $from   = $args->{from}   || undef;
-                        my $to     = $args->{to}     || undef;
-                        my $origin = $args->{origin} || undef;
+                        my $from   = $args->{from}   || '';
+                        my $to     = $args->{to}     || '';
+                        my $origin = $args->{origin} || '';
                         $from =~ s/\D//g;
                         $to =~ s/\D//g;
                         $origin =~ s/\D//g;
@@ -813,13 +813,14 @@ BEGIN {
                             ? 'author_id'
                             : 'created_by';
                         my %author_id
-                            = map { $_->$col => 1 if $_->$col } @$objs;
+                            = map { ( $_->$col ) ? ( $_->$col => 1 ) : () } @$objs;
                         my @authors = MT->model('author')
                             ->load( { id => [ keys %author_id ] } );
                         my %nickname
-                            = map { $_->id => $_->nickname } @authors;
+                            = map { $_->id => defined $_->nickname ? $_->nickname : '' } @authors;
+                        $nickname{0} = ''; # fallback
                         return sort {
-                            $nickname{ $a->$col } cmp $nickname{ $b->$col }
+                            $nickname{ $a->$col || 0 } cmp $nickname{ $b->$col || 0 }
                         } @$objs;
                     },
                 },
@@ -1127,9 +1128,10 @@ BEGIN {
                                     MT->translate('*Website/Blog deleted*');
                                 next;
                             }
-                            if ((   my $site
-                                    = $blog_site_map{ $blog->parent_id }
-                                )
+                            my $site;
+                            if ($blog->parent_id
+                                && ( $site
+                                    = $blog_site_map{ $blog->parent_id } )
                                 && $prop->site_name
                                 )
                             {
@@ -1974,6 +1976,7 @@ BEGIN {
             'SignOffURL' =>
                 { default => 'https://www.typekey.com/t/typekey/logout?', },
             'IdentityURL' => { default => "http://profile.typekey.com/", },
+            'ReturnToURL' => undef,
             'DynamicComments'           => { default => 0, },
             'SignOnPublicKey'           => { default => '', },
             'ThrottleSeconds'           => { default => 20, },

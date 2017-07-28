@@ -289,7 +289,7 @@ sub save_config {
                 $data .= $mgr->{__settings}{$_}{key} . ' ' . $v . "\n";
             }
         }
-        else {
+        elsif ( defined $settings->{$_} and $settings->{$_} ne '' ) {
             $data
                 .= $mgr->{__settings}{$_}{key} . ' ' . $settings->{$_} . "\n";
         }

@@ -1734,6 +1734,9 @@ function resizeModal() {
   } else {
     modalHeight = $iframeContents.find('body > *:first').outerHeight(true);
   }
+  if ( modalHeight < 500 ) {
+    modalHeight = 500;
+  }
   $('.mt-modal .modal-content').css('padding-bottom', modalHeight);
 }
 

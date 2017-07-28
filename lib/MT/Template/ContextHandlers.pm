@@ -48,9 +48,7 @@ sub core_tags {
             'App:Setting'   => \&MT::Template::Tags::App::_hdlr_app_setting,
             'App:Widget'    => \&MT::Template::Tags::App::_hdlr_app_widget,
             'App:StatusMsg' => \&MT::Template::Tags::App::_hdlr_app_statusmsg,
-            'App:NewStatusMsg' =>
-                \&MT::Template::Tags::App::_hdlr_app_new_statusmsg,
-            'App:Listing' => \&MT::Template::Tags::App::_hdlr_app_listing,
+            'App:Listing'   => \&MT::Template::Tags::App::_hdlr_app_listing,
             'App:SettingGroup' =>
                 \&MT::Template::Tags::App::_hdlr_app_setting_group,
             'App:Form' => \&MT::Template::Tags::App::_hdlr_app_form,
@@ -3155,9 +3153,18 @@ sub _hdlr_app_setting {
     else {
         $label_class = 'field-' . $label_class;
     }
-    my $indent_css = "";
+
+    my $style = "";
     if ($indent) {
-        $indent_css = " style=\"padding-left: " . $indent . "px;\"";
+        if ( !$shown ) {
+            $style = qq{ style="padding-left: ${indent}px; display: none;"};
+        }
+        else {
+            $style = qq{ style="padding-left: ${indent}px;"};
+        }
+    }
+    elsif ( !$shown ) {
+        $style = ' style="display: none;"';
     }
 
     # 'Required' indicator plus CSS class
@@ -3170,12 +3177,11 @@ sub _hdlr_app_setting {
     # $insides =~ s/(<\/textarea>)\s*$/$1<\/div>/g;
 
     my $class = $args->{class} || "";
-    $class = ( $class eq '' ) ? 'hidden' : $class . ' hidden' unless $shown;
 
     if ( $args->{no_grid} ) {
         if ( $args->{no_header} ) {
             return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field$req_class $label_class $class"$indent_css>
+    <div id="$id-field" class="field$req_class $label_class $class"$style>
         <div class="field-content $content_class">
           $insides$hint$warning
         </div>
@@ -3184,7 +3190,7 @@ EOT
         }
         else {
             return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field$req_class $label_class $class"$indent_css>
+    <div id="$id-field" class="field$req_class $label_class $class"$style>
         <div class="field-header">
           <label id="$id-label" for="$id">$label$req</label>
         </div>
@@ -3197,7 +3203,7 @@ EOT
     }
     elsif ( $args->{no_header} ) {
         return $ctx->build(<<"EOT");
-    <div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
+    <div id="$id-field" class="row form-group field$req_class $label_class $class"$style>
         <div class="col-md-12 col-sm-12 field-content $content_class">
           $insides$hint$warning
         </div>
@@ -3206,7 +3212,7 @@ EOT
     }
     else {
         return $ctx->build(<<"EOT");
-    <div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
+    <div id="$id-field" class="row form-group field$req_class $label_class $class"$style>
         <div class="col-md-2 col-sm-2 field-header">
           <label id="$id-label" for="$id" class="control-label text-right pull-right">$label$req</label>
         </div>
@@ -3288,6 +3294,7 @@ sub _hdlr_app_widget {
     my $label_onclick = $args->{label_onclick} || "";
     my $header_action = $args->{header_action} || "";
     my $closable      = $args->{can_close} ? 1 : 0;
+    my $hidden        = $args->{hidden};
     if ($closable) {
         $header_action
             = qq{<button type="button" class="close remove-widget"><span>&times;</span></button>};
@@ -3300,7 +3307,7 @@ sub _hdlr_app_widget {
     elsif ($label_link) {
         $widget_header = "\n<a href=\"$label_link\"><span>$label</span></a>";
     }
-    else {
+    elsif (defined $label) {
         $widget_header = "\n<span>$label</span>";
     }
     my $token    = $ctx->var('magic_token')     || '';
@@ -3336,6 +3343,10 @@ sub _hdlr_app_widget {
         : "";
     my $tabbed       = $args->{tabbed} ? ' mt:delegate="tab-container"' : "";
     my $header_class = $tabbed         ? 'widget-header-tabs'           : '';
+    my $style        = '';
+    if ($hidden) {
+        $style = ' style="display: none;"';
+    }
     my $return_args = $app->make_return_args;
     $return_args = encode_html($return_args);
     my $cgi = $app->uri;
@@ -3355,18 +3366,18 @@ $insides
 EOT
     }
     my $widget = <<"EOT";
-<div id="$id" class="panel panel-default widget $class"$tabbed>
-  <div class="panel-heading widget-header $header_class">
+<div id="$id" class="card widget $class"$tabbed$style>
+  <div class="card-header widget-header $header_class">
     <div class="widget-action">$header_action</div>
     <div class="widget-label">$widget_header</div>
   </div>
-  <div class="panel-body widget-content">
+  <div class="card-block widget-content">
     $insides
   </div>
 EOT
     if ($widget_footer) {
         $widget .= <<"EOT";
-  <div class="panel-footer widget-footer">$widget_footer</div>$corners
+  <div class="card-footer widget-footer">$widget_footer</div>$corners
 EOT
     }
     $widget .= <<"EOT";
@@ -3403,94 +3414,15 @@ Accepted values: "all", "index".
 
 sub _hdlr_app_statusmsg {
     my ( $ctx, $args, $cond ) = @_;
-    my $app     = MT->instance;
-    my $id      = $args->{id};
-    my $class   = $args->{class} || 'info';
-    my $msg     = $ctx->slurp;
-    my $rebuild = $args->{rebuild} || '';
-    my $no_link = $args->{no_link} || '';
-    my $blog_id = $ctx->var('blog_id');
-    my $blog    = $ctx->stash('blog');
-    if ( !$blog && $blog_id ) {
-        $blog = MT->model('blog')->load($blog_id);
-    }
-    if ( $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
-        my $link_l
-            = $no_link
-            ? ''
-            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">';
-        my $link_r = $no_link ? '' : '</a>';
-        my $obj_type
-            = $rebuild eq 'blog'
-            ? MT->translate('blog(s)')
-            : MT->translate('website(s)');
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your [_3] to see these changes take effect." params="$link_l%%$link_r%%$obj_type">};
-    }
-    elsif (
-        $blog && $app->user
-        and $app->user->can_do(
-            'rebuild',
-            at_least_one => 1,
-            blog_id      => $blog->id,
-        )
-        )
-    {
-        $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">}
-            if $rebuild eq 'all';
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">}
-            if $rebuild eq 'index';
-    }
-    else {
-        $rebuild = '';
-    }
-    my $close = '';
-    if ( $id && ( $args->{can_close} || ( !exists $args->{can_close} ) ) ) {
-        $close
-            = qq{<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>};
-    }
-    $id    = defined $id    ? qq{ id="$id"}      : "";
-    $class = defined $class ? qq{msg msg-$class} : "msg";
-    return $ctx->build(<<"EOT");
-    <div$id class="$class"><p class="msg-text">$msg $rebuild</p>$close</div>
-EOT
-}
-
-=head2 App:NewStatusMsg
-
-An application template tag that outputs a MT status message.
-
-B<Attributes:>
-
-=over 4
-
-=item * id (optional)
-
-=item * class (optional; default "info")
-
-=item * rebuild (optional)
-
-Accepted values: "all", "index".
-
-=item * can_close (optional; default "1")
-
-=back
-
-=for tags application
-
-=cut
-
-sub _hdlr_app_new_statusmsg {
-    my ( $ctx, $args, $cond ) = @_;
     my $app = MT->instance;
     my $id  = $args->{id};
 
     my $class = $args->{class} || 'info';
-    $class = 'warning' if $class eq 'alert';
-    $class = 'danger'  if $class eq 'error';
+    $class =~ s/\balert\b/warning/;
+    $class =~ s/\berror\b/danger/;
+
+    my $hidden = $args->{hidden};
+    my $style = $hidden ? ' style="display: none;"' : '';
 
     my $msg     = $ctx->slurp;
     my $rebuild = $args->{rebuild} || '';
@@ -3542,7 +3474,7 @@ sub _hdlr_app_new_statusmsg {
             = qq{<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>};
     }
     return $ctx->build(<<"EOT");
-    <div$id class="$class">$close $msg $rebuild</div>
+    <div$id class="$class"$style>$close $msg $rebuild</div>
 EOT
 }
 
@@ -3989,7 +3921,7 @@ sub _hdlr_app_page_actions {
             <mt:if name="page">
                     <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>><mt:var name="label"></a></li>
             <mt:else><mt:if name="link">
-                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open"</mt:if>><mt:var name="label"></a></li>
+                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open" data-mt-modal-large</mt:if>><mt:var name="label"></a></li>
             </mt:if></mt:if>
         </mt:loop>
                 </ul>
@@ -4865,7 +4797,7 @@ sub _hdlr_section {
     my $enc = MT->config->PublishCharset || 'UTF-8';
 
     # make cache id
-    my $cache_id = $args->{cache_prefix} || undef;
+    my $cache_id = $args->{cache_prefix} || '';
 
     my $tmpl = $ctx->{__stash}{template};
     $cache_id .= ':' . $tmpl->id if $tmpl && $tmpl->id;

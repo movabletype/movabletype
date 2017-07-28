@@ -13,12 +13,12 @@
   <input type="hidden" name="set_static_file_to" value="<mt:var name="static_file" escape="html">" />
   <input type="hidden" name="default_language" value="<mt:var name="default_language" escape="html">" />
 <mt:if name="missing_db">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="missing-db"
      class="error"
      can_close="0">
     <__trans phrase="The following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your blog's data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the 'Retry' button.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="optional">
   <p class="intro">
@@ -27,12 +27,12 @@
   <p id="package-list-msg" class="note"><__trans phrase="Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>" params="toggleList()"></p>
 </mt:if>
 <mt:if name="required">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="required"
      class="error"
      can_close="0">
     <__trans phrase="One or more Perl modules required by Movable Type could not be found.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   <p><__trans phrase="The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the 'Retry' button to re-test for these packages."></p>
 </mt:if>
 
@@ -42,28 +42,28 @@
 </mt:if>
 
 <mt:if name="missing_db">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="missing_db"
      class="error"
      can_close="0">
     <__trans phrase="Missing Database Modules">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="optional">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="optional"
      class="info"
      can_close="0">
     <__trans phrase="Missing Optional Modules">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="required">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="required"
      class="error"
      can_close="0">
     <__trans phrase="Missing Required Modules">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 
 <dl id="packages-list">

@@ -132,7 +132,7 @@ my %xml_tests = (
         '&amp;#0; &amp;#2; &#67; &amp;#x2; &#x67; &amp;#x19; &amp;#25',
 );
 
-for my $test ( keys %xml_tests ) {
+for my $test ( sort keys %xml_tests ) {
     if ( ref( $xml_tests{$test} ) eq 'ARRAY' ) {
         is( encode_xml($test), $xml_tests{$test}[0] );    #65 #69 #73
         is( decode_xml( $xml_tests{$test}[0] ), $test );  #66 #70 #74
@@ -434,7 +434,7 @@ my $script_tag_encoded
 is( encode_js($script_tag), $script_tag_encoded, 'encode_js()' );
 is( 'description',          'description',       "encode_js('description')" );
 is( decode_js($script_tag_encoded), $script_tag,      'decode_js()' );
-is( encode_php("\\\$\"\n\r\t"),     "\\\\\$\"\n\r\t", 'encode_php()' );
+is( encode_php("\\\$\"\n\r\t", '' ),     "\\\\\$\"\n\r\t", 'encode_php()' );
 is( encode_php( "\\\$\"\n\r\t", 'qq' ),
     '\\\\\\$\\"\\n\\r\\t', 'encode_php() (qq)' );
 is( encode_php( "\\\$\"\n\r\t", 'here' ),

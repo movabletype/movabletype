@@ -1,4 +1,5 @@
-  </pre>
+    </pre>
+  </div>
 </div>
 
 <script type="text/javascript">
@@ -13,7 +14,7 @@ function RestoredAssetIds () {
 }
 
 <mt:if name="open_dialog">
-$.fn.mtModal.open(
+jQuery.fn.mtModal.open(
   '<mt:var name="script_url">?__mode=<mt:var name="dialog_mode">&<mt:var name="dialog_params">',
   { large: true }
 );
@@ -29,12 +30,12 @@ $.fn.mtModal.open(
 <p><__trans phrase="Make sure that you remove the files that you restored from the 'import' folder, so that if/when you run the restore process again, those files will not be re-restored."></p>
     </mt:unless>
   <mt:else>
-<mtapp:newstatusmsg
+<mtapp:statusmsg
    id="error"
    class="danger"
    can_close="0">
   <__trans phrase="An error occurred during the restore process: [_1] Please check activity log for more details." params="<mt:var name="error">">
-</mtapp:newstatusmsg>
+</mtapp:statusmsg>
   </mt:if>
 </mt:unless>
 

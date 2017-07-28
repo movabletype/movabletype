@@ -4,68 +4,68 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="error"
      class="error"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="no_writedir">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="no-writedir"
      class="error"
      can_close="0">
     <__trans phrase="Error: Movable Type was not able to create a directory for publishing your [_1]. If you create this directory yourself, grant write permission to the web server." params="<mt:var name="object_label" lower_case="1">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 <mt:else>
   <mt:if name="no_cachedir">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="no-cachedir"
      class="error"
      can_close="0">
     <__trans phrase="Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your site directory." params="templates_c">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   <mt:else>
     <mt:if name="no_writecache">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="no-writecache"
      class="error"
      can_close="0">
     <__trans phrase="Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your site directory." params="templates_c">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
     <mt:else>
       <mt:if name="no_cache_path">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="no-cache-path"
      class="error"
      can_close="0">
     <__trans phrase="Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your site directory." params="cache">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
       <mt:else>
         <mt:if name="no_write_cache_path">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="no-write-cache-path"
      class="error"
      can_close="0">
     <__trans phrase="Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your site directory." params="cache">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
         <mt:else>
           <mt:if name="saved">
             <mt:if name="can_rebuild">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success"
      rebuild="all"
      can_close="0">
     <__trans phrase="Your preferences have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
             <mt:else>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="Your preferences have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
             </mt:if>
           </mt:if>
         </mt:if>
@@ -270,7 +270,7 @@
         <input type="text" name="site_url" id="site_url" value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" class="form-control text website-url-field mt-edit-field required" />
       </div>
     </mt:if>
-      <p class="alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none">
+      <p class="text-warning alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none">
         <__trans phrase="Warning: Changing the [_1] URL can result in breaking all the links in your [_1]." params="<mt:var name="object_label" capitalize="1">%%">
         </p>
     <mt:if name="is_blog">
@@ -305,7 +305,7 @@
         <label for="use_absolute"><__trans phrase="Use absolute path"></label>
       </div>
       </mt:if></mt:if>
-      <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none">
+      <p class="text-warning alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none">
         <__trans phrase="Warning: Changing the [_1] root requires a complete publish of your [_1]." params="<mt:var name="object_label" capitalize="1">">
       </p>
 
@@ -336,7 +336,7 @@
       <label for="enable_archive_paths"><__trans phrase="Publish archives outside of [_1] Root" params="<mt:var name="object_label" capitalize="1">"></label>
     </mtapp:setting>
 
-    <div id="enable_archive_paths_prefs"<mt:unless name="enable_archive_paths"> class="hidden"</mt:unless>>
+    <div id="enable_archive_paths_prefs"<mt:unless name="enable_archive_paths"> style="display: none;"</mt:unless>>
       <mtapp:setting
          id="archive_url"
          class="url-field"
@@ -434,7 +434,7 @@
           <input type="text" name="archive_url" id="archive_url" value="<mt:var name="archive_url" encode_html="1" default="$site_url">" class="form-control text website-url-field mt-edit-field<mt:unless name="enable_archive_paths"> show-input</mt:unless> required" />
         </div>
       </mt:if>
-        <p class="alert-warning-inline icon-left icon-warning" id="archive_url-warning" style="display: none">
+        <p class="text-warning alert-warning-inline icon-left icon-warning" id="archive_url-warning" style="display: none">
           <__trans phrase="Warning: Changing the archive URL can result in breaking all links in your [_1]." params="<mt:var name="object_label" lower_case="1">">
         </p>
       <mt:if name="is_blog">
@@ -475,7 +475,7 @@
           <input type="text" name="archive_path" id="archive_path" value="<mt:if name="archive_path_absolute"><mt:var name="archive_path" escape="html"><mt:else><mt:var name="site_path" escape="html" ></mt:if>" class="form-control website-path-field mt-edit-field<mt:unless name="enable_archive_paths"> show-input</mt:unless> required<mt:if name="sitepath_limited"> limited_path</mt:if>" />
         </div>
         </mt:if>
-        <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none">
+        <p class="text-warning alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none">
           <__trans phrase="Warning: Changing the archive path can result in breaking all links in your [_1]." params="<mt:var name="object_label" lower_case="1">">
           </p>
         <mt:if name="is_blog">
@@ -551,7 +551,7 @@
       </mt:if>
     </mt:loop>
     <mt:unless name="entry_archive_types">
-      <p><span class="alert-warning-inline"><__trans phrase="No archives are active"></span></p>
+      <p><span class="text-warning alert-warning-inline"><__trans phrase="No archives are active"></span></p>
       <input type="hidden" name="no_archives_are_active" id="no_archives_are_active" value="1" />
     </mt:unless>
     <mt:if name="is_blog">
@@ -599,12 +599,12 @@
   <mtapp:settinggroup id="revision-history-settings">
     <h5><__trans phrase="Revision History"></h5>
   <mt:unless name="master_revision_switch">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="master_revision_off"
        class="error"
        can_close="0">
       <__trans phrase="Note: Revision History is currently disabled at the system level.">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   </mt:unless>
 
     <mtapp:setting
@@ -651,11 +651,11 @@
         <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
       </mt:loop>
       </select>
-      <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination hidden" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" />
+      <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" style="display: none;" />
       <span class="upload-extra-path">
         / <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
       </span>
-      <div class="option" >
+      <div class="form-group option">
         <input type="checkbox" name="allow_to_change_at_upload" id="allow_to_change_at_upload" value="1"<mt:if name="allow_to_change_at_upload"> checked="checked"</mt:if> class="cb" />
         <label for="allow_to_change_at_upload"><__trans phrase="Allow to change at upload"></label>
       </div>
@@ -719,11 +719,6 @@ function setLicense() {
 var e = MT.Util.getByID(<mt:if name="cc_license">'has-license'<mt:else>'no-license'</mt:if>);
 if (e) e.style.display = 'block';
 
-
-    jQuery('input#enable_archive_paths').click(function() {
-        jQuery('div#enable_archive_paths_prefs').toggleClass('hidden');
-    });
-
     <mt:if name="sitepath_limited">
     function is_path_limit_clear( path_ ) {
         re = new RegExp("^<mt:var name="sitepath_limited" escape="js" escape="js">$", "i");
@@ -737,6 +732,11 @@ if (e) e.style.display = 'block';
         return true;
     }
     </mt:if>
+
+jQuery(window).load(function () {
+    jQuery('input#enable_archive_paths').change(function() {
+        jQuery('div#enable_archive_paths_prefs').toggle();
+    });
 
     jQuery.mtValidateAddRules({
 <mt:if name="is_blog">
@@ -853,6 +853,8 @@ if (e) e.style.display = 'block';
     });
     jQuery.mtUseAbsolute();
 </mt:if>
+
+});
 
 /* ]]> */
 </script>

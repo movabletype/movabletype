@@ -57,7 +57,7 @@ sub save_config {
     my $app = shift;
 
     my $q          = $app->param;
-    my $plugin_sig = $q->param('plugin_sig');
+    my $plugin_sig = $q->param('plugin_sig') || '';
     my $profile    = $MT::Plugins{$plugin_sig};
     my $blog_id    = $q->param('blog_id');
 
@@ -101,7 +101,7 @@ sub reset_config {
     my $app = shift;
 
     my $q          = $app->param;
-    my $plugin_sig = $q->param('plugin_sig');
+    my $plugin_sig = $q->param('plugin_sig') || '';
     my $profile    = $MT::Plugins{$plugin_sig};
     my $blog_id    = $q->param('blog_id');
 

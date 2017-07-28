@@ -18,6 +18,9 @@ if ( $^O eq 'MSWin32' ) {
     $app->config->TempDir('C:\Windows\Temp');
 }
 
+$Data::Dumper::Sortkeys = 1;
+$Data::Dumper::Indent = 0;
+
 my $suite = suite();
 test_data_api( $suite, { author_id => 1, is_superuser => 1 } );
 

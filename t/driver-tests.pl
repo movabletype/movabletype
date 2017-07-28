@@ -2455,7 +2455,7 @@ $vals = {
     modified_by => 'foo',
 };
 $foo->set_values($vals);
-for my $col ( keys %$vals ) {
+for my $col ( sort keys %$vals ) {
     is( $vals->{$col}, $foo->column($col), $col );
 }
 
@@ -2481,12 +2481,12 @@ my $chk = Foo->load( $binmonster->id );
 if ($chk) {
     my $chk_data = $chk->data;
     my $chk_vals = $srlzr->unserialize($chk_data);
-    foreach ( keys %$vals ) {
+    foreach ( sort keys %$vals ) {
         is( $$chk_vals->{$_}, $vals->{$_}, $_ );
     }
 }
 else {
-    foreach ( keys %$vals ) {
+    foreach ( sort keys %$vals ) {
         ok( 0, $_ );
     }
 }

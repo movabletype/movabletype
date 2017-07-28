@@ -81,12 +81,12 @@ function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerN
   <input type="hidden" name="old_rebuild_triggers" id="old_rebuild_triggers" value="<mt:var name="rebuild_triggers">" />
   <p><a href="<mt:var name="script_url">?__mode=multiblog_add_trigger&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create mt-open-dialog mt-modal-open" data-mt-modal-large><__trans phrase="Create Rebuild Trigger"></a></p>
   <mt:unless name="rebuilds_loop">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="info"
        class="info"
        can_close="0">
       <__trans phrase="You have not defined any rebuild triggers.">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   </mt:unless>
   <div id="multiblog_blog_list" class="listing hide_actions<mt:unless name="rebuilds_loop"> hidden</mt:unless>"></div>
 </mtapp:setting>

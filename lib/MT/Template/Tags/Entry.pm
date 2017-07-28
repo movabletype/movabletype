@@ -515,7 +515,7 @@ sub _hdlr_entries {
             };
             if ( !$entries ) {
                 if ( $category_arg !~ m/\bNOT\b/i ) {
-                    return '' unless @cat_ids;
+                    return MT::Template::Context::_hdlr_pass_tokens_else(@_) unless @cat_ids;
                     $args{join} = MT::Placement->join_on(
                         'entry_id',
                         {   category_id => \@cat_ids,
@@ -588,7 +588,7 @@ sub _hdlr_entries {
             };
             if ( !$entries ) {
                 if ( $tag_arg !~ m/\bNOT\b/i ) {
-                    return '' unless @tag_ids;
+                    return MT::Template::Context::_hdlr_pass_tokens_else(@_) unless @tag_ids;
                     $args{join} = MT::ObjectTag->join_on(
                         'object_id',
                         {   tag_id            => \@tag_ids,
@@ -674,7 +674,7 @@ sub _hdlr_entries {
             }
         }
         if ($need_join) {
-            my $scored_by = $args->{scored_by} || undef;
+            my $scored_by = $args->{scored_by};
             if ($scored_by) {
                 require MT::Author;
                 my $author = MT::Author->load( { name => $scored_by } )
@@ -1197,12 +1197,12 @@ sub _hdlr_entries {
         local $ctx->{__stash}{entry}         = $e;
         local $ctx->{current_timestamp}      = $e->authored_on;
         local $ctx->{modification_timestamp} = $e->modified_on;
-        my $this_day = substr $e->authored_on, 0, 8;
+        my $this_day = substr( ( $e->authored_on || '' ), 0, 8 );
         my $next_day = $this_day;
         my $footer   = 0;
 
         if ( defined $entries[ $i + 1 ] ) {
-            $next_day = substr( $entries[ $i + 1 ]->authored_on, 0, 8 );
+            $next_day = substr( ( $entries[ $i + 1 ]->authored_on || '' ), 0, 8 );
             $footer = $this_day ne $next_day;
         }
         else { $footer++ }

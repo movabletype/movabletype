@@ -4,48 +4,48 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error" escape="html">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="Your settings have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="config_warning">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="info"
      class="info"
      can_close="0">
     <mt:var name="config_warning">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="image_driver" eq="imager">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="info"
      class="info"
      can_close="0">
     <__trans phrase="Imager does not support ImageQualityPng.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="email_sent"
      class="success"
      can_close="0">
     <__trans phrase="A test mail was sent.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 <mt:if name="warning_sitepath_limit">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="warning_sitepath_limit"
      class="info">
     <__trans phrase="One or more of your websites or blogs are not following the base site path (value of BaseSitePath) restriction.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 
@@ -59,11 +59,17 @@
      id="system_email_address"
      required="1"
      label="<__trans phrase="System Email Address">">
-    <div class="form-inline">
+    <div class="input-group">
       <input type="text"<mt:if name="config_warnings_emailaddressmain"> disabled="disabled"</mt:if> name="system_email_address" id="system_email_address" class="form-control text med required email"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> style="width: 50%;" />
-      <a href="#" id="send-test-email" class="button btn btn-default" data-toggle="modal" data-target="#test-email-dialog"><__trans phrase="Send Test Mail"></a>
+      <div class="input-group-btn">
+        <button id="send-test-email" class="button btn btn-default" data-toggle="modal" data-target="#test-email-dialog" onclick="return false;">
+          <__trans phrase="Send Test Mail">
+        </button>
+      </div>
     </div>
-    <p class="text-muted hint"><__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events."></p>
+    <p class="text-muted hint">
+      <__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">
+    </p>
   </mt:app:setting>
 
   <mtapp:settinggroup id="system-support-settings">
@@ -214,7 +220,7 @@
       </mt:if>
     </span>
     <mt:unless name="config_warnings_lockoutnotifyto">
-    <a href="<mt:var name="script_url">?__mode=dialog_select_sysadmin&amp;multi=1&amp;idfield=lockout-notify-ids&amp;namefield=lockout-notify-names" class="mt-open-dialog mt-modal-open">
+    <a href="<mt:var name="script_url">?__mode=dialog_select_sysadmin&amp;multi=1&amp;idfield=lockout-notify-ids&amp;namefield=lockout-notify-names" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
       <__trans phrase="Select">
     </a>
     </mt:unless>
@@ -284,20 +290,20 @@
 </form>
 
 <div id="test-email-dialog" class="modal fade" tabindex="-1">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
+        <h5 class="modal-title"><__trans phrase="Send Mail To"></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title"><__trans phrase="Send Mail To"></h4>
       </div>
       <div class="modal-body">
-        <mtapp:newstatusmsg
+        <mtapp:statusmsg
            id="email_sent_error"
            class="danger"
            can_close="0"
         >
           <p></p>
-        </mtapp:newstatusmsg>
+        </mtapp:statusmsg>
         <mtapp:setting
            id="to_email_address"
            label="<__trans phrase="Send Mail To">"
@@ -331,16 +337,6 @@
   function validate (f) {
       return true;
   }
-
-  jQuery(document).ready( function() {
-      jQuery('#email_sent').hide();
-  });
-
-  jQuery('#test-email-dialog').on('show.bs.modal', function (e) {
-    jQuery('span.indicator').hide();
-    jQuery('#email_sent').hide();
-    jQuery('#email_sent_error').hide();
-  });
 
   function sendTestEmail() {
     jQuery('#email_sent').hide();
@@ -376,6 +372,21 @@
     return false;
   }
 
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+  jQuery(document).ready( function() {
+      jQuery('#email_sent').hide();
+  });
+
+  jQuery('#test-email-dialog').on('show.bs.modal', function (e) {
+    jQuery('span.indicator').hide();
+    jQuery('#email_sent').hide();
+    jQuery('#email_sent_error').hide();
+  });
+
   jQuery('input#system-performance-logging').click(function() {
       jQuery('div#system-performance-logging-option').toggleClass('hidden');
   });
@@ -406,9 +417,6 @@
       jQuery('#auto-change-image-quality').removeAttr('disabled');
       if ( !jQuery(this).find('input:not(:disabled), select:not(:disabled)').filter('input:visible, select:visible').mtValidate('simple') ) return false;
   });
-
-/* ]]> */
-</script>
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

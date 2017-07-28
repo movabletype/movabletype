@@ -117,7 +117,7 @@ sub to_object {
         };
 
         if ( $d->{not_to} ) {
-            foreach my $k ( keys %{ $d->{not_to} } ) {
+            foreach my $k ( sort keys %{ $d->{not_to} } ) {
                 delete $expected_values->{$k};
                 my $value = delete $values->{$k};
                 isnt( $value, $d->{not_to}{$k}, 'converted data:' . $k );

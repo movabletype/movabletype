@@ -61,10 +61,7 @@ sub core_parameters {
                     text_more => 'like'
                 },
                 'sort' => 'authored_on',
-                terms  => {
-                    status => 2,    #MT::Entry::RELEASE()
-                    class => $app->param('archive_type') ? 'entry' : '*',
-                },
+                terms  => \&_filter_terms,
                 filter_types => {
                     author   => \&_join_author,
                     category => \&_join_category,
@@ -82,6 +79,22 @@ sub core_parameters {
     }
 
     $core;
+}
+
+sub _filter_terms {
+    my $app = shift;
+
+    my $class_param = scalar $app->param('class');
+    my $class
+        = $class_param
+        && ( 'entry' eq lc $class_param || 'page' eq lc $class_param )
+        ? lc $class_param
+        : $app->param('archive_type') ? 'entry'
+        :                               '*';
+    return {
+        status => 2,        #MT::Entry::RELEASE()
+        class  => $class,
+    };
 }
 
 sub init_request {
@@ -511,10 +524,17 @@ sub search_terms {
 
     my $params
         = $app->registry( $app->mode, 'types', $app->{searchparam}{Type} );
-    my %def_terms
-        = exists( $params->{terms} )
-        ? %{ $params->{terms} }
-        : ();
+    my %def_terms = ();
+    if ( exists( $params->{terms} ) ) {
+        if ( 'HASH' ne ref $params->{terms} ) {
+            my $code = $params->{terms};
+            $code = MT->handler_to_coderef($code);
+            eval { %def_terms = %{ $code->( $app ) }; };
+        }
+        else {
+            %def_terms = %{ $params->{terms} };
+        }
+    }
     delete $def_terms{'plugin'};
 
     if ( my $incl_blogs = $app->{searchparam}{IncludeBlogs} ) {
@@ -690,7 +710,7 @@ sub first_blog_id {
     else {
 
         # if IncludeBlogs is empty or all, get the first blog id available
-        if (   $q->param('IncludeBlogs') eq ''
+        if (   !$q->param('IncludeBlogs')
             || $q->param('IncludeBlogs') eq 'all' )
         {
             my @blogs = $app->model('blog')

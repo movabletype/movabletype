@@ -8,17 +8,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="stylesheet" href="<mt:var name="static_uri">bootstrap-3.3.7/css/bootstrap.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
-  <link rel="stylesheet" href="//cdn.movabletype.net/libs/font-awesome/4.5.0/css/font-awesome.min.css" />
-  <link rel="stylesheet" href="//cdn.movabletype.net/libs/select2/4.0.1/css/select2.min.css" />
-  <link rel="stylesheet" href="<mt:var name="static_uri">mt-net/icons.css?517cb0a" />
-  <link rel="stylesheet" href="<mt:var name="static_uri">mt-net/bundle.min.css?27250d7" />
-  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/selector.css" />
-  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/footer.css" />
-  <mt:var name="css_include">
-
   <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
   <mt:include name="include/icon.tmpl">
+
+  <link rel="stylesheet" href="<mt:var name="static_uri">lib/tether/css/tether.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/mt.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+
+  <link rel="stylesheet" href="//cdn.movabletype.net/libs/font-awesome/4.5.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="<mt:var name="static_uri">mt-net/icons.css?517cb0a" />
+
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/selector.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/caret.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <mt:var name="css_include">
 
   <mt:include name="include/libjs.tmpl">
 
@@ -40,11 +41,22 @@
 
   <mt:var name="html_head">
 
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:if name="local_lang_id" ne="en-us">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
+  </mt:if>
+  <mt:unless name="optimize_ui">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mt:else>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  </mt:unless>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/mt/util.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+
   <mt:var name="js_include">
 </head>
-<body style="margin-bottom: 100px;">
+<body>
   <mt:include name="include/selector.tmpl">
-  <div class="container body">
+  <div class="container-fluid body" style="min-height: 30rem;">
     <div class="row">
       <mt:if name="has_menu">
       <mt:include name="include/sidebar.tmpl">

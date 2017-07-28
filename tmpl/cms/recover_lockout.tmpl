@@ -5,12 +5,12 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
-<mtapp:newstatusmsg
+<mtapp:statusmsg
    id="recovred"
    class="success"
    can_close="0">
 <__trans phrase="User '[_1]' has been unlocked." params="<mt:var name="author_nickname" encode_html="1" />">
-</mtapp:newstatusmsg>
+</mtapp:statusmsg>
 
 <mt:if name="author_edit_link">
 <mt:setvarblock name="action_buttons">

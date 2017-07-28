@@ -3,25 +3,25 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="saved_commenter">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved-commenter"
      class="success">
     <__trans phrase="Your changes have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="trusted">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="trusted"
      class="success">
     <__trans phrase="The commenter has been trusted.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="banned">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="banned"
      class="success">
     <__trans phrase="The commenter has been banned.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 

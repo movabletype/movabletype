@@ -255,7 +255,7 @@ sub bulk_update {
             sort { $a->id <=> $b->id } @old_objects
     );
     require Digest::MD5;
-    if ( $app->param('checksum') ne Digest::MD5::md5_hex($text) ) {
+    if ( ( $app->param('checksum') || '' ) ne Digest::MD5::md5_hex($text) ) {
         return $app->json_error(
             $app->translate(
                 'Failed to update [_1]: Some of [_2] were changed after you opened this page.',
@@ -462,7 +462,7 @@ sub category_do_add {
         $app->run_callbacks( 'cms_save_permission_filter.' . $type,
             $app, undef )
             || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            $app->translate( "Permission denied" ) );
     }
 
     my $filter_result
@@ -679,9 +679,9 @@ sub pre_save {
         return $eh->error(
             $app->translate(
                 "The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.",
-                $_->label
+                $_->basename
             )
-        ) if $_->basename eq $obj->basename;
+        ) if defined $obj->basename and $_->basename eq $obj->basename;
     }
     return $eh->error(
         $app->translate( "The name '[_1]' is too long!", $obj->label ) )

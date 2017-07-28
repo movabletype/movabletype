@@ -4,44 +4,44 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="danger"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
   <mt:if name="can_rebuild">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success"
      rebuild="all"
      can_close="0">
     <__trans phrase="Your changes have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   <mt:else>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="Your changes have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 </mt:if>
 <mt:if name="saved_image">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved_image"
      class="success">
     <__trans phrase="Your edited image has been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="broken_metadata">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="broken_metadata"
      class="warning"
      can_close="0">
     <__trans phrase="Metadata cannot be updated because Metadata in this image seems to be broken.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 
@@ -108,9 +108,29 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="object_nav">
-<ul class="object-nav">
-  <li id="previous-link"><mt:if name="previous_entry_id"><a href="<mt:var name="script_url">?__mode=view&amp;_type=asset&amp;id=<mt:var name="previous_entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">">&lsaquo; <__trans phrase="Prev"></a><mt:else><span>&lsaquo; <__trans phrase="Prev"></span></mt:if></li>
-  <li id="next-link"><mt:if name="next_entry_id"><a href="<mt:var name="script_url">?__mode=view&amp;_type=asset&amp;id=<mt:var name="next_entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Next"> &rsaquo;</a><mt:else><span><__trans phrase="Next"> &rsaquo;</span></mt:if></li>
+<ul class="object-nav list-inline text-right">
+  <li id="previous-link" class="list-inline-item">
+    <mt:if name="previous_entry_id">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=asset&amp;id=<mt:var name="previous_entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">">
+        &lsaquo; <__trans phrase="Prev">
+      </a>
+    <mt:else>
+      <span>
+        &lsaquo; <__trans phrase="Prev">
+      </span>
+    </mt:if>
+  </li>
+  <li id="next-link" class="list-inline-item">
+    <mt:if name="next_entry_id">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=asset&amp;id=<mt:var name="next_entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">">
+        <__trans phrase="Next"> &rsaquo;
+      </a>
+    <mt:else>
+      <span>
+        <__trans phrase="Next"> &rsaquo;
+      </span>
+    </mt:if>
+  </li>
 </ul>
 </mt:setvarblock>
 
@@ -186,12 +206,12 @@ jQuery(window).load( init );
 
     <div class="row asset-preview asset-type-<mt:var name="asset_type" escape="html" lower_case="1"> line">
     <mt:if name="file_is_missing">
-      <mtapp:newstatusmsg
+      <mtapp:statusmsg
          id="file-missing-error"
          class="danger"
          can_close="0">
         <__trans phrase="[_1] is missing" params="<mt:var name="asset_class_label" escape="html">">
-      </mtapp:newstatusmsg>
+      </mtapp:statusmsg>
     <mt:else>
       <mt:if name="has_thumbnail">
       <div class="col-md-4 asset-preview-thumb picture small">
@@ -200,53 +220,55 @@ jQuery(window).load( init );
         </div>
       </div>
       <mt:elseif name="asset_type" eq="image">
-        <mtapp:newstatusmsg
+        <mtapp:statusmsg
           id="warning-has-no-thumbnail"
           class="warning"
           can_close="0">
           <__trans phrase="Error creating thumbnail file.">
-        </mtapp:newstatusmsg>
+        </mtapp:statusmsg>
       <mt:else>
       <div class="col-md-4 asset-type-icon picture small">
         <img src="<mt:var name="static_uri">images/asset/<mt:var name="asset_type">-45.png" width="45" height="45" />
       </div>
       </mt:if>
     </mt:if>
-    <div class="col-md-8 asset-metadata">
-      <ul class="list-unstyled metadata">
-        <li class="metadata-item asset-name">
-          <strong><__trans phrase="File Name">:</strong>
-            <mt:var name="file_name" escape="html">
-        </li>
-        <li class="metadata-item asset-type">
-          <strong><__trans phrase="Type">:</strong>
-          <mt:var name="asset_class_label" escape="html">
-        </li>
-        <mt:if name="class" eq="image">
-        <li class="metadata-item asset-dimensions">
-          <strong><__trans phrase="Dimensions">:</strong>
-          <mt:var name="image_width" escape="html"> &times; <mt:var name="image_height" escape="html">
-        </li>
-        </mt:if>
-        <li class="metadata-item asset-size">
-          <strong><__trans phrase="File Size">:</strong>
-          <mt:var name="file_size_formatted" escape="html">
-        </li>
-      </ul>
-    </div>
-    <mt:if name="can_edit_image">
-      <mt:if name="asset_type" eq="image">
-        <mt:unless name="file_is_missing">
-          <mt:if name="has_thumbnail">
-    <div class="image-editor">
-      <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">" class="button btn btn-default">
-        <__trans phrase="Edit Image">
-      </a>
-    </div>
+    <div class="col-md-8">
+      <div class="asset-metadata">
+        <ul class="list-unstyled metadata">
+          <li class="metadata-item asset-name">
+            <strong><__trans phrase="File Name">:</strong>
+              <mt:var name="file_name" escape="html">
+          </li>
+          <li class="metadata-item asset-type">
+            <strong><__trans phrase="Type">:</strong>
+            <mt:var name="asset_class_label" escape="html">
+          </li>
+          <mt:if name="class" eq="image">
+          <li class="metadata-item asset-dimensions">
+            <strong><__trans phrase="Dimensions">:</strong>
+            <mt:var name="image_width" escape="html"> &times; <mt:var name="image_height" escape="html">
+          </li>
           </mt:if>
-        </mt:unless>
+          <li class="metadata-item asset-size">
+            <strong><__trans phrase="File Size">:</strong>
+            <mt:var name="file_size_formatted" escape="html">
+          </li>
+        </ul>
+      </div>
+      <mt:if name="can_edit_image">
+        <mt:if name="asset_type" eq="image">
+          <mt:unless name="file_is_missing">
+            <mt:if name="has_thumbnail">
+      <div class="image-editor">
+        <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">" class="button btn btn-default mt-modal-open" data-mt-modal-large>
+          <__trans phrase="Edit Image">
+        </a>
+      </div>
+            </mt:if>
+          </mt:unless>
+        </mt:if>
       </mt:if>
-    </mt:if>
+    </div>
     </div>
 
     <div class="asset-info">

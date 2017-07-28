@@ -48,7 +48,7 @@ my $components = {
 my $mt = MT->instance;
 
 my $tag_count = 0;
-foreach my $c ( keys %$components ) {
+foreach my $c ( sort keys %$components ) {
     next unless $mt->component($c);
     my $tags     = $mt->component($c)->registry('tags');
     my $fn_count = scalar keys( %{ $tags->{function} } );
@@ -63,7 +63,7 @@ foreach my $c ( keys %$components ) {
 
 plan tests => $tag_count;
 
-foreach my $c ( keys %$components ) {
+foreach my $c ( sort keys %$components ) {
     next unless $mt->component($c);
     note("Checking for tag documentation for component $c");
     my $all_docs  = '';
@@ -116,7 +116,7 @@ foreach my $c ( keys %$components ) {
         $doc_names->{$tag} = 1;
     }
 
-    foreach my $tag ( keys %{ $tags->{function} } ) {
+    foreach my $tag ( sort keys %{ $tags->{function} } ) {
         next if $tag eq 'plugin';
         if ( $core_tags && $core_tags->{function}{$tag} ) {
             ok( 1, "component $c, function tag $tag (extends core tag)" );
@@ -127,7 +127,7 @@ foreach my $c ( keys %$components ) {
         }
     }
 
-    foreach my $tag ( keys %{ $tags->{block} } ) {
+    foreach my $tag ( sort keys %{ $tags->{block} } ) {
         next if $tag eq 'plugin';
         $tag =~ s/\?$//;
         if ( $core_tags && $core_tags->{block}{$tag} ) {
@@ -138,7 +138,7 @@ foreach my $c ( keys %$components ) {
         }
     }
 
-    foreach my $tag ( keys %{ $tags->{modifier} } ) {
+    foreach my $tag ( sort keys %{ $tags->{modifier} } ) {
         next if $tag eq 'plugin';
         if ( $core_tags && $core_tags->{modifier}{$tag} ) {
             ok( 1, "component $c, modifier $tag (extends core tag)" );

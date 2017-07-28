@@ -712,9 +712,9 @@ sub list_props {
                 my $blog = MT->app ? MT->app->blog : undef;
                 require MT::Util;
                 my $now = MT::Util::epoch2ts( $blog, time() );
-                my $from   = $args->{from}   || undef;
-                my $to     = $args->{to}     || undef;
-                my $origin = $args->{origin} || undef;
+                my $from   = $args->{from}   || '';
+                my $to     = $args->{to}     || '';
+                my $origin = $args->{origin} || '';
                 $from =~ s/\D//g;
                 $to =~ s/\D//g;
                 $origin =~ s/\D//g;
@@ -1244,7 +1244,7 @@ MT::TBPing->add_callback(
 sub archive_file {
     my $entry = shift;
     my ($at)  = @_;
-    my $blog  = $entry->blog() || return;
+    my $blog  = $entry->blog() || return '';
     unless ($at) {
         $at = $blog->archive_type_preferred || $blog->archive_type;
         return '' if !$at || $at eq 'None';
@@ -1260,7 +1260,9 @@ sub archive_file {
             last;
         }
     }
-    archive_file_for( $entry, $blog, $at );
+    my $file = archive_file_for( $entry, $blog, $at );
+    $file = '' unless defined $file;
+    $file;
 }
 
 sub archive_url {

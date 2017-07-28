@@ -76,7 +76,7 @@ subtest 'search_replace' => sub {
     foreach my $data (@suite) {
         my $params = $data->{params};
         my $query
-            = join( '&', map { $_ . '=' . $params->{$_} } keys %$params );
+            = join( '&', map { $_ . '=' . $params->{$_} } sort keys %$params );
         subtest $query => sub {
             my $app = _run_app(
                 'MT::App::CMS',

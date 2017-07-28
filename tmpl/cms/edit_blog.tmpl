@@ -7,21 +7,21 @@
 
 <mt:setvarblock name="system_msg">
     <mt:if name="error">
-        <mtapp:newstatusmsg
+        <mtapp:statusmsg
            id="generic-error"
            class="error"
            can_close="0">
           <mt:var name="error">
-        </mtapp:newstatusmsg>
+        </mtapp:statusmsg>
     </mt:if>
     <mt:if name="saved">
-        <mtapp:newstatusmsg
+        <mtapp:statusmsg
            id="saved"
            class="success"
            rebuild="all"
            can_close="0">
           <__trans phrase="Your blog configuration has been saved.">
-        </mtapp:newstatusmsg>
+        </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>
 
@@ -45,50 +45,52 @@ function init() {
 </mt:if>
 }
 
-init();
-jQuery.mtUseSubdomain();
-jQuery.mtUseAbsolute();
+jQuery(window).load(function () {
+  init();
+  jQuery.mtUseSubdomain();
+  jQuery.mtUseAbsolute();
 
-jQuery.mtValidateAddRules({
-  '#site_url_path': function ($e) {
-    return MT.Validator.urlPath($e.val());
-  },
-  "#site_url_subdomain": function($e) {
-    return ! $e.is(':visible') || MT.Validator.urlSubdomain($e.val());
-  },
-  '#site_path': function ($e) {
-    return MT.Validator.path($e.val(), 1);
-  },
-  '#site_path_absolute': function ($e) {
-    if ( jQuery('#use_absolute:checked').length <= 0 ) {
-      return true;
+  jQuery.mtValidateAddRules({
+    '#site_url_path': function ($e) {
+      return MT.Validator.urlPath($e.val());
+    },
+    "#site_url_subdomain": function($e) {
+      return ! $e.is(':visible') || MT.Validator.urlSubdomain($e.val());
+    },
+    '#site_path': function ($e) {
+      return MT.Validator.path($e.val(), 1);
+    },
+    '#site_path_absolute': function ($e) {
+      if ( jQuery('#use_absolute:checked').length <= 0 ) {
+        return true;
+      }
+      return MT.Validator.absolutePath($e.val());
+    },
+    '#server_offset': function ($e) {
+      return $e.val() !== '';
     }
-    return MT.Validator.absolutePath($e.val());
-  },
-  '#server_offset': function ($e) {
-    return $e.val() !== '';
-  }
-});
+  });
 
-jQuery.mtValidateAddMessages({
-  '#name': '<__trans phrase="You must set your Blog Name." escape="singlequotes">',
-  '#server_offset': '<__trans phrase="You did not select a time zone." escape="singlequotes">',
-  '#site_url_path': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
-  '#site_url_subdomain': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
-  '#site_path.required': '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
-  '#site_path': '<__trans phrase="You must set a valid local site path." escape="singlequotes">',
-  '#site_path_absolute.required': '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
-  '#site_path_absolute': '<__trans phrase="You must set a valid local site path." escape="singlequotes">'
-});
+  jQuery.mtValidateAddMessages({
+    '#name': '<__trans phrase="You must set your Blog Name." escape="singlequotes">',
+    '#server_offset': '<__trans phrase="You did not select a time zone." escape="singlequotes">',
+    '#site_url_path': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+    '#site_url_subdomain': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+    '#site_path.required': '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
+    '#site_path': '<__trans phrase="You must set a valid local site path." escape="singlequotes">',
+    '#site_path_absolute.required': '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
+    '#site_path_absolute': '<__trans phrase="You must set a valid local site path." escape="singlequotes">'
+  });
 
-jQuery('#cfg_form').submit( function () {
-    var $form = jQuery(this),
-        $url = $form.find('#site_url_path, #site_url_subdomain'),
-        $simple = $form.find('input:visible, select:visible').filter(function() {
-            return jQuery.inArray(this, $url) === -1;
-        });
+  jQuery('#cfg_form').submit( function () {
+      var $form = jQuery(this),
+          $url = $form.find('#site_url_path, #site_url_subdomain'),
+          $simple = $form.find('input:visible, select:visible').filter(function() {
+              return jQuery.inArray(this, $url) === -1;
+          });
 
-    return $url.mtValidate('url_path_subdomain') && $simple.mtValidate('simple');
+      return $url.mtValidate('url_path_subdomain') && $simple.mtValidate('simple');
+  });
 });
 /* ]]> */
 </script>

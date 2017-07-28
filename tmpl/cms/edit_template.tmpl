@@ -22,46 +22,46 @@
 <mt:setvarblock name="system_msg">
 <mt:unless name="recovered_object">
   <mt:if name="autosaved_object_exists">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="autosaved-object-exists"
      class="info">
     <__trans phrase="A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;_recover=1&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if>%%<mt:If name="blog_id"><mt:date ts="$autosaved_object_ts" relative="1" offset_blog_id="<$mt:var name="blog_id"$>"></mt:If>">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 </mt:unless>
 <mt:if name="recovered_object">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="recovered-object"
      class="success">
     <__trans phrase="You have successfully recovered your saved [_1]." params="<mt:var name="object_label">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="recovered_failed">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="recovered-failed"
      class="error"
      can_close="0">
     <__trans phrase="An error occurred while trying to recover your saved [_1]." params="<mt:var name="object_label">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="loaded_revision">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="loaded_revision"
      class="info">
     <__trans phrase="Restored revision (Date:[_1])." params="<$mt:var name="rev_date" escape="html"$>">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
   <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <__trans phrase="Your changes have been saved.">
       <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   <mt:else>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success">
     <__trans phrase="Your changes have been saved.">
@@ -74,31 +74,31 @@
         </mt:if>
       </mt:unless>
     </mt:unless>
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 <mt:else>
   <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 </mt:if>
 <mt:if name="message">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="message"
      class="alert">
     <mt:var name="message">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved_rebuild">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved-rebuild"
      class="success">
     <__trans phrase="Your [_1] has been published." params="<mt:var name="name" escape="html" escape="html">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 
@@ -204,7 +204,7 @@
 
 <mtapp:widget
    id="tag-list"
-   class="hidden"
+   hidden="1"
    label="<__trans phrase="Template Tag Docs">"
    label_link="$link_doc">
   <div id="tag-list-inner">
@@ -213,7 +213,7 @@
 
 <mtapp:widget
    id="badtag-list"
-   class="hidden"
+   hidden="1"
    label="<__trans phrase="Unrecognized Tags">">
   <div id="badtag-list-inner">
   </div>
@@ -359,18 +359,18 @@ function documentTags( useTextInput ) {
     if (list != '') {
         list = '<ul class="list-unstyled">' + list + '</ul>';
         DOM.getElement("tag-list-inner").innerHTML = list;
-        DOM.removeClassName("tag-list", "hidden");
+        jQuery('#tag-list').show();
     } else {
-        DOM.addClassName("tag-list", "hidden");
+        jQuery('#tag-list').hide();
     }
     // if we found invalid tags, display them in badtag-list, otherwise
     // hide it
     if (bad_list != '') {
         bad_list = '<ul class="list-unstyled">' + bad_list + '</ul>';
         DOM.getElement("badtag-list-inner").innerHTML = bad_list;
-        DOM.removeClassName("badtag-list", "hidden");
+        jQuery('#badtag-list').show();
     } else {
-        DOM.addClassName("badtag-list", "hidden");
+        jQuery('#badtag-list').hide();
     }
 }
 
@@ -391,8 +391,8 @@ function archiveFileSelect(sel) {
     var edit = getByID(fld);
     var map = sel.options[sel.selectedIndex].value;
     if (map == '') {
-        DOM.addClassName(sel, "hidden");
-        DOM.removeClassName(edit, "hidden");
+        jQuery(sel).hide();
+        jQuery(edit).show();
         edit.focus();
     } else {
         edit.value = map;
@@ -593,8 +593,8 @@ function toggleCache(id) {
      help_page="templates"
      help_section="template_name"
      no_header="1">
-    <div class="panel panel-default">
-      <div id="template-editor-toolbar" class="panel-heading template editor-toolbar toolbar">
+    <div class="card">
+      <div id="template-editor-toolbar" class="card-header template editor-toolbar toolbar">
         <button type="button" id="syntaxon" class="command-highlight-on toolbar button active" title="<__trans phrase="Syntax highlighting On">">
           <span class="button-label"><__trans phrase="Syntax highlighting On"></span>
         </button>
@@ -616,8 +616,8 @@ function toggleCache(id) {
   <$mt:setvar name="template_options_active" value="1"$>
 </mt:if>
 
-  <div id="template-options" class="panel panel-default<mt:if name="template_options_active"> active</mt:if>">
-    <div id="template-options-header" class="panel-heading line">
+  <div id="template-options" class="card">
+    <div id="template-options-header" class="card-header line">
       <div class="row">
         <div class="col-md-8 template-options-toggle">
           <a href="#template-options-content" class="icon-left icon-spinner" data-toggle="collapse">
@@ -637,7 +637,7 @@ function toggleCache(id) {
         </div>
       </div>
     </div>
-    <div id="template-options-content" class="panel-body collapse">
+    <div id="template-options-content" class="card-block collapse<mt:if name="template_options_active"> show</mt:if>">
     <mt:if name="has_outfile">
       <mtapp:setting
          id="outfile"
@@ -857,9 +857,6 @@ function toggleCache(id) {
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 </form>
 
-</mt:setvarblock>
-
-<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 App.singletonConstructor =

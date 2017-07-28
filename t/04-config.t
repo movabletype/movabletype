@@ -18,7 +18,7 @@ use MT;
 use MT::ConfigMgr;
 
 use vars qw( $BASE );
-require 't/test-common.pl';
+require './t/test-common.pl';
 
 my ( $cfg_file, $cfg, $mt );
 

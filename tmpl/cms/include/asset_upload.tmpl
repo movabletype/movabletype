@@ -73,27 +73,27 @@ function is_valid_path(path_){
   </mt:if>
 <mt:else>
   <mt:if name="error">
-<mtapp:newstatusmsg
+<mtapp:statusmsg
    id="generic-error"
    class="error"
    can_close="0">
   <mt:var name="error">
-</mtapp:newstatusmsg>
+</mtapp:statusmsg>
   </mt:if>
   <mt:loop name="thumb_dir_warnings">
-<mtapp:newstatusmsg
+<mtapp:statusmsg
    id="warning-<mt:var name="key">-thumb-path"
    class="warning"
    can_close="0">
   <__trans phrase="Cannot write to '[_1]'. Image upload is possible, but thumbnail is not created.", params="<mt:var name="path">" escape="html">
-</mtapp:newstatusmsg>
+</mtapp:statusmsg>
   </mt:loop>
   <mt:if name="uploaded">
-<mtapp:newstatusmsg
+<mtapp:statusmsg
    id="asset-uploaded"
    class="success">
   <__trans phrase="Asset file('[_1]') has been uploaded.", params="<mt:var name="uploaded_filename">" escape="html" escape="html">
-</mtapp:newstatusmsg>
+</mtapp:statusmsg>
   </mt:if>
 
 <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" id="upload-form" onsubmit="return validate(this)">

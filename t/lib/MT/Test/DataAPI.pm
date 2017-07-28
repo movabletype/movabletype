@@ -151,7 +151,7 @@ sub test_data_api {
             $note .= '?'
                 . join( '&',
                 map { $_ . '=' . $data->{params}{$_} }
-                    keys %{ $data->{params} } );
+                    sort keys %{ $data->{params} } );
         }
         $note .= ' ' . $data->{method};
         $note .= ' ' . $data->{note} if $data->{note};
@@ -180,7 +180,7 @@ sub test_data_api {
                 (   $params
                     ? map {
                         $_ => ref $params->{$_}
-                            ? MT::Util::to_json( $params->{$_} )
+                            ? MT::Util::to_json( $params->{$_}, { canonical => 1 } )
                             : $params->{$_};
                         }
                         keys %{$params}
@@ -245,8 +245,14 @@ sub test_data_api {
 
         if ( exists $data->{error} ) {
             $result = $format->{unserialize}->($body) if !defined $result;
-            is( $result->{error}{message},
-                $data->{error}, 'error: ' . $data->{error} );
+            if ( ref $data->{error} eq ref qr// ) {
+                like( $result->{error}{message},
+                    $data->{error}, 'error: ' . $data->{error} );
+            }
+            else {
+                is( $result->{error}{message},
+                    $data->{error}, 'error: ' . $data->{error} );
+            }
         }
 
         if ( my $complete = $data->{complete} ) {

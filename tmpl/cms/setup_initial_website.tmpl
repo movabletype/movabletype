@@ -6,20 +6,20 @@
   <div id="warning_gone"<mt:if name="version_warning"> style="display:none;"</mt:if>>
     <p class="intro"><__trans phrase="In order to properly publish your website, you must provide Movable Type with your website's URL and the filesystem path where its files should be published."></p>
   <mt:if name="error">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="setup-website-error"
        class="error"
        can_close="0">
       <mt:var name="error">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   </mt:if>
   <mt:if name="support_unwritable">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="support_unwritable"
        class="info"
        can_close="0">
       <__trans phrase="Support directory does not exists or not writable by the web server. Change the ownership or permissions on this directory">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   </mt:if>
 
     <form id="website_form" method="post" action="<mt:var name="script_url">">

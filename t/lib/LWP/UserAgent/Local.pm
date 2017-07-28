@@ -98,7 +98,7 @@ sub simple_request {
 
     my $response = new HTTP::Response();
     $response->request($request);
-    my $status_line;
+    my $status_line = '';
     while ( ( $line = <RESPONSE> ) !~ /^\s*$/ ) {
         if ( $line =~ /^Status:/i ) {
             $status_line = $line;

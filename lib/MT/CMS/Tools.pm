@@ -278,17 +278,11 @@ sub new_password {
         elsif ( $new_password ne $again ) {
             $param->{'error'} = $app->translate('Passwords do not match');
         }
-        elsif ( ref $app eq 'MT::App::Community' ) {
 
-            # community people may change the template, and not include the
-            # needed password validation tags
-            $param->{'error'} = eval {
+        $param->{'error'} = eval {
+            $app->verify_password_strength( $user->name, $new_password );
+        };
 
-                # might be an old version that does not have this function
-                MT::App::Community::__verify_password_strength( $app, $user,
-                    $new_password );
-            };
-        }
         if ( not $param->{'error'} ) {
             my $redirect = $user->password_reset_return_to || '';
 
@@ -636,7 +630,9 @@ sub save_cfg_system_general {
             'Debug mode is [_1]',
             $app->param('system_debug_mode')
         )
-    ) if ( $app->param('system_debug_mode') =~ /\d+/ );
+        )
+        if ( defined $app->param('system_debug_mode')
+        and $app->param('system_debug_mode') =~ /\d+/ );
     if ( not $cfg->HidePerformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
             push( @meta_messages,
@@ -652,7 +648,9 @@ sub save_cfg_system_general {
                 'Performance log path is [_1]',
                 $app->param('system_performance_logging_path')
             )
-        ) if ( $app->param('system_performance_logging_path') =~ /\w+/ );
+            )
+            if ( defined $app->param('system_performance_logging_path')
+            and $app->param('system_performance_logging_path') =~ /\w+/ );
         push(
             @meta_messages,
             $app->translate(
@@ -660,15 +658,17 @@ sub save_cfg_system_general {
                 $app->param('system_performance_logging_threshold')
             )
             )
-            if (
-            $app->param('system_performance_logging_threshold') =~ /\d+/ );
+            if ( defined $app->param('system_performance_logging_threshold')
+            and $app->param('system_performance_logging_threshold')
+            =~ /\d+/ );
     }
 
     # actually assign the changes
     $app->config( 'EmailAddressMain',
-        ( $app->param('system_email_address') || undef ), 1 );
+        ( scalar $app->param('system_email_address') ), 1 );
     $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
-        if ( $app->param('system_debug_mode') =~ /\d+/ );
+        if ( defined $app->param('system_debug_mode')
+        and $app->param('system_debug_mode') =~ /\d+/ );
     if ( not $cfg->HidePerformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
             $app->config( 'PerformanceLogging', 1, 1 );
@@ -678,11 +678,13 @@ sub save_cfg_system_general {
         }
         $app->config( 'PerformanceLoggingPath',
             $app->param('system_performance_logging_path'), 1 )
-            if ( $app->param('system_performance_logging_path') =~ /\w+/ );
+            if ( defined $app->param('system_performance_logging_path')
+            and $app->param('system_performance_logging_path') =~ /\w+/ );
         $app->config( 'PerformanceLoggingThreshold',
             $app->param('system_performance_logging_threshold'), 1 )
-            if (
-            $app->param('system_performance_logging_threshold') =~ /\d+/ );
+            if ( defined $app->param('system_performance_logging_threshold')
+            and $app->param('system_performance_logging_threshold')
+            =~ /\d+/ );
     }
 
     if ( not $cfg->HideBaseSitePath ) {
@@ -746,7 +748,8 @@ sub save_cfg_system_general {
         push( @meta_messages,
             $app->translate('Prohibit notification pings is off') );
     }
-    if ( $app->param('trackback_send') eq 'any' ) {
+    my $trackback_send = $app->param('trackback_send') || '';
+    if ( $trackback_send eq 'any' ) {
         push(
             @meta_messages,
             $app->translate(
@@ -755,7 +758,7 @@ sub save_cfg_system_general {
             )
         );
     }
-    elsif ( $app->param('trackback_send') eq 'off' ) {
+    elsif ( $trackback_send eq 'off' ) {
         push(
             @meta_messages,
             $app->translate(
@@ -764,7 +767,7 @@ sub save_cfg_system_general {
             )
         );
     }
-    elsif ( $app->param('trackback_send') eq 'local' ) {
+    elsif ( $trackback_send eq 'local' ) {
         push(
             @meta_messages,
             $app->translate(
@@ -773,7 +776,7 @@ sub save_cfg_system_general {
             )
         );
     }
-    elsif ( $app->param('trackback_send') eq 'selected' ) {
+    elsif ( $trackback_send eq 'selected' ) {
         push(
             @meta_messages,
             $app->translate(
@@ -826,7 +829,9 @@ sub save_cfg_system_general {
         },
         )
     {
-        if ( $app->param( $hash->{key} ) =~ $hash->{regex} ) {
+        my $param = $app->param( $hash->{key} );
+        $param = '' unless defined $param;
+        if ( $param =~ $hash->{regex} ) {
             my $value = $1;
             if ( $hash->{filter} ) {
                 $hash->{filter}->($value);
@@ -1126,7 +1131,7 @@ sub backup {
     my $q        = $app->param;
     my $blog_id  = $q->param('blog_id');
     my $perms    = $app->permissions;
-    my $blog_ids = $q->param('backup_what');
+    my $blog_ids = $q->param('backup_what') || '';
     my @blog_ids = split ',', $blog_ids;
 
     require MT::Util::Log;
@@ -1216,7 +1221,7 @@ sub backup {
     if ( !( $size || $num_assets ) ) {
         $splitter = sub { };
 
-        if ( '0' eq $archive ) {
+        if ( !$archive ) {
             ( $fh, my $filepath )
                 = File::Temp::tempfile( 'xml.XXXXXXXX', DIR => $temp_dir );
             binmode $fh, ":encoding(utf8)";
@@ -1269,8 +1274,8 @@ sub backup {
         open $fh, ">$filename";
         my $url
             = $app->uri
-            . "?__mode=backup_download&name=$file-1.xml&magic_token="
-            . $app->current_magic;
+            . "?__mode=backup_download&name=$file-1.xml";
+        $url .= "&magic_token=" . $app->current_magic if defined($app->current_magic);
         $url .= "&blog_id=$blog_id" if defined($blog_id);
         push @files,
             {
@@ -1296,8 +1301,8 @@ sub backup {
             open $fh, ">$filename";
             my $url
                 = $app->uri
-                . "?__mode=backup_download&name=$file-$findex.xml&magic_token="
-                . $app->current_magic;
+                . "?__mode=backup_download&name=$file-$findex.xml";
+            $url .= "&magic_token=" . $app->current_magic if defined($app->current_magic);
             $url .= "&blog_id=$blog_id" if defined($blog_id);
             push @files,
                 {
@@ -1354,9 +1359,8 @@ sub backup {
                 my $url
                     = $app->uri
                     . "?__mode=backup_download&assetname="
-                    . MT::Util::encode_url($name)
-                    . "&magic_token="
-                    . $app->current_magic;
+                    . MT::Util::encode_url($name);
+                $url .= "&magic_token=" . $app->current_magic if defined($app->current_magic);
                 $url .= "&blog_id=$blog_id" if defined($blog_id);
                 push @files,
                     {
@@ -1368,15 +1372,15 @@ sub backup {
             close $fh;
             my $url
                 = $app->uri
-                . "?__mode=backup_download&name=$file.manifest&magic_token="
-                . $app->current_magic;
+                . "?__mode=backup_download&name=$file.manifest";
+            $url .= "&magic_token=" . $app->current_magic if defined($app->current_magic);
             $url .= "&blog_id=$blog_id" if defined($blog_id);
             push @files,
                 {
                 url      => $url,
                 filename => "$file.manifest"
                 };
-            if ( '0' eq $archive ) {
+            if ( !$archive ) {
                 for my $f (@files) {
                     $f->{filename}
                         = MT::FileMgr::Local::_syserr( $f->{filename} )
@@ -1479,7 +1483,7 @@ sub backup_download {
         $sess->remove;
     }
     else {
-        $newfilename = $app->param('name');
+        $newfilename = $app->param('name') || '';
         return
             if $newfilename
             !~ /Movable_Type-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-Backup(?:-\d+)?\.\w+/;
@@ -1839,7 +1843,7 @@ sub adjust_sitepath {
     my $q         = $app->param;
     my $tmp_dir   = $q->param('tmp_dir');
     my $error     = $q->param('error') || q();
-    my %asset_ids = split ',', $q->param('asset_ids');
+    my %asset_ids = split ',', $q->param('asset_ids') || '';
 
     $app->{no_print_body} = 1;
 
@@ -1874,7 +1878,7 @@ sub adjust_sitepath {
             || q();
         $site_url_subdomain .= '.'
             if $site_url_subdomain && $site_url_subdomain !~ /\.$/;
-        my $parent_id = scalar $q->param("parent_id_$id") || undef;
+        my $parent_id = scalar $q->param("parent_id_$id");
         my $site_path_absolute = scalar $q->param("site_path_absolute_$id")
             || q();
         my $use_absolute = scalar $q->param("use_absolute_$id") || q();
@@ -2536,7 +2540,7 @@ sub dialog_adjust_sitepath {
     my $tmp_dir    = $q->param('tmp_dir');
     my $error      = $q->param('error') || q();
     my $uploaded   = $q->param('restore_upload') || 0;
-    my @blog_ids   = split ',', $q->param('blog_ids');
+    my @blog_ids   = split ',', $q->param('blog_ids') || '';
     my $asset_ids  = $q->param('asset_ids');
     my $blog_class = $app->model('blog');
     my @blogs      = $blog_class->load( { id => \@blog_ids } );

@@ -7,38 +7,38 @@
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="generic-error"
      class="error"
      can_close="0">
     <mt:var name="error">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
   <mt:if name="can_rebuild">
     <mt:if name="need_full_rebuild">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved-full-rebuild"
      class="success"
      rebuild="all"
      can_close="0">
     <__trans phrase="Your preferences have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
     <mt:else>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success"
      can_close="1">
     <__trans phrase="Your preferences have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
     </mt:if>
   <mt:else>
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success"
      can_close="1">
     <__trans phrase="Your preferences have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
   </mt:if>
 </mt:if>
 </mt:setvarblock>
@@ -65,7 +65,7 @@
       <label for="auto_delete_junk"><__trans phrase="Automatically delete spam feedback after the time period shown below."></label>
     </mtapp:setting>
 
-    <div id="auto_delete_junk_prefs"<mt:unless name="auto_delete_junk">class=" hidden"</mt:unless>>
+    <div id="auto_delete_junk_prefs"<mt:unless name="auto_delete_junk"> style="display: none;"</mt:unless>>
       <mtapp:setting
          id="junk_folder_expiry"
          label="<__trans phrase="Delete Spam After">"
@@ -125,12 +125,12 @@
 
   <mt:if name="allow_comments">
     <mt:unless name="system_allow_comments">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="system-allow-comments"
        class="info"
        can_close="0">
       <__trans phrase="Note: Commenting is currently disabled at the system level.">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
     </mt:unless>
   </mt:if>
 
@@ -327,12 +327,12 @@
   <mtapp:settinggroup id="cfg_trackback">
 
   <mt:unless name="system_allow_pings">
-    <mtapp:newstatusmsg
+    <mtapp:statusmsg
        id="system-allow-pings"
        class="info"
        can_close="0">
       <__trans phrase="Note: TrackBacks are currently disabled at the system level.">
-    </mtapp:newstatusmsg>
+    </mtapp:statusmsg>
   </mt:unless>
 
     <mtapp:setting
@@ -495,41 +495,14 @@ function scoreNudge(amount) {
     return false;
 }
 
-jQuery(function() {
-    jQuery('input#auto_delete_junk').click(function() {
-        jQuery('div#auto_delete_junk_prefs').toggleClass('hidden');
-    });
-
-    jQuery('#nofollow_urls').on('change', function () {
-      jQuery('#nofollow_urls-option').toggle();
-    });
-    if (jQuery('#nofollow_urls:checked').length == 0) {
-      jQuery('#nofollow_urls-option').hide();
-    }
-
-    jQuery('#allow_comments').on('change', function () {
-      jQuery('#allow_comments-option').toggle();
-    });
-    if (jQuery('#allow_comments:checked').length == 0) {
-      jQuery('#allow_comments-option').hide();
-    }
-
-    jQuery('#allow_comment_html').on('change', function () {
-      jQuery('#allow_comment_html-option').toggle();
-    });
-    if (jQuery('#allow_comment_html:checked').length == 0) {
-      jQuery('#allow_comment_html-option').hide();
-    }
-
-    jQuery('#allow_pings').on('change', function () {
-      jQuery('#allow_pings-option').toggle();
-    });
-    if (jQuery('#allow_pings:checked').length == 0) {
-      jQuery('#allow_pings-option').hide();
-    }
-});
 /* ]]> */
 </script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('input#auto_delete_junk').click(function() {
+    jQuery('div#auto_delete_junk_prefs').toggle();
+});
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

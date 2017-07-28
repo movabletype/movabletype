@@ -256,7 +256,7 @@ sub _load_pseudo_theme_from_template_set {
         or return;
     my $set = $sets->{$id}
         or return;
-    my $plugin = $set->{plugin} || undef;
+    my $plugin = $set->{plugin};
     my $label
         = $set->{label}
         || ( $plugin && $plugin->registry('name') )

@@ -4521,7 +4521,7 @@ sub _entry_prefs_from_params {
     my $disp     = $q->param('entry_prefs') || '';
     my @fields;
     if ( lc $disp eq 'custom' ) {
-        @fields = split /,/, $q->param( $prefix . 'custom_prefs' );
+        @fields = split /,/, $q->param( $prefix . 'custom_prefs' ) || '';
     }
     elsif ($disp) {
         push @fields, $disp;
@@ -4533,7 +4533,8 @@ sub _entry_prefs_from_params {
     if ( my $body_height = $q->param('text_height') ) {
         push @fields, 'body:' . $body_height;
     }
-    return join( ',', @fields ) . '|' . $q->param('bar_position');
+    return
+        join( ',', @fields ) . '|' . ( $q->param('bar_position') || 'top' );
 }
 
 # rebuild_set is a hash whose keys are entry IDs
@@ -4574,7 +4575,7 @@ sub rebuild_these {
                 $app->rebuild_indexes( Blog => $blog )
                     or return $app->publish_error();
             }
-            my $blog_id = int( $app->param('blog_id') );
+            my $blog_id = int( $app->param('blog_id') || 0 );
             my $this_blog;
             $this_blog = MT::Blog->load($blog_id) if $blog_id;
             $app->run_callbacks( 'rebuild', $this_blog );

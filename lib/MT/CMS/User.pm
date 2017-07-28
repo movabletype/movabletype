@@ -767,12 +767,11 @@ sub save_cfg_system_users {
     $app->config( 'DefaultTimezone', $tz, 1 );
     $app->config( 'NewUserAutoProvisioning',
         $app->param('personal_weblog') ? 1 : 0, 1 );
-    $app->config( 'NewUserBlogTheme', $theme_id || undef, 1 );
-    $app->config( 'NewUserDefaultWebsiteId', $default_website_id || undef,
-        1 );
+    $app->config( 'NewUserBlogTheme', $theme_id, 1 );
+    $app->config( 'NewUserDefaultWebsiteId', $default_website_id, 1 );
     $app->config( 'DefaultUserLanguage', $app->param('default_language'), 1 );
     $app->config( 'DefaultUserTagDelimiter',
-        $app->param('default_user_tag_delimiter') || undef, 1 );
+        scalar $app->param('default_user_tag_delimiter'), 1 );
     my $registration = $cfg->CommenterRegistration;
 
     if ( my $reg = $app->param('registration') ) {
@@ -799,7 +798,10 @@ sub save_cfg_system_users {
         && !$app->config->is_readonly('UserPasswordMinLength') )
     {
         my $pass_min_len = $app->param('minimum_length');
-        if ( !$pass_min_len or ( $pass_min_len =~ m/\D/ ) or ( $pass_min_len < 1 ) ) {
+        if (   !$pass_min_len
+            or ( $pass_min_len =~ m/\D/ )
+            or ( $pass_min_len < 1 ) )
+        {
             return $app->errtrans(
                 'Minimum password length must be an integer and greater than zero.'
             );
@@ -863,9 +865,8 @@ sub remove_user_assoc {
 
         MT::Association->remove( { blog_id => $blog_id, author_id => $id } );
 
-        # these too, just in case there are no real associations
-        # (ie, commenters)
-        $perm->remove if $perm;
+        # Rebuild permissions because the user may belong to several groups
+        $perm->rebuild if $perm;
     }
 
     $app->add_return_arg( saved => 1 );
@@ -1142,8 +1143,9 @@ sub dialog_select_sysadmin {
                 ),
             },
             code     => $hasher,
-            template => 'dialog/select_users.tmpl',
-            params   => {
+            template => $app->param('json') ? 'include/listing_panel.tmpl'
+            : 'dialog/select_users.tmpl',
+            params => {
                 dialog_title =>
                     $app->translate("Select a System Administrator"),
                 items_prompt =>
@@ -1191,7 +1193,7 @@ PERMCHECK: {
         return $app->permission_denied();
     }
 
-    my $type = $app->param('_type');
+    my $type = $app->param('_type') || '';
     my ( $user, $role );
     if ( $author_id && $author_id ne 'PSEUDO' ) {
         $user = MT::Author->load($author_id);
@@ -1636,6 +1638,15 @@ sub save_filter {
             )
             );
     }
+
+    # Password strength check
+    # Why the name of password field is different in each forms...
+    if ( scalar $app->param('pass') || scalar $app->param('password') ) {
+        my $msg = $app->verify_password_strength( $accessor->('name'),
+            scalar $app->param('pass') );
+        return $eh->error($msg) if $msg;
+    }
+
     my $email = $accessor->('email');
     return $eh->error(
         MT->translate("Email Address is required for password reset.") )
@@ -1659,6 +1670,7 @@ sub save_filter {
         return $eh->error( MT->translate("URL is invalid.") )
             if !is_url($url) || ( $url =~ m/[<>]/ );
     }
+
     1;
 }
 
@@ -1679,7 +1691,7 @@ sub pre_save {
     }
 
     my ( $delim, $delim2 ) = $app->param('tag_delim');
-    $delim = $delim ? $delim : $delim2;
+    $delim ||= $delim2 || '';
     if ( $delim =~ m/comma/i ) {
         $delim = ord(',');
     }

@@ -14,28 +14,28 @@
 </mt:unless>
 
 <mt:if name="not_found_error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="not_found_error"
      class="error"
      can_close="0">
     <__trans phrase="[_1] could not be found." params="<mt:var name="temp_dir" escape="html">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="not_write_error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="not_write_error"
      class="error"
      can_close="0">
     <__trans phrase="[_1] is not writable." params="<mt:var name="temp_dir" escape="html">">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 <mt:if name="invalid_error">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="invalid_error"
      class="error"
      can_close="0">
     <__trans phrase="TempDir is required.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 
 <!-- TempDir -->

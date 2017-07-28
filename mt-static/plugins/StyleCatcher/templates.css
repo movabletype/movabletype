@@ -238,8 +238,6 @@ span#find-category {
 }
 
 #select-design-controls {
-    position: absolute;
-    width: 280px;
     top: auto;
     bottom: 10px;
     margin-right: 10px;

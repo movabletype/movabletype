@@ -12,13 +12,13 @@
   <mt:setvar name="rebuild" value="all">
 </mt:if>
 <mt:if name="saved">
-  <mtapp:newstatusmsg
+  <mtapp:statusmsg
      id="saved"
      class="success"
      rebuild="$rebuild"
      can_close="0">
     <__trans phrase="Your changes have been saved.">
-  </mtapp:newstatusmsg>
+  </mtapp:statusmsg>
 </mt:if>
 </div>
 </mt:setvarblock>
@@ -44,12 +44,12 @@
 <mt:if __first__>
   <mt:setvarblock name="table_header">
   <tr>
-    <th class="col head status"><span class="col-label"><__trans phrase="Status"></span></th>
-    <th class="col head title primary"><span class="col-label"><__trans phrase="Title"></span></th>
-    <th class="col head category"><span class="col-label"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></span></th>
-    <th class="col head author"><span class="col-label"><__trans phrase="Author"></span></th>
-    <th class="col head datetime"><span class="col-label"><__trans phrase="Published Date"></span></th>
-    <th class="col head datetime"><span class="col-label"><__trans phrase="Date Modified"></span></th>
+    <th class="head status"><span class="col-label"><__trans phrase="Status"></span></th>
+    <th class="head title primary"><span class="col-label"><__trans phrase="Title"></span></th>
+    <th class="head category"><span class="col-label"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></span></th>
+    <th class="head author"><span class="col-label"><__trans phrase="Author"></span></th>
+    <th class="head datetime"><span class="col-label"><__trans phrase="Published Date"></span></th>
+    <th class="head datetime"><span class="col-label"><__trans phrase="Date Modified"></span></th>
   </tr>
   </mt:setvarblock>
 
@@ -63,7 +63,7 @@
 </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
     <mt:if name="has_publish_access">
-      <td class="col status">
+      <td class="status">
         <select name="status_<$mt:var name="id"$>" class="form-control">
           <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>><__trans phrase="Unpublished (Draft)"></option>
           <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
@@ -75,7 +75,7 @@
         </select>
       </td>
     </mt:if>
-      <td class="col title">
+      <td class="title">
       <mt:if name="has_edit_access">
         <mt:if name="title">
         <input type="text" name="title_<$mt:var name="id"$>" class="form-control text full" value="<$mt:var name="title" escape="html" default="..."$>" />
@@ -87,7 +87,7 @@
         <mt:var name="title" escape="html" default="...">
       </mt:if>
       </td>
-      <td class="col category">
+      <td class="category">
       <mt:if name="is_editable">
         <mt:if name="entry_blog_id" eq="$original_blog_id">
         <select name="category_id_<$mt:var name="id"$>" class="form-control">
@@ -113,7 +113,7 @@
         </mt:if>
       </mt:if>
       </td>
-      <td class="col author">
+      <td class="author">
       <mt:if name="is_editable">
         <input type="hidden" name="author_id_<$mt:var name="id"$>" value="<$mt:var name="row_author_id"$>" id="entry_author_id_<$mt:var name="id"$>">
         <a href="<$mt:var name="script_url"$>?__mode=dialog_select_author&amp;blog_id=<$mt:var name="blog_id"$>&amp;multi=0&amp;entry_type=<mt:var name="object_type">&amp;idfield=entry_author_id_<$mt:var name="id"$>&amp;namefield=entry_author_name_<$mt:var name="id"$>" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
@@ -125,7 +125,7 @@
         <mt:var name="author_name" escape="html">
       </mt:if>
       </td>
-      <td class="col datetime">
+      <td class="datetime">
       <mt:if name="has_publish_access">
         <input type="text" name="created_on_<$mt:var name="id"$>" class="form-control text full" value="<$mt:var name="created_on_time_formatted"$>" />
       <mt:else>
@@ -143,7 +143,7 @@
         <input type="hidden" name="created_on_<$mt:var name="id"$>" value="<$mt:var name="created_on_time_formatted"$>" />
       </mt:if>
       </td>
-      <td class="col datetime">
+      <td class="datetime">
       <mt:if name="has_publish_access">
         <input type="text" name="modified_on_<$mt:var name="id"$>" class="form-control text full" value="<$mt:var name="modified_on_time_formatted"$>" />
       <mt:else>
