@@ -1,114 +1,36 @@
-<mt:var name="screen_type" value="dialog-screen insert-content-data-dialog">
-<mt:setvarblock name="html_head" append="1">
-<style>
-#container {
-    height: 100%;
-}
+<mt:setvar name="page_title" value="<__trans phrase="Select Content Data">">
+<mt:setvar name="screen_type" value="dialog-screen insert-content-data-dialog">
 
-#content {
-    height: 100%;
-    padding: 0px;
-}
-
-#content-body {
-    margin-top: 0px;
-    height: 100%;
-    min-height: 100%;
-}
-
-#content-body-left {
-    float: left;
-    width: 135px;
-}
-
-#content-body-right {
-    float: right;
-    margin: 0 15px 0 -150px;
-    width: 100%;
-    height: 100%;
-    min-height: 100%;
-}
-
-#content-body-right-body {
-    padding: 15px 0 0 15px;
-    margin: 0 0 0 150px;
-    height: 100%;
-    min-height: 100%;
-    border-left: solid 1px #aaa;
-}
-
-#content-data-menu li {
-    margin-bottom: 0px;
-    list-style-type: none;
-    height: 50px;
-    border-bottom: solid 1px #aaa;
-    line-height: 50px;
-    padding-left: .5em;
-}
-
-#content-data-menu li.last-child {
-    border-bottom: solid 1px #aaa;
-}
-
-#content-data-menu li.active {
-    background-color: #cae5f8
-}
-</style>
+<mt:setvarblock name="modal_body">
+<div class="row">
+  <div class="col-md-12">
+    <mt:include name="include/content_data_list.tmpl" dialog="1">
+  </div>
+</div>
 </mt:setvarblock>
 
-<mt:include name="dialog/header.tmpl">
-
-<div id="content-body-right">
-  <div id="content-body-right-body">
-    <div id="select-content-data-panel" class="panel">
-<mt:include name="include/content_data_list.tmpl" dialog="1" component="ContentType">
-    </div>
-<mt:if name="can_add">
-    <div id="create-content-data-panel" class="hidden panel">
-      create content data
-    </div>
-</mt:if>
-  </div>
+<mt:setvarblock name="modal_footer">
+<div class="actions-bar actions-bar-bottom">
+  <form action="" method="get" onsubmit="return false">
+    <button
+      type="submit"
+      accesskey="s"
+      title="<__trans phrase="Insert (s)">"
+      class="action primary button close-button disabled btn btn-primary"
+      disabled="true">
+      <__trans phrase="Insert">
+    </button>
+    <button
+      type="submit"
+      accesskey="x"
+      class="cancel action button mt-close-dialog btn btn-default"
+      data-mt-modal-close
+      title="<__trans phrase="Cancel (x)">">
+      <__trans phrase="Cancel">
+    </button>
+  </form>
 </div>
-
-<div id="content-body-left">
-  <div id="content-data-menu">
-    <li class="active">
-      <a href="#" class="left-menu-item" data-panel-id="#select-content-data-panel">
-        <__trans phrase="Select">
-      </a>
-    </li>
-<mt:if name="can_add">
-    <li>
-      <a href="#" class="left-menu-item" data-panel-id="#create-content-data-panel">
-        <__trans phrase="Create">
-      </a>
-    </li>
-</mt:if>
-  </div>
-</div>
-
-<div class="dialog-screen">
-  <div class="actions-bar actions-bar-bottom">
-    <form action="" method="get" onsubmit="return false">
-      <button
-        type="submit"
-        accesskey="s"
-        title="<__trans phrase="Insert (s)">"
-        class="action primary button close disabled"
-        disabled="true">
-        <__trans phrase="Insert">
-      </button>
-      <button
-        type="submit"
-        accesskey="x"
-        class="cancel action button mt-close-dialog"
-        title="<__trans phrase="Cancel (x)">">
-        <__trans phrase="Cancel">
-      </button>
-    </form>
-  </div>
-</div>
+</mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
 <mt:if name="can_add">
@@ -196,10 +118,10 @@ jQuery('.actions-bar button.primary').click(function() {
   log('found dirty form');
   parent.app.setDirty();
 
-  parent.jQuery.fn.mtDialog.close();
+  jQuery.fn.mtModal.close();
   return false;
 });
 </mt:setvarblock>
 
-<mt:include name="dialog/footer.tmpl">
-
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

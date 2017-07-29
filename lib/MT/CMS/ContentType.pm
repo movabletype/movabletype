@@ -1507,7 +1507,6 @@ sub dialog_content_data_modal {
     if ($content_field_id) {
         if ( my $content_field = MT::ContentField->load($content_field_id) ) {
             my $options = $content_field->options;
-            $can_add   = $options->{can_add}  ? 1 : 0;
             $can_multi = $options->{multiple} ? 1 : 0;
             $content_type_id = $content_field->related_content_type_id;
             if ( my $content_type = $content_field->related_content_type ) {
@@ -1517,7 +1516,6 @@ sub dialog_content_data_modal {
     }
 
     my $param = {
-        can_add           => $can_add,
         can_multi         => $can_multi,
         content_field_id  => $content_field_id,
         content_type_id   => $content_type_id,
