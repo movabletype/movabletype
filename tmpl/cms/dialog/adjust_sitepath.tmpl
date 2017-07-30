@@ -109,7 +109,7 @@ function init() {
     <div id="website-paths" class="for-website">
     <mt:loop name="website_loop">
     <mt:if name="__first__">
-      <h2><__trans phrase="Websites"></h2>
+      <h2><__trans phrase="Sites"></h2>
     </mt:if>
       <fieldset>
         <h3><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</h3>
@@ -142,17 +142,17 @@ function init() {
     <div id="blog-paths" class="for-blog"<mt:if name="website_loop"> style="display: none"</mt:if>>
     <mt:loop name="blogs_loop">
     <mt:if name="__first__">
-      <h2><__trans phrase="Blogs"></h2>
+      <h2><__trans phrase="Child Sites"></h2>
     </mt:if>
       <fieldset>
         <h3><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</h3>
         <mtapp:setting
            id="parent_id"
-           label="<__trans phrase="Parent Website">"
+           label="<__trans phrase="Parent Site">"
            label_class="top-label"
            no_grid="1">
           <select id="parent_id_<mt:var name="id">" name="parent_id_<mt:var name="id">" class="form-control parent_website" onchange="changeParent(this)">
-            <option value="0"><__trans phrase="Please choose parent website."></option>
+            <option value="0"><__trans phrase="Please choose parent site."></option>
           <mt:loop name="all_websites">
             <option value="<mt:var name="website_id">"<mt:if name="parent_id" eq="$website_id"> selected</mt:if>> <mt:var name="website_name" escape="html"></option>
           </mt:loop>
@@ -164,9 +164,9 @@ function init() {
            id="$site_url_id"
            class="url-field"
            shown="0"
-           label="<__trans phrase="Blog URL">"
+           label="<__trans phrase="Site URL">"
            label_class="top-label"
-           hint="<__trans phrase="Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/blog/">"
+           hint="<__trans phrase="Enter the new URL of your public child site. End with '/'. Example: http://www.example.com/blog/">"
            show_hint="1"
            no_grid="1">
         <mt:if name="old_site_url_subdomain">
@@ -228,7 +228,7 @@ function init() {
            id="$site_path_id"
            class="site-path-field"
            shown="0"
-           label="<__trans phrase="Blog Root">"
+           label="<__trans phrase="Site Root">"
            label_class="top-label"
            no_grid="1">
         <mt:if name="old_site_path">
@@ -266,7 +266,7 @@ function init() {
            shown="0"
            label="<__trans phrase="Archive URL">"
            label_class="top-label"
-           hint="<__trans phrase="Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/">"
+           hint="<__trans phrase="Enter the new URL of the archives section of your child site. Example: http://www.example.com/blog/archives/">"
            show_hint="1"
            no_grid="1">
           <input type="hidden" name="old_archive_url_<mt:var name="id" escape="html">" id="old_archive_url_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_url" escape="html">" />

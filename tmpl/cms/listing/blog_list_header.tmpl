@@ -4,13 +4,13 @@
             <mtapp:statusmsg
                 id="saved-deleted"
                 class="success">
-                <__trans phrase="You have successfully deleted the website from the Movable Type system. The files still exist in the site path. Please delete files if not needed.">
+                <__trans phrase="You have successfully deleted the site from the Movable Type system. The files still exist in the site path. Please delete files if not needed.">
             </mtapp:statusmsg>
         <mt:else>
             <mtapp:statusmsg
                 id="saved-deleted"
                 class="success">
-                <__trans phrase="You have successfully deleted the blog from the website. The files still exist in the site path. Please delete files if not needed.">
+                <__trans phrase="You have successfully deleted the child site from the site. The files still exist in the site path. Please delete files if not needed.">
             </mtapp:statusmsg>
         </mt:if>
     </mt:if>
@@ -25,7 +25,7 @@
         <mtapp:statusmsg
             id="moved"
             class="success">
-            <__trans phrase="You have successfully moved selected blogs to another website.">
+            <__trans phrase="You have successfully moved selected child sites to another site.">
         </mtapp:statusmsg>
         <mtapp:statusmsg
             id="moved-warning"
@@ -47,7 +47,7 @@
                 id="not-deleted"
                 class="error"
                 can_close="0">
-                <__trans phrase="Some websites were not deleted. You need to delete blogs under the website first.">
+                <__trans phrase="Some sites were not deleted. You need to delete child sites under the site first.">
             </mtapp:statusmsg>
         </mt:if>
     </mt:if>

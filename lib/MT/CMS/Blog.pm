@@ -1468,11 +1468,11 @@ sub dialog_select_weblog {
             terms    => $terms,
             args     => $args,
             params   => {
-                dialog_title  => $app->translate("Select Blog"),
-                items_prompt  => $app->translate("Selected Blog"),
+                dialog_title  => $app->translate("Select Child Site"),
+                items_prompt  => $app->translate("Selected Child Site"),
                 search_prompt => $app->translate(
-                    "Type a blog name to filter the choices below."),
-                panel_label       => $app->translate("Blog Name"),
+                    "Type a site name to filter the choices below."),
+                panel_label       => $app->translate("Child Site Name"),
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',
                 panel_multi       => defined $app->param('multi')
@@ -3365,7 +3365,7 @@ sub print_status_page {
 
     $app->print_encode( $app->build_page('layout/modal/header.tmpl') );
 
-    my $page_title = $app->translate('Clone Blog');
+    my $page_title = $app->translate('Clone Child Site');
     $app->print_encode( $app->translate_templatized(<<"HTML" ) );
 
 <div class="modal-header">
@@ -3376,9 +3376,9 @@ sub print_status_page {
 </div>
 
 <div class="modal-body">
-    <h2><__trans phrase="Cloning blog '[_1]'..." params="$blog_name_encode"></h2>
-    <div class="modal_width panel panel-default" id="dialog-clone-weblog" style="background-color: #fafafa;">
-        <div id="clone-process" class="process-msg panel-body">
+    <h2><__trans phrase="Cloning child site '[_1]'..." params="$blog_name_encode"></h2>
+    <div class="modal_width card" id="dialog-clone-weblog" style="background-color: #fafafa;">
+        <div id="clone-process" class="process-msg card-block">
             <ul class="list-unstyled">
 HTML
 

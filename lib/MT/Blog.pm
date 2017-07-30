@@ -149,11 +149,11 @@ sub ALIGN () {'none'}
 sub UNITS () {'pixels'}
 
 sub class_label {
-    MT->translate("Blog");
+    MT->translate("Child Site");
 }
 
 sub class_label_plural {
-    MT->translate("Blogs");
+    MT->translate("Child Sites");
 }
 
 sub list_props {
@@ -253,7 +253,7 @@ sub list_props {
         # },
         parent_website => {
             view            => ['system'],
-            label           => 'Website',
+            label           => 'Site',
             order           => 800,
             display         => 'default',
             filter_editable => 0,
@@ -262,7 +262,7 @@ sub list_props {
                 my $parent = $obj->website;
                 return $parent
                     ? $parent->name
-                    : ( MT->translate('*Website/Blog deleted*') );
+                    : ( MT->translate('*Site deleted*') );
             },
             bulk_sort => sub {
                 my $prop    = shift;
@@ -1055,7 +1055,7 @@ sub clone_with_children {
     $new_blog->save or die $new_blog->errstr;
     $new_blog_id = $new_blog->id;
     $callback->(
-        MT->translate( "Cloned blog... new id is [_1].", $new_blog_id ) );
+        MT->translate( "Cloned child site... new id is [_1].", $new_blog_id ) );
 
     if ( ( !exists $classes->{'MT::Permission'} )
         || $classes->{'MT::Permission'} )

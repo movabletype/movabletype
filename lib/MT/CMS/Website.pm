@@ -498,11 +498,11 @@ sub dialog_select_website {
             terms  => $terms,
             args   => $args,
             params => {
-                dialog_title  => $app->translate("Select Website"),
-                items_prompt  => $app->translate("Selected Website"),
+                dialog_title  => $app->translate("Select Site"),
+                items_prompt  => $app->translate("Selected Site"),
                 search_prompt => $app->translate(
                     "Type a website name to filter the choices below."),
-                panel_label       => $app->translate("Website Name"),
+                panel_label       => $app->translate("Site Name"),
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',
                 panel_multi       => defined $app->param('multi')
@@ -551,11 +551,11 @@ sub dialog_move_blogs {
             terms  => $terms,
             args   => $args,
             params => {
-                dialog_title  => $app->translate("Select Website"),
-                items_prompt  => $app->translate("Selected Website"),
+                dialog_title  => $app->translate("Select Site"),
+                items_prompt  => $app->translate("Selected Site"),
                 search_prompt => $app->translate(
-                    "Type a website name to filter the choices below."),
-                panel_label       => $app->translate("Website Name"),
+                    "Type a site name to filter the choices below."),
+                panel_label       => $app->translate("Site Name"),
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',
                 panel_multi       => 0,

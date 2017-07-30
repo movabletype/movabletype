@@ -1576,7 +1576,7 @@ sub core_list_actions {
                 },
             },
             move_blogs => {
-                label         => "Move blog(s) ",
+                label         => "Move child site(s) ",
                 order         => 200,
                 code          => "${pkg}Website::dialog_move_blogs",
                 permit_action => 'move_blogs',
@@ -1589,7 +1589,7 @@ sub core_list_actions {
                 }
             },
             clone_blog => {
-                label         => "Clone Blog",
+                label         => "Clone Child Site",
                 code          => "${pkg}Blog::clone",
                 permit_action => 'clone_blog',
                 max           => 1,
@@ -1871,11 +1871,11 @@ sub core_menus {
     my $app = shift;
     return {
         'website' => {
-            label => "Websites",
+            label => "Sites",
             order => 50,
         },
         'blog' => {
-            label => "Blogs",
+            label => "Child Sites",
             order => 100,
         },
         'entry' => {

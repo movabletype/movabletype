@@ -1278,7 +1278,7 @@ sub _make_upload_destinations {
     my ( $blog, $real_path ) = @_;
 
     my @dest_root;
-    my $class_label = $blog->class_label;
+    my $class_label = $app->translate('Site');
 
     require POSIX;
     my $user_basename;

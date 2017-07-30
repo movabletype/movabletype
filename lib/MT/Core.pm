@@ -1083,8 +1083,8 @@ BEGIN {
                     requires_grep => \&MT::Filter::pack_requires_grep,
                 },
                 blog_name => {
-                    label        => 'Website/Blog Name',
-                    filter_label => '__WEBSITE_BLOG_NAME',
+                    label        => 'Site Name',
+                    filter_label => 'Site Name',
                     order        => 10000,
                     display      => 'default',
                     site_name    => 1,
@@ -1202,7 +1202,7 @@ BEGIN {
                         my $prop = shift;
                         my ($settings) = @_;
                         return MT->translate(
-                            '[_1] of this Website',
+                            '[_1] of this Site',
                             $settings->{object_label_plural}
                                 || $prop->datasource->class_label_plural,
                         );
@@ -1300,7 +1300,7 @@ BEGIN {
         },
         listing_screens => {
             website => {
-                object_label     => 'Website',
+                object_label     => 'Site',
                 primary          => 'name',
                 view             => 'system',
                 default_sort_key => 'name',
@@ -1312,7 +1312,7 @@ BEGIN {
                 },
             },
             blog => {
-                object_label     => 'Blog',
+                object_label     => 'Child Site',
                 view             => [qw( system website )],
                 primary          => 'name',
                 default_sort_key => 'name',
