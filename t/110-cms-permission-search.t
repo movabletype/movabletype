@@ -15,116 +15,112 @@ use Test::More;
 ### Make test data
 
 # Website
-my $website = MT::Test::Permission->make_website();
+my $website        = MT::Test::Permission->make_website();
 my $second_website = MT::Test::Permission->make_website();
 
 # Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
-my $second_blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+my $second_blog
+    = MT::Test::Permission->make_blog( parent_id => $website->id, );
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
+    name     => 'aikawa',
     nickname => 'Ichiro Aikawa',
 );
 
 my $ichikawa = MT::Test::Permission->make_author(
-    name => 'ichikawa',
+    name     => 'ichikawa',
     nickname => 'Jiro Ichikawa',
 );
 
 my $ukawa = MT::Test::Permission->make_author(
-    name => 'ukawa',
+    name     => 'ukawa',
     nickname => 'Saburo Ukawa',
 );
 
 my $egawa = MT::Test::Permission->make_author(
-    name => 'egawa',
+    name     => 'egawa',
     nickname => 'Shiro Egawa',
 );
 
 my $ogawa = MT::Test::Permission->make_author(
-    name => 'ogawa',
+    name     => 'ogawa',
     nickname => 'Goro Ogawa',
 );
 
 my $kagawa = MT::Test::Permission->make_author(
-    name => 'kagawa',
+    name     => 'kagawa',
     nickname => 'Ichiro Kagawa',
 );
 
 my $kikkawa = MT::Test::Permission->make_author(
-    name => 'kikkawa',
+    name     => 'kikkawa',
     nickname => 'Jiro Kikkawa',
 );
 
 my $kumekawa = MT::Test::Permission->make_author(
-    name => 'kumekawa',
+    name     => 'kumekawa',
     nickname => 'Saburo Kumekawa',
 );
 
 my $kemikawa = MT::Test::Permission->make_author(
-    name => 'kemikawa',
+    name     => 'kemikawa',
     nickname => 'Shiro Kemikawa',
 );
 
 my $komiya = MT::Test::Permission->make_author(
-    name => 'komiya',
+    name     => 'komiya',
     nickname => 'Goro Komiya',
 );
 
 my $sagawa = MT::Test::Permission->make_author(
-    name => 'sagawa',
+    name     => 'sagawa',
     nickname => 'Ichiro Sagawa',
 );
 
-
 my $shiki = MT::Test::Permission->make_author(
-    name => 'shiki',
+    name     => 'shiki',
     nickname => 'Jiro Shiki',
 );
 
 my $suda = MT::Test::Permission->make_author(
-    name => 'suda',
+    name     => 'suda',
     nickname => 'Saburo Suda',
 );
 
 my $segawa = MT::Test::Permission->make_author(
-    name => 'segawa',
+    name     => 'segawa',
     nickname => 'Shiro Segawa',
 );
 
 my $sone = MT::Test::Permission->make_author(
-    name => 'sone',
+    name     => 'sone',
     nickname => 'Goro Sone',
 );
 
 my $tachikawa = MT::Test::Permission->make_author(
-    name => 'tachikawa',
+    name     => 'tachikawa',
     nickname => 'Ichiro Tachikawa',
 );
 
 my $tsuda = MT::Test::Permission->make_author(
-    name => 'tsuda',
+    name     => 'tsuda',
     nickname => 'Saburo Tsuda',
 );
 
 my $terakawa = MT::Test::Permission->make_author(
-    name => 'terakawa',
+    name     => 'terakawa',
     nickname => 'Shiro Terakawa',
 );
 
 my $toda = MT::Test::Permission->make_author(
-    name => 'toda',
+    name     => 'toda',
     nickname => 'Goro Toda',
 );
 
 my $nagayama = MT::Test::Permission->make_author(
-    name => 'nagayama',
+    name     => 'nagayama',
     nickname => 'Ichiro Nagayama',
 );
 
@@ -132,70 +128,71 @@ my $admin = MT::Author->load(1);
 
 # Role
 my $create_post = MT::Test::Permission->make_role(
-   name  => 'Create Post',
-   permissions => "'create_post'",
+    name        => 'Create Post',
+    permissions => "'create_post'",
 );
 my $edit_all_posts = MT::Test::Permission->make_role(
-   name  => 'Edit All Posts',
-   permissions => "'edit_all_posts'",
+    name        => 'Edit All Posts',
+    permissions => "'edit_all_posts'",
 );
 my $manage_feedback = MT::Test::Permission->make_role(
-   name  => 'Manage Feedback',
-   permissions => "'manage_feedback'",
+    name        => 'Manage Feedback',
+    permissions => "'manage_feedback'",
 );
 my $edit_templates = MT::Test::Permission->make_role(
-   name  => 'Edit Templates',
-   permissions => "'edit_templates'",
+    name        => 'Edit Templates',
+    permissions => "'edit_templates'",
 );
 my $edit_assets = MT::Test::Permission->make_role(
-   name  => 'Edit Assets',
-   permissions => "'edit_assets'",
+    name        => 'Edit Assets',
+    permissions => "'edit_assets'",
 );
 my $view_blog_log = MT::Test::Permission->make_role(
-   name  => 'View Blog Log',
-   permissions => "'view_blog_log'",
+    name        => 'View Blog Log',
+    permissions => "'view_blog_log'",
 );
 my $manage_pages = MT::Test::Permission->make_role(
-   name  => 'Manage Pages',
-   permissions => "'manage_pages'",
+    name        => 'Manage Pages',
+    permissions => "'manage_pages'",
 );
 
-my $blog_admin = MT::Role->load({ name => MT->translate('Blog Administrator') });
-my $website_admin = MT::Role->load({ name => MT->translate('Website Administrator') });
+my $blog_admin
+    = MT::Role->load( { name => MT->translate('Blog Administrator') } );
+my $website_admin
+    = MT::Role->load( { name => MT->translate('Website Administrator') } );
 
 require MT::Association;
-MT::Association->link( $aikawa => $create_post => $blog );
-MT::Association->link( $ichikawa => $edit_all_posts => $blog );
-MT::Association->link( $ukawa => $manage_feedback => $blog );
-MT::Association->link( $egawa => $edit_templates => $blog );
-MT::Association->link( $ogawa => $edit_assets => $blog );
-MT::Association->link( $kagawa => $view_blog_log => $blog );
-MT::Association->link( $kikkawa => $manage_pages => $blog );
-MT::Association->link( $kumekawa => $blog_admin => $blog );
-MT::Association->link( $kemikawa => $website_admin => $website );
+MT::Association->link( $aikawa   => $create_post     => $blog );
+MT::Association->link( $ichikawa => $edit_all_posts  => $blog );
+MT::Association->link( $ukawa    => $manage_feedback => $blog );
+MT::Association->link( $egawa    => $edit_templates  => $blog );
+MT::Association->link( $ogawa    => $edit_assets     => $blog );
+MT::Association->link( $kagawa   => $view_blog_log   => $blog );
+MT::Association->link( $kikkawa  => $manage_pages    => $blog );
+MT::Association->link( $kumekawa => $blog_admin      => $blog );
+MT::Association->link( $kemikawa => $website_admin   => $website );
 
-MT::Association->link( $shiki => $create_post => $second_blog );
-MT::Association->link( $suda => $edit_all_posts => $second_blog );
-MT::Association->link( $segawa => $manage_feedback => $second_blog );
-MT::Association->link( $sone => $edit_templates => $second_blog );
-MT::Association->link( $tachikawa => $edit_assets => $second_blog );
-MT::Association->link( $tsuda => $view_blog_log => $second_blog );
-MT::Association->link( $terakawa => $manage_pages => $second_blog );
-MT::Association->link( $toda => $blog_admin => $second_blog );
-MT::Association->link( $nagayama => $website_admin => $second_website );
-
+MT::Association->link( $shiki     => $create_post     => $second_blog );
+MT::Association->link( $suda      => $edit_all_posts  => $second_blog );
+MT::Association->link( $segawa    => $manage_feedback => $second_blog );
+MT::Association->link( $sone      => $edit_templates  => $second_blog );
+MT::Association->link( $tachikawa => $edit_assets     => $second_blog );
+MT::Association->link( $tsuda     => $view_blog_log   => $second_blog );
+MT::Association->link( $terakawa  => $manage_pages    => $second_blog );
+MT::Association->link( $toda      => $blog_admin      => $second_blog );
+MT::Association->link( $nagayama  => $website_admin   => $second_website );
 
 require MT::Permission;
 my $p = MT::Permission->new;
-$p->blog_id( 0);
+$p->blog_id(0);
 $p->author_id( $komiya->id );
-$p->permissions( "'edit_templates'" );
+$p->permissions("'edit_templates'");
 $p->save;
 
 $p = MT::Permission->new;
-$p->blog_id( 0);
+$p->blog_id(0);
 $p->author_id( $sagawa->id );
-$p->permissions( "'view_log'" );
+$p->permissions("'view_log'");
 $p->save;
 
 # Run
@@ -203,9 +200,9 @@ my ( $app, $out );
 
 subtest 'search: entry' => sub {
     MT::Test::Permission->make_entry(
-        blog_id        => $blog->id,
-        author_id      => $aikawa->id,
-        text           => 'aaaaaaa',
+        blog_id   => $blog->id,
+        author_id => $aikawa->id,
+        text      => 'aaaaaaa',
     );
     $app = _run_app(
         'MT::App::CMS',
@@ -215,14 +212,14 @@ subtest 'search: entry' => sub {
             _type            => 'entry',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:entry" );
+    ok( $out,                     "Request: search:entry" );
     ok( $out !~ m!permission=1!i, "search:entry by admin" );
 
     $app = _run_app(
@@ -233,15 +230,16 @@ subtest 'search: entry' => sub {
             _type            => 'entry',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:entry" );
-    ok( $out !~ m!permission=1!i, "search:entry by permitted user (create post)" );
+    ok( $out !~ m!permission=1!i,
+        "search:entry by permitted user (create post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -251,15 +249,16 @@ subtest 'search: entry' => sub {
             _type            => 'entry',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:entry" );
-    ok( $out !~ m!permission=1!i, "search:entry by permitted user (edit all posts)" );
+    ok( $out !~ m!permission=1!i,
+        "search:entry by permitted user (edit all posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -269,15 +268,16 @@ subtest 'search: entry' => sub {
             _type            => 'entry',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:entry" );
-    ok( $out =~ m!permission=1!i, "search:entry by other blog (create post)" );
+    ok( $out =~ m!permission=1!i,
+        "search:entry by other blog (create post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -287,15 +287,16 @@ subtest 'search: entry' => sub {
             _type            => 'entry',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:entry" );
-    ok( $out =~ m!permission=1!i, "search:entry by other blog (edit all posts)" );
+    ok( $out =~ m!permission=1!i,
+        "search:entry by other blog (edit all posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -306,27 +307,28 @@ subtest 'search: entry' => sub {
             limit            => 10,
             blog_id          => $blog->id,
 
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:entry" );
-    ok( $out =~ m!No entries were found that match the given criteria!i, "search:entry by other permission" );
+    ok( $out =~ m!No entries were found that match the given criteria!i,
+        "search:entry by other permission" );
 };
 
 subtest 'search: comment' => sub {
     my $entry = MT::Test::Permission->make_entry(
-        blog_id        => $blog->id,
-        author_id      => $aikawa->id,
-        text           => 'aaaaaaa',
+        blog_id   => $blog->id,
+        author_id => $aikawa->id,
+        text      => 'aaaaaaa',
     );
     MT::Test::Permission->make_comment(
-        blog_id        => $blog->id,
-        entry_id       => $entry->id,
-        text           => 'aaaa aaa',
+        blog_id  => $blog->id,
+        entry_id => $entry->id,
+        text     => 'aaaa aaa',
     );
     $app = _run_app(
         'MT::App::CMS',
@@ -336,14 +338,14 @@ subtest 'search: comment' => sub {
             _type            => 'comment',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:comment" );
+    ok( $out,                     "Request: search:comment" );
     ok( $out !~ m!permission=1!i, "search:comment by admin" );
 
     $app = _run_app(
@@ -354,15 +356,16 @@ subtest 'search: comment' => sub {
             _type            => 'comment',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out !~ m!permission=1!i, "search:comment by permitted user (create post)" );
+    ok( $out !~ m!permission=1!i,
+        "search:comment by permitted user (create post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -372,15 +375,16 @@ subtest 'search: comment' => sub {
             _type            => 'comment',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out !~ m!permission=1!i, "search:comment by permitted user (manage feedback)" );
+    ok( $out !~ m!permission=1!i,
+        "search:comment by permitted user (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -390,15 +394,16 @@ subtest 'search: comment' => sub {
             _type            => 'comment',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out !~ m!permission=1!i, "search:comment by permitted user (manage pages)" );
+    ok( $out !~ m!permission=1!i,
+        "search:comment by permitted user (manage pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -408,15 +413,16 @@ subtest 'search: comment' => sub {
             _type            => 'comment',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out =~ m!permission=1!i, "search:comment by other blog (create post)" );
+    ok( $out =~ m!permission=1!i,
+        "search:comment by other blog (create post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -426,15 +432,16 @@ subtest 'search: comment' => sub {
             _type            => 'comment',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out =~ m!permission=1!i, "search:comment by other blog (manage feedback)" );
+    ok( $out =~ m!permission=1!i,
+        "search:comment by other blog (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -444,15 +451,16 @@ subtest 'search: comment' => sub {
             _type            => 'comment',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out =~ m!permission=1!i, "search:comment by other blog (manage pages)" );
+    ok( $out =~ m!permission=1!i,
+        "search:comment by other blog (manage pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -462,31 +470,32 @@ subtest 'search: comment' => sub {
             _type            => 'comment',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out =~ m!No comments were found that match the given criteria!i, "search:comment by other permission" );
+    ok( $out =~ m!No comments were found that match the given criteria!i,
+        "search:comment by other permission" );
 };
 
 subtest 'search: ping' => sub {
     my $entry = MT::Test::Permission->make_entry(
-        blog_id        => $blog->id,
-        author_id      => $aikawa->id,
-        text           => 'aaaaaaa',
+        blog_id   => $blog->id,
+        author_id => $aikawa->id,
+        text      => 'aaaaaaa',
     );
     my $tb = MT::Test::Permission->make_tb(
-        blog_id        => $blog->id,
-        entry_id       => $entry->id,
+        blog_id  => $blog->id,
+        entry_id => $entry->id,
     );
     MT::Test::Permission->make_ping(
-        blog_id        => $blog->id,
-        tb_id          => $tb->id,
-        excerpt        => 'aaaaaaa',
+        blog_id => $blog->id,
+        tb_id   => $tb->id,
+        excerpt => 'aaaaaaa',
     );
     $app = _run_app(
         'MT::App::CMS',
@@ -496,14 +505,14 @@ subtest 'search: ping' => sub {
             _type            => 'ping',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:ping" );
+    ok( $out,                     "Request: search:ping" );
     ok( $out !~ m!permission=1!i, "search:ping by admin" );
 
     $app = _run_app(
@@ -514,15 +523,16 @@ subtest 'search: ping' => sub {
             _type            => 'ping',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out !~ m!permission=1!i, "search:ping by permitted user (create post)" );
+    ok( $out !~ m!permission=1!i,
+        "search:ping by permitted user (create post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -532,15 +542,16 @@ subtest 'search: ping' => sub {
             _type            => 'ping',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out !~ m!permission=1!i, "search:ping by permitted user (manage feedback)" );
+    ok( $out !~ m!permission=1!i,
+        "search:ping by permitted user (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -550,15 +561,16 @@ subtest 'search: ping' => sub {
             _type            => 'ping',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out !~ m!permission=1!i, "search:ping by permitted user (manage pages)" );
+    ok( $out !~ m!permission=1!i,
+        "search:ping by permitted user (manage pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -568,14 +580,14 @@ subtest 'search: ping' => sub {
             _type            => 'ping',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:ping" );
+    ok( $out,                     "Request: search:ping" );
     ok( $out =~ m!permission=1!i, "search:ping by other blog (create post)" );
 
     $app = _run_app(
@@ -586,15 +598,16 @@ subtest 'search: ping' => sub {
             _type            => 'ping',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out =~ m!permission=1!i, "search:ping by other blog (manage feedback)" );
+    ok( $out =~ m!permission=1!i,
+        "search:ping by other blog (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -604,15 +617,16 @@ subtest 'search: ping' => sub {
             _type            => 'ping',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out =~ m!permission=1!i, "search:ping by other blog (manage pages)" );
+    ok( $out =~ m!permission=1!i,
+        "search:ping by other blog (manage pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -622,15 +636,16 @@ subtest 'search: ping' => sub {
             _type            => 'ping',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out =~ m!No trackbacks were found that match the given criteria!i, "search:ping by other permission" );
+    ok( $out =~ m!No trackbacks were found that match the given criteria!i,
+        "search:ping by other permission" );
 };
 
 subtest 'search: template' => sub {
@@ -647,14 +662,14 @@ subtest 'search: template' => sub {
             _type            => 'template',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:template" );
+    ok( $out,                     "Request: search:template" );
     ok( $out !~ m!permission=1!i, "search:template by admin" );
 
     $app = _run_app(
@@ -665,15 +680,16 @@ subtest 'search: template' => sub {
             _type            => 'template',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:template" );
-    ok( $out !~ m!permission=1!i, "search:template by permitted user (local)" );
+    ok( $out !~ m!permission=1!i,
+        "search:template by permitted user (local)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -683,15 +699,16 @@ subtest 'search: template' => sub {
             _type            => 'template',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:template" );
-    ok( $out !~ m!permission=1!i, "search:template by permitted user (system)" );
+    ok( $out !~ m!permission=1!i,
+        "search:template by permitted user (system)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -701,14 +718,14 @@ subtest 'search: template' => sub {
             _type            => 'template',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:template" );
+    ok( $out,                     "Request: search:template" );
     ok( $out =~ m!permission=1!i, "search:template by other blog" );
 
     $app = _run_app(
@@ -719,15 +736,16 @@ subtest 'search: template' => sub {
             _type            => 'template',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:template" );
-    ok( $out =~ m!No templates were found that match the given criteria!i, "search:template by other permission" );
+    ok( $out =~ m!No templates were found that match the given criteria!i,
+        "search:template by other permission" );
 };
 
 subtest 'search: asset' => sub {
@@ -743,14 +761,14 @@ subtest 'search: asset' => sub {
             _type            => 'asset',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:asset" );
+    ok( $out,                     "Request: search:asset" );
     ok( $out !~ m!permission=1!i, "search:asset by admin" );
 
     $app = _run_app(
@@ -761,14 +779,14 @@ subtest 'search: asset' => sub {
             _type            => 'asset',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:asset" );
+    ok( $out,                     "Request: search:asset" );
     ok( $out !~ m!permission=1!i, "search:asset by permitted user" );
 
     $app = _run_app(
@@ -779,14 +797,14 @@ subtest 'search: asset' => sub {
             _type            => 'asset',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:asset" );
+    ok( $out,                     "Request: search:asset" );
     ok( $out =~ m!permission=1!i, "search:asset by other blog" );
 
     $app = _run_app(
@@ -797,15 +815,16 @@ subtest 'search: asset' => sub {
             _type            => 'asset',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:asset" );
-    ok( $out =~ m!No assets were found that match the given criteria!i, "search:asset by other permission" );
+    ok( $out =~ m!No assets were found that match the given criteria!i,
+        "search:asset by other permission" );
 };
 
 subtest 'search: log' => sub {
@@ -821,14 +840,14 @@ subtest 'search: log' => sub {
             _type            => 'log',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:log" );
+    ok( $out,                     "Request: search:log" );
     ok( $out !~ m!permission=1!i, "search:log by admin" );
 
     $app = _run_app(
@@ -839,14 +858,14 @@ subtest 'search: log' => sub {
             _type            => 'log',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:log" );
+    ok( $out,                     "Request: search:log" );
     ok( $out !~ m!permission=1!i, "search:log by permitted user (local)" );
 
     $app = _run_app(
@@ -857,14 +876,14 @@ subtest 'search: log' => sub {
             _type            => 'log',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:log" );
+    ok( $out,                     "Request: search:log" );
     ok( $out !~ m!permission=1!i, "search:log by permitted user (system)" );
 
     $app = _run_app(
@@ -875,14 +894,14 @@ subtest 'search: log' => sub {
             _type            => 'log',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:log" );
+    ok( $out,                     "Request: search:log" );
     ok( $out =~ m!permission=1!i, "search:log by other blog" );
 
     $app = _run_app(
@@ -893,15 +912,17 @@ subtest 'search: log' => sub {
             _type            => 'log',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:log" );
-    ok( $out =~ m!No log messages were found that match the given criteria!i, "search:log by other permission" );
+    ok( $out =~ m!No log messages were found that match the given criteria!i,
+        "search:log by other permission"
+    );
 };
 
 subtest 'search: author' => sub {
@@ -917,14 +938,14 @@ subtest 'search: author' => sub {
             _type            => 'author',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:author" );
+    ok( $out,                     "Request: search:author" );
     ok( $out !~ m!permission=1!i, "search:author by admin" );
 
     $app = _run_app(
@@ -935,15 +956,16 @@ subtest 'search: author' => sub {
             _type            => 'author',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:author" );
-    ok( $out =~ m!No users were found that match the given criteria!i, "search:author by other permission" );
+    ok( $out =~ m!No users were found that match the given criteria!i,
+        "search:author by other permission" );
 };
 
 subtest 'search: blog' => sub {
@@ -959,14 +981,14 @@ subtest 'search: blog' => sub {
             _type            => 'blog',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:blog" );
+    ok( $out,                     "Request: search:blog" );
     ok( $out !~ m!permission=1!i, "search:blog by admin" );
 
     $app = _run_app(
@@ -977,14 +999,14 @@ subtest 'search: blog' => sub {
             _type            => 'blog',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:blog" );
+    ok( $out,                     "Request: search:blog" );
     ok( $out !~ m!permission=1!i, "search:blog by permitted user" );
 
     $app = _run_app(
@@ -995,14 +1017,14 @@ subtest 'search: blog' => sub {
             _type            => 'blog',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:blog" );
+    ok( $out,                     "Request: search:blog" );
     ok( $out =~ m!permission=1!i, "search:blog by other blog" );
 
     $app = _run_app(
@@ -1013,21 +1035,20 @@ subtest 'search: blog' => sub {
             _type            => 'blog',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:blog" );
-    ok( $out =~ m!No blogs were found that match the given criteria!i, "search:blog by other permission" );
+    ok( $out =~ m!No child sites were found that match the given criteria!i,
+        "search:blog by other permission" );
 };
 
 subtest 'search: website' => sub {
-    MT::Test::Permission->make_website(
-        name => 'aaaaaaaaaaa',
-    );
+    MT::Test::Permission->make_website( name => 'aaaaaaaaaaa', );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -1035,15 +1056,16 @@ subtest 'search: website' => sub {
             __mode           => 'search_replace',
             _type            => 'website',
             limit            => 10,
-            website_id          => $website->id,
-            return_args      => '__mode%3Dsearch_replace%26website_id%3D'.$website->id,
+            website_id       => $website->id,
+            return_args      => '__mode%3Dsearch_replace%26website_id%3D'
+                . $website->id,
             do_search        => 1,
             search           => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:website" );
+    ok( $out,                     "Request: search:website" );
     ok( $out !~ m!permission=1!i, "search:website by admin" );
 
     $app = _run_app(
@@ -1053,15 +1075,16 @@ subtest 'search: website' => sub {
             __mode           => 'search_replace',
             _type            => 'website',
             limit            => 10,
-            website_id          => $website->id,
-            return_args      => '__mode%3Dsearch_replace%26website_id%3D'.$website->id,
+            website_id       => $website->id,
+            return_args      => '__mode%3Dsearch_replace%26website_id%3D'
+                . $website->id,
             do_search        => 1,
             search           => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:website" );
+    ok( $out,                     "Request: search:website" );
     ok( $out !~ m!permission=1!i, "search:website by permitted user" );
 
     $app = _run_app(
@@ -1072,14 +1095,15 @@ subtest 'search: website' => sub {
             _type            => 'website',
             limit            => 10,
             blog_id          => $website->id,
-            return_args      => '__mode%3Dsearch_replace%26website_id%3D'.$website->id,
+            return_args      => '__mode%3Dsearch_replace%26website_id%3D'
+                . $website->id,
             do_search        => 1,
             search           => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:website" );
+    ok( $out,                     "Request: search:website" );
     ok( $out =~ m!permission=1!i, "search:website by other website" );
 
     $app = _run_app(
@@ -1090,14 +1114,15 @@ subtest 'search: website' => sub {
             _type            => 'website',
             limit            => 10,
             blog_id          => $website->id,
-            return_args      => '__mode%3Dsearch_replace%26website_id%3D'.$website->id,
+            return_args      => '__mode%3Dsearch_replace%26website_id%3D'
+                . $website->id,
             do_search        => 1,
             search           => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:website" );
+    ok( $out,                     "Request: search:website" );
     ok( $out =~ m!permission=1!i, "search:website by other permission" );
 };
 
@@ -1115,14 +1140,14 @@ subtest 'search: page' => sub {
             _type            => 'page',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:page" );
+    ok( $out,                     "Request: search:page" );
     ok( $out !~ m!permission=1!i, "search:page by admin" );
 
     $app = _run_app(
@@ -1133,14 +1158,14 @@ subtest 'search: page' => sub {
             _type            => 'page',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:page" );
+    ok( $out,                     "Request: search:page" );
     ok( $out !~ m!permission=1!i, "search:page by permitted user" );
 
     $app = _run_app(
@@ -1151,14 +1176,14 @@ subtest 'search: page' => sub {
             _type            => 'page',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: search:page" );
+    ok( $out,                     "Request: search:page" );
     ok( $out =~ m!permission=1!i, "search:page by other blog" );
 
     $app = _run_app(
@@ -1169,15 +1194,16 @@ subtest 'search: page' => sub {
             _type            => 'page',
             limit            => 10,
             blog_id          => $blog->id,
-            return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
-            do_search        => 1,
-            search           => 'aaa',
+            return_args => '__mode%3Dsearch_replace%26blog_id%3D' . $blog->id,
+            do_search   => 1,
+            search      => 'aaa',
             'dates-disabled' => 1,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:page" );
-    ok( $out =~ m!No pages were found that match the given criteria!i, "search:page by other permission" );
+    ok( $out =~ m!No pages were found that match the given criteria!i,
+        "search:page by other permission" );
 };
 
 done_testing();
