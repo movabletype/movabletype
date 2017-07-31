@@ -322,9 +322,6 @@ sub suite {
                 my @folder_order = split ',', $site->folder_order;
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return MT::DataAPI::Resource->from_object(
                     [ map { $app->model('folder')->load($_) } @folder_order ]
