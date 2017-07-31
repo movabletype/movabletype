@@ -226,8 +226,8 @@ sub test_data_api {
         if ( my $expected_result = $data->{result} ) {
             MT->instance->user($author);
             no warnings 'redefine';
-            local *boolean::true  = sub {'true'};
-            local *boolean::false = sub {'false'};
+            local *boolean::true  = sub {$JSON::true};
+            local *boolean::false = sub {$JSON::false};
 
             $expected_result = $expected_result->( $data, $body )
                 if ref $expected_result eq 'CODE';
