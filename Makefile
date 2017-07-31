@@ -74,6 +74,9 @@ mt-static/jquery/jquery.mt.min.js: $(jquery_js)
 	cat $(jquery_js) > mt-static/jquery/jquery.mt.min.js
 	./build/minifier.pl mt-static/jquery/jquery.mt.min.js
 
+mt-static/js/listing/listing.js:
+	npm run install
+
 mt-static/css/main.css: $(main_css)
 	cat $(main_css) > mt-static/css/main.css
 	./build/minifier.pl mt-static/css/main.css
@@ -88,6 +91,7 @@ code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
         mt-static/js/mt_core_compact.js \
         mt-static/js/editor.js \
         mt-static/jquery/jquery.mt.min.js \
+        mt-static/js/listing/listing.js \
         mt-static/css/main.css \
         mt-static/css/simple.css
 
@@ -198,6 +202,7 @@ clean:
 	-rm -rf mt-static/js/mt_core_compact.js
 	-rm -rf mt-static/js/editor.js
 	-rm -f mt-static/jquery/jquery.mt.min.js
+	-rm -f mt-static/js/listing/listing.js
 	-rm -rf mt-static/css/main.css mt-static/css/simple.css
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
