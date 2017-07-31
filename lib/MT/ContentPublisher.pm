@@ -297,24 +297,36 @@ sub rebuild {
                 next unless $archiver;
 
                 if ( $archiver->contenttype_category_based ) {
-                    my @cats = MT::Category->load(
-                        { object_id => $content_data->id } );
-                    foreach my $cat (@cats) {
-                        $mt->_rebuild_content_archive_type(
-                            ContentData => $content_data,
-                            Blog        => $blog,
-                            Category    => $cat,
-                            ArchiveType => $at,
-                            NoStatic    => $param{NoStatic},
-                            Force       => ( $param{Force} ? 1 : 0 ),
-                            $param{TemplateMap}
-                            ? ( TemplateMap => $param{TemplateMap} )
-                            : (),
-                            $param{TemplateID}
-                            ? ( TemplateID =>
-                                    $param{TemplateID} )
-                            : (),
-                        ) or return;
+                    my @cat_cfs = MT::ContentField->load(
+                        {   type            => 'categories',
+                            content_type_id => $content_data->content_type_id,
+                        }
+                    );
+                    foreach my $cat_cf (@cat_cfs) {
+                        my @obj_cats = MT::ObjectCategory->load(
+                            {   object_ds => 'content_field',
+                                object_id => $cat_cf->id,
+                            }
+                        );
+                        foreach my $obj_cat (@obj_cats) {
+                            my ($cat)
+                                = MT::Category->load( $obj_cat->category_id );
+                            $mt->_rebuild_content_archive_type(
+                                ContentData => $content_data,
+                                Blog        => $blog,
+                                Category    => $cat,
+                                ArchiveType => $at,
+                                NoStatic    => $param{NoStatic},
+                                Force       => ( $param{Force} ? 1 : 0 ),
+                                $param{TemplateMap}
+                                ? ( TemplateMap => $param{TemplateMap} )
+                                : (),
+                                $param{TemplateID}
+                                ? ( TemplateID =>
+                                        $param{TemplateID} )
+                                : (),
+                            ) or return;
+                        }
                     }
                 }
                 elsif ( $archiver->contenttype_author_based ) {
