@@ -34,7 +34,7 @@ my $mt = MT->new;
 $mt->config( 'NoHTMLEntities', 1 );
 
 if ( $^O eq 'MSWin32' ) {
-    $mt->config( 'TempDir', 'C:\Windows\Temp' );
+    $mt->config( 'TempDir', File::Spec->tmpdir );
 }
 
 ## Use done_testing()
