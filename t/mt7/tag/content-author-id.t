@@ -114,7 +114,7 @@ SKIP:
 # {
 #     unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
 #         skip "Can't find executable file: php",
-#             1 * blocks('expected_dynamic');
+#             1 * blocks;
 #     }
 #
 #     run {
