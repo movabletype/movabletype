@@ -147,7 +147,7 @@ sub list_props {
             fields  => [qw(title text text_more keywords excerpt basename)],
             display => 'none',
         },
-        blog_id         => {
+        blog_id => {
             auto            => 1,
             col             => 'blog_id',
             display         => 'none',

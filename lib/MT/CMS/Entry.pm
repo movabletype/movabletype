@@ -1151,8 +1151,11 @@ sub _build_entry_preview {
         $entry->cache_property( 'categories', undef, [] );
     }
     my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
-    my $tags = $q->param('tags');
-    my @tag_names = ( defined $tags and $tags ne '' ) ? MT::Tag->split( $tag_delim, $tags ) : ();
+    my $tags      = $q->param('tags');
+    my @tag_names
+        = ( defined $tags and $tags ne '' )
+        ? MT::Tag->split( $tag_delim, $tags )
+        : ();
     if (@tag_names) {
         my @tags;
         foreach my $tag_name (@tag_names) {
@@ -1543,8 +1546,8 @@ sub save {
         $primary_category_old = $orig_obj->category;
         $categories_old       = $orig_obj->categories;
     }
-    my $status_old           = $id ? $obj->status : 0;
-    my $names                = $obj->column_names;
+    my $status_old = $id ? $obj->status : 0;
+    my $names = $obj->column_names;
 
     ## Get rid of category_id param, because we don't want to just set it
     ## in the Entry record; save it for later when we will set the Placement.
@@ -1832,9 +1835,9 @@ sub save {
     require MT::Asset;
     require MT::ObjectAsset;
     my $include_asset_ids = $app->param('include_asset_ids') || '';
-    my @asset_ids         = split( ',', $include_asset_ids );
-    my $obj_assets        = ();
-    my @obj_assets        = MT::ObjectAsset->load(
+    my @asset_ids  = split( ',', $include_asset_ids );
+    my $obj_assets = ();
+    my @obj_assets = MT::ObjectAsset->load(
         { object_ds => 'entry', object_id => $obj->id } );
     foreach my $obj_asset (@obj_assets) {
         my $asset_id = $obj_asset->asset_id;

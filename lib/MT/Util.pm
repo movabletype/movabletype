@@ -89,7 +89,8 @@ sub leap_year {
 sub iso2ts {
     my ( $blog, $iso ) = @_;
     return undef
-        unless $iso and $iso
+        unless $iso
+        and $iso
         =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/;
     my ( $y, $mo, $d, $h, $m, $s, $offset )
         = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
@@ -457,8 +458,9 @@ sub format_ts {
         %f = %$f_ref;
     }
     else {
-        my $L = $Languages{$lang};
-        my @ts = @f{qw( Y m d H M S )} = map { $_ || 0 } unpack 'A4A2A2A2A2A2', $ts;
+        my $L  = $Languages{$lang};
+        my @ts = @f{qw( Y m d H M S )}
+            = map { $_ || 0 } unpack 'A4A2A2A2A2A2', $ts;
         $f{w} = wday_from_ts( @ts[ 0 .. 2 ] );
         $f{j} = yday_from_ts( @ts[ 0 .. 2 ] );
         $f{'y'} = substr $f{Y}, 2;

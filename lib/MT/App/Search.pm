@@ -60,8 +60,8 @@ sub core_parameters {
                     text      => 'like',
                     text_more => 'like'
                 },
-                'sort' => 'authored_on',
-                terms  => \&_filter_terms,
+                'sort'       => 'authored_on',
+                terms        => \&_filter_terms,
                 filter_types => {
                     author   => \&_join_author,
                     category => \&_join_category,
@@ -529,7 +529,7 @@ sub search_terms {
         if ( 'HASH' ne ref $params->{terms} ) {
             my $code = $params->{terms};
             $code = MT->handler_to_coderef($code);
-            eval { %def_terms = %{ $code->( $app ) }; };
+            eval { %def_terms = %{ $code->($app) }; };
         }
         else {
             %def_terms = %{ $params->{terms} };
@@ -710,7 +710,7 @@ sub first_blog_id {
     else {
 
         # if IncludeBlogs is empty or all, get the first blog id available
-        if (   !$q->param('IncludeBlogs')
+        if (  !$q->param('IncludeBlogs')
             || $q->param('IncludeBlogs') eq 'all' )
         {
             my @blogs = $app->model('blog')

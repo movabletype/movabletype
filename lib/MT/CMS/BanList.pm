@@ -48,7 +48,7 @@ sub cms_pre_load_filtered_list {
 
     require MT::Permission;
     my $options_blog_ids = $load_options->{blog_ids};
-    my $iter = MT::Permission->load_iter(
+    my $iter             = MT::Permission->load_iter(
         {   author_id => $user->id,
             (   $options_blog_ids
                 ? ( blog_id => $options_blog_ids )
