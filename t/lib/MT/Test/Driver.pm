@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+package MT::Test::Driver;
 
 # Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
@@ -13,49 +13,7 @@ use English qw( -no_match_vars );
 
 $OUTPUT_AUTOFLUSH = 1;
 
-# Run this script as a symlink, in the form of 99-driver.t, ie:
-# ln -s driver-tests.pl 99-driver.t
-
-BEGIN {
-
-    # Set config to driver-test.cfg when run as /path/to/99-driver.t
-    $ENV{MT_CONFIG} = "$1-test.cfg"
-        if __FILE__ =~ m{ [\\/] \d+- ([^\\/]+) \.t \z }xms;
-
-    # Set "DisableObjectCache 1" when testing MySQL.
-    if ( $ENV{MT_CONFIG} =~ /^mysql/ ) {
-        $ENV{MT_CONFIG} = 'mysql-test-disable-object-cache.cfg';
-    }
-}
-
 use Test::More;
-use lib 't/lib';
-
-BEGIN {
-    plan skip_all => "Configuration file $ENV{MT_CONFIG} not found"
-        if !-r "t/$ENV{MT_CONFIG}";
-
-    my %modules = (
-        'mysql'       => 'DBD::mysql',
-        'postgresql'  => 'DBD::Pg',
-        'sqlite'      => 'DBD::SQLite',
-        'oracle'      => 'DBD::Oracle',
-        'mssqlserver' => 'DBD::ODBC',
-    );
-
-    my $db = $1
-        if $ENV{MT_CONFIG} =~ m/(.*)-test(?:-disable-object-cache)?.cfg/;
-
-    if ( $db ne 'mysql' ) {
-        plan skip_all => "Test for '$db' is not actively maintained";
-    }
-
-    my $module = $modules{$db};
-    eval "require $module;";
-    plan skip_all => "Database driver '$module' not found."
-        if $@;
-}
-
 use MT::Test qw(:testdb :time);
 
 package Zot;
@@ -1772,14 +1730,20 @@ sub clean_db : Test(teardown) {
     MT::Test->reset_table_for(qw( Foo Bar Baz ));
 }
 
-package main;
+package Test::DriverBasic;
+use base qw( Test::Class MT::Test );
 use MT::Test;
+use Test::More;
 
-Test::Class->runtests(
-    'Test::GroupBy',   'Test::Search', 'Test::Classy', 'Test::Joins',
-    'Test::TypedJoin', +137
-);
+sub reset_db : Test(setup) {
+    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+}
 
+sub clean_db : Test(teardown) {
+    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+}
+
+sub basic : Test(137) {
 my ( $foo, @foo, @bar );
 my ( $tmp, @tmp );
 
@@ -2576,6 +2540,7 @@ SKIP: {
 SKIP: {
     skip( 1, '$tmp[1] undefined' ) unless $tmp[1];
     ok( $tmp[1] && ( $tmp[1]->name eq 'this' ), 'name' );
+}
 }
 
 1;
