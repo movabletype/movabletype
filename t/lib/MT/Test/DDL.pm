@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+package MT::Test::DDL;
 
 # Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
@@ -13,42 +13,10 @@ use English qw( -no_watch_vars );
 
 $OUTPUT_AUTOFLUSH = 1;
 
-# Run this script as a symlink, in the form of 99-driver.t, ie:
-# ln -s driver-tests.pl 99-driver.t
-
-BEGIN {
-
-    # Set config to driver-test.cfg when run as /path/to/99-driver.t
-    $ENV{MT_CONFIG} = "$1-test.cfg"
-        if __FILE__ =~ m{ ([^\\/-]+) \.t \z }xms;
-}
-
 use Test::More;
 use lib 't/lib';
-use MT::Test ();
+use MT::Test;
 use Test::Class;
-
-BEGIN {
-    plan skip_all => "Configuration file $ENV{MT_CONFIG} not found"
-        if !-r $ENV{MT_CONFIG};
-
-    my %modules = (
-        'mysql'       => 'DBD::mysql',
-        'postgresql'  => 'DBD::Pg',
-        'sqlite'      => 'DBD::SQLite',
-        'oracle'      => 'DBD::Oracle',
-        'mssqlserver' => 'DBD::ODBC',
-    );
-
-    my $db = $1
-        if __FILE__ =~ m{ ([^\\/-]+) \.t \z }xms;
-    my $module = $modules{$db};
-    eval "require $module;";
-    plan skip_all => "Database driver '$module' not found."
-        if $@;
-}
-
-MT::Test->import;
 
 package Ddltest;
 use base qw( MT::Object );
@@ -828,9 +796,5 @@ sub _00_drop_table_test : Test(shutdown => 3) {
     ok( !defined $ddl_class->column_defs('Ddltest'),
         'Ddltest table no longer exists' );
 }
-
-package main;
-
-Test::DDL->runtests();
 
 1;
