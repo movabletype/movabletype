@@ -85,13 +85,13 @@ sub simple_request {
         $ENV{CONTENT_LENGTH} = length $request->content();
         my $pid
             = open2( \*RESPONSE, \*REQUEST,
-            "/usr/bin/env perl ./$script_name" )
+            "$^X ./$script_name" )
             or die "Couldn't spawn ./$script_name";
         print REQUEST $request->content();
         close REQUEST;
     }
     else {
-        open RESPONSE, "/usr/bin/env perl ./$script_name|"
+        open RESPONSE, "$^X ./$script_name|"
             or die "Couldn't spawn $script_name";
         print STDERR "$script_name exit status: $?\n" if $?;
     }
