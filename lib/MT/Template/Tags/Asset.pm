@@ -408,9 +408,9 @@ sub _hdlr_assets {
     else {
         my $blog = $ctx->stash('blog');
         my $so
-            = lc( $args->{sort_order}
-            || ( $blog ? $blog->sort_order_posts : undef )
-            || '' );
+            = lc(  $args->{sort_order}
+                || ( $blog ? $blog->sort_order_posts : undef )
+                || '' );
         my $col = lc( $args->{sort_by} || 'created_on' );
 
         unless ( $col eq 'none' ) {
@@ -1178,8 +1178,9 @@ sub _hdlr_asset_thumbnail_url {
     }
 
     if ( !$args->{force} ) {
-        delete $arg{Width}  if $arg{Width} and $arg{Width} > $a->image_width;
-        delete $arg{Height} if $arg{Height} and $arg{Height} > $a->image_height;
+        delete $arg{Width} if $arg{Width} and $arg{Width} > $a->image_width;
+        delete $arg{Height}
+            if $arg{Height} and $arg{Height} > $a->image_height;
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
@@ -1284,8 +1285,9 @@ sub _hdlr_asset_thumbnail_link {
     $arg{Square} = $args->{square} if $args->{square};
 
     if ( !$args->{force} ) {
-        delete $arg{Width}  if $arg{Width} and $arg{Width} > $a->image_width;
-        delete $arg{Height} if $arg{Height} and $arg{Height} > $a->image_height;
+        delete $arg{Width} if $arg{Width} and $arg{Width} > $a->image_width;
+        delete $arg{Height}
+            if $arg{Height} and $arg{Height} > $a->image_height;
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);

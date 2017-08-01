@@ -2740,7 +2740,7 @@ sub build_email {
 
     # basically, try to load from database
     my $blog = $param->{blog};
-    my $id = $file;
+    my $id   = $file;
     $id =~ s/(\.tmpl|\.mtml)$//;
 
     require MT::Template;

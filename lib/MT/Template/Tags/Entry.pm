@@ -515,7 +515,8 @@ sub _hdlr_entries {
             };
             if ( !$entries ) {
                 if ( $category_arg !~ m/\bNOT\b/i ) {
-                    return MT::Template::Context::_hdlr_pass_tokens_else(@_) unless @cat_ids;
+                    return MT::Template::Context::_hdlr_pass_tokens_else(@_)
+                        unless @cat_ids;
                     $args{join} = MT::Placement->join_on(
                         'entry_id',
                         {   category_id => \@cat_ids,
@@ -588,7 +589,8 @@ sub _hdlr_entries {
             };
             if ( !$entries ) {
                 if ( $tag_arg !~ m/\bNOT\b/i ) {
-                    return MT::Template::Context::_hdlr_pass_tokens_else(@_) unless @tag_ids;
+                    return MT::Template::Context::_hdlr_pass_tokens_else(@_)
+                        unless @tag_ids;
                     $args{join} = MT::ObjectTag->join_on(
                         'object_id',
                         {   tag_id            => \@tag_ids,
@@ -1202,7 +1204,8 @@ sub _hdlr_entries {
         my $footer   = 0;
 
         if ( defined $entries[ $i + 1 ] ) {
-            $next_day = substr( ( $entries[ $i + 1 ]->authored_on || '' ), 0, 8 );
+            $next_day
+                = substr( ( $entries[ $i + 1 ]->authored_on || '' ), 0, 8 );
             $footer = $this_day ne $next_day;
         }
         else { $footer++ }

@@ -83,9 +83,7 @@ sub simple_request {
 
     if ( $request->content() ) {
         $ENV{CONTENT_LENGTH} = length $request->content();
-        my $pid
-            = open2( \*RESPONSE, \*REQUEST,
-            "$^X ./$script_name" )
+        my $pid = open2( \*RESPONSE, \*REQUEST, "$^X ./$script_name" )
             or die "Couldn't spawn ./$script_name";
         print REQUEST $request->content();
         close REQUEST;

@@ -3307,7 +3307,7 @@ sub _hdlr_app_widget {
     elsif ($label_link) {
         $widget_header = "\n<a href=\"$label_link\"><span>$label</span></a>";
     }
-    elsif (defined $label) {
+    elsif ( defined $label ) {
         $widget_header = "\n<span>$label</span>";
     }
     my $token    = $ctx->var('magic_token')     || '';

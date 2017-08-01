@@ -117,13 +117,15 @@ sub _hdlr_contents {
         my $content_type = MT::ContentType->load($ct_id);
         local $ctx->{__stash}{content_type} = $content_type;
 
-        defined(my $out = $builder->build(
-            $ctx, $tok,
-            {   %{$cond},
-                ContentsHeader => !$i,
-                ContentsFooter => !defined $contents[ $i + 1 ],
-            }
-        )) or return $ctx->error( $builder->errstr );
+        defined(
+            my $out = $builder->build(
+                $ctx, $tok,
+                {   %{$cond},
+                    ContentsHeader => !$i,
+                    ContentsFooter => !defined $contents[ $i + 1 ],
+                }
+            )
+        ) or return $ctx->error( $builder->errstr );
         $res .= $out;
         $i++;
     }

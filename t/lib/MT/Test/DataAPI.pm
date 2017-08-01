@@ -151,7 +151,7 @@ sub test_data_api {
             $note .= '?'
                 . join( '&',
                 map { $_ . '=' . $data->{params}{$_} }
-                    sort keys %{ $data->{params} } );
+                sort keys %{ $data->{params} } );
         }
         $note .= ' ' . $data->{method};
         $note .= ' ' . $data->{note} if $data->{note};
@@ -180,7 +180,8 @@ sub test_data_api {
                 (   $params
                     ? map {
                         $_ => ref $params->{$_}
-                            ? MT::Util::to_json( $params->{$_}, { canonical => 1 } )
+                            ? MT::Util::to_json( $params->{$_},
+                            { canonical => 1 } )
                             : $params->{$_};
                         }
                         keys %{$params}
