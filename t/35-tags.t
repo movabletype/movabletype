@@ -72,8 +72,8 @@ my %const = (
     DYNAMIC_CONSTANT => '',
     DAYS_CONSTANT1 => $daysdiff + 2,
     DAYS_CONSTANT2 => $daysdiff - 1,
-    CURRENT_YEAR => POSIX::strftime("%Y", localtime),
-    CURRENT_MONTH => POSIX::strftime("%m", localtime),
+    CURRENT_YEAR => POSIX::strftime("%Y", gmtime(time + $blog->server_offset * 3600)),
+    CURRENT_MONTH => POSIX::strftime("%m", gmtime(time + $blog->server_offset * 3600)),
     STATIC_FILE_PATH => MT->instance->static_file_path . '/',
     THREE_DAYS_AGO => epoch2ts($blog, time() - int(3.5 * 86400)),
 );
@@ -158,6 +158,11 @@ $ctx->stash('blog', $blog);
 $ctx->stash('current_timestamp', '20040816135142');
 $mt->init_plugins();
 $entry = $db->fetch_entry(1);
+
+if ($blog->server_offset) {
+    $const['CURRENT_YEAR'] = strftime("%Y", time() + $blog->server_offset * 3600);
+    $const['CURRENT_MONTH'] = strftime("%m", time() + $blog->server_offset * 3600);
+}
 
 $suite = load_tests();
 
