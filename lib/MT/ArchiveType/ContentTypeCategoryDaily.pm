@@ -37,7 +37,7 @@ sub template_params {
 }
 
 sub archive_file {
-    my $obj = shift;
+    my $archiver = shift;
     my ( $ctx, %param ) = @_;
     my $timestamp    = $param{Timestamp};
     my $file_tmpl    = $param{Template};
@@ -46,32 +46,7 @@ sub archive_file {
     my $content_data = $ctx->{__stash}{content};
     my $file;
 
-    my $this_cat;
-    if ($cat) {
-        $this_cat = $cat;
-    }
-    elsif ($content_data) {
-        my @cat_cfs = MT::ContentField->load(
-            {   type            => 'categories',
-                content_type_id => $content_data->content_type_id,
-            }
-        );
-        foreach my $cat_cf (@cat_cfs) {
-            my @obj_cats = MT::ObjectCategory->load(
-                {   object_ds => 'content_field',
-                    object_id => $cat_cf->id,
-                }
-            );
-            foreach my $obj_cat (@obj_cats) {
-                my ($category) = MT::Category->load( $obj_cat->category_id );
-                push @$cat, $category;
-            }
-        }
-        $this_cat = $cat;
-    }
-    else {
-        $this_cat = undef;
-    }
+    my $this_cat = $archiver->_get_this_cat( $cat, $content_data );
 
     if ($file_tmpl) {
         ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} )

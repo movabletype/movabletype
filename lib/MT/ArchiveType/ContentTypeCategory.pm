@@ -36,7 +36,7 @@ sub template_params {
 }
 
 sub archive_file {
-    my $obj = shift;
+    my $archiver = shift;
     my ( $ctx, %param ) = @_;
     my $timestamp    = $param{Timestamp};
     my $file_tmpl    = $param{Template};
@@ -45,7 +45,35 @@ sub archive_file {
     my $content_data = $ctx->{__stash}{content};
     my $file;
 
+    my $this_cat = $archiver->_get_this_cat( $cat, $content_data );
+
+    if ($file_tmpl) {
+        $ctx->stash( 'archive_category', $this_cat );
+        $ctx->{inside_mt_categories} = 1;
+        $ctx->{__stash}{category} = $this_cat;
+    }
+    else {
+        if ( !$this_cat ) {
+            return "";
+        }
+        my $label = '';
+        $label = dirify( $this_cat->label );
+        if ( $label !~ /\w/ ) {
+            $label = $this_cat ? "cat" . $this_cat->id : "";
+        }
+        $file = sprintf( "%s/index", $this_cat->category_path );
+    }
+    $file;
+}
+
+sub archive_title {
+}
+
+sub _get_this_cat {
+    my $archiver = shift;
+    my ( $cat, $content_data ) = @_;
     my $this_cat;
+
     if ($cat) {
         $this_cat = $cat;
     }
@@ -72,26 +100,7 @@ sub archive_file {
         $this_cat = undef;
     }
 
-    if ($file_tmpl) {
-        $ctx->stash( 'archive_category', $this_cat );
-        $ctx->{inside_mt_categories} = 1;
-        $ctx->{__stash}{category} = $this_cat;
-    }
-    else {
-        if ( !$this_cat ) {
-            return "";
-        }
-        my $label = '';
-        $label = dirify( $this_cat->label );
-        if ( $label !~ /\w/ ) {
-            $label = $this_cat ? "cat" . $this_cat->id : "";
-        }
-        $file = sprintf( "%s/index", $this_cat->category_path );
-    }
-    $file;
-}
-
-sub archive_title {
+    return $this_cat;
 }
 
 1;
