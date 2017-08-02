@@ -1111,8 +1111,11 @@ if ( $mt->component('commercial') ) {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Create a new field" );
-    ok( $out =~ m/__mode=dashboard&permission=1/i,
-        "Create a new Field: result" );
+    location_param_contains(
+        $out,
+        { __mode => 'dashboard', permission => 1 },
+        'Create a new Field: result'
+    );
 
     # Delete Field
     # __mode=delete&_type=field&id=1&blog_id=1
@@ -1551,10 +1554,10 @@ sub make_data {
     ### Association
     my $designer_role = MT::Role->load( { name => 'Designer' } );
     my $author_role   = MT::Role->load( { name => 'Author' } );
-    my $blog_role     = MT::Role->load( { name => 'Blog Administrator' } );
-    my $website_role  = MT::Role->load( { name => 'Website Administrator' } );
-    my $page_role     = MT::Role->load( { name => 'Webmaster' } );
-    my $editor_role   = MT::Role->load( { name => 'Entry Editor' } );
+    my $blog_role = MT::Role->load( { name => 'Child Site Administrator' } );
+    my $website_role = MT::Role->load( { name => 'Site Administrator' } );
+    my $page_role    = MT::Role->load( { name => 'Webmaster' } );
+    my $editor_role  = MT::Role->load( { name => 'Entry Editor' } );
 
     require MT::Association;
     my $assoc = MT::Association->new();

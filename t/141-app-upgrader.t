@@ -33,7 +33,8 @@ subtest 'Upgrade from MT4 to MT6' => sub {
     is( MT::Blog->count(),    3, 'There are three blogs.' );
 
     my $blog_admin
-        = MT::Role->load( { name => MT->translate('Blog Administrator') } );
+        = MT::Role->load(
+        { name => MT->translate('Child Site Administrator') } );
     my $blog = MT::Blog->load( $blog_ids[0] );
     $admin->add_role( $blog_admin, $blog );
 
@@ -44,8 +45,8 @@ subtest 'Upgrade from MT4 to MT6' => sub {
     }
     is( scalar @roles, 1, 'Administrator has one role.' );
     is( $roles[0]->name,
-        MT->translate('Blog Administrator'),
-        'Administrator has "Blog Administrator" role.'
+        MT->translate('Child Site Administrator'),
+        'Administrator has "Child Site Administrator" role.'
     );
     my $perms = $admin->permissions( $blog->id );
     ok( $perms->has('administer_blog'),
@@ -129,8 +130,8 @@ subtest 'Upgrade from MT4 to MT6' => sub {
     }
     is( scalar @roles, 1, 'Administrator has one role.' );
     is( $roles[0]->name,
-        MT->translate('Website Administrator'),
-        'Administrator has "Website Administrator" role.'
+        MT->translate('Site Administrator'),
+        'Administrator has "Site Administrator" role.'
     );
 
     $perms = $admin->permissions( $blog->id );
@@ -156,7 +157,8 @@ subtest 'Upgrade from MT5 to MT6' => sub {
     $admin->save or die $admin->errstr;
 
     my $blog_admin
-        = MT::Role->load( { name => MT->translate('Blog Administrator') } );
+        = MT::Role->load(
+        { name => MT->translate('Child Site Administrator') } );
     $admin->add_role( $blog_admin, $blog );
 
     my @roles;
@@ -166,8 +168,8 @@ subtest 'Upgrade from MT5 to MT6' => sub {
     }
     is( scalar @roles, 1, 'Administrator has one role.' );
     is( $roles[0]->name,
-        MT->translate('Blog Administrator'),
-        'Administrator has "Blog Administrator" role.'
+        MT->translate('Child Site Administrator'),
+        'Administrator has "Child Site Administrator" role.'
     );
     my $perms = $admin->permissions( $blog->id );
     ok( $perms->has('administer_blog'),
@@ -254,8 +256,8 @@ subtest 'Upgrade from MT5 to MT6' => sub {
     }
     is( scalar @roles, 1, "Administrator has one role." );
     is( $roles[0]->name,
-        MT->translate('Blog Administrator'),
-        'Administrator has "Blog Administrator" role.'
+        MT->translate('Child Site Administrator'),
+        'Administrator has "Child Site Administrator" role.'
     );
 
     $perms = $admin->permissions( $blog->id );

@@ -25,8 +25,7 @@ my $app = MT::App::DataAPI->new;
     $website_entry->save or die $website_entry->errstr;
 
     my $website = $app->model('website')->load(2) or die;
-    my $role
-        = $app->model('role')->load( { name => 'Website Administrator' } )
+    my $role = $app->model('role')->load( { name => 'Site Administrator' } )
         or die;
 
     require MT::Association;

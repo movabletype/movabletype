@@ -157,9 +157,9 @@ my $manage_pages = MT::Test::Permission->make_role(
 );
 
 my $blog_admin
-    = MT::Role->load( { name => MT->translate('Blog Administrator') } );
+    = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
 my $website_admin
-    = MT::Role->load( { name => MT->translate('Website Administrator') } );
+    = MT::Role->load( { name => MT->translate('Site Administrator') } );
 
 require MT::Association;
 MT::Association->link( $aikawa   => $create_post     => $blog );
