@@ -3,7 +3,7 @@ package LWP::UserAgent::Local;
 use LWP::UserAgent;
 use base 'LWP::UserAgent';
 use IPC::Run3 'run3';
-use IO::Scalar;
+use IO::String;
 
 =pod
 
@@ -92,7 +92,7 @@ sub simple_request {
         or die "Couldn't spawn ./$script_name";
     print STDERR "$script_name exit status: $?\n" if $?;
 
-    my $RESPONSE = IO::Scalar->new(\$output);
+    my $RESPONSE = IO::String->new($output);
 
     my $response = new HTTP::Response();
     $response->request($request);
