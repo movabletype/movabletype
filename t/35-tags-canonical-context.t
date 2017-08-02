@@ -104,20 +104,23 @@ sub test_mapping_url {
         'preferred_mapping_url - static'
     );
 
-    my $php_result = test_mapping_url_php( $fileinfo->id );
+SKIP: {
+        skip "Can't find executable file: php", 2 unless has_php();
+        my $php_result = test_mapping_url_php( $fileinfo->id );
 
-    is( $php_result->{current_mapping_url},
-        exists( $data->{current_mapping_url} )
-        ? $data->{current_mapping_url}
-        : $blog_uri->scheme . '://' . $blog_uri->host . $fileinfo->url,
-        'current_mapping_url - dynamic'
-    );
-    is( $php_result->{preferred_mapping_url},
-        exists( $data->{preferred_mapping_url} )
-        ? $data->{preferred_mapping_url}
-        : undef,
-        'preferred_mapping_url - dynamic'
-    );
+        is( $php_result->{current_mapping_url},
+            exists( $data->{current_mapping_url} )
+            ? $data->{current_mapping_url}
+            : $blog_uri->scheme . '://' . $blog_uri->host . $fileinfo->url,
+            'current_mapping_url - dynamic'
+        );
+        is( $php_result->{preferred_mapping_url},
+            exists( $data->{preferred_mapping_url} )
+            ? $data->{preferred_mapping_url}
+            : undef,
+            'preferred_mapping_url - dynamic'
+        );
+    }
 }
 
 sub test_mapping_url_php {

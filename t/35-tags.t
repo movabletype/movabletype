@@ -98,7 +98,11 @@ foreach my $test_item (@$test_suite) {
     is($result, $test_item->{e}, "perl test " . $num++);
 }
 
-php_tests($test_suite);
+SKIP: {
+    skip "Can't find executable file: php", scalar @$test_suite
+        unless has_php();
+    php_tests($test_suite);
+}
 
 sub build {
     my($ctx, $markup) = @_;
