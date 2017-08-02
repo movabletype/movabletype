@@ -101,7 +101,7 @@ nav.blog {
           </a>
 </mt:if>
 <mt:if name="can_create_blog">
-  <mt:if name="scope_type" eq="website">
+  <mt:if name="scope_type" eq="site">
           <div class="dropdown-divider"></div>
           <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="blog_id"$>" class="dropdown-item create-link website">
             <__trans phrase="Create Child Site (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">">
