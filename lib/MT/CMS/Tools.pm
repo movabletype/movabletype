@@ -1272,10 +1272,9 @@ sub backup {
         my $filename = File::Spec->catfile( $temp_dir, $file . "-1.xml" );
         $fh = gensym();
         open $fh, ">$filename";
-        my $url
-            = $app->uri
-            . "?__mode=backup_download&name=$file-1.xml";
-        $url .= "&magic_token=" . $app->current_magic if defined($app->current_magic);
+        my $url = $app->uri . "?__mode=backup_download&name=$file-1.xml";
+        $url .= "&magic_token=" . $app->current_magic
+            if defined( $app->current_magic );
         $url .= "&blog_id=$blog_id" if defined($blog_id);
         push @files,
             {
@@ -1302,7 +1301,8 @@ sub backup {
             my $url
                 = $app->uri
                 . "?__mode=backup_download&name=$file-$findex.xml";
-            $url .= "&magic_token=" . $app->current_magic if defined($app->current_magic);
+            $url .= "&magic_token=" . $app->current_magic
+                if defined( $app->current_magic );
             $url .= "&blog_id=$blog_id" if defined($blog_id);
             push @files,
                 {
@@ -1360,7 +1360,8 @@ sub backup {
                     = $app->uri
                     . "?__mode=backup_download&assetname="
                     . MT::Util::encode_url($name);
-                $url .= "&magic_token=" . $app->current_magic if defined($app->current_magic);
+                $url .= "&magic_token=" . $app->current_magic
+                    if defined( $app->current_magic );
                 $url .= "&blog_id=$blog_id" if defined($blog_id);
                 push @files,
                     {
@@ -1371,9 +1372,9 @@ sub backup {
             print $fh "</manifest>\n";
             close $fh;
             my $url
-                = $app->uri
-                . "?__mode=backup_download&name=$file.manifest";
-            $url .= "&magic_token=" . $app->current_magic if defined($app->current_magic);
+                = $app->uri . "?__mode=backup_download&name=$file.manifest";
+            $url .= "&magic_token=" . $app->current_magic
+                if defined( $app->current_magic );
             $url .= "&blog_id=$blog_id" if defined($blog_id);
             push @files,
                 {
@@ -1381,6 +1382,7 @@ sub backup {
                 filename => "$file.manifest"
                 };
             if ( !$archive ) {
+
                 for my $f (@files) {
                     $f->{filename}
                         = MT::FileMgr::Local::_syserr( $f->{filename} )
@@ -1878,7 +1880,7 @@ sub adjust_sitepath {
             || q();
         $site_url_subdomain .= '.'
             if $site_url_subdomain && $site_url_subdomain !~ /\.$/;
-        my $parent_id = scalar $q->param("parent_id_$id");
+        my $parent_id          = scalar $q->param("parent_id_$id");
         my $site_path_absolute = scalar $q->param("site_path_absolute_$id")
             || q();
         my $use_absolute = scalar $q->param("use_absolute_$id") || q();

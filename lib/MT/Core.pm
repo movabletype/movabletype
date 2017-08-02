@@ -813,14 +813,19 @@ BEGIN {
                             ? 'author_id'
                             : 'created_by';
                         my %author_id
-                            = map { ( $_->$col ) ? ( $_->$col => 1 ) : () } @$objs;
+                            = map { ( $_->$col ) ? ( $_->$col => 1 ) : () }
+                            @$objs;
                         my @authors = MT->model('author')
                             ->load( { id => [ keys %author_id ] } );
-                        my %nickname
-                            = map { $_->id => defined $_->nickname ? $_->nickname : '' } @authors;
-                        $nickname{0} = ''; # fallback
+                        my %nickname = map {
+                            $_->id => defined $_->nickname
+                                ? $_->nickname
+                                : ''
+                        } @authors;
+                        $nickname{0} = '';    # fallback
                         return sort {
-                            $nickname{ $a->$col || 0 } cmp $nickname{ $b->$col || 0 }
+                            $nickname{ $a->$col || 0 }
+                                cmp $nickname{ $b->$col || 0 }
                         } @$objs;
                     },
                 },

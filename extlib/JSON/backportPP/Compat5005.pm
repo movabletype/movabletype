@@ -1,11 +1,12 @@
-package JSON::PP5005;
+package # This is JSON::backportPP
+    JSON::backportPP5005;
 
 use 5.005;
 use strict;
 
 my @properties;
 
-$JSON::PP5005::VERSION = '1.09';
+$JSON::PP5005::VERSION = '1.10';
 
 BEGIN {
 
@@ -32,11 +33,9 @@ BEGIN {
     *JSON::PP::JSON_PP_decode_unicode    = \&_decode_unicode;
 
     # missing in B module.
-    sub B::SVf_IOK () { 0x00010000; }
-    sub B::SVf_NOK () { 0x00020000; }
-    sub B::SVf_POK () { 0x00040000; }
     sub B::SVp_IOK () { 0x01000000; }
     sub B::SVp_NOK () { 0x02000000; }
+    sub B::SVp_POK () { 0x04000000; }
 
     $INC{'bytes.pm'} = 1; # dummy
 }
@@ -91,12 +90,6 @@ sub _decode_unicode {
 }
 
 
-sub JSON::PP::incr_parse {
-    local $Carp::CarpLevel = 1;
-    ( $_[0]->{_incr_parser} ||= JSON::PP::IncrParser->new )->incr_parse( @_ );
-}
-
-
 sub JSON::PP::incr_text {
     $_[0]->{_incr_parser} ||= JSON::PP::IncrParser->new;
 
@@ -106,16 +99,6 @@ sub JSON::PP::incr_text {
 
     $_[0]->{_incr_parser}->{incr_text} = $_[1] if ( @_ > 1 );
     $_[0]->{_incr_parser}->{incr_text};
-}
-
-
-sub JSON::PP::incr_skip {
-    ( $_[0]->{_incr_parser} ||= JSON::PP::IncrParser->new )->incr_skip;
-}
-
-
-sub JSON::PP::incr_reset {
-    ( $_[0]->{_incr_parser} ||= JSON::PP::IncrParser->new )->incr_reset;
 }
 
 
@@ -139,7 +122,7 @@ Makamaka Hannyaharamitu, E<lt>makamaka[at]cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2007-2009 by Makamaka Hannyaharamitu
+Copyright 2007-2012 by Makamaka Hannyaharamitu
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

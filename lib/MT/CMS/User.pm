@@ -767,7 +767,7 @@ sub save_cfg_system_users {
     $app->config( 'DefaultTimezone', $tz, 1 );
     $app->config( 'NewUserAutoProvisioning',
         $app->param('personal_weblog') ? 1 : 0, 1 );
-    $app->config( 'NewUserBlogTheme', $theme_id, 1 );
+    $app->config( 'NewUserBlogTheme',        $theme_id,           1 );
     $app->config( 'NewUserDefaultWebsiteId', $default_website_id, 1 );
     $app->config( 'DefaultUserLanguage', $app->param('default_language'), 1 );
     $app->config( 'DefaultUserTagDelimiter',

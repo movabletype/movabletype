@@ -480,9 +480,6 @@ sub suite {
             result => sub {
                 $app->user($author);
                 my $cat = $app->model('category')->load(1);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     'totalResults' => '1',
                     'items' => mt::DataAPI::Resource->from_object( [$cat] ),
@@ -552,9 +549,6 @@ sub suite {
                         : undef;
                 }
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     'totalResults' => scalar @cat,
                     'items' => mt::DataAPI::Resource->from_object( \@cat ),
@@ -599,9 +593,6 @@ sub suite {
                     = $app->model('category')
                     ->load(
                     { id => { not => 3 }, blog_id => 1, parent => 1 } );
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     'totalResults' => '1',
                     'items' => mt::DataAPI::Resource->from_object( [$cat] ),
@@ -671,9 +662,6 @@ sub suite {
                 $app->user($author);
                 my @cats = $app->model('category')
                     ->load( { blog_id => 1, parent => 1 } );
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => 2,
                     items => MT::DataAPI::Resource->from_object( \@cats ),
@@ -771,9 +759,6 @@ sub suite {
                 my @category_order = split ',', $site->category_order;
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return MT::DataAPI::Resource->from_object(
                     [   map { $app->model('category')->load($_) }

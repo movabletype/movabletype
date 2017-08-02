@@ -1,4 +1,5 @@
-package JSON::PP::Boolean;
+package # This is JSON::backportPP
+    JSON::PP::Boolean;
 
 use strict;
 use overload (
@@ -8,7 +9,7 @@ use overload (
     fallback => 1,
 );
 
-$JSON::PP::Boolean::VERSION = '2.94';
+$JSON::backportPP::Boolean::VERSION = '2.94';
 
 1;
 

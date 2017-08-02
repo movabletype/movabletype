@@ -780,7 +780,7 @@ sub list_props {
             col     => 'entry.status',
             display => 'none',
         },
-        blog_id         => {
+        blog_id => {
             auto            => 1,
             col             => 'blog_id',
             display         => 'none',

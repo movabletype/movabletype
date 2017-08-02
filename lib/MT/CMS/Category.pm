@@ -461,8 +461,7 @@ sub category_do_add {
     if ( !$author->is_superuser ) {
         $app->run_callbacks( 'cms_save_permission_filter.' . $type,
             $app, undef )
-            || return $app->error(
-            $app->translate( "Permission denied" ) );
+            || return $app->error( $app->translate("Permission denied") );
     }
 
     my $filter_result

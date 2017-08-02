@@ -117,12 +117,11 @@ sub post_save {
 }
 
 sub save_filter {
-    my $eh = shift;
+    my $eh    = shift;
     my ($app) = @_;
     my $label = $app->param('label') or return 1;
-    return $app->errtrans( "The name '[_1]' is too long!",
-        $label )
-        if ( length( $label ) > 100 );
+    return $app->errtrans( "The name '[_1]' is too long!", $label )
+        if ( length($label) > 100 );
     return 1;
 }
 

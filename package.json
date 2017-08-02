@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "install": "npm run build-riot",
+    "build": "npm run build-riot",
     "build-riot": "riot mt-static/js/listing/tag mt-static/js/listing/listing.js"
   },
   "repository": {
