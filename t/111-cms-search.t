@@ -76,7 +76,8 @@ subtest 'search_replace' => sub {
     foreach my $data (@suite) {
         my $params = $data->{params};
         my $query
-            = join( '&', map { $_ . '=' . $params->{$_} } sort keys %$params );
+            = join( '&',
+            map { $_ . '=' . $params->{$_} } sort keys %$params );
         subtest $query => sub {
             my $app = _run_app(
                 'MT::App::CMS',
@@ -105,7 +106,7 @@ subtest 'search_replace' => sub {
 
     subtest 'Column name in each scopes' => sub {
 
-        # blog scope
+        # child site scope
         my $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $admin,
@@ -125,18 +126,19 @@ subtest 'search_replace' => sub {
             'No entries were found that match the given criteria.';
         unlike( $out, qr/$no_results/, 'There are some search results.' );
 
-        my $col_blog = quotemeta('<span class="col-label">Blog</span>');
-        $col_blog = qr/$col_blog/;
-        unlike( $out, $col_blog,
-            'Does not have a colomn "Blog" in blog scope' );
-
         my $col_website_blog
-            = quotemeta('<span class="col-label">Site</span>');
+            = quotemeta('<span class="col-label">Website/Blog</span>');
         $col_website_blog = qr/$col_website_blog/;
         unlike( $out, $col_website_blog,
-            'Does not have a column "Website/Blog" in blog scope' );
+            'Does not have a colomn "Website/Blog" in child site scope' );
 
-        # website scope
+        my $col_site_child_site
+            = quotemeta('<span class="col-label">Site/Child Site</span>');
+        $col_site_child_site = qr/$col_site_child_site/;
+        unlike( $out, $col_site_child_site,
+            'Does not have a column "Site/Child Site" in child site scope' );
+
+        # site scope
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $admin,
@@ -154,13 +156,11 @@ subtest 'search_replace' => sub {
 
         unlike( $out, qr/$no_results/, 'There are some search results.' );
 
-        $col_blog = qr/$col_blog/;
-        unlike( $out, $col_blog,
-            'Does not have a colomn "Blog" in website scope' );
+        unlike( $out, $col_website_blog,
+            'Does not have a colomn "Website/Blog" in site scope' );
 
-        $col_website_blog = qr/$col_website_blog/;
-        like( $out, $col_website_blog,
-            'Has a column "Website/Blog" in website scope' );
+        like( $out, $col_site_child_site,
+            'Has a column "Site/Child Site" in site scope' );
 
         # system scope
         $app = _run_app(
@@ -180,15 +180,15 @@ subtest 'search_replace' => sub {
 
         unlike( $out, qr/$no_results/, 'There are some search results.' );
 
-        unlike( $out, $col_blog,
-            'Does not have a colomn "Blog" in system scope' );
-        like( $out, $col_website_blog,
-            'Has a column "Website/Blog" in system scope' );
+        unlike( $out, $col_website_blog,
+            'Does not have a colomn "Website/Blog" in system scope' );
+        like( $out, $col_site_child_site,
+            'Has a column "Site/Child Site" in system scope' );
 
         done_testing();
     };
 
-    subtest 'Search in website scope' => sub {
+    subtest 'Search in site scope' => sub {
         my $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $admin,
@@ -244,10 +244,10 @@ subtest 'search_replace' => sub {
         $out = delete $app->{__test_output};
         ok( $out, 'Request: search_replace' );
         like( $out, qr/$a_sunny_day/,
-            'Search results have "A Sunny Day" entry by permitted user in a website'
+            'Search results have "A Sunny Day" entry by permitted user in a site'
         );
         unlike( $out, qr/$a_rainy_day/,
-            'Search results do not have "A Rainy Day" entry by permitted user in a website'
+            'Search results do not have "A Rainy Day" entry by permitted user in a site'
         );
 
         $app = _run_app(
@@ -265,10 +265,10 @@ subtest 'search_replace' => sub {
         $out = delete $app->{__test_output};
         ok( $out, 'Request: search_replace' );
         unlike( $out, qr/$a_sunny_day/,
-            'Search results do not have "A Sunny Day" entry by permitted user in a blog'
+            'Search results do not have "A Sunny Day" entry by permitted user in a child site'
         );
         like( $out, qr/$a_rainy_day/,
-            'Search results have "A Rainy Day" entry by permitted user in a blog'
+            'Search results have "A Rainy Day" entry by permitted user in a child site'
         );
 
         $app = _run_app(
