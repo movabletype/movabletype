@@ -8,7 +8,6 @@ package MT::I18N::default;
 
 use strict;
 use base qw( MT::ErrorHandler );
-our $PKG;
 
 sub DEFAULT_LENGTH_ENTRY_EXCERPT ()                    {40}
 sub LENGTH_ENTRY_TITLE_FROM_TEXT ()                    {5}
@@ -89,39 +88,6 @@ sub first_n_text {
     my $class = shift;
     return $class->first_n_encode(@_);
 }
-
-# Dumb default methods (charset ignorant)
-
-sub encode_text_perl {
-    my $class = shift;
-    my ($str) = @_;
-    $str;
-}
-
-sub guess_encoding_perl {
-    MT->config('PublishCharset');
-}
-
-sub wrap_text_perl {
-    my $class = shift;
-    my ( $text, $col, $tab_init, $tab_sub ) = @_;
-    $tab_init = '' unless defined $tab_init;
-    $tab_sub  = '' unless defined $tab_sub;
-    require Text::Wrap;
-    $Text::Wrap::columns = $col;
-    $text = Text::Wrap::wrap( $tab_init, $tab_sub, $text );
-    return $text;
-}
-
-sub first_n_perl {
-    my $class = shift;
-    my ( $text, $length ) = @_;
-    require MT::Util;
-    $text = MT::Util::first_n_words( $text, $length );
-    return $text;
-}
-
-# Encode package methods
 
 sub wrap_text_encode {
     my $class = shift;
@@ -221,20 +187,6 @@ sub encode_text_encode {
     }
 
     $text;
-}
-
-sub _load_module {
-    return $PKG if $PKG;
-    my $class = shift;
-    if ( $] > 5.008 ) {
-        eval "require Encode";
-        unless ($@) {
-            $PKG = 'encode';
-            return $PKG;
-        }
-    }
-    $PKG = 'perl';
-    return $PKG;
 }
 
 1;

@@ -8,9 +8,8 @@ package MT::I18N::ja;
 
 use strict;
 use MT::Util qw(remove_html);
-use vars qw( @ISA $PKG );
+use vars qw( @ISA );
 @ISA = qw( MT::I18N::default );
-*PKG = *MT::I18N::default::PKG;
 
 sub DEFAULT_LENGTH_ENTRY_EXCERPT ()                    {40}
 sub LENGTH_ENTRY_TITLE_FROM_TEXT ()                    {10}
