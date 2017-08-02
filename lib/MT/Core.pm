@@ -818,7 +818,7 @@ BEGIN {
                         my @authors = MT->model('author')
                             ->load( { id => [ keys %author_id ] } );
                         my %nickname = map {
-                            $_->id => defined $_->nickname
+                                  $_->id => defined $_->nickname
                                 ? $_->nickname
                                 : ''
                         } @authors;
@@ -2704,7 +2704,7 @@ sub load_core_permissions {
         'blog.administer_website' => {
             'group'            => 'blog_admin',
             'inherit_from'     => ['blog.administer_blog'],
-            'label'            => 'Manage Website',
+            'label'            => 'Manage Site',
             'order'            => 200,
             'permitted_action' => {
                 'save_all_settings_for_website' => 1,
@@ -2730,7 +2730,7 @@ sub load_core_permissions {
                 'blog.view_blog_log',       'blog.manage_feedback',
                 'blog.manage_themes',
             ],
-            'label'            => 'Manage Blog',
+            'label'            => 'Manage Child Site',
             'order'            => 300,
             'permitted_action' => {
                 'access_to_blog_association_list'  => 1,
@@ -2766,7 +2766,7 @@ sub load_core_permissions {
         },
         'blog.manage_member_blogs' => {
             'group'            => 'blog_admin',
-            'label'            => 'Manage Website with Blogs',
+            'label'            => 'Manage Site with Child Sites',
             'inherit_from'     => ['blog.administer_website'],
             'order'            => 100,
             'permitted_action' => {
@@ -3235,7 +3235,7 @@ sub load_core_permissions {
         },
         'system.create_blog' => {
             'group'            => 'sys_admin',
-            'label'            => 'Create Blogs',
+            'label'            => 'Create Child Sites',
             'order'            => 200,
             'permitted_action' => {
                 'create_blog'                => 1,
@@ -3250,7 +3250,7 @@ sub load_core_permissions {
         },
         'system.create_website' => {
             'group'            => 'sys_admin',
-            'label'            => 'Create Websites',
+            'label'            => 'Create Sites',
             'order'            => 100,
             'permitted_action' => {
                 'create_new_website'            => 1,
