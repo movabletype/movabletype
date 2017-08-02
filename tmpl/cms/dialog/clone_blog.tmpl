@@ -178,7 +178,7 @@
      required="1"
      label="<__trans phrase="Site URL">"
      label_class="top-label"
-     hint="<__trans phrase="Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/blog/">"
+     hint="<__trans phrase="Enter the new URL of your public child site. End with '/'. Example: http://www.example.com/blog/">"
      show_hint="1"
      no_grid="1">
   <mt:if name="site_url_subdomain">
@@ -260,7 +260,7 @@
        required="1"
        label="<__trans phrase="Archive URL">"
        label_class="top-label"
-       hint="<__trans phrase="Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/">"
+       hint="<__trans phrase="Enter the new URL of the archives section of your child site. Example: http://www.example.com/blog/archives/">"
        show_hint="1"
        help_page="blog_settings_publishing"
        help_section="archive_url"
@@ -600,7 +600,11 @@
   });
 
   jQuery.mtValidateAddMessages({
-      "#name.required": '<__trans phrase="You must set your Blog Name." escape="singlequotes">',
+<mt:if name="is_blog">
+      "#name.required": '<__trans phrase="You must set your Child Site Name." escape="singlequotes">',
+<mt:else>
+      "#name.required": '<__trans phrase="You must set your Site Name." escape="singlequotes">',
+</mt:if>
       "#server_offset.required": '<__trans phrase="You did not select a time zone." escape="singlequotes">',
       "#site_url": '<__trans phrase="You must set a valid URL." escape="singlequotes">',
       "#site_url_path": '<__trans phrase="You must set a valid URL." escape="singlequotes">',

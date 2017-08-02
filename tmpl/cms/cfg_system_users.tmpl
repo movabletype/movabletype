@@ -36,11 +36,11 @@ function clearWebsiteLocation() {
     var el_id = MT.Util.getByID("new_user_default_website_id");
     if (el_name && el_id) {
         el_id.value = "";
-        el_name.innerHTML = "<__trans phrase="(No website selected)">";
+        el_name.innerHTML = "<__trans phrase="(No site selected)">";
     }
     var el_id_link = MT.Util.getByID("select-website-link");
     if (el_id_link) {
-        el_id_link.innerHTML = "<__trans phrase="Select website">";
+        el_id_link.innerHTML = "<__trans phrase="Select site">";
     }
 }
 function clearNotifyUsers() {
@@ -152,7 +152,7 @@ function clearNotifyUsers() {
     <mtapp:setting
        id="personal_weblog"
        label="<__trans phrase="Personal Child Site">"
-       hint="<__trans phrase="Have the system automatically create a new personal child site when a user is created. The user will be granted the blog administrator role on this child site.">">
+       hint="<__trans phrase="Have the system automatically create a new personal child site when a user is created. The user will be granted the child site administrator role on this child site.">">
       <input type="checkbox" id="personal_weblog" name="personal_weblog"<mt:if name="personal_weblog"> checked="checked"</mt:if><mt:if name="personal_weblog_readonly"> disabled="disabled"</mt:if> />
       <label for="personal_weblog"><__trans phrase="Automatically create a new child site for each new user."></label>
     </mtapp:setting>
@@ -160,7 +160,7 @@ function clearNotifyUsers() {
     <mtapp:setting
        id="new_user_default_website_id"
        label="<__trans phrase="Personal Child Site Location">"
-       hint="<__trans phrase="Select a website you wish to use as the location of new personal child sites.">">
+       hint="<__trans phrase="Select a site you wish to use as the location of new personal child sites.">">
       <input type="hidden" id="new_user_default_website_id" name="new_user_default_website_id" value="<mt:var name="new_user_default_website_id" escape="html">" />
       <span id="new_user_default_website_name">
       <mt:if name="new_user_default_website_id">

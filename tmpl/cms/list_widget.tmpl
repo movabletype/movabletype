@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><mt:if name="blog_id"><__trans phrase="Manage [_1] Widgets" params="<mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if>"><mt:else><__trans phrase="Manage Global Widgets"></mt:if></mt:setvarblock>
+<mt:setvarblock name="page_title"><mt:if name="blog_id"><__trans phrase="Manage [_1] Widgets" params="<mt:if name="is_blog"><__trans phrase="Child Site"><mt:else><__trans phrase="Site"></mt:if>"><mt:else><__trans phrase="Manage Global Widgets"></mt:if></mt:setvarblock>
 <mt:var name="position_actions_top" value="1">
 
 <mt:setvarblock name="js_include" append="1">
@@ -56,7 +56,7 @@ function init() {
      class="info"
      rebuild="all"
      can_close="0">
-    <__trans phrase="You have successfully deleted the selected widget set(s) from your blog.">
+    <__trans phrase="You have successfully deleted the selected widget set(s) from your [_1]." params="<mt:if name="is_blog"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if>">
   </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
