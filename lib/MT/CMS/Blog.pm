@@ -387,11 +387,11 @@ sub edit {
         $id ? $obj->language : $lang || MT->config->DefaultLanguage );
 
     if ( !$param->{site_path} ) {
-        $param->{suggested_site_path} = 'BLOG-NAME';
+        $param->{suggested_site_path} = 'CHILD-SITE-NAME';
     }
 
     if ( !$param->{site_url_path} ) {
-        $param->{suggested_site_url} = 'BLOG-NAME';
+        $param->{suggested_site_url} = 'CHILD-SITE-NAME';
     }
     if ( !$param->{id} ) {
         if ( $param->{site_url_path} ) {
