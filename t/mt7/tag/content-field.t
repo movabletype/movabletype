@@ -419,7 +419,7 @@ SKIP:
 #
 # SKIP:
 # {
-#     unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
+#     unless ( has_php() ) {
 #         skip "Can't find executable file: php",
 #             1 * blocks;
 #     }

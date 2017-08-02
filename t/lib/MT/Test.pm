@@ -8,7 +8,7 @@ use base qw( Exporter );
 
 our $VERSION = 0.9;
 our @EXPORT
-    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks location_param_contains query_param_contains );
+    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks location_param_contains query_param_contains has_php );
 
 use strict;
 
@@ -1859,6 +1859,15 @@ sub query_param_contains {
             or $fail++;
     }
     ok !$fail, $message;
+}
+
+my $HasPHP;
+
+sub has_php {
+    return $HasPHP if defined $HasPHP;
+    my $php_version_string = `php --version 2>&1` or return $HasPHP = 0;
+    my ($php_version) = $php_version_string =~ /^PHP (\d+\.\d+)/i;
+    $HasPHP = ( $php_version and $php_version >= 5 ) ? 1 : 0;
 }
 
 1;
