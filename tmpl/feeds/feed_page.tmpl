@@ -23,7 +23,7 @@
     </mt:if>
 
     &lt;p&gt;
-    &lt;b&gt;<__trans phrase="Blog">:&lt;/b&gt; &lt;a href="<mt:var name="log.entry.blog.site_url">"&gt;<mt:var name="log.entry.blog.name" escape="html">&lt;/a&gt;&lt;br /&gt;
+    &lt;b&gt;<mt:if name="log.blog.parent_id"><__trans phrase="Child Site"><mt:else><__trans phrase="Site"></mt:if>:&lt;/b&gt; &lt;a href="<mt:var name="log.entry.blog.site_url">"&gt;<mt:var name="log.entry.blog.name" escape="html">&lt;/a&gt;&lt;br /&gt;
     <mt:if name="log.entry.status_is_1">
     &lt;b&gt;<__trans phrase="Title">:&lt;/b&gt; <mt:if name="log.entry.title"><mt:var name="log.entry.title" escape="html"><mt:else>(<__trans phrase="Untitled">)</mt:if>&lt;br /&gt;
     <mt:else>
@@ -64,7 +64,7 @@
 
         &lt;ul&gt;
         &lt;strong&gt;<__trans phrase="More like this">:&lt;/strong&gt;&lt;br /&gt;
-        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list&amp;_type=page&amp;blog_id=<mt:var name="log.entry.blog_id">"&gt;<__trans phrase="From this blog">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list&amp;_type=page&amp;blog_id=<mt:var name="log.entry.blog_id">"&gt;<__trans phrase="From this [_1]" params="<mt:if name="log.blog.parent_id"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if>">&lt;/a&gt;&lt;/li&gt;
         &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list&amp;_type=page&amp;blog_id=<mt:var name="log.entry.blog_id">&amp;filter=author_id&amp;filter_val=<mt:var name="log.entry.author.id">"&gt;<__trans phrase="From this author">&lt;/a&gt;&lt;/li&gt;
         &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=search_replace&amp;_type=page&amp;from=<mt:var name="log.entry.authored_on">&amp;to=<mt:var name="log.entry.authored_on">&amp;show_all=1&amp;blog_id=<mt:var name="log.entry.blog_id">&amp;do_search=1"&gt;<__trans phrase="On this day">&lt;/a&gt;&lt;/li&gt;
         &lt;/ul&gt;

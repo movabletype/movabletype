@@ -1,9 +1,8 @@
 <mt:ignore>FIXME: should fix scope_type in Perl code.</mt:ignore>
-<mt:if name="scope_type" eq="website"><mt:var name="scope_type" value="site"></mt:if>
 <mt:setvarblock name="user_screen_name"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html"><mt:else><mt:var name="author_name" escape="html"></mt:if></mt:setvarblock>
 
 <style>
-nav.site {
+nav.website {
   background: #1E8CD2 !important;
 }
 
@@ -36,7 +35,7 @@ nav.blog {
 <mt:if name="fav_website_loop">
           <div class="dropdown-divider"></div>
           <h6 class="dropdown-header">
-            <__trans phrase="Websites">
+            <__trans phrase="Sites">
           </h6>
   <mt:loop name="fav_website_loop">
     <mt:if name="fav_website_can_link">
@@ -49,7 +48,7 @@ nav.blog {
     <mt:if name="__last__">
       <mt:unless name="selector_hide_website_chooser">
           <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="dropdown-item text-right mt-open-dialog mt-modal-open scope-link" data-mt-modal-large>
-            <__trans phrase="Select another website...">
+            <__trans phrase="Select another site...">
           </a>
       </mt:unless>
     </mt:if>
@@ -57,17 +56,17 @@ nav.blog {
 <mt:else>
   <mt:unless name="selector_hide_website_chooser">
           <h6 class="dropdown-header">
-            <__trans phrase="Websites">
+            <__trans phrase="Sites">
           </h6>
           <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="dropdown-item text-right mt-open-dialog mt-modal-open scope-link" data-mt-modal-large>
-            <__trans phrase="Select another website...">
+            <__trans phrase="Select another site...">
           </a>
   </mt:unless>
 </mt:if>
 <mt:if name="fav_blog_loop">
           <div class="dropdown-divider"></div>
           <h6 class="dropdown-header">
-            <__trans phrase="Blog">
+            <__trans phrase="Child Site">
           </h6>
   <mt:loop name="fav_blog_loop">
           <a class="dropdown-item" href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;<$mt:var name="return_args" escape="html"$>" class="scope-link">
@@ -79,7 +78,7 @@ nav.blog {
     <mt:if name="__last__">
       <mt:unless name="selector_hide_blog_chooser">
           <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="dropdown-item text-right mt-open-dialog mt-modal-open scope-link" data-mt-modal-large>
-            <__trans phrase="Select another blog...">
+            <__trans phrase="Select another child site...">
           </a>
       </mt:unless>
     </mt:if>
@@ -87,29 +86,29 @@ nav.blog {
 <mt:else>
   <mt:unless name="selector_hide_blog_chooser">
           <h6 class="dropdown-header">
-            <__trans phrase="Blog">
+            <__trans phrase="Child Site">
           </h6>
           <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="dropdown-item text-right mt-open-dialog mt-modal-open scope-link" data-mt-modal-large>
-            <__trans phrase="Select another blog...">
+            <__trans phrase="Select another child site...">
           </a>
   </mt:unless>
 </mt:if>
 <mt:if name="can_create_website">
           <div class="dropdown-divider"></div>
           <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0" class="dropdown-item create-link website">
-            <__trans phrase="Create Website">
+            <__trans phrase="Create Site">
           </a>
 </mt:if>
 <mt:if name="can_create_blog">
   <mt:if name="scope_type" eq="website">
           <div class="dropdown-divider"></div>
           <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="blog_id"$>" class="dropdown-item create-link website">
-            <__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">">
+            <__trans phrase="Create Child Site (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">">
           </a>
   <mt:elseif name="scope_type" eq="blog">
           <div class="dropdown-divider"></div>
           <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="curr_website_id"$>" class="dropdown-item create-link blog">
-            <__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">">
+            <__trans phrase="Create Child Site (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">">
           </a>
   </mt:if>
 </mt:if>

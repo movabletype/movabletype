@@ -186,8 +186,8 @@ sub list_props {
             },
         },
         blog_name => {
-            label        => 'Website/Blog Name',
-            filter_label => '__WEBSITE_BLOG_NAME',
+            label        => 'Site Name',
+            filter_label => 'Site Name',
             base         => '__virtual.string',
             display      => 'default',
             order        => 300,

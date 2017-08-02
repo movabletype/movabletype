@@ -174,11 +174,12 @@ sub add_trigger {
                 class => [ 'website', 'blog' ]
             },
             params => {
-                panel_type    => 'blog',
-                dialog_title  => $plugin->translate('MultiBlog'),
-                panel_title   => $plugin->translate('Create Trigger'),
-                panel_label   => $plugin->translate("Website/Blog"),
-                search_prompt => $plugin->translate("Search Weblogs") . ':',
+                panel_type   => 'blog',
+                dialog_title => $plugin->translate('MultiBlog'),
+                panel_title  => $plugin->translate('Create Trigger'),
+                panel_label  => $plugin->translate("Site/Child Site"),
+                search_prompt =>
+                    $plugin->translate("Search Sites and Child Sites") . ':',
                 panel_description      => $plugin->translate("Description"),
                 panel_multi            => 0,
                 panel_first            => 1,
@@ -202,9 +203,9 @@ sub add_trigger {
                                 {
                                 id    => '_blogs_in_website',
                                 label => $plugin->translate(
-                                    '(All blogs in this website)'),
+                                    '(All child sites in this site)'),
                                 description => $plugin->translate(
-                                    'Select to apply this trigger to all blogs in this website.'
+                                    'Select to apply this trigger to all child sites in this site.'
                                 ),
                                 };
                         }
@@ -213,9 +214,9 @@ sub add_trigger {
                             {
                             id    => '_all',
                             label => $plugin->translate(
-                                '(All websites and blogs in this system)'),
+                                '(All sites and child sites in this system)'),
                             description => $plugin->translate(
-                                'Select to apply this trigger to all websites and blogs in this system.'
+                                'Select to apply this trigger to all sites and child sites in this system.'
                             ),
                             };
                         splice( @$loop, $limit ) if scalar(@$loop) > $limit;
@@ -284,7 +285,7 @@ sub load_config {
                 {   action_name  => $actions{$action},
                     action_value => $action,
                     blog_name    => $plugin->translate(
-                        '(All websites and blogs in this system)'),
+                        '(All sites and child sites in this system)'),
                     blog_id       => $id,
                     trigger_name  => $triggers{$trigger},
                     trigger_value => $trigger,
@@ -294,7 +295,7 @@ sub load_config {
                 {   action_name  => $actions{$action},
                     action_value => $action,
                     blog_name =>
-                        $plugin->translate('(All blogs in this website)'),
+                        $plugin->translate('(All child sites in this site)'),
                     blog_id       => $id,
                     trigger_name  => $triggers{$trigger},
                     trigger_value => $trigger,

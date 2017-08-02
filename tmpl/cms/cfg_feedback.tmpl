@@ -84,14 +84,9 @@
        help_page="blog_settings_feedback"
        help_section="junk_score_threshold"
        class="form-inline">
-      <a href="javascript:void(0)" id="decrease-threshold" onclick="return scoreNudge(-1)"><__trans phrase="Less Aggressive">
-        <img alt="<__trans phrase="Decrease">" src="<mt:var name="static_uri">images/decrease.gif" />
-      </a>
+      <a href="javascript:void(0)" id="decrease-threshold" onclick="return scoreNudge(-1)"><__trans phrase="Less Aggressive"><img alt="<__trans phrase="Decrease">" src="<mt:var name="static_uri">images/decrease.gif" /></a>
       <input type="text" name="junk_score_threshold" id="junk_score_threshold" class="form-control text num" value="<mt:var name="junk_score_threshold" escape="html">" />
-      <a href="javascript:void(0)" id="increase-threshold" onclick="return scoreNudge(1)">
-        <img alt="<__trans phrase="Increase">" src="<mt:var name="static_uri">images/increase.gif" />
-        <__trans phrase="More Aggressive">
-      </a>
+      <a href="javascript:void(0)" id="increase-threshold" onclick="return scoreNudge(1)"><img alt="<__trans phrase="Increase">" src="<mt:var name="static_uri">images/increase.gif" /><__trans phrase="More Aggressive"></a>
     </mtapp:setting>
 
     <mtapp:setting
