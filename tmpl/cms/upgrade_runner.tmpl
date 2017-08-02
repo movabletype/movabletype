@@ -9,10 +9,12 @@
 <mt:setvarblock name="page_content">
 <div class="upgrade">
 <mt:unless name="up_to_date">
-  <pre id="upgrade-container" class="upgrade-process" style="height: 300px; overflow: auto;">
-    <ul id="upgrade-progress">
-    </ul>
-  </pre>
+  <div class="card card-block bg-faded">
+    <pre id="upgrade-container" class="upgrade-process" style="height: 300px; overflow: auto;">
+      <ul id="upgrade-progress">
+      </ul>
+    </pre>
+  </div>
   <div id="progressbar" class="progressbar indeterminate"></div>
   <div id="error-message-div" class="msg msg-error" style="display: none">
     <p class="msg-text alert alert-danger">

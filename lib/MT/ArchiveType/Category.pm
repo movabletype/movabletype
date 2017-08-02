@@ -173,11 +173,13 @@ sub display_name {
     my $ctx      = shift;
     my $tmpl     = $ctx->stash('template');
     my $cat      = '';
-    if (   !$tmpl
-        || ( ( $tmpl->type || '' ) eq 'index' || ( $tmpl->type || '' ) eq 'widget' )
+    if (!$tmpl
+        || (   ( $tmpl->type || '' ) eq 'index'
+            || ( $tmpl->type || '' ) eq 'widget' )
         || !$archiver
         || ( $archiver && !$archiver->category_based )
-        || !$ctx->{inside_archive_list} )
+        || !$ctx->{inside_archive_list}
+        )
     {
         $cat = $ctx->stash('archive_category') || $ctx->stash('category');
         $cat = $cat ? $cat->label . ': ' : '';

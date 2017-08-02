@@ -1840,9 +1840,9 @@ sub _run_tasks {
 }
 
 sub location_param_contains {
-    my ($out, $expects, $message) = @_;
+    my ( $out, $expects, $message ) = @_;
     my ($location_url) = $out =~ /^Location:\s*(\S+)/m;
-    unless ( $location_url ) {
+    unless ($location_url) {
         fail "$message: no Location url";
         return;
     }
@@ -1850,11 +1850,13 @@ sub location_param_contains {
 }
 
 sub query_param_contains {
-    my ($url, $expects, $message) = @_;
-    my $uri = URI->new($url);
+    my ( $url, $expects, $message ) = @_;
+    my $uri  = URI->new($url);
     my $fail = 0;
     for my $key ( sort keys %$expects ) {
-        is $uri->query_param($key) => $expects->{$key}, "$key: $expects->{$key}" or $fail++;
+        is $uri->query_param($key) => $expects->{$key},
+            "$key: $expects->{$key}"
+            or $fail++;
     }
     ok !$fail, $message;
 }

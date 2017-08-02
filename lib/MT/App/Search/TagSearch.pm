@@ -173,7 +173,7 @@ sub search_terms {
         if ( 'HASH' ne ref $params->{terms} ) {
             my $code = $params->{terms};
             $code = MT->handler_to_coderef($code);
-            eval { %terms = %{ $code->( $app ) }; };
+            eval { %terms = %{ $code->($app) }; };
         }
         else {
             %terms = %{ $params->{terms} };

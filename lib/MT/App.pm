@@ -294,7 +294,7 @@ sub list_actions {
                     if 'CODE' eq ref($code);
             }
             else {
-                $actions->{$a}{js_message} = $actions->{$a}{label}
+                $actions->{$a}{js_message} = $actions->{$a}{label};
             }
         }
 
@@ -2776,7 +2776,7 @@ sub upload_info {
             $fh = $q->param($param_name);
         }
         return unless $fh;
-        $info      = $q->uploadInfo($fh);
+        $info = $q->uploadInfo($fh);
     }
 
     return if $no_upload;
@@ -3166,8 +3166,7 @@ sub run {
                     $local_component = $meth_info->{component}
                         if $meth_info->{component};
 
-                    my $set
-                        = $meth_info->{permission}
+                    my $set = $meth_info->{permission}
                         || $meth_info->{permit_action};
 
                     if ($set) {
@@ -3294,7 +3293,8 @@ sub run {
                         . "</li>\n"
                         . $trace;
                     if ( $trace ne '' ) {
-                        my $debug_panel_header = $app->translate('Warnings and Log Messages');
+                        my $debug_panel_header
+                            = $app->translate('Warnings and Log Messages');
                         my $panel = <<"__HTML__";
                           <div class="col-md-12">
                             <div class="card debug-panel" style="margin: 0 -15px;">
@@ -3920,8 +3920,7 @@ sub call_return {
     $app->add_return_arg(@_) if @_;
     my $connection = $app->get_header('Connection') || '';
     $app->redirect( $app->return_uri,
-        ( $connection eq 'close' ? ( UseMeta => 1 ) : () )
-    );
+        ( $connection eq 'close' ? ( UseMeta => 1 ) : () ) );
 }
 
 sub state_params {

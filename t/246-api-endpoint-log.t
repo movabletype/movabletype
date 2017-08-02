@@ -248,10 +248,6 @@ sub suite {
                     }
                 );
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( \@logs ),
@@ -281,10 +277,6 @@ sub suite {
                     }
                 );
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( \@logs ),
@@ -309,10 +301,6 @@ sub suite {
                     }
                 );
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( \@logs ),
@@ -336,10 +324,6 @@ sub suite {
                         level   => MT::Log::ERROR(),
                     }
                 );
-
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 0,

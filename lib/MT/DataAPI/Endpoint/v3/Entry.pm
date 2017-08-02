@@ -250,6 +250,4 @@ sub update {
     $new_entry;
 }
 
-
-
 1;

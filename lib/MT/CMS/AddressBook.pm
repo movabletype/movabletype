@@ -59,7 +59,8 @@ sub send_notify {
         $params{send_excerpt} = 1;
     }
     my $message = $q->param('message');
-    $params{message} = defined $message ? wrap_text( $message, $cols, '', '' ) : '';
+    $params{message}
+        = defined $message ? wrap_text( $message, $cols, '', '' ) : '';
     if ( $q->param('send_body') ) {
         $params{send_body} = 1;
     }
@@ -102,7 +103,7 @@ sub send_notify {
             "No valid recipients were found for the entry notification.")
         );
     my $address;
-    if ($author and $author->email) {
+    if ( $author and $author->email ) {
         $address
             = defined $author->nickname
             ? $author->nickname . ' <' . $author->email . '>'
@@ -297,7 +298,7 @@ sub cms_pre_load_filtered_list {
 
     require MT::Permission;
     my $options_blog_ids = $load_options->{blog_ids};
-    my $iter = MT::Permission->load_iter(
+    my $iter             = MT::Permission->load_iter(
         {   author_id => $user->id,
             (   $options_blog_ids
                 ? ( blog_id => $options_blog_ids )

@@ -2305,13 +2305,13 @@ sub _delete_archive_file {
 
         return join ':',
             (
-            $entry && $entry->id    ? $entry->id  : '0',
-            $blog && $blog->id      ? $blog->id   : '0',
-            $at                     ? $at         : 'None',
-            $cat && $cat->id        ? $cat->id    : '0',
-            $map && $map->id        ? $map->id    : '0',
-            $timestamp              ? $timestamp  : '0',
-            $author && $author->id  ? $author->id : '0'
+            $entry && $entry->id ? $entry->id : '0',
+            $blog  && $blog->id  ? $blog->id  : '0',
+            $at ? $at : 'None',
+            $cat && $cat->id ? $cat->id : '0',
+            $map && $map->id ? $map->id : '0',
+            $timestamp ? $timestamp : '0',
+            $author && $author->id ? $author->id : '0'
             );
     }
 

@@ -79,9 +79,6 @@ sub suite {
                     { sort => 'modified_on', direction => 'descend' } );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 4,
@@ -102,9 +99,6 @@ sub suite {
                     { sort => 'modified_on', direction => 'descend' } );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 2,
@@ -127,9 +121,6 @@ sub suite {
                     { sort => 'modified_on', direction => 'descend' } );
 
                 $app->user( MT::Author->anonymous );
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 5,
@@ -150,9 +141,6 @@ sub suite {
                 my $page = $app->model('page')->load(20);
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 1,
@@ -175,9 +163,6 @@ sub suite {
                     ->load( { blog_id => 1, status => 1 } );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 1,

@@ -351,7 +351,7 @@ sub pre_save {
     if ( !$obj->id ) {
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
-        if ( $site_path ) {
+        if ($site_path) {
             unless ( $fmgr->exists($site_path) ) {
                 my @dirs = File::Spec->splitdir($site_path);
                 pop @dirs;
@@ -362,7 +362,9 @@ sub pre_save {
             "The '[_1]' provided below is not writable by the web server. Change the directory ownership or permissions and try again.",
             $app->translate('Website Root')
             )
-            unless $site_path && $fmgr->exists($site_path) && $fmgr->can_write($site_path);
+            unless $site_path
+            && $fmgr->exists($site_path)
+            && $fmgr->can_write($site_path);
     }
 
     return 1;

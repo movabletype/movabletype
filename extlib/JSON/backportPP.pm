@@ -1,4 +1,5 @@
-package JSON::PP;
+package # This is JSON::backportPP
+    JSON::PP;
 
 # JSON-2.0
 
@@ -6,15 +7,15 @@ use 5.005;
 use strict;
 
 use Exporter ();
-BEGIN { @JSON::PP::ISA = ('Exporter') }
+BEGIN { @JSON::backportPP::ISA = ('Exporter') }
 
 use overload ();
-use JSON::PP::Boolean;
+use JSON::backportPP::Boolean;
 
 use Carp ();
 #use Devel::Peek;
 
-$JSON::PP::VERSION = '2.94';
+$JSON::backportPP::VERSION = '2.94';
 
 @JSON::PP::EXPORT = qw(encode_json decode_json from_json to_json);
 
@@ -65,7 +66,7 @@ BEGIN {
     # Perl version check, Unicode handling is enabled?
     # Helper module sets @JSON::PP::_properties.
     if ( OLD_PERL ) {
-        my $helper = $] >= 5.006 ? 'JSON::PP::Compat5006' : 'JSON::PP::Compat5005';
+        my $helper = $] >= 5.006 ? 'JSON::backportPP::Compat5006' : 'JSON::backportPP::Compat5005';
         eval qq| require $helper |;
         if ($@) { Carp::croak $@; }
     }
@@ -1294,7 +1295,8 @@ BEGIN {
         *JSON::PP::JSON_PP_decode_unicode    = \&_decode_unicode;
 
         if ($] < 5.008003) { # join() in 5.8.0 - 5.8.2 is broken.
-            package JSON::PP;
+            package # hide from PAUSE
+              JSON::PP;
             require subs;
             subs->import('join');
             eval q|
@@ -1413,7 +1415,8 @@ sub null  { undef; }
 
 ###############################
 
-package JSON::PP::IncrParser;
+package # hide from PAUSE
+  JSON::PP::IncrParser;
 
 use strict;
 
@@ -1424,7 +1427,7 @@ use constant INCR_M_JSON => 3; # outside anything, count nesting
 use constant INCR_M_C0   => 4;
 use constant INCR_M_C1   => 5;
 
-$JSON::PP::IncrParser::VERSION = '1.01';
+$JSON::backportPP::IncrParser::VERSION = '1.01';
 
 sub new {
     my ( $class ) = @_;
@@ -2832,7 +2835,7 @@ The F<json_pp> command line utility for quick experiments.
 L<JSON::XS>, L<Cpanel::JSON::XS>, and L<JSON::Tiny> for faster alternatives.
 L<JSON> and L<JSON::MaybeXS> for easy migration.
 
-L<JSON::PP::Compat5005> and L<JSON::PP::Compat5006> for older perl users.
+L<JSON::backportPP::Compat5005> and L<JSON::backportPP::Compat5006> for older perl users.
 
 RFC4627 (L<http://www.ietf.org/rfc/rfc4627.txt>)
 
