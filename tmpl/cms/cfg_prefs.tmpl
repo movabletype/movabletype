@@ -270,7 +270,7 @@
       </div>
       </mt:unless>
     <mt:else>
-      <div class="form-inline site-url content-path">
+      <div class="site-url content-path">
         <input type="text" name="site_url" id="site_url" value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" class="form-control text website-url-field mt-edit-field required" />
       </div>
     </mt:if>
@@ -290,7 +290,7 @@
        label='<__trans phrase="Site Root">'
        help_page="blog_settings_publishing"
        help_section="site_root">
-      <div class="form-inline relative-site_path content-path">
+      <div class="relative-site_path content-path<mt:if name="is_blog"> form-inline</mt:if>">
         <span class="website-path">
           <mt:if name="is_blog">
             <mt:var name="website_path" encode_html="1">
@@ -434,7 +434,7 @@
         </mt:unless>
         </mt:if>
       <mt:else>
-        <div class="form-inline archive-url content-path">
+        <div class="archive-url content-path">
           <input type="text" name="archive_url" id="archive_url" value="<mt:var name="archive_url" encode_html="1" default="$site_url">" class="form-control text website-url-field mt-edit-field<mt:unless name="enable_archive_paths"> show-input</mt:unless> required" />
         </div>
       </mt:if>

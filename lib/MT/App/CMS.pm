@@ -411,7 +411,7 @@ sub core_widgets {
             default  => 1,
         },
         recent_websites => {
-            label    => 'Websites',
+            label    => 'Sites',
             template => 'widget/recent_websites.tmpl',
             handler  => "${pkg}Dashboard::recent_websites_widget",
             singular => 1,
@@ -421,7 +421,7 @@ sub core_widgets {
             default  => 1,
         },
         recent_blogs => {
-            label    => 'Blogs',
+            label    => 'Child Sites',
             template => 'widget/recent_blogs.tmpl',
             handler  => "${pkg}Dashboard::recent_blogs_widget",
             singular => 1,
@@ -431,7 +431,7 @@ sub core_widgets {
             default  => 1,
         },
         favorite_blogs => {
-            label    => 'Websites and Blogs',
+            label    => 'Sites and Child Sites',
             template => 'widget/favorite_blogs.tmpl',
             handler  => "${pkg}Dashboard::favorite_blogs_widget",
             singular => 1,
