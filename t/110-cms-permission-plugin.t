@@ -18,36 +18,33 @@ use Test::More;
 my $website = MT::Test::Permission->make_website();
 
 # Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
-my $second_blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+my $second_blog
+    = MT::Test::Permission->make_blog( parent_id => $website->id, );
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
+    name     => 'aikawa',
     nickname => 'Ichiro Aikawa',
 );
 
 my $ichikawa = MT::Test::Permission->make_author(
-    name => 'ichikawa',
+    name     => 'ichikawa',
     nickname => 'Jiro Ichikawa',
 );
 
 my $ukawa = MT::Test::Permission->make_author(
-    name => 'ukawa',
+    name     => 'ukawa',
     nickname => 'Saburo Ukawa',
 );
 
 my $egawa = MT::Test::Permission->make_author(
-    name => 'egawa',
+    name     => 'egawa',
     nickname => 'Shiro Egawa',
 );
 
 my $ogawa = MT::Test::Permission->make_author(
-    name => 'ogawa',
+    name     => 'ogawa',
     nickname => 'Goro Ogawa',
 );
 
@@ -55,21 +52,23 @@ my $admin = MT::Author->load(1);
 
 # Role
 require MT::Role;
-my $blog_admin = MT::Role->load({ name => MT->translate( 'Blog Administrator' ) } );
-my $website_admin = MT::Role->load({ name => MT->translate( 'Website Administrator' ) } );
-my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+my $blog_admin
+    = MT::Role->load( { name => MT->translate('Blog Administrator') } );
+my $website_admin
+    = MT::Role->load( { name => MT->translate('Website Administrator') } );
+my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
 require MT::Association;
-MT::Association->link( $aikawa => $blog_admin => $blog );
-MT::Association->link( $ichikawa => $blog_admin => $second_blog );
-MT::Association->link( $ukawa => $website_admin => $website );
-MT::Association->link( $ogawa => $designer => $blog );
+MT::Association->link( $aikawa   => $blog_admin    => $blog );
+MT::Association->link( $ichikawa => $blog_admin    => $second_blog );
+MT::Association->link( $ukawa    => $website_admin => $website );
+MT::Association->link( $ogawa    => $designer      => $blog );
 
 require MT::Permission;
 my $p = MT::Permission->new;
 $p->author_id( $egawa->id );
-$p->blog_id( 0 );
-$p->permissions( "'manage_plugins'" );
+$p->blog_id(0);
+$p->permissions("'manage_plugins'");
 $p->save;
 
 # Run
@@ -85,7 +84,7 @@ subtest 'mode = cfg_plugins' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: cfg_plugins" );
+    ok( $out,                     "Request: cfg_plugins" );
     ok( $out !~ m!permission=1!i, "cfg_plugins by admin" );
 
     $app = _run_app(
@@ -97,7 +96,7 @@ subtest 'mode = cfg_plugins' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: cfg_plugins" );
+    ok( $out,                     "Request: cfg_plugins" );
     ok( $out !~ m!permission=1!i, "cfg_plugins by permitted user on blog" );
 
     $app = _run_app(
@@ -110,7 +109,8 @@ subtest 'mode = cfg_plugins' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_plugins" );
-    ok( $out !~ m!permission=1!i, "cfg_plugins by permitted user on website" );
+    ok( $out !~ m!permission=1!i,
+        "cfg_plugins by permitted user on website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -121,7 +121,7 @@ subtest 'mode = cfg_plugins' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: cfg_plugins" );
+    ok( $out,                     "Request: cfg_plugins" );
     ok( $out !~ m!permission=1!i, "cfg_plugins by permitted user on system" );
 
     $app = _run_app(
@@ -133,7 +133,7 @@ subtest 'mode = cfg_plugins' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: cfg_plugins" );
+    ok( $out,                     "Request: cfg_plugins" );
     ok( $out =~ m!permission=1!i, "cfg_plugins by other blog" );
 
     $app = _run_app(
@@ -145,7 +145,7 @@ subtest 'mode = cfg_plugins' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: cfg_plugins" );
+    ok( $out,                     "Request: cfg_plugins" );
     ok( $out =~ m!permission=1!i, "cfg_plugins by other permission" );
 
     $app = _run_app(
@@ -158,7 +158,8 @@ subtest 'mode = cfg_plugins' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_plugins" );
-    ok( $out =~ m!permission=1!i, "cfg_plugins by non permitted user on website" );
+    ok( $out =~ m!permission=1!i,
+        "cfg_plugins by non permitted user on website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -170,7 +171,8 @@ subtest 'mode = cfg_plugins' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_plugins" );
-    ok( $out =~ m!permission=1!i, "cfg_plugins by non permitted user on blog" );
+    ok( $out =~ m!permission=1!i,
+        "cfg_plugins by non permitted user on blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -182,7 +184,8 @@ subtest 'mode = cfg_plugins' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_plugins" );
-    ok( $out =~ m!permission=1!i, "cfg_plugins by non permitted user on system" );
+    ok( $out =~ m!permission=1!i,
+        "cfg_plugins by non permitted user on system" );
 
     done_testing();
 };
@@ -199,7 +202,7 @@ subtest 'mode = plugin_control' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: plugin_control" );
+    ok( $out,                     "Request: plugin_control" );
     ok( $out !~ m!permission=1!i, "plugin_control by admin" );
 
     $app = _run_app(
@@ -213,7 +216,7 @@ subtest 'mode = plugin_control' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: plugin_control" );
+    ok( $out,                     "Request: plugin_control" );
     ok( $out !~ m!permission=1!i, "plugin_control by permitted user" );
 
     $app = _run_app(
@@ -227,7 +230,7 @@ subtest 'mode = plugin_control' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: plugin_control" );
+    ok( $out,                     "Request: plugin_control" );
     ok( $out =~ m!permission=1!i, "plugin_control by non permitted user" );
 
     done_testing();
@@ -243,7 +246,7 @@ subtest 'mode = reset_plugin_config' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: reset_plugin_config" );
+    ok( $out,                     "Request: reset_plugin_config" );
     ok( $out !~ m!permission=1!i, "reset_plugin_config by admin" );
 
     $app = _run_app(
@@ -256,7 +259,8 @@ subtest 'mode = reset_plugin_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_plugin_config" );
-    ok( $out !~ m!permission=1!i, "reset_plugin_config by permitted user on blog" );
+    ok( $out !~ m!permission=1!i,
+        "reset_plugin_config by permitted user on blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -268,7 +272,8 @@ subtest 'mode = reset_plugin_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_plugin_config" );
-    ok( $out !~ m!permission=1!i, "reset_plugin_config by permitted user on website" );
+    ok( $out !~ m!permission=1!i,
+        "reset_plugin_config by permitted user on website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -280,7 +285,8 @@ subtest 'mode = reset_plugin_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_plugin_config" );
-    ok( $out !~ m!permission=1!i, "reset_plugin_config by permitted user on system" );
+    ok( $out !~ m!permission=1!i,
+        "reset_plugin_config by permitted user on system" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -291,7 +297,7 @@ subtest 'mode = reset_plugin_config' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: reset_plugin_config" );
+    ok( $out,                     "Request: reset_plugin_config" );
     ok( $out =~ m!permission=1!i, "reset_plugin_config by other blog" );
 
     $app = _run_app(
@@ -303,7 +309,7 @@ subtest 'mode = reset_plugin_config' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: reset_plugin_config" );
+    ok( $out,                     "Request: reset_plugin_config" );
     ok( $out =~ m!permission=1!i, "reset_plugin_config by other permission" );
 
     $app = _run_app(
@@ -316,7 +322,8 @@ subtest 'mode = reset_plugin_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_plugin_config" );
-    ok( $out =~ m!permission=1!i, "reset_plugin_config by non permitted user on website" );
+    ok( $out =~ m!permission=1!i,
+        "reset_plugin_config by non permitted user on website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -328,7 +335,8 @@ subtest 'mode = reset_plugin_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_plugin_config" );
-    ok( $out =~ m!permission=1!i, "reset_plugin_config by non permitted user on blog" );
+    ok( $out =~ m!permission=1!i,
+        "reset_plugin_config by non permitted user on blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -340,7 +348,8 @@ subtest 'mode = reset_plugin_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_plugin_config" );
-    ok( $out =~ m!permission=1!i, "reset_plugin_config by non permitted user on system" );
+    ok( $out =~ m!permission=1!i,
+        "reset_plugin_config by non permitted user on system" );
 
     done_testing();
 };
@@ -355,7 +364,7 @@ subtest 'mode = save_plugin_config' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_plugin_config" );
+    ok( $out,                     "Request: save_plugin_config" );
     ok( $out !~ m!permission=1!i, "save_plugin_config by admin" );
 
     $app = _run_app(
@@ -368,7 +377,8 @@ subtest 'mode = save_plugin_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_plugin_config" );
-    ok( $out !~ m!permission=1!i, "save_plugin_config by permitted user on blog" );
+    ok( $out !~ m!permission=1!i,
+        "save_plugin_config by permitted user on blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -380,7 +390,8 @@ subtest 'mode = save_plugin_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_plugin_config" );
-    ok( $out !~ m!permission=1!i, "save_plugin_config by permitted user on website" );
+    ok( $out !~ m!permission=1!i,
+        "save_plugin_config by permitted user on website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -392,7 +403,8 @@ subtest 'mode = save_plugin_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_plugin_config" );
-    ok( $out !~ m!permission=1!i, "save_plugin_config by permitted user on system" );
+    ok( $out !~ m!permission=1!i,
+        "save_plugin_config by permitted user on system" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -403,7 +415,7 @@ subtest 'mode = save_plugin_config' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_plugin_config" );
+    ok( $out,                     "Request: save_plugin_config" );
     ok( $out =~ m!permission=1!i, "save_plugin_config by other blog" );
 
     $app = _run_app(
@@ -415,7 +427,7 @@ subtest 'mode = save_plugin_config' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_plugin_config" );
+    ok( $out,                     "Request: save_plugin_config" );
     ok( $out =~ m!permission=1!i, "save_plugin_config by other permission" );
 
     $app = _run_app(
@@ -428,7 +440,8 @@ subtest 'mode = save_plugin_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_plugin_config" );
-    ok( $out =~ m!permission=1!i, "save_plugin_config by non permitted user on website" );
+    ok( $out =~ m!permission=1!i,
+        "save_plugin_config by non permitted user on website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -440,7 +453,8 @@ subtest 'mode = save_plugin_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_plugin_config" );
-    ok( $out =~ m!permission=1!i, "save_plugin_config by non permitted user on blog" );
+    ok( $out =~ m!permission=1!i,
+        "save_plugin_config by non permitted user on blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -452,7 +466,8 @@ subtest 'mode = save_plugin_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_plugin_config" );
-    ok( $out =~ m!permission=1!i, "save_plugin_config by non permitted user on system" );
+    ok( $out =~ m!permission=1!i,
+        "save_plugin_config by non permitted user on system" );
 
     done_testing();
 };
