@@ -58,12 +58,6 @@ my @ENCODINGS_ENCODE = qw( cp1252 utf-8 euc-jp shiftjis 7bit-jis iso-2022-jp
     iso-2022-jp-1 jis0201-raw jis0208-raw
     jis0212-raw cp932 Macjapanese iso-8859-1 );
 
-sub guess_encoding {
-    my $class = shift;
-    my $meth = 'guess_encoding_' . ( $PKG || $class->_load_module );
-    $class->$meth(@_);
-}
-
 no warnings 'redefine';
 *MT::I18N::encode_text    = \&encode_text;
 *MT::I18N::guess_encoding = \&guess_encoding;
