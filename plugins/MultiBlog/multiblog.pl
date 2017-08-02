@@ -154,8 +154,12 @@ sub add_trigger {
 
     my $blog_id = $app->blog->id;
 
-    my $dialog_tmpl = $plugin->load_tmpl('dialog_create_trigger.tmpl');
-    my $tmpl        = $app->listing(
+    my $dialog_tmpl = $plugin->load_tmpl(
+        $app->param('json')
+        ? 'include/listing_panel.tmpl'
+        : 'dialog_create_trigger.tmpl'
+    );
+    my $tmpl = $app->listing(
         {   template => $dialog_tmpl,
             type     => 'blog',
             code     => sub {
