@@ -131,7 +131,7 @@ subtest 'search_replace' => sub {
             'Does not have a colomn "Blog" in blog scope' );
 
         my $col_website_blog
-            = quotemeta('<span class="col-label">Website/Blog</span>');
+            = quotemeta('<span class="col-label">Site</span>');
         $col_website_blog = qr/$col_website_blog/;
         unlike( $out, $col_website_blog,
             'Does not have a column "Website/Blog" in blog scope' );

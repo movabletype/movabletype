@@ -144,7 +144,7 @@
      hint="<__trans phrase="This will override all individual blog settings.">">
     <label>
       <input type="checkbox"<mt:if name="config_warnings_allowcomments"> disabled="disabled"</mt:if> name="comment_disable" id="comment-disable"<mt:if name="comment_disable"> checked="checked"</mt:if> />
-      <__trans phrase="Disable comments for sites.">
+      <__trans phrase="Disable comments for all sites and child sites.">
     </label>
   </mtapp:setting>
 
@@ -154,7 +154,7 @@
      hint="<__trans phrase="This will override all individual blog settings.">">
     <label>
       <input type="checkbox"<mt:if name="config_warnings_allowpings"> disabled="disabled"</mt:if> name="ping_disable" id="ping-disable" <mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" />
-      <__trans phrase="Disable receipt of TrackBacks for all sites.">
+      <__trans phrase="Disable receipt of TrackBacks for all sites and child sites.">
     </label>
   </mtapp:setting>
 </mtapp:settinggroup>
@@ -167,7 +167,7 @@
      hint="<__trans phrase="Disable sending notification pings when a new entry is created in any blog on the system.">">
     <label>
       <input type="checkbox"<mt:if name="config_warnings_disablenotificationpings"> disabled="disabled"</mt:if> name="disable_notify_ping" id="disable-notify-ping" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" />
-      <__trans phrase="Disable notification pings for all sites.">
+      <__trans phrase="Disable notification pings for all sites and child sites.">
     </label>
   </mtapp:setting>
 

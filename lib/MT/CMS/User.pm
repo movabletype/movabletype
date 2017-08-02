@@ -1317,7 +1317,7 @@ PERMCHECK: {
             },
             'blog' => {
                 panel_title       => $app->translate("Select Child Sites"),
-                panel_label       => $app->translate("Child Site Name"),
+                panel_label       => $app->translate("Site Name"),
                 items_prompt      => $app->translate("Child Sites Selected"),
                 panel_description => $app->translate("Description"),
             },

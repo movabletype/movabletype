@@ -1472,7 +1472,7 @@ sub dialog_select_weblog {
                 items_prompt  => $app->translate("Selected Child Site"),
                 search_prompt => $app->translate(
                     "Type a site name to filter the choices below."),
-                panel_label       => $app->translate("Child Site Name"),
+                panel_label       => $app->translate("Site Name"),
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',
                 panel_multi       => defined $app->param('multi')

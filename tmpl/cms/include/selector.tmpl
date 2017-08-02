@@ -1,5 +1,4 @@
 <mt:ignore>FIXME: should fix scope_type in Perl code.</mt:ignore>
-<mt:if name="scope_type" eq="website"><mt:var name="scope_type" value="site"></mt:if>
 <mt:setvarblock name="user_screen_name"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html"><mt:else><mt:var name="author_name" escape="html"></mt:if></mt:setvarblock>
 
 <style>
@@ -101,7 +100,7 @@ nav.blog {
           </a>
 </mt:if>
 <mt:if name="can_create_blog">
-  <mt:if name="scope_type" eq="site">
+  <mt:if name="scope_type" eq="website">
           <div class="dropdown-divider"></div>
           <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="blog_id"$>" class="dropdown-item create-link website">
             <__trans phrase="Create Child Site (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">">
