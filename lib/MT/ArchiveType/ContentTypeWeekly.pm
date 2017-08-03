@@ -19,5 +19,14 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-WEEKLY_ADV");
 }
 
+sub default_archive_templates {
+    return [
+        {   label    => MT->translate('yyyy/mm/day-week/index.html'),
+            template => '%y/%m/%d-week/%i',
+            default  => 1
+        },
+    ];
+}
+
 1;
 

@@ -19,5 +19,14 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-YEARLY_ADV");
 }
 
+sub default_archive_templates {
+    return [
+        {   label    => MT->translate('yyyy/index.html'),
+            template => '%y/%i',
+            default  => 1
+        }
+    ];
+}
+
 1;
 
