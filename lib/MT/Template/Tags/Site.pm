@@ -2,6 +2,16 @@ package MT::Template::Tags::Site;
 use strict;
 use warnings;
 
+###########################################################################
+
+=head2 Sites
+
+A container tag which iterates over a list of all of the sites in the
+system. You can use any of the site tags (L<SiteName>, L<SiteURL>, etc -
+anything starting with MTSite) inside of this tag set.
+
+=cut
+
 sub _hdlr_sites {
     my ( $ctx, $args, $cond ) = @_;
     my ( $terms, %args );

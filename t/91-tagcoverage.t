@@ -31,6 +31,7 @@ my $components = {
                 MT/Template/Tags/Ping.pm
                 MT/Template/Tags/Score.pm
                 MT/Template/Tags/Search.pm
+                MT/Template/Tags/Site.pm
                 MT/Template/Tags/Tag.pm
                 MT/Template/Tags/Userpic.pm
                 MT/Template/Tags/Website.pm

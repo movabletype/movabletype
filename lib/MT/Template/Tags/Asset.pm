@@ -1350,6 +1350,19 @@ B<Example:>
 
 =cut
 
+=head2 AssetSiteID
+
+The numeric system ID of the site that is parent to the asset currently
+in context.
+
+B<Example:>
+
+    <$mt:AssetSiteID$>
+
+=for tags assets, sites
+
+=cut
+
 sub _hdlr_asset_blog_id {
     my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('asset')

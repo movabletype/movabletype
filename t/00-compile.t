@@ -385,6 +385,7 @@ use_ok('MT::Template::Tags::Pager');
 use_ok('MT::Template::Tags::Ping');
 use_ok('MT::Template::Tags::Score');
 use_ok('MT::Template::Tags::Search');
+use_ok('MT::Template::Tags::Site');
 use_ok('MT::Template::Tags::Tag');
 use_ok('MT::Template::Tags::Userpic');
 use_ok('MT::Template::Tags::Website');

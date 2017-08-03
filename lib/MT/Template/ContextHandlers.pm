@@ -57,6 +57,8 @@ sub core_tags {
             Sites => '$Core::MT::Template::Tags::Site::_hdlr_sites',
             'SiteHasChildSite?' =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_website_has_blog',
+            'SiteIfCommentsOpen?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
 
             EntrySiteID =>
                 '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_id',
@@ -476,8 +478,6 @@ sub core_tags {
             ## Site
             SiteParentSite =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_parent_website',
-            'SiteIfCommentsOpen?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
 
             SiteID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
             SiteName => '$Core::MT::Template::Tags::Blog::_hdlr_blog_name',

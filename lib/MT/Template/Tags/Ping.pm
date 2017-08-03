@@ -473,6 +473,18 @@ B<Example:>
 
 =cut
 
+=head2 PingSiteName
+
+The site name that sent the TrackBack ping.
+
+B<Example:>
+
+    <$mt:SiteName$>
+
+=for tags pings
+
+=cut
+
 sub _hdlr_ping_blog_name {
     my ( $ctx, $args ) = @_;
     $ctx->sanitize_on($args);
@@ -573,6 +585,15 @@ Returns a count of published TrackBack pings associated with the blog
 currently in context.
 
 =for tags multiblog, count, blogs, pings
+
+=cut
+
+=head2 SitePingCount
+
+Returns a count of published TrackBack pings associated with the site
+currently in context.
+
+=for tags multiblog, count, sites, pings
 
 =cut
 

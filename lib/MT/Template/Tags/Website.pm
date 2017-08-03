@@ -445,6 +445,15 @@ in the context has one or more blogs.
 
 =cut
 
+=head2 SiteHasChildSite
+
+A conditional tag that returns True when the current site
+in the context has one or more child sites.
+
+=for tags websites,
+
+=cut
+
 sub _hdlr_website_has_blog {
     my ($ctx) = @_;
     my $blog = $ctx->stash('blog');
@@ -585,6 +594,14 @@ sub _hdlr_website_theme_id {
 A container tag which loads parent website of blog in the current context.
 
 =for tags websites blogs
+
+=cut
+
+=head2 SiteParentSite
+
+A container tag which loads parent site of child site in the current context.
+
+=for tags sites
 
 =cut
 
