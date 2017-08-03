@@ -53,6 +53,40 @@ sub core_tags {
                 \&MT::Template::Tags::App::_hdlr_app_setting_group,
             'App:Form' => \&MT::Template::Tags::App::_hdlr_app_form,
 
+            ## Site
+            Sites => '$Core::MT::Template::Tags::Site::_hdlr_sites',
+            'SiteHasChildSite?' =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_website_has_blog',
+
+            EntrySiteID =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_id',
+            EntrySiteName =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_name',
+            EntrySiteDescription =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_description',
+            EntrySiteURL =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_url',
+            SiteEntryCount =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
+
+            CommentSiteID =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_blog_id',
+            SiteCommentCount =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
+            PingSiteName =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_ping_blog_name',
+            SitePingCount =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
+
+            SiteCategoryCount =>
+                '$Core::MT::Template::Tags::Category::_hdlr_blog_category_count',
+
+            SitePageCount =>
+                '$Core::MT::Template::Tags::Page::_hdlr_blog_page_count',
+
+            AssetSiteID =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_blog_id',
+
             ## Blog
             Blogs     => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
             'IfBlog?' => '$Core::MT::Template::Tags::Blog::_hdlr_if_blog',
@@ -438,6 +472,39 @@ sub core_tags {
             'App:ActionBar' =>
                 \&MT::Template::Tags::App::_hdlr_app_action_bar,
             'App:Link' => \&MT::Template::Tags::App::_hdlr_app_link,
+
+            ## Site
+            SiteParentSite =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_parent_website',
+            'SiteIfCommentsOpen?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
+
+            SiteID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
+            SiteName => '$Core::MT::Template::Tags::Blog::_hdlr_blog_name',
+            SiteDescription =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_description',
+            SiteLanguage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_language',
+            SiteDateLanguage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_date_language',
+            SiteURL => '$Core::MT::Template::Tags::Blog::_hdlr_blog_url',
+            SiteArchiveURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_archive_url',
+            SiteRelativeURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_relative_url',
+            SiteSitePath =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_site_path',
+            SiteHost => '$Core::MT::Template::Tags::Blog::_hdlr_blog_host',
+            SiteTimezone =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_timezone',
+            SiteCCLicenseURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',
+            SiteCCLicenseImage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',
+            SiteFileExtension =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_file_extension',
+            SiteThemeID =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_theme_id',
 
             ## Blog
             BlogID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
