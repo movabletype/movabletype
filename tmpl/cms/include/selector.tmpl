@@ -86,7 +86,7 @@ nav.blog {
 <mt:else>
   <mt:unless name="selector_hide_blog_chooser">
           <h6 class="dropdown-header">
-            <__trans phrase="Child Sites">
+            <__trans phrase="Child Site">
           </h6>
           <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="dropdown-item text-right mt-open-dialog mt-modal-open scope-link" data-mt-modal-large>
             <__trans phrase="Select another child site...">
@@ -96,7 +96,7 @@ nav.blog {
 <mt:if name="can_create_website">
           <div class="dropdown-divider"></div>
           <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0" class="dropdown-item create-link website">
-            <__trans phrase="Create Sites">
+            <__trans phrase="Create Site">
           </a>
 </mt:if>
 <mt:if name="can_create_blog">
