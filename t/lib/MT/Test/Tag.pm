@@ -23,7 +23,7 @@ sub run_perl_tests {
             $tmpl->text( $block->template );
             my $ctx = $tmpl->context;
 
-            my $blog = MT::Blog->load($blog_id);
+            my $blog = MT::Blog->load( $block->blog_id || $blog_id );
             $ctx->stash( 'blog',          $blog );
             $ctx->stash( 'blog_id',       $blog->id );
             $ctx->stash( 'local_blog_id', $blog->id );
@@ -64,8 +64,8 @@ SKIP: {
                 my $text     = $block->text || '';
                 my $extra    = $callback ? $callback->($block) : '';
 
-                my $php_script
-                    = php_test_script( $blog_id, $template, $text, $extra );
+                my $php_script = php_test_script( $block->blog_id || $blog_id,
+                    $template, $text, $extra );
 
                 run3 [ 'php', '-q' ], \$php_script, \my $php_result, undef,
                     { binmode_stdin => 1 }
