@@ -2,7 +2,8 @@
 # $Id: 35-tags.t 3531 2009-03-12 09:11:52Z fumiakiy $
 use strict;
 use warnings;
-use IPC::Open2;
+use IPC::Run3;
+use IO::String;
 
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
@@ -274,12 +275,6 @@ PHP
     $test_script =~ s/<\Q$_\E>/$const{$_}/g for keys %const;
 
     # now run the test suite through PHP!
-    my $pid = open2(\*IN, \*OUT, "php");
-    print OUT $test_script;
-    close OUT;
-    select IN;
-    $| = 1;
-    select STDOUT;
 
     my @lines;
     my $num = 1;
@@ -298,9 +293,14 @@ PHP
             }
         }
     };
+    run3 ['php', '-q'],
+        \$test_script, \my $php_result, undef
+        or die $?;
+
+    my $RESULT = IO::String->new($php_result);
 
     my $output = '';
-    while (<IN>) {
+    while (<$RESULT>) {
         $output .= $_;
         if ($output =~ m/\n/) {
             my @new_lines = split /\n/, $output;
@@ -310,6 +310,6 @@ PHP
         $test->() if @lines;
     }
     push @lines, $output if $output ne '';
-    close IN;
+    close $RESULT;
     $test->() if @lines;
 }
