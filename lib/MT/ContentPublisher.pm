@@ -346,7 +346,7 @@ sub rebuild {
                         Author   => $content_data->author,
                     ) or return;
                 }
-                elsif ( $archiver->contenttype_based ) {
+                else {
                     $mt->_rebuild_content_archive_type(
                         ContentData => $content_data,
                         Blog        => $blog,
@@ -946,7 +946,13 @@ sub _rebuild_content_archive_type {
     my $done = MT->instance->request( '__published:' . $blog->id )
         || MT->instance->request( '__published:' . $blog->id, {} );
     for my $map (@map) {
-        my $ts = exists $param{Timestamp} ? $param{Timestamp} : undef;
+        my $ts;
+        my $dt_field_id = $map->dt_field_id;
+        if ($dt_field_id) {
+            my $data = $content_data->data;
+            $ts = $data->{$dt_field_id};
+        }
+
         my $file
             = exists $param{File}
             ? $param{File}
@@ -1108,7 +1114,7 @@ sub _rebuild_content_archive_type {
         }
         local $ctx->{__stash}{category}         = $cat if $cat;
         local $ctx->{__stash}{archive_category} = $cat if $cat;
-        $timestamp = $obj->authored_on() if $obj;
+        $timestamp = $obj->authored_on() if $obj && !$timestamp;
         local $ctx->{__stash}{entry} = $obj
             if $obj && ref $obj eq 'MT::Entry';
         local $ctx->{__stash}{content} = $obj

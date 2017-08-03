@@ -7,7 +7,7 @@
 package MT::ArchiveType::ContentTypeYearly;
 
 use strict;
-use base qw( MT::ArchiveType::Date );
+use base qw( MT::ArchiveType::ContentTypeDate );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -28,5 +28,25 @@ sub default_archive_templates {
     ];
 }
 
+sub archive_file {
+    my $obj = shift;
+    my ( $ctx, %param ) = @_;
+    my $timestamp = $param{Timestamp};
+    my $file_tmpl = $param{Template};
+    my $blog      = $ctx->{__stash}{blog};
+
+    my $file;
+    if ($file_tmpl) {
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} )
+            = start_end_year( $timestamp, $blog );
+    }
+    else {
+        my $start = start_end_year( $timestamp, $blog );
+        my ($year) = unpack 'A4', $start;
+        $file = sprintf( "%04d/index", $year );
+    }
+
+    $file;
+}
 1;
 
