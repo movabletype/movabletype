@@ -57,40 +57,9 @@ MT::Test::Tag->run_perl_tests($blog_id);
 
 __END__
 
-=== MT::ContentsCount without modifier
+=== MT::SiteContentCount
 --- template
-<mt:ContentsCount>
---- error
-No Content Type could be found.
-
-=== MT::ContentsCount in contents context
---- template
-<mt:Contents blog_id="1" name="test content type 1"><mt:ContentsHeader><mt:ContentsCount></mt:ContentsHeader></mt:Contents>
+<mt:SiteContentCount blog_id="1" name="test content type 1">
 --- expected
 5
-
-=== MT::ContentsCount with content_type_id modifier
---- template
-<mt:ContentsCount content_type_id="[% ct1_id %]">
---- expected
-5
-
-=== MT::ContentsCount with ct_unique_id modifier
---- SKIP
---- template
-<mt:ContentsCount ct_unique_id="[% ct1_uid %]">
---- expected
-5
-
-=== MT::ContentsCount with name modifier
---- template
-<mt:ContentsCount name="test content type 1">
---- expected
-5
-
-=== MT::ContentsCount with name modifier and wrong blog_id
---- template
-<mt:ContentsCount name="test content type 1" blog_id="2">
---- error
-No Content Type could be found.
 

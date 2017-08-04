@@ -15,11 +15,7 @@
   <mtapp:statusmsg
      id="saved"
      class="success">
-    <mt:if name="is_blog">
-    <__trans phrase="Your blog preferences have been saved.">
-    <mt:else>
-    <__trans phrase="Your website preferences have been saved.">
-    </mt:if>
+    <__trans phrase="Your site preferences have been saved.">
   </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
@@ -37,7 +33,7 @@
   <mtapp:setting
      id="allow_commenter_regist"
      label="<__trans phrase="User Registration">"
-     hint="<__trans phrase="Allow registration for this website.">">
+     hint="<__trans phrase="Allow registration for this site.">">
   <mt:if name="system_disallow_registration">
     <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Registration Not Enabled">" width="9" height="9" />
     <span class="text-warning alert-warning-inline">
@@ -46,7 +42,7 @@
   </mt:if>
       <label>
         <input type="checkbox" id="allow_commenter_regist" name="allow_commenter_regist" value="1"<mt:if name="allow_commenter_regist"> checked="checked"</mt:if> class="cb" />
-        <__trans phrase="Allow visitors to register as members of this website using one of the Authentication Methods selected below.">
+        <__trans phrase="Allow visitors to register as members of this site using one of the Authentication Methods selected below.">
       </label>
     </p>
   </mtapp:setting>

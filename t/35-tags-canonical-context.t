@@ -15,7 +15,7 @@ BEGIN {
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
-use IPC::Open2;
+use IPC::Run3;
 
 use Test::More;
 use URI;
@@ -104,20 +104,23 @@ sub test_mapping_url {
         'preferred_mapping_url - static'
     );
 
-    my $php_result = test_mapping_url_php( $fileinfo->id );
+SKIP: {
+        skip "Can't find executable file: php", 2 unless has_php();
+        my $php_result = test_mapping_url_php( $fileinfo->id );
 
-    is( $php_result->{current_mapping_url},
-        exists( $data->{current_mapping_url} )
-        ? $data->{current_mapping_url}
-        : $blog_uri->scheme . '://' . $blog_uri->host . $fileinfo->url,
-        'current_mapping_url - dynamic'
-    );
-    is( $php_result->{preferred_mapping_url},
-        exists( $data->{preferred_mapping_url} )
-        ? $data->{preferred_mapping_url}
-        : undef,
-        'preferred_mapping_url - dynamic'
-    );
+        is( $php_result->{current_mapping_url},
+            exists( $data->{current_mapping_url} )
+            ? $data->{current_mapping_url}
+            : $blog_uri->scheme . '://' . $blog_uri->host . $fileinfo->url,
+            'current_mapping_url - dynamic'
+        );
+        is( $php_result->{preferred_mapping_url},
+            exists( $data->{preferred_mapping_url} )
+            ? $data->{preferred_mapping_url}
+            : undef,
+            'preferred_mapping_url - dynamic'
+        );
+    }
 }
 
 sub test_mapping_url_php {
@@ -159,10 +162,9 @@ print($ctx->stash('current_mapping_url') . "\n");
 print($ctx->stash('preferred_mapping_url') . "\n");
 PHP
 
-    open2( my $php_in, my $php_out, 'php -q' );
-    print {$php_out} $test_script;
-    close $php_out;
-    my $php_result = do { local $/; <$php_in> };
+    run3 ['php', '-q'],
+        \$test_script, \my $php_result, undef
+        or die $?;
 
     my $result = {};
     @$result{qw(current_mapping_url preferred_mapping_url)} = split /\n/,

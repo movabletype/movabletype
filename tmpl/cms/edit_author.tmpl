@@ -420,7 +420,13 @@ function showPasswordField() {
        hint="<__trans phrase="Default text formatting filter when creating new entries and new pages.">">
       <select name="text_format" id="text_format" class="form-control se">
       <mt:loop name="text_filters">
-        <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:if name="key" eq="0"><__trans phrase="(Use Website/Blog Default)"><mt:else><mt:var name="label" escape="html"></mt:if></option>
+        <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>>
+          <mt:if name="key" eq="0">
+            <__trans phrase="(Use Site Default)">
+          <mt:else>
+            <mt:var name="label" escape="html">
+          </mt:if>
+        </option>
       </mt:loop>
       </select>
     </mtapp:setting>
@@ -484,11 +490,11 @@ function showPasswordField() {
     <mtapp:setting
        id="create_user_blog"
        label="<__trans phrase="Options">"
-       hint="<__trans phrase="Create personal blog for user">"
+       hint="<__trans phrase="Create personal child site for user">"
        show_hint="0">
       <label<mt:unless name="create_personal_weblog"> class="text-muted"</mt:unless>>
         <input type="checkbox" id="create_personal_weblog" name="create_personal_weblog" <mt:if name="create_personal_weblog">checked="checked"<mt:else>disabled="disabled"</mt:if> />
-        <__trans phrase="Create personal blog for user">
+        <__trans phrase="Create personal child site for user">
       </label>
     </mtapp:setting>
   </mtapp:settinggroup>

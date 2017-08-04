@@ -101,10 +101,10 @@ subtest 'In system scope' => sub {
         like( $out, qr/\(system\)/, 'blog_name is "(system)"' );
     };
 
-    subtest 'Deleted website/blog boilerplate' => sub {
+    subtest 'Deleted site/child site boilerplate' => sub {
         $ft->set_values(
             {   blog_id => 10,
-                label   => 'Website/Blog deleted',
+                label   => 'Site/Child Site deleted',
             }
         );
         $ft->save or die $ft->errstr;
@@ -122,8 +122,8 @@ subtest 'In system scope' => sub {
         $out = delete $app->{__test_output};
         like(
             $out,
-            qr/\*Website\/Blog deleted\*/,
-            'blog_name is "*Website/Blog deleted*"'
+            qr/\*Site\/Child Site deleted\*/,
+            'blog_name is "*Site/Child Site deleted*"'
         );
     };
 };

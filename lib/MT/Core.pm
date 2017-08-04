@@ -818,7 +818,7 @@ BEGIN {
                         my @authors = MT->model('author')
                             ->load( { id => [ keys %author_id ] } );
                         my %nickname = map {
-                            $_->id => defined $_->nickname
+                                  $_->id => defined $_->nickname
                                 ? $_->nickname
                                 : ''
                         } @authors;
@@ -1088,8 +1088,8 @@ BEGIN {
                     requires_grep => \&MT::Filter::pack_requires_grep,
                 },
                 blog_name => {
-                    label        => 'Website/Blog Name',
-                    filter_label => '__WEBSITE_BLOG_NAME',
+                    label        => 'Site Name',
+                    filter_label => 'Site Name',
                     order        => 10000,
                     display      => 'default',
                     site_name    => 1,
@@ -1207,7 +1207,7 @@ BEGIN {
                         my $prop = shift;
                         my ($settings) = @_;
                         return MT->translate(
-                            '[_1] of this Website',
+                            '[_1] of this Site',
                             $settings->{object_label_plural}
                                 || $prop->datasource->class_label_plural,
                         );
@@ -1305,7 +1305,7 @@ BEGIN {
         },
         listing_screens => {
             website => {
-                object_label     => 'Website',
+                object_label     => 'Site',
                 primary          => 'name',
                 view             => 'system',
                 default_sort_key => 'name',
@@ -1317,7 +1317,7 @@ BEGIN {
                 },
             },
             blog => {
-                object_label     => 'Blog',
+                object_label     => 'Child Site',
                 view             => [qw( system website )],
                 primary          => 'name',
                 default_sort_key => 'name',
@@ -2704,7 +2704,7 @@ sub load_core_permissions {
         'blog.administer_website' => {
             'group'            => 'blog_admin',
             'inherit_from'     => ['blog.administer_blog'],
-            'label'            => 'Manage Website',
+            'label'            => 'Manage Site',
             'order'            => 200,
             'permitted_action' => {
                 'save_all_settings_for_website' => 1,
@@ -2730,7 +2730,7 @@ sub load_core_permissions {
                 'blog.view_blog_log',       'blog.manage_feedback',
                 'blog.manage_themes',
             ],
-            'label'            => 'Manage Blog',
+            'label'            => 'Manage Child Site',
             'order'            => 300,
             'permitted_action' => {
                 'access_to_blog_association_list'  => 1,
@@ -2766,7 +2766,7 @@ sub load_core_permissions {
         },
         'blog.manage_member_blogs' => {
             'group'            => 'blog_admin',
-            'label'            => 'Manage Website with Blogs',
+            'label'            => 'Manage Site with Child Sites',
             'inherit_from'     => ['blog.administer_website'],
             'order'            => 100,
             'permitted_action' => {
@@ -3235,7 +3235,7 @@ sub load_core_permissions {
         },
         'system.create_blog' => {
             'group'            => 'sys_admin',
-            'label'            => 'Create Blogs',
+            'label'            => 'Create Child Sites',
             'order'            => 200,
             'permitted_action' => {
                 'create_blog'                => 1,
@@ -3250,7 +3250,7 @@ sub load_core_permissions {
         },
         'system.create_website' => {
             'group'            => 'sys_admin',
-            'label'            => 'Create Websites',
+            'label'            => 'Create Sites',
             'order'            => 100,
             'permitted_action' => {
                 'create_new_website'            => 1,

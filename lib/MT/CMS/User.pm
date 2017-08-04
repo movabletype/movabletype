@@ -1310,15 +1310,15 @@ PERMCHECK: {
 
         my $panel_info = {
             'website' => {
-                panel_title       => $app->translate("Select Website"),
-                panel_label       => $app->translate("Website Name"),
-                items_prompt      => $app->translate("Websites Selected"),
+                panel_title       => $app->translate("Select Site"),
+                panel_label       => $app->translate("Site Name"),
+                items_prompt      => $app->translate("Sites Selected"),
                 panel_description => $app->translate("Description"),
             },
             'blog' => {
-                panel_title       => $app->translate("Select Blogs"),
-                panel_label       => $app->translate("Blog Name"),
-                items_prompt      => $app->translate("Blogs Selected"),
+                panel_title       => $app->translate("Select Child Sites"),
+                panel_label       => $app->translate("Site Name"),
+                items_prompt      => $app->translate("Child Sites Selected"),
                 panel_description => $app->translate("Description"),
             },
             'author' => {

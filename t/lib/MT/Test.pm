@@ -8,7 +8,7 @@ use base qw( Exporter );
 
 our $VERSION = 0.9;
 our @EXPORT
-    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks location_param_contains query_param_contains );
+    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks location_param_contains query_param_contains has_php );
 
 use strict;
 
@@ -595,18 +595,18 @@ sub init_data {
     require MT::Role;
     my ( $admin_role, $author_role )
         = map { MT::Role->load( { name => $_ } ) }
-        ( 'Blog Administrator', 'Author' );
+        ( 'Child Site Administrator', 'Author' );
 
     unless ( $admin_role && $author_role ) {
         my @default_roles = (
-            {   name        => 'Blog Administrator',
-                description => 'Can administer the blog.',
+            {   name        => 'Child Site Administrator',
+                description => 'Can administer the child site.',
                 role_mask   => 2**12,
                 perms       => ['administer_blog']
             },
             {   name => 'Author',
                 description =>
-                    'Can create entries, edit their own entries, upload files, and publish.',
+                    'Can create entries, edit their own entries, upload files and publish.',
                 perms => [
                     'comment',      'create_post',
                     'publish_post', 'upload',
@@ -631,7 +631,7 @@ sub init_data {
         MT::Object->driver->clear_cache;
         ( $admin_role, $author_role )
             = map { MT::Role->load( { name => $_ } ) }
-            ( 'Blog Administrator', 'Author' );
+            ( 'Child Site Administrator', 'Author' );
     }
 
     require MT::Association;
@@ -1859,6 +1859,15 @@ sub query_param_contains {
             or $fail++;
     }
     ok !$fail, $message;
+}
+
+my $HasPHP;
+
+sub has_php {
+    return $HasPHP if defined $HasPHP;
+    my $php_version_string = `php --version 2>&1` or return $HasPHP = 0;
+    my ($php_version) = $php_version_string =~ /^PHP (\d+\.\d+)/i;
+    $HasPHP = ( $php_version and $php_version >= 5 ) ? 1 : 0;
 }
 
 1;

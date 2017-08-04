@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><mt:if name="blog_id"><__trans phrase="[_1] Themes" params="<mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if>"><mt:else><__trans phrase="All Themes"></mt:if></mt:setvarblock>
+<mt:setvarblock name="page_title"><mt:if name="blog_id"><__trans phrase="[_1] Themes" params="<mt:if name="is_blog"><__trans phrase="Child Site"><mt:else><__trans phrase="Site"></mt:if>"><mt:else><__trans phrase="All Themes"></mt:if></mt:setvarblock>
 <mt:unless name="blog_id">
     <$mt:setvar name="position_actions_top" value="1"$>
     <mt:setvar name="system-theme-settings" value="1">
@@ -94,7 +94,11 @@
     <mt:if name="errors">
     <p class="error-text">
       <a href="#theme-<mt:var name="id">-errors" class="theme-detail-link">
-        <__trans phrase="This theme cannot be applied to the website due to [_1] errors" params="<mt:var name="error_count">">
+      <mt:if name="is_blog">
+        <__trans phrase="This theme cannot be applied to the child site due to [_1] errors" params="<mt:var name="error_count">">
+      <mt:else>
+        <__trans phrase="This theme cannot be applied to the site due to [_1] errors" params="<mt:var name="error_count">">
+      </mt:if>
       </a>
     </p>
     </mt:if>
@@ -168,7 +172,11 @@
          id="saved-added"
          class="error"
          can_close="0">
-        <__trans phrase="This theme cannot be applied to the website due to [_1] errors" params="<mt:var name="error_count">">
+        <mt:if name="is_blog">
+          <__trans phrase="This theme cannot be applied to the child site due to [_1] errors" params="<mt:var name="error_count">">
+        <mt:else>
+          <__trans phrase="This theme cannot be applied to the site due to [_1] errors" params="<mt:var name="error_count">">
+        </mt:if>
       </mtapp:statusmsg>
       <ul>
       <mt:loop name="errors">
@@ -184,7 +192,11 @@
          id="saved-added"
          class="alert"
          can_close="0">
-        <__trans phrase="Portions of this theme cannot be applied to the website. [_1] elements will be skipped." params="<mt:var name="warning_count">">
+        <mt:if name="is_blog">
+          <__trans phrase="Portions of this theme cannot be applied to the child site. [_1] elements will be skipped." params="<mt:var name="warning_count">">
+        <mt:else>
+          <__trans phrase="Portions of this theme cannot be applied to the site. [_1] elements will be skipped." params="<mt:var name="warning_count">">
+        </mt:if>
       </mtapp:statusmsg>
       <ul>
       <mt:loop name="warnings">
