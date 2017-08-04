@@ -57,8 +57,9 @@ my ( $app, $out );
 note 'Test cfg_prefs mode';
 subtest 'Test cfg_prefs mode' => sub {
     foreach my $type ( 'website', 'blog' ) {
-        my $type_ucfirst = ucfirst $type;
+        my $type_ucfirst = 'Site'; # ucfirst $type;
         my $test_blog = $type eq 'website' ? $website : $blog;
+        my $type_alias = $type eq 'website' ? 'site' : 'child site';
 
         note "$type_ucfirst scope";
         subtest "$type_ucfirst scope" => sub {
@@ -92,7 +93,7 @@ subtest 'Test cfg_prefs mode' => sub {
 
             my $description
                 = quotemeta(
-                "Used to generate URLs (permalinks) for this ${type}'s archived entries. Choose one of the archive types used in this ${type}'s archive templates."
+                "Used to generate URLs (permalinks) for this ${type_alias}'s archived entries. Choose one of the archive types used in this ${type_alias}'s archive templates."
                 );
             $description = qr/$description/;
             like( $out, qr/$description/,
@@ -120,13 +121,13 @@ SKIP: {
 
             my $archive_url_hint
                 = $type eq 'blog'
-                ? "The URL of the archives section of your ${type}. Example: http://www.example.com/${type}/archives/"
-                : "The URL of the archives section of your ${type}. Example: http://www.example.com/archives/";
+                ? "The URL of the archives section of your ${type_alias}. Example: http://www.example.com/${type}/archives/"
+                : "The URL of the archives section of your ${type_alias}. Example: http://www.example.com/archives/";
             $archive_url_hint = quotemeta $archive_url_hint;
             like( $out, qr/$archive_url_hint/, 'Has Archive URL hint.' );
 
             my $archive_url_warning = quotemeta
-                "Warning: Changing the archive URL can result in breaking all links in your ${type}.";
+                "Warning: Changing the archive URL can result in breaking all links in your ${type_alias}.";
             like( $out, qr/$archive_url_warning/,
                 'Has Archive URL warning.' );
 
