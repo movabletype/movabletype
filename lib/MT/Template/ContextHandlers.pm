@@ -491,7 +491,7 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_archive_url',
             SiteRelativeURL =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_relative_url',
-            SiteSitePath =>
+            SitePath =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_site_path',
             SiteHost => '$Core::MT::Template::Tags::Blog::_hdlr_blog_host',
             SiteTimezone =>
