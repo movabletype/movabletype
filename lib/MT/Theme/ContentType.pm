@@ -6,7 +6,7 @@ use MT;
 use MT::ContentField;
 use MT::ContentType;
 
-sub import {
+sub apply {
     my ( $element, $theme, $blog, $opts ) = @_;
     my $content_types = $element->{data} || {};
 

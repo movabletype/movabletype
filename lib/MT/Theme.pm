@@ -750,7 +750,7 @@ sub core_theme_element_handlers {
             label    => 'Default Content Types',
             order    => 700,
             importer => {
-                import    => '$Core::MT::Theme::ContentType::import',
+                import    => '$Core::MT::Theme::ContentType::apply',
                 info      => '$Core::MT::Theme::ContentType::info',
                 validator => '$Core::MT::Theme::ContentType::validator',
             },

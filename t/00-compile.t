@@ -414,6 +414,7 @@ use_ok('MT::Summary::Triggers');
 # Themes
 use_ok('MT::Theme');
 use_ok('MT::Theme::Category');
+use_ok('MT::Theme::ContentType');
 use_ok('MT::Theme::Element');
 use_ok('MT::Theme::Entry');
 use_ok('MT::Theme::Pref');
