@@ -62,35 +62,6 @@ sub core_tags {
             'SiteIfCommentsOpen?' =>
                 '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
 
-            EntrySiteID =>
-                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_id',
-            EntrySiteName =>
-                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_name',
-            EntrySiteDescription =>
-                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_description',
-            EntrySiteURL =>
-                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_url',
-            SiteEntryCount =>
-                '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
-
-            CommentSiteID =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_blog_id',
-            SiteCommentCount =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
-            PingSiteName =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_ping_blog_name',
-            SitePingCount =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
-
-            SiteCategoryCount =>
-                '$Core::MT::Template::Tags::Category::_hdlr_blog_category_count',
-
-            SitePageCount =>
-                '$Core::MT::Template::Tags::Page::_hdlr_blog_page_count',
-
-            AssetSiteID =>
-                '$Core::MT::Template::Tags::Asset::_hdlr_asset_blog_id',
-
             ## Blog
             Blogs     => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
             'IfBlog?' => '$Core::MT::Template::Tags::Blog::_hdlr_if_blog',
@@ -504,6 +475,35 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_file_extension',
             SiteThemeID =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_theme_id',
+
+            EntrySiteID =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_id',
+            EntrySiteName =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_name',
+            EntrySiteDescription =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_description',
+            EntrySiteURL =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_url',
+            SiteEntryCount =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
+
+            CommentSiteID =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_blog_id',
+            SiteCommentCount =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
+            PingSiteName =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_ping_blog_name',
+            SitePingCount =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
+
+            SiteCategoryCount =>
+                '$Core::MT::Template::Tags::Category::_hdlr_blog_category_count',
+
+            SitePageCount =>
+                '$Core::MT::Template::Tags::Page::_hdlr_blog_page_count',
+
+            AssetSiteID =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_blog_id',
 
             ## Blog
             BlogID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
