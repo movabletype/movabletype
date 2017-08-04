@@ -24,8 +24,16 @@ filters {
     error    => [qw( chomp )],
 };
 
+sub _set_php_allow_comments {
+    return <<'PHP';
+$ctx->mt->config('AllowComments', 1);
+PHP
+}
+
+MT->config->AllowComments(1);
+
 MT::Test::Tag->run_perl_tests;
-MT::Test::Tag->run_php_tests;
+MT::Test::Tag->run_php_tests( undef, \&_set_php_allow_comments );
 
 __END__
 
