@@ -557,10 +557,10 @@ sub edit {
 
         # Content Type
         if ( $obj_type eq 'ct' ) {
-            my $iter = MT::ContentType->load_iter( { blog_id => $blog_id } );
-            while ( my $ct = $iter->() ) {
-                push @{ $param->{content_types} }, $ct;
-            }
+            my $content_type = MT::ContentType->load( $obj->content_type_id );
+            $param->{content_type_name} = $content_type->name
+                if $content_type;
+            $param->{content_type_id} = $content_type->id if $content_type;
         }
     }
     else {
@@ -676,6 +676,14 @@ sub edit {
             && $param->{type} ne 'widget'
             && !$param->{is_special};
         $param->{name} = $app->param('name') if $app->param('name');
+
+        # Content Type
+        if ( $template_type eq 'ct' ) {
+            my $iter = MT::ContentType->load_iter( { blog_id => $blog_id } );
+            while ( my $ct = $iter->() ) {
+                push @{ $param->{content_types} }, $ct;
+            }
+        }
     }
     $param->{publish_queue_available}
         = eval 'require List::Util; require Scalar::Util; 1;';
@@ -1713,9 +1721,8 @@ sub add_map {
             archive_type => $at
         }
     );
-    my $content_type_id = $q->param('content_type_id');
-    my $cat_field_id    = $q->param('cat_field_id');
-    my $dt_field_id     = $q->param('dt_field_id');
+    my $cat_field_id = $q->param('cat_field_id');
+    my $dt_field_id  = $q->param('dt_field_id');
 
     $app->model('template')
         ->load( { id => $template_id, blog_id => $blog_id } )
@@ -1727,9 +1734,8 @@ sub add_map {
     $map->template_id($template_id);
     $map->blog_id($blog_id);
     $map->archive_type($at);
-    $map->content_type_id($content_type_id) if $content_type_id;
-    $map->cat_field_id($cat_field_id)       if $cat_field_id;
-    $map->dt_field_id($dt_field_id)         if $dt_field_id;
+    $map->cat_field_id($cat_field_id) if $cat_field_id;
+    $map->dt_field_id($dt_field_id)   if $dt_field_id;
     $map->save
         or return $app->error(
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );

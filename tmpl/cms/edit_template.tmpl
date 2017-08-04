@@ -580,6 +580,23 @@ function toggleCache(id) {
   </mt:if>
   </mtapp:setting>
 
+<mt:if name="type" eq="ct">
+  <mtapp:setting
+     id="content_type_id"
+     label="<__trans phrase="Content Type">">
+  <mt:if name="has_name">
+    <select name="content_type_id">
+  <mt:loop name="content_types">
+      <option value="<mt:var name="id">"><mt:var name="name"></option>
+  </mt:loop>
+    </select>
+  <mt:else>
+    <mt:var name="content_type_name" escape="html">
+    <input type="hidden" name="content_type_id" id="content_type_id" value="<$mt:var name="content_type_id" escape="html"$>" />
+  </mt:if>
+  </mtapp:setting>
+</mt:if>
+     
 <mt:if name="type_custom">
   <$mt:setvar name="template_name" value="<__trans phrase="Module Body">"$>
 <mt:else>
@@ -702,14 +719,6 @@ function toggleCache(id) {
         </mt:loop>
         </select>
         <mt:if name="type" eq="ct">
-        </div>
-        <div>
-          <label for="content_type_id"><strong><__trans phrase="Content Type"></strong></label>
-          <select name="content_type_id" id="content_type_id" tabindex="10" class="form-control">
-          <mt:loop name="content_types">
-            <option value="<mt:var name="id">"><mt:var name="name"></option>
-          </mt:loop>
-          </select>
         </div>
         <div>
           <label for="cat_field_id"><strong><__trans phrase="Category Field"></strong></label>
@@ -984,10 +993,6 @@ function saveTemplatePrefs( sync ) {
     });
     <mt:if name="type" eq="ct">
     jQuery("#new_archive_type").change(function(){
-      getContentFields();
-    });
-
-    jQuery("#content_type_id").change(function(){
       getContentFields();
     });
 

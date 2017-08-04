@@ -929,15 +929,25 @@ sub _rebuild_content_archive_type {
             @map = @$maps;
         }
         else {
+            my $args
+                = $content_data && !$param{TemplateID}
+                ? {
+                'join' => MT::Template->join_on(
+                    undef,
+                    {   'id'              => \'= templatemap_template_id',
+                        'content_type_id' => $content_data->content_type_id,
+                    }
+                )
+                }
+                : undef;
             @map = MT::TemplateMap->load(
                 {   archive_type => $at,
                     blog_id      => $blog->id,
-                    $param{TemplateID} ? ( template_id => $param{TemplateID} )
-                    : (),
-                    $content_data
-                    ? ( content_type_id => $content_data->content_type_id )
-                    : (),
-                }
+                    $param{TemplateID}
+                    ? ( template_id => $param{TemplateID} )
+                    : ()
+                },
+                $args
             );
             $cached_maps->{ $at . $blog->id } = \@map;
         }

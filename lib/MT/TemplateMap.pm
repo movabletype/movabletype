@@ -11,17 +11,16 @@ use base qw( MT::Object );
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'              => 'integer not null auto_increment',
-            'blog_id'         => 'integer not null',
-            'template_id'     => 'integer not null',
-            'archive_type'    => 'string(100) not null',
-            'file_template'   => 'string(255)',
-            'is_preferred'    => 'boolean',
-            'build_type'      => 'smallint',
-            'build_interval'  => 'integer',
-            'content_type_id' => 'integer',
-            'cat_field_id'    => 'integer',
-            'dt_field_id'     => 'integer',
+            'id'             => 'integer not null auto_increment',
+            'blog_id'        => 'integer not null',
+            'template_id'    => 'integer not null',
+            'archive_type'   => 'string(100) not null',
+            'file_template'  => 'string(255)',
+            'is_preferred'   => 'boolean',
+            'build_type'     => 'smallint',
+            'build_interval' => 'integer',
+            'cat_field_id'   => 'integer',
+            'dt_field_id'    => 'integer',
         },
         indexes => {
             blog_id      => 1,
