@@ -39,20 +39,6 @@ sub _hdlr_sites {
 
     require MT::Blog;
     $terms->{class} = '*' unless $terms->{class};
-    if ( !exists $terms->{id} && !exists $terms->{parent_id} ) {
-        if ($current_blog) {
-
-            # website or blog scope
-            $terms->{parent_id} = $current_blog->id;
-        }
-        else {
-            # system scope
-            $terms = [
-                $terms,
-                [ { parent_id => 0 }, '-or', { parent_id => \'IS NULL' } ],
-            ];
-        }
-    }
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
     my @blogs = MT::Blog->load( $terms, \%args );
