@@ -58,7 +58,7 @@ sub core_tags {
             SiteParentSite =>
                 '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
             'SiteHasChildSite?' =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_website_has_blog',
+                '$Core::MT::Template::Tags::Website::_hdlr_website_has_blog',
             'SiteIfCommentsOpen?' =>
                 '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
 
