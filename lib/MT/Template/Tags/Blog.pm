@@ -450,7 +450,7 @@ Outputs the Site Root field of the blog currently in context. An ending
 
 =cut
 
-=head2 SiteSitePath
+=head2 SitePath
 
 Outputs the Site Root field of the blog currently in context. An ending
 '/' character is guaranteed.
