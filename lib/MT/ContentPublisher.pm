@@ -932,9 +932,11 @@ sub _rebuild_content_archive_type {
             @map = MT::TemplateMap->load(
                 {   archive_type => $at,
                     blog_id      => $blog->id,
-                    $param{TemplateID}
-                    ? ( template_id => $param{TemplateID} )
-                    : ()
+                    $param{TemplateID} ? ( template_id => $param{TemplateID} )
+                    : (),
+                    $content_data
+                    ? ( content_type_id => $content_data->content_type_id )
+                    : (),
                 }
             );
             $cached_maps->{ $at . $blog->id } = \@map;
