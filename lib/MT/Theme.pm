@@ -746,6 +746,15 @@ sub core_theme_element_handlers {
                 info   => '$Core::MT::Theme::Entry::info_pages',
             },
         },
+        default_content_types => {
+            label    => 'Default Content Types',
+            order    => 700,
+            importer => {
+                import    => '$Core::MT::Theme::ContentType::import',
+                info      => '$Core::MT::Theme::ContentType::info',
+                validator => '$Core::MT::Theme::ContentType::validator',
+            },
+        },
     };
 }
 
