@@ -39,7 +39,7 @@ __END__
 --- template
 <mt:SiteHasChildSite><mt:SiteID></mt:SiteHasChildSite>
 --- expected
-1
+
 
 === mt:SiteHasChildSite - website with blog
 --- blog_id

@@ -445,15 +445,6 @@ in the context has one or more blogs.
 
 =cut
 
-=head2 SiteHasChildSite
-
-A conditional tag that returns True when the current site
-in the context has one or more child sites.
-
-=for tags websites,
-
-=cut
-
 sub _hdlr_website_has_blog {
     my ($ctx) = @_;
     my $blog = $ctx->stash('blog');

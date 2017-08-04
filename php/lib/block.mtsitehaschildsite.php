@@ -6,6 +6,10 @@
 # $Id$
 
 function smarty_block_mtsitehaschildsite($args, $content, &$ctx, &$repeat) {
+    $blog = $ctx->stash('blog');
+    if ( !$blog || $blog->is_blog() ) {
+        return false;
+    }
     return smarty_block_mtwebsitehasblog($args, $content, $ctx, $repeat);
 }
 ?>
