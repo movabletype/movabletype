@@ -55,6 +55,8 @@ sub core_tags {
 
             ## Site
             Sites => '$Core::MT::Template::Tags::Site::_hdlr_sites',
+            SiteParentSite =>
+                '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
             'SiteHasChildSite?' =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_website_has_blog',
             'SiteIfCommentsOpen?' =>
@@ -476,9 +478,6 @@ sub core_tags {
             'App:Link' => \&MT::Template::Tags::App::_hdlr_app_link,
 
             ## Site
-            SiteParentSite =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_parent_website',
-
             SiteID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
             SiteName => '$Core::MT::Template::Tags::Blog::_hdlr_blog_name',
             SiteDescription =>
