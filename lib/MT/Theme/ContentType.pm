@@ -10,30 +10,40 @@ sub apply {
     my ( $element, $theme, $blog, $opts ) = @_;
     my $content_types = $element->{data} || {};
 
+    my $current_lang = MT->current_language;
+
     for my $ct_key ( keys %{$content_types} ) {
         my $ct_value = $content_types->{$ct_key};
 
+        MT->set_language( $blog->language );
         my $ct = MT::ContentType->new(
             name => defined( $ct_value->{name} )
-            ? $ct_value->{name}
+            ? $theme->translate_templatized( $ct_value->{name} )
             : $ct_key,
-            description      => $ct_value->{description},
+            description =>
+                $theme->translate_templatized( $ct_value->{description} ),
             user_disp_option => $ct_value->{user_disp_option} ? 1 : 0,
             unique_id        => $ct_value->{unique_id},
             blog_id          => $blog->id,
         );
+        MT->set_language($current_lang);
+
         $ct->save or die $ct->errstr;
 
         my $order = 1;
         my @fields;
         for my $cf_value ( @{ $ct_value->{fields} || [] } ) {
+            MT->set_language( $blog->language );
             my $cf = MT::ContentField->new(
-                name            => $cf_value->{label},
-                description     => $cf_value->{description},
+                name => $theme->translate_templatized( $cf_value->{label} ),
+                description =>
+                    $theme->translate_templatized( $cf_value->{description} ),
                 type            => $cf_value->{type},
                 blog_id         => $ct->blog_id,
                 content_type_id => $ct->id,
             );
+            MT->set_language($current_lang);
+
             $cf->save or die $cf->errstr;
 
             my $field = {
@@ -43,10 +53,16 @@ sub apply {
                 order     => $order,
                 options   => {},
             };
+
+            MT->set_language( $blog->language );
             for my $cf_value_key ( keys %{$cf_value} ) {
                 next if $cf_value_key eq 'type';
-                $field->{options}{$cf_value_key} = $cf_value->{$cf_value_key};
+                $field->{options}{$cf_value_key}
+                    = $theme->translate_templatized(
+                    $cf_value->{$cf_value_key} );
             }
+            MT->set_language($current_lang);
+
             push @fields, $field;
 
             $order++;
