@@ -866,7 +866,9 @@ sub _categories_registry {
         ss_validator =>
             '$Core::MT::ContentFieldType::Categories::ss_validator',
         tag_handler => '$Core::MT::ContentFieldType::Categories::tag_handler',
-        list_props  => {
+        theme_import_handler =>
+            '$Core::MT::ContentFieldType::Categories::theme_import_handler',
+        list_props => {
             categories => {
                 base      => '__virtual.string',
                 col       => 'label',
@@ -991,4 +993,3 @@ sub _table_registry {
 }
 
 1;
-

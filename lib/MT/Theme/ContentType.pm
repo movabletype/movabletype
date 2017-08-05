@@ -61,6 +61,20 @@ sub apply {
                     = $theme->translate_templatized(
                     $cf_value->{$cf_value_key} );
             }
+
+            my $type       = $cf_value->{type};
+            my $field_type = MT->registry('content_field_types')->{$type};
+            if ( my $handler = $field_type->{theme_import_handler} ) {
+                if ( !ref $handler ) {
+                    $handler = MT->handler_to_coderef($handler);
+                }
+                if ( !$handler || ref $handler ne 'CODE' ) {
+                    die MT->translate(
+                        'Invalid theme_import_handler of [_1].', $type );
+                }
+                $handler->( $theme, $blog, $ct, $cf_value, $field );
+            }
+
             MT->set_language($current_lang);
 
             push @fields, $field;
