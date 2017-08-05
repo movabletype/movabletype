@@ -8,18 +8,14 @@ use MT::ContentType;
 
 sub apply {
     my ( $element, $theme, $blog, $opts ) = @_;
-    my $content_types = $element->{data} || {};
+    my $content_types = $element->{data} || [];
 
     my $current_lang = MT->current_language;
 
-    for my $ct_key ( keys %{$content_types} ) {
-        my $ct_value = $content_types->{$ct_key};
-
+    for my $ct_value ( @{$content_types} ) {
         MT->set_language( $blog->language );
         my $ct = MT::ContentType->new(
-            name => defined( $ct_value->{name} )
-            ? $theme->translate_templatized( $ct_value->{name} )
-            : $ct_key,
+            name => $theme->translate_templatized( $ct_value->{name} ),
             description =>
                 $theme->translate_templatized( $ct_value->{description} ),
             user_disp_option => $ct_value->{user_disp_option} ? 1 : 0,
@@ -91,7 +87,7 @@ sub apply {
 
 sub info {
     my ( $element, $theme, $blog ) = @_;
-    my $content_type_count = scalar %{ $element->{data} };
+    my $content_type_count = scalar @{ $element->{data} };
     sub {
         MT->translate( '[_1] content types.', $content_type_count );
     };
@@ -102,7 +98,7 @@ sub validator {
     my $content_types = $element->{data};
 
     my @unique_ids
-        = grep {$_} map { $_->{unique_id} } values %{$content_types};
+        = grep {$_} map { $_->{unique_id} } @{$content_types};
     if ( @unique_ids
         && MT::ContentType->exist( { unique_id => \@unique_ids } ) )
     {
