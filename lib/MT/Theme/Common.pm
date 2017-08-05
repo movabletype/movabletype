@@ -5,7 +5,62 @@ use base 'Exporter';
 
 use MT;
 
-our @EXPORT_OK = qw( get_author_id );
+our @EXPORT_OK = qw( add_categories get_author_id );
+
+sub add_categories {
+    my ( $theme, $blog, $cat_data, $class, $category_list_id, $parent ) = @_;
+
+    my $author_id = get_author_id($blog);
+    unless ( defined $author_id ) {
+        my $error;
+        if ( $class eq 'folder' ) {
+            $error = 'Failed to create theme default folders';
+        }
+        else {
+            $error = 'Failed to create theme default categories';
+        }
+        die MT->translate($error);
+    }
+
+    for my $basename ( keys %$cat_data ) {
+        my $datum = $cat_data->{$basename};
+        my $cat   = MT->model($class)->load(
+            {   blog_id  => $blog->id,
+                basename => $basename,
+                parent   => $parent ? $parent->id : 0,
+                $category_list_id
+                ? ( category_list_id => $category_list_id )
+                : (),
+            }
+        );
+        unless ($cat) {
+            $cat = MT->model($class)->new;
+            $cat->blog_id( $blog->id );
+            $cat->category_list_id($category_list_id) if $category_list_id;
+            $cat->basename($basename);
+            for my $key (qw{ label description }) {
+                my $val = $datum->{$key};
+                if ( ref $val eq 'CODE' ) {
+                    $val = $val->();
+                }
+                else {
+                    $val = $theme->translate($val) if $val;
+                }
+                $cat->$key($val);
+            }
+            $cat->allow_pings( $datum->{allow_pings} || 0 );
+            $cat->author_id($author_id);
+            $cat->parent( $parent->id )
+                if defined $parent;
+            $cat->save;
+        }
+        if ( my $children = $datum->{children} ) {
+            add_categories( $theme, $blog, $children, $class,
+                $category_list_id, $cat );
+        }
+    }
+    1;
+}
 
 sub get_author_id {
     my ($blog) = @_;
