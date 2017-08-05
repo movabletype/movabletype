@@ -76,7 +76,7 @@ sub validator {
     if ( @unique_ids
         && MT::ContentType->exist( { unique_id => \@unique_ids } ) )
     {
-        return $element->error(
+        return $element->trans_error(
             'some content type in this theme have been installed already.');
     }
 
