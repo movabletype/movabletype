@@ -13,9 +13,20 @@ sub apply {
     my $current_lang = MT->current_language;
 
     for my $ct_value ( @{$content_types} ) {
+
+        if ( my $unique_id = $ct_value->{unique_id} ) {
+            next if MT::ContentType->exist( { unique_id => $unique_id } );
+        }
+
+        my $name = $theme->translate_templatized( $ct_value->{name} );
+
+        next
+            if MT::ContentType->exist(
+            { blog_id => $blog->id, name => $name } );
+
         MT->set_language( $blog->language );
         my $ct = MT::ContentType->new(
-            name => $theme->translate_templatized( $ct_value->{name} ),
+            name => $name,
             description =>
                 $theme->translate_templatized( $ct_value->{description} ),
             user_disp_option => $ct_value->{user_disp_option} ? 1 : 0,
