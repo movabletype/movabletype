@@ -37,6 +37,8 @@ sub _content_type_registry {
             '$Core::MT::ContentFieldType::ContentType::field_html_params',
         ss_validator =>
             '$Core::MT::ContentFieldType::ContentType::ss_validator',
+        theme_import_handler =>
+            '$Core::MT::ContentFieldType::ContentType::theme_import_handler',
         list_props => {
             content_type =>
                 { html => '$Core::MT::ContentFieldType::ContentType::html' },
