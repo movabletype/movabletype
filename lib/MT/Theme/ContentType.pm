@@ -112,6 +112,8 @@ sub validator {
     my ( $element, $theme, $blog ) = @_;
     my $content_types = $element->{data};
 
+    return 1 unless $blog;
+
     my $error
         = 'some content type in this theme have been installed already.';
 

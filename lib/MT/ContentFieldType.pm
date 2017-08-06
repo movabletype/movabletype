@@ -108,6 +108,8 @@ sub _multi_line_text_registry {
                 use_blank => 1,
             },
         },
+        theme_data_import_handler =>
+            '$Core::MT::ContentFieldType::MultiLineText::theme_data_import_handler',
         options => [
             qw(
                 label

@@ -763,6 +763,14 @@ sub core_theme_element_handlers {
                 validator => '$Core::MT::Theme::ContentType::validator',
             },
         },
+        default_content_data => {
+            label    => 'Default Content Data',
+            order    => 900,
+            importer => {
+                import => '$Core::MT::Theme::ContentData::apply',
+                info   => '$Core::MT::Theme::ContentData::info',
+            },
+        },
     };
 }
 
