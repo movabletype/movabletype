@@ -112,13 +112,34 @@ sub validator {
     my ( $element, $theme, $blog ) = @_;
     my $content_types = $element->{data};
 
+    my $error
+        = 'some content type in this theme have been installed already.';
+
+    my @names = grep {$_} map { $_->{name} } @{$content_types};
+    if (@names) {
+        my $current_lang = MT->current_language;
+        MT->set_language( $blog->language );
+
+        @names = map { $theme->translate_templatized($_) } @names;
+
+        if (MT::ContentType->exist(
+                { blog_id => $blog->id, name => \@names }
+            )
+            )
+        {
+            MT->set_language($current_lang);
+            return $element->trans_error($error);
+        }
+
+        MT->set_language($current_lang);
+    }
+
     my @unique_ids
         = grep {$_} map { $_->{unique_id} } @{$content_types};
     if ( @unique_ids
         && MT::ContentType->exist( { unique_id => \@unique_ids } ) )
     {
-        return $element->trans_error(
-            'some content type in this theme have been installed already.');
+        return $element->trans_error($error);
     }
 
     1;
