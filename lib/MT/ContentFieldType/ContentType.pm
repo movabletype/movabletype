@@ -160,6 +160,9 @@ sub theme_import_handler {
         if ($ct) {
             $field->{options}{content_type} = $ct->id;
         }
+        else {
+            delete $field->{options}{content_type};
+        }
     }
 }
 

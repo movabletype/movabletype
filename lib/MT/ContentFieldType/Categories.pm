@@ -289,9 +289,13 @@ sub theme_import_handler {
     if ( defined $cl_name && $cl_name ne '' ) {
         my $cl
             = MT::CategoryList->load(
-            { blog_id => $blog->id, name => $cl_name } )
-            or return;
-        $field->{options}{category_list} = $cl->id;
+            { blog_id => $blog->id, name => $cl_name } );
+        if ($cl) {
+            $field->{options}{category_list} = $cl->id;
+        }
+        else {
+            delete $field->{options}{category_list};
+        }
     }
 }
 
