@@ -18,13 +18,17 @@ sub apply {
             next if MT::ContentType->exist( { unique_id => $unique_id } );
         }
 
+        MT->set_language( $blog->language );
+
         my $name = $theme->translate_templatized( $ct_value->{name} );
 
-        next
-            if MT::ContentType->exist(
-            { blog_id => $blog->id, name => $name } );
+        if ( MT::ContentType->exist( { blog_id => $blog->id, name => $name } )
+            )
+        {
+            MT->set_language($current_lang);
+            next;
+        }
 
-        MT->set_language( $blog->language );
         my $ct = MT::ContentType->new(
             name => $name,
             description =>
