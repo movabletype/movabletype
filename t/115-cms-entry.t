@@ -107,7 +107,7 @@ my $edit_all_posts = MT::Test::Permission->make_role(
 
 my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 my $website_administrator
-    = MT::Role->load( { name => MT->translate('Website Administrator') } );
+    = MT::Role->load( { name => MT->translate('Site Administrator') } );
 
 MT::Association->link( $aikawa,   $create_post,           $website );
 MT::Association->link( $ogawa,    $designer,              $website );

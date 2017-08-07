@@ -38,7 +38,7 @@ my $admin = MT::Author->load(1);
 
 # Role
 require MT::Role;
-my $blog_admin = MT::Role->load( { name => MT->translate( 'Blog Administrator' ) } );
+my $blog_admin = MT::Role->load( { name => MT->translate( 'Child Site Administrator' ) } );
 
 require MT::Association;
 MT::Association->link( $aikawa => $blog_admin => $blog );
