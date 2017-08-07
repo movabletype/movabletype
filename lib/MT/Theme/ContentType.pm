@@ -74,9 +74,15 @@ sub apply {
             MT->set_language( $blog->language );
             for my $cf_value_key ( keys %{$cf_value} ) {
                 next if $cf_value_key eq 'type';
-                $field->{options}{$cf_value_key}
-                    = $theme->translate_templatized(
-                    $cf_value->{$cf_value_key} );
+                if ( ref $cf_value->{$cf_value_key} ) {
+                    $field->{options}{$cf_value_key}
+                        = $cf_value->{$cf_value_key};
+                }
+                else {
+                    $field->{options}{$cf_value_key}
+                        = $theme->translate_templatized(
+                        $cf_value->{$cf_value_key} );
+                }
             }
 
             my $type       = $cf_value->{type};
