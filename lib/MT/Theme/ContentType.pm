@@ -10,6 +10,8 @@ sub apply {
     my ( $element, $theme, $blog, $opts ) = @_;
     my $content_types = $element->{data} || [];
 
+    my $content_field_types = MT->registry('content_field_types');
+
     my $current_lang = MT->current_language;
 
     for my $ct_value ( @{$content_types} ) {
@@ -44,6 +46,10 @@ sub apply {
         my $order = 1;
         my @fields;
         for my $cf_value ( @{ $ct_value->{fields} || [] } ) {
+            next
+                unless defined $content_field_types->{ $cf_value->{type} }
+                && $content_field_types->{ $cf_value->{type} } ne '';
+
             MT->set_language( $blog->language );
             my $cf = MT::ContentField->new(
                 name => $theme->translate_templatized( $cf_value->{label} ),
@@ -113,6 +119,28 @@ sub validator {
     my $content_types = $element->{data};
 
     return 1 unless $blog;
+
+    my $content_field_types = MT->registry('content_field_types');
+
+    for my $ct ( @{$content_types} ) {
+        my @valid_content_fields = grep {
+            defined $content_field_types->{ $_->{type} }
+                && $content_field_types->{ $_->{type} } ne ''
+        } @{ $ct->{fields} };
+        if (@valid_content_fields) {
+            return $element->trans_error(
+                'some content field in this theme has invalid type.');
+        }
+    }
+
+    my @valid_content_types = grep {
+        defined $content_field_types->{ $_->{type} }
+            && $content_field_types->{ $_->{type} } ne ''
+    } @{$content_types};
+    if (@valid_content_types) {
+        return $element->trans_error(
+            'some content field in this theme has invalid type.');
+    }
 
     my $error
         = 'some content type in this theme have been installed already.';
