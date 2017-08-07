@@ -84,7 +84,9 @@
           <label for="<mt:var name="id">-include"><input type="checkbox" id="<mt:var name="id">-include" name="include" value="<mt:var name="id">" onclick="toggleActive('<mt:var name="id">-detail')" <mt:if name="included">checked="checked"</mt:if>> <mt:var name="label"></label>
         <mt:if name="template">
           <span id="<mt:var name="id">-detail" class="theme-option-detail <mt:unless name="include"> active</mt:unless>">
-            <a href="<mt:var name="script_url">?__mode=theme_element_detail&exporter_id=<mt:var name="id">&blog_id=<mt:var name="blog_id">" class="mt-open-dialog mt-modal-open"><__trans phrase="Details"></a>
+            <a href="<mt:var name="script_url">?__mode=theme_element_detail&exporter_id=<mt:var name="id">&blog_id=<mt:var name="blog_id">" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+              <__trans phrase="Details">
+            </a>
           </span>
         </mt:if>
         </li>
