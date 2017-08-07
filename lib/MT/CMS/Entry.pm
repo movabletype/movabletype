@@ -1204,6 +1204,7 @@ sub _build_entry_preview {
     my $file_ext;
     if ($tmpl_map) {
         $tmpl         = MT::Template->load( $tmpl_map->template_id );
+        MT::Request->instance->cache( 'build_template', $tmpl );
         $file_ext     = $blog->file_extension || '';
         $archive_file = $entry->archive_file;
 
