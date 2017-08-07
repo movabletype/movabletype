@@ -854,6 +854,7 @@ sub _embedded_text_registry {
                 description
                 required
                 display
+                initial_value
                 )
         ],
     };
