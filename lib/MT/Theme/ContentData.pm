@@ -102,8 +102,11 @@ sub apply {
                 else {
                     $data->{ $f->{id} } = $ct_value->{data}{$cf_name};
                 }
-                $data->{ $f->{id} }
-                    = $theme->translate_templatized( $data->{ $f->{id} } );
+                unless ( ref $data->{ $f->{id} } ) {
+                    $data->{ $f->{id} }
+                        = $theme->translate_templatized(
+                        $data->{ $f->{id} } );
+                }
 
                 if ( my $handler = $f->{theme_data_import_handler} ) {
                     if ( !ref $handler ) {
