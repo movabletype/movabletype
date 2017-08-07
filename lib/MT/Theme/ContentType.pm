@@ -127,10 +127,9 @@ sub validator {
             defined $content_field_types->{ $_->{type} }
                 && $content_field_types->{ $_->{type} } ne ''
         } @{ $ct->{fields} };
-        if (@valid_content_fields) {
-            return $element->trans_error(
-                'some content field in this theme has invalid type.');
-        }
+        return $element->trans_error(
+            'some content field in this theme has invalid type.')
+            unless @valid_content_fields;
     }
 
     my @valid_content_types = grep {
