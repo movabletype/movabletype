@@ -2355,6 +2355,19 @@ B<Example:>
 
 =cut
 
+=head2 EntrySiteID
+
+The numeric system ID of the site that is parent to the entry currently
+in context.
+
+B<Example:>
+
+    <$mt:EntrySiteID$>
+
+=for tags entries, sites
+
+=cut
+
 sub _hdlr_entry_blog_id {
     my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
@@ -2375,6 +2388,19 @@ B<Example:>
     <$mt:EntryBlogName$>
 
 =for tags entries, blogs
+
+=cut
+
+=head2 EntrySiteName
+
+Returns the site name of the site to which the entry in context belongs.
+The site name is set in the General Site Settings.
+
+B<Example:>
+
+    <$mt:EntrySiteName$>
+
+=for tags entries, sites
 
 =cut
 
@@ -2403,6 +2429,19 @@ B<Example:>
 
 =cut
 
+=head2 EntrySiteDescription
+
+Returns the site description of the site to which the entry in context
+belongs. The site description is set in the General Site Settings.
+
+B<Example:>
+
+    <$mt:EntrySiteDescription$>
+
+=for tags sites, entries
+
+=cut
+
 sub _hdlr_entry_blog_description {
     my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
@@ -2425,6 +2464,18 @@ B<Example:>
     <$mt:EntryBlogURL$>
 
 =for tags blogs, entries
+
+=cut
+
+=head2 EntrySiteURL
+
+Returns the site URL for the site to which the entry in context belongs.
+
+B<Example:>
+
+    <$mt:EntrySiteURL$>
+
+=for tags sites, entries
 
 =cut
 
@@ -2518,6 +2569,15 @@ Returns the number of published entries associated with the blog
 currently in context.
 
 =for tags multiblog, count, blogs, entries
+
+=cut
+
+=head2 SiteEntryCount
+
+Returns the number of published entries associated with the site
+currently in context.
+
+=for tags multiblog, count, sites, entries
 
 =cut
 

@@ -613,6 +613,19 @@ B<Example:>
 
 =cut
 
+=head2 SitePageCount
+
+The number of published pages in the site. This template tag supports the
+multiblog template tags.
+
+B<Example:>
+
+    <$mt:SitePageCount$>
+
+=for tags sites, pages, multiblog, count
+
+=cut
+
 sub _hdlr_blog_page_count {
     my ( $ctx, $args, $cond ) = @_;
 

@@ -1817,6 +1817,23 @@ B<Example:>
 
 =cut
 
+=head2 SiteCategoryCount
+
+Returns the number of categories associated with a site. This
+template tag supports the multiblog template tags.
+
+This template tag also supports all of the same filtering mechanisms
+defined by the mt:Categories tag allowing users to retrieve a count
+of the number of comments on a site that meet a certain criteria.
+
+B<Example:>
+
+    <$mt:SiteCategoryCount$>
+
+=for tags multiblog, count, sites, categories
+
+=cut
+
 sub _hdlr_blog_category_count {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
