@@ -139,7 +139,9 @@ sub validator {
     }
 
     my @valid_content_types = grep {
-        defined $content_field_types->{ $_->{type} }
+               ref $_ eq 'HASH'
+            && $_->{type}
+            && defined $content_field_types->{ $_->{type} }
             && $content_field_types->{ $_->{type} } ne ''
     } @{$content_types};
     if (@valid_content_types) {
