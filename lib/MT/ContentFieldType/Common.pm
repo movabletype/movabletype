@@ -247,7 +247,7 @@ sub html_multiple {
     my ( $content_data, $app, $opts ) = @_;
 
     my $content_field = MT::ContentField->load( $prop->content_field_id );
-    my %label_hash = map { $_->{value} => $_->{key} }
+    my %label_hash = map { $_->{value} => $_->{label} }
         @{ $content_field->options->{values} };
 
     my $values = $content_data->data->{ $prop->content_field_id } || [];
