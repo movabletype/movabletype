@@ -478,10 +478,11 @@ sub edit {
             || $obj_type eq 'author'
             || $obj_type eq 'category'
             || $obj_type eq 'archive'
-            || $obj_type eq 'ct' )
+            || $obj_type eq 'ct'
+            || $obj_type eq 'ct_archive' )
         {
             my @at = $app->publisher->archive_types;
-            if ( $obj_type eq 'ct' ) {
+            if ( $obj_type eq 'ct' || $obj_type eq 'ct_archive' ) {
                 @at = grep { $_ =~ /^ContentType/ } @at;
             }
             else {
@@ -513,6 +514,16 @@ sub edit {
                   # only include if it is a entry-based archive type and entry
                     next unless $archiver->entry_based;
                     next if $archiver->entry_class eq 'page';
+                }
+                elsif ( $obj_type eq 'ct_archive' ) {
+
+                 # only include if it is NOT an contenttype-based archive type
+                    next if $archiver->contenttype_based;
+                }
+                elsif ( $obj_type eq 'ct' ) {
+
+                    # only include if it is a contenttype-based archive type
+                    next unless $archiver->contenttype_based;
                 }
                 push @archive_types,
                     {
@@ -556,7 +567,7 @@ sub edit {
         $param->{type} = 'custom' if $param->{type} eq 'module';
 
         # Content Type
-        if ( $obj_type eq 'ct' ) {
+        if ( $obj_type eq 'ct' || $obj_type eq 'ct_archive' ) {
             my $content_type = MT::ContentType->load( $obj->content_type_id );
             $param->{content_type_name} = $content_type->name
                 if $content_type;
@@ -612,8 +623,7 @@ sub edit {
         elsif ($template_type eq 'archive'
             || $template_type eq 'individual'
             || $template_type eq 'category'
-            || $template_type eq 'page'
-            || $template_type eq 'ct' )
+            || $template_type eq 'page' )
         {
             $tab                           = 'archive';
             $param->{template_group_trans} = $app->translate('archive');
@@ -624,6 +634,20 @@ sub edit {
                 },
                 {   key   => 'individual',
                     label => $app->translate('Entry or Page')
+                },
+            );
+            $param->{new_archive_types} = \@types;
+        }
+        elsif ( $template_type eq 'ct' || $template_type eq 'ct_archive' ) {
+            $tab                           = 'ct';
+            $param->{template_group_trans} = $app->translate('Content Type');
+            $param->{type_ct_archive}      = 1;
+            my @types = (
+                {   key   => 'ct_archive',
+                    label => $app->translate('Content Type Archive')
+                },
+                {   key   => 'ct',
+                    label => $app->translate('Content Type')
                 },
             );
             $param->{new_archive_types} = \@types;
@@ -652,8 +676,9 @@ sub edit {
             || $template_type eq 'archive'
             || $template_type eq 'category'
             || $template_type eq 'page'
+            || $template_type eq 'individual'
             || $template_type eq 'ct'
-            || $template_type eq 'individual';
+            || $template_type eq 'ct_archive';
         $param->{has_outfile} = $template_type eq 'index';
         $param->{has_rebuild} = ( ( $template_type eq 'index' )
                 && ( ( $blog->custom_dynamic_templates || "" ) ne 'all' ) );
@@ -678,7 +703,7 @@ sub edit {
         $param->{name} = $app->param('name') if $app->param('name');
 
         # Content Type
-        if ( $template_type eq 'ct' ) {
+        if ( $template_type eq 'ct' || $template_type eq 'ct_archive' ) {
             my $iter = MT::ContentType->load_iter( { blog_id => $blog_id } );
             while ( my $ct = $iter->() ) {
                 push @{ $param->{content_types} }, $ct;
@@ -981,7 +1006,7 @@ sub list {
                 },
                 'ct' => {
                     label => $app->translate("Content Type Templates"),
-                    type  => ['ct'],
+                    type  => [ 'ct', 'ct_archive' ],
                     order => 200,
                 },
                 'module' => {
