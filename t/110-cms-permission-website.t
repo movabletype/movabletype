@@ -109,9 +109,9 @@ my $edit_templates = MT::Test::Permission->make_role(
     permissions => "'edit_templates'",
 );
 my $website_admin
-    = MT::Role->load( { name => MT->translate('Website Administrator') } );
+    = MT::Role->load( { name => MT->translate('Site Administrator') } );
 my $blog_admin
-    = MT::Role->load( { name => MT->translate('Blog Administrator') } );
+    = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
 my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
 require MT::Association;

@@ -6,11 +6,12 @@
 package MT::Theme::Category;
 use strict;
 use MT;
+use MT::Theme::Common qw( add_categories );
 
 sub import_categories {
     my ( $element, $theme, $obj_to_apply ) = @_;
     my $cats = $element->{data};
-    _add_categories( $theme, $obj_to_apply, $cats, 'category' )
+    add_categories( $theme, $obj_to_apply, $cats, 'category' )
         or die "Failed to create theme default categories";
     return 1;
 }
@@ -18,86 +19,9 @@ sub import_categories {
 sub import_folders {
     my ( $element, $theme, $obj_to_apply ) = @_;
     my $cats = $element->{data};
-    _add_categories( $theme, $obj_to_apply, $cats, 'folder' )
+    add_categories( $theme, $obj_to_apply, $cats, 'folder' )
         or die "Failed to create theme default folders";
     return 1;
-}
-
-sub _add_categories {
-    my ( $theme, $blog, $cat_data, $class, $parent ) = @_;
-
-    my $author_id;
-    if ( my $app = MT->instance ) {
-        if ( $app->isa('MT::App') ) {
-            my $author = $app->user;
-            $author_id = $author->id if defined $author;
-        }
-    }
-    unless ( defined $author_id ) {
-
-        # Fallback 1: created_by from this blog.
-        $author_id = $blog->created_by if defined $blog->created_by;
-    }
-    unless ( defined $author_id ) {
-
-        # Fallback 2: One of this blog's administrator
-        my $search_string
-            = $blog->is_blog
-            ? '%\'administer_blog\'%'
-            : '%\'administer_website\'%';
-        my $perm = MT->model('permission')->load(
-            {   blog_id     => $blog->id,
-                permissions => { like => $search_string },
-            }
-        );
-        $author_id = $perm->author_id if $perm;
-    }
-    unless ( defined $author_id ) {
-
-        # Fallback 3: One of system administrator
-        my $perm = MT->model('permission')->load(
-            {   blog_id     => 0,
-                permissions => { like => '%administer%' },
-            }
-        );
-        $author_id = $perm->author_id if $perm;
-    }
-    die "Failed to create theme default pages"
-        unless defined $author_id;
-
-    for my $basename ( keys %$cat_data ) {
-        my $datum = $cat_data->{$basename};
-        my $cat   = MT->model($class)->load(
-            {   blog_id  => $blog->id,
-                basename => $basename,
-                parent   => $parent ? $parent->id : 0
-            }
-        );
-        unless ($cat) {
-            $cat = MT->model($class)->new;
-            $cat->blog_id( $blog->id );
-            $cat->basename($basename);
-            for my $key (qw{ label description }) {
-                my $val = $datum->{$key};
-                if ( ref $val eq 'CODE' ) {
-                    $val = $val->();
-                }
-                else {
-                    $val = $theme->translate($val) if $val;
-                }
-                $cat->$key($val);
-            }
-            $cat->allow_pings( $datum->{allow_pings} || 0 );
-            $cat->author_id($author_id);
-            $cat->parent( $parent->id )
-                if defined $parent;
-            $cat->save;
-        }
-        if ( my $children = $datum->{children} ) {
-            _add_categories( $theme, $blog, $children, $class, $cat );
-        }
-    }
-    1;
 }
 
 sub info_categories {

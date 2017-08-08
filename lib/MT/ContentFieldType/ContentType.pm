@@ -5,6 +5,7 @@ use warnings;
 use MT::ContentData;
 use MT::ContentField;
 use MT::ContentFieldType::Common qw( get_cd_ids_by_left_join );
+use MT::ContentType;
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
@@ -142,5 +143,27 @@ sub ss_validator {
         $type_label_plural );
 }
 
-1;
+sub theme_import_handler {
+    my ( $theme, $blog, $ct, $cf_value, $field ) = @_;
+    my $name_or_unique_id = $field->{options}{content_type};
+    if ( defined $name_or_unique_id && $name_or_unique_id ne '' ) {
+        my $ct = MT::ContentType->load(
+            {   blog_id   => $blog->id,
+                unique_id => $name_or_unique_id,
+            }
+        );
+        $ct ||= MT::ContentType->load(
+            {   blog_id => $blog->id,
+                name    => $name_or_unique_id,
+            }
+        );
+        if ($ct) {
+            $field->{options}{content_type} = $ct->id;
+        }
+        else {
+            delete $field->{options}{content_type};
+        }
+    }
+}
 
+1;

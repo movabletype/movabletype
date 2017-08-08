@@ -588,6 +588,14 @@ A container tag which loads parent website of blog in the current context.
 
 =cut
 
+=head2 SiteParentSite
+
+A container tag which loads parent site of child site in the current context.
+
+=for tags sites
+
+=cut
+
 sub _hdlr_blog_parent_website {
     my ( $ctx, $args, $cond ) = @_;
 

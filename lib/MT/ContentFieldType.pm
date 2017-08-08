@@ -37,6 +37,8 @@ sub _content_type_registry {
             '$Core::MT::ContentFieldType::ContentType::field_html_params',
         ss_validator =>
             '$Core::MT::ContentFieldType::ContentType::ss_validator',
+        theme_import_handler =>
+            '$Core::MT::ContentFieldType::ContentType::theme_import_handler',
         list_props => {
             content_type =>
                 { html => '$Core::MT::ContentFieldType::ContentType::html' },
@@ -106,6 +108,8 @@ sub _multi_line_text_registry {
                 use_blank => 1,
             },
         },
+        theme_data_import_handler =>
+            '$Core::MT::ContentFieldType::MultiLineText::theme_data_import_handler',
         options => [
             qw(
                 label
@@ -850,6 +854,7 @@ sub _embedded_text_registry {
                 description
                 required
                 display
+                initial_value
                 )
         ],
     };
@@ -866,7 +871,9 @@ sub _categories_registry {
         ss_validator =>
             '$Core::MT::ContentFieldType::Categories::ss_validator',
         tag_handler => '$Core::MT::ContentFieldType::Categories::tag_handler',
-        list_props  => {
+        theme_import_handler =>
+            '$Core::MT::ContentFieldType::Categories::theme_import_handler',
+        list_props => {
             categories => {
                 base      => '__virtual.string',
                 col       => 'label',
@@ -991,4 +998,3 @@ sub _table_registry {
 }
 
 1;
-

@@ -54,20 +54,6 @@
   </script>
 <div class="card-header">
 <div class="row">
-  <div class="theme-status">
-  <mt:unless name="current">
-    <mt:if name="errors">
-    <span class="alert-error icon-left icon-error"><__trans phrase="Failed"></span>
-    </mt:if>
-    <mt:if name="warnings">
-    <span class="alert-warning icon-left icon-warning">
-      <a href="#" class="theme-detail-link">
-        <__trans phrase="[quant,_1,warning,warnings]" params="<mt:var name="warning_count">">
-      </a>
-    </span>
-    </mt:if>
-  </mt:unless>
-  </div>
   <div class="col-md-2 align-self-center theme-thumbnail picture small">
     <img src="<mt:var name="thumbnail_url">" class="img-thumbnail" width="<mt:var name="thumb_w">" height="<mt:var name="thumb_h">" />
   </div>
@@ -93,7 +79,7 @@
   <mt:unless name="current">
     <mt:if name="errors">
     <p class="error-text">
-      <a href="#theme-<mt:var name="id">-errors" class="theme-detail-link">
+      <a href="#theme-<mt:var name="id">-errors" class="theme-detail-link" onclick="openError('<mt:var name="id">'); return false;">
       <mt:if name="is_blog">
         <__trans phrase="This theme cannot be applied to the child site due to [_1] errors" params="<mt:var name="error_count">">
       <mt:else>
@@ -105,6 +91,18 @@
   </mt:unless>
   </div>
   <div class="col-md-3 text-right">
+    <mt:unless name="current">
+      <mt:if name="errors">
+      <span class="alert-error icon-left icon-error"><__trans phrase="Failed"></span>
+      </mt:if>
+      <mt:if name="warnings">
+      <span class="alert-warning icon-left icon-warning">
+        <a href="#" class="theme-detail-link" onclick="openWarning('<mt:var name="id">'); return false;">
+          <__trans phrase="[quant,_1,warning,warnings]" params="<mt:var name="warning_count">">
+        </a>
+      </span>
+      </mt:if>
+    </mt:unless>
     <mt:if name="blog_id">
       <mt:unless name="errors">
         <mt:if name="current">
@@ -166,7 +164,7 @@
   <div class="tab-content">
   <mt:unless name="current">
     <mt:if name="errors">
-    <div id="theme-<mt:var name="id">-errors" class="theme-errors theme-info">
+    <div id="theme-<mt:var name="id">-errors" class="tab-pane theme-errors theme-info">
       <h4><__trans phrase="Theme Errors"></h4>
       <mtapp:statusmsg
          id="saved-added"
@@ -186,7 +184,7 @@
     </div>
     </mt:if>
     <mt:if name="warnings">
-    <div id="theme-<mt:var name="id">-warnings" class="theme-warnings theme-info">
+    <div id="theme-<mt:var name="id">-warnings" class="tab-pane theme-warnings theme-info">
       <h4><__trans phrase="Theme Warnings"></h4>
       <mtapp:statusmsg
          id="saved-added"
@@ -207,7 +205,7 @@
     </mt:if>
   </mt:unless>
   <mt:if name="info">
-    <div id="theme-<mt:var name="id">-info" class="theme-info">
+    <div id="theme-<mt:var name="id">-info" class="tab-pane theme-info">
       <h4><__trans phrase="Theme Information"></h4>
       <ul>
       <mt:loop name="info">
@@ -260,6 +258,20 @@
   <mt:setvar name="loop_for" value="available_theme_loop" /><mt:var name="theme_loop_tmpl">
   </div>
 </div>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
+function openWarning(id) {
+  jQuery('#theme-' + id + '-details').collapse('show');
+  jQuery('#theme-' + id + '-warnings').tab('show');
+}
+
+function openError(id) {
+  jQuery('#theme-' + id + '-details').collapse('show');
+  jQuery('#theme-' + id + '-errors').tab('show');
+}
+</script>
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">

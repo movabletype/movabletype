@@ -283,5 +283,20 @@ sub tag_handler {
     $res;
 }
 
-1;
+sub theme_import_handler {
+    my ( $theme, $blog, $ct, $cf_value, $field ) = @_;
+    my $cl_name = $field->{options}{category_list};
+    if ( defined $cl_name && $cl_name ne '' ) {
+        my $cl
+            = MT::CategoryList->load(
+            { blog_id => $blog->id, name => $cl_name } );
+        if ($cl) {
+            $field->{options}{category_list} = $cl->id;
+        }
+        else {
+            delete $field->{options}{category_list};
+        }
+    }
+}
 
+1;
