@@ -722,14 +722,19 @@ function toggleCache(id) {
         </select>
         <mt:if name="type_ct_archive">
         </div>
-        <div>
-          <label for="cat_field_id"><strong><__trans phrase="Category Field"></strong></label>
-          <select name="cat_field_id" id="cat_field_id" tabindex="11" class="form-control">
+        <div id="archive_template-block" style="display:none;">
+          <label for="archive_template"><strong><__trans phrase="Archive Template"></strong></label>
+          <select name="archive_template" id="archive_template" tabindex="11" class="form-control">
           </select>
         </div>
-        <div>
+        <div id="cat_field_id-block" style="display:none;">
+          <label for="cat_field_id"><strong><__trans phrase="Category Field"></strong></label>
+          <select name="cat_field_id" id="cat_field_id" tabindex="12" class="form-control">
+          </select>
+        </div>
+        <div id="dt_field_id-block" style="display:none;">
           <label for="dt_field_id"><strong><__trans phrase="Date & Time Field"></strong></label>
-          <select name="dt_field_id" id="dt_field_id" tabindex="12" class="form-control">
+          <select name="dt_field_id" id="dt_field_id" tabindex="13" class="form-control">
           </select>
         </div>
         <div>
@@ -995,12 +1000,43 @@ function saveTemplatePrefs( sync ) {
     });
     <mt:if name="type_ct_archive">
     jQuery("#new_archive_type").change(function(){
+      getDefaultArchiveTemplates();
       getContentFields();
     });
 
+    jQuery("#archive_template").change(function(){
+      getContentFields();
+    });
+
+    function getDefaultArchiveTemplates() {
+      var tmpls = <mt:var name="default_archive_templates">;
+      var archive_type = jQuery("#new_archive_type").val();
+      var archive_tmpls = tmpls[archive_type];
+      jQuery("#archive_template").empty();
+      jQuery.each( archive_tmpls, function( index, tmpl) {
+        var option = jQuery("<option/>").attr("value", tmpl.value).text(tmpl.name);
+        if (tmpl.default) {
+          option.prop("selected", "selected");
+        }
+        jQuery("#archive_template").append(option);
+      });
+      jQuery("#archive_template-block").css('display', 'block');
+    }
+
     function getContentFields() {
-      var archive_type    = jQuery("#new_archive_type").val();
-      var content_type_id = jQuery("#content_type_id").val();
+      jQuery("#cat_field_id-block").css('display', 'none');
+      jQuery("#dt_field_id-block").css('display', 'none');
+      var archive_type     = jQuery("#new_archive_type").val();
+      var content_type_id  = jQuery("#content_type_id").val();
+      var archive_template = jQuery("#archive_template").val();
+      var cat_field = 0;
+      var dt_field = 0;
+      if ( archive_template.match(/%[c|\-c|_c|C|\-C|_C]/) ) {
+        cat_field = 1;
+      }
+      if ( archive_template.match(/%[d|D|h|H|j|m|n|s|y|Y]/) ) {
+        dt_field = 1;
+      }
       jQuery.ajax(
         {
           type: 'POST',
@@ -1012,7 +1048,9 @@ function saveTemplatePrefs( sync ) {
             magic_token: '<mt:var name="magic_token">',
             blog_id: '<mt:var name="blog_id">',
             archive_type: archive_type,
-            content_type_id: content_type_id
+            content_type_id: content_type_id,
+            dt_field: dt_field,
+            cat_field: cat_field
           },
         }
       ).done(
@@ -1032,6 +1070,10 @@ function saveTemplatePrefs( sync ) {
             $option = jQuery('<option>').val(value.id).text(value.label);
             jQuery('#dt_field_id').append($option);
           });
+          if (cat_field)
+              jQuery("#cat_field_id-block").css('display', 'block');
+          if (dt_field)
+              jQuery("#dt_field_id-block").css('display', 'block');
         }
       ).fail(
         function(xhr, status, errorThrown) {
@@ -1046,6 +1088,9 @@ function saveTemplatePrefs( sync ) {
         }
       );
     }
+
+    getDefaultArchiveTemplates();
+    getContentFields();
     </mt:if>
 
 </mt:setvarblock>

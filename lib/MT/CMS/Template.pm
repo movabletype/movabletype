@@ -489,6 +489,7 @@ sub edit {
                 @at = grep { $_ !~ /^ContentType/ } @at;
             }
             my @archive_types;
+            my %default_archive_templates;
             for my $at (@at) {
                 my $archiver      = $app->publisher->archiver($at);
                 my $archive_label = $archiver->archive_label;
@@ -533,8 +534,29 @@ sub edit {
                 @archive_types
                     = sort { MT::App::CMS::archive_type_sorter( $a, $b ) }
                     @archive_types;
+
+                # Default Archive Templates
+                my $index = $app->config('IndexBasename');
+                my $ext = $blog->file_extension || '';
+                $ext = '.' . $ext if $ext ne '';
+                my $tmpls     = $archiver->default_archive_templates;
+                my $tmpl_loop = [];
+                foreach (@$tmpls) {
+                    my $name = $_->{label};
+                    $name =~ s/\.html$/$ext/;
+                    $name =~ s/index$ext$/$index$ext/;
+                    push @$tmpl_loop,
+                        {
+                        name    => $name,
+                        value   => $_->{template},
+                        default => ( $_->{default} || 0 ),
+                        };
+                }
+                $default_archive_templates{$at} = $tmpl_loop;
             }
             $param->{archive_types} = \@archive_types;
+            $param->{default_archive_templates}
+                = JSON::encode_json( \%default_archive_templates );
 
             # Populate template maps for this template
             my $maps = _populate_archive_loop( $app, $blog, $obj );
@@ -3323,26 +3345,27 @@ sub save_template_prefs {
 }
 
 sub get_archive_mapping_content_fields {
-    my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
-    my $at      = $q->param('archive_type');
-    my $ct_id   = $q->param('content_type_id');
+    my $app       = shift;
+    my $q         = $app->param;
+    my $blog_id   = $q->param('blog_id');
+    my $at        = $q->param('archive_type');
+    my $ct_id     = $q->param('content_type_id');
+    my $cat_field = $q->param('cat_field');
+    my $dt_field  = $q->param('dt_field');
 
     my $ct     = MT::ContentType->load($ct_id);
     my $fields = $ct->fields;
 
     my $result = {};
-    if ( $at =~ /[Daily|Weekly|Monthly|Yearly]/ ) {
-        @{ $result->{date_and_times} }
-            = map { { id => $_->{id}, label => $_->{options}{label} } }
-            grep { $_->{type} eq 'date_and_time' } @$fields;
-    }
-
-    if ( $at =~ /Category/ ) {
+    if (cat_field) {
         @{ $result->{categories} }
             = map { { id => $_->{id}, label => $_->{options}{label} } }
             grep { $_->{type} eq 'categories' } @$fields;
+    }
+    if (dt_field) {
+        @{ $result->{date_and_times} }
+            = map { { id => $_->{id}, label => $_->{options}{label} } }
+            grep { $_->{type} eq 'date_and_time' } @$fields;
     }
 
     return $app->json_result( { success => 1, fields => $result } );
