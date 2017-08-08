@@ -1024,8 +1024,6 @@ function saveTemplatePrefs( sync ) {
     }
 
     function getContentFields() {
-      jQuery("#cat_field_id-block").css('display', 'none');
-      jQuery("#dt_field_id-block").css('display', 'none');
       var archive_type     = jQuery("#new_archive_type").val();
       var content_type_id  = jQuery("#content_type_id").val();
       var archive_template = jQuery("#archive_template").val();
@@ -1070,10 +1068,18 @@ function saveTemplatePrefs( sync ) {
             $option = jQuery('<option>').val(value.id).text(value.label);
             jQuery('#dt_field_id').append($option);
           });
-          if (cat_field)
-              jQuery("#cat_field_id-block").css('display', 'block');
+          if (cat_field) {
+            jQuery("#cat_field_id-block").css('display', 'block');
+          }
+          else {
+            jQuery("#cat_field_id-block").css('display', 'none');
+          }
           if (dt_field)
-              jQuery("#dt_field_id-block").css('display', 'block');
+            jQuery("#dt_field_id-block").css('display', 'block');
+          }
+          else {
+            jQuery("#dt_field_id-block").css('display', 'none');
+          }
         }
       ).fail(
         function(xhr, status, errorThrown) {
