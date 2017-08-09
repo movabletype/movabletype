@@ -1777,6 +1777,7 @@ sub select_list_content_fields {
 
     my $content_type = MT::ContentType->load($content_type_id);
     my $field_data   = $content_type->fields;
+    my %locked;
 
     my @array = map {
         my $id = $_->{id};

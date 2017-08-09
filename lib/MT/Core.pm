@@ -2786,6 +2786,17 @@ sub load_core_permissions {
                 'edit_global_commenter_status'     => 1,
             },
         },
+        'blog.manage_member_blogs' => {
+            'group'            => 'blog_admin',
+            'label'            => 'Manage Website with Blogs',
+            'inherit_from'     => ['blog.administer_website'],
+            'order'            => 100,
+            'permitted_action' => {
+                'manage_member_blogs'          => 1,
+                'open_blog_listing_screen'     => 1,
+                'open_all_blog_listing_screen' => 1,
+            },
+        },
         'blog.comment' => {
             'group'            => 'blog_comment',
             'label'            => 'Post Comments',
