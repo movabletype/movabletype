@@ -29,21 +29,21 @@ MT::Test::Tag->run_php_tests;
 
 __END__
 
-=== mt:Sites - blog
+=== mt:ChildSites - blog
 --- blog_id
 1
 --- template
-<mt:Sites><mt:SiteID>
-</mt:Sites>
+<mt:ChildSites><mt:SiteID>
+</mt:ChildSites>
 --- expected
-2
+1
 
-=== mt:Sites - website
+=== mt:ChildSites - website
 --- blog_id
 2
 --- template
-<mt:Sites><mt:SiteID>
-</mt:Sites>
+<mt:ChildSites><mt:SiteID>
+</mt:ChildSites>
 --- expected
-2
+1
 

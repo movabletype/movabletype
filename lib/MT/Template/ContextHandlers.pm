@@ -54,7 +54,8 @@ sub core_tags {
             'App:Form' => \&MT::Template::Tags::App::_hdlr_app_form,
 
             ## Site
-            Sites => '$Core::MT::Template::Tags::Site::_hdlr_sites',
+            Sites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
+            ChildSites => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
             SiteParentSite =>
                 '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
             'SiteHasChildSite?' =>

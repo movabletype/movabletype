@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtsites($args, $content, &$ctx, &$repeat) {
-    return smarty_block_mtwebsites($args, $content, $ctx, $repeat);
+function smarty_block_mtchildsites($args, $content, &$ctx, &$repeat) {
+    return smarty_block_mtblogs($args, $content, $ctx, $repeat);
 }
 ?>
