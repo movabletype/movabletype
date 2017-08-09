@@ -727,10 +727,11 @@ function toggleCache(id) {
         </mt:if>
         <mt:if name="type" like="^ct">
         </div>
-        <div id="archive_template-block">
-          <label for="archive_template"><strong><__trans phrase="Archive Template"></strong></label>
-          <select name="archive_template" id="archive_template" tabindex="11" class="form-control">
+        <div id="archive_file_sel-block">
+          <label for="archive_file_sel"><strong><__trans phrase="Archive Path"></strong></label>
+          <select name="archive_file_sel" id="archive_file_sel" tabindex="11" class="form-control">
           </select>
+          <input type="text" id="archive_file_tmpl" name="archive_file_tmpl" class="form-control tmpl-path tmpl-path-custom hidden last-child" value="" style="display:none;" />
         </div>
         <div id="cat_field_id-block" style="display:none;">
           <label for="cat_field_id"><strong><__trans phrase="Category Field"></strong></label>
@@ -1005,11 +1006,13 @@ function saveTemplatePrefs( sync ) {
     });
     <mt:if name="type" like="^ct">
     jQuery("#new_archive_type").change(function(){
+      jQuery("#archive_file_sel").css("display", "block");
+      jQuery("#archive_file_tmpl").css("display", "none");
       getDefaultArchiveTemplates();
       getContentFields();
     });
 
-    jQuery("#archive_template").change(function(){
+    jQuery("#archive_file_sel").change(function(){
       getContentFields();
     });
 
@@ -1017,27 +1020,39 @@ function saveTemplatePrefs( sync ) {
       var tmpls = <mt:var name="default_archive_templates">;
       var archive_type = jQuery("#new_archive_type").val();
       var archive_tmpls = tmpls[archive_type];
-      jQuery("#archive_template").empty();
+      jQuery("#archive_file_sel").empty();
       jQuery.each( archive_tmpls, function( index, tmpl) {
         var option = jQuery("<option/>").attr("value", tmpl.value).text(tmpl.name);
         if (tmpl.default) {
           option.prop("selected", "selected");
         }
-        jQuery("#archive_template").append(option);
+        jQuery("#archive_file_sel").append(option);
       });
+      jQuery("#archive_file_sel").append(
+        jQuery("<option/>").attr( "value", "" ).text("<__trans phrase="Custom...">")
+      );
     }
 
     function getContentFields() {
       var archive_type     = jQuery("#new_archive_type").val();
       var content_type_id  = jQuery("#content_type_id").val();
-      var archive_template = jQuery("#archive_template").val();
+      var archive_file_sel = jQuery("#archive_file_sel").val();
       var cat_field = 0;
       var dt_field = 0;
-      if ( archive_template.match(/%[\-|_|][c|C]/i) ) {
+      if (!archive_file_sel) {
         cat_field = 1;
+        dt_field  = 1;
+        jQuery("#archive_file_sel").css("display", "none");
+        jQuery("#archive_file_tmpl").css("display", "block");
       }
-      if ( archive_template.match(/%[d|D|h|H|j|m|n|s|y|Y]/i) ) {
-        dt_field = 1;
+      else {
+        jQuery("#archive_file_tmpl").val(archive_file_sel);
+        if ( archive_file_sel.match(/%[\-|_|][c|C]/i) ) {
+          cat_field = 1;
+        }
+        if ( archive_file_sel.match(/%[d|D|h|H|j|m|n|s|y|Y]/i) ) {
+          dt_field = 1;
+        }
       }
       jQuery.ajax(
         {
