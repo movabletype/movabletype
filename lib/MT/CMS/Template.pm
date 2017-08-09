@@ -946,6 +946,15 @@ sub list {
         elsif ( $type eq 'backup' ) {
             $template_type = 'backup';
         }
+        elsif ( $type eq 'ct' || $type eq 'ct_archive' ) {
+            $template_type = 'ct';
+
+            # populate context with templatemap loop
+            if ($tblog) {
+                $row->{archive_types}
+                    = _populate_archive_loop( $app, $tblog, $obj );
+            }
+        }
         else {
             $template_type = 'system';
         }
@@ -1029,17 +1038,17 @@ sub list {
                 'ct' => {
                     label => $app->translate("Content Type Templates"),
                     type  => [ 'ct', 'ct_archive' ],
-                    order => 200,
+                    order => 300,
                 },
                 'module' => {
                     label => $app->translate("Template Modules"),
                     type  => 'custom',
-                    order => 300,
+                    order => 400,
                 },
                 'system' => {
                     label => $app->translate("System Templates"),
                     type  => [ keys %$sys_tmpl ],
-                    order => 400,
+                    order => 500,
                 },
             );
         }
@@ -1100,6 +1109,9 @@ sub list {
         }
         elsif ( $tmpl_type eq 'backup' ) {
             $app->param( 'filter_key', 'backup_templates' );
+        }
+        elsif ( $tmpl_type eq 'ct' ) {
+            $app->param( 'filter_key', 'contenttype_templates' );
         }
         my $tmpl_param = {};
         unless ( exists( $types{$tmpl_type}->{type} )
