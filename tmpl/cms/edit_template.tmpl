@@ -715,11 +715,16 @@ function toggleCache(id) {
       <div class="form-inline create-inline" id="create-inline-mapping" style="display: none;">
         <mt:if name="type" like="^ct"><div></mt:if>
         <label for="new_archive_type"><strong><__trans phrase="Type"></strong></label>
+        <mt:if name="type" eq="ct">
+          <__trans phrase="CONTENTTYPE_ADV">
+          <input type="hidden" name="new_archive_type" id="new_archive_type" value="ContentType" />
+        <mt:else>
         <select name="new_archive_type" id="new_archive_type" tabindex="9" class="form-control">
         <mt:loop name="archive_types">
           <option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
         </mt:loop>
         </select>
+        </mt:if>
         <mt:if name="type" like="^ct">
         </div>
         <div id="archive_template-block">
