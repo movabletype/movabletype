@@ -944,12 +944,12 @@ sub _hdlr_content_calendar {
     my ( $cat_name, $cat );
     if ( defined $args->{category} ) {
         $cat_name = $args->{category};
-        my $category_list_id = $args->{category_list_id};
+        my $category_set_id = $args->{category_set_id};
         $cat = MT::Category->load(
             {   label   => $cat_name,
                 blog_id => $blog_id,
-                $category_list_id
-                ? ( category_list_id => $category_list_id )
+                $category_set_id
+                ? ( category_set_id => $category_set_id )
                 : (),
             }
             )

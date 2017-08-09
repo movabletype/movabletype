@@ -892,7 +892,7 @@ sub _categories_registry {
                 can_add
                 max
                 min
-                category_list
+                category_set
                 )
         ],
     };

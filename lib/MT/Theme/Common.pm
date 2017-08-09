@@ -8,7 +8,7 @@ use MT;
 our @EXPORT_OK = qw( add_categories get_author_id );
 
 sub add_categories {
-    my ( $theme, $blog, $cat_data, $class, $category_list_id, $parent ) = @_;
+    my ( $theme, $blog, $cat_data, $class, $category_set_id, $parent ) = @_;
 
     my $author_id = get_author_id($blog);
     unless ( defined $author_id ) {
@@ -28,15 +28,15 @@ sub add_categories {
             {   blog_id  => $blog->id,
                 basename => $basename,
                 parent   => $parent ? $parent->id : 0,
-                $category_list_id
-                ? ( category_list_id => $category_list_id )
+                $category_set_id
+                ? ( category_set_id => $category_set_id )
                 : (),
             }
         );
         unless ($cat) {
             $cat = MT->model($class)->new;
             $cat->blog_id( $blog->id );
-            $cat->category_list_id($category_list_id) if $category_list_id;
+            $cat->category_set_id($category_set_id) if $category_set_id;
             $cat->basename($basename);
             for my $key (qw{ label description }) {
                 my $val = $datum->{$key};
@@ -56,7 +56,7 @@ sub add_categories {
         }
         if ( my $children = $datum->{children} ) {
             add_categories( $theme, $blog, $children, $class,
-                $category_list_id, $cat );
+                $category_set_id, $cat );
         }
     }
     1;

@@ -15,7 +15,7 @@ use POSIX ();
 
 use MT;
 use MT::CMS::Common;
-use MT::CategoryList;
+use MT::CategorySet;
 use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentType;
@@ -222,17 +222,17 @@ sub cfg_content_type {
         $param->{$name} = $q->param($name) if $q->param($name);
     }
 
-    my @category_lists;
-    my $cl_iter = MT::CategoryList->load_iter( { blog_id => $app->blog->id },
+    my @category_sets;
+    my $cs_iter = MT::CategorySet->load_iter( { blog_id => $app->blog->id },
         { fetchonly => { id => 1, name => 1 } } );
-    while ( my $cat_list = $cl_iter->() ) {
-        push @category_lists,
+    while ( my $cat_set = $cs_iter->() ) {
+        push @category_sets,
             {
-            id   => $cat_list->id,
-            name => $cat_list->name,
+            id   => $cat_set->id,
+            name => $cat_set->name,
             };
     }
-    $param->{category_lists} = \@category_lists;
+    $param->{category_sets} = \@category_sets;
 
     my $content_type_loop
         = MT::ContentType->get_related_content_type_loop( $app->blog->id,
@@ -404,10 +404,10 @@ sub save_cfg_content_type {
         $content_field->required( $options->{required} );
 
         if ( $content_field->type eq 'categories' ) {
-            $content_field->related_cat_list_id( $options->{category_list} );
+            $content_field->related_cat_set_id( $options->{category_set} );
         }
         else {
-            $content_field->related_cat_list_id(undef);
+            $content_field->related_cat_set_id(undef);
         }
 
         if ( $content_field->type eq 'content_type' ) {

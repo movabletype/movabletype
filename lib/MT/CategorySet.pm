@@ -1,4 +1,4 @@
-package MT::CategoryList;
+package MT::CategorySet;
 use strict;
 use warnings;
 use base qw( MT::Object );
@@ -27,7 +27,7 @@ __PACKAGE__->install_properties(
         child_of => 'MT::Blog',
         audit    => 1,
         child_classes => ['MT::Category'],
-        datasource    => 'category_list',
+        datasource    => 'category_set',
         primary_key   => 'id',
     }
 );
@@ -39,30 +39,30 @@ MT::ContentField->add_callback( 'post_remove', 5, MT->component('core'),
 
 sub _post_update_content_type {
     my ( $cb, $cf, $orig ) = @_;
-    if ( $cf->related_cat_list_id || $orig->related_cat_list_id ) {
-        if ( my $cat_list = __PACKAGE__->load( $cf->related_cat_list_id ) ) {
-            $cat_list->_calculate_ct_count;
-            $cat_list->SUPER::save();
+    if ( $cf->related_cat_set_id || $orig->related_cat_set_id ) {
+        if ( my $cat_set = __PACKAGE__->load( $cf->related_cat_set_id ) ) {
+            $cat_set->_calculate_ct_count;
+            $cat_set->SUPER::save();
         }
-        if ( $cf->related_cat_list_id != $orig->related_cat_list_id ) {
-            my $old_cat_list = __PACKAGE__->load( $orig->related_cat_list_id )
+        if ( $cf->related_cat_set_id != $orig->related_cat_set_id ) {
+            my $old_cat_set = __PACKAGE__->load( $orig->related_cat_set_id )
                 or return;
-            $old_cat_list->_calculate_ct_count;
-            $old_cat_list->SUPER::save();
+            $old_cat_set->_calculate_ct_count;
+            $old_cat_set->SUPER::save();
         }
     }
 }
 
 sub class_label {
-    MT->translate('Category List');
+    MT->translate('Category Set');
 }
 
 sub class_label_plural {
-    MT->translate('Category Lists');
+    MT->translate('Category Sets');
 }
 
 sub class_type {
-    'category_list';
+    'category_set';
 }
 
 sub list_props {
@@ -135,7 +135,7 @@ sub _ct_count_html_link {
         args => {
             _type      => 'content_type',
             blog_id    => $obj->blog_id,
-            filter     => 'category_list',
+            filter     => 'category_set',
             filter_val => $obj->id,
         },
     );
@@ -150,22 +150,22 @@ sub _category_label_terms {
     if ( $option eq 'not_contains' ) {
         my $string   = $args->{string};
         my $cat_join = MT::Category->join_on(
-            'category_list_id',
+            'category_set_id',
             { label  => { like => "%${string}%" } },
             { unique => 1 },
         );
-        my @cat_list_ids;
+        my @cat_set_ids;
         my $iter
-            = MT::CategoryList->load_iter( { blog_id => MT->app->blog->id },
+            = MT::CategorySet->load_iter( { blog_id => MT->app->blog->id },
             { join => $cat_join, fetchonly => { id => 1 } } );
-        while ( my $cat_list = $iter->() ) {
-            push @cat_list_ids, $cat_list->id;
+        while ( my $cat_set = $iter->() ) {
+            push @cat_set_ids, $cat_set->id;
         }
-        @cat_list_ids ? { id => { not => \@cat_list_ids } } : ();
+        @cat_set_ids ? { id => { not => \@cat_set_ids } } : ();
     }
     else {
         my $query    = $prop->super(@_);
-        my $cat_join = MT::Category->join_on( 'category_list_id', $query,
+        my $cat_join = MT::Category->join_on( 'category_set_id', $query,
             { unique => 1 } );
         $db_args->{joins} ||= [];
         push @{ $db_args->{joins} }, $cat_join;
@@ -189,18 +189,18 @@ sub _content_type_name_terms {
         );
         my $cf_join = MT::ContentField->join_on(
             undef,
-            {   type                => 'category',
-                related_cat_list_id => \'= category_list_id',
+            {   type               => 'category',
+                related_cat_set_id => \'= category_set_id',
             },
             { join => $ct_join },
         );
-        my @cat_list_ids;
-        my $iter = MT::CategoryList->load_iter( $db_terms,
+        my @cat_set_ids;
+        my $iter = MT::CategorySet->load_iter( $db_terms,
             { join => $cf_join, fetchonly => { id => 1 } } );
-        while ( my $cat_list = $iter->() ) {
-            push @cat_list_ids, $cat_list->id;
+        while ( my $cat_set = $iter->() ) {
+            push @cat_set_ids, $cat_set->id;
         }
-        @cat_list_ids ? { id => { not => \@cat_list_ids } } : ();
+        @cat_set_ids ? { id => { not => \@cat_set_ids } } : ();
     }
     else {
         my $query   = $prop->super(@_);
@@ -208,8 +208,8 @@ sub _content_type_name_terms {
             [ $query, { id => \'= cf_content_type_id' } ] );
         my $cf_join = MT::ContentField->join_on(
             undef,
-            {   type                => 'category',
-                related_cat_list_id => \'= category_list_id',
+            {   type               => 'category',
+                related_cat_set_id => \'= category_set_id',
             },
             { join => $ct_join },
         );
@@ -238,7 +238,7 @@ sub save {
 sub _calculate_cat_count {
     my $self = shift;
     return unless $self->id;
-    my $count = MT::Category->count( { category_list_id => $self->id } );
+    my $count = MT::Category->count( { category_set_id => $self->id } );
     $self->cat_count($count);
 }
 
@@ -247,8 +247,8 @@ sub _calculate_ct_count {
     return unless $self->id;
     my $cf_join = MT::ContentField->join_on(
         'content_type_id',
-        {   type                => 'category',
-            related_cat_list_id => $self->id,
+        {   type               => 'category',
+            related_cat_set_id => $self->id,
         },
     );
     my $count = MT::ContentType->count( { blog_id => $self->blog_id },
@@ -259,7 +259,7 @@ sub _calculate_ct_count {
 sub remove {
     my $self = shift;
     if ( ref $self ) {
-        $self->remove_children( { key => 'category_list_id' } );
+        $self->remove_children( { key => 'category_set_id' } );
     }
     $self->SUPER::remove(@_);
 }
@@ -288,8 +288,8 @@ sub categories {
             );
             my @cats;
             my $iter = MT::Category->load_iter(
-                { category_list_id => $self->id },
-                { join             => $join },
+                { category_set_id => $self->id },
+                { join            => $join },
             );
             while ( my $cat = $iter->() ) {
                 push @cats, $cat;

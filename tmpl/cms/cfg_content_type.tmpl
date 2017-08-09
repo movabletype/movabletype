@@ -1152,10 +1152,10 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="categories-category_list"
-       label="<__trans phrase="Source Category List">">
-      <select name="categories-category_list" id="categories-category_list">
-      <mt:loop name="category_lists">
+       id="categories-category_set"
+       label="<__trans phrase="Source Category Set">">
+      <select name="categories-category_set" id="categories-category_set">
+      <mt:loop name="category_sets">
         <option value="<mt:var name="id" escape="html">"><mt:var name="name" escape="html"></option>
       </mt:loop>
       </select>

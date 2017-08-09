@@ -380,7 +380,7 @@ sub core_methods {
 
         'data_convert_to_html' => "${pkg}ContentData::data_convert_to_html",
 
-        'view_category_list' => "${pkg}CategoryList::view",
+        'view_category_set' => "${pkg}CategorySet::view",
 
     };
 }
@@ -1855,8 +1855,8 @@ sub core_list_actions {
                 button => 1,
             },
         },
-        'category_list' => '$Core::MT::CMS::CategoryList::list_actions',
-        'content_type'  => '$Core::MT::CMS::ContentType::list_actions',
+        'category_set' => '$Core::MT::CMS::CategorySet::list_actions',
+        'content_type' => '$Core::MT::CMS::ContentType::list_actions',
         %{ MT::CMS::ContentData::make_list_actions() },
     };
 }
@@ -2627,24 +2627,24 @@ sub core_menus {
             view  => [ 'website', 'blog' ],
         },
 
-        'category_list' => {
-            label => 'Category Lists',
+        'category_set' => {
+            label => 'Category Sets',
             order => 9500,
         },
-        'category_list:manage' => {
+        'category_set:manage' => {
             label     => 'Manage',
             order     => 100,
             mode      => 'list',
-            condition => '$Core::MT::CMS::CategoryList::manage_condition',
-            args      => { _type => 'category_list' },
+            condition => '$Core::MT::CMS::CategorySet::manage_condition',
+            args      => { _type => 'category_set' },
             view      => [ 'website', 'blog' ],
         },
-        'category_list:create' => {
+        'category_set:create' => {
             label      => 'New',
             order      => 200,
             mode       => 'view',
             permission => 'edit_categories',
-            args       => { _type => 'category_list' },
+            args       => { _type => 'category_set' },
             view       => [ 'website', 'blog' ],
         },
 
@@ -2789,7 +2789,7 @@ sub core_disable_object_methods {
                 return 1;
             },
         },
-        category_list => {
+        category_set => {
             save => 1,
             edit => 1,
         },
@@ -4718,9 +4718,9 @@ sub _build_category_list {
     my $include_markers = $param{markers};
     my $counts          = $param{counts};
     my $type            = $param{type};
-    my $cat_list_id;
+    my $cat_set_id;
     if ( $type eq 'category' ) {
-        $cat_list_id = $param{cat_list_id};
+        $cat_set_id = $param{cat_set_id};
     }
 
     my @data;
@@ -4737,10 +4737,10 @@ sub _build_category_list {
     }
 
     my $id_ord;
-    if ($cat_list_id) {
-        require MT::CategoryList;
-        if ( my $cat_list = MT::CategoryList->load($cat_list_id) ) {
-            $id_ord = $cat_list->order || '';
+    if ($cat_set_id) {
+        require MT::CategorySet;
+        if ( my $cat_set = MT::CategorySet->load($cat_set_id) ) {
+            $id_ord = $cat_set->order || '';
         }
     }
     else {
@@ -4752,8 +4752,8 @@ sub _build_category_list {
     }
 
     my @cats = $class->load(
-        {   blog_id          => $blog_id,
-            category_list_id => $cat_list_id || [ \'IS NULL', 0 ],
+        {   blog_id         => $blog_id,
+            category_set_id => $cat_set_id || [ \'IS NULL', 0 ],
         }
     );
     @cats = MT::Category::_sort_by_id_list(

@@ -957,25 +957,25 @@ sub make_group {
     return $grp;
 }
 
-sub make_category_list {
+sub make_category_set {
     my $pkg    = shift;
     my %params = @_;
 
     my $values = {
         blog_id => 2,
-        name    => 'Sample Category List',
+        name    => 'Sample Category Set',
         %params,
     };
 
-    require MT::CategoryList;
-    my $cl = MT::CategoryList->new;
+    require MT::CategorySet;
+    my $cs = MT::CategorySet->new;
 
-    $cl->$_( $values->{$_} ) for keys %{$values};
-    $cl->save or die q{Couldn't save category list record: } . $cl->errstr;
+    $cs->$_( $values->{$_} ) for keys %{$values};
+    $cs->save or die q{Couldn't save category set record: } . $cs->errstr;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
 
-    $cl;
+    $cs;
 }
 
 sub make_content_type {
