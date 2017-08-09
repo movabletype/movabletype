@@ -3369,12 +3369,12 @@ sub get_archive_mapping_content_fields {
     my $fields = $ct->fields;
 
     my $result = {};
-    if ($cat_field) {
+    if ( $cat_field || $at =~ /Category/ ) {
         @{ $result->{categories} }
             = map { { id => $_->{id}, label => $_->{options}{label} } }
             grep { $_->{type} eq 'categories' } @$fields;
     }
-    if ($dt_field) {
+    if ( $dt_field || $at =~ /[Daily|Weekly|Monthly|Yearly]/ ) {
         @{ $result->{date_and_times} }
             = map { { id => $_->{id}, label => $_->{options}{label} } }
             grep { $_->{type} eq 'date_and_time' } @$fields;
