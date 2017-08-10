@@ -4,6 +4,26 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     copy: {
+      bootstrap: {
+        expand: true,
+        cwd: 'node_modules/bootstrap/dist',
+        src: [
+          '**/*'
+        ],
+        dest: 'mt-static/bootstrap'
+      },
+      riot: {
+        expand: true,
+        cwd: 'node_modules/riot',
+        src: [
+          'LICENSE.txt',
+          'riot.js',
+          'riot.min.js',
+          'riot+compiler.js',
+          'riot+compiler.min.js'
+        ],
+        dest: 'mt-static/riot'
+      },
       svg4everybody: {
         expand: true,
         cwd: 'node_modules/svg4everybody/dist',
@@ -11,7 +31,15 @@ module.exports = function(grunt) {
           'svg4everybody.js',
           'svg4everybody.min.js'
         ],
-        dest: 'mt-static/lib/svg4everybody'
+        dest: 'mt-static/svg4everybody'
+      },
+      tether: {
+        expand: true,
+        cwd: 'node_modules/tether/dist',
+        src: [
+          '**/*'
+        ],
+        dest: 'mt-static/tether'
       }
     },
     svg_sprite: {
