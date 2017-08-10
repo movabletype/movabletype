@@ -1,1 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"><defs><polygon id="a" points="12 17 6.122 20.09 7.245 13.545 2.489 8.91 9.061 7.955 12 2 14.939 7.955 21.511 8.91 16.755 13.545 17.878 20.09"/></defs><g fill="none"><mask id="b"><use xlink:href="#a"/></mask><use xlink:href="#a"/><rect width="64" height="64" fill="#2F2F2F" transform="translate(-22 -23)" mask="url(#b)"/></g></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.1 (44463) - http://www.bohemiancoding.com/sketch -->
+    <title>ico/fav</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="12 17 6.12214748 20.0901699 7.24471742 13.545085 2.48943484 8.90983006 9.06107374 7.95491503 12 2 14.9389263 7.95491503 21.5105652 8.90983006 16.7552826 13.545085 17.8778525 20.0901699"></polygon>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ico/fav">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <use id="Star" fill="#000000" xlink:href="#path-1"></use>
+            <g id="color" mask="url(#mask-2)">
+                <g transform="translate(-22.000000, -23.000000)" id="Colors/DarkGray">
+                    <g>
+                        <rect id="#2F2F2F" fill="#2F2F2F" x="0" y="0" width="64" height="64"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

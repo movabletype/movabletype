@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.1 (44463) - http://www.bohemiancoding.com/sketch -->
+    <title>ico/addpage</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ico/addpage" fill="#000000">
+            <path d="M15.5,16 L15.5,13.5 L14.5,13.5 L14.5,16 L12,16 L12,17 L14.5,17 L14.5,19.5 L15.5,19.5 L15.5,17 L18,17 L18,16 L15.5,16 Z M8.09033215,2 L18.0065894,2 C19.1075197,2 20,2.89821238 20,3.99079514 L20,20.0092049 C20,21.1086907 19.1054862,22 18.0059397,22 L5.99406028,22 C4.8927712,22 4,21.1030778 4,20.0005708 L4,5.95692073 L8.09033215,2 Z M9,4 L6,7 L9,7 L9,4 Z" id="Combined-Shape"></path>
+        </g>
+    </g>
+</svg>
