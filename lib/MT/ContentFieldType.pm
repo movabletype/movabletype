@@ -30,8 +30,8 @@ sub _content_type_registry {
     {   label     => 'Content Type',
         data_type => 'integer',
         order     => 10,
-        data_getter =>
-            '$Core::MT::ContentFieldType::Common::data_getter_multiple',
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Common::data_load_handler_multiple',
         field_html => 'field_html/field_html_content_type.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::ContentType::field_html_params',
@@ -187,7 +187,8 @@ sub _date_time_registry {
         field_html => 'field_html/field_html_datetime.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::DateTime::field_html_params',
-        data_getter => '$Core::MT::ContentFieldType::DateTime::data_getter',
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::DateTime::data_load_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
         tag_handler =>
@@ -222,7 +223,8 @@ sub _date_registry {
         field_html => 'field_html/field_html_date.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Date::field_html_params',
-        data_getter => '$Core::MT::ContentFieldType::Date::data_getter',
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Date::data_load_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
         tag_handler =>
@@ -257,7 +259,8 @@ sub _time_registry {
         field_html => 'field_html/field_html_time.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Time::field_html_params',
-        data_getter => '$Core::MT::ContentFieldType::Time::data_getter',
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Time::data_load_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
         tag_handler =>
@@ -284,11 +287,12 @@ sub _time_registry {
 }
 
 sub _select_box_registry {
-    {   label       => 'Select Box',
-        data_type   => 'varchar',
-        order       => 90,
-        data_getter => '$Core::MT::ContentFieldType::Common::multiple',
-        field_html  => 'field_html/field_html_select_box.tmpl',
+    {   label     => 'Select Box',
+        data_type => 'varchar',
+        order     => 90,
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Common::data_load_handler_multiple',
+        field_html => 'field_html/field_html_select_box.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::SelectBox::field_html_params',
         ss_validator =>
@@ -361,8 +365,8 @@ sub _checkboxes_registry {
     {   label     => 'Checkboxes',
         data_type => 'varchar',
         order     => 110,
-        data_getter =>
-            '$Core::MT::ContentFieldType::Common::data_getter_multiple',
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Common::data_load_handler_multiple',
         field_html => 'field_html/field_html_checkboxes.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Checkboxes::field_html_params',
@@ -401,8 +405,8 @@ sub _asset_registry {
     {   label     => 'Asset',
         data_type => 'integer',
         order     => 120,
-        data_getter =>
-            '$Core::MT::ContentFieldType::Common::data_getter_asset',
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Common::data_load_handler_asset',
         field_html => 'field_html/field_html_asset.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Asset::field_html_params',
@@ -507,8 +511,8 @@ sub _audio_registry {
     {   label     => 'Audio',
         data_type => 'integer',
         order     => 130,
-        data_getter =>
-            '$Core::MT::ContentFieldType::Common::data_getter_asset',
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Common::data_load_handler_asset',
         field_html => 'field_html/field_html_asset.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Asset::field_html_params',
@@ -612,8 +616,8 @@ sub _video_registry {
     {   label     => 'Video',
         data_type => 'integer',
         order     => 140,
-        data_getter =>
-            '$Core::MT::ContentFieldType::Common::data_getter_asset',
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Common::data_load_handler_asset',
         field_html => 'field_html/field_html_asset.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Asset::field_html_params',
@@ -717,8 +721,8 @@ sub _image_registry {
     {   label     => 'Image',
         data_type => 'integer',
         order     => 150,
-        data_getter =>
-            '$Core::MT::ContentFieldType::Common::data_getter_asset',
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Common::data_load_handler_asset',
         field_html => 'field_html/field_html_asset.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Asset::field_html_params',
@@ -861,11 +865,12 @@ sub _embedded_text_registry {
 }
 
 sub _categories_registry {
-    {   label       => 'Categories',
-        data_type   => 'integer',
-        order       => 170,
-        data_getter => '$Core::MT::ContentFieldType::Categories::data_getter',
-        field_html  => 'field_html/field_html_categories.tmpl',
+    {   label     => 'Categories',
+        data_type => 'integer',
+        order     => 170,
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Categories::data_load_handler',
+        field_html => 'field_html/field_html_categories.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Categories::field_html_params',
         ss_validator =>
@@ -902,8 +907,8 @@ sub _tags_registry {
     {   label     => 'Tags',
         data_type => 'integer',
         order     => 180,
-        data_getter =>
-            '$Core::MT::ContentFieldType::Common::data_getter_multiple',
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Common::data_load_handler_multiple',
         field_html => 'field_html/field_html_tags.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Tags::field_html_params',
@@ -938,8 +943,8 @@ sub _list_registry {
     {   label     => 'list',
         data_type => 'varchar',
         order     => 190,
-        data_getter =>
-            '$Core::MT::ContentFieldType::Common::data_getter_multiple',
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Common::data_load_handler_multiple',
         field_html => 'field_html/field_html_list.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::List::field_html_params',

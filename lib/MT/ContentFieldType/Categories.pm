@@ -78,7 +78,7 @@ sub _build_category_list {
     ( $cat_tree, \@sel_cats );
 }
 
-sub data_getter {
+sub data_load_handler {
     my ( $app, $field_data ) = @_;
     my $field_id = $field_data->{id};
     [ split ',', $app->param("category-${field_id}") ];

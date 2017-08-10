@@ -1463,15 +1463,15 @@ sub cms_pre_load_filtered_list {
 sub _get_form_data {
     my ( $app, $content_field_type, $form_data ) = @_;
 
-    if ( my $data_getter = $content_field_type->{data_getter} ) {
-        if ( !ref $data_getter ) {
-            $data_getter = MT->handler_to_coderef($data_getter);
+    if ( my $data_load_handler = $content_field_type->{data_load_handler} ) {
+        if ( !ref $data_load_handler ) {
+            $data_load_handler = MT->handler_to_coderef($data_load_handler);
         }
-        if ( 'CODE' eq ref $data_getter ) {
-            return $data_getter->( $app, $form_data );
+        if ( 'CODE' eq ref $data_load_handler ) {
+            return $data_load_handler->( $app, $form_data );
         }
         else {
-            return $data_getter;
+            return $data_load_handler;
         }
     }
     else {
