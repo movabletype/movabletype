@@ -14,7 +14,7 @@ sub theme_data_import_handler {
     }
 }
 
-sub data_getter {
+sub data_load_handler {
     my ( $app, $field_data ) = @_;
     my $field_id  = $field_data->{id};
     my $data_json = $app->param('blockeditor-data');

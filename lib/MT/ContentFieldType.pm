@@ -97,10 +97,11 @@ sub _single_line_text_registry {
 }
 
 sub _multi_line_text_registry {
-    {   label      => 'Multi Line Text',
-        data_type  => 'blob',
-        order      => 30,
-        data_getter => '$Core::MT::ContentFieldType::MultiLineText::data_getter',
+    {   label     => 'Multi Line Text',
+        data_type => 'blob',
+        order     => 30,
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::MultiLineText::data_load_handler',
         list_props => {
             multi_line_text => {
                 base  => '__virtual.string',
