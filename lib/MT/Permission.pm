@@ -118,7 +118,8 @@ sub global_perms {
         my $regs = MT::Component->registry('permissions');
         my %keys = map { $_ => 1 } map { keys %$_ } @$regs;
         %perms = map { $_ => MT->registry( 'permissions' => $_ ) } keys %keys;
-
+        %perms = +( %perms,
+            %{ MT->app->model('content_type')->all_permissions } );
         \%perms;
     }
 }
@@ -254,7 +255,7 @@ sub global_perms {
         for my $perm_name (@perms) {
             $cur_rest =~ s/'$perm_name',?//i;
         }
-        $perms->restrictions( $cur_rest );
+        $perms->restrictions($cur_rest);
     }
 
     # Clears all permissions or those in a particular set

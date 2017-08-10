@@ -57,7 +57,7 @@ sub tmpl_param_edit_role {
     while ( my $ct = $iter->() ) {
         push @content_types, $ct;
     }
-    $param->{content_types} = \@content_types;
+    $param->{content_types}            = \@content_types;
     $param->{content_type_perm_groups} = MT::ContentType->permission_groups;
 
 }
@@ -1781,9 +1781,9 @@ sub select_list_content_fields {
 
     my @array = map {
         my $id = $_->{id};
-        $_->{id} = $id;
-        $_->{name} = $_->{type};
-        $_->{locked} => 1 if($locked{$id});
+        $_->{id}     = $id;
+        $_->{name}   = $_->{type};
+        $_->{locked} = 1 if ( $locked{$id} );
         $_;
     } @{$field_data};
     $param->{content_fields} = \@array;

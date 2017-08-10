@@ -295,7 +295,7 @@ sub create_default_roles {
     my (%param) = @_;
 
     my @default_roles = (
-        {   name        => MT->translate('Website Administrator'),
+        {   name        => MT->translate('Website Administraotr (MT6)'),
             description => MT->translate('Can administer the website.'),
             perms       => [ 'administer_website', 'manage_member_blogs' ]
         },
@@ -304,7 +304,7 @@ sub create_default_roles {
             role_mask   => 2**12,
             perms       => ['administer_blog']
         },
-        {   name        => MT->translate('Editor'),
+        {   name        => MT->translate('Editor (MT6)'),
             description => MT->translate(
                 'Can upload files, edit all entries(categories), pages(folders), tags and publish the site.'
             ),
@@ -317,7 +317,7 @@ sub create_default_roles {
                 'manage_feedback', 'edit_assets'
             ],
         },
-        {   name        => MT->translate('Author'),
+        {   name        => MT->translate('Author (MT6)'),
             description => MT->translate(
                 'Can create entries, edit their own entries, upload files and publish.'
             ),
@@ -327,7 +327,7 @@ sub create_default_roles {
                 'send_notifications'
             ],
         },
-        {   name        => MT->translate('Designer'),
+        {   name        => MT->translate('Desiger (MT6)'),
             description => MT->translate(
                 'Can edit, manage, and publish blog templates and themes.'),
             role_mask => ( 2**4 + 2**7 ),
@@ -338,7 +338,7 @@ sub create_default_roles {
                 'Can manage pages, upload files and publish blog templates.'),
             perms => [ 'manage_pages', 'rebuild', 'upload' ]
         },
-        {   name        => MT->translate('Contributor'),
+        {   name        => MT->translate('Contributor (MT6)'),
             description => MT->translate(
                 'Can create entries, edit their own entries, and comment.'),
             perms => [ 'comment', 'create_post' ],
@@ -353,9 +353,10 @@ sub create_default_roles {
             perms       => ['comment'],
         },
         {   name        => MT->translate('ContentType'),
-            description => MT->translate('Can manage content types, edit their own content types.'),
-            role_mask   => 2**0,
-            perms       => ['manage_content_type,edit_content_types'],
+            description => MT->translate(
+                'Can manage content types, edit their own content types.'),
+            role_mask => 2**0,
+            perms     => ['manage_content_types'],
         },
     );
 

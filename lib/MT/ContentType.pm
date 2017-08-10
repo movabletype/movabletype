@@ -204,9 +204,21 @@ sub permissions {
 
 sub permission {
     my $self = shift;
-    (   $self->_create_content_data_permission,
+    (   $self->_manage_content_data_permission,
+        $self->_create_content_data_permission,
         $self->_publish_content_data_permission,
         $self->_edit_all_content_data_permission,
+    );
+}
+
+sub _manage_content_data_permission {
+    my $self            = shift;
+    my $permission_name = 'blog.manage_content_data:' . $self->unique_id;
+    (   $permission_name => {
+            group => $self->permission_group,
+            label => 'Manage Content Data',
+            order => 100,
+        }
     );
 }
 
@@ -283,8 +295,10 @@ sub permission_groups {
 # class method
 sub all_permissions {
     my $class = shift;
-    my @content_types = eval { __PACKAGE__->load }
-        || ();    # TODO: many error occurs without "eval" in test.
+    my @content_types = eval { __PACKAGE__->load };
+    if ($@) {
+        @content_types = ();
+    }
     my %all_permission = map { %{ $_->permissions } } @content_types;
     return \%all_permission;
 }

@@ -813,14 +813,19 @@ BEGIN {
                             ? 'author_id'
                             : 'created_by';
                         my %author_id
-                            = map { ( $_->$col ) ? ( $_->$col => 1 ) : () } @$objs;
+                            = map { ( $_->$col ) ? ( $_->$col => 1 ) : () }
+                            @$objs;
                         my @authors = MT->model('author')
                             ->load( { id => [ keys %author_id ] } );
-                        my %nickname
-                            = map { $_->id => defined $_->nickname ? $_->nickname : '' } @authors;
-                        $nickname{0} = ''; # fallback
+                        my %nickname = map {
+                                  $_->id => defined $_->nickname
+                                ? $_->nickname
+                                : ''
+                        } @authors;
+                        $nickname{0} = '';    # fallback
                         return sort {
-                            $nickname{ $a->$col || 0 } cmp $nickname{ $b->$col || 0 }
+                            $nickname{ $a->$col || 0 }
+                                cmp $nickname{ $b->$col || 0 }
                         } @$objs;
                     },
                 },
@@ -2695,34 +2700,6 @@ sub load_backup_instructions {
 
 sub load_core_permissions {
     return {
-        'blog.administer_site' => {
-            'group'            => 'blog_admin',
-            'inherit_from'     => ['blog.administer_website','blog.administer_blog'],
-            'label'            => 'Manage Sites',
-            'order'            => 0,
-            'permitted_action' => {
-                'save_all_settings_for_site' => 1,
-                'access_to_site_list'        => 1,
-                'administer_site'            => 1,
-                'clone_site'                 => 1,
-                'delete_site'                => 1,
-                'remove_user_assoc'          => 1,
-            },
-        },
-        'blog.administer_site' => {
-            'group'            => 'blog_admin',
-            'inherit_from'     => ['blog.administer_website','blog.administer_blog'],
-            'label'            => 'Manage Sites',
-            'order'            => 0,
-            'permitted_action' => {
-                'save_all_settings_for_site' => 1,
-                'access_to_site_list'        => 1,
-                'administer_site'            => 1,
-                'clone_site'                 => 1,
-                'delete_site'                => 1,
-                'remove_user_assoc'          => 1,
-            },
-        },
         'blog.administer_website' => {
             'group'            => 'blog_admin',
             'inherit_from'     => ['blog.administer_blog'],
@@ -2740,17 +2717,16 @@ sub load_core_permissions {
         'blog.administer_blog' => {
             'group'        => 'blog_admin',
             'inherit_from' => [
-                'blog.comment',             'blog.create_post',
-                'blog.edit_all_posts',      'blog.edit_assets',
-                'blog.edit_categories',     'blog.edit_config',
-                'blog.edit_notifications',  'blog.edit_tags',
-                'blog.edit_templates',      'blog.edit_content_types',
-                'blog.manage_pages',        'blog.manage_users',
-                'blog.publish_post',        'blog.rebuild',
-                'blog.save_image_defaults', 'blog.send_notifications',
-                'blog.set_publish_paths',   'blog.upload',
-                'blog.view_blog_log',       'blog.manage_feedback',
-                'blog.manage_themes',
+                'blog.comment',            'blog.create_post',
+                'blog.edit_all_posts',     'blog.edit_assets',
+                'blog.edit_categories',    'blog.edit_config',
+                'blog.edit_notifications', 'blog.edit_tags',
+                'blog.edit_templates',     'blog.manage_pages',
+                'blog.manage_users',       'blog.publish_post',
+                'blog.rebuild',            'blog.save_image_defaults',
+                'blog.send_notifications', 'blog.set_publish_paths',
+                'blog.upload',             'blog.view_blog_log',
+                'blog.manage_feedback',    'blog.manage_themes',
             ],
             'label'            => 'Manage Blog',
             'order'            => 300,
@@ -2887,7 +2863,7 @@ sub load_core_permissions {
         },
         'blog.edit_all_content_types' => {
             'group'            => 'content_type',
-            'label'            => 'Edit Content Type',
+            'label'            => 'Edit Content Types',
             'order'            => 200,
             'permitted_action' => {
                 'access_to_content_type_list'        => 1,
@@ -2898,10 +2874,10 @@ sub load_core_permissions {
             }
         },
         'blog.edit_assets' => {
-            'group'        => 'blog_upload',
-            'inherit_from' => [ 'blog.upload', 'blog.save_image_defaults' ],
-            'label'        => 'Manage Assets',
-            'order'        => 300,
+            'group'            => 'blog_upload',
+            'inherit_from'     => ['blog.upload'],
+            'label'            => 'Manage Assets',
+            'order'            => 300,
             'permitted_action' => {
                 'access_to_asset_list'             => 1,
                 'add_tags_to_assets'               => 1,
@@ -3205,6 +3181,13 @@ sub load_core_permissions {
                 'publish_entry_via_list' => 1,
             }
         },
+        'blog.save_image_defaults' => {
+            'group'            => 'blog_upload',
+            'inherit_from'     => ['blog.upload'],
+            'label'            => 'Save Image Defaults',
+            'order'            => 200,
+            'permitted_action' => { 'save_image_defaults' => 1 }
+        },
         'blog.send_notifications' => {
             'group'            => 'auth_pub',
             'inherit_from'     => ['blog.create_post'],
@@ -3227,16 +3210,6 @@ sub load_core_permissions {
                 'set_publish_paths'  => 1,
             }
         },
-        'blog.upload' => {
-            'group'            => 'blog_upload',
-            'label'            => 'Upload File',
-            'order'            => 100,
-            'permitted_action' => {
-                'upload'                         => 1,
-                'upload_asset_via_atom_server'   => 1,
-                'upload_asset_via_xmlrpc_server' => 1,
-            }
-        },
         'blog.view_blog_log' => {
             'group'            => 'blog_admin',
             'label'            => 'View Activity Log',
@@ -3251,11 +3224,57 @@ sub load_core_permissions {
                 'use_tools:search'     => 1,
             }
         },
+        'blog.create_site' => {
+            'group'            => 'blog_admin',
+            'label'            => 'Create Sites',
+            'order'            => 800,
+            'permitted_action' => {
+                'create_blog'                => 1,
+                'create_new_blog'            => 1,
+                'use_blog:create_menu'       => 1,
+                'edit_new_blog_config'       => 1,
+                'open_new_blog_screen'       => 1,
+                'set_new_blog_publish_paths' => 1,
+                'access_to_system_dashboard' => 1,
+                'use_tools:search'           => 1,
+            }
+        },
+        'blog.administer_site' => {
+            'group' => 'blog_admin',
+            'label' => 'Manage Sites',
+            'order' => 800,
+            'inherit_from' =>
+                [ 'blog.administer_website', 'blog.manage_site', ],
+            'permitted_action' => {
+                'manage_member_blogs'          => 1,
+                'open_blog_listing_screen'     => 1,
+                'open_all_blog_listing_screen' => 1,
+            }
+        },
+        'blog.manage_category_set' => {
+            'group'            => 'blog_admin',
+            'label'            => 'Manage Sites',
+            'order'            => 800,
+            'inherit_from'     => ['blog.edit_categories'],
+            'permitted_action' => {
+                'edit_category_set',           'save_category_set',
+                'access_to_category_set_list', 'delete_category_set',
+            }
+        },
+        'blog.upload' => {
+            'group'            => 'blog_upload',
+            'label'            => 'Upload File',
+            'order'            => 100,
+            'permitted_action' => {
+                'upload'                         => 1,
+                'upload_asset_via_atom_server'   => 1,
+                'upload_asset_via_xmlrpc_server' => 1,
+            }
+        },
         'system.administer' => {
             'group'        => 'sys_admin',
             'label'        => 'System Administrator',
             'inherit_from' => [
-                'system.create_blog',    'system.create_website',
                 'system.edit_templates', 'system.manage_plugins',
                 'system.view_log',       'system.manage_content_types',
                 'create_site',
@@ -3288,6 +3307,36 @@ sub load_core_permissions {
                 'edit_commenter_status'          => 1,
                 'delete_any_filters'             => 1,
                 'open_dialog_select_theme'       => 1,
+            }
+        },
+        'system.create_blog' => {
+            'group'            => 'sys_admin',
+            'label'            => 'Create Child Sites',
+            'order'            => 200,
+            'permitted_action' => {
+                'create_blog'                => 1,
+                'create_new_blog'            => 1,
+                'use_blog:create_menu'       => 1,
+                'edit_new_blog_config'       => 1,
+                'open_new_blog_screen'       => 1,
+                'set_new_blog_publish_paths' => 1,
+                'access_to_system_dashboard' => 1,
+                'use_tools:search'           => 1,
+            }
+        },
+        'system.create_website' => {
+            'group'            => 'sys_admin',
+            'label'            => 'Create Sites',
+            'order'            => 100,
+            'permitted_action' => {
+                'create_new_website'            => 1,
+                'create_website'                => 1,
+                'use_website:create_menu'       => 1,
+                'edit_new_website_config'       => 1,
+                'open_new_website_screen'       => 1,
+                'set_new_website_publish_paths' => 1,
+                'access_to_system_dashboard'    => 1,
+                'use_tools:search'              => 1,
             }
         },
         'system.edit_templates' => {
@@ -3376,16 +3425,24 @@ sub load_core_permissions {
                 'edit_new_site_config'       => 1,
                 'open_new_site_screen'       => 1,
                 'set_new_site_publish_paths' => 1,
-            }
+                }
 
         },
-
-
+        'system.manage_users_groups' => {
+            'group'            => 'sys_admin',
+            'label'            => 'Manage Users & Groups',
+            'order'            => 900,
+            'inherit_from'     => ['blog.manage_users'],
+            'permitted_action' => {
+                'access_to_any_group_list', 'grant_administer_role',
+                'grant_role_for_blog',
+            },
+        },
         'system.manage_content_types' => {
             group            => 'sys_admin',
             label            => 'Manage All Content Types',
-            order            => 900,
-            permitted_action => { 'blog.edit_content_types', 'blog.manage_content_types' },
+            order            => 1000,
+            permitted_action => {},
         },
     };
 }
