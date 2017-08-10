@@ -52,12 +52,12 @@ $.extend(MT.BlockEditorFieldManager.prototype, {
             delete　self.field_instances[id];
         });
         label.on('click', '.icon-settings', function(){
-          $(this).parents('.field-content').find('.field_options').toggleClass('hidden');
+          $(this).parents('.field-content').find('.field_options').toggle();
         });
         var count = $('.' + edit_field_class).length;
         var edit_field = $('<div id="' + id + '-wrapper" class="field field-top-label sort-enabled"></div>');
         edit_field.append(label);
-        var field_options = $('<div class="field_options hidden"><label>class<input type="text name="field_class" class="field_class"></label></div>');
+        var field_options = $('<div class="field_options" style="display: none;"><label>class<input type="text name="field_class" class="field_class"></label></div>');
         field_options.on('change', '.field_class', function(){
             field_instance.set_class_name($(this).val());
         });
