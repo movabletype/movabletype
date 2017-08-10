@@ -35,13 +35,13 @@ sub archive_file {
     Carp::confess("archive_file_for ContentType archive needs an content")
         unless $content;
     if ($file_tmpl) {
-        $ctx->{current_timestamp} = $content->authored_on;
+        $ctx->{current_timestamp} = $timestamp;
     }
     else {
         my $basename = $content->identifier();
         $basename ||= dirify( $content->label() );
         $file = sprintf( "%04d/%02d/%s",
-            unpack( 'A4A2', $content->authored_on ), $basename );
+            unpack( 'A4A2', $timestamp ), $basename );
     }
     $file;
 }
