@@ -2724,10 +2724,10 @@ sub load_core_permissions {
                 'blog.edit_notifications', 'blog.edit_tags',
                 'blog.edit_templates',     'blog.manage_pages',
                 'blog.manage_users',       'blog.publish_post',
-                'blog.rebuild',            'blog.save_image_defaults',
-                'blog.send_notifications', 'blog.set_publish_paths',
-                'blog.upload',             'blog.view_blog_log',
-                'blog.manage_feedback',    'blog.manage_themes',
+                'blog.rebuild',            'blog.send_notifications',
+                'blog.set_publish_paths',  'blog.upload',
+                'blog.view_blog_log',      'blog.manage_feedback',
+                'blog.manage_themes',
             ],
             'label'            => 'Manage Child Site',
             'order'            => 300,
@@ -3181,13 +3181,6 @@ sub load_core_permissions {
                 'rebuild'                => 1,
                 'publish_entry_via_list' => 1,
             }
-        },
-        'blog.save_image_defaults' => {
-            'group'            => 'blog_upload',
-            'inherit_from'     => ['blog.upload'],
-            'label'            => 'Save Image Defaults',
-            'order'            => 200,
-            'permitted_action' => { 'save_image_defaults' => 1 }
         },
         'blog.send_notifications' => {
             'group'            => 'auth_pub',

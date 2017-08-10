@@ -52,7 +52,6 @@ isa_ok( $mt, 'MT' );
     ok( $perm->can_edit_notifications,  'can_edit_notifications' );
     ok( $perm->can_administer_blog,     'can_administer_blog' );
     ok( $perm->can_edit_assets,         'can_edit_assets' );
-    ok( $perm->can_save_image_defaults, 'can_save_image_defaults' );
     ok( $perm->can_manage_feedback,     'can_manage_feedback' );
 }
 
@@ -127,7 +126,6 @@ isa_ok( $mt, 'MT' );
     ok( !$perm->can_edit_notifications,  'can_edit_notifications' );
     ok( !$perm->can_administer_blog,     'can_administer_blog' );
     ok( !$perm->can_edit_assets,         'can_edit_assets' );
-    ok( !$perm->can_save_image_defaults, 'can_save_image_defaults' );
     ok( !$perm->can_manage_feedback,     'can_manage_feedback' );
 }
 
