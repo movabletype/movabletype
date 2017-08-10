@@ -100,9 +100,6 @@ sub suite {
                 my @widgets = $app->model('template')->load(@terms_args);
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => $total_results,
@@ -128,9 +125,6 @@ sub suite {
                 my @widgets = $app->model('template')->load(@terms_args);
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => $total_results,
@@ -151,9 +145,6 @@ sub suite {
                     ->load( { blog_id => 0, type => 'widget' } );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 1,
@@ -186,9 +177,6 @@ sub suite {
                 my @widgets = $app->model('template')->load(@terms_args);
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => $total_results,
@@ -221,9 +209,6 @@ sub suite {
                 my @widgets = $app->model('template')->load(@terms_args);
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => $total_results,
@@ -291,9 +276,6 @@ sub suite {
 #                my @widgets = $app->model('template')->load(@terms_args);
 #
 #                $app->user($author);
-#                no warnings 'redefine';
-#                local *boolean::true  = sub {'true'};
-#                local *boolean::false = sub {'false'};
 #                return +{
 #                    totalResults => $total_results,
 #                    items => MT::DataAPI::Resource->from_object( \@widgets ),
@@ -340,9 +322,6 @@ sub suite {
                 @widget = sort { $a->name cmp $b->name } @widget;
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => scalar @widget,
                     items => MT::DataAPI::Resource->from_object( \@widget ),

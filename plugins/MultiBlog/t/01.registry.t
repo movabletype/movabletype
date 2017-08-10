@@ -3,9 +3,10 @@
 use strict;
 use warnings;
 
-use lib qw( lib extlib );
+use lib qw( lib extlib t/lib );
 
 use Test::More;
+use MT::Test ();
 use MT;
 use MT::App::CMS;
 

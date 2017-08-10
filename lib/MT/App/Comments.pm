@@ -1695,7 +1695,8 @@ sub comment_listing {
         $limit = 100;
     }
     my $direction = 'ascend';
-    if ( $app->param('direction') eq 'descend' ) {
+    if ( $app->param('direction') and $app->param('direction') eq 'descend' )
+    {
         $direction = 'descend';
     }
     my $method = $app->param('method');
@@ -2024,7 +2025,8 @@ sub save_commenter_profile {
                     'Failed to verify the current password.');
                 return $app->build_page( 'profile.tmpl', \%param );
             }
-            elsif (my $msg = $app->verify_password_strength(
+            elsif (
+                my $msg = $app->verify_password_strength(
                     $cmntr->name, $param{password}
                 )
                 )

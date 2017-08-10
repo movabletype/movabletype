@@ -90,6 +90,7 @@ sub iso2ts {
     my ( $blog, $iso ) = @_;
     return undef
         unless $iso
+        and $iso
         =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/;
     my ( $y, $mo, $d, $h, $m, $s, $offset )
         = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
@@ -457,8 +458,9 @@ sub format_ts {
         %f = %$f_ref;
     }
     else {
-        my $L = $Languages{$lang};
-        my @ts = @f{qw( Y m d H M S )} = map { $_ || 0 } unpack 'A4A2A2A2A2A2', $ts;
+        my $L  = $Languages{$lang};
+        my @ts = @f{qw( Y m d H M S )}
+            = map { $_ || 0 } unpack 'A4A2A2A2A2A2', $ts;
         $f{w} = wday_from_ts( @ts[ 0 .. 2 ] );
         $f{j} = yday_from_ts( @ts[ 0 .. 2 ] );
         $f{'y'} = substr $f{Y}, 2;
@@ -1239,8 +1241,7 @@ sub make_unique_category_basename {
 
     my $cat_class = ref $cat;
     my $terms
-        = { category_list_id => $cat->category_list_id || [ \'IS NULL', 0 ],
-        };
+        = { category_set_id => $cat->category_set_id || [ \'IS NULL', 0 ], };
     return _get_basename( $cat_class, $base, $blog, $terms );
 }
 
@@ -1914,7 +1915,7 @@ $Languages{en_US} = $Languages{en_us} = $Languages{"en-us"} = $Languages{en};
 $Languages{ja} = $Languages{jp};
 
 sub browser_language {
-    my @browser_langs = $ENV{HTTP_ACCEPT_LANGUAGE} =~ m{
+    my @browser_langs = ( $ENV{HTTP_ACCEPT_LANGUAGE} || '' ) =~ m{
     	(
     		[a-z]{2}      # en
     		(?:-[a-z]{2})?  # -us

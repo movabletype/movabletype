@@ -91,7 +91,6 @@
        id="name"
        required="1"
        label="<__trans phrase="Name">"
-       hint="<__trans phrase="Name your blog. The name can be changed at any time.">"
        help_page="blog_settings_general"
        help_section="blog_name">
       <input type="text" name="name" id="name" class="form-control text required" value="<mt:var name="name" escape="html">" maxlength="255" />
@@ -100,7 +99,6 @@
     <mtapp:setting
        id="description"
        label="<__trans phrase="Description">"
-       hint="<__trans phrase="Enter a description for your blog.">"
        help_page="blog_settings_general"
        help_section="blog_description">
       <textarea name="description" id="description" class="form-control text low" cols="" rows=""><mt:var name="description" escape="html"></textarea>
@@ -174,20 +172,24 @@
       </mt:if>
         <p>
       <mt:if name="is_blog">
-          <__trans phrase="Your blog is currently licensed under:">
+          <__trans phrase="Your child site is currently licensed under:">
       <mt:else>
-          <__trans phrase="Your website is currently licensed under:">
+          <__trans phrase="Your site is currently licensed under:">
       </mt:if>
           <strong id="cc-license-name"><mt:var name="cc_license_name"></strong>
         </p>
-        <span class="actions-link"><a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Change license"></a> | <a href="javascript:void(0);" onclick="return doRemoveLicense();"><__trans phrase="Remove license"></a></span>
+        <span class="actions-link">
+          <a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Change license"></a>
+          |
+          <a href="javascript:void(0);" onclick="return doRemoveLicense();"><__trans phrase="Remove license"></a>
+        </span>
       </div>
       <div id="no-license" style="display: none;">
         <p>
       <mt:if name="is_blog">
-          <__trans phrase="Your blog does not have an explicit Creative Commons license.">
+          <__trans phrase="Your child site does not have an explicit Creative Commons license.">
       <mt:else>
-          <__trans phrase="Your website does not have an explicit Creative Commons license.">
+          <__trans phrase="Your site does not have an explicit Creative Commons license.">
       </mt:if>
         </p>
         <a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Select a license"></a>
@@ -202,7 +204,7 @@
     <mtapp:setting
        id="site_url"
        class="url-field"
-       label='<__trans phrase="[_1] URL" params="<mt:var name="object_label" capitalize="1">">'
+       label='<__trans phrase="Site URL">'
        help_page="blog_settings_publishing"
        help_section="site_url">
     <mt:if name="site_url_subdomain">
@@ -266,7 +268,7 @@
       </div>
       </mt:unless>
     <mt:else>
-      <div class="form-inline site-url content-path">
+      <div class="site-url content-path">
         <input type="text" name="site_url" id="site_url" value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" class="form-control text website-url-field mt-edit-field required" />
       </div>
     </mt:if>
@@ -274,19 +276,19 @@
         <__trans phrase="Warning: Changing the [_1] URL can result in breaking all the links in your [_1]." params="<mt:var name="object_label" capitalize="1">%%">
         </p>
     <mt:if name="is_blog">
-      <div class="text-muted hint"><__trans phrase="The URL of your blog. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/"></div>
+      <div class="text-muted hint"><__trans phrase="The URL of your child site. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/"></div>
     <mt:else>
-      <div class="text-muted hint"><__trans phrase="The URL of your website. Exclude the filename (i.e. index.html).  End with '/'. Example: http://www.example.com/"></div>
+      <div class="text-muted hint"><__trans phrase="The URL of your site. Exclude the filename (i.e. index.html).  End with '/'. Example: http://www.example.com/"></div>
     </mt:if>
     </mtapp:setting>
 
     <mtapp:setting
        id="site_path"
        class="site-path-field"
-       label='<__trans phrase="[_1] Root" params="<mt:var name="object_label" capitalize="1">">'
+       label='<__trans phrase="Site Root">'
        help_page="blog_settings_publishing"
        help_section="site_root">
-      <div class="form-inline relative-site_path content-path">
+      <div class="relative-site_path content-path<mt:if name="is_blog"> form-inline</mt:if>">
         <span class="website-path">
           <mt:if name="is_blog">
             <mt:var name="website_path" encode_html="1">
@@ -329,11 +331,11 @@
        id="enable_archive_paths"
        label="<__trans phrase="Advanced Archive Publishing">"
        show_label="0"
-       hint="<__trans phrase="Select this option only if you need to publish your archives outside of your Blog Root.">"
+       hint="<__trans phrase="Select this option only if you need to publish your archives outside of your Site Root.">"
        help_page="blog_settings_publishing"
        help_section="advanced_archive_publishing">
       <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="cb" />
-      <label for="enable_archive_paths"><__trans phrase="Publish archives outside of [_1] Root" params="<mt:var name="object_label" capitalize="1">"></label>
+      <label for="enable_archive_paths"><__trans phrase="Publish archives outside of Site Root"></label>
     </mtapp:setting>
 
     <div id="enable_archive_paths_prefs"<mt:unless name="enable_archive_paths"> style="display: none;"</mt:unless>>
@@ -430,7 +432,7 @@
         </mt:unless>
         </mt:if>
       <mt:else>
-        <div class="form-inline archive-url content-path">
+        <div class="archive-url content-path">
           <input type="text" name="archive_url" id="archive_url" value="<mt:var name="archive_url" encode_html="1" default="$site_url">" class="form-control text website-url-field mt-edit-field<mt:unless name="enable_archive_paths"> show-input</mt:unless> required" />
         </div>
       </mt:if>
@@ -438,9 +440,9 @@
           <__trans phrase="Warning: Changing the archive URL can result in breaking all links in your [_1]." params="<mt:var name="object_label" lower_case="1">">
         </p>
       <mt:if name="is_blog">
-        <div class="text-muted hint"><__trans phrase="The URL of the archives section of your blog. Example: http://www.example.com/blog/archives/"></div>
+        <div class="text-muted hint"><__trans phrase="The URL of the archives section of your child site. Example: http://www.example.com/blog/archives/"></div>
       <mt:else>
-        <div class="text-muted hint"><__trans phrase="The URL of the archives section of your website. Example: http://www.example.com/archives/"></div>
+        <div class="text-muted hint"><__trans phrase="The URL of the archives section of your site. Example: http://www.example.com/archives/"></div>
       </mt:if>
       </mtapp:setting>
 
@@ -555,9 +557,9 @@
       <input type="hidden" name="no_archives_are_active" id="no_archives_are_active" value="1" />
     </mt:unless>
     <mt:if name="is_blog">
-      <div class="text-muted hint"><__trans phrase="Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive types used in this blog's archive templates."></div>
+      <div class="text-muted hint"><__trans phrase="Used to generate URLs (permalinks) for this child site's archived entries. Choose one of the archive types used in this child site's archive templates."></div>
     <mt:else>
-      <div class="text-muted hint"><__trans phrase="Used to generate URLs (permalinks) for this website's archived entries. Choose one of the archive types used in this website's archive templates."></div>
+      <div class="text-muted hint"><__trans phrase="Used to generate URLs (permalinks) for this site's archived entries. Choose one of the archive types used in this site's archive templates."></div>
     </mt:if>
     </mtapp:setting>
 
@@ -803,7 +805,11 @@ jQuery(window).load(function () {
     });
 
     jQuery.mtValidateAddMessages({
-        "#name.required": '<__trans phrase="You must set your Blog Name." escape="singlequotes">',
+<mt:if name="is_blog">
+        "#name.required": '<__trans phrase="You must set your Child Site Name." escape="singlequotes">',
+<mt:else>
+        "#name.required": '<__trans phrase="You must set your Site Name." escape="singlequotes">',
+</mt:if>
         "#server_offset.required": '<__trans phrase="You did not select a time zone." escape="singlequotes">',
         "#site_url": '<__trans phrase="You must set a valid URL." escape="singlequotes">',
         "#site_url_path": '<__trans phrase="You must set a valid URL." escape="singlequotes">',
@@ -812,11 +818,11 @@ jQuery(window).load(function () {
         "#site_path.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
         "#site_path.path": '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">',
 <mt:if name="sitepath_limited">
-        "#site_path.limited_path": '<__trans phrase="Website root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
+        "#site_path.limited_path": '<__trans phrase="Site root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
 </mt:if>
         "#site_path_absolute.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
         "#site_path_absolute": '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">',
-        "#site_path_absolute.limited_path": '<__trans phrase="Blog root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
+        "#site_path_absolute.limited_path": '<__trans phrase="Site root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
         "#archive_url": '<__trans phrase="You must set a valid URL." escape="singlequotes">',
         "#archive_url_path.required": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
         "#archive_url_path": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
@@ -824,7 +830,7 @@ jQuery(window).load(function () {
         "#archive_path.required": '<__trans phrase="You must set your Local Archive Path." escape="singlequotes">',
         "#archive_path": '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
 <mt:if name="sitepath_limited">
-        "#archive_path.limited_path": '<__trans phrase="Website root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
+        "#archive_path.limited_path": '<__trans phrase="Site root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
 </mt:if>
         "#archive_path_absolute.required": '<__trans phrase="You must set your Local Archive Path." escape="singlequotes">',
         "#archive_path_absolute": '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',

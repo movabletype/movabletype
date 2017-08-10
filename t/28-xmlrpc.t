@@ -63,7 +63,7 @@ my @apis = (
             is( $result->[1]->{blogid}, '2', 'blogid is correct' );
             is( $result->[1]->{blogName}, 'Test site',
                 'blogName is correct' );
-            }
+        }
     },
     {   api    => 'metaWeblog.getUsersBlogs',
         params => [ '', $username, $password ],
@@ -82,7 +82,7 @@ my @apis = (
             is( $result->[1]->{blogid}, '2', 'blogid is correct' );
             is( $result->[1]->{blogName}, 'Test site',
                 'blogName is correct' );
-            }
+        }
     },
     {   api    => 'blogger.getUserInfo',
         params => [ '', $username, $password ],
@@ -96,7 +96,7 @@ my @apis = (
             is( $result->{nickname}, $author->nickname || '' );
             is( $result->{email},    $author->email    || '' );
             is( $result->{url},      $author->url      || '' );
-            }
+        }
     },
     {   api    => 'blogger.getUsersBlogs',
         params => [ '', 'Chuck D', 'wrong' ],
@@ -106,7 +106,7 @@ my @apis = (
             ok( $som->fault );
             is( $som->faultstring, 'Invalid login' );
             is( $som->faultcode,   1 );
-            }
+        }
     },
     {   api    => 'metaWeblog.getUsersBlogs',
         params => [ '', 'Chuck D', 'wrong' ],
@@ -116,7 +116,7 @@ my @apis = (
             ok( $som->fault );
             is( $som->faultstring, 'Invalid login' );
             is( $som->faultcode,   1 );
-            }
+        }
     },
     {   api    => 'blogger.getUserInfo',
         params => [ '', 'Chuck D', 'wrong' ],
@@ -126,7 +126,7 @@ my @apis = (
             ok( $som->fault );
             is( $som->faultstring, 'Invalid login' );
             is( $som->faultcode,   1 );
-            }
+        }
     },
     {   api    => 'blogger.getRecentPosts',
         params => [ '', 1, $username, $password, 2 ],
@@ -1212,7 +1212,7 @@ my @apis = (
             my $asset = MT::Asset->load( { blog_id => 1 },
                 { sort => 'id', direction => 'descend', limit => 1 } );
             $asset->remove();
-            }
+        }
     },
     {   api    => 'metaWeblog.newMediaObject',
         params => [
@@ -1247,7 +1247,7 @@ my @apis = (
             my $asset = MT::Asset::Image->load( { blog_id => 2 },
                 { sort => 'id', direction => 'descend', limit => 1 } );
             $asset->remove();
-            }
+        }
     },
     {   api    => 'metaWeblog.getCategories',
         params => [ 1, $username, $password ],
@@ -1383,11 +1383,12 @@ my @apis = (
                 'markdown'                  => 1,
                 'markdown_with_smartypants' => 1,
                 'textile_2'                 => 1,
+                'blockeditor'               => 1,
             );
 
             # __sanitize__ may come from the community pack
             @$result = grep { $_->{key} ne '__sanitize__' } @$result;
-            foreach my $res (sort @$result) {
+            foreach my $res ( sort @$result ) {
                 is( 1, delete( $tf{ $res->{key} } ), $res->{key} );
             }
             ok( !%tf );
@@ -1712,7 +1713,7 @@ my @apis = (
                 my $p = MT::Page->load( { blog_id => 1 },
                     { sort => 'id', direction => 'descend' } );
                 $p->id;
-                }
+            }
         ],
         result => sub {
             my ( $som, $data ) = @_;
@@ -1739,7 +1740,7 @@ my @apis = (
                 my $p = MT::Page->load( { blog_id => 2 },
                     { sort => 'id', direction => 'descend' } );
                 $p->id;
-                }
+            }
         ],
         result => sub {
             my ( $som, $data ) = @_;

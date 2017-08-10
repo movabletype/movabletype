@@ -31,11 +31,11 @@
       <mt:if name="return_args"><input type="hidden" name="return_args" value="<mt:var name="return_args">" /></mt:if>
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
 
-      <mt:if name="is_category_list">
+      <mt:if name="is_category_set">
         <div class="form-inline">
           <label>
-            <__trans phrase="List Name">:
-            <input type="text" class="form-control text" id="list_name" name="list_name" value="<mt:var name="list_name">" />
+            <__trans phrase="Set Name">:
+            <input type="text" class="form-control text" id="set_name" name="set_name" value="<mt:var name="set_name">" />
           </label>
         </div>
       </mt:if>
@@ -242,7 +242,7 @@ function createItem(id, parent, label, basename, number) {
   if ( basename )
     line += '<span class="item-basename"><span class="item-basename-text-container"><span class="item-basename-text">'+basename+'</span></span></span>';
   line += ' <span class="item-ctrl"></span>';
-  <mt:unless name="is_category_list">
+  <mt:unless name="is_category_set">
   line += ' <span class="count" style="margin-left: auto;">'+number+'</span>';
   </mt:unless>
   var $item = jQuery('<div id="cat-'+id+'" class="card card-block flex-row pcat-'+parent+'" />').append(line);
@@ -260,7 +260,7 @@ function initItem($item) {
     .addClass('lv-'+nest.length)
     .addClass('sortable-item');
   $item.find('.item-ctrl, .edit-form').remove();
-<mt:if name="is_category_list">
+<mt:if name="is_category_set">
   $item.append('<span class="item-ctrl" />');
 <mt:else>
   jQuery('<span class="item-ctrl" />').insertBefore($item.find('.count'));
@@ -769,11 +769,11 @@ function renderNestedList() {
   var params = {
     __mode: 'filtered_list',
     datasource: '<mt:var name="list_type">',
-  <mt:if name="is_category_list">
-    is_category_list: 1,
+  <mt:if name="is_category_set">
+    is_category_set: 1,
   </mt:if>
   <mt:if name="id">
-    list_id: <mt:var name="id" escape="js">,
+    set_id: <mt:var name="id" escape="js">,
   </mt:if>
     blog_id: <mt:var name="blog_id">
   };
@@ -859,12 +859,12 @@ function bulkUpdateCategories() {
     data: {
       __mode: 'bulk_update_<mt:var name="object_type">',
       datasource: '<mt:var name="list_type">',
-  <mt:if name="is_category_list">
-      is_category_list: 1,
-      list_name: jQuery('#list_name').val(),
+  <mt:if name="is_category_set">
+      is_category_set: 1,
+      set_name: jQuery('#set_name').val(),
   </mt:if>
   <mt:if name="id">
-      list_id: <mt:var name="id" escape="js">,
+      set_id: <mt:var name="id" escape="js">,
   </mt:if>
       blog_id: <mt:var name="blog_id">,
       checksum: checksum,
@@ -895,8 +895,8 @@ function bulkUpdateCategories() {
   return false;
 }
 
-  <mt:if name="is_category_list">
-jQuery('#list_name').keyup(function() {
+  <mt:if name="is_category_set">
+jQuery('#set_name').keyup(function() {
   setDirty(true);
 });
   </mt:if>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.1 (44463) - http://www.bohemiancoding.com/sketch -->
+    <title>ico/bold</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M13.0451529,3.94963514 C13.0451529,2.07251175 11.4488826,0 8.83804518,8.8817842e-15 L0.576185616,0 C0.149533643,0 0,0.240222875 0,0.646674374 L0,15.4369463 C0,15.8433978 0.204043245,16 0.630695218,16 L9.11516128,16 C12.2265527,16 14,13.9365574 14,11.6582048 C14,9.35239639 12.5539928,7.71519601 11.0395825,7.38775593 C11.9400427,6.97845584 13.0451529,5.82675852 13.0451529,3.94963514 Z M7.71951471,3 C8.58606088,3 9.21636419,3.68168083 9.21636419,4.49987375 C9.21636419,5.19426106 8.69635319,6 7.71951471,6 L3.19999981,6 L3.19999981,3 L7.71951471,3 Z M3.19999981,12.5 L3.19999981,9.5 L8.76979052,9.5 C9.66657472,9.5 10.2421041,10.274824 10.2421041,11 C10.2421041,11.9480264 9.45240481,12.5 8.76979052,12.5 L3.19999981,12.5 Z" id="path-1"></path>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ico/bold">
+            <g id="Colors/DarkGray" transform="translate(5.000000, 4.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="Mask" fill="#000000" xlink:href="#path-1"></use>
+                <g mask="url(#mask-2)" id="#2F2F2F" fill="#2F2F2F">
+                    <g transform="translate(-26.000000, -20.000000)">
+                        <rect x="0" y="0" width="64" height="64"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -2,6 +2,16 @@
 
 <mt:setvar name="position_actions_bottom" value="1">
 
+<mt:setvarblock name="css_include" append="1">
+<style>
+.placeholder {
+    border: 1px dashed #c0c6c9;
+    border-radius: .25em;
+    background-color: #fbfbfb;
+}
+</style>
+</mt:setvarblock>
+
 <mt:setvarblock name="system_msg">
 <mt:if name="saved">
   <mtapp:statusmsg
@@ -61,7 +71,7 @@
             <div id="module-<mt:var name="id" escape="html">" class="card widget widget-item" style="cursor: move;">
               <div class="row card-block widget-header">
                 <div class="col-md-10 widget-label">
-                  <h4><mt:var name="name" escape="html"></h4>
+                  <mt:var name="name" escape="html">
                 </div>
                 <div class="col-md-2 text-right widget-action">
                   <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
@@ -81,7 +91,7 @@
             <div id="module-<mt:var name="id" escape="html">" class="card widget widget-item" style="cursor: move;">
               <div class="row card-block widget-header">
                 <div class="col-md-10 widget-label">
-                  <h4><mt:var name="name" escape="html"></h4>
+                  <mt:var name="name" escape="html">
                 </div>
                 <div class="col-md-2 text-right widget-action">
                   <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>

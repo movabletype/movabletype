@@ -401,7 +401,7 @@ sub empty_junk {
             or return $app->permission_denied();
     }
 
-    my $type  = $app->param('_type');
+    my $type  = $app->param('_type') || '';
     my $class = $app->model($type);
     my $arg   = {};
     require MT::Comment;
@@ -747,8 +747,10 @@ sub reply_preview {
     $ctx->stash( 'blog',    $parent->blog );
     $param->{'preview_html'} = $tmpl->output;
 
+    my $comment_reply = $q->param('comment-reply');
+    $comment_reply = '' unless defined $comment_reply;
     return $app->build_page( 'dialog/comment_reply.tmpl',
-        { %$param, 'text' => $q->param('comment-reply') } );
+        { %$param, 'text' => $comment_reply } );
 }
 
 sub dialog_post_comment {
@@ -944,7 +946,7 @@ sub pre_save {
         return 1 unless $entry->author_id == $app->user->id;
     }
 
-    my $status = $app->param('status');
+    my $status = $app->param('status') || '';
     if ( $status eq 'publish' ) {
         $obj->approve;
     }

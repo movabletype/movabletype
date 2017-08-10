@@ -10,9 +10,7 @@ BEGIN {
     $ENV{MT_APP}    = 'MT::App::CMS';
 }
 
-use IPC::Open2;
-
-use Test::Base;
+use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
@@ -1190,187 +1188,104 @@ $guest->save or die $guest->errstr;
 
 MT->request->reset;
 
-run {
-    my $block = shift;
+MT::Test::Tag->run_perl_tests($blog_id);
+MT::Test::Tag->run_php_tests($blog_id);
 
-SKIP:
-    {
-        skip $block->skip, 1 if $block->skip;
-
-        my $tmpl = $app->model('template')->new;
-        $tmpl->text( '<mt:Websites site_ids="'
-                . $blog_id . '">'
-                . $block->template
-                . '</mt:Websites>' );
-        my $ctx = $tmpl->context;
-
-        $ctx->stash( 'builder', MT::Builder->new );
-        $ctx->stash( 'user',    $admin );
-
-        my $result = $tmpl->build;
-        $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-
-        is( $result, $block->expected, $block->name );
-    }
-};
-
-sub php_test_script {
-    my ( $template, $text ) = @_;
-    $text ||= '';
-
-    my $test_script = <<PHP;
-<?php
-\$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
-\$MT_CONFIG = '@{[ $app->find_config ]}';
-\$tmpl = <<<__TMPL__
-$template
-__TMPL__
-;
-\$text = <<<__TMPL__
-$text
-__TMPL__
-;
-PHP
-    $test_script .= <<'PHP';
-include_once($MT_HOME . '/php/mt.php');
-include_once($MT_HOME . '/php/lib/MTUtil.php');
-
-$mt = MT::get_instance(1, $MT_CONFIG);
-$mt->config('SupportDirectoryPath', './mt-static');
-$mt->init_plugins();
-
-$ctx =& $mt->context();
-
-if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-    $ctx->_eval('?>' . $_var_compiled);
-} else {
-    print('Error compiling template module.');
-}
-
-?>
-PHP
-}
-
-SKIP:
-{
-    unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
-        skip "Can't find executable file: php",
-            1 * blocks('expected_dynamic');
-    }
-
-    run {
-        my $block = shift;
-
-    SKIP:
-        {
-            skip $block->skip, 1 if $block->skip;
-
-            open2( my $php_in, my $php_out, 'php -q' );
-            print $php_out &php_test_script(
-                '<mt:Websites site_ids="'
-                    . $blog_id . '">'
-                    . $block->template
-                    . '</mt:Websites>',
-                $block->text
-            );
-            close $php_out;
-            my $php_result = do { local $/; <$php_in> };
-            $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-
-            my $name = $block->name . ' - dynamic';
-            is( $php_result, $block->expected, $name );
-        }
-    };
+sub _mt_websites {
+    $_ = '<mt:Websites site_ids="'
+       . $blog_id . '">'
+       . $_
+       . '</mt:Websites>';
 }
 
 __END__
 
 === mt:BlogIfCCLicense
---- template
+--- template _mt_websites
 <mt:BlogIfCCLicense>if<mt:Else>else</mt:BlogIfCCLicense>
 --- expected
 if
 
 === mt:BlogIfCommentsOpen
---- template
+--- template _mt_websites
 <mt:BlogIfCommentsOpen>if<mt:else>else</mt:BlogIfCommentsOpen>
 --- expected
 if
 
 === mt:BlogID
---- template
+--- template _mt_websites
 <mt:BlogID>
 --- expected
 1
 
 === mt:BlogName
---- template
+--- template _mt_websites
 <mt:BlogName>
 --- expected
 First Website
 
 === mt:BlogDescription
---- template
+--- template _mt_websites
 <mt:BlogDescription>
 --- expected
 This is a first website.
 
 === mt:BlogLanguage
---- template
+--- template _mt_websites
 <mt:BlogLanguage>
 --- expected
 en_US
 
 === mt:BlogURL
---- template
+--- template _mt_websites
 <mt:BlogURL>
 --- expected
 http://localhost/first_website/
 
 === mt:BlogArchiveURL
---- template
+--- template _mt_websites
 <mt:BlogArchiveURL>
 --- expected
 http://localhost/first_website/
 
 === mt:BlogRelativeURL
---- template
+--- template _mt_websites
 <mt:BlogRelativeURL>
 --- expected
 /first_website/
 
 === mt:BlogSitePath
---- template
+--- template _mt_websites
 <mt:BlogSitePath>
 --- expected
 /var/www/html/first_website/
 
 === mt:BlogHost
---- template
+--- template _mt_websites
 <mt:BlogHost>
 --- expected
 localhost
 
 === mt:BlogTimezone
---- template
+--- template _mt_websites
 <mt:BlogTimezone>
 --- expected
 +00:00
 
 === mt:BlogCCLicenseURL
---- template
+--- template _mt_websites
 <mt:BlogCCLicenseURL>
 --- expected
 http://creativecommons.org/licenses/by/3.0/
 
 === mt:BlogCCLicenseImage
---- template
+--- template _mt_websites
 <mt:BlogCCLicenseImage>
 --- expected
 http://i.creativecommons.org/l/by/3.0/88x31.png
 
 === mt:CCLicenseRDF
---- template
+--- template _mt_websites
 <mt:CCLicenseRDF>
 --- expected
 <!--
@@ -1388,25 +1303,25 @@ http://i.creativecommons.org/l/by/3.0/88x31.png
 -->
 
 === mt:BlogFileExtension
---- template
+--- template _mt_websites
 <mt:BlogFileExtension>
 --- expected
 .html
 
 === mt:BlogTemplateSetID
---- template
+--- template _mt_websites
 <mt:BlogTemplateSetID>
 --- expected
 classic-website
 
 === mt:BlogThemeID
---- template
+--- template _mt_websites
 <mt:BlogThemeID>
 --- expected
 classic-website
 
 === mt:EntriesHeader, mt:EntriesFooter
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntriesHeader>EntriesHeader
 </mt:EntriesHeader><mt:EntryTitle><mt:EntriesFooter>
 EntriesFooter</mt:EntriesFooter>
@@ -1422,7 +1337,7 @@ Website Entry 1
 EntriesFooter
 
 === mt:EntryPrevious
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryPrevious><mt:EntryBody>
 </mt:EntryPrevious></mt:Entries>
 --- expected
@@ -1433,7 +1348,7 @@ This is website entry 2.
 This is website entry 1.
 
 === mt:EntryNext
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryNext><mt:EntryBody>
 </mt:EntryNext></mt:Entries>
 --- expected
@@ -1444,7 +1359,7 @@ This is website entry 3.
 This is website entry 2.
 
 === mt:DateHeader
---- template
+--- template _mt_websites
 <mt:Entries><mt:DateHeader><mt:EntryDate format="%Y-%m-%d">
 </mt:DateHeader><mt:EntryTitle><mt:DateFooter>
 ***</mt:DateFooter>
@@ -1468,7 +1383,7 @@ Website Entry 1
 ***
 
 === mt:EntryIfExtended
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryIfExtended><mt:EntryMore>
 </mt:EntryIfExtended></mt:Entries>
 --- expected
@@ -1477,26 +1392,26 @@ Allow_pings is 1, allow_comments is null.
 Both allow_pings and allow_comments are null.
 
 === mt:AuthorHasEntry
---- template
+--- template _mt_websites
 <mt:Authors><mt:AuthorHasEntry><mt:AuthorName>
 </mt:AuthorHasEntry></mt:Authors>
 --- expected
 Melody
 
 === mt:EntriesCount
---- template
+--- template _mt_websites
 <mt:EntriesCount>
 --- expected
 6
 
 === mt:Entries, mt:EntryID
---- template
+--- template _mt_websites
 <mt:Entries glue=" "><mt:EntryID></mt:Entries>
 --- expected
 7 6 5 3 2 1
 
 === mt:EntryTitle
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryTitle>
 </mt:Entries>
 --- expected
@@ -1508,13 +1423,13 @@ Website Entry 2
 Website Entry 1
 
 === mt:EntryStatus
---- template
+--- template _mt_websites
 <mt:Entries glue=" "><mt:EntryStatus></mt:Entries>
 --- expected
 Publish Publish Publish Publish Publish Publish
 
 === mt:EntryFlag
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryFlag flag="allow_pings"> <mt:EntryFlag flag="allow_comments">
 </mt:Entries>
 --- expected
@@ -1526,7 +1441,7 @@ Publish Publish Publish Publish Publish Publish
 0 0
 
 === mt:EntryBody
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryBody>
 </mt:Entries>
 --- expected
@@ -1538,7 +1453,7 @@ This is website entry 2.
 This is website entry 1.
 
 === mt:EntryMore
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryMore>
 </mt:Entries>
 --- expected
@@ -1547,7 +1462,7 @@ Allow_pings is 1, allow_comments is null.
 Both allow_pings and allow_comments are null.
 
 === mt:EntryExcerpt
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryExcerpt>
 </mt:Entries>
 --- expected
@@ -1559,13 +1474,13 @@ Website Entry Excerpt 2
 Website Entry Excerpt 1
 
 === mt:EntryKeywords
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryKeywords> </mt:Entries>
 --- expected
 Bar  Foo
 
 === mt:EntryLink
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryLink>
 </mt:Entries>
 --- expected
@@ -1577,7 +1492,7 @@ http://localhost/first_website/2012/02/website-entry-2.html
 http://localhost/first_website/2011/01/website-entry-1.html
 
 === mt:EntryBasename
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryBasename>
 </mt:Entries>
 --- expected
@@ -1589,7 +1504,7 @@ website_entry_2
 website_entry_1
 
 === mt:EntryAtomID
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryAtomID>
 </mt:Entries>
 --- expected
@@ -1601,7 +1516,7 @@ tag:localhost,2012:/first_website//1.2
 tag:localhost,2011:/first_website//1.1
 
 === mt:EntryPermalink
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryPermalink>
 </mt:Entries>
 --- expected
@@ -1613,7 +1528,7 @@ http://localhost/first_website/2012/02/website-entry-2.html
 http://localhost/first_website/2011/01/website-entry-1.html
 
 === mt:EntryPermalink - Daily
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryPermalink archive_type="Daily">
 </mt:Entries>
 --- expected
@@ -1625,7 +1540,7 @@ http://localhost/first_website/2012/02/02/#000002
 http://localhost/first_website/2011/01/01/#000001
 
 === mt:EntryPermalink - Weekly
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryPermalink archive_type="Weekly">
 </mt:Entries>
 --- expected
@@ -1637,7 +1552,7 @@ http://localhost/first_website/2012/01/29-week/#000002
 http://localhost/first_website/2010/12/26-week/#000001
 
 === mt:EntryPermalink - Monthly
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryPermalink archive_type="Monthly">
 </mt:Entries>
 --- expected
@@ -1649,7 +1564,7 @@ http://localhost/first_website/2012/02/#000002
 http://localhost/first_website/2011/01/#000001
 
 === mt:EntryPermalink - Yearly
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryPermalink archive_type="Yearly">
 </mt:Entries>
 --- expected
@@ -1661,7 +1576,7 @@ http://localhost/first_website/2012/#000002
 http://localhost/first_website/2011/#000001
 
 === mt:EntryPermalink - Author
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryPermalink archive_type="Author">
 </mt:Entries>
 --- expected
@@ -1673,7 +1588,7 @@ http://localhost/first_website/author/melody/#000002
 http://localhost/first_website/author/melody/#000001
 
 === mt:EntryPermalink - Author-Daily
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryPermalink archive_type="Author-Daily">
 </mt:Entries>
 --- expected
@@ -1685,7 +1600,7 @@ http://localhost/first_website/author/melody/2012/02/02/#000002
 http://localhost/first_website/author/melody/2011/01/01/#000001
 
 === mt:EntryPermalink - Author-Weekly
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryPermalink archive_type="Author-Weekly">
 </mt:Entries>
 --- expected
@@ -1697,7 +1612,7 @@ http://localhost/first_website/author/melody/2012/01/29-week/#000002
 http://localhost/first_website/author/melody/2010/12/26-week/#000001
 
 === mt:EntryPermalink - Author-Monthly
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryPermalink archive_type="Author-Monthly">
 </mt:Entries>
 --- expected
@@ -1709,7 +1624,7 @@ http://localhost/first_website/author/melody/2012/02/#000002
 http://localhost/first_website/author/melody/2011/01/#000001
 
 === mt:EntryPermalink - Author-Yearly
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryPermalink archive_type="Author-Yearly">
 </mt:Entries>
 --- expected
@@ -1721,7 +1636,7 @@ http://localhost/first_website/author/melody/2012/#000002
 http://localhost/first_website/author/melody/2011/#000001
 
 === mt:EntryPermalink - Category
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryIfCategory><mt:EntryPermalink archive_type="Category"></mt:EntryIfCategory>
 </mt:Entries>
 --- expected
@@ -1732,7 +1647,7 @@ http://localhost/first_website/website-category-1/website-subcategory-2/#000002
 http://localhost/first_website/website-category-1/#000001
 
 === mt:EntryPermalink - Category-Daily
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryIfCategory><mt:EntryPermalink archive_type="Category-Daily"></mt:EntryIfCategory>
 </mt:Entries>
 --- expected
@@ -1743,7 +1658,7 @@ http://localhost/first_website/website-category-1/website-subcategory-2/2012/02/
 http://localhost/first_website/website-category-1/2011/01/01/#000001
 
 === mt:EntryPermalink - Category-Weekly
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryIfCategory><mt:EntryPermalink archive_type="Category-Weekly"></mt:EntryIfCategory>
 </mt:Entries>
 --- expected
@@ -1754,7 +1669,7 @@ http://localhost/first_website/website-category-1/website-subcategory-2/2012/01/
 http://localhost/first_website/website-category-1/2010/12/26-week/#000001
 
 === mt:EntryPermalink - Category-Monthly
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryIfCategory><mt:EntryPermalink archive_type="Category-Monthly"></mt:EntryIfCategory>
 </mt:Entries>
 --- expected
@@ -1765,7 +1680,7 @@ http://localhost/first_website/website-category-1/website-subcategory-2/2012/02/
 http://localhost/first_website/website-category-1/2011/01/#000001
 
 === mt:EntryPermalink - Category-Yearly
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryIfCategory><mt:EntryPermalink archive_type="Category-Yearly"></mt:EntryIfCategory>
 </mt:Entries>
 --- expected
@@ -1776,25 +1691,25 @@ http://localhost/first_website/website-category-1/website-subcategory-2/2012/#00
 http://localhost/first_website/website-category-1/2011/#000001
 
 === mt:EntryClass
---- template
+--- template _mt_websites
 <mt:Entries glue=" "><mt:EntryClass></mt:Entries>
 --- expected
 entry entry entry entry entry entry
 
 === mt:EntryClassLabel
---- template
+--- template _mt_websites
 <mt:Entries glue=" "><mt:EntryClassLabel></mt:Entries>
 --- expected
 Entry Entry Entry Entry Entry Entry
 
 === mt:EntryAuthor
---- template
+--- template _mt_websites
 <mt:Entries glue=" "><mt:EntryAuthor></mt:Entries>
 --- expected
 Melody Melody Melody Melody Melody Melody
 
 === mt:EntryAuthorDisplayName
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryAuthorDisplayName>
 </mt:Entries>
 --- expected
@@ -1806,7 +1721,7 @@ Administrator Melody
 Administrator Melody
 
 === mt:EntryAuthorNickname
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryAuthorNickname>
 </mt:Entries>
 --- expected
@@ -1818,13 +1733,13 @@ Administrator Melody
 Administrator Melody
 
 === mt:EntryAuthorUsername
---- template
+--- template _mt_websites
 <mt:Entries glue=" "><mt:EntryAuthorUsername></mt:Entries>
 --- expected
 Melody Melody Melody Melody Melody Melody
 
 === mt:EntryAuthorEmail
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryAuthorEmail>
 </mt:Entries>
 --- expected
@@ -1836,7 +1751,7 @@ melody@localhost
 melody@localhost
 
 === mt:EntryAuthorURL
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryAuthorURL>
 </mt:Entries>
 --- expected
@@ -1848,7 +1763,7 @@ http://localhost/~melody/
 http://localhost/~melody/
 
 === mt:EntryAuthorLink
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryAuthorLink>
 </mt:Entries>
 --- expected
@@ -1860,19 +1775,19 @@ http://localhost/~melody/
 <a href="http://localhost/~melody/">Administrator Melody</a>
 
 === mt:EntryAuthorID
---- template
+--- template _mt_websites
 <mt:Entries glue=" "><mt:EntryAuthorID></mt:Entries>
 --- expected
 1 1 1 1 1 1
 
 === mt:AuthorEntryCount
---- template
+--- template _mt_websites
 <mt:Entries glue=" "><mt:AuthorEntryCount></mt:Entries>
 --- expected
 6 6 6 6 6 6
 
 === mt:EntryDate
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryDate>
 </mt:Entries>
 --- expected
@@ -1884,7 +1799,7 @@ February  2, 2012 12:00 AM
 January  1, 2011 12:00 AM
 
 === mt:EntryCreatedDate
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryCreatedDate>
 </mt:Entries>
 --- expected
@@ -1896,7 +1811,7 @@ February  2, 2012 12:00 AM
 January  1, 2011 12:00 AM
 
 === mt:EntryModifiedDate
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryCreatedDate>
 </mt:Entries>
 --- expected
@@ -1908,13 +1823,13 @@ February  2, 2012 12:00 AM
 January  1, 2011 12:00 AM
 
 === mt:EntryBlogID
---- template
+--- template _mt_websites
 <mt:Entries glue=" "><mt:EntryBlogID></mt:Entries>
 --- expected
 1 1 1 1 1 1
 
 === mt:EntryBlogName
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryBlogName>
 </mt:Entries>
 --- expected
@@ -1926,7 +1841,7 @@ First Website
 First Website
 
 === mt:EntryBlogDescription
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryBlogDescription>
 </mt:Entries>
 --- expected
@@ -1938,7 +1853,7 @@ This is a first website.
 This is a first website.
 
 === mt:EntryBlogURL
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryBlogURL>
 </mt:Entries>
 --- expected
@@ -1951,7 +1866,7 @@ http://localhost/first_website/
 
 === mt:EntryEditLink
 --- SKIP
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryEditLink>
 </mt:Entries>
 --- expected
@@ -1963,13 +1878,13 @@ http://localhost/first_website/
 [<a href="/cgi-bin/mt.cgi?__mode=view&_type=entry&blog_id=1&id=1">Edit</a>]
 
 === mt:BlogEntryCount
---- template
+--- template _mt_websites
 <mt:BlogEntryCount>
 --- expected
 6
 
 === mt:Comments, mt:CommentBlogID
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentBlogID>
 </mt:Comments>
 --- expected
@@ -1978,13 +1893,13 @@ http://localhost/first_website/
 1
 
 === mt:BlogCommentCount
---- template
+--- template _mt_websites
 <mt:BlogCommentCount>
 --- expected
 3
 
 === mt:CommentEntry
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentEntry><mt:EntryTitle>
 </mt:CommentEntry></mt:Comments>
 --- expected
@@ -1993,21 +1908,21 @@ Website Entry 1
 Website Entry 1
 
 === mt:EntryIfAllowComments
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryIfAllowComments>if
 </mt:EntryIfAllowComments></mt:Entries>
 --- expected
 if
 
 === mt:EntryIfCommentsOpen
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryIfCommentsOpen>if
 </mt:EntryIfCommentsOpen></mt:Entries>
 --- expected
 if
 
 === mt:IfCommenterIsEntryAuthor
---- template
+--- template _mt_websites
 <mt:Comments><mt:IfCommenterIsEntryAuthor>if
 <mt:Else>else
 </mt:IfCommenterIsEntryAuthor></mt:Comments>
@@ -2017,7 +1932,7 @@ else
 if
 
 === mt:CommentEntryID
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentEntryID>
 </mt:Comments>
 --- expected
@@ -2026,7 +1941,7 @@ if
 1
 
 === mt:EntryCommentCount
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryCommentCount>
 </mt:Entries>
 --- expected
@@ -2038,7 +1953,7 @@ if
 3
 
 === mt:EntryTrackbackCount
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryTrackbackCount>
 </mt:Entries>
 --- expected
@@ -2050,14 +1965,14 @@ if
 0
 
 === mt:EntryTrackbackLink
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryTrackbackLink>
 </mt:Entries>
 --- expected
 http://localhost/cgi-bin/mt-tb.cgi/2
 
 === mt:EntryTrackbackData
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryTrackbackData>
 </mt:Entries>
 --- expected
@@ -2078,14 +1993,14 @@ http://localhost/cgi-bin/mt-tb.cgi/2
 -->
 
 === mt:EntryTrackbackID
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryTrackbackID>
 </mt:Entries>
 --- expected
 2
 
 === mt:PingBlogName
---- template
+--- template _mt_websites
 <mt:Pings><mt:PingBlogName>
 </mt:Pings>
 --- expected
@@ -2093,40 +2008,40 @@ first website
 first website
 
 === mt:BlogPingCount
---- template
+--- template _mt_websites
 <mt:BlogPingCount>
 --- expected
 2
 
 === mt:PingEntry
---- template
+--- template _mt_websites
 <mt:Pings><mt:PingEntry><mt:EntryBody>
 </mt:PingEntry></mt:Pings>
 --- expected
 This is website entry 2.
 
 === mt:EntryIfAllowPings
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryIfAllowPings>if
 </mt:EntryIfAllowPings></mt:Entries>
 --- expected
 if
 
 === mt:CategoryIfAllowPings
---- template
+--- template _mt_websites
 <mt:Categories glue=" "><mt:CategoryIfAllowPings>if
 </mt:CategoryIfAllowPings></mt:Categories>
 --- expected
 if
 
 === mt:Categories, mt:CategoryID
---- template
+--- template _mt_websites
 <mt:Categories glue=" "><mt:CategoryID></mt:Categories>
 --- expected
 1 3 4 2 5 6
 
 === mt:CategoryPrevious
---- template
+--- template _mt_websites
 <mt:Categories><mt:CategoryPrevious><mt:CategoryLabel>
 </mt:CategoryPrevious></mt:Categories>
 --- expected
@@ -2135,7 +2050,7 @@ Website Category 3
 Website Subsubcategory 5
 
 === mt:CategoryNext
---- template
+--- template _mt_websites
 <mt:Categories><mt:CategoryNext><mt:CategoryLabel>
 </mt:CategoryNext></mt:Categories>
 --- expected
@@ -2144,7 +2059,7 @@ Website Category 4
 Website Subsubcategory 6
 
 === mt:SubCategories
---- template
+--- template _mt_websites
 <mt:Categories><mt:SubCategories><mt:CategoryBasename>
 </mt:SubCategories></mt:Categories>
 --- expected
@@ -2153,7 +2068,7 @@ website_subsubcategory_5
 website_subsubcategory_6
 
 === mt:TopLevelCategories
---- template
+--- template _mt_websites
 <mt:TopLevelCategories><mt:CategoryDescription>
 </mt:TopLevelCategories>
 --- expected
@@ -2162,7 +2077,7 @@ This is a website category 3.
 This is a website category 4.
 
 === mt:ParentCategory
---- template
+--- template _mt_websites
 <mt:Categories><mt:SubCategories><mt:ParentCategory><mt:CategoryLabel>
 </mt:ParentCategory></mt:SubCategories></mt:Categories>
 --- expected
@@ -2171,7 +2086,7 @@ Website Subcategory 2
 Website Subcategory 2
 
 === mt:ParentCategories
---- template
+--- template _mt_websites
 <mt:Categories><mt:SubCategories><mt:ParentCategories glue=" "><mt:CategoryBasename></mt:ParentCategories>
 </mt:SubCategories></mt:Categories>
 --- expected
@@ -2180,14 +2095,14 @@ website_category_1 website_subcategory_2 website_subsubcategory_5
 website_category_1 website_subcategory_2 website_subsubcategory_6
 
 === mt:TopLevelParent
---- template
+--- template _mt_websites
 <mt:TopLevelCategories><mt:SubCategories><mt:TopLevelParent><mt:CategoryLabel>
 </mt:TopLevelParent></mt:SubCategories></mt:TopLevelCategories>
 --- expected
 Website Category 1
 
 === mt:EntriesWithSubCategories
---- template
+--- template _mt_websites
 <mt:Entries category="Website Category 1"><mt:EntryCategories glue=" | "><mt:CategoryLabel></mt:EntryCategories>
 </mt:Entries>
 <mt:EntriesWithSubCategories category="Website Category 1"><mt:EntryCategories glue=" | "><mt:CategoryLabel></mt:EntryCategories>
@@ -2201,19 +2116,19 @@ Website Subcategory 2
 Website Category 1 | Website Category 4
 
 === mt:IfCategory
---- template
+--- template _mt_websites
 <mt:Categories><mt:IfCategory label="Website Subcategory 2"><mt:CategoryLabel></mt:IfCategory></mt:Categories>
 --- expected
 Website Subcategory 2
 
 === mt:EntryIfCategory
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryIfCategory name="Website Subcategory 2"><mt:EntryTitle></mt:EntryIfCategory></mt:Entries>
 --- expected
 Website Entry 2
 
 === mt:SubCatIsFirst
---- template
+--- template _mt_websites
 <mt:Categories><mt:SubCategories><mt:SubCatIsFirst><mt:CategoryLabel>
 </mt:SubCatIsFirst></mt:SubCategories></mt:Categories>
 --- expected
@@ -2221,7 +2136,7 @@ Website Subcategory 2
 Website Subsubcategory 5
 
 === mt:SubCatIsLast
---- template
+--- template _mt_websites
 <mt:Categories><mt:SubCategories><mt:SubCatIsLast><mt:CategoryBasename>
 </mt:SubCatIsLast></mt:SubCategories></mt:Categories>
 --- expected
@@ -2229,7 +2144,7 @@ website_subcategory_2
 website_subsubcategory_6
 
 === mt:HasSubCategories
---- template
+--- template _mt_websites
 <mt:Categories><mt:HasSubCategories><mt:CategoryLabel>
 </mt:HasSubCategories></mt:Categories>
 --- expected
@@ -2237,7 +2152,7 @@ Website Category 1
 Website Subcategory 2
 
 === mt:HasNoSubCategories
---- template
+--- template _mt_websites
 <mt:Categories><mt:HasNoSubCategories><mt:CategoryBasename>
 </mt:HasNoSubCategories></mt:Categories>
 --- expected
@@ -2247,7 +2162,7 @@ website_subsubcategory_5
 website_subsubcategory_6
 
 === mt:HasParentCategory
---- template
+--- template _mt_websites
 <mt:Categories><mt:HasParentCategory><mt:CategoryLabel>
 </mt:HasParentCategory></mt:Categories>
 --- expected
@@ -2256,7 +2171,7 @@ Website Subsubcategory 5
 Website Subsubcategory 6
 
 === mt:HasNoParentCategory
---- template
+--- template _mt_websites
 <mt:Categories><mt:HasNoParentCategory><mt:CategoryBasename>
 </mt:HasNoParentCategory></mt:Categories>
 --- expected
@@ -2265,7 +2180,7 @@ website_category_3
 website_category_4
 
 === mt:IfIsAncestor
---- template
+--- template _mt_websites
 <mt:Categories><mt:IfIsAncestor child="Website Subcategory 2"><mt:CategoryLabel>
 </mt:IfIsAncestor></mt:Categories>
 --- expected
@@ -2273,7 +2188,7 @@ Website Category 1
 Website Subcategory 2
 
 === mt:IfIsDescendant
---- template
+--- template _mt_websites
 <mt:Categories><mt:IfIsDescendant parent="Website Category 1"><mt:CategoryBasename>
 </mt:IfIsDescendant></mt:Categories>
 --- expected
@@ -2283,7 +2198,7 @@ website_subsubcategory_5
 website_subsubcategory_6
 
 === mt:EntryCategories
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryCategories glue=" | "><mt:CategoryLabel></mt:EntryCategories>
 </mt:Entries>
 --- expected
@@ -2294,7 +2209,7 @@ Website Subcategory 2
 Website Category 1 | Website Category 4
 
 === mt:EntryPrimaryCategory
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryPrimaryCategory><mt:CategoryBasename>
 </mt:EntryPrimaryCategory></mt:Entries>
 --- expected
@@ -2305,14 +2220,14 @@ website_subcategory_2
 website_category_1
 
 === mt:EntryAdditionalCategories
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryAdditionalCategories><mt:CategoryLabel>
 </mt:EntryAdditionalCategories></mt:Entries>
 --- expected
 Website Category 4
 
 === mt:CategoryLabel
---- template
+--- template _mt_websites
 <mt:Categories><mt:CategoryLabel>
 </mt:Categories>
 --- expected
@@ -2324,7 +2239,7 @@ Website Subsubcategory 5
 Website Subsubcategory 6
 
 === mt:CategoryBasename
---- template
+--- template _mt_websites
 <mt:Categories><mt:CategoryBasename>
 </mt:Categories>
 --- expected
@@ -2336,7 +2251,7 @@ website_subsubcategory_5
 website_subsubcategory_6
 
 === mt:CategoryDescription
---- template
+--- template _mt_websites
 <mt:Categories><mt:CategoryDescription>
 </mt:Categories>
 --- expected
@@ -2348,7 +2263,7 @@ This is a website subsubcategory 5.
 This is a website subsubcategory 6.
 
 === mt:CategoryArchiveLink
---- template
+--- template _mt_websites
 <mt:Categories><mt:CategoryArchiveLink>
 </mt:Categories>
 --- expected
@@ -2360,13 +2275,13 @@ http://localhost/first_website/website-category-1/website-subcategory-2/website-
 http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/
 
 === mt:CategoryCount
---- template
+--- template _mt_websites
 <mt:Categories glue=" "><mt:CategoryCount></mt:Categories>
 --- expected
 1 1 1 1 1 1
 
 === mt:SubCatsRecurse
---- template
+--- template _mt_websites
 <mt:TopLevelCategories><mt:CategoryLabel>
 <mt:SubCatsRecurse></mt:TopLevelCategories>
 --- expected
@@ -2378,7 +2293,7 @@ Website Category 3
 Website Category 4
 
 === mt:SubCategoryPath
---- template
+--- template _mt_websites
 <mt:Categories><mt:SubCategoryPath>
 </mt:Categories>
 --- expected
@@ -2390,13 +2305,13 @@ website_category_1/website_subcategory_2/website_subsubcategory_5
 website_category_1/website_subcategory_2/website_subsubcategory_6
 
 === mt:BlogCategoryCount
---- template
+--- template _mt_websites
 <mt:BlogCategoryCount>
 --- expected
 6
 
 === mt:ArchiveCategory
---- template
+--- template _mt_websites
 <mt:Categories><mt:ArchiveCategory>
 </mt:Categories>
 --- expected
@@ -2408,7 +2323,7 @@ Website Subsubcategory 5
 Website Subsubcategory 6
 
 === mt:EntryCategory
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryCategory>
 </mt:Entries>
 --- expected
@@ -2419,7 +2334,7 @@ Website Subcategory 2
 Website Category 1
 
 === mt:CategoryCommentCount
---- template
+--- template _mt_websites
 <mt:Categories><mt:CategoryCommentCount>
 </mt:Categories>
 --- expected
@@ -2431,14 +2346,14 @@ Website Category 1
 0
 
 === mt:CategoryTrackbackLink
---- template
+--- template _mt_websites
 <mt:Categories><mt:CategoryTrackbackLink>
 </mt:Categories>
 --- expected
 http://localhost/cgi-bin/mt-tb.cgi/1
 
 === mt:CategoryTrackbackCount
---- template
+--- template _mt_websites
 <mt:Categories><mt:CategoryTrackbackCount>
 </mt:Categories>
 --- expected
@@ -2450,14 +2365,14 @@ http://localhost/cgi-bin/mt-tb.cgi/1
 0
 
 === mt:EntryAssets
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryAssets>ID:<mt:EntryID> / <mt:AssetLabel>
 </mt:EntryAssets></mt:Entries>
 --- expected
 ID:1 / Website Asset 1
 
 === mt:EntryAuthorUserpicAsset
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryAuthorUserpicAsset><mt:AssetLabel>
 </mt:EntryAuthorUserpicAsset></mt:Entries>
 --- expected
@@ -2470,7 +2385,7 @@ Userpic
 
 === mt:EntryAuthorUserpic
 --- SKIP
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryAuthorUserpic>
 </mt:Entries>
 --- expected
@@ -2482,7 +2397,7 @@ Userpic
 <img src="/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="25" height="25" alt="" />
 
 === mt:EntryAuthorUserpicURL
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryAuthorUserpicURL>
 </mt:Entries>
 --- expected
@@ -2494,21 +2409,21 @@ Userpic
 /mt-static/support/assets_c/userpics/userpic-1-100x100.png
 
 === mt:EntryTags
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryTags><mt:TagName>
 </mt:EntryTags></mt:Entries>
 --- expected
 Website Tag 1
 
 === mt:EntryIfTagged
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryIfTagged><mt:EntryTitle>
 </mt:EntryIfTagged></mt:Entries>
 --- expected
 Website Entry 1
 
 === mt:EntryScore
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryScore namespace="test_namespace">
 </mt:Entries>
 --- expected
@@ -2520,7 +2435,7 @@ Website Entry 1
 6
 
 === mt:EntryScoreHigh
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryScoreHigh namespace="test_namespace">
 </mt:Entries>
 --- expected
@@ -2532,7 +2447,7 @@ Website Entry 1
 4
 
 === mt:EntryScoreLow
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryScoreLow namespace="test_namespace">
 </mt:Entries>
 --- expected
@@ -2544,7 +2459,7 @@ Website Entry 1
 2
 
 === mt:EntryScoreAvg
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryScoreAvg namespace="test_namespace">
 </mt:Entries>
 --- expected
@@ -2556,7 +2471,7 @@ Website Entry 1
 3.00
 
 === mt:EntryScoreCount
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryScoreCount namespace="test_namespace">
 </mt:Entries>
 --- expected
@@ -2568,26 +2483,26 @@ Website Entry 1
 2
 
 === mt:EntryRank
---- template
+--- template _mt_websites
 <mt:Entries><mt:EntryRank namespace="test_namespace">
 </mt:Entries>
 --- expected
 5
 
 === mt:IfExternalUserManagement
---- template
+--- template _mt_websites
 <mt:IfExternalUserManagement>if<mt:Else>else</mt:IfExternalUserManagement>
 --- expected
 else
 
 === mt:IfCommenterRegistrationAllowed
---- template
+--- template _mt_websites
 <mt:IfCommenterRegistrationAllowed>if</mt:IfCommenterRegistrationAllowed>
 --- expected
 if
 
 === mt:IfCommenterTrusted
---- template
+--- template _mt_websites
 <mt:Comments><mt:IfCommenterTrusted><mt:CommenterName>
 <mt:Else>else
 </mt:IfCommenterTrusted></mt:Comments>
@@ -2597,7 +2512,7 @@ Guest
 Administrator Melody
 
 === mt:CommenterIfTrusted
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommenterIfTrusted><mt:CommenterName>
 <mt:Else>else
 </mt:CommenterIfTrusted></mt:Comments>
@@ -2607,7 +2522,7 @@ Guest
 Administrator Melody
 
 === mt:CommenterIsAuthor
---- template
+--- template _mt_websites
 <mt:Comments><mt:IfCommenterIsAuthor><mt:CommenterName>
 <mt:Else>else
 </mt:IfCommenterIsAuthor></mt:Comments>
@@ -2617,25 +2532,25 @@ Guest
 Administrator Melody
 
 === mt:IfCommentsModerated
---- template
+--- template _mt_websites
 <mt:IfCommentsModerated>if<mt:Else>else</mt:IfCommentsModerated>
 --- expected
 if
 
 === mt:BlogIfCommentsOpen
---- template
+--- template _mt_websites
 <mt:BlogIfCommentsOpen>if<mt:Else>else</mt:BlogIfCommentsOpen>
 --- expected
 if
 
 === mt:WebsiteIfCommentsOpen
---- template
+--- template _mt_websites
 <mt:WebsiteIfCommentsOpen>if<mt:Else>else</mt:WebsiteIfCommentsOpen>
 --- expected
 if
 
 === mt:CommentsHeader, mt:CommentsFooter
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentsHeader>-- header --
 </mt:CommentsHeader><mt:CommentName>
 <mt:CommentsFooter>-- footer --
@@ -2648,7 +2563,7 @@ Administrator Melody
 -- footer --
 
 === mt:CommentIfModerated
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentIfModerated>if<mt:Else>else</mt:CommentIfModerated>
 </mt:Comments>
 --- expected
@@ -2657,7 +2572,7 @@ else
 else
 
 === mt:CommentParent
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentParent><mt:CommentName></mt:CommentParent>
 </mt:Comments>
 --- expected
@@ -2665,7 +2580,7 @@ Administrator Melody
 Guest
 
 === mt:CommentReplies
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentReplies><mt:CommentName></mt:CommentReplies>
 </mt:Comments>
 --- expected
@@ -2673,7 +2588,7 @@ Guest
 Administrator Melody
 
 === mt:IfCommentParent
---- template
+--- template _mt_websites
 <mt:Comments><mt:IfCommentParent>if<mt:Else>else</mt:IfCommentParent>
 </mt:Comments>
 --- expected
@@ -2682,7 +2597,7 @@ if
 if
 
 === mt:IfCommentReplies
---- template
+--- template _mt_websites
 <mt:Comments><mt:IfCommentReplies>if<mt:Else>else</mt:IfCommentReplies>
 </mt:Comments>
 --- expected
@@ -2691,67 +2606,67 @@ if
 else
 
 === mt:IfRegistrationRequired
---- template
+--- template _mt_websites
 <mt:IfRegistrationRequired>required<mt:Else>not required</mt:IfRegistrationRequired>
 --- expected
 not required
 
 === mt:IfRegistrationNotRequired
---- template
+--- template _mt_websites
 <mt:IfRegistrationNotRequired>not required<mt:Else>required</mt:IfRegistrationNotRequired>
 --- expected
 not required
 
 === mt:IfRegistrationAllowed
---- template
+--- template _mt_websites
 <mt:IfRegistrationAllowed>allowed<mt:Else>not allowed</mt:IfRegistrationAllowed>
 --- expected
 allowed
 
 === mt:IfTypeKeyToken
---- template
+--- template _mt_websites
 <mt:IfTypeKeyToken>if<mt:Else>else</mt:IfTypeKeyToken>
 --- expected
 if
 
 === mt:IfAllowCommentHTML
---- template
+--- template _mt_websites
 <mt:IfAllowCommentHTML>if<mt:Else>else</mt:IfAllowCommentHTML>
 --- expected
 if
 
 === mt:IfCommentsAllowed
---- template
+--- template _mt_websites
 <mt:IfCommentsAllowed>if<mt:Else>else</mt:IfCommentsAllowed>
 --- expected
 if
 
 === mt:IfCommentsAccepted
---- template
+--- template _mt_websites
 <mt:IfCommentsAccepted>if<mt:Else>else</mt:IfCommentsAccepted>
 --- expected
 if
 
 === mt:IfCommentsActive
---- template
+--- template _mt_websites
 <mt:IfCommentsActive>if<mt:Else>else</mt:IfCommentsActive>
 --- expected
 if
 
 === mt:IfNeedEmail
---- template
+--- template _mt_websites
 <mt:IfNeedEmail>if<mt:Else>else</mt:IfNeedEmail>
 --- expected
 else
 
 === mt:IfRequireCommentEmails
---- template
+--- template _mt_websites
 <mt:IfRequireCommentEmails>if<mt:Else>else</mt:IfRequireCommentEmails>
 --- expected
 else
 
 === mt:CommentID, mt:CommenterUserpicAsset
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentID>: <mt:CommenterUserpicAsset><mt:AssetLabel></mt:CommenterUserpicAsset>
 </mt:Comments>
 --- expected
@@ -2761,7 +2676,7 @@ else
 
 === mt:AuthorCommentCount
 --- SKIP
---- template
+--- template _mt_websites
 <mt:Authors><mt:AuthorCommentCount>
 </mt:Authors>
 --- expected
@@ -2769,14 +2684,14 @@ else
 
 === mt:CommenterNameChunk
 --- SKIP
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommenterNameChunk>
 </mt:Comments>
 --- expected
 (no php code)
 
 === mt:CommenterUsername
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommenterUsername>
 </mt:Comments>
 --- expected
@@ -2785,7 +2700,7 @@ Guest
 Melody
 
 === mt:CommenterName
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommenterName>
 </mt:Comments>
 --- expected
@@ -2794,7 +2709,7 @@ Guest
 Administrator Melody
 
 === mt:CommenterEmail
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommenterEmail>
 </mt:Comments>
 --- expected
@@ -2803,7 +2718,7 @@ guest@localhost
 melody@localhost
 
 === mt:CommenterAuthType
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommenterAuthType>
 </mt:Comments>
 --- expected
@@ -2812,7 +2727,7 @@ MT
 MT
 
 === mt:CommenterAuthIconURL
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommenterAuthIconURL>
 </mt:Comments>
 --- expected
@@ -2821,7 +2736,7 @@ http://localhost/mt-static/images/comment/mt_logo.png
 http://localhost/mt-static/images/comment/mt_logo.png
 
 === mt:CommenterID
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommenterID>
 </mt:Comments>
 --- expected
@@ -2830,7 +2745,7 @@ http://localhost/mt-static/images/comment/mt_logo.png
 1
 
 === mt:CommenterURL
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommenterURL>
 </mt:Comments>
 --- expected
@@ -2840,37 +2755,37 @@ http://localhost/~melody/
 
 === mt:UserSessionState
 --- SKIP
---- template
+--- template _mt_websites
 <mt:UserSessionState>
 --- expected
 (no php code)
 
 === mt:UserSessionCookieTimeout
---- template
+--- template _mt_websites
 <mt:UserSessionCookieTimeout>
 --- expected
 14400
 
 === mt:UserSessionCookieName
---- template
+--- template _mt_websites
 <mt:UserSessionCookieName>
 --- expected
 mt_blog_user
 
 === mt:UserSessionCookiePath
---- template
+--- template _mt_websites
 <mt:UserSessionCookiePath>
 --- expected
 /
 
 === mt:UserSessionCookieDomain
---- template
+--- template _mt_websites
 <mt:UserSessionCookieDomain>
 --- expected
 .localhost
 
 === mt:CommentName
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentName>
 </mt:Comments>
 --- expected
@@ -2879,7 +2794,7 @@ Guest
 Administrator Melody
 
 === mt:CommentIP
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentIP>
 </mt:Comments>
 --- expected
@@ -2888,7 +2803,7 @@ Administrator Melody
 127.0.0.1
 
 === mt:CommentAuthor
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentAuthor>
 </mt:Comments>
 --- expected
@@ -2897,7 +2812,7 @@ Guest
 Administrator Melody
 
 === mt:CommentAuthorLink
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentAuthorLink>
 </mt:Comments>
 --- expected
@@ -2906,7 +2821,7 @@ Administrator Melody
 <a title="http://localhost/~melody/" href="http://localhost/~melody/">Administrator Melody</a>
 
 === mt:CommentAuthorIdentity
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentAuthorIdentity>
 </mt:Comments>
 --- expected
@@ -2915,7 +2830,7 @@ Administrator Melody
 <a class="commenter-profile" href="http://localhost/~melody/"><img alt="" src="http://localhost/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>
 
 === mt:CommentEmail
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentEmail>
 </mt:Comments>
 --- expected
@@ -2924,7 +2839,7 @@ guest@localhost
 melody@localhost
 
 === mt:CommentLink
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentLink>
 </mt:Comments>
 --- expected
@@ -2933,7 +2848,7 @@ http://localhost/first_website/2011/01/website-entry-1.html#comment-2
 http://localhost/first_website/2011/01/website-entry-1.html#comment-3
 
 === mt:CommentURL
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentURL>
 </mt:Comments>
 --- expected
@@ -2942,7 +2857,7 @@ http://localhost/~guest/
 http://localhost/~melody/
 
 === mt:CommentBody
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentBody>
 </mt:Comments>
 --- expected
@@ -2951,7 +2866,7 @@ http://localhost/~melody/
 <p>Comment 3</p>
 
 === mt:CommentOrderNumber
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentOrderNumber>
 </mt:Comments>
 --- expected
@@ -2960,7 +2875,7 @@ http://localhost/~melody/
 3
 
 === mt:CommentDate
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentDate>
 </mt:Comments>
 --- expected
@@ -2969,7 +2884,7 @@ November 11, 2011 12:00 AM
 December 12, 2012 12:00 AM
 
 === mt:CommentParentID
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentParentID>
 </mt:Comments>
 --- expected
@@ -2977,7 +2892,7 @@ December 12, 2012 12:00 AM
 2
 
 === mt:CommentReplyToLink
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentReplyToLink>
 </mt:Comments>
 --- expected
@@ -2987,7 +2902,7 @@ December 12, 2012 12:00 AM
 
 === mt:CommentPreviewAuthor
 --- SKIP
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentPreviewAuthor>
 </mt:Comments>
 --- expected
@@ -2995,7 +2910,7 @@ December 12, 2012 12:00 AM
 
 === mt:CommentPreviewIP
 --- SKIP
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentPreviewIP>
 </mt:Comments>
 --- expected
@@ -3003,41 +2918,41 @@ December 12, 2012 12:00 AM
 
 === mt:CommentPreviewAuthorLink
 --- SKIP
---- template
+--- template _mt_websites
 --- expected
 
 === mt:CommentPreviewEmail
 --- SKIP
---- template
+--- template _mt_websites
 --- expected
 
 === mt:CommentPreviewURL
 --- SKIP
---- template
+--- template _mt_websites
 --- expected
 
 === mt:CommentPreviewBody
 --- SKIP
---- template
+--- template _mt_websites
 --- expected
 
 === mt:CommentPreviewDate
 --- SKIP
---- template
+--- template _mt_websites
 --- expected
 
 === mt:CommentPreviewState
 --- SKIP
---- template
+--- template _mt_websites
 --- expected
 
 === mt:CommentPreviewIsStatic
 --- SKIP
---- template
+--- template _mt_websites
 --- expected
 
 === mt:CommentRepliesRecurse
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentReplies><mt:CommentName>
 <mt:CommentRepliesRecurse></mt:CommentReplies></mt:Comments>
 --- expected
@@ -3046,62 +2961,62 @@ Administrator Melody
 Administrator Melody
 
 === mt:WebsiteCommentCount
---- template
+--- template _mt_websites
 <mt:WebsiteCommentCount>
 --- expected
 3
 
 === mt:TypeKeyToken
---- template
+--- template _mt_websites
 <mt:TypeKeyToken>
 --- expected
 token
 
 === mt:CommentFields
 --- SKIP
---- template
+--- template _mt_websites
 <mt:CommentFields>
 --- expected
 (deprecated)
 
 === mt:RemoteSignOutLink
 --- SKIP
---- template
+--- template _mt_websites
 <mt:RemoteSignOutLink>
 --- expected
 (deprecated)
 
 === mt:RemoteSignInLink
 --- SKIP
---- template
+--- template _mt_websites
 <mt:RemoteSignInLink>
 --- expected
 (deprecated)
 
 === mt:SignOutLink
 --- SKIP
---- template
+--- template _mt_websites
 <mt:SignOutLink>
 --- expected
 http://localhost/cgi-bin/mt-cp.cgi?__mode=logout&static=0&blog_id=1
 
 === mt:SignInLink
 --- SKIP
---- template
+--- template _mt_websites
 <mt:SignInLink>
 --- expected
 http://localhost/cgi-bin/mt-cp.cgi?__mode=login&blog_id=1
 
 === mt:SignOnURL
 --- SKIP
---- template
+--- template _mt_websites
 <mt:SignOnURL>
 --- expected
 https://www.typekey.com/t/typekey/login?
 
 === mt:CommenterUserpic
 --- SKIP
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommenterUserpic>
 </mt:Comments>
 --- expected
@@ -3110,7 +3025,7 @@ https://www.typekey.com/t/typekey/login?
 <img src="/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="100" height="100" alt="" />
 
 === mt:CommenterUserpicURL
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommenterUserpicURL>
 </mt:Comments>
 --- expected
@@ -3119,7 +3034,7 @@ https://www.typekey.com/t/typekey/login?
 /mt-static/support/assets_c/userpics/userpic-1-100x100.png
 
 === mt:CommentScore
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentScore namespace="test_namespace">
 </mt:Comments>
 --- expected
@@ -3128,7 +3043,7 @@ https://www.typekey.com/t/typekey/login?
 0
 
 === mt:CommentScoreHigh
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentScoreHigh namespace="test_namespace">
 </mt:Comments>
 --- expected
@@ -3137,7 +3052,7 @@ https://www.typekey.com/t/typekey/login?
 0
 
 === mt:CommentScoreLow
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentScoreLow namespace="test_namespace">
 </mt:Comments>
 --- expected
@@ -3146,7 +3061,7 @@ https://www.typekey.com/t/typekey/login?
 0
 
 === mt:CommentScoreAvg
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentScoreAvg namespace="test_namespace">
 </mt:Comments>
 --- expected
@@ -3155,7 +3070,7 @@ https://www.typekey.com/t/typekey/login?
 0
 
 === mt:CommentScoreCount
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentScoreCount namespace="test_namespace">
 </mt:Comments>
 --- expected
@@ -3164,7 +3079,7 @@ https://www.typekey.com/t/typekey/login?
 0
 
 === mt:CommentRank
---- template
+--- template _mt_websites
 <mt:Comments><mt:CommentRank namespace="test_namespace">
 </mt:Comments>
 --- expected

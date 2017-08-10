@@ -294,7 +294,7 @@ sub list_actions {
                     if 'CODE' eq ref($code);
             }
             else {
-                $actions->{$a}{js_message} = $actions->{$a}{label}
+                $actions->{$a}{js_message} = $actions->{$a}{label};
             }
         }
 
@@ -2775,8 +2775,8 @@ sub upload_info {
         if ( $@ && $@ =~ /^Undefined subroutine/ ) {
             $fh = $q->param($param_name);
         }
-        $no_upload = !$fh;
-        $info      = $q->uploadInfo($fh);
+        return unless $fh;
+        $info = $q->uploadInfo($fh);
     }
 
     return if $no_upload;
@@ -3166,8 +3166,7 @@ sub run {
                     $local_component = $meth_info->{component}
                         if $meth_info->{component};
 
-                    my $set
-                        = $meth_info->{permission}
+                    my $set = $meth_info->{permission}
                         || $meth_info->{permit_action};
 
                     if ($set) {
@@ -3294,18 +3293,21 @@ sub run {
                         . "</li>\n"
                         . $trace;
                     if ( $trace ne '' ) {
-                        my $debug_panel_header = $app->translate('Warnings and Log Messages');
+                        my $debug_panel_header
+                            = $app->translate('Warnings and Log Messages');
                         my $panel = <<"__HTML__";
-                            <div class="panel debug-panel text-danger" style="margin: 0 -15px;">
-                              <div class="panel-heading bg-danger">
-                                <h3 class="panel-title">$debug_panel_header</h3>
+                          <div class="col-md-12">
+                            <div class="card debug-panel" style="margin: 0 -15px;">
+                              <div class="card-header text-white" style="background: #EF7678;">
+                                <h4 class="card-title">$debug_panel_header</h4>
                               </div>
-                              <div class="panel-body debug-panel-inner">
+                              <div class="card-block debug-panel-inner" style="background: #FFE0E0;">
                                 <ul class="list-unstyled">
                                   $trace
                                 </ul>
                               </div>
                             </div>
+                          </div>
 __HTML__
                         $body =~ s!(</body>)!$panel$1!i;
                     }
@@ -3908,15 +3910,17 @@ sub query_string {
 }
 
 sub return_uri {
-    $_[0]->uri . '?' . $_[0]->return_args;
+    my ( $uri, $query ) = ( $_[0]->uri, $_[0]->return_args );
+    return $uri if !defined $query or $query eq "";
+    $uri . '?' . $query;
 }
 
 sub call_return {
     my $app = shift;
     $app->add_return_arg(@_) if @_;
+    my $connection = $app->get_header('Connection') || '';
     $app->redirect( $app->return_uri,
-        ( $app->get_header('Connection') eq 'close' ? ( UseMeta => 1 ) : () )
-    );
+        ( $connection eq 'close' ? ( UseMeta => 1 ) : () ) );
 }
 
 sub state_params {

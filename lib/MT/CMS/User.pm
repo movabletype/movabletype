@@ -1204,7 +1204,7 @@ PERMCHECK: {
         return $app->permission_denied();
     }
 
-    my $type = $app->param('_type');
+    my $type = $app->param('_type') || '';
     my ( $user, $role );
     if ( $author_id && $author_id ne 'PSEUDO' ) {
         $user = MT::Author->load($author_id);
@@ -1321,15 +1321,15 @@ PERMCHECK: {
 
         my $panel_info = {
             'website' => {
-                panel_title       => $app->translate("Select Website"),
-                panel_label       => $app->translate("Website Name"),
-                items_prompt      => $app->translate("Websites Selected"),
+                panel_title       => $app->translate("Select Site"),
+                panel_label       => $app->translate("Site Name"),
+                items_prompt      => $app->translate("Sites Selected"),
                 panel_description => $app->translate("Description"),
             },
             'blog' => {
-                panel_title       => $app->translate("Select Blogs"),
-                panel_label       => $app->translate("Blog Name"),
-                items_prompt      => $app->translate("Blogs Selected"),
+                panel_title       => $app->translate("Select Child Sites"),
+                panel_label       => $app->translate("Site Name"),
+                items_prompt      => $app->translate("Child Sites Selected"),
                 panel_description => $app->translate("Description"),
             },
             'author' => {
@@ -1702,7 +1702,7 @@ sub pre_save {
     }
 
     my ( $delim, $delim2 ) = $app->param('tag_delim');
-    $delim = $delim ? $delim : $delim2;
+    $delim ||= $delim2 || '';
     if ( $delim =~ m/comma/i ) {
         $delim = ord(',');
     }

@@ -33,7 +33,7 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0003' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0004' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
@@ -2740,7 +2740,7 @@ sub build_email {
 
     # basically, try to load from database
     my $blog = $param->{blog};
-    my $id = $file;
+    my $id   = $file;
     $id =~ s/(\.tmpl|\.mtml)$//;
 
     require MT::Template;

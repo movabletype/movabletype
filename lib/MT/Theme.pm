@@ -746,6 +746,31 @@ sub core_theme_element_handlers {
                 info   => '$Core::MT::Theme::Entry::info_pages',
             },
         },
+        default_category_sets => {
+            label    => 'Default Category Sets',
+            order    => 700,
+            importer => {
+                import => '$Core::MT::Theme::CategorySet::apply',
+                info   => '$Core::MT::Theme::CategorySet::info',
+            },
+        },
+        default_content_types => {
+            label    => 'Default Content Types',
+            order    => 800,
+            importer => {
+                import    => '$Core::MT::Theme::ContentType::apply',
+                info      => '$Core::MT::Theme::ContentType::info',
+                validator => '$Core::MT::Theme::ContentType::validator',
+            },
+        },
+        default_content_data => {
+            label    => 'Default Content Data',
+            order    => 900,
+            importer => {
+                import => '$Core::MT::Theme::ContentData::apply',
+                info   => '$Core::MT::Theme::ContentData::info',
+            },
+        },
     };
 }
 

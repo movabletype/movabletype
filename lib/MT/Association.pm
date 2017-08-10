@@ -186,8 +186,8 @@ sub list_props {
             },
         },
         blog_name => {
-            label        => 'Website/Blog Name',
-            filter_label => '__WEBSITE_BLOG_NAME',
+            label        => 'Site Name',
+            filter_label => 'Site Name',
             base         => '__virtual.string',
             display      => 'default',
             order        => 300,
@@ -274,8 +274,8 @@ sub list_props {
                 my $author = MT->model('author')->load($val)
                     or
                     return $prop->error( MT->translate('Invalid parameter') );
-                my $label = MT->translate( 'User is [_1]',
-                    $author->nickname, );
+                my $label
+                    = MT->translate( 'User is [_1]', $author->nickname, );
                 return $label;
             },
             label_via_param => sub {

@@ -244,13 +244,13 @@
 
     <mtapp:setting
        id="number-min_value"
-       label="<__trans phrase="Min Length">">
+       label="<__trans phrase="Min Value">">
       <input type="text" name="number-min_value" id="number-min_value" class="text num" />
     </mtapp:setting>
 
     <mtapp:setting
        id="number-max_value"
-       label="<__trans phrase="Max Length">">
+       label="<__trans phrase="Max Value">">
       <input type="text" name="number-max_value" id="number-max_value" class="text num" />
     </mtapp:setting>
 
@@ -696,6 +696,12 @@
         <option value="optional"><__trans phrase="Optional"></option>
         <option value="none"><__trans phrase="None"></option>
       </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="embedded_text-initial_value"
+       label="<__trans phrase="Initial Value">">
+      <textarea name="embedded_text-initial_value" id="embedded_text-initial_value" class="text high" ></textarea>
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -1146,10 +1152,10 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="categories-category_list"
-       label="<__trans phrase="Source Category List">">
-      <select name="categories-category_list" id="categories-category_list">
-      <mt:loop name="category_lists">
+       id="categories-category_set"
+       label="<__trans phrase="Source Category Set">">
+      <select name="categories-category_set" id="categories-category_set">
+      <mt:loop name="category_sets">
         <option value="<mt:var name="id" escape="html">"><mt:var name="name" escape="html"></option>
       </mt:loop>
       </select>

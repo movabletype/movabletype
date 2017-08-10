@@ -24,7 +24,7 @@ my $website = MT::Website->load(1);
 
 subtest 'Remove all members with all_selected = 1.' => sub {
     my $role = MT::Role->load(
-        { name => MT->translate('Website Administrator') } );
+        { name => MT->translate('Site Administrator') } );
 
     for ( my $cnt = 0; $cnt < 5; $cnt++ ) {
         my $name   = "user$cnt";

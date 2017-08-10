@@ -339,7 +339,7 @@ html {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "ヒラギノ角ゴ ProN W3", Meiryo, sans-serif;
-  font-size: 1rem;
+  font-size: 14px;
   font-weight: normal;
   line-height: 1.5;
   color: #292b2c;
@@ -2245,7 +2245,7 @@ pre code {
   display: block;
   width: 100%;
   padding: 0.5rem 0.65rem;
-  font-size: 1rem;
+  font-size: 14px;
   line-height: 1.25;
   color: #2F2F2F;
   background-color: #fff;
@@ -2338,7 +2338,7 @@ select.form-control:focus::-ms-value {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   margin-bottom: 0;
-  font-size: 1rem;
+  font-size: 14px;
 }
 
 .form-control-static {
@@ -2647,7 +2647,7 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
           user-select: none;
   border: 1px solid transparent;
   padding: 0.5rem 1rem;
-  font-size: 1rem;
+  font-size: 14px;
   border-radius: 0.25rem;
   -webkit-transition: all 0.1s ease-in-out;
   -o-transition: all 0.1s ease-in-out;
@@ -3169,7 +3169,7 @@ tbody.collapse.show {
   min-width: 10rem;
   padding: 0.5rem 0;
   margin: 0.125rem 0 0;
-  font-size: 1rem;
+  font-size: 14px;
   color: #292b2c;
   text-align: left;
   list-style: none;
@@ -3507,7 +3507,7 @@ tbody.collapse.show {
 .input-group-addon {
   padding: 0.5rem 0.65rem;
   margin-bottom: 0;
-  font-size: 1rem;
+  font-size: 14px;
   font-weight: normal;
   line-height: 1.25;
   color: #2F2F2F;
@@ -3628,7 +3628,7 @@ tbody.collapse.show {
 
 .custom-control-input:checked ~ .custom-control-indicator {
   color: #fff;
-  background-color: #0176BF;
+  background-color: #004B9A;
 }
 
 .custom-control-input:focus ~ .custom-control-indicator {
@@ -3653,21 +3653,21 @@ tbody.collapse.show {
 
 .custom-control-indicator {
   position: absolute;
-  top: 0.25rem;
+  top: 0.15rem;
   left: 0;
   display: block;
-  width: 1rem;
-  height: 1rem;
+  width: 1.2rem;
+  height: 1.2rem;
   pointer-events: none;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
-  background-color: #CACACA;
+  background-color: #FFFFFF;
   background-repeat: no-repeat;
   background-position: center center;
-  -webkit-background-size: 50% 50%;
-          background-size: 50% 50%;
+  -webkit-background-size: 70% 70%;
+          background-size: 70% 70%;
 }
 
 .custom-checkbox .custom-control-indicator {
@@ -3675,7 +3675,7 @@ tbody.collapse.show {
 }
 
 .custom-checkbox .custom-control-input:checked ~ .custom-control-indicator {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2210%22%20height%3D%229%22%20viewBox%3D%220%200%2010%209%22%3E%0A%20%20%3Cpath%20fill%3D%22%23FFF%22%20fill-rule%3D%22nonzero%22%20d%3D%22M1.555%204.168L.445%205.832%204.193%208.33l5.575-6.69L8.232.36%203.807%205.67%22/%3E%0A%3C/svg%3E");
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg%20width%3D%2210%22%20height%3D%229%22%20viewBox%3D%220%200%2010%209%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M1.37%203.463L0%204.953l3.648%203.354%205.982-6.99L8.092%200%203.474%205.397%22%20fill-rule%3D%22nonzero%22%20fill%3D%22%23FFF%22/%3E%3C/svg%3E");
 }
 
 .custom-checkbox .custom-control-input:indeterminate ~ .custom-control-indicator {
@@ -5794,7 +5794,7 @@ button.close {
 .popover-title {
   padding: 8px 14px;
   margin-bottom: 0;
-  font-size: 1rem;
+  font-size: 14px;
   background-color: #f7f7f7;
   border-bottom: 1px solid #ebebeb;
   border-top-right-radius: calc(0.3rem - 1px);
@@ -9319,9 +9319,15 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   }
 }
 
+html {
+  font-size: 14px;
+}
+
 body {
+  font-size: 14px;
   line-height: 1.5;
   overflow-x: hidden;
+  color: #292b2c;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -9511,5 +9517,32 @@ h1 .badge, h2 .badge, h3 .badge,
   color: #595959;
   background-color: #EBEBEB;
   border-color: #E0E0E0;
+}
+
+.custom-control-indicator {
+  border: 1px solid #A5A5A5;
+}
+
+.custom-control-input:checked + .custom-control-indicator {
+  border-color: transparent;
+}
+
+.mt-globalNavigation {
+  padding: 1rem 0;
+  background: #2F2F2F;
+  color: #FFFFFF;
+}
+
+.mt-primaryNavigation {
+  background: #EBEBEB;
+}
+
+.mt-secondaryPanel {
+  border-left: 1px solid #A5A5A5;
+}
+
+.mt-footer {
+  padding: 1rem 0;
+  border-top: 1px solid #A5A5A5;
 }
 /*# sourceMappingURL=mt.css.map */

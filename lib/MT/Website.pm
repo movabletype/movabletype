@@ -25,11 +25,11 @@ __PACKAGE__->install_properties(
 );
 
 sub class_label {
-    return MT->translate("Website");
+    return MT->translate("Site");
 }
 
 sub class_label_plural {
-    MT->translate("Websites");
+    MT->translate("Sites");
 }
 
 sub list_props {
@@ -37,8 +37,8 @@ sub list_props {
         id         => { base => 'blog.id', },
         name       => { base => 'blog.name', },
         blog_count => {
-            label        => 'Blogs',
-            filter_label => '__BLOG_COUNT',
+            label        => 'Child Sites',
+            filter_label => 'Child Site Count',
             order        => 200,
             base         => '__virtual.object_count',
             display      => 'default',

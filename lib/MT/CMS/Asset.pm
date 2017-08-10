@@ -399,7 +399,9 @@ sub asset_userpic {
 
            # Delete the author's userpic thumb (if any); it'll be regenerated.
 
-            if ( !defined $user->userpic_asset_id or $user->userpic_asset_id != $asset->id ) {
+            if ( !defined $user->userpic_asset_id
+                or $user->userpic_asset_id != $asset->id )
+            {
                 my $old_file = $user->userpic_file();
                 my $fmgr     = MT::FileMgr->new('Local');
                 if ( $fmgr->exists($old_file) ) {
@@ -483,7 +485,7 @@ sub start_upload {
 sub js_upload_file {
     my $app = shift;
 
-    my $is_userpic = $app->param('type') eq 'userpic' ? 1 : 0;
+    my $is_userpic = ( $app->param('type') || '' ) eq 'userpic' ? 1 : 0;
     my $user_id = $app->param('user_id');
     if ($is_userpic) {
         return $app->error(
@@ -678,8 +680,7 @@ sub complete_insert {
     }
     my ( $extension_message, $ext_from, $ext_to );
     if ( my $file_ext_changes = $app->param('changed_file_ext') ) {
-        ( $ext_from, $ext_to )
-            = split( ",", $file_ext_changes );
+        ( $ext_from, $ext_to ) = split( ",", $file_ext_changes );
         $extension_message
             = $app->translate( "Extension changed from [_1] to [_2]",
             $ext_from, $ext_to )
@@ -1130,7 +1131,8 @@ sub asset_insert_text {
     require MT::Asset;
     my $asset = MT::Asset->load($id)
         or return $app->errtrans( "Cannot load file #[_1].", $id );
-    $param->{enclose} = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
+    $param->{enclose}
+        = ( $app->param('edit_field') || '' ) =~ /^customfield/ ? 1 : 0;
     return $asset->as_html($param);
 }
 
@@ -1278,7 +1280,7 @@ sub _make_upload_destinations {
     my ( $blog, $real_path ) = @_;
 
     my @dest_root;
-    my $class_label = $blog->class_label;
+    my $class_label = $app->translate('Site');
 
     require POSIX;
     my $user_basename;
@@ -1558,7 +1560,7 @@ sub _upload_file_compat {
     );
     if ( $blog_id = $q->param('blog_id') ) {
         unless ($has_overwrite) {
-            if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
+            if ( my $ext_new = MT::Image->get_image_type($fh) ) {
                 my $ext_old
                     = (
                     File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ )
@@ -1595,8 +1597,8 @@ sub _upload_file_compat {
                 'Movable Type was unable to write to the "Upload Destination". Please make sure that the webserver can write to this folder.'
             )
         ) unless -d $root_path;
-        $relative_path = $q->param('extra_path');
-        $middle_path = $q->param('middle_path') || '';
+        $relative_path = $q->param('extra_path')  || '';
+        $middle_path   = $q->param('middle_path') || '';
         my $relative_path_save = $relative_path;
         if ( $middle_path ne '' ) {
             $relative_path = $middle_path
@@ -1744,26 +1746,31 @@ sub _upload_file_compat {
                 close $tmp_fh;
                 my ( $vol, $path, $tmp ) = File::Spec->splitpath($tmp_file);
                 my $extension_message;
-                if ( my $file_ext_changes = $app->param('changed_file_ext') ) {
+                if ( my $file_ext_changes = $app->param('changed_file_ext') )
+                {
                     my ( $ext_from, $ext_to )
                         = split( ",", $file_ext_changes );
                     $extension_message
-                        = $app->translate( "Extension changed from [_1] to [_2]",
+                        = $app->translate(
+                        "Extension changed from [_1] to [_2]",
                         $ext_from, $ext_to )
                         if ( $ext_from && $ext_to );
                 }
                 return $exists_handler->(
                     $app,
-                    temp              => $tmp,
-                    extra_path        => $relative_path_save,
-                    site_path         => scalar $q->param('site_path'),
-                    asset_select      => scalar $q->param('asset_select'),
-                    entry_insert      => scalar $q->param('entry_insert'),
-                    edit_field        => scalar $app->param('edit_field'),
-                    middle_path       => $middle_path,
-                    fname             => $basename,
-                    no_insert         => $q->param('no_insert') || "",
-                    ( $extension_message ? ( extension_message => $extension_message ) : () ),
+                    temp         => $tmp,
+                    extra_path   => $relative_path_save,
+                    site_path    => scalar $q->param('site_path'),
+                    asset_select => scalar $q->param('asset_select'),
+                    entry_insert => scalar $q->param('entry_insert'),
+                    edit_field   => scalar $app->param('edit_field'),
+                    middle_path  => $middle_path,
+                    fname        => $basename,
+                    no_insert    => $q->param('no_insert') || "",
+                    (   $extension_message
+                        ? ( extension_message => $extension_message )
+                        : ()
+                    ),
                 );
             }
         }
@@ -2095,7 +2102,7 @@ sub _upload_file {
         File::Basename::basename($basename) );
 
     # Change to real file extension
-    if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
+    if ( my $ext_new = MT::Image->get_image_type($fh) ) {
         my $ext_old
             = ( File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
             [2];

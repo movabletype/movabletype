@@ -14,16 +14,16 @@ use MT::Blog;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'               => 'integer not null auto_increment',
-            'blog_id'          => 'integer not null',
-            'label'            => 'string(100) not null',
-            'author_id'        => 'integer',
-            'ping_urls'        => 'text',
-            'description'      => 'text',
-            'parent'           => 'integer',
-            'allow_pings'      => 'boolean',
-            'basename'         => 'string(255)',
-            'category_list_id' => 'integer not null',
+            'id'              => 'integer not null auto_increment',
+            'blog_id'         => 'integer not null',
+            'label'           => 'string(100) not null',
+            'author_id'       => 'integer',
+            'ping_urls'       => 'text',
+            'description'     => 'text',
+            'parent'          => 'integer',
+            'allow_pings'     => 'boolean',
+            'basename'        => 'string(255)',
+            'category_set_id' => 'integer not null',
 
             # META
             'show_fields' => 'text meta',
@@ -36,9 +36,9 @@ __PACKAGE__->install_properties(
             blog_class    => { columns => [ 'blog_id', 'class' ], },
         },
         defaults => {
-            parent           => 0,
-            allow_pings      => 0,
-            category_list_id => 0,
+            parent          => 0,
+            allow_pings     => 0,
+            category_set_id => 0,
         },
         class_type    => 'category',
         child_of      => 'MT::Blog',
@@ -120,11 +120,11 @@ sub list_props {
                 require MT::Blog;
                 my $rep = $objs->[0] or return;
                 my $text;
-                if ( $rep->category_list_id ) {
-                    my $list
-                        = MT->model('category_list')
-                        ->load( $rep->category_list_id );
-                    $text = $list->order || '';
+                if ( $rep->category_set_id ) {
+                    my $set
+                        = MT->model('category_set')
+                        ->load( $rep->category_set_id );
+                    $text = $set->order || '';
                 }
                 else {
                     my $blog = MT::Blog->load( { id => $rep->blog_id },
@@ -164,7 +164,7 @@ sub list_props {
             display         => 'none',
             filter_editable => 0,
         },
-        category_list_id => {
+        category_set_id => {
             auto    => 1,
             display => 'none',
         },
@@ -677,13 +677,13 @@ sub is_category {
     return $class->class eq 'category';
 }
 
-sub category_list {
+sub category_set {
     my $self = shift;
     $self->cache_property(
         'cateogry_list',
         sub {
-            require MT::CategoryList;
-            MT::CategoryList->load( $self->category_list_id || 0 );
+            require MT::CategorySet;
+            MT::CategorySet->load( $self->category_set_id || 0 );
         },
     );
 }

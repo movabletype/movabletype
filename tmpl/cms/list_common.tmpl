@@ -85,10 +85,13 @@
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_action_client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_data.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_store.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 
+<mt:ignore>
 <mt:if name="optimize_ui">
-  <script type="text/javascript" src="<mt:var name="static_uri">riot-3.6.0/riot.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/listing/tag/listing.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">riot/riot.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/listing/listing.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <mt:else>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-top.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/display-options.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
@@ -96,12 +99,17 @@
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-filter.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-table.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-
-  <script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_data.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_store.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-
-  <script type="text/javascript" src="<mt:var name="static_uri">riot-3.6.0/riot+compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">riot/riot+compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:if>
+</mt:ignore>
+
+<script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-top.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/display-options.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-actions.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-filter.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-table.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">riot/riot+compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 
 <script>
 (function () {
@@ -215,9 +223,9 @@
   </mt:if>
 
   <mt:if name="action_label">
-  var singular = '<mt:var name="action_label">';
+    var singular = '<mt:var name="action_label">';
   <mt:else>
-  var singular = '<mt:var name="object_label" lower_case="1" escape="js">';
+    var singular = '<mt:var name="object_label" lower_case="1" escape="js">';
   </mt:if>
 
   <mt:if name="action_label_plural">

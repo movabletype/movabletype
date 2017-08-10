@@ -1,9 +1,9 @@
 <mt:unless name="json">
   <mt:var name="screen_type" value="dialog-screen insert-content-data-dialog">
 
-<div>
-  <form action="" method="get" id="modal-search">
-    <input type="text" id="search" name="search" class="search-input text" style="width: 40%" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
+<div style="display: none;">
+  <form action="" method="get" id="modal-search" class="form-inline">
+    <input type="text" id="search" name="search" class="form-control search-input text" style="width: 40%" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
     <input type="image" id="search-button" class="search-command search-submit" src="<mt:var name="static_uri">images/search-submit-dialog.png" title="<__trans phrase="Search">" />
     <a href="javascript:void(0)" class="search-reset hidden">
       <__trans phrase="Reset">
@@ -20,7 +20,7 @@
   <div class="unit size1of1">
     <div id="listing-table" class="listing-table-block">
       <div id="listing-table-overlay" class="overlay"></div>
-      <table id="content-data-table" class="listing-table list-content-data">
+      <table id="content-data-table" class="table table-striped listing-table list-content-data">
   <mt:setvarblock name="table_header_footer">
           <th class="head cb">&nbsp;</th>
           <th class="head title primary string">
@@ -63,7 +63,7 @@
 <mt:unless name="json">
       </table>
     </div>
-    <div id="actions-bar" class="line">
+    <div id="actions-bar" class="float-right line">
       <mt:var name="list_actions">
     </div>
   </div>

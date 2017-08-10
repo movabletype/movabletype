@@ -9,23 +9,22 @@ use MT::Test qw( :db );
 use MT::Test::Permission;
 
 use MT::Category;
-use MT::CategoryList;
 use MT::ContentFieldIndex;
 
 my $blog_id = 1;
 
-my $category_list
-    = MT::Test::Permission->make_category_list( blog_id => $blog_id, );
+my $category_set
+    = MT::Test::Permission->make_category_set( blog_id => $blog_id, );
 
 my $category1 = MT::Test::Permission->make_category(
-    blog_id          => $category_list->blog_id,
-    category_list_id => $category_list->id,
-    label            => 'category1',
+    blog_id         => $category_set->blog_id,
+    category_set_id => $category_set->id,
+    label           => 'category1',
 );
 my $category2 = MT::Test::Permission->make_category(
-    blog_id          => $category_list->blog_id,
-    category_list_id => $category_list->id,
-    label            => 'category2',
+    blog_id         => $category_set->blog_id,
+    category_set_id => $category_set->id,
+    label           => 'category2',
 );
 
 my $ct = MT::Test::Permission->make_content_type(
@@ -34,11 +33,11 @@ my $ct = MT::Test::Permission->make_content_type(
 );
 
 my $cf = MT::Test::Permission->make_content_field(
-    blog_id             => $ct->blog_id,
-    content_type_id     => $ct->id,
-    name                => 'categories',
-    type                => 'categories',
-    related_cat_list_id => $category_list->id,
+    blog_id            => $ct->blog_id,
+    content_type_id    => $ct->id,
+    name               => 'categories',
+    type               => 'categories',
+    related_cat_set_id => $category_set->id,
 );
 
 my $fields = [
@@ -46,8 +45,8 @@ my $fields = [
         order   => 1,
         type    => $cf->type,
         options => {
-            label         => 1,
-            category_list => $cf->related_cat_list_id,
+            label        => 1,
+            category_set => $cf->related_cat_set_id,
         },
         unique_id => $cf->unique_id,
     }

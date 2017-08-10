@@ -299,8 +299,8 @@ sub create_default_roles {
             description => MT->translate('Can administer the website.'),
             perms       => [ 'administer_website', 'manage_member_blogs' ]
         },
-        {   name        => MT->translate('Blog Administrator'),
-            description => MT->translate('Can administer the blog.'),
+        {   name        => MT->translate('Child Site Administrator'),
+            description => MT->translate('Can administer the child site.'),
             role_mask   => 2**12,
             perms       => ['administer_blog']
         },
@@ -335,7 +335,8 @@ sub create_default_roles {
         },
         {   name        => MT->translate('Webmaster'),
             description => MT->translate(
-                'Can manage pages, upload files and publish blog templates.'),
+                'Can manage pages, upload files and publish site/child site templates.'
+            ),
             perms => [ 'manage_pages', 'rebuild', 'upload' ]
         },
         {   name        => MT->translate('Contributor (MT6)'),

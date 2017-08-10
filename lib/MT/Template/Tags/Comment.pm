@@ -96,6 +96,16 @@ fashion.
 
 =cut
 
+=head2 SiteIfCommentsOpen
+
+A conditional tag that returns true when: the system is configured to
+allow comments and the site is configured to accept comments in some
+fashion.
+
+=for tags comments
+
+=cut
+
 sub _hdlr_blog_if_comments_open {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
@@ -1155,6 +1165,15 @@ in context.
 
 =cut
 
+=head2 CommentSiteID
+
+Outputs the numeric ID of the site for the current comment
+in context.
+
+=for tags comments
+
+=cut
+
 sub _hdlr_comment_blog_id {
     my ($ctx) = @_;
     my $c = $ctx->stash('comment')
@@ -1647,7 +1666,7 @@ sub _hdlr_comment_reply_link {
         MT::Util::encode_html( MT::Util::encode_js($name) ), 1 );
     my $onclick
         = sprintf( $args->{onclick} || "mtReplyCommentOnClick(%d, '%s')",
-        $comment->id, $name );
+        $comment->id || 0, $name );
 
     return
         sprintf(
@@ -1899,6 +1918,25 @@ If true, will count only top-level comments
 =back
 
 =for tags multiblog, count, blogs, comments
+
+=cut
+
+=head2 SiteCommentCount
+
+Returns the number of published comments associated with the site
+currently in context.
+
+B<Attributes:>
+
+=over 4
+
+=item * top
+
+If true, will count only top-level comments
+
+=back
+
+=for tags multiblog, count, sites, comments
 
 =cut
 

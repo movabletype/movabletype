@@ -105,9 +105,6 @@ sub suite {
                 );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => scalar @users,
                     items => MT::DataAPI::Resource->from_object( \@users ),
@@ -130,9 +127,6 @@ sub suite {
                 );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => scalar @users,
                     items => MT::DataAPI::Resource->from_object( \@users ),
@@ -158,9 +152,6 @@ sub suite {
                 );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => scalar @users,
                     items => MT::DataAPI::Resource->from_object( \@users ),
@@ -186,9 +177,6 @@ sub suite {
                 );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( [$user] ),
@@ -230,9 +218,6 @@ sub suite {
                 );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( [$user] ),
@@ -258,9 +243,6 @@ sub suite {
                 );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => 3,
                     items => MT::DataAPI::Resource->from_object( \@users ),
@@ -303,9 +285,6 @@ sub suite {
                 @users = grep { $_->locked_out } @users;
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => 0,
                     items        => [],
@@ -332,9 +311,6 @@ sub suite {
                 @users = grep { !$_->locked_out } @users;
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 3,

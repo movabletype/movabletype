@@ -169,7 +169,7 @@ BEGIN {
             'accesstoken'     => 'MT::AccessToken',
 
             # MT7
-            'category_list'       => 'MT::CategoryList',
+            'category_set'        => 'MT::CategorySet',
             'cd'                  => 'MT::ContentData',
             'content_data'        => 'MT::ContentData',
             'cf'                  => 'MT::ContentField',
@@ -1088,8 +1088,8 @@ BEGIN {
                     requires_grep => \&MT::Filter::pack_requires_grep,
                 },
                 blog_name => {
-                    label        => 'Website/Blog Name',
-                    filter_label => '__WEBSITE_BLOG_NAME',
+                    label        => 'Site Name',
+                    filter_label => 'Site Name',
                     order        => 10000,
                     display      => 'default',
                     site_name    => 1,
@@ -1133,9 +1133,10 @@ BEGIN {
                                     MT->translate('*Website/Blog deleted*');
                                 next;
                             }
-                            if ((   my $site
-                                    = $blog_site_map{ $blog->parent_id }
-                                )
+                            my $site;
+                            if ($blog->parent_id
+                                && ( $site
+                                    = $blog_site_map{ $blog->parent_id } )
                                 && $prop->site_name
                                 )
                             {
@@ -1206,7 +1207,7 @@ BEGIN {
                         my $prop = shift;
                         my ($settings) = @_;
                         return MT->translate(
-                            '[_1] of this Website',
+                            '[_1] of this Site',
                             $settings->{object_label_plural}
                                 || $prop->datasource->class_label_plural,
                         );
@@ -1265,30 +1266,30 @@ BEGIN {
                     },
                 },
             },
-            website       => '$Core::MT::Website::list_props',
-            blog          => '$Core::MT::Blog::list_props',
-            entry         => '$Core::MT::Entry::list_props',
-            page          => '$Core::MT::Page::list_props',
-            asset         => '$Core::MT::Asset::list_props',
-            category      => '$Core::MT::Category::list_props',
-            folder        => '$Core::MT::Folder::list_props',
-            comment       => '$Core::MT::Comment::list_props',
-            ping          => '$Core::MT::TBPing::list_props',
-            author        => '$Core::MT::Author::list_props',
-            member        => '$Core::MT::Author::member_list_props',
-            commenter     => '$Core::MT::Author::commenter_list_props',
-            tag           => '$Core::MT::Tag::list_props',
-            banlist       => '$Core::MT::IPBanList::list_props',
-            association   => '$Core::MT::Association::list_props',
-            role          => '$Core::MT::Role::list_props',
-            notification  => '$Core::MT::Notification::list_props',
-            log           => '$Core::MT::Log::list_props',
-            filter        => '$Core::MT::Filter::list_props',
-            permission    => '$Core::MT::Permission::list_props',
-            template      => '$Core::MT::Template::list_props',
-            templatemap   => '$Core::MT::TemplateMap::list_props',
-            category_list => '$Core::MT::CategoryList::list_props',
-            content_type  => '$Core::MT::ContentType::list_props',
+            website      => '$Core::MT::Website::list_props',
+            blog         => '$Core::MT::Blog::list_props',
+            entry        => '$Core::MT::Entry::list_props',
+            page         => '$Core::MT::Page::list_props',
+            asset        => '$Core::MT::Asset::list_props',
+            category     => '$Core::MT::Category::list_props',
+            folder       => '$Core::MT::Folder::list_props',
+            comment      => '$Core::MT::Comment::list_props',
+            ping         => '$Core::MT::TBPing::list_props',
+            author       => '$Core::MT::Author::list_props',
+            member       => '$Core::MT::Author::member_list_props',
+            commenter    => '$Core::MT::Author::commenter_list_props',
+            tag          => '$Core::MT::Tag::list_props',
+            banlist      => '$Core::MT::IPBanList::list_props',
+            association  => '$Core::MT::Association::list_props',
+            role         => '$Core::MT::Role::list_props',
+            notification => '$Core::MT::Notification::list_props',
+            log          => '$Core::MT::Log::list_props',
+            filter       => '$Core::MT::Filter::list_props',
+            permission   => '$Core::MT::Permission::list_props',
+            template     => '$Core::MT::Template::list_props',
+            templatemap  => '$Core::MT::TemplateMap::list_props',
+            category_set => '$Core::MT::CategorySet::list_props',
+            content_type => '$Core::MT::ContentType::list_props',
         },
         system_filters => {
             entry     => '$Core::MT::Entry::system_filters',
@@ -1304,7 +1305,7 @@ BEGIN {
         },
         listing_screens => {
             website => {
-                object_label     => 'Website',
+                object_label     => 'Site',
                 primary          => 'name',
                 view             => 'system',
                 default_sort_key => 'name',
@@ -1316,7 +1317,7 @@ BEGIN {
                 },
             },
             blog => {
-                object_label     => 'Blog',
+                object_label     => 'Child Site',
                 view             => [qw( system website )],
                 primary          => 'name',
                 default_sort_key => 'name',
@@ -1690,13 +1691,13 @@ BEGIN {
                 data_api_condition  => sub {1},
                 data_api_scope_mode => 'this',
             },
-            template      => { data_api_scope_mode => 'strict', },
-            category_list => {
-                object_label     => 'Category List',
+            template     => { data_api_scope_mode => 'strict', },
+            category_set => {
+                object_label     => 'Category Set',
                 primary          => 'name',
                 view             => [ 'website', 'blog' ],
                 default_sort_key => 'name',
-                permission       => 'access_to_category_list_list',
+                permission       => 'access_to_category_set_list',
                 scope_mode       => 'this',
             },
             content_type => {
@@ -2703,7 +2704,7 @@ sub load_core_permissions {
         'blog.administer_website' => {
             'group'            => 'blog_admin',
             'inherit_from'     => ['blog.administer_blog'],
-            'label'            => 'Manage Website',
+            'label'            => 'Manage Site',
             'order'            => 200,
             'permitted_action' => {
                 'save_all_settings_for_website' => 1,
@@ -2728,7 +2729,7 @@ sub load_core_permissions {
                 'blog.upload',             'blog.view_blog_log',
                 'blog.manage_feedback',    'blog.manage_themes',
             ],
-            'label'            => 'Manage Blog',
+            'label'            => 'Manage Child Site',
             'order'            => 300,
             'permitted_action' => {
                 'access_to_blog_association_list'  => 1,
@@ -2764,7 +2765,7 @@ sub load_core_permissions {
         },
         'blog.manage_member_blogs' => {
             'group'            => 'blog_admin',
-            'label'            => 'Manage Website with Blogs',
+            'label'            => 'Manage Site with Child Sites',
             'inherit_from'     => ['blog.administer_website'],
             'order'            => 100,
             'permitted_action' => {
@@ -2898,18 +2899,18 @@ sub load_core_permissions {
             'label'            => 'Manage Categories',
             'order'            => 500,
             'permitted_action' => {
-                'access_to_category_list_list'        => 1,
+                'access_to_category_set_list'         => 1,
                 'access_to_category_list'             => 1,
                 'bulk_edit_category_trackbacks'       => 1,
-                'delete_category_list'                => 1,
+                'delete_category_set'                 => 1,
                 'delete_category'                     => 1,
                 'delete_category_trackback'           => 1,
-                'edit_category_list'                  => 1,
+                'edit_category_set'                   => 1,
                 'edit_categories'                     => 1,
                 'handle_junk_for_category_trackback'  => 1,
                 'open_category_edit_screen'           => 1,
                 'open_category_trackback_edit_screen' => 1,
-                'save_category_list'                  => 1,
+                'save_category_set'                   => 1,
                 'save_category'                       => 1,
                 'save_category_trackback'             => 1,
                 'search_category_trackbacks'          => 1,

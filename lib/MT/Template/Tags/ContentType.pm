@@ -117,13 +117,15 @@ sub _hdlr_contents {
         my $content_type = MT::ContentType->load($ct_id);
         local $ctx->{__stash}{content_type} = $content_type;
 
-        my $out = $builder->build(
-            $ctx, $tok,
-            {   %{$cond},
-                ContentsHeader => !$i,
-                ContentsFooter => !defined $contents[ $i + 1 ],
-            }
-        );
+        defined(
+            my $out = $builder->build(
+                $ctx, $tok,
+                {   %{$cond},
+                    ContentsHeader => !$i,
+                    ContentsFooter => !defined $contents[ $i + 1 ],
+                }
+            )
+        ) or return $ctx->error( $builder->errstr );
         $res .= $out;
         $i++;
     }
@@ -371,7 +373,7 @@ sub _hdlr_content_unpublished_date {
     my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    $args->{ts} = $cd->unpublished_on;
+    $args->{ts} = $cd->unpublished_on or return '';
     return $ctx->build_date($args);
 }
 
@@ -942,12 +944,12 @@ sub _hdlr_content_calendar {
     my ( $cat_name, $cat );
     if ( defined $args->{category} ) {
         $cat_name = $args->{category};
-        my $category_list_id = $args->{category_list_id};
+        my $category_set_id = $args->{category_set_id};
         $cat = MT::Category->load(
             {   label   => $cat_name,
                 blog_id => $blog_id,
-                $category_list_id
-                ? ( category_list_id => $category_list_id )
+                $category_set_id
+                ? ( category_set_id => $category_set_id )
                 : (),
             }
             )

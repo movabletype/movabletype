@@ -2612,7 +2612,7 @@ MT.App.CategorySelector = new Class( Component, {
         this.catInput = DOM.getElement( args.catInput || "add-category-input" );
         this.catInputMovableId = args.catInputMovableId || "add-category-input-movable";
 
-        this.categoryListId = args.categoryListId || 0;
+        this.categorySetId = args.categorySetId || 0;
         this.contentFieldId = args.contentFieldId || 0;
 
         this.list = this.addComponent( new List( element + '-list', template ) );
@@ -2789,9 +2789,9 @@ MT.App.CategorySelector = new Class( Component, {
             __mode: this.isTag ? "js_add_tag" : "js_add_category",
             magic_token: app.form["magic_token"].value,
             blog_id: app.form["blog_id"].value || DOM.getElement("blog-id").value,
-            category_list_id: this.categoryListId,
+            category_set_id: this.categorySetId,
             parent: parseInt( this.parentID ),
-            _type: this.categoryListId ? 'category' : this.type
+            _type: this.categorySetId ? 'category' : this.type
         };
         args.label = name;
 
@@ -2928,7 +2928,7 @@ MT.App.CategorySelector = new Class( Component, {
             Array.fromPseudo( list.getSelectedIDs() )
         );
         ( this.catList || app.catList ).redraw();
-        if ( !this.opening && this.type == 'folder' && !this.categoryListId && !this.isTag )
+        if ( !this.opening && this.type == 'folder' && !this.categorySetId && !this.isTag )
             this.close();
         this.setDirtyIfNeeded( list, ids );
     },

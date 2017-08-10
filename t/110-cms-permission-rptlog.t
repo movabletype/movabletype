@@ -27,7 +27,7 @@ my $admin = MT::Author->load(1);
 
 # Role
 require MT::Role;
-my $website_admin = MT::Role->load( { name => MT->translate( 'Website Administrator' ) } );
+my $website_admin = MT::Role->load( { name => MT->translate( 'Site Administrator' ) } );
 
 require MT::Association;
 MT::Association->link( $aikawa => $website_admin => $website );

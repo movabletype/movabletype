@@ -169,11 +169,11 @@ sub save {
         }
 
         unless ( $obj->id ) {
-            my $subdomain = $q->param('site_url_subdomain');
+            my $subdomain = $q->param('site_url_subdomain') || '';
             $subdomain = '' if !$q->param('use_subdomain');
             $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
             $subdomain =~ s/\.{2,}/\./g;
-            my $path = $q->param('site_url_path');
+            my $path = $q->param('site_url_path') || '';
             $values{site_url} = "$subdomain/::/$path";
 
             $values{site_path} = $app->param('site_path_absolute')
@@ -1546,7 +1546,7 @@ sub filtered_list {
     my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
     my @cols = grep {/^[^\.]+$/} split( ',', $cols );
     my @subcols = grep {/\./} split( ',', $cols );
-    my $class = MT->model( $setting->{object_type} ) || MT->model($ds);
+    my $class = MT->model( $setting->{object_type} || $ds );
     if ( $class->has_column('id') ) {
         unshift @cols,    '__id';
         unshift @subcols, '__id';

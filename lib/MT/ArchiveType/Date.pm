@@ -99,7 +99,7 @@ sub get_entry {
     my $archiver = shift;
     my ( $ts, $blog_id, $order ) = @_;
     my ( $start, $end ) = $archiver->date_range($ts);
-    if ( $order eq 'previous' ) {
+    if ( $order and $order eq 'previous' ) {
         $order = 'descend';
         $ts    = $start;
     }

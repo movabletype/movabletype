@@ -65,8 +65,8 @@ my $create_post = MT::Test::Permission->make_role(
 );
 
 my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
-my $blog_admin = MT::Role->load( { name => MT->translate( 'Blog Administrator' ) } );
-my $website_admin = MT::Role->load( { name => MT->translate( 'Website Administrator' ) } );
+my $blog_admin = MT::Role->load( { name => MT->translate( 'Child Site Administrator' ) } );
+my $website_admin = MT::Role->load( { name => MT->translate( 'Site Administrator' ) } );
 
 require MT::Association;
 MT::Association->link( $aikawa => $blog_admin => $blog );

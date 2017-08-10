@@ -53,6 +53,16 @@ sub core_tags {
                 \&MT::Template::Tags::App::_hdlr_app_setting_group,
             'App:Form' => \&MT::Template::Tags::App::_hdlr_app_form,
 
+            ## Site
+            Sites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
+            ChildSites => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
+            SiteParentSite =>
+                '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
+            'SiteHasChildSite?' =>
+                '$Core::MT::Template::Tags::Site::_hdlr_site_has_child_site',
+            'SiteIfCommentsOpen?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
+
             ## Blog
             Blogs     => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
             'IfBlog?' => '$Core::MT::Template::Tags::Blog::_hdlr_if_blog',
@@ -437,7 +447,65 @@ sub core_tags {
                 \&MT::Template::Tags::App::_hdlr_app_list_filters,
             'App:ActionBar' =>
                 \&MT::Template::Tags::App::_hdlr_app_action_bar,
-            'App:Link' => \&MT::Template::Tags::App::_hdlr_app_link,
+            'App:Link'    => \&MT::Template::Tags::App::_hdlr_app_link,
+            'App:SVGIcon' => \&MT::Template::Tags::App::_hdlr_app_svg_icon,
+
+            ## Site
+            SiteID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
+            SiteName => '$Core::MT::Template::Tags::Blog::_hdlr_blog_name',
+            SiteDescription =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_description',
+            SiteLanguage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_language',
+            SiteDateLanguage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_date_language',
+            SiteURL => '$Core::MT::Template::Tags::Blog::_hdlr_blog_url',
+            SiteArchiveURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_archive_url',
+            SiteRelativeURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_relative_url',
+            SitePath =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_site_path',
+            SiteHost => '$Core::MT::Template::Tags::Blog::_hdlr_blog_host',
+            SiteTimezone =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_timezone',
+            SiteCCLicenseURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',
+            SiteCCLicenseImage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',
+            SiteFileExtension =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_file_extension',
+            SiteThemeID =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_theme_id',
+
+            EntrySiteID =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_id',
+            EntrySiteName =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_name',
+            EntrySiteDescription =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_description',
+            EntrySiteURL =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_url',
+            SiteEntryCount =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
+
+            CommentSiteID =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_blog_id',
+            SiteCommentCount =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
+            PingSiteName =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_ping_blog_name',
+            SitePingCount =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
+
+            SiteCategoryCount =>
+                '$Core::MT::Template::Tags::Category::_hdlr_blog_category_count',
+
+            SitePageCount =>
+                '$Core::MT::Template::Tags::Page::_hdlr_blog_page_count',
+
+            AssetSiteID =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_blog_id',
 
             ## Blog
             BlogID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
@@ -3307,7 +3375,7 @@ sub _hdlr_app_widget {
     elsif ($label_link) {
         $widget_header = "\n<a href=\"$label_link\"><span>$label</span></a>";
     }
-    else {
+    elsif ( defined $label ) {
         $widget_header = "\n<span>$label</span>";
     }
     my $token    = $ctx->var('magic_token')     || '';
@@ -4089,6 +4157,44 @@ sub _hdlr_app_link {
         }
     }
     return $app->uri( mode => $mode, args => \%args );
+}
+
+###########################################################################
+
+=head2 App:SVGIcon
+
+Produces tags of svg image.
+
+B<Attributes:>
+
+=over 4
+
+=item * title
+
+=item * size
+
+=item * icon
+
+=item * fill
+
+=back
+
+=for tags application
+
+=cut
+
+sub _hdlr_app_svg_icon {
+    my ( $ctx, $args, $cond ) = @_;
+    my $title = $args->{title};
+    my $size  = $args->{size} || 'width: 28px; height: 28px;';
+    my $icon  = $args->{icon};
+    my $fill  = $args->{fill};
+
+    my $static_uri = MT->static_path;
+
+    qq!<svg title="${title}" role="img" style="${size} fill: ${fill};">
+  <use xlink:href="${static_uri}images/sprite.svg#mt-static--images--svg--${icon}">
+</svg>!;
 }
 
 package MT::Template::Tags::System;

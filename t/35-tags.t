@@ -2,7 +2,8 @@
 # $Id: 35-tags.t 3531 2009-03-12 09:11:52Z fumiakiy $
 use strict;
 use warnings;
-use IPC::Open2;
+use IPC::Run3;
+use IO::String;
 
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
@@ -72,8 +73,8 @@ my %const = (
     DYNAMIC_CONSTANT => '',
     DAYS_CONSTANT1 => $daysdiff + 2,
     DAYS_CONSTANT2 => $daysdiff - 1,
-    CURRENT_YEAR => POSIX::strftime("%Y", localtime),
-    CURRENT_MONTH => POSIX::strftime("%m", localtime),
+    CURRENT_YEAR => POSIX::strftime("%Y", gmtime(time + $blog->server_offset * 3600)),
+    CURRENT_MONTH => POSIX::strftime("%m", gmtime(time + $blog->server_offset * 3600)),
     STATIC_FILE_PATH => MT->instance->static_file_path . '/',
     THREE_DAYS_AGO => epoch2ts($blog, time() - int(3.5 * 86400)),
 );
@@ -98,7 +99,11 @@ foreach my $test_item (@$test_suite) {
     is($result, $test_item->{e}, "perl test " . $num++);
 }
 
-php_tests($test_suite);
+SKIP: {
+    skip "Can't find executable file: php", scalar @$test_suite
+        unless has_php();
+    php_tests($test_suite);
+}
 
 sub build {
     my($ctx, $markup) = @_;
@@ -158,6 +163,11 @@ $ctx->stash('blog', $blog);
 $ctx->stash('current_timestamp', '20040816135142');
 $mt->init_plugins();
 $entry = $db->fetch_entry(1);
+
+if ($blog->server_offset) {
+    $const['CURRENT_YEAR'] = strftime("%Y", time() + $blog->server_offset * 3600);
+    $const['CURRENT_MONTH'] = strftime("%m", time() + $blog->server_offset * 3600);
+}
 
 $suite = load_tests();
 
@@ -265,12 +275,6 @@ PHP
     $test_script =~ s/<\Q$_\E>/$const{$_}/g for keys %const;
 
     # now run the test suite through PHP!
-    my $pid = open2(\*IN, \*OUT, "php");
-    print OUT $test_script;
-    close OUT;
-    select IN;
-    $| = 1;
-    select STDOUT;
 
     my @lines;
     my $num = 1;
@@ -289,9 +293,14 @@ PHP
             }
         }
     };
+    run3 ['php', '-q'],
+        \$test_script, \my $php_result, undef
+        or die $?;
+
+    my $RESULT = IO::String->new($php_result);
 
     my $output = '';
-    while (<IN>) {
+    while (<$RESULT>) {
         $output .= $_;
         if ($output =~ m/\n/) {
             my @new_lines = split /\n/, $output;
@@ -301,6 +310,6 @@ PHP
         $test->() if @lines;
     }
     push @lines, $output if $output ne '';
-    close IN;
+    close $RESULT;
     $test->() if @lines;
 }

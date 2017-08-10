@@ -52,7 +52,9 @@ function init() {
 
         <div class="modal-body">
 
-        <p><__trans phrase="Choose the profile that best matches the requirements for this blog."></p>
+        <p>
+            <__trans phrase="Choose the profile that best matches the requirements for this [_1]." params="<mt:if name="is_blog"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if>">
+        </p>
 
         <mtapp:setting
             id="dynamicity"

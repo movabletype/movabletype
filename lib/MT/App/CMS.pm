@@ -380,7 +380,7 @@ sub core_methods {
 
         'data_convert_to_html' => "${pkg}ContentData::data_convert_to_html",
 
-        'view_category_list' => "${pkg}CategoryList::view",
+        'view_category_set' => "${pkg}CategorySet::view",
 
         'select_list_content_fields' =>
             "${pkg}ContentType::select_list_content_fields",
@@ -413,7 +413,7 @@ sub core_widgets {
             default  => 1,
         },
         recent_websites => {
-            label    => 'Websites',
+            label    => 'Sites',
             template => 'widget/recent_websites.tmpl',
             handler  => "${pkg}Dashboard::recent_websites_widget",
             singular => 1,
@@ -423,7 +423,7 @@ sub core_widgets {
             default  => 1,
         },
         recent_blogs => {
-            label    => 'Blogs',
+            label    => 'Child Sites',
             template => 'widget/recent_blogs.tmpl',
             handler  => "${pkg}Dashboard::recent_blogs_widget",
             singular => 1,
@@ -433,7 +433,7 @@ sub core_widgets {
             default  => 1,
         },
         favorite_blogs => {
-            label    => 'Websites and Blogs',
+            label    => 'Sites and Child Sites',
             template => 'widget/favorite_blogs.tmpl',
             handler  => "${pkg}Dashboard::favorite_blogs_widget",
             singular => 1,
@@ -1578,7 +1578,7 @@ sub core_list_actions {
                 },
             },
             move_blogs => {
-                label         => "Move blog(s) ",
+                label         => "Move child site(s) ",
                 order         => 200,
                 code          => "${pkg}Website::dialog_move_blogs",
                 permit_action => 'move_blogs',
@@ -1591,7 +1591,7 @@ sub core_list_actions {
                 }
             },
             clone_blog => {
-                label         => "Clone Blog",
+                label         => "Clone Child Site",
                 code          => "${pkg}Blog::clone",
                 permit_action => 'clone_blog',
                 max           => 1,
@@ -1857,8 +1857,8 @@ sub core_list_actions {
                 button => 1,
             },
         },
-        'category_list' => '$Core::MT::CMS::CategoryList::list_actions',
-        'content_type'  => '$Core::MT::CMS::ContentType::list_actions',
+        'category_set' => '$Core::MT::CMS::CategorySet::list_actions',
+        'content_type' => '$Core::MT::CMS::ContentType::list_actions',
         %{ MT::CMS::ContentData::make_list_actions() },
     };
 }
@@ -1873,11 +1873,11 @@ sub core_menus {
     my $app = shift;
     return {
         'website' => {
-            label => "Websites",
+            label => "Sites",
             order => 50,
         },
         'blog' => {
-            label => "Blogs",
+            label => "Child Sites",
             order => 100,
         },
         'entry' => {
@@ -2629,24 +2629,24 @@ sub core_menus {
             view  => [ 'website', 'blog' ],
         },
 
-        'category_list' => {
-            label => 'Category Lists',
+        'category_set' => {
+            label => 'Category Sets',
             order => 9500,
         },
-        'category_list:manage' => {
+        'category_set:manage' => {
             label     => 'Manage',
             order     => 100,
             mode      => 'list',
-            condition => '$Core::MT::CMS::CategoryList::manage_condition',
-            args      => { _type => 'category_list' },
+            condition => '$Core::MT::CMS::CategorySet::manage_condition',
+            args      => { _type => 'category_set' },
             view      => [ 'website', 'blog' ],
         },
-        'category_list:create' => {
+        'category_set:create' => {
             label      => 'New',
             order      => 200,
             mode       => 'view',
             permission => 'edit_categories',
-            args       => { _type => 'category_list' },
+            args       => { _type => 'category_set' },
             view       => [ 'website', 'blog' ],
         },
 
@@ -2791,7 +2791,7 @@ sub core_disable_object_methods {
                 return 1;
             },
         },
-        category_list => {
+        category_set => {
             save => 1,
             edit => 1,
         },
@@ -4520,7 +4520,7 @@ sub _entry_prefs_from_params {
     my $disp     = $q->param('entry_prefs') || '';
     my @fields;
     if ( lc $disp eq 'custom' ) {
-        @fields = split /,/, $q->param( $prefix . 'custom_prefs' );
+        @fields = split /,/, $q->param( $prefix . 'custom_prefs' ) || '';
     }
     elsif ($disp) {
         push @fields, $disp;
@@ -4532,7 +4532,8 @@ sub _entry_prefs_from_params {
     if ( my $body_height = $q->param('text_height') ) {
         push @fields, 'body:' . $body_height;
     }
-    return join( ',', @fields ) . '|' . $q->param('bar_position');
+    return
+        join( ',', @fields ) . '|' . ( $q->param('bar_position') || 'top' );
 }
 
 # rebuild_set is a hash whose keys are entry IDs
@@ -4573,7 +4574,7 @@ sub rebuild_these {
                 $app->rebuild_indexes( Blog => $blog )
                     or return $app->publish_error();
             }
-            my $blog_id = int( $app->param('blog_id') );
+            my $blog_id = int( $app->param('blog_id') || 0 );
             my $this_blog;
             $this_blog = MT::Blog->load($blog_id) if $blog_id;
             $app->run_callbacks( 'rebuild', $this_blog );
@@ -4719,9 +4720,9 @@ sub _build_category_list {
     my $include_markers = $param{markers};
     my $counts          = $param{counts};
     my $type            = $param{type};
-    my $cat_list_id;
+    my $cat_set_id;
     if ( $type eq 'category' ) {
-        $cat_list_id = $param{cat_list_id};
+        $cat_set_id = $param{cat_set_id};
     }
 
     my @data;
@@ -4738,10 +4739,10 @@ sub _build_category_list {
     }
 
     my $id_ord;
-    if ($cat_list_id) {
-        require MT::CategoryList;
-        if ( my $cat_list = MT::CategoryList->load($cat_list_id) ) {
-            $id_ord = $cat_list->order || '';
+    if ($cat_set_id) {
+        require MT::CategorySet;
+        if ( my $cat_set = MT::CategorySet->load($cat_set_id) ) {
+            $id_ord = $cat_set->order || '';
         }
     }
     else {
@@ -4753,8 +4754,8 @@ sub _build_category_list {
     }
 
     my @cats = $class->load(
-        {   blog_id          => $blog_id,
-            category_list_id => $cat_list_id || [ \'IS NULL', 0 ],
+        {   blog_id         => $blog_id,
+            category_set_id => $cat_set_id || [ \'IS NULL', 0 ],
         }
     );
     @cats = MT::Category::_sort_by_id_list(

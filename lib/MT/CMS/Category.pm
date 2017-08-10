@@ -154,8 +154,8 @@ sub bulk_update {
     my $app = shift;
     $app->validate_magic or return;
 
-    my $is_category_list = $app->param('is_category_list');
-    my $list_id          = $app->param('list_id');
+    my $is_category_set = $app->param('is_category_set');
+    my $set_id          = $app->param('set_id');
 
     my $model = $app->param('datasource') || 'category';
     if ( 'category' eq $model ) {
@@ -163,9 +163,9 @@ sub bulk_update {
             or
             return $app->json_error( $app->translate("Permission denied.") );
 
-        if ($is_category_list) {
+        if ($is_category_set) {
             return $app->json_error( $app->translate('Permission defined.') )
-                unless $app->can_do('save_category_list');
+                unless $app->can_do('save_category_set');
         }
     }
     elsif ( 'folder' eq $model ) {
@@ -196,47 +196,47 @@ sub bulk_update {
         $objects = [];
     }
 
-    my $list;
-    if ($is_category_list) {
-        if ($list_id) {
-            $list = MT->model('category_list')->load($list_id)
-                or return $app->errtrans( 'Invalid category_list_id: [_1]',
-                $list_id );
-            $list->name( scalar $app->param('list_name') );
-            $list->save or return $app->error( $list->errstr );
+    my $set;
+    if ($is_category_set) {
+        if ($set_id) {
+            $set = MT->model('category_set')->load($set_id)
+                or return $app->errtrans( 'Invalid category_set_id: [_1]',
+                $set_id );
+            $set->name( scalar $app->param('set_name') );
+            $set->save or return $app->error( $set->errstr );
         }
         else {
-            $list = MT->model('category_list')->new;
-            $list->set_values(
+            $set = MT->model('category_set')->new;
+            $set->set_values(
                 {   blog_id => $blog_id,
-                    name    => scalar $app->param('list_name'),
+                    name    => scalar $app->param('set_name'),
                 }
             );
-            $list->save or return $app->error( $list->errstr );
-            $list_id = $list->id;
-            $app->request( 'new_category_list_id', $list_id );
+            $set->save or return $app->error( $set->errstr );
+            $set_id = $set->id;
+            $app->request( 'new_category_set_id', $set_id );
         }
     }
 
     my $old_objects_terms;
-    if ($list_id) {
+    if ($set_id) {
         $old_objects_terms
-            = { blog_id => $blog_id, category_list_id => $list_id };
+            = { blog_id => $blog_id, category_set_id => $set_id };
     }
-    elsif ($is_category_list) {
+    elsif ($is_category_set) {
         $old_objects_terms = { id => 0 };    # no data
     }
     else {
         $old_objects_terms
-            = { blog_id => $blog_id, category_list_id => [ \'IS NULL', 0 ] };
+            = { blog_id => $blog_id, category_set_id => [ \'IS NULL', 0 ] };
     }
     my @old_objects = $class->load($old_objects_terms);
 
     # Test CheckSum
     my $cat_order;
     my $meta = $model . '_order';
-    if ($is_category_list) {
-        $cat_order = $list->order || '';
+    if ($is_category_set) {
+        $cat_order = $set->order || '';
     }
     else {
         $cat_order = $app->blog->$meta || '';
@@ -255,7 +255,7 @@ sub bulk_update {
             sort { $a->id <=> $b->id } @old_objects
     );
     require Digest::MD5;
-    if ( $app->param('checksum') ne Digest::MD5::md5_hex($text) ) {
+    if ( ( $app->param('checksum') || '' ) ne Digest::MD5::md5_hex($text) ) {
         return $app->json_error(
             $app->translate(
                 'Failed to update [_1]: Some of [_2] were changed after you opened this page.',
@@ -282,7 +282,7 @@ sub bulk_update {
             $new_obj->set_values($obj);
             $new_obj->blog_id($blog_id);
             $new_obj->author_id( $app->user->id );
-            $new_obj->category_list_id($list_id) if $list_id;
+            $new_obj->category_set_id($set_id) if $set_id;
             push @objects, $new_obj;
             push @creates, $new_obj;
             $new_obj->{tmp_id} = $tmp_id;
@@ -362,8 +362,8 @@ sub bulk_update {
     $app->touch_blogs;
 
     my $previous_order;
-    if ($is_category_list) {
-        $previous_order = $list->order || '';
+    if ($is_category_set) {
+        $previous_order = $set->order || '';
     }
     else {
         $previous_order = $blog->$meta || '';
@@ -385,9 +385,9 @@ sub bulk_update {
             }
         );
 
-        if ($is_category_list) {
-            $list->order($new_order);
-            $list->save;
+        if ($is_category_set) {
+            $set->order($new_order);
+            $set->save;
         }
         else {
             $blog->$meta($new_order);
@@ -461,8 +461,7 @@ sub category_do_add {
     if ( !$author->is_superuser ) {
         $app->run_callbacks( 'cms_save_permission_filter.' . $type,
             $app, undef )
-            || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            || return $app->error( $app->translate("Permission denied") );
     }
 
     my $filter_result
@@ -491,13 +490,13 @@ sub js_add_category {
     unless ( $app->validate_magic ) {
         return $app->json_error( $app->translate("Invalid request.") );
     }
-    my $user             = $app->user;
-    my $blog_id          = $app->param('blog_id');
-    my $perms            = $app->permissions;
-    my $type             = $app->param('_type') || 'category';
-    my $category_list_id = 0;
+    my $user            = $app->user;
+    my $blog_id         = $app->param('blog_id');
+    my $perms           = $app->permissions;
+    my $type            = $app->param('_type') || 'category';
+    my $category_set_id = 0;
     if ( $type eq 'category' ) {
-        $category_list_id = $app->param('category_list_id') || 0;
+        $category_set_id = $app->param('category_set_id') || 0;
     }
     return $app->json_error( $app->translate("Invalid request.") )
         unless ( $type eq 'category' )
@@ -523,10 +522,9 @@ sub js_add_category {
     if ( my $parent_id = $app->param('parent') ) {
         if ( $parent_id != -1 ) {    # special case for 'root' folder
             $parent = $class->load(
-                {   id               => $parent_id,
-                    blog_id          => $blog_id,
-                    category_list_id => $category_list_id
-                        || [ \'IS NULL', 0 ],
+                {   id              => $parent_id,
+                    blog_id         => $blog_id,
+                    category_set_id => $category_set_id || [ \'IS NULL', 0 ],
                 }
             );
             if ( !$parent ) {
@@ -543,7 +541,7 @@ sub js_add_category {
     $obj->basename($basename)   if $basename;
     $obj->parent( $parent->id ) if $parent;
     $obj->blog_id($blog_id);
-    $obj->category_list_id($category_list_id);
+    $obj->category_set_id($category_set_id);
     $obj->author_id( $user->id );
     $obj->created_by( $user->id );
 
@@ -572,8 +570,8 @@ sub js_add_category {
     # So, broken order cannot be updated correctly.
     my $order_field;
     my @order;
-    if ($category_list_id) {
-        @order = split ',', ( $obj->category_list->order || '' );
+    if ($category_set_id) {
+        @order = split ',', ( $obj->category_set->order || '' );
     }
     else {
         $order_field = "${type}_order";
@@ -586,10 +584,10 @@ sub js_add_category {
         unshift @order, $obj->id;
     }
     my $new_order = join ',', @order;
-    if ($category_list_id) {
-        my $category_list = $obj->category_list;
-        $category_list->order($new_order);
-        $category_list->save;
+    if ($category_set_id) {
+        my $category_set = $obj->category_set;
+        $category_set->order($new_order);
+        $category_set->save;
     }
     else {
         $blog->$order_field($new_order);
@@ -663,9 +661,9 @@ sub pre_save {
         $obj->{__tb_passphrase} = $pass;
     }
     my @siblings = $pkg->load(
-        {   parent           => $obj->parent,
-            blog_id          => $obj->blog_id,
-            category_list_id => $obj->category_list_id || [ \'IS NULL', 0 ],
+        {   parent          => $obj->parent,
+            blog_id         => $obj->blog_id,
+            category_set_id => $obj->category_set_id || [ \'IS NULL', 0 ],
         }
     );
     foreach (@siblings) {
@@ -679,9 +677,9 @@ sub pre_save {
         return $eh->error(
             $app->translate(
                 "The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.",
-                $_->label
+                $_->basename
             )
-        ) if $_->basename eq $obj->basename;
+        ) if defined $obj->basename and $_->basename eq $obj->basename;
     }
     return $eh->error(
         $app->translate( "The name '[_1]' is too long!", $obj->label ) )
@@ -856,17 +854,17 @@ sub move_category {
 sub template_param_list {
     my ( $cb, $app, $param, $tmpl ) = @_;
 
-    if ( $param->{is_category_list} = $app->param('is_category_list') ) {
-        my $list_id = $app->param('id');
-        my $list = MT->model('category_list')->load( $list_id || 0 );
+    if ( $param->{is_category_set} = $app->param('is_category_set') ) {
+        my $set_id = $app->param('id');
+        my $set = MT->model('category_set')->load( $set_id || 0 );
 
-        if ($list) {
-            $param->{id}        = $list->id;
-            $param->{list_name} = $list->name;
+        if ($set) {
+            $param->{id}       = $set->id;
+            $param->{set_name} = $set->name;
         }
 
-        my $verb = $list ? 'Edit' : 'Create';
-        my $object_label = $app->translate('Category List');
+        my $verb = $set ? 'Edit' : 'Create';
+        my $object_label = $app->translate('Category Set');
         $param->{page_title}
             = $app->translate( "${verb} [_1]", $object_label );
     }
@@ -890,21 +888,21 @@ sub pre_load_filtered_list {
     $opts->{sort_by} = 'custom_sort';
     @$cols = qw( id parent label basename entry_count );
 
-    if ( my $list_id = $app->param('list_id') ) {
+    if ( my $set_id = $app->param('set_id') ) {
         $opts->{terms} ||= {};
-        $opts->{terms}{category_list_id} = $list_id;
+        $opts->{terms}{category_set_id} = $set_id;
     }
-    elsif ( $app->param('is_category_list') ) {
+    elsif ( $app->param('is_category_set') ) {
         $opts->{terms} ||= {};
         $opts->{terms}{id} = 0;    # return no data
     }
     else {
-        my $list_id_terms = { category_list_id => [ \'IS NULL', 0 ] };
+        my $set_id_terms = { category_set_id => [ \'IS NULL', 0 ] };
         if ( $opts->{terms} ) {
-            $opts->{terms} = [ $opts->{terms}, $list_id_terms ];
+            $opts->{terms} = [ $opts->{terms}, $set_id_terms ];
         }
         else {
-            $opts->{terms} = $list_id_terms;
+            $opts->{terms} = $set_id_terms;
         }
     }
 }
@@ -913,10 +911,10 @@ sub filtered_list_param {
     my ( $cb, $app, $param, $objs ) = @_;
 
     my $sort_order = '';
-    if ( $app->param('is_category_list') ) {
-        if ( my $list_id = $app->param('list_id') ) {
-            my $list = $app->model('category_list')->load($list_id);
-            $sort_order = $list->order || '';
+    if ( $app->param('is_category_set') ) {
+        if ( my $set_id = $app->param('set_id') ) {
+            my $set = $app->model('category_set')->load($set_id);
+            $sort_order = $set->order || '';
         }
     }
     else {
@@ -936,13 +934,13 @@ sub filtered_list_param {
     require Digest::MD5;
     $param->{checksum} = Digest::MD5::md5_hex($text);
 
-    if ( my $new_list_id = $app->request('new_category_list_id') ) {
+    if ( my $new_set_id = $app->request('new_category_set_id') ) {
         $param->{redirect_url} = $app->uri(
             mode => 'view',
             args => {
-                _type   => 'category_list',
+                _type   => 'category_set',
                 blog_id => $app->blog->id,
-                id      => $new_list_id,
+                id      => $new_set_id,
                 saved   => 1,
             },
         );

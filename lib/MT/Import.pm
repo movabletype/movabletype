@@ -144,6 +144,10 @@ sub _get_stream_iterator {
                 $stream = $fh;
             };
         }
+        else {
+            return $class->error(
+                MT->translate( "File not found: [_1]", $stream ) );
+        }
     }
     $iter;
 }

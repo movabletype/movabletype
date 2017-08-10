@@ -120,13 +120,13 @@ sub filter_tmpl_multiple {
 __TMPL__
 }
 
-sub data_getter_multiple {
+sub data_load_handler_multiple {
     my ( $app, $field_data ) = @_;
     my $field_id = $field_data->{id};
     [ $app->param("content-field-${field_id}") ];
 }
 
-sub data_getter_asset {
+sub data_load_handler_asset {
     my ( $app, $field_data ) = @_;
     my $field_id = $field_data->{id};
     my $asset_ids = $app->param( 'content-field-' . $field_id ) || '';
@@ -247,7 +247,7 @@ sub html_multiple {
     my ( $content_data, $app, $opts ) = @_;
 
     my $content_field = MT::ContentField->load( $prop->content_field_id );
-    my %label_hash = map { $_->{value} => $_->{key} }
+    my %label_hash = map { $_->{value} => $_->{label} }
         @{ $content_field->options->{values} };
 
     my $values = $content_data->data->{ $prop->content_field_id } || [];
