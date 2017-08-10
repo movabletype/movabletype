@@ -4192,7 +4192,7 @@ sub _hdlr_app_svg_icon {
 
     my $static_uri = MT->static_path;
 
-    qq!<svg title=${title} role="img" style="${size} fill: ${fill};">
+    qq!<svg title="${title}" role="img" style="${size} fill: ${fill};">
   <use xlink:href="${static_uri}images/sprite.svg#mt-static--images--svg--${icon}">
 </svg>!;
 }
