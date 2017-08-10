@@ -20,6 +20,20 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-AUTHOR-YEARLY_ADV");
 }
 
+sub default_archive_templates {
+    return [
+        {   label           => 'author/author-basename/yyyy/index.html',
+            template        => 'author/%-a/%y/%f',
+            default         => 1,
+            required_fields => { date_and_time => 1 }
+        },
+        {   label           => 'author/author_basename/yyyy/index.html',
+            template        => 'author/%a/%y/%f',
+            required_fields => { date_and_time => 1 }
+        },
+    ];
+}
+
 sub template_params {
     return { archive_class => "contenttype-author-yearly-archive" };
 }

@@ -19,6 +19,18 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-AUTHOR_ADV");
 }
 
+sub default_archive_templates {
+    return [
+        {   label    => 'author/author-basename/index.html',
+            template => 'author/%-a/%f',
+            default  => 1
+        },
+        {   label    => 'author/author_basename/index.html',
+            template => 'author/%a/%f'
+        },
+    ];
+}
+
 sub template_params {
     return { archive_class => "contenttype-author-archive" };
 }

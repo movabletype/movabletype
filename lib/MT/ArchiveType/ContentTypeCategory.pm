@@ -23,10 +23,12 @@ sub default_archive_templates {
     return [
         {   label    => MT->translate('category/sub-category/index.html'),
             template => '%-c/%i',
-            default  => 1
+            default  => 1,
+            required_fields => { category => 1 }
         },
         {   label    => MT->translate('category/sub_category/index.html'),
-            template => '%c/%i'
+            template => '%c/%i',
+            required_fields => { category => 1 }
         }
     ];
 }

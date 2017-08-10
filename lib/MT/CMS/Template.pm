@@ -490,6 +490,7 @@ sub edit {
             }
             my @archive_types;
             my %default_archive_templates;
+            my %required_fields;
             for my $at (@at) {
                 my $archiver      = $app->publisher->archiver($at);
                 my $archive_label = $archiver->archive_label;
@@ -551,12 +552,16 @@ sub edit {
                         value   => $_->{template},
                         default => ( $_->{default} || 0 ),
                         };
+                    $required_fields{ $_->{template} }
+                        = $_->{required_fields};
                 }
                 $default_archive_templates{$at} = $tmpl_loop;
             }
             $param->{archive_types} = \@archive_types;
             $param->{default_archive_templates}
                 = MT::Util::to_json( \%default_archive_templates );
+            $param->{required_fields}
+                = MT::Util::to_json( \%required_fields );
 
             # Populate template maps for this template
             my $maps = _populate_archive_loop( $app, $blog, $obj );

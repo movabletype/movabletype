@@ -25,9 +25,11 @@ sub default_archive_templates {
         {   label    => 'category/sub-category/yyyy/mm/day-week/index.html',
             template => '%-c/%y/%m/%d-week/%i',
             default  => 1,
+            required_fields => { category => 1, date_and_time => 1 }
         },
         {   label    => 'category/sub_category/yyyy/mm/day-week/index.html',
-            template => '%c/%y/%m/%d-week/%i'
+            template => '%c/%y/%m/%d-week/%i',
+            required_fields => { category => 1, date_and_time => 1 }
         },
     ];
 }

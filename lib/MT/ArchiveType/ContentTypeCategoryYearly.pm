@@ -22,12 +22,14 @@ sub archive_label {
 
 sub default_archive_templates {
     return [
-        {   label    => 'category/sub-category/yyyy/index.html',
-            template => '%-c/%y/%i',
-            default  => 1
+        {   label           => 'category/sub-category/yyyy/index.html',
+            template        => '%-c/%y/%i',
+            default         => 1,
+            required_fields => { category => 1, date_and_time => 1 }
         },
-        {   label    => 'category/sub_category/yyyy/index.html',
-            template => '%c/%y/%i'
+        {   label           => 'category/sub_category/yyyy/index.html',
+            template        => '%c/%y/%i',
+            required_fields => { category => 1, date_and_time => 1 }
         },
     ];
 }

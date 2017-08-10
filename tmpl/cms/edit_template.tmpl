@@ -1034,6 +1034,7 @@ function saveTemplatePrefs( sync ) {
     }
 
     function getContentFields() {
+      var required_fields  = <mt:var name="required_fields">;
       var archive_type     = jQuery("#new_archive_type").val();
       var content_type_id  = jQuery("#content_type_id").val();
       var archive_file_sel = jQuery("#archive_file_sel").val();
@@ -1047,10 +1048,11 @@ function saveTemplatePrefs( sync ) {
       }
       else {
         jQuery("#archive_file_tmpl").val(archive_file_sel);
-        if ( archive_file_sel.match(/%[\-|_|][c|C]/i) ) {
+        var rf = required_fields[archive_file_sel];
+        if ( rf && rf.category ) {
           cat_field = 1;
         }
-        if ( archive_file_sel.match(/%[d|D|h|H|j|m|n|s|y|Y]/i) ) {
+        if ( rf && rf.date_and_time ) {
           dt_field = 1;
         }
       }

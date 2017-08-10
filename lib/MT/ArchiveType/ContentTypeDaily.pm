@@ -21,9 +21,10 @@ sub archive_label {
 
 sub default_archive_templates {
     return [
-        {   label    => MT->translate('yyyy/mm/dd/index.html'),
-            template => '%y/%m/%d/%f',
-            default  => 1
+        {   label           => MT->translate('yyyy/mm/dd/index.html'),
+            template        => '%y/%m/%d/%f',
+            default         => 1,
+            required_fields => { date_and_time => 1 }
         },
     ];
 }
