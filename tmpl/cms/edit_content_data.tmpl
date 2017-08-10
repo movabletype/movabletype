@@ -404,6 +404,29 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       });
   }
 
+  var block_editor_data_json = '<mt:var name="block_editor_data" encode_js="1">';
+  var block_editor_data  = {};
+  <mt:if name="block_editor_data">if(block_editor_data_json){
+    block_editor_data = JSON.parse(block_editor_data_json);
+  }</mt:if>
+
+  
+
+  jQuery(function(){
+    jQuery('.convert_breaks :selected[value=blockeditor]').each(function(){
+      var target_id = jQuery(this).parent().attr('data-target');
+      var target_data = {};
+      if( target_id in block_editor_data ){
+        target_data = block_editor_data[target_id];
+      }
+      jQuery('#' + target_id).blockeditor(target_data);
+      jQuery('#' + target_id).parents('.editor-content').addClass('hidden');
+    })
+  });
+
+  function generate_unique_id(){
+    return new Date().getTime().toString(16)  + Math.floor(Math.random()*9999).toString(16)
+  }
   function convertedText(response) {
       if (response.error) {
           alert("Error: " + response.error);
@@ -415,8 +438,6 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       jQuery('.convert_breaks[data-target='+field_id+']').attr('data-orig_text_format', 'richtext');
       jQuery('#'+field_id).parents('.editor-content').removeClass('editor-plaintext');
       app.editor.reload();
-      // app.editor.setFormat('richtext');
-      // app.setEditorIframeHTML();
   }
   function changedTextFormat() {
       var editor_id = jQuery(this).data('target');
@@ -431,6 +452,18 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       if ((cur_text_format != 'richtext') && (option == 'richtext')) {
           // warn user that changing to richtext is not reversible (easily)
           if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
+              // revert selection
+              for (var i = 0; i < this.options.length; i++) {
+                  if (this.options[i].value == cur_text_format)
+                      this.selectedIndex = i;
+              }
+              app.editor.focus();
+              return;
+          }
+      }
+      if ((cur_text_format == 'blockeditor') && (option != 'blockeditor')) {
+          // warn user that changing to plaintext is not reversible (easily)
+          if (!confirm("<__trans phrase="Changing to plain text is not possible to return to the block edit." escape="js">")) {
               // revert selection
               for (var i = 0; i < this.options.length; i++) {
                   if (this.options[i].value == cur_text_format)
@@ -457,6 +490,18 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           app.editor.reload();
           app.editor.setMode('textarea');
           app.editor.focus();
+      } else if(cur_text_format == 'blockeditor') {
+          // changing to plaintext editor
+          jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
+
+          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
+
+          app.editor.setMode('textarea');
+          app.editor.insertContent(jQuery('#'+editor_id).blockeditor('get_html'));
+          jQuery('#'+editor_id).blockeditor('destroy');
+          jQuery('#' + editor_id).parents('.editor-content').removeClass('hidden');
+          app.editor.focus();
+
       } else if (option == 'richtext') {
           app.saveHTML(false);
           // changing to richtext editor
@@ -474,10 +519,20 @@ Template.templates.autoSave = '<mt:section encode_js="1">
                   arguments: param, load: convertedText
           };
           jQuery.post('<mt:var name="script_url">', param, convertedText);
+      } else if ( cur_text_format == 'blockeditor' ) {
+        // changing to other editor
+        jQuery('#' + editor_id).blockeditor('destroy');
+        jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
+        app.editor.setMode(option);
+        app.editor.focus();
       } else {
           jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
           app.editor.setMode(option);
           app.editor.focus();
+          if(option == "blockeditor"){
+            jQuery('#' + editor_id).blockeditor(block_editor_data[editor_id]);
+            jQuery('#' + editor_id).parents('.editor-content').addClass('hidden');
+          }
       }
   }
 
@@ -500,6 +555,8 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   jQuery(document).on('click', '.field-convert_breaks .help-link', openTFDocs);
 </script>
 </mt:setvarblock>
+
+<mt:var name="blockeditor_tmpl">
 
 <mt:setvarblock name="page_content">
 <mtapp:settinggroup id="content_data">
@@ -647,6 +704,18 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     var form = this;
     validateInServerSide().done(function () {
       if (validateInClientSide()) {
+        var block_editor_data = {};
+        jQuery('.editorfield').each(function(i) {
+          var format = jQuery('.convert_breaks[data-target='+this.id+']').val();
+          if(format=="blockeditor"){
+            block_editor_data[this.id] = jQuery('#'+this.id).blockeditor('get_data');
+          }
+        });
+        if(Object.keys(block_editor_data).length > 0) {
+          jQuery(form).append(jQuery('<input type="hidden" name="blockeditor-data">').val(JSON.stringify(block_editor_data)))
+        } else {
+          jQuery(form).append(jQuery('<input type="hidden" name="blockeditor-data">').val(''))
+        }
         form.submit();
       }
     })

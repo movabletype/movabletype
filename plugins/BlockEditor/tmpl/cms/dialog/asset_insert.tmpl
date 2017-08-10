@@ -1,0 +1,19 @@
+<mt:include name="dialog/header.tmpl">
+<script type="text/javascript">
+/* <![CDATA[ */
+var $field = parent.jQuery( '#<mt:var name="edit_field" escape="js">' );
+if ($field){
+    parent.jQuery( '#<mt:var name="edit_field" escape="js">-preview' ).empty();
+    var ids = [];
+<mt:loop name="assets">
+    <mt:Asset id="$id">
+    ids.push('<mt:var name="id" escape="JS">');
+    parent.jQuery( '#<mt:var name="edit_field" escape="js">-preview' ).append('<img src="<$mt:AssetThumbnailURL width="100" $>" style="width: 100px;" alt="">');
+    </mt:Asset>
+</mt:loop>
+    $field.val(ids.join(','));
+}
+parent.jQuery.fn.mtDialog.close();
+/* ]]> */
+</script>
+<mt:include name="dialog/footer.tmpl">

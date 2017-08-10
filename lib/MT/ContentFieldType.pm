@@ -100,6 +100,7 @@ sub _multi_line_text_registry {
     {   label      => 'Multi Line Text',
         data_type  => 'blob',
         order      => 30,
+        data_getter => '$Core::MT::ContentFieldType::MultiLineText::data_getter',
         list_props => {
             multi_line_text => {
                 base  => '__virtual.string',
