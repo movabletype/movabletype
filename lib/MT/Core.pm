@@ -3254,7 +3254,7 @@ sub load_core_permissions {
         },
         'blog.manage_category_set' => {
             'group'            => 'blog_admin',
-            'label'            => 'Manage Sites',
+            'label'            => 'Manage Category Set',
             'order'            => 800,
             'inherit_from'     => ['blog.edit_categories'],
             'permitted_action' => {
