@@ -447,7 +447,8 @@ sub core_tags {
                 \&MT::Template::Tags::App::_hdlr_app_list_filters,
             'App:ActionBar' =>
                 \&MT::Template::Tags::App::_hdlr_app_action_bar,
-            'App:Link' => \&MT::Template::Tags::App::_hdlr_app_link,
+            'App:Link'    => \&MT::Template::Tags::App::_hdlr_app_link,
+            'App:SVGIcon' => \&MT::Template::Tags::App::_hdlr_app_svg_icon,
 
             ## Site
             SiteID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
@@ -4156,6 +4157,44 @@ sub _hdlr_app_link {
         }
     }
     return $app->uri( mode => $mode, args => \%args );
+}
+
+###########################################################################
+
+=head2 App:SVGIcon
+
+Produces tags of svg image.
+
+B<Attributes:>
+
+=over 4
+
+=item * title
+
+=item * size
+
+=item * icon
+
+=item * fill
+
+=back
+
+=for tags application
+
+=cut
+
+sub _hdlr_app_svg_icon {
+    my ( $ctx, $args, $cond ) = @_;
+    my $title = $args->{title};
+    my $size  = $args->{size} || 'width: 28px; height: 28px;';
+    my $icon  = $args->{icon};
+    my $fill  = $args->{fill};
+
+    my $static_uri = MT->static_path;
+
+    qq!<svg title=${title} role="img" style="${size} fill: ${fill};">
+  <use xlink:href="${static_uri}images/sprite.svg#mt-static--images--svg--${icon}">
+</svg>!;
 }
 
 package MT::Template::Tags::System;

@@ -173,7 +173,9 @@ nav.blog {
 </mt:if>
     <li class="cms-search nav-item dropdown">
       <a href="#" data-toggle="dropdown">
-        <img src="<mt:var name="static_uri">images/search-submit.png" />
+        <svg title="Search" role="img">
+          <use xlink:href="<mt:var name="static_uri">images/sprite.svg#mt-static--images--svg--ic_checkbox"/>
+        </svg>
       </a>
       <div class="dropdown-menu dropdown-menu-right" role="menu">
         <form id="basic-search" class="basic-search" name="quicksearch" method="get" action="<$mt:var name="mt_url"$>">
