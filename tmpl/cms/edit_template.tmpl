@@ -1054,64 +1054,31 @@ function saveTemplatePrefs( sync ) {
           dt_field = 1;
         }
       }
-      jQuery.ajax(
-        {
-          type: 'POST',
-          contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-          url:  '<mt:var name="script_url">',
-          dataType: 'json',
-          data: {
-            __mode: 'get_archive_mapping_content_fields',
-            magic_token: '<mt:var name="magic_token">',
-            blog_id: '<mt:var name="blog_id">',
-            archive_type: archive_type,
-            content_type_id: content_type_id,
-            dt_field: dt_field,
-            cat_field: cat_field
-          },
-        }
-      ).done(
-        function(data) {
-          if (data.result.error) {
-            alert(data.result.errmsg);
-          }
-          var categories     = data.result.fields.categories || [];
-          var date_and_times = data.result.fields.date_and_times || [];
-          jQuery('#cat_field_id').children().remove();
-          jQuery('#dt_field_id').children().remove();
-          jQuery.each(categories, function(index, value){
-            $option = jQuery('<option>').val(value.id).text(value.label);
-            jQuery('#cat_field_id').append($option);
-          });
-          jQuery.each(date_and_times, function(index, value){
-            $option = jQuery('<option>').val(value.id).text(value.label);
-            jQuery('#dt_field_id').append($option);
-          });
-          if (cat_field) {
-            jQuery("#cat_field_id-block").css('display', 'block');
-          }
-          else {
-            jQuery("#cat_field_id-block").css('display', 'none');
-          }
-          if (dt_field) {
-            jQuery("#dt_field_id-block").css('display', 'block');
-          }
-          else {
-            jQuery("#dt_field_id-block").css('display', 'none');
-          }
-        }
-      ).fail(
-        function(xhr, status, errorThrown) {
-          if (xhr.status !== 200) {
-            if ( status === 'error' && xhr.status === 0 ){
-              alert('<__trans phrase="Unknown error occurred.">');
-            }
-            else {
-              alert(status+': '+xhr.status+' '+errorThrown);
-            }
-          }
-        }
-      );
+      var content_fields = <mt:var name="content_fields">;
+      var categories     = content_fields.categories || [];
+      var date_and_times = content_fields.date_and_times || [];
+      jQuery('#cat_field_id').children().remove();
+      jQuery('#dt_field_id').children().remove();
+      jQuery.each(categories, function(index, value){
+        $option = jQuery('<option>').val(value.id).text(value.label);
+        jQuery('#cat_field_id').append($option);
+      });
+      jQuery.each(date_and_times, function(index, value){
+        $option = jQuery('<option>').val(value.id).text(value.label);
+        jQuery('#dt_field_id').append($option);
+      });
+      if (cat_field) {
+        jQuery("#cat_field_id-block").css('display', 'block');
+      }
+      else {
+        jQuery("#cat_field_id-block").css('display', 'none');
+      }
+      if (dt_field) {
+        jQuery("#dt_field_id-block").css('display', 'block');
+      }
+      else {
+        jQuery("#dt_field_id-block").css('display', 'none');
+      }
     }
 
     getDefaultArchiveTemplates();

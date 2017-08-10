@@ -556,7 +556,7 @@ sub edit {
             }
             $param->{archive_types} = \@archive_types;
             $param->{default_archive_templates}
-                = JSON::encode_json( \%default_archive_templates );
+                = MT::Util::to_json( \%default_archive_templates );
 
             # Populate template maps for this template
             my $maps = _populate_archive_loop( $app, $blog, $obj );
@@ -577,6 +577,30 @@ sub edit {
             else {
                 $param->{can_rebuild} = 0;
             }
+
+            # Content Fields
+            my $app       = shift;
+            my $q         = $app->param;
+            my $blog_id   = $q->param('blog_id');
+            my $at        = $q->param('archive_type');
+            my $ct_id     = $q->param('content_type_id');
+            my $cat_field = $q->param('cat_field');
+            my $dt_field  = $q->param('dt_field');
+
+            my $ct     = MT::ContentType->load( $obj->content_type_id );
+            my $fields = $ct->fields;
+
+            my $content_fields = {
+                categories => [
+                    map { { id => $_->{id}, label => $_->{options}{label} } }
+                    grep { $_->{type} eq 'categories' } @$fields
+                ],
+                date_and_times => [
+                    map { { id => $_->{id}, label => $_->{options}{label} } }
+                        grep { $_->{type} eq 'date_and_time' } @$fields
+                ],
+            };
+            $param->{content_fields} = MT::Util::to_json($content_fields);
         }
 
         # publish options
@@ -3354,33 +3378,6 @@ sub save_template_prefs {
         $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
         );
     return $app->json_result( { success => 1 } );
-}
-
-sub get_archive_mapping_content_fields {
-    my $app       = shift;
-    my $q         = $app->param;
-    my $blog_id   = $q->param('blog_id');
-    my $at        = $q->param('archive_type');
-    my $ct_id     = $q->param('content_type_id');
-    my $cat_field = $q->param('cat_field');
-    my $dt_field  = $q->param('dt_field');
-
-    my $ct     = MT::ContentType->load($ct_id);
-    my $fields = $ct->fields;
-
-    my $result = {};
-    if ( $cat_field || $at =~ /Category/ ) {
-        @{ $result->{categories} }
-            = map { { id => $_->{id}, label => $_->{options}{label} } }
-            grep { $_->{type} eq 'categories' } @$fields;
-    }
-    if ( $dt_field || $at =~ /[Daily|Weekly|Monthly|Yearly]/ ) {
-        @{ $result->{date_and_times} }
-            = map { { id => $_->{id}, label => $_->{options}{label} } }
-            grep { $_->{type} eq 'date_and_time' } @$fields;
-    }
-
-    return $app->json_result( { success => 1, fields => $result } );
 }
 
 1;
