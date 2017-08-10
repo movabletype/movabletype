@@ -8,9 +8,9 @@ package MT::ArchiveType::ContentTypeAuthorWeekly;
 
 use strict;
 use base
-    qw( MT::ArchiveType::AuthorWeekly MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeWeekly );
+    qw( MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeWeekly );
 
-use MT::Util qw( remove_html encode_html );
+use MT::Util qw( dirify start_end_day );
 
 sub name {
     return 'ContentType-Author-Weekly';
@@ -41,6 +41,29 @@ sub template_params {
 sub archive_file {
     my $obj = shift;
     my ( $ctx, %param ) = @_;
+    my $timestamp    = $param{Timestamp};
+    my $file_tmpl    = $param{Template};
+    my $author       = $ctx->{__stash}{author};
+    my $content_data = $ctx->{__stash}{content};
+    my $file;
+    my $this_author
+        = $author
+        ? $author
+        : ( $content_data ? $content_data->author : undef );
+    return "" unless $this_author;
+
+    if ( !$file_tmpl ) {
+        my $name  = $this_author->basename;
+        my $start = start_end_week($timestamp);
+        my ( $year, $month, $day ) = unpack 'A4A2A2', $start;
+        $file = sprintf( "author/%s/%04d/%02d/%02d-week/index",
+            $name, $year, $month, $day );
+    }
+    else {
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} )
+            = start_end_week($timestamp);
+    }
+    $file;
 }
 
 sub archive_title {

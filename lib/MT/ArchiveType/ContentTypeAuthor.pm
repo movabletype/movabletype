@@ -7,7 +7,7 @@
 package MT::ArchiveType::ContentTypeAuthor;
 
 use strict;
-use base qw( MT::ArchiveType::Author );
+use base qw( MT::ArchiveType );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -38,6 +38,21 @@ sub template_params {
 sub archive_file {
     my $obj = shift;
     my ( $ctx, %param ) = @_;
+    my $file_tmpl    = $param{Template};
+    my $author       = $ctx->{__stash}{author};
+    my $content_data = $ctx->{__stash}{content};
+    my $file;
+
+    my $this_author
+        = $author
+        ? $author
+        : ( $content_data ? $content_data->author : undef );
+    return "" unless $this_author;
+
+    if ( !$file_tmpl ) {
+        $file = sprintf( "%s/index", $this_author->basename );
+    }
+    $file;
 }
 
 sub archive_title {

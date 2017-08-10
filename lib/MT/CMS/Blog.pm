@@ -3642,12 +3642,20 @@ sub _determine_total {
             { category_list_id => [ map { $_->id } @cat_list ] } );
     }
     elsif ( $archiver->contenttype_author_based ) {
+        require MT::Author;
         require MT::ContentData;
         my $terms = {
-            status  => MT::Entry::RELEASE(),
             blog_id => $blog_id,
+            status  => MT::Entry::RELEASE(),
         };
-        $total = MT::ContentData->count($terms);
+        $total = MT::Author->count(
+            { status => MT::Author::ACTIVE() },
+            {   join => MT::ContentData->join_on(
+                    'author_id', $terms, { unique => 1 }
+                ),
+                unique => 1,
+            }
+        );
     }
 
     return $total;
