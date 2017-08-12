@@ -327,7 +327,7 @@ sub create_default_roles {
                 'send_notifications'
             ],
         },
-        {   name        => MT->translate('Desiger (MT6)'),
+        {   name        => MT->translate('Designer (MT6)'),
             description => MT->translate(
                 'Can edit, manage, and publish blog templates and themes.'),
             role_mask => ( 2**4 + 2**7 ),
