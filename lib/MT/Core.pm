@@ -3318,7 +3318,7 @@ sub load_core_permissions {
                 'use_tools:search'           => 1,
             }
         },
-        'system.create_website' => {
+        'system.create_site' => {
             'group'            => 'sys_admin',
             'label'            => 'Create Sites',
             'order'            => 100,
