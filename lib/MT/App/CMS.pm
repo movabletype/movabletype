@@ -2491,20 +2491,6 @@ sub core_menus {
             view          => [ 'blog', 'website' ],
         },
 
-        # MT7
-        'content_data:manage_content_data' => {
-            label => 'Manage',
-            order => 100,
-            mode  => 'select_list_content_type',
-            view  => [ 'website', 'blog' ],
-        },
-        'content_data:create_content_data' => {
-            label => 'New',
-            mode  => 'select_edit_content_type',
-            order => 200,
-            view  => [ 'website', 'blog' ],
-        },
-
         'category_set:manage' => {
             label     => 'Manage',
             order     => 100,
@@ -2522,6 +2508,7 @@ sub core_menus {
             view       => [ 'website', 'blog' ],
         },
 
+        %{ MT::CMS::ContentData::make_menus() },
     };
 }
 
