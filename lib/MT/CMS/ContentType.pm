@@ -1159,8 +1159,8 @@ sub edit_content_data {
         $_;
     } @$array;
 
-    $param->{fields}            = $array;
-    if($blockeditor_data){
+    $param->{fields} = $array;
+    if ($blockeditor_data) {
         $param->{block_editor_data} = $blockeditor_data;
     }
 
@@ -1790,6 +1790,14 @@ sub _make_content_data_listing_screens {
     }
 
     return $props;
+}
+
+sub list_boilerplates {
+    my $app = shift;
+    my $param
+        = { page_title => $app->translate('Manage Content Type Boilerplates'),
+        };
+    $app->load_tmpl( 'not_implemented_yet.tmpl', $param );
 }
 
 1;

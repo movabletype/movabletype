@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><mt:if name="blog_id"><__trans phrase="Backup [_1]" params="<mt:if name="is_blog"><__trans phrase="Child Site"><mt:else><__trans phrase="Site"></mt:if>"><mt:else><__trans phrase="Backup"></mt:if></mt:setvarblock>
+<mt:setvarblock name="page_title"><mt:if name="blog_id"><__trans phrase="Export Site"><mt:else><__trans phrase="Export Sites"></mt:if></mt:setvarblock>
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="backup" value="1">
 
@@ -23,8 +23,8 @@
   <mt:else>
     <mtapp:setting
        id="backup_what"
-       label="<__trans phrase="What to Backup">"
-       hint="<__trans phrase="This option will backup Users, Roles, Associations, Blogs, Entries, Categories, Templates and Tags.">"
+       label="<__trans phrase="What to Export">"
+       hint="<__trans phrase="This option will export Users, Roles, Associations, Sites, Entries, Categories, Templates and Tags.">"
        help_page="backup_restore"
        help_section="backup_what">
       <input type="hidden" id="selected_blog_ids" name="backup_what" value="" />
@@ -89,10 +89,10 @@
     <mt:setvarblock name="action_buttons">
       <button
          type="submit"
-         accesskey="b"
-         title="<__trans phrase="Make Backup (b)">"
+         accesskey="e"
+         title="<__trans phrase="Export (e)">"
          class="action primary button btn btn-primary">
-        <__trans phrase="Make Backup">
+        <__trans phrase="Export">
       </button>
     </mt:setvarblock>
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">

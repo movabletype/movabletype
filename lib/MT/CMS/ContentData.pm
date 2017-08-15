@@ -97,5 +97,17 @@ sub make_list_actions {
     $list_actions;
 }
 
+sub start_import {
+    my $app = shift;
+    my $param = { page_title => $app->translate('Import Site Content'), };
+    $app->load_tmpl( 'not_implemented_yet.tmpl', $param );
+}
+
+sub start_export {
+    my $app = shift;
+    my $param = { page_title => $app->translate('Export Site Content'), };
+    $app->load_tmpl( 'not_implemented_yet.tmpl', $param );
+}
+
 1;
 
