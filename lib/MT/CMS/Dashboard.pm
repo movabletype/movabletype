@@ -938,7 +938,30 @@ sub notification_widget {
     my ( $tmpl, $param ) = @_;
     my $user = $app->user;
 
-    my @messages;
+    require MT::Session;
+    if ( scalar $app->param( 'reload') ) {
+        # Force reload, purge cache if exists
+        my $cache = MT->model('session')->load({
+            kind => 'ND',
+        });
+        $cache->remove if $cache;
+    }
+    else {
+        # Check cache
+        my $ttl = MT->config('NotificationCacheTTL');
+        my $cache = MT::Session::get_unexpired_value( $ttl, {
+            kind => 'ND',
+        });
+
+        if ( $cache  ) {
+            require MT::Serialize;
+            my $data = MT::Serialize->unserialize( $cache->data() );
+            $param->{loop_notification_dashboard} = $$data;
+            return;
+        }
+    }
+
+    my @messages = ();
     my $trail_msg
         = ' '
         . $app->translate(
@@ -1060,6 +1083,18 @@ sub notification_widget {
 
     # Notification center callback
     $app->run_callbacks( 'set_notification_dashboard', \@messages );
+
+    # Make a cache
+    require MT::Serialize;
+    my $ser = MT::Serialize->serialize( \\@messages );
+    my $cache = MT->model('session')->new;
+    $cache->set_values({
+        id    => 'Notification messages',
+        kind  => 'ND',
+        data  => $ser,
+        start => time,
+    });
+    $cache->save;
 
     $param->{loop_notification_dashboard} = \@messages;
 }

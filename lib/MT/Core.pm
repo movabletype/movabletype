@@ -2200,6 +2200,9 @@ BEGIN {
             'LoggerLevel'  => { default => 'none' },
             'LoggerPath'   => undef,
             'LoggerModule' => undef,
+
+            # Notification Center
+            'NotificationCacheTTL' => { default => 3600 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

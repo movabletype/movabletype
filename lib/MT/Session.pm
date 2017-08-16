@@ -230,6 +230,10 @@ Tag Cache is the cache of a particular tag data.
 
 Disk Usage is the cache for notify free disk space alert. Cloud.pack only.
 
+=item ND
+
+Cache for the content of notification dashboard widget.
+
 =back
 
 =head1 METHODS
