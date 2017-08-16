@@ -95,42 +95,6 @@ sub dashboard {
     return $app->load_tmpl( 'dashboard/dashboard.tmpl', $param );
 }
 
-sub favorite_blogs_widget {
-    my $app  = shift;
-    my $user = $app->user;
-    my ( $tmpl, $param ) = @_;
-
-    my %args;
-    my %terms;
-
-    # Load favorite websites data
-    $param->{website_object_loop}
-        = _build_favorite_websites_data( $app, { not_count => 1 } );
-
-    require MT::Permission;
-    require MT::Website;
-    $args{join} = MT::Permission->join_on( 'blog_id',
-        { author_id => $user->id, permissions => { not => "'comment'" } } );
-    $terms{class} = 'website';
-    my $count = MT::Website->count( \%terms, \%args );
-    $param->{has_more_websites} = 1 if $count > 10;
-
-    # Load favorite blogs data
-    $param->{blog_object_loop}
-        = _build_favorite_blogs_data( $app, { not_count => 1 } );
-
-    require MT::Blog;
-    %terms      = ();
-    %args       = ();
-    $args{join} = MT::Permission->join_on( 'blog_id',
-        { author_id => $user->id, permissions => { not => "'comment'" } } );
-    $terms{class} = 'blog';
-    $count = MT::Blog->count( \%terms, \%args );
-    $param->{has_more_blogs} = 1 if $count > 10;
-
-    $param->{can_create_blog} = $user->can_do('create_blog');
-}
-
 sub mt_news_widget {
     my $app = shift;
     my ( $tmpl, $param ) = @_;

@@ -403,17 +403,6 @@ sub core_widgets {
             order    => { 'user' => 500 },
             default  => 1,
         },
-        favorite_blogs => {
-            label    => 'Sites and Child Sites',
-            template => 'widget/favorite_blogs.tmpl',
-            handler  => "${pkg}Dashboard::favorite_blogs_widget",
-            singular => 1,
-            set      => 'main',
-            view     => 'user',
-            param    => { tab => 'website' },
-            order    => { 'user' => 300 },
-            default  => 1,
-        },
         notification_dashboard => {
             label    => 'Notification Dashboard',
             template => 'widget/notification_dashboard.tmpl',
