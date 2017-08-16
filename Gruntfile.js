@@ -12,6 +12,14 @@ module.exports = function(grunt) {
         ],
         dest: 'mt-static/bootstrap'
       },
+      popper: {
+        expand: true,
+        cwd: 'node_modules/popper.js/dist/umd',
+        src: [
+          '*'
+        ],
+        dest: 'mt-static/popper'
+      },
       riot: {
         expand: true,
         cwd: 'node_modules/riot',
