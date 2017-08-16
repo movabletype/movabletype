@@ -131,28 +131,6 @@ sub favorite_blogs_widget {
     $param->{can_create_blog} = $user->can_do('create_blog');
 }
 
-sub recent_websites_widget {
-    my $app  = shift;
-    my $user = $app->user;
-    my ( $tmpl, $param ) = @_;
-
-    my %args;
-    my %terms;
-
-    # Load favorite websites data
-    $param->{website_object_loop} = _build_favorite_websites_data($app);
-
-    require MT::Permission;
-    require MT::Website;
-    $args{join} = MT::Permission->join_on( 'blog_id',
-        { author_id => $user->id, permissions => { not => "'comment'" } } );
-    $terms{class} = 'website';
-    my $count = MT::Website->count( \%terms, \%args );
-    $param->{has_more_websites} = 1 if $count > 10;
-
-    $param->{can_create_blog} = $user->can_do('create_blog');
-}
-
 sub recent_blogs_widget {
     my $app  = shift;
     my $user = $app->user;

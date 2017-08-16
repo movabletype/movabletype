@@ -403,16 +403,6 @@ sub core_widgets {
             order    => { 'user' => 500 },
             default  => 1,
         },
-        recent_websites => {
-            label    => 'Sites',
-            template => 'widget/recent_websites.tmpl',
-            handler  => "${pkg}Dashboard::recent_websites_widget",
-            singular => 1,
-            set      => 'main',
-            view     => 'system',
-            order    => { 'system' => 100 },
-            default  => 1,
-        },
         recent_blogs => {
             label    => 'Child Sites',
             template => 'widget/recent_blogs.tmpl',
