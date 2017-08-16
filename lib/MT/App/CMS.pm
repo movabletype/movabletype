@@ -399,9 +399,12 @@ sub core_widgets {
             handler  => "${pkg}Dashboard::mt_news_widget",
             singular => 1,
             set      => 'sidebar',
-            view     => 'user',
-            order    => { 'user' => 500 },
-            default  => 1,
+            view     => [ 'user', 'system' ],
+            order    => {
+                'user'   => 0,
+                'system' => 0,
+            },
+            default => 1,
         },
         notification_dashboard => {
             label    => 'Notification Dashboard',
