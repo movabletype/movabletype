@@ -393,16 +393,6 @@ sub core_widgets {
     my $pkg = '$Core::MT::CMS::';
 
     my $core_widgets = {
-        personal_stats => {
-            label    => 'Personal Stats',
-            template => 'widget/personal_stats.tmpl',
-            handler  => "${pkg}Dashboard::personal_stats_widget",
-            set      => 'sidebar',
-            singular => 1,
-            view     => 'user',
-            order    => { 'user' => 400 },
-            default  => 1,
-        },
         mt_news => {
             label    => 'Movable Type News',
             template => 'widget/mt_news.tmpl',

@@ -67,15 +67,6 @@ __SQL__
                 label => 'Adding Website Administrator role...',
             },
         },
-        '_v6_rename_this_is_you_widget' => {
-            version_limit => 6.0003,
-            priority      => 3.0,
-            updater       => {
-                type  => 'author',
-                label => 'Migrating "This is you" dashboard widget...',
-                code  => \&_v6_rename_this_is_you_widget,
-            },
-        },
         '_v6_add_site_stats_widget' => {
             version_limit => 6.0005,
             priority      => 3.1,
@@ -107,27 +98,6 @@ __SQL__
             code          => \&_v6_remove_indexes,
         },
     };
-}
-
-sub _v6_rename_this_is_you_widget {
-    my $user    = shift;
-    my $widgets = $user->widgets;
-    return 1 unless $widgets;
-
-    foreach my $key ( keys %$widgets ) {
-        if ( $key eq 'dashboard:user:' . $user->id ) {
-            my @widget_keys = keys %{ $widgets->{$key} };
-            delete $widgets->{$key}->{'this_is_you-1'}
-                if ( grep { $_ eq 'this_is_you-1' } @widget_keys );
-            $widgets->{$key}->{'personal_stats'} = {
-                order => 1,
-                set   => 'sidebar',
-            };
-        }
-    }
-
-    $user->widgets($widgets);
-    $user->save;
 }
 
 sub _v6_add_site_stats_widget {
