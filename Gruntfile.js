@@ -40,14 +40,6 @@ module.exports = function(grunt) {
           'svg4everybody.min.js'
         ],
         dest: 'mt-static/svg4everybody'
-      },
-      tether: {
-        expand: true,
-        cwd: 'node_modules/tether/dist',
-        src: [
-          '**/*'
-        ],
-        dest: 'mt-static/tether'
       }
     },
     svg_sprite: {
