@@ -409,10 +409,11 @@ sub core_widgets {
         notification_dashboard => {
             label    => 'Notification Dashboard',
             template => 'widget/notification_dashboard.tmpl',
+            handler  => "${pkg}Dashboard::notification_widget",
             singular => 1,
             set      => 'main',
-            view     => 'user',
-            order    => { 'user' => 100 },
+            view     => [ 'user', 'system' ],
+            order    => { 'user' => 0 },
             default  => 1,
         },
         site_stats => {
@@ -4940,150 +4941,6 @@ sub sanitize_tainted_param {
                 $app->config->GlobalSanitizeSpec );
         }
     }
-}
-
-sub pre_run {
-    my $app = shift;
-    $app->SUPER::pre_run(@_) or return;
-    my $user = $app->user;
-
-    # Return if setting nortification dashboard is unnecessary.
-    my $method_info = MT->request('method_info') || {};
-    return
-        if ( exists $method_info->{requires_login}
-        && $method_info->{requires_login} == 0 )
-        or $app->param('xhr')
-        or ( $method_info->{app_mode} || '' ) eq 'JSON'
-        or $app->request('already_set_notification_dashboard');
-
-    # Message Center
-    my @messages;
-
-    require MT::FileMgr;
-    my $fmgr = MT::FileMgr->new('Local');
-    my $support_path;
-    my $has_uploads_path;
-    foreach my $subdir (qw( uploads userpics )) {
-        $support_path
-            = File::Spec->catdir( $app->support_directory_path, $subdir );
-        if ( !$fmgr->exists($support_path) ) {
-            $fmgr->mkpath($support_path);
-        }
-        if (   $fmgr->exists($support_path)
-            && $fmgr->can_write($support_path) )
-        {
-            $has_uploads_path = 1;
-        }
-    }
-    unless ( $has_uploads_path || $fmgr->exists($support_path) ) {
-
-        # the path didn't exist - change the warning a little
-        $support_path = $app->support_directory_path;
-    }
-    unless ($has_uploads_path) {
-        my $message = {
-            level => 'warning',
-            text => $app->translate('The support directory is not writable.'),
-        };
-        if ( $user && $user->is_superuser ) {
-            $message->{detail} = $app->translate(
-                'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.',
-                $support_path
-            );
-        }
-        else {
-            $message->{text}
-                .= ' '
-                . $app->translate(
-                'Please contact your Movable Type system administrator.');
-        }
-        push @messages, $message;
-    }
-
-    if ( $app->request('image_driver_error') ) {
-        my $message = {
-            level => 'warning',
-            text  => $app->translate('ImageDriver is not configured.'),
-        };
-        if ( $user && $user->is_superuser ) {
-            $message->{detail}
-                = $app->translate(
-                'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.'
-                );
-        }
-        else {
-            $message->{text}
-                .= ' '
-                . $app->translate(
-                'Please contact your Movable Type system administrator.');
-        }
-        push @messages, $message;
-    }
-
-    unless ( $app->config('EmailAddressMain') ) {
-        my $message = {
-            level => 'warning',
-            text =>
-                $app->translate('System Email Address is not configured.'),
-        };
-        if ( $user && $user->is_superuser ) {
-            $message->{detail} = $app->translate(
-                q{The System Email Address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events. Please confirm your <a href="[_1]">settings.</a>},
-                $app->uri(
-                    mode => 'cfg_system_general',
-                    args => { blog_id => 0 }
-                )
-            );
-        }
-        else {
-            $message->{text}
-                .= ' '
-                . $app->translate(
-                'Please contact your Movable Type system administrator.');
-        }
-        push @messages, $message;
-    }
-
-    my $has_mozilla_ca = eval { require Mozilla::CA; 1 };
-    unless ( $app->config('SSLVerifyNone') || $has_mozilla_ca ) {
-        my $message = {
-            level => 'warning',
-            text  => $app->translate('Cannot verify SSL certificate.'),
-        };
-        if ( $user && $user->is_superuser ) {
-            $message->{detail}
-                = $app->translate(
-                'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this is not recommended.'
-                );
-        }
-        else {
-            $message->{text}
-                .= ' '
-                . $app->translate(
-                'Please contact your Movable Type system administrator.');
-        }
-        push @messages, $message;
-    }
-    elsif ( $app->config('SSLVerifyNone') && $has_mozilla_ca ) {
-        my $message = {
-            level => 'warning',
-            text  => $app->translate(
-                'Can verify SSL certificate, but verification is disabled.'),
-        };
-        if ( $user && $user->is_superuser ) {
-            $message->{detail}
-                = $app->translate(
-                'You should remove "SSLVerifyNone 1" in mt-config.cgi.');
-        }
-        else {
-            $message->{text}
-                .= ' '
-                . $app->translate(
-                'Please contact your Movable Type system administrator.');
-        }
-        push @messages, $message;
-    }
-
 }
 
 sub validate_request_params {
