@@ -3276,9 +3276,12 @@ sub load_core_permissions {
             'group'        => 'sys_admin',
             'label'        => 'System Administrator',
             'inherit_from' => [
-                'system.edit_templates', 'system.manage_plugins',
-                'system.view_log',       'system.manage_content_types',
-                'create_site'
+                'system.edit_templates',      'system.manage_plugins',
+                'system.view_log',            'system.manage_content_types',
+                'system.create_site',         'system.create_blog',
+                'system.sign_in_cms',         'system.sign_in_data_api',
+                'system.manage_users_groups', 'system.manage_content_types',
+
             ],
             'order'            => 0,
             'permitted_action' => {
