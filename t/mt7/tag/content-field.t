@@ -122,19 +122,19 @@ my $cf_category = MT::Test::Permission->make_content_field(
     name            => 'categories',
     type            => 'categories',
 );
-my $category_list = MT::Test::Permission->make_category_list(
+my $category_set = MT::Test::Permission->make_category_set(
     blog_id => $ct->blog_id,
-    name    => 'test category list',
+    name    => 'test category set',
 );
 my $category1 = MT::Test::Permission->make_category(
-    blog_id          => $category_list->blog_id,
-    category_list_id => $category_list->id,
-    label            => 'category1',
+    blog_id         => $category_set->blog_id,
+    category_set_id => $category_set->id,
+    label           => 'category1',
 );
 my $category2 = MT::Test::Permission->make_category(
-    blog_id          => $category_list->blog_id,
-    category_list_id => $category_list->id,
-    label            => 'category2',
+    blog_id         => $category_set->blog_id,
+    category_set_id => $category_set->id,
+    label           => 'category2',
 );
 
 my $cf_image = MT::Test::Permission->make_content_field(
@@ -293,11 +293,11 @@ my $fields = [
         order   => 15,
         type    => $cf_category->type,
         options => {
-            label         => $cf_category->name,
-            category_list => $category_list->id,
-            multiple      => 1,
-            max           => 5,
-            min           => 1,
+            label        => $cf_category->name,
+            category_set => $category_set->id,
+            multiple     => 1,
+            max          => 5,
+            min          => 1,
         },
     },
     {   id      => $cf_image->id,
@@ -343,6 +343,7 @@ my $cd = MT::Test::Permission->make_content_data(
 );
 
 MT::Test::Tag->run_perl_tests($blog_id);
+
 # MT::Test::Tag->run_php_tests($blog_id);
 
 __END__

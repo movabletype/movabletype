@@ -40,18 +40,18 @@ my $mt = MT->instance;
 
 my $author2 = MT::Test::Permission->make_author;
 
-my $category_list
-    = MT::Test::Permission->make_category_list( blog_id => $blog_id );
+my $category_set
+    = MT::Test::Permission->make_category_set( blog_id => $blog_id );
 
 my $category1 = MT::Test::Permission->make_category(
-    blog_id          => $category_list->blog_id,
-    category_list_id => $category_list->id,
-    label            => 'category1',
+    blog_id         => $category_set->blog_id,
+    category_set_id => $category_set->id,
+    label           => 'category1',
 );
 my $category2 = MT::Test::Permission->make_category(
-    blog_id          => $category_list->blog_id,
-    category_list_id => $category_list->id,
-    label            => 'category2',
+    blog_id         => $category_set->blog_id,
+    category_set_id => $category_set->id,
+    label           => 'category2',
 );
 $vars->{cat1_id} = $category1->id;
 $vars->{cat2_id} = $category2->id;
@@ -61,19 +61,19 @@ my $ct = MT::Test::Permission->make_content_type(
     blog_id => $blog_id,
 );
 my $cf = MT::Test::Permission->make_content_field(
-    blog_id             => $ct->blog_id,
-    content_type_id     => $ct->id,
-    name                => 'categories',
-    type                => 'categories',
-    related_cat_list_id => $category_list->id,
+    blog_id            => $ct->blog_id,
+    content_type_id    => $ct->id,
+    name               => 'categories',
+    type               => 'categories',
+    related_cat_set_id => $category_set->id,
 );
 my $fields = [
     {   id      => $cf->id,
         order   => 1,
         type    => $cf->type,
         options => {
-            label         => 1,
-            category_list => $cf->related_cat_list_id,
+            label        => 1,
+            category_set => $cf->related_cat_set_id,
         },
         unique_id => $cf->unique_id,
     }
@@ -117,6 +117,7 @@ $vars->{cd2_id} = $cd2->id;
 $vars->{cd3_id} = $cd3->id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
+
 # MT::Test::Tag->run_php_tests($blog_id);
 
 __END__

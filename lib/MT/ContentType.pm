@@ -12,7 +12,7 @@ use base qw( MT::Object );
 use JSON ();
 
 use MT;
-use MT::CategoryList;
+use MT::CategorySet;
 use MT::ContentField;
 use MT::ContentType::UniqueID;
 use MT::Util;
@@ -64,23 +64,23 @@ sub list_props {
             link_mode => 'cfg_content_type',
             html      => \&_make_name_html,
         },
-        category_list => {
+        category_set => {
             base                  => '__virtual.single_select',
-            terms                 => \&_cl_terms,
-            single_select_options => \&_cl_single_select_options,
-            label                 => 'Category List',
+            terms                 => \&_cs_terms,
+            single_select_options => \&_cs_single_select_options,
+            label                 => 'Category Set',
             display               => 'none',
         },
     };
 }
 
-sub _cl_terms {
+sub _cs_terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
     my $cf_join = MT::ContentField->join_on(
         'content_type_id',
-        {   type                => 'category',
-            related_cat_list_id => $args->{value},
+        {   type               => 'category',
+            related_cat_set_id => $args->{value},
         },
     );
     $db_args->{joins} ||= [];
@@ -88,16 +88,16 @@ sub _cl_terms {
     return;
 }
 
-sub _cl_single_select_options {
+sub _cs_single_select_options {
     my $prop = shift;
     my @options;
-    my $iter = MT::CategoryList->load_iter(
+    my $iter = MT::CategorySet->load_iter(
         { blog_id   => MT->app->blog->id },
         { fetchonly => { id => 1, name => 1 } },
     );
-    while ( my $cl = $iter->() ) {
-        my $id   = $cl->id;
-        my $name = $cl->name;
+    while ( my $cs = $iter->() ) {
+        my $id   = $cs->id;
+        my $name = $cs->name;
         push @options, { label => "${name} (id:${id})", value => $id };
     }
     \@options;

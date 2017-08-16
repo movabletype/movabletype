@@ -36,7 +36,6 @@ __END__
 <mt:Sites><mt:SiteID>
 </mt:Sites>
 --- expected
-1
 2
 
 === mt:Sites - website
@@ -46,6 +45,5 @@ __END__
 <mt:Sites><mt:SiteID>
 </mt:Sites>
 --- expected
-1
 2
 

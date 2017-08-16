@@ -126,6 +126,7 @@
             });
 
             ed.addMTButton('mt_fullscreen', {
+                icon: 'fullscreen',
                 tooltip: 'mt_fullscreen',
                 cmd: 'mtFullScreen'
             });

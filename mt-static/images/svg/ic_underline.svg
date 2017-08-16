@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.1 (44463) - http://www.bohemiancoding.com/sketch -->
+    <title>ico/underline</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M0,16 L12,16 L12,17 L0,17 L0,16 Z M12,8.75835616 C12,10.665215 11.4679856,12.0821871 10.4039409,13.0093151 C9.33989616,13.936443 7.8686465,14.4 5.99014778,14.4 C4.08537635,14.4 2.61084266,13.9397306 1.56650246,13.0191781 C0.522162266,12.0986255 0,10.6783658 0,8.75835616 L0,0 L3.09359606,0 L3.09359606,8.75835616 C3.09359606,9.13972793 3.12643645,9.51451871 3.19211823,9.88273973 C3.2578,10.2509607 3.39572966,10.5764369 3.60591133,10.8591781 C3.816093,11.1419192 4.10837251,11.3720539 4.48275862,11.549589 C4.85714473,11.7271242 5.35960276,11.8158904 5.99014778,11.8158904 C7.09360158,11.8158904 7.85549872,11.5693175 8.27586207,11.0761644 C8.69622542,10.5830112 8.90640394,9.81041622 8.90640394,8.75835616 L8.90640394,0 L12,0 L12,8.75835616 Z" id="path-1"></path>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ico/underline">
+            <g id="Colors/DarkGray" transform="translate(6.000000, 4.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="Mask" fill="#000000" xlink:href="#path-1"></use>
+                <g mask="url(#mask-2)" id="#2F2F2F" fill="#2F2F2F">
+                    <g transform="translate(-26.000000, -22.000000)">
+                        <rect x="0" y="0" width="64" height="64"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

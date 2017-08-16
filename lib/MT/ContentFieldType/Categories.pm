@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use MT::Category;
-use MT::CategoryList;
+use MT::CategorySet;
 use MT::ContentField;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
@@ -43,21 +43,20 @@ sub _build_category_list {
     my $blog_id = $app->blog->id;
 
     my $categories = [];
-    if ( my $category_list
-        = MT::CategoryList->load( $field_data->{options}{category_list} || 0 )
-        )
+    if ( my $category_set
+        = MT::CategorySet->load( $field_data->{options}{category_set} || 0 ) )
     {
-        $categories = $category_list->categories;
+        $categories = $category_set->categories;
     }
 
     my %value = map { $_ => 1 } @{ $field_data->{value} || [] };
     my %places = map { $_->id => 1 } grep { $value{ $_->id } } @{$categories};
 
     my $data = $app->_build_category_list(
-        blog_id     => $blog_id,
-        cat_list_id => $field_data->{options}{category_list},
-        markers     => 1,
-        type        => 'category',
+        blog_id    => $blog_id,
+        cat_set_id => $field_data->{options}{category_set},
+        markers    => 1,
+        type       => 'category',
     );
 
     my @sel_cats;
@@ -79,7 +78,7 @@ sub _build_category_list {
     ( $cat_tree, \@sel_cats );
 }
 
-sub data_getter {
+sub data_load_handler {
     my ( $app, $field_data ) = @_;
     my $field_id = $field_data->{id};
     [ split ',', $app->param("category-${field_id}") ];
@@ -92,7 +91,7 @@ sub ss_validator {
 
     my $iter
         = MT::Category->load_iter(
-        { id => $data, category_list_id => $options->{category_list} },
+        { id => $data, category_set_id => $options->{category_set} },
         { fetchonly => { id => 1 } } );
     my %valid_cats;
     while ( my $cat = $iter->() ) {
@@ -162,7 +161,7 @@ sub terms {
         my @cat_ids;
         my $iter = MT::Category->load_iter(
             {   label => { like => "%${string}%" },
-                category_list_id => $field->related_cat_list_id,
+                category_set_id => $field->related_cat_set_id,
             },
             { fetchonly => { id => 1 } },
         );
@@ -192,13 +191,13 @@ sub terms {
 sub tag_handler {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
-    my $category_list_id = $field_data->{options}{category_list}
+    my $category_set_id = $field_data->{options}{category_set}
         or return $ctx->error(
-        MT->translate('No category_list setting in content field type.') );
+        MT->translate('No category_set setting in content field type.') );
 
     my $cat_terms = {
-        id               => $value,
-        category_list_id => $category_list_id,
+        id              => $value,
+        category_set_id => $category_set_id,
     };
     my $cat_args = {};
 
@@ -285,16 +284,16 @@ sub tag_handler {
 
 sub theme_import_handler {
     my ( $theme, $blog, $ct, $cf_value, $field ) = @_;
-    my $cl_name = $field->{options}{category_list};
-    if ( defined $cl_name && $cl_name ne '' ) {
-        my $cl
-            = MT::CategoryList->load(
-            { blog_id => $blog->id, name => $cl_name } );
-        if ($cl) {
-            $field->{options}{category_list} = $cl->id;
+    my $cs_name = $field->{options}{category_set};
+    if ( defined $cs_name && $cs_name ne '' ) {
+        my $cs
+            = MT::CategorySet->load(
+            { blog_id => $blog->id, name => $cs_name } );
+        if ($cs) {
+            $field->{options}{category_set} = $cs->id;
         }
         else {
-            delete $field->{options}{category_list};
+            delete $field->{options}{category_set};
         }
     }
 }

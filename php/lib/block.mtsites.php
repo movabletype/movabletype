@@ -6,7 +6,6 @@
 # $Id$
 
 function smarty_block_mtsites($args, $content, &$ctx, &$repeat) {
-    $args['class'] = '*';
-    return smarty_block_mtblogs($args, $content, $ctx, $repeat);
+    return smarty_block_mtwebsites($args, $content, $ctx, $repeat);
 }
 ?>

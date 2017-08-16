@@ -38,6 +38,32 @@ would iterate over only the websites with IDs 1, 12 and 19.
 
 =cut
 
+=head2 Sites
+
+A container tag which iterates over a list of all of the sites in the
+system. You can use any of the site tags (L<SiteName>, L<SiteURL>, etc -
+anything starting with MTSite) inside of this tag set.
+
+B<Attributes:>
+
+=over 4
+
+=item * site_ids
+
+This attribute allows you to limit the set of sites iterated over by
+L<Sites>. Multiple sites are specified in a comma-delimited fashion.
+For example:
+
+    <mt:Sites site_ids="1,12,19">
+
+would iterate over only the sites with IDs 1, 12 and 19.
+
+=back
+
+=for tags multiblog, loop, sites
+
+=cut
+
 sub _hdlr_websites {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );

@@ -15,7 +15,7 @@ use POSIX ();
 
 use MT;
 use MT::CMS::Common;
-use MT::CategoryList;
+use MT::CategorySet;
 use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentType;
@@ -222,17 +222,17 @@ sub cfg_content_type {
         $param->{$name} = $q->param($name) if $q->param($name);
     }
 
-    my @category_lists;
-    my $cl_iter = MT::CategoryList->load_iter( { blog_id => $app->blog->id },
+    my @category_sets;
+    my $cs_iter = MT::CategorySet->load_iter( { blog_id => $app->blog->id },
         { fetchonly => { id => 1, name => 1 } } );
-    while ( my $cat_list = $cl_iter->() ) {
-        push @category_lists,
+    while ( my $cat_set = $cs_iter->() ) {
+        push @category_sets,
             {
-            id   => $cat_list->id,
-            name => $cat_list->name,
+            id   => $cat_set->id,
+            name => $cat_set->name,
             };
     }
-    $param->{category_lists} = \@category_lists;
+    $param->{category_sets} = \@category_sets;
 
     my $content_type_loop
         = MT::ContentType->get_related_content_type_loop( $app->blog->id,
@@ -404,10 +404,10 @@ sub save_cfg_content_type {
         $content_field->required( $options->{required} );
 
         if ( $content_field->type eq 'categories' ) {
-            $content_field->related_cat_list_id( $options->{category_list} );
+            $content_field->related_cat_set_id( $options->{category_set} );
         }
         else {
-            $content_field->related_cat_list_id(undef);
+            $content_field->related_cat_set_id(undef);
         }
 
         if ( $content_field->type eq 'content_type' ) {
@@ -660,12 +660,12 @@ sub _validate_content_field_type_options {
         }
         elsif ( $type eq 'url' ) {
             my $initial_value = $options->{initial_value};
-            if ( length($initial_value) > 255 ) {
+            if ( length($initial_value) > 2000 ) {
                 $err_msg = $app->translate(
                     '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                     $label || $field_label,
                     'Initial Value',
-                    '1024'
+                    '2000'
                 );
             }
             elsif (defined $initial_value
@@ -1067,6 +1067,10 @@ sub edit_content_data {
         = $content_data
         ? MT::Serialize->unserialize( $content_data->convert_breaks )
         : undef;
+    my $blockeditor_data
+        = $content_data
+        ? $content_data->block_editor_data()
+        : undef;
     my $content_field_types = $app->registry('content_field_types');
     @$array = map {
         my $e_unique_id = $_->{unique_id};
@@ -1156,6 +1160,9 @@ sub edit_content_data {
     } @$array;
 
     $param->{fields} = $array;
+    if ($blockeditor_data) {
+        $param->{block_editor_data} = $blockeditor_data;
+    }
 
     foreach my $name (qw( saved err_msg content_type_id id )) {
         $param->{$name} = $q->param($name) if $q->param($name);
@@ -1406,6 +1413,8 @@ sub save_content_data {
     $content_data->convert_breaks(
         MT::Serialize->serialize( \$convert_breaks ) );
 
+    $content_data->block_editor_data( $app->param('blockeditor-data') );
+
     $app->run_callbacks( 'cms_pre_save.cd', $app, $content_data, $orig );
 
     $content_data->save
@@ -1463,15 +1472,15 @@ sub cms_pre_load_filtered_list {
 sub _get_form_data {
     my ( $app, $content_field_type, $form_data ) = @_;
 
-    if ( my $data_getter = $content_field_type->{data_getter} ) {
-        if ( !ref $data_getter ) {
-            $data_getter = MT->handler_to_coderef($data_getter);
+    if ( my $data_load_handler = $content_field_type->{data_load_handler} ) {
+        if ( !ref $data_load_handler ) {
+            $data_load_handler = MT->handler_to_coderef($data_load_handler);
         }
-        if ( 'CODE' eq ref $data_getter ) {
-            return $data_getter->( $app, $form_data );
+        if ( 'CODE' eq ref $data_load_handler ) {
+            return $data_load_handler->( $app, $form_data );
         }
         else {
-            return $data_getter;
+            return $data_load_handler;
         }
     }
     else {
@@ -1781,6 +1790,14 @@ sub _make_content_data_listing_screens {
     }
 
     return $props;
+}
+
+sub list_boilerplates {
+    my $app = shift;
+    my $param
+        = { page_title => $app->translate('Manage Content Type Boilerplates'),
+        };
+    $app->load_tmpl( 'not_implemented_yet.tmpl', $param );
 }
 
 1;

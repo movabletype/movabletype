@@ -2,6 +2,7 @@ package MT::CMS::ContentData;
 use strict;
 use warnings;
 
+use MT::Blog;
 use MT::ContentType;
 use MT::Log;
 
@@ -95,6 +96,46 @@ sub make_list_actions {
         $list_actions->{$key} = $common_delete_action;
     }
     $list_actions;
+}
+
+sub make_menus {
+    my $menus         = {};
+    my $blog_order    = 100;
+    my $website_order = 100;
+    my $iter = MT::ContentType->load_iter( undef, { sort => 'name' } );
+    while ( my $ct = $iter->() ) {
+        my $blog = MT::Blog->load( $ct->blog_id ) or next;
+        my $key = 'content_data:' . $ct->id;
+        $menus->{$key} = {
+            label => $ct->name,
+            mode  => 'list',
+            args  => {
+                _type   => 'content_data_' . $ct->id,
+                blog_id => $ct->blog_id,
+            },
+            order => $blog->is_blog ? $blog_order : $website_order,
+            view  => $blog->is_blog ? 'blog'      : 'website',
+        };
+        if ( $blog->is_blog ) {
+            $blog_order += 100;
+        }
+        else {
+            $website_order += 100;
+        }
+    }
+    $menus;
+}
+
+sub start_import {
+    my $app = shift;
+    my $param = { page_title => $app->translate('Import Site Content'), };
+    $app->load_tmpl( 'not_implemented_yet.tmpl', $param );
+}
+
+sub start_export {
+    my $app = shift;
+    my $param = { page_title => $app->translate('Export Site Content'), };
+    $app->load_tmpl( 'not_implemented_yet.tmpl', $param );
 }
 
 1;

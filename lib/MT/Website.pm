@@ -60,6 +60,16 @@ sub list_props {
 
                 return { id => [ map( $_->blog_id, @perms ) ] };
             },
+            html => sub {
+                my $prop = shift;
+                my ($obj) = @_;
+                if ( $obj->is_blog ) {
+                    '-';
+                }
+                else {
+                    $prop->super(@_);
+                }
+            },
         },
         page_count => {
             base => 'blog.page_count',
@@ -116,6 +126,10 @@ sub list_props {
                 require MT::Theme;
                 return MT::Theme->load_theme_loop;
             },
+        },
+        parent_website => {
+            base => 'blog.parent_website',
+            view => ['system'],
         },
         created_on  => { base => 'blog.created_on' },
         modified_on => { base => 'blog.modified_on' },

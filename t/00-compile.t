@@ -128,10 +128,10 @@ use_ok('MT::FileMgr::Local');
 use_ok('MT::FileMgr::FTP');
 
 # MT7
-use_ok('MT::CMS::CategoryList');
+use_ok('MT::CMS::CategorySet');
 use_ok('MT::CMS::ContentData');
 use_ok('MT::CMS::ContentType');
-use_ok('MT::CategoryList');
+use_ok('MT::CategorySet');
 use_ok('MT::ContentData');
 use_ok('MT::ContentField');
 use_ok('MT::ContentFieldIndex');
@@ -416,7 +416,7 @@ use_ok('MT::Summary::Triggers');
 # Themes
 use_ok('MT::Theme');
 use_ok('MT::Theme::Category');
-use_ok('MT::Theme::CategoryList');
+use_ok('MT::Theme::CategorySet');
 use_ok('MT::Theme::Common');
 use_ok('MT::Theme::ContentData');
 use_ok('MT::Theme::ContentType');

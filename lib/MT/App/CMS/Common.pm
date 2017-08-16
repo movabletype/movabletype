@@ -210,9 +210,9 @@ sub init_core_callbacks {
                 . 'filtered_list_param.folder' =>
                 "${pfx}Category::filtered_list_param",
 
-            # category_list callbacks
-            "${pkg}delete_permission_filter.category_list" =>
-                "${pfx}CategoryList::can_delete",
+            # category_set callbacks
+            "${pkg}delete_permission_filter.category_set" =>
+                "${pfx}CategorySet::can_delete",
 
             # comment callbacks
             $pkg . 'edit.comment' => "${pfx}Comment::edit",

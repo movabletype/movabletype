@@ -1241,8 +1241,7 @@ sub make_unique_category_basename {
 
     my $cat_class = ref $cat;
     my $terms
-        = { category_list_id => $cat->category_list_id || [ \'IS NULL', 0 ],
-        };
+        = { category_set_id => $cat->category_set_id || [ \'IS NULL', 0 ], };
     return _get_basename( $cat_class, $base, $blog, $terms );
 }
 

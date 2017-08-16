@@ -47,6 +47,30 @@
 .plane-text {
     padding: 0.2em 0;
 }
+.add_field {
+    cursor: pointer;
+    margin: 10px 0;
+}
+.add_menu {
+    margin: 10px 0;
+}
+.add_menu .add {
+    width: 90px;
+    border: 1px solid #c0c0c0;
+    display: inline-block;
+    text-align: center;
+    height: 30px;
+    vertical-align: middle;
+    line-height: 30px;
+    cursor: pointer;
+    margin: 0 3px;
+}
+.asset_field img {
+    max-width: 300px;
+}
+.field_options {
+    margin-bottom: 10px;
+}
 
 /* - Clearfix */
 .setting-item {

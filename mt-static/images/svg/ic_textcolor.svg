@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.1 (44463) - http://www.bohemiancoding.com/sketch -->
+    <title>ico/textcolor</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ico/textcolor">
+            <path d="M10.3839542,11.530086 L13.5644699,11.530086 L12.017192,7.02578797 L11.982808,7.02578797 L10.3839542,11.530086 Z M10.6418338,4 L13.4097421,4 L18,16.2750716 L15.1977077,16.2750716 L14.269341,13.5415473 L9.67908309,13.5415473 L8.71633238,16.2750716 L6,16.2750716 L10.6418338,4 Z" id="A" fill="#1A1A1A"></path>
+            <rect id="Rectangle" fill-opacity="0.6" fill="#000000" x="4" y="18" width="16" height="3" rx="0.5"></rect>
+        </g>
+    </g>
+</svg>
