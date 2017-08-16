@@ -3548,8 +3548,15 @@ sub cms_pre_load_filtered_list {
         unless $terms->{class} and $terms->{class} eq '*';
 
     my $user = $load_options->{user} || $app->user;
-    return   if $user->is_superuser;
-    return 1 if $user->permissions(0)->can_do('edit_templates');
+    if (   $user->is_superuser
+        || $user->permissions(0)->can_do('edit_templates') )
+    {
+        if ( $terms->{class} eq 'blog' ) {
+            my $parent_site_terms = { id => $app->blog->website->id };
+            $load_options->{terms} = [ $terms, '-or', $parent_site_terms ];
+        }
+        return;
+    }
 
     my $iter = MT::Permission->load_iter(
         {   author_id   => $user->id,
@@ -3580,7 +3587,14 @@ sub cms_pre_load_filtered_list {
     else {
         $terms->{id} = 0;
     }
-    $load_options->{terms} = $terms;
+
+    if ( $terms->{class} eq 'blog' ) {
+        my $parent_site_terms = { id => $app->blog->website->id };
+        $load_options->{terms} = [ $terms, '-or', $parent_site_terms ];
+    }
+    else {
+        $load_options->{terms} = $terms;
+    }
 }
 
 sub can_view_blog_list {

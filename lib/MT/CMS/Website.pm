@@ -741,7 +741,7 @@ sub cms_pre_load_filtered_list {
 
     my $terms = $load_options->{terms};
     delete $terms->{blog_id};
-    $terms->{class} = 'website';
+    $terms->{class} = '*';
 
     my $user = $app->user;
     return if $user->is_superuser;
