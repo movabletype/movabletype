@@ -660,12 +660,12 @@ sub _validate_content_field_type_options {
         }
         elsif ( $type eq 'url' ) {
             my $initial_value = $options->{initial_value};
-            if ( length($initial_value) > 255 ) {
+            if ( length($initial_value) > 2000 ) {
                 $err_msg = $app->translate(
                     '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                     $label || $field_label,
                     'Initial Value',
-                    '1024'
+                    '2000'
                 );
             }
             elsif (defined $initial_value

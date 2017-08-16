@@ -158,14 +158,14 @@ sub _number_registry {
 
 sub _url_registry {
     {   label        => 'URL',
-        data_type    => 'varchar',
+        data_type    => 'blob',
         order        => 50,
         field_html   => 'field_html/field_html_url.tmpl',
         ss_validator => '$Core::MT::ContentFieldType::URL::ss_validator',
         list_props   => {
             url => {
                 base  => '__virtual.string',
-                col   => 'value_varchar',
+                col   => 'value_blob',
                 terms => '$Core::MT::ContentFieldType::Common::terms_text',
                 use_blank => 1,
             },
