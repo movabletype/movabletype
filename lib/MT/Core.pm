@@ -2122,7 +2122,6 @@ BEGIN {
             'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
             'PublishCommenterIcon' => { default => 1 },
             'EnableAddressBook'    => { default => 0 },
-            'EnableBlogStats'      => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultTemplateSet'   => { default => 'mt_blog' },
             'DefaultWebsiteTheme'  => { default => 'rainier' },
@@ -2275,7 +2274,6 @@ BEGIN {
                 menus           => sub { MT->app->core_menus() },
                 methods         => sub { MT->app->core_methods() },
                 widgets         => sub { MT->app->core_widgets() },
-                blog_stats_tabs => sub { MT->app->core_blog_stats_tabs() },
                 import_formats  => sub {
                     require MT::Import;
                     return MT::Import->core_import_formats();

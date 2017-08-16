@@ -428,45 +428,7 @@ sub core_widgets {
         },
     };
 
-    if ( $app->config('EnableBlogStats') ) {
-        $core_widgets->{'blog_stats'} = {
-            label    => 'Blog Stats',
-            template => 'widget/blog_stats.tmpl',
-            handler  => "${pkg}Dashboard::mt_blog_stats_widget",
-            singular => 1,
-            set      => 'main',
-            view     => 'blog',
-            param    => { tab => 'entry' },
-            order    => { 'blog' => 200 },
-            default  => 1,
-        };
-    }
-
     return $core_widgets;
-}
-
-sub core_blog_stats_tabs {
-    my $app = shift;
-    my $pkg = '$Core::MT::CMS::';
-    return {
-        entry => {
-            label    => 'Entries',
-            template => 'widget/blog_stats_entry.tmpl',
-            handler  => "${pkg}Dashboard::mt_blog_stats_widget_entry_tab",
-            stats    => "${pkg}Dashboard::generate_dashboard_stats_entry_tab",
-        },
-        comment => {
-            label    => 'Comments',
-            template => 'widget/blog_stats_comment.tmpl',
-            handler  => "${pkg}Dashboard::mt_blog_stats_widget_comment_tab",
-            stats => "${pkg}Dashboard::generate_dashboard_stats_comment_tab",
-        },
-        tag_cloud => {
-            label    => 'Tag Cloud',
-            handler  => "${pkg}Dashboard::mt_blog_stats_tag_cloud_tab",
-            template => 'widget/blog_stats_tag_cloud.tmpl',
-        },
-    };
 }
 
 sub core_page_actions {
