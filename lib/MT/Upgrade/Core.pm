@@ -261,7 +261,7 @@ sub seed_database {
     require MT::Association;
     require MT::Role;
     my ($website_admin_role)
-        = MT::Role->load_by_permission("administer_website");
+        = MT::Role->load_by_permission("administer_site");
     MT::Association->link( $website => $website_admin_role => $author );
 
     if ( $param{use_system_email} ) {

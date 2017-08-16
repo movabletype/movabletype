@@ -13,7 +13,7 @@
         <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=log<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>" class="icon-left-xwide icon-log"><__trans phrase="Activity Log"></a></li>
         </mt:if>
         <mt:if name="blog_id">
-        <mt:if name="can_administer_blog">
+        <mt:if name="can_administer_site">
         <li><a href="<mt:var name="script_url">?__mode=start_import&amp;blog_id=<mt:var name="blog_id">" class="icon-left-xwide icon-import"><__trans phrase="Import Content"></a></li>
         </mt:if>
         <mt:if name="can_edit_config">

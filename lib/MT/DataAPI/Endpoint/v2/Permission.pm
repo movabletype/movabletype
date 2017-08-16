@@ -144,10 +144,10 @@ sub _can_grant {
 sub _exists_administer_blog_role {
 
     # Load permission which has administer_blog
-    my @admin_roles = MT::Role->load_by_permission("administer_blog");
+    my @admin_roles = MT::Role->load_by_permission("administer_site");
     my $admin_role;
     foreach my $r (@admin_roles) {
-        next if $r->permissions =~ m/\'administer_website\'/;
+        next if $r->permissions =~ m/\'administer_site\'/;
         return 1;
     }
     return;

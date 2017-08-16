@@ -131,7 +131,7 @@ sub filter_conditional_list {
     my $perms = $app->permissions;
     my $user  = $app->user;
     my $admin = ( $user && $user->is_superuser() )
-        || ( $perms && $perms->blog_id && $perms->has('administer_blog') );
+        || ( $perms && $perms->blog_id && $perms->has('administer_site') );
     my $system_perms;
     $system_perms = $user->permissions(0) unless $perms && $perms->blog_id;
 
@@ -1254,10 +1254,10 @@ sub _cb_user_provisioning {
 
     require MT::Role;
     require MT::Association;
-    my @roles = MT::Role->load_by_permission("administer_blog");
+    my @roles = MT::Role->load_by_permission("administer_site");
     my $role;
     foreach my $r (@roles) {
-        next if $r->permissions =~ m/\'administer_website\'/;
+        next if $r->permissions =~ m/\'administer_site\'/;
         $role = $r;
         last;
     }
@@ -3178,7 +3178,7 @@ sub run {
                             my $admin = $user->is_superuser()
                                 || ( $blog
                                 && $perms
-                                && $perms->can_administer_blog() );
+                                && $perms->can_administer_site() );
                             my @p = split /,/, $set;
                             foreach my $p (@p) {
                                 $allowed = 1, last

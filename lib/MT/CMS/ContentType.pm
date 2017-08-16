@@ -268,7 +268,7 @@ sub save_cfg_content_type {
     return $app->permission_denied()
         unless $app->user->is_superuser()
         || ( $perms
-        && $perms->can_administer_blog );
+        && $perms->can_administer_site );
 
     my $blog_id = scalar $q->param('blog_id')
         or return $app->errtrans("Invalid request.");
@@ -1139,8 +1139,8 @@ sub edit_content_data {
         $_;
     } @$array;
 
-    $param->{fields}            = $array;
-    if($blockeditor_data){
+    $param->{fields} = $array;
+    if ($blockeditor_data) {
         $param->{block_editor_data} = $blockeditor_data;
     }
 
@@ -1193,7 +1193,7 @@ sub save_content_data {
     return $app->permission_denied()
         unless $app->user->is_superuser()
         || ( $perms
-        && $perms->can_administer_blog );
+        && $perms->can_administer_site );
 
     my $blog_id = scalar $q->param('blog_id')
         or return $app->errtrans("Invalid request.");

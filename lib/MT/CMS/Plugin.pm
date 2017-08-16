@@ -17,11 +17,7 @@ sub cfg_plugins {
         my $blog = $app->model('blog')->load($blog_id);
         return $app->permission_denied()
             if $blog
-            && (
-            $blog->is_blog
-            ? !$app->can_do('administer_blog')
-            : !$app->can_do('administer_website')
-            );
+            && $app->can_do('administer_site');
 
         $q->param( '_type', 'blog' );
         $q->param( 'id',    $blog_id );

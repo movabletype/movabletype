@@ -448,7 +448,7 @@ sub authenticate {
             $app->{perms} = new MT::Permission;
             $app->{perms}->blog_id($blog_id);
             $app->{perms}->author_id( $app->{user}->id );
-            $app->{perms}->can_administer_blog(1);
+            $app->{perms}->can_administer_site(1);
             return 1;
         }
         my $perms = $app->{perms} = MT::Permission->load(

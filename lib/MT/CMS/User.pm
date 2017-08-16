@@ -872,7 +872,7 @@ sub remove_user_assoc {
         next
             if !$can_remove_administrator
             && $perm
-            && $perm->can_administer_blog;
+            && $perm->can_administer_site;
 
         MT::Association->remove( { blog_id => $blog_id, author_id => $id } );
 
@@ -910,7 +910,7 @@ sub revoke_role {
         unless $blog && $role && $author;
     return $app->permission_denied()
         if !$app->can_do('revoke_administer_role')
-        && $role->has('administer_blog');
+        && $role->has('administer_site');
 
     MT::Association->unlink( $blog => $role => $author );
 
@@ -979,13 +979,13 @@ sub grant_role {
 
     my @default_assignments;
 
-    # Load permission which has administer_blog
+    # Load permission which has administer_site
     require MT::Association;
     require MT::Role;
-    my @admin_roles = MT::Role->load_by_permission("administer_blog");
+    my @admin_roles = MT::Role->load_by_permission("administer_site");
     my $admin_role;
     foreach my $r (@admin_roles) {
-        next if $r->permissions =~ m/\'administer_website\'/;
+        next if $r->permissions =~ m/\'administer_site\'/;
         $admin_role = $r;
         last;
     }
@@ -996,7 +996,7 @@ sub grant_role {
         foreach my $role (@roles) {
             next
                 if ( ( !$can_grant_administer )
-                && ( $role->has('administer_blog') ) );
+                && ( $role->has('administer_site') ) );
             if ($add_pseudo_new_user) {
                 push @default_assignments, $role->id . ',' . $blog->id;
             }
@@ -1220,23 +1220,22 @@ PERMCHECK: {
         $row->{description} = $row->{nickname} if exists $row->{nickname};
         $row->{disabled}    = 1
             if UNIVERSAL::isa( $obj, 'MT::Role' )
-            && ( $obj->has('administer_blog')
-            || $obj->has('administer_website') )
+            && $obj->has('administer_site')
             && !$app->can_do('grant_role_for_all_blogs')
             && !$this_user->permissions($blog_id)
             ->can_do('grant_role_for_blog');
         if (   $app->param('type')
             && $app->param('type') eq 'blog'
             && UNIVERSAL::isa( $obj, 'MT::Role' )
-            && $obj->has('administer_website') )
+            && $obj->has('administer_site') )
         {
             $row->{disabled} = 1;
         }
         if (   $app->param('type')
             && $app->param('type') eq 'website'
             && UNIVERSAL::isa( $obj, 'MT::Role' )
-            && $obj->has('administer_blog')
-            && !$obj->has('administer_website') )
+            && $obj->has('administer_site')
+            && !$obj->has('administer_site') )
         {
             $row->{disabled} = 1;
         }

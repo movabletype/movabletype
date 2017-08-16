@@ -295,14 +295,18 @@ sub create_default_roles {
     my (%param) = @_;
 
     my @default_roles = (
-        {   name        => MT->translate('Website Administraotr (MT6)'),
+        {   name        => MT->translate('Site Administrator'),
+            description => MT->translate('Can administer the site.'),
+            perms       => ['administer_site']
+        },
+        {   name        => MT->translate('Website Administrator (MT6)'),
             description => MT->translate('Can administer the website.'),
-            perms       => [ 'administer_website', 'manage_member_blogs' ]
+            perms       => ['administer_site']
         },
         {   name        => MT->translate('Child Site Administrator'),
             description => MT->translate('Can administer the child site.'),
             role_mask   => 2**12,
-            perms       => ['administer_blog']
+            perms       => ['administer_site']
         },
         {   name        => MT->translate('Editor (MT6)'),
             description => MT->translate(
@@ -353,11 +357,11 @@ sub create_default_roles {
             role_mask   => 2**0,
             perms       => ['comment'],
         },
-        {   name        => MT->translate('ContentType'),
+        {   name        => MT->translate('Content Designer'),
             description => MT->translate(
-                'Can manage content types, edit their own content types.'),
-            role_mask => 2**0,
-            perms     => ['manage_content_types'],
+                'Can manage content types, content datas, edit their own content types, contentdatas.'
+            ),
+            perms => [ 'manage_content_types', 'manage_content_datas' ],
         },
     );
 

@@ -80,11 +80,8 @@ sub get_author_id {
     unless ( defined $author_id ) {
 
         # Fallback 2: One of this blog's administrator
-        my $search_string
-            = $blog->is_blog
-            ? '%\'administer_blog\'%'
-            : '%\'administer_website\'%';
-        my $perm = MT->model('permission')->load(
+        my $search_string = '%\'administer_site\'%';
+        my $perm          = MT->model('permission')->load(
             {   blog_id     => $blog->id,
                 permissions => { like => $search_string },
             }
