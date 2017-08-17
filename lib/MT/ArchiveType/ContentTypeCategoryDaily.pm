@@ -8,7 +8,7 @@ package MT::ArchiveType::ContentTypeCategoryDaily;
 
 use strict;
 use base
-    qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeDaily );
+    qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeDaily MT::ArchiveType::CategoryDaily );
 
 use MT::Util qw( dirify start_end_day );
 
@@ -74,8 +74,6 @@ sub archive_file {
     $file;
 }
 
-sub archive_title {
-}
+*date_range = \&MT::ArchiveType::Daily::date_range;
 
 1;
-

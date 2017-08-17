@@ -209,6 +209,11 @@ sub archive_contents_count {
         ( $start, $end ) = $archiver->date_range($ts) if $archiver;
     }
 
+    my $cat_field_id
+        = $cat
+        ? MT::ObjectCategory->load( { category_id => $cat->id } )
+        : undef;
+
     my $count = MT->model('cd')->count(
         {   blog_id => $blog->id,
             status  => MT::Entry::RELEASE(),
@@ -216,10 +221,10 @@ sub archive_contents_count {
             ( $auth ? ( author_id => $auth->id ) : () ),
         },
         {   ( $ts ? ( range_incl => { authored_on => 1 } ) : () ),
-            (   $cat
+            (   $cat_field_id
                 ? ( 'join' => [
-                        'MT::ObjectCategory', 'object_id',
-                        { category_id => $cat->id }
+                        'MT::ContentFieldIndex', 'content_data_id',
+                        { value_integer => $cat->id }
                     ]
                     )
                 : ()

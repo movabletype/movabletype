@@ -3602,7 +3602,9 @@ sub _determine_total {
     my ( $archiver, $blog_id ) = @_;
 
     my $total = 0;
-    if ( $archiver->entry_based || $archiver->date_based ) {
+    if ( ( $archiver->entry_based || $archiver->date_based )
+        && !$archiver->category_based )
+    {
         if (   $archiver->contenttype_based
             || $archiver->contenttype_date_based )
         {
@@ -3625,12 +3627,22 @@ sub _determine_total {
         }
     }
     elsif ( $archiver->category_based ) {
-        require MT::Category;
-        my $terms = {
-            blog_id => $blog_id,
-            class   => $archiver->category_class,
-        };
-        $total = MT::Category->count($terms);
+        if ( $archiver->contenttype_category_based ) {
+            require MT::Category;
+            require MT::CategorySet;
+            my @cat_set = MT::CategorySet->load( { blog_id => $blog_id } );
+            $total
+                = MT::Category->count(
+                { category_set_id => [ map { $_->id } @cat_set ] } );
+        }
+        else {
+            require MT::Category;
+            my $terms = {
+                blog_id => $blog_id,
+                class   => $archiver->category_class,
+            };
+            $total = MT::Category->count($terms);
+        }
     }
     elsif ( $archiver->author_based ) {
         require MT::Author;
@@ -3658,14 +3670,6 @@ sub _determine_total {
             blog_id => $blog_id,
         };
         $total = MT::ContentData->count($terms);
-    }
-    elsif ( $archiver->contenttype_category_based ) {
-        require MT::Category;
-        require MT::CategoryList;
-        my @cat_list = MT::CategoryList->load( { blog_id => $blog_id } );
-        $total
-            = MT::Category->count(
-            { category_list_id => [ map { $_->id } @cat_list ] } );
     }
     elsif ( $archiver->contenttype_author_based ) {
         require MT::Author;

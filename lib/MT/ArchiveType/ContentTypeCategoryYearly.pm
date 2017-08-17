@@ -8,7 +8,7 @@ package MT::ArchiveType::ContentTypeCategoryYearly;
 
 use strict;
 use base
-    qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeYearly );
+    qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeYearly MT::ArchiveType::CategoryYearly );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -73,8 +73,6 @@ sub archive_file {
     $file;
 }
 
-sub archive_title {
-}
+*date_range = \&MT::ArchiveType::Yearly::date_range;
 
 1;
-

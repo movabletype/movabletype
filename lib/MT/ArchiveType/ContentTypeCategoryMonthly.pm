@@ -8,7 +8,7 @@ package MT::ArchiveType::ContentTypeCategoryMonthly;
 
 use strict;
 use base
-    qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeMonthly );
+    qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeMonthly MT::ArchiveType::CategoryMonthly );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -75,8 +75,6 @@ sub archive_file {
     $file;
 }
 
-sub archive_title {
-}
+*date_range = \&MT::ArchiveType::Monthly::date_range;
 
 1;
-

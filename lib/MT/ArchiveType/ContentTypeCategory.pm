@@ -7,7 +7,7 @@
 package MT::ArchiveType::ContentTypeCategory;
 
 use strict;
-use base qw( MT::ArchiveType );
+use base qw( MT::ArchiveType::Category );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -68,9 +68,6 @@ sub archive_file {
     $file;
 }
 
-sub archive_title {
-}
-
 sub _get_this_cat {
     my $archiver = shift;
     my ( $cat, $content_data ) = @_;
@@ -103,6 +100,34 @@ sub _get_this_cat {
     }
 
     return $this_cat;
+}
+
+sub archive_contents_count {
+    my $obj = shift;
+    my ( $blog, $at, $content_data, $cat ) = @_;
+    return $obj->SUPER::archive_contents_count(@_) unless $content_data;
+    $cat = _get_this_cat( $cat, $content_data ) unless $cat;
+    return 0 unless $cat;
+    return $obj->SUPER::archive_contents_count(
+        {   Blog        => $blog,
+            ArchiveType => $at,
+            Category    => $cat
+        }
+    );
+}
+
+sub does_publish_file {
+    my $obj    = shift;
+    my %params = %{ shift() };
+    if ( !$params{Category} && $params{ContentData} ) {
+        $params{Category}
+            = _get_this_cat( $params{Category}, $params{ContentData} );
+    }
+    return 0 unless $params{Category};
+
+    return 1 if $params{Blog}->publish_empty_archive;
+
+    MT::ArchiveType::archive_contents_count( $obj, \%params );
 }
 
 1;

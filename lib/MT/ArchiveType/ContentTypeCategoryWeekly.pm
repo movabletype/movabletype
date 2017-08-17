@@ -8,7 +8,7 @@ package MT::ArchiveType::ContentTypeCategoryWeekly;
 
 use strict;
 use base
-    qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeWeekly );
+    qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeWeekly MT::ArchiveType::CategoryWeekly );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -75,8 +75,6 @@ sub archive_file {
     $file;
 }
 
-sub archive_title {
-}
+*date_range = \&MT::ArchiveType::Weekly::date_range;
 
 1;
-
