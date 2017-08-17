@@ -13,7 +13,7 @@
         <virtual data-is="list-filter"></virtual>
         <table data-is="list-table"
           id="{ opts.objectType }-table"
-          class="table table-striped table-hover listing-table list-{ opts.objectType }"
+          class="table mt-table list-{ opts.objectType }"
         >
         </table>
       </div>
