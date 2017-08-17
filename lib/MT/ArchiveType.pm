@@ -124,7 +124,7 @@ sub author_based {
 sub contenttype_based {
     my $obj = shift;
     if ( ref $obj ne __PACKAGE__ ) {
-        return $obj->isa('MT::ArchiveType::ContentTypeIndividual');
+        return $obj->isa('MT::ArchiveType::ContentType');
     }
     return $obj->_getset( 'contenttype_based', @_ );
 }
