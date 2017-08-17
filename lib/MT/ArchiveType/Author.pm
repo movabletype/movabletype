@@ -61,7 +61,7 @@ sub archive_file {
     my ( $ctx, %param ) = @_;
     my $file_tmpl = $param{Template};
     my $author    = $ctx->{__stash}{author};
-    my $obj       = _get_object($ctx);
+    my $obj       = _get_content($ctx);
     my $file;
 
     my $this_author = $author ? $author : ( $obj ? $obj->author : undef );
@@ -198,7 +198,7 @@ sub group_based {
     return 1;
 }
 
-sub _get_object {
+sub _get_content {
     my $ctx = shift;
     return $ctx->{__stash}{entry};
 }
