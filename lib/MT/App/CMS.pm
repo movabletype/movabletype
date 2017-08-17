@@ -2383,14 +2383,14 @@ sub core_menus {
         },
         'settings:system_web_services' => {
             label             => "Web Services",
-            order             => 300,
+            order             => 600,
             mode              => 'cfg_web_services',
             system_permission => 'administer',
             view              => 'system',
         },
         'settings:system_plugins' => {
             label             => "Plugins",
-            order             => 300,
+            order             => 700,
             mode              => "cfg_plugins",
             permission        => "administer_blog",
             system_permission => "manage_plugins",
@@ -2398,7 +2398,7 @@ sub core_menus {
         },
         'settings:system_information' => {
             label         => "System Information",
-            order         => 400,
+            order         => 800,
             mode          => "tools",
             view          => "system",
             permit_action => 'use_tools:system_info_menu',
@@ -2452,19 +2452,19 @@ sub core_menus {
             },
             view => [ "blog", 'website', 'system' ],
         },
-        'tools:system_export' => {
-            label      => "Export Sites",
-            order      => 200,
-            mode       => "start_backup",
-            permission => "administer_blog",
-            view       => ['system'],
-        },
         'tools:restore' => {
             label      => "Import Sites",
-            order      => 300,
+            order      => 200,
             mode       => "start_restore",
             permission => "administer_blog",
             view       => "system",
+        },
+        'tools:system_export' => {
+            label      => "Export Sites",
+            order      => 300,
+            mode       => "start_backup",
+            permission => "administer_blog",
+            view       => ['system'],
         },
         'tools:import' => {
             label      => "Import Content",

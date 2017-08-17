@@ -12,6 +12,14 @@ module.exports = function(grunt) {
         ],
         dest: 'mt-static/bootstrap'
       },
+      popper: {
+        expand: true,
+        cwd: 'node_modules/popper.js/dist/umd',
+        src: [
+          '*'
+        ],
+        dest: 'mt-static/popper'
+      },
       riot: {
         expand: true,
         cwd: 'node_modules/riot',
@@ -32,15 +40,12 @@ module.exports = function(grunt) {
           'svg4everybody.min.js'
         ],
         dest: 'mt-static/svg4everybody'
-      },
-      tether: {
-        expand: true,
-        cwd: 'node_modules/tether/dist',
-        src: [
-          '**/*'
-        ],
-        dest: 'mt-static/tether'
       }
+    },
+    exec: {
+      riot: {
+        command: 'npm run build-riot'
+      },
     },
     svg_sprite: {
       basic: {
@@ -70,7 +75,8 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-exec');
   grunt.loadNpmTasks('grunt-svg-sprite');
 
-  grunt.registerTask('default', ['svg_sprite', 'copy']);
+  grunt.registerTask('default', ['exec:riot', 'svg_sprite', 'copy']);
 };
