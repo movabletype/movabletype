@@ -42,6 +42,11 @@ module.exports = function(grunt) {
         dest: 'mt-static/svg4everybody'
       }
     },
+    exec: {
+      riot: {
+        command: 'npm run build-riot'
+      },
+    },
     svg_sprite: {
       basic: {
         src: ['mt-static/images/svg/*.svg'],
@@ -70,7 +75,8 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-exec');
   grunt.loadNpmTasks('grunt-svg-sprite');
 
-  grunt.registerTask('default', ['svg_sprite', 'copy']);
+  grunt.registerTask('default', ['exec:riot', 'svg_sprite', 'copy']);
 };
