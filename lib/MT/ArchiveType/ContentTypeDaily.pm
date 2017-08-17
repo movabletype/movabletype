@@ -7,7 +7,7 @@
 package MT::ArchiveType::ContentTypeDaily;
 
 use strict;
-use base qw( MT::ArchiveType::ContentTypeDate );
+use base qw( MT::ArchiveType::ContentTypeDate MT::ArchiveType::Daily );
 
 use MT::Util qw( start_end_day );
 
@@ -27,26 +27,6 @@ sub default_archive_templates {
             required_fields => { date_and_time => 1 }
         },
     ];
-}
-
-sub archive_file {
-    my $obj = shift;
-    my ( $ctx, %param ) = @_;
-    my $timestamp = $param{Timestamp};
-    my $file_tmpl = $param{Template};
-    my $blog      = $ctx->{__stash}{blog};
-
-    my $file;
-    if ($file_tmpl) {
-        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} )
-            = start_end_day($timestamp);
-    }
-    else {
-        my $start = start_end_day($timestamp);
-        my ( $year, $mon, $mday ) = unpack 'A4A2A2', $start;
-        $file = sprintf( "%04d/%02d/%02d/index", $year, $mon, $mday );
-    }
-    $file;
 }
 
 1;
