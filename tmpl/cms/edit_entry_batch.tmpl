@@ -42,23 +42,16 @@
 <mtapp:listing
    hide_pager="$hide_pager">
 <mt:if __first__>
-  <mt:setvarblock name="table_header">
-  <tr>
-    <th class="head status"><span class="col-label"><__trans phrase="Status"></span></th>
-    <th class="head title primary"><span class="col-label"><__trans phrase="Title"></span></th>
-    <th class="head category"><span class="col-label"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></span></th>
-    <th class="head author"><span class="col-label"><__trans phrase="Author"></span></th>
-    <th class="head datetime"><span class="col-label"><__trans phrase="Published Date"></span></th>
-    <th class="head datetime"><span class="col-label"><__trans phrase="Date Modified"></span></th>
-  </tr>
-  </mt:setvarblock>
-
-  <thead>
-    <mt:var name="table_header">
-  </thead>
-  <tfoot>
-    <mt:var name="table_header">
-  </tfoot>
+    <thead>
+      <tr>
+        <th class="head status" scope="col"><span class="col-label"><__trans phrase="Status"></span></th>
+        <th class="head title primary" scope="col"><span class="col-label"><__trans phrase="Title"></span></th>
+        <th class="head category" scope="col"><span class="col-label"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></span></th>
+        <th class="head author" scope="col"><span class="col-label"><__trans phrase="Author"></span></th>
+        <th class="head datetime" scope="col"><span class="col-label"><__trans phrase="Published Date"></span></th>
+        <th class="head datetime" scope="col"><span class="col-label"><__trans phrase="Date Modified"></span></th>
+      </tr>
+    </thead>
   <tbody>
 </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">

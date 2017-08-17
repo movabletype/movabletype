@@ -20,28 +20,26 @@
   <div class="unit size1of1">
     <div id="listing-table" class="listing-table-block">
       <div id="listing-table-overlay" class="overlay"></div>
-      <table id="content-data-table" class="table table-striped listing-table list-content-data">
-  <mt:setvarblock name="table_header_footer">
-          <th class="head cb">&nbsp;</th>
-          <th class="head title primary string">
+      <table id="content-data-table" class="table mt-table listing-table">
+        <thead>
+          <th class="head cb mt-table__control">&nbsp;</th>
+          <th class="head string" scope="col">
             <span class="col-label"><__trans phrase="Title"></span>
           </th>
-          <th class="head string" style="width: 20%">
+          <th class="head string" scope="col" style="width: 20%">
             <span class="col-label"><__trans phrase="Date Modified"></span>
           </th>
-          <th class="head string">
+          <th class="head string" scope="col">
             <span class="col-label"><__trans phrase="Author"></span>
           </th>
-  </mt:setvarblock>
-        <thead><mt:var name="table_header_footer"></thead>
-        <tfoot><mt:var name="table_header_footer"></tfoot>
+        </thead>
 </mt:unless>
         <tbody>
 <mt:loop name="object_loop">
           <tr id="content-data-<mt:var name="id" escape="html">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
             <td class="cb">
               <input type="hidden" id="content-data-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
-              <input type="<mt:if name="can_multi">checkbox<mt:else>radio</mt:if>" name="id" value="<mt:var name="id" escape="html">" class="select" id="content-data-select-<mt:var name="id" escape="html">" />
+              <input type="<mt:if name="can_multi">checkbox<mt:else>radio</mt:if>" name="id" value="<mt:var name="id" escape="html">" class="select" id="content-data-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
             </td>
             <td class="content-data-title primary"><mt:var name="title" escape="html"></td>
             <td class="content-data-modified-date">
@@ -68,6 +66,10 @@
     </div>
   </div>
 </div>
+
+<mt:setvarblock name="js_include" append="1">
+<script src="<mt:var name="static_uri">js/list_table.js"></script>
+</mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
 var checked = [];

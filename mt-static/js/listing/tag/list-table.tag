@@ -17,7 +17,7 @@
 
 <list-table-header>
   <tr>
-    <th scope="col">
+    <th class="mt-table__control">
       <input type="checkbox"
         checked={ store.checkedAllRowsOnPage }
         onchange={ toggleAllRowsOnPage } />

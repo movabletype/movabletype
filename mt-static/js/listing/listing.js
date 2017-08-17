@@ -652,7 +652,7 @@ riot.tag2('list-table', '<thead data-is="list-table-header"></thead> <tbody if="
     this.mixin('listTop')
 });
 
-riot.tag2('list-table-header', '<tr> <th scope="col"> <input type="checkbox" checked="{store.checkedAllRowsOnPage}" onchange="{toggleAllRowsOnPage}"> </th> <th each="{store.columns}" scope="col" if="{checked}" data-id="{id}" class="{primary: primary,         sortable: sortable,         sorted: parent.store.sortBy == id}"> <a href="javascript:void(0)" if="{sortable}" onclick="{toggleSortColumn}" class="{mt-table__ascend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'ascend\',           mt-table__descend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'descend\'}"> {label} </a> <virtual if="{!sortable}">{label}</virtual> </th> </tr>', '', '', function(opts) {
+riot.tag2('list-table-header', '<tr> <th class="mt-table__control"> <input type="checkbox" checked="{store.checkedAllRowsOnPage}" onchange="{toggleAllRowsOnPage}"> </th> <th each="{store.columns}" scope="col" if="{checked}" data-id="{id}" class="{primary: primary,         sortable: sortable,         sorted: parent.store.sortBy == id}"> <a href="javascript:void(0)" if="{sortable}" onclick="{toggleSortColumn}" class="{mt-table__ascend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'ascend\',           mt-table__descend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'descend\'}"> {label} </a> <virtual if="{!sortable}">{label}</virtual> </th> </tr>', '', '', function(opts) {
     this.mixin('listTop')
 
     this.toggleAllRowsOnPage = function(e) {
