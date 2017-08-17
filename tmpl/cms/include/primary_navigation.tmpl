@@ -1,22 +1,17 @@
+<ul id="primaryNavigation" class="mt-primaryNavigation__list" data-children=".item">
 <mt:loop name="top_nav_loop">
-  <mt:if name="allowed">
-  <div class="card">
-    <div class="card-header sidebar-menu-header<mt:if name="screen_group" eq="$id"> in</mt:if>">
-      <a href="#collapse<mt:var name="id" capitalize="1">" class="float-right" data-toggle="collapse">&#x25BC;</a>
-      <a href="<mt:var name="link" escape="html">"><mt:var name="label"></a>
+  <li class="item mt-primaryNavigation__item">
+    <a data-toggle="collapse" data-parent="#primaryNavigation" href="#primayNavigation-item<mt:var name="__counter__">" aria-expanded="false" aria-controls="primayNavigation-item<mt:var name="__counter__">"><mt:var name="label"></a>
+    <div id="primayNavigation-item<mt:var name="__counter__">" class="collapse" role="tabpanel">
+      <ul class="mt-primaryNavigation__child">
+  <mt:loop name="sub_nav_loop">
+    <mt:if name="allowed">
+        <li><a href="<mt:var name="link" escape="html">"<mt:if name="current"> class="selected"</mt:if>><mt:var name="label"></a></li>
+    </mt:if>
+  </mt:loop>
+      </ul>
     </div>
-    <div id="collapse<mt:var name="id" capitalize="1">" class="collapse<mt:if name="screen_group" eq="$id"> in</mt:if>">
-      <div class="card-block">
-        <ul class="list-unstyled sidebar-menu-group">
-        <mt:loop name="sub_nav_loop">
-          <mt:if name="allowed">
-            <li class="sidebar-menu-group-item<mt:if name="current"> active</mt:if>"><a href="<mt:var name="link" escape="html">"><mt:var name="label"></a></li>
-          </mt:if>
-        </mt:loop>
-        </ul>
-      </div>
-    </div>
-  </div>
-  </mt:if>
+  </li>
 </mt:loop>
+</ul>
 
