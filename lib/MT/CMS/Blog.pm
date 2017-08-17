@@ -3603,14 +3603,26 @@ sub _determine_total {
 
     my $total = 0;
     if ( $archiver->entry_based || $archiver->date_based ) {
-        my $entry_class = $archiver->entry_class || 'entry';
-        require MT::Entry;
-        my $terms = {
-            class   => $entry_class,
-            status  => MT::Entry::RELEASE(),
-            blog_id => $blog_id,
-        };
-        $total = MT::Entry->count($terms);
+        if (   $archiver->contenttype_based
+            || $archiver->contenttype_date_based )
+        {
+            require MT::ContentData;
+            my $terms = {
+                status  => MT::Entry::RELEASE(),
+                blog_id => $blog_id,
+            };
+            $total = MT::ContentData->count($terms);
+        }
+        else {
+            my $entry_class = $archiver->entry_class || 'entry';
+            require MT::Entry;
+            my $terms = {
+                class   => $entry_class,
+                status  => MT::Entry::RELEASE(),
+                blog_id => $blog_id,
+            };
+            $total = MT::Entry->count($terms);
+        }
     }
     elsif ( $archiver->category_based ) {
         require MT::Category;

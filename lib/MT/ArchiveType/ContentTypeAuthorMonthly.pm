@@ -8,7 +8,7 @@ package MT::ArchiveType::ContentTypeAuthorMonthly;
 
 use strict;
 use base
-    qw( MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeMonthly );
+    qw( MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeMonthly MT::ArchiveType::AuthorMonthly );
 
 use MT::Util qw( dirify start_end_day );
 
@@ -65,8 +65,7 @@ sub archive_file {
     $file;
 }
 
-sub archive_title {
-}
+*date_range    = \&MT::ArchiveType::Monthly::date_range;
+*archive_title = \&MT::ArchiveType::AuthorMonthly::archive_title;
 
 1;
-

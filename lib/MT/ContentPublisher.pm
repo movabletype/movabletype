@@ -999,18 +999,6 @@ sub _rebuild_content_archive_type {
         MT->translate("You did not set your blog publishing path") )
         unless $arch_root;
 
-    my ( $start, $end );
-    if ( exists $param{Start} && exists $param{End} ) {
-        $start = $param{Start};
-        $end   = $param{End};
-    }
-    else {
-        if ( $archiver->date_based() && $archiver->can('date_range') ) {
-            ( $start, $end )
-                = $archiver->date_range( $content_data->authored_on );
-        }
-    }
-
     ## For each mapping, we need to rebuild the entries we loaded above in
     ## the particular template map, and write it to the specified archive
     ## file template.
@@ -1022,6 +1010,19 @@ sub _rebuild_content_archive_type {
     for my $map (@map) {
         next unless $map->build_type;    # ignore disabled template maps
         next if $map->build_type == MT::PublishOption::MANUALLY() && !$force;
+
+        my ( $start, $end );
+        if ( exists $param{Start} && exists $param{End} ) {
+            $start = $param{Start};
+            $end   = $param{End};
+        }
+        else {
+            if ( $archiver->date_based() && $archiver->can('date_range') ) {
+                ( $start, $end )
+                    = $archiver->date_range(
+                    $archiver->target_dt( $content_data, $map ) );
+            }
+        }
 
         my $ctx = MT::Template::Context->new;
         $ctx->{current_archive_type} = $at;

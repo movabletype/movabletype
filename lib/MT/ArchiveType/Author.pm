@@ -61,10 +61,10 @@ sub archive_file {
     my ( $ctx, %param ) = @_;
     my $file_tmpl = $param{Template};
     my $author    = $ctx->{__stash}{author};
-    my $entry     = $ctx->{__stash}{entry};
+    my $obj       = _get_object($ctx);
     my $file;
 
-    my $this_author = $author ? $author : ( $entry ? $entry->author : undef );
+    my $this_author = $author ? $author : ( $obj ? $obj->author : undef );
     return "" unless $this_author;
 
     if ( !$file_tmpl ) {
@@ -196,6 +196,11 @@ sub author_based {
 
 sub group_based {
     return 1;
+}
+
+sub _get_object {
+    my $ctx = shift;
+    return $ctx->{__stash}{entry};
 }
 
 1;

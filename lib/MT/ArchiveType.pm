@@ -124,7 +124,7 @@ sub author_based {
 sub contenttype_based {
     my $obj = shift;
     if ( ref $obj ne __PACKAGE__ ) {
-        return $obj->isa('MT::ArchiveType::ContentType');
+        return $obj->isa('MT::ArchiveType::ContentTypeIndividual');
     }
     return $obj->_getset( 'contenttype_based', @_ );
 }
@@ -165,7 +165,6 @@ sub archive_entries_count {
     my $ts       = $params->{Timestamp};
     my $cat      = $params->{Category};
     my $auth     = $params->{Author};
-    my $ct       = $params->{ContentType};
     my ( $start, $end );
     if ($ts) {
         my $archiver = MT->publisher->archiver($at);
@@ -182,6 +181,44 @@ sub archive_entries_count {
             (   $cat
                 ? ( 'join' => [
                         'MT::Placement', 'entry_id',
+                        { category_id => $cat->id }
+                    ]
+                    )
+                : ()
+            ),
+        }
+    );
+    return $count;
+}
+
+sub archive_contents_count {
+    my $self = shift;
+
+    return $self->_getset_coderef( 'archive_contents_count', @_ )
+        if ref($self) eq __PACKAGE__;
+
+    my ($params) = @_;
+    my $blog     = $params->{Blog};
+    my $at       = $params->{ArchiveType};
+    my $ts       = $params->{Timestamp};
+    my $cat      = $params->{Category};
+    my $auth     = $params->{Author};
+    my ( $start, $end );
+    if ($ts) {
+        my $archiver = MT->publisher->archiver($at);
+        ( $start, $end ) = $archiver->date_range($ts) if $archiver;
+    }
+
+    my $count = MT->model('cd')->count(
+        {   blog_id => $blog->id,
+            status  => MT::Entry::RELEASE(),
+            ( $ts ? ( authored_on => [ $start, $end ] ) : () ),
+            ( $auth ? ( author_id => $auth->id ) : () ),
+        },
+        {   ( $ts ? ( range_incl => { authored_on => 1 } ) : () ),
+            (   $cat
+                ? ( 'join' => [
+                        'MT::ObjectCategory', 'object_id',
                         { category_id => $cat->id }
                     ]
                     )

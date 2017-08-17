@@ -756,18 +756,18 @@ sub _hdlr_archive_title {
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
 
     my $archiver = MT->publisher->archiver($at);
-    my @entries;
+    my @objects;
     if ( $archiver->entry_based ) {
-        my $entries = $ctx->stash('entries');
-        if ( !$entries && ( my $e = $ctx->stash('entry') ) ) {
-            push @$entries, $e;
+        my $objects = $ctx->stash('entries');
+        if ( !$objects && ( my $e = $ctx->stash('entry') ) ) {
+            push @$objects, $e;
         }
-        if ( $entries && ref($entries) eq 'ARRAY' && $at ) {
-            @entries = @$entries;
+        if ( $objects && ref($objects) eq 'ARRAY' && $at ) {
+            @objects = @$objects;
         }
         else {
             my $blog = $ctx->stash('blog');
-            if ( !@entries ) {
+            if ( !@objects ) {
                 ## This situation arises every once in awhile. We have
                 ## a date-based archive page, but no entries to go on it--this
                 ## might happen, for example, if you have daily archives, and
@@ -783,7 +783,34 @@ sub _hdlr_archive_title {
                 if ( $at && $archiver->date_based() ) {
                     my $e = MT::Entry->new;
                     $e->authored_on( $ctx->{current_timestamp} );
-                    @entries = ($e);
+                    @objects = ($e);
+                }
+                else {
+                    return $ctx->error(
+                        MT->translate(
+                            "You used an [_1] tag outside of the proper context.",
+                            '<$MTArchiveTitle$>'
+                        )
+                    );
+                }
+            }
+        }
+    }
+    elsif ( $archiver->contenttype_based ) {
+        my $objects = $ctx->stash('contents');
+        if ( !$objects && ( my $c = $ctx->stash('content') ) ) {
+            push @$objects, $c;
+        }
+        if ( $objects && ref($objects) eq 'ARRAY' && $at ) {
+            @objects = @$objects;
+        }
+        else {
+            my $blog = $ctx->stash('blog');
+            if ( !@objects ) {
+                if ( $at && $archiver->contenttype_date_based() ) {
+                    my $c = MT::ContentData->new;
+                    $c->authored_on( $ctx->{current_timestamp} );
+                    @objects = ($c);
                 }
                 else {
                     return $ctx->error(
@@ -797,8 +824,8 @@ sub _hdlr_archive_title {
         }
     }
     my $title
-        = ( @entries && $entries[0] )
-        ? $archiver->archive_title( $ctx, $entries[0] )
+        = ( @objects && $objects[0] )
+        ? $archiver->archive_title( $ctx, $objects[0] )
         : $archiver->archive_title( $ctx, $ctx->{current_timestamp} );
     defined $title ? $title : '';
 }

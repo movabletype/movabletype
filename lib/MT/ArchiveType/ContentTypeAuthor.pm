@@ -7,7 +7,7 @@
 package MT::ArchiveType::ContentTypeAuthor;
 
 use strict;
-use base qw( MT::ArchiveType );
+use base qw( MT::ArchiveType::Author );
 
 use MT::Util qw( remove_html encode_html );
 
@@ -35,27 +35,38 @@ sub template_params {
     return { archive_class => "contenttype-author-archive" };
 }
 
-sub archive_file {
+sub archive_contents_count {
     my $obj = shift;
-    my ( $ctx, %param ) = @_;
-    my $file_tmpl    = $param{Template};
-    my $author       = $ctx->{__stash}{author};
-    my $content_data = $ctx->{__stash}{content};
-    my $file;
-
-    my $this_author
-        = $author
-        ? $author
-        : ( $content_data ? $content_data->author : undef );
-    return "" unless $this_author;
-
-    if ( !$file_tmpl ) {
-        $file = sprintf( "%s/index", $this_author->basename );
-    }
-    $file;
+    my ( $blog, $at, $content_data ) = @_;
+    return $obj->SUPER::archive_contents_count(
+        {   Blog        => $blog,
+            ArchiveType => $at,
+        }
+    ) unless $content_data;
+    my $auth = $content_data->author;
+    return $obj->SUPER::archive_contents_count(
+        {   Blog        => $blog,
+            ArchiveType => $at,
+            Author      => $auth
+        }
+    );
 }
 
-sub archive_title {
+sub does_publish_file {
+    my $obj    = shift;
+    my %params = %{ shift() };
+
+    if ( !$params{Author} && $params{ContentData} ) {
+        $params{Author} = $params{ContentData}->author;
+    }
+    return 0 unless $params{Author};
+
+    MT::ArchiveType::archive_contents_count( $obj, \%params );
+}
+
+sub _get_object {
+    my $ctx = shift;
+    return $ctx->{__stash}{content};
 }
 
 1;
