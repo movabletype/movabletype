@@ -7,7 +7,7 @@
   </mt:if>
 
   <mt:if name="author_name">
-    <ul id="footer-nav" class="list-inline inline-nav">
+    <ul class="list-inline">
       <li class="list-inline-item">
         <a href="<__trans phrase="http://www.movabletype.org">">
           <__trans phrase="MovableType.org">
@@ -46,12 +46,10 @@
     </ul>
   </mt:if>
 
-    <mt:include name="include/copyright.tmpl">
-
-    <p id="version">
-      <strong>
+    <p>
+      <small>
+        <MT_TRANS phrase="Copyright &copy; 2001 Six Apart. All Rights Reserved."><br>
         <__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_version_id">">
-      </strong>
 <mt:if name="packs_installed">
   <__trans phrase="with">:
   <mt:loop name="packs_installed" glue=", ">
@@ -65,6 +63,7 @@
     </mt:if>
   </mt:loop>
 </mt:if>
+      </small>
     </p>
   <div>
 </div>
