@@ -2203,6 +2203,9 @@ BEGIN {
 
             # Notification Center
             'NotificationCacheTTL' => { default => 3600 },
+
+            # Dashboard
+            'DisableVersionCheck' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2274,10 +2277,10 @@ BEGIN {
                     require MT::CMS::Search;
                     return MT::CMS::Search::core_search_apis( MT->app, @_ );
                 },
-                menus           => sub { MT->app->core_menus() },
-                methods         => sub { MT->app->core_methods() },
-                widgets         => sub { MT->app->core_widgets() },
-                import_formats  => sub {
+                menus          => sub { MT->app->core_menus() },
+                methods        => sub { MT->app->core_methods() },
+                widgets        => sub { MT->app->core_widgets() },
+                import_formats => sub {
                     require MT::Import;
                     return MT::Import->core_import_formats();
                 },

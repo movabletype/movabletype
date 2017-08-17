@@ -8,6 +8,7 @@ package MT::CMS::Dashboard;
 use strict;
 use MT::Util qw( epoch2ts encode_html );
 use MT::Stats qw(readied_provider);
+use MT::I18N qw( const );
 
 sub dashboard {
     my $app = shift;
@@ -939,21 +940,19 @@ sub notification_widget {
     my $user = $app->user;
 
     require MT::Session;
-    if ( scalar $app->param( 'reload') ) {
+    if ( scalar $app->param('reload') ) {
+
         # Force reload, purge cache if exists
-        my $cache = MT->model('session')->load({
-            kind => 'ND',
-        });
+        my $cache = MT->model('session')->load( { kind => 'ND', } );
         $cache->remove if $cache;
     }
     else {
         # Check cache
         my $ttl = MT->config('NotificationCacheTTL');
-        my $cache = MT::Session::get_unexpired_value( $ttl, {
-            kind => 'ND',
-        });
+        my $cache
+            = MT::Session::get_unexpired_value( $ttl, { kind => 'ND', } );
 
-        if ( $cache  ) {
+        if ($cache) {
             require MT::Serialize;
             my $data = MT::Serialize->unserialize( $cache->data() );
             $param->{loop_notification_dashboard} = $$data;
@@ -1086,17 +1085,82 @@ sub notification_widget {
 
     # Make a cache
     require MT::Serialize;
-    my $ser = MT::Serialize->serialize( \\@messages );
+    my $ser   = MT::Serialize->serialize( \\@messages );
     my $cache = MT->model('session')->new;
-    $cache->set_values({
-        id    => 'Notification messages',
-        kind  => 'ND',
-        data  => $ser,
-        start => time,
-    });
+    $cache->set_values(
+        {   id    => 'Notification messages',
+            kind  => 'ND',
+            data  => $ser,
+            start => time,
+        }
+    );
     $cache->save;
 
     $param->{loop_notification_dashboard} = \@messages;
+}
+
+sub system_information_widget {
+    my $app = shift;
+    my ( $tmpl, $param ) = @_;
+
+    # Count MT Native User
+    my $author_class = $app->model('author');
+    $param->{active_users} = $author_class->count(
+        {   type   => MT::Author::AUTHOR(),
+            status => MT::Author::ACTIVE(),
+        }
+    );
+
+    # Count Sites (Parent and child)
+    my $site_class = $app->model('blog');
+    $param->{total_sites}
+        = $site_class->count( { class => '*' } );
+
+    # Count Content Types
+    my $ct_class = $app->model('content_type');
+    $param->{total_content_types} = $ct_class->count();
+
+    # Server model
+    if ( $ENV{MOD_PERL} ) {
+        $param->{server_model} = 'mod_perl';
+    }
+    elsif ( $ENV{FAST_CGI} ) {
+        $param->{server_model} = 'FastCGI';
+    }
+    elsif ( $ENV{'psgi.version'} ) {
+        $param->{server_model} = 'PSGI';
+    }
+    else {
+        $param->{server_model} = 'CGI';
+    }
+
+    # Update check
+    if ( $app->config('DisableVersionCheck') ) {
+        $param->{disable_version_check} = 1;
+    }
+    else {
+        # Read available version data.
+        my $ua = MT->new_ua( { timeout => 10 } );
+        if ( !$ua ) {
+            $param->{disable_version_check} = 1;
+        }
+        else {
+            my $version_url = const('LATEST_VESION_URL');
+            my $req         = new HTTP::Request( GET => $version_url );
+            my $resp        = $ua->request($req);
+            my $result = $resp->content();
+            if ( !$resp->is_success() || !$result ) {
+                $param->{disable_version_check} = 1;
+            }
+            else {
+                $result = MT::Util::from_json($result);
+                if ( MT->version_id ne $result->{version} ) {
+                    $param->{available_version} = $result->{version};
+                    $param->{news_url}          = $result->{news_url};
+                }
+            }
+        }
+    }
 }
 
 1;

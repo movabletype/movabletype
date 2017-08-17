@@ -430,6 +430,16 @@ sub core_widgets {
             },
             default => 1,
         },
+        system_information => {
+            label    => 'System Infromation',
+            template => 'widget/system_information.tmpl',
+            handler  => "${pkg}Dashboard::system_information_widget",
+            singular => 1,
+            set      => 'main',
+            view     => 'system',
+            order    => 100,
+            default  => 1,
+        },
     };
 
     return $core_widgets;
