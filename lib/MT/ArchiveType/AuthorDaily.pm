@@ -56,14 +56,14 @@ sub archive_title {
 }
 
 sub archive_file {
-    my $obj = shift;
+    my $archiver = shift;
     my ( $ctx, %param ) = @_;
     my $timestamp = $param{Timestamp};
     my $file_tmpl = $param{Template};
     my $author    = $ctx->{__stash}{author};
-    my $entry     = $ctx->{__stash}{entry};
+    my $obj       = $archiver->get_content($ctx);
     my $file;
-    my $this_author = $author ? $author : ( $entry ? $entry->author : undef );
+    my $this_author = $author ? $author : ( $obj ? $obj->author : undef );
     return "" unless $this_author;
 
     if ( !$file_tmpl ) {

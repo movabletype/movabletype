@@ -38,34 +38,8 @@ sub template_params {
     return { archive_class => "contenttype-author-monthly-archive" };
 }
 
-sub archive_file {
-    my $obj = shift;
-    my ( $ctx, %param ) = @_;
-    my $timestamp    = $param{Timestamp};
-    my $file_tmpl    = $param{Template};
-    my $author       = $ctx->{__stash}{author};
-    my $content_data = $ctx->{__stash}{content};
-    my $file;
-    my $this_author
-        = $author
-        ? $author
-        : ( $content_data ? $content_data->author : undef );
-    return "" unless $this_author;
-
-    if ( !$file_tmpl ) {
-        my $name = $this_author->basename;
-        my ($start) = start_end_month($timestamp);
-        my ( $year, $month ) = unpack 'A4A2', $start;
-        $file = sprintf( "author/%s/%04d/%02d/index", $name, $year, $month );
-    }
-    else {
-        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} )
-            = start_end_month($timestamp);
-    }
-    $file;
-}
-
 *date_range    = \&MT::ArchiveType::Monthly::date_range;
+*archive_file  = \&MT::ArchiveType::AuthorMonthly::archive_file;
 *archive_title = \&MT::ArchiveType::AuthorMonthly::archive_title;
 
 1;

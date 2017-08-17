@@ -246,4 +246,8 @@ sub previous_archive_entry {
     shift->_getset_coderef( 'previous_archive_entry', @_ );
 }
 
+sub get_content {
+    shift->_getset_coderef( 'get_content', @_ );
+}
+
 1;

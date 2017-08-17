@@ -38,35 +38,8 @@ sub template_params {
     return { archive_class => "contenttype-author-weekly-archive" };
 }
 
-sub archive_file {
-    my $obj = shift;
-    my ( $ctx, %param ) = @_;
-    my $timestamp    = $param{Timestamp};
-    my $file_tmpl    = $param{Template};
-    my $author       = $ctx->{__stash}{author};
-    my $content_data = $ctx->{__stash}{content};
-    my $file;
-    my $this_author
-        = $author
-        ? $author
-        : ( $content_data ? $content_data->author : undef );
-    return "" unless $this_author;
-
-    if ( !$file_tmpl ) {
-        my $name  = $this_author->basename;
-        my $start = start_end_week($timestamp);
-        my ( $year, $month, $day ) = unpack 'A4A2A2', $start;
-        $file = sprintf( "author/%s/%04d/%02d/%02d-week/index",
-            $name, $year, $month, $day );
-    }
-    else {
-        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} )
-            = start_end_week($timestamp);
-    }
-    $file;
-}
-
 *date_range    = \&MT::ArchiveType::Weekly::date_range;
+*archive_file  = \&MT::ArchiveType::AuthorWeekly::archive_file;
 *archive_title = \&MT::ArchiveType::AuthorWeekly::archive_title;
 
 1;

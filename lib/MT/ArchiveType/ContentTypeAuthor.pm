@@ -64,8 +64,8 @@ sub does_publish_file {
     MT::ArchiveType::archive_contents_count( $obj, \%params );
 }
 
-sub _get_content {
-    my $ctx = shift;
+sub get_content {
+    my ( $archiver, $ctx ) = @_;
     return $ctx->{__stash}{content};
 }
 

@@ -38,35 +38,8 @@ sub template_params {
     return { archive_class => "contenttype-author-yearly-archive" };
 }
 
-sub archive_file {
-    my $obj = shift;
-    my ( $ctx, %param ) = @_;
-    my $timestamp    = $param{Timestamp};
-    my $file_tmpl    = $param{Template};
-    my $author       = $ctx->{__stash}{author};
-    my $content_data = $ctx->{__stash}{content};
-    my $file;
-    my $this_author
-        = $author
-        ? $author
-        : ( $content_data ? $content_data->author : undef );
-    return "" unless $this_author;
-
-    if ( !$file_tmpl ) {
-        return "" unless $this_author;
-        my $name  = $this_author->basename;
-        my $start = start_end_year($timestamp);
-        my ($year) = unpack 'A4', $start;
-        $file = sprintf( "author/%s/%04d/index", $name, $year );
-    }
-    else {
-        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} )
-            = start_end_year($timestamp);
-    }
-    $file;
-}
-
 *date_range    = \&MT::ArchiveType::Yearly::date_range;
+*archive_file  = \&MT::ArchiveType::AuthorYearly::archive_file;
 *archive_title = \&MT::ArchiveType::AuthorYearly::archive_title;
 
 1;
