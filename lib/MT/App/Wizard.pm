@@ -1130,12 +1130,12 @@ sub seed {
     my $drivers = $app->object_drivers;
 
     my $r_uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
-    if ( $ENV{MOD_PERL}
+    if ( MT::Util::is_mod_perl1()
         || ( ( $r_uri =~ m/\/mt-wizard\.(\w+)(\?.*)?$/ ) && ( $1 ne 'cgi' ) )
         )
     {
         my $new = '';
-        if ( $ENV{MOD_PERL} ) {
+        if ( MT::Util::is_mod_perl1() ) {
             $param{mod_perl} = 1;
         }
         else {

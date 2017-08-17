@@ -12,7 +12,7 @@ use MT::Util qw( offset_time_list );
 
 sub mt_new {
     my $cfg
-        = $ENV{MOD_PERL}
+        = MT::Util::is_mod_perl1()
         ? Apache->request->dir_config('MTConfig')
         : ( $ENV{MT_CONFIG} || $MT::XMLRPCServer::MT_DIR . '/mt-config.cgi' );
     my $mt = MT->new( Config => $cfg )
