@@ -652,7 +652,7 @@ riot.tag2('list-table', '<thead data-is="list-table-header"></thead> <tbody if="
     this.mixin('listTop')
 });
 
-riot.tag2('list-table-header', '<tr> <th> <input type="checkbox" checked="{store.checkedAllRowsOnPage}" onchange="{toggleAllRowsOnPage}"> </th> <th each="{store.columns}" if="{checked}" data-id="{id}" class="{primary: primary,         sortable: sortable,         sorted: parent.store.sortBy == id}"> <a href="javascript:void(0)" if="{sortable}" onclick="{toggleSortColumn}"> {label} </a> <virtual if="{!sortable}">{label}</virtual> <span class="caret caret-reverse" if="{sortable && (           parent.store.sortBy != id           || parent.store.sortOrder == \'ascend\'         )}"> </span> <span class="caret" if="{sortable && (           parent.store.sortBy != id           || parent.store.sortOrder == \'descend\'         )}"> </span> </th> </tr>', '', '', function(opts) {
+riot.tag2('list-table-header', '<tr> <th scope="col"> <input type="checkbox" checked="{store.checkedAllRowsOnPage}" onchange="{toggleAllRowsOnPage}"> </th> <th each="{store.columns}" scope="col" if="{checked}" data-id="{id}" class="{primary: primary,         sortable: sortable,         sorted: parent.store.sortBy == id}"> <a href="javascript:void(0)" if="{sortable}" onclick="{toggleSortColumn}" class="{mt-table__ascend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'ascend\',           mt-table__descend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'descend\'}"> {label} </a> <virtual if="{!sortable}">{label}</virtual> </th> </tr>', '', '', function(opts) {
     this.mixin('listTop')
 
     this.toggleAllRowsOnPage = function(e) {
@@ -665,7 +665,7 @@ riot.tag2('list-table-header', '<tr> <th> <input type="checkbox" checked="{store
     }.bind(this)
 });
 
-riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan="{store.columns.length + 1}"> {trans(\'No [_1] could be found.\', listTop.opts.zeroStateLabel)} </td> </tr> <tr style="background-color: #ffffff;" if="{store.pageMax > 1 && store.checkedAllRowsOnPage && !store.checkedAllRows}"> <td colspan="{store.objects.length + 1}"> <a href="javascript:void(0);" onclick="{checkAllRows}"> {trans(\'Select all [_1] items\', store.count)} </a> </td> </tr> <tr class="success" if="{store.pageMax > 1 && store.checkedAllRows}"> <td colspan="{store.objects.length + 1}"> {trans(\'All [_1] items are selected\', store.count)} </td> </tr> <tr data-is="list-table-row" each="{obj, index in store.objects}" onclick="{parent.toggleRow}" class="{obj.checked ? \'warning\' : \'\'}" data-index="{index}" checked="{obj.checked}" object="{obj.object}"> </tr>', '', '', function(opts) {
+riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan="{store.columns.length + 1}"> {trans(\'No [_1] could be found.\', listTop.opts.zeroStateLabel)} </td> </tr> <tr style="background-color: #ffffff;" if="{store.pageMax > 1 && store.checkedAllRowsOnPage && !store.checkedAllRows}"> <td colspan="{store.objects.length + 1}"> <a href="javascript:void(0);" onclick="{checkAllRows}"> {trans(\'Select all [_1] items\', store.count)} </a> </td> </tr> <tr class="success" if="{store.pageMax > 1 && store.checkedAllRows}"> <td colspan="{store.objects.length + 1}"> {trans(\'All [_1] items are selected\', store.count)} </td> </tr> <tr data-is="list-table-row" each="{obj, index in store.objects}" onclick="{parent.toggleRow}" class="{obj.checked ? \'mt-table__highlight\' : \'\'}" data-index="{index}" checked="{obj.checked}" object="{obj.object}"> </tr>', '', '', function(opts) {
     this.mixin('listTop')
 
     this.toggleRow = function(e) {
@@ -688,7 +688,7 @@ riot.tag2('list-table-column', '<virtual></virtual>', '', '', function(opts) {
     this.root.innerHTML = opts.content
 });
 
-riot.tag2('list-top', '<div data-is="display-options"></div> <div class="row"> <div data-is="list-actions" if="{opts.useActions}" class="col-md-12"> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <div data-is="list-pagination" class="col-md-12 text-center"></div> </div> <div class="row"> <div class="col-md-12"> <div class="card"> <virtual data-is="list-filter"></virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table table-striped table-hover listing-table list-{opts.objectType}"> </table> </div> </div> </div>', '', '', function(opts) {
+riot.tag2('list-top', '<div data-is="display-options"></div> <div class="row"> <div data-is="list-actions" if="{opts.useActions}" class="col-md-12"> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <div data-is="list-pagination" class="col-md-12 text-center"></div> </div> <div class="row"> <div class="col-md-12"> <div class="card"> <virtual data-is="list-filter"></virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table list-{opts.objectType}"> </table> </div> </div> </div>', '', '', function(opts) {
     riot.mixin('listTop', {
       init: function () {
         if (this.__.tagName == 'list-top') {

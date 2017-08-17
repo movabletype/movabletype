@@ -17,12 +17,13 @@
 
 <list-table-header>
   <tr>
-    <th>
+    <th scope="col">
       <input type="checkbox"
         checked={ store.checkedAllRowsOnPage }
         onchange={ toggleAllRowsOnPage } />
     </th>
     <th each={ store.columns }
+      scope="col"
       if={ checked }
       data-id={ id }
       class={
@@ -34,22 +35,14 @@
       <a href="javascript:void(0)"
         if={ sortable }
         onclick={ toggleSortColumn }
+        class={
+          mt-table__ascend: sortable && parent.store.sortBy == id && parent.store.sortOrder == 'ascend',
+          mt-table__descend: sortable && parent.store.sortBy == id && parent.store.sortOrder == 'descend'
+        }
       >
         { label }
       </a>
       <virtual if={ !sortable }>{ label }</virtual>
-      <span class="caret caret-reverse"
-        if={ sortable && (
-          parent.store.sortBy != id
-          || parent.store.sortOrder == 'ascend'
-        ) }>
-      </span>
-      <span class="caret"
-        if={ sortable && (
-          parent.store.sortBy != id
-          || parent.store.sortOrder == 'descend'
-        ) }>
-      </span>
     </th>
   </tr>
 
@@ -90,7 +83,7 @@
   <tr data-is="list-table-row"
     each={ obj, index in store.objects }
     onclick={ parent.toggleRow }
-    class={ obj.checked ? 'warning' : '' }
+    class={ obj.checked ? 'mt-table__highlight' : '' }
     data-index={ index }
     checked={ obj.checked }
     object={ obj.object }
