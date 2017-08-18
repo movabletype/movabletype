@@ -8276,6 +8276,10 @@ li {
   border-bottom: 0;
 }
 
+.mt-table .custom-control {
+  margin-right: 0;
+}
+
 .mt-table__highlight {
   background: #E3F2F4;
 }
