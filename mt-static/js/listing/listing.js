@@ -628,7 +628,7 @@ riot.tag2('list-filter-save-modal', '<div id="save-filter" class="modal fade" ta
     }.bind(this)
 });
 
-riot.tag2('list-pagination', '<ul class="list-inline"> <li class="list-inline-item"> <button class="btn btn-default" disabled="{store.page <= 1}" data-page="{store.page - 1}" onclick="{movePage}"> &lt; {trans(\'Prev\')} </button> </li> <li class="list-inline-item"> <virtual if="{store.page - 3 >= 1}"> <a href="javascript:void(0);" data-page="{1}" onclick="{movePage}"> <span class="label label-default"> 1 </span> </a> ... </virtual> <virtual if="{store.page - 2 >= 1}"> <a href="javascript:void(0);" data-page="{store.page - 2}" onclick="{movePage}"> {store.page - 2} </a> </virtual> <virtual if="{store.page - 1 >= 1}"> <a href="javascript:void(0);" data-page="{store.page - 1}" onclick="{movePage}"> {store.page - 1} </a> </virtual> <span class="label label-primary">{store.page}</span> <virtual if="{store.page + 1 <= store.pageMax}"> <a href="javascript:void(0);" data-page="{store.page + 1}" onclick="{movePage}"> {store.page + 1} </a> </virtual> <virtual if="{store.page + 2 <= store.pageMax}"> <a href="javascript:void(0);" data-page="{store.page + 2}" onclick="{movePage}"> {store.page + 2} </a> </virtual> <virtual if="{store.page + 3 <= store.pageMax}"> ... <a href="javascript:void(0);" data-page="{store.pageMax}" onclick="{movePage}"> <span class="label label-default"> {store.pageMax} </span> </a> </virtual> </li> <li class="list-inline-item"> [ <input min="1" max="{store.pageMax}" riot-value="{store.page}" class="text-center" style="width: 50px;" onkeyup="{movePage}" type="{\'number\'}"> / {store.pageMax} ] </li> <li class="list-inline-item"> <button class="btn btn-default" disabled="{store.page >= store.pageMax}" data-page="{store.page + 1}" onclick="{movePage}"> {trans(\'Next\')} &gt; </button> </li> </ul>', '', '', function(opts) {
+riot.tag2('list-pagination', '<nav aria-label="Page Navigation"> <ul class="pagination"> <li class="page-item"> <a href="javascript:void(0);" class="page-link" disabled="{store.page <= 1}" data-page="{store.page - 1}" onclick="{movePage}"> {trans(\'Previous\')} </a> </li> <virtual if="{store.page - 2 >= 1}"> <li class="page-item first-last"> <a href="javascript:void(0);" class="page-link" data-page="{1}" onclick="{movePage}"> 1 </a> </li> <li class="page-item" aria-hidden="true"> ... </li> </virtual> <li if="{store.page - 1 >= 1}" class="{\'page-item\': true, \'first-last\': store.page - 1 == 1}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page - 1}" onclick="{movePage}"> {store.page - 1} </a> </li> <li class="page-item active"> <a class="page-link"> {store.page} <span class="sr-only">(current)</span> </a> </li> <li if="{store.page + 1 <= store.pageMax}" class="{\'page-item\': true, \'first-last\': store.page + 1 == store.pageMax}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page + 1}" onclick="{movePage}"> {store.page + 1} </a> </li> <virtual if="{store.page + 2 <= store.pageMax}"> <li class="page-item" aria-hidden="true"> ... </li> <li class="page-item first-last"> <a href="javascript:void(0);" class="page-link" data-page="{store.pageMax}" onclick="{movePage}"> {store.pageMax} </a> </li> </virtual> <li class="page-item"> <a href="javascript:void(0);" class="page-link" disabled="{store.page >= store.pageMax}" data-page="{store.page + 1}" onclick="{movePage}"> {trans(\'Next\')} </a> </li> </ul> </nav>', '', '', function(opts) {
     this.mixin('listTop')
 
     this.movePage = function(e) {
@@ -645,6 +645,7 @@ riot.tag2('list-pagination', '<ul class="list-inline"> <li class="list-inline-it
         return false
       }
       this.store.trigger('move_page', nextPage)
+      return false
     }.bind(this)
 });
 
@@ -688,7 +689,7 @@ riot.tag2('list-table-column', '<virtual></virtual>', '', '', function(opts) {
     this.root.innerHTML = opts.content
 });
 
-riot.tag2('list-top', '<div data-is="display-options"></div> <div class="row"> <div data-is="list-actions" if="{opts.useActions}" class="col-md-12"> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <div data-is="list-pagination" class="col-md-12 text-center"></div> </div> <div class="row"> <div class="col-md-12"> <div class="card"> <virtual data-is="list-filter"></virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table list-{opts.objectType}"> </table> </div> </div> </div>', '', '', function(opts) {
+riot.tag2('list-top', '<div data-is="display-options"></div> <div class="row"> <div data-is="list-actions" if="{opts.useActions}" class="col-md-12"> </div> </div> <div class="row"> <div class="col-md-12"> <div class="card"> <virtual data-is="list-filter"></virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table list-{opts.objectType}"> </table> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <div data-is="list-pagination" class="col-md-12"></div> </div>', '', '', function(opts) {
     riot.mixin('listTop', {
       init: function () {
         if (this.__.tagName == 'list-top') {
