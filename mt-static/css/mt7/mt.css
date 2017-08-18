@@ -638,7 +638,7 @@ pre code {
   width: 100%;
 }
 
-.row, .mt-globalNavigation {
+.row {
   display: -ms-flexbox;
   display: flex;
   -ms-flex-wrap: wrap;
@@ -8078,6 +8078,7 @@ li {
 .mt-primaryNavigation {
   padding-right: 0;
   padding-left: 0;
+  max-width: 240px;
   background: #F4F4F4;
 }
 
@@ -8152,6 +8153,7 @@ li {
 
 /* Secondary Panel */
 .mt-secondaryPanel {
+  max-width: 400px;
   background: #F4F4F4;
 }
 
