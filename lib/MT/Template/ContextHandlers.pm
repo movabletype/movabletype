@@ -3504,7 +3504,7 @@ sub _hdlr_app_statusmsg {
         my $link_l
             = $no_link
             ? ''
-            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">';
+            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">';
         my $link_r = $no_link ? '' : '</a>';
         my $obj_type
             = $rebuild eq 'blog'
@@ -3524,10 +3524,10 @@ sub _hdlr_app_statusmsg {
     {
         $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
         $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">}
+            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">}
             if $rebuild eq 'all';
         $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">}
+            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">%%</a>">}
             if $rebuild eq 'index';
     }
     else {
@@ -3539,10 +3539,14 @@ sub _hdlr_app_statusmsg {
     if ( $id && ( $args->{can_close} || ( !exists $args->{can_close} ) ) ) {
         $class .= ' alert-dismissable';
         $close
-            = qq{<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>};
+            = qq{<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>};
+    }
+    my $role = '';
+    if ( $class =~ /\bwarning|\bdanger/ ) {
+        $role = ' role="alert"';
     }
     return $ctx->build(<<"EOT");
-    <div$id class="$class"$style>$close $msg $rebuild</div>
+    <div$id class="$class"$style$role>$close $msg $rebuild</div>
 EOT
 }
 
