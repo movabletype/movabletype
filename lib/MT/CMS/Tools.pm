@@ -43,7 +43,7 @@ sub system_check {
         }
     }
 
-    $param{server_modperl} = 1 if $ENV{MOD_PERL};
+    $param{server_modperl} = 1 if MT::Util::is_mod_perl1();
     $param{server_fastcgi} = 1 if $ENV{FAST_CGI};
 
     $param{server_psgi} = $ENV{'psgi.version'} ? 1 : 0;

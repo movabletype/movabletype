@@ -35,7 +35,7 @@ sub wrap {
         ## If running under mod_perl, using request->pnotes; otherwise,
         ## just use a hash.
         my $ram_cache;
-        if ( $ENV{MOD_PERL} ) {
+        if ( MT::Util::is_mod_perl1() ) {
             require Data::ObjectDriver::Driver::Cache::Apache;
             $ram_cache = 'Data::ObjectDriver::Driver::Cache::Apache';
         }

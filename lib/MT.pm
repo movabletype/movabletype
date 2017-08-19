@@ -1026,7 +1026,7 @@ sub init_config {
                 . $DBI::VERSION
                 . "; DBD/"
                 . $drh->{Version} . "\n";
-            if ( $ENV{MOD_PERL} ) {
+            if ( MT::Util::is_mod_perl1() ) {
                 print $PERFLOG "# App Mode: mod_perl\n";
             }
             elsif ( $ENV{FAST_CGI} ) {
@@ -2447,14 +2447,14 @@ sub set_default_tmpl_params {
     $param->{mt_debug} = $MT::DebugMode;
     if ( $param->{mt_debug} && $mt->isa('MT::App') ) {
         $param->{mt_svn_revision} = $mt->_svn_revision();
-        if ( $ENV{MOD_PERL} && exists( $mt->{apache} ) ) {
+        if ( MT::Util::is_mod_perl1() && exists( $mt->{apache} ) ) {
             $param->{mt_headers} = $mt->{apache}->headers_in();
         }
         else {
             $param->{mt_headers} = \%ENV;
         }
         unless ( $mt->{cookies} ) {
-            if ( $ENV{MOD_PERL} ) {
+            if ( MT::Util::is_mod_perl1() ) {
                 eval { require Apache::Cookie };
                 $mt->{cookies} = Apache::Cookie->fetch;
             }
