@@ -632,6 +632,10 @@ riot.tag2('list-pagination', '<nav aria-label="Page Navigation"> <ul class="pagi
     this.mixin('listTop')
 
     this.movePage = function(e) {
+      if (e.currentTarget.disabled) {
+        return false
+      }
+
       let nextPage
       if (e.target.tagName == "INPUT") {
         if (e.which != 13) {
