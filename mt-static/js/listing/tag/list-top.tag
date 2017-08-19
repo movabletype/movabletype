@@ -36,9 +36,12 @@
 
     const self = this
 
-    opts.store.on('refresh_view', function () {
+    opts.store.on('refresh_view', function (moveToPagination) {
       self.update()
       self.updateSubFields()
+      if (moveToPagination) {
+        window.document.body.scrollTop = window.document.body.scrollHeight
+      }
     })
 
     this.on('mount', function () {
