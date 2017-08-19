@@ -92,8 +92,7 @@ label {
      id="default_language"
      label="<__trans phrase="Language">"
      label_class="top-label"
-     hint="<__trans phrase="Default language.">"
-     no_grid="1">
+     hint="<__trans phrase="Default language.">">
     <select name="default_language" id="default_language" class="form-control">
     <mt:loop name="languages">
       <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
@@ -140,8 +139,7 @@ label {
        label="<__trans phrase="Static web path">"
        label_class="top-label"
        show_hint="1"
-       hint="$hintfoo"
-       no_grid="1">
+       hint="$hintfoo">
       <input type="text" name="set_static_uri_to" id="set_static_uri_to" class="form-control text full" value="<$mt:var name="set_static_uri_to" default="$static_uri" escape="html"$>" size="">
     </mtapp:setting>
     <mtapp:setting
@@ -149,8 +147,7 @@ label {
        label="<__trans phrase="Static file path">"
        label_class="top-label"
        show_hint="1"
-       hint="$hintfp"
-       no_grid="1">
+       hint="$hintfp">
       <input type="text" name="set_static_file_to" id="set_static_file_to" class="form-control text full" value="<$mt:var name="set_static_file_to" default="$static_file_path" escape="html"$>" size="">
     </mtapp:setting>
   </div>
