@@ -92,6 +92,10 @@
     this.mixin('listTop')
 
     movePage(e) {
+      if (e.currentTarget.disabled) {
+        return false
+      }
+
       let nextPage
       if (e.target.tagName == "INPUT") {
         if (e.which != 13) {
