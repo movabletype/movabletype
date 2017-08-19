@@ -108,7 +108,8 @@
       if (!nextPage) {
         return false
       }
-      this.store.trigger('move_page', nextPage)
+      const moveToPagination = true
+      this.store.trigger('move_page', nextPage, moveToPagination)
       return false
     }
   </script>
