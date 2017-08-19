@@ -1,5 +1,5 @@
 <list-pagination>
-  <nav aria-label="Page Navigation">
+  <nav aria-label={ store.listClient.objectType + ' list' }>
     <ul class="pagination">
       <li class="page-item">
         <a href="javascript:void(0);"
@@ -92,6 +92,7 @@
     this.mixin('listTop')
 
     movePage(e) {
+debugger
       if (e.currentTarget.disabled) {
         return false
       }
