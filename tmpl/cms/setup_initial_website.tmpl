@@ -31,24 +31,21 @@
       <mtapp:setting
          id="website_name"
          label="<__trans phrase="Site Name">"
-         label_class="top-label"
-         no_grid="1">
+         label_class="top-label">
         <input type="text" id="website_name" class="form-control text full required" name="website_name" value="<mt:if name="website_name"><mt:var name="website_name" escape="html"><mt:else><__trans phrase="My First Site"></mt:if>" />
       </mtapp:setting>
 
       <mtapp:setting
          id="website_url"
          label="<__trans phrase="Site URL">"
-         label_class="top-label"
-         no_grid="1">
+         label_class="top-label">
         <input type="text" id="website_url" class="form-control text full required" name="website_url" value="<mt:if name="website_url"><mt:var name="website_url" escape="html"></mt:if>" />
       </mtapp:setting>
 
       <mtapp:setting
          id="website_path"
          label="<__trans phrase="Site Root">"
-         label_class="top-label"
-         no_grid="1">
+         label_class="top-label">
         <input type="text" id="website_path" class="form-control text full required<mt:if name="sitepath_limited"> limited_path</mt:if>" name="website_path" value="<mt:if name="website_path"><mt:var name="website_path" escape="html"></mt:if>" />
         <p class="text-muted hint">
           <__trans phrase="The 'Site Root' is the directory in your web server's filesystem where Movable Type will publish the files for your site. The web server must have write access to this directory.">
@@ -60,8 +57,7 @@
          id="website_theme"
          label="<__trans phrase="Theme">"
          hint="<__trans phrase="Select the theme you wish to use for this new site.">"
-         label_class="top-label"
-         no_grid="1">
+         label_class="top-label">
         <select name="website_theme" class="custom-select">
         <mt:loop name="theme_loop">
           <option value="<mt:var name="value" escape="html">"<mt:if name="website_theme"><mt:if name="value" eq="$website_theme"> selected="selected"</mt:if><mt:else><mt:if name="value" eq="$config.DefaultWebsiteTheme"> selected="selected"</mt:if></mt:if>><mt:var name="label" escape="html"></option>
@@ -74,8 +70,7 @@
          id="website_timezone"
          label="<__trans phrase="Time Zone">"
          label_class="top-label"
-         hint="<__trans phrase="Select your timezone from the pulldown menu.">"
-         no_grid="1">
+         hint="<__trans phrase="Select your timezone from the pulldown menu.">">
         <select name="website_timezone" id="website_timezone" class="custom-select se">
           <option value=""><__trans phrase="Time zone not selected"></option>
           <option value="13"<mt:if name="WEBSITE_TIMEZONE_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>

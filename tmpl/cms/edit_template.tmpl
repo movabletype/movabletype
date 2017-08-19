@@ -641,8 +641,7 @@ function toggleCache(id) {
          label="<__trans phrase="Output File">"
          label_class="top-label"
          help_page="templates"
-         help_section="output_file"
-         no_grid="1">
+         help_section="output_file">
         <input type="text" name="outfile" id="outfile" class="form-control text" tabindex="4" value="<mt:var name="outfile" escape="html">" mt:watch-change="1" />
       </mtapp:setting>
     </mt:if>
@@ -652,8 +651,7 @@ function toggleCache(id) {
          label_class="top-label"
          id="identifier"
          help_page="templates"
-         help_section="template_type"
-         no_grid="1">
+         help_section="template_type">
         <select name="identifier" id="identifier" tabindex="5" class="form-control">
           <option value="" <mt:unless name="identifier">selected="selected"</mt:unless>><__trans phrase="Custom Index Template"></option>
         <mt:loop name="index_identifiers">
@@ -668,8 +666,7 @@ function toggleCache(id) {
          label="<__trans phrase="Link to File">"
          label_class="top-label"
          help_page="templates"
-         help_section="linked_templates"
-         no_grid="1">
+         help_section="linked_templates">
         <input type="text" name="linked_file" id="linked_file" class="form-control text" tabindex="8" value="<mt:var name="linked_file" escape="html">" maxlength="255" mt:watch-change="1" />
       </mtapp:setting>
 
@@ -681,8 +678,7 @@ function toggleCache(id) {
        label="<__trans phrase="Archive Mapping">"
        label_class="top-label"
        content_class="field-content-text"
-       show_hint="0"
-       no_grid="1">
+       show_hint="0">
       <p>
         <a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create">
           <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
@@ -723,8 +719,7 @@ function toggleCache(id) {
        hint="$publishing_hint"
        show_hint="1"
        help_page="templates"
-       help_section="enable_dynamic_publishing"
-       no_grid="1">
+       help_section="enable_dynamic_publishing">
       <select name="build_type" id="build-type" class="form-control fhalf-width">
         <option value="1"<mt:if name="build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically (default)"></option>
       <mt:if name="publish_queue_available">
@@ -813,8 +808,7 @@ function toggleCache(id) {
   <mtapp:setting
      id="revision-note"
      label="<__trans phrase="Change note">"
-     label_class="top-label"
-     no_grid="1">
+     label_class="top-label">
     <input type="text" name="revision-note" id="revision-note" class="form-control text full" value="<mt:var name="revision-note" escape="html">"<mt:if name="save_revision" eq="0"> style="display:none"</mt:if> />
   </mtapp:setting>
 </mt:if>

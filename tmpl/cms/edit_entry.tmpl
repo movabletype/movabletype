@@ -427,8 +427,7 @@
      label="<__trans phrase="Status">"
      label_class="top-label"
      help_page="entries"
-     help_section="status"
-     no_grid="1">
+     help_section="status">
   <mt:unless name="sitepath_configured">
     <input type="hidden" name="status" id="status" value="1" />
     <span><__trans phrase="Unpublished"></span>
@@ -508,8 +507,7 @@
      label="$authored_on_label"
      label_class="top-label"
      help_page="entries"
-     help_section="date"
-     no_grid="1">
+     help_section="date">
     <div class="form-inline date-time-fields">
       <input type="text" id="created-on" class="form-control text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/>
       <span class="separator"> <__trans phrase="@"></span>
@@ -524,8 +522,7 @@
      label="$unpublished_on_label"
      label_class="top-label"
      help_page="entries"
-     help_section="date"
-     no_grid="1">
+     help_section="date">
     <div class="date-time-fields">
       <div id="unpublished-on" class="form-inline mt-edit-inputblock<$mt:if name="show_input_unpublished_on"> show-input</mt:if>">
         <input type="text" id="unpublished-on-date" class="form-control text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" />
@@ -539,8 +536,7 @@
      id="basename"
      label="$basename_label"
      label_class="top-label"
-     help_page="entries"
-     no_grid="1">
+     help_page="entries">
   <mt:if name="can_publish_post">
     <span class="basename">
     <input type="text" name="basename" id="basename" class="form-control text full" value="<$mt:var name="basename" escape="html"$>" /><mt:if name="object_type" eq="page"><span class="file-extension"><mt:var name="file_extension" escape="html"></span></mt:if>
@@ -569,8 +565,7 @@
   <mtapp:setting
      id="revision-note"
      label="<__trans phrase="Change note">"
-     label_class="top-label"
-     no_grid="1">
+     label_class="top-label">
     <input type="text" name="revision-note" id="revision-note" class="form-control text full" value="<mt:var name="revision-note" escape="html">" />
   </mtapp:setting>
 </mt:if>
@@ -693,8 +688,7 @@
        hint="$ping_urls_hint"
        show_hint="$show_ping_urls_hint"
        help_page="entries"
-       help_section="urls_to_ping"
-       no_grid="1">
+       help_section="urls_to_ping">
       <textarea name="to_ping_urls" id="to_ping_urls" class="form-control text full low" cols="" rows=""><$mt:var name="to_ping_urls" escape="html"$></textarea>
     </mtapp:setting>
   </mtapp:widget>
@@ -1212,8 +1206,7 @@
     <mtapp:setting
        id="entry_fields"
        label="<__trans phrase="Fields">"
-       label_class="display-options"
-       no_grid="1">
+       label_class="display-options">
       <ul id="entry-pref-field-list" class="list-inline multiple-selection">
       <mt:loop name="field_loop">
         <mt:unless name="system_field">
@@ -1240,8 +1233,7 @@
     <mtapp:setting
        id="metadata_fields"
        label="<__trans phrase="Metadata">"
-       label_class="display-options"
-       no_grid="1">
+       label_class="display-options">
       <ul class="list-inline multiple-selection">
       <mt:if name="object_type" ne="page">
         <li class="list-inline-item">
@@ -1310,8 +1302,7 @@
      shown="$show_field"
      content_class="$content_class"
      show_hint="$show_hint"
-     required="$required"
-     no_grid="1">
+     required="$required">
     <$mt:var name="field_html"$>
   </mtapp:setting>
 <mt:else>
@@ -1403,8 +1394,7 @@
        label_class="top-label"
        hint="$tags_hint"
        help_page="entries"
-       help_section="entry_tags"
-       no_grid="1">
+       help_section="entry_tags">
       <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
       <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
       <div id="tags-suggestion">
@@ -1420,8 +1410,7 @@
        label="$field_label"
        label_class="top-label"
        help_page="entries"
-       help_section="excerpt"
-       no_grid="1">
+       help_section="excerpt">
       <textarea name="excerpt" id="excerpt" class="form-control text full low" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
     </mtapp:setting>
 
@@ -1433,8 +1422,7 @@
        label="$field_label"
        label_class="top-label"
        help_page="entries"
-       help_section="keywords"
-       no_grid="1">
+       help_section="keywords">
       <input type="text" name="keywords" id="keywords" class="form-control text full" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
     </mtapp:setting>
 

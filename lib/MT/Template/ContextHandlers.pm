@@ -3246,33 +3246,10 @@ sub _hdlr_app_setting {
 
     my $class = $args->{class} || "";
 
-    if ( $args->{no_grid} ) {
-        if ( $args->{no_header} ) {
-            return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field$req_class $label_class $class"$style>
-        <div class="field-content $content_class">
-          $insides$hint$warning
-        </div>
-    </div>
-EOT
-        }
-        else {
-            return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field$req_class $label_class $class"$style>
-        <div class="field-header">
-          <label id="$id-label" for="$id">$label$req</label>
-        </div>
-        <div class="field-content $content_class">
-          $insides$hint$warning
-        </div>
-    </div>
-EOT
-        }
-    }
-    elsif ( $args->{no_header} ) {
+    if ( $args->{no_header} ) {
         return $ctx->build(<<"EOT");
-    <div id="$id-field" class="row form-group field$req_class $label_class $class"$style>
-        <div class="col-md-12 col-sm-12 field-content $content_class">
+    <div id="$id-field" class="field$req_class $label_class $class"$style>
+        <div class="field-content $content_class">
           $insides$hint$warning
         </div>
     </div>
@@ -3280,11 +3257,11 @@ EOT
     }
     else {
         return $ctx->build(<<"EOT");
-    <div id="$id-field" class="row form-group field$req_class $label_class $class"$style>
-        <div class="col-md-2 col-sm-2 field-header">
-          <label id="$id-label" for="$id" class="control-label text-right pull-right">$label$req</label>
+    <div id="$id-field" class="field$req_class $label_class $class"$style>
+        <div class="field-header">
+          <label id="$id-label" for="$id">$label$req</label>
         </div>
-        <div class="col-md-8 col-sm-8 field-content $content_class">
+        <div class="field-content $content_class">
           $insides$hint$warning
         </div>
     </div>

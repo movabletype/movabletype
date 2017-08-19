@@ -38,8 +38,7 @@ function doValidateNotifyRecips(f) {
      label="<__trans phrase="Recipients">"
      label_class="top-label"
      show_hint="1"
-     hint="<__trans phrase="Enter email addresses on separate lines or separated by commas.">"
-     no_grid="1">
+     hint="<__trans phrase="Enter email addresses on separate lines or separated by commas.">">
     <ul class="list-unstyled">
     <mt:if name="config.enableaddressbook">
       <li>
@@ -57,15 +56,13 @@ function doValidateNotifyRecips(f) {
   <mtapp:setting
      id="message"
      label="<__trans phrase="Optional Message">"
-     label_class="top-label"
-     no_grid="1">
+     label_class="top-label">
     <textarea name="message" id="message" class="form-control text full high"><mt:var name="notification" escape="html"></textarea>
   </mtapp:setting>
   <mtapp:setting
      id="send_content"
      label="<__trans phrase="Optional Content">"
-     label_class="top-label"
-     no_grid="1">
+     label_class="top-label">
     <ul class="list-unstyled">
       <li>
         <input type="checkbox" name="send_excerpt" id="send_excerpt" value="1" />

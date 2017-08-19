@@ -77,8 +77,7 @@ div.warning#version-warning {
          id="admin_username"
          label="<__trans phrase="Username">"
          label_class="top-label"
-         hint="<__trans phrase="The name used by this user to login.">"
-         no_grid="1">
+         hint="<__trans phrase="The name used by this user to login.">">
         <input type="text" id="admin_username" class="form-control text full required" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
       </mtapp:setting>
 
@@ -86,8 +85,7 @@ div.warning#version-warning {
          id="admin_nickname"
          label="<__trans phrase="Display Name">"
          label_class="top-label"
-         hint="<__trans phrase="The name used when published.">"
-         no_grid="1">
+         hint="<__trans phrase="The name used when published.">">
         <input type="text" name="admin_nickname" id="admin_nickname" class="form-control text full required" value="<mt:var name="admin_nickname" escape="html">" />
       </mtapp:setting>
 
@@ -95,8 +93,7 @@ div.warning#version-warning {
          id="admin_email"
          label="<__trans phrase="Email Address">"
          label_class="top-label"
-         hint="<__trans phrase="The user&rsquo;s email address.">"
-         no_grid="1">
+         hint="<__trans phrase="The user&rsquo;s email address.">">
         <input type="text" id="admin_email" class="form-control text full required email" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
       </mtapp:setting>
 
@@ -106,8 +103,7 @@ div.warning#version-warning {
              lebel="<__trans phrase="System Email">"
              label_class="no-header"
              hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
-             show_hint="1"
-             no_grid="1">
+             show_hint="1">
             <label class="form-inline">
               <input type="checkbox" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" />
               <__trans phrase="Use this as system email address">
@@ -119,8 +115,7 @@ div.warning#version-warning {
          id="preferred_language"
          label="<__trans phrase="Language">"
          label_class="top-label"
-         hint="<__trans phrase="The user&rsquo;s preferred language.">"
-         no_grid="1">
+         hint="<__trans phrase="The user&rsquo;s preferred language.">">
         <select name="preferred_language" id="preferred_language" class="form-control"><mt:loop name="languages">
           <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
@@ -131,8 +126,7 @@ div.warning#version-warning {
          label="<__trans phrase="Password">"
          label_class="top-label"
          hint="<__trans phrase="Select a password for your account."> (<$mt:PasswordValidationRule$>)"
-         show_hint="1"
-         no_grid="1">
+         show_hint="1">
         <input type="password" id="admin_password" class="form-control text password required" name="admin_password" />
       </mtapp:setting>
 
@@ -140,8 +134,7 @@ div.warning#version-warning {
          id="admin_password_confirm"
          label="<__trans phrase="Confirm Password">"
          label_class="top-label"
-         hint="<__trans phrase="Repeat the password for confirmation.">"
-         no_grid="1">
+         hint="<__trans phrase="Repeat the password for confirmation.">">
         <input type="password" id="admin_password_confirm" class="form-control text password" name="admin_password_confirm" />
       </mtapp:setting>
       <script type="text/javascript">
@@ -156,8 +149,7 @@ div.warning#version-warning {
          id="admin_username"
          label="<__trans phrase="Username">"
          label_class="top-label"
-         hint="<__trans phrase="Your LDAP username.">"
-         no_grid="1">
+         hint="<__trans phrase="Your LDAP username.">">
         <input type="text" id="admin_username" class="form-control text full" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
       </mtapp:setting>
 
@@ -165,8 +157,7 @@ div.warning#version-warning {
          id="preferred_language"
          label="<__trans phrase="Language">"
          label_class="top-label"
-         hint="<__trans phrase="The user&rsquo;s preferred language.">"
-         no_grid="1">
+         hint="<__trans phrase="The user&rsquo;s preferred language.">">
         <select name="preferred_language" id="preferred_language" class="form-control"><mt:loop name="languages">
           <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
@@ -176,8 +167,7 @@ div.warning#version-warning {
          id="admin_password"
          label="<__trans phrase="Password">"
          label_class="top-label"
-         hint="<__trans phrase="Enter your LDAP password.">"
-         no_grid="1">
+         hint="<__trans phrase="Enter your LDAP password.">">
         <input type="password" id="admin_password" class="form-control text password" name="admin_password" />
       </mtapp:setting>
     </mt:if>
