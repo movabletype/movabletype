@@ -46,9 +46,6 @@ sub archive_file {
     $file;
 }
 
-sub archive_title {
-}
-
 sub default_archive_templates {
     return [
         {   label           => MT->translate('yyyy/mm/base-name.html'),

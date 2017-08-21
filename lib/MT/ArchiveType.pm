@@ -203,6 +203,7 @@ sub archive_contents_count {
     my $ts       = $params->{Timestamp};
     my $cat      = $params->{Category};
     my $auth     = $params->{Author};
+    my $map      = $params->{TemplateMap};
     my ( $start, $end );
     if ($ts) {
         my $archiver = MT->publisher->archiver($at);
@@ -210,21 +211,42 @@ sub archive_contents_count {
     }
 
     my $cat_field_id
-        = $cat
-        ? MT::ObjectCategory->load( { category_id => $cat->id } )
-        : undef;
+        = ( $at eq 'ContentType' || $self->category_based )
+        && defined $map
+        && $map ? $map->cat_field_id : '';
+    my $dt_field_id
+        = ( $at eq 'ContentType' || $self->date_based )
+        && defined $map
+        && $map ? $map->dt_field_id : '';
 
     my $count = MT->model('cd')->count(
         {   blog_id => $blog->id,
             status  => MT::Entry::RELEASE(),
-            ( $ts ? ( authored_on => [ $start, $end ] ) : () ),
+            (         !$dt_field_id
+                    && $ts ? ( authored_on => [ $start, $end ] ) : ()
+            ),
             ( $auth ? ( author_id => $auth->id ) : () ),
         },
-        {   ( $ts ? ( range_incl => { authored_on => 1 } ) : () ),
+        {   ( !$dt_field_id ? ( range_incl => { authored_on => 1 } ) : () ),
             (   $cat_field_id
                 ? ( 'join' => [
-                        'MT::ContentFieldIndex', 'content_data_id',
-                        { value_integer => $cat->id }
+                        'MT::ContentFieldIndex',
+                        'content_data_id',
+                        {   content_field_id => $cat_field_id,
+                            value_integer    => $cat->id
+                        }
+                    ]
+                    )
+                : ()
+            ),
+            (   $dt_field_id && $ts
+                ? ( 'join' => [
+                        'MT::ContentFieldIndex',
+                        'content_data_id',
+                        {   content_field_id => $dt_field_id,
+                            value_datetime   => [ $start, $end ]
+                        },
+                        { range_incl => { value_datetime => 1 } }
                     ]
                     )
                 : ()

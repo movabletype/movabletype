@@ -600,6 +600,7 @@ sub rebuild_file {
                 Category    => $category,
                 Author      => $author,
                 Timestamp   => $start,
+                TemplateMap => $map,
             }
         )
         )

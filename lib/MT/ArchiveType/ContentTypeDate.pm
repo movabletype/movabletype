@@ -9,16 +9,18 @@ use base qw( MT::ArchiveType::Date );
 
 sub archive_contents_count {
     my $obj = shift;
-    my ( $blog, $at, $content_data, $timestamp ) = @_;
+    my ( $blog, $at, $content_data, $timestamp, $map ) = @_;
     return $obj->SUPER::archive_contents_count(
         {   Blog        => $blog,
             ArchiveType => $at,
+            TemplateMap => $map,
         }
     ) unless $content_data;
     return $obj->SUPER::archive_contents_count(
         {   Blog        => $blog,
             ArchiveType => $at,
             Timestamp   => $timestamp,
+            TemplateMap => $map,
         }
     );
 }
@@ -28,8 +30,8 @@ sub does_publish_file {
     my %params = %{ shift() };
 
     $obj->archive_contents_count(
-        $params{Blog},        $params{ArchiveType},
-        $params{ContentData}, $params{Start}
+        $params{Blog},  $params{ArchiveType}, $params{ContentData},
+        $params{Start}, $params{TemplateMap},
     );
 }
 

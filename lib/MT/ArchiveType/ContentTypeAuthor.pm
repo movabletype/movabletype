@@ -47,7 +47,7 @@ sub archive_contents_count {
     return $obj->SUPER::archive_contents_count(
         {   Blog        => $blog,
             ArchiveType => $at,
-            Author      => $auth
+            Author      => $auth,
         }
     );
 }
