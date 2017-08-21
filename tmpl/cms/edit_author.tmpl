@@ -263,7 +263,7 @@ function showPasswordField() {
     <mtapp:setting
        id="name"
        required="1"
-       label="<__trans phrase="Username">"
+       label="<__trans phrase="Username">">
       <input type="text" name="name" id="name" class="form-control text" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> />
       <mt:unless name="auth_mode_mt">
         <mt:unless name="new_user_external_auth">
