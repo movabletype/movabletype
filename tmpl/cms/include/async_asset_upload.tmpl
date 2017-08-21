@@ -159,20 +159,20 @@ h1.dialog-title {
       label_class="top-label"
       class="form-inline">
       <mt:if name="destination_loop">
-        <select name="destination" id="destination" class="form-control" onchange="uploadDestinationSelect(this);">
+        <select name="destination" id="destination" class="form-control" onchange="uploadDestinationSelect(this);" aria-describedby="uploadDestination">
         <mt:loop name="destination_loop">
           <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>>
             <mt:var name="label" escape="html">
           </option>
         </mt:loop>
         </select>
-        <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" style="display: none;" />
+        <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" style="display: none;" aria-describedby="uploadDestination" />
         <span class="upload-extra-path">
           / <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
         </span>
       </mt:if>
     </mtapp:setting>
-    <small class="form-text text-muted"><__trans phrase="_USAGE_UPLOAD"></small>
+    <small id="uploadDestination" class="form-text text-muted"><__trans phrase="_USAGE_UPLOAD"></small>
   <mt:else>
     <div id="site_path-field" class="field field-top-label">
       <div class="field-content">
