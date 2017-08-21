@@ -567,8 +567,7 @@ function toggleCache(id) {
      label="<__trans phrase="Template Name">"
      label_class="no-header"
      help_page="templates"
-     help_section="template_name"
-     no_header="1">
+     help_section="template_name">
   <mt:if name="has_name">
     <input type="text" name="name" id="title" class="form-control title text full" tabindex="1" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Template Name">"  maxlength="255" mt:watch-change="1" />
   <mt:else>
@@ -588,8 +587,7 @@ function toggleCache(id) {
      label="$template_name"
      label_class="no-header"
      help_page="templates"
-     help_section="template_name"
-     no_header="1">
+     help_section="template_name">
     <div class="card">
       <div id="template-editor-toolbar" class="card-header template editor-toolbar toolbar">
         <button type="button" id="syntaxon" class="command-highlight-on toolbar button active" title="<__trans phrase="Syntax highlighting On">">
@@ -676,9 +674,7 @@ function toggleCache(id) {
     <mtapp:setting
        id="archive_mapping"
        label="<__trans phrase="Archive Mapping">"
-       label_class="top-label"
-       content_class="field-content-text"
-       show_hint="0">
+       label_class="top-label">
       <p>
         <a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create">
           <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
@@ -717,10 +713,11 @@ function toggleCache(id) {
        label="<__trans phrase="Publishing">"
        label_class="top-label"
        hint="$publishing_hint"
+       hint_id="publishingHint"
        show_hint="1"
        help_page="templates"
        help_section="enable_dynamic_publishing">
-      <select name="build_type" id="build-type" class="form-control fhalf-width">
+      <select name="build_type" id="build-type" class="form-control fhalf-width" aria-describedby="publishingHint">
         <option value="1"<mt:if name="build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically (default)"></option>
       <mt:if name="publish_queue_available">
         <option value="4"<mt:if name="build_type_4"> selected="selected"</mt:if>><__trans phrase="Via Publish Queue"></option>

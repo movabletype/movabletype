@@ -27,9 +27,10 @@
         id="wp_download"
         label="<__trans phrase="Download attachments">"
         show_hint="1"
+        hint_id="wpDownload"
         hint="<__trans phrase="Requires the use of a cron job to download attachments from WordPress powered blog in the background.">">
 <label>
-  <input type="checkbox" name="wp_download" id="wp_download" value="1" />
+  <input type="checkbox" name="wp_download" id="wp_download" value="1" aria-describedby="wpDownload" />
   <__trans phrase="Download attachments (images and files) from the imported WordPress powered blog.">
 </label>
     </mtapp:setting>

@@ -56,7 +56,6 @@
       <mtapp:setting
          id="website_theme"
          label="<__trans phrase="Theme">"
-         hint="<__trans phrase="Select the theme you wish to use for this new site.">"
          label_class="top-label">
         <select name="website_theme" class="custom-select">
         <mt:loop name="theme_loop">
@@ -69,8 +68,7 @@
       <mtapp:setting
          id="website_timezone"
          label="<__trans phrase="Time Zone">"
-         label_class="top-label"
-         hint="<__trans phrase="Select your timezone from the pulldown menu.">">
+         label_class="top-label">
         <select name="website_timezone" id="website_timezone" class="custom-select se">
           <option value=""><__trans phrase="Time zone not selected"></option>
           <option value="13"<mt:if name="WEBSITE_TIMEZONE_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>

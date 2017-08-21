@@ -32,8 +32,8 @@
 <mt:unless name="external_user_management">
   <mtapp:setting
      id="allow_commenter_regist"
-     label="<__trans phrase="User Registration">"
-     hint="<__trans phrase="Allow registration for this site.">">
+     label="<__trans phrase="User Registration">">
+  <div>
   <mt:if name="system_disallow_registration">
     <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Registration Not Enabled">" width="9" height="9" />
     <span class="text-warning alert-warning-inline">
@@ -45,6 +45,7 @@
         <__trans phrase="Allow visitors to register as members of this site using one of the Authentication Methods selected below.">
       </label>
     </p>
+  </div>
   </mtapp:setting>
 </mt:unless>
 

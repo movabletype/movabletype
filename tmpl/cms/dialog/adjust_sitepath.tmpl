@@ -112,7 +112,7 @@ function init() {
       <h2><__trans phrase="Sites"></h2>
     </mt:if>
       <fieldset>
-        <h3><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</h3>
+        <legend><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</legend>
         <mtapp:setting
            id="site_url"
            label="<__trans phrase="Site URL">"
@@ -143,7 +143,7 @@ function init() {
       <h2><__trans phrase="Child Sites"></h2>
     </mt:if>
       <fieldset>
-        <h3><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</h3>
+        <legend><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</legend>
         <mtapp:setting
            id="parent_id"
            label="<__trans phrase="Parent Site">"

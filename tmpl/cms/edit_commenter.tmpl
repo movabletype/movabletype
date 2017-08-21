@@ -190,9 +190,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
 </mt:if>
   <mtapp:setting
      id="name"
-     label="<__trans phrase="Display Name">"
-     hint="<__trans phrase="The Name of the commenter">"
-     show_hint="0">
+     label="<__trans phrase="Display Name">">
     <mt:var name="nickname" escape="html">
     <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="nickname" escape="url">">
       <img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" />
@@ -201,9 +199,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
 
   <mtapp:setting
      id="identity"
-     label="<__trans phrase="Identity">"
-     hint="<__trans phrase="The Identity of the commenter">"
-     show_hint="0">
+     label="<__trans phrase="Identity">">
   <mt:if name="url">
     <a href="<mt:var name="url" escape="html">" target="_blank"><mt:var name="name" escape="html">
       <img alt="<__trans phrase="View">" src="<mt:var name="static_uri">images/status_icons/view.gif" />
@@ -215,9 +211,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
 
   <mtapp:setting
      id="email"
-     label="<__trans phrase="Email Address">"
-     hint="<__trans phrase="The Email Address of the commenter">"
-     show_hint="0">
+     label="<__trans phrase="Email Address">">
   <mt:if name="is_email_hidden">
     <__trans phrase="Withheld">
   <mt:else>
@@ -234,9 +228,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
 
   <mtapp:setting
      id="url"
-     label="<__trans phrase="Website URL">"
-     hint="<__trans phrase="The Website URL of the commenter">"
-     show_hint="0">
+     label="<__trans phrase="Website URL">">
   <mt:if name="url">
     <a href="<mt:var name="url" escape="html">"><mt:var name="url" escape="html">
       <img alt="<__trans phrase="View">" src="<mt:var name="static_uri">images/status_icons/view.gif" />
@@ -248,9 +240,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
 
   <mtapp:setting
      id="status"
-     label="<__trans phrase="Status">"
-     hint="<__trans phrase="The trusted status of the commenter">"
-     show_hint="0">
+     label="<__trans phrase="Status">">
   <mt:if name="commenter_approved">
     <span class="icon-left-wide icon-trusted"><__trans phrase="Trusted"></span>
   <mt:else>

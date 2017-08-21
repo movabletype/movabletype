@@ -91,10 +91,11 @@ function toggleHidden( ids ) {
         label_class="top-label"
         show_label="0"
         show_hint="1"
+        hint_id="refreshTemplates"
         hint="<__trans phrase="Updates current templates while retaining any user-created templates.">">
         <div class="field-header">
             <label for="refresh_type_refresh">
-              <input type="radio" name="refresh_type" id="refresh_type_refresh" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" />
+              <input type="radio" name="refresh_type" id="refresh_type_refresh" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" aria-describedby="refreshTemplates" />
               <$mt:var name="refresh_label"$>
             </label>
         </div>
@@ -104,6 +105,7 @@ function toggleHidden( ids ) {
         label="$new_label"
         show_label="0"
         show_hint="1"
+        hint_id="cleanStart"
         hint="$new_hint"
         label_class="top-label">
 
@@ -116,7 +118,7 @@ function toggleHidden( ids ) {
     </mtapp:setting>
 
         <div>
-        <input type="checkbox" id="backup" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" />
+        <input type="checkbox" id="backup" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" aria-describedby="cleanStart" />
         <label for="backup"><__trans phrase="Make backups of existing templates first"></label>
         </div>
     </div>

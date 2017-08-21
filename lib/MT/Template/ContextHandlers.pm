@@ -3112,16 +3112,15 @@ setting.
 Allows an additional CSS class to be applied to the label of the
 setting.
 
-=item * content_class (optional)
-
-Allows an addtional CSS class to be applied to the contents of the
-setting.
-
 =item * hint (optional)
 
 Supplies a "hint" phrase that provides inline instruction to the user.
 By default, this hint is hidden, unless the 'show_hint' attribute
 forces it to display.
+
+=item * hint_id (optional)
+
+Set hind_id which is added to form element.
 
 =item * show_hint (optional; default "0")
 
@@ -3173,12 +3172,11 @@ sub _hdlr_app_setting {
     my $show_label  = exists $args->{show_label} ? $args->{show_label} : 1;
     my $shown       = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
     my $label_class = $args->{label_class} || "";
-    my $content_class = $args->{content_class} || "";
-    my $hint          = $args->{hint} || "";
-    my $show_hint     = $args->{show_hint} || 0;
-    my $indent        = $args->{indent};
-    my $no_header     = $args->{no_header};
-    my $help          = "";
+    my $hint        = $args->{hint} || "";
+    my $hint_id     = $args->{hint_id} || "";
+    my $show_hint   = $args->{show_hint} || 0;
+    my $indent      = $args->{indent};
+    my $help        = "";
 
     my $label_help = "";
     if ( $label && $show_label ) {
@@ -3189,7 +3187,11 @@ sub _hdlr_app_setting {
         $label = '';    # zero it out, because the user turned it off
     }
     if ( $hint && $show_hint ) {
-        $hint = "\n<div class=\"hint text-muted\">$hint$help</div>";
+        if ( $hint_id ne "" ) {
+            $hint_id = " id=\"$hint_id\"";
+        }
+        $hint
+            = "\n<small ${hint_id}class=\"form-text text-muted\">$hint$help</small>";
     }
     else {
         $hint = ''
@@ -3221,32 +3223,14 @@ sub _hdlr_app_setting {
 
     my $insides = $ctx->slurp( $args, $cond );
 
-    # $insides =~ s/^\s*(<textarea)\b/<div class="textarea-wrapper">$1/g;
-    # $insides =~ s/(<\/textarea>)\s*$/$1<\/div>/g;
-
     my $class = $args->{class} || "";
 
-    if ( $args->{no_header} ) {
-        return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field$req_class $label_class $class"$style>
-        <div class="field-content $content_class">
-          $insides$hint
-        </div>
+    return $ctx->build(<<"EOT");
+    <div id="$id-field" class="form-group$req_class $label_class $class"$style>
+        <label>$label$req</label>
+        $insides$hint
     </div>
 EOT
-    }
-    else {
-        return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field$req_class $label_class $class"$style>
-        <div class="field-header">
-          <label id="$id-label" for="$id">$label$req</label>
-        </div>
-        <div class="field-content $content_class">
-          $insides$hint
-        </div>
-    </div>
-EOT
-    }
 }
 
 ###########################################################################

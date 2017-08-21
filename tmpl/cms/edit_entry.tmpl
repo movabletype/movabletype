@@ -254,8 +254,7 @@
    label="$container_label"
    label_class="$container_label_class"
    help_page="entries"
-   help_section="entry_categories"
-   no_header="1">
+   help_section="entry_categories">
   <script type="text/javascript">
   /* <![CDATA[ */
       MT.App.selectedCategoryList = <$mt:if name="selected_category_loop"><$mt:var name="selected_category_loop" to_json="1"$><mt:else>[]</mt:if>;
@@ -648,8 +647,7 @@
        label="<__trans phrase="Accept">"
        label_class="no-header"
        help_page="entries"
-       help_section="accept_comments"
-       no_header="1">
+       help_section="accept_comments">
       <ul class="list-unstyled">
         <li>
           <input type="checkbox" name="allow_comments" id="allow_comments" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" />
@@ -687,9 +685,10 @@
        label_class="top-label"
        hint="$ping_urls_hint"
        show_hint="$show_ping_urls_hint"
+       hint_id="outboundTrackbackUrls"
        help_page="entries"
        help_section="urls_to_ping">
-      <textarea name="to_ping_urls" id="to_ping_urls" class="form-control text full low" cols="" rows=""><$mt:var name="to_ping_urls" escape="html"$></textarea>
+      <textarea name="to_ping_urls" id="to_ping_urls" class="form-control text full low" cols="" rows=""<mt:if name="show_ping_urls_hint"> aria-describedby="outboundTrackbackUrls"</mt:if>><$mt:var name="to_ping_urls" escape="html"$></textarea>
     </mtapp:setting>
   </mtapp:widget>
 </div>
@@ -1300,7 +1299,6 @@
      label_class="$label_class"
      hint="$desc_encoded"
      shown="$show_field"
-     content_class="$content_class"
      show_hint="$show_hint"
      required="$required">
     <$mt:var name="field_html"$>
@@ -1312,8 +1310,7 @@
      label="<__trans phrase="Title">"
      label_class="no-header"
      help_page="entries"
-     help_section="entry_title"
-     no_header="1">
+     help_section="entry_title">
     <input type="text" name="title" id="title" class="form-control title text full" value="<$mt:var name="title" escape="html"$>" placeholder="<__trans phrase="Title">" maxlength="255" mt:watch-change="1" />
   </mtapp:setting>
     <mt:unless name="new_object">
@@ -1322,8 +1319,7 @@
      label="Permalink"
      label_class="no-header"
      help_page="entries"
-     help_section="permalink"
-     no_header="1">
+     help_section="permalink">
     <strong><__trans phrase="Permalink:"></strong> <mt:var name="entry_permalink">
       <mt:if name="status_publish">
         <mt:if name="entry_permalink">
@@ -1392,7 +1388,6 @@
        shown="$show_field"
        label="<__trans phrase="Tags">"
        label_class="top-label"
-       hint="$tags_hint"
        help_page="entries"
        help_section="entry_tags">
       <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
