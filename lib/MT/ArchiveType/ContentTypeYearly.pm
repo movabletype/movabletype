@@ -29,6 +29,7 @@ sub default_archive_templates {
     ];
 }
 
-*date_range = \&MT::ArchiveType::Yearly::date_range;
+*date_range   = \&MT::ArchiveType::Yearly::date_range;
+*archive_file = \&MT::ArchiveType::Yearly::archive_file;
 
 1;

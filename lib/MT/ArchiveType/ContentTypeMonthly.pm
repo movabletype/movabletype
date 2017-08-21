@@ -29,7 +29,8 @@ sub default_archive_templates {
     ];
 }
 
-*date_range = \&MT::ArchiveType::Monthly::date_range;
+*date_range   = \&MT::ArchiveType::Monthly::date_range;
+*archive_file = \&MT::ArchiveType::Monthly::archive_file;
 
 1;
 

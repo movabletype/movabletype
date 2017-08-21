@@ -29,7 +29,8 @@ sub default_archive_templates {
     ];
 }
 
-*date_range = \&MT::ArchiveType::Weekly::date_range;
+*date_range   = \&MT::ArchiveType::Weekly::date_range;
+*archive_file = \&MT::ArchiveType::Weekly::archive_file;
 
 1;
 
