@@ -92,7 +92,6 @@
     this.mixin('listTop')
 
     movePage(e) {
-debugger
       if (e.currentTarget.disabled) {
         return false
       }
