@@ -235,8 +235,7 @@ jQuery(window).load(function () {
     id="blog_language"
     label="<__trans phrase="Language">"
     hint="<__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.">"
-    show_hint="1"
-    show_warning="1">
+    show_hint="1">
     <select name="blog_language" id="blog_language" class="form-control se">
     <mt:loop name="languages">
         <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
