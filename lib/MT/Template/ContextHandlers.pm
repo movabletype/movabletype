@@ -447,8 +447,7 @@ sub core_tags {
                 \&MT::Template::Tags::App::_hdlr_app_list_filters,
             'App:ActionBar' =>
                 \&MT::Template::Tags::App::_hdlr_app_action_bar,
-            'App:Link'    => \&MT::Template::Tags::App::_hdlr_app_link,
-            'App:SVGIcon' => \&MT::Template::Tags::App::_hdlr_app_svg_icon,
+            'App:Link' => \&MT::Template::Tags::App::_hdlr_app_link,
 
             ## Site
             SiteID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
