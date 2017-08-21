@@ -3127,14 +3127,6 @@ forces it to display.
 
 Controls whether the inline help 'hint' label is shown or not.
 
-=item * warning
-
-Supplies a warning message to the user regarding the use of this setting.
-
-=item * show_warning
-
-Controls whether the warning message is shown or not.
-
 =item * help_page
 
 Identifies a specific page of the MT help documentation for this setting.
@@ -3184,8 +3176,6 @@ sub _hdlr_app_setting {
     my $content_class = $args->{content_class} || "";
     my $hint          = $args->{hint} || "";
     my $show_hint     = $args->{show_hint} || 0;
-    my $warning       = $args->{warning} || "";
-    my $show_warning  = $args->{show_warning} || 0;
     my $indent        = $args->{indent};
     my $no_header     = $args->{no_header};
     my $help          = "";
@@ -3203,15 +3193,6 @@ sub _hdlr_app_setting {
     }
     else {
         $hint = ''
-            ;  # hiding hint because it is either empty or should not be shown
-    }
-    if ( $warning && $show_warning ) {
-        $warning
-            = qq{\n<p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
-<span class="alert-warning-inline">$warning</span></p>\n};
-    }
-    else {
-        $warning = ''
             ;  # hiding hint because it is either empty or should not be shown
     }
     unless ($label_class) {
@@ -3249,7 +3230,7 @@ sub _hdlr_app_setting {
         return $ctx->build(<<"EOT");
     <div id="$id-field" class="field$req_class $label_class $class"$style>
         <div class="field-content $content_class">
-          $insides$hint$warning
+          $insides$hint
         </div>
     </div>
 EOT
@@ -3261,7 +3242,7 @@ EOT
           <label id="$id-label" for="$id">$label$req</label>
         </div>
         <div class="field-content $content_class">
-          $insides$hint$warning
+          $insides$hint
         </div>
     </div>
 EOT
