@@ -139,8 +139,6 @@
    id="status"
    label="<__trans phrase="Status">"
    label_class="left-label <mt:var name="ping_status">"
-   hint="<__trans phrase="Update the status of this TrackBack">"
-   show_hint="0"
    class="form-inline">
 <mt:if name="has_publish_access">
   <select name="status" class="form-control ping-status width90">
@@ -175,8 +173,6 @@
 <mtapp:setting
    id="source_title"
    label="<__trans phrase="Source Title">"
-   hint=""
-   show_hint="0"
    class="form-inline">
   <input type="text" name="title" id="title" class="form-control text" value="<mt:var name="title" escape="html">" />
   <a title="<__trans phrase="Search for other TrackBacks with this title">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=title&amp;filter_val=<mt:var name="title" escape="url">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
@@ -234,9 +230,7 @@
 
 <mtapp:setting
    id="text"
-   label="<__trans phrase="TrackBack Text">"
-   hint="<__trans phrase="Excerpt of the TrackBack entry">"
-   show_hint="0">
+   label="<__trans phrase="TrackBack Text">">
   <textarea name="excerpt" id="excerpt" class="form-control text high"><mt:var name="excerpt" escape="html"></textarea>
 </mtapp:setting>
 

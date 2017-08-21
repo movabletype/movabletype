@@ -151,12 +151,11 @@ function toggleFile() {
 
     <mtapp:settinggroup id="category-inbound-ping">
 
-      <h5 class="title"><__trans phrase="Inbound TrackBacks"></h5>
+      <legend class="title"><__trans phrase="Inbound TrackBacks"></legend>
 
       <mtapp:setting
          id="allow_pings"
          label="<__trans phrase="Accept Trackbacks">"
-         hint="<__trans phrase="If enabled, TrackBacks will be accepted for this category from any source.">"
          help_page="categories"
          help_section="accept_category_pings">
         <input type="checkbox" name="allow_pings" id="allow_pings" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" />
@@ -184,7 +183,6 @@ function toggleFile() {
         <mtapp:setting
            id="trackback_url"
            label="<__trans phrase="TrackBack URL for this category">"
-           hint="<__trans phrase="_USAGE_CATEGORY_PING_URL">">
           <input type="text" name="trackback_url" id="trackback_url" readonly="readonly" value="<mt:var name="tb_url" escape="html">" class="form-control text readonly" />
         </mtapp:setting>
 
@@ -202,12 +200,11 @@ function toggleFile() {
 
     <mtapp:settinggroup id="category-outbound-ping">
 
-      <h5 class="title"><__trans phrase="Outbound TrackBacks"></h5>
+      <legend class="title"><__trans phrase="Outbound TrackBacks"></legend>
 
       <mtapp:setting
          id="ping_urls"
          label="<__trans phrase="Trackback URLs">"
-         hint="<__trans phrase="Enter the URL(s) of the websites that you would like to send a TrackBack to each time you create an entry in this category. (Separate URLs with a carriage return.)">"
          help_page="categories"
          help_section="categories_urls_to_ping">
         <textarea name="ping_urls" id="ping_urls" cols="" rows="" class="form-control text low"><mt:var name="ping_urls" escape="html"></textarea>

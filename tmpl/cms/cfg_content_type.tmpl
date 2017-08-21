@@ -45,7 +45,7 @@
 
   <mtapp:settinggroup id="content_type">
 
-    <h2 id="setting-title" ><__trans phrase="Content Type"></h2>
+    <legend id="setting-title" ><__trans phrase="Content Type"></legend>
 
     <mtapp:setting
        id="unique_id"
@@ -67,7 +67,7 @@
 
   <mtapp:settinggroup id="content-fields">
 
-    <h2><__trans phrase="Content Fields"></h2>
+    <legend><__trans phrase="Content Fields"></legend>
 
       <div id="add-block" class="icon-create icon-left">
         <select name="type" id="type">" class="half-width required">
@@ -95,8 +95,9 @@
        id="single_line_text-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="singleLineTextDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="single_line_text-description" id="single_line_text-description" class="text med" />
+      <input type="text" name="single_line_text-description" id="single_line_text-description" class="text med" aria-describedby="singleLineTextDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -110,8 +111,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="singleLineTextDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="single_line_text-display" id="single_line_text-display">
+      <select name="single_line_text-display" id="single_line_text-display" aria-describedby="singleLineTextDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -156,8 +158,9 @@
        id="multi_line_text-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="multiLineTextDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="multi_line_text-description" id="multi_line_text-description" class="text med" />
+      <input type="text" name="multi_line_text-description" id="multi_line_text-description" class="text med" aria-describedby="multiLineTextDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -171,8 +174,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="multiLineTextDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="multi_line_text-display" id="multi_line_text-display">
+      <select name="multi_line_text-display" id="multi_line_text-display" aria-describedby="multiLineTextDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -218,8 +222,9 @@
        id="number-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="numberDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="number-description" id="number-description" class="text med" />
+      <input type="text" name="number-description" id="number-description" class="text med" aria-describedby="numberDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -233,8 +238,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="numberDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="number-display" id="number-display">
+      <select name="number-display" id="number-display" aria-describedby="numberDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -285,8 +291,9 @@
        id="url-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="urlDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="url-description" id="url-description" class="text med" />
+      <input type="text" name="url-description" id="url-description" class="text med" aria-describedby="urlDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -300,8 +307,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="urlDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="url-display" id="url-display">
+      <select name="url-display" id="url-display" aria-describedby="urlDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -334,8 +342,9 @@
        id="date_and_time-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="dateAndTimeDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="date_and_time-description" id="date_and_time-description" class="text med" />
+      <input type="text" name="date_and_time-description" id="date_and_time-description" class="text med" aria-describedby="dateAndTimeDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -349,8 +358,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="dateAndTimeDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="date_and_time-display" id="date_and_time-display">
+      <select name="date_and_time-display" id="date_and_time-display" aria-describedby="dateAndTimeDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -383,8 +393,9 @@
        id="date-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="dateDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="date-description" id="date-description" class="text med" />
+      <input type="text" name="date-description" id="date-description" class="text med" aria-describedby="dateDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -398,8 +409,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="dateDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="date-display" id="date-display">
+      <select name="date-display" id="date-display" aria-describedby="dateDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -432,8 +444,9 @@
        id="time-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="timeDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="time-description" id="time-description" class="text med" />
+      <input type="text" name="time-description" id="time-description" class="text med" aria-describedby="timeDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -446,9 +459,10 @@
        id="time-display"
        label="<__trans phrase="Display Options">"
        required="1"
+       hint_id="timeDisplay"
        show_hint="1"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="time-display" id="time-display">
+      <select name="time-display" id="time-display" aria-describedby="timeDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -480,9 +494,10 @@
     <mtapp:setting
        id="select_box-description"
        label="<__trans phrase="Description">"
+       hint_id="selectBoxDescription"
        show_hint="1"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="select_box-description" id="select_box-description" class="text med" />
+      <input type="text" name="select_box-description" id="select_box-description" class="text med" aria-describedby="selectBoxDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -496,8 +511,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="selectBoxDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="select_box-display" id="select_box-display">
+      <select name="select_box-display" id="select_box-display" aria-describedby="selectBoxDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -522,16 +538,18 @@
        id="select_box-min"
        label="<__trans phrase="Min">"
        show_hint="1"
+       hint_id="selectBoxMin"
        hint="<__trans phrase="Minimum number of selections.">">
-      <input type="text" name="select_box-min" id="select_box-min" class="text num" />
+      <input type="text" name="select_box-min" id="select_box-min" class="text num" aria-describedby="selectBoxMin" />
     </mtapp:setting>
 
     <mtapp:setting
        id="select_box-max"
        label="<__trans phrase="Max">"
        show_hint="1"
+       hint_id="selectBoxMax"
        hint="<__trans phrase="Maximum number of selections.">">
-      <input type="text" name="select_box-max" id="select_box-max" class="text num" />
+      <input type="text" name="select_box-max" id="select_box-max" class="text num" aria-describedby="selectBoxMax" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -553,8 +571,9 @@
        id="radio_button-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="radioButtonDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="radio_button-description" id="radio_button-description" class="text med" />
+      <input type="text" name="radio_button-description" id="radio_button-description" class="text med" aria-describedby="radioButtonDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -568,8 +587,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="radioButtonDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="radio_button-display" id="radio_button-display">
+      <select name="radio_button-display" id="radio_button-display" aria-describedby="radioButtonDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -602,8 +622,9 @@
        id="checkboxes-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="checkboxesDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="checkboxes-description" id="checkboxes-description" class="text med" />
+      <input type="text" name="checkboxes-description" id="checkboxes-description" class="text med" aria-describedby="checkboxesDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -617,8 +638,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="checkboxesDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="checkboxes-display" id="checkboxes-display">
+      <select name="checkboxes-display" id="checkboxes-display" aria-describedby="checkboxesDispaly">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -637,16 +659,18 @@
        id="checkboxes-min"
        label="<__trans phrase="Min">"
        show_hint="1"
+       hint_id="checkboxesMin"
        hint="<__trans phrase="Minimum number of selections.">">
-      <input type="text" name="checkboxes-min" id="checkboxes-min" class="text num" />
+      <input type="text" name="checkboxes-min" id="checkboxes-min" class="text num" aria-describedby="checkboxesMin" />
     </mtapp:setting>
 
     <mtapp:setting
        id="checkboxes-max"
        label="<__trans phrase="Max">"
        show_hint="1"
+       hint_id="checkboxesMax"
        hint="<__trans phrase="Maximum number of selections.">">
-      <input type="text" name="checkboxes-max" id="checkboxes-max" class="text num" />
+      <input type="text" name="checkboxes-max" id="checkboxes-max" class="text num" aria-describedby="checkboexesMax" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -674,8 +698,9 @@
        id="embedded_text-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="embeddedTextDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="embedded_text-description" id="embedded_text-description" class="text med" />
+      <input type="text" name="embedded_text-description" id="embedded_text-description" class="text med" aria-describedby="embeddedTextDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -689,8 +714,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="embeddedTextDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="embedded_text-display" id="embedded_text-display">
+      <select name="embedded_text-display" id="embedded_text-display" aria-describedby="embeddedTextDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -723,8 +749,9 @@
        id="content_type-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="contentTypeDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="content_type-description" id="content_type-description" class="text med" />
+      <input type="text" name="content_type-description" id="content_type-description" class="text med" aria-describedby="contentTypeDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -737,9 +764,10 @@
        id="content_type-display"
        label="<__trans phrase="Display Options">"
        required="1"
+       hint_id="contentTypeDisplay"
        show_hint="1"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="content_type-display" id="content_type-display">
+      <select name="content_type-display" id="content_type-display" aria-describedby="contentTypeDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -763,16 +791,18 @@
        id="content_type-min"
        label="<__trans phrase="Min">"
        show_hint="1"
+       hint_id="cotentTypeMin"
        hint="<__trans phrase="Minimum number of selections.">">
-      <input type="text" name="content_type-min" id="content_type-min" class="text num" />
+      <input type="text" name="content_type-min" id="content_type-min" class="text num" aria-describedby="contentTypeMin" />
     </mtapp:setting>
 
     <mtapp:setting
        id="content_type-max"
        label="<__trans phrase="Max">"
        show_hint="1"
+       hint_id="contentTypeMax"
        hint="<__trans phrase="Maximum number of selections.">">
-      <input type="text" name="content_type-max" id="content_type-max" class="text num" />
+      <input type="text" name="content_type-max" id="content_type-max" class="text num" aria-describedby="contentTypeMax" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -804,6 +834,7 @@
        id="asset-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="assetDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
       <input type="text" name="asset-description" id="asset-description" class="text med" />
     </mtapp:setting>
@@ -818,9 +849,10 @@
        id="asset-display"
        label="<__trans phrase="Display Options">"
        required="1"
+       hint_id="assetDisplay"
        show_hint="1"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="asset-display" id="asset-display">
+      <select name="asset-display" id="asset-display" aria-describedby="assetDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -848,16 +880,18 @@
        id="asset-min"
        label="<__trans phrase="Min">"
        show_hint="1"
+       hint_id="assetMin"
        hint="<__trans phrase="Minimum number of selections.">">
-      <input type="text" name="asset-min" id="asset-min" class="text num" />
+      <input type="text" name="asset-min" id="asset-min" class="text num" aria-describedby="assetMin" />
     </mtapp:setting>
 
     <mtapp:setting
        id="asset-max"
        label="<__trans phrase="Max">"
        show_hint="1"
+       hint_id="assetMax"
        hint="<__trans phrase="Maximum number of selections.">">
-      <input type="text" name="asset-max" id="asset-max" class="text num" />
+      <input type="text" name="asset-max" id="asset-max" class="text num" aria-describedby="assetMax" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -879,8 +913,9 @@
        id="audio-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="audioDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="audio-description" id="audio-description" class="text med" />
+      <input type="text" name="audio-description" id="audio-description" class="text med" aria-describedby="audioDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -893,9 +928,10 @@
        id="audio-display"
        label="<__trans phrase="Display Options">"
        required="1"
+       hint_id="audioDisplay"
        show_hint="1"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="audio-display" id="audio-display">
+      <select name="audio-display" id="audio-display" aria-describedby="audioDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -923,16 +959,18 @@
        id="audio-min"
        label="<__trans phrase="Min">"
        show_hint="1"
+       hint_id="audioMin"
        hint="<__trans phrase="Minimum number of selections.">">
-      <input type="text" name="audio-min" id="audio-min" class="text num" />
+      <input type="text" name="audio-min" id="audio-min" class="text num" aria-describedby="audioMin" />
     </mtapp:setting>
 
     <mtapp:setting
        id="audio-max"
        label="<__trans phrase="Max">"
        show_hint="1"
+       hint_id="audioMax"
        hint="<__trans phrase="Maximum number of selections.">">
-      <input type="text" name="audio-max" id="audio-max" class="text num" />
+      <input type="text" name="audio-max" id="audio-max" class="text num" aria-describedby="audioMax" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -954,8 +992,9 @@
        id="video-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hind_id="videoDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="video-description" id="video-description" class="text med" />
+      <input type="text" name="video-description" id="video-description" class="text med" aria-describedby="videoDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -969,8 +1008,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="videoDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="video-display" id="video-display">
+      <select name="video-display" id="video-display" aria-describedby="videoDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -998,16 +1038,18 @@
        id="video-min"
        label="<__trans phrase="Min">"
        show_hint="1"
+       hint_id="videoMin"
        hint="<__trans phrase="Maximum number of selections.">">
-      <input type="text" name="video-min" id="video-min" class="text num" />
+      <input type="text" name="video-min" id="video-min" class="text num" aria-describedby="videoMin" />
     </mtapp:setting>
 
     <mtapp:setting
        id="video-max"
        label="<__trans phrase="Max">"
        show_hint="1"
+       hint_id="videoMax"
        hint="<__trans phrase="Maximum number of selections.">">
-      <input type="text" name="video-max" id="video-max" class="text num" />
+      <input type="text" name="video-max" id="video-max" class="text num" aria-describedby="videoMax" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -1029,8 +1071,9 @@
        id="image-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="imageDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="image-description" id="image-description" class="text med" />
+      <input type="text" name="image-description" id="image-description" class="text med" aria-description="imageDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -1044,8 +1087,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="imageDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="image-display" id="image-display">
+      <select name="image-display" id="image-display" aria-describedby="imageDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -1073,16 +1117,18 @@
        id="image-min"
        label="<__trans phrase="Min">"
        show_hint="1"
+       hint_id="imageMin"
        hint="<__trans phrase="Minimum number of selections.">">
-      <input type="text" name="image-min" id="image-min" class="text num" />
+      <input type="text" name="image-min" id="image-min" class="text num" aria-describedby="imageMin" />
     </mtapp:setting>
 
     <mtapp:setting
        id="image-max"
        label="<__trans phrase="Max">"
        show_hint="1"
+       hint_id="imageMax"
        hint="<__trans phrase="Maximum number of selections.">">
-      <input type="text" name="image-max" id="image-max" class="text num" />
+      <input type="text" name="image-max" id="image-max" class="text num" aria-describedby="imageMax" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -1104,8 +1150,9 @@
        id="categories-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="categoriesDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="categories-description" id="categories-description" class="text med" />
+      <input type="text" name="categories-description" id="categories-description" class="text med" aria-describedby="categoriesDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -1119,8 +1166,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="categoriesDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="categories-display" id="categories-display">
+      <select name="categories-display" id="categories-display" aria-describedby="categoriesDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -1139,16 +1187,18 @@
        id="categories-min"
        label="<__trans phrase="Min">"
        show_hint="1"
+       hint_id="categoriesMin"
        hint="<__trans phrase="Minimum number of selections.">">
-      <input type="text" name="categories-min" id="categories-min" class="text num" />
+      <input type="text" name="categories-min" id="categories-min" class="text num" aria-describedby="categoriesMin" />
     </mtapp:setting>
 
     <mtapp:setting
        id="categories-max"
        label="<__trans phrase="Max">"
        show_hint="1"
+       hint_id="categoriesMax"
        hint="<__trans phrase="Maximum number of selections.">">
-      <input type="text" name="categories-max" id="categories-max" class="text num" />
+      <input type="text" name="categories-max" id="categories-max" class="text num" aria-describedby="categoriesMax" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -1185,8 +1235,9 @@
        id="tags-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="tagsDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="tags-description" id="tags-description" class="text med" />
+      <input type="text" name="tags-description" id="tags-description" class="text med" aria-describedby="tagsDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -1200,8 +1251,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="tagsDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="tags-display" id="tags-display">
+      <select name="tags-display" id="tags-display" aria-describedby="tagsDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -1225,16 +1277,18 @@
        id="tags-min"
        label="<__trans phrase="Min">"
        show_hint="1"
+       hint_id="tagsMin"
        hint="<__trans phrase="Minimum number of selections.">">
-      <input type="text" name="tags-min" id="tags-min" class="text num" />
+      <input type="text" name="tags-min" id="tags-min" class="text num" aria-describedby="tagsMin" />
     </mtapp:setting>
 
     <mtapp:setting
        id="tags-max"
        label="<__trans phrase="Max">"
        show_hint="1"
+       hint_id="tagsMax"
        hint="<__trans phrase="Maximum number of selections.">">
-      <input type="text" name="tags-max" id="tags-max" class="text num" />
+      <input type="text" name="tags-max" id="tags-max" class="text num" aria-describedby="tagsMax" />
     </mtapp:setting>
 
     <mt:setvarblock name="tags_hint"><__trans phrase="[_1] separated list" params="<$mt:var name="tag_delim"$>"></mt:setvarblock>
@@ -1242,8 +1296,9 @@
        id="tags-initial_value"
        label="<__trans phrase="Initial Value">"
        show_hint="1"
+       hint_id="tagsInitialvalue"
        hint="$tags_hint">
-      <input type="text" name="tags-initial_value" id="tags-initial_value" class="text med" />
+      <input type="text" name="tags-initial_value" id="tags-initial_value" class="text med" aria-describedby="tagsInitialValue" />
     </mtapp:setting>
 
     <div id="save-block" class="icon-save icon-left">
@@ -1265,8 +1320,9 @@
        id="list-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="listDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="list-description" id="list-description" class="text med" />
+      <input type="text" name="list-description" id="list-description" class="text med" aria-describedby="listDescription" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -1280,8 +1336,9 @@
        label="<__trans phrase="Display Options">"
        required="1"
        show_hint="1"
+       hint_id="listDisplay"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="list-display" id="list-display">
+      <select name="list-display" id="list-display" aria-describedby="listDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -1308,17 +1365,19 @@
        id="table-description"
        label="<__trans phrase="Description">"
        show_hint="1"
+       hint_id="tableDescription"
        hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-      <input type="text" name="table-description" id="table-description" class="text med" />
+      <input type="text" name="table-description" id="table-description" class="text med" aria-describedby="tableDescription" />
     </mtapp:setting>
 
     <mtapp:setting
        id="table-display"
        label="<__trans phrase="Display Options">"
        required="1"
+       hint_id="tableDisplay"
        show_hint="1"
        hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-      <select name="table-display" id="table-display">
+      <select name="table-display" id="table-display" aria-describedby="tableDisplay">
         <option value="force"><__trans phrase="Force"></option>
         <option value="default" selected="selected"><__trans phrase="Default"></option>
         <option value="optional"><__trans phrase="Optional"></option>
@@ -1342,16 +1401,18 @@
        id="table-row_heading"
        label="<__trans phrase="Row Heading">"
        show_hint="1"
+       hint_id="tableRowHeading"
        hint="<__trans phrase=" Commma separated list">">
-      <input type="text" name="table-row_heading" id="table-row_heading" class="text long" />
+      <input type="text" name="table-row_heading" id="table-row_heading" class="text long" aria-describedby="tableRowHeading" />
     </mtapp:setting>
 
     <mtapp:setting
        id="table-column_heading"
        label="<__trans phrase="Column Heading">"
        show_hint="1"
+       hint_id="tableColumnHeading"
        hint="<__trans phrase=" Commma separated list">">
-      <input type="text" name="table-column_heading" id="table-column_heading" class="text long" />
+      <input type="text" name="table-column_heading" id="table-column_heading" class="text long" aria-describedby="tableColumnHeading" />
     </mtapp:setting>
 
     <mtapp:setting
