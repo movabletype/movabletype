@@ -10,7 +10,7 @@ use strict;
 use base
     qw( MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeWeekly MT::ArchiveType::AuthorWeekly );
 
-use MT::Util qw( dirify start_end_day );
+use MT::Util qw( start_end_week week2ymd );
 
 sub name {
     return 'ContentType-Author-Weekly';

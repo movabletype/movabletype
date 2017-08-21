@@ -10,7 +10,7 @@ use strict;
 use base
     qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeMonthly MT::ArchiveType::CategoryMonthly );
 
-use MT::Util qw( remove_html encode_html );
+use MT::Util qw( start_end_month );
 
 sub name {
     return 'ContentType-Category-Monthly';

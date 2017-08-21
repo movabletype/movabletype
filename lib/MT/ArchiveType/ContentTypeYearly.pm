@@ -9,7 +9,7 @@ package MT::ArchiveType::ContentTypeYearly;
 use strict;
 use base qw( MT::ArchiveType::ContentTypeDate MT::ArchiveType::Yearly );
 
-use MT::Util qw( remove_html encode_html );
+use MT::Util qw( start_end_year );
 
 sub name {
     return 'ContentTypeYearly';
@@ -28,5 +28,7 @@ sub default_archive_templates {
         }
     ];
 }
+
+*date_range = \&MT::ArchiveType::Yearly::date_range;
 
 1;

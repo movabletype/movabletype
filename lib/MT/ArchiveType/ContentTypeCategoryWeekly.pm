@@ -10,7 +10,7 @@ use strict;
 use base
     qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeWeekly MT::ArchiveType::CategoryWeekly );
 
-use MT::Util qw( remove_html encode_html );
+use MT::Util qw( start_end_week week2ymd );
 
 sub name {
     return 'ContentType-Category-Weekly';

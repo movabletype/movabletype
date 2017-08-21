@@ -10,7 +10,7 @@ use strict;
 use base
     qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeYearly MT::ArchiveType::CategoryYearly );
 
-use MT::Util qw( remove_html encode_html );
+use MT::Util qw( start_end_year );
 
 sub name {
     return 'ContentType-Catogery-Yearly';

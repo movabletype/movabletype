@@ -10,7 +10,7 @@ use strict;
 use base
     qw( MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeMonthly MT::ArchiveType::AuthorMonthly );
 
-use MT::Util qw( dirify start_end_day );
+use MT::Util qw( start_end_month );
 
 sub name {
     return 'ContentType-Author-Monthly';

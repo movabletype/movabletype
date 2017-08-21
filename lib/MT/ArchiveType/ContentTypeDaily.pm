@@ -29,4 +29,6 @@ sub default_archive_templates {
     ];
 }
 
+*date_range = \&MT::ArchiveType::Daily::date_range;
+
 1;
