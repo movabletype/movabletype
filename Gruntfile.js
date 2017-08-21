@@ -1,6 +1,8 @@
 module.exports = function(grunt) {
   'use strict';
 
+  var path = require('path');
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     copy: {
@@ -49,7 +51,7 @@ module.exports = function(grunt) {
     },
     svg_sprite: {
       basic: {
-        src: ['mt-static/images/svg/*.svg'],
+        src: ['mt-static/images/icons/*.svg'],
         dest: 'mt-static/images',
         options: {
           shape: {
@@ -61,7 +63,12 @@ module.exports = function(grunt) {
                   ]
                 }
               }
-            ]
+            ],
+            id: {
+              generator: function(name) {
+                return path.basename(name.replace(/\s+/g, this.whitespace), '.svg');
+              }
+            }
           },
           mode: {
             symbol: {
