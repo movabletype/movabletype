@@ -923,7 +923,7 @@ sub grant_role {
 
     my $user = $app->user;
     return unless $app->validate_magic;
-    my $blogs   = $app->param('blog')   || $app->param('website') || '';
+    my $blogs   = $app->param('blog')   || $app->param('website') || $app->param('site') || '';
     my $authors = $app->param('author') || '';
     my $roles   = $app->param('role')   || '';
     my $author_id = $app->param('author_id');
@@ -1309,6 +1309,11 @@ PERMCHECK: {
                 push @panels, 'website'
                     if ( $app->param('type')
                     && $app->param('type') eq 'website' );
+
+                if ( $app->param('type') && $app->param('type') eq 'site' ) {
+                    push @panels, 'site';
+
+                }
             }
         }
 
@@ -1319,16 +1324,10 @@ PERMCHECK: {
         }
 
         my $panel_info = {
-            'website' => {
+            'site' => {
                 panel_title       => $app->translate("Select Site"),
                 panel_label       => $app->translate("Site Name"),
                 items_prompt      => $app->translate("Sites Selected"),
-                panel_description => $app->translate("Description"),
-            },
-            'blog' => {
-                panel_title       => $app->translate("Select Child Sites"),
-                panel_label       => $app->translate("Site Name"),
-                items_prompt      => $app->translate("Child Sites Selected"),
                 panel_description => $app->translate("Description"),
             },
             'author' => {
@@ -1374,6 +1373,11 @@ PERMCHECK: {
             if ( $source eq 'author' ) {
                 $terms->{status} = MT::Author::ACTIVE();
                 $terms->{type}   = MT::Author::AUTHOR();
+            }
+
+            if( $source eq 'site' ){
+                $terms->{class}   = '*';
+                $args->{group_by} = 'class';
             }
 
             $app->listing(
