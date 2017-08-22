@@ -1,4 +1,4 @@
-riot.tag2('display-options', '<div class="row"> <div class="col-md-12"> <button class="btn btn-default dropdown-toggle float-right" data-toggle="collapse" data-target="#display-options-detail"> {trans(\'Display Options\')} </button> </div> </div> <div class="row"> <div data-is="display-options-detail" class="col-md-12"></div> </div>', '', '', function(opts) {
+riot.tag2('display-options', '<div class="row"> <div class="col-md-12"> <button class="btn btn-default dropdown-toggle float-right" data-toggle="collapse" data-target="#display-options-detail" aria-expanded="false" aria-controls="display-options-detail"> {trans(\'Display Options\')} </button> </div> </div> <div class="row"> <div data-is="display-options-detail" class="col-md-12"></div> </div>', '', '', function(opts) {
     this.mixin('listTop')
 });
 
@@ -355,7 +355,7 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
     }.bind(this)
 });
 
-riot.tag2('list-filter-header', '<div class="row"> <div class="col-md-11"> <ul class="list-inline"> <li class="list-inline-item"> {trans(\'Filter:\')} </li> <li class="list-inline-item"> <a href="#" id="opener" data-toggle="modal" data-target="#select-filter"> <u>{trans( listFilterTop.currentFilter.label )}</u> </a> <virtual data-is="list-filter-select-modal"></virtual> </li> <li class="list-inline-item"> <a href="#" id="allpass-filter" if="{listFilterTop.isAllpassFilter() == false}" onclick="{resetFilter}"> [ {trans( \'Reset Filter\' )} ] </a> </li> </ul> </div> <div class="col-md-1"> <button id="toggle-filter-detail" class="btn btn-default dropdown-toggle float-right" data-toggle="collapse" href="#list-filter-collapse"></button> </div> </div>', '', '', function(opts) {
+riot.tag2('list-filter-header', '<div class="row"> <div class="col-md-11"> <ul class="list-inline"> <li class="list-inline-item"> {trans(\'Filter:\')} </li> <li class="list-inline-item"> <a href="#" id="opener" data-toggle="modal" data-target="#select-filter"> <u>{trans( listFilterTop.currentFilter.label )}</u> </a> <virtual data-is="list-filter-select-modal"></virtual> </li> <li class="list-inline-item"> <a href="#" id="allpass-filter" if="{listFilterTop.isAllpassFilter() == false}" onclick="{resetFilter}"> [ {trans( \'Reset Filter\' )} ] </a> </li> </ul> </div> <div class="col-md-1"> <button id="toggle-filter-detail" class="btn btn-default dropdown-toggle float-right" data-toggle="collapse" data-target="#list-filter-collapse" aria-expanded="false" aria-controls="list-filter-collapse"></button> </div> </div>', '', '', function(opts) {
     this.mixin('listTop')
     this.mixin('listFilterTop')
 

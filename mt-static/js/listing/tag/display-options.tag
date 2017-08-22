@@ -5,6 +5,8 @@
         class="btn btn-default dropdown-toggle float-right"
         data-toggle="collapse"
         data-target="#display-options-detail"
+        aria-expanded="false"
+        aria-controls="display-options-detail"
       >
         { trans('Display Options') }
       </button>

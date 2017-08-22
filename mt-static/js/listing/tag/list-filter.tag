@@ -227,7 +227,9 @@
       <button id="toggle-filter-detail"
         class="btn btn-default dropdown-toggle float-right"
         data-toggle="collapse"
-        href="#list-filter-collapse"
+        data-target="#list-filter-collapse"
+        aria-expanded="false"
+        aria-controls="list-filter-collapse"
       ></button>
     </div>
   </div>
