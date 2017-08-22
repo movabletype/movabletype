@@ -226,7 +226,7 @@ h1.dialog-title {
 </form>
 
 <div class="row">
-  <div id="upload-progress" class="col-md-12"></div>
+  <div id="upload-progress" class="col-12"></div>
 </div>
 
 <mt:setvarblock name="js_include" append="1">
@@ -415,8 +415,8 @@ function createUploadBlock () {
   this.uploadBlockPanel = jQuery('<div class="card"><div class="card-block"></div></div>');
   this.uploadBlock  = jQuery('<div class="row upload-status-block" id="upload-status_' + numOfRows + '"></div>').appendTo(this.uploadBlockPanel.children());
 
-  this.leftPanel    = jQuery('<div class="col-md-11 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
-  this.rightPanel   = jQuery('<div class="col-md-1 text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
+  this.leftPanel    = jQuery('<div class="col-11 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
+  this.rightPanel   = jQuery('<div class="col-1 text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
   this.leftContent  = jQuery('<div class="upload-status-block-left-content"></div>').appendTo(this.leftPanel);
   this.progressbar  = jQuery('<div class="progress"><div class="progress-bar"></div></div>').appendTo(this.leftContent);
   this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);

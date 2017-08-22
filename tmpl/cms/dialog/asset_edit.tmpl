@@ -87,7 +87,7 @@ jQuery(window).load(init);
 
 <div class="container-fluid">
   <div class="row asset-preview asset-type-<mt:var name="asset_type" escape="html" lower_case="1"> line">
-    <div class="col-sm-4 asset-preview-thumb">
+    <div class="col-4 asset-preview-thumb">
 <mt:if name="has_thumbnail">
       <img src="<mt:var name="thumbnail_url" escape="html">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
 <mt:elseif name="asset_type" eq="image">
@@ -99,7 +99,7 @@ jQuery(window).load(init);
       </mtapp:statusmsg>
 </mt:if>
     </div>
-    <div class="col-sm-8 asset-metadata">
+    <div class="col-8 asset-metadata">
       <ul class="list-unstyled metadata">
         <li class="metadata-item asset-name">
           <strong><__trans phrase="File Name">:</strong>

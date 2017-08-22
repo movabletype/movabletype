@@ -34,12 +34,12 @@ function returnSelectedTheme(ok, id) {
 <mt:loop name="theme_loop">
     <li id="theme-<mt:var name="id">" class="list-group-item theme<mt:if name="current"> current-theme</mt:if>">
       <div class="row">
-        <div class="col-md-3 d-flex justify-content-center align-self-center">
+        <div class="col-3 d-flex justify-content-center align-self-center">
           <a href="javascript:returnSelectedTheme(1,'<mt:var name="theme_id">')">
               <img class="img-thumbnail" alt="<$mt:var name="label" escape="html"$>" src="<mt:var name="thumbnail_url">" />
           </a>
         </div>
-        <div class="col-md-9 theme-meta">
+        <div class="col-9 theme-meta">
             <h4><mt:var name="label" escape="html"></h4>
             <p class="theme-description description"><mt:var name="description" escape="html"></p>
             <span class="action-link">

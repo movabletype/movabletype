@@ -197,7 +197,7 @@
 
 <list-filter-header>
   <div class="row">
-    <div class="col-md-11">
+    <div class="col-11">
       <ul class="list-inline">
         <li class="list-inline-item">
           { trans('Filter:') }
@@ -223,7 +223,7 @@
         </li>
       </ul>
     </div>
-    <div class="col-md-1">
+    <div class="col-1">
       <button id="toggle-filter-detail"
         class="btn btn-default dropdown-toggle float-right"
         data-toggle="collapse"
@@ -249,7 +249,7 @@
 
 <list-filter-detail>
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
       <ul class="list-inline">
         <li class="list-inline-item">
           <div class="dropdown">
@@ -273,7 +273,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
       <ul class="list-group">
         <li data-is="list-filter-item"
           each={ item, index in listFilterTop.currentFilter.items }
@@ -285,7 +285,7 @@
     </div>
   </div>
   <div class="row">
-    <div data-is="list-filter-buttons" class="col-md-12"></div>
+    <div data-is="list-filter-buttons" class="col-12"></div>
   </div>
 
   <script>

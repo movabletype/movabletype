@@ -3,10 +3,10 @@
     <div id="favorite-blog-container" class="blog-container">
     <mt:loop name="blog_object_loop">
       <div id="blog-<mt:var name="blog_id">-content" class="row blog-content<mt:if name="__odd__"> odd</mt:if>">
-        <div id="blog-<mt:var name="blog_id">-theme-thumbnail" class="col-md-2 thumbnail picture small">
+        <div id="blog-<mt:var name="blog_id">-theme-thumbnail" class="col-2 thumbnail picture small">
           <img alt="" src="<mt:var name="blog_theme_thumb">" />
         </div>
-        <div id="blog-<mt:var name="blog_id">-meta" class="col-md-8 blog-meta">
+        <div id="blog-<mt:var name="blog_id">-meta" class="col-8 blog-meta">
           <h4 id="blog-<mt:var name="blog_id">-name" class="blog-name">
             <a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="blog_id">">
               <mt:var name="blog_name" escape="html">
@@ -73,7 +73,7 @@
             </mt:if>
           </ul>
         </div>
-        <div class="col-md-2">
+        <div class="col-2">
           <mt:if name="can_create_new_entry">
             <a class="button btn btn-default float-right" href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">">
               <__trans phrase="New Entry">

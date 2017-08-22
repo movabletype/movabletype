@@ -1,6 +1,6 @@
 <display-options>
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
       <button
         class="btn btn-default dropdown-toggle float-right"
         data-toggle="collapse"
@@ -13,7 +13,7 @@
     </div>
   </div>
   <div class="row">
-    <div data-is="display-options-detail" class="col-md-12"></div>
+    <div data-is="display-options-detail" class="col-12"></div>
   </div>
 
   <script>

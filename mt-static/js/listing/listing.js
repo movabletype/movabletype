@@ -1,4 +1,4 @@
-riot.tag2('display-options', '<div class="row"> <div class="col-md-12"> <button class="btn btn-default dropdown-toggle float-right" data-toggle="collapse" data-target="#display-options-detail" aria-expanded="false" aria-controls="display-options-detail"> {trans(\'Display Options\')} </button> </div> </div> <div class="row"> <div data-is="display-options-detail" class="col-md-12"></div> </div>', '', '', function(opts) {
+riot.tag2('display-options', '<div class="row"> <div class="col-12"> <button class="btn btn-default dropdown-toggle float-right" data-toggle="collapse" data-target="#display-options-detail" aria-expanded="false" aria-controls="display-options-detail"> {trans(\'Display Options\')} </button> </div> </div> <div class="row"> <div data-is="display-options-detail" class="col-12"></div> </div>', '', '', function(opts) {
     this.mixin('listTop')
 });
 
@@ -355,7 +355,7 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
     }.bind(this)
 });
 
-riot.tag2('list-filter-header', '<div class="row"> <div class="col-md-11"> <ul class="list-inline"> <li class="list-inline-item"> {trans(\'Filter:\')} </li> <li class="list-inline-item"> <a href="#" id="opener" data-toggle="modal" data-target="#select-filter"> <u>{trans( listFilterTop.currentFilter.label )}</u> </a> <virtual data-is="list-filter-select-modal"></virtual> </li> <li class="list-inline-item"> <a href="#" id="allpass-filter" if="{listFilterTop.isAllpassFilter() == false}" onclick="{resetFilter}"> [ {trans( \'Reset Filter\' )} ] </a> </li> </ul> </div> <div class="col-md-1"> <button id="toggle-filter-detail" class="btn btn-default dropdown-toggle float-right" data-toggle="collapse" data-target="#list-filter-collapse" aria-expanded="false" aria-controls="list-filter-collapse"></button> </div> </div>', '', '', function(opts) {
+riot.tag2('list-filter-header', '<div class="row"> <div class="col-11"> <ul class="list-inline"> <li class="list-inline-item"> {trans(\'Filter:\')} </li> <li class="list-inline-item"> <a href="#" id="opener" data-toggle="modal" data-target="#select-filter"> <u>{trans( listFilterTop.currentFilter.label )}</u> </a> <virtual data-is="list-filter-select-modal"></virtual> </li> <li class="list-inline-item"> <a href="#" id="allpass-filter" if="{listFilterTop.isAllpassFilter() == false}" onclick="{resetFilter}"> [ {trans( \'Reset Filter\' )} ] </a> </li> </ul> </div> <div class="col-1"> <button id="toggle-filter-detail" class="btn btn-default dropdown-toggle float-right" data-toggle="collapse" data-target="#list-filter-collapse" aria-expanded="false" aria-controls="list-filter-collapse"></button> </div> </div>', '', '', function(opts) {
     this.mixin('listTop')
     this.mixin('listFilterTop')
 
@@ -367,7 +367,7 @@ riot.tag2('list-filter-header', '<div class="row"> <div class="col-md-11"> <ul c
     }.bind(this)
 });
 
-riot.tag2('list-filter-detail', '<div class="row"> <div class="col-md-12"> <ul class="list-inline"> <li class="list-inline-item"> <div class="dropdown"> <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> {trans(\'Select Filter Item...\')} </button> <div class="dropdown-menu"> <a each="{listTop.opts.filterTypes}" if="{editable}" class="{disabled: parent.listFilterTop.isFilterItemSelected(type), dropdown-item: true}" href="#" data-mt-filter-type="{type}" onclick="{addFilterItem}"> {label} </a> </div> </div> </li> </ul> </div> </div> <div class="row"> <div class="col-md-12"> <ul class="list-group"> <li data-is="list-filter-item" each="{item, index in listFilterTop.currentFilter.items}" data-mt-list-item-index="{index}" item="{item}" class="list-group-item"> </li> </ul> </div> </div> <div class="row"> <div data-is="list-filter-buttons" class="col-md-12"></div> </div>', '', '', function(opts) {
+riot.tag2('list-filter-detail', '<div class="row"> <div class="col-12"> <ul class="list-inline"> <li class="list-inline-item"> <div class="dropdown"> <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> {trans(\'Select Filter Item...\')} </button> <div class="dropdown-menu"> <a each="{listTop.opts.filterTypes}" if="{editable}" class="{disabled: parent.listFilterTop.isFilterItemSelected(type), dropdown-item: true}" href="#" data-mt-filter-type="{type}" onclick="{addFilterItem}"> {label} </a> </div> </div> </li> </ul> </div> </div> <div class="row"> <div class="col-12"> <ul class="list-group"> <li data-is="list-filter-item" each="{item, index in listFilterTop.currentFilter.items}" data-mt-list-item-index="{index}" item="{item}" class="list-group-item"> </li> </ul> </div> </div> <div class="row"> <div data-is="list-filter-buttons" class="col-12"></div> </div>', '', '', function(opts) {
     this.mixin('listTop')
     this.mixin('listFilterTop')
 
@@ -694,7 +694,7 @@ riot.tag2('list-table-column', '<virtual></virtual>', '', '', function(opts) {
     this.root.innerHTML = opts.content
 });
 
-riot.tag2('list-top', '<div data-is="display-options"></div> <div class="row"> <div data-is="list-actions" if="{opts.useActions}" class="col-md-12"> </div> </div> <div class="row"> <div class="col-md-12"> <div class="card"> <virtual data-is="list-filter"></virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table list-{opts.objectType}"> </table> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <div data-is="list-pagination" class="col-md-12"></div> </div>', '', '', function(opts) {
+riot.tag2('list-top', '<div data-is="display-options"></div> <div class="row"> <div data-is="list-actions" if="{opts.useActions}" class="col-12"> </div> </div> <div class="row"> <div class="col-12"> <div class="card"> <virtual data-is="list-filter"></virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table list-{opts.objectType}"> </table> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <div data-is="list-pagination" class="col-12"></div> </div>', '', '', function(opts) {
     riot.mixin('listTop', {
       init: function () {
         if (this.__.tagName == 'list-top') {
