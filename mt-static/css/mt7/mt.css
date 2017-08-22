@@ -629,7 +629,7 @@ pre code {
   }
 }
 
-.container-fluid {
+.container-fluid, .container-single-column {
   width: 100%;
   margin-right: auto;
   margin-left: auto;
@@ -3267,7 +3267,8 @@ tbody.collapse.show {
 }
 
 .navbar > .container,
-.navbar > .container-fluid {
+.navbar > .container-fluid,
+.navbar > .container-single-column {
   display: -ms-flexbox;
   display: flex;
   -ms-flex-wrap: wrap;
@@ -3350,7 +3351,8 @@ tbody.collapse.show {
 
 @media (max-width: 575px) {
   .navbar-expand-sm > .container,
-  .navbar-expand-sm > .container-fluid {
+  .navbar-expand-sm > .container-fluid,
+  .navbar-expand-sm > .container-single-column {
     padding-right: 0;
     padding-left: 0;
   }
@@ -3381,7 +3383,8 @@ tbody.collapse.show {
     padding-left: .5rem;
   }
   .navbar-expand-sm > .container,
-  .navbar-expand-sm > .container-fluid {
+  .navbar-expand-sm > .container-fluid,
+  .navbar-expand-sm > .container-single-column {
     -ms-flex-wrap: nowrap;
         flex-wrap: nowrap;
   }
@@ -3396,7 +3399,8 @@ tbody.collapse.show {
 
 @media (max-width: 767px) {
   .navbar-expand-md > .container,
-  .navbar-expand-md > .container-fluid {
+  .navbar-expand-md > .container-fluid,
+  .navbar-expand-md > .container-single-column {
     padding-right: 0;
     padding-left: 0;
   }
@@ -3427,7 +3431,8 @@ tbody.collapse.show {
     padding-left: .5rem;
   }
   .navbar-expand-md > .container,
-  .navbar-expand-md > .container-fluid {
+  .navbar-expand-md > .container-fluid,
+  .navbar-expand-md > .container-single-column {
     -ms-flex-wrap: nowrap;
         flex-wrap: nowrap;
   }
@@ -3442,7 +3447,8 @@ tbody.collapse.show {
 
 @media (max-width: 991px) {
   .navbar-expand-lg > .container,
-  .navbar-expand-lg > .container-fluid {
+  .navbar-expand-lg > .container-fluid,
+  .navbar-expand-lg > .container-single-column {
     padding-right: 0;
     padding-left: 0;
   }
@@ -3473,7 +3479,8 @@ tbody.collapse.show {
     padding-left: .5rem;
   }
   .navbar-expand-lg > .container,
-  .navbar-expand-lg > .container-fluid {
+  .navbar-expand-lg > .container-fluid,
+  .navbar-expand-lg > .container-single-column {
     -ms-flex-wrap: nowrap;
         flex-wrap: nowrap;
   }
@@ -3488,7 +3495,8 @@ tbody.collapse.show {
 
 @media (max-width: 1199px) {
   .navbar-expand-xl > .container,
-  .navbar-expand-xl > .container-fluid {
+  .navbar-expand-xl > .container-fluid,
+  .navbar-expand-xl > .container-single-column {
     padding-right: 0;
     padding-left: 0;
   }
@@ -3519,7 +3527,8 @@ tbody.collapse.show {
     padding-left: .5rem;
   }
   .navbar-expand-xl > .container,
-  .navbar-expand-xl > .container-fluid {
+  .navbar-expand-xl > .container-fluid,
+  .navbar-expand-xl > .container-single-column {
     -ms-flex-wrap: nowrap;
         flex-wrap: nowrap;
   }
@@ -3542,7 +3551,8 @@ tbody.collapse.show {
 }
 
 .navbar-expand > .container,
-.navbar-expand > .container-fluid {
+.navbar-expand > .container-fluid,
+.navbar-expand > .container-single-column {
   padding-right: 0;
   padding-left: 0;
 }
@@ -3567,7 +3577,8 @@ tbody.collapse.show {
 }
 
 .navbar-expand > .container,
-.navbar-expand > .container-fluid {
+.navbar-expand > .container-fluid,
+.navbar-expand > .container-single-column {
   -ms-flex-wrap: nowrap;
       flex-wrap: nowrap;
 }
@@ -7949,6 +7960,7 @@ Basic Layout
   Secondary Panel
   Main Content
   Footer Navigation
+  Single Column
 Forms
 Tables
 Alert
@@ -8121,7 +8133,9 @@ li {
 }
 
 .mt-globalNavigation__logo > button[aria-expanded="false"]:after,
-.mt-primayNavigation__item > button[aria-expanded="false"]:after {
+.mt-globalNavigation__logo > a[aria-expanded="false"]:after,
+.mt-primaryNavigation__item > button[aria-expanded="false"]:after,
+.mt-primaryNavigation__item > a[aria-expanded="false"]:after {
   border-top: .4rem solid;
   border-right: .4rem solid transparent;
   border-left: .4rem solid transparent;
@@ -8129,7 +8143,9 @@ li {
 }
 
 .mt-globalNavigation__logo > button[aria-expanded="true"]:after,
-.mt-primayNavigation__item > button[aria-expanded="true"]:after {
+.mt-globalNavigation__logo > a[aria-expanded="true"]:after,
+.mt-primaryNavigation__item > button[aria-expanded="true"]:after,
+.mt-primaryNavigation__item > a[aria-expanded="true"]:after {
   border-top: 0;
   border-right: .4rem solid transparent;
   border-left: .4rem solid transparent;
@@ -8176,6 +8192,20 @@ li {
 .mt-footer .list-inline-item {
   margin-bottom: 0;
   margin-right: 1rem;
+}
+
+/* Single Column */
+.container-single-column {
+  display: -ms-flexbox;
+  display: flex;
+  min-height: 100vh;
+  -ms-flex-direction: column;
+      flex-direction: column;
+}
+
+.flex-items-1 {
+  -ms-flex: 1;
+      flex: 1;
 }
 
 /* Forms */
