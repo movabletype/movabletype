@@ -1300,6 +1300,7 @@
      hint="$desc_encoded"
      shown="$show_field"
      show_hint="$show_hint"
+     field_header="1"
      required="$required">
     <$mt:var name="field_html"$>
   </mtapp:setting>
@@ -1388,6 +1389,7 @@
        shown="$show_field"
        label="<__trans phrase="Tags">"
        label_class="top-label"
+       field_header="1"
        help_page="entries"
        help_section="entry_tags">
       <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
@@ -1404,6 +1406,7 @@
        shown="$show_field"
        label="$field_label"
        label_class="top-label"
+       field_header="1"
        help_page="entries"
        help_section="excerpt">
       <textarea name="excerpt" id="excerpt" class="form-control text full low" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
@@ -1416,6 +1419,7 @@
        shown="$show_field"
        label="$field_label"
        label_class="top-label"
+       field_header="1"
        help_page="entries"
        help_section="keywords">
       <input type="text" name="keywords" id="keywords" class="form-control text full" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />

@@ -3225,12 +3225,24 @@ sub _hdlr_app_setting {
 
     my $class = $args->{class} || "";
 
-    return $ctx->build(<<"EOT");
-    <div id="$id-field" class="form-group$req_class $label_class $class"$style>
+    if ( $args->{field_header} ) {
+        return $ctx->build(<<"EOT");
+    <div id="$id-field" class="field form-group$req_class $label_class $class"$style>
+        <div class="field-header">
+          <label>$label$req</label>
+        </div>
+        $insides$hint
+    </div>
+EOT
+    }
+    else {
+        return $ctx->build(<<"EOT");
+    <div id="$id-field" class="field form-group$req_class $label_class $class"$style>
         <label>$label$req</label>
         $insides$hint
     </div>
 EOT
+    }
 }
 
 ###########################################################################
