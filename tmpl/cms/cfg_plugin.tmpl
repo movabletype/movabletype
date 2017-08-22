@@ -276,7 +276,7 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
               <mt:unless name="plugin_error">
                 <span><img src="<mt:var name="plugin_icon">" /></span>
               </mt:unless>
-              <a href="#plugin-<mt:var name="plugin_id">-content" title="<__trans phrase="Settings for [_1]" params="<mt:var name="plugin_name" escape="html">">" data-toggle="collapse">
+              <a class="btn btn-link" aria-expanded="false" aria-controls="plugin-<mt:var name="plugin_id" escape="html">-content" href="#plugin-<mt:var name="plugin_id" escape="html">-content" title="<__trans phrase="Settings for [_1]" params="<mt:var name="plugin_name" escape="html">">" data-toggle="collapse">
                 <$mt:var name="plugin_name" escape="html"$>
                 <mt:if name="plugin_version">
                   <span class="plugin-version">
