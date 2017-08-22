@@ -16,6 +16,13 @@
       $('.mt-modal-open').mtModal();
       $('[data-mt-modal-close]').mtModalClose();
 
+      // checkbox collapse
+      $('[type=checkbox], [data-toggle=collapse]').on('show.bs.collapse', function () {
+          $(this).attr('checked', 'checked');
+      }).on('hide.bs.collapse', function () {
+          $(this).attr('checked', '');
+      });
+
       if (typeof document.body.style.maxHeight == "undefined") {
           if (jQuery.fn.pngfix) jQuery('#brand a span, .nav-link a, .search-submit img, .welcome-widget img').pngfix();
       }
@@ -29,7 +36,6 @@
       jQuery('input.mt-edit-field').mtEditInput({
           edit: '<__trans phrase="Edit">'
       });
-      jQuery('div.has-option').mtCheckboxOption();
       jQuery('.msg, .display-options').mtToggleField();
       jQuery('.fav-actions-nav').mtToggleField({hide_clicked: true});
       jQuery('#cms-search').mtToggleField({hide_clicked: true}, function(){

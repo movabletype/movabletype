@@ -86,18 +86,17 @@
     <mt:unless name="preflogging_hidden">
     <mtapp:setting
        id="system-performance-logging"
-       class="has-option"
        label="<__trans phrase="Performance Logging">"
        hint="<__trans phrase="Turn on performance logging, which will report any system event that takes the number of seconds specified by Logging Threshold.">"
        hint_id="performanceLogging"
        show_hint="1">
       <div>
-        <input type="checkbox"<mt:if name="config_warnings_performancelogging"> disabled="disable"</mt:if> name="system_performance_logging" id="system-performance-logging" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> aria-describedby="performanceLogging" />
+        <input type="checkbox"<mt:if name="config_warnings_performancelogging"> disabled="disable"</mt:if> name="system_performance_logging" id="system-performance-logging" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> aria-describedby="performanceLogging" data-target="#system-performance-logging-option" data-toggle="collapse" aria-expanded="<mt:if name="system_performance_loggin">true<mt:else>false</mt:if>" aria-controls="system-performance-logging-option" />
         <label for="system-performance-logging"><__trans phrase="Turn on performance logging"></label>
       </div>
     </mt:app:setting>
 
-    <div id="system-performance-logging-option" class="setting-option hidden">
+    <div id="system-performance-logging-option" class="setting-option collapse<mt:if name="system_performance_logging"> show</mt:if>">
       <mtapp:setting
          id="system-performance-logging-path"
          label="<__trans phrase="Log Path">"
@@ -264,17 +263,16 @@
   <legend><__trans phrase="Image Quality Settings"></legend>
   <mtapp:setting
     id="auto-change-image-quality"
-    label="<__trans phrase="Changing image quality">"
-    class="has-option">
+    label="<__trans phrase="Changing image quality">">
     <div>
       <label>
-        <input type="checkbox"<mt:if name="config_warnings_autochangeimagequality"> disabled="disabled"</mt:if> name="auto_change_image_quality" id="auto-change-image-quality"<mt:if name="auto_change_image_quality"> checked="checked"</mt:if> />
+        <input type="checkbox"<mt:if name="config_warnings_autochangeimagequality"> disabled="disabled"</mt:if> name="auto_change_image_quality" id="auto-change-image-quality"<mt:if name="auto_change_image_quality"> checked="checked"</mt:if> data-target="#auto-change-image-quality-option" data-toggle="collapse" aria-expanded="<mt:if name="auto_change_image_quality">true<mt:else>false</mt:if>" aria-controls="auto-change-image-quality-option" />
         <__trans phrase="Enable image quality changing.">
       </label>
     </div>
   </mtapp:setting>
 
-  <div id="auto-change-image-quality-option" class="setting-option<mt:unless name="auto_change_image_quality"> hidden</mt:unless>">
+  <div id="auto-change-image-quality-option" class="setting-option <mt:if name="auto_change_image_quality">show</mt:if> collapse">
     <mtapp:setting
       id="image-quality-jpeg"
       label="<__trans phrase="Image quality(JPEG)">"
@@ -404,14 +402,6 @@
     jQuery('span.indicator').hide();
     jQuery('#email_sent').hide();
     jQuery('#email_sent_error').hide();
-  });
-
-  jQuery('input#system-performance-logging').click(function() {
-      jQuery('div#system-performance-logging-option').toggleClass('hidden');
-  });
-
-  jQuery('input#auto-change-image-quality').click(function () {
-      jQuery('div#auto-change-image-quality-option').toggleClass('hidden');
   });
 
   jQuery.mtValidateAddRules({
