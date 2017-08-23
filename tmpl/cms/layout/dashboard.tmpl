@@ -1,0 +1,37 @@
+<mt:setvartemplate name="layout">
+
+  <mt:include name="layout/default/header.tmpl">
+
+  <div class="row">
+  <mt:if name="has_menu">
+    <div class="mt-primaryNavigation">
+    <mt:include name="include/primary_navigation.tmpl">
+    </div>
+  </mt:if>
+
+    <div class="mt-mainContent">
+  <mt:unless name="no_page_header">
+      <div class="row align-items-center">
+        <div class="col-10">
+          <h3 id="page-title"><mt:var name="page_title"></h3>
+        </div>
+        <div class="col-2">
+          <div class="float-right">
+            <button type="button" class="btn btn-default"><__trans phrase="Relaod"></button>
+          </div>
+        </div>
+      </div>
+  </mt:unless>
+  <mt:include name="include/system_msg.tmpl">
+  <mt:var name="page_content">
+    </div>
+
+  <mt:if name="related_content">
+    <div class="mt-secondaryPanel">
+      <mt:var name="related_content">
+    </div>
+  </mt:if>
+  </div>
+
+  <mt:include name="layout/default/footer.tmpl">
+</mt:setvartemplate>

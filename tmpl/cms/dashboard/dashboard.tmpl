@@ -1,11 +1,5 @@
-<mt:if name="scope_type" like="(blog|website)">
-  <mt:setvarblock name="html_title"><__trans phrase="Dashboard"></mt:setvarblock>
-  <mt:setvarblock name="page_title"><$mt:var name="blog_name" escape="html"$></mt:setvarblock>
-<mt:else name="scope_type" eq="system">
-  <mt:setvarblock name="page_title"><__trans phrase="System Overview"></mt:setvarblock>
-<mt:else>
-  <mt:setvarblock name="html_title"><__trans phrase="Dashboard"></mt:setvarblock>
-</mt:if>
+<mt:setvarblock name="html_title"><__trans phrase="Dashboard"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Dashboard"></mt:setvarblock>
 
 <mt:setvarblock name="css_include" append="1">
 <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/widget.css" />
@@ -86,5 +80,5 @@ jQuery('button.remove-widget').mtRemoveWidget();
   <mt:var name="select_widget_form" set="main">
 </mt:setvarblock>
 
-<mt:include name="layout/default.tmpl">
+<mt:include name="layout/dashboard.tmpl">
 <mt:var name="layout">
