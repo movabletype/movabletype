@@ -709,7 +709,7 @@ sub _bulk_author_name_html {
             $out .= qq{<span class="username">$name</span>};
         }
         if ( $url || $email ) {
-            $out .= q{<ul class="user-info description">};
+            $out .= q{<ul class="list-unstyled user-info description">};
             $out
                 .= qq{<li class="user-info-item user-email"><img alt="Email "src="$mail_icon" /> <a href="mailto:$email" title="$email">$email</a></li>}
                 if $email;

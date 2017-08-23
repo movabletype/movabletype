@@ -62,12 +62,12 @@
        help_page="blog_settings_feedback"
        help_section="autodelete_junk">
       <div>
-        <input id="auto_delete_junk" name="auto_delete_junk" type="checkbox" value="1"<mt:if name="auto_delete_junk"> checked="checked"</mt:if> />
+        <input id="auto_delete_junk" name="auto_delete_junk" type="checkbox" value="1"<mt:if name="auto_delete_junk"> checked="checked"</mt:if> data-toggle="collapse" data-target="#auto_delete_junk_prefs" aria-expanded="<mt:if name="auto_delete_junk">true<mt:else>false</mt:if>" aria-controls="auto_delete_junk_prefs" />
         <label for="auto_delete_junk"><__trans phrase="Automatically delete spam feedback after the time period shown below."></label>
       </div>
     </mtapp:setting>
 
-    <div id="auto_delete_junk_prefs"<mt:unless name="auto_delete_junk"> style="display: none;"</mt:unless>>
+    <div id="auto_delete_junk_prefs" class="collapse<mt:if name="auto_delete_junk"> show</mt:if>">
       <mtapp:setting
          id="junk_folder_expiry"
          label="<__trans phrase="Delete Spam After">"
@@ -93,19 +93,18 @@
 
     <mtapp:setting
        id="nofollow_urls"
-       class="has-option"
        label="<__trans phrase="Apply 'nofollow' to URLs">"
        help_page="blog_settings_feedback"
        help_section="nofollow_urls">
       <div>
-        <input type="checkbox" value="1" name="nofollow_urls" id="nofollow_urls"<mt:if name="nofollow_urls"> checked="checked"</mt:if> class="cb" />
+        <input type="checkbox" value="1" name="nofollow_urls" id="nofollow_urls"<mt:if name="nofollow_urls"> checked="checked"</mt:if> class="cb" data-toggle="collapse" data-target="#nofollow_urls-option" aria-expanded="<mt:if name="nofollow_urls">true<mt:else>false</mt:if>" aria-controls="nofollow_urls-option" />
         <label for="nofollow_urls">
           <__trans phrase="If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation.">
         </label>
       </div>
     </mtapp:setting>
 
-    <div id="nofollow_urls-option">
+    <div id="nofollow_urls-option" class="collapse<mt:if name="nofollow_urls"> show</mt:if>">
       <mtapp:setting
          id="follow_auth_links"
          label="<__trans phrase="'nofollow' exception for trusted commenters">"
@@ -141,12 +140,11 @@
 
     <mtapp:setting
        id="allow_comments"
-       class="has-option"
        label="<__trans phrase="Accept Comments">"
        help_page="blog_settings_feedback"
        help_section="accept_comments_from">
       <div>
-        <input type="checkbox" name="allow_comments" id="allow_comments"<mt:if name="allow_comments"> checked="checked"</mt:if> value="1" />
+        <input type="checkbox" name="allow_comments" id="allow_comments"<mt:if name="allow_comments"> checked="checked"</mt:if> value="1" data-toggle="collapse" data-target="#allow_comments-option" aria-expanded="<mt:if name="allow_comments">true<mt:else>false</mt:if>" aria-controls="allow_comments-option" />
         <label for="allow_comments"><__trans phrase="Accept comments according to the policies shown below."></label>
         <p>
           <a href="<mt:var name="script_url">?__mode=cfg_registration&amp;blog_id=<mt:var name="blog_id" escape="url">">
@@ -156,7 +154,7 @@
       </div>
     </mtapp:setting>
 
-    <div id="allow_comments-option">
+    <div id="allow_comments-option" class="collapse<mt:if name="allow_comments"> show</mt:if>">
       <mtapp:settinggroup id="comment-policy-setting">
         <legend><__trans phrase="Commenting Policy"></legend>
         <mtapp:setting
@@ -194,19 +192,18 @@
 
         <mtapp:setting
            id="allow_comment_html"
-           class="has-option"
            label="<__trans phrase="Allow HTML">"
            help_page="blog_settings_feedback"
            help_section="allow_html">
           <div>
             <label>
-              <input type="checkbox" name="allow_comment_html" id="allow_comment_html" value="1"<mt:if name="allow_comment_html"> checked="checked"</mt:if> class="cb" />
+              <input type="checkbox" name="allow_comment_html" id="allow_comment_html" value="1"<mt:if name="allow_comment_html"> checked="checked"</mt:if> class="cb" data-toggle="collapse" data-target="#allow_comment_html-option" aria-expanded="<mt:if name="allow_comment_html">true<mt:else>false</mt:if>" aria-controls="allow_comment_html-option" />
               <__trans phrase="Allow commenters to include a limited set of HTML tags in their comments. Otherwise all HTML will be stripped out.">
             </label>
           </div>
         </mtapp:setting>
 
-        <div id="allow_comment_html-option">
+        <div id="allow_comment_html-option" class="collapse<mt:if name="allow_comment_html"> show</mt:if>">
           <mtapp:setting
              id="sanitize_spec"
              label="<__trans phrase="Limit HTML Tags">"
@@ -341,19 +338,18 @@
 
     <mtapp:setting
        id="allow_pings"
-       class="has-option"
        label="<__trans phrase="Accept TrackBacks">"
        help_page="blog_settings_feedback"
        help_section="accept_trackbacks">
       <div>
-        <input type="checkbox" name="allow_pings" id="allow_pings"<mt:if name="allow_pings"> checked="checked"</mt:if> value="1" />
+        <input type="checkbox" name="allow_pings" id="allow_pings"<mt:if name="allow_pings"> checked="checked"</mt:if> value="1" data-toggle="collapse" data-target="#allow_pings-option" aria-expanded="<mt:if name="allow_pings">true<mt:else>false</mt:if>" aria-controls="allow_pings-option" />
         <label for="allow_pings">
           <__trans phrase="Accept TrackBacks from any source.">
         </label>
       </div>
     </mtapp:setting>
 
-    <div id="allow_pings-option">
+    <div id="allow_pings-option" class="collapse<mt:if name="allow_pings"> show</mt:if>">
       <mtapp:settinggroup id="trackback-policy-setting">
         <legend><__trans phrase="TrackBack Policy"></legend>
         <mtapp:setting
@@ -503,12 +499,6 @@ function scoreNudge(amount) {
 
 /* ]]> */
 </script>
-</mt:setvarblock>
-
-<mt:setvarblock name="jq_js_include" append="1">
-jQuery('input#auto_delete_junk').click(function() {
-    jQuery('div#auto_delete_junk_prefs').toggle();
-});
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

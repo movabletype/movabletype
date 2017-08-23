@@ -332,11 +332,11 @@
        show_label="0"
        help_page="blog_settings_publishing"
        help_section="advanced_archive_publishing">
-      <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="cb" />
+      <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="cb" data-target="#enable_archive_paths_prefs" data-toggle="collapse" aria-expanded="<mt:if name="eanble_archive_paths">true<mt:else>false</mt:if>" aria-controls="enable_archive_paths_prefs" />
       <label for="enable_archive_paths"><__trans phrase="Publish archives outside of Site Root"></label>
     </mtapp:setting>
 
-    <div id="enable_archive_paths_prefs"<mt:unless name="enable_archive_paths"> style="display: none;"</mt:unless>>
+    <div id="enable_archive_paths_prefs" class="collapse<mt:if name="enable_archive_paths"> show</mt:if>">
       <mtapp:setting
          id="archive_url"
          class="url-field"
@@ -610,17 +610,16 @@
 
     <mtapp:setting
        id="use-revision"
-       class="has-option"
        label="<__trans phrase="Revision history">">
       <div>
         <label for="use-revision">
-          <input type="checkbox" value="1" name="use_revision" id="use-revision"<mt:if name="use_revision"> checked="checked"</mt:if><mt:unless name="master_revision_switch"> disabled="disabled"</mt:unless> />
+          <input type="checkbox" value="1" name="use_revision" id="use-revision"<mt:if name="use_revision"> checked="checked"</mt:if><mt:unless name="master_revision_switch"> disabled="disabled"</mt:unless> data-toggle="collapse" data-target="#use-revision-option" aria-expanded="<mt:if name="use_revision">true<mt:else>false</mt:if>" aria-controls="use-revision-option" />
           <__trans phrase="Enable revision history">
         </label>
       </div>
     </mtapp:setting>
 
-    <div id="use-revision-option" class="setting-option">
+    <div id="use-revision-option" class="setting-option collapse<mt:if name="use_revision"> show</mt:if>">
       <mt:setvarblock name="revisions_entry_label"><__trans phrase="Number of revisions per entry/page"></mt:setvarblock>
       <mtapp:setting
          id="max_revisions_entry"
@@ -673,7 +672,6 @@
 
     <mtapp:setting
       id="auto_rename_non_ascii"
-      class="has-option"
       label="<__trans phrase="Rename filename">">
       <div>
         <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb" />
@@ -691,7 +689,6 @@
     </mtapp:setting>
     <mtapp:setting
       id="normalize_orientation"
-      class="has-option"
       label="<__trans phrase="Normalize orientation">">
       <div>
         <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb" />
@@ -749,10 +746,6 @@ if (e) e.style.display = 'block';
     </mt:if>
 
 jQuery(window).load(function () {
-    jQuery('input#enable_archive_paths').change(function() {
-        jQuery('div#enable_archive_paths_prefs').toggle();
-    });
-
     jQuery.mtValidateAddRules({
 <mt:if name="is_blog">
         "#site_url_path": function($e) {

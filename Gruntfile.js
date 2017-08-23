@@ -48,42 +48,11 @@ module.exports = function(grunt) {
       riot: {
         command: 'npm run build-riot'
       },
-    },
-    svg_sprite: {
-      basic: {
-        src: ['mt-static/images/icons/*.svg'],
-        dest: 'mt-static/images',
-        options: {
-          shape: {
-            transform: [
-              {
-                svgo: {
-                  plugins: [
-                    { removeAttrs: { attrs: 'fill' } }
-                  ]
-                }
-              }
-            ],
-            id: {
-              generator: function(name) {
-                return path.basename(name.replace(/\s+/g, this.whitespace), '.svg');
-              }
-            }
-          },
-          mode: {
-            symbol: {
-              dest: '.',
-              sprite: 'sprite.svg'
-            }
-          }
-        }
-      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-exec');
-  grunt.loadNpmTasks('grunt-svg-sprite');
 
-  grunt.registerTask('default', ['exec:riot', 'svg_sprite', 'copy']);
+  grunt.registerTask('default', ['exec:riot', 'copy']);
 };

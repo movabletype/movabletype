@@ -1,10 +1,10 @@
 <mt:setvarblock name="user_screen_name"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html"><mt:else><mt:var name="author_name" escape="html"></mt:if></mt:setvarblock>
 
-<div class="mt-globalNavigation row align-items-center">
+<div class="mt-globalNavigation align-items-center">
   <div class="col">
     <h1 class="mt-globalNavigation__logo btn-group">
       <a href="<mt:var name="mt_url">?__mode=dashboard" role="home"><img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="40" height="40"></a>
-      <button type="button" class="btn btn-link dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" id="aria-labelledby="userDropdownMenu" aria-haspopup="true" aria-expanded="false"><span class="sr-only"><__trans phrase="Drop Down Menu"></span></button>
+      <button type="button" class="btn btn-link dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" id="systemDropdownMenu" aria-haspopup="true" aria-expanded="false"><span class="sr-only"><__trans phrase="Drop Down Menu"></span></button>
       <div class="dropdown-menu" aria-labelledby="systemDropdownMenu">
 <mt:if name="scope_type" ne="user">
         <a class="dropdown-item" href="<$mt:var name="mt_url"$>?__mode=dashboard">
@@ -133,7 +133,7 @@
 
   <div class="col-2">
     <div class="float-right">
-      <button class="btn btn-link dropdown-toggle" type="button"  data-toggle="dropdown" id="userDropdownMenu" aria-haspopup="true" aria-expanded="false">
+      <button class="btn btn-link dropdown-toggle" type="button" data-toggle="dropdown" id="userDropdownMenu" aria-haspopup="true" aria-expanded="false">
       <mt:if name="author_userpic_url">
         <img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle">
       <mt:else>
@@ -143,7 +143,7 @@
       </button>
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdownMenu">
         <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=view&_type=author&id=<mt:var name="author_id" escape="url">"><__trans phrase="Profile"></a>
-        <a class="dropdown-item" href="<mt:var name="help_url">help/<mt:var name="template_filename" escape="html">/" target="_blank"><__trans phrase="Help"></a>
+        <a class="dropdown-item" href="<__trans phrase="https://movabletype.org/documentation/">" target="_blank"><__trans phrase="Documentation"></a>
         <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=logout"><__trans phrase="Sign out"></a>
       </div>
     </div>

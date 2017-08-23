@@ -57,7 +57,7 @@ my ( $app, $out );
 note 'Test cfg_prefs mode';
 subtest 'Test cfg_prefs mode' => sub {
     foreach my $type ( 'website', 'blog' ) {
-        my $type_ucfirst = 'Site'; # ucfirst $type;
+        my $type_ucfirst = 'Site';    # ucfirst $type;
         my $test_blog = $type eq 'website' ? $website : $blog;
         my $type_alias = $type eq 'website' ? 'site' : 'child site';
 
@@ -114,10 +114,10 @@ subtest 'Test cfg_prefs mode' => sub {
 
             my $archive_url = quotemeta
                 '<label id="archive_url-label" for="archive_url">Archive URL *</label>';
-SKIP: {
-            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-            like( $out, qr/$archive_url/, 'Has "Archive URL" setting.' );
-}
+        SKIP: {
+                skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+                like( $out, qr/$archive_url/, 'Has "Archive URL" setting.' );
+            }
 
             my $archive_url_hint
                 = $type eq 'blog'
@@ -133,10 +133,11 @@ SKIP: {
 
             my $archive_root = quotemeta
                 '<label id="archive_path-label" for="archive_path">Archive Root *</label>';
-SKIP: {
-            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-            like( $out, qr/$archive_root/, 'Has "Archive Root" setting.' );
-}
+        SKIP: {
+                skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+                like( $out, qr/$archive_root/,
+                    'Has "Archive Root" setting.' );
+            }
 
             my $archive_root_hint
                 = $type eq 'blog'
@@ -158,7 +159,8 @@ SKIP: {
             $out = delete $app->{__test_output};
 
             my $is_checked = quotemeta
-                '<input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1" checked="checked" class="cb" />';
+                '<input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1" checked="checked" class="cb"';
+
             like( $out, qr/$is_checked/,
                 'Parameter "enable_archive_paths" is checked.' );
 
@@ -209,11 +211,11 @@ SKIP: {
                 unlike( $out, qr/$site_root_hint_abs/,
                     'Has Site Root hint(absolute).' );
 
-SKIP: {
-                skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-                like( $out, qr/$archive_root_hint/,
-                    'Has Archive URL hint(relative).' );
-}
+            SKIP: {
+                    skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+                    like( $out, qr/$archive_root_hint/,
+                        'Has Archive URL hint(relative).' );
+                }
                 my $archive_root_hint_abs = quotemeta
                     "The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\\' for Windows) is preferred. Do not end with '/' or '\\'. Example: /home/mt/public_html or C:\\www\\public_html";
                 unlike( $out, qr/$archive_root_hint_abs/,
@@ -378,23 +380,23 @@ subtest 'Website listing screen' => sub {
     my $blogs = quotemeta
         '<th class="col head blog_count num"><a href="#blog_count" class="sort-link"><span class="col-label">Blogs</span><span class="sm"></span></a></th>';
 SKIP: {
-    skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-    like( $out, qr/$blogs/, 'Listing screen has "Blogs" column.' );
-}
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+        like( $out, qr/$blogs/, 'Listing screen has "Blogs" column.' );
+    }
 
     my $entries = quotemeta
         '<th class="col head entry_count num"><a href="#entry_count" class="sort-link"><span class="col-label">Entries</span><span class="sm"></span></a></th>';
 SKIP: {
-    skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-    like( $out, qr/$entries/, 'Listing screen has "Entries" column.' );
-}
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+        like( $out, qr/$entries/, 'Listing screen has "Entries" column.' );
+    }
 
     my $pages = quotemeta
         '<th class="col head page_count num"><a href="#page_count" class="sort-link"><span class="col-label">Pages</span><span class="sm"></span></a></th>';
 SKIP: {
-    skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-    like( $out, qr/$pages/, 'Listing screen has "Pages" column.' );
-}
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+        like( $out, qr/$pages/, 'Listing screen has "Pages" column.' );
+    }
 
     my $classic_website = quotemeta
         '<option value="classic_website">Classic Website</option>';
