@@ -264,7 +264,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
         '<p>This is an example web page.</p><p>If the <code>@ADD_TO_SITE_NAV</code> tag is used on a web page, that page will be added to the navigation list in both the header and footer.</p>',
     '__CF_REQUIRED_VALUE__' => q{Value},
 
-    'CONTENT_TYPE_BOILERPLATES' => 'Boilerplates',
+    '_CONTENT_TYPE_BOILERPLATES' => 'Boilerplates',
 );
 
 1;
