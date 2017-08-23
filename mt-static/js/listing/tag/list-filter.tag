@@ -520,6 +520,9 @@
                   class="icon-mini-left addnew create-new apply-link"
                   onclick={ createNewFilter }
                 >
+                  <svg title={ trans( 'Add' ) } role="img" class="mt-icon">
+                    <use xlink:href={ StaticURI + 'images/sprite.svg#ic_add' } />
+                  </svg>
                   { trans( 'Create New' ) }
                 </a>
               </li>
