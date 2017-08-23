@@ -2,6 +2,9 @@
 
 <div class="mt-globalNavigation align-items-center">
   <div class="col">
+  <mt:if name="mt_beta">
+    <span class="badge badge-info">BETA</span>
+  </mt:if>
     <h1 class="mt-globalNavigation__logo btn-group">
       <a href="<mt:var name="mt_url">?__mode=dashboard" role="home"><img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="40" height="40"></a>
       <button type="button" class="btn btn-link dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" id="systemDropdownMenu" aria-haspopup="true" aria-expanded="false"><span class="sr-only"><__trans phrase="Drop Down Menu"></span></button>
