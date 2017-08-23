@@ -2494,15 +2494,17 @@ sub set_default_tmpl_params {
             }
         }
     }
-    $param->{mt_beta}         = 1 if MT->version_id =~ m/^\d+\.\d+(?:a|b|rc)/;
-    $param->{static_uri}      = $mt->static_path;
-    $param->{mt_version}      = MT->version_number;
-    $param->{mt_version_id}   = MT->version_id;
-    $param->{mt_product_code} = MT->product_code;
-    $param->{mt_product_name} = $mt->translate( MT->product_name );
-    $param->{language_tag}    = substr( $mt->current_language, 0, 2 );
+    $param->{mt_alpha} = 1 if MT->version_id =~ m/^\d+\.\d+a/;
+    $param->{mt_beta}  = 1 if MT->version_id =~ m/^\d+\.\d+(?:b|rc)/;
+    $param->{mt_alpha_or_beta}  = $param->{mt_alpha} || $param->{mt_beta};
+    $param->{static_uri}        = $mt->static_path;
+    $param->{mt_version}        = MT->version_number;
+    $param->{mt_version_id}     = MT->version_id;
+    $param->{mt_product_code}   = MT->product_code;
+    $param->{mt_product_name}   = $mt->translate( MT->product_name );
+    $param->{language_tag}      = substr( $mt->current_language, 0, 2 );
     $param->{language_encoding} = $mt->charset;
-    $param->{optimize_ui} = $mt->build_id && !$MT::DebugMode;
+    $param->{optimize_ui}       = $mt->build_id && !$MT::DebugMode;
 
     if ( $mt->isa('MT::App') ) {
         if ( my $author = $mt->user ) {

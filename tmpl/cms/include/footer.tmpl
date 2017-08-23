@@ -1,10 +1,15 @@
 <div class="row">
   <div class="mt-footer">
-  <mt:if name="mt_beta">
+  <mt:if name="mt_alpha_or_beta">
     <div id="msg-beta" class="text-center">
       <p>
+    <mt:if name="mt_alpha">
+        <span class="badge badge-info">DEVELOPER PREVIEW</span>
+        <__trans phrase="This is a alpha version of Movable Type and is not recommended for production use.">
+    <mt:elseif name="mt_beta">
         <span class="badge badge-info">BETA</span>
         <__trans phrase="This is a beta version of Movable Type and is not recommended for production use.">
+    </mt:if>
       </p>
     </div>
   </mt:if>
