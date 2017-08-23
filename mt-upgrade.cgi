@@ -1,4 +1,4 @@
-#!/usr/bin/env perl -w
+#!/usr/bin/perl -w
 
 # Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
