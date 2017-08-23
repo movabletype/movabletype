@@ -1,0 +1,32 @@
+<mtapp:widget
+  class="system-information-widget"
+  label="<__trans phrase="System Information">"
+  can_close="1">
+  <div class="card-group">
+    <div class="card text-center">
+      <div class="card-block">
+        <p class="card-text h1"><mt:var name="active_users"></p>
+        <p class="card-text"><__trans phrase="Active Users"></p>
+      </div>
+    </div>
+    <div class="card text-center">
+      <div class="card-block">
+        <p class="card-text h1"><mt:var name="total_sites"></p>
+        <p class="card-text"><__trans phrase="Sites"></p>
+      </div>
+    </div>
+    <div class="card text-center">
+      <div class="card-block">
+        <p class="card-text h1"><mt:var name="total_content_types"></p>
+        <p class="card-text"><__trans phrase="Content Types"></p>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-block">
+      <p class="card-text"><__trans phrase="Server Model">: <mt:var name="server_model"></p>
+          <mt:unless name="disable_version_check"><p class="card-text"><__trans phrase="Available Updates">: <mt:if name="available_version"><__trans phrase="Available updates (Version: [_1]) found. Please see the <a href="[_2]" target="_blank">news</a> for detail." params="<mt:var name="available_version">%%<mt:var name="news_url">"><mt:else><__trans phrase="You are using the latest version of Movable Type."></mt:if></p></mt:unless>
+    </div>
+  </div>
+</mtapp:widget>
+
