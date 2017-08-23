@@ -2178,7 +2178,7 @@ sub core_menus {
         },
 
         'content_type:boilerplates' => {
-            label      => 'Boilerplates',
+            label      => 'CONTENT_TYPE_BOILERPLATES',
             order      => 300,
             mode       => 'list_ct_boilerplates',
             permission => 'administer',
