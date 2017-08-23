@@ -2482,7 +2482,7 @@ sub get_newsbox_html {
     require MT::Sanitize;
 
     # allowed html
-    my $spec = 'a href,* style class id,ul,li,div,span,br';
+    my $spec = 'a href,* target style class id,ul,li,div,span,br';
     $result = MT::Sanitize->sanitize( $result, $spec );
     $news_object = MT::Session->new();
     $news_object->set_values(
