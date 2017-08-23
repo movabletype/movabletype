@@ -243,7 +243,7 @@ function showPasswordField() {
     <mtapp:setting
        id="status"
        label="<__trans phrase="_USER_STATUS_CAPTION">"
-       label_class="left-label <mt:var name="user_status">"
+       label_class="left-label <mt:var name="user_status">">
       <select name="status" id="status" class="form-control half-width" onchange="toggleDisabled(this.value);">
         <option <mt:if name="status_enabled">selected="selected"</mt:if> value="1">
           <__trans phrase="_USER_ENABLED">
