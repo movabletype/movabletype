@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24">
   <defs>
-    <polygon id="a" points="12 17 6.122 20.09 7.245 13.545 2.489 8.91 9.061 7.955 12 2 14.939 7.955 21.511 8.91 16.755 13.545 17.878 20.09"/>
+    <path id="a" d="M9,10.5 L9,4.5 L6,4.5 L6,19.5 L9,19.5 L9,13.5 L15,13.5 L15,19.5 L18,19.5 L18,4.5 L15,4.5 L15,10.5 L9,10.5 Z"/>
   </defs>
   <g fill="none" fill-rule="evenodd">
     <use fill="#000000" xlink:href="#a"/>

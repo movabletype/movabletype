@@ -1,24 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 46.1 (44463) - http://www.bohemiancoding.com/sketch -->
-    <title>ico/duplicate</title>
-    <desc>Created with Sketch.</desc>
-    <defs>
-        <path d="M12,2 L2,2 L2,13 L0,13 L0,2.00276013 C0,0.896666251 0.901950359,0 2.0085302,0 L12,0 L12,2 Z M4,6.00585866 C4,4.89805351 4.90195036,4 6.0085302,4 L13.9914698,4 C15.1007504,4 16,4.89706013 16,6.00585866 L16,15.9941413 C16,17.1019465 15.0980496,18 13.9914698,18 L6.0085302,18 C4.8992496,18 4,17.1029399 4,15.9941413 L4,6.00585866 Z M6,6 L6,16 L14,16 L14,6 L6,6 Z" id="path-1"></path>
-    </defs>
-    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="ico/duplicate">
-            <g id="Colors/DarkGray" transform="translate(4.000000, 3.000000)">
-                <mask id="mask-2" fill="white">
-                    <use xlink:href="#path-1"></use>
-                </mask>
-                <use id="Mask" fill="#000000" xlink:href="#path-1"></use>
-                <g mask="url(#mask-2)" id="#2F2F2F" fill="#2F2F2F">
-                    <g transform="translate(-28.000000, -19.000000)">
-                        <rect x="0" y="0" width="64" height="64"></rect>
-                    </g>
-                </g>
-            </g>
-        </g>
-    </g>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24">
+  <defs>
+    <path id="a" d="M16,5 L6,5 L6,16 L4,16 L4,5.00276013 C4,3.89666625 4.90195036,3 6.0085302,3 L16,3 L16,5 Z M8,9.00585866 C8,7.89805351 8.90195036,7 10.0085302,7 L17.9914698,7 C19.1007504,7 20,7.89706013 20,9.00585866 L20,18.9941413 C20,20.1019465 19.0980496,21 17.9914698,21 L10.0085302,21 C8.8992496,21 8,20.1029399 8,18.9941413 L8,9.00585866 Z M10,9 L10,19 L18,19 L18,9 L10,9 Z"/>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <use fill="#000000" xlink:href="#a"/>
+  </g>
 </svg>
