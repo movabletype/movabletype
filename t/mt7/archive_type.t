@@ -16,7 +16,7 @@ use MT::ContentFieldIndex;
 use MT::ContentPublisher;
 
 my $mt   = MT->instance;
-my $blog = MT::Test::Permission->make_blog( parent_id => 0, );
+my $blog = MT::Test::Permission->make_blog( parent_id => 0, name => 'test blog' );
 
 my $ct = MT::Test::Permission->make_content_type(
     blog_id => $blog->id,
@@ -82,12 +82,30 @@ my $cd = MT::Test::Permission->make_content_data(
     },
 );
 
-my $tmpl = MT::Test::Permission->make_template( blog_id => $blog->id, name => 'ContentType Test' );
+my $tmpl = MT::Test::Permission->make_template( blog_id => $blog->id, name => 'ContentType Test', text => '<$mt:ArchiveTitle$>' );
 $tmpl->content_type_id( $ct->id );
-my $tmpl_archive = MT::Test::Permission->make_template( blog_id => $blog->id, name => 'ContentType Archive Test' );
+my $tmpl_archive = MT::Test::Permission->make_template( blog_id => $blog->id, name => 'ContentType Archive Test', text => '<$mt:ArchiveTitle$>' );
 $tmpl_archive->content_type_id( $ct->id );
 
 my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
+
+my %html = (
+    'ContentType' => 'Sample Content Data',
+    'ContentType-Daily' => 'June  3, 2017',
+    'ContentType-Weekly' => 'May 28, 2017 - June  3, 2017',
+    'ContentType-Monthly' => 'June 2017',
+    'ContentType-Yearly' => '2017',
+    'ContentType_Author' => 'Yuki Ishikawa',
+    'ContentType_Author-Daily' => 'Yuki Ishikawa: June  3, 2017',
+    'ContentType_Author-Weekly' => 'Yuki Ishikawa: May 28, 2017 - June  3, 2017',
+    'ContentType_Author-Monthly' => 'Yuki Ishikawa: June 2017',
+    'ContentType_Author-Yearly' => 'Yuki Ishikawa: 2017',
+    'ContentType_Category' => 'category1',
+    'ContentType_Category-Daily' => 'category1: June  3, 2017',
+    'ContentType_Category-Weekly' => 'category1: May 28, 2017 - June  3, 2017',
+    'ContentType_Category-Monthly' => 'category1: June 2017',
+    'ContentType_Category-Yearly' => 'category1: 2017',
+);
 
 my @suite;
 foreach my $prefix ( qw( ContentType ContentType_Author ContentType_Category ) ) {
@@ -107,6 +125,7 @@ foreach my $prefix ( qw( ContentType ContentType_Author ContentType_Category ) )
         push @suite, {
             ArchiveType => $at,
             TemplateMap => $map,
+            Html        => $html{$at},
             Published   => 1,
         },
     }
@@ -159,6 +178,7 @@ for my $s (@suite) {
             Blog        => $blog,
             ArchiveType => $at,
             TemplateMap => $map,
+            TemplateID  => $map->template_id,
             Force       => 1,
             Category    => $category,
         );
@@ -169,6 +189,7 @@ for my $s (@suite) {
             Blog        => $blog,
             ArchiveType => $at,
             TemplateMap => $map,
+            TemplateID  => $map->template_id,
             Force       => 1,
             Author      => $cd->author,
         );
@@ -179,11 +200,14 @@ for my $s (@suite) {
             Blog        => $blog,
             ArchiveType => $at,
             TemplateMap => $map,
+            TemplateID  => $map->template_id,
             Force       => 1,
         );
     }
     is( -e $file ? 1 : 0,
         $s->{Published}, 'Rebuild: When a target file does not exists' );
+    my $fmgr = MT::FileMgr->new('Local');
+    is( $fmgr->get_data($file), $s->{Html}, 'Published contents: When a target file does not exists' );
 
     {
         my $dirname = dirname($file);
@@ -204,6 +228,7 @@ for my $s (@suite) {
             Blog        => $blog,
             ArchiveType => $at,
             TemplateMap => $map,
+            TemplateID  => $map->template_id,
             Force       => 1,
             Category    => $category,
         );
@@ -214,6 +239,7 @@ for my $s (@suite) {
             Blog        => $blog,
             ArchiveType => $at,
             TemplateMap => $map,
+            TemplateID  => $map->template_id,
             Force       => 1,
             Author      => $cd->author,
         );
@@ -224,11 +250,13 @@ for my $s (@suite) {
             Blog        => $blog,
             ArchiveType => $at,
             TemplateMap => $map,
+            TemplateID  => $map->template_id,
             Force       => 1,
         );
     }
     is( -e $file ? 1 : 0,
         $s->{Published}, 'Rebuild: When a target file already exists' );
+    is( $fmgr->get_data($file), $s->{Html}, 'Published contents: When a target file already exists' );
 }
 
 done_testing;
