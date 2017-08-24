@@ -157,10 +157,10 @@ for my $s (@suite) {
         $publisher->_rebuild_content_archive_type(
             ContentData => $cd,
             Blog        => $blog,
-            Category    => $category,
             ArchiveType => $at,
-            Force       => 1,
             TemplateMap => $map,
+            Force       => 1,
+            Category    => $category,
         );
     }
     elsif ( $archiver->contenttype_author_based ) {
@@ -171,7 +171,7 @@ for my $s (@suite) {
             TemplateMap => $map,
             Force       => 1,
             Author      => $cd->author,
-        ) or return;
+        );
     }
     else {
         $publisher->_rebuild_content_archive_type(
@@ -180,7 +180,7 @@ for my $s (@suite) {
             ArchiveType => $at,
             TemplateMap => $map,
             Force       => 1,
-        ) or return;
+        );
     }
     is( -e $file ? 1 : 0,
         $s->{Published}, 'Rebuild: When a target file does not exists' );
@@ -198,13 +198,35 @@ for my $s (@suite) {
         close $fh;
     }
     $mt->request->reset;
-    $publisher->_rebuild_content_archive_type(
-        Blog        => $blog,
-        Category    => $category,
-        ArchiveType => $at,
-        TemplateMap => $map,
-        Force       => 1,
-    );
+    if ( $archiver->contenttype_category_based ) {
+        $publisher->_rebuild_content_archive_type(
+            ContentData => $cd,
+            Blog        => $blog,
+            ArchiveType => $at,
+            TemplateMap => $map,
+            Force       => 1,
+            Category    => $category,
+        );
+    }
+    elsif ( $archiver->contenttype_author_based ) {
+        $publisher->_rebuild_content_archive_type(
+            ContentData => $cd,
+            Blog        => $blog,
+            ArchiveType => $at,
+            TemplateMap => $map,
+            Force       => 1,
+            Author      => $cd->author,
+        );
+    }
+    else {
+        $publisher->_rebuild_content_archive_type(
+            ContentData => $cd,
+            Blog        => $blog,
+            ArchiveType => $at,
+            TemplateMap => $map,
+            Force       => 1,
+        );
+    }
     is( -e $file ? 1 : 0,
         $s->{Published}, 'Rebuild: When a target file already exists' );
 }
