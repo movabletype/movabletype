@@ -447,7 +447,8 @@ sub core_tags {
                 \&MT::Template::Tags::App::_hdlr_app_list_filters,
             'App:ActionBar' =>
                 \&MT::Template::Tags::App::_hdlr_app_action_bar,
-            'App:Link' => \&MT::Template::Tags::App::_hdlr_app_link,
+            'App:Link'    => \&MT::Template::Tags::App::_hdlr_app_link,
+            'App:SVGIcon' => \&MT::Template::Tags::App::_hdlr_app_svg_icon,
 
             ## Site
             SiteID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
@@ -4114,6 +4115,62 @@ sub _hdlr_app_link {
         }
     }
     return $app->uri( mode => $mode, args => \%args );
+}
+
+###########################################################################
+
+=head2 App:SVGIcon
+
+Produces tags of svg image.
+
+B<Attributes:>
+
+=over 4
+
+=item * id
+
+=item * title
+
+=item * color
+
+=item * size
+
+=back
+
+=for tags application
+
+=cut
+
+sub _hdlr_app_svg_icon {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $id    = $args->{id};
+    my $title = $args->{title};
+    my $color = $args->{color};
+    my $size  = $args->{size};
+
+    if ( !defined $id || $id eq '' ) {
+        return $ctx->error( MT->translate('id attribute is required') );
+    }
+
+    my $title_attr = '';
+    if ( defined $title && $title ne '' ) {
+        $title_attr = qq{ title="$title"};
+    }
+    my $color_class_suffix = '';
+    if ( defined $color && $color ne '' ) {
+        $color_class_suffix = "--$color";
+    }
+    my $size_class = '';
+    if ( defined $size && $size ne '' ) {
+        $size_class = " mt-icon--$size";
+    }
+
+    my $static_uri = MT->static_path;
+
+    qq{<svg$title_attr role="img" class="mt-icon${color_class_suffix}${size_class}${size_class}">
+  <use xlink:href="${static_uri}images/sprite.svg#$id">
+</svg>};
 }
 
 package MT::Template::Tags::System;
