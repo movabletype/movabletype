@@ -46,18 +46,19 @@
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
   <mtapp:settinggroup id="data-api-settings">
-  <h5><__trans phrase="Data API Settings"></h5>
+    <legend><__trans phrase="Data API Settings"></legend>
     <mtapp:setting
        id="enable-data-api"
-       class="has-option"
        label="<__trans phrase="Data API">">
-    <input type="checkbox" value="1" name="enable_data_api" id="enable-data-api" <mt:if name="data_api_disable_site_readonly">disabled="disabled"</mt:if><mt:if name="enable_data_api"> checked="checked"</mt:if> />
-    <label for="enable-data-api"><mt:if name="blog_id"><__trans phrase="Enable Data API in this site."><mt:else><__trans phrase="Enable Data API in system scope."></mt:if></label>
+    <div>
+      <input type="checkbox" value="1" name="enable_data_api" id="enable-data-api" <mt:if name="data_api_disable_site_readonly">disabled="disabled"</mt:if><mt:if name="enable_data_api"> checked="checked"</mt:if> />
+      <label for="enable-data-api"><mt:if name="blog_id"><__trans phrase="Enable Data API in this site."><mt:else><__trans phrase="Enable Data API in system scope."></mt:if></label>
+    </div>
     </mtapp:setting>
   </mtapp:settinggroup>
 
   <mt:if name="blog_id">
-    <h5><__trans phrase="External Notifications"></h5>
+    <legend><__trans phrase="External Notifications"></legend>
     <mtapp:settinggroup id="system-feedback-controls">
       <mtapp:setting
          id="ping_blogs"

@@ -3113,28 +3113,19 @@ setting.
 Allows an additional CSS class to be applied to the label of the
 setting.
 
-=item * content_class (optional)
-
-Allows an addtional CSS class to be applied to the contents of the
-setting.
-
 =item * hint (optional)
 
 Supplies a "hint" phrase that provides inline instruction to the user.
 By default, this hint is hidden, unless the 'show_hint' attribute
 forces it to display.
 
+=item * hint_id (optional)
+
+Set hind_id which is added to form element.
+
 =item * show_hint (optional; default "0")
 
 Controls whether the inline help 'hint' label is shown or not.
-
-=item * warning
-
-Supplies a warning message to the user regarding the use of this setting.
-
-=item * show_warning
-
-Controls whether the warning message is shown or not.
 
 =item * help_page
 
@@ -3182,14 +3173,11 @@ sub _hdlr_app_setting {
     my $show_label  = exists $args->{show_label} ? $args->{show_label} : 1;
     my $shown       = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
     my $label_class = $args->{label_class} || "";
-    my $content_class = $args->{content_class} || "";
-    my $hint          = $args->{hint} || "";
-    my $show_hint     = $args->{show_hint} || 0;
-    my $warning       = $args->{warning} || "";
-    my $show_warning  = $args->{show_warning} || 0;
-    my $indent        = $args->{indent};
-    my $no_header     = $args->{no_header};
-    my $help          = "";
+    my $hint        = $args->{hint} || "";
+    my $hint_id     = $args->{hint_id} || "";
+    my $show_hint   = $args->{show_hint} || 0;
+    my $indent      = $args->{indent};
+    my $help        = "";
 
     my $label_help = "";
     if ( $label && $show_label ) {
@@ -3200,19 +3188,14 @@ sub _hdlr_app_setting {
         $label = '';    # zero it out, because the user turned it off
     }
     if ( $hint && $show_hint ) {
-        $hint = "\n<div class=\"hint text-muted\">$hint$help</div>";
+        if ( $hint_id ne "" ) {
+            $hint_id = " id=\"$hint_id\"";
+        }
+        $hint
+            = "\n<small ${hint_id}class=\"form-text text-muted\">$hint$help</small>";
     }
     else {
         $hint = ''
-            ;  # hiding hint because it is either empty or should not be shown
-    }
-    if ( $warning && $show_warning ) {
-        $warning
-            = qq{\n<p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
-<span class="alert-warning-inline">$warning</span></p>\n};
-    }
-    else {
-        $warning = ''
             ;  # hiding hint because it is either empty or should not be shown
     }
     unless ($label_class) {
@@ -3241,52 +3224,23 @@ sub _hdlr_app_setting {
 
     my $insides = $ctx->slurp( $args, $cond );
 
-    # $insides =~ s/^\s*(<textarea)\b/<div class="textarea-wrapper">$1/g;
-    # $insides =~ s/(<\/textarea>)\s*$/$1<\/div>/g;
-
     my $class = $args->{class} || "";
 
-    if ( $args->{no_grid} ) {
-        if ( $args->{no_header} ) {
-            return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field$req_class $label_class $class"$style>
-        <div class="field-content $content_class">
-          $insides$hint$warning
-        </div>
-    </div>
-EOT
-        }
-        else {
-            return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field$req_class $label_class $class"$style>
-        <div class="field-header">
-          <label id="$id-label" for="$id">$label$req</label>
-        </div>
-        <div class="field-content $content_class">
-          $insides$hint$warning
-        </div>
-    </div>
-EOT
-        }
-    }
-    elsif ( $args->{no_header} ) {
+    if ( $args->{field_header} ) {
         return $ctx->build(<<"EOT");
-    <div id="$id-field" class="row form-group field$req_class $label_class $class"$style>
-        <div class="col-md-12 col-sm-12 field-content $content_class">
-          $insides$hint$warning
+    <div id="$id-field" class="field form-group$req_class $label_class $class"$style>
+        <div class="field-header">
+          <label>$label$req</label>
         </div>
+        $insides$hint
     </div>
 EOT
     }
     else {
         return $ctx->build(<<"EOT");
-    <div id="$id-field" class="row form-group field$req_class $label_class $class"$style>
-        <div class="col-md-2 col-sm-2 field-header">
-          <label id="$id-label" for="$id" class="control-label text-right pull-right">$label$req</label>
-        </div>
-        <div class="col-md-8 col-sm-8 field-content $content_class">
-          $insides$hint$warning
-        </div>
+    <div id="$id-field" class="field form-group$req_class $label_class $class"$style>
+        <label>$label$req</label>
+        $insides$hint
     </div>
 EOT
     }
@@ -3504,7 +3458,7 @@ sub _hdlr_app_statusmsg {
         my $link_l
             = $no_link
             ? ''
-            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">';
+            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">';
         my $link_r = $no_link ? '' : '</a>';
         my $obj_type
             = $rebuild eq 'blog'
@@ -3524,10 +3478,10 @@ sub _hdlr_app_statusmsg {
     {
         $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
         $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">}
+            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">}
             if $rebuild eq 'all';
         $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">}
+            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">%%</a>">}
             if $rebuild eq 'index';
     }
     else {
@@ -3539,10 +3493,14 @@ sub _hdlr_app_statusmsg {
     if ( $id && ( $args->{can_close} || ( !exists $args->{can_close} ) ) ) {
         $class .= ' alert-dismissable';
         $close
-            = qq{<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>};
+            = qq{<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>};
+    }
+    my $role = '';
+    if ( $class =~ /\bwarning|\bdanger/ ) {
+        $role = ' role="alert"';
     }
     return $ctx->build(<<"EOT");
-    <div$id class="$class"$style>$close $msg $rebuild</div>
+    <div$id class="$class"$style$role>$close $msg $rebuild</div>
 EOT
 }
 
@@ -3987,9 +3945,19 @@ sub _hdlr_app_page_actions {
                 <ul class="list-unstyled">
         <mt:loop name="page_actions">
             <mt:if name="page">
-                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>><mt:var name="label"></a></li>
+                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
+                        <mtapp:svgicon id="ic_setting" title="\$label">
+                        <a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>>
+                            <mt:var name="label">
+                        </a>
+                    </li>
             <mt:else><mt:if name="link">
-                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open" data-mt-modal-large</mt:if>><mt:var name="label"></a></li>
+                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
+                        <mtapp:svgicon id="ic_setting" title="\$label">
+                        <a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open" data-mt-modal-large</mt:if>>
+                            <mt:var name="label">
+                        </a>
+                    </li>
             </mt:if></mt:if>
         </mt:loop>
                 </ul>
@@ -4169,13 +4137,13 @@ B<Attributes:>
 
 =over 4
 
+=item * id
+
 =item * title
 
+=item * color
+
 =item * size
-
-=item * icon
-
-=item * fill
 
 =back
 
@@ -4185,16 +4153,34 @@ B<Attributes:>
 
 sub _hdlr_app_svg_icon {
     my ( $ctx, $args, $cond ) = @_;
+
+    my $id    = $args->{id};
     my $title = $args->{title};
-    my $size  = $args->{size} || 'width: 28px; height: 28px;';
-    my $icon  = $args->{icon};
-    my $fill  = $args->{fill};
+    my $color = $args->{color};
+    my $size  = $args->{size};
+
+    if ( !defined $id || $id eq '' ) {
+        return $ctx->error( MT->translate('id attribute is required') );
+    }
+
+    my $title_attr = '';
+    if ( defined $title && $title ne '' ) {
+        $title_attr = qq{ title="$title"};
+    }
+    my $color_class_suffix = '';
+    if ( defined $color && $color ne '' ) {
+        $color_class_suffix = "--$color";
+    }
+    my $size_class = '';
+    if ( defined $size && $size ne '' ) {
+        $size_class = " mt-icon--$size";
+    }
 
     my $static_uri = MT->static_path;
 
-    qq!<svg title="${title}" role="img" style="${size} fill: ${fill};">
-  <use xlink:href="${static_uri}images/sprite.svg#mt-static--images--svg--${icon}">
-</svg>!;
+    qq{<svg$title_attr role="img" class="mt-icon${color_class_suffix}${size_class}${size_class}">
+  <use xlink:href="${static_uri}images/sprite.svg#$id">
+</svg>};
 }
 
 package MT::Template::Tags::System;

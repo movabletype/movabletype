@@ -787,6 +787,7 @@ sub core_content_actions {
                 mode  => 'view',
                 class => 'icon-create',
                 label => 'Create Role',
+                icon  => 'ic_add',
                 order => 100,
             }
         },
@@ -794,6 +795,7 @@ sub core_content_actions {
             'grant_role' => {
                 class         => 'icon-create',
                 label         => 'Grant Permission',
+                icon          => 'ic_add',
                 mode          => 'dialog_select_assoc_type',
                 return_args   => 1,
                 permit_action => 'create_any_association',
@@ -810,6 +812,7 @@ sub core_content_actions {
                         lc $app->blog->class_label
                     );
                 },
+                icon => 'ic_add',
                 mode => 'dialog_grant_role',
                 args => sub {
                     if ( $app->blog->is_blog ) {
@@ -834,6 +837,7 @@ sub core_content_actions {
             'reset_log' => {
                 class       => 'icon-action',
                 label       => 'Clear Activity Log',
+                icon        => 'ic_setting',
                 mode        => 'reset_log',
                 order       => 100,
                 confirm_msg => sub {
@@ -2182,7 +2186,7 @@ sub core_menus {
         },
 
         'content_type:boilerplates' => {
-            label      => 'Boilerplates',
+            label      => '_CONTENT_TYPE_BOILERPLATES',
             order      => 300,
             mode       => 'list_ct_boilerplates',
             permission => 'administer',

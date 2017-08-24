@@ -20,13 +20,18 @@
     this.on('apply_filter', function (filter, noFilterId) {
       this.setFilter(filter);
       const refreshCurrentFilter = true
-      this.loadList(refreshCurrentFilter, noFilterId);
+      this.loadList({
+        refreshCurrentFilter: refreshCurrentFilter,
+        noFilterId: noFilterId
+      });
     });
 
     this.on('apply_filter_by_id', function (filterId) {
       this.setFilterById(filterId);
       const refreshCurrentFilter = true
-      this.loadList(refreshCurrentFilter);
+      this.loadList({
+        refreshCurrentFilter: refreshCurrentFilter
+      });
     });
 
     this.on('check_all_rows', function () {
@@ -43,10 +48,12 @@
       this.loadList();
     });
 
-    this.on('move_page', function (page) {
+    this.on('move_page', function (page, moveToPagination) {
       var moved = this.movePage(page);
       if (moved) {
-        this.loadList();
+        this.loadList({
+          moveToPagination: moveToPagination
+        });
       } else {
         this.trigger('refresh_view');
       }
@@ -152,7 +159,14 @@
     }
   };
 
-  ListStore.prototype.loadList = function (refreshCurrentFilter, noFilterId) {
+  ListStore.prototype.loadList = function (args) {
+    if (!args) {
+      args = {};
+    }
+    var refreshCurrentFilter = args.refreshCurrentFilter;
+    var noFilterId           = args.noFilterId;
+    var moveToPagination     = args.moveToPagination;
+
     if (!this.sortOrder) {
       this.toggleSortColumn(this.sortBy);
     }
@@ -185,7 +199,7 @@
         if (refreshCurrentFilter) {
           self.trigger('refresh_current_filter')
         }
-        self.trigger('refresh_view');
+        self.trigger('refresh_view', moveToPagination);
       },
     });
   };

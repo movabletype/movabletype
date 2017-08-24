@@ -43,7 +43,7 @@ function toggleHidden( ids ) {
      id="template_set_not_found"
      class="error"
      can_close="0">
-    <__trans phrase="Cannot find template set. Please apply [_1]theme[_2] to refresh your templates." params="<a href="javascript:void(0);" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_full_url">?__mode=list_theme&amp;blog_id=<mt:var name="blog_id">');">%%</a>">
+    <__trans phrase="Cannot find template set. Please apply [_1]theme[_2] to refresh your templates." params="<a href="javascript:void(0);" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=list_theme&amp;blog_id=<mt:var name="blog_id">');" class="alert-link">%%</a>">
   </mtapp:statusmsg>
 </mt:setvarblock>
 
@@ -91,11 +91,11 @@ function toggleHidden( ids ) {
         label_class="top-label"
         show_label="0"
         show_hint="1"
-        hint="<__trans phrase="Updates current templates while retaining any user-created templates.">"
-        no_grid="1">
+        hint_id="refreshTemplates"
+        hint="<__trans phrase="Updates current templates while retaining any user-created templates.">">
         <div class="field-header">
             <label for="refresh_type_refresh">
-              <input type="radio" name="refresh_type" id="refresh_type_refresh" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" />
+              <input type="radio" name="refresh_type" id="refresh_type_refresh" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" aria-describedby="refreshTemplates" />
               <$mt:var name="refresh_label"$>
             </label>
         </div>
@@ -105,9 +105,9 @@ function toggleHidden( ids ) {
         label="$new_label"
         show_label="0"
         show_hint="1"
+        hint_id="cleanStart"
         hint="$new_hint"
-        label_class="top-label"
-        no_grid="1">
+        label_class="top-label">
 
         <div class="field-header">
             <label for="refresh_type_clean">
@@ -118,7 +118,7 @@ function toggleHidden( ids ) {
     </mtapp:setting>
 
         <div>
-        <input type="checkbox" id="backup" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" />
+        <input type="checkbox" id="backup" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" aria-describedby="cleanStart" />
         <label for="backup"><__trans phrase="Make backups of existing templates first"></label>
         </div>
     </div>

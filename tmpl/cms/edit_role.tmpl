@@ -107,8 +107,8 @@ function init() {
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
-  <h5><__trans phrase="Role Details"></h5>
   <mtapp:settinggroup id="role-details">
+    <legend><__trans phrase="Role Details"></legend>
     <mtapp:setting
        id="name"
        label="<__trans phrase="Role Name">"
@@ -132,8 +132,8 @@ function init() {
   </mt:if>
   </mtapp:settinggroup>
 
-  <h5><__trans phrase="Privileges"></h5>
   <mtapp:settinggroup id="role-privileges">
+    <legend><__trans phrase="Privileges"></legend>
     <mtapp:setting
        id="administration"
        label="<__trans phrase="Administration">">
@@ -223,8 +223,7 @@ function init() {
     <mt:if name="same_perm_loop">
     <mtapp:setting
        id="same_permissions"
-       label="<__trans phrase="Duplicate Roles">"
-       hint="<__trans phrase="These roles have the same privileges as this role">">
+       label="<__trans phrase="Duplicate Roles">">
       <div class="static">
       <mt:loop name="same_perm_loop">
         <a href="<mt:var name="script_url">?__mode=view&amp;_type=role&amp;id=<mt:var name="id" escape="url">">

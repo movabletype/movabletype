@@ -26,7 +26,7 @@
      rebuild="all"
      can_close="0">
 <mt:if name="warning_on_apply">
-    <__trans phrase="Theme [_1] has been applied (<a href="[_2]">[quant,_3,warning,warnings]</a>)." params="<mt:var name="current_theme_name" escape="html" escape="html">%%<mt:var name="script_url">?__mode=list&amp;_type=log&blog_id=<mt:var name="blog_id">%%<mt:var name="warning_on_apply">">
+    <__trans phrase="Theme [_1] has been applied (<a href="[_2]" class="alert-link">[quant,_3,warning,warnings]</a>)." params="<mt:var name="current_theme_name" escape="html" escape="html">%%<mt:var name="script_url">?__mode=list&amp;_type=log&blog_id=<mt:var name="blog_id">%%<mt:var name="warning_on_apply">">
 <mt:else>
     <__trans phrase="Theme [_1] has been applied." params="<mt:var name="current_theme_name" escape="html" escape="html">">
 </mt:if>
@@ -54,12 +54,12 @@
   </script>
 <div class="card-header">
 <div class="row">
-  <div class="col-md-2 align-self-center theme-thumbnail picture small">
+  <div class="col-2 align-self-center theme-thumbnail picture small">
     <img src="<mt:var name="thumbnail_url">" class="img-thumbnail" width="<mt:var name="thumb_w">" height="<mt:var name="thumb_h">" />
   </div>
-  <div class="col-md-7 theme-meta">
+  <div class="col-7 theme-meta">
     <h3 class="theme-title">
-      <a href="#theme-<mt:var name="id">-details" class="theme-detail-link toggle-link icon-left icon-spinner" data-toggle="collapse">
+      <a href="#theme-<mt:var name="id" escape="html">-details" class="theme-detail-link toggle-link icon-left icon-spinner" data-toggle="collapse" aria-expanded="false" aria-controls="theme-<mt:var name="id" escape="html">">
         <mt:var name="name" escape="html">
       <mt:if name="theme_version">
         <span class="theme-version"><mt:var name="theme_version" escape="html"></span>
@@ -90,7 +90,7 @@
     </mt:if>
   </mt:unless>
   </div>
-  <div class="col-md-3 text-right">
+  <div class="col-3 text-right">
     <mt:unless name="current">
       <mt:if name="errors">
       <span class="alert-error icon-left icon-error"><__trans phrase="Failed"></span>

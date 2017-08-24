@@ -197,7 +197,7 @@
 
 <list-filter-header>
   <div class="row">
-    <div class="col-md-11">
+    <div class="col-11">
       <ul class="list-inline">
         <li class="list-inline-item">
           { trans('Filter:') }
@@ -223,11 +223,13 @@
         </li>
       </ul>
     </div>
-    <div class="col-md-1">
+    <div class="col-1">
       <button id="toggle-filter-detail"
         class="btn btn-default dropdown-toggle float-right"
         data-toggle="collapse"
-        href="#list-filter-collapse"
+        data-target="#list-filter-collapse"
+        aria-expanded="false"
+        aria-controls="list-filter-collapse"
       ></button>
     </div>
   </div>
@@ -247,7 +249,7 @@
 
 <list-filter-detail>
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
       <ul class="list-inline">
         <li class="list-inline-item">
           <div class="dropdown">
@@ -271,7 +273,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
       <ul class="list-group">
         <li data-is="list-filter-item"
           each={ item, index in listFilterTop.currentFilter.items }
@@ -283,7 +285,7 @@
     </div>
   </div>
   <div class="row">
-    <div data-is="list-filter-buttons" class="col-md-12"></div>
+    <div data-is="list-filter-buttons" class="col-12"></div>
   </div>
 
   <script>
@@ -518,6 +520,9 @@
                   class="icon-mini-left addnew create-new apply-link"
                   onclick={ createNewFilter }
                 >
+                  <svg title={ trans( 'Add' ) } role="img" class="mt-icon">
+                    <use xlink:href={ StaticURI + 'images/sprite.svg#ic_add' } />
+                  </svg>
                   { trans( 'Create New' ) }
                 </a>
               </li>

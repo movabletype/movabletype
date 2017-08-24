@@ -35,27 +35,28 @@
 <mt:setvarblock name="page_content">
 <mtapp:form id="cfg_entry" name="cfg_entry" mode="save" object_type="$o">
   <input type="hidden" name="cfg_screen" value="cfg_entry" />
-  <h5><__trans phrase="Publishing Defaults"></h5>
   <mtapp:settinggroup id="display-settings">
-    <mtapp:setting
-       id="list_on_index"
-       label="<__trans phrase="Listing Default">"
-       hint="<__trans phrase="Select the number of days of entries or the exact number of entries you would like displayed on your blog.">"
-       help_page="blog_settings_general"
-       help_section="entries_to_display"
-       class="form-inline">
-      <input type="text" name="list_on_index" id="list_on_index" class="form-control text num" value="<mt:var name="list_on_index" escape="html">" />
-      <select name="days_or_posts" id="days_or_posts" class="form-control">
-        <option value="days"<mt:if name="days"> selected="selected"</mt:if>><__trans phrase="Days"></option>
-        <option value="posts"<mt:if name="posts"> selected="selected"</mt:if>><__trans phrase="Posts"></option>
-      </select>
-      <div id="list_on_index-field-msg-block" style="display: none;"></div>
-    </mtapp:setting>
+    <legend><__trans phrase="Publishing Defaults"></legend>
+
+    <div class="row">
+      <div class="form-group col">
+        <label><__trans phrase="Listing Default"></label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-inline col">
+        <input type="text" name="list_on_index" id="list_on_index" class="form-control text num" value="<mt:var name="list_on_index" escape="html">" />
+        <select name="days_or_posts" id="days_or_posts" class="form-control">
+          <option value="days"<mt:if name="days"> selected="selected"</mt:if>><__trans phrase="Days"></option>
+          <option value="posts"<mt:if name="posts"> selected="selected"</mt:if>><__trans phrase="Posts"></option>
+        </select>
+        <div id="list_on_index-field-msg-block" style="display: none;"></div>
+        </div>
+    </div>
 
     <mtapp:setting
        id="sort_order_posts"
        label="<__trans phrase="Order">"
-       hint="<__trans phrase="Select whether you want your entries displayed in ascending (oldest at top) or descending (newest at top) order.">"
        help_page="blog_settings_general"
        help_section="entry_order">
       <select name="sort_order_posts" id="sort_order_posts" class="form-control">
@@ -67,7 +68,6 @@
     <mtapp:setting
        id="words_in_excerpt"
        label="<__trans phrase="Excerpt Length">"
-       hint="<__trans phrase="Enter the number of words that should appear in an auto-generated excerpt.">"
        help_page="blog_settings_general"
        help_section="excerpt_length">
       <input type="text" name="words_in_excerpt" id="words_in_excerpt" class="form-control text num" value="<mt:var name="words_in_excerpt" escape="html">" />
@@ -76,7 +76,6 @@
     <mtapp:setting
        id="date_language"
        label="<__trans phrase="Date Language">"
-       hint="<__trans phrase="Select the language in which you would like dates on your blog displayed.">"
        help_page="blog_settings_general"
        help_section="date_language">
       <select name="date_language" id="date_language" class="form-control">
@@ -104,20 +103,18 @@
     <mtapp:setting
        id="basename_limit"
        label="<__trans phrase="Basename Length">"
-       hint="<__trans phrase="Specifies the default length of an auto-generated basename. The range for this setting is 15 to 250.">"
        help_page="blog_settings_entry_defaults"
        help_section="basename_length">
       <input type="text" name="basename_limit" id="basename_limit" class="form-control text num" maxlength="3" value="<mt:var name="basename_limit" escape="html">" />
     </mtapp:setting>
   </mtapp:settinggroup>
 
-  <h5><__trans phrase="Compose Defaults"></h5>
   <mtapp:settinggroup id="entry-settings">
+    <legend><__trans phrase="Compose Defaults"></legend>
 
     <mtapp:setting
        id="status_default"
-       label="<__trans phrase="Status">"
-       hint="<__trans phrase="Specifies the default Post Status when creating a new entry.">">
+       label="<__trans phrase="Status">">
       <select name="status_default" id="status_default" class="form-control">
         <option value="1"<mt:if name="STATUS_DEFAULT_1"> selected="selected"</mt:if>><__trans phrase="Unpublished"></option>
         <option value="2"<mt:if name="STATUS_DEFAULT_2"> selected="selected"</mt:if>><__trans phrase="Published"></option>
@@ -141,20 +138,21 @@
        id="allow_comments_default"
        label="<__trans phrase="Comments">"
        help_page="blog_settings_entry_defaults"
-       help_section="accept_comments"
-       hint="<__trans phrase="Specifies the default Accept Comments setting when creating a new entry.">">
-      <input type="checkbox" name="allow_comments_default" id="allow_comments_default" value="1"<mt:if name="ALLOW_COMMENTS_DEFAULT_1"> checked="checked"</mt:if> /> <label for="allow_comments_default"><__trans phrase="Accept Comments"></label>
-    <mt:unless name="system_allow_comments">
-      <p>
-        <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
-        <span class="text-warning alert-warning-inline">
-      <mt:if name="is_blog">
-          <__trans phrase="Note: This option is currently ignored since comments are disabled either child site or system-wide.">
-      <mt:else>
-          <__trans phrase="Note: This option is currently ignored since comments are disabled either site or system-wide.">
-      </mt:if>
-        </span>
-      </p>
+       help_section="accept_comments">
+      <div>
+        <input type="checkbox" name="allow_comments_default" id="allow_comments_default" value="1"<mt:if name="ALLOW_COMMENTS_DEFAULT_1"> checked="checked"</mt:if> /> <label for="allow_comments_default"><__trans phrase="Accept Comments"></label>
+    <m  t:unless name="system_allow_comments">
+        <p>
+          <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
+          <span class="text-warning alert-warning-inline">
+        <mt:if name="is_blog">
+            <__trans phrase="Note: This option is currently ignored since comments are disabled either child site or system-wide.">
+        <mt:else>
+            <__trans phrase="Note: This option is currently ignored since comments are disabled either site or system-wide.">
+        </mt:if>
+          </span>
+        </p>
+      </div>
     </mt:unless>
     </mtapp:setting>
 
@@ -162,28 +160,28 @@
        id="allow_pings_default"
        label="<__trans phrase="TrackBacks">"
        help_page="blog_settings_entry_defaults"
-       help_section="allow_trackbacks"
-       hint="<__trans phrase="Specifies the default Accept TrackBacks setting when creating a new entry.">">
-      <input type="checkbox" value="1" name="allow_pings_default" id="allow_pings_default"<mt:if name="allow_pings_default"> checked="checked"</mt:if> /> <label for="allow_pings_default"><__trans phrase="Accept TrackBacks"></label>
-    <mt:unless name="system_allow_pings">
-      <p>
-        <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
-        <span class="text-warning alert-warning-inline">
-      <mt:if name="is_blog">
-          <__trans phrase="Note: This option is currently ignored since TrackBacks are disabled either child site or system-wide.">
-      <mt:else>
-          <__trans phrase="Note: This option is currently ignored since TrackBacks are disabled either site or system-wide.">
-      </mt:if>
-        </span>
-      </p>
+       help_section="allow_trackbacks">
+      <div>
+        <input type="checkbox" value="1" name="allow_pings_default" id="allow_pings_default"<mt:if name="allow_pings_default"> checked="checked"</mt:if> /> <label for="allow_pings_default"><__trans phrase="Accept TrackBacks"></label>
+    <m  t:unless name="system_allow_pings">
+        <p>
+          <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
+          <span class="text-warning alert-warning-inline">
+        <mt:if name="is_blog">
+            <__trans phrase="Note: This option is currently ignored since TrackBacks are disabled either child site or system-wide.">
+        <mt:else>
+            <__trans phrase="Note: This option is currently ignored since TrackBacks are disabled either site or system-wide.">
+        </mt:if>
+          </span>
+        </p>
+      </div>
     </mt:unless>
     </mtapp:setting>
 
     <mt:setvarblock name="entry_fields" id="entry_fields"></mt:setvarblock>
     <mtapp:setting
        id="entry_prefs"
-       label="<__trans phrase="Entry Fields">"
-       hint="<__trans phrase="_USAGE_ENTRYPREFS">">
+       label="<__trans phrase="Entry Fields">">
       <ul class="list-inline fixed-width multiple-selection">
         <li class="list-inline-item">
           <input type="checkbox" name="entry_custom_prefs" id="entry-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" />
@@ -240,8 +238,7 @@
   <mt:setvarblock name="page_fields" id="page_fields"></mt:setvarblock>
   <mtapp:setting
      id="entry_prefs"
-     label="<__trans phrase="Page Fields">"
-     hint="<__trans phrase="_USAGE_ENTRYPREFS">">
+     label="<__trans phrase="Page Fields">">
     <ul class="list-inline fixed-width multiple-selection">
       <li class="list-inline-item">
         <input type="checkbox" name="page_custom_prefs" id="page-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" />
@@ -290,21 +287,23 @@
     </mtapp:setting>
   </mtapp:settinggroup>
 
-  <h5><__trans phrase="WYSIWYG Editor Setting"></h5>
   <mtapp:settinggroup id="wysiwyg-editor-setting">
+    <legend><__trans phrase="WYSIWYG Editor Setting"></legend>
     <mtapp:setting
        id="content_css"
        label="<__trans phrase="Content CSS">"
        hint="<__trans phrase="Content CSS will be applied when WYSIWYG editor does support. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css">"
+       hint_id="contentCss"
        show_hint="1">
-       <input type="text" name="content_css" class="form-control" value="<mt:var name="content_css" escape="html">" placeholder="http://www.example.com/path/to/cssfile.css" />
+       <input type="text" name="content_css" class="form-control" value="<mt:var name="content_css" escape="html">" placeholder="http://www.example.com/path/to/cssfile.css" aria-describedby="contentCss" />
     </mtapp:setting>
   </mtapp:settinggroup>
 
-  <h5><__trans phrase="Punctuation Replacement Setting"></h5>
   <mtapp:settinggroup id="smart-replace-setting">
+    <legend><__trans phrase="Punctuation Replacement Setting"></legend>
 
-    <p class="text-muted hint"><__trans phrase="Replace UTF-8 characters frequently used by word processors with their more common web equivalents."></p>
+    <small class="form-text text-muted hint"><__trans phrase="Replace UTF-8 characters frequently used by word processors with their more common web equivalents."></small>
+
     <mtapp:setting
        id="nwc_smart_replace"
        label="<__trans phrase="Punctuation Replacement">">
@@ -376,23 +375,24 @@
   </mt:unless>
   </mtapp:settinggroup>
 
-  <h5><__trans phrase="Image default insertion options"></h5>
   <mtapp:settinggroup id="default-insert-options">
+    <legend><__trans phrase="Image default insertion options"></legend>
 
     <mtapp:setting
        id="image_default_thumb"
        label="<__trans phrase="Use thumbnail">"
-       class="form-inline"
      >
-      <label class="float-left">
-        <input type="checkbox" name="image_default_thumb" id="image_default_thumb" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
-        <__trans phrase="Use thumbnail">
-        (<__trans phrase="width:">
-        <input type="text" name="image_default_width" id="image_default_width" class="form-control text num" value="<mt:var name="thumb_width" escape="html">"/>
-        <__trans phrase="pixels">
-        )
-      </label>
-      <div id="image_default_thumb-field-msg-block" style="display: none;"></div>
+      <div class="form-inline">
+        <label class="float-left">
+          <input type="checkbox" name="image_default_thumb" id="image_default_thumb" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
+          <__trans phrase="Use thumbnail">
+          (<__trans phrase="width:">
+          <input type="text" name="image_default_width" id="image_default_width" class="form-control text num" value="<mt:var name="thumb_width" escape="html">"/>
+          <__trans phrase="pixels">
+          )
+        </label>
+        <div id="image_default_thumb-field-msg-block" style="display: none;"></div>
+      </div>
     </mtapp:setting>
 
     <mtapp:setting
@@ -421,8 +421,10 @@
     <mtapp:setting
        id="image_default_popup"
        label="<__trans phrase="Link to popup window">">
-      <input type="checkbox" name="image_default_popup" id="image_default_popup" value="1" <mt:if name="popup">checked="checked" </mt:if>/>
-      <label for="image_default_popup"><__trans phrase="Link image to full-size version in a popup window."></label>
+      <div>
+        <input type="checkbox" name="image_default_popup" id="image_default_popup" value="1" <mt:if name="popup">checked="checked" </mt:if>/>
+        <label for="image_default_popup"><__trans phrase="Link image to full-size version in a popup window."></label>
+      </div>
     </mtapp:setting>
   </mtapp:settinggroup>
 

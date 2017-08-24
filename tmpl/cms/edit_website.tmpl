@@ -37,10 +37,11 @@
      id="website_theme"
      label="<__trans phrase="Site Theme">"
      hint="<__trans phrase="Select the theme you wish to use for this site.">"
+     hint_id="siteTheme"
      show_hint="1"
      help_page="blog_settings_general"
      help_section="website_theme">
-    <select name="website_theme" class="form-control">
+    <select name="website_theme" class="form-control" aria-describedby="siteTheme">
     <mt:loop name="theme_loop">
       <option value="<mt:var name="value" escape="html">"<mt:if name="t_selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
     </mt:loop>
@@ -50,11 +51,12 @@
      id="name"
      label="<__trans phrase="Site Name">"
      hint="<__trans phrase="Name your site. The site name can be changed at any time.">"
+     hint_id="siteName"
      required="1"
      show_hint="1"
      help_page="blog_settings_general"
      help_section="website_name">
-    <input type="text" name="name" id="name" class="form-control text required" value="<mt:var name="name" escape="html">" />
+    <input type="text" name="name" id="name" class="form-control text required" value="<mt:var name="name" escape="html">" aria-describedby="siteName" />
   </mtapp:setting>
   <mtapp:setting
      id="website_url"
@@ -62,9 +64,10 @@
      hint="<__trans phrase="Enter the URL of your site. Exclude the filename (i.e. index.html). Example: http://www.example.com/">"
      required="1"
      show_hint="1"
+     hint_id="siteUrl"
      help_page="blog_settings_publishing"
      help_section="website_url">
-    <input type="text" name="site_url" id="site_url" class="form-control text required" value="<mt:var name="site_url"  escape="html">" />
+    <input type="text" name="site_url" id="site_url" class="form-control text required" value="<mt:var name="site_url"  escape="html">" aria-describedby="siteName" />
   </mtapp:setting>
   <mtapp:setting
      id="website_path"
@@ -72,18 +75,20 @@
      hint="<__trans phrase="Enter the path where your main index file will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/ or C:\www\public_html">"
      required="1"
      show_hint="1"
+     hint_id="siteRoot"
      help_page="blog_settings_publishing"
      help_section="website_root">
-    <input type="text" name="site_path" id="site_path" class="form-control text required<mt:if name="sitepath_limited"> limited_path</mt:if>" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" />
+    <input type="text" name="site_path" id="site_path" class="form-control text required<mt:if name="sitepath_limited"> limited_path</mt:if>" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" aria-describedby="siteRoot" />
   </mtapp:setting>
   <mtapp:setting
      id="server_offset"
      label="<__trans phrase="Time Zone">"
      hint="<__trans phrase="Select your timezone from the pulldown menu.">"
+     hint_id="timeZone"
      show_hint="1"
      help_page="blog_settings_general"
      help_section="blog_timezone">
-    <select name="server_offset" id="server_offset" class="form-control">
+    <select name="server_offset" id="server_offset" class="form-control" aria-describedby="timeZone">
       <option value=""><__trans phrase="Time zone not selected"></option>
       <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
       <option value="12"<mt:if name="SERVER_OFFSET_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
@@ -121,9 +126,9 @@
      id="blog_language"
      label="<__trans phrase="Language">"
      hint="<__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.">"
-     show_hint="1"
-     show_warning="1">
-    <select name="blog_language" id="blog_language" class="form-control se">
+     hint_id="blogLanguage"
+     show_hint="1">
+    <select name="blog_language" id="blog_language" class="form-control se" aria-describedby="blogLanguage">
     <mt:loop name="languages">
       <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
     </mt:loop>

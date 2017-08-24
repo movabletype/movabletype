@@ -734,7 +734,7 @@ sub send_http_header {
             if $type =~ m!^text/|\+xml$|/json$!
             && $type !~ /\bcharset\b/;
     }
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         if ( $app->{response_message} ) {
             $app->{apache}->status_line(
                 ( $app->response_code || 200 )
@@ -771,7 +771,7 @@ sub send_http_header {
 
 sub print {
     my $app = shift;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         $app->{apache}->print(@_);
     }
     else {
@@ -921,7 +921,7 @@ sub init_request {
         cookies _errstr request_method requires_login __host );
     delete $app->{$_} foreach @req_vars;
     $app->user(undef);
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         require Apache::Request;
         $app->{apache} = $param{ApacheObject} || Apache->request;
         $app->{query} = Apache::Request->instance( $app->{apache},
@@ -969,7 +969,7 @@ sub init_query {
     # CGI.pm has this terrible flaw in that if a POST is in effect,
     # it totally ignores any query parameters.
     if ( $app->request_method eq 'POST' ) {
-        if ( !$ENV{MOD_PERL} ) {
+        if ( !MT::Util::is_mod_perl1() ) {
             my $query_string = $ENV{'QUERY_STRING'}
                 if defined $ENV{'QUERY_STRING'};
             $query_string ||= $ENV{'REDIRECT_QUERY_STRING'}
@@ -2679,7 +2679,7 @@ sub clear_login_cookie {
 sub request_content {
     my $app = shift;
     unless ( exists $app->{request_content} ) {
-        if ( $ENV{MOD_PERL} ) {
+        if ( MT::Util::is_mod_perl1() ) {
             ## Read from $app->{apache}
             my $r   = $app->{apache};
             my $len = $app->get_header('Content-length');
@@ -2708,7 +2708,7 @@ sub request_content {
 sub get_header {
     my $app = shift;
     my ($key) = @_;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         return $app->{apache}->header_in($key);
     }
     else {
@@ -2720,7 +2720,7 @@ sub get_header {
 sub set_header {
     my $app = shift;
     my ( $key, $val ) = @_;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         $app->{apache}->header_out( $key, $val );
     }
     else {
@@ -2743,7 +2743,7 @@ sub request_method {
         $app->{request_method} = shift;
     }
     elsif ( !exists $app->{request_method} ) {
-        if ( $ENV{MOD_PERL} ) {
+        if ( MT::Util::is_mod_perl1() ) {
             $app->{request_method} = Apache->request->method;
         }
         else {
@@ -2759,7 +2759,7 @@ sub upload_info {
     my $q            = $app->param;
 
     my ( $fh, $info, $no_upload );
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         if ( my $up = $q->upload($param_name) ) {
             $fh        = $up->fh;
             $info      = $up->info;
@@ -2805,7 +2805,7 @@ sub bake_cookie {
     if ( !$param{-domain} && $cfg->CookieDomain ) {
         $param{-domain} = $cfg->CookieDomain;
     }
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         require Apache::Cookie;
         my $cookie = Apache::Cookie->new( $app->{apache}, %param );
         if ( $param{-expires} && ( $cookie->expires =~ m/%/ ) ) {
@@ -2827,7 +2827,7 @@ sub bake_cookie {
 sub cookies {
     my $app = shift;
     unless ( $app->{cookies} ) {
-        my $class = $ENV{MOD_PERL} ? 'Apache::Cookie' : 'CGI::Cookie';
+        my $class = MT::Util::is_mod_perl1() ? 'Apache::Cookie' : 'CGI::Cookie';
         eval "use $class;";
         $app->{cookies} = $class->fetch;
     }
@@ -3095,7 +3095,7 @@ sub run {
         $app->validate_request_params($meth_info) or die;
 
         require MT::Auth;
-        if ( $ENV{MOD_PERL} ) {
+        if ( MT::Util::is_mod_perl1() ) {
             unless ( $app->{no_read_body} ) {
                 my $status = $q->parse;
                 unless ( $status == Apache::Constants::OK() ) {
@@ -3263,7 +3263,7 @@ sub run {
                     . '">' );
         }
         else {
-            if ( $ENV{MOD_PERL} ) {
+            if ( MT::Util::is_mod_perl1() ) {
                 $app->{apache}->header_out( Location => $url );
                 $app->response_code( Apache::Constants::REDIRECT() );
                 $app->send_http_header;
@@ -3296,7 +3296,7 @@ sub run {
                         my $debug_panel_header
                             = $app->translate('Warnings and Log Messages');
                         my $panel = <<"__HTML__";
-                          <div class="col-md-12">
+                          <div class="col-12">
                             <div class="card debug-panel" style="margin: 0 -15px;">
                               <div class="card-header text-white" style="background: #EF7678;">
                                 <h4 class="card-title">$debug_panel_header</h4>
@@ -3881,7 +3881,7 @@ sub delete_param {
     my ($key) = @_;
     my $q     = $app->{query};
     return unless $q;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         my $tab = $q->parms;
         $tab->unset($key);
     }
@@ -3906,7 +3906,7 @@ sub param_hash {
 
 sub query_string {
     my $app = shift;
-    $ENV{MOD_PERL} ? $app->{apache}->args : $app->{query}->query_string;
+    MT::Util::is_mod_perl1() ? $app->{apache}->args : $app->{query}->query_string;
 }
 
 sub return_uri {
@@ -4024,7 +4024,7 @@ sub app_path {
     return $app->{__path} if exists $app->{__path};
 
     my $path;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         $path = $app->{apache}->uri;
         $path =~ s!/[^/]*$!!;
     }
@@ -4060,7 +4060,7 @@ sub envelope {''}
 sub script {
     my $app = shift;
     return $app->{__script} if exists $app->{__script};
-    my $script = $ENV{MOD_PERL} ? $app->{apache}->uri : $ENV{SCRIPT_NAME};
+    my $script = MT::Util::is_mod_perl1() ? $app->{apache}->uri : $ENV{SCRIPT_NAME};
     if ( !$script ) {
         require File::Basename;
         import File::Basename qw(basename);
@@ -4112,7 +4112,7 @@ sub path_info {
     my $app = shift;
     return $app->{__path_info} if exists $app->{__path_info};
     my $path_info;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         ## mod_perl often leaves part of the script name (Location)
         ## in the path info, for some reason. This should remove it.
         $path_info = $app->{apache}->path_info;
@@ -4134,7 +4134,7 @@ sub path_info {
 
 sub is_secure {
     my $app = shift;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         return $app->{apache}->subprocess_env('https');
     }
     else {
@@ -4308,7 +4308,7 @@ sub remote_ip {
 
     my $trusted = $app->config->TransparentProxyIPs || 0;
     my $remote_ip = (
-          $ENV{MOD_PERL}
+          MT::Util::is_mod_perl1()
         ? $app->{apache}->connection->remote_ip
         : $ENV{REMOTE_ADDR}
     );
@@ -4356,7 +4356,7 @@ sub remote_ip {
 sub document_root {
     my $app = shift;
     my $cwd = '';
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         ## If mod_perl, just use the document root.
         $cwd = $app->{apache}->document_root;
     }
@@ -4394,7 +4394,7 @@ sub DESTROY {
 sub set_no_cache {
     my $app = shift;
     ## Add the Pragma: no-cache header.
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         $app->{apache}->no_cache(1);
     }
     else {

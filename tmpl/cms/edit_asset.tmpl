@@ -214,7 +214,7 @@ jQuery(window).load( init );
       </mtapp:statusmsg>
     <mt:else>
       <mt:if name="has_thumbnail">
-      <div class="col-md-4 asset-preview-thumb picture small">
+      <div class="col-4 asset-preview-thumb picture small">
         <div class="thumbnail">
           <img src="<mt:var name="thumbnail_url" escape="html">?ts=<mt:var name="modified_on" escape="url">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
         </div>
@@ -227,12 +227,12 @@ jQuery(window).load( init );
           <__trans phrase="Error creating thumbnail file.">
         </mtapp:statusmsg>
       <mt:else>
-      <div class="col-md-4 asset-type-icon picture small">
+      <div class="col-4 asset-type-icon picture small">
         <img src="<mt:var name="static_uri">images/asset/<mt:var name="asset_type">-45.png" width="45" height="45" />
       </div>
       </mt:if>
     </mt:if>
-    <div class="col-md-8">
+    <div class="col-8">
       <div class="asset-metadata">
         <ul class="list-unstyled metadata">
           <li class="metadata-item asset-name">

@@ -3,7 +3,6 @@
   <mtapp:setting
      id="create_thumbnail-<mt:var name="id">"
      label="<__trans phrase="Use thumbnail">"
-     no_header="1"
      help_page="file_upload"
      help_section="creating_thumbnails"
      class="form-inline">
@@ -20,8 +19,7 @@
 <mtapp:setting
    id="image_alignment-<mt:var name="id">"
    label="<__trans phrase="Alignment">"
-   label_class="top-header"
-   no_grid="1">
+   label_class="top-header">
   <ul id="alignment-<mt:var name="id">">
     <li style="display: inline-block">
       <input type="radio" name="align-<mt:var name="id">" id="align-none-<mt:var name="id">" class="rb" value="none" <mt:if name="align_none">checked="checked" </mt:if>/>
@@ -43,8 +41,7 @@
 </mtapp:setting>
 <mtapp:setting
    id="link_to_popup-<mt:var name="id">"
-   label="<__trans phrase="Link image to full-size version in a popup window.">"
-   no_header="1">
+   label="<__trans phrase="Link image to full-size version in a popup window.">">
   <input type="checkbox" name="popup-<mt:var name="id">" id="link_to_popup-<mt:var name="id">" value="1" <mt:if name="popup">checked="checked" </mt:if>/>
   <label for="link_to_popup-<mt:var name="id">"><__trans phrase="Link image to full-size version in a popup window."></label>
 </mtapp:setting>

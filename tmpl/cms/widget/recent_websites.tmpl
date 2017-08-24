@@ -3,10 +3,10 @@
     <div id="favorite-website-container" class="blog-container">
     <mt:loop name="website_object_loop">
         <div id="website-<mt:var name="website_id">" class="row blog-content<mt:if name="__odd__"> odd</mt:if>">
-            <div id="website-<mt:var name="website_id">-theme-thumbnail" class="col-md-2 thumbnail picture small">
+            <div id="website-<mt:var name="website_id">-theme-thumbnail" class="col-2 thumbnail picture small">
                 <img alt="" src="<mt:var name="website_theme_thumb">" />
             </div>
-            <div id="website-<mt:var name="website_id">-meta" class="col-md-8 blog-meta">
+            <div id="website-<mt:var name="website_id">-meta" class="col-8 blog-meta">
                 <h4 id="website-<mt:var name="website_id">-name" class="blog-name">
                   <a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="website_id">">
                     <mt:var name="website_name" escape="html">
@@ -80,7 +80,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-md-2">
+            <div class="col-2">
               <mt:if name="can_create_new_entry">
               <a class="button btn btn-default float-right" href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;blog_id=<mt:var name="website_id">">
                 <__trans phrase="New Entry">
@@ -107,7 +107,7 @@
       id="zero-state"
       class="info zero-state"
       can_close="0">
-      <__trans phrase="No site could be found. [_1]" params="<mt:if name="can_create_website"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0"><__trans phrase="Create a new"></a></mt:if>">
+      <__trans phrase="No site could be found. [_1]" params="<mt:if name="can_create_website"><a class="alert-link" href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0"><__trans phrase="Create a new"></a></mt:if>">
     </mtapp:statusmsg>
   </mt:if>
 </mtapp:widget>

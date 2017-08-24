@@ -236,15 +236,14 @@ function showPasswordField() {
   <input type="hidden" id="status" name="status" value="1" />
 </mt:if>
 
-  <h5><__trans phrase="Profile"></h5>
   <fieldset id="author-profile-settings">
+    <legend><__trans phrase="Profile"></legend>
   <mt:if name="editing_other_profile">
 
     <mtapp:setting
        id="status"
        label="<__trans phrase="_USER_STATUS_CAPTION">"
-       label_class="left-label <mt:var name="user_status">"
-       hint="<__trans phrase="Status of user in the system. Disabling a user prevents that person from using the system but preserves their content and history.">">
+       label_class="left-label <mt:var name="user_status">">
       <select name="status" id="status" class="form-control half-width" onchange="toggleDisabled(this.value);">
         <option <mt:if name="status_enabled">selected="selected"</mt:if> value="1">
           <__trans phrase="_USER_ENABLED">
@@ -264,8 +263,7 @@ function showPasswordField() {
     <mtapp:setting
        id="name"
        required="1"
-       label="<__trans phrase="Username">"
-       hint="<__trans phrase="The username used to login.">">
+       label="<__trans phrase="Username">">
       <input type="text" name="name" id="name" class="form-control text" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> />
       <mt:unless name="auth_mode_mt">
         <mt:unless name="new_user_external_auth">
@@ -290,8 +288,9 @@ function showPasswordField() {
        required="1"
        label="<__trans phrase="Display Name">"
        show_hint="1"
+       hint_id="displayName"
        hint="<__trans phrase="The name displayed when content from this user is published.">">
-      <input type="text" name="nickname" id="nickname" class="form-control text" value="<mt:var name="nickname" escape="html">" <mt:if name="nickname_readonly">disabled="disabled"</mt:if> />
+      <input type="text" name="nickname" id="nickname" class="form-control text" value="<mt:var name="nickname" escape="html">" <mt:if name="nickname_readonly">disabled="disabled"</mt:if> aria-describedby="displayName" />
       <mt:if name="nickname_readonly">
         <input name="nickname" type="hidden" value="<mt:var name="nickname" escape="html">" />
       </mt:if>
@@ -300,8 +299,7 @@ function showPasswordField() {
     <mtapp:setting
        id="email"
        required="$auth_mode_mt"
-       label="<__trans phrase="Email Address">"
-       hint="<__trans phrase="The email address associated with this user.">">
+       label="<__trans phrase="Email Address">">
        <input type="text" name="email" id="email" class="form-control text" value="<mt:var name="email" escape="html">" <mt:if name="email_readonly">disabled="disabled"</mt:if> />
        <mt:if name="email_readonly">
         <input name="email" type="hidden" value="<mt:var name="email" escape="html">" />
@@ -312,27 +310,29 @@ function showPasswordField() {
        id="url"
        label="<__trans phrase="Website URL">"
        show_hint="1"
+       hint_id="websiteUrl"
        hint="<__trans phrase="This User's website (e.g. http://www.movabletype.com/).  If the Website URL and Display Name fields are both populated, Movable Type will by default publish entries and comments with bylines linked to this URL.">">
-      <input type="text" name="url" id="url" class="form-control text" value="<mt:var name="url" escape="html">" />
+      <input type="text" name="url" id="url" class="form-control text" value="<mt:var name="url" escape="html">" aria-describedby="websiteUrl" />
     </mtapp:setting>
 
     <mt:if name="id">
       <mt:if name="can_use_userpic">
     <mtapp:setting
        id="userpic_asset_id"
-       label="<__trans phrase="Userpic">"
-       hint="<__trans phrase="The image associated with this user.">">
+       label="<__trans phrase="Userpic">">
       <input type="hidden" name="userpic_asset_id" id="userpic_asset_id" value="<mt:var name="userpic_asset_id" default="0" escape="html">" />
       <div id="userpic-preview"<mt:unless name="userpic"> style="display: none;"</mt:unless>>
         <span id="userpic-preview-userpic"><mt:var name="userpic"></span>
       </div>
-      <a href="<mt:var name="script_url">?__mode=dialog_list_asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;filter=userpic&amp;filter_val=<mt:var name="id" escape="url">&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
-        <__trans phrase="Select Userpic">
-      </a>
-      <span id="remove-userpic"<mt:unless name="userpic"> style="display: none;"</mt:unless>>
-        <a href="javascript:void(0)" onclick="removeUserpic()"><__trans phrase="Remove Userpic"></a>
-        <span id="ajax-message"></span>
-      </span>
+      <div>
+        <a href="<mt:var name="script_url">?__mode=dialog_list_asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;filter=userpic&amp;filter_val=<mt:var name="id" escape="url">&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+          <__trans phrase="Select Userpic">
+        </a>
+        <span id="remove-userpic"<mt:unless name="userpic"> style="display: none;"</mt:unless>>
+          <a href="javascript:void(0)" onclick="removeUserpic()"><__trans phrase="Remove Userpic"></a>
+          <span id="ajax-message"></span>
+        </span>
+      </div>
     </mtapp:setting>
       </mt:if>
     </mt:if>
@@ -342,7 +342,9 @@ function showPasswordField() {
     <mtapp:setting
        id="show_password"
        label="<__trans phrase="Password">">
-      <a href="#" id="change-password-link" class="toggle-link" onclick="showPasswordField();"><__trans phrase="Change Password"></a>
+      <div>
+        <button id="change-password-link" class="btn btn-link toggle-link" onclick="showPasswordField();"><__trans phrase="Change Password"></button>
+      </div>
     </mtapp:setting>
       </mt:unless>
     <div id="password-fields"<mt:unless name="new_object"> style="display: none;"</mt:unless>>
@@ -350,8 +352,7 @@ function showPasswordField() {
         <mt:if name="is_me">
       <mtapp:setting
          id="old_pass"
-         label="<__trans phrase="Current Password">"
-         hint="<__trans phrase="Existing password required to create a new password.">">
+         label="<__trans phrase="Current Password">">
         <input type="password" name="old_pass" id="old_pass" class="form-control text password" value="" />
       </mtapp:setting>
         </mt:if>
@@ -372,15 +373,15 @@ function showPasswordField() {
          label="$password_prompt"
          required="$password_required"
          hint="$password_hint"
+         hint_id="passwordHelp"
          show_hint="1">
-        <input type="password" name="pass" id="pass" class="form-control text password" value="" />
+        <input type="password" name="pass" id="pass" class="form-control text password" value=""  aria-describedby="passwordHelp" />
       </mtapp:setting>
 
       <mtapp:setting
          id="pass_verify"
          label="<__trans phrase="Confirm Password">"
-         required="$password_required"
-         hint="<__trans phrase="Repeat the password for confirmation.">">
+         required="$password_required">
         <input type="password" name="pass_verify" id="pass_verify" class="form-control text password" value="" />
       </mtapp:setting>
 
@@ -389,8 +390,7 @@ function showPasswordField() {
       <mtapp:setting
          id="hint"
          required="0"
-         label="<__trans phrase="Password recovery word/phrase">"
-         hint="<__trans phrase="This word or phrase is not used in the password recovery.">">
+         label="<__trans phrase="Password recovery word/phrase">">
         <input name="hint" id="hint" value="<mt:var name="hint" escape="html">" />
       </mtapp:setting>
         </mt:if>
@@ -399,14 +399,15 @@ function showPasswordField() {
     </mt:if>
   </fieldset>
 
-  <h5><__trans phrase="Preferences"></h5>
   <fieldset id="author-preferences-settings">
+    <legend><__trans phrase="Preferences"></legend>
     <mtapp:setting
        id="preferred_language"
        label="<__trans phrase="Language">"
        show_hint="1"
+       hint_id="langaugeHelp"
        hint="<__trans phrase="Display language for the Movable Type interface.">">
-      <select name="preferred_language" id="preferred_language" class="form-control">
+      <select name="preferred_language" id="preferred_language" class="form-control" aria-describedby="languageHelp">
       <mt:loop name="languages">
         <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
       </mt:loop>
@@ -417,8 +418,9 @@ function showPasswordField() {
        id="text_format"
        label="<__trans phrase="Text Format">"
        show_hint="1"
+       hint_id="textFormat"
        hint="<__trans phrase="Default text formatting filter when creating new entries and new pages.">">
-      <select name="text_format" id="text_format" class="form-control se">
+      <select name="text_format" id="text_format" class="form-control se" aria-describedby="textFormat">
       <mt:loop name="text_filters">
         <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>>
           <mt:if name="key" eq="0">
@@ -435,8 +437,9 @@ function showPasswordField() {
        id="date_format"
        label="<__trans phrase="Date Format">"
        show_hint="1"
+       hint_id="dateFormat"
        hint="<__trans phrase="Default date formatting in the Movable Type interface.">">
-      <select name="date_format" id="date_format" class="form-control">
+      <select name="date_format" id="date_format" class="form-control" aria-describedby="dateFormat">
         <option value="relative"<mt:if name="date_format" eq="relative"> selected="selected"</mt:if>><__trans phrase="Relative"></option>
         <option value="full"<mt:if name="date_format" eq="full"> selected="selected"</mt:if>><__trans phrase="Full"></option>
       </select>
@@ -446,8 +449,9 @@ function showPasswordField() {
        id="tag_delim"
        label="<__trans phrase="Tag Delimiter">"
        show_hint="1"
+       hint_id="tagDelimiter"
        hint="<__trans phrase="Preferred method of separating tags.">">
-      <select name="tag_delim" id="tag_delim" class="form-control se">
+      <select name="tag_delim" id="tag_delim" class="form-control se" aria-describedby="tagDelimiter">
         <option value="comma"<mt:if name="auth_pref_tag_delim_comma"> selected="selected"</mt:if>><__trans phrase="Comma"></option>
         <option value="space"<mt:if name="auth_pref_tag_delim_space"> selected="selected"</mt:if>><__trans phrase="Space"></option>
       </select>
@@ -457,17 +461,21 @@ function showPasswordField() {
   <mt:if name="can_modify_api_password">
     <mtapp:setting
        id="api_password"
-       label="<__trans phrase="Web Services Password">"
-       hint="<__trans phrase="For use by Activity feeds and with XML-RPC and Atom-enabled clients.">"
-       class="form-inline">
-      <input type="password" name="api_password" id="api_password" class="form-control text password" autocomplete="new-password" value="<mt:var name="api_password" escape="html">" />
-      <a href="javascript:void(0)" onclick="return reveal_api_password()"><__trans phrase="Reveal"></a>
+       label="<__trans phrase="Web Services Password">">
+      <div class="form-row">
+        <div class="col-3">
+          <input type="password" name="api_password" id="api_password" class="form-control text password" autocomplete="new-password" value="<mt:var name="api_password" escape="html">" />
+        </div>
+        <div>
+          <a href="javascript:void(0)" onclick="return reveal_api_password()"><__trans phrase="Reveal"></a>
+        </div>
+      </div>
     </mtapp:setting>
   </mt:if>
   </fieldset>
 
-  <h5><__trans phrase="System Permissions"></h5>
   <fieldset id="author-permission-settings">
+    <legend><__trans phrase="System Permissions"></legend>
     <mtapp:setting
        id="system_permissions"
        label="<__trans phrase="Permissions">">
@@ -485,13 +493,11 @@ function showPasswordField() {
   </fieldset>
 
 <mt:if name="new_object">
-  <h5><__trans phrase="Options"></h5>
   <mtapp:settinggroup id="author-optional-settings">
+    <legend><__trans phrase="Options"></legend>
     <mtapp:setting
        id="create_user_blog"
-       label="<__trans phrase="Options">"
-       hint="<__trans phrase="Create personal child site for user">"
-       show_hint="0">
+       label="<__trans phrase="Options">">
       <label<mt:unless name="create_personal_weblog"> class="text-muted"</mt:unless>>
         <input type="checkbox" id="create_personal_weblog" name="create_personal_weblog" <mt:if name="create_personal_weblog">checked="checked"<mt:else>disabled="disabled"</mt:if> />
         <__trans phrase="Create personal child site for user">
@@ -530,8 +536,8 @@ function showPasswordField() {
   <input type="hidden" name="author_id" value="<mt:var name="id" escape="html">" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-  <h2><__trans phrase="Password Recovery"></h2>
   <mtapp:settinggroup id="password-recovery">
+    <legend><__trans phrase="Password Recovery"></legend>
     <p><__trans phrase="_USAGE_PASSWORD_RESET" params="<mt:var name="email" escape="html">"></p>
     <div style="text-align: center">
       <input class="state_change" onclick="passwordResetConfirm()" type="button" value="<__trans phrase="Initiate Password Recovery">" <mt:unless name="status_enabled">disabled</mt:unless> />

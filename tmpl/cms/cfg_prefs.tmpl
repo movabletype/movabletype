@@ -85,7 +85,7 @@
 </mt:if>
 
   <mtapp:settinggroup id="blog-settings">
-    <h5><__trans phrase="[_1] Settings" params="<mt:var name="object_label" capitalize="1">"></h5>
+    <legend><__trans phrase="[_1] Settings" params="<mt:var name="object_label" capitalize="1">"></legend>
 
     <mtapp:setting
        id="name"
@@ -110,7 +110,6 @@
        id="server_offset"
        required="1"
        label="<__trans phrase="Time Zone">"
-       hint="<__trans phrase="Select your time zone from the pulldown menu.">"
        help_page="blog_settings_general"
        help_section="blog_timezone">
       <select name="server_offset" id="server_offset" class="form-control half-width required">
@@ -152,9 +151,9 @@
         id="language"
         label="<__trans phrase="Language">"
         hint="<__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.">"
-        show_hint="1"
-        show_warning="1">
-        <select name="language" id="language" class="form-control">
+        hint_id="languageHelp"
+        show_hint="1">
+        <select name="language" id="language" class="form-control" aria-describedby="languageHelp">
         <mt:loop name="languages">
             <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
         </mt:loop>
@@ -199,7 +198,7 @@
   </mtapp:settinggroup>
 
 <mt:if name="can_set_publish_paths">
-  <h5><__trans phrase="Publishing Paths"></h5>
+  <legend><__trans phrase="Publishing Paths"></legend>
   <mtapp:settinggroup id="publushing-path-settings">
     <mtapp:setting
        id="site_url"
@@ -276,9 +275,9 @@
         <__trans phrase="Warning: Changing the [_1] URL can result in breaking all the links in your [_1]." params="<mt:var name="object_label" capitalize="1">%%">
         </p>
     <mt:if name="is_blog">
-      <div class="text-muted hint"><__trans phrase="The URL of your child site. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/"></div>
+      <small class="form-text text-muted hint"><__trans phrase="The URL of your child site. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/"></small>
     <mt:else>
-      <div class="text-muted hint"><__trans phrase="The URL of your site. Exclude the filename (i.e. index.html).  End with '/'. Example: http://www.example.com/"></div>
+      <small class="form-text text-muted hint"><__trans phrase="The URL of your site. Exclude the filename (i.e. index.html).  End with '/'. Example: http://www.example.com/"></small>
     </mt:if>
     </mtapp:setting>
 
@@ -312,18 +311,18 @@
       </p>
 
       <mt:if name="is_blog">
-      <div class="text-muted hint relative-site_path-hint">
+      <small class="form-text text-muted hint relative-site_path-hint">
         <__trans phrase="The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
-      </div>
+      </small>
         <mt:unless name="sitepath_limited">
-      <div class="text-muted hint absolute-site_path-hint">
+      <small class="form-text text-muted hint absolute-site_path-hint">
         <__trans phrase="The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html">
-      </div>
+      </small>
         </mt:unless>
       <mt:else>
-      <div class="text-muted hint absolute-site_path-hint">
+      <small class="form-text text-muted hint absolute-site_path-hint">
         <__trans phrase="The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html">
-      </div>
+      </small>
       </mt:if>
     </mtapp:setting>
 
@@ -331,14 +330,13 @@
        id="enable_archive_paths"
        label="<__trans phrase="Advanced Archive Publishing">"
        show_label="0"
-       hint="<__trans phrase="Select this option only if you need to publish your archives outside of your Site Root.">"
        help_page="blog_settings_publishing"
        help_section="advanced_archive_publishing">
-      <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="cb" />
+      <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="cb" data-target="#enable_archive_paths_prefs" data-toggle="collapse" aria-expanded="<mt:if name="eanble_archive_paths">true<mt:else>false</mt:if>" aria-controls="enable_archive_paths_prefs" />
       <label for="enable_archive_paths"><__trans phrase="Publish archives outside of Site Root"></label>
     </mtapp:setting>
 
-    <div id="enable_archive_paths_prefs"<mt:unless name="enable_archive_paths"> style="display: none;"</mt:unless>>
+    <div id="enable_archive_paths_prefs" class="collapse<mt:if name="enable_archive_paths"> show</mt:if>">
       <mtapp:setting
          id="archive_url"
          class="url-field"
@@ -440,9 +438,9 @@
           <__trans phrase="Warning: Changing the archive URL can result in breaking all links in your [_1]." params="<mt:var name="object_label" lower_case="1">">
         </p>
       <mt:if name="is_blog">
-        <div class="text-muted hint"><__trans phrase="The URL of the archives section of your child site. Example: http://www.example.com/blog/archives/"></div>
+        <small class="form-text text-muted hint"><__trans phrase="The URL of the archives section of your child site. Example: http://www.example.com/blog/archives/"></small>
       <mt:else>
-        <div class="text-muted hint"><__trans phrase="The URL of the archives section of your site. Example: http://www.example.com/archives/"></div>
+        <small class="form-text text-muted hint"><__trans phrase="The URL of the archives section of your site. Example: http://www.example.com/archives/"></small>
       </mt:if>
       </mtapp:setting>
 
@@ -451,7 +449,6 @@
          class="site-path-field"
          required="1"
          label="<__trans phrase="Archive Root">"
-         show_hint="1"
          help_page="blog_settings_publishing"
          help_section="archive_path">
         <mt:if name="is_blog">
@@ -481,18 +478,18 @@
           <__trans phrase="Warning: Changing the archive path can result in breaking all links in your [_1]." params="<mt:var name="object_label" lower_case="1">">
           </p>
         <mt:if name="is_blog">
-        <div class="text-muted hint relative-site_path-hint">
+        <small class="form-text text-muted hint relative-site_path-hint">
           <__trans phrase="The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
-        </div>
+        </small>
           <mt:unless name="sitepath_limited">
-        <div class="text-muted hint absolute-site_path-hint">
+        <small class="form-text text-muted hint absolute-site_path-hint">
           <__trans phrase="The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html">
-        </div>
+        </small>
           </mt:unless>
         <mt:else>
-        <div class="text-muted hint absolute-site_path-hint">
+        <small class="form-text text-muted hint absolute-site_path-hint">
           <__trans phrase="The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html">
-        </div>
+        </small>
         </mt:if>
       </mtapp:setting>
     </div>
@@ -501,8 +498,8 @@
 
 <mt:unless name="hide_build_option">
   <mt:if name="dynamic_enabled">
-  <h5><__trans phrase="Dynamic Publishing Options"></h5>
   <mtapp:settinggroup id="dynamic-option-settings">
+    <legend><__trans phrase="Dynamic Publishing Options"></legend>
     <mtapp:setting
        id="dynamic_publishing_options"
        label="<__trans phrase="Dynamic Publishing Options">"
@@ -522,13 +519,12 @@
   </mt:if>
 </mt:unless>
 
-  <h5><__trans phrase="Archive Settings"></h5>
   <mtapp:settinggroup id="archive-option-settings">
+    <legend><__trans phrase="Archive Settings"></legend>
 
     <mtapp:setting
        id="file_extension"
        label="<__trans phrase="File Extension">"
-       hint="<__trans phrase="Enter the archive file extension. This can take the form of 'html', 'shtml', 'php', etc. Note: Do not enter the leading period ('.').">"
        help_page="blog_setting_publishing"
        help_section="archive_file_extension">
       <input type="text" name="file_extension" id="file_extension" class="form-control text min" value="<mt:var name="file_extension" escape="html">" />
@@ -537,7 +533,6 @@
     <mtapp:setting
        id="preferred_archive_type"
        label="<__trans phrase="Preferred Archive">"
-       show_hint="1"
        help_page="blog_settings_publishing"
        help_section="preferred_archive_type">
     <mt:loop name="entry_archive_types">
@@ -557,22 +552,24 @@
       <input type="hidden" name="no_archives_are_active" id="no_archives_are_active" value="1" />
     </mt:unless>
     <mt:if name="is_blog">
-      <div class="text-muted hint"><__trans phrase="Used to generate URLs (permalinks) for this child site's archived entries. Choose one of the archive types used in this child site's archive templates."></div>
+      <small class="form-text text-muted hint"><__trans phrase="Used to generate URLs (permalinks) for this child site's archived entries. Choose one of the archive types used in this child site's archive templates."></small>
     <mt:else>
-      <div class="text-muted hint"><__trans phrase="Used to generate URLs (permalinks) for this site's archived entries. Choose one of the archive types used in this site's archive templates."></div>
+      <small class="form-text text-muted hint"><__trans phrase="Used to generate URLs (permalinks) for this site's archived entries. Choose one of the archive types used in this site's archive templates."></small>
     </mt:if>
     </mtapp:setting>
 
     <mtapp:setting
        id="publish_empty_archive"
        label="<__trans phrase="Publish With No Entries">">
-      <input id="publish_empty_archive" type="checkbox" name="publish_empty_archive" value="1"<mt:if name="publish_empty_archive"> checked="checked"</mt:if> />
-      <label for="publish_empty_archive"><__trans phrase="Publish category archive without entries"></label>
+      <div>
+        <input id="publish_empty_archive" type="checkbox" name="publish_empty_archive" value="1"<mt:if name="publish_empty_archive"> checked="checked"</mt:if> />
+        <label for="publish_empty_archive"><__trans phrase="Publish category archive without entries"></label>
+      </div>
     </mtapp:setting>
   </mtapp:settinggroup>
 
-  <h5><__trans phrase="Module Settings"></h5>
   <mtapp:settinggroup id="module-option-settings">
+    <legend><__trans phrase="Module Settings"></legend>
 
     <mtapp:setting
        id="include_system"
@@ -593,13 +590,15 @@
        label="<__trans phrase="Module Caching">"
        help_page="blog_settings_publishing"
        help_section="include_cache">
-      <input id="include_cache" type="checkbox" name="include_cache" value="1"<mt:if name="include_cache"> checked="checked"</mt:if> />
-      <label for="include_cache"><__trans phrase="Allow properly configured template modules to be cached to enhance publishing performance."></label>
+      <div>
+        <input id="include_cache" type="checkbox" name="include_cache" value="1"<mt:if name="include_cache"> checked="checked"</mt:if> />
+        <label for="include_cache"><__trans phrase="Allow properly configured template modules to be cached to enhance publishing performance."></label>
+      </div>
     </mtapp:setting>
   </mtapp:settinggroup>
 
   <mtapp:settinggroup id="revision-history-settings">
-    <h5><__trans phrase="Revision History"></h5>
+    <legend><__trans phrase="Revision History"></legend>
   <mt:unless name="master_revision_switch">
     <mtapp:statusmsg
        id="master_revision_off"
@@ -611,15 +610,16 @@
 
     <mtapp:setting
        id="use-revision"
-       class="has-option"
        label="<__trans phrase="Revision history">">
-      <label for="use-revision">
-        <input type="checkbox" value="1" name="use_revision" id="use-revision"<mt:if name="use_revision"> checked="checked"</mt:if><mt:unless name="master_revision_switch"> disabled="disabled"</mt:unless> />
-        <__trans phrase="Enable revision history">
-      </label>
+      <div>
+        <label for="use-revision">
+          <input type="checkbox" value="1" name="use_revision" id="use-revision"<mt:if name="use_revision"> checked="checked"</mt:if><mt:unless name="master_revision_switch"> disabled="disabled"</mt:unless> data-toggle="collapse" data-target="#use-revision-option" aria-expanded="<mt:if name="use_revision">true<mt:else>false</mt:if>" aria-controls="use-revision-option" />
+          <__trans phrase="Enable revision history">
+        </label>
+      </div>
     </mtapp:setting>
 
-    <div id="use-revision-option" class="setting-option">
+    <div id="use-revision-option" class="setting-option collapse<mt:if name="use_revision"> show</mt:if>">
       <mt:setvarblock name="revisions_entry_label"><__trans phrase="Number of revisions per entry/page"></mt:setvarblock>
       <mtapp:setting
          id="max_revisions_entry"
@@ -642,32 +642,41 @@
   </mtapp:settinggroup>
 
   <mtapp:settinggroup id="upload-settings">
-    <h5><__trans phrase="Upload"></h5>
-    <mtapp:setting
-      id="upload_destination"
-      label="<__trans phrase="Upload Destination">"
-      class="form-inline"
-    >
-      <select name="upload_destination" id="upload_destination" class="form-control" onchange="uploadDestinationSelect(this)">
-      <mt:loop name="destination_loop">
-        <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
-      </mt:loop>
-      </select>
-      <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" style="display: none;" />
-      <span class="upload-extra-path">
-        / <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
-      </span>
-      <div class="form-group option">
+    <legend><__trans phrase="Upload"></legend>
+
+    <div class="row">
+      <div class="form-group col">
+        <label><__trans phrase="Upload Destination"></label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-inline col">
+        <select name="upload_destination" id="upload_destination" class="form-control" onchange="uploadDestinationSelect(this)">
+        <mt:loop name="destination_loop">
+          <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
+        </mt:loop>
+        </select>
+        <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" style="display: none;" />
+        <span class="upload-extra-path">
+          /
+          <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
+        </span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col"> 
         <input type="checkbox" name="allow_to_change_at_upload" id="allow_to_change_at_upload" value="1"<mt:if name="allow_to_change_at_upload"> checked="checked"</mt:if> class="cb" />
         <label for="allow_to_change_at_upload"><__trans phrase="Allow to change at upload"></label>
       </div>
-    </mtapp:setting>
+    </div>
+
     <mtapp:setting
       id="auto_rename_non_ascii"
-      class="has-option"
       label="<__trans phrase="Rename filename">">
-      <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb" />
-      <label for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
+      <div>
+        <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb" />
+        <label for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
+      </div>
     </mtapp:setting>
     <mtapp:setting
       id="operation_if_exists"
@@ -680,10 +689,11 @@
     </mtapp:setting>
     <mtapp:setting
       id="normalize_orientation"
-      class="has-option"
       label="<__trans phrase="Normalize orientation">">
-      <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb" />
-      <label for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
+      <div>
+        <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb" />
+        <label for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
+      </div>
     </mtapp:setting>
   </mtapp:settinggroup>
 
@@ -736,10 +746,6 @@ if (e) e.style.display = 'block';
     </mt:if>
 
 jQuery(window).load(function () {
-    jQuery('input#enable_archive_paths').change(function() {
-        jQuery('div#enable_archive_paths_prefs').toggle();
-    });
-
     jQuery.mtValidateAddRules({
 <mt:if name="is_blog">
         "#site_url_path": function($e) {

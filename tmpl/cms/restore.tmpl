@@ -27,7 +27,6 @@
     <mtapp:setting
        id="file"
        label="<__trans phrase="Exported File">"
-       hint="<__trans phrase="If your backup file is located on a remote computer, you can upload it here.  Otherwise, Movable Type will automatically look in the 'import' folder within your Movable Type directory.">"
        help_page="backup_restore"
        help_section="source_file">
       <input name="file" class="form-control-file" type="file" />
@@ -36,8 +35,7 @@
     <mtapp:setting
        id="overwrite_global_templates"
        label="<__trans phrase="Options">"
-       show_label="0"
-       hint="<__trans phrase="Allow existing global templates to be overwritten by global templates in the backup file.">">
+       show_label="0">
       <input name="overwrite_global_templates" id="overwrite_global_templates" type="checkbox" />
       <label for="overwrite_global_templates"><__trans phrase="Overwrite global templates."></label>
     </mtapp:setting>

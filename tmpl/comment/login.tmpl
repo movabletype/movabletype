@@ -8,8 +8,7 @@
 <mtapp:setting
    id="comment_signin_options"
    label="<__trans phrase="Sign in using">..."
-   label_class="top-label"
-   no_grid="1">
+   label_class="top-label">
   <select name="auth_options" id="auth_options" class="form-control full">
   <mt:if name="enabled_MovableType">
     <option value="<mt:var name="default_id" escape="html">"><mt:var name="default_signin" escape="html"></option>
@@ -53,16 +52,14 @@
     <mtapp:setting
        id="username"
        label="<__trans phrase="Username">"
-       label_class="top-label"
-       no_grid="1">
+       label_class="top-label">
       <input type="text" name="username" id="username" class="form-control text full" />
     </mtapp:setting>
 
     <mtapp:setting
        id="password"
        label="<__trans phrase="Password">"
-       label_class="top-label"
-       no_grid="1">
+       label_class="top-label">
       <input type="password" name="password" id="password" class="form-control text password full" />
     </mtapp:setting>
 
@@ -71,7 +68,7 @@
     </div>
 
     <div class="row actions-bar actions-bar-login">
-      <div class="col-md-4">
+      <div class="col-4">
         <button
            type="submit"
            accesskey="s"
@@ -80,7 +77,7 @@
           <__trans phrase="Sign in">
         </button>
       </div>
-      <div class="col-md-8">
+      <div class="col-8">
     <mt:if name="can_recover_password">
       <div id="forget-password">
         <a class="float-right" href="<mt:var name="script_url">?__mode=start_recover<mt:if name="return_url">&return_to=<mt:var name="return_url" escape="url"></mt:if>">

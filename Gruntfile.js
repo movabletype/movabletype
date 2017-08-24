@@ -1,6 +1,8 @@
 module.exports = function(grunt) {
   'use strict';
 
+  var path = require('path');
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     copy: {
@@ -46,37 +48,11 @@ module.exports = function(grunt) {
       riot: {
         command: 'npm run build-riot'
       },
-    },
-    svg_sprite: {
-      basic: {
-        src: ['mt-static/images/svg/*.svg'],
-        dest: 'mt-static/images',
-        options: {
-          shape: {
-            transform: [
-              {
-                svgo: {
-                  plugins: [
-                    { removeAttrs: { attrs: 'fill' } }
-                  ]
-                }
-              }
-            ]
-          },
-          mode: {
-            symbol: {
-              dest: '.',
-              sprite: 'sprite.svg'
-            }
-          }
-        }
-      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-exec');
-  grunt.loadNpmTasks('grunt-svg-sprite');
 
-  grunt.registerTask('default', ['exec:riot', 'svg_sprite', 'copy']);
+  grunt.registerTask('default', ['exec:riot', 'copy']);
 };

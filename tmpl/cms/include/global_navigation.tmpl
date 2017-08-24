@@ -1,20 +1,10 @@
 <mt:setvarblock name="user_screen_name"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html"><mt:else><mt:var name="author_name" escape="html"></mt:if></mt:setvarblock>
 
-<style>
-nav.website {
-  background: #1E8CD2 !important;
-}
-
-nav.blog {
-  background: #63AD9E !important;
-}
-</style>
-
-<div class="mt-globalNavigation row align-items-center">
+<div class="mt-globalNavigation align-items-center">
   <div class="col">
     <h1 class="mt-globalNavigation__logo btn-group">
-      <a href="<mt:var name="mt_url">?__mode=dashboard" role="home"><img src="<mt:var name="static_uri">images/svg/logo-mark.svg" alt="Movable Type" width="40" height="40"></a>
-      <button type="button" class="btn btn-link dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" id="aria-labelledby="userDropdownMenu" aria-haspopup="true" aria-expanded="false"><span class="sr-only"><__trans phrase="Drop Down Menu"></span></button>
+      <a href="<mt:var name="mt_url">?__mode=dashboard" role="home"><img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="40" height="40"></a>
+      <button type="button" class="btn btn-link dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" id="systemDropdownMenu" aria-haspopup="true" aria-expanded="false"><span class="sr-only"><__trans phrase="Drop Down Menu"></span></button>
       <div class="dropdown-menu" aria-labelledby="systemDropdownMenu">
 <mt:if name="scope_type" ne="user">
         <a class="dropdown-item" href="<$mt:var name="mt_url"$>?__mode=dashboard">
@@ -130,20 +120,42 @@ nav.blog {
     </a>
 </mt:if>
 
+<mt:if name="mt_alpha_or_beta">
+    <span class="badge badge-info">
+  <mt:if name="mt_alpha">
+      <__trans phrase="DEVELOPER PREVIEW">
+  <mt:elseif name="mt_beta">
+      <__trans phrase="BETA">
+  </mt:if>
+    </span>
+</mt:if>
+
   </div>
-  <div class="col-2">
+
 <mt:if name="blog_id">
+  <div class="ml-auto col-1">
     <a href="<mt:var name="url">?__mode=view&_type=entry&blog_id=<mt:var name="blog_id">" id="create-entry-shortcut"><span class="fa fa-pencil"></span></a>
     <a href="<$mt:var name="mt_url"$>?__mode=rebuild_confirm&blog_id=<$mt:var name="blog_id"$>" class="mt-rebuild"><img src="<mt:var name="static_uri">images/nav-icon-publish.png" /></a>
     <a href="<mt:var name="blog_url" escape="html">" target="_blank"><span class="fa fa-external-link"></span></a>
     <a href="#"><img src="<mt:var name="static_uri">images/search-submit.png" /></a>
+  </div>
 </mt:if>
 
-    <button class="btn btn-link dropdown-toggle" type="button"  data-toggle="dropdown" id="userDropdownMenu" aria-haspopup="true" aria-expanded="false"><mt:var name="user_screen_name"></button>
-    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdownMenu">
-      <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=view&_type=author&id=<mt:var name="author_id" escape="url">"><__trans phrase="Profile"></a>
-      <a class="dropdown-item" href="<mt:var name="help_url">help/<mt:var name="template_filename" escape="html">/" target="_blank"><__trans phrase="Help"></a>
-      <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=logout"><__trans phrase="Sign out"></a>
+  <div class="col-2">
+    <div class="float-right">
+      <button class="btn btn-link dropdown-toggle" type="button" data-toggle="dropdown" id="userDropdownMenu" aria-haspopup="true" aria-expanded="false">
+      <mt:if name="author_userpic_url">
+        <img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle">
+      <mt:else>
+        <img src="<mt:var name="static_uri">images/user-default.svg" alt="" widht="32" height="32" class="mr-1">
+      </mt:if>
+        <mt:var name="user_screen_name">
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdownMenu">
+        <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=view&_type=author&id=<mt:var name="author_id" escape="url">"><__trans phrase="Profile"></a>
+        <a class="dropdown-item" href="<__trans phrase="https://movabletype.org/documentation/">" target="_blank"><__trans phrase="Documentation"></a>
+        <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=logout"><__trans phrase="Sign out"></a>
+      </div>
     </div>
   </div>
 </div>

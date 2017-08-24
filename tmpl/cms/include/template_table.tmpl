@@ -10,19 +10,19 @@
     </mt:if>
     <li class="list-inline-item">
       <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
-        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+        <mtapp:svgicon id="ic_add" title="<__trans phrase="Create entry archive">">
         <__trans phrase="Entry">
       </a>
     </li>
     <li class="list-inline-item">
       <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
-        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+        <mtapp:svgicon id="ic_add" title="<__trans phrase="Create entry listing archive">">
         <__trans phrase="Entry Listing">
       </a>
     </li>
     <li class="list-inline-item">
       <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
-        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+        <mtapp:svgicon id="ic_add" title="<__trans phrase="Create page archive">">
         <__trans phrase="Page">
       </a>
     </li>
@@ -54,7 +54,7 @@
     </mt:if>
     <li class="list-inline-item">
       <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
-        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+        <mtapp:svgicon id="ic_add" title="<__trans phrase="Create template module">">
         <__trans phrase="Create template module">
       </a>
     </li>
@@ -68,7 +68,7 @@
     </mt:if>
     <li class="list-inline-item">
       <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
-        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+        <mtapp:svgicon id="ic_add" title="<__trans phrase="Create index template">">
         <__trans phrase="Create index template">
       </a>
     </li>
@@ -251,16 +251,20 @@
     <mt:else name="template_type" like="(module|widget)">
       <mt:if name="blog_id">
       <td class="ssi-method si status-<mt:if name="use_ssi">enabled<mt:else>disabled</mt:if>">
-        <img src="<mt:var name="static_uri">images/status_icons/neutral.gif" alt="" width="9" height="9" title="" />
+        <mtapp:svgicon id="ic_minus" title="<__trans phrase="Disabled">" color="secondary">
       </td>
       <td class="cache-method si status-<mt:if name="use_cache">cached<mt:else>uncached</mt:if>">
-        <img src="<mt:var name="static_uri">images/status_icons/neutral.gif" alt="" width="9" height="9" title="" />
+        <mtapp:svgicon id="ic_minus" title="<__trans phrase="Uncached">" color="secondary">
       </td>
       </mt:if>
     </mt:if>
     <mt:unless name="screen_id" eq="search-replace">
       <td class="linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>">
-        <img src="<mt:var name="static_uri">images/status_icons/neutral.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> />
+      <mt:if name="linked_file">
+        <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Linked">" color="success">
+      <mt:else>
+        <mtapp:svgicon id="ic_minus" title="<__trans phrase="Unlinked">" color="secondary">
+      </mt:if>
       </td>
     </mt:unless>
     <mt:unless name="blog_view">

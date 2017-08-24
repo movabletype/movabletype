@@ -103,7 +103,7 @@ sub list_props {
                     my $thumb_size = 45;
                     my $userpic_sticker
                         = $is_userpic{ $obj->id }
-                        ? q{<span class="inuse-userpic sticky-label">Userpic</span>}
+                        ? q{<span class="badge badge-default">Userpic</span>}
                         : '';
 
                     if ( $file_path && $fmgr->exists($file_path) ) {

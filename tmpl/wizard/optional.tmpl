@@ -59,17 +59,16 @@
          label_class="top-label"
          required="1"
          hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
-         show_hint="1"
-         no_grid="1">
-        <input type="text" id="email_address_main" class="form-control text full email required" name="email_address_main" value="<mt:if name="email_address_main"><mt:var name="email_address_main" escape="html"></mt:if>" />
+         hint_id="emailAddressMain"
+         show_hint="1">
+        <input type="text" id="email_address_main" class="form-control text full email required" name="email_address_main" value="<mt:if name="email_address_main"><mt:var name="email_address_main" escape="html"></mt:if>" aria-describedby="emailAddressMain" />
       </mtapp:setting>
 
     <!-- MailTransfer -->
       <mtapp:setting
          id="mail_transfer"
          label="<__trans phrase="Send mail via:">"
-         label_class="top-label"
-         no_grid="1">
+         label_class="top-label">
         <select id="mail_transfer" class="form-control" name="mail_transfer">
           <option value=""><__trans phrase="Select One..."></option>
         <mt:loop name="mail_loop">
@@ -85,9 +84,7 @@
              id="sendmail_path"
              label="<__trans phrase="Sendmail Path">"
              label_class="top-label"
-             required="1"
-             hint="<__trans phrase="The physical file path for your Sendmail binary.">"
-             no_grid="1">
+             required="1">
             <input type="text" id="sendmail_path" class="form-control text full" name="sendmail_path" value="<mt:if name="sendmail_path"><mt:var name="sendmail_path" escape="html"></mt:if>" />
           </mtapp:setting>
         </div>
@@ -100,9 +97,9 @@
              label_class="top-label"
              required="1"
              hint="<__trans phrase="Address of your SMTP Server.">"
-             show_hint="1"
-             no_grid="1">
-            <input type="text" id="smtp_server" class="form-control text full" name="smtp_server" value="<mt:if name="smtp_server"><mt:var name="smtp_server" escape="html"></mt:if>" />
+             hint_id="smtpServer"
+             show_hint="1">
+            <input type="text" id="smtp_server" class="form-control text full" name="smtp_server" value="<mt:if name="smtp_server"><mt:var name="smtp_server" escape="html"></mt:if>" aria-describedby="smtpServer" />
           </mtapp:setting>
 
       <!-- SMTPPort -->
@@ -112,9 +109,9 @@
              label_class="top-label"
              required="1"
              hint="<__trans phrase="Port number of your SMTP Server.">"
-             show_hint="1"
-             no_grid="1">
-            <input type="text" id="smtp_port" class="form-control text full" name="smtp_port" value="<mt:if name="smtp_port"><mt:var name="smtp_port" escape="html"></mt:if>" />
+             hint_id="smtpPort"
+             show_hint="1">
+            <input type="text" id="smtp_port" class="form-control text full" name="smtp_port" value="<mt:if name="smtp_port"><mt:var name="smtp_port" escape="html"></mt:if>" aria-describedby="smtpPort" />
           </mtapp:setting>
 
       <!-- SMTPAuth -->
@@ -131,9 +128,9 @@
                  label_class="top-label"
                  required="1"
                  hint="<__trans phrase="Username for your SMTP Server.">"
-                 show_hint="1"
-                 no_grid="1">
-                <input type="text" id="smtp_auth_username" class="form-control text full" name="smtp_auth_username" value="<mt:if name="smtp_auth_username"><mt:var name="smtp_auth_username" escape="html"></mt:if>" />
+                 hint_id="smtpAuthUsername"
+                 show_hint="1">
+                <input type="text" id="smtp_auth_username" class="form-control text full" name="smtp_auth_username" value="<mt:if name="smtp_auth_username"><mt:var name="smtp_auth_username" escape="html"></mt:if>" aria-describedby="smtpAuthUsername" />
               </mtapp:setting>
 
       <!-- SMTPAuth Password -->
@@ -143,17 +140,16 @@
                  label_class="top-label"
                  required="1"
                  hint="<__trans phrase="Password for your SMTP Server.">"
-                 show_hint="1"
-                 no_grid="1">
-                <input type="password" id="smtp_auth_password" class="form-control text full" name="smtp_auth_password" value="<mt:if name="smtp_auth_password"><mt:var name="smtp_auth_password" escape="html"></mt:if>" />
+                 hint_id="smtpAuthPassword"
+                 show_hint="1">
+                <input type="password" id="smtp_auth_password" class="form-control text full" name="smtp_auth_password" value="<mt:if name="smtp_auth_password"><mt:var name="smtp_auth_password" escape="html"></mt:if>" aria-describedby="smtpAuthPassword" />
               </mtapp:setting>
 
       <!-- SSL -->
               <mtapp:setting
                  id="smtp_ssl"
                  label="<__trans phrase="SSL Connection">"
-                 label_class="top-label"
-                 no_grid="1">
+                 label_class="top-label">
               <mt:unless name="has_net_smtp_ssl">
                 <mtapp:statusmsg
                    id="no_smtp_auth_ssl"
@@ -231,8 +227,7 @@
       <mtapp:setting
          id="test_email_address"
          label="<__trans phrase="Mail address to which test email should be sent">"
-         label_class="top-label"
-         no_grid="1">
+         label_class="top-label">
         <input type="text" id="test_mail_address" class="form-control text full" name="test_mail_address" value="<mt:if name="test_mail_address"><mt:var name="test_mail_address" escape="html"></mt:if>" />
       </mtapp:setting>
 
