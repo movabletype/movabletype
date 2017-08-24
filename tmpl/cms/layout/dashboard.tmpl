@@ -10,7 +10,6 @@
   </mt:if>
 
     <div class="mt-mainContent">
-  <mt:unless name="no_page_header">
       <div class="row align-items-center">
         <div class="col-10">
           <h3 id="page-title"><mt:var name="page_title"></h3>
@@ -21,13 +20,12 @@
           </div>
         </div>
       </div>
-  </mt:unless>
   <mt:include name="include/system_msg.tmpl">
   <mt:var name="page_content">
     </div>
 
   <mt:if name="related_content">
-    <div class="mt-secondaryPanel">
+    <div class="mt-dashboardPanel">
       <mt:var name="related_content">
     </div>
   </mt:if>
