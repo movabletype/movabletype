@@ -808,6 +808,7 @@ sub core_content_actions {
                         lc $app->blog->class_label
                     );
                 },
+                icon => 'ic_add',
                 mode => 'dialog_grant_role',
                 args => sub {
                     if ( $app->blog->is_blog ) {
