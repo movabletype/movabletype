@@ -64,10 +64,6 @@ sub list_props {
             html         => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $type = 'user';
-                my $icon_url
-                    = MT->static_path
-                    . 'images/nav_icons/color/'
-                    . $type . '.gif';
                 return '(unknown object)' unless defined $obj->user;
                 my $name      = MT::Util::encode_html( $obj->user->name );
                 my $edit_link = $app->uri(
@@ -78,10 +74,14 @@ sub list_props {
                         blog_id => 0,
                     },
                 );
+                my $user_title = $app->translate('User');
+                my $static_uri = $app->static_path;
                 return qq{
-                    <a href="$edit_link">$name</a>
+                    <a href="$edit_link" class="align-top">$name</a>
                     <span class="target-type $type">
-                        <img src="$icon_url" />
+                        <svg title="$user_title" role="img" class="mt-icon">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_user">
+                        </svg>
                     </span>
                 };
             },

@@ -791,6 +791,7 @@ sub core_content_actions {
             'grant_role' => {
                 class         => 'icon-create',
                 label         => 'Grant Permission',
+                icon          => 'ic_add',
                 mode          => 'dialog_select_assoc_type',
                 return_args   => 1,
                 permit_action => 'create_any_association',
