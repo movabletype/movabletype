@@ -598,6 +598,7 @@
      title="<mt:var name="delete_button_title">"
      class="delete"
      accesskey="x">
+    <mtapp:svgicon id="ic_trash" title="$delete_button_title">
     <__trans phrase="Delete">
   </a>
 </div>
@@ -701,7 +702,7 @@
      label="$widget_label">
     <div class="text-right asset-list-header">
       <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog mt-modal-open" data-mt-modal-large>
-        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+        <mtapp:svgicon id="ic_add" title="<__trans phrase="Add Entry Asset">">
         <__trans phrase="Add">
       </a>
     </div>
