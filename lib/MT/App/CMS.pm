@@ -832,6 +832,7 @@ sub core_content_actions {
             'reset_log' => {
                 class       => 'icon-action',
                 label       => 'Clear Activity Log',
+                icon        => 'ic_setting',
                 mode        => 'reset_log',
                 order       => 100,
                 confirm_msg => sub {
