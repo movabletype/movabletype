@@ -291,9 +291,13 @@
               } #]
               <mt:if name="object_type" ne="page">
               [# if ( i == 0 ) { #]
-                  <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]"><strong>[#= label #]</strong><a href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h trans("Remove") #]">&nbsp;<span>[#|h trans("Remove") #]</span></a></li>
+                  <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
+                    <mtapp:svgicon id="ic_fav" title="Primary">
+                    <strong>[#= label #]</strong>
+                    <a href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h trans("Remove") #]">&nbsp;<mtapp:svgicon id="ic_minus" title="Remove"></a>
+                  </li>
               [# } else { #]
-                  <li mt:focus-hover="1" mt:id="[#= cat.id #]"><mt:if name="object_type" eq="entry"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a></mt:if><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h "Remove" #]">&nbsp;<span>[#|h trans("Remove") #]</span></a></li>
+                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" style="margin-left: 2rem;"><mt:if name="object_type" eq="entry"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a></mt:if><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h "Remove" #]">&nbsp;<mtapp:svgicon id="ic_minus" title="Remove"></a></li>
               [# } #]
               <mt:else>
               <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
