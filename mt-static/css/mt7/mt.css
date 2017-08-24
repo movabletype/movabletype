@@ -658,7 +658,7 @@ pre code {
   padding-left: 0;
 }
 
-.col-1, .col-2, .mt-primaryNavigation, .col-3, .mt-secondaryPanel, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .col, .mt-globalNavigation, .mt-mainContent, .mt-footer,
+.col-1, .col-2, .mt-primaryNavigation, .mt-dashboardPanel, .col-3, .mt-secondaryPanel, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .col, .mt-globalNavigation, .mt-mainContent, .mt-footer,
 .col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm,
 .col-sm-auto, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-md,
 .col-md-auto, .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg,
@@ -692,7 +692,7 @@ pre code {
   max-width: 8.333333%;
 }
 
-.col-2, .mt-primaryNavigation {
+.col-2, .mt-primaryNavigation, .mt-dashboardPanel {
   -ms-flex: 0 0 16.666667%;
       flex: 0 0 16.666667%;
   max-width: 16.666667%;
@@ -3672,7 +3672,7 @@ tbody.collapse.show {
   color: rgba(255, 255, 255, 0.5);
 }
 
-.card {
+.card, .mt-widget, .mt-widget--panel {
   position: relative;
   display: -ms-flexbox;
   display: flex;
@@ -3713,12 +3713,12 @@ tbody.collapse.show {
   margin-left: 1.25rem;
 }
 
-.card > .list-group:first-child .list-group-item:first-child {
+.card > .list-group:first-child .list-group-item:first-child, .mt-widget > .list-group:first-child .list-group-item:first-child, .mt-widget--panel > .list-group:first-child .list-group-item:first-child {
   border-top-left-radius: 0.25rem;
   border-top-right-radius: 0.25rem;
 }
 
-.card > .list-group:last-child .list-group-item:last-child {
+.card > .list-group:last-child .list-group-item:last-child, .mt-widget > .list-group:last-child .list-group-item:last-child, .mt-widget--panel > .list-group:last-child .list-group-item:last-child {
   border-bottom-right-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
 }
@@ -3791,7 +3791,7 @@ tbody.collapse.show {
     margin-right: -15px;
     margin-left: -15px;
   }
-  .card-deck .card {
+  .card-deck .card, .card-deck .mt-widget, .card-deck .mt-widget--panel {
     display: -ms-flexbox;
     display: flex;
     -ms-flex: 1 0 0%;
@@ -3810,44 +3810,46 @@ tbody.collapse.show {
     -ms-flex-flow: row wrap;
         flex-flow: row wrap;
   }
-  .card-group .card {
+  .card-group .card, .card-group .mt-widget, .card-group .mt-widget--panel {
     -ms-flex: 1 0 0%;
         flex: 1 0 0%;
   }
-  .card-group .card + .card {
+  .card-group .card + .card, .card-group .mt-widget + .card, .card-group .mt-widget--panel + .card, .card-group .card + .mt-widget, .card-group .mt-widget + .mt-widget, .card-group .mt-widget--panel + .mt-widget, .card-group .card + .mt-widget--panel, .card-group .mt-widget + .mt-widget--panel, .card-group .mt-widget--panel + .mt-widget--panel {
     margin-left: 0;
     border-left: 0;
   }
-  .card-group .card:first-child {
+  .card-group .card:first-child, .card-group .mt-widget:first-child, .card-group .mt-widget--panel:first-child {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
-  .card-group .card:first-child .card-img-top {
+  .card-group .card:first-child .card-img-top, .card-group .mt-widget:first-child .card-img-top, .card-group .mt-widget--panel:first-child .card-img-top {
     border-top-right-radius: 0;
   }
-  .card-group .card:first-child .card-img-bottom {
+  .card-group .card:first-child .card-img-bottom, .card-group .mt-widget:first-child .card-img-bottom, .card-group .mt-widget--panel:first-child .card-img-bottom {
     border-bottom-right-radius: 0;
   }
-  .card-group .card:last-child {
+  .card-group .card:last-child, .card-group .mt-widget:last-child, .card-group .mt-widget--panel:last-child {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
-  .card-group .card:last-child .card-img-top {
+  .card-group .card:last-child .card-img-top, .card-group .mt-widget:last-child .card-img-top, .card-group .mt-widget--panel:last-child .card-img-top {
     border-top-left-radius: 0;
   }
-  .card-group .card:last-child .card-img-bottom {
+  .card-group .card:last-child .card-img-bottom, .card-group .mt-widget:last-child .card-img-bottom, .card-group .mt-widget--panel:last-child .card-img-bottom {
     border-bottom-left-radius: 0;
   }
-  .card-group .card:not(:first-child):not(:last-child) {
+  .card-group .card:not(:first-child):not(:last-child), .card-group .mt-widget:not(:first-child):not(:last-child), .card-group .mt-widget--panel:not(:first-child):not(:last-child) {
     border-radius: 0;
   }
-  .card-group .card:not(:first-child):not(:last-child) .card-img-top,
-  .card-group .card:not(:first-child):not(:last-child) .card-img-bottom {
+  .card-group .card:not(:first-child):not(:last-child) .card-img-top, .card-group .mt-widget:not(:first-child):not(:last-child) .card-img-top, .card-group .mt-widget--panel:not(:first-child):not(:last-child) .card-img-top,
+  .card-group .card:not(:first-child):not(:last-child) .card-img-bottom,
+  .card-group .mt-widget:not(:first-child):not(:last-child) .card-img-bottom,
+  .card-group .mt-widget--panel:not(:first-child):not(:last-child) .card-img-bottom {
     border-radius: 0;
   }
 }
 
-.card-columns .card {
+.card-columns .card, .card-columns .mt-widget, .card-columns .mt-widget--panel {
   margin-bottom: 0.75rem;
 }
 
@@ -3858,7 +3860,7 @@ tbody.collapse.show {
     -webkit-column-gap: 1.25rem;
             column-gap: 1.25rem;
   }
-  .card-columns .card {
+  .card-columns .card, .card-columns .mt-widget, .card-columns .mt-widget--panel {
     display: inline-block;
     width: 100%;
   }
@@ -7958,11 +7960,13 @@ Basic Layout
   Global Navigation
   Primary Navigation
   Secondary Panel
+  Dashboard Panel
   Main Content
   Footer Navigation
   Single Column
 Forms
 Tables
+Widgets
 Alert
 Badges
 Icons
@@ -8178,7 +8182,20 @@ li {
   background: #F4F4F4;
 }
 
+/* Dashboard Panel */
+.mt-dashboardPanel {
+  padding-right: 0;
+  padding-left: 0;
+  max-width: 320px;
+  background: #F4F4F4;
+}
+
 /* Main Content */
+.mt-mainContent {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
 /* Footer Navigation */
 .mt-footer {
   padding: 1rem;
@@ -8286,6 +8303,10 @@ fieldset.form-group {
   width: 18px;
 }
 
+.mt-stepper {
+  text-align: center;
+}
+
 /* Tables */
 .mt-table th, .mt-table td {
   padding: .8rem;
@@ -8354,6 +8375,43 @@ fieldset.form-group {
   width: 1.5rem;
 }
 
+/* Widgets */
+.mt-widget, .mt-widget--panel {
+  margin-bottom: 2rem;
+  border: 1px solid #CACACA;
+  border-radius: 0.25rem;
+  background: transparent;
+}
+
+.mt-widget__title {
+  margin: 0;
+  padding: 1rem;
+  border-bottom: 1px solid #CACACA;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.mt-widget__content {
+  padding: 1rem;
+}
+
+.mt-widget__content *:last-child {
+  margin-bottom: 0;
+}
+
+.mt-widget--panel {
+  border: 0;
+}
+
+.mt-widget--panel .mt-widget__title {
+  padding: 0.5rem 1rem;
+  border-bottom: 0;
+}
+
+.mt-widget--panel .mt-widget__content {
+  padding: 0.5rem 1rem 1rem;
+}
+
 /* Alert */
 .alert h1, .alert h2, .alert h3, .alert h4,
 .alert .h1, .alert .h2, .alert .h3, .alert .h4 {
@@ -8379,6 +8437,11 @@ h1 .badge, h2 .badge, h3 .badge,
 }
 
 /* Icons */
+.close {
+  line-height: 0.5;
+  opacity: 0.8;
+}
+
 .mt-icon, .mt-icon--primary, .mt-icon--secondary, .mt-icon--success, .mt-icon--info, .mt-icon--warning, .mt-icon--danger {
   height: 24px;
   width: 24px;
