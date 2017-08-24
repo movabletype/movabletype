@@ -4263,8 +4263,6 @@ sub add_to_favorite_sites {
     return unless $user;
 
     my $site = MT->model('blog')->load($fav);
-    use Data::Dumper;
-    print STDERR Dumper( $site );
     return unless $site;
 
     return
