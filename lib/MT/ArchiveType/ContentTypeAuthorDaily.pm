@@ -38,6 +38,19 @@ sub template_params {
     return { archive_class => "contenttype-author-daily-archive" };
 }
 
+sub archive_group_contents {
+    my $obj = shift;
+    my ( $ctx, %param ) = @_;
+    my $ts
+        = $param{year}
+        ? sprintf( "%04d%02d%02d000000",
+        $param{year}, $param{month}, $param{day} )
+        : $ctx->stash('current_timestamp');
+    my $author = $param{author} || $ctx->stash('author');
+    my $limit = $param{limit};
+    $obj->dated_author_contents( $ctx, 'Author-Daily', $author, $ts, $limit );
+}
+
 *date_range    = \&MT::ArchiveType::Daily::date_range;
 *archive_file  = \&MT::ArchiveType::AuthorDaily::archive_file;
 *archive_title = \&MT::ArchiveType::AuthorDaily::archive_title;

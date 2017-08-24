@@ -29,6 +29,17 @@ sub default_archive_templates {
     ];
 }
 
+sub archive_group_contents {
+    my $obj = shift;
+    my ( $ctx, %param ) = @_;
+    my $ts
+        = $param{year}
+        ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month}, 1 )
+        : undef;
+    my $limit = $param{limit};
+    $obj->dated_group_contents( $ctx, 'Monthly', $ts, $limit );
+}
+
 *date_range   = \&MT::ArchiveType::Monthly::date_range;
 *archive_file = \&MT::ArchiveType::Monthly::archive_file;
 

@@ -486,7 +486,8 @@ sub rebuild_file {
         $content_data = MT::ContentData->load($content_data)
             if !ref $content_data;
         $ctx->var( 'content_archive', 1 );
-        $ctx->{__stash}{content} = $content_data;
+        $ctx->{__stash}{content}      = $content_data;
+        $ctx->{__stash}{template_map} = $map;
     }
     local $ctx->{current_timestamp}     = $start if $start;
     local $ctx->{current_timestamp_end} = $end   if $end;
@@ -700,6 +701,11 @@ sub rebuild_file {
             require MT::Promise;
             my $entries = sub { $archiver->archive_group_entries($ctx) };
             $ctx->stash( 'entries', MT::Promise::delay($entries) );
+        }
+        elsif ( $archiver->contenttype_group_based ) {
+            require MT::Promise;
+            my $contents = sub { $archiver->archive_group_contents($ctx) };
+            $ctx->stash( 'contents', MT::Promise::delay($contents) );
         }
 
         my $html = undef;

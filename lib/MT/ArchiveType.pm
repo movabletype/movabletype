@@ -53,6 +53,10 @@ sub archive_group_entries {
     shift->_getset_coderef( 'archive_group_entries', @_ );
 }
 
+sub archive_group_contents {
+    shift->_getset_coderef( 'archive_group_contents', @_ );
+}
+
 sub archive_file {
     shift->_getset_coderef( 'archive_file', @_ );
 }
@@ -69,6 +73,14 @@ sub group_based {
     my $obj = shift;
     if ( ref($obj) eq __PACKAGE__ ) {
         return $obj->_getset('archive_group_entries') ? 1 : 0;
+    }
+    return 0;
+}
+
+sub contenttype_group_based {
+    my $obj = shift;
+    if ( ref($obj) eq __PACKAGE__ ) {
+        return $obj->_getset('archive_group_contents') ? 1 : 0;
     }
     return 0;
 }

@@ -29,6 +29,17 @@ sub default_archive_templates {
     ];
 }
 
+sub archive_group_contents {
+    my $obj = shift;
+    my ( $ctx, %param ) = @_;
+    my $ts
+        = $param{year}
+        ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 )
+        : undef;
+    my $limit = $param{limit};
+    $obj->dated_group_contents( $ctx, 'Yearly', $ts, $limit );
+}
+
 *date_range   = \&MT::ArchiveType::Yearly::date_range;
 *archive_file = \&MT::ArchiveType::Yearly::archive_file;
 

@@ -29,6 +29,18 @@ sub default_archive_templates {
     ];
 }
 
+sub archive_group_contents {
+    my $obj = shift;
+    my ( $ctx, %param ) = @_;
+    my $ts
+        = $param{year}
+        ? sprintf( "%04d%02d%02d000000",
+        week2ymd( $param{year}, $param{week} ) )
+        : undef;
+    my $limit = $param{limit};
+    $obj->dated_group_contents( $ctx, 'Weekly', $ts, $limit );
+}
+
 *date_range   = \&MT::ArchiveType::Weekly::date_range;
 *archive_file = \&MT::ArchiveType::Weekly::archive_file;
 

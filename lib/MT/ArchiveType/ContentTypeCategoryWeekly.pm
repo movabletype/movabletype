@@ -75,6 +75,20 @@ sub archive_file {
     $file;
 }
 
+sub archive_group_contents {
+    my $obj = shift;
+    my ( $ctx, %param ) = @_;
+    my $ts
+        = $param{year}
+        ? sprintf( "%04d%02d%02d000000",
+        week2ymd( $param{year}, $param{week} ) )
+        : $ctx->stash('current_timestamp');
+    my $cat = $param{category} || $ctx->stash('archive_category');
+    my $limit = $param{limit};
+    $obj->dated_category_contents( $ctx, 'Category-Weekly', $cat, $ts,
+        $limit );
+}
+
 *date_range = \&MT::ArchiveType::Weekly::date_range;
 
 1;

@@ -38,6 +38,20 @@ sub template_params {
     return { archive_class => "contenttype-author-monthly-archive" };
 }
 
+sub archive_group_contents {
+    my $obj = shift;
+    my ( $ctx, %param ) = @_;
+    Carp::confess("ctx is undef") unless defined $ctx;
+    my $ts
+        = $param{year}
+        ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month}, 1 )
+        : $ctx->stash('current_timestamp');
+    my $author = $param{author} || $ctx->stash('author');
+    my $limit = $param{limit};
+    $obj->dated_author_contents( $ctx, 'Author-Monthly', $author, $ts,
+        $limit );
+}
+
 *date_range    = \&MT::ArchiveType::Monthly::date_range;
 *archive_file  = \&MT::ArchiveType::AuthorMonthly::archive_file;
 *archive_title = \&MT::ArchiveType::AuthorMonthly::archive_title;

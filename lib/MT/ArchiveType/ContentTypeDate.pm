@@ -7,6 +7,129 @@ package MT::ArchiveType::ContentTypeDate;
 
 use base qw( MT::ArchiveType::Date );
 
+sub contenttype_group_based {
+    return 1;
+}
+
+sub dated_group_contents {
+    my $obj = shift;
+    my ( $ctx, $at, $ts, $limit ) = @_;
+    my $blog = $ctx->stash('blog');
+    my ( $start, $end );
+    if ($ts) {
+        ( $start, $end ) = $obj->date_range($ts);
+        $ctx->{current_timestamp}     = $start;
+        $ctx->{current_timestamp_end} = $end;
+    }
+    else {
+        $start = $ctx->{current_timestamp};
+        $end   = $ctx->{current_timestamp_end};
+    }
+    my $map          = $ctx->stash('template_map');
+    my $cat_field_id = defined $map && $map ? $map->cat_field_id : '';
+    my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
+    require MT::ContentData;
+    my @entries = MT::ContentData->load(
+        {   blog_id => $blog->id,
+            status  => MT::Entry::RELEASE(),
+        },
+        {   'sort'      => 'authored_on',
+            'direction' => 'descend',
+            ( $limit ? ( 'limit' => $limit ) : () ),
+            'join' => [
+                'MT::ContentFieldIndex',
+                'content_data_id',
+                {   content_field_id => $dt_field_id,
+                    value_datetime   => [ $start, $end ]
+                },
+                { range_incl => { value_datetime => 1 } }
+            ],
+        }
+    ) or return $ctx->error("Couldn't get $at archive list");
+    \@entries;
+}
+
+sub dated_category_contents {
+    my $obj = shift;
+    my ( $ctx, $at, $cat, $ts ) = @_;
+
+    my $blog = $ctx->stash('blog');
+    my ( $start, $end );
+    if ($ts) {
+        ( $start, $end ) = $obj->date_range($ts);
+    }
+    else {
+        $start = $ctx->{current_timestamp};
+        $end   = $ctx->{current_timestamp_end};
+    }
+    my $map          = $ctx->stash('template_map');
+    my $cat_field_id = defined $map && $map ? $map->cat_field_id : '';
+    my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
+    my @contents = MT::ContentData->load(
+        {   blog_id     => $blog->id,
+            status      => MT::Entry::RELEASE(),
+        },
+        {   'sort'      => 'authored_on',
+            'direction' => 'descend',
+            'joins' => [
+                [
+                'MT::ContentFieldIndex',
+                'content_data_id',
+                {   content_field_id => $dt_field_id,
+                    value_datetime   => [ $start, $end ]
+                },
+                { range_incl => { value_datetime => 1 } }
+                ],
+                [
+                'MT::ContentFieldIndex',
+                'content_data_id',
+                {   content_field_id => $cat_field_id,
+                    value_integer    => $cat->id
+                }
+                ]
+            ],
+        }
+    ) or return $ctx->error("Couldn't get $at archive list");
+    \@contents;
+}
+
+sub dated_author_contents {
+    my $obj = shift;
+    my ( $ctx, $at, $author, $ts ) = @_;
+
+    my $blog = $ctx->stash('blog');
+    my ( $start, $end );
+    if ($ts) {
+        ( $start, $end ) = $obj->date_range($ts);
+    }
+    else {
+        $start = $ctx->{current_timestamp};
+        $end   = $ctx->{current_timestamp_end};
+    }
+    my $map          = $ctx->stash('template_map');
+    my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
+    my @contents = MT::ContentData->load(
+        {   blog_id     => $blog->id,
+            author_id   => $author->id,
+            status      => MT::Entry::RELEASE(),
+            ( !$dt_field_id ? ( authored_on => [ $start, $end ] ) : () ),
+        },
+        {   ( !$dt_field_id ? ( range_incl  => { authored_on => 1 } ) : () ),
+            'sort'      => 'authored_on',
+            'direction' => 'descend',
+             'join' => [
+                 'MT::ContentFieldIndex',
+                 'content_data_id',
+                 {   content_field_id => $dt_field_id,
+                     value_datetime   => [ $start, $end ]
+                 },
+                 { range_incl => { value_datetime => 1 } }
+             ]
+        }
+    ) or return $ctx->error("Couldn't get $at archive list");
+    \@contents;
+}
+
 sub archive_contents_count {
     my $obj = shift;
     my ( $blog, $at, $content_data, $timestamp, $map ) = @_;

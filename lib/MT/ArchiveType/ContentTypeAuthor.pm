@@ -52,6 +52,41 @@ sub archive_contents_count {
     );
 }
 
+sub archive_group_contents {
+    my $obj = shift;
+    my ( $ctx, %param ) = @_;
+    my $blog  = $ctx->stash('blog');
+    my $a     = $param{author} || $ctx->stash('author');
+    my $limit = $param{limit};
+    if ( $limit && ( $limit eq 'auto' ) ) {
+        my $blog = $ctx->stash('blog');
+        $limit = $blog->entries_on_index if $blog;
+    }
+    return [] unless $a;
+    my $map         = $ctx->stash('template_map');
+    my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
+    require MT::ContentData;
+    my @contents = MT::ContentData->load(
+        {   blog_id   => $blog->id,
+            author_id => $a->id,
+            status    => MT::Entry::RELEASE()
+        },
+        {   'sort'      => 'authored_on',
+            'direction' => 'descend',
+            ( $limit ? ( 'limit' => $limit ) : () ),
+            'join' => [
+                'MT::ContentFieldIndex',
+                'content_data_id',
+                {   content_field_id => $dt_field_id,
+                    value_datetime   => [ $start, $end ]
+                },
+                { range_incl => { value_datetime => 1 } }
+            ],
+        }
+    );
+    \@contents;
+}
+
 sub does_publish_file {
     my $obj    = shift;
     my %params = %{ shift() };
@@ -67,6 +102,10 @@ sub does_publish_file {
 sub get_content {
     my ( $archiver, $ctx ) = @_;
     return $ctx->{__stash}{content};
+}
+
+sub contenttype_group_based {
+    return 1;
 }
 
 1;

@@ -74,6 +74,19 @@ sub archive_file {
     $file;
 }
 
+sub archive_group_contents{
+    my $obj = shift;
+    my ( $ctx, %param ) = @_;
+    my $ts
+        = $param{year}
+        ? sprintf( "%04d%02d%02d000000",
+        $param{year}, $param{month}, $param{day} )
+        : $ctx->stash('current_timestamp');
+    my $cat = $param{category} || $ctx->stash('archive_category');
+    my $limit = $param{limit};
+    $obj->dated_category_contents( $ctx, 'Category-Daily', $cat, $ts, $limit );
+}
+
 *date_range = \&MT::ArchiveType::Daily::date_range;
 
 1;
