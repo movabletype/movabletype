@@ -208,9 +208,9 @@
             <mt:loop name="sub_nav_loop">
             <mt:if name="allowed">
               <mt:if name="current">
-              <li class="item"><a href="<mt:var name="link" escape="html">" class="current sub-menu-link menu-link"><em><span class="menu-label"><mt:var name="label"></span></em></a></li>
+              <li class="item"><a href="<mt:var name="link" escape="html">" class="current sub-menu-link menu-link"><em><span class="menu-label"><mt:var name="label" escape="html"></span></em></a></li>
               <mt:else>
-              <li class="item"><a href="<mt:var name="link" escape="html">" class="sub-menu-link menu-link<mt:if name="dialog"> mt-open-dialog</mt:if>"><span class="menu-label"><mt:var name="label"></span></a></li>
+              <li class="item"><a href="<mt:var name="link" escape="html">" class="sub-menu-link menu-link<mt:if name="dialog"> mt-open-dialog</mt:if>"><span class="menu-label"><mt:var name="label" escape="html"></span></a></li>
               </mt:if>
             </mt:if>
             </mt:loop>

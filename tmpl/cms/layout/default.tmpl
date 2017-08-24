@@ -1,6 +1,6 @@
 <mt:setvartemplate name="layout">
 
-  <mt:include name="layout/default/header.tmpl">
+  <mt:include name="layout/common/header.tmpl">
 
   <mt:if name="form_header">
     <mt:var name="form_header">
@@ -12,18 +12,7 @@
     </div>
   </mt:if>
 
-    <mt:ignore>This width fixes broken edit template screen</mt:ignore>
-    <div class="mt-mainContent"<mt:if name="mode" eq="view"><mt:if name="object_type" eq="template"> style="width: 500px;"</mt:if></mt:if>>
-      <mt:include name="include/notification_indicator.tmpl">
-      <mt:include name="include/page_title.tmpl">
-      <mt:include name="include/system_msg.tmpl">
-      <mt:include name="include/display_options.tmpl">
-      <mt:include name="include/content_header.tmpl">
-      <mt:var name="page_content">
-    <mt:if name="form_footer">
-      <mt:var name="form_footer">
-    </mt:if>
-    </div>
+    <mt:include name="include/main_content.tmpl">
 
   <mt:setvarblock name="has_info"><mt:if name="object_nav">1<mt:elseif name="related_content">1</mt:if></mt:setvarblock>
 
@@ -37,5 +26,5 @@
   </mt:if>
   </div>
 
-  <mt:include name="layout/default/footer.tmpl">
+  <mt:include name="layout/common/footer.tmpl">
 </mt:setvartemplate>

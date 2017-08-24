@@ -1464,7 +1464,7 @@
     jQuery("#setting-title").text( trans( 'Edit [_1]', data.name ) );
 </mt:unless>
 <mt:if name="name">
-    jQuery("#setting-title").text( trans( 'Edit [_1]', '<mt:var name="name">' ) );
+    jQuery("#setting-title").text( trans( 'Edit [_1]', '<mt:var name="name" escape="js">' ) );
     var data = {};
     data['name'] = '<mt:var name="name" escape="js">';
     data['description'] = '<mt:var name="description" escape="js">';

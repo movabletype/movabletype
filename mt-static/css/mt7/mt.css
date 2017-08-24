@@ -8209,6 +8209,10 @@ li {
 }
 
 /* Forms */
+fieldset.form-group {
+  margin-bottom: 2rem;
+}
+
 .btn {
   cursor: pointer;
   font-weight: 600;

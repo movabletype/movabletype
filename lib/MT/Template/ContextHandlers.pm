@@ -447,7 +447,8 @@ sub core_tags {
                 \&MT::Template::Tags::App::_hdlr_app_list_filters,
             'App:ActionBar' =>
                 \&MT::Template::Tags::App::_hdlr_app_action_bar,
-            'App:Link' => \&MT::Template::Tags::App::_hdlr_app_link,
+            'App:Link'    => \&MT::Template::Tags::App::_hdlr_app_link,
+            'App:SVGIcon' => \&MT::Template::Tags::App::_hdlr_app_svg_icon,
 
             ## Site
             SiteID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
@@ -3944,9 +3945,19 @@ sub _hdlr_app_page_actions {
                 <ul class="list-unstyled">
         <mt:loop name="page_actions">
             <mt:if name="page">
-                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>><mt:var name="label"></a></li>
+                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
+                        <mtapp:svgicon id="ic_setting" title="\$label">
+                        <a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>>
+                            <mt:var name="label">
+                        </a>
+                    </li>
             <mt:else><mt:if name="link">
-                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open" data-mt-modal-large</mt:if>><mt:var name="label"></a></li>
+                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
+                        <mtapp:svgicon id="ic_setting" title="\$label">
+                        <a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open" data-mt-modal-large</mt:if>>
+                            <mt:var name="label">
+                        </a>
+                    </li>
             </mt:if></mt:if>
         </mt:loop>
                 </ul>
@@ -4114,6 +4125,62 @@ sub _hdlr_app_link {
         }
     }
     return $app->uri( mode => $mode, args => \%args );
+}
+
+###########################################################################
+
+=head2 App:SVGIcon
+
+Produces tags of svg image.
+
+B<Attributes:>
+
+=over 4
+
+=item * id
+
+=item * title
+
+=item * color
+
+=item * size
+
+=back
+
+=for tags application
+
+=cut
+
+sub _hdlr_app_svg_icon {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $id    = $args->{id};
+    my $title = $args->{title};
+    my $color = $args->{color};
+    my $size  = $args->{size};
+
+    if ( !defined $id || $id eq '' ) {
+        return $ctx->error( MT->translate('id attribute is required') );
+    }
+
+    my $title_attr = '';
+    if ( defined $title && $title ne '' ) {
+        $title_attr = qq{ title="$title"};
+    }
+    my $color_class_suffix = '';
+    if ( defined $color && $color ne '' ) {
+        $color_class_suffix = "--$color";
+    }
+    my $size_class = '';
+    if ( defined $size && $size ne '' ) {
+        $size_class = " mt-icon--$size";
+    }
+
+    my $static_uri = MT->static_path;
+
+    qq{<svg$title_attr role="img" class="mt-icon${color_class_suffix}${size_class}${size_class}">
+  <use xlink:href="${static_uri}images/sprite.svg#$id">
+</svg>};
 }
 
 package MT::Template::Tags::System;
