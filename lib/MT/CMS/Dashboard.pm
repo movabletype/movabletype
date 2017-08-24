@@ -1402,6 +1402,22 @@ sub site_list_widget {
             }
         }
     }
+    else {
+        # from recent access
+        my @recent = @{ $user->favorite_sites || [] };
+        for my $site_id (@recent) {
+            next
+                unless $user->has_perm($site_id)
+                || $user->is_superuser
+                || $user->permissions(0)->can_do('edit_templates');
+
+            my $site = MT->model('website')->load($site_id);
+            next unless $site;
+
+            my $row = $site_builder->($site);
+            push @sites, $row if $row;
+        }
+    }
 
     $param->{sites} = \@sites;
 }
