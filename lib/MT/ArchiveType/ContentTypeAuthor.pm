@@ -63,8 +63,6 @@ sub archive_group_contents {
         $limit = $blog->entries_on_index if $blog;
     }
     return [] unless $a;
-    my $map         = $ctx->stash('template_map');
-    my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
     require MT::ContentData;
     my @contents = MT::ContentData->load(
         {   blog_id   => $blog->id,
@@ -74,14 +72,6 @@ sub archive_group_contents {
         {   'sort'      => 'authored_on',
             'direction' => 'descend',
             ( $limit ? ( 'limit' => $limit ) : () ),
-            'join' => [
-                'MT::ContentFieldIndex',
-                'content_data_id',
-                {   content_field_id => $dt_field_id,
-                    value_datetime   => [ $start, $end ]
-                },
-                { range_incl => { value_datetime => 1 } }
-            ],
         }
     );
     \@contents;
