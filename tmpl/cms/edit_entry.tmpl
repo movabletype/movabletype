@@ -291,9 +291,13 @@
               } #]
               <mt:if name="object_type" ne="page">
               [# if ( i == 0 ) { #]
-                  <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]"><strong>[#= label #]</strong><a href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h trans("Remove") #]">&nbsp;<span>[#|h trans("Remove") #]</span></a></li>
+                  <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
+                    <mtapp:svgicon id="ic_fav" title="Primary">
+                    <strong>[#= label #]</strong>
+                    <a href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h trans("Remove") #]">&nbsp;<mtapp:svgicon id="ic_minus" title="Remove"></a>
+                  </li>
               [# } else { #]
-                  <li mt:focus-hover="1" mt:id="[#= cat.id #]"><mt:if name="object_type" eq="entry"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a></mt:if><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h "Remove" #]">&nbsp;<span>[#|h trans("Remove") #]</span></a></li>
+                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" style="margin-left: 2rem;"><mt:if name="object_type" eq="entry"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a></mt:if><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h "Remove" #]">&nbsp;<mtapp:svgicon id="ic_minus" title="Remove"></a></li>
               [# } #]
               <mt:else>
               <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
@@ -598,6 +602,7 @@
      title="<mt:var name="delete_button_title">"
      class="delete"
      accesskey="x">
+    <mtapp:svgicon id="ic_trash" title="$delete_button_title">
     <__trans phrase="Delete">
   </a>
 </div>
@@ -701,7 +706,7 @@
      label="$widget_label">
     <div class="text-right asset-list-header">
       <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog mt-modal-open" data-mt-modal-large>
-        <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
+        <mtapp:svgicon id="ic_add" title="<__trans phrase="Add Entry Asset">">
         <__trans phrase="Add">
       </a>
     </div>

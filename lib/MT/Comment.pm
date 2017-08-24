@@ -397,18 +397,21 @@ sub list_props {
                         push @result, MT->translate('Deleted');
                         next;
                     }
-                    my $type = $entry->class_type;
-                    my $img
-                        = MT->static_path
-                        . 'images/nav_icons/color/'
-                        . $type . '.gif';
                     my $title_html
                         = MT::ListProperty::make_common_label_html( $entry,
                         $app, 'title', 'No title' );
+
+                    my $static_uri = $app->static_path;
+                    my $icon_title = $entry->class_label;
+                    my $icon_color = $entry->is_entry ? 'success' : 'info';
+                    my $icon       = qq{
+                        <svg title="$icon_title" role="img" class="mt-icon--$icon_color">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_file">
+                        </svg>
+                    };
+
                     push @result, qq{
-                        <span class="icon target-type $type">
-                          <img src="$img" />
-                        </span>
+                        $icon
                         $title_html
                     };
                 }

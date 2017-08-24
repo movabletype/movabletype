@@ -4178,9 +4178,7 @@ sub _hdlr_app_svg_icon {
 
     my $static_uri = MT->static_path;
 
-    qq{<svg$title_attr role="img" class="mt-icon${color_class_suffix}${size_class}${size_class}">
-  <use xlink:href="${static_uri}images/sprite.svg#$id">
-</svg>};
+    qq{<svg$title_attr role="img" class="mt-icon${color_class_suffix}${size_class}${size_class}"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
 }
 
 package MT::Template::Tags::System;
