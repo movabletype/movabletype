@@ -85,7 +85,7 @@
 </mt:if>
 
   <mtapp:settinggroup id="blog-settings">
-    <legend><__trans phrase="[_1] Settings" params="<mt:var name="object_label" capitalize="1">"></legend>
+    <legend class="h3"><__trans phrase="[_1] Settings" params="<mt:var name="object_label" capitalize="1">"></legend>
 
     <mtapp:setting
        id="name"
@@ -198,8 +198,8 @@
   </mtapp:settinggroup>
 
 <mt:if name="can_set_publish_paths">
-  <legend><__trans phrase="Publishing Paths"></legend>
   <mtapp:settinggroup id="publushing-path-settings">
+    <legend class="h3"><__trans phrase="Publishing Paths"></legend>
     <mtapp:setting
        id="site_url"
        class="url-field"
@@ -499,7 +499,7 @@
 <mt:unless name="hide_build_option">
   <mt:if name="dynamic_enabled">
   <mtapp:settinggroup id="dynamic-option-settings">
-    <legend><__trans phrase="Dynamic Publishing Options"></legend>
+    <legend class="h3"><__trans phrase="Dynamic Publishing Options"></legend>
     <mtapp:setting
        id="dynamic_publishing_options"
        label="<__trans phrase="Dynamic Publishing Options">"
@@ -520,7 +520,7 @@
 </mt:unless>
 
   <mtapp:settinggroup id="archive-option-settings">
-    <legend><__trans phrase="Archive Settings"></legend>
+    <legend class="h3"><__trans phrase="Archive Settings"></legend>
 
     <mtapp:setting
        id="file_extension"
@@ -569,7 +569,7 @@
   </mtapp:settinggroup>
 
   <mtapp:settinggroup id="module-option-settings">
-    <legend><__trans phrase="Module Settings"></legend>
+    <legend class="h3"><__trans phrase="Module Settings"></legend>
 
     <mtapp:setting
        id="include_system"
@@ -598,7 +598,7 @@
   </mtapp:settinggroup>
 
   <mtapp:settinggroup id="revision-history-settings">
-    <legend><__trans phrase="Revision History"></legend>
+    <legend class="h3"><__trans phrase="Revision History"></legend>
   <mt:unless name="master_revision_switch">
     <mtapp:statusmsg
        id="master_revision_off"
@@ -642,7 +642,7 @@
   </mtapp:settinggroup>
 
   <mtapp:settinggroup id="upload-settings">
-    <legend><__trans phrase="Upload"></legend>
+    <legend class="h3"><__trans phrase="Upload"></legend>
 
     <div class="row">
       <div class="form-group col">

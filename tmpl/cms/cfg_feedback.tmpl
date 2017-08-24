@@ -54,7 +54,7 @@
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">" />
 
   <mtapp:settinggroup id="cfg-spam">
-    <legend><__trans phrase="Spam Settings"></legend>
+    <legend class="h3"><__trans phrase="Spam Settings"></legend>
 
     <mtapp:setting
        id="auto_delete_junk"
@@ -121,7 +121,7 @@
   </mtapp:settinggroup>
 
   <mtapp:settinggroup id="cfg-comment">
-    <legend><__trans phrase="Comment Settings"></legend>
+    <legend class="h3"><__trans phrase="Comment Settings"></legend>
 
   <mt:if name="allow_comments">
     <mt:unless name="system_allow_comments">
@@ -156,7 +156,7 @@
 
     <div id="allow_comments-option" class="collapse<mt:if name="allow_comments"> show</mt:if>">
       <mtapp:settinggroup id="comment-policy-setting">
-        <legend><__trans phrase="Commenting Policy"></legend>
+        <legend class="h3"><__trans phrase="Commenting Policy"></legend>
         <mtapp:setting
            id="moderate_comments"
            label="<__trans phrase="Immediately approve comments from">"
@@ -253,7 +253,7 @@
       </mtapp:settinggroup>
 
       <mtapp:settinggroup id="comment-display-setting">
-        <legend><__trans phrase="Comment Display Settings"></legend>
+        <legend class="h3"><__trans phrase="Comment Display Settings"></legend>
         <mtapp:setting
            id="sort_order_comments"
            label="<__trans phrase="Comment Order">"
@@ -325,7 +325,7 @@
 
 
   <mtapp:settinggroup id="cfg_trackback">
-    <legend><__trans phrase="Trackback Settings"></legend>
+    <legend class="h3"><__trans phrase="Trackback Settings"></legend>
 
   <mt:unless name="system_allow_pings">
     <mtapp:statusmsg
@@ -351,7 +351,7 @@
 
     <div id="allow_pings-option" class="collapse<mt:if name="allow_pings"> show</mt:if>">
       <mtapp:settinggroup id="trackback-policy-setting">
-        <legend><__trans phrase="TrackBack Policy"></legend>
+        <legend class="h3"><__trans phrase="TrackBack Policy"></legend>
         <mtapp:setting
            id="moderate_pings"
            label="<__trans phrase="Moderation">"
@@ -394,7 +394,7 @@
       </mtapp:settinggroup>
 
       <mtapp:settinggroup id="trackback-option-setting">
-        <legend><__trans phrase="TrackBack Options"></legend>
+        <legend class="h3"><__trans phrase="TrackBack Options"></legend>
         <mtapp:setting
            id="autodiscover_links"
            label="<__trans phrase="TrackBack Auto-Discovery">"

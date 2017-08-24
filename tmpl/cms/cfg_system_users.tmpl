@@ -63,7 +63,7 @@ function clearNotifyUsers() {
 
 <mt:unless name="external_user_management">
   <mtapp:settinggroup id="external-user-management">
-    <legend><__trans phrase="User Registration"></legend>
+    <legend class="h3"><__trans phrase="User Registration"></legend>
     <mtapp:setting
        id="registration"
        label="<__trans phrase="Allow Registration">">
@@ -98,7 +98,7 @@ function clearNotifyUsers() {
 
 <mt:if name="auth_mode_mt">
   <mtapp:settinggroup id="password-validation">
-    <legend><__trans phrase="Password Validation"></legend>
+    <legend class="h3"><__trans phrase="Password Validation"></legend>
     <mtapp:setting
        id="password-validation-options"
        label="<__trans phrase="Options">">
@@ -149,7 +149,7 @@ function clearNotifyUsers() {
 </mt:if>
 
   <mtapp:settinggroup id="new-user-defaults">
-    <legend><__trans phrase="New User Defaults"></legend>
+    <legend class="h3"><__trans phrase="New User Defaults"></legend>
     <mtapp:setting
        id="personal_weblog"
        label="<__trans phrase="Personal Child Site">">

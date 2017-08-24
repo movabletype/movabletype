@@ -111,8 +111,8 @@ function init() {
     <mt:if name="__first__">
       <h2><__trans phrase="Sites"></h2>
     </mt:if>
-      <fieldset>
-        <legend><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</legend>
+      <fieldset class="form-group">
+        <legend class="h3"><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</legend>
         <mtapp:setting
            id="site_url"
            label="<__trans phrase="Site URL">"
@@ -142,8 +142,8 @@ function init() {
     <mt:if name="__first__">
       <h2><__trans phrase="Child Sites"></h2>
     </mt:if>
-      <fieldset>
-        <legend><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</legend>
+      <fieldset class="form-group">
+        <legend class="h3"><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</legend>
         <mtapp:setting
            id="parent_id"
            label="<__trans phrase="Parent Site">"
