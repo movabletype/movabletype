@@ -783,6 +783,7 @@ sub core_content_actions {
                 mode  => 'view',
                 class => 'icon-create',
                 label => 'Create Role',
+                icon  => 'ic_add',
                 order => 100,
             }
         },
