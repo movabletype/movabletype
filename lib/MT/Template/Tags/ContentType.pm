@@ -91,8 +91,11 @@ sub _hdlr_contents {
             unless $match;
     }
 
+    my $contents = $ctx->stash('contents');
     my @contents
-        = MT::ContentData->load( { content_type_id => $content_type->id } );
+        = $contents
+        ? @{ $contents }
+        : MT::ContentData->load( { content_type_id => $content_type->id } );
 
     my $i       = 0;
     my $res     = '';

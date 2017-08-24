@@ -447,6 +447,8 @@ sub rebuild_file {
             unless ref $category;
         $ctx->var( 'category_archive', 1 );
         $ctx->{__stash}{archive_category} = $category;
+        $ctx->{__stash}{template_map} = $map
+            if $archiver->contenttype_category_based;
     }
     if ( $archiver->entry_based ) {
         $entry = $args{Entry};
@@ -465,6 +467,8 @@ sub rebuild_file {
         Carp::confess("Date-based archive types require StartDate parameter")
             unless $args{StartDate};
         $ctx->var( 'datebased_archive', 1 );
+        $ctx->{__stash}{template_map} = $map
+            if $archiver->contenttype_date_based;
     }
     if ( $archiver->author_based ) {
 
@@ -477,6 +481,8 @@ sub rebuild_file {
             unless ref $author;
         $ctx->var( 'author_archive', 1 );
         $ctx->{__stash}{author} = $author;
+        $ctx->{__stash}{template_map} = $map
+            if $archiver->contenttype_author_based;
     }
     if ( $archiver->contenttype_based ) {
         $content_data = $args{ContentData};
