@@ -698,14 +698,17 @@ sub rebuild_file {
     {
 
         if ( $archiver->group_based ) {
-            require MT::Promise;
-            my $entries = sub { $archiver->archive_group_entries($ctx) };
-            $ctx->stash( 'entries', MT::Promise::delay($entries) );
-        }
-        elsif ( $archiver->contenttype_group_based ) {
-            require MT::Promise;
-            my $contents = sub { $archiver->archive_group_contents($ctx) };
-            $ctx->stash( 'contents', MT::Promise::delay($contents) );
+            if ( $archiver->contenttype_group_based ) {
+                require MT::Promise;
+                my $contents
+                    = sub { $archiver->archive_group_contents($ctx) };
+                $ctx->stash( 'contents', MT::Promise::delay($contents) );
+            }
+            else {
+                require MT::Promise;
+                my $entries = sub { $archiver->archive_group_entries($ctx) };
+                $ctx->stash( 'entries', MT::Promise::delay($entries) );
+            }
         }
 
         my $html = undef;
