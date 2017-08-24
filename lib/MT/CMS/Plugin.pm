@@ -213,6 +213,14 @@ sub build_plugin_table {
         my $row;
         my $icon = $app->static_path . 'images/plugin.gif';
 
+        my $icon_title = $app->translate('Plugin');
+        my $static_uri = $app->static_path;
+        $icon = qq{
+            <svg title="$icon_title" role="img" class="mt-icon">
+                <use xlink:href="${static_uri}images/sprite.svg#ic_plugin">
+            </svg>
+        };
+
         if ( my $plugin = $profile->{object} ) {
             my $plugin_icon;
             if ( $plugin->icon ) {
