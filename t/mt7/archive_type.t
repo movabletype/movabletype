@@ -150,8 +150,6 @@ for my $s (@suite) {
     #my $file = File::Spec->catfile( $blog->archive_path, $map->file_template);
     my $file_name = $publisher->archive_file_for( $cd, $blog, $at, $category, $map, $ts, $cd->author );
     my $file = File::Spec->catfile( $blog->archive_path, $file_name );
-warn $at;
-warn $file;
 
     unlink $file if -e $file;
     $mt->request->reset;
