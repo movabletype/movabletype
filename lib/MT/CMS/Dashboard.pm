@@ -1240,4 +1240,170 @@ sub activity_log_widget {
     $param->{logs} = \@logs;
 }
 
+sub site_list_widget {
+    my $app = shift;
+    my ( $tmpl, $param ) = @_;
+
+    my $user = $app->user;
+    my $blog = $app->blog || undef;
+
+    my $site_builder = sub {
+        my $site = shift;
+        return if !$user->is_superuser and !$user->permissions( $site->id );
+
+        my $row;
+
+        # basic information
+        $row->{site_name}        = $site->name;
+        $row->{parent_site_name} = $site->is_blog ? $site->website->name : '';
+        $row->{site_url}         = $site->site_url;
+
+        # Action link
+        $row->{can_edit_template}
+            = $user->is_superuser ? 1
+            : $user->permissions( $site->id )
+            ->can_do('access_to_template_list') ? 1
+            : 0;
+        $row->{can_edit_config}
+            = $user->is_superuser ? 1
+            : $user->permissions( $site->id )
+            ->can_do('open_blog_config_screen') ? 1
+            : 0;
+
+        # Recent post
+        my $MAX_POSTS = 3;
+        my @recent;
+        my $terms = {
+            author_id => $user->id,
+            blog_id   => $site->id,
+        };
+        my $args = {
+            limit      => $MAX_POSTS,
+            sort_by    => 'created_on',
+            sort_order => 'asc',
+        };
+
+        # Recent post - Content Data
+        my $cd_class = MT->model('content_data');
+        my $cd_iter = $cd_class->load_iter( $terms, $args );
+        while ( my $p = $cd_iter->() ) {
+            my $item;
+            $item->{site_id}         = $site->id;
+            $item->{id}              = $p->id;
+            $item->{title}           = $p->title;
+            $item->{object_tyoe}     = 'content_data';
+            $item->{content_type_id} = $p->content_type_id;
+
+            if ( my $ts = $p->created_on ) {
+                $item->{created_on_formatted} = format_ts(
+                    MT::App::CMS::LISTING_DATETIME_FORMAT(),
+                    epoch2ts( $site, ts2epoch( undef, $ts ) ),
+                    $site,
+                    $user ? $user->preferred_language : undef
+                );
+            }
+            push @recent, $item;
+        }
+
+        # Recent post - Entry
+        if ( $MAX_POSTS > scalar @recent ) {
+            my $entry_class = MT->model('entry');
+            $args->{limit} = $MAX_POSTS - scalar @recent;
+
+            my $entry_iter = $entry_class->load_iter( $terms, $args );
+            while ( my $p = $entry_iter->() ) {
+                my $item;
+                $item->{site_id}     = $site->id;
+                $item->{id}          = $p->id;
+                $item->{title}       = $p->title;
+                $item->{object_tyoe} = 'entry';
+
+                if ( my $ts = $p->created_on ) {
+                    $item->{created_on_formatted} = format_ts(
+                        MT::App::CMS::LISTING_DATETIME_FORMAT(),
+                        epoch2ts( $site, ts2epoch( undef, $ts ) ),
+                        $site,
+                        $user ? $user->preferred_language : undef
+                    );
+                }
+                push @recent, $item;
+            }
+        }
+
+        # Recent post - Page
+        if ( $MAX_POSTS > scalar @recent ) {
+            my $page_class = MT->model('page');
+            $args->{limit} = $MAX_POSTS - scalar @recent;
+
+            my $page_iter = $page_class->load_iter( $terms, $args );
+            while ( my $p = $page_iter->() ) {
+                my $item;
+                $item->{site_id}     = $site->id;
+                $item->{id}          = $p->id;
+                $item->{title}       = $p->title;
+                $item->{object_tyoe} = 'page';
+
+                if ( my $ts = $p->created_on ) {
+                    $item->{created_on_formatted} = format_ts(
+                        MT::App::CMS::LISTING_DATETIME_FORMAT(),
+                        epoch2ts( $site, ts2epoch( undef, $ts ) ),
+                        $site,
+                        $user ? $user->preferred_language : undef
+                    );
+                }
+                push @recent, $item;
+            }
+        }
+        $row->{recent_post} = \@recent;
+
+        # Content Type list
+        my @content_types;
+        my $ct_class = MT->model('content_type');
+        my $ct_iter  = $ct_class->load_iter(
+            { blog_id => $site->id, },
+            {   sort_by    => 'name',
+                sort_order => 'asc',
+            }
+        );
+        while ( my $ct = $ct_iter->() ) {
+            my $item;
+            $item->{name} = $ct->name;
+            $item->{can_create}
+                = $user->can_do( "create_content_data_" . $ct->id ) ? 1 : 0;
+            $item->{can_list}
+                = $user->can_do( "create_content_data_" . $ct->id )   ? 1
+                : $user->can_do( "publish_content_data_" . $ct->id )  ? 1
+                : $user->can_do( "edit_all_content_data_" . $ct->id ) ? 1
+                :                                                       0;
+            push @content_types, $item
+                if $item->{can_create} or $item->{can_list};
+        }
+        $row->{content_types} = \@content_types;
+
+        return $row;
+    };
+
+    # Load sites
+    my @sites;
+    if ($blog) {
+        if ( $blog->is_blog ) {
+            my $row = $site_builder->($blog);
+            push @sites, $row if $row;
+        }
+        else {
+            # Parent
+            my $row = $site_builder->($blog);
+            push @sites, $row if $row;
+
+            # Children
+            for my $child ( @{ $blog->blogs } ) {
+                my $row = $site_builder->($child);
+                push @sites, $row if $row;
+            }
+        }
+    }
+
+    $param->{sites} = \@sites;
+}
+
 1;

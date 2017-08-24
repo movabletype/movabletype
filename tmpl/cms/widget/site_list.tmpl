@@ -1,0 +1,41 @@
+<mtapp:widget
+  class="site-list-widget"
+  label="<__trans phrase="Site List">"
+  can_close="1">
+  <mt:If name="sites">
+    <mt:Loop name="sites">
+  <div class="card">
+    <div class="card-block">        
+      <div class="row">
+        <div class="col-12">
+          <h3><mt:Var name="site_name" escape="html"></h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+      <mt:If name="parent_site_name">
+          <p><__trans phrase="(on [_1])" params="<mt:Var name="parent_site_name" escape="html">"></p></mt:If>
+          <p><mt:Var name="site_url"></p>
+      <mt:If name="can_edit_template">
+          <a class="btn btn-default" href=""><__trans phrase="Design"></a>
+      </mt:If>
+      <mt:If name="can_edit_config">
+          <a class="btn btn-default" href=""><__trans phrase="Setting"></a>
+      </mt:If>
+        </div>
+        <div class="col-6">
+      <mt:Loop name="content_types">
+          <div class="row">
+            <div class="col-8"><mt:Var name="name" escape="html"></div>
+            <div class="col-2"><mt:If name="can_list"><a href=""><__trans phrase="List"></a></mt:If></div>
+            <div class="col-2"><mt:If name="can_create"><a href=""><__trans phrase="Create"></a></mt:If></div>
+          </div>
+      </mt:Loop>
+        </div>
+      </div>
+    </div>
+  </div>
+    </mt:Loop>
+  </mt:If>
+</mtapp:widget>
+

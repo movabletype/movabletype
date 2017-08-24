@@ -450,6 +450,16 @@ sub core_widgets {
             order    => 100,
             default  => 1,
         },
+        site_list => {
+            label    => 'Site List',
+            template => 'widget/site_list.tmpl',
+            handler  => "${pkg}Dashboard::site_list_widget",
+            singular => 1,
+            set      => 'main',
+            view     => [ 'user', 'website', 'blog' ],
+            order    => 100,
+            default  => 1,
+        },
     };
 
     return $core_widgets;
