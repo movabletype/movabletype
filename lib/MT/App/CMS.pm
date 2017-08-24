@@ -440,6 +440,16 @@ sub core_widgets {
             order    => 100,
             default  => 1,
         },
+        activity_log => {
+            label    => 'Activity Log',
+            template => 'widget/activity_log.tmpl',
+            handler  => "${pkg}Dashboard::activity_log_widget",
+            singular => 1,
+            set      => 'sidebar',
+            view     => [ 'system', 'user', 'website', 'blog' ],
+            order    => 100,
+            default  => 1,
+        },
     };
 
     return $core_widgets;

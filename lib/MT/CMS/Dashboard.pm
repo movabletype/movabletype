@@ -6,7 +6,8 @@
 package MT::CMS::Dashboard;
 
 use strict;
-use MT::Util qw( epoch2ts encode_html );
+use MT::Util
+    qw( ts2epoch epoch2ts encode_html relative_date offset_time format_ts );
 use MT::Stats qw(readied_provider);
 use MT::I18N qw( const );
 
@@ -1148,7 +1149,7 @@ sub system_information_widget {
             my $version_url = const('LATEST_VESION_URL');
             my $req         = new HTTP::Request( GET => $version_url );
             my $resp        = $ua->request($req);
-            my $result = $resp->content();
+            my $result      = $resp->content();
             if ( !$resp->is_success() || !$result ) {
                 $param->{disable_version_check} = 1;
             }
@@ -1161,6 +1162,82 @@ sub system_information_widget {
             }
         }
     }
+}
+
+sub activity_log_widget {
+    my $app = shift;
+    my ( $tmpl, $param ) = @_;
+
+    my $user    = $app->user;
+    my $blog_id = scalar $app->param('blog_id');
+    my $blog    = $app->blog || undef;
+
+    my $terms;
+    my $args;
+    if ($blog_id) {
+        $terms->{blog_id} = $blog_id;
+        if ( !$user->permissions($blog_id)->can_do('view_blog_log') ) {
+            $terms->{author_id} = $user->id;
+        }
+    }
+    else {
+        if ( !$user->permissions(0)->can_do('view_log') ) {
+            $terms->{author_id} = $user->id;
+        }
+    }
+    $args = {
+        limit      => 5,
+        sort_by    => 'created_on',
+        sort_order => 'asc',
+    };
+
+    my $is_relative
+        = ( $user->date_format || 'relative' ) eq 'relative' ? 1 : 0;
+    my $site_view = $blog ? 1 : 0;
+
+    my $log_class  = MT->model('log');
+    my $blog_class = MT->model('blog');
+    my $iter       = $log_class->load_iter( $terms, $args );
+    my @logs;
+    my %blogs;
+    while ( my $log = $iter->() ) {
+        my $row = {
+            log_message => $log->message,
+            id          => $log->id,
+            blog_id     => $log->blog_id
+        };
+        if ( my $ts = $log->created_on ) {
+            if ($site_view) {
+                $row->{created_on_formatted} = format_ts(
+                    MT::App::CMS::LISTING_DATETIME_FORMAT(),
+                    epoch2ts( $blog, ts2epoch( undef, $ts ) ),
+                    $blog,
+                    $user ? $user->preferred_language : undef
+                );
+            }
+            else {
+                $row->{created_on_formatted} = format_ts(
+                    MT::App::CMS::LISTING_DATETIME_FORMAT(),
+                    epoch2ts( undef, offset_time( ts2epoch( undef, $ts ) ) ),
+                    undef,
+                    $user ? $user->preferred_language : undef
+                );
+            }
+
+            if ( $log->blog_id ) {
+                $blog = $blogs{ $log->blog_id }
+                    ||= $blog_class->load( $log->blog_id, { cache_ok => 1 } );
+                $row->{site_name} = $blog ? $blog->name : '';
+            }
+            else {
+                $row->{site_name} = $app->translate('System');
+            }
+        }
+
+        push @logs, $row;
+    }
+
+    $param->{logs} = \@logs;
 }
 
 1;
