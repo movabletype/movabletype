@@ -41,7 +41,8 @@ sub archive_group_contents {
     $obj->dated_group_contents( $ctx, 'Daily', $ts, $limit );
 }
 
-*date_range   = \&MT::ArchiveType::Daily::date_range;
-*archive_file = \&MT::ArchiveType::Daily::archive_file;
+*date_range    = \&MT::ArchiveType::Daily::date_range;
+*archive_file  = \&MT::ArchiveType::Daily::archive_file;
+*archive_title = \&MT::ArchiveType::Daily::archive_title;
 
 1;

@@ -86,6 +86,7 @@ sub archive_group_contents {
         $limit );
 }
 
-*date_range = \&MT::ArchiveType::Yearly::date_range;
+*date_range    = \&MT::ArchiveType::Yearly::date_range;
+*archive_title = \&MT::ArchiveType::CategoryYearly::archive_title;
 
 1;

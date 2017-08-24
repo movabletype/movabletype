@@ -40,8 +40,9 @@ sub archive_group_contents {
     $obj->dated_group_contents( $ctx, 'Monthly', $ts, $limit );
 }
 
-*date_range   = \&MT::ArchiveType::Monthly::date_range;
-*archive_file = \&MT::ArchiveType::Monthly::archive_file;
+*date_range    = \&MT::ArchiveType::Monthly::date_range;
+*archive_file  = \&MT::ArchiveType::Monthly::archive_file;
+*archive_title = \&MT::ArchiveType::Monthly::archive_title;
 
 1;
 

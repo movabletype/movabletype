@@ -89,6 +89,7 @@ sub archive_group_contents {
         $limit );
 }
 
-*date_range = \&MT::ArchiveType::Weekly::date_range;
+*date_range    = \&MT::ArchiveType::Weekly::date_range;
+*archive_title = \&MT::ArchiveType::CategoryWeekly::archive_title;
 
 1;

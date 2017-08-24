@@ -88,6 +88,7 @@ sub archive_group_contents{
         $limit );
 }
 
-*date_range = \&MT::ArchiveType::Monthly::date_range;
+*date_range    = \&MT::ArchiveType::Monthly::date_range;
+*archive_title = \&MT::ArchiveType::CategoryMonthly::archive_title;
 
 1;

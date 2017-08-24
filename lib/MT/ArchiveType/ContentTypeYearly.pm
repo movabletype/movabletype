@@ -40,7 +40,8 @@ sub archive_group_contents {
     $obj->dated_group_contents( $ctx, 'Yearly', $ts, $limit );
 }
 
-*date_range   = \&MT::ArchiveType::Yearly::date_range;
-*archive_file = \&MT::ArchiveType::Yearly::archive_file;
+*date_range    = \&MT::ArchiveType::Yearly::date_range;
+*archive_file  = \&MT::ArchiveType::Yearly::archive_file;
+*archive_title = \&MT::ArchiveType::Yearly::archive_title;
 
 1;

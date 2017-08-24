@@ -41,8 +41,9 @@ sub archive_group_contents {
     $obj->dated_group_contents( $ctx, 'Weekly', $ts, $limit );
 }
 
-*date_range   = \&MT::ArchiveType::Weekly::date_range;
-*archive_file = \&MT::ArchiveType::Weekly::archive_file;
+*date_range    = \&MT::ArchiveType::Weekly::date_range;
+*archive_file  = \&MT::ArchiveType::Weekly::archive_file;
+*archive_title = \&MT::ArchiveType::Weekly::archive_title;
 
 1;
 

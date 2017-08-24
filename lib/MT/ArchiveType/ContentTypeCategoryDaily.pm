@@ -87,6 +87,7 @@ sub archive_group_contents{
     $obj->dated_category_contents( $ctx, 'Category-Daily', $cat, $ts, $limit );
 }
 
-*date_range = \&MT::ArchiveType::Daily::date_range;
+*date_range    = \&MT::ArchiveType::Daily::date_range;
+*archive_title = \&MT::ArchiveType::CategoryDaily::archive_title;
 
 1;
