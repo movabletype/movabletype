@@ -4255,9 +4255,40 @@ sub object_edit_uri {
     );
 }
 
+sub add_to_favorite_sites {
+    my $app = shift;
+    my ($fav) = @_;
+
+    my $user = $app->user;
+    return unless $user;
+
+    my $site = MT->model('blog')->load($fav);
+    use Data::Dumper;
+    print STDERR Dumper( $site );
+    return unless $site;
+
+    return
+           unless $user->has_perm($fav)
+        || $user->is_superuser
+        || $user->permissions(0)->can_do('edit_templates');
+
+    my @current = @{ $user->favorite_sites || [] };
+
+    return if @current && ( $current[0] == $fav );
+    @current = grep { $_ != $fav } @current;
+    unshift @current, $fav;
+    @current = @current[ 0 .. 19 ]
+        if @current > 20;
+
+    $user->favorite_sites( \@current );
+    $user->save;
+}
+
 sub add_to_favorite_blogs {
     my $app = shift;
     my ($fav) = @_;
+
+    add_to_favorite_sites( $app, $fav );
 
     my $auth = $app->user;
     return unless $auth;
@@ -4286,6 +4317,8 @@ sub add_to_favorite_blogs {
 sub add_to_favorite_websites {
     my $app = shift;
     my ($fav) = @_;
+
+    add_to_favorite_sites( $app, $fav );
 
     my $auth = $app->user;
     return unless $auth;
