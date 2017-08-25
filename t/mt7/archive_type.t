@@ -15,8 +15,9 @@ use File::Basename;
 use MT::ContentFieldIndex;
 use MT::ContentPublisher;
 
-my $mt   = MT->instance;
-my $blog = MT::Test::Permission->make_blog( parent_id => 0, name => 'test blog' );
+my $mt = MT->instance;
+my $blog
+    = MT::Test::Permission->make_blog( parent_id => 0, name => 'test blog' );
 
 my $ct = MT::Test::Permission->make_content_type(
     blog_id => $blog->id,
@@ -82,52 +83,67 @@ my $cd = MT::Test::Permission->make_content_data(
     },
 );
 
-my $tmpl = MT::Test::Permission->make_template( blog_id => $blog->id, name => 'ContentType Test', text => '<$mt:ArchiveTitle$>' );
+my $text = '<$mt:ArchiveTitle$>';
+my $tmpl = MT::Test::Permission->make_template(
+    blog_id => $blog->id,
+    name    => 'ContentType Test',
+    text    => $text
+);
 $tmpl->content_type_id( $ct->id );
-my $tmpl_archive = MT::Test::Permission->make_template( blog_id => $blog->id, name => 'ContentType Archive Test', text => '<$mt:ArchiveTitle$>' );
+my $tmpl_archive = MT::Test::Permission->make_template(
+    blog_id => $blog->id,
+    name    => 'ContentType Archive Test',
+    text    => $text
+);
 $tmpl_archive->content_type_id( $ct->id );
 
 my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
 
 my %html = (
-    'ContentType' => 'Sample Content Data',
-    'ContentType-Daily' => 'June  3, 2017',
-    'ContentType-Weekly' => 'May 28, 2017 - June  3, 2017',
-    'ContentType-Monthly' => 'June 2017',
-    'ContentType-Yearly' => '2017',
-    'ContentType_Author' => 'Yuki Ishikawa',
+    'ContentType'              => 'Sample Content Data',
+    'ContentType-Daily'        => 'June  3, 2017',
+    'ContentType-Weekly'       => 'May 28, 2017 - June  3, 2017',
+    'ContentType-Monthly'      => 'June 2017',
+    'ContentType-Yearly'       => '2017',
+    'ContentType_Author'       => 'Yuki Ishikawa',
     'ContentType_Author-Daily' => 'Yuki Ishikawa: June  3, 2017',
-    'ContentType_Author-Weekly' => 'Yuki Ishikawa: May 28, 2017 - June  3, 2017',
+    'ContentType_Author-Weekly' =>
+        'Yuki Ishikawa: May 28, 2017 - June  3, 2017',
     'ContentType_Author-Monthly' => 'Yuki Ishikawa: June 2017',
-    'ContentType_Author-Yearly' => 'Yuki Ishikawa: 2017',
-    'ContentType_Category' => 'category1',
+    'ContentType_Author-Yearly'  => 'Yuki Ishikawa: 2017',
+    'ContentType_Category'       => 'category1',
     'ContentType_Category-Daily' => 'category1: June  3, 2017',
-    'ContentType_Category-Weekly' => 'category1: May 28, 2017 - June  3, 2017',
+    'ContentType_Category-Weekly' =>
+        'category1: May 28, 2017 - June  3, 2017',
     'ContentType_Category-Monthly' => 'category1: June 2017',
-    'ContentType_Category-Yearly' => 'category1: 2017',
+    'ContentType_Category-Yearly'  => 'category1: 2017',
 );
 
 my @suite;
-foreach my $prefix ( qw( ContentType ContentType_Author ContentType_Category ) ) {
-    foreach my $suffix ( (  '', '-Daily', '-Weekly', '-Monthly', '-Yearly' ) ) {
-        my $at = $prefix . $suffix;
+foreach my $prefix (qw( ContentType ContentType_Author ContentType_Category ))
+{
+    foreach my $suffix ( ( '', '-Daily', '-Weekly', '-Monthly', '-Yearly' ) )
+    {
+        my $at  = $prefix . $suffix;
         my $map = MT::Test::Permission->make_templatemap(
-            template_id  => ( $at eq 'ContentType' ? $tmpl->id : $tmpl_archive->id ),
+            template_id =>
+                ( $at eq 'ContentType' ? $tmpl->id : $tmpl_archive->id ),
             blog_id      => $blog->id,
             archive_type => $at,
             cat_field_id => $cf_category->id,
             dt_field_id  => $cf_datetime->id,
         );
         my $archiver = $publisher->archiver($at);
-        my $tmpls = $archiver->default_archive_templates;
+        my $tmpls    = $archiver->default_archive_templates;
         my ($default) = grep { $_->{default} } @$tmpls;
         $map->file_template( $default->{template} );
-        push @suite, {
+        push @suite,
+            {
             ArchiveType => $at,
             TemplateMap => $map,
             Html        => $html{$at},
             Published   => 1,
-        },
+            };
     }
 }
 
@@ -141,12 +157,13 @@ for my $s (@suite) {
 
     my $archiver = $publisher->archiver($at);
 
-    my $category = $archiver->contenttype_based || $archiver->category_based ? $category1 : undef; 
+    my $category = $archiver->contenttype_based
+        || $archiver->category_based ? $category1 : undef;
     my $ts;
     if ( $archiver->contenttype_based || $archiver->date_based ) {
         my $dt_field_id = $map->dt_field_id;
         if ($dt_field_id) {
-            my $data        = $cd->data;
+            my $data = $cd->data;
             $ts = $data->{$dt_field_id};
         }
         else {
@@ -166,8 +183,9 @@ for my $s (@suite) {
     );
     is( $does_publish_file, 1, ref($archiver) . '::does_publish_file' );
 
-    #my $file = File::Spec->catfile( $blog->archive_path, $map->file_template);
-    my $file_name = $publisher->archive_file_for( $cd, $blog, $at, $category, $map, $ts, $cd->author );
+    my $file_name
+        = $publisher->archive_file_for( $cd, $blog, $at, $category, $map,
+        $ts, $cd->author );
     my $file = File::Spec->catfile( $blog->archive_path, $file_name );
 
     unlink $file if -e $file;
@@ -207,7 +225,9 @@ for my $s (@suite) {
     is( -e $file ? 1 : 0,
         $s->{Published}, 'Rebuild: When a target file does not exists' );
     my $fmgr = MT::FileMgr->new('Local');
-    is( $fmgr->get_data($file), $s->{Html}, 'Published contents: When a target file does not exists' );
+    is( $fmgr->get_data($file),
+        $s->{Html},
+        'Published contents: When a target file does not exists' );
 
     {
         my $dirname = dirname($file);
@@ -256,7 +276,8 @@ for my $s (@suite) {
     }
     is( -e $file ? 1 : 0,
         $s->{Published}, 'Rebuild: When a target file already exists' );
-    is( $fmgr->get_data($file), $s->{Html}, 'Published contents: When a target file already exists' );
+    is( $fmgr->get_data($file),
+        $s->{Html}, 'Published contents: When a target file already exists' );
 }
 
 done_testing;
