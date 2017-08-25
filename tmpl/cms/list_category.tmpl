@@ -32,12 +32,12 @@
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
 
       <mt:if name="is_category_set">
-        <div class="form-inline">
-          <label>
-            <__trans phrase="Set Name">:
-            <input type="text" class="form-control text" id="set_name" name="set_name" value="<mt:var name="set_name">" />
-          </label>
-        </div>
+        <mtapp:setting
+          id="set_name"
+          label="<__trans phrase="Set Name">"
+          label_for="set_name">
+          <input type="text" class="form-control text" id="set_name" name="set_name" value="<mt:var name="set_name">" />
+        </mtapp:setting>
       </mt:if>
 
       <div id="actions-bar-top" class="actions-bar actions-bar-top line">
