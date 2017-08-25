@@ -493,17 +493,17 @@ function showPasswordField() {
     <mtapp:setting
        id="system_permissions"
        label="<__trans phrase="Permissions">">
-      <ul class="list-inline inline-list">
+      <div class="form-group align-items-center">
       <mt:loop name="loaded_permissions">
-        <li class="list-inline-item">
+        <div class="form-check form-check-inline">
           <label class="custom-control custom-checkbox">
             <input name="<mt:var name="id">" id="<mt:var name="id">" class="custom-control-input" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this, '<mt:var name="children">')" />
             <span class="custom-control-indicator"></span>
             <span class="custom-control-description"><mt:var name="label"></span>
           </label>
-        </li>
+        </div>
       </mt:loop>
-      </ul>
+      </div>
     </mtapp:setting>
   </fieldset>
 
@@ -512,11 +512,15 @@ function showPasswordField() {
     <legend class="h3"><__trans phrase="Options"></legend>
     <mtapp:setting
        id="create_user_blog"
-       label="<__trans phrase="Options">">
-      <label<mt:unless name="create_personal_weblog"> class="text-muted"</mt:unless>>
-        <input type="checkbox" id="create_personal_weblog" name="create_personal_weblog" <mt:if name="create_personal_weblog">checked="checked"<mt:else>disabled="disabled"</mt:if> />
-        <__trans phrase="Create personal child site for user">
-      </label>
+       label="<__trans phrase="Options">"
+       label_for="create_personal_weblog">
+      <div class="form-group">
+        <label class="custom-control custom-checkbox<mt:unless name="create_personal_weblog"> text-muted</mt:unless>">
+          <input type="checkbox" id="create_personal_weblog" name="create_personal_weblog" class="custom-control-input" <mt:if name="create_personal_weblog">checked="checked"<mt:else>disabled="disabled"</mt:if> />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><__trans phrase="Create personal child site for user"></span>
+        </label>
+      </div>
     </mtapp:setting>
   </mtapp:settinggroup>
 </mt:if>
