@@ -3098,6 +3098,10 @@ field is a required field or not.
 
 Supplies the label phrase for the setting.
 
+=item * label_for
+
+Supplies "for" property of the label.
+
 =item * show_label (optional; default "1")
 
 Controls whether the label portion of the setting is shown or not.
@@ -3137,29 +3141,6 @@ Identifies a section name of the MT help documentation for this setting.
 
 =back
 
-B<Example:>
-
-    <mtapp:Setting
-        id="name"
-        required="1"
-        label="Username"
-        hint="The username used to login">
-            <input type="text" name="name" id="name" value="<$mt:Var name="name" escape="html"$>" />
-    </mtapp:setting>
-
-The basic structural output of a setting tag looks like this:
-
-    <div id="ID-field" class="field pkg">
-        <div class="field-inner">
-            <div class="field-header">
-                <label id="ID-label" for="ID">LABEL</label>
-            </div>
-            <div class="field-content">
-                (content of App:Setting tag)
-            </div>
-        </div>
-    </div>
-
 =for tags application
 
 =cut
@@ -3170,6 +3151,7 @@ sub _hdlr_app_setting {
     return $ctx->error("'id' attribute missing") unless $id;
 
     my $label       = $args->{label};
+    my $label_for   = $args->{label_for};
     my $show_label  = exists $args->{show_label} ? $args->{show_label} : 1;
     my $shown       = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
     my $label_class = $args->{label_class} || "";
@@ -3181,11 +3163,16 @@ sub _hdlr_app_setting {
 
     my $label_help = "";
     if ( $label && $show_label ) {
-
-        # do nothing;
+        if ( defined $label_for && $label_for ne '' ) {
+            $label_for = qq{ for="$label_for"};
+        }
+        else {
+            $label_for = '';
+        }
     }
     else {
-        $label = '';    # zero it out, because the user turned it off
+        $label     = '';    # zero it out, because the user turned it off
+        $label_for = '';
     }
     if ( $hint && $show_hint ) {
         if ( $hint_id ne "" ) {
@@ -3230,7 +3217,7 @@ sub _hdlr_app_setting {
         return $ctx->build(<<"EOT");
     <div id="$id-field" class="field field-content form-group$req_class $label_class $class"$style>
         <div class="field-header">
-          <label>$label$req</label>
+          <label$label_for>$label$req</label>
         </div>
         $insides$hint
     </div>
@@ -3239,7 +3226,7 @@ EOT
     else {
         return $ctx->build(<<"EOT");
     <div id="$id-field" class="field field-content form-group$req_class $label_class $class"$style>
-        <label>$label$req</label>
+        <label$label_for>$label$req</label>
         $insides$hint
     </div>
 EOT

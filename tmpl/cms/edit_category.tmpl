@@ -122,26 +122,31 @@ function toggleFile() {
 
     <mtapp:setting
        id="label"
-       label="<__trans phrase="Label">">
+       label="<__trans phrase="Label">"
+       label_for="label">
       <input type="text" name="label" id="label" class="form-control text" maxlength="100" value="<mt:var name="label" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
        id="basename"
        label="<__trans phrase="_CATEGORY_BASENAME">"
+       label_for="basename"
        hint="<__trans phrase="This is the basename assigned to your category.">"
        help_page="categories"
        help_section="category_basename">
-      <input type="text" name="basename" id="basename" class="form-control mt-edit-field text basename" maxlength="250" value="<mt:var name="basename" escape="html">" />
-      <p class="text-warning alert-warning-inline" id="basename-warning" style="display: none;">
-        <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
-        <__trans phrase="Warning: Changing this category's basename may break inbound links.">
-      </p>
+      <div class="form-group">
+        <input type="text" name="basename" id="basename" class="form-control mt-edit-field text basename" maxlength="250" value="<mt:var name="basename" escape="html">" />
+        <p class="text-warning alert-warning-inline" id="basename-warning" style="display: none;">
+          <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
+          <__trans phrase="Warning: Changing this category's basename may break inbound links.">
+        </p>
+      </div>
     </mtapp:setting>
 
     <mtapp:setting
        id="description"
-       label="<__trans phrase="Description">">
+       label="<__trans phrase="Description">"
+       label_for="description">
       <textarea name="description" id="description" rows="" cols="" class="form-control text low"><mt:var name="description" escape="html"></textarea>
     </mtapp:setting>
 
@@ -158,7 +163,12 @@ function toggleFile() {
          label="<__trans phrase="Accept Trackbacks">"
          help_page="categories"
          help_section="accept_category_pings">
-        <input type="checkbox" name="allow_pings" id="allow_pings" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" />
+        <div class="form-group">
+          <label class="custom-control custom-checkbox">
+            <input type="checkbox" name="allow_pings" id="allow_pings" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb custom-control-input" />
+            <span class="custom-control-indicator"></span>
+          </label>
+        </div>
       </mtapp:setting>
 
     <mt:if name="tb">
@@ -183,12 +193,14 @@ function toggleFile() {
         <mtapp:setting
            id="trackback_url"
            label="<__trans phrase="TrackBack URL for this category">"
+           label_for="trackback_url">
           <input type="text" name="trackback_url" id="trackback_url" readonly="readonly" value="<mt:var name="tb_url" escape="html">" class="form-control text readonly" />
         </mtapp:setting>
 
         <mtapp:setting
            id="tb_passphrase"
            label="<__trans phrase="Passphrase Protection">"
+           label_for="tb_passphrase"
            hint="<__trans phrase="Optional">"
            help_page="categories"
            help_section="trackback_passphrase_protection">
@@ -205,6 +217,7 @@ function toggleFile() {
       <mtapp:setting
          id="ping_urls"
          label="<__trans phrase="Trackback URLs">"
+         label_for="ping_urls"
          help_page="categories"
          help_section="categories_urls_to_ping">
         <textarea name="ping_urls" id="ping_urls" cols="" rows="" class="form-control text low"><mt:var name="ping_urls" escape="html"></textarea>

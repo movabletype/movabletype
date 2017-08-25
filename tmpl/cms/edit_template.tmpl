@@ -565,6 +565,7 @@ function toggleCache(id) {
   <mtapp:setting
      id="title"
      label="<__trans phrase="Template Name">"
+     label_for="title"
      label_class="no-header"
      help_page="templates"
      help_section="template_name">
@@ -585,6 +586,7 @@ function toggleCache(id) {
   <mtapp:setting
      id="template-body"
      label="$template_name"
+     label_for="text"
      label_class="no-header"
      help_page="templates"
      help_section="template_name">
@@ -637,6 +639,7 @@ function toggleCache(id) {
       <mtapp:setting
          id="outfile"
          label="<__trans phrase="Output File">"
+         label_for="outfile"
          label_class="top-label"
          help_page="templates"
          help_section="output_file">
@@ -646,11 +649,12 @@ function toggleCache(id) {
     <mt:if name="type" eq="index">
       <mtapp:setting
          label="<__trans phrase="Template Type">"
+         label_for="identifier"
          label_class="top-label"
          id="identifier"
          help_page="templates"
          help_section="template_type">
-        <select name="identifier" id="identifier" tabindex="5" class="form-control">
+        <select name="identifier" id="identifier" tabindex="5" class="custom-select form-control">
           <option value="" <mt:unless name="identifier">selected="selected"</mt:unless>><__trans phrase="Custom Index Template"></option>
         <mt:loop name="index_identifiers">
           <option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><$mt:var name="label" escape="html"$> (<$mt:var name="key" escape="html"$>)</option>
@@ -662,6 +666,7 @@ function toggleCache(id) {
       <mtapp:setting
          id="linked_file"
          label="<__trans phrase="Link to File">"
+         label_for="linked_file"
          label_class="top-label"
          help_page="templates"
          help_section="linked_templates">
@@ -674,6 +679,7 @@ function toggleCache(id) {
     <mtapp:setting
        id="archive_mapping"
        label="<__trans phrase="Archive Mapping">"
+       label_for="new_archive_type"
        label_class="top-label">
       <p>
         <a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create">
@@ -684,7 +690,7 @@ function toggleCache(id) {
       <div id="msg-block"></div>
       <div class="form-inline create-inline" id="create-inline-mapping" style="display: none;">
         <label for="new_archive_type"><strong><__trans phrase="Type"></strong></label>
-        <select name="new_archive_type" id="new_archive_type" tabindex="9" class="form-control">
+        <select name="new_archive_type" id="new_archive_type" tabindex="9" class="custom-select form-control">
         <mt:loop name="archive_types">
           <option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
         </mt:loop>
@@ -711,13 +717,14 @@ function toggleCache(id) {
     <mtapp:setting
        id="build_dynamic"
        label="<__trans phrase="Publishing">"
+       label_for="build-type"
        label_class="top-label"
        hint="$publishing_hint"
        hint_id="publishingHint"
        show_hint="1"
        help_page="templates"
        help_section="enable_dynamic_publishing">
-      <select name="build_type" id="build-type" class="form-control fhalf-width" aria-describedby="publishingHint">
+      <select name="build_type" id="build-type" class="custom-select form-control fhalf-width" aria-describedby="publishingHint">
         <option value="1"<mt:if name="build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically (default)"></option>
       <mt:if name="publish_queue_available">
         <option value="4"<mt:if name="build_type_4"> selected="selected"</mt:if>><__trans phrase="Via Publish Queue"></option>
@@ -746,13 +753,19 @@ function toggleCache(id) {
        id="server_side_include"
        label="<__trans phrase="Server Side Include">"
        label_class="top-label">
-      <input type="checkbox" id="server-side-include" name="include_with_ssi" value="1" onclick="toggleHidden('include_cache_path-field')"<mt:if name="include_with_ssi"> checked</mt:if> />
-      <label for="server-side-include"><__trans phrase="Process as <strong>[_1]</strong> include" params="<$mt:var name="ssi_type"$>"></label>
+      <div class="form-group">
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" id="server-side-include" name="include_with_ssi" class="custom-control-input" value="1" onclick="toggleHidden('include_cache_path-field')"<mt:if name="include_with_ssi"> checked</mt:if> />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><__trans phrase="Process as <strong>[_1]</strong> include" params="<$mt:var name="ssi_type"$>"></span>
+        </label>
+      </div>
     </mtapp:setting>
   <mt:ignore>
     <mtapp:setting
        id="include_cache_path"
        label="<__trans phrase="Include cache path">"
+       label_for="include-cache-path"
        label_class="top-label"
        shown="<mt:if name="include_with_ssi">0<mt:else>1</mt:if>">
       <div class="textarea-wrapper">
@@ -769,29 +782,101 @@ function toggleCache(id) {
     <mt:if name="caching_disabled">
       <__trans phrase="Disabled (<a href="[_1]">change publishing settings</a>)" params="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">">
     <mt:else>
-      <ul id="cache-options">
-        <li><input type="radio" value="0" name="cache_expire_type" id="no-cache" onclick="toggleCache('cache-none');"<mt:if name="cache_expire_type" eq="0"> checked="checked"</mt:if>> <label for="no-cache"><__trans phrase="No caching"></label></li>
+      <ul id="cache-options" class="list-unstyled">
         <li>
-          <input type="radio" value="1" name="cache_expire_type" id="expire-time" onclick="toggleCache('expire-time');"<mt:if name="cache_expire_type" eq="1"> checked="checked"</mt:if>> <label for="expire-time"><__trans phrase="Expire after"></label>
-          <input type="text" id="cache-time-value" class="text num" name="cache_expire_interval" value="<$mt:var name="cache_expire_interval" escape="html">" maxlength="3" <mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless> />
-          <select id="cache-time-unit" name="cache_expire_period"<mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless>>
-            <option value="minutes"<mt:if name="cache_expire_period" eq="minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
-            <option value="hours"<mt:if name="cache_expire_period" eq="hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>
-            <option value="days"<mt:if name="cache_expire_period" eq="days"> selected="selected"</mt:if>><__trans phrase="days"></option>
-          </select>
+          <label class="custom-control custom-radio">
+            <input type="radio" value="0" name="cache_expire_type" id="no-cache" class="custom-control-input" onclick="toggleCache('cache-none');"<mt:if name="cache_expire_type" eq="0"> checked="checked"</mt:if>>
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><__trans phrase="No caching"></span>
+          </label>
         </li>
         <li>
-          <input type="radio" value="2" name="cache_expire_type" id="expire-event" onclick="toggleCache('expire-event');"<mt:if name="cache_expire_type" eq="2"> checked="checked"</mt:if>> <label for="expire-event"><__trans phrase="Expire upon creation or modification of:"></label>
-          <ul id="cache-events">
-            <li><input type="checkbox" value="entry" name="cache_expire_event" id="cache-event-entry" onclick=""<mt:if name="cache_expire_event_entry"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-entry"><__trans phrase="Entry"></label></li>
-            <li><input type="checkbox" value="comment" name="cache_expire_event" id="cache-event-comment" onclick=""<mt:if name="cache_expire_event_comment"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-comment"><__trans phrase="Comment"></label></li>
-            <li><input type="checkbox" value="tbping" name="cache_expire_event" id="cache-event-trackback" onclick=""<mt:if name="cache_expire_event_tbping"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-trackback"><__trans phrase="TrackBack"></label></li>
-            <li><input type="checkbox" value="page" name="cache_expire_event" id="cache-event-page" onclick=""<mt:if name="cache_expire_event_page"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-page"><__trans phrase="Page"></label></li>
-            <li><input type="checkbox" value="author" name="cache_expire_event" id="cache-event-author" onclick=""<mt:if name="cache_expire_event_author"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-author"><__trans phrase="User"></label></li>
-            <li><input type="checkbox" value="category" name="cache_expire_event" id="cache-event-category" onclick=""<mt:if name="cache_expire_event_category"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-category"><__trans phrase="Category"></label></li>
-            <li><input type="checkbox" value="folder" name="cache_expire_event" id="cache-event-folder" onclick=""<mt:if name="cache_expire_event_folder"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-folder"><__trans phrase="Folder"></label></li>
-            <li><input type="checkbox" value="asset" name="cache_expire_event" id="cache-event-asset" onclick=""<mt:if name="cache_expire_event_asset"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-asset"><__trans phrase="Asset"></label></li>
-          </ul>
+          <div class="form-row align-items-center">
+            <div class="col">
+              <label class="custom-control custom-radio">
+                <input type="radio" value="1" name="cache_expire_type" id="expire-time" class="custom-control-input" onclick="toggleCache('expire-time');"<mt:if name="cache_expire_type" eq="1"> checked="checked"</mt:if>>
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Expire after"></span>
+              </label>
+            </div>
+            <div class="col">
+              <input type="text" id="cache-time-value" class="text num form-control" name="cache_expire_interval" value="<$mt:var name="cache_expire_interval" escape="html">" maxlength="3" <mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless> />
+            </div>
+            <div class="col">
+              <select id="cache-time-unit" class="custom-select form-control" name="cache_expire_period"<mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless>>
+                <option value="minutes"<mt:if name="cache_expire_period" eq="minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
+                <option value="hours"<mt:if name="cache_expire_period" eq="hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>
+                <option value="days"<mt:if name="cache_expire_period" eq="days"> selected="selected"</mt:if>><__trans phrase="days"></option>
+              </select>
+            </div>
+            <div class="col"></div>
+            <div class="col"></div>
+          </div>
+        </li>
+        <li>
+          <label class="custom-control custom-radio">
+            <input type="radio" value="2" name="cache_expire_type" id="expire-event" class="custom-control-input" onclick="toggleCache('expire-event');"<mt:if name="cache_expire_type" eq="2"> checked="checked"</mt:if>>
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><__trans phrase="Expire upon creation or modification of:"></span>
+          </label>
+          <div id="cache-events" class="form-group">
+            <div class="form-check form-check-inline">
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" value="entry" name="cache_expire_event" id="cache-event-entry" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_entry"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Entry"></span>
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" value="comment" name="cache_expire_event" id="cache-event-comment" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_comment"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Comment"></span>
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" value="tbping" name="cache_expire_event" id="cache-event-trackback" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_tbping"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="TrackBack"></span>
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" value="page" name="cache_expire_event" id="cache-event-page" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_page"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Page"></span>
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" value="author" name="cache_expire_event" id="cache-event-author" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_author"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="User"></span>
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" value="category" name="cache_expire_event" id="cache-event-category" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_category"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Category"></span>
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" value="folder" name="cache_expire_event" id="cache-event-folder" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_folder"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Folder"></span>
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" value="asset" name="cache_expire_event" id="cache-event-asset" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_asset"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Asset"></span>
+              </label>
+            </div>
+          </div>
         </li>
       </ul>
     </mt:if>
@@ -805,6 +890,7 @@ function toggleCache(id) {
   <mtapp:setting
      id="revision-note"
      label="<__trans phrase="Change note">"
+     label_for="revision-note"
      label_class="top-label">
     <input type="text" name="revision-note" id="revision-note" class="form-control text full" value="<mt:var name="revision-note" escape="html">"<mt:if name="save_revision" eq="0"> style="display:none"</mt:if> />
   </mtapp:setting>

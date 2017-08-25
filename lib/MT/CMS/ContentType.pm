@@ -1331,7 +1331,7 @@ sub save_content_data {
                 || $2 < 1
                 || $3 < 1
                 || ( MT::Util::days_in( $2, $1 ) < $3
-                    && !MT::Util::leap_day( $0, $1, $2 ) )
+                    && !MT::Util::leap_day( $1, $2, $3 ) )
                 );
         }
         $param{return_args} = $app->param('return_args');
@@ -1370,7 +1370,7 @@ sub save_content_data {
                     || $2 < 1
                     || $3 < 1
                     || ( MT::Util::days_in( $2, $1 ) < $3
-                        && !MT::Util::leap_day( $0, $1, $2 ) )
+                        && !MT::Util::leap_day( $1, $2, $3 ) )
                     );
             }
             my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,

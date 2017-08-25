@@ -59,6 +59,7 @@
      id="system_email_address"
      required="1"
      label="<__trans phrase="System Email Address">"
+     label_for="system_email_address"
      hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
      hint_id="systemEmailAddress"
      show_hint="1"
@@ -77,6 +78,7 @@
     <mtapp:setting
        id="system_debug_mode"
        label="<__trans phrase="Debug Mode">"
+       label_for="system-debug-mode"
        hint="<__trans phrase='Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.'>"
        hint_id="debugMode"
        show_hint="1">
@@ -90,9 +92,12 @@
        hint="<__trans phrase="Turn on performance logging, which will report any system event that takes the number of seconds specified by Logging Threshold.">"
        hint_id="performanceLogging"
        show_hint="1">
-      <div>
-        <input type="checkbox"<mt:if name="config_warnings_performancelogging"> disabled="disable"</mt:if> name="system_performance_logging" id="system-performance-logging" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> aria-describedby="performanceLogging" data-target="#system-performance-logging-option" data-toggle="collapse" aria-expanded="<mt:if name="system_performance_loggin">true<mt:else>false</mt:if>" aria-controls="system-performance-logging-option" />
-        <label for="system-performance-logging"><__trans phrase="Turn on performance logging"></label>
+      <div class="form-group">
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox"<mt:if name="config_warnings_performancelogging"> disabled="disable"</mt:if> name="system_performance_logging" id="system-performance-logging" class="custom-control-input" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> aria-describedby="performanceLogging" data-target="#system-performance-logging-option" data-toggle="collapse" aria-expanded="<mt:if name="system_performance_loggin">true<mt:else>false</mt:if>" aria-controls="system-performance-logging-option" />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><__trans phrase="Turn on performance logging"></span>
+        </label>
       </div>
     </mt:app:setting>
 
@@ -100,6 +105,7 @@
       <mtapp:setting
          id="system-performance-logging-path"
          label="<__trans phrase="Log Path">"
+         label_for="system-performance-logging-path"
          hint="<__trans phrase="The filesystem directory where performance logs are written.  The web server must have write permission in this directory.">"
          hint_id="logPath"
          show_hint="1">
@@ -109,6 +115,7 @@
       <mtapp:setting
          id="system-performance-logging-threshold"
          label="<__trans phrase="Logging Threshold">"
+         label_for="system-performance-logging-threshold"
          hint="<__trans phrase="The time limit for unlogged events in seconds. Any event that takes this amount of time or longer will be reported.">"
          hint_id="loggingThreshold"
          show_hint="1">
@@ -120,10 +127,13 @@
     <mtapp:setting
        id="track-revisions"
        label="<__trans phrase="Revision History">">
-      <label>
-        <input type="checkbox"<mt:if name="config_warnings_trackrevisions"> disabled="disabled"</mt:if> name="track_revisions" id="track-revisions" <mt:if name="track_revisions"> checked="checked"</mt:if> />
-        <__trans phrase="Track revision history">
-      </label>
+      <div class="form-group">
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox"<mt:if name="config_warnings_trackrevisions"> disabled="disabled"</mt:if> name="track_revisions" id="track-revisions" <mt:if name="track_revisions"> checked="checked"</mt:if> class="custom-control-input" />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><__trans phrase="Track revision history"></span>
+        </label>
+      </div>
     </mtapp:setting>
 </mtapp:settinggroup>
 
@@ -133,6 +143,7 @@
     <mtapp:setting
        id="sitepath-limit"
        label="<__trans phrase="Base Site Path">"
+       label_for="sitepath-limit"
        hint="<__trans phrase="Allow sites to be placed only under this directory">"
        hint_id="sitePathLimitation"
        show_hint="1">
@@ -147,10 +158,11 @@
   <mtapp:setting
      id="comment-disable"
      label="<__trans phrase="Prohibit Comments">">
-    <div>
-      <label>
-        <input type="checkbox"<mt:if name="config_warnings_allowcomments"> disabled="disabled"</mt:if> name="comment_disable" id="comment-disable"<mt:if name="comment_disable"> checked="checked"</mt:if> />
-        <__trans phrase="Disable comments for all sites and child sites.">
+    <div class="form-group">
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox"<mt:if name="config_warnings_allowcomments"> disabled="disabled"</mt:if> name="comment_disable" class="custom-control-input" id="comment-disable"<mt:if name="comment_disable"> checked="checked"</mt:if> />
+        <span class="custom-control-indicator"></span>
+        <span class="custom-control-description"><__trans phrase="Disable comments for all sites and child sites."></span>
       </label>
     </div>
   </mtapp:setting>
@@ -158,10 +170,11 @@
   <mtapp:setting
      id="ping-disable"
      label="<__trans phrase="Prohibit TrackBacks">">
-    <div>
-      <label>
-        <input type="checkbox"<mt:if name="config_warnings_allowpings"> disabled="disabled"</mt:if> name="ping_disable" id="ping-disable" <mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" />
-        <__trans phrase="Disable receipt of TrackBacks for all sites and child sites.">
+    <div class="form-group">
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox"<mt:if name="config_warnings_allowpings"> disabled="disabled"</mt:if> name="ping_disable" id="ping-disable" class="custom-control-input" <mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" />
+        <span class="custom-control-indicator"></span>
+        <span class="custom-control-description"><__trans phrase="Disable receipt of TrackBacks for all sites and child sites."></span>
       </label>
     </div>
   </mtapp:setting>
@@ -171,11 +184,12 @@
   <legend class="h3"><__trans phrase="Outbound Notifications"></legend>
   <mtapp:setting
      id="disable-notify-ping"
-     label="<__trans phrase="Prohibit Notification Pings">">>>>
-    <div>
-      <label>
-        <input type="checkbox"<mt:if name="config_warnings_disablenotificationpings"> disabled="disabled"</mt:if> name="disable_notify_ping" id="disable-notify-ping" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" />
-        <__trans phrase="Disable notification pings for all sites and child sites.">
+     label="<__trans phrase="Prohibit Notification Pings">">
+    <div class="form-group">
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox"<mt:if name="config_warnings_disablenotificationpings"> disabled="disabled"</mt:if> name="disable_notify_ping" id="disable-notify-ping" class="custom-control-input" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" />
+        <span class="custom-control-indicator"></span>
+        <span class="custom-control-description"><__trans phrase="Disable notification pings for all sites and child sites."></span>
       </label>
     </div>
   </mtapp:setting>
@@ -188,24 +202,34 @@
      show_hint="1">
     <ul id="outbound-trackback-setting-list" class="list-unstyled setting-list">
       <li>
-        <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_any" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> aria-describedby="sendOutboundTrackbacksTo" />
-        <label for="trackback_send_any"><__trans phrase="Any site"></label>
-        </li>
-      <li>
-        <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_off" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> />
-        <label for="trackback_send_off">
-          <__trans phrase="Disabled">
-          <span class="text-muted hint"><__trans phrase="(No Outbound TrackBacks)"></span>
+        <label class="custom-control custom-radio">
+          <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_any" class="custom-control-input" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> aria-describedby="sendOutboundTrackbacksTo" />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><__trans phrase="Any site"></span>
         </label>
         </li>
       <li>
-        <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_local" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> />
-        <label for="trackback_send_local"><__trans phrase="Only to child sites within this system"></label>
+        <label class="custom-control custom-radio">
+          <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_off" class="custom-control-input" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description">
+            <__trans phrase="Disabled">
+            <span class="text-muted hint"><__trans phrase="(No Outbound TrackBacks)"></span>
+          </span>
+        </label>
         </li>
       <li>
-        <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_selected" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> />
-        <label for="trackback_send_selected">
-          <__trans phrase="Only to sites on the following domains:">
+        <label class="custom-control custom-radio">
+          <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_local" class="custom-control-input" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><__trans phrase="Only to child sites within this system"></span>
+        </label>
+        </li>
+      <li>
+        <label class="custom-control custom-radio">
+          <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_selected" class="custom-control-input" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><__trans phrase="Only to sites on the following domains:"></span>
         </label>
         <textarea<mt:if name="config_warnings_outboundtrackbackdomains"> disabled="disabled"</mt:if> name="trackback_send_domains" class="form-control text low" rows="4"><mt:var name="trackback_send_domains" escape="html"></textarea>
       </li>
@@ -264,10 +288,11 @@
   <mtapp:setting
     id="auto-change-image-quality"
     label="<__trans phrase="Changing image quality">">
-    <div>
-      <label>
-        <input type="checkbox"<mt:if name="config_warnings_autochangeimagequality"> disabled="disabled"</mt:if> name="auto_change_image_quality" id="auto-change-image-quality"<mt:if name="auto_change_image_quality"> checked="checked"</mt:if> data-target="#auto-change-image-quality-option" data-toggle="collapse" aria-expanded="<mt:if name="auto_change_image_quality">true<mt:else>false</mt:if>" aria-controls="auto-change-image-quality-option" />
-        <__trans phrase="Enable image quality changing.">
+    <div class="form-group">
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox"<mt:if name="config_warnings_autochangeimagequality"> disabled="disabled"</mt:if> name="auto_change_image_quality" class="custom-control-input" id="auto-change-image-quality"<mt:if name="auto_change_image_quality"> checked="checked"</mt:if> data-target="#auto-change-image-quality-option" data-toggle="collapse" aria-expanded="<mt:if name="auto_change_image_quality">true<mt:else>false</mt:if>" aria-controls="auto-change-image-quality-option" />
+        <span class="custom-control-indicator"></span>
+        <span class="custom-control-description"><__trans phrase="Enable image quality changing."></span>
       </label>
     </div>
   </mtapp:setting>
@@ -276,19 +301,21 @@
     <mtapp:setting
       id="image-quality-jpeg"
       label="<__trans phrase="Image quality(JPEG)">"
+      label_for="image-quality-jpeg"
       hint="<__trans phrase="Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.">"
       hint_id="imageQualityJpeg"
       show_hint="1">
-      <input type="text" class="form-control text num required jpeg-quality" name="image_quality_jpeg" value="<mt:var name="image_quality_jpeg">" <mt:if name="config_warnings_imagequalityjpeg">disabled="disabled"</mt:if> aria-describedby="imageQualityJpeg" />
+      <input type="text" id="image-quality-jpeg" class="form-control text num required jpeg-quality" name="image_quality_jpeg" value="<mt:var name="image_quality_jpeg">" <mt:if name="config_warnings_imagequalityjpeg">disabled="disabled"</mt:if> aria-describedby="imageQualityJpeg" />
     </mtapp:setting>
 
     <mtapp:setting
       id="image-quality-png"
       label="<__trans phrase="Image quality(PNG)">"
+      label_for="image-quality-png"
       hint="<__trans phrase="Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.">"
       hint_id="imageQualityPng"
       show_hint="1">
-      <input type="text" class="form-control text num required png-quality" name="image_quality_png" value="<mt:var name="image_quality_png">" <mt:if name="config_warnings_imagequalitypng">disabled="disabled"<mt:elseif name="image_driver" eq="imager">disabled="disabled"</mt:if> aria-describedby="imageQualityPng" />
+      <input type="text" id="image-quality-png" class="form-control text num required png-quality" name="image_quality_png" value="<mt:var name="image_quality_png">" <mt:if name="config_warnings_imagequalitypng">disabled="disabled"<mt:elseif name="image_driver" eq="imager">disabled="disabled"</mt:if> aria-describedby="imageQualityPng" />
     </mtapp:setting>
   </div>
 </mtapp:settinggroup>
