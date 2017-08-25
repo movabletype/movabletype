@@ -47,10 +47,12 @@ content listed by a L<Contentss> tag is reached.
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
+    my $archive_contents = $ctx->stash('archive_contents');
+
     my $terms;
     my $type    = $args->{type};
     my $name    = $args->{name};
-    my $blog_id = $args->{blog_id};
+    my $blog_id = $args->{blog_id} || $ctx->stash('blog_id');
     if ($type) {
         $terms = { unique_id => $type };
     }
@@ -61,10 +63,8 @@ sub _hdlr_contents {
         };
     }
     else {
-        return $ctx->error(
-            MT->translate(
-                '\'type\' or "\'name\' and \'blog_id\'" is required.')
-        );
+        my $tmpl = $ctx->stash('template');
+        $terms = $tmpl->content_type_id;
     }
     my $content_type = MT::ContentType->load($terms)
         or return $ctx->error( MT->translate('Content Type was not found.') );
@@ -91,10 +91,9 @@ sub _hdlr_contents {
             unless $match;
     }
 
-    my $contents = $ctx->stash('contents');
     my @contents
-        = $contents
-        ? @{ $contents }
+        = $archive_contents
+        ? @{$archive_contents}
         : MT::ContentData->load( { content_type_id => $content_type->id } );
 
     my $i       = 0;

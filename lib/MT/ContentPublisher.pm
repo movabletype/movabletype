@@ -447,7 +447,7 @@ sub rebuild_file {
             unless ref $category;
         $ctx->var( 'category_archive', 1 );
         $ctx->{__stash}{archive_category} = $category;
-        $ctx->{__stash}{template_map} = $map
+        $ctx->{__stash}{template_map}     = $map
             if $archiver->contenttype_category_based;
     }
     if ( $archiver->entry_based ) {
@@ -480,7 +480,7 @@ sub rebuild_file {
         $author = MT::Author->load($author)
             unless ref $author;
         $ctx->var( 'author_archive', 1 );
-        $ctx->{__stash}{author} = $author;
+        $ctx->{__stash}{author}       = $author;
         $ctx->{__stash}{template_map} = $map
             if $archiver->contenttype_author_based;
     }
@@ -708,7 +708,8 @@ sub rebuild_file {
                 require MT::Promise;
                 my $contents
                     = sub { $archiver->archive_group_contents($ctx) };
-                $ctx->stash( 'contents', MT::Promise::delay($contents) );
+                $ctx->stash( 'archive_contents',
+                    MT::Promise::delay($contents) );
             }
             else {
                 require MT::Promise;

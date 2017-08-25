@@ -65,28 +65,28 @@ sub dated_category_contents {
     my $map          = $ctx->stash('template_map');
     my $cat_field_id = defined $map && $map ? $map->cat_field_id : '';
     my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
-    my @contents = MT::ContentData->load(
-        {   blog_id     => $blog->id,
-            status      => MT::Entry::RELEASE(),
+    my @contents     = MT::ContentData->load(
+        {   blog_id => $blog->id,
+            status  => MT::Entry::RELEASE(),
         },
         {   'sort'      => 'authored_on',
             'direction' => 'descend',
-            'joins' => [
-                [
-                'MT::ContentFieldIndex',
-                'content_data_id',
-                {   content_field_id => $dt_field_id,
-                    value_datetime   => [ $start, $end ]
-                },
-                { range_incl => { value_datetime => 1 } }
-                ],
-                [
-                'MT::ContentFieldIndex',
-                'content_data_id',
-                {   content_field_id => $cat_field_id,
-                    value_integer    => $cat->id
-                }
-                ]
+            'joins'     => [
+                MT::ContentFieldIndex->join_on(
+                    'content_data_id',
+                    {   content_field_id => $dt_field_id,
+                        value_datetime   => { op => '>=', value => $start },
+                        value_datetime   => { op => '<=', value => $end },
+                    },
+                    { alias => 'dt_cf_idx' }
+                ),
+                MT::ContentFieldIndex->join_on(
+                    'content_data_id',
+                    {   content_field_id => $cat_field_id,
+                        value_integer    => $cat->id
+                    },
+                    { alias => 'cat_cf_idx' }
+                )
             ],
         }
     ) or return $ctx->error("Couldn't get $at archive list");
@@ -106,25 +106,25 @@ sub dated_author_contents {
         $start = $ctx->{current_timestamp};
         $end   = $ctx->{current_timestamp_end};
     }
-    my $map          = $ctx->stash('template_map');
-    my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
-    my @contents = MT::ContentData->load(
-        {   blog_id     => $blog->id,
-            author_id   => $author->id,
-            status      => MT::Entry::RELEASE(),
+    my $map         = $ctx->stash('template_map');
+    my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
+    my @contents    = MT::ContentData->load(
+        {   blog_id   => $blog->id,
+            author_id => $author->id,
+            status    => MT::Entry::RELEASE(),
             ( !$dt_field_id ? ( authored_on => [ $start, $end ] ) : () ),
         },
-        {   ( !$dt_field_id ? ( range_incl  => { authored_on => 1 } ) : () ),
+        {   ( !$dt_field_id ? ( range_incl => { authored_on => 1 } ) : () ),
             'sort'      => 'authored_on',
             'direction' => 'descend',
-             'join' => [
-                 'MT::ContentFieldIndex',
-                 'content_data_id',
-                 {   content_field_id => $dt_field_id,
-                     value_datetime   => [ $start, $end ]
-                 },
-                 { range_incl => { value_datetime => 1 } }
-             ]
+            'join'      => [
+                'MT::ContentFieldIndex',
+                'content_data_id',
+                {   content_field_id => $dt_field_id,
+                    value_datetime   => [ $start, $end ]
+                },
+                { range_incl => { value_datetime => 1 } }
+            ]
         }
     ) or return $ctx->error("Couldn't get $at archive list");
     \@contents;

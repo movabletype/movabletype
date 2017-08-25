@@ -83,40 +83,46 @@ my $cd = MT::Test::Permission->make_content_data(
     },
 );
 
-my $text = '<$mt:ArchiveTitle$>';
+my $text = "<\$mt:ArchiveTitle\$>\n<mt:Contents>a</mt:Contents>";
 my $tmpl = MT::Test::Permission->make_template(
-    blog_id => $blog->id,
-    name    => 'ContentType Test',
-    text    => $text
+    blog_id         => $blog->id,
+    content_type_id => $cd->id,
+    name            => 'ContentType Test',
+    text            => $text
 );
 $tmpl->content_type_id( $ct->id );
 my $tmpl_archive = MT::Test::Permission->make_template(
-    blog_id => $blog->id,
-    name    => 'ContentType Archive Test',
-    text    => $text
+    blog_id         => $blog->id,
+    content_type_id => $cd->id,
+    name            => 'ContentType Archive Test',
+    text            => $text
 );
 $tmpl_archive->content_type_id( $ct->id );
 
 my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
 
-my %html = (
-    'ContentType'              => 'Sample Content Data',
-    'ContentType-Daily'        => 'June  3, 2017',
-    'ContentType-Weekly'       => 'May 28, 2017 - June  3, 2017',
-    'ContentType-Monthly'      => 'June 2017',
-    'ContentType-Yearly'       => '2017',
-    'ContentType_Author'       => 'Yuki Ishikawa',
-    'ContentType_Author-Daily' => 'Yuki Ishikawa: June  3, 2017',
+my $contents_html = "\na";
+my %html          = (
+    'ContentType'         => 'Sample Content Data' . $contents_html,
+    'ContentType-Daily'   => 'June  3, 2017' . $contents_html,
+    'ContentType-Weekly'  => 'May 28, 2017 - June  3, 2017' . $contents_html,
+    'ContentType-Monthly' => 'June 2017' . $contents_html,
+    'ContentType-Yearly'  => '2017' . $contents_html,
+    'ContentType_Author'  => 'Yuki Ishikawa' . $contents_html,
+    'ContentType_Author-Daily' => 'Yuki Ishikawa: June  3, 2017'
+        . $contents_html,
     'ContentType_Author-Weekly' =>
-        'Yuki Ishikawa: May 28, 2017 - June  3, 2017',
-    'ContentType_Author-Monthly' => 'Yuki Ishikawa: June 2017',
-    'ContentType_Author-Yearly'  => 'Yuki Ishikawa: 2017',
-    'ContentType_Category'       => 'category1',
-    'ContentType_Category-Daily' => 'category1: June  3, 2017',
+        'Yuki Ishikawa: May 28, 2017 - June  3, 2017' . $contents_html,
+    'ContentType_Author-Monthly' => 'Yuki Ishikawa: June 2017'
+        . $contents_html,
+    'ContentType_Author-Yearly'  => 'Yuki Ishikawa: 2017' . $contents_html,
+    'ContentType_Category'       => 'category1' . $contents_html,
+    'ContentType_Category-Daily' => 'category1: June  3, 2017'
+        . $contents_html,
     'ContentType_Category-Weekly' =>
-        'category1: May 28, 2017 - June  3, 2017',
-    'ContentType_Category-Monthly' => 'category1: June 2017',
-    'ContentType_Category-Yearly'  => 'category1: 2017',
+        'category1: May 28, 2017 - June  3, 2017' . $contents_html,
+    'ContentType_Category-Monthly' => 'category1: June 2017' . $contents_html,
+    'ContentType_Category-Yearly'  => 'category1: 2017' . $contents_html,
 );
 
 my @suite;
