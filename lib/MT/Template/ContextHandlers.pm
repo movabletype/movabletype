@@ -3228,7 +3228,7 @@ sub _hdlr_app_setting {
 
     if ( $args->{field_header} ) {
         return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field form-group$req_class $label_class $class"$style>
+    <div id="$id-field" class="field field-content form-group$req_class $label_class $class"$style>
         <div class="field-header">
           <label>$label$req</label>
         </div>
@@ -3238,7 +3238,7 @@ EOT
     }
     else {
         return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field form-group$req_class $label_class $class"$style>
+    <div id="$id-field" class="field field-content form-group$req_class $label_class $class"$style>
         <label>$label$req</label>
         $insides$hint
     </div>

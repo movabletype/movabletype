@@ -236,8 +236,8 @@ function showPasswordField() {
   <input type="hidden" id="status" name="status" value="1" />
 </mt:if>
 
-  <fieldset id="author-profile-settings">
-    <legend><__trans phrase="Profile"></legend>
+  <fieldset id="author-profile-settings" class="form-group">
+    <legend class="h3"><__trans phrase="Profile"></legend>
   <mt:if name="editing_other_profile">
 
     <mtapp:setting
@@ -399,8 +399,8 @@ function showPasswordField() {
     </mt:if>
   </fieldset>
 
-  <fieldset id="author-preferences-settings">
-    <legend><__trans phrase="Preferences"></legend>
+  <fieldset id="author-preferences-settings" class="form-group">
+    <legend class="h3"><__trans phrase="Preferences"></legend>
     <mtapp:setting
        id="preferred_language"
        label="<__trans phrase="Language">"
@@ -474,8 +474,8 @@ function showPasswordField() {
   </mt:if>
   </fieldset>
 
-  <fieldset id="author-permission-settings">
-    <legend><__trans phrase="System Permissions"></legend>
+  <fieldset id="author-permission-settings" class="form-group">
+    <legend class="h3"><__trans phrase="System Permissions"></legend>
     <mtapp:setting
        id="system_permissions"
        label="<__trans phrase="Permissions">">
@@ -494,7 +494,7 @@ function showPasswordField() {
 
 <mt:if name="new_object">
   <mtapp:settinggroup id="author-optional-settings">
-    <legend><__trans phrase="Options"></legend>
+    <legend class="h3"><__trans phrase="Options"></legend>
     <mtapp:setting
        id="create_user_blog"
        label="<__trans phrase="Options">">
@@ -537,7 +537,7 @@ function showPasswordField() {
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
   <mtapp:settinggroup id="password-recovery">
-    <legend><__trans phrase="Password Recovery"></legend>
+    <legend class="h3"><__trans phrase="Password Recovery"></legend>
     <p><__trans phrase="_USAGE_PASSWORD_RESET" params="<mt:var name="email" escape="html">"></p>
     <div style="text-align: center">
       <input class="state_change" onclick="passwordResetConfirm()" type="button" value="<__trans phrase="Initiate Password Recovery">" <mt:unless name="status_enabled">disabled</mt:unless> />

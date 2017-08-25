@@ -46,7 +46,7 @@
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
   <mtapp:settinggroup id="data-api-settings">
-    <legend><__trans phrase="Data API Settings"></legend>
+    <legend class="h3"><__trans phrase="Data API Settings"></legend>
     <mtapp:setting
        id="enable-data-api"
        label="<__trans phrase="Data API">">
@@ -58,8 +58,8 @@
   </mtapp:settinggroup>
 
   <mt:if name="blog_id">
-    <legend><__trans phrase="External Notifications"></legend>
     <mtapp:settinggroup id="system-feedback-controls">
+      <legend class="h3"><__trans phrase="External Notifications"></legend>
       <mtapp:setting
          id="ping_blogs"
          label="<__trans phrase="Notify ping services of [_1] updates" params="<mt:if name="is_blog"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if>">"
