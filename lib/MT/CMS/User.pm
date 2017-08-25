@@ -923,7 +923,11 @@ sub grant_role {
 
     my $user = $app->user;
     return unless $app->validate_magic;
-    my $blogs   = $app->param('blog')   || $app->param('website') || $app->param('site') || '';
+    my $blogs
+        = $app->param('blog')
+        || $app->param('website')
+        || $app->param('site')
+        || '';
     my $authors = $app->param('author') || '';
     my $roles   = $app->param('role')   || '';
     my $author_id = $app->param('author_id');
@@ -1216,9 +1220,23 @@ PERMCHECK: {
 
     my $hasher = sub {
         my ( $obj, $row ) = @_;
-        $row->{label}       = $row->{name};
+        $row->{label} = $row->{name};
         $row->{description} = $row->{nickname} if exists $row->{nickname};
-        $row->{disabled}    = 1
+        if ( $app->param('type') eq 'site' ) {
+            if ( $row->{class} eq 'website' && $obj->has_blog() ) {
+                $row->{has_child} = 1;
+                my @child_blogs = $obj->blogs();
+                my $child_sites = [];
+                push @$child_sites,
+                    {
+                    id          => $_->id,
+                    label       => $_->name,
+                    description => $_->description
+                    } foreach @{ $obj->blogs() };
+                $row->{child_sites} = $child_sites;
+            }
+        }
+        $row->{disabled} = 1
             if UNIVERSAL::isa( $obj, 'MT::Role' )
             && $obj->has('administer_site')
             && !$app->can_do('grant_role_for_all_blogs')
@@ -1246,6 +1264,9 @@ PERMCHECK: {
     if ( $type && ( $type eq 'author' ) ) {
         $terms->{status} = MT::Author::ACTIVE();
         $terms->{type}   = MT::Author::AUTHOR();
+    }
+    if ( $type && ( $type eq 'site' ) ) {
+        $terms->{class} = 'website';
     }
 
     if ( $app->param('search') || $app->param('json') ) {
@@ -1375,9 +1396,8 @@ PERMCHECK: {
                 $terms->{type}   = MT::Author::AUTHOR();
             }
 
-            if( $source eq 'site' ){
-                $terms->{class}   = '*';
-                $args->{group_by} = 'class';
+            if ( $source eq 'site' ) {
+                $terms->{class} = 'website';
             }
 
             $app->listing(
