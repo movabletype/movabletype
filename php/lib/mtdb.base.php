@@ -953,7 +953,8 @@ abstract class MTDatabase {
             $include_private = 0;
             $tag_array = tag_split($tag_arg);
             foreach ($tag_array as $tag) {
-                if ($tag && (substr($tag,0,1) == '@')) {
+                $tag_body = trim(preg_replace('/\bNOT\b/i','',$tag));
+                if ($tag_body && (substr($tag_body,0,1) == '@')) {
                     $include_private = 1;
                 }
             }
