@@ -1225,15 +1225,16 @@ PERMCHECK: {
         if ( $app->param('type') eq 'site' ) {
             if ( $row->{class} eq 'website' && $obj->has_blog() ) {
                 $row->{has_child} = 1;
-                my @child_blogs = $obj->blogs();
+                my $child_blogs = $obj->blogs();
                 my $child_sites = [];
                 push @$child_sites,
                     {
                     id          => $_->id,
                     label       => $_->name,
                     description => $_->description
-                    } foreach @{ $obj->blogs() };
-                $row->{child_sites} = $child_sites;
+                    } foreach @{$child_blogs};
+                $row->{child_sites}      = $child_sites;
+                $row->{child_site_count} = scalar @{$child_blogs};
             }
         }
         $row->{disabled} = 1
