@@ -1391,12 +1391,16 @@ sub site_list_widget {
             push @sites, $row if $row;
         }
         else {
-            # Parent
+            # Parent site
             my $row = $site_builder->($blog);
             push @sites, $row if $row;
 
             # Children
             for my $child ( @{ $blog->blogs } ) {
+                next
+                    unless $user->has_perm($child->id)
+                    || $user->is_superuser
+                    || $user->permissions(0)->can_do('edit_templates');
                 my $row = $site_builder->($child);
                 push @sites, $row if $row;
             }
