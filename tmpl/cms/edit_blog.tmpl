@@ -97,7 +97,7 @@ jQuery(window).load(function () {
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
-<form method="post" id="cfg_form" action="<mt:var name="script_url">">
+<form method="post" id="cfg_form" class="mb-5" action="<mt:var name="script_url">">
 <mt:unless name="new_object">
     <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
 </mt:unless>
@@ -112,12 +112,13 @@ jQuery(window).load(function () {
     <mtapp:setting
         id="blog_theme"
         label="<__trans phrase="Site Theme">"
+        label_for="blog_theme"
         hint="<__trans phrase="Select the theme you wish to use for this child site.">"
         hint_id="blogTheme"
         show_hint="1"
         help_page="blog_settings_general"
         help_section="blog_theme">
-        <select name="blog_theme" class="form-control" aria-describedby="blogTheme">
+        <select id="blog_theme" name="blog_theme" class="custom-select form-control" aria-describedby="blogTheme">
         <mt:loop name="theme_loop">
           <option value="<mt:var name="value" escape="html">"<mt:if name="t_selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
         </mt:loop>
@@ -127,6 +128,7 @@ jQuery(window).load(function () {
     <mtapp:setting
         id="name"
         label="<__trans phrase="Site Name">"
+        label_for="name"
         hint="<__trans phrase="Name your child site. The site name can be changed at any time.">"
         hint_id="siteName"
         show_hint="1"
@@ -161,7 +163,11 @@ jQuery(window).load(function () {
         </div>
         <mt:unless name="ignore_subdomain">
         <div class="use-subdomain option">
-            <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb"<mt:if name="use_subdomain">checked="checked"</mt:if> /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+            <label class="custom-control custom-checkbox">
+                <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="custom-control-input cb"<mt:if name="use_subdomain">checked="checked"</mt:if> />
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Use subdomain"></span>
+            </label>
         </div>
         </mt:unless>
     </mtapp:setting>
@@ -183,7 +189,11 @@ jQuery(window).load(function () {
           <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path_absolute" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="form-control blog-path-text text hide-input required" aria-describedby="absolutePath" />
         </div>
         <div class="use-absolute option">
-            <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
+            <label class="custom-control custom-checkbox">
+                <input type="checkbox" name="use_absolute" id="use_absolute" class="custom-control-input" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" />
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Use absolute path"></span>
+            </label>
         </div>
         <small id="absolutePath" class="form-text text-muted hint absolute-site_path-hint"><__trans phrase="The path where your index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></small>
         </mt:unless>
@@ -194,12 +204,13 @@ jQuery(window).load(function () {
     <mtapp:setting
         id="server_offset"
         label="<__trans phrase="Time Zone">"
+        label_for="server_offset"
         hint="<__trans phrase="Select your timezone from the pulldown menu.">"
         hint_id="timeZone"
         show_hint="1"
         help_page="blog_settings_general"
         help_section="blog_timezone">
-            <select name="server_offset" id="server_offset" class="form-control" aria-describedby="timeZone">
+            <select name="server_offset" id="server_offset" class="custom-select form-control" aria-describedby="timeZone">
                 <option value=""><__trans phrase="Time zone not selected"></option>
                 <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
                 <option value="12"<mt:if name="SERVER_OFFSET_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
@@ -238,10 +249,11 @@ jQuery(window).load(function () {
 <mtapp:setting
     id="blog_language"
     label="<__trans phrase="Language">"
+    label_for="blog_language"
     hint="<__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.">"
     hint_id="languageHelp"
     show_hint="1">
-    <select name="blog_language" id="blog_language" class="form-control se" aria-describedby="languageHelp">
+    <select name="blog_language" id="blog_language" class="custom-select form-control se" aria-describedby="languageHelp">
     <mt:loop name="languages">
         <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
     </mt:loop>
