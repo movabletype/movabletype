@@ -21,7 +21,7 @@
     <__trans phrase="Perl module XML::SAX and/or some of its dependencies are missing.  Movable Type cannot restore the system without these modules.">
   </mtapp:statusmsg>
 <mt:else>
-  <form class="mb-5" method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
+  <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="restore" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <mtapp:setting

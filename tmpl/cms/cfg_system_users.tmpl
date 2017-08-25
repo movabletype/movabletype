@@ -56,7 +56,7 @@ function clearNotifyUsers() {
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
-<form id="cfg_user_settings" class="mb-5" action="<mt:var name="script_url">" method="post">
+<form id="cfg_user_settings" action="<mt:var name="script_url">" method="post">
   <input type="hidden" name="__mode" value="save_cfg_system_users" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />

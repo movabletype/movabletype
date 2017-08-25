@@ -546,7 +546,7 @@ function toggleCache(id) {
   </script>
 </mt:if>
 
-<form name="template-listing-form" id="template-listing-form" class="mb-5" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewinnewwindow"> mt:once="1"</mt:unless> mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
+<form name="template-listing-form" id="template-listing-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewinnewwindow"> mt:once="1"</mt:unless> mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html" default="0">" />
   <input type="hidden" name="type" value="<mt:var name="type" escape="html">" />
