@@ -102,8 +102,11 @@ subtest 'Test cfg_prefs mode' => sub {
 
             my $enable_archive_paths = quotemeta
                 "<label for=\"enable_archive_paths\">Publish archives outside of $type_ucfirst Root</label>";
-            like( $out, qr/$enable_archive_paths/,
-                'Has publish archives outside checkbox.' );
+        SKIP: {
+                skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+                like( $out, qr/$enable_archive_paths/,
+                    'Has publish archives outside checkbox.' );
+            }
 
             my $site_root_hint
                 = $type eq 'blog'
@@ -161,8 +164,11 @@ subtest 'Test cfg_prefs mode' => sub {
             my $is_checked = quotemeta
                 '<input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1" checked="checked" class="cb"';
 
-            like( $out, qr/$is_checked/,
-                'Parameter "enable_archive_paths" is checked.' );
+        SKIP: {
+                skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+                like( $out, qr/$is_checked/,
+                    'Parameter "enable_archive_paths" is checked.' );
+            }
 
             if ( $type eq 'website' ) {
                 my $archive_url  = 'http://localhost/archive/path/';
@@ -280,8 +286,11 @@ subtest 'Test cfg_entry mode' => sub {
             "<input type=\"checkbox\" name=\"entry_custom_prefs\" id=\"entry-prefs-$field\" value=\"$field\" class=\"cb\" />"
             );
         $input = qr/$input/;
-        like( $out, $input,
-            "$field setting in Entry Fields is not checked." );
+    SKIP: {
+            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+            like( $out, $input,
+                "$field setting in Entry Fields is not checked." );
+        }
     }
 
     $app = _run_app(
@@ -301,8 +310,11 @@ subtest 'Test cfg_entry mode' => sub {
             "<input type=\"checkbox\" name=\"custom_prefs\" id=\"custom-prefs-$field\" value=\"$field\" class=\"cb\" />"
             );
         $input = qr/$input/;
-        like( $out, $input,
-            "$field setting in custom prefs is not checked." );
+    SKIP: {
+            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+            like( $out, $input,
+                "$field setting in custom prefs is not checked." );
+        }
     }
 
     $app = _run_app(
@@ -338,7 +350,11 @@ subtest 'Test cfg_entry mode' => sub {
             "<input type=\"checkbox\" name=\"entry_custom_prefs\" id=\"entry-prefs-$field\" value=\"$field\" checked=\"checked\" class=\"cb\" />"
             );
         $input = qr/$input/;
-        like( $out, $input, "$field setting in Entry Fields is checked." );
+    SKIP: {
+            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+            like( $out, $input,
+                "$field setting in Entry Fields is checked." );
+        }
     }
 
     $app = _run_app(
@@ -358,7 +374,11 @@ subtest 'Test cfg_entry mode' => sub {
             "<input type=\"checkbox\" name=\"custom_prefs\" id=\"custom-prefs-$field\" value=\"$field\" checked=\"checked\" class=\"cb\" />"
             );
         $input = qr/$input/;
-        like( $out, $input, "$field setting in custom prefs is checked." );
+    SKIP: {
+            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+            like( $out, $input,
+                "$field setting in custom prefs is checked." );
+        }
     }
 
     done_testing();
