@@ -728,9 +728,6 @@ function setLicense() {
    return false;
 }
 
-var e = MT.Util.getByID(<mt:if name="cc_license">'has-license'<mt:else>'no-license'</mt:if>);
-if (e) e.style.display = 'block';
-
     <mt:if name="sitepath_limited">
     function is_path_limit_clear( path_ ) {
         re = new RegExp("^<mt:var name="sitepath_limited" escape="js" escape="js">$", "i");
@@ -746,6 +743,9 @@ if (e) e.style.display = 'block';
     </mt:if>
 
 jQuery(window).load(function () {
+    var e = MT.Util.getByID(<mt:if name="cc_license">'has-license'<mt:else>'no-license'</mt:if>);
+    if (e) e.style.display = 'block';
+
     jQuery.mtValidateAddRules({
 <mt:if name="is_blog">
         "#site_url_path": function($e) {
