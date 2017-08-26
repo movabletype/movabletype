@@ -30,7 +30,8 @@
     <mtapp:setting
        id="theme-name-field"
        required="1"
-       label="<__trans phrase="Name">">
+       label="<__trans phrase="Name">"
+       label_for="theme_name">
       <input type="text" name="theme_name" id="theme_name" class="form-control text required" value="<mt:var name="theme_name" escape="html">" />
     </mtapp:setting>
 
@@ -38,6 +39,7 @@
        id="theme-id-field"
        required="1"
        label="<__trans phrase="Basename">"
+       label_for="theme_id"
        show_hint="1"
        hint_id="basenameHelp"
        hint="<__trans phrase="Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').">">
@@ -47,25 +49,29 @@
     <mtapp:setting
        id="theme-version-field"
        required="1"
-       label="<__trans phrase="Version">">
+       label="<__trans phrase="Version">"
+       label_for="theme_version">
        <input type="text" name="theme_version" id="theme_version" class="form-control text required" value="<mt:var name="theme_version" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
        id="theme-description-field"
-       label="<__trans phrase="Description">">
+       label="<__trans phrase="Description">"
+       label_for="description">
        <textarea name="description" id="description" class="form-control text low"><mt:var name="description" escape="html"></textarea>
     </mtapp:setting>
 
     <mtapp:setting
        id="theme-author-name-field"
-       label="<__trans phrase="_THEME_AUTHOR">">
+       label="<__trans phrase="_THEME_AUTHOR">"
+       label_for="theme_author_name">
        <input type="text" name="theme_author_name" id="theme_author_name" class="form-control text" value="<mt:var name="theme_author_name" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
        id="theme-author-link-field"
-       label="<__trans phrase="Author link">">
+       label="<__trans phrase="Author link">"
+       label_for="theme_author_link">
       <input type="text" name="theme_author_link" id="theme_author_link" class="form-control text" value="<mt:var name="theme_author_link" escape="html">" />
     </mtapp:setting>
 
@@ -75,7 +81,11 @@
       <ul class="list-unstyled">
       <mt:loop name="exporters">
         <li>
-          <label for="<mt:var name="id">-include"><input type="checkbox" id="<mt:var name="id">-include" name="include" value="<mt:var name="id">" onclick="toggleActive('<mt:var name="id">-detail')" <mt:if name="included">checked="checked"</mt:if>> <mt:var name="label"></label>
+          <label class="custom-control custom-checkbox">
+            <input type="checkbox" id="<mt:var name="id">-include" class="custom-control-input" name="include" value="<mt:var name="id">" onclick="toggleActive('<mt:var name="id">-detail')" <mt:if name="included">checked="checked"</mt:if>>
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><mt:var name="label"></span>
+          </label>
         <mt:if name="template">
           <span id="<mt:var name="id">-detail" class="theme-option-detail <mt:unless name="include"> active</mt:unless>">
             <a href="<mt:var name="script_url">?__mode=theme_element_detail&exporter_id=<mt:var name="id">&blog_id=<mt:var name="blog_id">" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
@@ -91,8 +101,9 @@
   <mt:if name="select_output_method">
     <mtapp:setting
        id="theme-output-field"
-       label="<__trans phrase="Destination">">
-      <select name="output" id="output" class="form-control">
+       label="<__trans phrase="Destination">"
+       label_for="output">
+      <select name="output" id="output" class="custom-select form-control">
       <mt:loop name="output_methods">
         <option value="<mt:var name="id">"<mt:if name="output" eq="$id"> selected="selected"</mt:if>>
           <mt:var name="label">
