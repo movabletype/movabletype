@@ -93,10 +93,11 @@ function toggleHidden( ids ) {
         show_hint="1"
         hint_id="refreshTemplates"
         hint="<__trans phrase="Updates current templates while retaining any user-created templates.">">
-        <div class="field-header">
-            <label for="refresh_type_refresh">
-              <input type="radio" name="refresh_type" id="refresh_type_refresh" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" aria-describedby="refreshTemplates" />
-              <$mt:var name="refresh_label"$>
+        <div class="form-group field-header">
+            <label class="custom-control custom-radio">
+              <input type="radio" name="refresh_type" id="refresh_type_refresh" class="custom-control-input" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" aria-describedby="refreshTemplates" />
+              <span class="custom-control-indicator"></span>
+              <span class="custom-control-description"><$mt:var name="refresh_label"$></span>
             </label>
         </div>
     </mtapp:setting>
@@ -109,17 +110,23 @@ function toggleHidden( ids ) {
         hint="$new_hint"
         label_class="top-label">
 
-        <div class="field-header">
-            <label for="refresh_type_clean">
-              <input type="radio" name="refresh_type" id="refresh_type_clean" value="clean" onclick="enable('template_set');toggleHidden('confirm-refresh');toggleHidden('confirm-clean');" />
-              <$mt:var name="new_label"$>
+        <div class="form-group field-header">
+            <label class="custom-control custom-radio">
+              <input type="radio" name="refresh_type" id="refresh_type_clean" class="custom-control-input" value="clean" onclick="enable('template_set');toggleHidden('confirm-refresh');toggleHidden('confirm-clean');" />
+              <span class="custom-control-indicator"></span>
+              <span class="custom-control-description"><$mt:var name="new_label"$></span>
             </label>
         </div>
     </mtapp:setting>
 
-        <div>
-        <input type="checkbox" id="backup" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" aria-describedby="cleanStart" />
-        <label for="backup"><__trans phrase="Make backups of existing templates first"></label>
+        <div class="form-group">
+            <label class="custom-control custom-checkbox">
+                <input type="checkbox" id="backup" class="custom-control-input" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" aria-describedby="cleanStart" />
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description">
+                    <__trans phrase="Make backups of existing templates first">
+                <span>
+            </label>
         </div>
     </div>
 
