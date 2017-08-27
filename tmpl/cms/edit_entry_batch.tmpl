@@ -26,13 +26,15 @@
 <mt:setvarblock name="save_button_title"><__trans phrase="Save these [_1] (s)" params="<mt:var name="object_label_plural" lower_case="1">"></mt:setvarblock>
 
 <mt:setvarblock name="action_buttons">
-  <button
-     type="submit"
-     accesskey="s"
-     title="<$mt:var name="save_button_title"$>"
-     class="save action primary button mt-submit-items btn btn-primary">
-    <__trans phrase="Save">
-  </button>
+  <div class="col my-4">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<$mt:var name="save_button_title"$>"
+       class="save action primary button mt-submit-items btn btn-primary">
+      <__trans phrase="Save">
+    </button>
+  </div>
 </mt:setvarblock>
 
 <mt:setvar name="hide_pager" value="1">
