@@ -400,10 +400,7 @@ sub core_widgets {
             singular => 1,
             set      => 'sidebar',
             view     => [ 'user', 'system' ],
-            order    => {
-                'user'   => 0,
-                'system' => 0,
-            },
+            order    => 0,
             default => 1,
         },
         notification_dashboard => {
@@ -413,7 +410,7 @@ sub core_widgets {
             singular => 1,
             set      => 'main',
             view     => [ 'user', 'system' ],
-            order    => { 'user' => 0 },
+            order    => 0,
             default  => 1,
         },
         site_stats => {
@@ -422,12 +419,8 @@ sub core_widgets {
             handler  => "${pkg}Dashboard::site_stats_widget",
             singular => 1,
             set      => 'main',
-            view     => [ 'user', 'website', 'blog' ],
-            order    => {
-                'user'    => 200,
-                'website' => 100,
-                'blog'    => 100,
-            },
+            view     => [ 'website', 'blog' ],
+            order    => 100,
             default => 1,
         },
         system_information => {
