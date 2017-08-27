@@ -51,7 +51,7 @@
   </div>
   <div class="field-content">
     <select id="row"
-      class="form-control"
+      class="custom-select form-control"
       style="width: 100px;"
       ref="limit"
       value={ store.limit }
@@ -81,13 +81,15 @@
     <ul id="disp_cols" class="list-inline">
       <virtual each={ column in store.columns }>
         <li hide={ column.force_display } class="list-inline-item">
-          <label>
+          <label class="custom-control custom-checkbox">
             <input type="checkbox"
+              class="custom-control-input"
               id={ column.id }
               checked={ column.checked }
               onchange={ toggleColumn }
             />
-            { column.label }
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description">{ column.label }</span>
           </label>
         </li>
         <li
@@ -95,15 +97,16 @@
           hide={ subField.force_display }
           class="list-inline-item"
         >
-          <label>
+          <label class="custom-control custom-checkbox">
             <input type="checkbox"
               id={ subField.id }
               pid={ subField.parent_id }
-              class={ subField.class }
+              class="custom-control-input { subField.class }"
               checked={ subField.checked }
               onchange={ toggleSubField }
             />
-            { subField.label }
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description">{ subField.label }</span>
           </label>
         </li>
       </virtual>

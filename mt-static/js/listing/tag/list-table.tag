@@ -18,9 +18,13 @@
 <list-table-header>
   <tr>
     <th class="mt-table__control">
-      <input type="checkbox"
-        checked={ store.checkedAllRowsOnPage }
-        onchange={ toggleAllRowsOnPage } />
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox"
+          class="custom-control-input"
+          checked={ store.checkedAllRowsOnPage }
+          onchange={ toggleAllRowsOnPage } />
+        <span class="custom-control-indicator"></span>
+      </label>
     </th>
     <th each={ store.columns }
       scope="col"
@@ -97,6 +101,8 @@
       if (e.target.tagName == 'A') {
         return false
       }
+      e.preventDefault()
+      e.stopPropagation()
       this.store.trigger('toggle_row', e.currentTarget.dataset.index)
     }
 
@@ -108,10 +114,14 @@
 
 <list-table-row>
   <td>
-    <input type="checkbox"
-      name="id"
-      value={ opts.object[0] }
-      checked={ opts.checked }>
+    <label class="custom-control custom-checkbox">
+      <input type="checkbox"
+        name="id"
+        class="custom-control-input"
+        value={ opts.object[0] }
+        checked={ opts.checked }>
+      <span class="custom-control-indicator"></span>
+    </label>
   </td>
   <td data-is="list-table-column"
     each={ content, index in opts.object }
