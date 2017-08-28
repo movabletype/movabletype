@@ -4200,12 +4200,20 @@ sub is_valid_redirect_target {
 sub param {
     my $app = shift;
     return unless $app->{query};
+    Carp::carp "app->param called in list context; use app->multi_param" if wantarray;
     if (@_) {
         $app->{query}->param(@_);
     }
     else {
         wantarray ? ( $app->{query}->param ) : $app->{query};
     }
+}
+
+sub multi_param {
+    my $app = shift;
+    return unless $app->{query};
+    local $CGI::LIST_CONTEXT_WARN = 0;
+    ( $app->{query}->param(@_) );
 }
 
 sub blog {
