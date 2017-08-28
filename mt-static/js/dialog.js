@@ -118,7 +118,7 @@ SelectionList = new Class(Object, {
             if (!data || (data && !data.label)) {
                 if (!data) data = {};
                 if (row) {
-                    var label = row.getElementsByTagName("label")[0];
+                    var label = jQuery(row).find('label:not(.custom-control)').get(0);
                     if (label)
                         data.label = label.innerHTML;
                 }
@@ -394,6 +394,7 @@ ListingPanel = new Class(Panel, {
                         TC.removeClassName(self.closeButton, "disabled");
                     self.closeButton.disabled = items.length == 0;
                 }
+                event.preventDefault();
             };
         }
     }
