@@ -4389,7 +4389,7 @@ sub _entry_prefs_from_params {
         push @fields, $disp;
     }
     else {
-        @fields = $q->param( $prefix . 'custom_prefs' );
+        @fields = $app->multi_param( $prefix . 'custom_prefs' );
     }
 
     if ( my $body_height = $q->param('text_height') ) {
@@ -4429,7 +4429,7 @@ sub rebuild_these {
         }
 
         # now, rebuild indexes for affected blogs
-        my @blogs = $app->param('blog_ids');
+        my @blogs = $app->multi_param('blog_ids');
         if (@blogs) {
             $app->run_callbacks('pre_build') if @blogs;
             foreach my $blog_id (@blogs) {
@@ -4458,7 +4458,7 @@ sub rebuild_these {
         return $phase->( $app, $params );
     }
     else {
-        my @blogs      = $app->param('blog_ids');
+        my @blogs      = $app->multi_param('blog_ids');
         my $start_time = $app->param('start_time');
         $app->publisher->start_time($start_time) if $start_time;
         my %blogs = map { $_ => () } @blogs;

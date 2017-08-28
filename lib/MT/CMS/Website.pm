@@ -542,7 +542,7 @@ sub dialog_move_blogs {
         $row->{'link'} = $row->{site_url};
     };
 
-    my @id = $app->param('id');
+    my @id = $app->multi_param('id');
     my $ids = join ',', @id;
     $app->listing(
         {   type     => 'website',
