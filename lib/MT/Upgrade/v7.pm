@@ -5,11 +5,11 @@ use warnings;
 sub upgrade_functions {
     return {
         'v5_reset_default_widget' => {
-            version_limit => 7.0007,
+            version_limit => 7.0008,
             priority      => 5.0,
             updater       => {
                 type  => 'author',
-                label => "Reset default widget...",
+                label => "Reset default dashboard widgets...",
                 code  => \&_v7_reset_default_widget,
             },
         },
@@ -30,12 +30,16 @@ sub _v7_reset_default_widget {
         order => 100,
         set   => 'main',
     };
-    $new_widgets->{'dashboard:system'}->{'mt_news'} = {
+    $new_widgets->{'dashboard:system'}->{'updates'} = {
         order => 0,
         set   => 'sidebar',
     };
-    $new_widgets->{'dashboard:system'}->{'activity_log'} = {
+    $new_widgets->{'dashboard:system'}->{'mt_news'} = {
         order => 100,
+        set   => 'sidebar',
+    };
+    $new_widgets->{'dashboard:system'}->{'activity_log'} = {
+        order => 200,
         set   => 'sidebar',
     };
 
