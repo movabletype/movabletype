@@ -108,18 +108,19 @@ function init() {
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
   <mtapp:settinggroup id="role-details">
-    <legend><__trans phrase="Role Details"></legend>
+    <legend class="h3"><__trans phrase="Role Details"></legend>
     <mtapp:setting
        id="name"
        label="<__trans phrase="Role Name">"
+       label_for="name"
        required="1">
       <input type="text" name="name" id="name" class="form-control text" value="<mt:var name="name" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
        id="description"
-       label="<__trans phrase="Description">">
-
+       label="<__trans phrase="Description">"
+       label_for="description">
       <textarea name="description" id="description" class="form-control text low"><mt:var name="description" escape="html"></textarea>
     </mtapp:setting>
 
@@ -127,96 +128,103 @@ function init() {
     <mtapp:setting
        id="created_by"
        label="<__trans phrase="Created by">">
-      <mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if>
+      <div class="form-group">
+        <mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if>
+      </div>
     </mtapp:setting>
   </mt:if>
   </mtapp:settinggroup>
 
   <mtapp:settinggroup id="role-privileges">
-    <legend><__trans phrase="Privileges"></legend>
+    <legend class="h3"><__trans phrase="Privileges"></legend>
     <mtapp:setting
        id="administration"
        label="<__trans phrase="Administration">">
-      <ul class="list-inline fixed-width multiple-selection">
+      <div class="form-group">
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="blog_admin">
-        <li class="list-inline-item">
-          <label for="<mt:var name="id">">
-            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <mt:var name="label" escape="html">
+        <div class="form-check form-check-inline">
+          <label class="custom-control custom-checkbox">
+            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><mt:var name="label" escape="html"></span>
           </label>
-        </li>
+        </div>
       </mt:if>
       </mt:loop>
-      </ul>
+      </div>
     </mtapp:setting>
 
     <mtapp:setting
        id="authoring_publishing"
        label="<__trans phrase="Authoring and Publishing">">
-      <ul class="list-inline fixed-width multiple-selection">
+      <div class="form-group">
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="auth_pub">
-        <li class="list-inline-item">
-          <label for="<mt:var name="id">">
-            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <mt:var name="label" escape="html">
+        <div class="form-check form-check-inline">
+          <label class="custom-control custom-checkbox">
+            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><mt:var name="label" escape="html"></span>
           </label>
-        </li>
+        </div>
       </mt:if>
       </mt:loop>
-      </ul>
+      </div>
     </mtapp:setting>
 
     <mtapp:setting
        id="designing"
        label="<__trans phrase="Designing">">
-      <ul class="list-inline fixed-width multiple-selection">
+      <div class="form-group">
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="blog_design">
-        <li class="list-inline-item">
-          <label for="<mt:var name="id">">
-            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <mt:var name="label" escape="html">
+        <div class="form-check form-check-inline">
+          <label class="custom-control custom-checkbox">
+            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><mt:var name="label" escape="html"></span>
           </label>
-        </li>
+        </div>
       </mt:if>
       </mt:loop>
-      </ul>
+      </div>
     </mtapp:setting>
 
     <mtapp:setting
        id="assets"
        label="<__trans phrase="Assets">">
-      <ul class="list-inline fixed-width multiple-selection">
+      <div class="form-group">
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="blog_upload">
-        <li class="list-inline-item">
-          <label for="<mt:var name="id">">
-            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <mt:var name="label" escape="html">
+        <div class="form-check form-check-inline">
+          <label class="custom-control custom-checkbox">
+            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><mt:var name="label" escape="html"></span>
           </label>
-        </li>
+        </div>
       </mt:if>
       </mt:loop>
-      </ul>
+      </div>
     </mtapp:setting>
 
     <mtapp:setting
        id="commenting"
        label="<__trans phrase="Commenting">">
-      <ul class="list-inline fixed-width multiple-selection">
+      <div class="form-group">
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="blog_comment">
-        <li class="list-inline-item">
-          <label for="<mt:var name="id">">
-            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <mt:var name="label" escape="html">
+        <div class="form-check form-check-inline">
+          <label class="custom-control custom-checkbox">
+            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><mt:var name="label" escape="html"></span>
           </label>
-        </li>
+        </div>
       </mt:if>
       </mt:loop>
-      </ul>
+      </div>
     </mtapp:setting>
 
   <mt:if name="id">

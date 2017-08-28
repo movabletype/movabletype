@@ -120,22 +120,23 @@ jQuery(window).load(init);
           <mt:var name="file_size_formatted" escape="html">
         </li>
       </ul>
-    </div>
 <mt:if name="asset_type" eq="image">
   <mt:if name="has_thumbnail">
-    <div class="image-editor">
-      <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">&return_args=<mt:var name="return_args" escape="html" escape="url">%26magic_token%3D<mt:var name="magic_token">" class="btn btn-default button mt-open-dialog">
-        <__trans phrase="Edit Image">
-      </a>
-    </div>
+      <div class="image-editor">
+        <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">&return_args=<mt:var name="return_args" escape="html" escape="url">%26magic_token%3D<mt:var name="magic_token">" class="btn btn-default button mt-open-dialog">
+          <__trans phrase="Edit Image">
+        </a>
+      </div>
   </mt:if>
 </mt:if>
+    </div>
   </div>
 
   <div class="asset-info">
 <mtapp:setting
   id="label"
   label="<__trans phrase="Label">"
+  label_for="label"
   label_class="top-label"
   help_page="assets"
   help_section="asset_label">
@@ -145,6 +146,7 @@ jQuery(window).load(init);
 <mtapp:setting
    id="description"
    label="<__trans phrase="Description">"
+   label_for="description"
    label_class="top-label"
    no_grid="1">
     <textarea name="description" id="description" class="form-control text full low"><mt:var name="description" escape="html"></textarea>
@@ -154,6 +156,7 @@ jQuery(window).load(init);
    id="tags"
    label_class="text-top"
    label="<__trans phrase="Tags">"
+   label_for="tags"
    label_class="top-label">
     <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" />
     <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />

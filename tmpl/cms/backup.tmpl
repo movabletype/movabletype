@@ -42,33 +42,32 @@
        label="<__trans phrase="Archive Format">"
        help_page="backup_restore"
        help_section="backup_format">
-      <ul class="list-inline multiple-selection">
+      <div class="form-group">
       <mt:loop name="archive_formats">
-        <li class="list-inline-item">
-          <input type="radio" id="<mt:var name="key">" name="backup_archive_format" value="<mt:var name="key">"<mt:if name="__first__"> checked="checked"</mt:if> />
-          <label for="<mt:var name="key" escape="html">">
-            <mt:var name="label" escape="html">
-          </label>
-        </li>
+        <label class="custom-control custom-radio">
+          <input type="radio" id="<mt:var name="key">" class="custom-control-input" name="backup_archive_format" value="<mt:var name="key">"<mt:if name="__first__"> checked="checked"</mt:if> />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><mt:var name="label" escape="html"></span>
+        </label>
         <mt:if name="__last__">
           <mt:setvar name="format_available">
         </mt:if>
       </mt:loop>
-        <li class="list-inline-item">
-          <input type="radio" id="no_archive" name="backup_archive_format" value="0"<mt:unless name="format_available"> checked="checked"</mt:unless> />
-          <label for="no_archive">
-            <__trans phrase="Don't compress">
-          </label>
-        </li>
-      </ul>
+        <label class="custom-control custom-radio">
+          <input type="radio" id="no_archive" class="custom-control-input" name="backup_archive_format" value="0"<mt:unless name="format_available"> checked="checked"</mt:unless> />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><__trans phrase="Don't compress"></span>
+        </label>
+      </div>
     </mtapp:setting>
 
     <mtapp:setting
        id="size_limit"
        label="<__trans phrase="Target File Size">"
+       label_for="size_limit"
        help_page="backup_restore"
        help_section="backup_num_size">
-      <select name="size_limit" id="size_limit" class="form-control">
+      <select name="size_limit" id="size_limit" class="custom-select form-control">
         <option value="0" selected="selected"><__trans phrase="No size limit"></option>
       <mt:if name="OVER_300">
         <option value="300">300KB</option>

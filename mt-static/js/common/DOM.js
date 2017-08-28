@@ -834,7 +834,7 @@ extend( DOM, {
     /* this and the following classname functions honor w3c case-sensitive classnames */
 
     getClassNames: function( e ) {
-        if( !e || !e.className )
+        if( !e || !e.className || typeof e.className != 'string' )
             return [];
         return e.className.split( /\s+/g );
     },

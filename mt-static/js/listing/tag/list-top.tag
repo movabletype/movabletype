@@ -1,10 +1,10 @@
 <list-top>
-  <div data-is="display-options"></div>
-  <div class="row">
+  <div class="mb-3" data-is="display-options"></div>
+  <div class="row mb-3">
     <div data-is="list-actions" if={ opts.useActions } class="col-12">
     </div>
   </div>
-  <div class="row">
+  <div class="row mb-3">
     <div class="col-12">
       <div class="card">
         <virtual data-is="list-filter"></virtual>

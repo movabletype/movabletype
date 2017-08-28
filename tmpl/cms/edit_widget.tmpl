@@ -46,18 +46,21 @@
     <mtapp:setting
        id="name"
        label="<__trans phrase="Widget Set Name">"
+       label_for="name"
        label_class="no-header">
       <input type="text" name="name" id="name" class="form-control text full title required" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Widget Set Name">" />
     </mtapp:setting>
 
     <mt:setvarblock name="action_buttons">
-      <button
-         type="submit"
-         accesskey="s"
-         title="<__trans phrase="Save changes to this widget set (s)">"
-         class="btn btn-primary save action primary button">
-        <__trans phrase="Save Changes">
-      </button>
+      <div class="my-4">
+        <button
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Save changes to this widget set (s)">"
+           class="btn btn-primary save action primary button">
+          <__trans phrase="Save Changes">
+        </button>
+      </div>
     </mt:setvarblock>
 
     <mt:include name="include/actions_bar.tmpl" bar_position="top" hide_pager="1" settings_bar="1">

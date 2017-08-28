@@ -7,7 +7,7 @@
 </mt:loop>
 
 <mt:setvarblock name="list_actions">
-        <div class="button-actions actions">
+        <div class="my-4 button-actions actions">
           <button type="button" class="btn btn-primary save action primary button disabled" disabled="disabled">
             <__trans phrase="Save Changes">
           </button>
@@ -32,12 +32,12 @@
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
 
       <mt:if name="is_category_set">
-        <div class="form-inline">
-          <label>
-            <__trans phrase="Set Name">:
-            <input type="text" class="form-control text" id="set_name" name="set_name" value="<mt:var name="set_name">" />
-          </label>
-        </div>
+        <mtapp:setting
+          id="set_name"
+          label="<__trans phrase="Set Name">"
+          label_for="set_name">
+          <input type="text" class="form-control text" id="set_name" name="set_name" value="<mt:var name="set_name">" />
+        </mtapp:setting>
       </mt:if>
 
       <div id="actions-bar-top" class="actions-bar actions-bar-top line">
@@ -46,7 +46,7 @@
 
       <div class="card">
         <div id="area-action" class="card-header form-inline mod sortable-header">
-          <select id="itemlist" name="itemlist" class="form-control disabled" disabled="disabled">
+          <select id="itemlist" name="itemlist" class="custom-select form-control disabled" disabled="disabled">
             <option id="opt-0" value="0"><__trans phrase="Top Level"></option>
           </select>
           <input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short disabled" disabled="disabled" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">">
@@ -330,7 +330,8 @@ function initItem($item) {
       return false;
     });
 
-  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child [_1]" params="<mt:var name="object_label">" escape="js"></span>')
+<mt:setvarblock name="add_icon_title"><__trans phrase="Add child [_1]" params="<mt:var name="object_label">" escape="js"></mt:setvarblock>
+  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon" style="cursor: pointer;"><mtapp:svgicon id="ic_add" title="$add_icon_title"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions({ sortable: false });
@@ -359,7 +360,8 @@ function initItem($item) {
       jQuery('.button').button();
     });
 
-  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">" escape="js"></span>')
+<mt:setvarblock name="remove_icon_title"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">" escape="js"></mt:setvarblock>
+  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon" style="cursor: pointer;"><mtapp:svgicon id="ic_trash" title="$remove_icon_title"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions();
