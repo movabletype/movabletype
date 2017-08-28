@@ -20,6 +20,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-AUTHOR-DAILY_ADV");
 }
 
+sub dynamic_template {
+    return 'author/<$MTContentAuthorID$>/<$MTArchiveDate format="%Y%m%d"$>';
+}
+
 sub default_archive_templates {
     return [
         {   label           => 'author/author-basename/yyyy/mm/dd/index.html',

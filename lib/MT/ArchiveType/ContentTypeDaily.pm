@@ -19,6 +19,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-DAILY_ADV");
 }
 
+sub dynamic_template {
+    return 'archives/<$MTArchiveDate format="%Y%m%d"$>';
+}
+
 sub default_archive_templates {
     return [
         {   label           => MT->translate('yyyy/mm/dd/index.html'),

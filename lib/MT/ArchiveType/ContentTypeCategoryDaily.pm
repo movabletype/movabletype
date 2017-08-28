@@ -20,6 +20,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-CATEGORY-DAILY_ADV");
 }
 
+sub dynamic_template {
+    return 'category/<$MTCategoryID$>/<$MTArchiveDate format="%Y%m%d"$>';
+}
+
 sub default_archive_templates {
     return [
         {   label           => 'category/sub-category/yyyy/mm/dd/index.html',

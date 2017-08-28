@@ -20,6 +20,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-CATEGORY-WEEKLY_ADV");
 }
 
+sub dynamic_template {
+    return 'category/<$MTCategoryID$>/week/<$MTArchiveDate format="%Y%m%d"$>';
+}
+
 sub default_archive_templates {
     return [
         {   label    => 'category/sub-category/yyyy/mm/day-week/index.html',
