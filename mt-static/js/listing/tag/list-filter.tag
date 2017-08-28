@@ -1,7 +1,7 @@
 <list-filter>
   <div data-is="list-filter-header" class="card-header"></div>
   <div id="list-filter-collapse" class="collapse">
-    <div data-is="list-filter-detail" id="filter-detail" class="card-block">
+    <div data-is="list-filter-detail" id="filter-detail" class="card-block p-3">
     </div>
   </div>
 
