@@ -717,7 +717,6 @@ function toggleCache(id) {
           <__trans phrase="CONTENTTYPE_ADV">
           <input type="hidden" name="new_archive_type" id="new_archive_type" value="ContentType" />
         <mt:else>
-        <select name="new_archive_type" id="new_archive_type" tabindex="9" class="form-control">
         <select name="new_archive_type" id="new_archive_type" tabindex="9" class="custom-select form-control">
         <mt:loop name="archive_types">
           <option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
