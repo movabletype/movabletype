@@ -24,8 +24,11 @@
   </div>
   <div class="card">
     <div class="card-block">
-      <p class="card-text"><__trans phrase="Server Model">: <mt:var name="server_model"></p>
-          <mt:unless name="disable_version_check"><p class="card-text"><__trans phrase="Available Updates">: <mt:if name="available_version"><__trans phrase="Available updates (Version: [_1]) found. Please see the <a href="[_2]" target="_blank">news</a> for detail." params="<mt:var name="available_version">%%<mt:var name="news_url">"><mt:else><__trans phrase="You are using the latest version of Movable Type."></mt:if></p></mt:unless>
+      <ul class="list-unstyled">
+        <li><__trans phrase="Server Model">: <mt:var name="server_model"></li>
+  <mt:unless name="disable_version_check">
+        <li><__trans phrase="Available Updates">: <mt:if name="available_version"><__trans phrase="Available updates (Version: [_1]) found. Please see the <a href="[_2]" target="_blank">news</a> for detail." params="<mt:var name="available_version">%%<mt:var name="news_url">"><mt:else><__trans phrase="You are using the latest version of Movable Type."></mt:if></li>
+  </mt:unless>
     </div>
   </div>
 </mtapp:widget>
