@@ -439,7 +439,7 @@ sub core_widgets {
             handler   => "${pkg}Dashboard::updates_widget",
             singular  => 1,
             set       => 'sidebar',
-            view      => 'system',
+            view      => [ 'user', 'system' ],
             order     => 0,
             default   => 1,
             condition => sub {

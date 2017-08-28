@@ -5,7 +5,7 @@ use warnings;
 sub upgrade_functions {
     return {
         'v5_reset_default_widget' => {
-            version_limit => 7.0008,
+            version_limit => 7.0009,
             priority      => 5.0,
             updater       => {
                 type  => 'author',
@@ -45,6 +45,10 @@ sub _v7_reset_default_widget {
 
     # User Dashboard
     $new_widgets->{'dashboard:user'}->{'mt_news'} = {
+        order => 100,
+        set   => 'sidebar',
+    };
+    $new_widgets->{'dashboard:system'}->{'updates'} = {
         order => 0,
         set   => 'sidebar',
     };
@@ -53,26 +57,25 @@ sub _v7_reset_default_widget {
         set   => 'main',
     };
     $new_widgets->{'dashboard:user'}->{'activity_log'} = {
-        order => 100,
+        order => 200,
         set   => 'sidebar',
     };
 
     # Site
     foreach my $key ( keys %$widgets ) {
         if ( $key =~ m/^dashboard:blog:/ ) {
+            $new_widgets->{$key}->{'site_list'} = {
+                order => 100,
+                set   => 'main',
+            };
             $new_widgets->{$key}->{'site_stats'} = {
                 order => 200,
                 set   => 'main',
             };
             $new_widgets->{$key}->{'activity_log'} = {
-                order => 100,
+                order => 200,
                 set   => 'sidebar',
             };
-            $new_widgets->{$key}->{'site_list'} = {
-                order => 100,
-                set   => 'main',
-            };
-
         }
     }
 
