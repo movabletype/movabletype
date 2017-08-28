@@ -1033,7 +1033,7 @@ sub init_query {
                     $request_charset, $charset )
                     if $transcode;
                 unless ( ref($d) && ( 'Fh' eq ref($d) ) ) {
-                    eval { $d = Encode::decode( $charset, $d, 1 ); };
+                    eval { $d = Encode::decode( $charset, $d, 1 ) unless Encode::is_utf8($d); };
                     return $app->errtrans(
                         "Problem with this request: corrupt character data for character set [_1]",
                         $charset
