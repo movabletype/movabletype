@@ -220,7 +220,7 @@ sub site_stats_widget {
     my $site = $app->blog;
     return unless $site;
     return
-        unless $user->has_perm($site->id)
+        unless $user->has_perm( $site->id )
         || $user->is_superuser;
 
     generate_site_stats_data( $app, $param );
@@ -259,8 +259,8 @@ sub generate_site_stats_data {
         = $app->registry( 'applications', 'cms', 'site_stats_lines' );
 
     # Reload stats data when type of stats was changed
-    my $force_reload = 0;
-    my $present_lines     = MT::Request->instance->cache('site_stats_lines');
+    my $force_reload  = 0;
+    my $present_lines = MT::Request->instance->cache('site_stats_lines');
     unless ($present_lines) {
         if ( $fmgr->exists($path) ) {
             my $file = $fmgr->get_data( $path, 'output' );
@@ -677,34 +677,6 @@ sub system_information_widget {
     else {
         $param->{server_model} = 'CGI';
     }
-
-    # Update check
-    if ( $app->config('DisableVersionCheck') ) {
-        $param->{disable_version_check} = 1;
-    }
-    else {
-        # Read available version data.
-        my $ua = MT->new_ua( { timeout => 10 } );
-        if ( !$ua ) {
-            $param->{disable_version_check} = 1;
-        }
-        else {
-            my $version_url = const('LATEST_VESION_URL');
-            my $req         = new HTTP::Request( GET => $version_url );
-            my $resp        = $ua->request($req);
-            my $result      = $resp->content();
-            if ( !$resp->is_success() || !$result ) {
-                $param->{disable_version_check} = 1;
-            }
-            else {
-                $result = MT::Util::from_json($result);
-                if ( MT->version_id ne $result->{version} ) {
-                    $param->{available_version} = $result->{version};
-                    $param->{news_url}          = $result->{news_url};
-                }
-            }
-        }
-    }
 }
 
 sub activity_log_widget {
@@ -941,7 +913,7 @@ sub site_list_widget {
             # Children
             for my $child ( @{ $blog->blogs } ) {
                 next
-                    unless $user->has_perm($child->id)
+                    unless $user->has_perm( $child->id )
                     || $user->is_superuser
                     || $user->permissions(0)->can_do('edit_templates');
                 my $row = $site_builder->($child);
@@ -967,6 +939,75 @@ sub site_list_widget {
     }
 
     $param->{sites} = \@sites;
+}
+
+sub updates_widget {
+    my $app = shift;
+    my ( $tmpl, $param ) = @_;
+
+    # Update check
+    if ( $app->config('DisableVersionCheck') ) {
+        $param->{disable_version_check} = 1;
+    }
+    else {
+        require MT::Session;
+        if ( scalar $app->param('reload') ) {
+
+            # Force reload, purge cache if exists
+            my $cache = MT->model('session')->load( { kind => 'UC', } );
+            $cache->remove if $cache;
+        }
+        else {
+            # Check cache
+            my $ttl = 4 * 60 * 60;    # 4 hours
+            my $cache
+                = MT::Session::get_unexpired_value( $ttl, { kind => 'UC', } );
+
+            if ($cache) {
+                if ( $cache->get('version')
+                    and MT->version_id ne $cache->get('version') )
+                {
+                    $param->{available_version} = $cache->get('version');
+                    $param->{news_url}          = $cache->get('news_url');
+                }
+                return;
+            }
+        }
+
+        # Read available version data.
+        my $ua = MT->new_ua( { timeout => 10 } );
+        if ( !$ua ) {
+            $param->{update_check_failed} = 1;
+        }
+        else {
+            my $version_url = const('LATEST_VESION_URL');
+            my $req         = new HTTP::Request( GET => $version_url );
+            my $resp        = $ua->request($req);
+            my $result      = $resp->content();
+            if ( !$resp->is_success() || !$result ) {
+                $param->{update_check_failed} = 1;
+            }
+            else {
+                $result = MT::Util::from_json($result);
+                if ( MT->version_id ne $result->{version} ) {
+                    $param->{available_version} = $result->{version};
+                    $param->{news_url}          = $result->{news_url};
+                }
+
+                # Make a cache
+                my $cache = MT->model('session')->new;
+                $cache->set_values(
+                    {   id    => 'Update Check',
+                        kind  => 'UC',
+                        start => time,
+                    }
+                );
+                $cache->set( 'version',  $result->{version} );
+                $cache->set( 'news_url', $result->{news_url} );
+                $cache->save;
+            }
+        }
+    }
 }
 
 1;

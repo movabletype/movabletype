@@ -400,8 +400,8 @@ sub core_widgets {
             singular => 1,
             set      => 'sidebar',
             view     => [ 'user', 'system' ],
-            order    => 0,
-            default => 1,
+            order    => 100,
+            default  => 1,
         },
         notification_dashboard => {
             label    => 'Notification Dashboard',
@@ -421,7 +421,7 @@ sub core_widgets {
             set      => 'main',
             view     => [ 'website', 'blog' ],
             order    => 100,
-            default => 1,
+            default  => 1,
         },
         system_information => {
             label    => 'System Infromation',
@@ -433,6 +433,19 @@ sub core_widgets {
             order    => 100,
             default  => 1,
         },
+        updates => {
+            label     => 'Updates',
+            template  => 'widget/updates.tmpl',
+            handler   => "${pkg}Dashboard::updates_widget",
+            singular  => 1,
+            set       => 'sidebar',
+            view      => 'system',
+            order     => 0,
+            default   => 1,
+            condition => sub {
+                MT->config('DisableVersionCheck') ? 0 : 1;
+            }
+        },
         activity_log => {
             label    => 'Activity Log',
             template => 'widget/activity_log.tmpl',
@@ -440,7 +453,7 @@ sub core_widgets {
             singular => 1,
             set      => 'sidebar',
             view     => [ 'system', 'user', 'website', 'blog' ],
-            order    => 100,
+            order    => 200,
             default  => 1,
         },
         site_list => {
