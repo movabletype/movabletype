@@ -487,14 +487,22 @@ sub notification_widget {
     if ( scalar $app->param('reload') ) {
 
         # Force reload, purge cache if exists
-        my $cache = MT->model('session')->load( { kind => 'ND', } );
+        my $cache = MT->model('session')->load(
+            {   id   => 'Notification messages',
+                kind => 'DW',
+            }
+        );
         $cache->remove if $cache;
     }
     else {
         # Check cache
-        my $ttl = MT->config('NotificationCacheTTL');
-        my $cache
-            = MT::Session::get_unexpired_value( $ttl, { kind => 'ND', } );
+        my $ttl   = MT->config('NotificationCacheTTL');
+        my $cache = MT::Session::get_unexpired_value(
+            $ttl,
+            {   id   => 'Notification messages',
+                kind => 'DW',
+            }
+        );
 
         if ($cache) {
             require MT::Serialize;
@@ -633,7 +641,7 @@ sub notification_widget {
     my $cache = MT->model('session')->new;
     $cache->set_values(
         {   id    => 'Notification messages',
-            kind  => 'ND',
+            kind  => 'DW',
             data  => $ser,
             start => time,
         }
@@ -954,14 +962,22 @@ sub updates_widget {
         if ( scalar $app->param('reload') ) {
 
             # Force reload, purge cache if exists
-            my $cache = MT->model('session')->load( { kind => 'UC', } );
+            my $cache = MT->model('session')->load(
+                {   id   => 'Update Check',
+                    kind => 'DW',
+                }
+            );
             $cache->remove if $cache;
         }
         else {
             # Check cache
-            my $ttl = 4 * 60 * 60;    # 4 hours
-            my $cache
-                = MT::Session::get_unexpired_value( $ttl, { kind => 'UC', } );
+            my $ttl   = 4 * 60 * 60;                        # 4 hours
+            my $cache = MT::Session::get_unexpired_value(
+                $ttl,
+                {   id   => 'Update Check',
+                    kind => 'DW',
+                }
+            );
 
             if ($cache) {
                 if ( $cache->get('version')
@@ -998,7 +1014,7 @@ sub updates_widget {
                 my $cache = MT->model('session')->new;
                 $cache->set_values(
                     {   id    => 'Update Check',
-                        kind  => 'UC',
+                        kind  => 'DW',
                         start => time,
                     }
                 );
