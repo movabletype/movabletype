@@ -51,6 +51,32 @@ sub archive_title {
     encode_html( remove_html( $_[1]->title ) );
 }
 
+sub archive_group_iter {
+    my $obj = shift;
+    my ( $ctx, $args ) = @_;
+
+    my $order
+        = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+
+    my $blog_id = $ctx->stash('blog')->id;
+    require MT::ContentData;
+    my $iter = MT::ContentData->load_iter(
+        {   blog_id => $blog_id,
+            status  => MT::Entry::RELEASE()
+        },
+        {   'sort'    => 'authored_on',
+            direction => $order,
+            $args->{lastn} ? ( limit => $args->{lastn} ) : ()
+        }
+    );
+    return sub {
+        while ( my $content = $iter->() ) {
+            return ( 1, contents => [$content], content => $content );
+        }
+        undef;
+        }
+}
+
 sub default_archive_templates {
     return [
         {   label           => MT->translate('yyyy/mm/base-name.html'),

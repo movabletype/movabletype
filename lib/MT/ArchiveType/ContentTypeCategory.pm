@@ -102,6 +102,48 @@ sub _get_this_cat {
     return $this_cat;
 }
 
+sub archive_group_iter {
+    my $obj = shift;
+    my ( $ctx, $args ) = @_;
+
+    my $blog_id = $ctx->stash('blog')->id;
+    require MT::Category;
+    my $iter = MT::Category->load_iter( { blog_id => $blog_id },
+        { 'sort' => 'label', direction => 'ascend' } );
+
+    my $map = $ctx->stash('template_map');
+    my $cat_field_id = defined $map && $map ? $map->cat_field_id : '';
+    require MT::ContentData;
+    require MT::ContentFieldIndex;
+
+    # issue a single count_group_by for all categories
+    my $cnt_iter = MT::ContentFieldIndex->count_group_by(
+        { content_field_id => $cat_field_id, },
+        {   group => ['value_integer'],
+            join  => MT::ContentData->join_on(
+                undef,
+                {   id      => \'= cf_idx_content_data_id',
+                    blog_id => $blog_id,
+                    status  => MT::Entry::RELEASE(),
+                }
+            ),
+        }
+    );
+    my %counts;
+    while ( my ( $count, $cat_id ) = $cnt_iter->() ) {
+        $counts{$cat_id} = $count;
+    }
+
+    return sub {
+        while ( my $c = $iter->() ) {
+            my $count = $counts{ $c->id };
+            next unless $count || $args->{show_empty};
+            return ( $count, category => $c );
+        }
+        return ();
+    };
+}
+
 sub archive_contents_count {
     my $obj = shift;
     my ( $blog, $at, $content_data, $cat ) = @_;
@@ -125,7 +167,7 @@ sub archive_group_contents {
         $limit = $blog->entries_on_index if $blog;
     }
     my $c = $ctx->stash('archive_category') || $ctx->stash('category');
-    my $map          = $ctx->stash('template_map');
+    my $map = $ctx->stash('template_map');
     my $cat_field_id = $map ? $map->cat_field_id : '';
     require MT::ContentData;
     my @contents = MT::ContentData->load(

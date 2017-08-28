@@ -38,6 +38,127 @@ sub template_params {
     return { archive_class => "contenttype-author-monthly-archive" };
 }
 
+sub archive_group_iter {
+    my $obj = shift;
+    my ( $ctx, $args ) = @_;
+    my $blog = $ctx->stash('blog');
+    my $sort_order
+        = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $auth_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
+    my $limit = exists $args->{lastn} ? delete $args->{lastn} : undef;
+
+    my $tmpl  = $ctx->stash('template');
+    my @data  = ();
+    my $count = 0;
+
+    my $author = $ctx->stash('author');
+
+    my $ts    = $ctx->{current_timestamp};
+    my $tsend = $ctx->{current_timestamp_end};
+
+    my $map          = $ctx->stash('template_map');
+    my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
+    require MT::ContentData;
+    require MT::ContentFieldIndex;
+    my $loop_sub = sub {
+        my $auth       = shift;
+        my $count_iter = MT::ContentData->count_group_by(
+            {   blog_id   => $blog->id,
+                author_id => $auth->id,
+                status    => MT::Entry::RELEASE(),
+            },
+            {   group => [
+                    "extract(year from cf_idx_value_datetime) AS year",
+                    "extract(month from cf_idx_value_datetime) AS month"
+                ],
+                'sort' => [
+                    {   column => "extract(year from cf_idx_value_datetime)",
+                        desc   => $order
+                    },
+                    {   column => "extract(month from cf_idx_value_datetime)",
+                        desc   => $order
+                    }
+                ],
+                join => MT::ContentFieldIndex->join_on(
+                    'content_data_id',
+                    {   content_field_id => $dt_field_id,
+                        ( $ts && $tsend ? ( value_datetime   => { op => '>=', value => $ts },
+                        value_datetime   => { op => '<=', value => $tsend } ) : () ),
+                    },
+                ),
+            }
+        ) or return $ctx->error("Couldn't get monthly archive list");
+
+        while ( my @row = $count_iter->() ) {
+            my $hash = {
+                year   => $row[1],
+                month  => $row[2],
+                author => $auth,
+                count  => $row[0],
+            };
+            push( @data, $hash );
+            return $count + 1
+                if ( defined($limit) && ( $count + 1 ) == $limit );
+            $count++;
+        }
+        return $count;
+    };
+
+    # Count entry by author
+    if ($author) {
+        $loop_sub->($author);
+    }
+    else {
+
+        # load authors
+        require MT::Author;
+        my $iter;
+        $iter = MT::Author->load_iter(
+            undef,
+            {   sort      => 'name',
+                direction => $auth_order,
+                join      => [
+                    'MT::ContentData',
+                    'author_id',
+                    { status => MT::Entry::RELEASE(), blog_id => $blog->id },
+                    { unique => 1 }
+                ]
+            }
+        );
+
+        while ( my $a = $iter->() ) {
+            $loop_sub->($a);
+            last if ( defined($limit) && $count == $limit );
+        }
+    }
+
+    my $loop = @data;
+    my $curr = 0;
+
+    return sub {
+        if ( $curr < $loop ) {
+            my $date = sprintf(
+                "%04d%02d%02d000000",
+                $data[$curr]->{year},
+                $data[$curr]->{month}, 1
+            );
+            my ( $start, $end ) = start_end_month($date);
+            my $count = $data[$curr]->{count};
+            my %hash  = (
+                author => $data[$curr]->{author},
+                year   => $data[$curr]->{year},
+                month  => $data[$curr]->{month},
+                start  => $start,
+                end    => $end
+            );
+            $curr++;
+            return ( $count, %hash );
+        }
+        undef;
+        }
+}
+
 sub archive_group_contents {
     my $obj = shift;
     my ( $ctx, %param ) = @_;

@@ -83,25 +83,23 @@ my $cd = MT::Test::Permission->make_content_data(
     },
 );
 
-my $text = "<\$mt:ArchiveTitle\$>\n<mt:Contents>a</mt:Contents>";
+my $text = "<\$mt:ArchiveTitle\$>\n<mt:Contents>a</mt:Contents>\n";
 my $tmpl = MT::Test::Permission->make_template(
     blog_id         => $blog->id,
     content_type_id => $cd->id,
     name            => 'ContentType Test',
-    text            => $text
+    type            => 'ct',
 );
-$tmpl->content_type_id( $ct->id );
 my $tmpl_archive = MT::Test::Permission->make_template(
     blog_id         => $blog->id,
     content_type_id => $cd->id,
     name            => 'ContentType Archive Test',
-    text            => $text
+    type            => 'ct_archive',
 );
-$tmpl_archive->content_type_id( $ct->id );
 
 my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
 
-my $contents_html = "\na";
+my $contents_html = "\na\nb";
 my %html          = (
     'ContentType'         => 'Sample Content Data' . $contents_html,
     'ContentType-Daily'   => 'June  3, 2017' . $contents_html,
@@ -146,6 +144,7 @@ foreach my $prefix (qw( ContentType ContentType_Author ContentType_Category ))
         push @suite,
             {
             ArchiveType => $at,
+            Template    => ( $at eq 'ContentType' ? $tmpl : $tmpl_archive ),
             TemplateMap => $map,
             Html        => $html{$at},
             Published   => 1,
@@ -154,12 +153,17 @@ foreach my $prefix (qw( ContentType ContentType_Author ContentType_Category ))
 }
 
 for my $s (@suite) {
-    my $at  = $s->{ArchiveType};
-    my $map = $s->{TemplateMap};
+    my $at       = $s->{ArchiveType};
+    my $template = $s->{Template};
+    my $map      = $s->{TemplateMap};
+
 
     note( 'ArchiveType: ' . $at );
 
+    $template->text( $text . '<mt:ArchiveList archive_type="' . $at . '">b</mt:ArchiveList>' );
+    $template->save;
     $blog->archive_type($at);
+    $blog->save;
 
     my $archiver = $publisher->archiver($at);
 

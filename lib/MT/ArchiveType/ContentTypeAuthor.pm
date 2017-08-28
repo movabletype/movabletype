@@ -35,6 +35,47 @@ sub template_params {
     return { archive_class => "contenttype-author-archive" };
 }
 
+sub archive_group_iter {
+    my $obj = shift;
+    my ( $ctx, $args ) = @_;
+    my $blog = $ctx->stash('blog');
+    my $sort_order
+        = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $auth_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
+    my $limit = exists $args->{lastn} ? delete $args->{lastn} : undef;
+    require MT::ContentData;
+    require MT::Author;
+    my $auth_iter = MT::Author->load_iter(
+        undef,
+        {   sort      => 'name',
+            direction => $auth_order,
+            join      => [
+                'MT::ContentData', 'author_id',
+                { status => MT::Entry::RELEASE(), blog_id => $blog->id },
+                { unique => 1 }
+            ]
+        }
+    );
+    my $i = 0;
+    return sub {
+
+        while ( my $a = $auth_iter->() ) {
+            last if defined($limit) && $i == $limit;
+            my $count = MT::ContentData->count(
+                {   blog_id   => $blog->id,
+                    status    => MT::Entry::RELEASE(),
+                    author_id => $a->id
+                }
+            );
+            next if $count == 0 && !$args->{show_empty};
+            $i++;
+            return ( $count, author => $a );
+        }
+        undef;
+    };
+}
+
 sub archive_contents_count {
     my $obj = shift;
     my ( $blog, $at, $content_data ) = @_;

@@ -251,9 +251,21 @@ sub _hdlr_archives {
             ( $start, $end ) = ( $curr{'start'}, $curr{'end'} );
         }
         else {
-            my $entry;
-            $entry = $curr{entries}->[0] if exists( $curr{entries} );
-            ( $start, $end ) = ( ref $entry ? $entry->authored_on : "" );
+            if ( $at eq 'ContentType' ) {
+                my $content;
+                $content = $curr{contents}->[0]
+                    if exists( $curr{contents} );
+                my $map = $ctx->stash('template_map');
+                my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
+                my $data = $content->data;
+                ( $start, $end ) = ( $data ? $data->{$dt_field_id} : "" );
+            }
+            else {
+                my $entry;
+                $entry = $curr{entries}->[0]
+                    if exists( $curr{entries} );
+                ( $start, $end ) = ( ref $entry ? $entry->authored_on : "" );
+            }
         }
         local $ctx->{current_timestamp}      = $start;
         local $ctx->{current_timestamp_end}  = $end;

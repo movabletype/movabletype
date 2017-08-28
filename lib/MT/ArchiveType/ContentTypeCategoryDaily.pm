@@ -74,6 +74,125 @@ sub archive_file {
     $file;
 }
 
+sub archive_group_iter {
+    my $obj = shift;
+    my ( $ctx, $args ) = @_;
+    my $blog = $ctx->stash('blog');
+    my $sort_order
+        = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $cat_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc'                 : 'desc';
+    my $limit = exists $args->{lastn}       ? delete $args->{lastn} : undef;
+    my $tmpl  = $ctx->stash('template');
+    my $cat   = $ctx->stash('archive_category') || $ctx->stash('category');
+    my @data  = ();
+    my $count = 0;
+    my $ts    = $ctx->{current_timestamp};
+    my $tsend = $ctx->{current_timestamp_end};
+
+    my $map          = $ctx->stash('template_map');
+    my $cat_field_id = defined $map && $map ? $map->cat_field_id : '';
+    my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
+    require MT::ContentData;
+    require MT::ContentFieldIndex;
+    my $loop_sub = sub {
+        my $c          = shift;
+        my $cd_iter = MT::ContentData->count_group_by(
+            {   blog_id => $blog->id,
+                status  => MT::Entry::RELEASE(),
+                #( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
+            },
+            {   group => [
+                    "extract(year from dt_cf_idx.cf_idx_value_datetime) AS year",
+                    "extract(month from dt_cf_idx.cf_idx_value_datetime) AS month",
+                    "extract(day from dt_cf_idx.cf_idx_value_datetime) as day"
+                ],
+                sort => [
+                    {   column => "extract(year from dt_cf_idx.cf_idx_value_datetime)",
+                        desc   => $order
+                    },
+                    {   column => "extract(month from dt_cf_idx.cf_idx_value_datetime)",
+                        desc   => $order
+                    },
+                    {   column => "extract(day from dt_cf_idx.cf_idx_value_datetime)",
+                        desc   => $order
+                    },
+                ],
+                'joins'     => [
+                    MT::ContentFieldIndex->join_on(
+                        'content_data_id',
+                        {   content_field_id => $dt_field_id,
+                            ( $ts && $tsend ? ( value_datetime   => { op => '>=', value => $ts },
+                            value_datetime   => { op => '<=', value => $tsend } ) : () ),
+                        },
+                        { alias => 'dt_cf_idx' }
+                    ),
+                    MT::ContentFieldIndex->join_on(
+                        'content_data_id',
+                        {   content_field_id => $cat_field_id,
+                            value_integer    => $c->id
+                        },
+                        { alias => 'cat_cf_idx' }
+                    )
+                ],
+            }
+        ) or return $ctx->error("Couldn't get yearly archive list");
+        while ( my @row = $cd_iter->() ) {
+            my $hash = {
+                year     => $row[1],
+                month    => $row[2],
+                day      => $row[3],
+                category => $c,
+                count    => $row[0],
+            };
+            push( @data, $hash );
+            return $count + 1
+                if ( defined($limit) && ( $count + 1 ) == $limit );
+            $count++;
+        }
+    };
+
+    if ($cat) {
+        $loop_sub->($cat);
+    }
+    else {
+        require MT::Category;
+        my $iter = MT::Category->load_iter( { blog_id => $blog->id },
+            { 'sort' => 'label', direction => $cat_order } );
+        while ( my $category = $iter->() ) {
+            $loop_sub->($category);
+            last if ( defined($limit) && $count == $limit );
+        }
+    }
+
+    my $loop = @data;
+    my $curr = 0;
+
+    return sub {
+        if ( $curr < $loop ) {
+            my $date = sprintf(
+                "%04d%02d%02d000000",
+                $data[$curr]->{year},
+                $data[$curr]->{month},
+                $data[$curr]->{day}
+            );
+            my ( $start, $end ) = start_end_day($date);
+            my $count = $data[$curr]->{count};
+            my %hash  = (
+                category => $data[$curr]->{category},
+                year     => $data[$curr]->{year},
+                month    => $data[$curr]->{month},
+                day      => $data[$curr]->{day},
+                start    => $start,
+                end      => $end,
+            );
+            $curr++;
+            return ( $count, %hash );
+        }
+        undef;
+        }
+}
+
 sub archive_group_contents{
     my $obj = shift;
     my ( $ctx, %param ) = @_;
