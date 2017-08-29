@@ -37,9 +37,9 @@ function returnBlogSelection(ok) {
         var inp = inputs[0];
         var row = TC.getParentByTagName( inp, "tr" );
         if (!row) return;
-        var labels = row.getElementsByTagName('label');
+        var labels = jQuery(row).find('label:not(.custom-control)');
         if (labels.length == 0) return;
-        var blog_name = labels[0].innerHTML;
+        var blog_name = labels.get(0).innerHTML;
         el_id.value = inp.value;
         if (blog_name)
             el_name.innerHTML = blog_name + ' (' + inp.value + ')';
