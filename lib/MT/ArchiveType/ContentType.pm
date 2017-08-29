@@ -20,7 +20,16 @@ sub archive_label {
 }
 
 sub template_params {
-    return { archive_class => "contenttype-archive" };
+    return {
+        archive_class        => "contenttype-archive",
+        contenttype_archive  => 1,
+        archive_template     => 1,
+        archive_listing      => 1,
+    };
+}
+
+sub dynamic_template {
+    'content/<$MTContentID$>';
 }
 
 sub archive_file {

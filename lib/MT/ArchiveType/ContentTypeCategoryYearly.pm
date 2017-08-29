@@ -39,7 +39,15 @@ sub default_archive_templates {
 }
 
 sub template_params {
-    return { archive_class => "contenttype-category-yearlyarchive" };
+    return {
+        archive_class                => "contenttype-category-yearly-archive",
+        category_yearly_archive      => 1,
+        archive_template             => 1,
+        archive_listing              => 1,
+        datebased_archive            => 1,
+        category_based_archive       => 1,
+        contenttype_archive_lisrting => 1,
+    };
 }
 
 sub archive_file {
