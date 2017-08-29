@@ -745,6 +745,7 @@ sub core_content_actions {
                 mode        => 'empty_junk',
                 class       => 'icon-action',
                 label       => 'Delete all Spam trackbacks',
+                icon        => 'ic_setting',
                 return_args => 1,
                 order       => 100,
                 confirm_msg => sub {
@@ -764,6 +765,7 @@ sub core_content_actions {
                 mode        => 'empty_junk',
                 class       => 'icon-action',
                 label       => 'Delete all Spam comments',
+                icon        => 'ic_setting',
                 return_args => 1,
                 order       => 100,
                 confirm_msg => sub {
