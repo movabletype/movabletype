@@ -37,11 +37,11 @@ sub dynamic_template {
 
 sub template_params {
     return {
-        archive_class                    => "author-archive",
-        'module_author-monthly_archives' => 1,
-        author_archive                   => 1,
-        archive_template                 => 1,
-        archive_listing                  => 1,
+        archive_class        => "author-archive",
+        author_archive       => 1,
+        archive_template     => 1,
+        archive_listing      => 1,
+        author_based_archive => 1,
     };
 }
 
