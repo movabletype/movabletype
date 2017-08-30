@@ -203,14 +203,27 @@ sub list_props {
                         $title_html = $obj->$title_col || $alt_label;
                     }
                     $type = 'categories' if $type eq 'category';
-                    my $img
-                        = MT->static_path
-                        . 'images/nav_icons/color/'
-                        . $type . '.gif';
+
+                    my $icon_title = $type;
+                    my $icon_color = '';
+                    if ( $type eq 'entry' ) {
+                        $icon_color = '--success';
+                    }
+                    elsif ( $type eq 'page' ) {
+                        $icon_color = '--info';
+                    }
+                    my $icon_type = '';
+                    if ( $type eq 'entry' || $type eq 'page' ) {
+                        $icon_type = 'file';
+                    }
+                    elsif ( $type eq 'categories' ) {
+                        $icon_type = 'category';
+                    }
+                    my $static_uri = $app->static_path;
                     push @res, qq{
-                        <span class="icon target-type $type">
-                          <img src="$img" />
-                        </span>
+                        <svg title="$icon_title" role="img" class="mt-icon--sm mt-icon$icon_color">
+                          <use xlink:href="${static_uri}images/sprite.svg#ic_$icon_type">
+                        </svg>
                         $title_html
                     };
                 }
