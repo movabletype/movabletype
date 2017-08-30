@@ -675,7 +675,7 @@ riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan=
     this.mixin('listTop')
 
     this.toggleRow = function(e) {
-      if (e.target.tagName == 'A') {
+      if (e.target.tagName == 'A' || e.target.tagName == 'IMG') {
         return false
       }
       e.preventDefault()
