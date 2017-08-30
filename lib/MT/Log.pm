@@ -111,7 +111,7 @@ sub list_props {
                         $msg
                       </a>
                       <div id="log-detail-$id" class="collapse log-metadata detail">
-                        <div class="card card-block">
+                        <div class="card card-block bg-light mt-2 p-2">
                           <pre style="overflow: auto; white-space: pre-wrap; word-wrap: break-word;">$desc</pre>
                         </div>
                       </div>
