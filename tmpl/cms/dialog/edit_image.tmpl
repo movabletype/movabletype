@@ -91,63 +91,90 @@ button.history {
 
       <div id="editor" class="col-4">
 
-        <div id="editor-resize">
-          <div class="editor-resize-column form-inline">
-            <div class="form-group float-right">
-              <label for="resize-width"><__trans phrase="W:"></label>
+        <div id="editor-resize" class="form-group">
+          <div class="form-row align-items-center mb-1">
+            <div class="col-2">
+              <label class="text-right" for="resize-width"><__trans phrase="W:"></label>
+            </div>
+            <div class="col">
               <input id="resize-width" class="form-control text resize" type="text" value="<mt:var name="image_width">" />
             </div>
-            <div class="form-group">
-              <label for="resize-height"><__trans phrase="H:"></label>
+          </div>
+          <div class="form-row align-items-center mb-1">
+            <div class="col-2">
+              <label class="text-right" for="resize-height"><__trans phrase="H:"></label>
+            </div>
+            <div class="col">
               <input id="resize-height" class="form-control text resize" type="text" value="<mt:var name="image_height">" />
             </div>
-            <button id="resize-apply" class="btn btn-default button resize enable-submit disabled" disabled="disabled"><__trans phrase="Apply"></button>
-            <button id="resize-reset" class="btn btn-default button resize disabled" disabled="disabled"><__trans phrase="Reset"></button>
           </div>
-          <div class="form-group editor-resize-subcolumn">
-            <input id="keep-aspect-ratio" class="checkbox" type="checkbox" value="1" checked="checked" />
-            <label for="keep-aspect-ratio"><__trans phrase="Keep aspect ratio"></label>
+          <div class="form-row align-items-center mb-1">
+            <div class="col">
+              <button id="resize-apply" class="btn btn-default button resize enable-submit disabled" disabled="disabled"><__trans phrase="Apply"></button>
+              <button id="resize-reset" class="btn btn-default button resize disabled" disabled="disabled"><__trans phrase="Reset"></button>
+            </div>
+          </div>
+          <div class="form-row align-items-center editor-resize-subcolumn">
+            <div class="col">
+              <label class="custom-control custom-checkbox">
+                <input id="keep-aspect-ratio" class="custom-control-input checkbox" type="checkbox" value="1" checked="checked" />
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Keep aspect ratio"></span>
+              </label>
+            </div>
           </div>
         </div>
 
-        <div id="editor-metadata">
-          <mt:if name="has_metadata">
-          <div class="form-inline editor-metadata-column">
-            <input id="remove-all-metadata" class="checkbox enable-submit" type="checkbox" />
-            <label for="remove-all-metadata"><__trans phrase="Remove All metadata"></label>
+        <div id="editor-metadata" class="form-group">
+        <mt:if name="has_metadata">
+          <div class="form-row align-items-center editor-metadata-column">
+            <div class="col">
+              <label class="custom-control custom-checkbox">
+                <input id="remove-all-metadata" class="custom-control-input checkbox enable-submit" type="checkbox" />
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Remove All metadata"></span>
+              </label>
+            </div>
           </div>
-          </mt:if>
-
-          <mt:if name="has_gps_metadata">
-          <div class="form-inline editor-metadata-column">
-            <input id="remove-gps-metadata" class="checkbox enable-submit" type="checkbox" />
-            <label for="remove-gps-metadata"><__trans phrase="Remove GPS metadata"></label>
+        </mt:if>
+        <mt:if name="has_gps_metadata">
+          <div class="form-row align-items-center editor-metadata-column">
+            <div class="col">
+              <label class="custom-control custom-checkbox">
+                <input id="remove-gps-metadata" class="custom-control-input checkbox enable-submit" type="checkbox" />
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Remove GPS metadata"></span>
+              </label>
+            </div>
           </div>
-          </mt:if>
+        </mt:if>
         </div>
 
-        <div id="editor-button">
-          <div class="editor-button-column">
-            <button class="btn btn-default button editor-button enable-submit" title="<__trans phrase="Rotate right">" onclick="image.rotate(90);">
-              <img alt="Rotate right" src="<mt:var name="static_uri">images/image_editor/rotate_right@2x.png" width="24" height="24" />
-            </button>
-            <button class="btn btn-default button editor-button enable-submit" title="<__trans phrase="Rotate left">" onclick="image.rotate(-90);">
-              <img alt="Rotate left" src="<mt:var name="static_uri">images/image_editor/rotate_left@2x.png" width="24" height="24" />
-            </button>
-            <button class="btn btn-default button editor-button enable-submit" title="<__trans phrase="Flip horizontal">" onclick="image.flipHorizontal();">
-              <img alt="Flip horizontal" src="<mt:var name="static_uri">images/image_editor/flip_horizontal@2x.png" width="24" height="24" />
-            </button>
-            <button class="btn btn-default button editor-button enable-submit" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
-              <img alt="Flip vertical" src="<mt:var name="static_uri">images/image_editor/flip_vertical@2x.png" width="24" height="24" />
-            </button>
-            <button id="crop" class="btn btn-default button editor-button enable-submit disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
-              <img alt="Crop" src="<mt:var name="static_uri">images/image_editor/crop@2x.png" width="24" height="24" />
-            </button>
+        <div id="editor-button" class="form-group">
+          <div class="form-row align-items-center mb-1 editor-button-column">
+            <div class="col">
+              <button class="btn btn-default p-1 button editor-button enable-submit" title="<__trans phrase="Rotate right">" onclick="image.rotate(90);">
+                <img alt="Rotate right" src="<mt:var name="static_uri">images/image_editor/rotate_right@2x.png" width="24" height="24" />
+              </button>
+              <button class="btn btn-default p-1 button editor-button enable-submit" title="<__trans phrase="Rotate left">" onclick="image.rotate(-90);">
+                <img alt="Rotate left" src="<mt:var name="static_uri">images/image_editor/rotate_left@2x.png" width="24" height="24" />
+              </button>
+              <button class="btn btn-default p-1 button editor-button enable-submit" title="<__trans phrase="Flip horizontal">" onclick="image.flipHorizontal();">
+                <img alt="Flip horizontal" src="<mt:var name="static_uri">images/image_editor/flip_horizontal@2x.png" width="24" height="24" />
+              </button>
+              <button class="btn btn-default p-1 button editor-button enable-submit" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
+                <img alt="Flip vertical" src="<mt:var name="static_uri">images/image_editor/flip_vertical@2x.png" width="24" height="24" />
+              </button>
+              <button id="crop" class="btn btn-default p-1 button editor-button enable-submit disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
+                <img alt="Crop" src="<mt:var name="static_uri">images/image_editor/crop@2x.png" width="24" height="24" />
+              </button>
+            </div>
           </div>
-
-          <div class="editor-button-column">
-            <button id="undo" class="btn btn-default button history disabled" disabled="disabled" onclick="image.undo();"><__trans phrase="Undo"></button>
-            <button id="redo" class="btn btn-default button history disabled" disabled="disabled" onclick="image.redo();"><__trans phrase="Redo"></button>
+          <div class="form-row align-items-center editor-button-column">
+            <div class="col">
+              <button id="undo" class="btn btn-default button history disabled" disabled="disabled" onclick="image.undo();"><__trans phrase="Undo"></button>
+              <button id="redo" class="btn btn-default button history disabled" disabled="disabled" onclick="image.redo();"><__trans phrase="Redo"></button>
+            </div>
           </div>
         </div>
 

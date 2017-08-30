@@ -4275,7 +4275,6 @@ sub trace {
     $app->{trace} ||= [];
     if ( $MT::DebugMode & 2 ) {
         require Carp;
-        local $Carp::CarpLevel = 1;
         my $msg = "@_";
         chomp $msg;
         push @{ $app->{trace} }, Carp::longmess($msg);
@@ -4292,7 +4291,6 @@ sub trace {
             . ', line '
             . $caller[2];
         if ( $MT::DebugMode & 2 ) {
-            local $Carp::CarpLevel = 1;
             my $msg = "@_";
             chomp $msg;
             print STDERR Carp::longmess("(warn from $place) $msg");

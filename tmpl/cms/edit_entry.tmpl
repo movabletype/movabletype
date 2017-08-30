@@ -292,12 +292,12 @@
               <mt:if name="object_type" ne="page">
               [# if ( i == 0 ) { #]
                   <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
-                    <mtapp:svgicon id="ic_fav" title="Primary">
+                    <mtapp:svgicon id="ic_fav" size="sm" title="Primary">
                     <strong>[#= label #]</strong>
-                    <a href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h trans("Remove") #]">&nbsp;<mtapp:svgicon id="ic_minus" title="Remove"></a>
+                    <a href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h trans("Remove") #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a>
                   </li>
               [# } else { #]
-                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" style="margin-left: 2rem;"><mt:if name="object_type" eq="entry"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a></mt:if><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h "Remove" #]">&nbsp;<mtapp:svgicon id="ic_minus" title="Remove"></a></li>
+                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" style="margin-left: 2rem;"><mt:if name="object_type" eq="entry"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a></mt:if><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h "Remove" #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a></li>
               [# } #]
               <mt:else>
               <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
@@ -602,7 +602,7 @@
      title="<mt:var name="delete_button_title">"
      class="delete"
      accesskey="x">
-    <mtapp:svgicon id="ic_trash" title="$delete_button_title">
+    <mtapp:svgicon id="ic_trash" size="sm" title="$delete_button_title">
     <__trans phrase="Delete">
   </a>
 </div>
@@ -706,7 +706,7 @@
      label="$widget_label">
     <div class="text-right asset-list-header">
       <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog mt-modal-open" data-mt-modal-large>
-        <mtapp:svgicon id="ic_add" title="<__trans phrase="Add Entry Asset">">
+        <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Add Entry Asset">">
         <__trans phrase="Add">
       </a>
     </div>
@@ -1205,61 +1205,68 @@
 <mt:setvarblock name="display_options">
 <$mt:setvar name="show_display_options_link" value="1"$>
 <div id="display-options-detail" class="collapse mod display-options-detail detail">
-  <div class="card card-block">
+  <div class="card card-block p-3">
     <input type="hidden" id="entry_prefs" name="entry_prefs" value="<mt:if name="disp_prefs_default">Default<mt:else>Custom</mt:if>">
     <mtapp:setting
        id="entry_fields"
+       class="align-items-center"
        label="<__trans phrase="Fields">"
        label_class="display-options">
-      <ul id="entry-pref-field-list" class="list-inline multiple-selection">
+      <div>
       <mt:loop name="field_loop">
         <mt:unless name="system_field">
           <mt:unless name="lock_field">
-            <li class="list-inline-item">
-              <label>
-                <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" />
-                <$mt:var name="field_label" escape="html"$>
+            <div class="form-check form-check-inline">
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="custom-control-input cb" />
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><$mt:var name="field_label" escape="html"$></span>
               </label>
-            </li>
+            </div>
           <mt:else>
-            <li class="list-inline-item">
-             <label>
-                <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" />
-                <$mt:var name="field_label" escape="html"$>
+            <div class="form-check form-check-inline">
+             <label class="custom-control custom-checkbox">
+                <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="custom-control-input cb" />
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><$mt:var name="field_label" escape="html"$></span>
               </label>
-            </li>
+            </div>
           </mt:unless>
         </mt:unless>
       </mt:loop>
-      </ul>
+      </div>
     </mtapp:setting>
 
     <mtapp:setting
        id="metadata_fields"
+       class="align-items-center"
        label="<__trans phrase="Metadata">"
        label_class="display-options">
-      <ul class="list-inline multiple-selection">
+      <div>
       <mt:if name="object_type" ne="page">
-        <li class="list-inline-item">
-          <label>
-            <input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="cb" />
-            <__trans phrase="Categories">
+        <div class="form-check form-check-inline">
+          <label class="custom-control custom-checkbox">
+            <input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="custom-control-input cb" />
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><__trans phrase="Categories"></span>
           </label>
-        </li>
+        </div>
       </mt:if>
-        <li class="list-inline-item">
-          <label>
-            <input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" />
-            <__trans phrase="Comments">
+        <div class="form-check form-check-inline">
+          <label class="custom-control custom-checkbox">
+            <input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="custom-control-input cb" />
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><__trans phrase="Comments"></span>
           </label>
-        </li>
-        <li class="list-inline-item">
-          <label>
-            <input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" />
-            <__trans phrase="[_1] Assets" params="<mt:var name="object_label">">
+        </div>
+        <div class="form-check form-check-inline">
+          <label class="custom-control custom-checkbox">
+            <input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="custom-control-input cb" />
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></span>
           </label>
-        </li>
-      </ul>
+        </div>
+      </div>
     </mtapp:setting>
     <div class="actions-bar actions-bar-bottom">
       <a href="javascript:void(0)" onclick="return setDefaultFieldGroup();" title="<__trans phrase="Reset display options to blog defaults">" >

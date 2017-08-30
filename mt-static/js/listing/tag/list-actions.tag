@@ -1,6 +1,6 @@
 <list-actions>
   <button each={ action, key in listTop.opts.buttonActions }
-    class="btn btn-default mx-1"
+    class="btn btn-default mr-2"
     data-action-id={ key }
     onclick={ doAction }
   >

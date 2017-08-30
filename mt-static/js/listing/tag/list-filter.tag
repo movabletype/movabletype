@@ -1,7 +1,7 @@
 <list-filter>
   <div data-is="list-filter-header" class="card-header"></div>
   <div id="list-filter-collapse" class="collapse">
-    <div data-is="list-filter-detail" id="filter-detail" class="card-block">
+    <div data-is="list-filter-detail" id="filter-detail" class="card-block p-3">
     </div>
   </div>
 
@@ -272,7 +272,7 @@
       </ul>
     </div>
   </div>
-  <div class="row">
+  <div class="row mb-3">
     <div class="col-12">
       <ul class="list-group">
         <li data-is="list-filter-item"
@@ -300,32 +300,39 @@
 </list-filter-detail>
 
 <list-filter-item>
-  <div class="input-group filteritem">
+  <div class="filteritem">
+    <button class="close" aria-label="Close" onclick={ removeFilterItem }>
+      <span aria-hidden="true">&times;</span>
+    </button>
     <div if={ opts.item.type == 'pack' }>
       <div each={ item, index in opts.item.args.items }
         if={ filterTypeHash[item.type] }
         data-mt-list-item-content-index={ index }
         class={ 'filtertype type-' + item.type }
       >
-        <div class="item-content">
+        <div class="item-content form-inline">
           <virtual data-is="list-filter-item-field"
             field={ filterTypeHash[item.type].field }
             item={ item }
           >
           </virtual>
-          <button class="btn btn-default"
+          <a href="javascript:void(0);"
             if={ !filterTypeHash[item.type].singleton }
             onclick={ addFilterItemContent }
           >
-            &plus;
-          </button>
-          <button class="btn btn-default"
+            <svg title={ trans('Add') } role="img" class="mt-icon mt-icon--sm">
+              <use xlink:href={ StaticURI + 'images/sprite.svg#ic_add' } />
+            </svg>
+          </a>
+          <a href="javascript:void(0);"
             if={ !filterTypeHash[item.type].singleton
               && parent.opts.item.args.items.length > 1 }
             onclick={ removeFilterItemContent }
           >
-            &minus;
-          </button>
+            <svg title={ trans('Remove') } role="img" class="mt-icon mt-icon--sm">
+              <use xlink:href={ StaticURI + 'images/sprite.svg#ic_remove' } />
+            </svg>
+          </a>
         </div>
       </div>
     </div>
@@ -333,22 +340,23 @@
       <div data-mt-list-item-content-index="0"
         class={ 'filtertype type-' + opts.item.type }
       >
-        <div class="item-content">
+        <div class="item-content form-inline">
           <virtual data-is="list-filter-item-field"
             field={ filterTypeHash[opts.item.type].field }
             item={ opts.item }
           >
           </virtual>
-          <button class="btn btn-default"
+          <a href="javascript:void(0);"
             if={ !filterTypeHash[opts.item.type].singleton }
             onclick={ addFilterItemContent }
           >
-            &plus;
-          </button>
+            <svg title={ trans('Add') } role="img" class="mt-icon mt-icon--sm">
+              <use xlink:href={ StaticURI + 'images/sprite.svg#ic_add' } />
+            </svg>
+          </a>
         </div>
       </div>
     </virtual>
-    <button class="close float-right" onclick={ removeFilterItem }>&times;</button>
   </div>
 
   <script>
@@ -520,7 +528,7 @@
                   class="icon-mini-left addnew create-new apply-link"
                   onclick={ createNewFilter }
                 >
-                  <svg title={ trans( 'Add' ) } role="img" class="mt-icon">
+                  <svg title={ trans( 'Add' ) } role="img" class="mt-icon mt-icon--sm">
                     <use xlink:href={ StaticURI + 'images/sprite.svg#ic_add' } />
                   </svg>
                   { trans( 'Create New' ) }

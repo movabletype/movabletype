@@ -26,13 +26,15 @@
 <mt:setvarblock name="save_button_title"><__trans phrase="Save these [_1] (s)" params="<mt:var name="object_label_plural" lower_case="1">"></mt:setvarblock>
 
 <mt:setvarblock name="action_buttons">
-  <button
-     type="submit"
-     accesskey="s"
-     title="<$mt:var name="save_button_title"$>"
-     class="save action primary button mt-submit-items btn btn-primary">
-    <__trans phrase="Save">
-  </button>
+  <div class="col my-4">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<$mt:var name="save_button_title"$>"
+       class="save action primary button mt-submit-items btn btn-primary">
+      <__trans phrase="Save">
+    </button>
+  </div>
 </mt:setvarblock>
 
 <mt:setvar name="hide_pager" value="1">
@@ -57,7 +59,7 @@
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
     <mt:if name="has_publish_access">
       <td class="status">
-        <select name="status_<$mt:var name="id"$>" class="form-control">
+        <select name="status_<$mt:var name="id"$>" class="custom-select form-control">
           <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>><__trans phrase="Unpublished (Draft)"></option>
           <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
           <option value="3"<mt:if name="status_review"> selected="selected"</mt:if>><__trans phrase="Unpublished (Review)"></option>
@@ -83,7 +85,7 @@
       <td class="category">
       <mt:if name="is_editable">
         <mt:if name="entry_blog_id" eq="$original_blog_id">
-        <select name="category_id_<$mt:var name="id"$>" class="form-control">
+        <select name="category_id_<$mt:var name="id"$>" class="custom-select form-control">
           <option value=""><__trans phrase="None"></option>
         <mt:loop name="row_category_loop">
           <option value="<$mt:var name="category_id"$>" title="<$mt:var name="category_label" encode_html="1"$>"<mt:if name="category_is_selected"> selected="selected"</mt:if>><$mt:var name="category_label_spacer"$><$mt:var name="category_label" encode_html="1"$></option>

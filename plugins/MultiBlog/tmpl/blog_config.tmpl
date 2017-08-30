@@ -49,8 +49,9 @@ function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerN
 
 <mtapp:setting
    id="blog_content_accessible"
-   label="<__trans phrase="Content Privacy">">
-  <select name="blog_content_accessible" id="blog_content_accessible" class="custom-select">
+   label="<__trans phrase="Content Privacy">"
+   label_for="blog_content_accessible">
+  <select name="blog_content_accessible" id="blog_content_accessible" class="custom-select form-control">
     <option value="0"><__trans phrase="Use system default"></option>
     <option value="2"<mt:if name="blog_content_accessible_2"> selected="selected"</mt:if>><__trans phrase="Allow"></option>
     <option value="1"<mt:if name="blog_content_accessible_1"> selected="selected"</mt:if>><__trans phrase="Disallow"></option>
@@ -63,7 +64,7 @@ function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerN
    class="form-inline"
    hint="<__trans phrase="Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or 'all' (include_blogs only) are acceptable values.">"
    show_hint="1">
-  <select name="default_mtmultiblog_action" id="default_mtmultiblog_action" class="custom-select">
+  <select name="default_mtmultiblog_action" id="default_mtmultiblog_action" class="custom-select form-control">
     <option value="1"<mt:if name="default_mtmultiblog_action_1"> selected="selected"</mt:if>>
       <__trans phrase="Include sites/child sites">
     </option>
