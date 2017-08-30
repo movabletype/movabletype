@@ -20,9 +20,9 @@
         </mt:section>';
         Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
 <mt:if name="object_type" eq="entry">
-        [# div.className="add-category-form form-inline"; div.style.display = "none" #]<input id="add-category-input-movable" class="form-control form-control-sm add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" style="width: 8rem;" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><mtapp:svgicon id="ic_add" title="Add"></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><mtapp:svgicon id="ic_minus" title="Cancel"></a>
+        [# div.className="add-category-form form-inline"; div.style.display = "none" #]<input id="add-category-input-movable" class="form-control form-control-sm add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" style="width: 8rem;" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><mtapp:svgicon id="ic_add" title="Add"></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><mtapp:svgicon id="ic_remove" title="Cancel"></a>
 <mt:else>
-        [# div.className="add-category-form form-inline"; div.style.display = "none" #]<input id="add-category-input-movable" class="form-control form-control-sm add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub folder" ) #]" style="width: 8rem;" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><mtapp:svgicon id="ic_add" title="Add"></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><mtapp:svgicon id="ic_minus" title="Cancel"></a>
+        [# div.className="add-category-form form-inline"; div.style.display = "none" #]<input id="add-category-input-movable" class="form-control form-control-sm add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub folder" ) #]" style="width: 8rem;" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><mtapp:svgicon id="ic_add" title="Add"></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><mtapp:svgicon id="ic_remove" title="Cancel"></a>
 </mt:if>
         </mt:section>';
     <mt:ignore>
@@ -50,7 +50,7 @@
           <mtapp:svgicon id="ic_add" title="<__trans phrase="Add">">
         </a>
         <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link">
-          <mtapp:svgicon id="ic_minus" title="<__trans phrase="Cancel">">
+          <mtapp:svgicon id="ic_remove" title="<__trans phrase="Cancel">">
         </a>
     </div>
 </mt:if>

@@ -239,10 +239,10 @@
     <mt:else name="template_type" like="(module|widget)">
       <mt:if name="blog_id">
       <td class="ssi-method si status-<mt:if name="use_ssi">enabled<mt:else>disabled</mt:if>">
-        <mtapp:svgicon id="ic_minus" title="<__trans phrase="Disabled">" color="secondary">
+        <mtapp:svgicon id="ic_remove" title="<__trans phrase="Disabled">" color="secondary">
       </td>
       <td class="cache-method si status-<mt:if name="use_cache">cached<mt:else>uncached</mt:if>">
-        <mtapp:svgicon id="ic_minus" title="<__trans phrase="Uncached">" color="secondary">
+        <mtapp:svgicon id="ic_remove" title="<__trans phrase="Uncached">" color="secondary">
       </td>
       </mt:if>
     </mt:if>
@@ -251,7 +251,7 @@
       <mt:if name="linked_file">
         <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Linked">" color="success">
       <mt:else>
-        <mtapp:svgicon id="ic_minus" title="<__trans phrase="Unlinked">" color="secondary">
+        <mtapp:svgicon id="ic_remove" title="<__trans phrase="Unlinked">" color="secondary">
       </mt:if>
       </td>
     </mt:unless>

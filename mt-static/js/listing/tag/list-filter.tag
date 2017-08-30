@@ -330,7 +330,7 @@
             onclick={ removeFilterItemContent }
           >
             <svg title={ trans('Remove') } role="img" class="mt-icon">
-              <use xlink:href={ StaticURI + 'images/sprite.svg#ic_minus' } />
+              <use xlink:href={ StaticURI + 'images/sprite.svg#ic_remove' } />
             </svg>
           </a>
         </div>
