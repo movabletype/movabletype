@@ -405,7 +405,7 @@ sub list_props {
                     my $icon_title = $entry->class_label;
                     my $icon_color = $entry->is_entry ? 'success' : 'info';
                     my $icon       = qq{
-                        <svg title="$icon_title" role="img" class="mt-icon--$icon_color">
+                        <svg title="$icon_title" role="img" class="mt-icon--sm mt-icon--$icon_color">
                             <use xlink:href="${static_uri}images/sprite.svg#ic_file">
                         </svg>
                     };

@@ -299,14 +299,14 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
           <mt:unless name="blog_view">
             <mt:if name="plugin_error">
               <span class="alert-error-inline icon-left icon-error">
-                <mtapp:svgicon id="ic_caution" title="<__trans phrase="Failed to load">" color="danger">
+                <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
                 <__trans phrase="Failed to Load">
               </span>
               <a class="button btn btn-default" href="javascript:void(0)" onclick="activatePlugin(0, '<mt:var name="plugin_sig" escape="js">'); return false;"><__trans phrase="Disable"></a>
             <mt:else>
               <mt:unless name="plugin_disabled">
               <span class="icon-left icon-success">
-                <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Enabled">" color="success">
+                <mtapp:svgicon id="ic_checkbox" size="sm" title="<__trans phrase="Enabled">" color="success">
                 <__trans phrase="Enabled">
               </span>
               <a class="button btn btn-default" href="javascript:void(0)" onclick="return activatePlugin(0, '<mt:var name="plugin_sig" escape="js">')">
@@ -314,7 +314,7 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
               </a>
               <mt:else>
               <span class="icon-left icon-neutral">
-                <mtapp:svgicon id="ic_remove" title="<__trans phrase="Disabled">" color="secondary">
+                <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Disabled">" color="secondary">
                 <__trans phrase="Disabled">
               </span>
                 <mt:if name="use_plugins">
@@ -327,18 +327,18 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
           <mt:else>
             <mt:if name="plugin_error">
               <span class="alert-error-inline icon-left icon-error">
-                <mtapp:svgicon id="ic_caution" title="<__trans phrase="Failed to load">" color="danger">
+                <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
                 <__trans phrase="Failed to Load">
               </span>
             <mt:else>
               <mt:unless name="plugin_disabled">
               <span class="icon-left icon-success">
-                <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Enabled">" color="success">
+                <mtapp:svgicon id="ic_checkbox" size="sm" title="<__trans phrase="Enabled">" color="success">
                 <__trans phrase="Enabled">
               </span>
               <mt:else>
               <span class="icon-left icon-neutral">
-                <mtapp:svgicon id="ic_remove" title="<__trans phrase="Disabled">" color="secondary">
+                <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Disabled">" color="secondary">
                 <__trans phrase="Disabled">
               </span>
               </mt:unless>
@@ -380,14 +380,14 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
         <ul class="nav nav-tabs plugin-tabs-list tabs"> <!-- Plugin Tab -->
           <li class="nav-item tab">
             <a href="#plugin-<mt:var name="plugin_id">-info" class="nav-link active icon-mini-left icon-mini-comments" data-toggle="tab">
-              <mtapp:svgicon id="ic_info" title="<__trans phrase="Info">">
+              <mtapp:svgicon id="ic_info" size="sm" title="<__trans phrase="Info">">
               <__trans phrase="Info">
             </a>
           </li>
       <mt:if name="plugin_resources">
           <li class="nav-item tab">
             <a href="#plugin-<mt:var name="plugin_id">-resources" class="nav-link icon-mini-left icon-mini-templates" data-toggle="tab">
-              <mtapp:svgicon id="ic_template" title="<__trans phrase="Resources">">
+              <mtapp:svgicon id="ic_template" size="sm" title="<__trans phrase="Resources">">
               <__trans phrase="Resources">
             </a>
           </li>
@@ -396,7 +396,7 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
         <mt:if name="plugin_config_html">
           <li class="nav-item tab">
             <a href="#plugin-<mt:var name="plugin_id">-config" class="nav-link icon-mini-left icon-mini-settings" data-toggle="tab">
-              <mtapp:svgicon id="ic_setting" title="<__trans phrase="Settings">">
+              <mtapp:svgicon id="ic_setting" size="sm" title="<__trans phrase="Settings">">
               <__trans phrase="Settings">
             </a>
           </li>

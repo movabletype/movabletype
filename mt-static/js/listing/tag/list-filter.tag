@@ -320,7 +320,7 @@
             if={ !filterTypeHash[item.type].singleton }
             onclick={ addFilterItemContent }
           >
-            <svg title={ trans('Add') } role="img" class="mt-icon">
+            <svg title={ trans('Add') } role="img" class="mt-icon mt-icon--sm">
               <use xlink:href={ StaticURI + 'images/sprite.svg#ic_add' } />
             </svg>
           </a>
@@ -329,7 +329,7 @@
               && parent.opts.item.args.items.length > 1 }
             onclick={ removeFilterItemContent }
           >
-            <svg title={ trans('Remove') } role="img" class="mt-icon">
+            <svg title={ trans('Remove') } role="img" class="mt-icon mt-icon--sm">
               <use xlink:href={ StaticURI + 'images/sprite.svg#ic_remove' } />
             </svg>
           </a>
@@ -350,7 +350,7 @@
             if={ !filterTypeHash[opts.item.type].singleton }
             onclick={ addFilterItemContent }
           >
-            <svg title={ trans('Add') } role="img" class="mt-icon">
+            <svg title={ trans('Add') } role="img" class="mt-icon mt-icon--sm">
               <use xlink:href={ StaticURI + 'images/sprite.svg#ic_add' } />
             </svg>
           </a>
@@ -528,7 +528,7 @@
                   class="icon-mini-left addnew create-new apply-link"
                   onclick={ createNewFilter }
                 >
-                  <svg title={ trans( 'Add' ) } role="img" class="mt-icon">
+                  <svg title={ trans( 'Add' ) } role="img" class="mt-icon mt-icon--sm">
                     <use xlink:href={ StaticURI + 'images/sprite.svg#ic_add' } />
                   </svg>
                   { trans( 'Create New' ) }

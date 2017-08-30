@@ -10,19 +10,19 @@
     </mt:if>
     <li class="list-inline-item">
       <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
-        <mtapp:svgicon id="ic_add" title="<__trans phrase="Create entry archive">">
+        <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create entry archive">">
         <__trans phrase="Entry">
       </a>
     </li>
     <li class="list-inline-item">
       <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
-        <mtapp:svgicon id="ic_add" title="<__trans phrase="Create entry listing archive">">
+        <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create entry listing archive">">
         <__trans phrase="Entry Listing">
       </a>
     </li>
     <li class="list-inline-item">
       <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
-        <mtapp:svgicon id="ic_add" title="<__trans phrase="Create page archive">">
+        <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create page archive">">
         <__trans phrase="Page">
       </a>
     </li>
@@ -36,7 +36,7 @@
     </mt:if>
     <li class="list-inline-item">
       <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
-        <mtapp:svgicon id="ic_add" title="<__trans phrase="Create template module">">
+        <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create template module">">
         <__trans phrase="Create template module">
       </a>
     </li>
@@ -50,7 +50,7 @@
     </mt:if>
     <li class="list-inline-item">
       <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
-        <mtapp:svgicon id="ic_add" title="<__trans phrase="Create index template">">
+        <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create index template">">
         <__trans phrase="Create index template">
       </a>
     </li>
@@ -239,19 +239,19 @@
     <mt:else name="template_type" like="(module|widget)">
       <mt:if name="blog_id">
       <td class="ssi-method si status-<mt:if name="use_ssi">enabled<mt:else>disabled</mt:if>">
-        <mtapp:svgicon id="ic_remove" title="<__trans phrase="Disabled">" color="secondary">
+        <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Disabled">" color="secondary">
       </td>
       <td class="cache-method si status-<mt:if name="use_cache">cached<mt:else>uncached</mt:if>">
-        <mtapp:svgicon id="ic_remove" title="<__trans phrase="Uncached">" color="secondary">
+        <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Uncached">" color="secondary">
       </td>
       </mt:if>
     </mt:if>
     <mt:unless name="screen_id" eq="search-replace">
       <td class="linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>">
       <mt:if name="linked_file">
-        <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Linked">" color="success">
+        <mtapp:svgicon id="ic_checkbox" size="sm" title="<__trans phrase="Linked">" color="success">
       <mt:else>
-        <mtapp:svgicon id="ic_remove" title="<__trans phrase="Unlinked">" color="secondary">
+        <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Unlinked">" color="secondary">
       </mt:if>
       </td>
     </mt:unless>

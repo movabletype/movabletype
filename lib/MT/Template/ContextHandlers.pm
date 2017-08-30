@@ -3927,14 +3927,14 @@ sub _hdlr_app_page_actions {
         <mt:loop name="page_actions">
             <mt:if name="page">
                     <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
-                        <mtapp:svgicon id="ic_setting" title="\$label">
+                        <mtapp:svgicon id="ic_setting" size="sm" title="\$label">
                         <a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>>
                             <mt:var name="label">
                         </a>
                     </li>
             <mt:else><mt:if name="link">
                     <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
-                        <mtapp:svgicon id="ic_setting" title="\$label">
+                        <mtapp:svgicon id="ic_setting" size="sm" title="\$label">
                         <a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open" data-mt-modal-large</mt:if>>
                             <mt:var name="label">
                         </a>
@@ -4161,7 +4161,7 @@ sub _hdlr_app_svg_icon {
 
     my $static_uri = MT->static_path;
 
-    qq{<svg$title_attr role="img" class="mt-icon${color_class_suffix}${size_class}${size_class}"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
+    qq{<svg$title_attr role="img" class="mt-icon${color_class_suffix}${size_class}"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
 }
 
 package MT::Template::Tags::System;
