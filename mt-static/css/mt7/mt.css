@@ -8160,9 +8160,14 @@ li {
   border-bottom: .4rem solid;
 }
 
+.mt-primaryNavigation__item .mt-icon, .mt-primaryNavigation__item .mt-icon--primary, .mt-primaryNavigation__item .mt-icon--secondary, .mt-primaryNavigation__item .mt-icon--success, .mt-primaryNavigation__item .mt-icon--info, .mt-primaryNavigation__item .mt-icon--warning, .mt-primaryNavigation__item .mt-icon--danger {
+  margin-right: 0.5rem;
+  fill: #737373;
+}
+
 .mt-primaryNavigation__child {
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 2.2rem;
   border-bottom: 1px solid #E0E0E0;
   list-style: none;
 }
@@ -8462,6 +8467,11 @@ h1 .badge, h2 .badge, h3 .badge,
   width: 24px;
   fill: #2F2F2F;
   vertical-align: middle;
+}
+
+.mt-icon--sm {
+  height: 16px;
+  width: 16px;
 }
 
 .mt-icon--lg {
