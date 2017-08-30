@@ -198,6 +198,15 @@ sub save {
                 )
                 );
 
+            # Week Number
+            if ( $idx_type eq 'date_and_time' || $idx_type eq 'date' ) {
+                if ( my $dt = $cf_idx->column_as_datetime('value_datetime') )
+                {
+                    my ( $yr, $w ) = $dt->week;
+                    $cf_idx->value_integer( $yr * 100 + $w );
+                }
+            }
+
             $cf_idx->save
                 or return $self->error(
                 MT->translate(
