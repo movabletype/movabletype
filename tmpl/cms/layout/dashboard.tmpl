@@ -16,7 +16,12 @@
         </div>
         <div class="col-2">
           <div class="float-right">
-            <button type="button" class="btn btn-default"><__trans phrase="Relaod"></button>
+            <form name="dashoboard_reload_form" id="dashoboard_reload_form" method="post" action="<$mt:var name="script_url"$>" mt:once="1">
+              <mt:if name="blog_id" gte="0"><input type="hidden" name="blog_id" value="<$mt:var name="blog_id" escape="html"$>"></mt:if>
+              <input type="hidden" name="__mode" value="dashboard">
+              <input type="hidden" name="reload" value="1">
+              <button type="submit" class="btn btn-default"><__trans phrase="Relaod"></button>
+            </form>
           </div>
         </div>
       </div>

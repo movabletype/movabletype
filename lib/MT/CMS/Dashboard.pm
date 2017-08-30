@@ -259,29 +259,35 @@ sub generate_site_stats_data {
         = $app->registry( 'applications', 'cms', 'site_stats_lines' );
 
     # Reload stats data when type of stats was changed
-    my $force_reload  = 0;
-    my $present_lines = MT::Request->instance->cache('site_stats_lines');
-    unless ($present_lines) {
-        if ( $fmgr->exists($path) ) {
-            my $file = $fmgr->get_data( $path, 'output' );
-            $file =~ s/widget_site_stats_draw_graph\((.*)\);/$1/;
-            my $data;
-            eval { $data = MT::Util::from_json($file) };
-            $present_lines = $data->{reg_keys} if $data;
-            MT::Request->instance->cache( 'site_stats_lines', $present_lines )
-                if $present_lines;
-        }
+    my $force_reload = 0;
+    if ( scalar $app->param('reload') ) {
+        $force_reload = 1;
     }
-    if ($present_lines) {
-        my $present_count = @$present_lines;
-        my $reg_count     = keys %$line_settings;
-        if ( $present_count != $reg_count ) {
-            $force_reload = 1;
+    else {
+        my $present_lines = MT::Request->instance->cache('site_stats_lines');
+        unless ($present_lines) {
+            if ( $fmgr->exists($path) ) {
+                my $file = $fmgr->get_data( $path, 'output' );
+                $file =~ s/widget_site_stats_draw_graph\((.*)\);/$1/;
+                my $data;
+                eval { $data = MT::Util::from_json($file) };
+                $present_lines = $data->{reg_keys} if $data;
+                MT::Request->instance->cache( 'site_stats_lines',
+                    $present_lines )
+                    if $present_lines;
+            }
         }
-        else {
-            foreach my $reg_key ( keys %$line_settings ) {
-                my $match = grep { $_ eq $reg_key } @$present_lines;
-                $force_reload = 1 unless $match;
+        if ($present_lines) {
+            my $present_count = @$present_lines;
+            my $reg_count     = keys %$line_settings;
+            if ( $present_count != $reg_count ) {
+                $force_reload = 1;
+            }
+            else {
+                foreach my $reg_key ( keys %$line_settings ) {
+                    my $match = grep { $_ eq $reg_key } @$present_lines;
+                    $force_reload = 1 unless $match;
+                }
             }
         }
     }
@@ -655,6 +661,37 @@ sub system_information_widget {
     my $app = shift;
     my ( $tmpl, $param ) = @_;
 
+    require MT::Session;
+    if ( scalar $app->param('reload') ) {
+
+        # Force reload, purge cache if exists
+        my $cache = MT->model('session')->load(
+            {   id   => 'System Information',
+                kind => 'DW',
+            }
+        );
+        $cache->remove if $cache;
+    }
+    else {
+        # Check cache
+        my $ttl   = 24 * 60 * 60;                       # 24 hours
+        my $cache = MT::Session::get_unexpired_value(
+            $ttl,
+            {   id   => 'System Information',
+                kind => 'DW',
+            }
+        );
+
+        if ($cache) {
+            $param->{'active_users'} = $cache->get('active_users');
+            $param->{'total_sites'}  = $cache->get('total_sites');
+            $param->{'total_content_types'}
+                = $cache->get('total_content_types');
+            $param->{'server_model'} = $cache->get('server_model');
+            return;
+        }
+    }
+
     # Count MT Native User
     my $author_class = $app->model('author');
     $param->{active_users} = $author_class->count(
@@ -685,6 +722,20 @@ sub system_information_widget {
     else {
         $param->{server_model} = 'CGI';
     }
+
+    # Make a cache
+    my $cache = MT->model('session')->new;
+    $cache->set_values(
+        {   id    => 'System Information',
+            kind  => 'DW',
+            start => time,
+        }
+    );
+    $cache->set( 'active_users',        $param->{active_users} );
+    $cache->set( 'total_sites',         $param->{total_sites} );
+    $cache->set( 'total_content_types', $param->{total_content_types} );
+    $cache->set( 'server_model',        $param->{server_model} );
+    $cache->save;
 }
 
 sub activity_log_widget {
