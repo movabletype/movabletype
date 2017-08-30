@@ -8450,6 +8450,14 @@ fieldset.form-group {
   margin-left: 0.5rem;
 }
 
+.mt-table th.mt-table__control, .mt-table td.mt-table__control {
+  width: 1.2rem;
+}
+
+.mt-table th[scope="row"], .mt-table td[scope="row"] {
+  padding-right: 0;
+}
+
 .mt-table thead th {
   background: #F4F4F4;
   border-top: 0;
@@ -8468,6 +8476,14 @@ fieldset.form-group {
 
 .mt-table .custom-control {
   margin-right: 0;
+}
+
+.mt-table__hierarchy {
+  padding: 0.8rem 0 0 0;
+}
+
+.mt-table__hierarchy > *:last-child {
+  margin-bottom: 0;
 }
 
 .mt-table__highlight {
@@ -8499,10 +8515,6 @@ fieldset.form-group {
 
 .mt-table__ascend:after {
   content: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2211%22%20height%3D%2212%22%20viewBox%3D%220%200%2011%2012%22%3E%0A%20%20%3Cpath%20fill%3D%22%232F2F2F%22%20fill-rule%3D%22evenodd%22%20d%3D%22M6.008%202.614v9.06c0%20.18-.157.326-.38.326h-.763c-.223%200-.382-.145-.382-.325V2.622L1.19%205.762c-.15.143-.39.143-.54%200L.113%205.25c-.15-.143-.15-.373%200-.515L4.964.107c.08-.075.183-.11.286-.107.103-.004.207.032.286.107l4.852%204.628c.15.142.15.372%200%20.514l-.54.513c-.148.142-.39.142-.538%200l-3.302-3.15z%22/%3E%0A%3C/svg%3E");
-}
-
-.mt-table__control {
-  width: 1.5rem;
 }
 
 /* Widgets */
