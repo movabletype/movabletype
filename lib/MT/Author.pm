@@ -634,7 +634,8 @@ sub _bulk_author_name_html {
         else {
             $userpic_url = MT->static_path . 'images/default-userpic-36.jpg';
         }
-        my ( $status_img, $status_label, $translated_status_label );
+        my ( $status_img, $status_label, $translated_status_label,
+            $badge_type );
         if ( MT->config->SingleCommunity ) {
             if ( $obj->type == MT::Author::AUTHOR() ) {
                 $status_label
@@ -643,6 +644,11 @@ sub _bulk_author_name_html {
                     :                              'Pending';
                 $translated_status_label = $app->translate($status_label);
 
+                $badge_type
+                    = $obj->status == ACTIVE()   ? 'success'
+                    : $obj->status == INACTIVE() ? 'secondary'
+                    :                              'default';
+
                 $status_img = qq{
                     <svg title="$translated_status_label" role="img" class="mt-icon mt-icon--sm">
                         <use xlink:href="${static_uri}images/sprite.svg#ic_user">
@@ -650,37 +656,46 @@ sub _bulk_author_name_html {
                 };
             }
             else {
-                $status_img
-                    = $obj->is_trusted(0) ? 'trusted.gif'
-                    : $obj->is_banned(0)  ? 'banned.gif'
-                    :                       'authenticated.gif';
                 $status_label
                     = $obj->is_trusted(0) ? 'Trusted'
                     : $obj->is_banned(0)  ? 'Banned'
                     :                       'Authenticated';
                 $translated_status_label = $app->translate($status_label);
+
+                $badge_type
+                    = $obj->is_trusted(0) ? 'success'
+                    : $obj->is_banned(0)  ? 'secondary'
+                    :                       'default';
+
+                $status_img = qq{
+                    <svg title="$translated_status_label" role="img" class="mt-icon mt-icon--sm">
+                        <use xlink:href="${static_uri}images/sprite.svg#ic_user">
+                    </svg>
+                };
             }
         }
         else {
             my $blog_id = $opts->{blog_id};
-            $status_img
-                = $obj->is_trusted($blog_id) ? 'trusted.gif'
-                : $obj->is_banned($blog_id)  ? 'banned.gif'
-                :                              'authenticated.gif';
             $status_label
                 = $obj->is_trusted($blog_id) ? 'Trusted'
                 : $obj->is_banned($blog_id)  ? 'Banned'
                 :                              'Authenticated';
+            $translated_status_label = $app->translate($status_label);
+
+            $badge_type
+                = $obj->is_trusted($blog_id) ? 'success'
+                : $obj->is_banned($blog_id)  ? 'secondary'
+                :                              'default';
+
+            $status_img = qq{
+                <svg title="$translated_status_label" role="img" class="mt-icon mt-icon--sm">
+                    <use xlink:href="${static_uri}images/sprite.svg#ic_user">
+                </svg>
+            };
         }
 
         my $lc_status_label = lc $status_label;
-        if ( $status_img !~ /svg/ ) {
-            $status_img
-                = MT->static_path . 'images/status_icons/' . $status_img;
-            $status_img
-                = qq{<img alt="$status_label" src="$status_img" class="status $lc_status_label" />};
-        }
-        my $auth_img = MT->static_path;
+        my $auth_img        = MT->static_path;
         my $auth_label;
         if ( $obj->auth_type eq 'MT' || $obj->auth_type eq 'LDAP' ) {
             $auth_img .= 'images/comment/mt_logo.png';
@@ -710,17 +725,6 @@ sub _bulk_author_name_html {
                          $status_img
                      </span>
         };
-
-        my $badge_type;
-        if ( $obj->status == ACTIVE() ) {
-            $badge_type = 'success';
-        }
-        elsif ( $obj->status == INACTIVE() ) {
-            $badge_type = 'secondary';
-        }
-        else {
-            $badge_type = 'default';
-        }
 
         if ( $app->can_do('edit_authors') || $app->user->id == $obj->id ) {
             my $edit_link = $app->uri(
