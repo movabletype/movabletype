@@ -33,7 +33,7 @@ sub FEEDBACK_URL()      {'http://www.movabletype.org/feedback.html'}
 sub LATEST_VESION_URL() {'https://movabletype.org/latest_version.json'}
 
 sub NEWSBOX_URL() {
-    'http://www.sixapart.com/movabletype/news/mt4_news_widget.html';
+    'https://www.movabletype.org/news/newsbox.json';
 }
 sub LEARNINGNEWS_URL()     {''}
 sub CATEGORY_NAME_NODASH() {0}

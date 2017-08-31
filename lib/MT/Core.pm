@@ -1998,7 +1998,7 @@ BEGIN {
                 { default => 'http://www.sixapart.com/movabletype/news/', },
             'NewsboxURL' => {
                 default =>
-                    'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
+                    'https://www.movabletype.org/news/newsbox.json',
             },
             'FeedbackURL' =>
                 { default => 'http://www.movabletype.org/feedback.html', },

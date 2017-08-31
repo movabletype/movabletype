@@ -101,8 +101,19 @@ sub mt_news_widget {
     my $app = shift;
     my ( $tmpl, $param ) = @_;
 
-    $param->{news_html} = get_newsbox_content($app) || '';
-    $param->{news_html} =~ s/class="button"/class="button btn btn-default"/;
+    my $content = get_newsbox_content($app) || '';
+    my $json;
+    eval { $json = MT::Util::from_json($content) };
+    if ( !$content || $@ ) {
+        # Maybe not a json
+        $param->{news_html} = $content;
+        $param->{news_html} =~ s/class="button"/class="button btn btn-default"/;
+    }
+    else {
+        $param->{news_json} = 1;
+        $param->{news_json_news} = $json->{news} if $json->{news};
+        $param->{news_json_links} = $json->{links} if $json->{links};
+    }
 }
 
 sub get_newsbox_content {
