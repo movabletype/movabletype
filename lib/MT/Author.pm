@@ -611,16 +611,6 @@ sub _bulk_author_name_html {
     my %userpic = map { $_->id => $_ } @userpics;
     my @results;
     my $static_uri = MT->static_path;
-    my $mail_icon  = qq{
-        <svg title="Mail" role="img" class="mt-icon mt-icon--sm">
-            <use xlink:href="${static_uri}images/sprite.svg#ic_mail">
-        </svg>
-    };
-    my $view_icon = qq{
-        <svg title="Website" role="img" class="mt-icon mt-icon--sm">
-            <use xlink:href="${static_uri}images/sprite.svg#ic_link">
-        </svg>
-    };
 
     for my $obj (@$objs) {
         my $userpic_url;
@@ -634,8 +624,7 @@ sub _bulk_author_name_html {
         else {
             $userpic_url = MT->static_path . 'images/default-userpic-36.jpg';
         }
-        my ( $status_img, $status_label, $translated_status_label,
-            $badge_type );
+        my ( $status_label, $translated_status_label, $badge_type );
         if ( MT->config->SingleCommunity ) {
             if ( $obj->type == MT::Author::AUTHOR() ) {
                 $status_label
@@ -648,12 +637,6 @@ sub _bulk_author_name_html {
                     = $obj->status == ACTIVE()   ? 'success'
                     : $obj->status == INACTIVE() ? 'secondary'
                     :                              'default';
-
-                $status_img = qq{
-                    <svg title="$translated_status_label" role="img" class="mt-icon mt-icon--sm">
-                        <use xlink:href="${static_uri}images/sprite.svg#ic_user">
-                    </svg>
-                };
             }
             else {
                 $status_label
@@ -666,12 +649,6 @@ sub _bulk_author_name_html {
                     = $obj->is_trusted(0) ? 'success'
                     : $obj->is_banned(0)  ? 'secondary'
                     :                       'default';
-
-                $status_img = qq{
-                    <svg title="$translated_status_label" role="img" class="mt-icon mt-icon--sm">
-                        <use xlink:href="${static_uri}images/sprite.svg#ic_user">
-                    </svg>
-                };
             }
         }
         else {
@@ -686,12 +663,6 @@ sub _bulk_author_name_html {
                 = $obj->is_trusted($blog_id) ? 'success'
                 : $obj->is_banned($blog_id)  ? 'secondary'
                 :                              'default';
-
-            $status_img = qq{
-                <svg title="$translated_status_label" role="img" class="mt-icon mt-icon--sm">
-                    <use xlink:href="${static_uri}images/sprite.svg#ic_user">
-                </svg>
-            };
         }
 
         my $lc_status_label = lc $status_label;
@@ -722,7 +693,9 @@ sub _bulk_author_name_html {
                 </div>
                 <div class="col">
                      <span class="icon status $status_label">
-                         $status_img
+                         <svg title="$translated_status_label" role="img" class="mt-icon mt-icon--sm">
+                             <use xlink:href="${static_uri}images/sprite.svg#ic_user">
+                         </svg>
                      </span>
         };
 
@@ -746,12 +719,26 @@ sub _bulk_author_name_html {
         }
         if ( $url || $email ) {
             $out .= q{<ul class="list-unstyled user-info description">};
-            $out
-                .= qq{<li class="user-info-item user-email">$mail_icon<a href="mailto:$email" title="$email">$email</a></li>}
-                if $email;
-            $out
-                .= qq{<li class="user-info-item user-url">$view_icon<a href="$url" title="$url">$url</a></li>}
-                if $url;
+            if ($email) {
+                $out .= qq{
+                    <li class="user-info-item user-email">
+                        <svg title="Mail" role="img" class="mt-icon mt-icon--sm">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_mail">
+                        </svg>
+                        <a href="mailto:$email" title="$email">$email</a>
+                    </li>
+                };
+            }
+            if ($url) {
+                $out .= qq{
+                    <li class="user-info-item user-url">
+                        <svg title="Website" role="img" class="mt-icon mt-icon--sm">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_link">
+                        </svg>
+                        <a href="$url" title="$url">$url</a>
+                    </li>
+                };
+            }
             $out .= q{</ul>};
         }
         $out .= '</div>';    # <div class="col">
