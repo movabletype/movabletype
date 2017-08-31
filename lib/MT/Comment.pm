@@ -427,7 +427,14 @@ sub list_props {
             label_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
-                my $entry = MT->model('entry')->load($val);
+                my $entry = MT->model('entry')->load($val)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        MT->translate("Entry"),
+                        defined $val ? $val : ''
+                    )
+                    );
                 my $label = MT->translate( 'Comments on [_1]: [_2]',
                     $entry->class_label, $entry->title, );
                 $prop->{filter_label} = MT::Util::encode_html($label);
@@ -485,7 +492,14 @@ sub list_props {
             label_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
-                my $user = MT->model('author')->load($val);
+                my $user = MT->model('author')->load($val)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        MT->translate("Author"),
+                        defined $val ? $val : ''
+                    )
+                    );
                 return MT->translate(
                     "All comments by [_1] '[_2]'",
                     (     $user->type == MT::Author::COMMENTER()

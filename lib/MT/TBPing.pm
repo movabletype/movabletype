@@ -322,7 +322,14 @@ sub list_props {
             },
             label_via_param => sub {
                 my ( $prop, $app, $val ) = @_;
-                my $entry = MT->model('entry')->load($val);
+                my $entry = MT->model('entry')->load($val)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        MT->translate("Entry"),
+                        defined $val ? $val : ''
+                    )
+                    );
                 my $type  = $entry->class_label || '';
                 return MT->translate( 'Trackbacks on [_1]: [_2]',
                     $type, $entry->title, );
@@ -348,7 +355,14 @@ sub list_props {
             },
             label_via_param => sub {
                 my ( $prop, $app, $val ) = @_;
-                my $cat = MT->model('category')->load($val);
+                my $cat = MT->model('category')->load($val)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        MT->translate("Category"),
+                        defined $val ? $val : ''
+                    )
+                    );
                 my $type
                     = $cat->class eq 'category' ? 'Category'
                     : $cat->class eq 'folder'   ? 'Folder'

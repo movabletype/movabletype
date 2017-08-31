@@ -76,7 +76,14 @@ sub list_props {
             label_via_param  => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
-                my $cat = MT->model('folder')->load($val);
+                my $cat = MT->model('folder')->load($val)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        $prop->datasource->container_label,
+                        defined $val ? $val : ''
+                    )
+                    );
                 my $label = MT->translate(
                     'Pages in folder: [_1]',
                     $cat->label . " (ID:" . $cat->id . ")",
