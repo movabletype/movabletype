@@ -331,7 +331,13 @@ sub content_actions {
         else {
             %args = %{ $action->{args} || {} };
         }
-        $args{_type} ||= $type;
+        if ( $type =~ m/(.*)\.(.*)/ ) {
+            $args{_type} = $1;
+            $args{type}  = $2;
+        }
+        else {
+            $args{_type} ||= $type;
+        }
         $args{return_args} = $app->make_return_args if $action->{return_args};
         $action->{url} = $app->uri(
             mode => $action->{mode},
@@ -1033,7 +1039,10 @@ sub init_query {
                     $request_charset, $charset )
                     if $transcode;
                 unless ( ref($d) && ( 'Fh' eq ref($d) ) ) {
-                    eval { $d = Encode::decode( $charset, $d, 1 ) unless Encode::is_utf8($d); };
+                    eval {
+                        $d = Encode::decode( $charset, $d, 1 )
+                            unless Encode::is_utf8($d);
+                    };
                     return $app->errtrans(
                         "Problem with this request: corrupt character data for character set [_1]",
                         $charset
@@ -2827,7 +2836,8 @@ sub bake_cookie {
 sub cookies {
     my $app = shift;
     unless ( $app->{cookies} ) {
-        my $class = MT::Util::is_mod_perl1() ? 'Apache::Cookie' : 'CGI::Cookie';
+        my $class
+            = MT::Util::is_mod_perl1() ? 'Apache::Cookie' : 'CGI::Cookie';
         eval "use $class;";
         $app->{cookies} = $class->fetch;
     }
@@ -3906,7 +3916,9 @@ sub param_hash {
 
 sub query_string {
     my $app = shift;
-    MT::Util::is_mod_perl1() ? $app->{apache}->args : $app->{query}->query_string;
+    MT::Util::is_mod_perl1()
+        ? $app->{apache}->args
+        : $app->{query}->query_string;
 }
 
 sub return_uri {
@@ -4060,7 +4072,8 @@ sub envelope {''}
 sub script {
     my $app = shift;
     return $app->{__script} if exists $app->{__script};
-    my $script = MT::Util::is_mod_perl1() ? $app->{apache}->uri : $ENV{SCRIPT_NAME};
+    my $script
+        = MT::Util::is_mod_perl1() ? $app->{apache}->uri : $ENV{SCRIPT_NAME};
     if ( !$script ) {
         require File::Basename;
         import File::Basename qw(basename);
@@ -4200,7 +4213,8 @@ sub is_valid_redirect_target {
 sub param {
     my $app = shift;
     return unless $app->{query};
-    Carp::carp "app->param called in list context; use app->multi_param" if wantarray;
+    Carp::carp "app->param called in list context; use app->multi_param"
+        if wantarray;
     if (@_) {
         $app->{query}->param(@_);
     }
@@ -4314,7 +4328,7 @@ sub remote_ip {
 
     my $trusted = $app->config->TransparentProxyIPs || 0;
     my $remote_ip = (
-          MT::Util::is_mod_perl1()
+        MT::Util::is_mod_perl1()
         ? $app->{apache}->connection->remote_ip
         : $ENV{REMOTE_ADDR}
     );

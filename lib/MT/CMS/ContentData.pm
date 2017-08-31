@@ -62,7 +62,7 @@ sub make_content_actions {
     my $iter            = MT::ContentType->load_iter;
     my $content_actions = {};
     while ( my $ct = $iter->() ) {
-        my $key = 'content_data_' . $ct->id;
+        my $key = 'content_data.content_data_' . $ct->id;
         $content_actions->{$key} = {
             new => {
                 label => 'Create new ' . $ct->name,
@@ -110,7 +110,8 @@ sub make_menus {
             label => $ct->name,
             mode  => 'list',
             args  => {
-                _type   => 'content_data_' . $ct->id,
+                _type   => 'content_data',
+                type    => 'content_data_' . $ct->id,
                 blog_id => $ct->blog_id,
             },
             order => $blog->is_blog ? $blog_order : $website_order,
@@ -124,6 +125,15 @@ sub make_menus {
         }
     }
     $menus;
+}
+
+sub cms_pre_load_filtered_list {
+    my ( $cb, $app, $filter, $load_options, $cols ) = @_;
+
+    my $object_ds = $filter->object_ds;
+    $object_ds =~ /content_data_(\d+)/;
+    my $content_type_id = $1;
+    $load_options->{terms}{content_type_id} = $content_type_id;
 }
 
 sub start_import {

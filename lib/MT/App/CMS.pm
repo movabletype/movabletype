@@ -644,6 +644,9 @@ sub init_plugins {
                 "${pfx}ContentType::tmpl_param_list_common",
             'template_param.edit_role' =>
                 "${pfx}ContentType::tmpl_param_edit_role",
+            $pkg
+                . 'pre_load_filtered_list.content_data' =>
+                "${pfx}ContentData::cms_pre_load_filtered_list",
         }
     );
 

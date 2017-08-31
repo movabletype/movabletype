@@ -28,8 +28,10 @@ use MT::Serialize;
 
 sub tmpl_param_list_common {
     my ( $cb, $app, $param, $tmpl ) = @_;
-    if (   $app->mode eq 'list'
-        && $app->param('_type') =~ /^content_data_(\d+)$/ )
+    if ($app->mode eq 'list'
+        && (   $app->param('_type') eq 'content_data'
+            && $app->param('type') =~ /^content_data_(\d+)$/ )
+        )
     {
         my $content_type_id = $1;
         my $content_type    = MT::ContentType->load($content_type_id);
@@ -1461,14 +1463,6 @@ sub _autosave_content_data {
 
 }
 
-sub cms_pre_load_filtered_list {
-    my ( $cb, $app, $filter, $load_options, $cols ) = @_;
-    my $object_ds = $filter->object_ds;
-    $object_ds =~ /content_data_(\d+)/;
-    my $content_type_id = $1;
-    $load_options->{terms}{content_type_id} = $content_type_id;
-}
-
 sub _get_form_data {
     my ( $app, $content_field_type, $form_data ) = @_;
 
@@ -1726,23 +1720,6 @@ sub init_content_type {
     for my $key ( keys %{$content_data_list_props} ) {
         $core_list_props->{$key} = $content_data_list_props->{$key};
     }
-
-    _add_content_data_callbacks($app);
-}
-
-sub _add_content_data_callbacks {
-    my $app       = shift;
-    my $pkg       = $app->id . '_';
-    my $pfx       = '$Core::MT::CMS::';
-    my $callbacks = {};
-    my $iter      = eval { MT->model('content_type')->load_iter }
-        || sub { };    # FIXME: An error occurs on mt-app when installing.
-    while ( my $ct = $iter->() ) {
-        my $cd_name = 'content_data_' . $ct->id;
-        $callbacks->{"${pkg}pre_load_filtered_list.${cd_name}"}
-            = "${pfx}ContentType::cms_pre_load_filtered_list";
-    }
-    $app->_register_core_callbacks($callbacks);
 }
 
 sub _make_content_data_listing_screens {
@@ -1750,7 +1727,7 @@ sub _make_content_data_listing_screens {
 
     my $iter = MT->model('content_type')->load_iter;
     while ( my $ct = $iter->() ) {
-        my $key = 'content_data_' . $ct->id;
+        my $key = 'content_data.content_data_' . $ct->id;
         $props->{$key} = {
             primary             => 'title',
             screen_label        => 'Manage ' . $ct->name,
