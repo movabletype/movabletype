@@ -610,7 +610,12 @@ sub _bulk_author_name_html {
         if keys %asset_for_load;
     my %userpic = map { $_->id => $_ } @userpics;
     my @results;
-    my $mail_icon = MT->static_path . 'images/status_icons/email.gif';
+    my $static_uri = MT->static_path;
+    my $mail_icon  = qq{
+        <svg title="Mail" role="img" class="mt-icon mt-icon--sm">
+            <use xlink:href="${static_uri}images/sprite.svg#ic_mail">
+        </svg>
+    };
     my $view_icon = MT->static_path . 'images/status_icons/link.gif';
 
     for my $obj (@$objs) {
@@ -713,7 +718,7 @@ sub _bulk_author_name_html {
         if ( $url || $email ) {
             $out .= q{<ul class="list-unstyled user-info description">};
             $out
-                .= qq{<li class="user-info-item user-email"><img alt="Email "src="$mail_icon" /> <a href="mailto:$email" title="$email">$email</a></li>}
+                .= qq{<li class="user-info-item user-email">$mail_icon<a href="mailto:$email" title="$email">$email</a></li>}
                 if $email;
             $out
                 .= qq{<li class="user-info-item user-url"><img alt="URL" src="$view_icon" /> <a href="$url" title="$url">$url</a></li>}

@@ -295,7 +295,7 @@
       <input type="text" name="email" id="email" class="text" value="<mt:var name="email" escape="html">" />
   </mt:if>
   <mt:if name="email">
-      <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><img src="<mt:var name="static_uri">images/status_icons/email.gif" alt="<__trans phrase="Email">" width="16" height="9" /></a>
+      <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><mtapp:svgicon id="ic_mail" title="<__trans phrase="Email">" size="sm"></a>
       <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
   </mt:if>
     </div>
