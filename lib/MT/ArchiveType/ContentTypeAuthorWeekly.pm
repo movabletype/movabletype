@@ -143,7 +143,7 @@ sub archive_group_iter {
         return $count;
     };
 
-    # Count entry by author
+    # Count content data by author
     if ($author) {
         $loop_sub->($author);
     }

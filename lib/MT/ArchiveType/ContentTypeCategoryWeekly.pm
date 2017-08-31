@@ -111,7 +111,7 @@ sub archive_group_iter {
 
     my $loop_sub = sub {
         my $c          = shift;
-        my $entry_iter = MT::Entry->count_group_by(
+        my $cd_iter = MT::ContentData->count_group_by(
             {   blog_id => $blog->id,
                 status  => MT::Entry::RELEASE(),
                 (         !$dt_field_id
@@ -169,7 +169,7 @@ sub archive_group_iter {
                 ],
             }
         ) or return $ctx->error("Couldn't get weekly archive list");
-        while ( my @row = $entry_iter->() ) {
+        while ( my @row = $cd_iter->() ) {
             my ( $year, $week ) = unpack 'A4A2', $row[1];
             my $hash = {
                 year     => $year,
