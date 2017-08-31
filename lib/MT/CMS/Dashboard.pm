@@ -844,6 +844,7 @@ sub site_list_widget {
         $row->{site_name}        = $site->name;
         $row->{parent_site_name} = $site->is_blog ? $site->website->name : '';
         $row->{site_url}         = $site->site_url;
+        $row->{blog_id}          = $site->id;
 
         # Action link
         $row->{can_edit_template}
@@ -962,6 +963,9 @@ sub site_list_widget {
                 : $user->can_do( "publish_content_data_" . $ct->id )  ? 1
                 : $user->can_do( "edit_all_content_data_" . $ct->id ) ? 1
                 :                                                       0;
+            $item->{type_id} = 'content_data_' . $ct->id;
+            $item->{content_type_id} = $ct->id;
+
             push @content_types, $item
                 if $item->{can_create} or $item->{can_list};
         }

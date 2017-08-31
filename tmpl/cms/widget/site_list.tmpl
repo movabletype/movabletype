@@ -4,31 +4,32 @@
   can_close="1">
   <mt:If name="sites">
     <mt:Loop name="sites">
-  <div class="card">
+  <div class="card<mt:unless name="__last__"> mb-3</mt:unless>">
     <div class="card-block">        
-      <div class="row">
+      <div class="row mb-3">
         <div class="col-12">
           <h3><mt:Var name="site_name" escape="html"></h3>
+      <mt:If name="parent_site_name">
+          <p><__trans phrase="(on [_1])" params="<mt:Var name="parent_site_name" escape="html">"></p>
+      </mt:If>
         </div>
       </div>
       <div class="row">
         <div class="col-6">
-      <mt:If name="parent_site_name">
-          <p><__trans phrase="(on [_1])" params="<mt:Var name="parent_site_name" escape="html">"></p></mt:If>
-          <p><mt:Var name="site_url"></p>
+          <p><a href="<mt:Var name="site_url">" target="_blank"><mt:Var name="site_url"></a></p>
       <mt:If name="can_edit_template">
-          <a class="btn btn-default" href=""><__trans phrase="Design"></a>
+          <a class="btn btn-default" href="<mt:var name="mt_url">?__mode=list_template&blog_id=<mt:var name="blog_id">"><__trans phrase="Design"></a>
       </mt:If>
       <mt:If name="can_edit_config">
-          <a class="btn btn-default" href=""><__trans phrase="Setting"></a>
+          <a class="btn btn-default" href="<mt:var name="mt_url">?__mode=cfg_prefs&blog_id=<mt:var name="blog_id">"><__trans phrase="Setting"></a>
       </mt:If>
         </div>
         <div class="col-6">
       <mt:Loop name="content_types">
           <div class="row">
             <div class="col-8"><mt:Var name="name" escape="html"></div>
-            <div class="col-2"><mt:If name="can_list"><a href=""><__trans phrase="List"></a></mt:If></div>
-            <div class="col-2"><mt:If name="can_create"><a href=""><__trans phrase="Create"></a></mt:If></div>
+            <div class="col-2"><mt:If name="can_list"><a href="<mt:var name="mt_url">?__mode=list&_type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">"><__trans phrase="List"></a></mt:If></div>
+            <div class="col-2"><mt:If name="can_create"><a href="<mt:var name="mt_url">?__mode=edit_content_data&content_type_id=<mt:var name="content_type_id">&_type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">"><__trans phrase="Create"></a></mt:If></div>
           </div>
       </mt:Loop>
         </div>
