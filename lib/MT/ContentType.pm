@@ -246,10 +246,9 @@ sub _publish_content_data_permission {
             label            => 'Publish Content Data',
             order            => 200,
             permitted_action => {
-                'edit_own_published_content_data_' . $self->id   => 1,  # TODO
-                'edit_own_unpublished_content_data_' . $self->id => 1,  # TODO
-                'publish_own_content_data_'
-                    . $self->id => 1,    # TODO: unique_id?
+                'edit_own_published_content_data_' . $self->unique_id   => 1,
+                'edit_own_unpublished_content_data_' . $self->unique_id => 1,
+                'publish_own_content_data_' . $self->unique_id          => 1,
             },
         }
     );
@@ -263,11 +262,10 @@ sub _edit_all_content_data_permission {
             label            => 'Edit All Content Data',
             order            => 300,
             permitted_action => {
-                'edit_all_content_data_' . $self->id => 1,  # TODO: unique_id?
-                'edit_all_published_content_data_' . $self->id   => 1,  # TODO
-                'edit_all_unpublished_content_data_' . $self->id => 1,  # TODO
-                'publish_all_content_data_'
-                    . $self->id => 1,    # TODO: unique_id?
+                'edit_all_content_data_' . $self->unique_id             => 1,
+                'edit_all_published_content_data_' . $self->unique_id   => 1,
+                'edit_all_unpublished_content_data_' . $self->unique_id => 1,
+                'publish_all_content_data_' . $self->unique_id          => 1,
             },
         }
     );
