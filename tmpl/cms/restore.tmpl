@@ -27,28 +27,17 @@
     <mtapp:setting
        id="file"
        label="<__trans phrase="Exported File">"
-       label_for=""
        help_page="backup_restore"
        help_section="source_file">
-      <div class="form-group">
-        <label class="custom-file">
-          <input name="file" id="restore-file" class="custom-file-input" type="file" />
-          <span class="custom-file-control"></span>
-        </label>
-      </div>
+      <input name="file" class="form-control-file" type="file" />
     </mtapp:setting>
 
     <mtapp:setting
        id="overwrite_global_templates"
        label="<__trans phrase="Options">"
        show_label="0">
-      <div class="form-group">
-        <label class="custom-control custom-checkbox">
-          <input name="overwrite_global_templates" id="overwrite_global_templates" type="checkbox" class="custom-control-input" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Overwrite global templates."></span>
-        </label>
-      </div>
+      <input name="overwrite_global_templates" id="overwrite_global_templates" type="checkbox" />
+      <label for="overwrite_global_templates"><__trans phrase="Overwrite global templates."></label>
     </mtapp:setting>
 
     <mt:setvarblock name="action_buttons">
