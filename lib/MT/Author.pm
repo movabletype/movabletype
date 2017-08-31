@@ -634,17 +634,20 @@ sub _bulk_author_name_html {
         else {
             $userpic_url = MT->static_path . 'images/default-userpic-36.jpg';
         }
-        my ( $status_img, $status_label );
+        my ( $status_img, $status_label, $translated_status_label );
         if ( MT->config->SingleCommunity ) {
             if ( $obj->type == MT::Author::AUTHOR() ) {
-                $status_img
-                    = $obj->status == ACTIVE()   ? 'user-enabled.gif'
-                    : $obj->status == INACTIVE() ? 'user-disabled.gif'
-                    :                              'user-pending.gif';
                 $status_label
                     = $obj->status == ACTIVE()   ? 'Enabled'
                     : $obj->status == INACTIVE() ? 'Disabled'
                     :                              'Pending';
+                $translated_status_label = $app->translate($status_label);
+
+                $status_img = qq{
+                    <svg title="$translated_status_label" role="img" class="mt-icon mt-icon--sm">
+                        <use xlink:href="${static_uri}images/sprite.svg#ic_user">
+                    </svg>
+                };
             }
             else {
                 $status_img
@@ -655,6 +658,7 @@ sub _bulk_author_name_html {
                     = $obj->is_trusted(0) ? 'Trusted'
                     : $obj->is_banned(0)  ? 'Banned'
                     :                       'Authenticated';
+                $translated_status_label = $app->translate($status_label);
             }
         }
         else {
@@ -669,9 +673,14 @@ sub _bulk_author_name_html {
                 :                              'Authenticated';
         }
 
-        $status_img = MT->static_path . 'images/status_icons/' . $status_img;
         my $lc_status_label = lc $status_label;
-        my $auth_img        = MT->static_path;
+        if ( $status_img !~ /svg/ ) {
+            $status_img
+                = MT->static_path . 'images/status_icons/' . $status_img;
+            $status_img
+                = qq{<img alt="$status_label" src="$status_img" class="status $lc_status_label" />};
+        }
+        my $auth_img = MT->static_path;
         my $auth_label;
         if ( $obj->auth_type eq 'MT' || $obj->auth_type eq 'LDAP' ) {
             $auth_img .= 'images/comment/mt_logo.png';
@@ -698,9 +707,20 @@ sub _bulk_author_name_html {
                 </div>
                 <div class="col">
                      <span class="icon status $status_label">
-                         <img alt="$status_label" src="$status_img" class="status $lc_status_label" />
+                         $status_img
                      </span>
         };
+
+        my $badge_type;
+        if ( $obj->status == ACTIVE() ) {
+            $badge_type = 'success';
+        }
+        elsif ( $obj->status == INACTIVE() ) {
+            $badge_type = 'secondary';
+        }
+        else {
+            $badge_type = 'default';
+        }
 
         if ( $app->can_do('edit_authors') || $app->user->id == $obj->id ) {
             my $edit_link = $app->uri(
@@ -714,10 +734,11 @@ sub _bulk_author_name_html {
                 },
             );
             $out
-                .= qq{<span class="username"><a href="$edit_link">$name</a></span>};
+                .= qq{<span class="username"><a href="$edit_link">$name</a> <span class="badge badge-$badge_type">$status_label</span></span>};
         }
         else {
-            $out .= qq{<span class="username">$name</span>};
+            $out
+                .= qq{<span class="username">$name <span class="badge badge-$badge_type">$status_label</span></span>};
         }
         if ( $url || $email ) {
             $out .= q{<ul class="list-unstyled user-info description">};
