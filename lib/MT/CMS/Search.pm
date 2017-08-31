@@ -571,12 +571,13 @@ sub core_search_apis {
 
 sub can_search_replace {
     my $app = shift;
+    my $blog_id = $app->param('blog_id');
 
     return 1 if $app->user->is_superuser;
     return 1 if $app->user->permissions(0)->can_do('edit_templates');
     return 1 if $app->user->permissions(0)->can_do('view_log');
-    if ( $app->param('blog_id') ) {
-        my $perms = $app->user->permissions( $app->param('blog_id') );
+    if ($blog_id) {
+        my $perms = $app->user->permissions($blog_id);
         return 0 unless $perms;
         return 0 unless $perms->permissions;
         return 0 unless $perms->can_do('use_tools:search');
