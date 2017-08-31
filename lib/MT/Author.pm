@@ -616,7 +616,11 @@ sub _bulk_author_name_html {
             <use xlink:href="${static_uri}images/sprite.svg#ic_mail">
         </svg>
     };
-    my $view_icon = MT->static_path . 'images/status_icons/link.gif';
+    my $view_icon = qq{
+        <svg title="Website" role="img" class="mt-icon mt-icon--sm">
+            <use xlink:href="${static_uri}images/sprite.svg#ic_link">
+        </svg>
+    };
 
     for my $obj (@$objs) {
         my $userpic_url;
@@ -721,7 +725,7 @@ sub _bulk_author_name_html {
                 .= qq{<li class="user-info-item user-email">$mail_icon<a href="mailto:$email" title="$email">$email</a></li>}
                 if $email;
             $out
-                .= qq{<li class="user-info-item user-url"><img alt="URL" src="$view_icon" /> <a href="$url" title="$url">$url</a></li>}
+                .= qq{<li class="user-info-item user-url">$view_icon<a href="$url" title="$url">$url</a></li>}
                 if $url;
             $out .= q{</ul>};
         }
