@@ -382,8 +382,9 @@ sub core_methods {
 
         'view_category_set' => "${pkg}CategorySet::view",
 
-        'select_list_content_fields' =>
-            "${pkg}ContentType::select_list_content_fields",
+        'list_ct_boilerplates' => "${pkg}ContentType::list_boilerplates",
+        'start_import_content' => "${pkg}ContentData::start_import",
+        'start_export_content' => "${pkg}ContentData::start_export",
     };
 }
 
@@ -744,6 +745,7 @@ sub core_content_actions {
                 mode        => 'empty_junk',
                 class       => 'icon-action',
                 label       => 'Delete all Spam trackbacks',
+                icon        => 'ic_setting',
                 return_args => 1,
                 order       => 100,
                 confirm_msg => sub {
@@ -763,6 +765,7 @@ sub core_content_actions {
                 mode        => 'empty_junk',
                 class       => 'icon-action',
                 label       => 'Delete all Spam comments',
+                icon        => 'ic_setting',
                 return_args => 1,
                 order       => 100,
                 confirm_msg => sub {
@@ -782,6 +785,7 @@ sub core_content_actions {
                 mode  => 'view',
                 class => 'icon-create',
                 label => 'Create Role',
+                icon  => 'ic_add',
                 order => 100,
             }
         },
@@ -789,6 +793,7 @@ sub core_content_actions {
             'grant_role' => {
                 class         => 'icon-create',
                 label         => 'Grant Permission',
+                icon          => 'ic_add',
                 mode          => 'dialog_select_assoc_type',
                 return_args   => 1,
                 permit_action => 'create_any_association',
@@ -805,6 +810,7 @@ sub core_content_actions {
                         lc $app->blog->class_label
                     );
                 },
+                icon => 'ic_add',
                 mode => 'dialog_grant_role',
                 args => sub {
                     if ( $app->blog->is_blog ) {
@@ -829,6 +835,7 @@ sub core_content_actions {
             'reset_log' => {
                 class       => 'icon-action',
                 label       => 'Clear Activity Log',
+                icon        => 'ic_setting',
                 mode        => 'reset_log',
                 order       => 100,
                 confirm_msg => sub {
@@ -1874,57 +1881,69 @@ sub core_menus {
     return {
         'website' => {
             label => "Sites",
-            order => 50,
+            order => 100,
         },
         'blog' => {
-            label => "Child Sites",
+            label => "Sites",
             order => 100,
+        },
+        'content_data' => {
+            label => 'Content Data',
+            order => 200,
         },
         'entry' => {
             label => "Entries",
-            order => 200,
+            order => 300,
         },
         'page' => {
             label => "Pages",
-            order => 300,
-        },
-        'asset' => {
-            label => "Assets",
             order => 400,
+        },
+        'category_set' => {
+            label => 'Category Sets',
+            order => 500,
         },
         'tag' => {
             label => "Tags",
-            order => 450,
+            order => 600,
         },
-        'feedback' => {
-            label => "Comments",
-            order => 500,
+        'asset' => {
+            label => "Assets",
+            order => 700,
+        },
+        'content_type' => {
+            label => 'Content Types',
+            order => 800,
         },
         'user' => {
             label => sub {
                 $app->translate( $app->blog ? 'Members' : 'Users' );
             },
-            order => 600,
+            order => 900,
         },
-        'commenter' => {
-            label => 'Commenters',
-            order => 625,
+        'feedback' => {
+            label => "Feedbacks",
+            order => 1000,
+        },
+        'role' => {
+            label => 'Roles',
+            order => 1100,
         },
         'design' => {
             label => "Design",
-            order => 700,
+            order => 1200,
         },
         'filter' => {
-            label => "Listing Filters",
-            order => 780,
+            label => "Filters",
+            order => 1400,
         },
         'settings' => {
             label => "Settings",
-            order => 800,
+            order => 1500,
         },
         'tools' => {
             label => "Tools",
-            order => 900,
+            order => 1600,
         },
 
         'website:manage' => {
@@ -1952,7 +1971,7 @@ sub core_menus {
             order     => 100,
             mode      => "list",
             args      => { _type => "blog" },
-            view      => [ "system", "website" ],
+            view      => [ "blog", "website" ],
             condition => sub {
                 require MT::CMS::Blog;
                 return MT::CMS::Blog::can_view_blog_list($app);
@@ -1964,7 +1983,7 @@ sub core_menus {
             mode          => 'view',
             args          => { _type => 'blog' },
             permit_action => 'use_blog:create_menu',
-            view          => "website",
+            view          => [ "blog", "website" ],
         },
 
         'user:member' => {
@@ -1984,17 +2003,32 @@ sub core_menus {
             permission => "administer",
             view       => "system",
         },
-        'commenter:manage' => {
-            label      => "Manage",
-            order      => 151,
-            mode       => "list",
-            args       => { _type => "commenter" },
-            permission => "administer",
-            view       => "system",
-            condition  => sub {
-                return MT->config->SingleCommunity;
-            },
+
+        'role:manage' => {
+            label             => "Manage",
+            order             => 100,
+            mode              => "list",
+            args              => { _type => "role", },
+            system_permission => 'administer',
+            view              => "system",
         },
+        'role:create' => {
+            label             => "New",
+            order             => 200,
+            mode              => "view",
+            args              => { _type => "role" },
+            system_permission => 'administer',
+            view              => "system",
+        },
+        'role:association' => {
+            label             => "Associations",
+            order             => 300,
+            mode              => "list",
+            args              => { _type => "association", },
+            system_permission => 'administer',
+            view              => "system",
+        },
+
         'user:create' => {
             label      => "New",
             order      => 200,
@@ -2006,19 +2040,13 @@ sub core_menus {
             },
             view => "system",
         },
-        'user:itemset_action' => {
-            order   => 10000,
-            mode    => 'itemset_action',
-            args    => { _type => "author" },
-            display => 0,
-        },
 
         'entry:manage' => {
             label     => "Manage",
             order     => 100,
             mode      => 'list',
             args      => { _type => 'entry' },
-            view      => [ "system", "blog", "website" ],
+            view      => [ "blog", "website" ],
             condition => sub {
                 return 1 if $app->user->is_superuser;
 
@@ -2062,20 +2090,13 @@ sub core_menus {
             permission => 'edit_categories',
             view       => [ "blog", "website" ],
         },
-        'entry:view_category' => {
-            order   => 10000,
-            mode    => 'view',
-            args    => { _type => 'category' },
-            view    => [ "blog", 'website', 'system' ],
-            display => 0,
-        },
 
         'page:manage' => {
             label     => "Manage",
             order     => 100,
             mode      => 'list',
             args      => { _type => 'page' },
-            view      => [ "system", "blog", 'website' ],
+            view      => [ "blog", 'website' ],
             condition => sub {
                 return 1 if $app->user->is_superuser;
 
@@ -2119,13 +2140,6 @@ sub core_menus {
             permission => 'manage_pages',
             view       => [ "blog", 'website' ],
         },
-        'page:view_folder' => {
-            order   => 10000,
-            mode    => 'view',
-            args    => { _type => 'folder' },
-            view    => [ "blog", 'website', 'system' ],
-            display => 0,
-        },
 
         'asset:manage' => {
             label      => "Manage",
@@ -2162,24 +2176,33 @@ sub core_menus {
             },
         },
         'asset:upload' => {
-            label      => "New",
+            label      => "Upload",
             order      => 200,
             mode       => 'start_upload',
             permission => 'upload,edit_assets',
             view       => [ "blog", 'website' ],
         },
-        'asset:view_asset' => {
-            order   => 10000,
-            mode    => 'view',
-            args    => { _type => 'asset' },
-            view    => [ "blog", 'website', 'system' ],
-            display => 0,
+
+        'content_type:boilerplates' => {
+            label      => '_CONTENT_TYPE_BOILERPLATES',
+            order      => 300,
+            mode       => 'list_ct_boilerplates',
+            permission => 'administer',
+            view       => ['system'],
         },
-        'asset:upload_file' => {
-            order   => 10000,
-            mode    => 'upload_file',
-            view    => [ "blog", 'website', 'system' ],
-            display => 0,
+        'content_type:manage_content_type' => {
+            label      => 'Manage',
+            order      => 100,
+            mode       => 'list',
+            args       => { _type => 'content_type' },
+            permission => 'administer_site',
+            view       => [ 'website', 'blog' ],
+        },
+        'content_type:create_content_type' => {
+            label => 'New',
+            mode  => 'cfg_content_type_description',
+            order => 200,
+            view  => [ 'website', 'blog' ],
         },
 
         'tag:manage' => {
@@ -2223,14 +2246,14 @@ sub core_menus {
                 }
                 return $cond ? 1 : 0;
             },
-            view => [ "system", "blog", 'website' ],
+            view => [ "blog", 'website' ],
         },
         'feedback:ping' => {
             label     => "TrackBacks",
             order     => 200,
             mode      => 'list',
             args      => { _type => 'ping' },
-            view      => [ "system", "blog", 'website' ],
+            view      => [ "blog", 'website' ],
             condition => sub {
                 return 1 if $app->user->is_superuser;
 
@@ -2258,23 +2281,12 @@ sub core_menus {
                 return $cond ? 1 : 0;
             },
         },
-        'feedback:view_comment' => {
-            order   => 10000,
-            mode    => 'view',
-            args    => { _type => 'comment' },
-            view    => [ "blog", 'website', 'system' ],
-            display => 0,
-        },
-        'feedback:view_ping' => {
-            order   => 10010,
-            mode    => 'view',
-            args    => { _type => 'ping' },
-            view    => [ "blog", 'website', 'system' ],
-            display => 0,
-        },
 
         'design:template' => {
-            label             => "Templates",
+            label => sub {
+                $app->translate(
+                    $app->blog ? 'Templates' : 'Global Templates' );
+            },
             order             => 100,
             mode              => 'list_template',
             permission        => 'edit_templates',
@@ -2282,7 +2294,9 @@ sub core_menus {
             view              => [ "blog", 'website', 'system' ],
         },
         'design:widgets' => {
-            label             => 'Widgets',
+            label => sub {
+                $app->translate( $app->blog ? 'Widgets' : 'Global Widgets' );
+            },
             order             => 200,
             mode              => 'list_widget',
             permission        => 'edit_templates',
@@ -2291,23 +2305,10 @@ sub core_menus {
         },
         'design:themes' => {
             label         => 'Themes',
-            order         => 500,
+            order         => 300,
             mode          => 'list_theme',
             view          => [ "blog", 'website', 'system' ],
             permit_action => 'use_design:themes_menu',
-        },
-        'design:view_template' => {
-            order   => 10000,
-            mode    => 'view',
-            args    => { _type => 'template' },
-            view    => [ "blog", 'website', 'system' ],
-            display => 0,
-        },
-        'design:edit_widget' => {
-            order   => 10000,
-            mode    => 'edit_widget',
-            view    => [ "blog", 'website', 'system' ],
-            display => 0,
         },
 
         'filter:member' => {
@@ -2359,40 +2360,15 @@ sub core_menus {
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
         },
-        'settings:ip_info' => {
-            label     => "IP Banning",
-            order     => 700,
-            mode      => 'list',
-            args      => { _type => 'banlist' },
-            condition => sub {
-                return 0 unless $app->config->ShowIPInformation;
-                return 1 if $app->user->is_superuser;
-
-                my $blog = $app->blog;
-                my $blog_ids
-                    = !$blog         ? undef
-                    : $blog->is_blog ? [ $blog->id ]
-                    :   [ $blog->id, map { $_->id } @{ $blog->blogs } ];
-
-                require MT::Permission;
-                my $iter = MT::Permission->load_iter(
-                    {   author_id => $app->user->id,
-                        (   $blog_ids
-                            ? ( blog_id => $blog_ids )
-                            : ( blog_id => { not => 0 } )
-                        ),
-                    }
-                );
-
-                my $cond;
-                while ( my $p = $iter->() ) {
-                    $cond = 1, last
-                        if $p->can_do('manage_feedback');
-                }
-                return $cond ? 1 : 0;
-            },
-            view => [qw( system website blog )],
+        'settings:site_plugins' => {
+            label             => "Plugins",
+            order             => 700,
+            mode              => "cfg_plugins",
+            permission        => "administer_site",
+            system_permission => "manage_plugins",
+            view              => [ "blog", "website" ],
         },
+
         'settings:system' => {
             label      => "General",
             order      => 100,
@@ -2407,127 +2383,32 @@ sub core_menus {
             view       => "system",
             permission => "administer",
         },
-        'settings:role' => {
-            label             => "Roles",
-            order             => 300,
-            mode              => "list",
-            args              => { _type => "role", },
-            system_permission => 'administer',
-            view              => "system",
-        },
-        'settings:association' => {
-            label             => "Permissions",
-            order             => 400,
-            mode              => "list",
-            args              => { _type => "association", },
-            system_permission => 'administer',
-            view              => "system",
-        },
         'settings:system_web_services' => {
             label             => "Web Services",
-            order             => 500,
+            order             => 600,
             mode              => 'cfg_web_services',
             system_permission => 'administer',
             view              => 'system',
         },
-        'settings:view_role' => {
-            order   => 10000,
-            mode    => 'view',
-            args    => { _type => 'role' },
-            view    => 'system',
-            display => 0,
-        },
-
-        'tools:search' => {
-            label     => "Search &amp; Replace",
-            order     => 100,
-            mode      => "search_replace",
-            view      => [ "blog", 'website', 'system' ],
-            condition => sub {
-                require MT::CMS::Search;
-                return MT::CMS::Search::can_search_replace($app);
-            }
-        },
-        'tools:plugins' => {
+        'settings:system_plugins' => {
             label             => "Plugins",
-            order             => 200,
+            order             => 700,
             mode              => "cfg_plugins",
             permission        => "administer_site",
             system_permission => "manage_plugins",
-            view              => [ "blog", 'website', 'system' ],
+            view              => ['system'],
         },
-        'tools:import' => {
-            label      => "Import Entries",
-            order      => 400,
-            mode       => "start_import",
-            permission => "administer_site",
-            view       => [ "blog", "website" ],
+        'settings:system_information' => {
+            label         => "System Information",
+            order         => 800,
+            mode          => "tools",
+            view          => "system",
+            permit_action => 'use_tools:system_info_menu',
         },
-        'tools:export' => {
-            label      => "Export Entries",
-            order      => 500,
-            mode       => "start_export",
-            permission => "administer_site",
-            view       => [ "blog", "website" ],
-        },
-        'tools:themeexport' => {
-            label         => "Export Theme",
-            order         => 550,
-            mode          => 'export_theme',
-            permit_action => 'use_tools:themeexport_menu',
-            view          => [ 'blog', 'website' ],
-        },
-        'tools:start_backup' => {
-            label      => "Backup",
-            order      => 600,
-            mode       => "start_backup",
-            permission => "administer_site",
-            view       => [ "blog", 'website', 'system' ],
-        },
-        'tools:restore' => {
-            label      => "Restore",
-            order      => 650,
-            mode       => "start_restore",
-            permission => "administer_site",
-            view       => "system",
-        },
-        'tools:notification' => {
-            label     => "Address Book",
-            order     => 700,
-            mode      => 'list',
-            args      => { _type => 'notification' },
-            condition => sub {
-                return 0 unless $app->config->EnableAddressBook;
-                return 1 if $app->user->is_superuser;
 
-                my $blog = $app->blog;
-                my $blog_ids
-                    = !$blog         ? undef
-                    : $blog->is_blog ? [ $blog->id ]
-                    :   [ $blog->id, map { $_->id } @{ $blog->blogs } ];
-
-                require MT::Permission;
-                my $iter = MT::Permission->load_iter(
-                    {   author_id => $app->user->id,
-                        (   $blog_ids
-                            ? ( blog_id => $blog_ids )
-                            : ( blog_id => { not => 0 } )
-                        ),
-                    }
-                );
-
-                my $cond;
-                while ( my $p = $iter->() ) {
-                    $cond = 1, last
-                        if $p->can_do('edit_notifications');
-                }
-                return $cond ? 1 : 0;
-            },
-            view => [qw( system website blog )],
-        },
         'tools:activity_log' => {
             label     => "Activity Log",
-            order     => 800,
+            order     => 100,
             mode      => "list",
             args      => { _type => 'log', },
             condition => sub {
@@ -2573,30 +2454,12 @@ sub core_menus {
             },
             view => [ "blog", 'website', 'system' ],
         },
-        'tools:system_information' => {
-            label         => "System Information",
-            order         => 900,
-            mode          => "tools",
-            view          => "system",
-            permit_action => 'use_tools:system_info_menu',
-        },
-        'tools:do_export_theme' => {
-            order   => 10000,
-            mode    => 'do_export_theme',
-            view    => [ 'blog', 'website' ],
-            display => 0,
-        },
-        'tools:backup' => {
-            order   => 10000,
-            mode    => 'backup',
-            view    => [ "blog", 'website', 'system' ],
-            display => 0,
-        },
-
-        # MT7
-        'content_type' => {
-            label => 'Content Type',
-            order => 9100
+        'tools:restore' => {
+            label      => "Import Sites",
+            order      => 200,
+            mode       => "start_restore",
+            permission => "administer_site",
+            view       => "system",
         },
         'content_type:manage_content_type' => {
             label      => 'Manage',
@@ -2606,33 +2469,42 @@ sub core_menus {
             permission => 'administer_site',
             view       => [ 'website', 'blog' ],
         },
-        'content_type:create_content_type' => {
-            label => 'New',
-            mode  => 'cfg_content_type_description',
-            order => 200,
-            view  => [ 'website', 'blog' ],
+        'tools:system_export' => {
+            label      => "Export Sites",
+            order      => 300,
+            mode       => "start_backup",
+            permission => "administer_site",
+            view       => ['system'],
         },
-        'content_data' => {
-            label => 'Content Data',
-            order => 9200,
+        'tools:import' => {
+            label      => "Import Content",
+            order      => 200,
+            mode       => "start_import_content",
+            permission => "administer_site",
+            view       => [ "blog", "website" ],
         },
-        'content_data:manage_content_data' => {
-            label => 'Manage',
-            order => 100,
-            mode  => 'select_list_content_type',
-            view  => [ 'website', 'blog' ],
+        'tools:export' => {
+            label      => "Export Content",
+            order      => 300,
+            mode       => "start_export_content",
+            permission => "administer_site",
+            view       => [ "blog", "website" ],
         },
-        'content_data:create_content_data' => {
-            label => 'New',
-            mode  => 'select_edit_content_type',
-            order => 200,
-            view  => [ 'website', 'blog' ],
+        'tools:site_export' => {
+            label      => "Export Site",
+            order      => 400,
+            mode       => "start_backup",
+            permission => "administer_site",
+            view       => [ "blog", "website" ],
+        },
+        'tools:themeexport' => {
+            label         => "Export Theme",
+            order         => 500,
+            mode          => 'export_theme',
+            permit_action => 'use_tools:themeexport_menu',
+            view          => [ 'blog', 'website' ],
         },
 
-        'category_set' => {
-            label => 'Category Sets',
-            order => 9500,
-        },
         'category_set:manage' => {
             label     => 'Manage',
             order     => 100,
@@ -2650,6 +2522,7 @@ sub core_menus {
             view       => [ 'website', 'blog' ],
         },
 
+        %{ MT::CMS::ContentData::make_menus() },
     };
 }
 
@@ -4526,7 +4399,7 @@ sub _entry_prefs_from_params {
         push @fields, $disp;
     }
     else {
-        @fields = $q->param( $prefix . 'custom_prefs' );
+        @fields = $app->multi_param( $prefix . 'custom_prefs' );
     }
 
     if ( my $body_height = $q->param('text_height') ) {
@@ -4566,7 +4439,7 @@ sub rebuild_these {
         }
 
         # now, rebuild indexes for affected blogs
-        my @blogs = $app->param('blog_ids');
+        my @blogs = $app->multi_param('blog_ids');
         if (@blogs) {
             $app->run_callbacks('pre_build') if @blogs;
             foreach my $blog_id (@blogs) {
@@ -4595,7 +4468,7 @@ sub rebuild_these {
         return $phase->( $app, $params );
     }
     else {
-        my @blogs      = $app->param('blog_ids');
+        my @blogs      = $app->multi_param('blog_ids');
         my $start_time = $app->param('start_time');
         $app->publisher->start_time($start_time) if $start_time;
         my %blogs = map { $_ => () } @blogs;

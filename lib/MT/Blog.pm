@@ -252,17 +252,22 @@ sub list_props {
         #     list_permit_action => 'access_to_member_list',
         # },
         parent_website => {
-            view            => ['system'],
-            label           => 'Site',
+            view            => ['website'],
+            label           => 'Parent Site',
             order           => 800,
             display         => 'default',
             filter_editable => 0,
             raw             => sub {
                 my ( $prop, $obj ) = @_;
-                my $parent = $obj->website;
-                return $parent
-                    ? $parent->name
-                    : ( MT->translate('*Site/Child Site deleted*') );
+                if ( $obj->is_blog ) {
+                    my $parent = $obj->website;
+                    $parent
+                        ? $parent->name
+                        : ( MT->translate('*Site/Child Site deleted*') );
+                }
+                else {
+                    '-';
+                }
             },
             bulk_sort => sub {
                 my $prop    = shift;

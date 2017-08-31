@@ -31,7 +31,7 @@ our @EXPORT_OK
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
     realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
-    encode_json build_upload_destination );
+    encode_json build_upload_destination is_mod_perl1 );
 
 {
     my $Has_Weaken;
@@ -43,6 +43,13 @@ our @EXPORT_OK
             && Scalar::Util->can('weaken') ? 1 : 0;
         Scalar::Util::weaken( $_[0] ) if $Has_Weaken;
     }
+}
+
+sub is_mod_perl1 () {
+    return ( $ENV{MOD_PERL}
+            and
+            ( !$ENV{MOD_PERL_API_VERSION} or $ENV{MOD_PERL_API_VERSION} < 2 )
+    );
 }
 
 sub leap_day {
@@ -1383,7 +1390,7 @@ sub is_valid_date {
         || $2 > 12
         || $2 < 1
         || $3 < 1
-        || ( days_in( $2, $1 ) < $3 && !leap_day( $0, $1, $2 ) ) );
+        || ( days_in( $2, $1 ) < $3 && !leap_day( $1, $2, $3 ) ) );
     1;
 }
 
@@ -1942,7 +1949,7 @@ sub browser_language {
 }
 
 sub launch_background_tasks {
-    return !( $ENV{MOD_PERL}
+    return !( is_mod_perl1()
         || $ENV{FAST_CGI}
         || $ENV{'psgi.input'}
         || !MT->config->LaunchBackgroundTasks );

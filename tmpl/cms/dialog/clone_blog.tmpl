@@ -158,20 +158,19 @@
 
 <mt:else>
 
-  <h2><__trans phrase="Child Site Details"></h2>
-  <fieldset>
+  <fieldset class="form-group">
+  <legend class="h3"><__trans phrase="Child Site Details"></legend>
   <mtapp:setting
      id="blog-name"
      required="1"
      label="<__trans phrase="Site Name">"
-     label_class="top-label"
-     no_grid="1">
+     label_class="top-label">
     <input type="text" name="new_blog_name" id="blog-name" class="text full required form-control" value="<mt:var name="new_blog_name" escape="html">" />
   </mtapp:setting>
   </fieldset>
 
-  <h2><__trans phrase="Publishing Paths"></h2>
-  <fieldset>
+  <fieldset class="form-group">
+  <legend class="h3"><__trans phrase="Publishing Paths"></legend>
   <mtapp:setting
      id="site_url"
      class="url-field"
@@ -179,8 +178,7 @@
      label="<__trans phrase="Site URL">"
      label_class="top-label"
      hint="<__trans phrase="Enter the new URL of your public child site. End with '/'. Example: http://www.example.com/blog/">"
-     show_hint="1"
-     no_grid="1">
+     show_hint="1">
   <mt:if name="site_url_subdomain">
     <div class="site-url content-path form-inline">
       <mt:var name="website_scheme">://
@@ -218,9 +216,7 @@
      class="site-path-field"
      required="1"
      label="<__trans phrase="Site Root">"
-     label_class="top-label"
-     show_hint="1"
-     no_grid="1">
+     label_class="top-label">
     <div class="relative-site_path content-path form-inline">
       <span class="website-path"><mt:var name="parent_path" escape="html"></span>
       <input type="text" name="site_path" id="site_path" class="blog-path-text text path form-control" value="<mt:unless name="use_absolute"><mt:var name="site_path" escape="html"></mt:unless>" />
@@ -246,10 +242,8 @@
      label="<__trans phrase="Advanced Archive Publishing">"
      label_class="top-label"
      show_label="0"
-     hint="<__trans phrase="Select this option only if you need to publish your archives outside of your Site Root.">"
      help_page="blog_settings_publishing"
-     help_section="advanced_archive_publishing"
-     no_grid="1">
+     help_section="advanced_archive_publishing">
     <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="cb" />
     <label for="enable_archive_paths"><__trans phrase="Publish archives outside of Site Root"></label>
   </mtapp:setting>
@@ -263,8 +257,7 @@
        hint="<__trans phrase="Enter the new URL of the archives section of your child site. Example: http://www.example.com/blog/archives/">"
        show_hint="1"
        help_page="blog_settings_publishing"
-       help_section="archive_url"
-       no_grid="1">
+       help_section="archive_url">
     <mt:if name="archive_url_subdomain">
       <div class="archive-url content-path form-inline">
         <span class="archive-url-domain">
@@ -342,8 +335,7 @@
        label="<__trans phrase="Archive Root">"
        label_class="top-label"
        help_page="blog_settings_publishing"
-       help_section="archive_path"
-       no_grid="1">
+       help_section="archive_path">
       <div class="relative-site_path content-path form-inline">
         <span class="website-path"><mt:var name="parent_path" escape="html"></span>
         <input type="text" name="archive_path" id="archive_path" value="<mt:unless name="use_absolute_archive"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text text path form-control" />
@@ -372,15 +364,13 @@
   </div>
   </fieldset>
 
-  <h2><__trans phrase="Exclusions"></h2>
-  <fieldset>
+  <fieldset class="form-group">
+  <legend class="h3"><__trans phrase="Exclusions"></legend>
   <mtapp:setting
      id="clone_prefs"
      class="field-no-header"
      label="<__trans phrase="Exclusions">"
-     label_class="top-label"
-     hint="<__trans phrase="Mark the settings that you want cloning to skip">"
-     no_grid="1">
+     label_class="top-label">
     <ul id="clone-prefs-fields" class="list-unstyled">
       <li>
         <input type="checkbox" name="clone_prefs_entries_pages" id="clone-prefs-entries-pages" <mt:if name="clone_prefs_entries_pages">checked="<mt:var name="clone_prefs_entries_pages" escape="html">"</mt:if> class="cb" />

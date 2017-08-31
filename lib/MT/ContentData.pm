@@ -83,7 +83,13 @@ __PACKAGE__->install_properties(
         indexes => {
             content_type_id => 1,
             ct_unique_id    => 1,
+            status          => 1,
+            title           => 1,
             unique_id       => { unique => 1 },
+            site_author     => {
+                columns =>
+                    [ 'author_id', 'authored_on', 'blog_id', 'ct_unique_id' ],
+            },
         },
         defaults    => { status => 0 },
         datasource  => 'cd',

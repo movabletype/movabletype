@@ -29,7 +29,7 @@ function rebuildMultiBlogTriggerTable() {
             values[i] += ":";
             values[i] += multiBlogRebuilds[i][5];
         }
-        str = "<table class='table table-striped legacy listing-table'><thead><tr><th class='col head primary'><span class='col-label'><__trans phrase="Site/Child Site" escape="js"></span></th><th class='col head primary'><span class='col-label'><__trans phrase="Trigger" escape="js"></span></th><th class='col head primary'><span class='col-label'><__trans phrase="Action" escape="js"></span></th><th class='col head si'><img alt='<__trans phrase="Remove">' src='<mt:var name='static_uri'>images/nav_icons/mini/delete.gif' /></th></tr></thead><tfoot><tr><th class='col head primary'><span class='col-label'><__trans phrase="Site/Child Site" escape="js"></span></th><th class='col head primary'><span class='col-label'><__trans phrase="Trigger" escape="js"></span></th><th class='col head primary'><span class='col-label'><__trans phrase="Action" escape="js"></span></th><th class='col head si'><img alt='<__trans phrase="Remove">' src='<mt:var name="static_uri">images/nav_icons/mini/delete.gif' /></th></tr></tfoot>\n" + str + "</table>";
+        str = "<table class='table mt-table'><thead><tr><th class='col head primary' scope='col'><span class='col-label'><__trans phrase="Site/Child Site" escape="js"></span></th><th class='col head primary' scope='col'><span class='col-label'><__trans phrase="Trigger" escape="js"></span></th><th class='col head primary' scope='col'><span class='col-label'><__trans phrase="Action" escape="js"></span></th><th class='col head si' scope='col'><img alt='<__trans phrase="Remove">' src='<mt:var name='static_uri'>images/nav_icons/mini/delete.gif' /></th></tr></thead>\n" + str + "</table>";
         getByID('multiblog_blog_list').innerHTML = str;
         getByID('rebuild_triggers').value = values.join('|');
     }
@@ -49,8 +49,9 @@ function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerN
 
 <mtapp:setting
    id="blog_content_accessible"
-   label="<__trans phrase="Content Privacy">">
-  <select name="blog_content_accessible" id="blog_content_accessible" class="custom-select">
+   label="<__trans phrase="Content Privacy">"
+   label_for="blog_content_accessible">
+  <select name="blog_content_accessible" id="blog_content_accessible" class="custom-select form-control">
     <option value="0"><__trans phrase="Use system default"></option>
     <option value="2"<mt:if name="blog_content_accessible_2"> selected="selected"</mt:if>><__trans phrase="Allow"></option>
     <option value="1"<mt:if name="blog_content_accessible_1"> selected="selected"</mt:if>><__trans phrase="Disallow"></option>
@@ -63,7 +64,7 @@ function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerN
    class="form-inline"
    hint="<__trans phrase="Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or 'all' (include_blogs only) are acceptable values.">"
    show_hint="1">
-  <select name="default_mtmultiblog_action" id="default_mtmultiblog_action" class="custom-select">
+  <select name="default_mtmultiblog_action" id="default_mtmultiblog_action" class="custom-select form-control">
     <option value="1"<mt:if name="default_mtmultiblog_action_1"> selected="selected"</mt:if>>
       <__trans phrase="Include sites/child sites">
     </option>
@@ -76,9 +77,7 @@ function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerN
 
 <mtapp:setting
    id="rebuild_triggers"
-   label="<__trans phrase="Rebuild Triggers">"
-   hint=""
-   show_hint="0">
+   label="<__trans phrase="Rebuild Triggers">">
   <input type="hidden" name="rebuild_triggers" id="rebuild_triggers" value="<mt:var name="rebuild_triggers">" />
   <input type="hidden" name="old_rebuild_triggers" id="old_rebuild_triggers" value="<mt:var name="rebuild_triggers">" />
   <p><a href="<mt:var name="script_url">?__mode=multiblog_add_trigger&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create mt-open-dialog mt-modal-open" data-mt-modal-large><__trans phrase="Create Rebuild Trigger"></a></p>

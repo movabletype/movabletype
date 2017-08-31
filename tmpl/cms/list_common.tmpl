@@ -25,6 +25,9 @@
           <mt:if name="id"> id="<mt:var name="id">"</mt:if>
           <mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>
         >
+        <mt:if name="icon">
+          <mtapp:svgicon id="$icon" size="sm" title="$label">
+        </mt:if>
           <mt:var name="label">
         </a>
       </li>
@@ -42,6 +45,7 @@
       title="<$mt:var name="feed_name" escape="html"$>"
       target="_blank"
     >
+      <mtapp:svgicon id="ic_rss" size="sm" color="warning" title="<__trans phrase="Feed">">
       <$mt:var name="object_type_feed"$>
     </a>
   </li>
@@ -66,7 +70,7 @@
 
   <mt:if name="listing_footer_content">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
       <div class="card">
         <ul id="listing-footer" class="footer-links mod list-group list-group-flush">
         <mt:var name="listing_footer_content">

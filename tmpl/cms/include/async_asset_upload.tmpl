@@ -140,6 +140,8 @@ h1.dialog-title {
 </mt:if>
 
 <form id="upload">
+
+<fieldset class="form-group">
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
   <button class="action button primary btn btn-primary" id="open-file-dialog">
     <img src="<mt:var name="static_uri">images/upload/ico_nowuploading_s@2x.png" width="12" height="10">
@@ -150,30 +152,32 @@ h1.dialog-title {
       </mt:if>
     </img>
   </button>
+</fieldset>
+
+<fieldset class="form-group">
+  <legend class="h3"><__trans phrase="Upload Destination"></legend>
 <mt:unless name="filter" eq="userpic">
-    <h5><__trans phrase="Upload Destination"></h5>
   <mt:if name="allow_to_change_at_upload">
     <mtapp:setting
       id="site_path"
-      hint="<__trans phrase="_USAGE_UPLOAD">"
-      show_hint="1"
       show_label="0"
       label_class="top-label"
       class="form-inline">
       <mt:if name="destination_loop">
-        <select name="destination" id="destination" class="form-control" onchange="uploadDestinationSelect(this);">
+        <select name="destination" id="destination" class="custom-select form-control" onchange="uploadDestinationSelect(this);" aria-describedby="uploadDestination">
         <mt:loop name="destination_loop">
           <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>>
             <mt:var name="label" escape="html">
           </option>
         </mt:loop>
         </select>
-        <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" style="display: none;" />
+        <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" style="display: none;" aria-describedby="uploadDestination" />
         <span class="upload-extra-path">
           / <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
         </span>
       </mt:if>
     </mtapp:setting>
+    <small id="uploadDestination" class="form-text text-muted"><__trans phrase="_USAGE_UPLOAD"></small>
   <mt:else>
     <div id="site_path-field" class="field field-top-label">
       <div class="field-content">
@@ -184,25 +188,33 @@ h1.dialog-title {
     </div>
   </mt:if>
 </mtunless>
+</fieldset>
+
 <mt:if name="dir_separator">
   <input type="hidden" name="dir_separator" value="<mt:var name="dir_separator">" />
 </mt:if>
 
-    <h5><__trans phrase="Upload Options"></h5>
+<fieldset class="form-group">
+<legend class="h3"><__trans phrase="Upload Options"></legend>
 <mtapp:setting
   id="auto_rename_non_ascii"
   label="<__trans phrase="Rename filename">"
   show_label="1">
-      <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb" />
-      <label for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
+      <div class="form-group">
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb custom-control-input" />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><__trans phrase="Rename non-ascii filename automatically"></span>
+        </label>
+      </div>
 </mtapp:setting>
 <mtapp:setting
   id="operation_if_exists"
-  show_hint="0"
   show_label="1"
   label="<__trans phrase="Operation for a file exists">"
+  label_for="operation_if_exists"
   label_class="left-label">
-    <select name="operation_if_exists" id="operation_if_exists" class="form-control">
+    <select name="operation_if_exists" id="operation_if_exists" class="custom-select form-control">
       <option value="1"<mt:if name="operation_if_exists" eq="1"> selected="selected"</mtif>>
         <__trans phrase="Upload and rename">
       </option>
@@ -218,13 +230,20 @@ h1.dialog-title {
   id="normalize_orientation"
   label="<__trans phrase="Normalize orientation">"
   show_label="1">
-      <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb" />
-      <label for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
+      <div class="form-group">
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb custom-control-input" />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><__trans phrase="Enable orientation normalization"></span>
+        </label>
+      </div>
 </mtapp:setting>
+</fieldset>
+
 </form>
 
 <div class="row">
-  <div id="upload-progress" class="col-md-12"></div>
+  <div id="upload-progress" class="col-12"></div>
 </div>
 
 <mt:setvarblock name="js_include" append="1">
@@ -413,8 +432,8 @@ function createUploadBlock () {
   this.uploadBlockPanel = jQuery('<div class="card"><div class="card-block"></div></div>');
   this.uploadBlock  = jQuery('<div class="row upload-status-block" id="upload-status_' + numOfRows + '"></div>').appendTo(this.uploadBlockPanel.children());
 
-  this.leftPanel    = jQuery('<div class="col-md-11 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
-  this.rightPanel   = jQuery('<div class="col-md-1 text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
+  this.leftPanel    = jQuery('<div class="col-11 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
+  this.rightPanel   = jQuery('<div class="col-1 text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
   this.leftContent  = jQuery('<div class="upload-status-block-left-content"></div>').appendTo(this.leftPanel);
   this.progressbar  = jQuery('<div class="progress"><div class="progress-bar"></div></div>').appendTo(this.leftContent);
   this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);

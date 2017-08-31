@@ -190,7 +190,7 @@ sub save_commenter_perm {
 
     my $acted_on;
     my %rebuild_set;
-    my @ids     = $params ? @$params : $app->param('commenter_id');
+    my @ids     = $params ? @$params : $app->multi_param('commenter_id');
     my $blog_id = $q->param('blog_id');
     my $author  = $app->user;
     my %permissions;
@@ -302,7 +302,7 @@ sub save_commenter_perm {
 
 sub trust_commenter_by_comment {
     my $app        = shift;
-    my @comments   = $app->param('id');
+    my @comments   = $app->multi_param('id');
     my @commenters = map_comment_to_commenter( $app, \@comments );
     $app->param( 'action', 'trust' );
     save_commenter_perm( $app, \@commenters );
@@ -310,7 +310,7 @@ sub trust_commenter_by_comment {
 
 sub untrust_commenter_by_comment {
     my $app        = shift;
-    my @comments   = $app->param('id');
+    my @comments   = $app->multi_param('id');
     my @commenters = map_comment_to_commenter( $app, \@comments );
     $app->param( 'action', 'untrust' );
     save_commenter_perm( $app, \@commenters );
@@ -318,7 +318,7 @@ sub untrust_commenter_by_comment {
 
 sub ban_commenter_by_comment {
     my $app        = shift;
-    my @comments   = $app->param('id');
+    my @comments   = $app->multi_param('id');
     my @commenters = map_comment_to_commenter( $app, \@comments );
     $app->param( 'action', 'ban' );
     save_commenter_perm( $app, \@commenters );
@@ -326,7 +326,7 @@ sub ban_commenter_by_comment {
 
 sub unban_commenter_by_comment {
     my $app        = shift;
-    my @comments   = $app->param('id');
+    my @comments   = $app->multi_param('id');
     my @commenters = map_comment_to_commenter( $app, \@comments );
     $app->param( 'action', 'unban' );
     save_commenter_perm( $app, \@commenters );
@@ -334,28 +334,28 @@ sub unban_commenter_by_comment {
 
 sub trust_commenter {
     my $app        = shift;
-    my @commenters = $app->param('id');
+    my @commenters = $app->multi_param('id');
     $app->param( 'action', 'trust' );
     save_commenter_perm( $app, \@commenters );
 }
 
 sub ban_commenter {
     my $app        = shift;
-    my @commenters = $app->param('id');
+    my @commenters = $app->multi_param('id');
     $app->param( 'action', 'ban' );
     save_commenter_perm( $app, \@commenters );
 }
 
 sub unban_commenter {
     my $app        = shift;
-    my @commenters = $app->param('id');
+    my @commenters = $app->multi_param('id');
     $app->param( 'action', 'unban' );
     save_commenter_perm( $app, \@commenters );
 }
 
 sub untrust_commenter {
     my $app        = shift;
-    my @commenters = $app->param('id');
+    my @commenters = $app->multi_param('id');
     $app->param( 'action', 'untrust' );
     save_commenter_perm( $app, \@commenters );
 }
@@ -414,7 +414,7 @@ sub empty_junk {
 
 sub handle_junk {
     my $app   = shift;
-    my @ids   = $app->param("id");
+    my @ids   = $app->multi_param("id");
     my $type  = $app->param("_type");
     my $class = $app->model($type);
     my @item_loop;
@@ -517,7 +517,7 @@ sub not_junk {
     my $app = shift;
     $app->validate_magic or return;
 
-    my @ids = $app->param("id");
+    my @ids = $app->multi_param("id");
     my @item_loop;
     my $i     = 0;
     my $type  = $app->param('_type');
@@ -1097,7 +1097,7 @@ sub set_item_visible {
     my $class = $app->model($type);
     $app->setup_filtered_ids
         if $app->param('all_selected');
-    my @obj_ids = $app->param('id');
+    my @obj_ids = $app->multi_param('id');
 
     if ( my $req_nonce = $app->param('nonce') ) {
         if ( scalar @obj_ids == 1 ) {

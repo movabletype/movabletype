@@ -1,101 +1,101 @@
 <list-pagination>
-  <ul class="list-inline">
-    <li class="list-inline-item">
-      <button class="btn btn-default"
-        disabled={ store.page <= 1 }
-        data-page={ store.page - 1 }
-        onclick={ movePage }
-      >
-        &lt; { trans('Prev') }
-      </button>
-    </li>
-    <li class="list-inline-item">
-      <virtual if={ store.page - 3 >= 1 }>
+  <nav aria-label={ store.listClient.objectType + ' list' }>
+    <ul class="pagination">
+      <li class="page-item">
         <a href="javascript:void(0);"
+          class="page-link"
+          disabled={ store.page <= 1 }
+          data-page={ store.page - 1 }
+          onclick={ movePage }
+        >
+          { trans('Previous') }
+        </a>
+      </li>
+
+    <virtual if={ store.page - 2 >= 1 }>
+      <li class="page-item first-last">
+        <a href="javascript:void(0);"
+          class="page-link"
           data-page={ 1 }
           onclick={ movePage }
         >
-          <span class="label label-default">
-            1
-          </span>
+          1
         </a>
+      </li>
+
+      <li class="page-item" aria-hidden="true">
         ...
-      </virtual>
+      </li>
+    </virtual>
 
-      <virtual if={ store.page - 2 >= 1 }>
+      <li if={ store.page - 1 >= 1 }
+        class={ 'page-item': true, 'first-last': store.page - 1 == 1 }
+      >
         <a href="javascript:void(0);"
-          data-page={ store.page - 2 }
-          onclick={ movePage }
-        >
-          { store.page - 2 }
-        </a>
-      </virtual>
-
-      <virtual if={ store.page - 1 >= 1 }>
-        <a href="javascript:void(0);"
+          class="page-link"
           data-page={ store.page - 1 }
           onclick={ movePage }
         >
           { store.page - 1 }
         </a>
-      </virtual>
+      </li>
 
-      <span class="label label-primary">{ store.page }</span>
+      <li class="page-item active">
+        <a class="page-link">
+          { store.page }
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
 
-      <virtual if={ store.page + 1 <= store.pageMax }>
+      <li if={ store.page + 1 <= store.pageMax }
+        class={ 'page-item': true, 'first-last': store.page + 1 == store.pageMax }
+      >
         <a href="javascript:void(0);"
+          class="page-link"
           data-page={ store.page + 1 }
           onclick={ movePage }
         >
           { store.page + 1 }
         </a>
-      </virtual>
+      </li>
 
-      <virtual if={ store.page + 2 <= store.pageMax }>
-        <a href="javascript:void(0);"
-          data-page={ store.page + 2 }
-          onclick={ movePage }
-        >
-          { store.page + 2 }
-        </a>
-      </virtual>
-
-      <virtual if={ store.page + 3 <= store.pageMax }>
+    <virtual if={ store.page + 2 <= store.pageMax }>
+      <li class="page-item" aria-hidden="true">
         ...
+      </li>
+
+      <li class="page-item first-last">
         <a href="javascript:void(0);"
+          class="page-link"
           data-page={ store.pageMax }
           onclick={ movePage }
         >
-          <span class="label label-default">
-            { store.pageMax }
-          </span>
+          { store.pageMax }
         </a>
-      </virtual>
-    </li>
-    <li class="list-inline-item">
-      [ <input type="number"
-          min="1"
-          max={ store.pageMax }
-          value={ store.page }
-          class="text-center"
-          style="width: 50px;"
-          onkeyup={ movePage } /> / { store.pageMax } ]
-    </li>
-    <li class="list-inline-item">
-      <button class="btn btn-default"
-        disabled={ store.page >= store.pageMax }
-        data-page={ store.page + 1 }
-        onclick={ movePage }
-      >
-        { trans('Next') } &gt;
-      </button>
-    </li>
-  </ul>
+      </li>
+    </virtual>
+
+      <li class="page-item">
+        <a href="javascript:void(0);"
+          class="page-link"
+          disabled={ store.page >= store.pageMax }
+          data-page={ store.page + 1 }
+          onclick={ movePage }
+        >
+          { trans('Next') }
+        </a>
+      </li>
+    </ul>
+  </nav>
 
   <script>
     this.mixin('listTop')
 
     movePage(e) {
+      if (e.currentTarget.disabled) {
+        return false
+      }
+
       let nextPage
       if (e.target.tagName == "INPUT") {
         if (e.which != 13) {
@@ -108,7 +108,9 @@
       if (!nextPage) {
         return false
       }
-      this.store.trigger('move_page', nextPage)
+      const moveToPagination = true
+      this.store.trigger('move_page', nextPage, moveToPagination)
+      return false
     }
   </script>
 </list-pagination>

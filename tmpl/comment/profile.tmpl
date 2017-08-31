@@ -30,9 +30,7 @@
     <mtapp:setting
         id="name"
         label="<__trans phrase="Username">"
-        hint="<__trans phrase="Your login name.">"
-        label_class="top-label"
-        no_grid="1">
+        label_class="top-label">
         <input type="text" name="name" class="form-control text full disabled" readonly="readonly" value="<mt:var name="name" escape="html">" />
     </mtapp:setting>
 
@@ -41,8 +39,6 @@
         label="<__trans phrase="Display Name">"
         label_class="top-label"
         required="1"
-        hint="<__trans phrase="The name appears on your comment.">"
-        no_grid="1">
         <input type="text" name="nickname" id="nickname" class="form-control text full" value="<mt:var name="nickname" escape="html">" />
     </mtapp:setting>
 
@@ -51,8 +47,6 @@
         label="<__trans phrase="Email Address">"
         label_class="top-label"
         required="$email_required"
-        hint="<__trans phrase="Your email address.">"
-        no_grid="1">
         <input type="text" name="email" id="email" class="form-control text full" value="<mt:var name="email" escape="html">" />
     </mtapp:setting>
 
@@ -60,9 +54,7 @@
 	<mtapp:setting
 	   id="old_pass"
 	   label="<__trans phrase="Current Password">"
-     label_class="top-label"
-	   hint="<__trans phrase="Existing password required to create a new password.">"
-     no_grid="1">
+       label_class="top-label"
 	  <input type="password" name="old_pass" id="old_pass" class="form-control text password" value="" />
 	</mtapp:setting>
 
@@ -71,17 +63,15 @@
         label="<__trans phrase="New Password">"
         label_class="top-label"
         hint="<__trans phrase="Select a password for yourself."> (<$mt:PasswordValidationRule$>)"
-        show_hint="1"
-        no_grid="1">
-        <input type="password" name="password" id="password" class="form-control text password" value="" />
+        hint_id="passwordHint"
+        show_hint="1">
+        <input type="password" name="password" id="password" class="form-control text password" value="" aria-describedby="passwordHint" />
     </mtapp:setting>
 
     <mtapp:setting
         id="pass_verify"
         label="<__trans phrase="Confirm Password">"
-        label_class="top-label"
-        hint="<__trans phrase="Repeat the password for confirmation.">"
-        no_grid="1">
+        label_class="top-label">
         <input type="password" name="pass_verify" id="pass_verify" class="form-control text password" value="" />
     </mtapp:setting>
 
@@ -98,9 +88,7 @@
     <mtapp:setting
         id="url"
         label="<__trans phrase="Website URL">"
-        label_class="top-label"
-        hint="<__trans phrase="The URL of your website. (Optional)">"
-        no_grid="1">
+        label_class="top-label">
         <input type="text" name="url" id="url" class="form-control text full" value="<mt:var name="url" escape="html">"  />
     </mtapp:setting>
 
@@ -117,8 +105,7 @@
             hint="$description"
             shown="$show_field"
             show_hint="$show_hint"
-            required="$required"
-            content_class="$content_class">
+            required="$required">
 
         <$mt:Var name="field_html"$>
 

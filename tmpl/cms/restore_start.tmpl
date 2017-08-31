@@ -1,7 +1,14 @@
-<mt:setvarblock name="page_title"><__trans phrase="Restore"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Import Sites"></mt:setvarblock>
 <mt:setvar name="restore" value="1">
 
-<mt:include name="layout/default/header.tmpl">
+<mt:include name="layout/common/header.tmpl">
+
+<div class="row">
+<mt:if name="has_menu">
+  <div class="mt-primaryNavigation">
+    <mt:include name="include/primary_navigation.tmpl">
+  </div>
+</mt:if>
 
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -12,9 +19,10 @@ function progress(str, id) {
 /* ]]> */
 </script>
 
-<mt:include name="include/page_title.tmpl">
+  <div class="mt-mainContent">
+    <mt:include name="include/page_title.tmpl">
 
-<div class="import-process">
-  <div id="progressbar" class="progressbar indeterminate"></div>
-  <div class="card card-block">
-    <pre class="progress-log"><__trans phrase="Restoring Movable Type">
+    <div class="import-process">
+      <div id="progressbar" class="progressbar indeterminate"></div>
+      <div class="card card-block">
+        <pre class="progress-log"><__trans phrase="Importing Movable Type">

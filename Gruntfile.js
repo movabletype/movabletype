@@ -1,6 +1,8 @@
 module.exports = function(grunt) {
   'use strict';
 
+  var path = require('path');
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     copy: {
@@ -11,6 +13,14 @@ module.exports = function(grunt) {
           '**/*'
         ],
         dest: 'mt-static/bootstrap'
+      },
+      popper: {
+        expand: true,
+        cwd: 'node_modules/popper.js/dist/umd',
+        src: [
+          '*'
+        ],
+        dest: 'mt-static/popper'
       },
       riot: {
         expand: true,
@@ -32,45 +42,17 @@ module.exports = function(grunt) {
           'svg4everybody.min.js'
         ],
         dest: 'mt-static/svg4everybody'
-      },
-      tether: {
-        expand: true,
-        cwd: 'node_modules/tether/dist',
-        src: [
-          '**/*'
-        ],
-        dest: 'mt-static/tether'
       }
     },
-    svg_sprite: {
-      basic: {
-        src: ['mt-static/images/svg/*.svg'],
-        dest: 'mt-static/images',
-        options: {
-          shape: {
-            transform: [
-              {
-                svgo: {
-                  plugins: [
-                    { removeAttrs: { attrs: 'fill' } }
-                  ]
-                }
-              }
-            ]
-          },
-          mode: {
-            symbol: {
-              dest: '.',
-              sprite: 'sprite.svg'
-            }
-          }
-        }
-      }
+    exec: {
+      riot: {
+        command: 'npm run build-riot'
+      },
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-svg-sprite');
+  grunt.loadNpmTasks('grunt-exec');
 
-  grunt.registerTask('default', ['svg_sprite', 'copy']);
+  grunt.registerTask('default', ['exec:riot', 'copy']);
 };

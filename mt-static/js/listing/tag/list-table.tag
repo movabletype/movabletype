@@ -17,12 +17,17 @@
 
 <list-table-header>
   <tr>
-    <th>
-      <input type="checkbox"
-        checked={ store.checkedAllRowsOnPage }
-        onchange={ toggleAllRowsOnPage } />
+    <th class="mt-table__control">
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox"
+          class="custom-control-input"
+          checked={ store.checkedAllRowsOnPage }
+          onchange={ toggleAllRowsOnPage } />
+        <span class="custom-control-indicator"></span>
+      </label>
     </th>
     <th each={ store.columns }
+      scope="col"
       if={ checked }
       data-id={ id }
       class={
@@ -34,22 +39,14 @@
       <a href="javascript:void(0)"
         if={ sortable }
         onclick={ toggleSortColumn }
+        class={
+          mt-table__ascend: sortable && parent.store.sortBy == id && parent.store.sortOrder == 'ascend',
+          mt-table__descend: sortable && parent.store.sortBy == id && parent.store.sortOrder == 'descend'
+        }
       >
         { label }
       </a>
       <virtual if={ !sortable }>{ label }</virtual>
-      <span class="caret caret-reverse"
-        if={ sortable && (
-          parent.store.sortBy != id
-          || parent.store.sortOrder == 'ascend'
-        ) }>
-      </span>
-      <span class="caret"
-        if={ sortable && (
-          parent.store.sortBy != id
-          || parent.store.sortOrder == 'descend'
-        ) }>
-      </span>
     </th>
   </tr>
 
@@ -90,7 +87,7 @@
   <tr data-is="list-table-row"
     each={ obj, index in store.objects }
     onclick={ parent.toggleRow }
-    class={ obj.checked ? 'warning' : '' }
+    class={ obj.checked ? 'mt-table__highlight' : '' }
     data-index={ index }
     checked={ obj.checked }
     object={ obj.object }
@@ -101,9 +98,11 @@
     this.mixin('listTop')
 
     toggleRow(e) {
-      if (e.target.tagName == 'A') {
+      if (e.target.tagName == 'A' || e.target.tagName == 'IMG') {
         return false
       }
+      e.preventDefault()
+      e.stopPropagation()
       this.store.trigger('toggle_row', e.currentTarget.dataset.index)
     }
 
@@ -115,10 +114,14 @@
 
 <list-table-row>
   <td>
-    <input type="checkbox"
-      name="id"
-      value={ opts.object[0] }
-      checked={ opts.checked }>
+    <label class="custom-control custom-checkbox">
+      <input type="checkbox"
+        name="id"
+        class="custom-control-input"
+        value={ opts.object[0] }
+        checked={ opts.checked }>
+      <span class="custom-control-indicator"></span>
+    </label>
   </td>
   <td data-is="list-table-column"
     each={ content, index in opts.object }

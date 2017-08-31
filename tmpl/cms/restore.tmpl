@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><__trans phrase="Restore from a Backup"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Import from Exported file"></mt:setvarblock>
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="restore" value="1">
 
@@ -26,29 +26,38 @@
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <mtapp:setting
        id="file"
-       label="<__trans phrase="Backup File">"
-       hint="<__trans phrase="If your backup file is located on a remote computer, you can upload it here.  Otherwise, Movable Type will automatically look in the 'import' folder within your Movable Type directory.">"
+       label="<__trans phrase="Exported File">"
+       label_for=""
        help_page="backup_restore"
        help_section="source_file">
-      <input name="file" class="form-control-file" type="file" />
+      <div class="form-group">
+        <label class="custom-file">
+          <input name="file" id="restore-file" class="custom-file-input" type="file" />
+          <span class="custom-file-control"></span>
+        </label>
+      </div>
     </mtapp:setting>
 
     <mtapp:setting
        id="overwrite_global_templates"
        label="<__trans phrase="Options">"
-       show_label="0"
-       hint="<__trans phrase="Allow existing global templates to be overwritten by global templates in the backup file.">">
-      <input name="overwrite_global_templates" id="overwrite_global_templates" type="checkbox" />
-      <label for="overwrite_global_templates"><__trans phrase="Overwrite global templates."></label>
+       show_label="0">
+      <div class="form-group">
+        <label class="custom-control custom-checkbox">
+          <input name="overwrite_global_templates" id="overwrite_global_templates" type="checkbox" class="custom-control-input" />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><__trans phrase="Overwrite global templates."></span>
+        </label>
+      </div>
     </mtapp:setting>
 
     <mt:setvarblock name="action_buttons">
       <button
          type="submit"
-         accesskey="r"
-         title="<__trans phrase="Restore (r)">"
+         accesskey="i"
+         title="<__trans phrase="Import (i)">"
          class="restore action primary button btn btn-primary">
-        <__trans phrase="Restore">
+        <__trans phrase="Import">
       </button>
     </mt:setvarblock>
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">

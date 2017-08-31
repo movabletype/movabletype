@@ -39,13 +39,13 @@ subtest 'MT::App::Wizard behavior when mt-config.cgi exists' => sub {
 
     {
         my $title
-            = quotemeta '<h3 id="page-title">Configuration File Exists</h3>';
+            = quotemeta '<h2 id="page-title">Configuration File Exists</h2>';
         ok( $out =~ m/$title/, 'Title is "Configuration File Exists"' );
     }
 
     {
         my $title
-            = quotemeta '<h3 id="page-title">Database Configuration</h3>';
+            = quotemeta '<h2 id="page-title">Database Configuration</h2>';
         ok( $out !~ m/$title/, 'Title is not "Database Configuration"' );
     }
 };

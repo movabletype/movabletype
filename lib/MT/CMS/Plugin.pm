@@ -40,7 +40,7 @@ sub cfg_plugins {
         $param{switched}     = 1 if $app->param('switched');
         $param{'reset'}  = 1 if $app->param('reset');
         $param{saved}    = 1 if $app->param('saved');
-        $param{mod_perl} = 1 if $ENV{MOD_PERL};
+        $param{mod_perl} = 1 if MT::Util::is_mod_perl1();
         $app->add_breadcrumb( $app->translate("Plugin Settings") );
         $param{screen_id}    = "list-plugins";
         $param{screen_class} = "plugin-settings";
@@ -62,11 +62,11 @@ sub save_config {
         unless $app->can_do('save_plugin_setting');
 
     my %param;
-    my @params = $q->param;
+    my @params = $app->multi_param;
     foreach (@params) {
         next
             if $_ =~ m/^(__mode|return_args|plugin_sig|magic_token|blog_id)$/;
-        my @values = $q->param($_);
+        my @values = $app->multi_param($_);
         if ( $#values > 0 ) {
             $param{$_} = \@values;
         }
@@ -208,6 +208,14 @@ sub build_plugin_table {
             : $app->translate("Individual Plugins");
         my $row;
         my $icon = $app->static_path . 'images/plugin.gif';
+
+        my $icon_title = $app->translate('Plugin');
+        my $static_uri = $app->static_path;
+        $icon = qq{
+            <svg title="$icon_title" role="img" class="mt-icon">
+                <use xlink:href="${static_uri}images/sprite.svg#ic_plugin">
+            </svg>
+        };
 
         if ( my $plugin = $profile->{object} ) {
             my $plugin_icon;

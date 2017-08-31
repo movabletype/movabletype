@@ -791,7 +791,7 @@ PERMCHECK: {
         if ( 'power_edit' eq $filter_col ) {
             $filter_col = 'id';
             unless ( 'ARRAY' eq ref($filter_val) ) {
-                my @values = $app->param('filter_val');
+                my @values = $app->multi_param('filter_val');
                 $filter_val = \@values;
             }
         }
@@ -1705,7 +1705,7 @@ sub save {
                 || $2 < 1
                 || $3 < 1
                 || ( MT::Util::days_in( $2, $1 ) < $3
-                    && !MT::Util::leap_day( $0, $1, $2 ) )
+                    && !MT::Util::leap_day( $1, $2, $3 ) )
                 );
         }
         $param{return_args} = $app->param('return_args');
@@ -1748,7 +1748,7 @@ sub save {
                     || $2 < 1
                     || $3 < 1
                     || ( MT::Util::days_in( $2, $1 ) < $3
-                        && !MT::Util::leap_day( $0, $1, $2 ) )
+                        && !MT::Util::leap_day( $1, $2, $3 ) )
                     );
             }
             my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
@@ -2083,7 +2083,7 @@ PERMCHECK: {
     $app->validate_magic() or return;
 
     my $q = $app->param;
-    my @p = $q->param;
+    my @p = $app->multi_param;
     require MT::Entry;
     require MT::Placement;
     require MT::Log;
@@ -2148,7 +2148,7 @@ PERMCHECK: {
                     || $2 < 1
                     || $3 < 1
                     || ( MT::Util::days_in( $2, $1 ) < $3
-                    && !MT::Util::leap_day( $0, $1, $2 ) );
+                    && !MT::Util::leap_day( $1, $2, $3 ) );
 
                 # FIXME: Should be assigning the publish_date field here
                 my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4,
@@ -2449,20 +2449,20 @@ sub save_entry_prefs {
 sub publish_entries {
     my $app = shift;
     require MT::Entry;
-    update_entry_status( $app, MT::Entry::RELEASE(), $app->param('id') );
+    update_entry_status( $app, MT::Entry::RELEASE(), $app->multi_param('id') );
 }
 
 sub draft_entries {
     my $app = shift;
     require MT::Entry;
-    update_entry_status( $app, MT::Entry::HOLD(), $app->param('id') );
+    update_entry_status( $app, MT::Entry::HOLD(), $app->multi_param('id') );
 }
 
 sub open_batch_editor {
     my $app = shift;
     my ($param) = @_;
     $param ||= {};
-    my @ids = $app->param('id')
+    my @ids = $app->multi_param('id')
         or return "Invalid request.";
     my %dupe;
     @ids = grep { !$dupe{$_}++ } @ids;
@@ -3181,7 +3181,7 @@ sub delete {
     $app->setup_filtered_ids
         if $app->param('all_selected');
     my %rebuild_recipe;
-    for my $id ( $q->param('id') ) {
+    for my $id ( $q->multi_param('id') ) {
         my $class = $app->model("entry");
         my $obj   = $class->load($id);
         return $app->call_return unless $obj;

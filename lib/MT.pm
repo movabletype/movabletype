@@ -33,7 +33,7 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0004' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0005' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
@@ -130,160 +130,6 @@ sub build_id {
     my $build_id = '__BUILD_ID__';
     $build_id = '' if $build_id eq '__BUILD_' . 'ID__';
     return $build_id;
-}
-
-sub import {
-    my $pkg = shift;
-    return unless @_;
-
-    my (%param) = @_;
-    my $app_pkg;
-    if ( $app_pkg = $param{app} || $param{App} || $ENV{MT_APP} ) {
-        if ( $app_pkg !~ m/::/ ) {
-            my $apps = $pkg->registry('applications');
-            $app_pkg = $apps->fetch($app_pkg);
-            if ( ref $app_pkg ) {
-
-                # pick first one??
-                $app_pkg = $app_pkg->[0];
-
-                # pick last one??
-                # $app_pkg = pop @$app_pkg;
-            }
-        }
-    }
-    elsif ( $param{run} || $param{Run} ) {
-
-        # my $script = File::Spec->rel2abs($0);
-        my ( $filename, $path, $suffix ) = fileparse( $0, qr{\..+$} );
-        $SCRIPT_SUFFIX = $suffix;
-        my $script = lc $filename;
-        $script =~ s/^mt-//;
-        my $apps = $pkg->registry('applications');
-        $app_pkg = $apps->fetch( lc $script );
-        unless ($app_pkg) {
-            die "cannot determine application for script $0, stopped at";
-        }
-    }
-    $pkg->run_app( $app_pkg, \%param )
-        if $app_pkg;
-}
-
-sub run_app {
-    my $pkg = shift;
-    my ( $class, $param ) = @_;
-
-    # When running under FastCGI, the initial invocation of the
-    # script has a bare environment. We can use this to test
-    # for FastCGI.
-    require MT::Util;
-    my $fast_cgi = MT::Util::check_fast_cgi( $param->{FastCGI} );
-
-    # ready to run now... run inside an eval block so we can gracefully
-    # die if something bad happens
-    my $app;
-    eval {
-        eval "require $class; 1;" or die $@;
-        if ($fast_cgi) {
-            my ( $max_requests, $max_time, $cfg );
-            while ( my $cgi = new CGI::Fast ) {
-                $app = $class->new( %$param, CGIObject => $cgi )
-                    or die $class->errstr;
-
-                $app->{fcgi_startup_time} ||= time;
-                $app->{fcgi_request_count}
-                    = ( $app->{fcgi_request_count} || 0 ) + 1;
-
-                unless ($cfg) {
-                    $cfg          = $app->config;
-                    $max_requests = $cfg->FastCGIMaxRequests;
-                    $max_time     = $cfg->FastCGIMaxTime;
-                }
-
-                local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
-                $pkg->set_instance($app);
-                $app->init_request( CGIObject => $cgi );
-                $app->run;
-
-                # Check for timeout for this process
-                if ( $max_time
-                    && ( time - $app->{fcgi_startup_time} >= $max_time ) )
-                {
-                    last;
-                }
-
-                # Check for max executions for this process
-                if ( $max_requests
-                    && ( $app->{fcgi_request_count} >= $max_requests ) )
-                {
-                    last;
-                }
-            }
-        }
-        else {
-            $app = $class->new(%$param) or die $class->errstr;
-            local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
-            $app->run;
-        }
-    };
-    if ( my $err = $@ ) {
-        my $charset = 'utf-8';
-        eval {
-            $app ||= MT->instance;
-            my $cfg = $app->config;
-            my $c   = $app->find_config;
-            $cfg->read_config($c);
-            $charset = $cfg->PublishCharset;
-        };
-        if ( $app && UNIVERSAL::isa( $app, 'MT::App' ) ) {
-            eval {
-                my %param = ( error => $err );
-                if ( $err =~ m/Bad ObjectDriver/ ) {
-                    $param{error_database_connection} = 1;
-                }
-                elsif ( $err =~ m/Bad CGIPath/ ) {
-                    $param{error_cgi_path} = 1;
-                }
-                elsif ( $err =~ m/Missing configuration file/ ) {
-                    $param{error_config_file} = 1;
-                }
-                my $page = $app->build_page( 'error.tmpl', \%param )
-                    or die $app->errstr;
-                print "Content-Type: text/html; charset=$charset\n\n";
-                print $page;
-            };
-            if ( my $err = $@ ) {
-                print "Content-Type: text/plain; charset=$charset\n\n";
-                print $app
-                    ? $app->translate( "Got an error: [_1]", $err )
-                    : "Got an error: $err";
-            }
-        }
-        else {
-            if ( $err =~ m/Missing configuration file/ ) {
-                my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
-                $host =~ s/:\d+//;
-                my $port = $ENV{SERVER_PORT};
-                my $uri = $ENV{REQUEST_URI} || $ENV{PATH_INFO};
-                $uri =~ s/mt(\Q$SCRIPT_SUFFIX\E)?.*$//;
-                my $cgipath = '';
-                $cgipath = $port == 443 ? 'https' : 'http';
-                $cgipath .= '://' . $host;
-                $cgipath
-                    .= ( $port == 443 || $port == 80 ) ? '' : ':' . $port;
-                $cgipath .= $uri;
-
-                print "Status: 302 Moved\n";
-                print "Location: " . $cgipath . "mt-wizard.cgi\n\n";
-            }
-            else {
-                print "Content-Type: text/plain; charset=$charset\n\n";
-                print $app
-                    ? $app->translate( "Got an error: [_1]", $err )
-                    : "Got an error: $err\n";
-            }
-        }
-    }
 }
 
 sub instance {
@@ -1026,7 +872,7 @@ sub init_config {
                 . $DBI::VERSION
                 . "; DBD/"
                 . $drh->{Version} . "\n";
-            if ( $ENV{MOD_PERL} ) {
+            if ( MT::Util::is_mod_perl1() ) {
                 print $PERFLOG "# App Mode: mod_perl\n";
             }
             elsif ( $ENV{FAST_CGI} ) {
@@ -2447,14 +2293,14 @@ sub set_default_tmpl_params {
     $param->{mt_debug} = $MT::DebugMode;
     if ( $param->{mt_debug} && $mt->isa('MT::App') ) {
         $param->{mt_svn_revision} = $mt->_svn_revision();
-        if ( $ENV{MOD_PERL} && exists( $mt->{apache} ) ) {
+        if ( MT::Util::is_mod_perl1() && exists( $mt->{apache} ) ) {
             $param->{mt_headers} = $mt->{apache}->headers_in();
         }
         else {
             $param->{mt_headers} = \%ENV;
         }
         unless ( $mt->{cookies} ) {
-            if ( $ENV{MOD_PERL} ) {
+            if ( MT::Util::is_mod_perl1() ) {
                 eval { require Apache::Cookie };
                 $mt->{cookies} = Apache::Cookie->fetch;
             }
@@ -2494,15 +2340,17 @@ sub set_default_tmpl_params {
             }
         }
     }
-    $param->{mt_beta}         = 1 if MT->version_id =~ m/^\d+\.\d+(?:a|b|rc)/;
-    $param->{static_uri}      = $mt->static_path;
-    $param->{mt_version}      = MT->version_number;
-    $param->{mt_version_id}   = MT->version_id;
-    $param->{mt_product_code} = MT->product_code;
-    $param->{mt_product_name} = $mt->translate( MT->product_name );
-    $param->{language_tag}    = substr( $mt->current_language, 0, 2 );
+    $param->{mt_alpha} = 1 if MT->version_id =~ m/^\d+\.\d+a/;
+    $param->{mt_beta}  = 1 if MT->version_id =~ m/^\d+\.\d+(?:b|rc)/;
+    $param->{mt_alpha_or_beta}  = $param->{mt_alpha} || $param->{mt_beta};
+    $param->{static_uri}        = $mt->static_path;
+    $param->{mt_version}        = MT->version_number;
+    $param->{mt_version_id}     = MT->version_id;
+    $param->{mt_product_code}   = MT->product_code;
+    $param->{mt_product_name}   = $mt->translate( MT->product_name );
+    $param->{language_tag}      = substr( $mt->current_language, 0, 2 );
     $param->{language_encoding} = $mt->charset;
-    $param->{optimize_ui} = $mt->build_id && !$MT::DebugMode;
+    $param->{optimize_ui}       = $mt->build_id && !$MT::DebugMode;
 
     if ( $mt->isa('MT::App') ) {
         if ( my $author = $mt->user ) {
@@ -2628,9 +2476,9 @@ sub build_page {
                     && ( $_ ne 'password' )
                     && ( $_ ne 'submit' )
                     && ( $mode eq 'logout' ? ( $_ ne '__mode' ) : 1 )
-            } $q->param;
+            } $mt->multi_param;
             for my $query_key (@query_keys) {
-                my @vals = $q->param($query_key);
+                my @vals = $mt->multi_param($query_key);
                 for my $val (@vals) {
                     push @query, { name => $query_key, value => $val };
                 }
@@ -3460,21 +3308,6 @@ Constructs a new instance of the MT subclass identified by C<$class>.
 
 Assigns the active MT instance object. This value is returned when
 C<MT-E<gt>instance> is invoked.
-
-=head2 MT->run_app( $pkg, $params )
-
-Instantiates and runs a MT application (identified by C<$pkg>), passing
-the C<$params> hashref as the parameters to the constructor method. This
-method is a self-contained version found in L<MT::Bootstrap> and will
-eventually be the manner in which MT applications are run (eliminating
-the need for the bootstrap module). The MT::import function calls this
-method when the MT module is used with an 'App' parameter. So, you can
-write a mt.cgi script that looks like this:
-
-    #!/usr/bin/perl
-    use strict;
-    use lib $ENV{MT_HOME} ? "$ENV{MT_HOME}/lib" : 'lib';
-    use MT App => 'MT::App::CMS';
 
 =head2 $mt->find_config($params)
 

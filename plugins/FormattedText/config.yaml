@@ -51,7 +51,6 @@ applications:
                         return 0;
                     }
                 view:
-                    - system
                     - website
                     - blog
             entry:view_formatted_text:
@@ -60,7 +59,6 @@ applications:
                 args:
                     _type: formatted_text
                 view:
-                    - system
                     - website
                     - blog
                 display: 0

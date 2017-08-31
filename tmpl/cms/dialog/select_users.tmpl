@@ -28,9 +28,9 @@ function returnMemberSelection(ok) {
                 var inp = inputs[i];
                 var row = jQuery(inp).parents('tr')[0];
                 if (!row) continue;
-                var labels = row.getElementsByTagName('label');
+                var labels = jQuery(row).find('label:not(.custom-control)');
                 if (labels.length == 0) continue;
-                names.push(labels[0].innerHTML + ' (' + inp.value + ')');
+                names.push(labels.get(0).innerHTML + ' (' + inp.value + ')');
                 ids.push(inp.value);
             }
             el_id.value = ids.join(',');

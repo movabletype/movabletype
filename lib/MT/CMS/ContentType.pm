@@ -640,12 +640,12 @@ sub _validate_content_field_type_options {
         }
         elsif ( $type eq 'url' ) {
             my $initial_value = $options->{initial_value};
-            if ( length($initial_value) > 255 ) {
+            if ( length($initial_value) > 2000 ) {
                 $err_msg = $app->translate(
                     '[_1]\'s "[_2]" field should be shorter than [_3] characters.',
                     $label || $field_label,
                     'Initial Value',
-                    '1024'
+                    '2000'
                 );
             }
             elsif (defined $initial_value
@@ -1311,7 +1311,7 @@ sub save_content_data {
                 || $2 < 1
                 || $3 < 1
                 || ( MT::Util::days_in( $2, $1 ) < $3
-                    && !MT::Util::leap_day( $0, $1, $2 ) )
+                    && !MT::Util::leap_day( $1, $2, $3 ) )
                 );
         }
         $param{return_args} = $app->param('return_args');
@@ -1350,7 +1350,7 @@ sub save_content_data {
                     || $2 < 1
                     || $3 < 1
                     || ( MT::Util::days_in( $2, $1 ) < $3
-                        && !MT::Util::leap_day( $0, $1, $2 ) )
+                        && !MT::Util::leap_day( $1, $2, $3 ) )
                     );
             }
             my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
@@ -1772,31 +1772,12 @@ sub _make_content_data_listing_screens {
     return $props;
 }
 
-sub select_list_content_fields {
-    my ($app) = @_;
-    my $q     = $app->param;
-    my $param = {};
-
-    my $blog_id = scalar $q->param('blog_id')
-        or return $app->errtrans("Invalid request.");
-    my $content_type_id = scalar $q->param('content_type_id')
-        or return $app->errtrans("Invalid request.");
-
-    my $content_type = MT::ContentType->load($content_type_id);
-    my $field_data   = $content_type->fields;
-    my %locked;
-
-    my @array = map {
-        my $id = $_->{id};
-        $_->{id}     = $id;
-        $_->{name}   = $_->{type};
-        $_->{locked} = 1 if ( $locked{$id} );
-        $_;
-    } @{$field_data};
-    $param->{content_fields} = \@array;
-
-    $app->build_page( $app->load_tmpl('dialog/select_content_fields.tmpl'),
-        $param );
+sub list_boilerplates {
+    my $app = shift;
+    my $param
+        = { page_title => $app->translate('Manage Content Type Boilerplates'),
+        };
+    $app->load_tmpl( 'not_implemented_yet.tmpl', $param );
 }
 
 1;

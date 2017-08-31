@@ -846,7 +846,7 @@ sub edit {
     if ( ( $q->param('msg') || "" ) eq 'nosuch' ) {
         $param{nosuch} = 1;
     }
-    for my $p ( $q->param ) {
+    for my $p ( $app->multi_param ) {
         $param{$p} = $q->param($p) if $p =~ /^saved/;
     }
     $param{page_actions} = $app->page_actions( $type, $obj );
@@ -1020,8 +1020,8 @@ sub list {
 
         # Nothing to do.
     }
-    elsif ( my @cols = $app->param('filter') ) {
-        my @vals = $app->param('filter_val');
+    elsif ( my @cols = $app->multi_param('filter') ) {
+        my @vals = $app->multi_param('filter_val');
         my @items;
         my @labels;
         for my $col (@cols) {
@@ -1801,7 +1801,7 @@ sub delete {
     my @not_deleted;
     my $delete_count = 0;
     my %return_arg;
-    for my $id ( $q->param('id') ) {
+    for my $id ( $app->multi_param('id') ) {
         next unless $id;    # avoid 'empty' ids
         if ( ( $type eq 'association' ) && ( $id =~ /PSEUDO-/ ) ) {
             require MT::CMS::User;

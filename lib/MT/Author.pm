@@ -682,13 +682,15 @@ sub _bulk_author_name_html {
         my $email = MT::Util::encode_html( $obj->email );
         my $url   = MT::Util::encode_html( $obj->url );
         my $out   = qq{
-            <div class="userpic picture small ">
-                <img src="$userpic_url" />
-                <img alt="$auth_label" src="$auth_img" width="12" height="12" class="icon auth-type" />
-            </div>
-            <span class="icon status $status_label">
-                <img alt="$status_label" src="$status_img" class="status $lc_status_label" />
-            </span>
+            <div class="row">
+                <div class="col-1 pl-0 userpic picture small">
+                    <img src="$userpic_url" />
+                    <img alt="$auth_label" src="$auth_img" width="12" height="12" class="icon auth-type" style="position: absolute; top: 24px; left: 24px;" />
+                </div>
+                <div class="col">
+                     <span class="icon status $status_label">
+                         <img alt="$status_label" src="$status_img" class="status $lc_status_label" />
+                     </span>
         };
 
         if ( $app->can_do('edit_authors') || $app->user->id == $obj->id ) {
@@ -709,7 +711,7 @@ sub _bulk_author_name_html {
             $out .= qq{<span class="username">$name</span>};
         }
         if ( $url || $email ) {
-            $out .= q{<ul class="user-info description">};
+            $out .= q{<ul class="list-unstyled user-info description">};
             $out
                 .= qq{<li class="user-info-item user-email"><img alt="Email "src="$mail_icon" /> <a href="mailto:$email" title="$email">$email</a></li>}
                 if $email;
@@ -718,6 +720,8 @@ sub _bulk_author_name_html {
                 if $url;
             $out .= q{</ul>};
         }
+        $out .= '</div>';    # <div class="col">
+        $out .= '</div>';    # <div class="row">
         push @results, $out;
     }
     return @results;

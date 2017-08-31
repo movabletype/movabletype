@@ -542,7 +542,7 @@ sub dialog_move_blogs {
         $row->{'link'} = $row->{site_url};
     };
 
-    my @id = $app->param('id');
+    my @id = $app->multi_param('id');
     my $ids = join ',', @id;
     $app->listing(
         {   type     => 'website',
@@ -741,7 +741,7 @@ sub cms_pre_load_filtered_list {
 
     my $terms = $load_options->{terms};
     delete $terms->{blog_id};
-    $terms->{class} = 'website';
+    $terms->{class} = '*';
 
     my $user = $app->user;
     return if $user->is_superuser;

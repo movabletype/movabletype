@@ -259,6 +259,7 @@ sub content_actions {
             mode      => 'view',
             args      => { _type => 'formatted_text', },
             class     => 'icon-create',
+            icon      => 'ic_add',
             label     => 'Create New',
             order     => 100,
             condition => sub { MT->instance->blog },

@@ -7,7 +7,7 @@
 </mt:loop>
 
 <mt:setvarblock name="list_actions">
-        <div class="button-actions actions">
+        <div class="my-4 button-actions actions">
           <button type="button" class="btn btn-primary save action primary button disabled" disabled="disabled">
             <__trans phrase="Save Changes">
           </button>
@@ -32,12 +32,12 @@
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
 
       <mt:if name="is_category_set">
-        <div class="form-inline">
-          <label>
-            <__trans phrase="Set Name">:
-            <input type="text" class="form-control text" id="set_name" name="set_name" value="<mt:var name="set_name">" />
-          </label>
-        </div>
+        <mtapp:setting
+          id="set_name"
+          label="<__trans phrase="Set Name">"
+          label_for="set_name">
+          <input type="text" class="form-control text" id="set_name" name="set_name" value="<mt:var name="set_name">" />
+        </mtapp:setting>
       </mt:if>
 
       <div id="actions-bar-top" class="actions-bar actions-bar-top line">
@@ -46,14 +46,15 @@
 
       <div class="card">
         <div id="area-action" class="card-header form-inline mod sortable-header">
-          <select id="itemlist" name="itemlist" class="form-control disabled" disabled="disabled">
+          <select id="itemlist" name="itemlist" class="custom-select form-control disabled" disabled="disabled">
             <option id="opt-0" value="0"><__trans phrase="Top Level"></option>
           </select>
           <input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short disabled" disabled="disabled" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">">
           <button type="submit" class="btn btn-default add button disabled" disabled="disabled"><__trans phrase="Add"></button>
         </div>
 
-        <div id="root" class="card-block sortable"></div>
+        <mt:ignore>same min-height value as old one</mt:ignore>
+        <div id="root" class="card-block sortable p-2" style="min-height: 250px;"></div>
       </div>
 
       <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
@@ -245,7 +246,7 @@ function createItem(id, parent, label, basename, number) {
   <mt:unless name="is_category_set">
   line += ' <span class="count" style="margin-left: auto;">'+number+'</span>';
   </mt:unless>
-  var $item = jQuery('<div id="cat-'+id+'" class="card card-block flex-row pcat-'+parent+'" />').append(line);
+  var $item = jQuery('<div id="cat-'+id+'" class="card card-block flex-row p-3 pcat-'+parent+'" />').append(line);
   return $item;
 }
 
@@ -329,13 +330,14 @@ function initItem($item) {
       return false;
     });
 
-  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child [_1]" params="<mt:var name="object_label">" escape="js"></span>')
+<mt:setvarblock name="add_icon_title"><__trans phrase="Add child [_1]" params="<mt:var name="object_label">" escape="js"></mt:setvarblock>
+  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon" style="cursor: pointer;"><mtapp:svgicon id="ic_add" size="sm" title="$add_icon_title"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions({ sortable: false });
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
       var parent = $element.attr('id').slice(4);
-      var $form = jQuery('<div class="card card-block flex-row form-inline mod add-form"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
+      var $form = jQuery('<div class="card card-block flex-row p-3 form-inline mod add-form"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
       $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_label" lower_case="1">_label]').focus();
       jQuery('<button type="button" class="btn btn-default add button"><__trans phrase="Add" escape="js"></button>')
         .bind('click', function() {
@@ -358,7 +360,8 @@ function initItem($item) {
       jQuery('.button').button();
     });
 
-  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">" escape="js"></span>')
+<mt:setvarblock name="remove_icon_title"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">" escape="js"></mt:setvarblock>
+  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon" style="cursor: pointer;"><mtapp:svgicon id="ic_trash" size="sm" title="$remove_icon_title"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions();
@@ -544,7 +547,7 @@ function initMoving() {
         $item.find('.badge').remove();
         $item.find('.item-basename, .plus, .delete').show();
         $item.attr('class', ('pcat-'+place));
-        $item.addClass('card card-block flex-row');
+        $item.addClass('card card-block flex-row p-3');
         initItem($item);
         var $last = $item;
         jQuery('.pcat-'+catid).each(function() {
@@ -553,7 +556,7 @@ function initMoving() {
           $this.attr('class').match(/\bpcat-(\w+)\b/);
           var parent = RegExp.$1;
           $this.attr('class', ('pcat-'+parent));
-          $this.addClass('card card-block flex-row');
+          $this.addClass('card card-block flex-row p-3');
           initItem($this);
           $this.insertAfter($last).show();
           $last = $this;

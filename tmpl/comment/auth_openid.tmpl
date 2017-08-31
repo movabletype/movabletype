@@ -9,14 +9,14 @@
      label="<__trans phrase="OpenID URL">"
      label_class="top-label"
      hint="<__trans phrase="Sign in with one of your existing third party OpenID accounts.">"
-     show_hint="1"
-     no_grid="1">
+     hint_id="openidUsername"
+     show_hint="1">
     <input type="hidden" name="key" value="OpenID" />
     <div class="input-group">
       <div class="input-group-addon">
         <img src="<mt:var name="static_uri">images/comment/openid_logo.png" />
       </div>
-      <input type="text" name="openid_url" class="form-control text full" />
+      <input type="text" name="openid_url" class="form-control text full" aria-described="openidUsername" />
     </div>
   </mtapp:setting>
   <img src="<mt:var name="static_uri">images/comment/openid_enabled.png" />

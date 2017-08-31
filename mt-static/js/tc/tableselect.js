@@ -151,6 +151,7 @@ TC.TableSelect.prototype.click = function( evt ) {
         if ((element.type == "checkbox") || (element.type == "radio"))
             var parent = TC.getParentByTagName( element, "tr" );
             if (parent) this.setFocus( parent );
+            evt.preventDefault();
             return this.select( element );
     }
 
@@ -170,6 +171,7 @@ TC.TableSelect.prototype.click = function( evt ) {
             if ( (element.type == "checkbox") || (element.type == "radio") ) {
                 if ( element.disabled ) return;
                 element.checked = !element.checked;
+                evt.preventDefault();
                 return this.select( element );
             }
         }
@@ -392,13 +394,13 @@ TC.TableSelect.prototype.selectRow = function( row, checked ) {
     if ( !row ) return false;
     var changed = false;
     if( checked ) {
-        if (!TC.hasClassName( row, "selected" )) {
-            TC.addClassName( row, "selected" );
+        if (!TC.hasClassName( row, "mt-table__highlight" )) {
+            TC.addClassName( row, "mt-table__highlight" );
             changed = true;
         }
     } else {
-        if (TC.hasClassName( row, "selected" )) {
-            TC.removeClassName( row, "selected" );
+        if (TC.hasClassName( row, "mt-table__highlight" )) {
+            TC.removeClassName( row, "mt-table__highlight" );
             changed = true;
         }
     }
@@ -416,9 +418,9 @@ TC.TableSelect.prototype.selectRow = function( row, checked ) {
         var next = this.getNextSibling( row );
         while (next && TC.hasClassName( next, "slave" )) {
             if ( checked )
-                TC.addClassName( next, "selected" );
+                TC.addClassName( next, "mt-table__highlight" );
             else
-                TC.removeClassName( next, "selected" );
+                TC.removeClassName( next, "mt-table__highlight" );
             next = this.getNextSibling( next );
         }
     }

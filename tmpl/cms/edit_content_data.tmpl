@@ -22,7 +22,7 @@
   <mtapp:statusmsg
      id="recovered-object"
      class="info">
-    <__trans phrase="A saved version of this content data was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=edit_content_data&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="content_type_id">&amp;content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
+    <__trans phrase="A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=edit_content_data&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="content_type_id">&amp;content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
   </mtapp:statusmsg>
     </mt:unless>
   </mt:if>
@@ -167,8 +167,7 @@
      label="<__trans phrase="Status">"
      label_class="top-label"
      help_page="entries"
-     help_section="status"
-     no_grid="1">
+     help_section="status">
   <mt:unless name="sitepath_configured">
     <input type="hidden" name="status" id="status" value="1" />
     <span><__trans phrase="Unpublished"></span>
@@ -227,8 +226,7 @@
      label="$authored_on_label"
      label_class="top-label"
      help_page="entries"
-     help_section="date"
-     no_grid="1">
+     help_section="date">
     <div class="form-inline date-time-fields">
       <input type="text" id="created-on" class="form-control text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/>
       <span class="separator"> <__trans phrase="@"></span>
@@ -243,8 +241,7 @@
      label="$unpublished_on_label"
      label_class="top-label"
      help_page="entries"
-     help_section="date"
-     no_grid="1">
+     help_section="date">
     <div class="form-inline date-time-fields">
       <div id="unpublished-on" class="mt-edit-inputblock<$mt:if name="show_input_unpublished_on"> show-input</mt:if>">
         <input type="text" id="unpublished-on-date" class="form-control text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" />
@@ -262,8 +259,7 @@
   <mtapp:setting
      id="revision-note"
      label="<__trans phrase="Change note">"
-     label_class="top-label"
-     no_grid="1">
+     label_class="top-label">
     <input type="text" name="revision-note" id="revision-note" class="form-control text full" value="<mt:var name="revision-note" escape="html">" />
   </mtapp:setting>
 </mt:if>
@@ -561,7 +557,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 <mt:setvarblock name="page_content">
 <mtapp:settinggroup id="content_data">
 
-  <h2><__trans phrase="Edit <mt:var name="name" escape="html">"></h2>
+  <legend class="h3"><__trans phrase="Edit <mt:var name="name" escape="html">"></legend>
 
   <div>
     <__trans phrase="Title"> *
