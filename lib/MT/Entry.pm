@@ -371,15 +371,14 @@ sub list_props {
                 return { option => 'equal', value => $cat->id };
             },
             label_via_param => sub {
-                my $prop  = shift;
-                my ($app) = @_;
-                my $id    = $app->param('filter_val');
-                my $cat   = MT->model('category')->load($id)
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                my $cat = MT->model('category')->load($val)
                     or return $prop->error(
                     MT->translate(
                         '[_1] ( id:[_2] ) does not exists.',
                         $prop->datasource->container_label,
-                        $id
+                        defined $val ? $val : ''
                     )
                     );
                 return if !$app->blog || $app->blog->id != $cat->blog_id;
@@ -768,7 +767,14 @@ sub list_props {
             label_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
-                my $author = MT->model('author')->load($val);
+                my $author = MT->model('author')->load($val)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        MT->translate("Author"),
+                        defined $val ? $val : ''
+                    )
+                    );
                 return MT->translate( 'Entries by [_1]', $author->nickname, );
             },
         },
