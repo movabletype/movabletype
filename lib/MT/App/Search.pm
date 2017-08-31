@@ -72,7 +72,7 @@ sub core_parameters {
         cache_driver => { 'package' => 'MT::Cache::Negotiate', },
     };
 
-    my @filters = ( $app->param('filter'), $app->param('filter_on') );
+    my @filters = ( $app->multi_param('filter'), $app->multi_param('filter_on') ); # XXX: filter_on is gone?
     if (@filters) {
         $core->{types}->{entry}->{columns}
             = { map { $_ => 'like' } @filters };
@@ -219,10 +219,10 @@ sub generate_cache_keys {
     my $app = shift;
 
     my $q = $app->param;
-    my @p = sort { $a cmp $b } $q->param;
+    my @p = sort { $a cmp $b } $app->multi_param;
     my ( $key, $count_key );
     foreach my $p (@p) {
-        foreach my $pp ( $q->param($p) ) {
+        foreach my $pp ( $app->multi_param($p) ) {
             $key .= lc($p) . encode_url($pp);
             $count_key .= lc($p) . encode_url($pp)
                 if ( 'limit' ne lc($p) ) && ( 'offset' ne lc($p) );
@@ -309,7 +309,7 @@ sub create_blog_list {
             push @{ $blog_list{$type} }, ( split /\s*,\s*/, $list );
         }
         next if exists( $no_override{$type} ) && $no_override{$type};
-        for my $blog_id ( $q->param($type) ) {
+        for my $blog_id ( $app->multi_param($type) ) {
             if ( $blog_id =~ m/,/ ) {
                 my @ids = split /,/, $blog_id;
                 s/\D+//g for @ids;    # only numeric values.
@@ -779,7 +779,7 @@ sub prepare_context {
         if ( my $val = $app->param($key) ) {
             $ctx->stash( 'search_' . $key, $val );
         }
-        my @filters = ( $app->param('filter'), $app->param('filter_on') );
+        my @filters = ( $app->multi_param('filter'), $app->multi_param('filter_on') );  # XXX: filter_on is gone?
         if (@filters) {
             $ctx->stash( 'search_filters', \@filters );
         }
@@ -995,7 +995,7 @@ sub query_parse {
         = $app->registry( $app->mode, 'types', $app->{searchparam}{Type} );
     my $filter_types = $reg->{'filter_types'};
     foreach my $type ( keys %$filter_types ) {
-        my @filters = $app->param($type);
+        my @filters = $app->multi_param($type);
         foreach my $filter (@filters) {
             if ( $filter =~ m/\s/ ) {
                 $filter = '"' . $filter . '"';

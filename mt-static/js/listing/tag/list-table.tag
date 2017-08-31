@@ -98,7 +98,7 @@
     this.mixin('listTop')
 
     toggleRow(e) {
-      if (e.target.tagName == 'A') {
+      if (e.target.tagName == 'A' || e.target.tagName == 'IMG') {
         return false
       }
       e.preventDefault()

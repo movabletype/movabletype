@@ -9,7 +9,11 @@
 
   <mt:include name="include/icon.tmpl">
 
+  <mt:unless name="optimize_ui">
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/mt.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mt:else>
   <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/mt.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  </mt:unless>
 
   <mt:var name="css_include">
 

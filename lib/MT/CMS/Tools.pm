@@ -359,9 +359,9 @@ sub do_list_action {
         $app->setup_filtered_ids;
     }
     else {
-        my @ids = $app->param('id');
+        my @ids = $app->multi_param('id');
         if ( scalar @ids == 1 && $ids[0] =~ /,/ ) {
-            $app->param( 'id', split ',', $ids[0] );
+            $app->multi_param( 'id', split ',', $ids[0] );
         }
     }
     if ( $app->param('xhr') ) {
@@ -1863,7 +1863,7 @@ sub adjust_sitepath {
         $path_limit =~ s/PATH$//;
         $path_limit_quote = quotemeta($path_limit);
     }
-    my @p = $q->param;
+    my @p = $app->multi_param;
     foreach my $p (@p) {
         next unless $p =~ /^site_path_(\d+)/;
         my $id   = $1;
@@ -2678,7 +2678,7 @@ sub update_list_prefs {
 
 sub recover_passwords {
     my $app = shift;
-    my @id  = $app->param('id');
+    my @id  = $app->multi_param('id');
 
     return $app->permission_denied()
         unless $app->user->is_superuser();

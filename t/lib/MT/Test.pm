@@ -1654,13 +1654,11 @@ sub _run_app {
         }
         elsif ( $k eq '__test_upload' ) {
             my ( $param, $src ) = @$v;
-            my $seqno = unpack( "%16C*",
-                join( '', localtime, grep { defined $_ } values %ENV ) );
-            my $filename = basename($src);
-            $CGITempFile::TMPDIRECTORY = '/tmp';
-            my $tmpfile = new CGITempFile($seqno) or die "CGITempFile: $!";
-            my $tmp     = $tmpfile->as_string;
-            my $cgi_fh  = Fh->new( $filename, $tmp, 0 ) or die "FH? $!";
+            require CGI::File::Temp;
+            my ($cgi_fh) = new CGI::File::Temp(UNLINK => 1) or die "CGI::File::Temp: $!";
+            $cgi_fh->_mp_filename(basename($src));
+            $CGI::DefaultClass->binmode($cgi_fh) if $CGI::needs_binmode
+                && defined fileno($cgi_fh);
 
             {
                 local $/ = undef;

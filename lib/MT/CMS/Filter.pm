@@ -165,7 +165,7 @@ sub delete_filters {
 
     $app->setup_filtered_ids
         if $app->param('all_selected');
-    my @ids = $app->param('id');
+    my @ids = $app->multi_param('id');
 
     # handling either AJAX request and normal request
     @ids = split ',', join ',', @ids;

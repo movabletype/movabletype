@@ -3555,8 +3555,6 @@ produces something like this:
                 (contents of tag are placed here)
 
             </table>
-            <$MTApp:ActionBar bar_position="bottom"
-                form_id="entry-listing-form"$>
         </form>
     </div>
 
@@ -3669,14 +3667,11 @@ sub _hdlr_app_listing {
     my $target
         = defined $args->{target} ? ' target="' . $args->{target} . '"' : '';
 
-    my $actions_top    = "";
-    my $actions_bottom = "";
-    my $form_id        = "$id-form";
+    my $actions_top = "";
+    my $form_id     = "$id-form";
     if ($show_actions) {
         $actions_top
             = qq{<\$MTApp:ActionBar bar_position="top" hide_pager="$hide_pager" form_id="$form_id"\$>};
-        $actions_bottom
-            = qq{<\$MTApp:ActionBar bar_position="bottom" hide_pager="$hide_pager" form_id="$form_id"\$>};
     }
     else {
         $listing_class .= " hide_actions";
@@ -3716,7 +3711,6 @@ $blog_id
         <input type="hidden" name="magic_token" value="$token" />
         $actions_top
         <mt:var name="__contents__">
-        $actions_bottom
     </form>
 </div>
 EOT
@@ -3933,14 +3927,14 @@ sub _hdlr_app_page_actions {
         <mt:loop name="page_actions">
             <mt:if name="page">
                     <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
-                        <mtapp:svgicon id="ic_setting" title="\$label">
+                        <mtapp:svgicon id="ic_setting" size="sm" title="\$label">
                         <a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>>
                             <mt:var name="label">
                         </a>
                     </li>
             <mt:else><mt:if name="link">
                     <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
-                        <mtapp:svgicon id="ic_setting" title="\$label">
+                        <mtapp:svgicon id="ic_setting" size="sm" title="\$label">
                         <a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open" data-mt-modal-large</mt:if>>
                             <mt:var name="label">
                         </a>
@@ -4035,15 +4029,17 @@ sub _hdlr_app_action_bar {
     my $buttons = $ctx->var('action_buttons') || '';
     my $buttons_html
         = $buttons =~ /\S/
-        ? qq{<div class="pull-left button-actions actions">$buttons</div>}
+        ? qq{<div class="pull-left mr-3 button-actions actions">$buttons</div>}
         : '';
 
     return $ctx->build(<<EOT);
 $form_id
-<div id="actions-bar-$pos" class="row form-inline actions-bar actions-bar-$pos $pager_class">
+<div id="actions-bar-$pos" class="row form-inline mb-2 actions-bar actions-bar-$pos $pager_class">
+  <div class="col">
     $pager
     $buttons_html
-<mt:include name="include/itemset_action_widget.tmpl">
+    <mt:include name="include/itemset_action_widget.tmpl">
+  </div>
 </div>
 EOT
 }
@@ -4165,7 +4161,7 @@ sub _hdlr_app_svg_icon {
 
     my $static_uri = MT->static_path;
 
-    qq{<svg$title_attr role="img" class="mt-icon${color_class_suffix}${size_class}${size_class}"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
+    qq{<svg$title_attr role="img" class="mt-icon${color_class_suffix}${size_class}"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
 }
 
 package MT::Template::Tags::System;

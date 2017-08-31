@@ -1481,7 +1481,7 @@ sub preview {
     }
 
     # Set selected archive mapping
-    my @p = $q->param;
+    my @p = $app->multi_param;
     for my $p (@p) {
         if ( $p =~ /^archive_file_tmpl_(\d+)$/ ) {
             push @data,
@@ -1933,7 +1933,7 @@ sub pre_save {
     my $q = $app->param;
     my @events;
 
-    foreach my $name ( $q->param('cache_expire_event') ) {
+    foreach my $name ( $app->multi_param('cache_expire_event') ) {
         push @events, $name;
     }
     $obj->cache_expire_event( join ',', @events ) if $#events >= 0;
@@ -1993,7 +1993,7 @@ sub post_save {
 
         # archive template specific post_save tasks
         require MT::TemplateMap;
-        my @p = $q->param;
+        my @p = $app->multi_param;
         my %static_maps;
         for my $p (@p) {
             my $map;
@@ -2276,7 +2276,7 @@ sub refresh_all_templates {
             ( $app->param('plugin_action_selector') || '' ) )
         {
             ## called from website wide blog listing screen.
-            @id = $app->param('id');
+            @id = $app->multi_param('id');
         }
         else {
             ## called from template listing screen of each website/blog.
@@ -2285,7 +2285,7 @@ sub refresh_all_templates {
     }
     else {
         ## if no blog_id, called from system-wide listing screen
-        @id = $app->param('id');
+        @id = $app->multi_param('id');
         if ( !@id ) {
 
             # refresh global templates
@@ -2694,7 +2694,7 @@ sub refresh_individual_templates {
     my $t = time;
 
     my @msg;
-    my @id = $app->param('id');
+    my @id = $app->multi_param('id');
     require MT::Template;
     foreach my $tmpl_id (@id) {
         my $tmpl = MT::Template->load($tmpl_id);
@@ -2800,7 +2800,7 @@ sub clone_templates {
             || $perms->can_administer_blog )
         );
 
-    my @id = $app->param('id');
+    my @id = $app->multi_param('id');
     require MT::Template;
     foreach my $tmpl_id (@id) {
         my $tmpl = MT::Template->load($tmpl_id);
@@ -2841,7 +2841,7 @@ sub publish_templates_from_search {
     require MT::Blog;
 
     my $templates
-        = MT->model('template')->lookup_multi( [ $app->param('id') ] );
+        = MT->model('template')->lookup_multi( [ $app->multi_param('id') ] );
     my @at_ids;
     $app->param( 'from_search', 1 );
 TEMPLATE: for my $tmpl (@$templates) {
@@ -2883,7 +2883,7 @@ sub publish_index_templates {
 
     require MT::Blog;
     my $templates
-        = MT->model('template')->lookup_multi( [ $app->param('id') ] );
+        = MT->model('template')->lookup_multi( [ $app->multi_param('id') ] );
 TEMPLATE: for my $tmpl (@$templates) {
         return $app->errtrans("Cannot publish a global template.")
             if ( $tmpl->blog_id == 0 );
@@ -2915,7 +2915,7 @@ sub publish_archive_templates {
         || $perms->can_administer_blog
         || $perms->can_rebuild;
 
-    my @ids = $app->param('id');
+    my @ids = $app->multi_param('id');
     if ( scalar @ids == 1 ) {
 
         # we also support a list of comma-delimited ids like this
@@ -3296,7 +3296,7 @@ sub delete_widget {
 
     my $tmpl_class = $app->model('template');
 
-    for my $id ( $q->param('id') ) {
+    for my $id ( $q->multi_param('id') ) {
         next unless $id;    # avoid 'empty' ids
 
         my $obj = $tmpl_class->load($id);

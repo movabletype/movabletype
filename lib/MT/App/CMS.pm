@@ -354,6 +354,10 @@ sub core_methods {
         'list_roles'        => "${pkg}User::list_role",
         'upload_userpic'    => "${pkg}User::upload_userpic",
 
+        ## MT7 - Content Data
+        'view_content_data' => "${pkg}ContentData::edit",
+        'edit_content_data' => "${pkg}ContentData::edit",
+
         ## MT7
         'cfg_content_type_description' =>
             "${pkg}ContentType::cfg_content_type_description",
@@ -365,7 +369,6 @@ sub core_methods {
             "${pkg}ContentType::select_list_content_type",
         'select_edit_content_type' =>
             "${pkg}ContentType::select_edit_content_type",
-        'edit_content_data'       => "${pkg}ContentType::edit_content_data",
         'validate_content_fields' => {
             code     => " ${pkg}ContentType::validate_content_fields",
             app_mode => 'JSON',
@@ -648,6 +651,9 @@ sub init_plugins {
                 "${pfx}ContentType::tmpl_param_list_common",
             'template_param.edit_role' =>
                 "${pfx}ContentType::tmpl_param_edit_role",
+            $pkg
+                . 'pre_load_filtered_list.content_data' =>
+                "${pfx}ContentData::cms_pre_load_filtered_list",
         }
     );
 
@@ -749,6 +755,7 @@ sub core_content_actions {
                 mode        => 'empty_junk',
                 class       => 'icon-action',
                 label       => 'Delete all Spam trackbacks',
+                icon        => 'ic_setting',
                 return_args => 1,
                 order       => 100,
                 confirm_msg => sub {
@@ -768,6 +775,7 @@ sub core_content_actions {
                 mode        => 'empty_junk',
                 class       => 'icon-action',
                 label       => 'Delete all Spam comments',
+                icon        => 'ic_setting',
                 return_args => 1,
                 order       => 100,
                 confirm_msg => sub {
@@ -4393,7 +4401,7 @@ sub _entry_prefs_from_params {
         push @fields, $disp;
     }
     else {
-        @fields = $q->param( $prefix . 'custom_prefs' );
+        @fields = $app->multi_param( $prefix . 'custom_prefs' );
     }
 
     if ( my $body_height = $q->param('text_height') ) {
@@ -4433,7 +4441,7 @@ sub rebuild_these {
         }
 
         # now, rebuild indexes for affected blogs
-        my @blogs = $app->param('blog_ids');
+        my @blogs = $app->multi_param('blog_ids');
         if (@blogs) {
             $app->run_callbacks('pre_build') if @blogs;
             foreach my $blog_id (@blogs) {
@@ -4462,7 +4470,7 @@ sub rebuild_these {
         return $phase->( $app, $params );
     }
     else {
-        my @blogs      = $app->param('blog_ids');
+        my @blogs      = $app->multi_param('blog_ids');
         my $start_time = $app->param('start_time');
         $app->publisher->start_time($start_time) if $start_time;
         my %blogs = map { $_ => () } @blogs;

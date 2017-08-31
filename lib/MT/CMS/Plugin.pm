@@ -66,11 +66,11 @@ sub save_config {
         unless $app->can_do('save_plugin_setting');
 
     my %param;
-    my @params = $q->param;
+    my @params = $app->multi_param;
     foreach (@params) {
         next
             if $_ =~ m/^(__mode|return_args|plugin_sig|magic_token|blog_id)$/;
-        my @values = $q->param($_);
+        my @values = $app->multi_param($_);
         if ( $#values > 0 ) {
             $param{$_} = \@values;
         }

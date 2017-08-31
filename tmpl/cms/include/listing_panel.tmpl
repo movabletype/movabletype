@@ -54,7 +54,16 @@ parameters:
       <table class="table mt-table">
         <thead>
           <tr>
-            <th class="head cb mt-table__control"><mt:if name="panel_multi"><input type="checkbox" value="all" class="select" /><mt:else>&nbsp;</mt:if></th>
+            <th class="head cb mt-table__control">
+          <mt:if name="panel_multi">
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" value="all" class="custom-control-input select" />
+                <span class="custom-control-indicator"></span>
+              </label>
+          <mt:else>
+              &nbsp;
+          </mt:if>
+            </th>
             <th class="head panel-label primary" scope="col"><span class="col-label"><mt:var name="panel_label"></span></th>
             <th class="head panel-description primary" scope="col"><span class="col-label"><mt:var name="panel_description"></span></th>
           </tr>
@@ -66,7 +75,12 @@ parameters:
         <mt:loop name="object_loop">
           <mt:unless name="disabled">
           <tr id="<mt:var name="panel_type">-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="cb"><input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" /></td>
+            <td class="cb">
+              <label class="custom-control custom-<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>">
+                <input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="custom-control-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
+                <span class="custom-control-indicator"></span>
+              </label>
+            </td>
             <td class="panel-label"><label><mt:var name="label" escape="html"></label></td>
             <td class="panel-description">
             <mt:ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:ignore>
@@ -77,7 +91,12 @@ parameters:
         <mt:if name="blogs">
         <mt:loop name="blogs">
           <tr id="<mt:var name="panel_type">-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="cb"><input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" /></td>
+            <td class="cb">
+              <label class="custom-control custom-<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>">
+                <input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="custom-control-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
+                <span class="custom-control-indicator"></span>
+              </label>
+            </td>
             <td class="panel-label sub-label"><label><mt:var name="label" escape="html"></label></td>
             <td class="panel-description">
             <mt:Ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:Ignore>

@@ -84,7 +84,13 @@ __PACKAGE__->install_properties(
         indexes => {
             content_type_id => 1,
             ct_unique_id    => 1,
+            status          => 1,
+            title           => 1,
             unique_id       => { unique => 1 },
+            site_author     => {
+                columns =>
+                    [ 'author_id', 'authored_on', 'blog_id', 'ct_unique_id' ],
+            },
         },
         defaults    => { status => 0 },
         datasource  => 'cd',
@@ -578,7 +584,7 @@ sub make_list_props {
 
     my $iter = MT::ContentType->load_iter;
     while ( my $content_type = $iter->() ) {
-        my $key   = 'content_data_' . $content_type->id;
+        my $key   = 'content_data.content_data_' . $content_type->id;
         my $order = 1000;
         my $field_list_props
             = _make_field_list_props( $content_type, $order );
