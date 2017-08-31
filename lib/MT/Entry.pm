@@ -360,13 +360,12 @@ sub list_props {
             args_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
-                my $id  = MT->app->param('filter_val');
-                my $cat = MT->model('category')->load($id)
+                my $cat = MT->model('category')->load($val)
                     or return $prop->error(
                     MT->translate(
                         '[_1] ( id:[_2] ) does not exists.',
                         $prop->datasource->container_label,
-                        $id
+                        defined $val ? $val : ''
                     )
                     );
                 return { option => 'equal', value => $cat->id };
