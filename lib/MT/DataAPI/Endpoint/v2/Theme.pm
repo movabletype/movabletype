@@ -442,7 +442,7 @@ sub export {
 
     ## Pick up settings.
     my $hdlrs = MT->registry('theme_element_handlers');
-    my %includes = map { $_ => 1 } ( $q->param('include') );
+    my %includes = map { $_ => 1 } ( $app->multi_param('include') );
     my %exporter;
     my $settings = $blog->theme_export_settings || {};
     my $elements = {};
@@ -606,7 +606,7 @@ sub export {
         output
     );
     for my $param (@core_params) {
-        $settings->{core}{$param} = [ $q->param($param) ];
+        $settings->{core}{$param} = [ $app->multi_param($param) ];
     }
     $blog->theme_export_settings($settings);
     $blog->save

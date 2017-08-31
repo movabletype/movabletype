@@ -725,7 +725,7 @@ sub do_search_replace {
         @ids = split /,/, $ids;
     }
     if ($is_limited) {
-        @cols = $q->param('search_cols');
+        @cols = $app->multi_param('search_cols');
         my %search_api_cols
             = map { $_ => 1 } keys %{ $search_api->{search_cols} };
         if ( @cols && ( $cols[0] =~ /,/ ) ) {

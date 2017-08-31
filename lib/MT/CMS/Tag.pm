@@ -260,7 +260,7 @@ sub add_tags_to_entries {
     $app->validate_magic or return;
 
     my $xhr = $app->param('xhr');
-    my @id  = $app->param('id');
+    my @id  = $app->multi_param('id');
 
     require MT::Tag;
     my $tags      = $app->param('itemset_action_input');
@@ -306,7 +306,7 @@ sub remove_tags_from_entries {
     my $app = shift;
     $app->validate_magic or return;
 
-    my @id = $app->param('id');
+    my @id = $app->multi_param('id');
 
     require MT::Tag;
     my $tags      = $app->param('itemset_action_input');
@@ -338,7 +338,7 @@ sub add_tags_to_assets {
     my $app = shift;
     $app->validate_magic or return;
 
-    my @id      = $app->param('id');
+    my @id      = $app->multi_param('id');
     my $blog_id = $app->param('blog_id');
     return $app->call_return
         if $blog_id and !$app->can_do('add_tags_to_assets');
@@ -385,7 +385,7 @@ sub remove_tags_from_assets {
     my $app = shift;
     $app->validate_magic or return;
 
-    my @id      = $app->param('id');
+    my @id      = $app->multi_param('id');
     my $blog_id = $app->param('blog_id');
     return $app->call_return
         if $blog_id and !$app->can_do('remove_tags_from_assets');

@@ -701,7 +701,7 @@ sub cfg_web_services {
 sub rebuild_phase {
     my $app  = shift;
     my $type = $app->param('_type') || 'entry';
-    my @ids  = $app->param('id');
+    my @ids  = $app->multi_param('id');
     $app->{goback} = $app->return_uri;
     $app->{value} ||= $app->translate('Back');
     if ( $type eq 'entry' ) {
@@ -1666,7 +1666,7 @@ sub pre_save {
                 $obj->require_comment_emails(0);
             }
             my @authenticators;
-            for my $param ( $app->param->param ) {
+            for my $param ( $app->multi_param ) {
                 if ( $param =~ /^enabled_(.*)$/ ) {
                     push @authenticators, $1;
                 }
@@ -3056,7 +3056,7 @@ sub clone {
 
     $app->validate_magic() or return;
 
-    my @id = $app->param('id');
+    my @id = $app->multi_param('id');
 
     if ( !@id ) {
         return $app->error(
@@ -3256,7 +3256,7 @@ sub clone {
         if $website->site_path;
     $param->{blog_id} = $app->param('blog_id');
 
-    for my $key ( $app->param ) {
+    for my $key ( $app->multi_param ) {
         if ( $key =~ /^clone_prefs/ ) {
             if ( $app->param($key) ) {
                 $param->{$key} = $app->param($key);

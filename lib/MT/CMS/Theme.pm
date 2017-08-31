@@ -412,7 +412,7 @@ sub save_detail {
         ? $exporter->{params}
         : [ $exporter->{params} ];
     for my $param (@$params) {
-        $setting->{$param} = [ $app->param($param) ];
+        $setting->{$param} = [ $app->multi_param($param) ];
     }
     $settings->{$exporter_id} = $setting;
     $blog->theme_export_settings($settings);
@@ -495,11 +495,11 @@ sub do_export {
             }
             else {
                 my %params;
-                foreach ( $q->param ) {
+                foreach ( $app->multi_param ) {
                     $params{$_} = $app->param($_);
                 }
 
-                my @include = $q->param('include');
+                my @include = $app->multi_param('include');
                 $params{include}      = \@include;
                 $params{theme_folder} = $output_path;
                 return $app->load_tmpl( 'theme_export_replace.tmpl',
@@ -510,7 +510,7 @@ sub do_export {
 
     ## Pick up settings.
     my $hdlrs = MT->registry('theme_element_handlers');
-    my %includes = map { $_ => 1 } ( $q->param('include') );
+    my %includes = map { $_ => 1 } ( $app->multi_param('include') );
     my %exporter;
     my $settings = $blog->theme_export_settings || {};
     my $elements = {};
@@ -663,7 +663,7 @@ sub do_export {
         output
     );
     for my $param (@core_params) {
-        $settings->{core}{$param} = [ $q->param($param) ];
+        $settings->{core}{$param} = [ $app->multi_param($param) ];
     }
     $blog->theme_export_settings($settings);
     $blog->save

@@ -43,11 +43,11 @@ sub entries {
         $app->param( 'start_time', _iso2epoch( $blog_id, $v ) );
     }
     if ( my $v = $app->param('blogIds') ) {
-        $app->param( 'blog_ids', split ',', $v );
+        $app->multi_param( 'blog_ids', split ',', $v );
     }
     my $start_time = $app->param('start_time');
     my %ids = map { $_ => 1 }
-        grep {m/\A\d+\z/o} map { split ',', $_ } $app->param('ids');
+        grep {m/\A\d+\z/o} map { split ',', $_ } $app->multi_param('ids');
     MT::App::CMS::rebuild_these(
         $app,
         \%ids,

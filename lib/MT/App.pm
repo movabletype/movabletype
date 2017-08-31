@@ -853,10 +853,10 @@ sub pre_run_debug {
         print STDERR "Session: " . $app->session->id . "\n"
             if $app->session;
         print STDERR "Request: " . $app->param->request_method . "\n";
-        my @param = $app->param;
+        my @param = $app->multi_param;
         if (@param) {
             foreach my $key (@param) {
-                my @val = $app->param($key);
+                my @val = $app->multi_param($key);
                 print STDERR "\t" . $key . ": " . $_ . "\n" for @val;
             }
         }
@@ -995,7 +995,7 @@ sub init_query {
         my $q = $app->param;
 
         # validate all parameter data matches the expected character set.
-        my @p = $q->param();
+        my @p = $app->multi_param();
 
         # use specific charset if the application method forces it
         my $charset = $options->{charset} || $app->charset;
@@ -1018,7 +1018,7 @@ sub init_query {
                 return $app->errtrans("Invalid request");
             }
 
-            my @d = $q->param($p);
+            my @d = $app->multi_param($p);
             my @param;
             foreach my $d (@d) {
                 if (   ( !defined $d )
@@ -1033,7 +1033,7 @@ sub init_query {
                     $request_charset, $charset )
                     if $transcode;
                 unless ( ref($d) && ( 'Fh' eq ref($d) ) ) {
-                    eval { $d = Encode::decode( $charset, $d, 1 ); };
+                    eval { $d = Encode::decode( $charset, $d, 1 ) unless Encode::is_utf8($d); };
                     return $app->errtrans(
                         "Problem with this request: corrupt character data for character set [_1]",
                         $charset
@@ -3894,7 +3894,7 @@ sub param_hash {
     my $app = shift;
     my $q   = $app->{query};
     return () unless $q;
-    my @params = $q->param();
+    my @params = $app->multi_param();
     my %result;
     foreach my $p (@params) {
         $result{$p} = $q->param($p);
@@ -3937,7 +3937,7 @@ sub make_return_args {
     my @vars = $app->state_params;
     my %args;
     foreach my $v (@vars) {
-        if ( my @p = $app->param($v) ) {
+        if ( my @p = $app->multi_param($v) ) {
             $args{$v}
                 = ( scalar @p > 1
                     && ( $v eq 'filter_val' || $v eq 'filter' ) )
@@ -4200,12 +4200,20 @@ sub is_valid_redirect_target {
 sub param {
     my $app = shift;
     return unless $app->{query};
+    Carp::carp "app->param called in list context; use app->multi_param" if wantarray;
     if (@_) {
         $app->{query}->param(@_);
     }
     else {
         wantarray ? ( $app->{query}->param ) : $app->{query};
     }
+}
+
+sub multi_param {
+    my $app = shift;
+    return unless $app->{query};
+    local $CGI::LIST_CONTEXT_WARN = 0;
+    ( $app->{query}->param(@_) );
 }
 
 sub blog {
