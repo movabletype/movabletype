@@ -425,11 +425,10 @@ sub list_props {
                     : '';
             },
             label_via_param => sub {
-                my $prop     = shift;
-                my $app      = shift;
-                my $entry_id = $app->param('filter_val');
-                my $entry    = MT->model('entry')->load($entry_id);
-                my $label    = MT->translate( 'Comments on [_1]: [_2]',
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                my $entry = MT->model('entry')->load($val);
+                my $label = MT->translate( 'Comments on [_1]: [_2]',
                     $entry->class_label, $entry->title, );
                 $prop->{filter_label} = MT::Util::encode_html($label);
                 $label;

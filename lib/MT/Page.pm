@@ -74,10 +74,9 @@ sub list_props {
             category_class   => 'folder',
             zero_state_label => '(root)',
             label_via_param  => sub {
-                my $prop  = shift;
-                my ($app) = @_;
-                my $id    = $app->param('filter_val');
-                my $cat   = MT->model('folder')->load($id);
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                my $cat = MT->model('folder')->load($val);
                 my $label = MT->translate(
                     'Pages in folder: [_1]',
                     $cat->label . " (ID:" . $cat->id . ")",

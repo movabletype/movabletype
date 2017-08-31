@@ -321,10 +321,9 @@ sub list_props {
                     );
             },
             label_via_param => sub {
-                my ( $prop, $app ) = @_;
-                my $entry_id = $app->param('filter_val');
-                my $entry    = MT->model('entry')->load($entry_id);
-                my $type     = $entry->class_label || '';
+                my ( $prop, $app, $val ) = @_;
+                my $entry = MT->model('entry')->load($val);
+                my $type  = $entry->class_label || '';
                 return MT->translate( 'Trackbacks on [_1]: [_2]',
                     $type, $entry->title, );
             },
@@ -348,9 +347,8 @@ sub list_props {
                     );
             },
             label_via_param => sub {
-                my ( $prop, $app ) = @_;
-                my $cat_id = $app->param('filter_val');
-                my $cat    = MT->model('category')->load($cat_id);
+                my ( $prop, $app, $val ) = @_;
+                my $cat = MT->model('category')->load($val);
                 my $type
                     = $cat->class eq 'category' ? 'Category'
                     : $cat->class eq 'folder'   ? 'Folder'
