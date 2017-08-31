@@ -233,7 +233,7 @@ sub _create_content_data_permission {
     (   $permission_name => {
             group => $self->permission_group,
             label => 'Create Content Data',
-            order => 100,
+            order => 200,
         }
     );
 }
@@ -244,7 +244,7 @@ sub _publish_content_data_permission {
     (   $permission_name => {
             group            => $self->permission_group,
             label            => 'Publish Content Data',
-            order            => 200,
+            order            => 300,
             permitted_action => {
                 'edit_own_published_content_data_' . $self->unique_id   => 1,
                 'edit_own_unpublished_content_data_' . $self->unique_id => 1,
@@ -260,7 +260,7 @@ sub _edit_all_content_data_permission {
     (   $permission_name => {
             group            => $self->permission_group,
             label            => 'Edit All Content Data',
-            order            => 300,
+            order            => 400,
             permitted_action => {
                 'edit_all_content_data_' . $self->unique_id             => 1,
                 'edit_all_published_content_data_' . $self->unique_id   => 1,
@@ -274,7 +274,7 @@ sub _edit_all_content_data_permission {
 sub field_permissions {
     my $obj = shift;
     my %permissions;
-    my $order = 200;
+    my $order = 500;
     for my $f ( @{ $obj->field_objs } ) {
         %permissions = ( %permissions, %{ $f->permission($order) } );
         $order += 100;
