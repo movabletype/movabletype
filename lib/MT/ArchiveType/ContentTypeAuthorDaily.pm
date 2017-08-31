@@ -73,44 +73,19 @@ sub archive_group_iter {
     my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
     require MT::ContentData;
     require MT::ContentFieldIndex;
+
+    my $group_terms
+        = $obj->make_archive_group_terms( $blog->id, $dt_field_id, $ts,
+        $tsend, $author->id );
+    my $group_args
+        = $obj->make_archive_group_args( 'author', 'daily',
+        $map, $ts, $tsend, $args->{lastn}, $order . '' );
+
     my $loop_sub = sub {
-        my $auth       = shift;
-        my $count_iter = MT::ContentData->count_group_by(
-            {   blog_id   => $blog->id,
-                author_id => $auth->id,
-                status    => MT::Entry::RELEASE(),
-            },
-            {   group => [
-                    "extract(year from cf_idx_value_datetime) AS year",
-                    "extract(month from cf_idx_value_datetime) AS month",
-                    "extract(day from cf_idx_value_datetime) AS day"
-                ],
-                'sort' => [
-                    {   column => 'extract(year from cf_idx_value_datetime)',
-                        desc   => $order
-                    },
-                    {   column => 'extract(month from cf_idx_value_datetime)',
-                        desc   => $order
-                    },
-                    {   column => 'extract(day from cf_idx_value_datetime)',
-                        desc   => $order
-                    }
-                ],
-                join => MT::ContentFieldIndex->join_on(
-                    'content_data_id',
-                    {   content_field_id => $dt_field_id,
-                        (   $ts && $tsend
-                            ? ( value_datetime =>
-                                    { op => '>=', value => $ts },
-                                value_datetime =>
-                                    { op => '<=', value => $tsend }
-                                )
-                            : ()
-                        ),
-                    },
-                ),
-            }
-        ) or return $ctx->error("Couldn't get monthly archive list");
+        my $auth = shift;
+        my $count_iter
+            = MT::ContentData->count_group_by( $group_terms, $group_args )
+            or return $ctx->error("Couldn't get monthly archive list");
 
         while ( my @row = $count_iter->() ) {
             my $hash = {

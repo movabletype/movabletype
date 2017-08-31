@@ -76,56 +76,18 @@ sub archive_group_iter {
     require MT::ContentData;
     require MT::ContentFieldIndex;
 
+    my $group_terms
+        = $obj->make_archive_group_terms( $blog->id, $dt_field_id, $ts,
+        $tsend, $author->id );
+    my $group_args
+        = $obj->make_archive_group_args( 'author', 'weekly',
+        $map, $ts, $tsend, $args->{lastn}, $order, '' );
+
     my $loop_sub = sub {
-        my $auth       = shift;
-        my $count_iter = MT::ContentData->count_group_by(
-            {   blog_id   => $blog->id,
-                author_id => $auth->id,
-                status    => MT::Entry::RELEASE(),
-                (         !$dt_field_id
-                        && $ts
-                        && $tsend ? ( authored_on => [ $ts, $tsend ] ) : ()
-                ),
-            },
-            {   (   !$dt_field_id && $ts && $tsend
-                    ? ( range_incl => { authored_on => 1 } )
-                    : ()
-                ),
-                group => [
-                    (   !$dt_field_id
-                        ? "week_number"
-                        : "cf_idx_value_integer"
-                    )
-                ],
-                sort => [
-                    {   column => (
-                            !$dt_field_id
-                            ? "week_number"
-                            : "cf_idx_value_integer"
-                        ),
-                        desc => $order
-                    }
-                ],
-                (   $dt_field_id
-                    ? ( join => MT::ContentFieldIndex->join_on(
-                            'content_data_id',
-                            {   content_field_id => $dt_field_id,
-                                (   $ts && $tsend
-                                    ? ( value_datetime =>
-                                            { op => '>=', value => $ts },
-                                        value_datetime =>
-                                            { op => '<=', value => $tsend }
-                                        )
-                                    : ()
-                                ),
-                            },
-                            { alias => 'dt_cf_idx' }
-                        )
-                        )
-                    : ()
-                )
-            }
-        ) or return $ctx->error("Couldn't get weekly archive list");
+        my $auth = shift;
+        my $count_iter
+            = MT::ContentData->count_group_by( $group_terms, $group_args )
+            or return $ctx->error("Couldn't get weekly archive list");
 
         while ( my @row = $count_iter->() ) {
             my ( $year, $week ) = unpack 'A4A2', $row[1];

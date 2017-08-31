@@ -104,34 +104,19 @@ sub archive_group_iter {
     my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
     require MT::ContentData;
     require MT::ContentFieldIndex;
+
+    my $group_terms
+        = $obj->make_archive_group_terms( $blog->id, $dt_field_id, '', '',
+        '' );
+    my $group_args
+        = $obj->make_archive_group_args( 'category', 'yearly',
+        $map, '', '', $args->{lastn}, $order, $cat );
+
     my $loop_sub = sub {
-        my $c          = shift;
-        my $cd_iter = MT::ContentData->count_group_by(
-            {   blog_id => $blog->id,
-                status  => MT::Entry::RELEASE()
-            },
-            {   group => ["extract(year from dt_cf_idx.cf_idx_value_datetime) AS year"],
-                sort  => [
-                    {   column => "extract(year from dt_cf_idx.cf_idx_value_datetime)",
-                        desc   => $order
-                    }
-                ],
-                'joins'     => [
-                    MT::ContentFieldIndex->join_on(
-                        'content_data_id',
-                        { content_field_id => $dt_field_id },
-                        { alias => 'dt_cf_idx' }
-                    ),
-                    MT::ContentFieldIndex->join_on(
-                        'content_data_id',
-                        {   content_field_id => $cat_field_id,
-                            value_integer    => $c->id
-                        },
-                        { alias => 'cat_cf_idx' }
-                    )
-                ],
-            }
-        ) or return $ctx->error("Couldn't get yearly archive list");
+        my $c = shift;
+        my $cd_iter
+            = MT::ContentData->count_group_by( $group_terms, $group_args )
+            or return $ctx->error("Couldn't get yearly archive list");
         while ( my @row = $cd_iter->() ) {
             my $hash = {
                 year     => $row[1],

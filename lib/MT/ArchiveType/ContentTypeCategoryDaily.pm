@@ -107,48 +107,19 @@ sub archive_group_iter {
     my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
     require MT::ContentData;
     require MT::ContentFieldIndex;
+
+    my $group_terms
+        = $obj->make_archive_group_terms( $blog->id, $dt_field_id, $ts,
+        $tsend, '' );
+    my $group_args
+        = $obj->make_archive_group_args( 'category', 'daily',
+        $map, $ts, $tsend, $args->{lastn}, $order, $cat );
+
     my $loop_sub = sub {
-        my $c          = shift;
-        my $cd_iter = MT::ContentData->count_group_by(
-            {   blog_id => $blog->id,
-                status  => MT::Entry::RELEASE(),
-                #( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
-            },
-            {   group => [
-                    "extract(year from dt_cf_idx.cf_idx_value_datetime) AS year",
-                    "extract(month from dt_cf_idx.cf_idx_value_datetime) AS month",
-                    "extract(day from dt_cf_idx.cf_idx_value_datetime) as day"
-                ],
-                sort => [
-                    {   column => "extract(year from dt_cf_idx.cf_idx_value_datetime)",
-                        desc   => $order
-                    },
-                    {   column => "extract(month from dt_cf_idx.cf_idx_value_datetime)",
-                        desc   => $order
-                    },
-                    {   column => "extract(day from dt_cf_idx.cf_idx_value_datetime)",
-                        desc   => $order
-                    },
-                ],
-                'joins'     => [
-                    MT::ContentFieldIndex->join_on(
-                        'content_data_id',
-                        {   content_field_id => $dt_field_id,
-                            ( $ts && $tsend ? ( value_datetime   => { op => '>=', value => $ts },
-                            value_datetime   => { op => '<=', value => $tsend } ) : () ),
-                        },
-                        { alias => 'dt_cf_idx' }
-                    ),
-                    MT::ContentFieldIndex->join_on(
-                        'content_data_id',
-                        {   content_field_id => $cat_field_id,
-                            value_integer    => $c->id
-                        },
-                        { alias => 'cat_cf_idx' }
-                    )
-                ],
-            }
-        ) or return $ctx->error("Couldn't get yearly archive list");
+        my $c = shift;
+        my $cd_iter
+            = MT::ContentData->count_group_by( $group_terms, $group_args )
+            or return $ctx->error("Couldn't get yearly archive list");
         while ( my @row = $cd_iter->() ) {
             my $hash = {
                 year     => $row[1],
@@ -205,7 +176,7 @@ sub archive_group_iter {
         }
 }
 
-sub archive_group_contents{
+sub archive_group_contents {
     my $obj = shift;
     my ( $ctx, %param ) = @_;
     my $ts
@@ -215,7 +186,8 @@ sub archive_group_contents{
         : $ctx->stash('current_timestamp');
     my $cat = $param{category} || $ctx->stash('archive_category');
     my $limit = $param{limit};
-    $obj->dated_category_contents( $ctx, 'Category-Daily', $cat, $ts, $limit );
+    $obj->dated_category_contents( $ctx, 'Category-Daily', $cat, $ts,
+        $limit );
 }
 
 *date_range    = \&MT::ArchiveType::Daily::date_range;

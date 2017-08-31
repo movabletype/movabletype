@@ -173,4 +173,116 @@ sub target_dt {
     return $target_dt;
 }
 
+sub make_archive_group_terms {
+    my $obj = shift;
+    my ( $blog_id, $dt_field_id, $ts, $tsend, $author_id ) = @_;
+    my $terms = {
+        blog_id => $blog_id,
+        status  => MT::Entry::RELEASE()
+    };
+    $terms->{author_id} = $author_id
+        if $author_id;
+    $terms->{authored_on} = [ $ts, $tsend ]
+        if !$dt_field_id && $ts && $tsend;
+    return $terms;
+}
+
+sub make_archive_group_args {
+    my $obj = shift;
+    my ( $type, $date_type, $map, $ts, $tsend, $lastn, $order, $cat ) = @_;
+    my $cat_field_id = defined $map && $map ? $map->cat_field_id : '';
+    my $dt_field_id  = defined $map && $map ? $map->dt_field_id  : '';
+    my $target_column
+        = $date_type eq 'weekly'
+        ? $dt_field_id
+            ? ( $type eq 'category' ? 'dt_cf_idx.' : '' )
+        . "cf_idx_value_integer"
+            : "week_number"
+        : $dt_field_id ? ( $type eq 'category' ? 'dt_cf_idx.' : '' )
+        . 'cf_idx_value_datetime'
+        : 'authored_on';
+    my $args = {};
+    $args->{lastn} = $lastn if $lastn;
+    $args->{range_incl} = { authored_on => 1 }
+        if !$dt_field_id && $ts && $tsend;
+
+    if (   $date_type eq 'daily'
+        || $date_type eq 'monthly'
+        || $date_type eq 'yearly' )
+    {
+        $args->{group} = ["extract(year from $target_column) AS year"];
+        push @{ $args->{group} },
+            "extract(month from $target_column) AS month"
+            if $date_type eq 'daily' || $date_type eq 'monthly';
+        push @{ $args->{group} }, "extract(day from $target_column) AS day"
+            if $date_type eq 'daily';
+    }
+    elsif ( $date_type eq 'weekly' ) {
+        $args->{group} = [$target_column];
+    }
+    if ( $date_type eq 'daily' ) {
+        $args->{sort} = [
+            {   column => "extract(year from $target_column)",
+                desc   => $order
+            },
+            {   column => "extract(month from $target_column)",
+                desc   => $order
+            },
+            {   column => "extract(day from $target_column)",
+                desc   => $order
+            },
+        ];
+    }
+    elsif ( $date_type eq 'weekly' ) {
+        $args->{sort} = [
+            {   column => $target_column,
+                desc   => $order
+            }
+        ];
+    }
+    if ( $type eq 'category' ) {
+        $args->{joins} = [
+            (   $dt_field_id
+                ? ( MT::ContentFieldIndex->join_on(
+                        'content_data_id',
+                        {   content_field_id => $dt_field_id,
+                            (   $ts && $tsend
+                                ? ( value_datetime =>
+                                        { op => '>=', value => $ts },
+                                    value_datetime =>
+                                        { op => '<=', value => $tsend }
+                                    )
+                                : ()
+                            ),
+                        },
+                        { alias => 'dt_cf_idx' }
+                    )
+                    )
+                : ()
+            ),
+            MT::ContentFieldIndex->join_on(
+                'content_data_id',
+                {   content_field_id => $cat_field_id,
+                    value_integer    => $cat->id
+                },
+                { alias => 'cat_cf_idx' }
+            )
+        ];
+    }
+    else {
+        $args->{join} = MT::ContentFieldIndex->join_on(
+            'content_data_id',
+            {   content_field_id => $dt_field_id,
+                (   $ts && $tsend
+                    ? ( value_datetime => { op => '>=', value => $ts },
+                        value_datetime => { op => '<=', value => $tsend }
+                        )
+                    : ()
+                ),
+            },
+        ) if $dt_field_id;
+    }
+    return $args;
+}
+
 1;

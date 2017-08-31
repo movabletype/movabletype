@@ -58,29 +58,23 @@ sub archive_group_iter {
 
     my $author = $ctx->stash('author');
 
-    my $map          = $ctx->stash('template_map');
-    my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
+    my $map = $ctx->stash('template_map');
+    my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
     require MT::ContentData;
     require MT::ContentFieldIndex;
+
+    my $group_terms
+        = $obj->make_archive_group_terms( $blog->id, $dt_field_id, '', '',
+        $author->id );
+    my $group_args
+        = $obj->make_archive_group_args( 'author', 'yearly',
+        $map, '', '', $args->{lastn}, $order, '' );
+
     my $loop_sub = sub {
-        my $auth       = shift;
-        my $count_iter = MT::ContentData->count_group_by(
-            {   blog_id   => $blog->id,
-                author_id => $auth->id,
-                status    => MT::Entry::RELEASE()
-            },
-            {   group  => ["extract(year from cf_idx_value_datetime) AS year"],
-                'sort' => [
-                    {   column => "extract(year from cf_idx_value_datetime)",
-                        desc   => $order
-                    }
-                ],
-                join => MT::ContentFieldIndex->join_on(
-                    'content_data_id',
-                    { content_field_id => $dt_field_id },
-                ),
-            }
-        ) or return $ctx->error("Couldn't get monthly archive list");
+        my $auth = shift;
+        my $count_iter
+            = MT::ContentData->count_group_by( $group_terms, $group_args )
+            or return $ctx->error("Couldn't get monthly archive list");
 
         while ( my @row = $count_iter->() ) {
             my $hash = {
@@ -146,7 +140,7 @@ sub archive_group_iter {
         }
 }
 
-sub archive_group_contents{
+sub archive_group_contents {
     my $obj = shift;
     my ( $ctx, %param ) = @_;
     my $ts
@@ -155,7 +149,8 @@ sub archive_group_contents{
         : $ctx->stash('current_timestamp');
     my $author = $param{author} || $ctx->stash('author');
     my $limit = $param{limit};
-    $obj->dated_author_contents( $ctx, 'Author-Yearly', $author, $ts, $limit );
+    $obj->dated_author_contents( $ctx, 'Author-Yearly', $author, $ts,
+        $limit );
 }
 
 *date_range    = \&MT::ArchiveType::Yearly::date_range;

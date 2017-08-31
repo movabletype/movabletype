@@ -35,13 +35,13 @@ sub default_archive_templates {
 
 sub template_params {
     return {
-        archive_class                => "contenttype-datebased-yearly-archive",
-        datebased_yearly_archive     => 1,
-        module_yearly_archives       => 1,
-        archive_template             => 1,
-        archive_listing              => 1,
-        datebased_archive            => 1,
-        datebased_only_archive       => 1,
+        archive_class            => "contenttype-datebased-yearly-archive",
+        datebased_yearly_archive => 1,
+        module_yearly_archives   => 1,
+        archive_template         => 1,
+        archive_listing          => 1,
+        datebased_archive        => 1,
+        datebased_only_archive   => 1,
         contenttype_archive_lisrting => 1,
     };
 }
@@ -59,23 +59,16 @@ sub archive_group_iter {
     my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
     require MT::ContentData;
     require MT::ContentFieldIndex;
-    $iter = MT::ContentData->count_group_by(
-        {   blog_id => $blog->id,
-            status  => MT::Entry::RELEASE()
-        },
-        {   group => ["extract(year from cf_idx_value_datetime) AS year"],
-            $args->{lastn} ? ( limit => $args->{lastn} ) : (),
-            sort => [
-                {   column => "extract(year from cf_idx_value_datetime)",
-                    desc   => $order
-                }
-            ],
-            join => MT::ContentFieldIndex->join_on(
-                'content_data_id',
-                { content_field_id => $dt_field_id },
-            ),
-        }
-    ) or return $ctx->error("Couldn't get yearly archive list");
+
+    my $group_terms
+        = $obj->make_archive_group_terms( $blog->id, $dt_field_id, '', '',
+        '' );
+    my $group_args
+        = $obj->make_archive_group_args( 'datebased_only', 'yearly',
+        $map, '', '', $args->{lastn}, $order, '' );
+
+    $iter = MT::ContentData->count_group_by( $group_terms, $group_args )
+        or return $ctx->error("Couldn't get yearly archive list");
 
     return sub {
         while ( my @row = $iter->() ) {
