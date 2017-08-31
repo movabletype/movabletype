@@ -354,6 +354,10 @@ sub core_methods {
         'list_roles'        => "${pkg}User::list_role",
         'upload_userpic'    => "${pkg}User::upload_userpic",
 
+        ## MT7 - Content Data
+        'view_content_data' => "${pkg}ContentData::edit",
+        'edit_content_data' => "${pkg}ContentData::edit",
+
         ## MT7
         'cfg_content_type_description' =>
             "${pkg}ContentType::cfg_content_type_description",
@@ -365,7 +369,6 @@ sub core_methods {
             "${pkg}ContentType::select_list_content_type",
         'select_edit_content_type' =>
             "${pkg}ContentType::select_edit_content_type",
-        'edit_content_data'       => "${pkg}ContentType::edit_content_data",
         'validate_content_fields' => {
             code     => " ${pkg}ContentType::validate_content_fields",
             app_mode => 'JSON',
