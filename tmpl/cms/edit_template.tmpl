@@ -1142,6 +1142,8 @@ function saveTemplatePrefs( sync ) {
         $option = jQuery('<option>').val(value.id).text(value.label);
         jQuery('#cat_field_id').append($option);
       });
+      $option = jQuery('<option>').val(0).text("<__trans phrase="Published Date">");
+      jQuery('#dt_field_id').append($option);
       jQuery.each(date_and_times, function(index, value){
         $option = jQuery('<option>').val(value.id).text(value.label);
         jQuery('#dt_field_id').append($option);
