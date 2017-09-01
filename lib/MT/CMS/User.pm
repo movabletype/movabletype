@@ -761,16 +761,18 @@ sub save_cfg_system_users {
         }
     }
 
-    my $cfg = $app->config;
-    my $tz  = $app->param('default_time_zone');
+    my $cfg              = $app->config;
+    my $tz               = $app->param('default_time_zone');
+    my $default_language = $app->param('default_language');
+    my $personal_weblog  = $app->param('personal_weblog');
+    my $default_user_tag_delimiter
+        = $app->param('default_user_tag_delimiter');
     $app->config( 'DefaultTimezone', $tz, 1 );
-    $app->config( 'NewUserAutoProvisioning',
-        $app->param('personal_weblog') ? 1 : 0, 1 );
-    $app->config( 'NewUserBlogTheme',        $theme_id,           1 );
-    $app->config( 'NewUserDefaultWebsiteId', $default_website_id, 1 );
-    $app->config( 'DefaultUserLanguage', $app->param('default_language'), 1 );
-    $app->config( 'DefaultUserTagDelimiter',
-        scalar $app->param('default_user_tag_delimiter'), 1 );
+    $app->config( 'NewUserAutoProvisioning', $personal_weblog ? 1 : 0, 1 );
+    $app->config( 'NewUserBlogTheme',        $theme_id,                   1 );
+    $app->config( 'NewUserDefaultWebsiteId', $default_website_id,         1 );
+    $app->config( 'DefaultUserLanguage',     $default_language,           1 );
+    $app->config( 'DefaultUserTagDelimiter', $default_user_tag_delimiter, 1 );
     my $registration = $cfg->CommenterRegistration;
 
     if ( my $reg = $app->param('registration') ) {
@@ -812,7 +814,7 @@ sub save_cfg_system_users {
 
     my $args = ();
 
-    if ( $app->param('personal_weblog')
+    if ( $personal_weblog
         && !$app->config('NewUserDefaultWebsiteId') )
     {
         $args->{error}
