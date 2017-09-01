@@ -77,18 +77,14 @@ function init() {
     dialog = new Dialog.MultiPanel("assoc");
     panels = [];
     var panel;<mt:loop name="panel_loop">
-
-
-
-
     panel = new ListingPanel("<mt:var name="panel_type">");
-    panel.listChanged = function(ts, row, checked) {
+    <mt:if name="panel_type" eq="site">panel.listChanged = function(ts, row, checked) {
         if (this.selectionList) {
             var self = this;
             if (checked){
                 this.selectionList.add(row.id);
                 if(jQuery(row).hasClass('has_child')){
-                  jQuery(row).find('tr').each(function(){
+                  jQuery(row).find('.list-unstyled li').each(function(){
                     self.selectionList.add(this.id);
                   });
                 }
@@ -96,7 +92,7 @@ function init() {
                 this.selectionList.remove(row.id);
                 if(jQuery(row).hasClass('has_child')){
                   var self = this;
-                  jQuery(row).find('tr').each(function(){
+                  jQuery(row).find('.list-unstyled li').each(function(){
                     self.selectionList.remove(this.id);
                   });
                 }
@@ -118,7 +114,7 @@ function init() {
                 this.closeButton.disabled = count == 0;
             }
         }
-    };
+    };</mt:if>
     panel.pager.setState(<mt:var name="pager_json">);
     panels[panels.length] = panel;</mt:loop>
     dialog.setPanels(panels);
