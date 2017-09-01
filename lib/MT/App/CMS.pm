@@ -1887,10 +1887,12 @@ sub core_menus {
     return {
         'website' => {
             label => "Sites",
+            icon  => 'ic_sites',
             order => 100,
         },
         'blog' => {
             label => "Sites",
+            icon  => 'ic_sites',
             order => 100,
         },
         'content_data' => {
@@ -1907,24 +1909,29 @@ sub core_menus {
         },
         'category_set' => {
             label => 'Category Sets',
+            icon  => 'ic_category',
             order => 500,
         },
         'tag' => {
             label => "Tags",
+            icon  => 'ic_tag',
             order => 600,
         },
         'asset' => {
             label => "Assets",
+            icon  => 'ic_asset',
             order => 700,
         },
         'content_type' => {
             label => 'Content Types',
+            icon  => 'ic_contentstype',
             order => 800,
         },
         'user' => {
             label => sub {
                 $app->translate( $app->blog ? 'Members' : 'Users' );
             },
+            icon  => 'ic_user',
             order => 900,
         },
         'feedback' => {
@@ -1933,22 +1940,27 @@ sub core_menus {
         },
         'role' => {
             label => 'Roles',
+            icon  => 'ic_role',
             order => 1100,
         },
         'design' => {
             label => "Design",
+            icon  => 'ic_design',
             order => 1200,
         },
         'filter' => {
             label => "Filters",
+            icon  => 'ic_filter',
             order => 1400,
         },
         'settings' => {
             label => "Settings",
+            icon  => 'ic_setting',
             order => 1500,
         },
         'tools' => {
             label => "Tools",
+            icon  => 'ic_tool',
             order => 1600,
         },
 
