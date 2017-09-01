@@ -711,7 +711,7 @@ sub _bulk_author_name_html {
                 },
             );
             $out
-                .= qq{<span class="username"><a href="$edit_link">$name</a> <span class="badge badge-$badge_type">$status_label</span></span>};
+                .= qq{<span class="username"><a href="$edit_link">$name</a> <span class="badge badge-$badge_type">$translated_status_label</span></span>};
         }
         else {
             $out
