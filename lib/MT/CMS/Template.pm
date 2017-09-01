@@ -1797,16 +1797,16 @@ sub pre_save {
     }
 
     # module caching
-    $obj->include_with_ssi( $app->param('include_with_ssi') ? 1 : 0 );
-    $obj->cache_path( $app->param('cache_path') );
-    my $cache_expire_type
-        = defined $app->param('cache_expire_type')
-        ? $app->param('cache_expire_type')
-        : '0';
+    my $include_with_ssi  = $app->param('include_with_ssi');
+    my $cache_path        = $app->param('cache_path');
+    my $cache_expire_type = $app->param('cache_expire_type') || 0;
+    my $period            = $app->param('cache_expire_period');
+    my $interval          = $app->param('cache_expire_interval') || 0;
+    my $sec               = _get_interval( $period, $interval );
+
+    $obj->include_with_ssi( $include_with_ssi ? 1 : 0 );
+    $obj->cache_path($cache_path);
     $obj->cache_expire_type($cache_expire_type);
-    my $period   = $app->param('cache_expire_period');
-    my $interval = $app->param('cache_expire_interval');
-    my $sec      = _get_interval( $period, $interval );
     $obj->cache_expire_interval($sec) if defined $sec;
     my $q = $app->param;
     my @events;
