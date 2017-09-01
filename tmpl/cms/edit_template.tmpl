@@ -162,15 +162,29 @@
   <ul class="list-unstyled">
   <mt:loop name="include_loop">
   <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:if name="scope_type" eq="system">global<mt:else><mt:var name="scope_type"></mt:if><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
+  <mt:setvarblock name="template_status_icon">
+    <mt:if name="include_scope_type" eq="global">
+      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Template">" size="sm">
+    <mt:elseif name="include_scope_type" eq="website">
+      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Template">" size="sm" color="success">
+    <mt:elseif name="include_scope_type" eq="blog">
+      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Template">" size="sm" color="primary">
+    </mt:if>
+  </mt:setvarblock>
     <li>
   <mt:if name="include_link">
     <mt:if name="can_link">
-      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></a>
+      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl">
+        <mt:var name="template_status_icon">
+        <mt:var name="include_module">
+      </a>
     <mt:else>
+      <mt:var name="template_status_icon">
       <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></span>
     </mt:if>
       <mt:if name="include_from" ne="self"><span class="include-from">(<mt:var name="include_blog_name">)</span></mt:if>
   <mt:else>
+      <mtapp:svgicon id="ic_stop" title="<__trans phrase="Error">" size="sm" color="danger">
       <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
   </mt:if>
