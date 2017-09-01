@@ -205,7 +205,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
     <div class="form-group">
   <mt:if name="url">
       <a href="<mt:var name="url" escape="html">" target="_blank"><mt:var name="name" escape="html">
-        <img alt="<__trans phrase="View">" src="<mt:var name="static_uri">images/status_icons/view.gif" />
+        <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View">" size="sm">
       </a>
   <mt:else>
       <mt:var name="name" escape="html">
@@ -238,7 +238,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
     <div class="form-group">
   <mt:if name="url">
       <a href="<mt:var name="url" escape="html">"><mt:var name="url" escape="html">
-        <img alt="<__trans phrase="View">" src="<mt:var name="static_uri">images/status_icons/view.gif" />
+        <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View">" size="sm">
       </a>
   <mt:else>
     &nbsp;
