@@ -12,11 +12,14 @@ body {
   margin: 45px auto 30px;
   padding: 30px 30px 25px;
   border: 1px solid #c0c6c9;
-  width: 400px;
+  width: 600px;
 }
 
-.container.signup {
-  width: 600px;
+.sign-in .container,
+.reset-password .container,
+.change-password .container
+{
+  width: 400px;
 }
 
 label {
