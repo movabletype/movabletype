@@ -15,9 +15,9 @@ body {
   width: 600px;
 }
 
-.sign-in .container,
-.reset-password .container,
-.change-password .container
+.sign-in.container,
+.reset-password.container,
+.change-password.container
 {
   width: 400px;
 }
