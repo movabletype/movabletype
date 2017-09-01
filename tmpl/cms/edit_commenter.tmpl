@@ -251,12 +251,21 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
      label="<__trans phrase="Status">">
     <div class="form-group">
   <mt:if name="commenter_approved">
-      <span class="icon-left-wide icon-trusted"><__trans phrase="Trusted"></span>
+      <span class="icon-left-wide icon-trusted">
+        <mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm">
+        <span class="badge badge-success"><__trans phrase="Trusted"></span>
+      </span>
   <mt:else>
     <mt:if name="commenter_banned">
-      <span class="icon-left-wide icon-banned"><__trans phrase="Banned"></span>
+      <span class="icon-left-wide icon-banned">
+        <mtapp:svgicon id="ic_user" title="<__trans phrase="Banned">" size="sm">
+        <span class="badge badge-secondary"><__trans phrase="Banned"></span>
+      </span>
     <mt:else>
-      <span class="icon-left-wide icon-authenticated"><__trans phrase="Authenticated"></span>
+      <span class="icon-left-wide icon-authenticated">
+        <mtapp:svgicon id="ic_user" title="<__trans phrase="Authenticated">" size="sm">
+        <span class="badge badge-default"><__trans phrase="Authenticated"></span>
+      </span>
     </mt:if>
   </mt:if>
     </div>

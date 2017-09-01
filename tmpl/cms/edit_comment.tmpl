@@ -220,11 +220,11 @@
     <div class="form-group">
     <mt:if name="commenter_approved">
       <mt:if name="can_edit_commenters">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">"><img src="<mt:var name="static_uri">images/status_icons/trusted.gif" alt="<__trans phrase="Trusted">" /></a>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm"></a>
       <mt:else>
-      <img src="<mt:var name="static_uri">images/status_icons/trusted.gif" alt="<__trans phrase="Trusted">" />
+      <mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm">
       </mt:if>
-      <span class="hint"><__trans phrase="(Trusted)"></span>
+      <span class="badge badge-success hint"><__trans phrase="Trusted"></span>
       <mt:unless name="is_mine">
       <span class="commenter-actions">
         <mt:if name="can_edit_commenters">
@@ -238,13 +238,11 @@
 
     <mt:else name="commenter_banned">
       <mt:if name="can_edit_commenters">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link"  title="<__trans phrase="View this commenter detail">">
-        <img src="<mt:var name="static_uri">images/status_icons/banned.gif" alt="<__trans phrase="Banned">" />
-      </a>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link"  title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Banned">" size="sm"></a>
       <mt:else>
-      <img src="<mt:var name="static_uri">images/status_icons/banned.gif" alt="<__trans phrase="Banned">" />
+      <mtapp:svgicon id="ic_user" title="<__trans phrase="Banned">" size="sm">
       </mt:if>
-      <span class="hint"><__trans phrase="(Banned)"></span>
+      <span class="badge badge-secondary hint"><__trans phrase="Banned"></span>
       <mt:unless name="is_mine">
         <mt:if name="can_edit_commenters">
       <span class="commenter-actions">
@@ -258,13 +256,11 @@
 
     <mt:else>
       <mt:if name="can_edit_commenters">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">">
-        <img src="<mt:var name="static_uri">images/status_icons/authenticated.gif" alt="<__trans phrase="Pending">" />
-      </a>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Pending">" size="sm" color="secondary"></a>
       <mt:else>
-      <img src="<mt:var name="static_uri">images/status_icons/authenticated.gif" alt="<__trans phrase="Pending">" />
+      <mtapp:svgicon id="ic_user" title="<__trans phrase="Pending">" size="sm" color="secondary">
       </mt:if>
-      <span class="hint"><__trans phrase="(Pending)"></span>
+      <span class="badge badge-default hint"><__trans phrase="Pending"></span>
       <mt:unless name="is_mine">
         <mt:if name="can_edit_commenters">
       <span class="commenter-actions">
