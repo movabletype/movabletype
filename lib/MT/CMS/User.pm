@@ -1535,20 +1535,12 @@ sub can_delete {
 sub save_filter {
     my ( $eh, $app, $obj, $original, $opts ) = @_;
     $opts ||= {};
-    my $accessor = sub {
-        if ($obj) {
-            my $k = shift;
-            $obj->$k(@_);
-        }
-        else {
-            $app->param(@_);
-        }
-    };
     my $encode_html = sub {
         $opts->{skip_encode_html} ? $_[0] : encode_html( $_[0] );
     };
 
-    my $name = $accessor->('name');
+    my $name = $obj ? $obj->name : $app->param('name');
+    my $id   = $obj ? $obj->id   : $app->param('id');
     if ( $name && !$opts->{skip_validate_unique_name} ) {
         require MT::Author;
         my $existing = MT::Author->load(
@@ -1556,7 +1548,6 @@ sub save_filter {
                 type => MT::Author::AUTHOR()
             }
         );
-        my $id = $accessor->('id');
         if ( $existing
             && ( ( $id && $existing->id ne $id ) || !$id ) )
         {
@@ -1566,19 +1557,19 @@ sub save_filter {
         }
     }
 
-    my $status = $accessor->('status');
+    my $status = $obj ? $obj->status : $app->param('status');
     return 1 if $status and $status == MT::Author::INACTIVE();
 
     require MT::Auth;
     my $auth_mode = $app->config('AuthenticationModule');
     my ($pref) = split /\s+/, $auth_mode;
 
-    my $nickname = $accessor->('nickname');
+    my $nickname = $obj ? $obj->nickname : $app->param('nickname');
 
     if ( $pref eq 'MT' ) {
         if ( defined $name ) {
             $name =~ s/(^\s+|\s+$)//g;
-            $accessor->( 'name', $name );
+            $obj ? $obj->name($name) : $app->param( 'name', $name );
         }
         return $eh->error( $app->translate("User requires username") )
             if ( !$name );
@@ -1599,7 +1590,9 @@ sub save_filter {
     # undefined. Only check requirement if the value is defined.
     if ( defined $nickname ) {
         $nickname =~ s/(^\s+|\s+$)//g;
-        $accessor->( 'nickname', $nickname );
+        $obj
+            ? $obj->nickname($nickname)
+            : $app->param( 'nickname', $nickname );
         return $eh->error( $app->translate("User requires display name") )
             if ( !length($nickname) );
 
@@ -1614,8 +1607,10 @@ sub save_filter {
         }
     }
 
+    # MT::Auth::MT uses id, pass, pass_verify, old_pass
+    # MT::Auth::TypeKey uses name as well, but ...
     my $ori_name = $app->param('name');
-    $app->param( 'name', $accessor->('name') );
+    $app->param( 'name', $name );
     require MT::Auth;
     my $error = MT::Auth->sanity_check($app);
     $app->param( 'name', $ori_name );
@@ -1632,24 +1627,22 @@ sub save_filter {
     }
 
     return 1 if ( $pref ne 'MT' );
-    if ( !$accessor->('id') ) {    # it's a new object
+
+    my $pass     = $app->param('pass');
+    my $password = $app->param('password');
+    if ( !$id ) {    # it's a new object
         return $eh->error( $app->translate("User requires password") )
-            if (
-            !length(
-                $obj ? $accessor->('password') : scalar $app->param('pass')
-            )
-            );
+            if ( !length( $obj ? $obj->password : $pass ) );
     }
 
     # Password strength check
     # Why the name of password field is different in each forms...
-    if ( scalar $app->param('pass') || scalar $app->param('password') ) {
-        my $msg = $app->verify_password_strength( $accessor->('name'),
-            scalar $app->param('pass') );
+    if ( $pass || $password ) {
+        my $msg = $app->verify_password_strength( $name, $pass );
         return $eh->error($msg) if $msg;
     }
 
-    my $email = $accessor->('email');
+    my $email = $obj ? $obj->email : $app->param('email');
     return $eh->error(
         MT->translate("Email Address is required for password reset.") )
         unless $email;
@@ -1667,8 +1660,7 @@ sub save_filter {
         );
     }
 
-    if ( $accessor->('url') ) {
-        my $url = $accessor->('url');
+    if ( my $url = $obj ? $obj->url : $app->param('url') ) {
         return $eh->error( MT->translate("URL is invalid.") )
             if !is_url($url) || ( $url =~ m/[<>]/ );
     }
