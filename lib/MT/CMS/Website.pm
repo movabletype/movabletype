@@ -351,16 +351,20 @@ sub pre_save {
     if ( !$obj->id ) {
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
-        unless ( $fmgr->exists($site_path) ) {
-            my @dirs = File::Spec->splitdir($site_path);
-            pop @dirs;
-            $site_path = File::Spec->catdir(@dirs);
+        if ($site_path) {
+            unless ( $fmgr->exists($site_path) ) {
+                my @dirs = File::Spec->splitdir($site_path);
+                pop @dirs;
+                $site_path = File::Spec->catdir(@dirs);
+            }
         }
         return $app->errtrans(
             "The '[_1]' provided below is not writable by the web server. Change the directory ownership or permissions and try again.",
             $app->translate('Website Root')
             )
-            unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
+            unless $site_path
+            && $fmgr->exists($site_path)
+            && $fmgr->can_write($site_path);
     }
 
     return 1;
@@ -496,11 +500,11 @@ sub dialog_select_website {
             terms  => $terms,
             args   => $args,
             params => {
-                dialog_title  => $app->translate("Select Website"),
-                items_prompt  => $app->translate("Selected Website"),
+                dialog_title  => $app->translate("Select Site"),
+                items_prompt  => $app->translate("Selected Site"),
                 search_prompt => $app->translate(
                     "Type a website name to filter the choices below."),
-                panel_label       => $app->translate("Website Name"),
+                panel_label       => $app->translate("Site Name"),
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',
                 panel_multi       => defined $app->param('multi')
@@ -538,7 +542,7 @@ sub dialog_move_blogs {
         $row->{'link'} = $row->{site_url};
     };
 
-    my @id = $app->param('id');
+    my @id = $app->multi_param('id');
     my $ids = join ',', @id;
     $app->listing(
         {   type     => 'website',
@@ -549,11 +553,11 @@ sub dialog_move_blogs {
             terms  => $terms,
             args   => $args,
             params => {
-                dialog_title  => $app->translate("Select Website"),
-                items_prompt  => $app->translate("Selected Website"),
+                dialog_title  => $app->translate("Select Site"),
+                items_prompt  => $app->translate("Selected Site"),
                 search_prompt => $app->translate(
-                    "Type a website name to filter the choices below."),
-                panel_label       => $app->translate("Website Name"),
+                    "Type a site name to filter the choices below."),
+                panel_label       => $app->translate("Site Name"),
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',
                 panel_multi       => 0,
@@ -737,7 +741,7 @@ sub cms_pre_load_filtered_list {
 
     my $terms = $load_options->{terms};
     delete $terms->{blog_id};
-    $terms->{class} = 'website';
+    $terms->{class} = '*';
 
     my $user = $app->user;
     return if $user->is_superuser;

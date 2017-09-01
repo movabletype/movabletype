@@ -35,11 +35,11 @@
 </mt:if>
 </mt:SetVarBlock>
 
-<mt:setvarblock name="content">
+<mt:setvarblock name="page_content">
 
 <mt:include name="include/editor_script.tmpl" id="editor_script_include">
 
-<form method="post" action="<mt:var name="script_url">" id="edit_formatted_text">
+<form method="post" action="<mt:var name="script_url">" id="edit_formatted_text" class="mb-5">
   <input type="hidden" id="blog-id" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
   <input type="hidden" name="__mode" value="save" />
   <input type="hidden" name="_type" value="<mt:var name="object_type">" />
@@ -53,8 +53,7 @@
        id="text"
        label_class="no-header"
        label="<__trans phrase="Text">"
-       no_grid="1"
-       no_header="1">
+       label_for="text">
       <textarea name="text" id="text" clas="text highest"><mt:var name="text" escape="html"></textarea>
     </mtapp:setting>
 
@@ -62,6 +61,7 @@
        id="label"
        label_class="top-label"
        label="<__trans phrase="Label">"
+       label_for="label"
        required="1"
        no_grid="1">
       <input type="text" name="label" id="label" class="form-control text full required" maxlength="100" value="<mt:var name="label" escape="html">" />
@@ -70,6 +70,7 @@
     <mtapp:setting
        id="description"
        label_class="top-label"
+       label_for="description"
        label="<__trans phrase="Description">"
        no_grid="1">
       <input type="text" name="description" id="description" class="form-control text full" maxlength="255" value="<mt:var name="description" escape="html">" />

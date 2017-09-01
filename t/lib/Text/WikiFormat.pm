@@ -130,7 +130,7 @@ sub check_blocks {
     my %blocks = %{ $tags->{blocks} };
     delete @blocks{ @{ $tags->{blockorder} } };
     Carp::carp( "No order specified for blocks '"
-            . join( ', ', keys %blocks )
+            . join( ', ', sort keys %blocks )
             . "'\n" )
         if keys %blocks;
 }

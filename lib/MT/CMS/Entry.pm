@@ -791,7 +791,7 @@ PERMCHECK: {
         if ( 'power_edit' eq $filter_col ) {
             $filter_col = 'id';
             unless ( 'ARRAY' eq ref($filter_val) ) {
-                my @values = $app->param('filter_val');
+                my @values = $app->multi_param('filter_val');
                 $filter_val = \@values;
             }
         }
@@ -1151,7 +1151,11 @@ sub _build_entry_preview {
         $entry->cache_property( 'categories', undef, [] );
     }
     my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
-    my @tag_names = MT::Tag->split( $tag_delim, $q->param('tags') );
+    my $tags      = $q->param('tags');
+    my @tag_names
+        = ( defined $tags and $tags ne '' )
+        ? MT::Tag->split( $tag_delim, $tags )
+        : ();
     if (@tag_names) {
         my @tags;
         foreach my $tag_name (@tag_names) {
@@ -1164,14 +1168,14 @@ sub _build_entry_preview {
         $entry->{__tag_objects} = \@tags;
     }
 
-    my $ao_date = $q->param('authored_on_date');
-    my $ao_time = $q->param('authored_on_time');
+    my $ao_date = $q->param('authored_on_date') || '';
+    my $ao_time = $q->param('authored_on_time') || '';
     my $ao_ts   = $ao_date . $ao_time;
     $ao_ts =~ s/\D//g;
     $entry->authored_on($ao_ts);
 
-    my $uo_date = $q->param('unpublished_on_date');
-    my $uo_time = $q->param('unpublished_on_time');
+    my $uo_date = $q->param('unpublished_on_date') || '';
+    my $uo_time = $q->param('unpublished_on_time') || '';
     my $uo_ts   = $uo_date . $uo_time;
     $uo_ts =~ s/\D//g;
     $entry->unpublished_on($uo_ts);
@@ -1542,8 +1546,8 @@ sub save {
         $primary_category_old = $orig_obj->category;
         $categories_old       = $orig_obj->categories;
     }
-    my $status_old           = $id ? $obj->status : 0;
-    my $names                = $obj->column_names;
+    my $status_old = $id ? $obj->status : 0;
+    my $names = $obj->column_names;
 
     ## Get rid of category_id param, because we don't want to just set it
     ## in the Entry record; save it for later when we will set the Placement.
@@ -1701,7 +1705,7 @@ sub save {
                 || $2 < 1
                 || $3 < 1
                 || ( MT::Util::days_in( $2, $1 ) < $3
-                    && !MT::Util::leap_day( $0, $1, $2 ) )
+                    && !MT::Util::leap_day( $1, $2, $3 ) )
                 );
         }
         $param{return_args} = $app->param('return_args');
@@ -1744,7 +1748,7 @@ sub save {
                     || $2 < 1
                     || $3 < 1
                     || ( MT::Util::days_in( $2, $1 ) < $3
-                        && !MT::Util::leap_day( $0, $1, $2 ) )
+                        && !MT::Util::leap_day( $1, $2, $3 ) )
                     );
             }
             my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
@@ -1830,10 +1834,10 @@ sub save {
     ## look if any assets have been included/removed from this entry
     require MT::Asset;
     require MT::ObjectAsset;
-    my $include_asset_ids = $app->param('include_asset_ids');
-    my @asset_ids         = split( ',', $include_asset_ids );
-    my $obj_assets        = ();
-    my @obj_assets        = MT::ObjectAsset->load(
+    my $include_asset_ids = $app->param('include_asset_ids') || '';
+    my @asset_ids  = split( ',', $include_asset_ids );
+    my $obj_assets = ();
+    my @obj_assets = MT::ObjectAsset->load(
         { object_ds => 'entry', object_id => $obj->id } );
     foreach my $obj_asset (@obj_assets) {
         my $asset_id = $obj_asset->asset_id;
@@ -2034,7 +2038,7 @@ sub save_entries {
     MT::Util::Log->info('--- Start save_entries.');
 
     my $perms   = $app->permissions;
-    my $type    = $app->param('_type');
+    my $type    = $app->param('_type') || '';
     my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;
@@ -2079,7 +2083,7 @@ PERMCHECK: {
     $app->validate_magic() or return;
 
     my $q = $app->param;
-    my @p = $q->param;
+    my @p = $app->multi_param;
     require MT::Entry;
     require MT::Placement;
     require MT::Log;
@@ -2144,7 +2148,7 @@ PERMCHECK: {
                     || $2 < 1
                     || $3 < 1
                     || ( MT::Util::days_in( $2, $1 ) < $3
-                    && !MT::Util::leap_day( $0, $1, $2 ) );
+                    && !MT::Util::leap_day( $1, $2, $3 ) );
 
                 # FIXME: Should be assigning the publish_date field here
                 my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4,
@@ -2178,11 +2182,11 @@ PERMCHECK: {
                 $entry->$col($ts);
             };
 
-            my $co = $q->param( 'created_on_' . $id );
+            my $co = $q->param( 'created_on_' . $id ) || '';
             $date_closure->(
                 $co, 'authored_on', MT->translate('authored on')
             ) or return;
-            $co = $q->param( 'modified_on_' . $id );
+            $co = $q->param( 'modified_on_' . $id ) || '';
             $date_closure->(
                 $co, 'modified_on', MT->translate('modified on')
             ) or return;
@@ -2410,7 +2414,7 @@ sub save_entry_prefs {
         or return $app->error( $app->translate("No permissions") );
     $app->validate_magic() or return;
     my $q          = $app->param;
-    my $prefs      = $app->_entry_prefs_from_params;
+    my $prefs      = $app->_entry_prefs_from_params('');
     my $disp       = $q->param('entry_prefs');
     my $sort_only  = $q->param('sort_only');
     my $prefs_type = $q->param('_type') . '_prefs';
@@ -2445,20 +2449,20 @@ sub save_entry_prefs {
 sub publish_entries {
     my $app = shift;
     require MT::Entry;
-    update_entry_status( $app, MT::Entry::RELEASE(), $app->param('id') );
+    update_entry_status( $app, MT::Entry::RELEASE(), $app->multi_param('id') );
 }
 
 sub draft_entries {
     my $app = shift;
     require MT::Entry;
-    update_entry_status( $app, MT::Entry::HOLD(), $app->param('id') );
+    update_entry_status( $app, MT::Entry::HOLD(), $app->multi_param('id') );
 }
 
 sub open_batch_editor {
     my $app = shift;
     my ($param) = @_;
     $param ||= {};
-    my @ids = $app->param('id')
+    my @ids = $app->multi_param('id')
         or return "Invalid request.";
     my %dupe;
     @ids = grep { !$dupe{$_}++ } @ids;
@@ -3177,7 +3181,7 @@ sub delete {
     $app->setup_filtered_ids
         if $app->param('all_selected');
     my %rebuild_recipe;
-    for my $id ( $q->param('id') ) {
+    for my $id ( $q->multi_param('id') ) {
         my $class = $app->model("entry");
         my $obj   = $class->load($id);
         return $app->call_return unless $obj;

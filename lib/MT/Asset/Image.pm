@@ -1098,12 +1098,13 @@ sub has_gps_metadata {
 sub has_metadata {
     my ($asset) = @_;
 
-    return 0 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
+    my $file_ext = lc( $asset->file_ext || '' );
+    return 0 if $file_ext !~ /^(jpe?g|tiff?)$/;
 
     require Image::ExifTool;
     my $exif    = $asset->exif or return;
-    my $is_jpeg = lc( $asset->file_ext ) =~ /^jpe?g$/;
-    my $is_tiff = lc( $asset->file_ext ) =~ /^tiff?$/;
+    my $is_jpeg = $file_ext =~ /^jpe?g$/;
+    my $is_tiff = $file_ext =~ /^tiff?$/;
     for my $g ( $exif->GetGroups ) {
         next
             if $g eq 'ExifTool'

@@ -146,19 +146,19 @@ sub fields {
 
                 return if !_can_save_blog_pathinfo($obj);
 
+                my $subdomain = $hash->{siteSubdomain};
                 if ( defined( $hash->{siteSubdomain} )
                     && $hash->{siteSubdomain} ne '' )
                 {
-                    my $subdomain = $hash->{siteSubdomain};
+                    $subdomain = $hash->{siteSubdomain};
                     $subdomain .= '.' if $subdomain !~ /\.$/;
                     $subdomain =~ s/\.{2,}/\./g;
-
-                    my $path = $hash->{url};
-                    return "$subdomain/::/$path";
                 }
                 else {
-                    return $hash->{url};
+                    $subdomain = '';
                 }
+                my $path = $hash->{url};
+                return "$subdomain/::/$path";
             },
         },
         {   name      => 'archiveUrl',

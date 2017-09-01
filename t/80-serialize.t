@@ -60,7 +60,7 @@ my $dd = sub {
 
 # serialize and deserialize, check the results
 # compare structures with Data::Dumper
-for my $label (keys %sers) {
+for my $label (sort keys %sers) {
   my $ser = $sers{$label};
 
   print "# Checking serialization for $label\n";

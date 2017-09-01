@@ -1,48 +1,31 @@
 <mt:setvartemplate name="layout">
-  <mt:include name="layout/default/header.tmpl">
+
+  <mt:include name="layout/common/header.tmpl">
 
   <mt:if name="form_header">
     <mt:var name="form_header">
   </mt:if>
 
-  <mt:setvarblock name="has_info"><mt:if name="object_nav">1<mt:elseif name="related_content">1</mt:if></mt:setvarblock>
-  <mt:if name="has_info">
-    <mt:include name="include/notification_indicator.tmpl">
-    <mt:include name="include/system_msg.tmpl">
-    <mt:include name="include/display_options.tmpl">
-    <div class="row">
-      <div class="col-md-9">
-        <mt:include name="include/page_title.tmpl">
-        <mt:include name="include/content_header.tmpl">
-        <mt:var name="page_content">
-      </div>
-      <div class="col-md-3">
-        <mt:if name="object_nav">
-          <div class="row">
-            <div class="col-md-12">
-              <mt:var name="object_nav">
-            </div>
-          </div>
-        </mt:if>
-        <div class="row">
-          <div class="col-md-12">
-            <mt:var name="related_content">
-          </div>
-        </div>
-      </div>
+  <div class="row">
+  <mt:if name="has_menu">
+    <div class="mt-primaryNavigation">
+      <mt:include name="include/primary_navigation.tmpl">
     </div>
-  <mt:else>
-    <mt:include name="include/notification_indicator.tmpl">
-    <mt:include name="include/system_msg.tmpl">
-    <mt:include name="include/display_options.tmpl">
-    <mt:include name="include/page_title.tmpl">
-    <mt:include name="include/content_header.tmpl">
-    <mt:var name="page_content">
   </mt:if>
 
-  <mt:if name="form_footer">
-    <mt:var name="form_footer">
-  </mt:if>
+    <mt:include name="include/main_content.tmpl">
 
-  <mt:include name="layout/default/footer.tmpl">
+  <mt:setvarblock name="has_info"><mt:if name="object_nav">1<mt:elseif name="related_content">1</mt:if></mt:setvarblock>
+
+  <mt:if name="has_info">
+    <div class="mt-secondaryPanel">
+    <mt:if name="object_nav">
+      <mt:var name="object_nav">
+    </mt:if>
+      <mt:var name="related_content">
+    </div>
+  </mt:if>
+  </div>
+
+  <mt:include name="layout/common/footer.tmpl">
 </mt:setvartemplate>

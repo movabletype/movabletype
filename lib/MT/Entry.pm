@@ -284,15 +284,16 @@ sub list_props {
                     :                                     '';
                 my $status_img
                     = MT->static_path . 'images/status_icons/' . $status_file;
-                my $view_img
-                    = MT->static_path . 'images/status_icons/view.gif';
                 my $view_link_text
                     = MT->translate( 'View [_1]', $class_label );
-                my $view_link = $obj->status == MT::Entry::RELEASE()
+                my $static_uri = MT->static_path;
+                my $view_link  = $obj->status == MT::Entry::RELEASE()
                     ? qq{
                     <span class="view-link">
                       <a href="$permalink" target="_blank">
-                        <img alt="$view_link_text" src="$view_img" />
+                        <svg title="$view_link_text" role="img" class="mt-icon mt-icon--sm">
+                          <use xlink:href="${static_uri}images/sprite.svg#ic_permalink">
+                        </svg>
                       </a>
                     </span>
                 }
@@ -360,27 +361,25 @@ sub list_props {
             args_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
-                my $id  = MT->app->param('filter_val');
-                my $cat = MT->model('category')->load($id)
+                my $cat = MT->model('category')->load($val)
                     or return $prop->error(
                     MT->translate(
                         '[_1] ( id:[_2] ) does not exists.',
                         $prop->datasource->container_label,
-                        $id
+                        defined $val ? $val : ''
                     )
                     );
                 return { option => 'equal', value => $cat->id };
             },
             label_via_param => sub {
-                my $prop  = shift;
-                my ($app) = @_;
-                my $id    = $app->param('filter_val');
-                my $cat   = MT->model('category')->load($id)
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                my $cat = MT->model('category')->load($val)
                     or return $prop->error(
                     MT->translate(
                         '[_1] ( id:[_2] ) does not exists.',
                         $prop->datasource->container_label,
-                        $id
+                        defined $val ? $val : ''
                     )
                     );
                 return if !$app->blog || $app->blog->id != $cat->blog_id;
@@ -712,9 +711,9 @@ sub list_props {
                 my $blog = MT->app ? MT->app->blog : undef;
                 require MT::Util;
                 my $now = MT::Util::epoch2ts( $blog, time() );
-                my $from   = $args->{from}   || undef;
-                my $to     = $args->{to}     || undef;
-                my $origin = $args->{origin} || undef;
+                my $from   = $args->{from}   || '';
+                my $to     = $args->{to}     || '';
+                my $origin = $args->{origin} || '';
                 $from =~ s/\D//g;
                 $to =~ s/\D//g;
                 $origin =~ s/\D//g;
@@ -769,7 +768,14 @@ sub list_props {
             label_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
-                my $author = MT->model('author')->load($val);
+                my $author = MT->model('author')->load($val)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        MT->translate("Author"),
+                        defined $val ? $val : ''
+                    )
+                    );
                 return MT->translate( 'Entries by [_1]', $author->nickname, );
             },
         },
@@ -1244,7 +1250,7 @@ MT::TBPing->add_callback(
 sub archive_file {
     my $entry = shift;
     my ($at)  = @_;
-    my $blog  = $entry->blog() || return;
+    my $blog  = $entry->blog() || return '';
     unless ($at) {
         $at = $blog->archive_type_preferred || $blog->archive_type;
         return '' if !$at || $at eq 'None';
@@ -1260,7 +1266,9 @@ sub archive_file {
             last;
         }
     }
-    archive_file_for( $entry, $blog, $at );
+    my $file = archive_file_for( $entry, $blog, $at );
+    $file = '' unless defined $file;
+    $file;
 }
 
 sub archive_url {

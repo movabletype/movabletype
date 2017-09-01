@@ -5,10 +5,10 @@
 <mt:setvarblock name="widget_header">
 </mt:setvarblock>
   <div class="row">
-    <div class="col-md-4 user-pic picture small">
+    <div class="col-4 user-pic picture small">
         <img alt="<mt:var name="author_display_name" escape="html">" src="<mt:if name="author_userpic_url"><mt:var name="author_userpic_url" escape="html"><mt:else><mt:var name="static_uri">images/default-userpic-50.jpg</mt:if>" />
     </div>
-    <div class="col-md-8 user-stats-upper">
+    <div class="col-8 user-stats-upper">
       <ul class="user-stats-list">
 <mt:if name="last_post_id">
   <mt:if name="last_post_can_edit">
@@ -28,14 +28,14 @@
 
     <div class="user-stats-lower">
       <div class="row">
-        <div class="col-md-offset-1 col-md-5 icon icon-entry">
+        <div class="col-5 ml-auto icon icon-entry">
           <mt:if name="can_list_entries">
             <__trans phrase="<a href="[_1]">[quant,_2,entry,entries]</a>" params="<mt:var name="my_entries_url">%%<mt:var name="publish_count">">
           <mt:else>
             <__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="publish_count">">
           </mt:if>
         </div>
-        <div class="col-md-offset-1 col-md-5 icon icon-page">
+        <div class="col-5 mr-auto icon icon-page">
           <mt:if name="can_list_pages">
             <__trans phrase="<a href="[_1]">[quant,_2,page,pages]</a>" params="<mt:var name="my_pages_url">%%<mt:var name="publish_page_count">">
           <mt:else>
@@ -44,14 +44,14 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-offset-1 col-md-5 icon icon-comment">
+        <div class="col-5 ml-auto icon icon-comment">
           <mt:if name="can_list_comments">
             <__trans phrase="<a href="[_1]">[quant,_2,comment,comments]</a>" params="<mt:var name="my_comments_url">%%<mt:var name="comment_count">">
           <mt:else>
             <__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="comment_count">">
           </mt:if>
         </div>
-        <div class="col-md-offset-1 col-md-5 icon icon-draft">
+        <div class="col-5 mr-auto icon icon-draft">
           <mt:if name="can_list_entries">
             <__trans phrase="<a href="[_1]">[quant,_2,draft,drafts]</a>" params="<mt:var name="my_drafts_url">%%<mt:var name="draft_count">">
           <mt:else>

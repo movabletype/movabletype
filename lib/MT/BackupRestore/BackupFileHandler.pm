@@ -50,7 +50,7 @@ sub start_element {
 
     if ( $self->{start} ) {
         die MT->translate(
-            'The uploaded file was not a valid Movable Type backup manifest file.'
+            'The uploaded file was not a valid Movable Type exported manifest file.'
             )
             if !( ( 'movabletype' eq $name )
             && ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns ) );
@@ -64,7 +64,7 @@ sub start_element {
         if ( $schema != $self->{schema_version} ) {
             $self->{critical} = 1;
             my $message = MT->translate(
-                'The uploaded backup manifest file was created with Movable Type, but the schema version ([_1]) differs from the one used by this system ([_2]).  You should not restore this backup to this version of Movable Type.',
+                'The uploaded exported manifest file was created with Movable Type, but the schema version ([_1]) differs from the one used by this system ([_2]).  You should not import this exported file to this version of Movable Type.',
                 $schema, $self->{schema_version}
             );
             MT->log(
@@ -97,18 +97,20 @@ sub start_element {
             unless ($class) {
                 push @{ $self->{errors} },
                     MT->translate(
-                    '[_1] is not a subject to be restored by Movable Type.',
+                    '[_1] is not a subject to be imported by Movable Type.',
                     $name );
             }
             else {
-                if ( $self->{current_class} ne $class ) {
+                if (  !$self->{current_class}
+                    or $self->{current_class} ne $class )
+                {
                     if ( my $c = $self->{current_class} ) {
                         my $state   = $self->{state};
                         my $records = $self->{records};
                         $callback->(
                             $state . " "
                                 . MT->translate(
-                                "[_1] records restored.", $records
+                                "[_1] records imported.", $records
                                 ),
                             $c->class_type || $c->datasource
                         );
@@ -116,7 +118,7 @@ sub start_element {
                     $self->{records}       = 0;
                     $self->{current_class} = $class;
                     my $state
-                        = MT->translate( 'Restoring [_1] records:', $class );
+                        = MT->translate( 'Importing [_1] records:', $class );
                     $callback->( $state, $name );
                     $self->{state} = $state;
                 }
@@ -133,23 +135,24 @@ sub start_element {
                         = $class =~ /^MT::Asset/
                         ? 'file_path'
                         : 'upload_path';
-                    my ($separator)
-                        = ( $column_data{$key} =~ m!^%\w(/|\\)! );
-                    if ( $separator eq '/' && $is_mswin32 ) {
-
-                        # *nix => Windows
-                        $column_data{$key} =~ s!/!\\!g;
-                    }
-                    elsif ( $separator eq '\\' && !$is_mswin32 ) {
-
-                        # Windows => *nix
-                        $column_data{$key} =~ s!\\!/!g;
+                    if ( $column_data{$key} ) {
+                        if ( $is_mswin32 and $column_data{$key} =~ m!^%\w/! )
+                        {
+                            # *nix => Windows
+                            $column_data{$key} =~ s!/!\\!g;
+                        }
+                        elsif (!$is_mswin32
+                            and $column_data{$key} =~ m!^%\w\\! )
+                        {
+                            # Windows => *nix
+                            $column_data{$key} =~ s!\\!/!g;
+                        }
                     }
                 }
 
                 my $obj;
                 if ( 'author' eq $name ) {
-                    MT::Util::Log->info( '   Start restore ' . $class );
+                    MT::Util::Log->info( '   Start import ' . $class );
 
                     $obj = $class->load( { name => $column_data{name} } );
                     if ($obj) {
@@ -158,12 +161,12 @@ sub start_element {
                         {
                             MT->log(
                                 {   message => MT->translate(
-                                        "A user with the same name as the current user ([_1]) was found in the backup.  Skipping this user record.",
+                                        "A user with the same name as the current user ([_1]) was found in the exported file.  Skipping this user record.",
                                         $obj->name
                                     ),
                                     level => MT::Log::INFO(),
                                     metadata =>
-                                        'Permissions and associations have been restored.',
+                                        'Permissions and associations have been imported.',
                                     class    => 'system',
                                     category => 'restore',
                                 }
@@ -178,13 +181,13 @@ sub start_element {
                         else {
                             MT->log(
                                 {   message => MT->translate(
-                                        "A user with the same name '[_1]' was found in the backup (ID:[_2]).  Restore replaced this user with the data from the backup.",
+                                        "A user with the same name '[_1]' was found in the exported file (ID:[_2]).  Import replaced this user with the data from the exported file.",
                                         $obj->name,
                                         $obj->id
                                     ),
                                     level => MT::Log::INFO(),
                                     metadata =>
-                                        'Permissions and associations have been restored as well.',
+                                        'Permissions and associations have been imported as well.',
                                     class    => 'system',
                                     category => 'restore',
                                 }
@@ -221,10 +224,10 @@ sub start_element {
                         }
                     }
 
-                    MT::Util::Log->info( '   End restore   ' . $class );
+                    MT::Util::Log->info( '   End import   ' . $class );
                 }
                 elsif ( 'template' eq $name ) {
-                    MT::Util::Log->info( '   Start restore ' . $class );
+                    MT::Util::Log->info( '   Start import ' . $class );
 
                     if ( !$column_data{blog_id} ) {
                         $obj = $class->load(
@@ -255,10 +258,10 @@ sub start_element {
                             }
                         }
                     }
-                    MT::Util::Log->info( '   End restore   ' . $class );
+                    MT::Util::Log->info( '   End import   ' . $class );
                 }
                 elsif ( 'filter' eq $name ) {
-                    MT::Util::Log->info( '   Start restore ' . $class );
+                    MT::Util::Log->info( '   Start import ' . $class );
 
                     if ( $objects->{ "MT::Author#" . $column_data{author_id} }
                         )
@@ -281,10 +284,10 @@ sub start_element {
                         }
                     }
 
-                    MT::Util::Log->info( '   End restore   ' . $class );
+                    MT::Util::Log->info( '   End import   ' . $class );
                 }
                 elsif ( 'image' eq $name ) {
-                    MT::Util::Log->info( '   Start restore ' . $class );
+                    MT::Util::Log->info( '   Start import ' . $class );
 
                     if ( !$column_data{blog_id} ) {
                         $obj = $class->load(
@@ -341,14 +344,14 @@ sub start_element {
                         }
                     }
 
-                    MT::Util::Log->info( '   End restore   ' . $class );
+                    MT::Util::Log->info( '   End import   ' . $class );
                 }
 
                 unless ($obj) {
                     $obj = $class->new;
                 }
                 unless ( $obj->id ) {
-                    MT::Util::Log->info( '   Start restore ' . $class );
+                    MT::Util::Log->info( '   Start import ' . $class );
 
                     # Pass through even if an blog doesn't restore
                     # the parent object
@@ -410,7 +413,7 @@ sub start_element {
                         $self->{skip} += 1;
                     }
 
-                    MT::Util::Log->info( '   End restore   ' . $class );
+                    MT::Util::Log->info( '   End import   ' . $class );
                 }
             }
         }
@@ -572,7 +575,7 @@ sub end_element {
                     $self->{callback}->(
                         $self->{state} . " "
                             . MT->translate(
-                            "[_1] records restored...", $records
+                            "[_1] records imported...", $records
                             ),
                         $data->{LocalName}
                     ) if $records && ( $records % 10 == 0 );
@@ -688,7 +691,7 @@ sub end_element {
                     $self->{callback}->(
                         $self->{state} . " "
                             . MT->translate(
-                            "[_1] records restored...", $records
+                            "[_1] records imported...", $records
                             ),
                         $data->{LocalName}
                     ) if $records && ( $records % 10 == 0 );
@@ -718,7 +721,7 @@ sub end_document {
         my $records = $self->{records};
         $self->{callback}->(
             $state . " "
-                . MT->translate( "[_1] records restored.", $records ),
+                . MT->translate( "[_1] records imported.", $records ),
             $c->class_type || $c->datasource
         );
     }

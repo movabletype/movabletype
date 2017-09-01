@@ -28,11 +28,7 @@ function toggleHidden( ids ) {
       if ( !element ) {
         return;
       }
-      if (jQuery(element).hasClass('hidden')) {
-        jQuery(element).removeClass('hidden');
-      } else {
-        jQuery(element).addClass('hidden');
-      }
+      jQuery(element).toggle();
     });
     return false;
 }
@@ -47,7 +43,7 @@ function toggleHidden( ids ) {
      id="template_set_not_found"
      class="error"
      can_close="0">
-    <__trans phrase="Cannot find template set. Please apply [_1]theme[_2] to refresh your templates." params="<a href="javascript:void(0);" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_full_url">?__mode=list_theme&amp;blog_id=<mt:var name="blog_id">');">%%</a>">
+    <__trans phrase="Cannot find template set. Please apply [_1]theme[_2] to refresh your templates." params="<a href="javascript:void(0);" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=list_theme&amp;blog_id=<mt:var name="blog_id">');" class="alert-link">%%</a>">
   </mtapp:statusmsg>
 </mt:setvarblock>
 
@@ -95,12 +91,13 @@ function toggleHidden( ids ) {
         label_class="top-label"
         show_label="0"
         show_hint="1"
-        hint="<__trans phrase="Updates current templates while retaining any user-created templates.">"
-        no_grid="1">
-        <div class="field-header">
-            <label for="refresh_type_refresh">
-              <input type="radio" name="refresh_type" id="refresh_type_refresh" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" />
-              <$mt:var name="refresh_label"$>
+        hint_id="refreshTemplates"
+        hint="<__trans phrase="Updates current templates while retaining any user-created templates.">">
+        <div class="form-group field-header">
+            <label class="custom-control custom-radio">
+              <input type="radio" name="refresh_type" id="refresh_type_refresh" class="custom-control-input" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" aria-describedby="refreshTemplates" />
+              <span class="custom-control-indicator"></span>
+              <span class="custom-control-description"><$mt:var name="refresh_label"$></span>
             </label>
         </div>
     </mtapp:setting>
@@ -109,56 +106,86 @@ function toggleHidden( ids ) {
         label="$new_label"
         show_label="0"
         show_hint="1"
+        hint_id="cleanStart"
         hint="$new_hint"
-        label_class="top-label"
-        no_grid="1">
+        label_class="top-label">
 
-        <div class="field-header">
-            <label for="refresh_type_clean">
-              <input type="radio" name="refresh_type" id="refresh_type_clean" value="clean" onclick="enable('template_set');toggleHidden('confirm-refresh');toggleHidden('confirm-clean');" />
-              <$mt:var name="new_label"$>
+        <div class="form-group field-header">
+            <label class="custom-control custom-radio">
+              <input type="radio" name="refresh_type" id="refresh_type_clean" class="custom-control-input" value="clean" onclick="enable('template_set');toggleHidden('confirm-refresh');toggleHidden('confirm-clean');" />
+              <span class="custom-control-indicator"></span>
+              <span class="custom-control-description"><$mt:var name="new_label"$></span>
             </label>
         </div>
     </mtapp:setting>
 
-        <div>
-        <input type="checkbox" id="backup" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" />
-        <label for="backup"><__trans phrase="Make backups of existing templates first"></label>
+        <div class="form-group">
+            <label class="custom-control custom-checkbox">
+                <input type="checkbox" id="backup" class="custom-control-input" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" aria-describedby="cleanStart" />
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description">
+                    <__trans phrase="Make backups of existing templates first">
+                <span>
+            </label>
         </div>
     </div>
 
 
-    <div id="confirm-panel-body" class="hidden">
+    <div id="confirm-panel-body" style="display: none;">
         <div id="confirm-refresh">
             <mt:if name="blog_id">
-                <p><__trans phrase="You have requested to <strong>refresh the current template set</strong>. This action will:"></p>
+                <p>
+                  <__trans phrase="You have requested to <strong>refresh the current template set</strong>. This action will:">
+                </p>
             <mt:else>
-                <p><__trans phrase="You have requested to <strong>refresh the global templates</strong>. This action will:"></p>
+                <p>
+                  <__trans phrase="You have requested to <strong>refresh the global templates</strong>. This action will:">
+                </p>
             </mt:if>
 
-            <ul>
-                <li id="backups-message-refresh"><__trans phrase="make backups of your templates that can be accessed through your backup filter"></li>
-                <li><__trans phrase="potentially install new templates"></li>
-                <li><__trans phrase="overwrite some existing templates with new template code"></li>
+            <ul class="list-unstyled">
+                <li id="backups-message-refresh">
+                  <__trans phrase="make backups of your templates that can be accessed through your backup filter">
+                </li>
+                <li>
+                  <__trans phrase="potentially install new templates">
+                </li>
+                <li>
+                  <__trans phrase="overwrite some existing templates with new template code">
+                </li>
             </ul>
         </div>
 
-        <div id="confirm-clean" class="hidden">
+        <div id="confirm-clean" style="display: none;">
             <mt:if name="blog_id">
-                <p><__trans phrase="You have requested to <strong>apply a new template set</strong>. This action will:"></p>
+                <p>
+                  <__trans phrase="You have requested to <strong>apply a new template set</strong>. This action will:">
+                </p>
             <mt:else>
-                <p><__trans phrase="You have requested to <strong>reset to the default global templates</strong>. This action will:"></p>
+                <p>
+                  <__trans phrase="You have requested to <strong>reset to the default global templates</strong>. This action will:">
+                </p>
             </mt:if>
 
-            <ul>
-                <li id="backups-message-clean"><__trans phrase="make backups of your templates that can be accessed through your backup filter"></li>
-                <mt:if name="blog_id">
-                    <li><__trans phrase="delete all of the templates in your blog"></li>
-                    <li><__trans phrase="install new templates from the selected template set"></li>
-                <mt:else>
-                    <li><__trans phrase="delete all of your global templates"></li>
-                    <li><__trans phrase="install new templates from the default global templates"></li>
-                </mt:if>
+            <ul class="list-unstyled">
+                <li id="backups-message-clean">
+                  <__trans phrase="make backups of your templates that can be accessed through your backup filter">
+                </li>
+              <mt:if name="blog_id">
+                <li>
+                  <__trans phrase="delete all of the templates in your blog">
+                </li>
+                <li>
+                  <__trans phrase="install new templates from the selected template set">
+                </li>
+              <mt:else>
+                <li>
+                  <__trans phrase="delete all of your global templates">
+                </li>
+                <li>
+                  <__trans phrase="install new templates from the default global templates">
+                </li>
+              </mt:if>
             </ul>
         </div>
 
@@ -189,7 +216,7 @@ function toggleHidden( ids ) {
         </div>
       </div>
 
-      <div id="confirm-panel-footer" class="hidden">
+      <div id="confirm-panel-footer" style="display: none;">
         <div class="actions-bar">
             <button
                type="submit"

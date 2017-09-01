@@ -1,18 +1,19 @@
 <display-options>
   <div class="row">
-    <div class="col-md-12">
-      <a href="#"
-        class="btn btn-default pull-right"
+    <div class="col-12">
+      <button
+        class="btn btn-default dropdown-toggle float-right"
         data-toggle="collapse"
         data-target="#display-options-detail"
+        aria-expanded="false"
+        aria-controls="display-options-detail"
       >
         { trans('Display Options') }
-        <span class="caret"></span>
-      </a>
+      </button>
     </div>
   </div>
   <div class="row">
-    <div data-is="display-options-detail" class="col-md-12"></div>
+    <div data-is="display-options-detail" class="col-12"></div>
   </div>
 
   <script>
@@ -21,11 +22,15 @@
 </display-options>
 
 <display-options-detail>
-  <div id="display-options-detail" class="collapse panel panel-default">
-    <div class="panel-body">
-      <div data-is="display-options-limit" id="per_page-field"></div>
+  <div id="display-options-detail" class="collapse">
+    <div class="card card-block p-3">
+      <fieldset class="form-group">
+        <div data-is="display-options-limit" id="per_page-field"></div>
+      </fieldset>
       <virtual if={ !listTop.opts.disableUserDispOption }>
-        <div data-is="display-options-columns" id="display_columns-field"></div>
+        <fieldset class="form-group">
+          <div data-is="display-options-columns" id="display_columns-field"></div>
+        </fieldset>
         <div class="actions-bar actions-bar-bottom">
           <a href="javascript:void(0);" id="reset-display-options" onclick={ resetColumns }>
             { trans('Reset defaults') }
@@ -50,7 +55,7 @@
   </div>
   <div class="field-content">
     <select id="row"
-      class="form-control"
+      class="custom-select form-control"
       style="width: 100px;"
       ref="limit"
       value={ store.limit }
@@ -77,31 +82,35 @@
     <label>{ trans('Column') }</label>
   </div>
   <div class="field-content">
-    <ul id="disp_cols" class="list-inline">
+    <ul id="disp_cols" class="list-inline m-0">
       <virtual each={ column in store.columns }>
-        <li hide={ column.force_display }>
-          <label>
+        <li hide={ column.force_display } class="list-inline-item">
+          <label class="custom-control custom-checkbox">
             <input type="checkbox"
+              class="custom-control-input"
               id={ column.id }
               checked={ column.checked }
               onchange={ toggleColumn }
             />
-            { column.label }
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description">{ column.label }</span>
           </label>
         </li>
         <li
           each={ subField in column.sub_fields }
           hide={ subField.force_display }
+          class="list-inline-item"
         >
-          <label>
+          <label class="custom-control custom-checkbox">
             <input type="checkbox"
               id={ subField.id }
               pid={ subField.parent_id }
-              class={ subField.class }
+              class="custom-control-input { subField.class }"
               checked={ subField.checked }
               onchange={ toggleSubField }
             />
-            { subField.label }
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description">{ subField.label }</span>
           </label>
         </li>
       </virtual>

@@ -10,7 +10,7 @@ use strict;
 use base qw( MT::Object );
 
 use MT;
-use MT::CategoryList;
+use MT::CategorySet;
 use MT::ContentType;
 use MT::ContentType::UniqueID;
 
@@ -25,7 +25,7 @@ __PACKAGE__->install_properties(
             'description'             => 'string(255)',
             'required'                => 'boolean',
             'related_content_type_id' => 'integer',
-            'related_cat_list_id'     => 'integer',
+            'related_cat_set_id'      => 'integer',
             'unique_id'               => 'string(40) not null',
         },
         indexes => {
@@ -138,13 +138,13 @@ sub related_content_type {
     );
 }
 
-sub related_cat_list {
+sub related_cat_set {
     my $self = shift;
     $self->cache_property(
-        'related_cat_list',
+        'related_cat_set',
         sub {
             return unless $self->type eq 'category';
-            MT::CategoryList->load( $self->related_cat_list_id || 0 );
+            MT::CategorySet->load( $self->related_cat_set_id || 0 );
         },
     );
 }

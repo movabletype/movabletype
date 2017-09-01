@@ -31,7 +31,7 @@ our @EXPORT_OK
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
     realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
-    encode_json build_upload_destination );
+    encode_json build_upload_destination is_mod_perl1 );
 
 {
     my $Has_Weaken;
@@ -43,6 +43,13 @@ our @EXPORT_OK
             && Scalar::Util->can('weaken') ? 1 : 0;
         Scalar::Util::weaken( $_[0] ) if $Has_Weaken;
     }
+}
+
+sub is_mod_perl1 () {
+    return ( $ENV{MOD_PERL}
+            and
+            ( !$ENV{MOD_PERL_API_VERSION} or $ENV{MOD_PERL_API_VERSION} < 2 )
+    );
 }
 
 sub leap_day {
@@ -90,6 +97,7 @@ sub iso2ts {
     my ( $blog, $iso ) = @_;
     return undef
         unless $iso
+        and $iso
         =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/;
     my ( $y, $mo, $d, $h, $m, $s, $offset )
         = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
@@ -457,8 +465,9 @@ sub format_ts {
         %f = %$f_ref;
     }
     else {
-        my $L = $Languages{$lang};
-        my @ts = @f{qw( Y m d H M S )} = map { $_ || 0 } unpack 'A4A2A2A2A2A2', $ts;
+        my $L  = $Languages{$lang};
+        my @ts = @f{qw( Y m d H M S )}
+            = map { $_ || 0 } unpack 'A4A2A2A2A2A2', $ts;
         $f{w} = wday_from_ts( @ts[ 0 .. 2 ] );
         $f{j} = yday_from_ts( @ts[ 0 .. 2 ] );
         $f{'y'} = substr $f{Y}, 2;
@@ -1215,12 +1224,18 @@ sub make_unique_category_basename {
     my ($cat) = @_;
     require MT::Blog;
     my $blog  = MT::Blog->load( $cat->blog_id );
+    my $name  = '';
     my $label = $cat->label;
-    $label = '' if !defined $label;
-    $label =~ s/^\s+|\s+$//gs;
-
-    my $name = MT::Util::dirify($label)
-        || ( $cat->basename_prefix(1) . $cat->id );
+    if ( defined $label ) {
+        $label =~ s/^\s+|\s+$//gs;
+        $name = MT::Util::dirify($label);
+    }
+    if ( $name eq '' ) {
+        $name
+            = $cat->id
+            ? $cat->basename_prefix(1) . $cat->id
+            : $cat->basename_prefix(0);
+    }
 
     my $limit
         = ( $blog && $blog->basename_limit ) ? $blog->basename_limit : 30;
@@ -1230,13 +1245,10 @@ sub make_unique_category_basename {
     $base =~ s/_+$//;
     $base = $cat->basename_prefix(0)
         if $base eq '';    #FIXME when does this happen?
-    my $i         = 1;
-    my $base_copy = $base;
 
     my $cat_class = ref $cat;
     my $terms
-        = { category_list_id => $cat->category_list_id || [ \'IS NULL', 0 ],
-        };
+        = { category_set_id => $cat->category_set_id || [ \'IS NULL', 0 ], };
     return _get_basename( $cat_class, $base, $blog, $terms );
 }
 
@@ -1262,8 +1274,6 @@ sub make_unique_author_basename {
     $limit = 250 if $limit > 250;
     my $base = substr( $name, 0, $limit );
     $base =~ s/_+$//;
-    my $i         = 1;
-    my $base_copy = $base;
 
     my $author_class = ref $author;
     return _get_basename( $author_class, $base );
@@ -1380,7 +1390,7 @@ sub is_valid_date {
         || $2 > 12
         || $2 < 1
         || $3 < 1
-        || ( days_in( $2, $1 ) < $3 && !leap_day( $0, $1, $2 ) ) );
+        || ( days_in( $2, $1 ) < $3 && !leap_day( $1, $2, $3 ) ) );
     1;
 }
 
@@ -1912,7 +1922,7 @@ $Languages{en_US} = $Languages{en_us} = $Languages{"en-us"} = $Languages{en};
 $Languages{ja} = $Languages{jp};
 
 sub browser_language {
-    my @browser_langs = $ENV{HTTP_ACCEPT_LANGUAGE} =~ m{
+    my @browser_langs = ( $ENV{HTTP_ACCEPT_LANGUAGE} || '' ) =~ m{
     	(
     		[a-z]{2}      # en
     		(?:-[a-z]{2})?  # -us
@@ -1939,7 +1949,7 @@ sub browser_language {
 }
 
 sub launch_background_tasks {
-    return !( $ENV{MOD_PERL}
+    return !( is_mod_perl1()
         || $ENV{FAST_CGI}
         || $ENV{'psgi.input'}
         || !MT->config->LaunchBackgroundTasks );

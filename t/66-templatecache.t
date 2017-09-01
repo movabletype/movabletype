@@ -67,7 +67,7 @@ $ts = sprintf '%04d%02d%02d%02d%02d%02d', $ts[5] + 1900, $ts[4] + 1,
     @ts[ 3, 2, 1, 0 ];
 $tmpl->modified_on($ts);
 $tmpl->save;
-$mt->rebuild( BlogId => $blog->id, Force => 1 ) || print "Rebuild error: ",
+$mt->rebuild( BlogID => $blog->id, Force => 1 ) || print "Rebuild error: ",
     $mt->errstr;
 my $out3 = $tmpl->build( $ctx, {} );
 ok( $out3 eq "hello yay", "Test template should be different" );

@@ -397,18 +397,21 @@ sub list_props {
                         push @result, MT->translate('Deleted');
                         next;
                     }
-                    my $type = $entry->class_type;
-                    my $img
-                        = MT->static_path
-                        . 'images/nav_icons/color/'
-                        . $type . '.gif';
                     my $title_html
                         = MT::ListProperty::make_common_label_html( $entry,
                         $app, 'title', 'No title' );
+
+                    my $static_uri = $app->static_path;
+                    my $icon_title = $entry->class_label;
+                    my $icon_color = $entry->is_entry ? 'success' : 'info';
+                    my $icon       = qq{
+                        <svg title="$icon_title" role="img" class="mt-icon--sm mt-icon--$icon_color">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_file">
+                        </svg>
+                    };
+
                     push @result, qq{
-                        <span class="icon target-type $type">
-                          <img src="$img" />
-                        </span>
+                        $icon
                         $title_html
                     };
                 }
@@ -422,11 +425,17 @@ sub list_props {
                     : '';
             },
             label_via_param => sub {
-                my $prop     = shift;
-                my $app      = shift;
-                my $entry_id = $app->param('filter_val');
-                my $entry    = MT->model('entry')->load($entry_id);
-                my $label    = MT->translate( 'Comments on [_1]: [_2]',
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                my $entry = MT->model('entry')->load($val)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        MT->translate("Entry"),
+                        defined $val ? $val : ''
+                    )
+                    );
+                my $label = MT->translate( 'Comments on [_1]: [_2]',
                     $entry->class_label, $entry->title, );
                 $prop->{filter_label} = MT::Util::encode_html($label);
                 $label;
@@ -483,7 +492,14 @@ sub list_props {
             label_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
-                my $user = MT->model('author')->load($val);
+                my $user = MT->model('author')->load($val)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        MT->translate("Author"),
+                        defined $val ? $val : ''
+                    )
+                    );
                 return MT->translate(
                     "All comments by [_1] '[_2]'",
                     (     $user->type == MT::Author::COMMENTER()
@@ -779,6 +795,12 @@ sub list_props {
             base    => 'entry.status',
             col     => 'entry.status',
             display => 'none',
+        },
+        blog_id => {
+            auto            => 1,
+            col             => 'blog_id',
+            display         => 'none',
+            filter_editable => 0,
         },
     };
 }

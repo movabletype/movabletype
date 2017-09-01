@@ -1,6 +1,4 @@
-<mt:include name="dialog/header.tmpl">
-<script type="text/javascript">
-/* <![CDATA[ */
+<mt:setvarblock name="jq_js_include" append="1">
 var $field = parent.jQuery( '#<mt:var name="edit_field" escape="js">' );
 if ($field){
     parent.jQuery( '#<mt:var name="edit_field" escape="js">-preview' ).empty();
@@ -13,7 +11,9 @@ if ($field){
 </mt:loop>
     $field.val(ids.join(','));
 }
-parent.jQuery.fn.mtDialog.close();
-/* ]]> */
-</script>
-<mt:include name="dialog/footer.tmpl">
+jQuery.fn.mtModal.close();
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">
+

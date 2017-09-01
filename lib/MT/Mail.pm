@@ -379,7 +379,7 @@ sub _send_mt_sendmail {
     local $SIG{ALRM} = sub { CORE::exit() };
     return unless defined $pid;
     if ( !$pid ) {
-        exec $sm_loc, "-oi", "-t"
+        exec $sm_loc, "-oi", "-t", "-f", $hdrs->{From}
             or return $class->error(
             MT->translate( "Exec of sendmail failed: [_1]", "$!" ) );
     }

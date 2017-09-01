@@ -186,7 +186,7 @@ subtest 'Manage Users screen' => sub {
         $out = delete $app->{__test_output};
         my $url_activity_log = $app->uri . '?__mode=list&_type=log&blog_id=0';
         $msg = quotemeta
-            "Some (1) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='$url_activity_log'>activity log</a> for more details.";
+            "Some (1) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='$url_activity_log' class=\"alert-link\">activity log</a> for more details.";
         ok( $out =~ m/$msg/,
             'There is a system message: could not be re-enabled one user.' );
 
@@ -201,7 +201,7 @@ subtest 'Manage Users screen' => sub {
         );
         $out = delete $app->{__test_output};
         $msg = quotemeta
-            "Some (5) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='$url_activity_log'>activity log</a> for more details.";
+            "Some (5) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='$url_activity_log' class=\"alert-link\">activity log</a> for more details.";
         ok( $out =~ m/$msg/,
             'There is a system message: could not be re-enabled five user.' );
     };
@@ -277,7 +277,7 @@ subtest 'Manage Users screen' => sub {
 subtest 'Batch Edit Entries screen' => sub {
     my $website = MT->model('website')->load;
     MT::Test::Permission->make_entry( blog_id => $website->id );
-    my $role = MT::Role->load( { name => 'Website Administrator' } );
+    my $role = MT::Role->load( { name => 'Site Administrator' } );
     MT::Association->link( $admin, $role, $website );
 
     foreach my $blog_type (qw( blog website )) {

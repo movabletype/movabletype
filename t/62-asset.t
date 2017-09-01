@@ -23,13 +23,15 @@ isa_ok( $mt, 'MT', 'Is MT' );
 
 {
     ### Cases for MT::Asset::Image
+    my $blog = MT::Blog->load( { id => 1 } );
+
     # object validation
     my $asset = MT::Asset->load( { id => 1 } );
     isa_ok( $asset, 'MT::Asset::Image', 'Is MT::Asset::Image' );
 
     # method validation
     my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst )
-        = localtime(time);
+        = gmtime(time + $blog->server_offset * 3600 );
     my $cache_path = sprintf( "%04d/%02d", $year + 1900, $mon + 1 );
 
     #    is($asset->class, 'Image', 'class');

@@ -155,7 +155,7 @@ sub list_props {
             display => 'default',
         },
         blog_name => {
-            label     => 'Website/Blog Name',
+            label     => 'Site Name',
             base      => '__virtual.blog_name',
             order     => 400,
             display   => 'default',
@@ -201,7 +201,7 @@ sub list_props {
                     }
                     my $blog = $blog_site_map{ $obj->blog_id };
                     unless ($blog) {
-                        push @out, MT->translate('*Website/Blog deleted*');
+                        push @out, MT->translate('*Site/Child Site deleted*');
                         next;
                     }
 

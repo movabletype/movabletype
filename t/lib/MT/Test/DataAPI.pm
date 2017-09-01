@@ -151,7 +151,7 @@ sub test_data_api {
             $note .= '?'
                 . join( '&',
                 map { $_ . '=' . $data->{params}{$_} }
-                    keys %{ $data->{params} } );
+                sort keys %{ $data->{params} } );
         }
         $note .= ' ' . $data->{method};
         $note .= ' ' . $data->{note} if $data->{note};
@@ -180,7 +180,8 @@ sub test_data_api {
                 (   $params
                     ? map {
                         $_ => ref $params->{$_}
-                            ? MT::Util::to_json( $params->{$_} )
+                            ? MT::Util::to_json( $params->{$_},
+                            { canonical => 1 } )
                             : $params->{$_};
                         }
                         keys %{$params}
@@ -226,8 +227,8 @@ sub test_data_api {
         if ( my $expected_result = $data->{result} ) {
             MT->instance->user($author);
             no warnings 'redefine';
-            local *boolean::true  = sub {'true'};
-            local *boolean::false = sub {'false'};
+            local *boolean::true  = sub {$JSON::true};
+            local *boolean::false = sub {$JSON::false};
 
             $expected_result = $expected_result->( $data, $body )
                 if ref $expected_result eq 'CODE';
@@ -245,8 +246,14 @@ sub test_data_api {
 
         if ( exists $data->{error} ) {
             $result = $format->{unserialize}->($body) if !defined $result;
-            is( $result->{error}{message},
-                $data->{error}, 'error: ' . $data->{error} );
+            if ( ref $data->{error} eq ref qr// ) {
+                like( $result->{error}{message},
+                    $data->{error}, 'error: ' . $data->{error} );
+            }
+            else {
+                is( $result->{error}{message},
+                    $data->{error}, 'error: ' . $data->{error} );
+            }
         }
 
         if ( my $complete = $data->{complete} ) {

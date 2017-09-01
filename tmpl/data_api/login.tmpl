@@ -106,7 +106,7 @@ jQuery(function($) {
   <div id="msg-block"></div>
 
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
 
 <mt:if name="logged_out">
   <mt:if name="delegate_auth">
@@ -156,7 +156,7 @@ jQuery(function($) {
 <mt:unless name="delegate_auth">
   <mt:var name="login_fields">
   <div class="row actions-bar actions-bar-login">
-    <div class="col-md-4">
+    <div class="col-4">
       <button
          type="submit"
          id="sign-in-button"
@@ -167,8 +167,8 @@ jQuery(function($) {
       </button>
     </div>
     <mt:if name="can_recover_password">
-      <div id="forget-password" class="col-md-8">
-        <a class="pull-right" href="<mt:var name="mt_url">?__mode=start_recover">
+      <div id="forget-password" class="col-8">
+        <a class="float-right" href="<mt:var name="mt_url">?__mode=start_recover">
           <__trans phrase="Forgot your password?">
         </a>
       </div>

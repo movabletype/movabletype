@@ -1,23 +1,23 @@
 <list-top>
-  <div data-is="display-options"></div>
-  <div class="row">
-    <div data-is="list-actions" if={ opts.useActions } class="col-md-12">
+  <div class="mb-3" data-is="display-options"></div>
+  <div class="row mb-3">
+    <div data-is="list-actions" if={ opts.useActions } class="col-12">
     </div>
   </div>
-  <div class="row" hide={ opts.store.count == 0 }>
-    <div data-is="list-pagination" class="col-md-12 text-center"></div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <div class="panel panel-default">
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card">
         <virtual data-is="list-filter"></virtual>
         <table data-is="list-table"
           id="{ opts.objectType }-table"
-          class="table table-striped table-hover listing-table list-{ opts.objectType }"
+          class="table mt-table list-{ opts.objectType }"
         >
         </table>
       </div>
     </div>
+  </div>
+  <div class="row" hide={ opts.store.count == 0 }>
+    <div data-is="list-pagination" class="col-12"></div>
   </div>
 
   <script>
@@ -36,9 +36,12 @@
 
     const self = this
 
-    opts.store.on('refresh_view', function () {
+    opts.store.on('refresh_view', function (moveToPagination) {
       self.update()
       self.updateSubFields()
+      if (moveToPagination) {
+        window.document.body.scrollTop = window.document.body.scrollHeight
+      }
     })
 
     this.on('mount', function () {

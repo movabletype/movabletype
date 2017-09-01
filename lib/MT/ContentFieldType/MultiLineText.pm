@@ -4,7 +4,17 @@ use warnings;
 
 use JSON ();
 
-sub data_getter {
+sub theme_data_import_handler {
+    my ( $theme, $blog, $ct, $cf_type, $field, $field_data, $data,
+        $convert_breaks )
+        = @_;
+
+    if ( ref $field_data eq 'HASH' ) {
+        $convert_breaks->{ $field->{id} } = $field_data->{convert_breaks};
+    }
+}
+
+sub data_load_handler {
     my ( $app, $field_data ) = @_;
     my $field_id  = $field_data->{id};
     my $data_json = $app->param('blockeditor-data');

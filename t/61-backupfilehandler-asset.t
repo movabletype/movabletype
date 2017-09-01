@@ -34,7 +34,7 @@ __XML__
 sub parse {
     my ($params) = @_;
 
-    note( 'Parse XML: params: ' . JSON::to_json($params) );
+    note( 'Parse XML: params: ' . JSON::to_json($params, {canonical => 1}) );
 
     my $objects = {};
     my $callback = sub { };

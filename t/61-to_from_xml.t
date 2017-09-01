@@ -101,7 +101,7 @@ require MIME::Base64;
 
 sub checkthemout {
     my ( $oldies, $objects ) = @_;
-    foreach my $name ( keys %$oldies ) {
+    foreach my $name ( sort keys %$oldies ) {
         my $old_objects = $oldies->{$name};
         my %meta;
         for my $old (@$old_objects) {
@@ -244,7 +244,7 @@ sub checkthemout {
                 $meta{ ref($obj) } = \%metacolumns;
             }
             my $metacolumns = $meta{ ref($obj) };
-            foreach my $metacol ( keys %$metacolumns ) {
+            foreach my $metacol ( sort keys %$metacolumns ) {
                 if ( my $type = $metacolumns->{$metacol} ) {
                     if ( 'vblob' eq $type ) {
                         if (   defined( $old->$metacol )
@@ -297,7 +297,7 @@ sub finish {
 
     use MT::Association;
     use MT::Role;
-    my $ba = MT::Role->load( { name => 'Blog Administrator' } );
+    my $ba = MT::Role->load( { name => 'Child Site Administrator' } );
     my $ed = MT::Role->load( { name => 'Editor' } );
     my $au = MT::Role->load( { name => 'Author' } );
     MT::Association->remove(
@@ -363,7 +363,7 @@ sub setup {
 
     require MT::Association;
     my $b1 = MT::Blog->load(1);
-    my $r = MT::Role->load( { name => 'Blog Administrator' } );
+    my $r = MT::Role->load( { name => 'Child Site Administrator' } );
     MT::Association->link( $chuck => $r => $b1 );    # Chuck is a blog admin
 
     my $r2 = MT::Role->load( { name => 'Editor' } );

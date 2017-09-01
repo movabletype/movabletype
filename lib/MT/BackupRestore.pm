@@ -288,7 +288,7 @@ sub backup {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start backup.');
+    MT::Util::Log->info('--- Start export.');
 
     my $class = shift;
     my ($blog_ids, $printer, $splitter, $finisher,
@@ -338,7 +338,7 @@ sub backup {
     $printer->('</movabletype>');
     $finisher->($files);
 
-    MT::Util::Log->info('--- End   backup.');
+    MT::Util::Log->info('--- End   export.');
 }
 
 sub _loop_through_objects {
@@ -385,7 +385,7 @@ sub _loop_through_objects {
             @metacolumns = MT::Meta->metadata_by_class($class);
         }
         my $records = 0;
-        my $state = MT->translate( 'Backing up [_1] records:', $class );
+        my $state = MT->translate( 'Exporting [_1] records:', $class );
         $progress->( $state, $class->class_type || $class->datasource );
         my $limit         = 50;
         my $offset        = 0;
@@ -473,14 +473,14 @@ sub _loop_through_objects {
             last unless $next;
             $progress->(
                 $state . " "
-                    . MT->translate( "[_1] records backed up...", $records ),
+                    . MT->translate( "[_1] records exported...", $records ),
                 $class->datasource
             ) if $records && ( $records % 100 == 0 );
         }
         if ($records) {
             $progress->(
                 $state . " "
-                    . MT->translate( "[_1] records backed up.", $records ),
+                    . MT->translate( "[_1] records exported.", $records ),
                 $class->class_type || $class->datasource
             );
         }
@@ -488,7 +488,7 @@ sub _loop_through_objects {
             $progress->(
                 $state . " "
                     . MT->translate(
-                    "There were no [_1] records to be backed up.", $class
+                    "There were no [_1] records to be exported.", $class
                     ),
                 $class->class_type || $class->datasource
             );
@@ -875,7 +875,7 @@ sub cb_restore_objects {
 
     my $i = 0;
     $callback->(
-        MT->translate( "Restoring asset associations ... ( [_1] )", $i++ ),
+        MT->translate( "Importing asset associations ... ( [_1] )", $i++ ),
         'cb-restore-entry-asset'
     );
     for my $obj_id ( keys %entries ) {
@@ -899,7 +899,7 @@ sub cb_restore_objects {
         if ( $entry->class == 'entry' ) {
             $callback->(
                 MT->translate(
-                    "Restoring asset associations in entry ... ( [_1] )",
+                    "Importing asset associations in entry ... ( [_1] )",
                     $i++
                 ),
                 'cb-restore-entry-asset'
@@ -908,7 +908,7 @@ sub cb_restore_objects {
         else {
             $callback->(
                 MT->translate(
-                    "Restoring asset associations in page ... ( [_1] )", $i++
+                    "Importing asset associations in page ... ( [_1] )", $i++
                 ),
                 'cb-restore-entry-asset'
             );
@@ -977,7 +977,7 @@ sub cb_restore_asset {
 
     my $i = 0;
     $callback->(
-        MT->translate( 'Restoring url of the assets ( [_1] )...', $i++ ),
+        MT->translate( 'Importing url of the assets ( [_1] )...', $i++ ),
         'cb-restore-asset-url'
     );
     for my $placement (@placements) {
@@ -988,7 +988,7 @@ sub cb_restore_asset {
         if ( $entry->class == 'entry' ) {
             $callback->(
                 MT->translate(
-                    'Restoring url of the assets in entry ( [_1] )...', $i++
+                    'Importing url of the assets in entry ( [_1] )...', $i++
                 ),
                 'cb-restore-asset-url'
             );
@@ -996,7 +996,7 @@ sub cb_restore_asset {
         else {
             $callback->(
                 MT->translate(
-                    'Restoring url of the assets in page ( [_1] )...', $i++
+                    'Importing url of the assets in page ( [_1] )...', $i++
                 ),
                 'cb-restore-asset-url'
             );
@@ -1027,7 +1027,7 @@ sub _restore_asset_multi {
     my $asset       = $objects->{"$asset_class#$old_id"};
     unless ( defined($asset) ) {
         $callback->(
-            MT->translate( 'The file ([_1]) was not restored.', $old_id ) );
+            MT->translate( 'The file ([_1]) was not imported.', $old_id ) );
         return 0;
     }
 

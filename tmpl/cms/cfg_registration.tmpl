@@ -15,11 +15,7 @@
   <mtapp:statusmsg
      id="saved"
      class="success">
-    <mt:if name="is_blog">
-    <__trans phrase="Your blog preferences have been saved.">
-    <mt:else>
-    <__trans phrase="Your website preferences have been saved.">
-    </mt:if>
+    <__trans phrase="Your site preferences have been saved.">
   </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
@@ -36,19 +32,22 @@
 <mt:unless name="external_user_management">
   <mtapp:setting
      id="allow_commenter_regist"
-     label="<__trans phrase="User Registration">"
-     hint="<__trans phrase="Allow registration for this website.">">
+     label="<__trans phrase="User Registration">">
+  <div>
   <mt:if name="system_disallow_registration">
     <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Registration Not Enabled">" width="9" height="9" />
     <span class="text-warning alert-warning-inline">
       <__trans phrase="Note: Registration is currently disabled at the system level.">
     </span>
   </mt:if>
-      <label>
-        <input type="checkbox" id="allow_commenter_regist" name="allow_commenter_regist" value="1"<mt:if name="allow_commenter_regist"> checked="checked"</mt:if> class="cb" />
-        <__trans phrase="Allow visitors to register as members of this website using one of the Authentication Methods selected below.">
-      </label>
-    </p>
+    <label class="custom-control custom-checkbox">
+      <input type="checkbox" id="allow_commenter_regist" name="allow_commenter_regist" value="1"<mt:if name="allow_commenter_regist"> checked="checked"</mt:if> class="custom-control-input cb" />
+      <span class="custom-control-indicator"></span>
+      <span class="custom-control-description">
+        <__trans phrase="Allow visitors to register as members of this site using one of the Authentication Methods selected below.">
+      </span>
+    </label>
+  </div>
   </mtapp:setting>
 </mt:unless>
 
@@ -62,9 +61,9 @@
       <span class="items">
     <mt:if name="new_roles">
     <mt:loop name="new_roles">
-      <span id="selected-role-<mt:var name="role_id">" class="sticky-label selected-item">
+      <span id="selected-role-<mt:var name="role_id">" class="badge badge-default sticky-label selected-item">
         <mt:var name="role_name" escape="html">&nbsp;
-        <span class="remove clickable">x</span>
+        <span class="tag-pill remove clickable">x</span>
       </span>
     </mt:loop>
     <mt:else>
@@ -99,17 +98,19 @@
     <ul class="list-unstyled">
       <mt:include name="include/anonymous_comment.tmpl">
       <li>
-        <input type="checkbox" id="enabled_MovableType" name="enabled_MovableType" value="1"<mt:if name="enabled_MovableType"> checked="checked"</mt:if> />
-        <label for="enabled_MovableType">
-          <__trans phrase="Movable Type">
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" id="enabled_MovableType" class="custom-control-input" name="enabled_MovableType" value="1"<mt:if name="enabled_MovableType"> checked="checked"</mt:if> />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><__trans phrase="Movable Type"></span>
         </label>
       </li>
   <mt:if name="cmtauth_loop">
     <mt:loop name="cmtauth_loop">
       <li>
-        <input type="<mt:if name="label">checkbox<mt:else>hidden</mt:if>" id="enabled_<mt:var name="key" escape="html">" name="enabled_<mt:var name="key" escape="html">" value="1"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> />
-        <label for="enabled_<mt:var name="key" escape="html">">
-          <mt:var name="label" escape="html">
+        <label class="custom-control custom-checkbox">
+          <input class="custom-control-input" type="<mt:if name="label">checkbox<mt:else>hidden</mt:if>" id="enabled_<mt:var name="key" escape="html">" name="enabled_<mt:var name="key" escape="html">" value="1"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> />
+          <span class="custom-control-indicator"></span>
+          <span class="custom-control-description"><mt:var name="label" escape="html"></span>
         </label>
         <mt:if name="disabled">
           (<mt:var name="disabled_reason" default="<__trans phrase="One or more Perl modules may be missing to use this authentication method.">">)
@@ -133,21 +134,19 @@
 </form>
 </mt:setvarblock>
 
-<mt:setvarblock name="js_include" append="1">
-<script>
-    jQuery('#new_created_user_role-field').on('click','span.remove',function() {
-        jQuery(this).parent().remove();
-        if ( jQuery('span.items').children().length == 0 ) {
-            jQuery('span.items').append('<__trans phrase="(No role selected)">');
-        }
-        var ids = new Array();
-        jQuery('span.items').children().each( function () {
-            jQuery(this).attr('id').match(/selected-role-(\d+)/);
-            ids.push( RegExp.$1 );
-        });
-        jQuery('input#new_created_user_role').val(ids.join(","));
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('#new_created_user_role-field').on('click','span.remove',function() {
+    jQuery(this).parent().remove();
+    if ( jQuery('span.items').children().length == 0 ) {
+        jQuery('span.items').append('<__trans phrase="(No role selected)">');
+    }
+    var ids = new Array();
+    jQuery('span.items').children().each( function () {
+        jQuery(this).attr('id').match(/selected-role-(\d+)/);
+        ids.push( RegExp.$1 );
     });
-</script>
+    jQuery('input#new_created_user_role').val(ids.join(","));
+});
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

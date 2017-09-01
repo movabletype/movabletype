@@ -190,76 +190,76 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
 </mt:if>
   <mtapp:setting
      id="name"
-     label="<__trans phrase="Display Name">"
-     hint="<__trans phrase="The Name of the commenter">"
-     show_hint="0">
-    <mt:var name="nickname" escape="html">
-    <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="nickname" escape="url">">
-      <img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" />
-    </a>
+     label="<__trans phrase="Display Name">">
+    <div class="form-group">
+      <mt:var name="nickname" escape="html">
+      <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="nickname" escape="url">">
+        <img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" />
+      </a>
+    </div>
   </mtapp:setting>
 
   <mtapp:setting
      id="identity"
-     label="<__trans phrase="Identity">"
-     hint="<__trans phrase="The Identity of the commenter">"
-     show_hint="0">
+     label="<__trans phrase="Identity">">
+    <div class="form-group">
   <mt:if name="url">
-    <a href="<mt:var name="url" escape="html">" target="_blank"><mt:var name="name" escape="html">
-      <img alt="<__trans phrase="View">" src="<mt:var name="static_uri">images/status_icons/view.gif" />
-    </a>
+      <a href="<mt:var name="url" escape="html">" target="_blank"><mt:var name="name" escape="html">
+        <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View">" size="sm">
+      </a>
   <mt:else>
-    <mt:var name="name" escape="html">
+      <mt:var name="name" escape="html">
   </mt:if>
+    </div>
   </mtapp:setting>
 
   <mtapp:setting
      id="email"
-     label="<__trans phrase="Email Address">"
-     hint="<__trans phrase="The Email Address of the commenter">"
-     show_hint="0">
+     label="<__trans phrase="Email Address">">
+    <div class="form-group">
   <mt:if name="is_email_hidden">
-    <__trans phrase="Withheld">
+      <__trans phrase="Withheld">
   <mt:else>
-    <mt:var name="email" escape="html">
+      <mt:var name="email" escape="html">
   </mt:if>
   <mt:if name="is_email_hidden">
-    &nbsp;
+      &nbsp;
   <mt:else>
-    <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">">
-      <img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" />
-    </a>
+      <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">">
+        <img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" />
+      </a>
+    </div>
   </mt:if>
   </mtapp:setting>
 
   <mtapp:setting
      id="url"
-     label="<__trans phrase="Website URL">"
-     hint="<__trans phrase="The Website URL of the commenter">"
-     show_hint="0">
+     label="<__trans phrase="Website URL">">
+    <div class="form-group">
   <mt:if name="url">
-    <a href="<mt:var name="url" escape="html">"><mt:var name="url" escape="html">
-      <img alt="<__trans phrase="View">" src="<mt:var name="static_uri">images/status_icons/view.gif" />
-    </a>
+      <a href="<mt:var name="url" escape="html">"><mt:var name="url" escape="html">
+        <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View">" size="sm">
+      </a>
   <mt:else>
     &nbsp;
   </mt:if>
+    </div>
   </mtapp:setting>
 
   <mtapp:setting
      id="status"
-     label="<__trans phrase="Status">"
-     hint="<__trans phrase="The trusted status of the commenter">"
-     show_hint="0">
+     label="<__trans phrase="Status">">
+    <div class="form-group">
   <mt:if name="commenter_approved">
-    <span class="icon-left-wide icon-trusted"><__trans phrase="Trusted"></span>
+      <span class="icon-left-wide icon-trusted"><__trans phrase="Trusted"></span>
   <mt:else>
     <mt:if name="commenter_banned">
-    <span class="icon-left-wide icon-banned"><__trans phrase="Banned"></span>
+      <span class="icon-left-wide icon-banned"><__trans phrase="Banned"></span>
     <mt:else>
-    <span class="icon-left-wide icon-authenticated"><__trans phrase="Authenticated"></span>
+      <span class="icon-left-wide icon-authenticated"><__trans phrase="Authenticated"></span>
     </mt:if>
   </mt:if>
+    </div>
   </mtapp:setting>
 
   <mt:if name="position_actions_bottom">

@@ -160,7 +160,7 @@ subtest 'mode = dialog_select_theme' => sub {
 
 subtest 'mode = do_export_theme' => sub {
     if ( $^O eq 'MSWin32' ) {
-        $app->config->TempDir('C:\Windows\Temp');
+        $app->config->TempDir( File::Spec->tmpdir );
     }
 
     $app = _run_app(

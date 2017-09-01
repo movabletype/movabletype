@@ -5,7 +5,7 @@
 
 <mt:setvarblock name="page_content">
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-12">
     <form method="post" action="<mt:var name="script_url">">
       <input type="hidden" name="__mode" value="start_rebuild" />
       <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
@@ -16,8 +16,7 @@
       <mtapp:setting
          id="dbtype"
          label="<__trans phrase="_REBUILD_PUBLISH">"
-         label_class="top-label"
-         no_grid="1">
+         label_class="top-label">
         <select name="type" class="full form-control">
           <option value="<mt:var name="build_order">" selected="selected"><__trans phrase="All Files"></option>
         <mt:if name="index_tmpl_id">

@@ -574,6 +574,7 @@
 
             // Register buttons
             ed.addButton('mt_insert_html', {
+                icon : 'template',
                 tooltip : 'mt_insert_html',
                 onclick : function() {
 
@@ -608,6 +609,7 @@
             });
 
             ed.addMTButton('mt_insert_image', {
+                icon : 'image',
                 tooltip : 'mt_insert_image',
                 onclick : function() {
                     ed.execCommand('mtSaveBookmark');
@@ -619,6 +621,7 @@
             });
 
             ed.addMTButton('mt_insert_file', {
+                icon : 'newdocument',
                 tooltip : 'mt_insert_file',
                 onclick : function() {
                     ed.execCommand('mtSaveBookmark');
@@ -684,6 +687,7 @@
             });
 
             ed.addMTButton('mt_source_link', {
+                icon : 'link',
                 tooltip : 'mt_insert_link',
                 onclickFunctions : {
                     source: function(cmd, ui, val) {
@@ -705,6 +709,7 @@
             });
 
             ed.addMTButton('mt_source_mode', {
+                icon : 'code',
                 tooltip : 'mt_source_mode',
                 onclickFunctions : {
                     wysiwyg: function() {

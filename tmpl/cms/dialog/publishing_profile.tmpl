@@ -42,17 +42,19 @@ function init() {
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
     <div class="modal-header">
-        <button type="button" class="close" data-mt-modal-close>
-            <span>&times;</span>
+        <h5 class="modal-title"><mt:var name="page_title"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+          <span aria-hidden="true">&times;</span>
         </button>
-        <h4 class="modal-title"><mt:var name="page_title"></h4>
     </div>
 
-    <div id="profile-panel" class="hidden">
+    <div id="profile-panel" style="display: none;">
 
         <div class="modal-body">
 
-        <p><__trans phrase="Choose the profile that best matches the requirements for this blog."></p>
+        <p>
+            <__trans phrase="Choose the profile that best matches the requirements for this [_1]." params="<mt:if name="is_blog"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if>">
+        </p>
 
         <mtapp:setting
             id="dynamicity"
@@ -60,56 +62,55 @@ function init() {
             show_label="0"
             label_class="top-label"
             help_page="blog_settings_publishing"
-            help_section="dynamic_publishing"
-            no_grid="1">
+            help_section="dynamic_publishing">
             <ul class="list-unstyled">
                 <li>
                     <label for="dynamicity-sync">
                       <input type="radio" id="dynamicity-sync" name="dynamicity" value="none" <mt:if name="dynamicity" eq="none"> checked="checked"</mt:if>/>
                       <__trans phrase="Static Publishing">
-                      <span class="text-muted hint">
+                      <small class="form-text text-muted hint">
                         <__trans phrase="Immediately publish all templates statically.">
-                      </span>
+                      </small>
                     </label>
                 </li>
                 <li>
                     <label for="dynamicity-async">
                       <input type="radio" id="dynamicity-async" name="dynamicity" value="async_all" <mt:if name="dynamicity" eq="async_all"> checked="checked"</mt:if>/>
                       <__trans phrase="Background Publishing">
-                      <span class="text-muted hint">
+                      <small class="form-text text-muted hint">
                         <__trans phrase="All templates published statically via Publish Que.">
-                      </span>
+                      </small>
                     </label>
                 </li>
                 <li>
                     <label for="dynamicity-partialasync">
                         <input type="radio" id="dynamicity-partialasync" name="dynamicity" value="async_partial" <mt:if name="dynamicity" eq="async_partial"> checked="checked"</mt:if>/>
                         <__trans phrase="High Priority Static Publishing">
-                        <span class="text-muted hint">
+                        <small class="form-text text-muted hint">
                 <mt:if name="is_blog">
                             <__trans phrase="Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.">
                 <mt:else>
                             <__trans phrase="Immediately publish Main Index template, Page archives statically. Use Publish Queue to publish all other templates statically.">
                 </mt:if>
-                        </span>
+                        </small>
                     </label>
                 </li>
                 <li>
                     <label for="dynamicity-dynamic">
                       <input type="radio" id="dynamicity-dynamic" name="dynamicity" value="all" <mt:if name="dynamicity" eq="all"> checked="checked"</mt:if>/>
                       <__trans phrase="Dynamic Publishing">
-                      <span class="text-muted hint">
+                      <small class="form-text text-muted hint">
                         <__trans phrase="Publish all templates dynamically.">
-                      </span>
+                      </small>
                     </label>
                 </li>
                 <li>
                     <label for="dynamicity-archives">
                       <input type="radio" id="dynamicity-archives" name="dynamicity" value="archives" <mt:if name="dynamicity" eq="archives"> checked="checked"</mt:if>/>
                       <__trans phrase="Dynamic Archives Only">
-                      <span class="text-muted hint">
+                      <small class="form-text text-muted hint">
                         <__trans phrase="Publish all Archive templates dynamically. Immediately publish all other templates statically.">
-                      </span>
+                      </small>
                     </label>
                 </li>
             </ul>
@@ -136,12 +137,18 @@ function init() {
 
     </div>
 
-    <div id="confirm-panel" class="hidden">
+    <div id="confirm-panel" style="display: none;">
         <div class="modal-body">
 
-        <p><__trans phrase="This new publishing profile will update your publishing settings."></p>
+        <p>
+          <__trans phrase="This new publishing profile will update your publishing settings.">
+        </p>
 
-        <p><strong><__trans phrase="Are you sure you wish to continue?"></strong></p>
+        <p>
+          <strong>
+            <__trans phrase="Are you sure you wish to continue?">
+          </strong>
+        </p>
 
         </div>
 
@@ -184,4 +191,3 @@ jQuery(function() {
 
 <mt:include name="layout/modal.tmpl">
 <mt:var name="layout">
-

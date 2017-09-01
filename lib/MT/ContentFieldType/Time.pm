@@ -34,7 +34,7 @@ sub field_html_params {
     };
 }
 
-sub data_getter {
+sub data_load_handler {
     my ( $app, $field_data ) = @_;
     my $id   = $field_data->{id};
     my $time = $app->param( 'time-' . $id );

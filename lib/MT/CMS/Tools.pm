@@ -43,7 +43,7 @@ sub system_check {
         }
     }
 
-    $param{server_modperl} = 1 if $ENV{MOD_PERL};
+    $param{server_modperl} = 1 if MT::Util::is_mod_perl1();
     $param{server_fastcgi} = 1 if $ENV{FAST_CGI};
 
     $param{server_psgi} = $ENV{'psgi.version'} ? 1 : 0;
@@ -278,17 +278,11 @@ sub new_password {
         elsif ( $new_password ne $again ) {
             $param->{'error'} = $app->translate('Passwords do not match');
         }
-        elsif ( ref $app eq 'MT::App::Community' ) {
 
-            # community people may change the template, and not include the
-            # needed password validation tags
-            $param->{'error'} = eval {
+        $param->{'error'} = eval {
+            $app->verify_password_strength( $user->name, $new_password );
+        };
 
-                # might be an old version that does not have this function
-                MT::App::Community::__verify_password_strength( $app, $user,
-                    $new_password );
-            };
-        }
         if ( not $param->{'error'} ) {
             my $redirect = $user->password_reset_return_to || '';
 
@@ -365,9 +359,9 @@ sub do_list_action {
         $app->setup_filtered_ids;
     }
     else {
-        my @ids = $app->param('id');
+        my @ids = $app->multi_param('id');
         if ( scalar @ids == 1 && $ids[0] =~ /,/ ) {
-            $app->param( 'id', split ',', $ids[0] );
+            $app->multi_param( 'id', split ',', $ids[0] );
         }
     }
     if ( $app->param('xhr') ) {
@@ -636,7 +630,9 @@ sub save_cfg_system_general {
             'Debug mode is [_1]',
             $app->param('system_debug_mode')
         )
-    ) if ( $app->param('system_debug_mode') =~ /\d+/ );
+        )
+        if ( defined $app->param('system_debug_mode')
+        and $app->param('system_debug_mode') =~ /\d+/ );
     if ( not $cfg->HidePerformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
             push( @meta_messages,
@@ -652,7 +648,9 @@ sub save_cfg_system_general {
                 'Performance log path is [_1]',
                 $app->param('system_performance_logging_path')
             )
-        ) if ( $app->param('system_performance_logging_path') =~ /\w+/ );
+            )
+            if ( defined $app->param('system_performance_logging_path')
+            and $app->param('system_performance_logging_path') =~ /\w+/ );
         push(
             @meta_messages,
             $app->translate(
@@ -660,15 +658,17 @@ sub save_cfg_system_general {
                 $app->param('system_performance_logging_threshold')
             )
             )
-            if (
-            $app->param('system_performance_logging_threshold') =~ /\d+/ );
+            if ( defined $app->param('system_performance_logging_threshold')
+            and $app->param('system_performance_logging_threshold')
+            =~ /\d+/ );
     }
 
     # actually assign the changes
     $app->config( 'EmailAddressMain',
-        ( $app->param('system_email_address') || undef ), 1 );
+        ( scalar $app->param('system_email_address') ), 1 );
     $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
-        if ( $app->param('system_debug_mode') =~ /\d+/ );
+        if ( defined $app->param('system_debug_mode')
+        and $app->param('system_debug_mode') =~ /\d+/ );
     if ( not $cfg->HidePerformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
             $app->config( 'PerformanceLogging', 1, 1 );
@@ -678,11 +678,13 @@ sub save_cfg_system_general {
         }
         $app->config( 'PerformanceLoggingPath',
             $app->param('system_performance_logging_path'), 1 )
-            if ( $app->param('system_performance_logging_path') =~ /\w+/ );
+            if ( defined $app->param('system_performance_logging_path')
+            and $app->param('system_performance_logging_path') =~ /\w+/ );
         $app->config( 'PerformanceLoggingThreshold',
             $app->param('system_performance_logging_threshold'), 1 )
-            if (
-            $app->param('system_performance_logging_threshold') =~ /\d+/ );
+            if ( defined $app->param('system_performance_logging_threshold')
+            and $app->param('system_performance_logging_threshold')
+            =~ /\d+/ );
     }
 
     if ( not $cfg->HideBaseSitePath ) {
@@ -746,7 +748,8 @@ sub save_cfg_system_general {
         push( @meta_messages,
             $app->translate('Prohibit notification pings is off') );
     }
-    if ( $app->param('trackback_send') eq 'any' ) {
+    my $trackback_send = $app->param('trackback_send') || '';
+    if ( $trackback_send eq 'any' ) {
         push(
             @meta_messages,
             $app->translate(
@@ -755,7 +758,7 @@ sub save_cfg_system_general {
             )
         );
     }
-    elsif ( $app->param('trackback_send') eq 'off' ) {
+    elsif ( $trackback_send eq 'off' ) {
         push(
             @meta_messages,
             $app->translate(
@@ -764,7 +767,7 @@ sub save_cfg_system_general {
             )
         );
     }
-    elsif ( $app->param('trackback_send') eq 'local' ) {
+    elsif ( $trackback_send eq 'local' ) {
         push(
             @meta_messages,
             $app->translate(
@@ -773,7 +776,7 @@ sub save_cfg_system_general {
             )
         );
     }
-    elsif ( $app->param('trackback_send') eq 'selected' ) {
+    elsif ( $trackback_send eq 'selected' ) {
         push(
             @meta_messages,
             $app->translate(
@@ -826,7 +829,9 @@ sub save_cfg_system_general {
         },
         )
     {
-        if ( $app->param( $hash->{key} ) =~ $hash->{regex} ) {
+        my $param = $app->param( $hash->{key} );
+        $param = '' unless defined $param;
+        if ( $param =~ $hash->{regex} ) {
             my $value = $1;
             if ( $hash->{filter} ) {
                 $hash->{filter}->($value);
@@ -989,8 +994,7 @@ sub recover_profile_password {
     return $app->error( $app->translate("Invalid author_id") )
         if !$author || $author->type != MT::Author::AUTHOR() || !$author_id;
 
-    my ( $rc, $res )
-        = reset_password( $app, $author, $author->hint, $author->name );
+    my ( $rc, $res ) = reset_password( $app, $author );
 
     if ($rc) {
         my $url = $app->uri(
@@ -1053,12 +1057,12 @@ sub start_backup {
     my %param = ();
     if ( defined($blog_id) ) {
         $param{blog_id} = $blog_id;
-        $app->add_breadcrumb( $app->translate('Backup') );
+        $app->add_breadcrumb( $app->translate('Export') );
         $param{backup_what} = join ',',
             _allowed_blog_ids_for_backup( $app, $blog_id );
     }
     else {
-        $app->add_breadcrumb( $app->translate('Backup & Restore') );
+        $app->add_breadcrumb( $app->translate('Import & Export') );
     }
     $param{system_overview_nav} = 1 unless $blog_id;
     $param{nav_backup} = 1;
@@ -1076,7 +1080,7 @@ sub start_backup {
     unless ( ( -d $tmp ) && ( -w $tmp ) && _can_write_temp_dir($tmp) ) {
         $param{error}
             = $app->translate(
-            'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.'
+            'Temporary directory needs to be writable for export to work correctly.  Please check TempDir configuration directive.'
             );
     }
     $app->load_tmpl( 'backup.tmpl', \%param );
@@ -1097,11 +1101,11 @@ sub start_restore {
     my %param = ();
     if ( defined($blog_id) ) {
         $param{blog_id} = $blog_id;
-        $app->add_breadcrumb( $app->translate('Backup') );
+        $app->add_breadcrumb( $app->translate('Export') );
         my $blog = $app->model('blog')->load($blog_id);
     }
     else {
-        $app->add_breadcrumb( $app->translate('Backup & Restore') );
+        $app->add_breadcrumb( $app->translate('Import & Export') );
     }
     $param{system_overview_nav} = 1 unless $blog_id;
     $param{nav_backup} = 1;
@@ -1113,7 +1117,7 @@ sub start_restore {
     unless ( ( -d $tmp ) && ( -w $tmp ) ) {
         $param{error}
             = $app->translate(
-            'Temporary directory needs to be writable for restore to work correctly.  Please check TempDir configuration directive.'
+            'Temporary directory needs to be writable for import to work correctly.  Please check TempDir configuration directive.'
             );
     }
 
@@ -1126,13 +1130,13 @@ sub backup {
     my $q        = $app->param;
     my $blog_id  = $q->param('blog_id');
     my $perms    = $app->permissions;
-    my $blog_ids = $q->param('backup_what');
+    my $blog_ids = $q->param('backup_what') || '';
     my @blog_ids = split ',', $blog_ids;
 
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('=== Start backup.');
+    MT::Util::Log->info('=== Start export.');
 
     if ( $user->is_superuser ) {
 
@@ -1176,15 +1180,15 @@ sub backup {
     my $ts      = sprintf "%04d-%02d-%02d-%02d-%02d-%02d", $ts[5] + 1900,
         $ts[4] + 1,
         @ts[ 3, 2, 1, 0 ];
-    my $file = "Movable_Type-$ts" . '-Backup';
+    my $file = "Movable_Type-$ts" . '-Export';
 
     my $param = { return_args => '__mode=start_backup' };
     $app->{no_print_body} = 1;
     $app->add_breadcrumb(
-        $app->translate('Backup & Restore'),
+        $app->translate('Import & Export'),
         $app->uri( mode => 'start_backup' )
     );
-    $app->add_breadcrumb( $app->translate('Backup') );
+    $app->add_breadcrumb( $app->translate('Export') );
     $param->{system_overview_nav} = 1 if defined($blog_ids) && $blog_ids;
     $param->{blog_id}  = $blog_id  if $blog_id;
     $param->{blog_ids} = $blog_ids if $blog_ids;
@@ -1216,7 +1220,7 @@ sub backup {
     if ( !( $size || $num_assets ) ) {
         $splitter = sub { };
 
-        if ( '0' eq $archive ) {
+        if ( !$archive ) {
             ( $fh, my $filepath )
                 = File::Temp::tempfile( 'xml.XXXXXXXX', DIR => $temp_dir );
             binmode $fh, ":encoding(utf8)";
@@ -1267,10 +1271,9 @@ sub backup {
         my $filename = File::Spec->catfile( $temp_dir, $file . "-1.xml" );
         $fh = gensym();
         open $fh, ">$filename";
-        my $url
-            = $app->uri
-            . "?__mode=backup_download&name=$file-1.xml&magic_token="
-            . $app->current_magic;
+        my $url = $app->uri . "?__mode=backup_download&name=$file-1.xml";
+        $url .= "&magic_token=" . $app->current_magic
+            if defined( $app->current_magic );
         $url .= "&blog_id=$blog_id" if defined($blog_id);
         push @files,
             {
@@ -1296,8 +1299,9 @@ sub backup {
             open $fh, ">$filename";
             my $url
                 = $app->uri
-                . "?__mode=backup_download&name=$file-$findex.xml&magic_token="
-                . $app->current_magic;
+                . "?__mode=backup_download&name=$file-$findex.xml";
+            $url .= "&magic_token=" . $app->current_magic
+                if defined( $app->current_magic );
             $url .= "&blog_id=$blog_id" if defined($blog_id);
             push @files,
                 {
@@ -1354,9 +1358,9 @@ sub backup {
                 my $url
                     = $app->uri
                     . "?__mode=backup_download&assetname="
-                    . MT::Util::encode_url($name)
-                    . "&magic_token="
-                    . $app->current_magic;
+                    . MT::Util::encode_url($name);
+                $url .= "&magic_token=" . $app->current_magic
+                    if defined( $app->current_magic );
                 $url .= "&blog_id=$blog_id" if defined($blog_id);
                 push @files,
                     {
@@ -1367,16 +1371,17 @@ sub backup {
             print $fh "</manifest>\n";
             close $fh;
             my $url
-                = $app->uri
-                . "?__mode=backup_download&name=$file.manifest&magic_token="
-                . $app->current_magic;
+                = $app->uri . "?__mode=backup_download&name=$file.manifest";
+            $url .= "&magic_token=" . $app->current_magic
+                if defined( $app->current_magic );
             $url .= "&blog_id=$blog_id" if defined($blog_id);
             push @files,
                 {
                 url      => $url,
                 filename => "$file.manifest"
                 };
-            if ( '0' eq $archive ) {
+            if ( !$archive ) {
+
                 for my $f (@files) {
                     $f->{filename}
                         = MT::FileMgr::Local::_syserr( $f->{filename} )
@@ -1438,7 +1443,7 @@ sub backup {
         _backup_finisher( $app, $fname, $param );
     }
 
-    MT::Util::Log->info('=== End   backup.');
+    MT::Util::Log->info('=== End   export.');
 
 }
 
@@ -1475,14 +1480,14 @@ sub backup_download {
         my @ts = gmtime( $sess->start );
         my $ts = sprintf "%04d-%02d-%02d-%02d-%02d-%02d", $ts[5] + 1900,
             $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
-        $newfilename = "Movable_Type-$ts" . '-Backup';
+        $newfilename = "Movable_Type-$ts" . '-Export';
         $sess->remove;
     }
     else {
-        $newfilename = $app->param('name');
+        $newfilename = $app->param('name') || '';
         return
             if $newfilename
-            !~ /Movable_Type-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-Backup(?:-\d+)?\.\w+/;
+            !~ /Movable_Type-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-Export(?:-\d+)?\.\w+/;
         $filename = $newfilename;
     }
 
@@ -1523,7 +1528,7 @@ sub backup_download {
         close $fh;
         $app->log(
             {   message => $app->translate(
-                    '[_1] successfully downloaded backup file ([_2])',
+                    '[_1] successfully downloaded export file ([_2])',
                     $app->user->name, $fname
                 ),
                 level    => MT::Log::INFO(),
@@ -1548,7 +1553,7 @@ sub restore {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('=== Start restore.');
+    MT::Util::Log->info('=== Start import.');
 
     my $q = $app->param;
 
@@ -1567,10 +1572,10 @@ sub restore {
     my $param = { return_args => '__mode=dashboard' };
 
     $app->add_breadcrumb(
-        $app->translate('Backup & Restore'),
+        $app->translate('Import & Export'),
         $app->uri( mode => 'start_restore' )
     );
-    $app->add_breadcrumb( $app->translate('Restore') );
+    $app->add_breadcrumb( $app->translate('Import') );
     $param->{system_overview_nav} = 1;
     $param->{nav_backup}          = 1;
 
@@ -1622,7 +1627,7 @@ sub restore {
                 }
                 my $message
                     = $app->translate(
-                    'Some of the actual files for assets could not be restored.'
+                    'Some of the actual files for assets could not be imported.'
                     );
                 $app->log(
                     {   message  => $message,
@@ -1728,7 +1733,7 @@ sub restore {
                     }
                     my $message
                         = $app->translate(
-                        'Some of the actual files for assets could not be restored.'
+                        'Some of the actual files for assets could not be imported.'
                         );
                     $app->log(
                         {   message  => $message,
@@ -1766,7 +1771,7 @@ sub restore {
     $app->print_encode( $app->build_page( "restore_end.tmpl", $param ) );
     close $fh if $fh;
 
-    MT::Util::Log->info('=== End   restore.');
+    MT::Util::Log->info('=== End   import.');
 
     1;
 }
@@ -1789,7 +1794,7 @@ sub restore_premature_cancel {
         $param->{restore_success} = 0;
         my $message
             = $app->translate(
-            'Some objects were not restored because their parent objects were not restored.'
+            'Some objects were not imported because their parent objects were not imported.'
             );
         $param->{error}
             = $message . '  '
@@ -1799,7 +1804,7 @@ sub restore_premature_cancel {
     else {
         $app->log(
             {   message => $app->translate(
-                    '[_1] has canceled the multiple files restore operation prematurely.',
+                    '[_1] has canceled the multiple files import operation prematurely.',
                     $app->user->name
                 ),
                 level    => MT::Log::WARNING(),
@@ -1839,7 +1844,7 @@ sub adjust_sitepath {
     my $q         = $app->param;
     my $tmp_dir   = $q->param('tmp_dir');
     my $error     = $q->param('error') || q();
-    my %asset_ids = split ',', $q->param('asset_ids');
+    my %asset_ids = split ',', $q->param('asset_ids') || '';
 
     $app->{no_print_body} = 1;
 
@@ -1858,13 +1863,13 @@ sub adjust_sitepath {
         $path_limit =~ s/PATH$//;
         $path_limit_quote = quotemeta($path_limit);
     }
-    my @p = $q->param;
+    my @p = $app->multi_param;
     foreach my $p (@p) {
         next unless $p =~ /^site_path_(\d+)/;
         my $id   = $1;
         my $blog = $app->model('blog')->load($id)
             or return $app->error(
-            $app->translate( 'Cannot load blog #[_1].', $id ) );
+            $app->translate( 'Cannot load site #[_1].', $id ) );
         my $old_site_path      = scalar $q->param("old_site_path_$id");
         my $old_site_url       = scalar $q->param("old_site_url_$id");
         my $site_path          = scalar $q->param("site_path_$id") || q();
@@ -1874,7 +1879,7 @@ sub adjust_sitepath {
             || q();
         $site_url_subdomain .= '.'
             if $site_url_subdomain && $site_url_subdomain !~ /\.$/;
-        my $parent_id = scalar $q->param("parent_id_$id") || undef;
+        my $parent_id          = scalar $q->param("parent_id_$id");
         my $site_path_absolute = scalar $q->param("site_path_absolute_$id")
             || q();
         my $use_absolute = scalar $q->param("use_absolute_$id") || q();
@@ -1905,7 +1910,7 @@ sub adjust_sitepath {
         if ( $site_url || $site_url_path || $site_path ) {
             $app->print_encode(
                 $app->translate(
-                    "Changing Site Path for the blog '[_1]' (ID:[_2])...",
+                    "Changing Site Path for the site '[_1]' (ID:[_2])...",
                     encode_html( $blog->name ),
                     $blog->id
                 )
@@ -1914,7 +1919,7 @@ sub adjust_sitepath {
         else {
             $app->print_encode(
                 $app->translate(
-                    "Removing Site Path for the blog '[_1]' (ID:[_2])...",
+                    "Removing Site Path for the site '[_1]' (ID:[_2])...",
                     encode_html( $blog->name ),
                     $blog->id
                 )
@@ -1957,7 +1962,7 @@ sub adjust_sitepath {
             $app->print_encode(
                 "\n"
                     . $app->translate(
-                    "Changing Archive Path for the blog '[_1]' (ID:[_2])...",
+                    "Changing Archive Path for the site '[_1]' (ID:[_2])...",
                     encode_html( $blog->name ),
                     $blog->id
                     )
@@ -1967,7 +1972,7 @@ sub adjust_sitepath {
             $app->print_encode(
                 "\n"
                     . $app->translate(
-                    "Removing Archive Path for the blog '[_1]' (ID:[_2])...",
+                    "Removing Archive Path for the site '[_1]' (ID:[_2])...",
                     encode_html( $blog->name ),
                     $blog->id
                     )
@@ -2138,7 +2143,7 @@ sub adjust_sitepath {
                 . $value . "\n";
         }
         my $message = $app->translate(
-            'Some of the actual files for assets could not be restored.');
+            'Some of the actual files for assets could not be imported.');
         $app->log(
             {   message  => $message,
                 level    => MT::Log::WARNING(),
@@ -2196,7 +2201,7 @@ sub adjust_sitepath {
                 unless ($backups) {
                     return $app->error(
                         MT->translate(
-                            "Manifest file [_1] was not a valid Movable Type backup manifest file.",
+                            "Manifest file [_1] was not a valid Movable Type exported manifest file.",
                             $manifest
                         )
                     );
@@ -2207,7 +2212,7 @@ sub adjust_sitepath {
                         my $filepath = File::Spec->catfile( $tmp_dir, $file );
                         $fmgr->delete($filepath)
                             or $errors .= $app->translate(
-                            "Could not remove backup file [_1] from the filesystem: [_2]",
+                            "Could not remove exported file [_1] from the filesystem: [_2]",
                             $filepath, $fmgr->errstr
                             ) . "\n";
                     }
@@ -2219,19 +2224,19 @@ sub adjust_sitepath {
                             = File::Spec->catfile( $tmp_dir, $asset_name );
                         $fmgr->delete($filepath)
                             or $errors .= $app->translate(
-                            "Could not remove backup file [_1] from the filesystem: [_2]",
+                            "Could not remove exported file [_1] from the filesystem: [_2]",
                             $filepath, $fmgr->errstr
                             ) . "\n";
                     }
                 }
                 $fmgr->delete($manifest)
                     or $errors .= $app->translate(
-                    "Could not remove backup file [_1] from the filesystem: [_2]",
+                    "Could not remove exported file [_1] from the filesystem: [_2]",
                     $manifest, $fmgr->errstr
                     ) . "\n";
                 if ($errors) {
                     my $message = $app->translate(
-                        'Some of the backup files could not be removed.');
+                        'Some of the exported files could not be removed.');
                     $app->log(
                         {   message  => $message,
                             level    => MT::Log::WARNING(),
@@ -2409,7 +2414,7 @@ sub dialog_restore_upload {
             $error_assets, sub { $app->print_encode(@_); }, $blogs_meta );
         if ( defined( $error_assets->{ $asset->{asset_id} } ) ) {
             $app->log(
-                {   message => $app->translate('Restoring a file failed: ')
+                {   message => $app->translate('Importing a file failed: ')
                         . $error_assets->{ $asset->{asset_id} },
                     level    => MT::Log::WARNING(),
                     class    => 'system',
@@ -2468,13 +2473,13 @@ sub dialog_restore_upload {
                 . $app->uri( mode => 'list', args => { '_type' => 'log' } );
             $param->{error}
                 = $app->translate(
-                'Some objects were not restored because their parent objects were not restored.'
+                'Some objects were not imported because their parent objects were not imported.'
                 );
             $param->{error_url} = $log_url;
         }
         elsif ( scalar( keys %$error_assets ) ) {
             $param->{error} = $app->translate(
-                'Some of the files were not restored correctly.');
+                'Some of the files were not imported correctly.');
             my $log_url
                 = $app->uri( mode => 'list', args => { '_type' => 'log' } );
             $param->{error_url} = $log_url;
@@ -2488,7 +2493,7 @@ sub dialog_restore_upload {
         else {
             $app->log(
                 {   message => $app->translate(
-                        "Successfully restored objects to Movable Type system by user '[_1]'",
+                        "Successfully imported objects to Movable Type system by user '[_1]'",
                         $app->user->name
                     ),
                     level    => MT::Log::INFO(),
@@ -2536,7 +2541,7 @@ sub dialog_adjust_sitepath {
     my $tmp_dir    = $q->param('tmp_dir');
     my $error      = $q->param('error') || q();
     my $uploaded   = $q->param('restore_upload') || 0;
-    my @blog_ids   = split ',', $q->param('blog_ids');
+    my @blog_ids   = split ',', $q->param('blog_ids') || '';
     my $asset_ids  = $q->param('asset_ids');
     my $blog_class = $app->model('blog');
     my @blogs      = $blog_class->load( { id => \@blog_ids } );
@@ -2673,7 +2678,7 @@ sub update_list_prefs {
 
 sub recover_passwords {
     my $app = shift;
-    my @id  = $app->param('id');
+    my @id  = $app->multi_param('id');
 
     return $app->permission_denied()
         unless $app->user->is_superuser();
@@ -2688,7 +2693,7 @@ sub recover_passwords {
     foreach (@id) {
         my $author = $class->load($_)
             or next;
-        my ( $rc, $res ) = reset_password( $app, $author, $author->hint );
+        my ( $rc, $res ) = reset_password( $app, $author );
         push @msg_loop, { message => $res };
     }
 
@@ -2697,10 +2702,8 @@ sub recover_passwords {
 }
 
 sub reset_password {
-    my $app      = shift;
+    my $app = shift;
     my ($author) = $_[0];
-    my $hint     = $_[1];
-    my $name     = $_[2];
 
     require MT::Auth;
     require MT::Log;
@@ -2719,38 +2722,16 @@ sub reset_password {
         );
     }
 
+# Just in case: $author should already be tested before entering reset_password()
     $app->log(
-        {   message => $app->translate(
-                "Invalid user name '[_1]' in password recovery attempt",
-                $name
-            ),
+        {   message  => $app->translate("User not found"),
             level    => MT::Log::SECURITY(),
             class    => 'system',
             category => 'recover_password',
         }
         ),
-        return ( 0,
-        $app->translate("User name or password hint is incorrect.") )
+        return ( 0, $app->translate("User not found") )
         unless $author;
-    return (
-        0,
-        $app->translate(
-            "User has not set pasword hint; Cannot recover password")
-    ) if ( $hint && !$author->hint );
-
-    $app->log(
-        {   message => $app->translate(
-                "Invalid attempt to recover password (used hint '[_1]')",
-                $hint
-            ),
-            level    => MT::Log::SECURITY(),
-            class    => 'system',
-            category => 'recover_password'
-        }
-        ),
-        return ( 0,
-        $app->translate("User name or password hint is incorrect.") )
-        unless $author->hint eq $hint;
 
     return (
         0,
@@ -2841,7 +2822,7 @@ sub restore_file {
             = $app->uri( mode => 'list', args => { '_type' => 'log' } );
         $$errormsg .= '; ' if $$errormsg;
         $$errormsg .= $app->translate(
-            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the activity log.',
+            'Some objects were not imported because their parent objects were not imported.  Detailed information is in the activity log.',
             $log_url
         );
         return $blogs;
@@ -2859,7 +2840,7 @@ sub restore_file {
 
     $app->log(
         {   message => $app->translate(
-                "Successfully restored objects to Movable Type system by user '[_1]'",
+                "Successfully imported objects to Movable Type system by user '[_1]'",
                 $app->user->name
             ),
             level    => MT::Log::INFO(),
@@ -2899,7 +2880,7 @@ sub restore_directory {
         sub { _progress( $app, @_ ); } );
 
     if ( scalar @errors ) {
-        $$error = $app->translate('Error occurred during restore process.');
+        $$error = $app->translate('Error occurred during import process.');
         $app->log(
             {   message  => $$error,
                 level    => MT::Log::WARNING(),
@@ -2917,7 +2898,7 @@ sub restore_directory {
             $data .= $app->translate( 'MT::Asset#[_1]: ', $key )
                 . $value . "\n";
         }
-        my $message = $app->translate('Some of files could not be restored.');
+        my $message = $app->translate('Some of files could not be imported.');
         $app->log(
             {   message  => $message,
                 level    => MT::Log::WARNING(),
@@ -2934,7 +2915,7 @@ sub restore_directory {
         my $log_url
             = $app->uri( mode => 'list', args => { '_type' => 'log' } );
         $$error = $app->translate(
-            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the activity log.',
+            'Some objects were not imported because their parent objects were not imported.  Detailed information is in the activity log.',
             $log_url
         );
         return ( $blogs, $assets );
@@ -2944,7 +2925,7 @@ sub restore_directory {
 
     $app->log(
         {   message => $app->translate(
-                "Successfully restored objects to Movable Type system by user '[_1]'",
+                "Successfully imported objects to Movable Type system by user '[_1]'",
                 $app->user->name
             ),
             level    => MT::Log::INFO(),
@@ -2968,7 +2949,7 @@ sub restore_upload_manifest {
     require MT::BackupRestore;
     my $backups = MT::BackupRestore->process_manifest($fh);
     return $app->errtrans(
-        "Uploaded file was not a valid Movable Type backup manifest file.")
+        "Uploaded file was not a valid Movable Type exported manifest file.")
         if !defined($backups);
 
     my $files  = $backups->{files};
@@ -3022,7 +3003,7 @@ sub restore_upload_manifest {
     if ( length $param->{dialog_params} > 2083 )
     {    # 2083 is Maximum URL length in IE
         $param->{error} = $app->translate(
-            "Manifest file '[_1]' is too large. Please use import direcotry for restore.",
+            "Manifest file '[_1]' is too large. Please use import directory for importing.",
             $param->{filename}
         );
         $param->{open_dialog} = 0;
@@ -3055,14 +3036,14 @@ sub _backup_finisher {
     my $message;
     if ( my $blog_id = $param->{blog_id} || $param->{blog_ids} ) {
         $message = $app->translate(
-            "Blog(s) (ID:[_1]) was/were successfully backed up by user '[_2]'",
+            "Site(s) (ID:[_1]) was/were successfully exported by user '[_2]'",
             $blog_id, $app->user->name
         );
     }
     else {
         $message
             = $app->translate(
-            "Movable Type system was successfully backed up by user '[_1]'",
+            "Movable Type system was successfully exported by user '[_1]'",
             $app->user->name );
     }
     $app->log(
@@ -3114,7 +3095,7 @@ sub _log_dirty_restore {
     }
     while ( my ( $class_name, $ids ) = each %deferred_by_class ) {
         my $message = $app->translate(
-            'Some [_1] were not restored because their parent objects were not restored.',
+            'Some [_1] were not imported because their parent objects were not imported.',
             $class_name
         );
         $app->log(

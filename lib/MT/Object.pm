@@ -925,7 +925,8 @@ sub _ts2db {
     if ( $_[0] =~ m{ \A \d{4} - }xms ) {
         return $_[0];
     }
-    my $ret = sprintf '%04d-%02d-%02d %02d:%02d:%02d', map { $_ || 0 } unpack 'A4A2A2A2A2A2',
+    my $ret = sprintf '%04d-%02d-%02d %02d:%02d:%02d',
+        map { $_ || 0 } unpack 'A4A2A2A2A2A2',
         $_[0];
     return $ret;
 }
@@ -1222,8 +1223,8 @@ sub add_callback {
 
 sub init {
     my $obj = shift;
-    $obj->SUPER::init(@_);
     $obj->set_defaults();
+    $obj->SUPER::init(@_);
     return $obj;
 }
 

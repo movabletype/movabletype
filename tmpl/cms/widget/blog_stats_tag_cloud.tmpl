@@ -1,7 +1,7 @@
 <mt:if name="tag_loop">
     <mt:setvarblock name="tabs" append="1">
-        <li id="tag-tab" class="tab <mt:if name="tab" eq="tag">active</mt:if>">
-          <a href="#tag-panel" data-toggle="tab">
+        <li id="tag-tab" class="tab nav-item">
+          <a href="#tag-panel" class="nav-link<mt:if name="tab" eq="tag"> active</mt:if>" data-toggle="tab">
             <span>
               <__trans phrase="Tags">
             </span>

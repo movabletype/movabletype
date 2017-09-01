@@ -103,7 +103,7 @@ sub list_props {
                     my $thumb_size = 45;
                     my $userpic_sticker
                         = $is_userpic{ $obj->id }
-                        ? q{<span class="inuse-userpic sticky-label">Userpic</span>}
+                        ? q{<span class="badge badge-default">Userpic</span>}
                         : '';
 
                     if ( $file_path && $fmgr->exists($file_path) ) {
@@ -829,7 +829,8 @@ sub thumbnail_url {
             }
             $file = MT::Util::encode_url($file);
             $site_url = MT::Util::caturl( $site_url, $path, $file );
-            $site_url .= '?ts=' . $asset->modified_on if $param{Ts};
+            $site_url .= '?ts=' . $asset->modified_on
+                if $param{Ts} and $asset->modified_on;
             return ( $site_url, $w, $h );
         }
     }

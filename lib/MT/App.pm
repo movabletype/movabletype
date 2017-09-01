@@ -285,10 +285,22 @@ sub list_actions {
         $actions->{$a}{key}  = $a;
         $actions->{$a}{core} = 1
             unless UNIVERSAL::isa( $actions->{$a}{plugin}, 'MT::Plugin' );
-        $actions->{$a}{js_message} = $actions->{$a}{label}
-            unless $actions->{$a}{js_message};
+
+        if ( !$actions->{$a}{js_message} ) {
+            if ( exists $actions->{$a}{js_message_handler} ) {
+                my $code = $app->handler_to_coderef(
+                    $actions->{$a}{js_message_handler} );
+                $actions->{$a}{js_message} = $code->()
+                    if 'CODE' eq ref($code);
+            }
+            else {
+                $actions->{$a}{js_message} = $actions->{$a}{label};
+            }
+        }
+
         $actions->{$a}{action_mode} = $actions->{$a}{mode}
             if $actions->{$a}{mode};
+
         if ( exists $actions->{$a}{continue_prompt_handler} ) {
             my $code = $app->handler_to_coderef(
                 $actions->{$a}{continue_prompt_handler} );
@@ -319,7 +331,13 @@ sub content_actions {
         else {
             %args = %{ $action->{args} || {} };
         }
-        $args{_type} ||= $type;
+        if ( $type =~ m/(.*)\.(.*)/ ) {
+            $args{_type} = $1;
+            $args{type}  = $2;
+        }
+        else {
+            $args{_type} ||= $type;
+        }
         $args{return_args} = $app->make_return_args if $action->{return_args};
         $action->{url} = $app->uri(
             mode => $action->{mode},
@@ -699,6 +717,9 @@ sub set_x_frame_options_header {
     my $app             = shift;
     my $x_frame_options = $app->config->XFrameOptions;
 
+    # If set as NONE MT should not output X-Frame-Options header.
+    return if lc $x_frame_options eq 'none';
+
     # Use default value when invalid value is set.
     unless ( lc $x_frame_options eq 'deny'
         || lc $x_frame_options eq 'sameorigin'
@@ -719,7 +740,7 @@ sub send_http_header {
             if $type =~ m!^text/|\+xml$|/json$!
             && $type !~ /\bcharset\b/;
     }
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         if ( $app->{response_message} ) {
             $app->{apache}->status_line(
                 ( $app->response_code || 200 )
@@ -756,7 +777,7 @@ sub send_http_header {
 
 sub print {
     my $app = shift;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         $app->{apache}->print(@_);
     }
     else {
@@ -838,10 +859,10 @@ sub pre_run_debug {
         print STDERR "Session: " . $app->session->id . "\n"
             if $app->session;
         print STDERR "Request: " . $app->param->request_method . "\n";
-        my @param = $app->param;
+        my @param = $app->multi_param;
         if (@param) {
             foreach my $key (@param) {
-                my @val = $app->param($key);
+                my @val = $app->multi_param($key);
                 print STDERR "\t" . $key . ": " . $_ . "\n" for @val;
             }
         }
@@ -906,7 +927,7 @@ sub init_request {
         cookies _errstr request_method requires_login __host );
     delete $app->{$_} foreach @req_vars;
     $app->user(undef);
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         require Apache::Request;
         $app->{apache} = $param{ApacheObject} || Apache->request;
         $app->{query} = Apache::Request->instance( $app->{apache},
@@ -954,7 +975,7 @@ sub init_query {
     # CGI.pm has this terrible flaw in that if a POST is in effect,
     # it totally ignores any query parameters.
     if ( $app->request_method eq 'POST' ) {
-        if ( !$ENV{MOD_PERL} ) {
+        if ( !MT::Util::is_mod_perl1() ) {
             my $query_string = $ENV{'QUERY_STRING'}
                 if defined $ENV{'QUERY_STRING'};
             $query_string ||= $ENV{'REDIRECT_QUERY_STRING'}
@@ -980,7 +1001,7 @@ sub init_query {
         my $q = $app->param;
 
         # validate all parameter data matches the expected character set.
-        my @p = $q->param();
+        my @p = $app->multi_param();
 
         # use specific charset if the application method forces it
         my $charset = $options->{charset} || $app->charset;
@@ -1003,7 +1024,7 @@ sub init_query {
                 return $app->errtrans("Invalid request");
             }
 
-            my @d = $q->param($p);
+            my @d = $app->multi_param($p);
             my @param;
             foreach my $d (@d) {
                 if (   ( !defined $d )
@@ -1018,7 +1039,10 @@ sub init_query {
                     $request_charset, $charset )
                     if $transcode;
                 unless ( ref($d) && ( 'Fh' eq ref($d) ) ) {
-                    eval { $d = Encode::decode( $charset, $d, 1 ); };
+                    eval {
+                        $d = Encode::decode( $charset, $d, 1 )
+                            unless Encode::is_utf8($d);
+                    };
                     return $app->errtrans(
                         "Problem with this request: corrupt character data for character set [_1]",
                         $charset
@@ -1878,7 +1902,7 @@ sub _get_options_html {
     if ( my $p = $authenticator->{login_form_params} ) {
         $p = $app->handler_to_coderef($p);
         if ($p) {
-            my $params = $p->( $key, $blog_id, $entry_id || undef, $static, );
+            my $params = $p->( $key, $blog_id, $entry_id, $static, );
             $tmpl->param($params) if $params;
         }
     }
@@ -2664,7 +2688,7 @@ sub clear_login_cookie {
 sub request_content {
     my $app = shift;
     unless ( exists $app->{request_content} ) {
-        if ( $ENV{MOD_PERL} ) {
+        if ( MT::Util::is_mod_perl1() ) {
             ## Read from $app->{apache}
             my $r   = $app->{apache};
             my $len = $app->get_header('Content-length');
@@ -2693,7 +2717,7 @@ sub request_content {
 sub get_header {
     my $app = shift;
     my ($key) = @_;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         return $app->{apache}->header_in($key);
     }
     else {
@@ -2705,7 +2729,7 @@ sub get_header {
 sub set_header {
     my $app = shift;
     my ( $key, $val ) = @_;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         $app->{apache}->header_out( $key, $val );
     }
     else {
@@ -2728,7 +2752,7 @@ sub request_method {
         $app->{request_method} = shift;
     }
     elsif ( !exists $app->{request_method} ) {
-        if ( $ENV{MOD_PERL} ) {
+        if ( MT::Util::is_mod_perl1() ) {
             $app->{request_method} = Apache->request->method;
         }
         else {
@@ -2744,7 +2768,7 @@ sub upload_info {
     my $q            = $app->param;
 
     my ( $fh, $info, $no_upload );
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         if ( my $up = $q->upload($param_name) ) {
             $fh        = $up->fh;
             $info      = $up->info;
@@ -2760,8 +2784,8 @@ sub upload_info {
         if ( $@ && $@ =~ /^Undefined subroutine/ ) {
             $fh = $q->param($param_name);
         }
-        $no_upload = !$fh;
-        $info      = $q->uploadInfo($fh);
+        return unless $fh;
+        $info = $q->uploadInfo($fh);
     }
 
     return if $no_upload;
@@ -2790,7 +2814,7 @@ sub bake_cookie {
     if ( !$param{-domain} && $cfg->CookieDomain ) {
         $param{-domain} = $cfg->CookieDomain;
     }
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         require Apache::Cookie;
         my $cookie = Apache::Cookie->new( $app->{apache}, %param );
         if ( $param{-expires} && ( $cookie->expires =~ m/%/ ) ) {
@@ -2812,7 +2836,8 @@ sub bake_cookie {
 sub cookies {
     my $app = shift;
     unless ( $app->{cookies} ) {
-        my $class = $ENV{MOD_PERL} ? 'Apache::Cookie' : 'CGI::Cookie';
+        my $class
+            = MT::Util::is_mod_perl1() ? 'Apache::Cookie' : 'CGI::Cookie';
         eval "use $class;";
         $app->{cookies} = $class->fetch;
     }
@@ -3080,7 +3105,7 @@ sub run {
         $app->validate_request_params($meth_info) or die;
 
         require MT::Auth;
-        if ( $ENV{MOD_PERL} ) {
+        if ( MT::Util::is_mod_perl1() ) {
             unless ( $app->{no_read_body} ) {
                 my $status = $q->parse;
                 unless ( $status == Apache::Constants::OK() ) {
@@ -3151,10 +3176,8 @@ sub run {
                     $local_component = $meth_info->{component}
                         if $meth_info->{component};
 
-                    my $set
-                        = $meth_info->{permission}
-                        || $meth_info->{permit_action}
-                        || undef;
+                    my $set = $meth_info->{permission}
+                        || $meth_info->{permit_action};
 
                     if ($set) {
                         my $user    = $app->user;
@@ -3250,7 +3273,7 @@ sub run {
                     . '">' );
         }
         else {
-            if ( $ENV{MOD_PERL} ) {
+            if ( MT::Util::is_mod_perl1() ) {
                 $app->{apache}->header_out( Location => $url );
                 $app->response_code( Apache::Constants::REDIRECT() );
                 $app->send_http_header;
@@ -3280,18 +3303,21 @@ sub run {
                         . "</li>\n"
                         . $trace;
                     if ( $trace ne '' ) {
-                        my $debug_panel_header = $app->translate('Warnings and Log Messages');
+                        my $debug_panel_header
+                            = $app->translate('Warnings and Log Messages');
                         my $panel = <<"__HTML__";
-                            <div class="panel debug-panel text-danger" style="margin: 0 -15px;">
-                              <div class="panel-heading bg-danger">
-                                <h3 class="panel-title">$debug_panel_header</h3>
+                          <div class="col-12">
+                            <div class="card debug-panel" style="margin: 0 -15px;">
+                              <div class="card-header text-white" style="background: #EF7678;">
+                                <h4 class="card-title">$debug_panel_header</h4>
                               </div>
-                              <div class="panel-body debug-panel-inner">
+                              <div class="card-block debug-panel-inner" style="background: #FFE0E0;">
                                 <ul class="list-unstyled">
                                   $trace
                                 </ul>
                               </div>
                             </div>
+                          </div>
 __HTML__
                         $body =~ s!(</body>)!$panel$1!i;
                     }
@@ -3351,7 +3377,7 @@ sub handlers_for_mode {
                 return undef unless $cond->($app);
             }
 
-            my $handler = $hdlr->{code} || $hdlr->{handler} || undef;
+            my $handler = $hdlr->{code} || $hdlr->{handler};
             if ( $handler && $handler !~ m/->/ ) {
                 $hdlr->{component} = $1
                     if $hdlr->{code} =~ m/^\$?(\w+)::/;
@@ -3865,7 +3891,7 @@ sub delete_param {
     my ($key) = @_;
     my $q     = $app->{query};
     return unless $q;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         my $tab = $q->parms;
         $tab->unset($key);
     }
@@ -3878,7 +3904,7 @@ sub param_hash {
     my $app = shift;
     my $q   = $app->{query};
     return () unless $q;
-    my @params = $q->param();
+    my @params = $app->multi_param();
     my %result;
     foreach my $p (@params) {
         $result{$p} = $q->param($p);
@@ -3890,19 +3916,23 @@ sub param_hash {
 
 sub query_string {
     my $app = shift;
-    $ENV{MOD_PERL} ? $app->{apache}->args : $app->{query}->query_string;
+    MT::Util::is_mod_perl1()
+        ? $app->{apache}->args
+        : $app->{query}->query_string;
 }
 
 sub return_uri {
-    $_[0]->uri . '?' . $_[0]->return_args;
+    my ( $uri, $query ) = ( $_[0]->uri, $_[0]->return_args );
+    return $uri if !defined $query or $query eq "";
+    $uri . '?' . $query;
 }
 
 sub call_return {
     my $app = shift;
     $app->add_return_arg(@_) if @_;
+    my $connection = $app->get_header('Connection') || '';
     $app->redirect( $app->return_uri,
-        ( $app->get_header('Connection') eq 'close' ? ( UseMeta => 1 ) : () )
-    );
+        ( $connection eq 'close' ? ( UseMeta => 1 ) : () ) );
 }
 
 sub state_params {
@@ -3919,7 +3949,7 @@ sub make_return_args {
     my @vars = $app->state_params;
     my %args;
     foreach my $v (@vars) {
-        if ( my @p = $app->param($v) ) {
+        if ( my @p = $app->multi_param($v) ) {
             $args{$v}
                 = ( scalar @p > 1
                     && ( $v eq 'filter_val' || $v eq 'filter' ) )
@@ -4006,7 +4036,7 @@ sub app_path {
     return $app->{__path} if exists $app->{__path};
 
     my $path;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         $path = $app->{apache}->uri;
         $path =~ s!/[^/]*$!!;
     }
@@ -4042,7 +4072,8 @@ sub envelope {''}
 sub script {
     my $app = shift;
     return $app->{__script} if exists $app->{__script};
-    my $script = $ENV{MOD_PERL} ? $app->{apache}->uri : $ENV{SCRIPT_NAME};
+    my $script
+        = MT::Util::is_mod_perl1() ? $app->{apache}->uri : $ENV{SCRIPT_NAME};
     if ( !$script ) {
         require File::Basename;
         import File::Basename qw(basename);
@@ -4094,7 +4125,7 @@ sub path_info {
     my $app = shift;
     return $app->{__path_info} if exists $app->{__path_info};
     my $path_info;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         ## mod_perl often leaves part of the script name (Location)
         ## in the path info, for some reason. This should remove it.
         $path_info = $app->{apache}->path_info;
@@ -4116,7 +4147,7 @@ sub path_info {
 
 sub is_secure {
     my $app = shift;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         return $app->{apache}->subprocess_env('https');
     }
     else {
@@ -4182,12 +4213,21 @@ sub is_valid_redirect_target {
 sub param {
     my $app = shift;
     return unless $app->{query};
+    Carp::carp "app->param called in list context; use app->multi_param"
+        if wantarray;
     if (@_) {
         $app->{query}->param(@_);
     }
     else {
         wantarray ? ( $app->{query}->param ) : $app->{query};
     }
+}
+
+sub multi_param {
+    my $app = shift;
+    return unless $app->{query};
+    local $CGI::LIST_CONTEXT_WARN = 0;
+    ( $app->{query}->param(@_) );
 }
 
 sub blog {
@@ -4257,7 +4297,6 @@ sub trace {
     $app->{trace} ||= [];
     if ( $MT::DebugMode & 2 ) {
         require Carp;
-        local $Carp::CarpLevel = 1;
         my $msg = "@_";
         chomp $msg;
         push @{ $app->{trace} }, Carp::longmess($msg);
@@ -4274,7 +4313,6 @@ sub trace {
             . ', line '
             . $caller[2];
         if ( $MT::DebugMode & 2 ) {
-            local $Carp::CarpLevel = 1;
             my $msg = "@_";
             chomp $msg;
             print STDERR Carp::longmess("(warn from $place) $msg");
@@ -4290,7 +4328,7 @@ sub remote_ip {
 
     my $trusted = $app->config->TransparentProxyIPs || 0;
     my $remote_ip = (
-          $ENV{MOD_PERL}
+        MT::Util::is_mod_perl1()
         ? $app->{apache}->connection->remote_ip
         : $ENV{REMOTE_ADDR}
     );
@@ -4338,7 +4376,7 @@ sub remote_ip {
 sub document_root {
     my $app = shift;
     my $cwd = '';
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         ## If mod_perl, just use the document root.
         $cwd = $app->{apache}->document_root;
     }
@@ -4376,7 +4414,7 @@ sub DESTROY {
 sub set_no_cache {
     my $app = shift;
     ## Add the Pragma: no-cache header.
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         $app->{apache}->no_cache(1);
     }
     else {

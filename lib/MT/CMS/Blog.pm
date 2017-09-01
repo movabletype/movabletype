@@ -387,11 +387,11 @@ sub edit {
         $id ? $obj->language : $lang || MT->config->DefaultLanguage );
 
     if ( !$param->{site_path} ) {
-        $param->{suggested_site_path} = 'BLOG-NAME';
+        $param->{suggested_site_path} = 'SITE-NAME';
     }
 
     if ( !$param->{site_url_path} ) {
-        $param->{suggested_site_url} = 'BLOG-NAME';
+        $param->{suggested_site_url} = 'SITE-NAME';
     }
     if ( !$param->{id} ) {
         if ( $param->{site_url_path} ) {
@@ -701,7 +701,7 @@ sub cfg_web_services {
 sub rebuild_phase {
     my $app  = shift;
     my $type = $app->param('_type') || 'entry';
-    my @ids  = $app->param('id');
+    my @ids  = $app->multi_param('id');
     $app->{goback} = $app->return_uri;
     $app->{value} ||= $app->translate('Back');
     if ( $type eq 'entry' ) {
@@ -752,7 +752,7 @@ sub rebuild_pages {
         $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $order = $q->param('type');
     my @order = split /,/, $order;
-    my $next  = $q->param('next');
+    my $next  = $q->param('next') || 0;
     my $done  = 0;
     my $type  = $order[$next];
 
@@ -1468,11 +1468,11 @@ sub dialog_select_weblog {
             terms    => $terms,
             args     => $args,
             params   => {
-                dialog_title  => $app->translate("Select Blog"),
-                items_prompt  => $app->translate("Selected Blog"),
+                dialog_title  => $app->translate("Select Child Site"),
+                items_prompt  => $app->translate("Selected Child Site"),
                 search_prompt => $app->translate(
-                    "Type a blog name to filter the choices below."),
-                panel_label       => $app->translate("Blog Name"),
+                    "Type a site name to filter the choices below."),
+                panel_label       => $app->translate("Site Name"),
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',
                 panel_multi       => defined $app->param('multi')
@@ -1666,7 +1666,7 @@ sub pre_save {
                 $obj->require_comment_emails(0);
             }
             my @authenticators;
-            for my $param ( $app->param->param ) {
+            for my $param ( $app->multi_param ) {
                 if ( $param =~ /^enabled_(.*)$/ ) {
                     push @authenticators, $1;
                 }
@@ -1699,7 +1699,7 @@ sub pre_save {
             $param{words_in_excerpt} = 40
                 unless defined $param{words_in_excerpt}
                 && $param{words_in_excerpt} ne '';
-            if ( $app->param('days_or_posts') eq 'days' ) {
+            if ( ( $app->param('days_or_posts') || '' ) eq 'days' ) {
                 $obj->days_on_index( $app->param('list_on_index') );
                 $obj->entries_on_index(0);
             }
@@ -1934,13 +1934,14 @@ sub post_save {
 
     for my $blog_field ( keys %blog_fields ) {
 
-        if ( $obj->$blog_field() ne $original->$blog_field() ) {
-            my $old
-                = defined $original->$blog_field()
-                ? $original->$blog_field()
-                : "none";
-            my $new
-                = defined $obj->$blog_field() ? $obj->$blog_field() : "none";
+        my $old
+            = defined $original->$blog_field()
+            ? $original->$blog_field()
+            : "";
+        my $new = defined $obj->$blog_field() ? $obj->$blog_field() : "";
+        if ( $new ne $old ) {
+            $old = "none" if $old eq "";
+            $new = "none" if $new eq "";
             push(
                 @meta_messages,
                 $app->translate(
@@ -2893,7 +2894,7 @@ sub prepare_dynamic_publishing {
 
     # IIS itself does not handle .htaccess,
     # but IISPassword (3rd party) does and dies with this.
-    if ( $ENV{SERVER_SOFTWARE} =~ /Microsoft-IIS/
+    if ( ( $ENV{SERVER_SOFTWARE} || '' ) =~ /Microsoft-IIS/
         && MT->config->EnableAutoRewriteOnIIS )
     {
 
@@ -3055,7 +3056,7 @@ sub clone {
 
     $app->validate_magic() or return;
 
-    my @id = $app->param('id');
+    my @id = $app->multi_param('id');
 
     if ( !@id ) {
         return $app->error(
@@ -3255,7 +3256,7 @@ sub clone {
         if $website->site_path;
     $param->{blog_id} = $app->param('blog_id');
 
-    for my $key ( $app->param ) {
+    for my $key ( $app->multi_param ) {
         if ( $key =~ /^clone_prefs/ ) {
             if ( $app->param($key) ) {
                 $param->{$key} = $app->param($key);
@@ -3363,20 +3364,20 @@ sub print_status_page {
 
     $app->print_encode( $app->build_page('layout/modal/header.tmpl') );
 
-    my $page_title = $app->translate('Clone Blog');
+    my $page_title = $app->translate('Clone Child Site');
     $app->print_encode( $app->translate_templatized(<<"HTML" ) );
 
 <div class="modal-header">
-    <button type="button" class="close" data-mt-modal-close>
-        <span>&times;</span>
+    <h5 class="modal-title">$page_title</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+      <span aria-hidden="true">&times;</span>
     </button>
-    <h4 class="modal-title">$page_title</h4>
 </div>
 
 <div class="modal-body">
-    <h2><__trans phrase="Cloning blog '[_1]'..." params="$blog_name_encode"></h2>
-    <div class="modal_width panel panel-default" id="dialog-clone-weblog" style="background-color: #fafafa;">
-        <div id="clone-process" class="process-msg panel-body">
+    <h2><__trans phrase="Cloning child site '[_1]'..." params="$blog_name_encode"></h2>
+    <div class="modal_width card" id="dialog-clone-weblog" style="background-color: #fafafa;">
+        <div id="clone-process" class="process-msg card-block">
             <ul class="list-unstyled">
 HTML
 
@@ -3493,7 +3494,7 @@ HTML
 HTML
     }
 
-    $app->print_encode( $app->build_page( 'layout/modal/footer.tmpl' ) );
+    $app->print_encode( $app->build_page('layout/modal/footer.tmpl') );
 }
 
 sub _progress {
@@ -3543,11 +3544,19 @@ sub cms_pre_load_filtered_list {
     delete $terms->{blog_id};
     $terms->{parent_id} = $load_options->{blog_id}
         if $app->blog;
-    $terms->{class} = 'blog' unless $terms->{class} eq '*';
+    $terms->{class} = 'blog'
+        unless $terms->{class} and $terms->{class} eq '*';
 
     my $user = $load_options->{user} || $app->user;
-    return   if $user->is_superuser;
-    return 1 if $user->permissions(0)->can_do('edit_templates');
+    if (   $user->is_superuser
+        || $user->permissions(0)->can_do('edit_templates') )
+    {
+        if ( $terms->{class} eq 'blog' ) {
+            my $parent_site_terms = { id => $app->blog->website->id };
+            $load_options->{terms} = [ $terms, '-or', $parent_site_terms ];
+        }
+        return;
+    }
 
     my $iter = MT::Permission->load_iter(
         {   author_id   => $user->id,
@@ -3578,7 +3587,14 @@ sub cms_pre_load_filtered_list {
     else {
         $terms->{id} = 0;
     }
-    $load_options->{terms} = $terms;
+
+    if ( $terms->{class} eq 'blog' ) {
+        my $parent_site_terms = { id => $app->blog->website->id };
+        $load_options->{terms} = [ $terms, '-or', $parent_site_terms ];
+    }
+    else {
+        $load_options->{terms} = $terms;
+    }
 }
 
 sub can_view_blog_list {

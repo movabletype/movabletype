@@ -10,13 +10,13 @@
      label="<__trans phrase="Your Wordpress.com Username">"
      label_class="top-label"
      hint="<__trans phrase="Sign in using your WordPress.com username.">"
-     show_hint="1"
-     no_grid="1">
+     hint_id="yourUsername"
+     show_hint="1">
     <div class="input-group">
       <div class="input-group-addon">
         <img src="<mt:var name="static_uri">images/comment/wordpress_logo.png" />
       </div>
-      <input type="text" name="openid_userid" class="form-control text full" />
+      <input type="text" name="openid_userid" class="form-control text full" aria-describedby="yourUsername" />
     </div>
   </mtapp:setting>
   <div class="actions-bar actions-bar-login">

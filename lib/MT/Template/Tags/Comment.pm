@@ -34,7 +34,7 @@ sub _comment_follow {
             my $cmntr = $ctx->stash('commenter');
             unless ($cmntr) {
                 if ( $c->commenter_id ) {
-                    $cmntr = MT::Author->load( $c->commenter_id ) || undef;
+                    $cmntr = MT::Author->load( $c->commenter_id );
                 }
             }
             if ( !defined $cmntr
@@ -90,6 +90,16 @@ fashion.
 
 A conditional tag that returns true when: the system is configured to
 allow comments and the blog is configured to accept comments in some
+fashion.
+
+=for tags comments
+
+=cut
+
+=head2 SiteIfCommentsOpen
+
+A conditional tag that returns true when: the system is configured to
+allow comments and the site is configured to accept comments in some
 fashion.
 
 =for tags comments
@@ -225,7 +235,7 @@ sub _hdlr_comments {
             }
         }
         if ($need_join) {
-            my $scored_by = $args->{scored_by} || undef;
+            my $scored_by = $args->{scored_by};
             if ($scored_by) {
                 require MT::Author;
                 my $author = MT::Author->load( { name => $scored_by } )
@@ -1155,6 +1165,15 @@ in context.
 
 =cut
 
+=head2 CommentSiteID
+
+Outputs the numeric ID of the site for the current comment
+in context.
+
+=for tags comments
+
+=cut
+
 sub _hdlr_comment_blog_id {
     my ($ctx) = @_;
     my $c = $ctx->stash('comment')
@@ -1647,7 +1666,7 @@ sub _hdlr_comment_reply_link {
         MT::Util::encode_html( MT::Util::encode_js($name) ), 1 );
     my $onclick
         = sprintf( $args->{onclick} || "mtReplyCommentOnClick(%d, '%s')",
-        $comment->id, $name );
+        $comment->id || 0, $name );
 
     return
         sprintf(
@@ -1899,6 +1918,25 @@ If true, will count only top-level comments
 =back
 
 =for tags multiblog, count, blogs, comments
+
+=cut
+
+=head2 SiteCommentCount
+
+Returns the number of published comments associated with the site
+currently in context.
+
+B<Attributes:>
+
+=over 4
+
+=item * top
+
+If true, will count only top-level comments
+
+=back
+
+=for tags multiblog, count, sites, comments
 
 =cut
 

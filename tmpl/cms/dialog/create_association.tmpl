@@ -65,7 +65,7 @@ function returnRoleSelection(ok) {
         var ids = new Array();
         jQuery('input[name=role-cb]:checked').each( function() {
             ids.push(this.value);
-            parent.jQuery('span.items').append('<span id="selected-role-'+this.value+'" class="sticky-label selected-item">'+jQuery('tr#role-'+this.value+' > td.panel-label > label').text()+'&nbsp;<span class="remove clickable">x</span></span>');
+            parent.jQuery('span.items').append('<span id="selected-role-'+this.value+'" class="badge badge-default sticky-label selected-item">'+jQuery('tr#role-'+this.value+' > td.panel-label > label').text()+'&nbsp;<span class="tag-pill remove clickable">x</span></span>');
         });
         parent.jQuery('input#new_created_user_role').val( ids.join(",") );
     }
@@ -104,10 +104,10 @@ TC.attachLoadEvent(init);
 </form>
 
 <div class="modal-header">
-    <button type="button" class="close" data-mt-modal-close>
-        <span>&times;</span>
+    <h2 class="mt-0 modal-title"><mt:var name="page_title"></h2>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+      <span aria-hidden="true">&times;</span>
     </button>
-    <h4 class="modal-title"><mt:var name="page_title"></h4>
 </div>
 
 <mt:if name="missing_data">
@@ -117,7 +117,7 @@ TC.attachLoadEvent(init);
             id="generic-info"
             class="info"
             can_close="0">
-            <__trans phrase="No roles exist in this installation. [_1]Create a role</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=role');">">
+            <__trans phrase="No roles exist in this installation. [_1]Create a role</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=role');" class="alert-link">">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_group">
@@ -125,7 +125,7 @@ TC.attachLoadEvent(init);
             id="generic-info"
             class="info"
             can_close="0">
-            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=group');">">
+            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=group');" class="alert-link">">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_author">
@@ -133,7 +133,7 @@ TC.attachLoadEvent(init);
             id="generic-info"
             class="info"
             can_close="0">
-            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=author');">">
+            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=author');" class="alert-link">">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_blog">
@@ -141,7 +141,7 @@ TC.attachLoadEvent(init);
             id="generic-info"
             class="info"
             can_close="0">
-            <__trans phrase="No blogs exist in this installation. [_1]Create a blog</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=blog');">">
+            <__trans phrase="No blogs exist in this installation. [_1]Create a blog</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=blog');" class="alert-link">">
         </mtapp:statusmsg>
     </mt:if>
 </div>
@@ -156,13 +156,14 @@ TC.attachLoadEvent(init);
     </form>
 </div>
 <mt:else>
+<div class="modal-body">
     <mt:loop name="panel_loop">
       <mt:include name="include/listing_panel.tmpl" use_page_content="1">
     </mt:loop>
+</div>
 </mt:if>
 
 </mt:setvarblock>
 
 <mt:include name="layout/modal.tmpl">
 <mt:var name="layout">
-

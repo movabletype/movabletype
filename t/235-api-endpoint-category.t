@@ -82,7 +82,7 @@ sub suite {
                 +{  totalResults => 3,
                     items        => MT::DataAPI::Resource->from_object(
                         [   MT->model('category')->load(
-                                undef,
+                                { blog_id => 1 },
                                 {   sort      => 'label',
                                     direction => 'ascend',
                                     limit     => 1
@@ -96,7 +96,7 @@ sub suite {
         {    # sortBy created_by.
             path      => '/v1/sites/1/categories',
             method    => 'GET',
-            params    => { sortBy => 'created_by', },
+            params    => { sortBy => 'created_by' },
             callbacks => [
                 {   name  => 'data_api_pre_load_filtered_list.category',
                     count => 2,
@@ -105,8 +105,10 @@ sub suite {
             result => sub {
                 +{  totalResults => 3,
                     items        => MT::DataAPI::Resource->from_object(
-                        [   MT->model('category')
-                                ->load( undef, { sort => 'created_by', } )
+                        [   MT->model('category')->load(
+                                { blog_id => 1 },
+                                { sort    => 'created_by' },
+                            )
                         ]
                     ),
                 };
@@ -478,9 +480,6 @@ sub suite {
             result => sub {
                 $app->user($author);
                 my $cat = $app->model('category')->load(1);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     'totalResults' => '1',
                     'items' => mt::DataAPI::Resource->from_object( [$cat] ),
@@ -550,9 +549,6 @@ sub suite {
                         : undef;
                 }
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     'totalResults' => scalar @cat,
                     'items' => mt::DataAPI::Resource->from_object( \@cat ),
@@ -593,10 +589,10 @@ sub suite {
             method => 'GET',
             result => sub {
                 $app->user($author);
-                my $cat = $app->model('category')->load(24);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
+                my $cat
+                    = $app->model('category')
+                    ->load(
+                    { id => { not => 3 }, blog_id => 1, parent => 1 } );
                 return +{
                     'totalResults' => '1',
                     'items' => mt::DataAPI::Resource->from_object( [$cat] ),
@@ -611,11 +607,13 @@ sub suite {
 
                 my $got = $app->current_format->{unserialize}->($body);
 
-                my $cat = $app->model('category')->load(2);
-                my @cats
-                    = $app->model('category')
-                    ->load(
-                    { id => { not => $cat->id }, parent => $cat->parent } );
+                my $cat  = $app->model('category')->load(2);
+                my @cats = $app->model('category')->load(
+                    {   id      => { not => $cat->id },
+                        blog_id => 1,
+                        parent  => $cat->parent,
+                    }
+                );
 
                 is( $got->{totalResults}, scalar @cats,
                     'Got ' . scalar(@cats) . ' categories.' );
@@ -662,11 +660,8 @@ sub suite {
             method => 'GET',
             result => sub {
                 $app->user($author);
-                my @cats
-                    = $app->model('category')->load( { id => [ 3, 24 ] } );
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
+                my @cats = $app->model('category')
+                    ->load( { blog_id => 1, parent => 1 } );
                 return +{
                     totalResults => 2,
                     items => MT::DataAPI::Resource->from_object( \@cats ),
@@ -701,8 +696,13 @@ sub suite {
         {    # Insufficient categories.
             path   => '/v2/sites/1/categories/permutate',
             method => 'POST',
-            params =>
-                { categories => [ map { +{ id => $_ } } qw/ 24 23 1 2 / ], },
+            params => sub {
+                my @cats = $app->model('category')->load( { blog_id => 1 },
+                    { sort => 'id', direction => 'descend' } );
+                my @cat_ids = map { { id => $_->id } } @cats;
+                pop @cat_ids;
+                { categories => \@cat_ids };
+            },
             code   => 400,
             result => sub {
                 +{  error => {
@@ -715,8 +715,11 @@ sub suite {
         {    # Not logged in.
             path   => '/v2/sites/1/categories/permutate',
             method => 'POST',
-            params => {
-                categories => [ map { +{ id => $_ } } qw/ 24 23 1 2 3 / ],
+            params => sub {
+                my @cats = $app->model('category')->load( { blog_id => 1 },
+                    { sort => 'id', direction => 'descend' } );
+                my @cat_ids = map { { id => $_->id } } @cats;
+                { categories => \@cat_ids };
             },
             author_id => 0,
             code      => 401,
@@ -725,8 +728,11 @@ sub suite {
         {    # No permissions.
             path   => '/v2/sites/1/categories/permutate',
             method => 'POST',
-            params => {
-                categories => [ map { +{ id => $_ } } qw/ 24 23 1 2 3 / ],
+            params => sub {
+                my @cats = $app->model('category')->load( { blog_id => 1 },
+                    { sort => 'id', direction => 'descend' } );
+                my @cat_ids = map { { id => $_->id } } @cats;
+                { categories => \@cat_ids };
             },
             restrictions => { 1 => [qw/ edit_categories /], },
             code         => 403,
@@ -736,8 +742,11 @@ sub suite {
         # permutate_categories - normal tests
         {   path   => '/v2/sites/1/categories/permutate',
             method => 'POST',
-            params => {
-                categories => [ map { +{ id => $_ } } qw/ 24 23 1 2 3 / ],
+            params => sub {
+                my @cats = $app->model('category')->load( { blog_id => 1 },
+                    { sort => 'id', direction => 'descend' } );
+                my @cat_ids = map { { id => $_->id } } @cats;
+                { categories => \@cat_ids };
             },
             callbacks => [
                 {   name =>
@@ -750,9 +759,6 @@ sub suite {
                 my @category_order = split ',', $site->category_order;
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return MT::DataAPI::Resource->from_object(
                     [   map { $app->model('category')->load($_) }

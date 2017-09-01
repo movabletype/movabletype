@@ -1186,7 +1186,7 @@ sub _hdlr_is_ancestor {
         {   blog_id => $blog_id,
             label   => $args->{'child'}
         }
-    ) || undef;
+    );
     while ( my $child = $iter->() ) {
         if ( $cat->is_ancestor($child) ) {
             $iter->end;
@@ -1814,6 +1814,23 @@ B<Example:>
     <$mt:BlogCategoryCount$>
 
 =for tags multiblog, count, blogs, categories
+
+=cut
+
+=head2 SiteCategoryCount
+
+Returns the number of categories associated with a site. This
+template tag supports the multiblog template tags.
+
+This template tag also supports all of the same filtering mechanisms
+defined by the mt:Categories tag allowing users to retrieve a count
+of the number of comments on a site that meet a certain criteria.
+
+B<Example:>
+
+    <$mt:SiteCategoryCount$>
+
+=for tags multiblog, count, sites, categories
 
 =cut
 

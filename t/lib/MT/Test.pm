@@ -8,7 +8,7 @@ use base qw( Exporter );
 
 our $VERSION = 0.9;
 our @EXPORT
-    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks location_param_contains query_param_contains );
+    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks location_param_contains query_param_contains has_php );
 
 use strict;
 
@@ -134,7 +134,7 @@ sub init_app {
     $app->instance( $cfg ? ( Config => $cfg ) : () );
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        File::Spec->rel2abs( $app->config->SearchTemplatePath ) );
+        [ File::Spec->rel2abs( $app->config->SearchTemplatePath ) ] );
 
     # kill __test_output for a new request
     require MT;
@@ -438,7 +438,7 @@ sub init_data {
     rmtree('t/site') if ( -d 't/site' );
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory($themedir);
+    MT->config->ThemesDirectory( [$themedir] );
     require MT::Theme;
 
     require MT::Website;
@@ -595,18 +595,18 @@ sub init_data {
     require MT::Role;
     my ( $admin_role, $author_role )
         = map { MT::Role->load( { name => $_ } ) }
-        ( 'Blog Administrator', 'Author' );
+        ( 'Child Site Administrator', 'Author' );
 
     unless ( $admin_role && $author_role ) {
         my @default_roles = (
-            {   name        => 'Blog Administrator',
-                description => 'Can administer the blog.',
+            {   name        => 'Child Site Administrator',
+                description => 'Can administer the child site.',
                 role_mask   => 2**12,
                 perms       => ['administer_blog']
             },
             {   name => 'Author',
                 description =>
-                    'Can create entries, edit their own entries, upload files, and publish.',
+                    'Can create entries, edit their own entries, upload files and publish.',
                 perms => [
                     'comment',      'create_post',
                     'publish_post', 'upload',
@@ -631,7 +631,7 @@ sub init_data {
         MT::Object->driver->clear_cache;
         ( $admin_role, $author_role )
             = map { MT::Role->load( { name => $_ } ) }
-            ( 'Blog Administrator', 'Author' );
+            ( 'Child Site Administrator', 'Author' );
     }
 
     require MT::Association;
@@ -829,6 +829,75 @@ It\'s a hard rain\'s a-gonna fall',
         $cat->parent(1);
         $cat->id(3);
         $cat->save or die "Couldn't save category record 3: " . $cat->errstr;
+    }
+
+    # Categories and sub categories
+    $cat = MT::Category->load( { label => 'US', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('US');
+        $cat->description('The United States of America');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(0);
+        $cat->id(4);
+        $cat->save or die "Couldn't save category record 4: " . $cat->errstr;
+    }
+    $cat = MT::Category->load( { label => 'California', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('California');
+        $cat->description('');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(4);
+        $cat->id(5);
+        $cat->save or die "Couldn't save category record 5: " . $cat->errstr;
+    }
+    $cat = MT::Category->load( { label => 'San Fransico', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('San Fransisco');
+        $cat->description('');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(5);
+        $cat->id(6);
+        $cat->save or die "Couldn't save category record 6: " . $cat->errstr;
+    }
+
+    $cat = MT::Category->load( { label => 'Japan', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('Japan');
+        $cat->description('Japan');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(0);
+        $cat->id(7);
+        $cat->save or die "Couldn't save category record 7: " . $cat->errstr;
+    }
+    $cat = MT::Category->load( { label => 'Tokyo', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('Tokyo');
+        $cat->description('');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(7);
+        $cat->id(8);
+        $cat->save or die "Couldn't save category record 8: " . $cat->errstr;
+    }
+    $cat = MT::Category->load( { label => 'Chiyoda', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('Chiyoda');
+        $cat->description('');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(8);
+        $cat->id(9);
+        $cat->save or die "Couldn't save category record 9: " . $cat->errstr;
     }
 
     require MT::Placement;
@@ -1256,6 +1325,34 @@ It\'s a hard rain\'s a-gonna fall',
     $folder->id(22);
     $folder->save or die "Could'n sae folder record 22:" . $folder->errstr;
 
+    # Folder with sub folders
+    $folder = MT::Folder->new();
+    $folder->blog_id(2);
+    $folder->label('Product');
+    $folder->description('News');
+    $folder->author_id( $chuckd->id );
+    $folder->parent(0);
+    $folder->id(23);
+    $folder->save or die "Could'n sae folder record 21:" . $folder->errstr;
+
+    $folder = MT::Folder->new();
+    $folder->blog_id(2);
+    $folder->label('Consumer');
+    $folder->description('');
+    $folder->author_id( $chuckd->id );
+    $folder->parent(23);
+    $folder->id(24);
+    $folder->save or die "Could'n sae folder record 22:" . $folder->errstr;
+
+    $folder = MT::Folder->new();
+    $folder->blog_id(2);
+    $folder->label('Game');
+    $folder->description('');
+    $folder->author_id( $chuckd->id );
+    $folder->parent(24);
+    $folder->id(25);
+    $folder->save or die "Could'n sae folder record 22:" . $folder->errstr;
+
     $page = MT::Page->new();
     $page->set_values(
         {   blog_id     => 1,
@@ -1402,7 +1499,7 @@ It\'s a hard rain\'s a-gonna fall',
         MT::Comment->count( { entry_id => 24, visible => 1 } ) || 0 );
     $page->save() or die "Couldn't save page record 24: " . $page->errstr;
 
-    MT->instance->rebuild( BlogId => 1, );
+    MT->instance->rebuild( BlogID => 1, );
 
     ### Make ObjectAsset mappings
     require MT::ObjectAsset;
@@ -1557,13 +1654,11 @@ sub _run_app {
         }
         elsif ( $k eq '__test_upload' ) {
             my ( $param, $src ) = @$v;
-            my $seqno = unpack( "%16C*",
-                join( '', localtime, grep { defined $_ } values %ENV ) );
-            my $filename = basename($src);
-            $CGITempFile::TMPDIRECTORY = '/tmp';
-            my $tmpfile = new CGITempFile($seqno) or die "CGITempFile: $!";
-            my $tmp     = $tmpfile->as_string;
-            my $cgi_fh  = Fh->new( $filename, $tmp, 0 ) or die "FH? $!";
+            require CGI::File::Temp;
+            my ($cgi_fh) = new CGI::File::Temp(UNLINK => 1) or die "CGI::File::Temp: $!";
+            $cgi_fh->_mp_filename(basename($src));
+            $CGI::DefaultClass->binmode($cgi_fh) if $CGI::needs_binmode
+                && defined fileno($cgi_fh);
 
             {
                 local $/ = undef;
@@ -1586,7 +1681,7 @@ sub _run_app {
     MT->set_instance($app);
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        abs_path( $app->config->SeachTemplatePath ) );
+        [ abs_path( $app->config->SeachTemplatePath ) ] );
 
     # nix upgrade required
     # seems to be hanging around when it doesn't need to be
@@ -1743,9 +1838,9 @@ sub _run_tasks {
 }
 
 sub location_param_contains {
-    my ($out, $expects, $message) = @_;
+    my ( $out, $expects, $message ) = @_;
     my ($location_url) = $out =~ /^Location:\s*(\S+)/m;
-    unless ( $location_url ) {
+    unless ($location_url) {
         fail "$message: no Location url";
         return;
     }
@@ -1753,13 +1848,24 @@ sub location_param_contains {
 }
 
 sub query_param_contains {
-    my ($url, $expects, $message) = @_;
-    my $uri = URI->new($url);
+    my ( $url, $expects, $message ) = @_;
+    my $uri  = URI->new($url);
     my $fail = 0;
     for my $key ( sort keys %$expects ) {
-        is $uri->query_param($key) => $expects->{$key}, "$key: $expects->{$key}" or $fail++;
+        is $uri->query_param($key) => $expects->{$key},
+            "$key: $expects->{$key}"
+            or $fail++;
     }
     ok !$fail, $message;
+}
+
+my $HasPHP;
+
+sub has_php {
+    return $HasPHP if defined $HasPHP;
+    my $php_version_string = `php --version 2>&1` or return $HasPHP = 0;
+    my ($php_version) = $php_version_string =~ /^PHP (\d+\.\d+)/i;
+    $HasPHP = ( $php_version and $php_version >= 5 ) ? 1 : 0;
 }
 
 1;

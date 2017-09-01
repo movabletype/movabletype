@@ -58,7 +58,9 @@ sub send_notify {
     if ( $q->param('send_excerpt') ) {
         $params{send_excerpt} = 1;
     }
-    $params{message} = wrap_text( $q->param('message'), $cols, '', '' );
+    my $message = $q->param('message');
+    $params{message}
+        = defined $message ? wrap_text( $message, $cols, '', '' ) : '';
     if ( $q->param('send_body') ) {
         $params{send_body} = 1;
     }
@@ -101,7 +103,7 @@ sub send_notify {
             "No valid recipients were found for the entry notification.")
         );
     my $address;
-    if ($author) {
+    if ( $author and $author->email ) {
         $address
             = defined $author->nickname
             ? $author->nickname . ' <' . $author->email . '>'
@@ -240,7 +242,7 @@ sub can_delete {
 sub save_filter {
     my $eh    = shift;
     my ($app) = @_;
-    my $email = lc $app->param('email');
+    my $email = lc( $app->param('email') || '' );
     $email =~ s/(^\s+|\s+$)//gs;
     my $blog_id = $app->param('blog_id');
     if ( !is_valid_email($email) ) {
@@ -295,8 +297,8 @@ sub cms_pre_load_filtered_list {
     return if $user->is_superuser;
 
     require MT::Permission;
-    my $options_blog_ids = $load_options->{blog_ids} || undef;
-    my $iter = MT::Permission->load_iter(
+    my $options_blog_ids = $load_options->{blog_ids};
+    my $iter             = MT::Permission->load_iter(
         {   author_id => $user->id,
             (   $options_blog_ids
                 ? ( blog_id => $options_blog_ids )

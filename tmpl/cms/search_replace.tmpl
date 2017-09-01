@@ -128,8 +128,8 @@ function blurDateFields(s) {
     <div id="search-tabs">
       <ul id="search-tabs-list" class="nav nav-tabs search-tabs-list tabs">
       <mt:loop name="search_tabs">
-        <li id="results-<mt:var name="key" escape="html">-tab" class="tab<mt:if name="object_type" eq="$key"> active</mt:if>">
-          <a href="#" data-mt-object-type="<mt:var name="key" escape="html">" onclick="reSearch(this.dataset.mtObjectType); return false;">
+        <li id="results-<mt:var name="key" escape="html">-tab" class="nav-item tab">
+          <a href="#" class="nav-link<mt:if name="object_type" eq="$key"> active</mt:if>" data-mt-object-type="<mt:var name="key" escape="html">" onclick="reSearch(this.dataset.mtObjectType); return false;">
             <span>
               <mt:var name="label" escape="html">
             </span>
@@ -166,24 +166,48 @@ function blurDateFields(s) {
            id="search"
            label="<__trans phrase="Search">"
            label_class="top-label"
-           help_section="search-alt"
-           no_grid="1">
+           help_section="search-alt">
           <input type="text" name="search" id="search" class="form-control text query" value="<mt:var name="search" escape="html">" />
         </mtapp:setting>
         <ul id="search-bar-advanced-search" class="list-inline multiple-selection">
-          <li><label for="case"><input type="checkbox" id="case" name="case" value="1"<mt:if name="case"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Case Sensitive"></label></li>
-          <li><label for="is_regex"><input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Regex Match"></label></li>
-          <li><label for="is_limited"><input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="cb" onclick="toggleVisibility(this, 'limited-fields')" /> <__trans phrase="Limited Fields"></label></li>
+          <li class="list-inline-item">
+            <label for="case">
+              <input type="checkbox" id="case" name="case" value="1"<mt:if name="case"> checked="checked"</mt:if> class="cb" />
+              <__trans phrase="Case Sensitive">
+            </label>
+          </li>
+          <li class="list-inline-item">
+            <label for="is_regex">
+              <input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="cb" />
+              <__trans phrase="Regex Match">
+            </label>
+          </li>
+          <li class="list-inline-item">
+            <label for="is_limited">
+              <input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="cb" onclick="toggleVisibility(this, 'limited-fields')" />
+              <__trans phrase="Limited Fields">
+            </label>
+          </li>
         <mt:if name="can_search_by_date">
-          <li><label for="is_dateranged"><input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="cb" onclick="toggleVisibility(this, 'date-range')" /> <__trans phrase="Date Range"></label></li>
+          <li class="list-inline-item">
+            <label for="is_dateranged">
+              <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="cb" onclick="toggleVisibility(this, 'date-range')" />
+              <__trans phrase="Date Range">
+            </label>
+          </li>
         </mt:if>
         <mt:if name="can_search_junk">
-          <li><label for="is_junk"><input type="checkbox" id="is_junk" name="is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Reported as Spam?"></label></li>
+          <li class="list-inline-item">
+            <label for="is_junk">
+              <input type="checkbox" id="is_junk" name="is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> class="cb" />
+              <__trans phrase="Reported as Spam?">
+            </label>
+          </li>
         </mt:if>
         </ul>
         <div id="limited-fields" class="mod advanced-options"<mt:unless name="is_limited"> style="display: none;"</mt:unless>>
         <mt:if name="search_cols">
-          <div id="<mt:var name="object_type">-fields" class="panel panel-default panel-body">
+          <div id="<mt:var name="object_type">-fields" class="card card-block">
             <ul class="list-inline multiple-selection">
             <mt:loop name="search_cols">
               <li>
@@ -197,7 +221,7 @@ function blurDateFields(s) {
           </div>
         </mt:if>
         </div>
-        <div id="date-range" class="panel panel-default panel-body form-inline mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
+        <div id="date-range" class="card card-block form-inline mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
           <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="from">0<mt:else>1</mt:if>" />
           <label for="datefrom"><__trans phrase="_DATE_FROM">:</label>
           <input placeholder="YYYY-MM-DD" type="text" name="from" id="from" class="form-control text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">
@@ -224,8 +248,7 @@ function blurDateFields(s) {
            id="search-alt"
            label="<__trans phrase="Search For">"
            label_class="top-label"
-           help_section="search-alt"
-           no_grid="1">
+           help_section="search-alt">
           <input type="text" name="search-alt" id="search-alt" class="form-control text query disabled" disabled value="<mt:var name="search" escape="html">" readonly="readonly" />
         </mtapp:setting>
         <!-- Replace -->
@@ -233,8 +256,7 @@ function blurDateFields(s) {
            id="replace"
            label="<__trans phrase="Replace With">"
            label_class="top-label"
-           help_section="replace"
-           no_grid="1">
+           help_section="replace">
           <textarea name="replace" id="replace" class="form-control text low"><mt:var name="replace" escape="html"></textarea>
         </mtapp:setting>
         <div class="actions-bar">
@@ -275,7 +297,7 @@ function blurDateFields(s) {
   <mtapp:statusmsg
      id="have-more-count"
      class="success">
-    <__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a>
+    <__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false" class="alert-link"><__trans phrase="Show all matches"></a>
   </mtapp:statusmsg>
 <mt:else>
   <mt:unless name="replace_count">

@@ -398,9 +398,6 @@ sub suite {
                     { blog_id => 1,           class     => '*' },
                     { sort    => 'file_name', direction => 'descend' },
                 );
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => scalar @assets,
                     items => MT::DataAPI::Resource->from_object( \@assets ),
@@ -522,9 +519,6 @@ sub suite {
  #                    { class => '*' },
  #                    { sort  => 'file_name', direction => 'descend' },
  #                );
- #                no warnings 'redefine';
- #                local *boolean::true  = sub {'true'};
- #                local *boolean::false = sub {'false'};
  #                return +{
  #                    totalResults => scalar @assets,
  #                    items => MT::DataAPI::Resource->from_object( \@assets ),
@@ -602,9 +596,6 @@ sub suite {
             result => sub {
                 $app->user($author);
                 my $asset = $app->model('asset')->load(1);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 my $res = +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( [$asset] ),
@@ -700,9 +691,6 @@ sub suite {
             result => sub {
                 $app->user($author);
                 my $asset = $app->model('asset')->load(2);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 my $res = +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( [$asset] ),
@@ -801,9 +789,6 @@ sub suite {
             result => sub {
                 $app->user($author);
                 my $asset = $app->model('asset')->load(1);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 my $res = +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( [$asset] ),
@@ -878,9 +863,6 @@ sub suite {
 #            result => sub {
 #                $app->user($author);
 #                my $asset = $app->model('asset')->load(1);
-#                no warnings 'redefine';
-#                local *boolean::true  = sub {'true'};
-#                local *boolean::false = sub {'false'};
 #                my $res = +{
 #                    totalResults => 1,
 #                    items => MT::DataAPI::Resource->from_object( [$asset] ),

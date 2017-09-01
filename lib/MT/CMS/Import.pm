@@ -172,7 +172,7 @@ sub do_import {
     require MT::Comment;
     require MT::TBPing;
 
-    my $import_type = $q->param('import_type');
+    my $import_type = $q->param('import_type') || '';
     require MT::Import;
     my $imp      = MT::Import->new;
     my $importer = $imp->importer($import_type);
@@ -192,9 +192,9 @@ sub do_import {
         ($import_as_me)
         ? ( ImportAs => $author )
         : ( ParentAuthor => $author ),
-        NewAuthorPassword => ( $q->param('password')       || undef ),
-        DefaultCategoryID => ( $q->param('default_cat_id') || undef ),
-        ConvertBreaks     => ( $q->param('convert_breaks') || undef ),
+        NewAuthorPassword => ( scalar $q->param('password') ),
+        DefaultCategoryID => ( scalar $q->param('default_cat_id') ),
+        ConvertBreaks     => ( scalar $q->param('convert_breaks') ),
         (%options) ? (%options) : (),
     );
 

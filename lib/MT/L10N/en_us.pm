@@ -53,9 +53,9 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
         'You should be able to log in to Movable Type using this new password from the URL below. Once you have logged in, you should change your password to something more memorable.',
 
     '_BACKUP_TEMPDIR_WARNING' =>
-        'Requested data has been backed up successfully in the [_1] directory.  Make sure that you download and <strong>then delete</strong> files listed above from [_1] <strong>immediately</strong> because backup files contain sensitive information.',
+        'Requested data has been exported successfully in the [_1] directory.  Make sure that you download and <strong>then delete</strong> files listed above from [_1] <strong>immediately</strong> because exported files contain sensitive information.',
     '_BACKUP_DOWNLOAD_MESSAGE' =>
-        'Downloading of the backup file will start automatically in a few seconds.  If for some reason it does not, click <a href="javascript:(void)" onclick="submit_form()">here</a> to start downloading manually.  Please note that you can download the backup file only once for a session.',
+        'Downloading of the exported file will start automatically in a few seconds.  If for some reason it does not, click <a href="javascript:(void)" onclick="submit_form()">here</a> to start downloading manually.  Please note that you can download the exported file only once for a session.',
     '_USAGE_BOOKMARKLET_1' =>
         'Setting up QuickPost to post to Movable Type allows you to perform one-click posting and publishing without ever entering through the main Movable Type interface.',
     '_USAGE_BOOKMARKLET_2' =>
@@ -263,6 +263,8 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '_SAMPLE_PAGE_BODY' =>
         '<p>This is an example web page.</p><p>If the <code>@ADD_TO_SITE_NAV</code> tag is used on a web page, that page will be added to the navigation list in both the header and footer.</p>',
     '__CF_REQUIRED_VALUE__' => q{Value},
+
+    '_CONTENT_TYPE_BOILERPLATES' => 'Boilerplates',
 );
 
 1;

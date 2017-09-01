@@ -74,10 +74,16 @@ sub list_props {
             category_class   => 'folder',
             zero_state_label => '(root)',
             label_via_param  => sub {
-                my $prop  = shift;
-                my ($app) = @_;
-                my $id    = $app->param('filter_val');
-                my $cat   = MT->model('folder')->load($id);
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                my $cat = MT->model('folder')->load($val)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        $prop->datasource->container_label,
+                        defined $val ? $val : ''
+                    )
+                    );
                 my $label = MT->translate(
                     'Pages in folder: [_1]',
                     $cat->label . " (ID:" . $cat->id . ")",
@@ -146,6 +152,12 @@ sub list_props {
             base    => '__virtual.content',
             fields  => [qw(title text text_more keywords excerpt basename)],
             display => 'none',
+        },
+        blog_id => {
+            auto            => 1,
+            col             => 'blog_id',
+            display         => 'none',
+            filter_editable => 0,
         },
     };
 }

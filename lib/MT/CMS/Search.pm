@@ -202,7 +202,7 @@ sub core_search_apis {
                 'excerpt'    => sub { $app->translate('Excerpt') },
                 'source_url' => sub { $app->translate('Source URL') },
                 'ip'         => sub { $app->translate('IP Address') },
-                'blog_name'  => sub { $app->translate('Blog Name') },
+                'blog_name'  => sub { $app->translate('Site Name') },
             },
             'replace_cols'       => [qw(title excerpt)],
             'can_replace'        => 1,
@@ -493,7 +493,7 @@ sub core_search_apis {
         },
         'blog' => {
             'order'     => 900,
-            'label'     => 'Blogs',
+            'label'     => 'Child Sites',
             'condition' => sub {
                 my $author = MT->app->user;
                 my $blog   = MT->app->blog;
@@ -539,7 +539,7 @@ sub core_search_apis {
                 return 1 if $author->permissions(0)->can_do('edit_template');
                 return 0;
             },
-            'label'      => 'Websites',
+            'label'      => 'Sites',
             'handler'    => '$Core::MT::CMS::Website::build_website_table',
             'perm_check' => sub {
                 my $author = MT->app->user;
@@ -725,7 +725,7 @@ sub do_search_replace {
         @ids = split /,/, $ids;
     }
     if ($is_limited) {
-        @cols = $q->param('search_cols');
+        @cols = $app->multi_param('search_cols');
         my %search_api_cols
             = map { $_ => 1 } keys %{ $search_api->{search_cols} };
         if ( @cols && ( $cols[0] =~ /,/ ) ) {

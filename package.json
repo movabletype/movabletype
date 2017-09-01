@@ -7,7 +7,6 @@
     "lib": "lib"
   },
   "scripts": {
-    "install": "npm run build-riot",
     "build-riot": "riot mt-static/js/listing/tag mt-static/js/listing/listing.js"
   },
   "repository": {
@@ -20,6 +19,14 @@
   },
   "homepage": "https://github.com/movabletype/movabletype#readme",
   "devDependencies": {
-    "riot": "^3.6.0"
+    "grunt": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-exec": "^3.0.0"
+  },
+  "dependencies": {
+    "bootstrap": "^4.0.0-beta",
+    "popper.js": "^1.12.1",
+    "riot": "^3.6.1",
+    "svg4everybody": "^2.1.9"
   }
 }

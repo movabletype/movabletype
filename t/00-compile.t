@@ -128,10 +128,10 @@ use_ok('MT::FileMgr::Local');
 use_ok('MT::FileMgr::FTP');
 
 # MT7
-use_ok('MT::CMS::CategoryList');
+use_ok('MT::CMS::CategorySet');
 use_ok('MT::CMS::ContentData');
 use_ok('MT::CMS::ContentType');
-use_ok('MT::CategoryList');
+use_ok('MT::CategorySet');
 use_ok('MT::ContentData');
 use_ok('MT::ContentField');
 use_ok('MT::ContentFieldIndex');
@@ -144,6 +144,7 @@ use_ok('MT::ContentFieldType::ContentType');
 use_ok('MT::ContentFieldType::Date');
 use_ok('MT::ContentFieldType::DateTime');
 use_ok('MT::ContentFieldType::List');
+use_ok('MT::ContentFieldType::MultiLineText');
 use_ok('MT::ContentFieldType::Number');
 use_ok('MT::ContentFieldType::RadioButton');
 use_ok('MT::ContentFieldType::SelectBox');
@@ -385,6 +386,7 @@ use_ok('MT::Template::Tags::Pager');
 use_ok('MT::Template::Tags::Ping');
 use_ok('MT::Template::Tags::Score');
 use_ok('MT::Template::Tags::Search');
+use_ok('MT::Template::Tags::Site');
 use_ok('MT::Template::Tags::Tag');
 use_ok('MT::Template::Tags::Userpic');
 use_ok('MT::Template::Tags::Website');
@@ -414,6 +416,10 @@ use_ok('MT::Summary::Triggers');
 # Themes
 use_ok('MT::Theme');
 use_ok('MT::Theme::Category');
+use_ok('MT::Theme::CategorySet');
+use_ok('MT::Theme::Common');
+use_ok('MT::Theme::ContentData');
+use_ok('MT::Theme::ContentType');
 use_ok('MT::Theme::Element');
 use_ok('MT::Theme::Entry');
 use_ok('MT::Theme::Pref');
@@ -520,9 +526,11 @@ use_ok('MT::DataAPI::Endpoint::v2::User');
 
 use_ok('MT::DataAPI::Endpoint::v3::Auth');
 use_ok('MT::DataAPI::Endpoint::v3::Asset');
+use_ok('MT::DataAPI::Endpoint::v3::Entry');
 
 use_ok('MT::DataAPI::Resource::v3::Blog');
 use_ok('MT::DataAPI::Resource::v3::Website');
+use_ok('MT::DataAPI::Resource::v3::User');
 
 use_ok('MT::App::Search::Common');
 
@@ -565,7 +573,7 @@ sub test_all_modules_are_checked {
     }
     if ( keys %$in_test ) {
         $res .= " " if $res;
-        $res .= "Modules not on HD: " . join( ", ", keys %$in_test );
+        $res .= "Modules not on HD: " . join( ", ", sort keys %$in_test );
     }
     if ($res) {
         ok( 0, $res );

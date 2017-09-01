@@ -1,14 +1,22 @@
 <mt:setvarblock name="page_title"><__trans phrase="Importing..."></mt:setvarblock>
 <mt:setvar name="import" value="1">
 
-<mt:include name="layout/default/header.tmpl">
+<mt:include name="layout/common/header.tmpl">
 
-<mt:include name="include/page_title.tmpl">
+<div class="row">
+<mt:if name="has_menu">
+  <div class="mt-primaryNavigation">
+    <mt:include name="include/primary_navigation.tmpl">
+  </div>
+</mt:if>
 
-<div class="import-process">
-  <div id="progressbar" class="progressbar indeterminate"></div>
-  <pre class="progress-log">
-    <__trans phrase="Importing entries into [_1]", params="<mt:var name="scope_label" escape="html" escape="html">">
-    <mt:if name="import_as_me">
-      <__trans phrase="Importing entries as user '[_1]'" params="<mt:var name="author_name" escape="html" escape="html">"><mt:else><__trans phrase="Creating new users for each user found in the [_1]", params="<mt:var name="scope_label" escape="html" escape="html">">
-    </mt:if>
+  <div class="mt-mainContent">
+    <mt:include name="include/page_title.tmpl">
+
+    <div class="import-process">
+      <div id="progressbar" class="progressbar indeterminate"></div>
+      <pre class="progress-log">
+        <__trans phrase="Importing entries into [_1]", params="<mt:var name="scope_label" escape="html" escape="html">">
+        <mt:if name="import_as_me">
+          <__trans phrase="Importing entries as user '[_1]'" params="<mt:var name="author_name" escape="html" escape="html">"><mt:else><__trans phrase="Creating new users for each user found in the [_1]", params="<mt:var name="scope_label" escape="html" escape="html">">
+        </mt:if>

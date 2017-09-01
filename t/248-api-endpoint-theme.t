@@ -137,11 +137,6 @@ sub suite {
                 require MT::Theme;
                 my $theme = MT::Theme->load('classic_website');
 
-                require boolean;
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return $theme->to_resource();
             },
         },
@@ -154,11 +149,6 @@ sub suite {
                 require MT::Theme;
                 my $theme = MT::Theme->load('classic_website');
 
-                require boolean;
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return $theme->to_resource();
             },
         },
@@ -169,11 +159,6 @@ sub suite {
                 require MT::Theme;
                 my $theme = MT::Theme->load('classic_blog');
 
-                require boolean;
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return $theme->to_resource();
             },
         },
@@ -182,11 +167,6 @@ sub suite {
             result => sub {
                 require MT::Theme;
                 my $theme = MT::Theme->load('classic_website');
-
-                require boolean;
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return $theme->to_resource();
             },

@@ -13,6 +13,8 @@ use MT::Mail;
 use Test::More;
 use MIME::Base64;
 
+plan skip_all => 'not for Win32' if $^O eq 'MSWin32';
+
 my $mt = MT->new() or die MT->errstr;
 $mt->config('MailTransfer', 'debug');
 
@@ -36,7 +38,7 @@ my @base64_encode_suite = (
 for my $data (@base64_encode_suite) {
     my ( $headers, $body ) = send_mail( {}, $data->{input} );
     is( $body, $data->{expected}, $data->{name} . ' : body' );
-    foreach my $key ( keys %{ $data->{headers} } ) {
+    foreach my $key ( sort keys %{ $data->{headers} } ) {
         like(
             $headers->{$key},
             $data->{headers}{$key},

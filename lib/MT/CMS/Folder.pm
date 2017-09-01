@@ -63,6 +63,8 @@ sub can_delete {
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj ) = @_;
+    return 1 unless defined $obj->basename;
+
     my $pkg      = $app->model('folder');
     my @siblings = $pkg->load(
         {   parent  => $obj->parent,
@@ -74,7 +76,7 @@ sub pre_save {
         return $eh->error(
             $app->translate(
                 "The folder '[_1]' conflicts with another folder. Folders with the same parent must have unique basenames.",
-                $_->label
+                $_->basename
             )
         ) if $_->basename eq $obj->basename;
     }
@@ -115,12 +117,11 @@ sub post_save {
 }
 
 sub save_filter {
-    my $eh = shift;
+    my $eh    = shift;
     my ($app) = @_;
     my $label = $app->param('label') or return 1;
-    return $app->errtrans( "The name '[_1]' is too long!",
-        $label )
-        if ( length( $label ) > 100 );
+    return $app->errtrans( "The name '[_1]' is too long!", $label )
+        if ( length($label) > 100 );
     return 1;
 }
 

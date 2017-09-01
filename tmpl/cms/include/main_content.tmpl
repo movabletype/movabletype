@@ -1,0 +1,13 @@
+<mt:ignore>This width fixes broken edit template screen</mt:ignore>
+<div class="mt-mainContent"<mt:if name="mode" eq="view"><mt:if name="object_type" eq="template"> style="width: 500px;"</mt:if></mt:if>>
+  <mt:include name="include/notification_indicator.tmpl">
+  <mt:include name="include/page_title.tmpl">
+  <mt:include name="include/system_msg.tmpl">
+  <mt:include name="include/display_options.tmpl">
+  <mt:include name="include/content_header.tmpl">
+  <mt:var name="page_content">
+<mt:if name="form_footer">
+  <mt:var name="form_footer">
+</mt:if>
+</div>
+

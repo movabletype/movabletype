@@ -600,10 +600,7 @@ function toggleHidden( id ) {
     var id = DOM.getElement( id );
     if ( !id )
         return false;
-    if ( DOM.hasClassName( id, 'hidden' ) )
-        DOM.removeClassName( id, 'hidden' );
-    else
-        DOM.addClassName( id, 'hidden' );
+    jQuery(id).toggle()
     return false;
 }
 
@@ -611,12 +608,12 @@ function toggle( id ) {
     var id = DOM.getElement( id );
     if ( !id )
         return false;
-    if ( DOM.hasClassName( id, 'hidden' ) ) {
-        DOM.removeClassName( id, 'hidden' );
-        DOM.addClassName( id, 'active' );
+    if ( jQuery(id).is(':hidden') ) {
+      jQuery(id).show();
+      DOM.addClassName( id, 'active' );
     } else {
-        DOM.removeClassName( id, 'active' );
-        DOM.addClassName( id, 'hidden' );
+      jQuery(id).hide();
+      DOM.removeClassName( id, 'active' );
     }
     return false;
 }
@@ -654,10 +651,10 @@ function tabToggle(selectedTab, tabs) {
 function show(id, d, style) {
     var el = getByID(id, d);
     if (!el) return;
-    if ( DOM.hasClassName( el, "hidden" ) ) {
-        DOM.removeClassName ( el, "hidden");
-    } else {
-        el.style.display = style ? style : 'block';
+    if ( jQuery(el).is(':hidden') ) {
+        jQuery(el).show();
+    } else if (style) {
+        el.style.display = style;
     }
     /* hack */
     if ( DOM.hasClassName( el, "autolayout-height-parent" ) )
@@ -667,11 +664,7 @@ function show(id, d, style) {
 function hide(id, d) {
     var el = getByID(id, d);
     if (!el) return;
-    if ( DOM.hasClassName( el, "hidden" ) ) {
-        return false;
-    } else {
-        DOM.addClassName ( el, "hidden");
-    }
+    jQuery(el).hide();
     if ( window.app )
         app.reflow();
 }
@@ -694,17 +687,17 @@ function toggleSubPrefs(c) {
         if (c.type) {
             var on = c.type == 'checkbox' ? c.checked : c.value != 0;
             if (on) {
-                TC.removeClassName(div, "hidden");
+                jQuery(div).show();
             } else {
-                TC.addClassName(div, "hidden");
+                jQuery(div).hide();
             }
             // div.style.display = on ? "block" : "none";
         } else {
             var on = div.style.display && div.style.display != "none";
             if (on) {
-                TC.addClassName(div, "hidden");
+                jQuery(div).hide();
             } else {
-                TC.removeClassName(div, "hidden");
+                jQuery(div).show();
             }
             // div.style.display = on ? "none" : "block";
         }
@@ -2619,7 +2612,7 @@ MT.App.CategorySelector = new Class( Component, {
         this.catInput = DOM.getElement( args.catInput || "add-category-input" );
         this.catInputMovableId = args.catInputMovableId || "add-category-input-movable";
 
-        this.categoryListId = args.categoryListId || 0;
+        this.categorySetId = args.categorySetId || 0;
         this.contentFieldId = args.contentFieldId || 0;
 
         this.list = this.addComponent( new List( element + '-list', template ) );
@@ -2676,13 +2669,13 @@ MT.App.CategorySelector = new Class( Component, {
     open: function( el ) {
         if ( el ) {
            this.openingEl = el;
-           DOM.addClassName( el, "hidden" );
+           jQuery(el).hide();
            var closeEl = el.getAttribute( "mt:close-el" );
            if ( closeEl )
-               DOM.removeClassName( closeEl, "hidden" );
+               jQuery('#' + closeEl).show();
         }
         DOM.addClassName( "category-field", "selector-active" );
-        DOM.removeClassName( this.element, "hidden" );
+        jQuery(this.element).show();
         this.redraw();
     },
 
@@ -2699,11 +2692,11 @@ MT.App.CategorySelector = new Class( Component, {
 
     close: function( el ) {
         if ( el )
-            DOM.addClassName( el, "hidden" );
-        DOM.addClassName( this.element, "hidden" );
+            jQuery(el).hide();
+        jQuery(this.element).hide();
         DOM.removeClassName( "category-field", "selector-active" );
         if ( this.openingEl )
-            DOM.removeClassName( this.openingEl, "hidden" );
+            jQuery(this.openingEl).show();
     },
 
 
@@ -2723,17 +2716,17 @@ MT.App.CategorySelector = new Class( Component, {
                 if ( id ) {
                     /* adding a sub cat/folder */
                     this.catInput.value = '';
-                    DOM.addClassName( this.catForm, "hidden" );
+                    jQuery(this.catForm).hide();
                     var item = this.list.getListElementFromTarget( event.target );
                     this.catFormMovable = document.createElement( "div" );
                     this.catFormMovable.innerHTML = Template.process( "categorySelectorAddForm", { div: this.catFormMovable, contentFieldId: this.contentFieldId } );
                     this.list.content.insertBefore( this.catFormMovable, item.nextSibling );
                     this.catInputMovable = DOM.getElement( this.catInputMovableId );
-                    DOM.removeClassName( this.catFormMovable, "hidden" );
+                    jQuery(this.catFormMovable).show();
                     this.parentID = id;
                     this.catInputMovable.focus();
                 } else {
-                    DOM.removeClassName( this.catForm, "hidden" );
+                    jQuery(this.catForm).show();
                     this.catInput.focus();
                 }
                 break;
@@ -2741,7 +2734,7 @@ MT.App.CategorySelector = new Class( Component, {
             case "cancel":
                 this.removeMovable();
                 /* hide it */
-                DOM.addClassName( this.catForm, "hidden" );
+                jQuery(this.catForm).hide();
                 break;
 
             case "add":
@@ -2788,17 +2781,17 @@ MT.App.CategorySelector = new Class( Component, {
             }
         }
 
-        DOM.addClassName( this.catForm, "hidden" );
-        DOM.addClassName( this.catFormMovable, "hidden" );
+        jQuery(this.catForm).hide();
+        jQuery(this.catFormMovable).hide();
         this.catInput.value = '';
 
         var args = {
             __mode: this.isTag ? "js_add_tag" : "js_add_category",
             magic_token: app.form["magic_token"].value,
             blog_id: app.form["blog_id"].value || DOM.getElement("blog-id").value,
-            category_list_id: this.categoryListId,
+            category_set_id: this.categorySetId,
             parent: parseInt( this.parentID ),
-            _type: this.categoryListId ? 'category' : this.type
+            _type: this.categorySetId ? 'category' : this.type
         };
         args.label = name;
 
@@ -2899,14 +2892,15 @@ MT.App.CategorySelector = new Class( Component, {
             /* update the cache */
             ( this.catCache || app.catCache ).setItem( "cat:" + cat.id, cat );
             /* add puts the item at the bottom, so we hide it and move it */
-            this.list.addItem( cat, !notSelect, "list-item hidden" );
+            this.list.addItem( cat, !notSelect, "list-item" );
+            jQuery(this.list.items[ this.list.items.length - 1 ]).hide();
             var div = this.list.getItem( cat.id );
             div.parentNode.removeChild( div );
             var parentItem = this.list.getItem( parent.id );
             /* move it after the parent */
             this.list.content.insertBefore( div, parentItem.nextSibling );
             this.list.toggleCheckbox( div, !notSelect ); // added checked attribute again for IE
-            DOM.removeClassName( div, "hidden" );
+            jQuery(div).show();
         } else {
             catlist.push( cat );
             /* update the cache */
@@ -2918,7 +2912,7 @@ MT.App.CategorySelector = new Class( Component, {
                 /* move it after the parent */
                 this.list.content.insertBefore( div, this.list.content.children[1] );
                 this.list.toggleCheckbox( div, !notSelect ); // added checked attribute again for IE
-                DOM.removeClassName( div, "hidden" );
+                jQuery(div).show();
             }
         }
 
@@ -2934,7 +2928,7 @@ MT.App.CategorySelector = new Class( Component, {
             Array.fromPseudo( list.getSelectedIDs() )
         );
         ( this.catList || app.catList ).redraw();
-        if ( !this.opening && this.type == 'folder' && !this.categoryListId && !this.isTag )
+        if ( !this.opening && this.type == 'folder' && !this.categorySetId && !this.isTag )
             this.close();
         this.setDirtyIfNeeded( list, ids );
     },

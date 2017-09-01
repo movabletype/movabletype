@@ -16,7 +16,7 @@ else {
 
 my $mt = MT->new;
 use MT::Util::Archive;
-my $tmp = ( $^O eq 'MSWin32' ) ? 'C:\Windows\Temp' : MT->config->TempDir;
+my $tmp = ( $^O eq 'MSWin32' ) ? File::Spec->tmpdir : MT->config->TempDir;
 my %files = (
     'zip' => File::Spec->catfile( $tmp, 'test1.zip' ),
     'tgz' => File::Spec->catfile( $tmp, 'test1.tar.gz' ),

@@ -29,7 +29,7 @@ for my $meth (qw( Storable MT )) {
         is(ref($thawed), 'REF', 'REF');
         my $hash2 = $$thawed;
         is(ref($hash2), 'HASH', 'HASH');
-        for my $key (keys %$hash) {
+        for my $key (sort keys %$hash) {
             is($hash->{$key}, $hash2->{$key}, "'$key' values");
         }
     }

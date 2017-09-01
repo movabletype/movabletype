@@ -5,7 +5,7 @@
   label="<__trans phrase="Site Stats">"
   can_close="1">
 <div class="row up-column">
-  <div class="col-md-10 stats-for">
+  <div class="col-9 stats-for">
     <mt:if name="object_loop">
     <label class="form-label">
       <__trans phrase="Stats for [_1]">
@@ -13,7 +13,7 @@
     </label>
     </mt:if>
   </div>
-  <div id="statistics_settings_link" class="col-md-2">
+  <div id="statistics_settings_link" class="col-3 text-right">
   <mt:unless name="is_smartphone_devices">
     <a href="<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Statistics Settings"></a>
   </mt:unless>
@@ -21,8 +21,8 @@
 </div>
 <div class="clear"></div>
 <div class="row down-column">
-  <div class="col-md-12 down-column-contents">
-    <div id="graph"></div>
+  <div class="col-12 down-column-contents">
+    <div id="graph" style="width: 99%;"></div>
   </div>
 </div>
 </mtapp:widget>

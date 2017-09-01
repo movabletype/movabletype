@@ -19,7 +19,7 @@
         create: function (id, data) {
             var self = this;
             self.id = id;
-            self.input_field = $('<div class="asset_field"><a href="' + ScriptURI + '?__mode=dialog_list_asset&amp;edit_field=' + id + '&amp;blog_id=' + $('[name=blog_id]').val() + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;no_insert=1&amp;next_mode=block_editor_asset" class="mt-open-dialog">edit Image</a><input type="hidden" name="' + id + '" id="' + id + '" value=""></div>');
+            self.input_field = $('<div class="asset_field"><a href="' + ScriptURI + '?__mode=dialog_list_asset&amp;edit_field=' + id + '&amp;blog_id=' + $('[name=blog_id]').val() + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;no_insert=1&amp;next_mode=block_editor_asset" class="mt-open-dialog mt-modal-open" data-mt-modal-large>edit Image</a><input type="hidden" name="' + id + '" id="' + id + '" value=""></div>');
             self.input_field.find('#' + id).val(data.value);
             self.preview_field = $('<div></div>');
             self.preview_field.attr('id', id + '-preview');
@@ -27,7 +27,7 @@
                 self.preview_field.append(data.preview_html);
             }
             self.input_field.find('a').append(self.preview_field);
-            self.input_field.find('a.mt-open-dialog').mtDialog();
+            self.input_field.find('a.mt-modal-open').mtModal();
 
             if(data.options && Object.keys(data.options).length > 0){
                 self.options = data.options;

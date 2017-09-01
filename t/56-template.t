@@ -33,7 +33,7 @@ __TMPL__
         'not_included'             => undef,
     );
 
-    for my $name ( keys %map ) {
+    for my $name ( sort keys %map ) {
         my $expected = $map{$name};
         my $elms     = $tmpl->getElementsByName($name);
         if ( defined($expected) ) {

@@ -53,6 +53,16 @@ sub core_tags {
                 \&MT::Template::Tags::App::_hdlr_app_setting_group,
             'App:Form' => \&MT::Template::Tags::App::_hdlr_app_form,
 
+            ## Site
+            Sites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
+            ChildSites => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
+            SiteParentSite =>
+                '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
+            'SiteHasChildSite?' =>
+                '$Core::MT::Template::Tags::Site::_hdlr_site_has_child_site',
+            'SiteIfCommentsOpen?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
+
             ## Blog
             Blogs     => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
             'IfBlog?' => '$Core::MT::Template::Tags::Blog::_hdlr_if_blog',
@@ -437,7 +447,65 @@ sub core_tags {
                 \&MT::Template::Tags::App::_hdlr_app_list_filters,
             'App:ActionBar' =>
                 \&MT::Template::Tags::App::_hdlr_app_action_bar,
-            'App:Link' => \&MT::Template::Tags::App::_hdlr_app_link,
+            'App:Link'    => \&MT::Template::Tags::App::_hdlr_app_link,
+            'App:SVGIcon' => \&MT::Template::Tags::App::_hdlr_app_svg_icon,
+
+            ## Site
+            SiteID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
+            SiteName => '$Core::MT::Template::Tags::Blog::_hdlr_blog_name',
+            SiteDescription =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_description',
+            SiteLanguage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_language',
+            SiteDateLanguage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_date_language',
+            SiteURL => '$Core::MT::Template::Tags::Blog::_hdlr_blog_url',
+            SiteArchiveURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_archive_url',
+            SiteRelativeURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_relative_url',
+            SitePath =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_site_path',
+            SiteHost => '$Core::MT::Template::Tags::Blog::_hdlr_blog_host',
+            SiteTimezone =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_timezone',
+            SiteCCLicenseURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',
+            SiteCCLicenseImage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',
+            SiteFileExtension =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_file_extension',
+            SiteThemeID =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_theme_id',
+
+            EntrySiteID =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_id',
+            EntrySiteName =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_name',
+            EntrySiteDescription =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_description',
+            EntrySiteURL =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_url',
+            SiteEntryCount =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
+
+            CommentSiteID =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_blog_id',
+            SiteCommentCount =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
+            PingSiteName =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_ping_blog_name',
+            SitePingCount =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
+
+            SiteCategoryCount =>
+                '$Core::MT::Template::Tags::Category::_hdlr_blog_category_count',
+
+            SitePageCount =>
+                '$Core::MT::Template::Tags::Page::_hdlr_blog_page_count',
+
+            AssetSiteID =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_blog_id',
 
             ## Blog
             BlogID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
@@ -3030,6 +3098,10 @@ field is a required field or not.
 
 Supplies the label phrase for the setting.
 
+=item * label_for
+
+Supplies "for" property of the label.
+
 =item * show_label (optional; default "1")
 
 Controls whether the label portion of the setting is shown or not.
@@ -3045,28 +3117,19 @@ setting.
 Allows an additional CSS class to be applied to the label of the
 setting.
 
-=item * content_class (optional)
-
-Allows an addtional CSS class to be applied to the contents of the
-setting.
-
 =item * hint (optional)
 
 Supplies a "hint" phrase that provides inline instruction to the user.
 By default, this hint is hidden, unless the 'show_hint' attribute
 forces it to display.
 
+=item * hint_id (optional)
+
+Set hind_id which is added to form element.
+
 =item * show_hint (optional; default "0")
 
 Controls whether the inline help 'hint' label is shown or not.
-
-=item * warning
-
-Supplies a warning message to the user regarding the use of this setting.
-
-=item * show_warning
-
-Controls whether the warning message is shown or not.
 
 =item * help_page
 
@@ -3078,29 +3141,6 @@ Identifies a section name of the MT help documentation for this setting.
 
 =back
 
-B<Example:>
-
-    <mtapp:Setting
-        id="name"
-        required="1"
-        label="Username"
-        hint="The username used to login">
-            <input type="text" name="name" id="name" value="<$mt:Var name="name" escape="html"$>" />
-    </mtapp:setting>
-
-The basic structural output of a setting tag looks like this:
-
-    <div id="ID-field" class="field pkg">
-        <div class="field-inner">
-            <div class="field-header">
-                <label id="ID-label" for="ID">LABEL</label>
-            </div>
-            <div class="field-content">
-                (content of App:Setting tag)
-            </div>
-        </div>
-    </div>
-
 =for tags application
 
 =cut
@@ -3111,40 +3151,38 @@ sub _hdlr_app_setting {
     return $ctx->error("'id' attribute missing") unless $id;
 
     my $label       = $args->{label};
+    my $label_for   = $args->{label_for};
     my $show_label  = exists $args->{show_label} ? $args->{show_label} : 1;
     my $shown       = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
     my $label_class = $args->{label_class} || "";
-    my $content_class = $args->{content_class} || "";
-    my $hint          = $args->{hint} || "";
-    my $show_hint     = $args->{show_hint} || 0;
-    my $warning       = $args->{warning} || "";
-    my $show_warning  = $args->{show_warning} || 0;
-    my $indent        = $args->{indent};
-    my $no_header     = $args->{no_header};
-    my $help          = "";
+    my $hint        = $args->{hint} || "";
+    my $hint_id     = $args->{hint_id} || "";
+    my $show_hint   = $args->{show_hint} || 0;
+    my $indent      = $args->{indent};
+    my $help        = "";
 
     my $label_help = "";
     if ( $label && $show_label ) {
-
-        # do nothing;
+        if ( defined $label_for && $label_for ne '' ) {
+            $label_for = qq{ for="$label_for"};
+        }
+        else {
+            $label_for = '';
+        }
     }
     else {
-        $label = '';    # zero it out, because the user turned it off
+        $label     = '';    # zero it out, because the user turned it off
+        $label_for = '';
     }
     if ( $hint && $show_hint ) {
-        $hint = "\n<div class=\"hint text-muted\">$hint$help</div>";
+        if ( $hint_id ne "" ) {
+            $hint_id = " id=\"$hint_id\"";
+        }
+        $hint
+            = "\n<small ${hint_id}class=\"form-text text-muted\">$hint$help</small>";
     }
     else {
         $hint = ''
-            ;  # hiding hint because it is either empty or should not be shown
-    }
-    if ( $warning && $show_warning ) {
-        $warning
-            = qq{\n<p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
-<span class="alert-warning-inline">$warning</span></p>\n};
-    }
-    else {
-        $warning = ''
             ;  # hiding hint because it is either empty or should not be shown
     }
     unless ($label_class) {
@@ -3153,9 +3191,18 @@ sub _hdlr_app_setting {
     else {
         $label_class = 'field-' . $label_class;
     }
-    my $indent_css = "";
+
+    my $style = "";
     if ($indent) {
-        $indent_css = " style=\"padding-left: " . $indent . "px;\"";
+        if ( !$shown ) {
+            $style = qq{ style="padding-left: ${indent}px; display: none;"};
+        }
+        else {
+            $style = qq{ style="padding-left: ${indent}px;"};
+        }
+    }
+    elsif ( !$shown ) {
+        $style = ' style="display: none;"';
     }
 
     # 'Required' indicator plus CSS class
@@ -3164,53 +3211,23 @@ sub _hdlr_app_setting {
 
     my $insides = $ctx->slurp( $args, $cond );
 
-    # $insides =~ s/^\s*(<textarea)\b/<div class="textarea-wrapper">$1/g;
-    # $insides =~ s/(<\/textarea>)\s*$/$1<\/div>/g;
-
     my $class = $args->{class} || "";
-    $class = ( $class eq '' ) ? 'hidden' : $class . ' hidden' unless $shown;
 
-    if ( $args->{no_grid} ) {
-        if ( $args->{no_header} ) {
-            return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field$req_class $label_class $class"$indent_css>
-        <div class="field-content $content_class">
-          $insides$hint$warning
-        </div>
-    </div>
-EOT
-        }
-        else {
-            return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field$req_class $label_class $class"$indent_css>
-        <div class="field-header">
-          <label id="$id-label" for="$id">$label$req</label>
-        </div>
-        <div class="field-content $content_class">
-          $insides$hint$warning
-        </div>
-    </div>
-EOT
-        }
-    }
-    elsif ( $args->{no_header} ) {
+    if ( $args->{field_header} ) {
         return $ctx->build(<<"EOT");
-    <div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
-        <div class="col-md-12 col-sm-12 field-content $content_class">
-          $insides$hint$warning
+    <div id="$id-field" class="field field-content form-group$req_class $label_class $class"$style>
+        <div class="field-header">
+          <label$label_for>$label$req</label>
         </div>
+        $insides$hint
     </div>
 EOT
     }
     else {
         return $ctx->build(<<"EOT");
-    <div id="$id-field" class="row form-group field$req_class $label_class $class"$indent_css>
-        <div class="col-md-2 col-sm-2 field-header">
-          <label id="$id-label" for="$id" class="control-label text-right pull-right">$label$req</label>
-        </div>
-        <div class="col-md-8 col-sm-8 field-content $content_class">
-          $insides$hint$warning
-        </div>
+    <div id="$id-field" class="field field-content form-group$req_class $label_class $class"$style>
+        <label$label_for>$label$req</label>
+        $insides$hint
     </div>
 EOT
     }
@@ -3286,6 +3303,7 @@ sub _hdlr_app_widget {
     my $label_onclick = $args->{label_onclick} || "";
     my $header_action = $args->{header_action} || "";
     my $closable      = $args->{can_close} ? 1 : 0;
+    my $hidden        = $args->{hidden};
     if ($closable) {
         $header_action
             = qq{<button type="button" class="close remove-widget"><span>&times;</span></button>};
@@ -3298,7 +3316,7 @@ sub _hdlr_app_widget {
     elsif ($label_link) {
         $widget_header = "\n<a href=\"$label_link\"><span>$label</span></a>";
     }
-    else {
+    elsif ( defined $label ) {
         $widget_header = "\n<span>$label</span>";
     }
     my $token    = $ctx->var('magic_token')     || '';
@@ -3334,6 +3352,10 @@ sub _hdlr_app_widget {
         : "";
     my $tabbed       = $args->{tabbed} ? ' mt:delegate="tab-container"' : "";
     my $header_class = $tabbed         ? 'widget-header-tabs'           : '';
+    my $style        = '';
+    if ($hidden) {
+        $style = ' style="display: none;"';
+    }
     my $return_args = $app->make_return_args;
     $return_args = encode_html($return_args);
     my $cgi = $app->uri;
@@ -3353,18 +3375,18 @@ $insides
 EOT
     }
     my $widget = <<"EOT";
-<div id="$id" class="panel panel-default widget $class"$tabbed>
-  <div class="panel-heading widget-header $header_class">
+<div id="$id" class="card widget $class"$tabbed$style>
+  <div class="card-header widget-header $header_class">
     <div class="widget-action">$header_action</div>
     <div class="widget-label">$widget_header</div>
   </div>
-  <div class="panel-body widget-content">
+  <div class="card-block widget-content">
     $insides
   </div>
 EOT
     if ($widget_footer) {
         $widget .= <<"EOT";
-  <div class="panel-footer widget-footer">$widget_footer</div>$corners
+  <div class="card-footer widget-footer">$widget_footer</div>$corners
 EOT
     }
     $widget .= <<"EOT";
@@ -3405,8 +3427,11 @@ sub _hdlr_app_statusmsg {
     my $id  = $args->{id};
 
     my $class = $args->{class} || 'info';
-    $class = 'warning' if $class eq 'alert';
-    $class = 'danger'  if $class eq 'error';
+    $class =~ s/\balert\b/warning/;
+    $class =~ s/\berror\b/danger/;
+
+    my $hidden = $args->{hidden};
+    my $style = $hidden ? ' style="display: none;"' : '';
 
     my $msg     = $ctx->slurp;
     my $rebuild = $args->{rebuild} || '';
@@ -3420,7 +3445,7 @@ sub _hdlr_app_statusmsg {
         my $link_l
             = $no_link
             ? ''
-            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">';
+            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">';
         my $link_r = $no_link ? '' : '</a>';
         my $obj_type
             = $rebuild eq 'blog'
@@ -3440,10 +3465,10 @@ sub _hdlr_app_statusmsg {
     {
         $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
         $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">}
+            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">}
             if $rebuild eq 'all';
         $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">}
+            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">%%</a>">}
             if $rebuild eq 'index';
     }
     else {
@@ -3455,10 +3480,14 @@ sub _hdlr_app_statusmsg {
     if ( $id && ( $args->{can_close} || ( !exists $args->{can_close} ) ) ) {
         $class .= ' alert-dismissable';
         $close
-            = qq{<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>};
+            = qq{<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>};
+    }
+    my $role = '';
+    if ( $class =~ /\bwarning|\bdanger/ ) {
+        $role = ' role="alert"';
     }
     return $ctx->build(<<"EOT");
-    <div$id class="$class">$close $msg $rebuild</div>
+    <div$id class="$class"$style$role>$close $msg $rebuild</div>
 EOT
 }
 
@@ -3526,8 +3555,6 @@ produces something like this:
                 (contents of tag are placed here)
 
             </table>
-            <$MTApp:ActionBar bar_position="bottom"
-                form_id="entry-listing-form"$>
         </form>
     </div>
 
@@ -3640,14 +3667,11 @@ sub _hdlr_app_listing {
     my $target
         = defined $args->{target} ? ' target="' . $args->{target} . '"' : '';
 
-    my $actions_top    = "";
-    my $actions_bottom = "";
-    my $form_id        = "$id-form";
+    my $actions_top = "";
+    my $form_id     = "$id-form";
     if ($show_actions) {
         $actions_top
             = qq{<\$MTApp:ActionBar bar_position="top" hide_pager="$hide_pager" form_id="$form_id"\$>};
-        $actions_bottom
-            = qq{<\$MTApp:ActionBar bar_position="bottom" hide_pager="$hide_pager" form_id="$form_id"\$>};
     }
     else {
         $listing_class .= " hide_actions";
@@ -3663,7 +3687,7 @@ sub _hdlr_app_listing {
     my $view = $ctx->var('view_expanded') ? ' expanded' : ' compact';
 
     my $table = <<TABLE;
-        <table id="$id-table" class="table table-striped legacy listing-table $listing_class $id-table$view">
+        <table id="$id-table" class="table mt-table $listing_class $id-table$view">
 $insides
         </table>
 TABLE
@@ -3687,7 +3711,6 @@ $blog_id
         <input type="hidden" name="magic_token" value="$token" />
         $actions_top
         <mt:var name="__contents__">
-        $actions_bottom
     </form>
 </div>
 EOT
@@ -3903,9 +3926,19 @@ sub _hdlr_app_page_actions {
                 <ul class="list-unstyled">
         <mt:loop name="page_actions">
             <mt:if name="page">
-                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>><mt:var name="label"></a></li>
+                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
+                        <mtapp:svgicon id="ic_setting" size="sm" title="\$label">
+                        <a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>>
+                            <mt:var name="label">
+                        </a>
+                    </li>
             <mt:else><mt:if name="link">
-                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open" data-mt-modal-large</mt:if>><mt:var name="label"></a></li>
+                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
+                        <mtapp:svgicon id="ic_setting" size="sm" title="\$label">
+                        <a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open" data-mt-modal-large</mt:if>>
+                            <mt:var name="label">
+                        </a>
+                    </li>
             </mt:if></mt:if>
         </mt:loop>
                 </ul>
@@ -3996,15 +4029,17 @@ sub _hdlr_app_action_bar {
     my $buttons = $ctx->var('action_buttons') || '';
     my $buttons_html
         = $buttons =~ /\S/
-        ? qq{<div class="pull-left button-actions actions">$buttons</div>}
+        ? qq{<div class="pull-left mr-3 button-actions actions">$buttons</div>}
         : '';
 
     return $ctx->build(<<EOT);
 $form_id
-<div id="actions-bar-$pos" class="row form-inline actions-bar actions-bar-$pos $pager_class">
+<div id="actions-bar-$pos" class="row form-inline mb-2 actions-bar actions-bar-$pos $pager_class">
+  <div class="col">
     $pager
     $buttons_html
-<mt:include name="include/itemset_action_widget.tmpl">
+    <mt:include name="include/itemset_action_widget.tmpl">
+  </div>
 </div>
 EOT
 }
@@ -4073,6 +4108,60 @@ sub _hdlr_app_link {
         }
     }
     return $app->uri( mode => $mode, args => \%args );
+}
+
+###########################################################################
+
+=head2 App:SVGIcon
+
+Produces tags of svg image.
+
+B<Attributes:>
+
+=over 4
+
+=item * id
+
+=item * title
+
+=item * color
+
+=item * size
+
+=back
+
+=for tags application
+
+=cut
+
+sub _hdlr_app_svg_icon {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $id    = $args->{id};
+    my $title = $args->{title};
+    my $color = $args->{color};
+    my $size  = $args->{size};
+
+    if ( !defined $id || $id eq '' ) {
+        return $ctx->error( MT->translate('id attribute is required') );
+    }
+
+    my $title_attr = '';
+    if ( defined $title && $title ne '' ) {
+        $title_attr = qq{ title="$title"};
+    }
+    my $color_class_suffix = '';
+    if ( defined $color && $color ne '' ) {
+        $color_class_suffix = "--$color";
+    }
+    my $size_class = '';
+    if ( defined $size && $size ne '' ) {
+        $size_class = " mt-icon--$size";
+    }
+
+    my $static_uri = MT->static_path;
+
+    qq{<svg$title_attr role="img" class="mt-icon${color_class_suffix}${size_class}"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
 }
 
 package MT::Template::Tags::System;
@@ -4781,7 +4870,7 @@ sub _hdlr_section {
     my $enc = MT->config->PublishCharset || 'UTF-8';
 
     # make cache id
-    my $cache_id = $args->{cache_prefix} || undef;
+    my $cache_id = $args->{cache_prefix} || '';
 
     my $tmpl = $ctx->{__stash}{template};
     $cache_id .= ':' . $tmpl->id if $tmpl && $tmpl->id;
