@@ -263,7 +263,9 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
           <div class="col-8">
             <h4 class="plugin-name">
         <mt:if name="plugin_disabled">
-              <span><img src="<mt:var name="static_uri">images/plugin-error.gif" /></span>
+              <span class="pr-3">
+                <mtapp:svgicon id="ic_stop" title="<__trans phrase="Disabled">" color="danger">
+              </span>
               <span class="plugin-name-disabled">
                 <$mt:var name="plugin_name" escape="html"$>
                 <mt:if name="plugin_version">
