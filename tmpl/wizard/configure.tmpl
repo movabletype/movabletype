@@ -58,7 +58,7 @@
          id="dbtype"
          label="<__trans phrase="Database Type">"
          label_class="top-label">
-        <select id="dbtype" class="form-control" name="dbtype">
+        <select id="dbtype" class="custom-select form-control" name="dbtype">
         <mt:unless name="one_db">
           <option value=""><__trans phrase="Select One..."></option>
         </mt:unless>
@@ -86,7 +86,7 @@
            hint="<mt:var name="hint">"
            show_hint="<mt:var name="show_hint" default="0">">
         <mt:if name="element" eq="select">
-          <select id="<mt:var name="id">" class="form-control" name="<mt:var name="id">">
+          <select id="<mt:var name="id">" class="custom-select form-control" name="<mt:var name="id">">
           <mt:loop name="option_loop">
             <option value="<mt:var name="value">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label"></option>
           </mt:loop>
