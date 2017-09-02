@@ -10,7 +10,9 @@
   <mt:else>
   <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/mt.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
   </mt:unless>
+  <mt:unless name="screen_type" eq="popup-screen">
   <link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/chromeless.css" />
+  </mt:unless>
   <mt:var name="css_include">
 
   <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
@@ -21,6 +23,7 @@
   <mt:var name="html_head">
 </head>
 <body>
+
   <div class="container body <mt:var name="screen_id"><mt:if name="template_filename" eq="signup"> signup</mt:if>">
 
     <mt:unless name="no_brand">
