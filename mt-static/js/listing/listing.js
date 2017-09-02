@@ -688,7 +688,7 @@ riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan=
     }.bind(this)
 });
 
-riot.tag2('list-table-row', '<td> <label class="custom-control custom-checkbox"> <input type="checkbox" name="id" class="custom-control-input" riot-value="{opts.object[0]}" checked="{opts.checked}"> <span class="custom-control-indicator"></span> </label> </td> <td data-is="list-table-column" each="{content, index in opts.object}" if="{index > 0}" class="{(parent.store.columns[0].id == \'id\' && !parent.store.columns[0].checked)       ? parent.store.columns[index+1].id       : parent.store.columns[index].id}" content="{content}"> </td>', '', '', function(opts) {
+riot.tag2('list-table-row', '<td> <label class="custom-control custom-checkbox" if="{opts.object[0]}"> <input type="checkbox" name="id" class="custom-control-input" riot-value="{opts.object[0]}" checked="{opts.checked}"> <span class="custom-control-indicator"></span> </label> </td> <td data-is="list-table-column" each="{content, index in opts.object}" if="{index > 0}" class="{(parent.store.columns[0].id == \'id\' && !parent.store.columns[0].checked)       ? parent.store.columns[index+1].id       : parent.store.columns[index].id}" content="{content}"> </td>', '', '', function(opts) {
     this.mixin('listTop')
 });
 

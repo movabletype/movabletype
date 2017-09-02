@@ -114,7 +114,7 @@
 
 <list-table-row>
   <td>
-    <label class="custom-control custom-checkbox">
+    <label class="custom-control custom-checkbox" if={ opts.object[0] }>
       <input type="checkbox"
         name="id"
         class="custom-control-input"
