@@ -492,7 +492,7 @@ function createUploadBlock () {
     this.progressbar.hide();
     this.filename.hide();
     jQuery('.upload-status-block-left-content').addClass('full-width');
-    jQuery('<p class="bg-danger msg-error">' + err + '</p>').appendTo(this.uploadResult);
+    jQuery('<p class="text-danger msg-error">' + err + '</p>').appendTo(this.uploadResult);
   }
 
   this.setCancelResult = function(msg) {
@@ -500,7 +500,7 @@ function createUploadBlock () {
     this.progressbar.hide();
     this.filename.hide();
     jQuery('.upload-status-block-left-content').addClass('full-width');
-    jQuery('<p class="bg-warning msg-warning">' + msg+ '</p>').appendTo(this.uploadResult);
+    jQuery('<p class="text-warning msg-warning">' + msg+ '</p>').appendTo(this.uploadResult);
   }
 
 <mt:unless name="filter" eq="userpic">
