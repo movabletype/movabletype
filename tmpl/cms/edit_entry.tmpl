@@ -776,7 +776,8 @@
     margin-bottom: 15px;
     border: 1px dashed #c0c6c9;
     background-color: #fbfbfb;
-    padding: 0.5rem;
+    padding: 0.5rem;   /* .p-2 */
+    margin-top: 1rem;  /* .mt-3 */
 }
 </style>
 </mt:setvarblock>
@@ -1306,7 +1307,7 @@
 <mt:if name="field_html">
   <mtapp:setting
      id="$field_id"
-     class="card card-block p-2 sort-enabled"
+     class="card card-block mt-3 p-2 sort-enabled"
      label="$label_encoded"
      label_class="$label_class"
      hint="$desc_encoded"
@@ -1397,7 +1398,7 @@
     </mt:if>
     <mtapp:setting
        id="tags"
-       class="card card-block p-2 sort-enabled"
+       class="card card-block mt-3 p-2 sort-enabled"
        shown="$show_field"
        label="<__trans phrase="Tags">"
        label_class="top-label"
@@ -1414,7 +1415,7 @@
   <mt:else eq="excerpt">
     <mtapp:setting
        id="excerpt"
-       class="card card-block p-2 sort-enabled"
+       class="card card-block mt-3 p-2 sort-enabled"
        shown="$show_field"
        label="$field_label"
        label_class="top-label"
@@ -1427,7 +1428,7 @@
   <mt:else eq="keywords">
     <mtapp:setting
        id="keywords"
-       class="card card-block p-2 sort-enabled"
+       class="card card-block mt-3 p-2 sort-enabled"
        shown="$show_field"
        label="$field_label"
        label_class="top-label"
