@@ -14,8 +14,7 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    my $q          = $app->param;
-    my $type       = $q->param('_type');
+    my $type       = $app->param('_type');
     my $perms      = $app->permissions;
     my $blog_class = $app->model('blog');
     my $blog       = $app->blog;
@@ -33,6 +32,9 @@ sub edit {
     # to trigger autosave logic in main edit routine
     $param->{autosave_support} = 1;
 
+    my $allow_comments     = $app->param('allow_comments');
+    my $reedit             = $app->param('reedit');
+
     my $original_revision;
     if ($id) {
         return $app->error( $app->translate("Invalid parameter") )
@@ -40,7 +42,7 @@ sub edit {
 
         if ( $blog->use_revision ) {
             $original_revision = $obj->revision;
-            my $rn = $q->param('r');
+            my $rn = $app->param('r');
             if ( defined($rn) && $rn != $obj->current_revision ) {
                 my $status_text = MT::Entry::status_text( $obj->status );
                 $param->{current_status_text} = $status_text;
@@ -54,7 +56,7 @@ sub edit {
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number}       = $rn;
-                $param->{no_snapshot}      = 1 if $q->param('no_snapshot');
+                $param->{no_snapshot}      = 1 if $app->param('no_snapshot');
                 $param->{missing_cats_rev} = 1
                     if exists( $obj->{__missing_cats_rev} )
                     && $obj->{__missing_cats_rev};
@@ -97,7 +99,7 @@ sub edit {
         ## Don't pass in author_id, because it will clash with the
         ## author_id parameter of the author currently logged in.
         delete $param->{'author_id'};
-        unless ( defined $q->param('category_id') ) {
+        unless ( defined $app->param('category_id') ) {
             delete $param->{'category_id'};
             if ( my $cat = $obj->category ) {
                 $param->{category_id} = $cat->id;
@@ -105,7 +107,7 @@ sub edit {
         }
         $blog_id = $obj->blog_id;
         my $blog = $app->model('blog')->load($blog_id);
-        my $status = $q->param('status') || $obj->status;
+        my $status = $app->param('status') || $obj->status;
         $status =~ s/\D//g;
         $param->{status} = $status;
         $param->{ "status_" . MT::Entry::status_text($status) } = 1;
@@ -118,18 +120,17 @@ sub edit {
             build_junk_table( $app, param => $param, object => $obj );
         }
         $param->{ "allow_comments_"
-                . ( $q->param('allow_comments') || $obj->allow_comments || 0 )
-        } = 1;
-        $param->{'authored_on_date'} = $q->param('authored_on_date')
+                . ( $allow_comments || $obj->allow_comments || 0 ) } = 1;
+        $param->{'authored_on_date'} = $app->param('authored_on_date')
             || format_ts( "%Y-%m-%d", $obj->authored_on, $blog,
             $app->user ? $app->user->preferred_language : undef );
-        $param->{'authored_on_time'} = $q->param('authored_on_time')
+        $param->{'authored_on_time'} = $app->param('authored_on_time')
             || format_ts( "%H:%M:%S", $obj->authored_on, $blog,
             $app->user ? $app->user->preferred_language : undef );
-        $param->{'unpublished_on_date'} = $q->param('unpublished_on_date')
+        $param->{'unpublished_on_date'} = $app->param('unpublished_on_date')
             || format_ts( "%Y-%m-%d", $obj->unpublished_on, $blog,
             $app->user ? $app->user->preferred_language : undef );
-        $param->{'unpublished_on_time'} = $q->param('unpublished_on_time')
+        $param->{'unpublished_on_time'} = $app->param('unpublished_on_time')
             || format_ts( "%H:%M:%S", $obj->unpublished_on, $blog,
             $app->user ? $app->user->preferred_language : undef );
 
@@ -165,7 +166,7 @@ sub edit {
         }
 
         $param->{has_any_pinged_urls} = ( $obj->pinged_urls || '' ) =~ m/\S/;
-        $param->{ping_errors}         = $q->param('ping_errors');
+        $param->{ping_errors}         = $app->param('ping_errors');
         $param->{can_view_log}        = $app->can_do('view_log');
         $param->{entry_permalink} = MT::Util::encode_html( $obj->permalink );
         $param->{'mode_view_entry'} = 1;
@@ -241,10 +242,9 @@ sub edit {
                 $def_status = $param->{status};
                 $def_status =~ s/\D//g;
                 $param->{status} = $def_status;
-                $param->{ 'allow_comments_' . $q->param('allow_comments') }
-                    = 1;
-                $param->{allow_comments} = $q->param('allow_comments');
-                $param->{allow_pings}    = $q->param('allow_pings');
+                $param->{ 'allow_comments_' . $allow_comments } = 1;
+                $param->{allow_comments} = $allow_comments;
+                $param->{allow_pings}    = $app->param('allow_pings');
             }
             else {
 
@@ -260,21 +260,22 @@ sub edit {
 
         require POSIX;
         my @now = offset_time_list( time, $blog );
-        $param->{authored_on_date} = $q->param('authored_on_date')
+        $param->{authored_on_date} = $app->param('authored_on_date')
             || POSIX::strftime( "%Y-%m-%d", @now );
-        $param->{authored_on_time} = $q->param('authored_on_time')
+        $param->{authored_on_time} = $app->param('authored_on_time')
             || POSIX::strftime( "%H:%M:%S", @now );
-        $param->{unpublished_on_date} = $q->param('unpublished_on_date');
-        $param->{unpublished_on_time} = $q->param('unpublished_on_time');
+        $param->{unpublished_on_date} = $app->param('unpublished_on_date');
+        $param->{unpublished_on_time} = $app->param('unpublished_on_time');
     }
 
     ## show the necessary associated assets
     if ( $type eq 'entry' || $type eq 'page' ) {
         require MT::Asset;
         require MT::ObjectAsset;
-        my $assets = ();
-        if ( $q->param('reedit') && $q->param('include_asset_ids') ) {
-            my $include_asset_ids = $app->param('include_asset_ids');
+        my $assets            = ();
+        my $include_asset_ids = $app->param('include_asset_ids');
+        my $asset_id          = $app->param('asset_id');
+        if ( $reedit && $include_asset_ids ) {
             my @asset_ids = split( ',', $include_asset_ids );
             foreach my $asset_id (@asset_ids) {
                 my $asset = MT::Asset->load($asset_id);
@@ -302,8 +303,8 @@ sub edit {
                 }
             }
         }
-        elsif ( $q->param('asset_id') && !$id ) {
-            my $asset   = MT::Asset->load( $q->param('asset_id') );
+        elsif ( $asset_id && !$id ) {
+            my $asset   = MT::Asset->load($asset_id);
             my $asset_1 = {
                 asset_id      => $asset->id,
                 asset_name    => $asset->file_name,
@@ -357,24 +358,24 @@ sub edit {
     my %places;
 
     # set the dirty flag in js?
-    $param->{dirty} = $q->param('dirty') ? 1 : 0;
+    $param->{dirty} = $app->param('dirty') ? 1 : 0;
 
     if ($id) {
         my $cats = $obj->categories;
         %places = map { $_->id => 1 } @$cats;
     }
-    my $cats = $q->param('category_ids');
+    my $cats = $app->param('category_ids');
     if ( defined $cats ) {
         if ( my @cats = grep { $_ =~ /^\d+/ } split /,/, $cats ) {
             $cat_id = $cats[0];
             %places = map { $_ => 1 } @cats;
         }
     }
-    if ( $q->param('reedit') ) {
+    if ($reedit) {
         $param->{reedit}          = 1;
-        $param->{'basename'}      = $q->param('basename');
-        $param->{'revision-note'} = $q->param('revision-note');
-        if ( $q->param('save_revision') ) {
+        $param->{'basename'}      = $app->param('basename');
+        $param->{'revision-note'} = $app->param('revision-note');
+        if ( $app->param('save_revision') ) {
             $param->{'save_revision'} = 1;
         }
         else {
@@ -477,8 +478,8 @@ sub edit {
 
     $param->{basename_limit} = ( $blog ? $blog->basename_limit : 0 ) || 30;
 
-    if ( $q->param('tags') ) {
-        $param->{tags} = $q->param('tags');
+    if ( my $tags = $app->param('tags') ) {
+        $param->{tags} = $tags;
     }
     else {
         if ($obj) {
@@ -491,7 +492,7 @@ sub edit {
 
     ## Load text filters if user displays them
     my %entry_filters;
-    if ( defined( my $filter = $q->param('convert_breaks') ) ) {
+    if ( defined( my $filter = $app->param('convert_breaks') ) ) {
         my @filters = split /\s*,\s*/, $filter;
         $entry_filters{$_} = 1 for @filters;
     }
