@@ -2035,13 +2035,14 @@ sub build_revision_table {
     my $app = shift;
     my (%args) = @_;
 
-    my $q     = $app->param;
-    my $type  = $q->param('_type');
-    my $class = $app->model($type);
-    my $param = $args{param};
-    my $obj   = $args{object};
-    my $blog  = $obj->blog || MT::Blog->load( $q->param('blog_id') );
-    my $lang  = $app->user ? $app->user->preferred_language : undef;
+    my $type    = $app->param('_type');
+    my $blog_id = $app->param('blog_id');
+    my $dialog  = $app->param('dialog');
+    my $class   = $app->model($type);
+    my $param   = $args{param};
+    my $obj     = $args{object};
+    my $blog    = $obj->blog || MT::Blog->load($blog_id);
+    my $lang    = $app->user ? $app->user->preferred_language : undef;
 
     my $js = $param->{rev_js};
     unless ($js) {
@@ -2099,7 +2100,7 @@ sub build_revision_table {
             code   => $hasher,
             terms  => { $class->datasource . '_id' => $obj->id },
             source => $type,
-            params => { dialog => scalar $q->param('dialog'), },
+            params => { dialog => $dialog, },
             %$param
         }
     );
