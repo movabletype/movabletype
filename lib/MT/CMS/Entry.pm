@@ -32,6 +32,7 @@ sub edit {
     # to trigger autosave logic in main edit routine
     $param->{autosave_support} = 1;
 
+    my $preferred_language = $author ? $author->preferred_language : undef;
     my $allow_comments     = $app->param('allow_comments');
     my $reedit             = $app->param('reedit');
 
@@ -65,8 +66,7 @@ sub edit {
                     && $obj->{__missing_tags_rev};
             }
             $param->{rev_date} = format_ts( "%Y-%m-%d %H:%M:%S",
-                $obj->modified_on, $blog,
-                $app->user ? $app->user->preferred_language : undef );
+                $obj->modified_on, $blog, $preferred_language );
         }
 
         $param->{nav_entries} = 1;
@@ -123,16 +123,16 @@ sub edit {
                 . ( $allow_comments || $obj->allow_comments || 0 ) } = 1;
         $param->{'authored_on_date'} = $app->param('authored_on_date')
             || format_ts( "%Y-%m-%d", $obj->authored_on, $blog,
-            $app->user ? $app->user->preferred_language : undef );
+            $preferred_language );
         $param->{'authored_on_time'} = $app->param('authored_on_time')
             || format_ts( "%H:%M:%S", $obj->authored_on, $blog,
-            $app->user ? $app->user->preferred_language : undef );
+            $preferred_language );
         $param->{'unpublished_on_date'} = $app->param('unpublished_on_date')
             || format_ts( "%Y-%m-%d", $obj->unpublished_on, $blog,
-            $app->user ? $app->user->preferred_language : undef );
+            $preferred_language );
         $param->{'unpublished_on_time'} = $app->param('unpublished_on_time')
             || format_ts( "%H:%M:%S", $obj->unpublished_on, $blog,
-            $app->user ? $app->user->preferred_language : undef );
+            $preferred_language );
 
         $param->{num_comments} = $id ? $obj->comment_count : 0;
         $param->{num_pings}    = $id ? $obj->ping_count    : 0;
@@ -176,8 +176,7 @@ sub edit {
             $param->{authored_on_ts} = $ts;
             $param->{authored_on_formatted}
                 = format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(),
-                $ts, $blog,
-                $app->user ? $app->user->preferred_language : undef );
+                $ts, $blog, $preferred_language );
         }
         if ( my $id = $obj->author_id ) {
             my $obj_author = MT::Author->load($id);
