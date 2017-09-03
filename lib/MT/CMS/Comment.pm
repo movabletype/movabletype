@@ -698,22 +698,24 @@ sub reply_preview {
 
     $app->validate_magic or return;
 
-    my $q   = $app->param;
     my $cfg = $app->config;
 
-    my $param = {
-        reply_to    => $q->param('reply_to'),
+    my $reply_to   = $app->param('reply_to');
+    my $blog_id    = $app->param('blog_id');
+    my $return_url = $app->param('return_url');
+    my $param      = {
+        reply_to    => $reply_to,
         magic_token => $app->current_magic,
-        blog_id     => $q->param('blog_id'),
-        return_url  => scalar( $q->param('return_url') ),
+        blog_id     => $blog_id,
+        return_url  => $return_url,
     };
     my ( $comment, $parent, $entry ) = _prepare_reply($app);
     return unless $comment;
 
     my $blog = $parent->blog
-        || $app->model('blog')->load( $q->param('blog_id') );
+        || $app->model('blog')->load($blog_id);
     return $app->error(
-        $app->translate( 'Cannot load blog #[_1].', $q->param('blog_id') ) )
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) )
         unless $blog;
 
     require MT::Sanitize;
@@ -746,7 +748,7 @@ sub reply_preview {
     $ctx->stash( 'blog',    $parent->blog );
     $param->{'preview_html'} = $tmpl->output;
 
-    my $comment_reply = $q->param('comment-reply');
+    my $comment_reply = $app->param('comment-reply');
     $comment_reply = '' unless defined $comment_reply;
     return $app->build_page( 'dialog/comment_reply.tmpl',
         { %$param, 'text' => $comment_reply } );
