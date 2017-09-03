@@ -38,21 +38,27 @@ my $fields = [
 $content_type->fields($fields);
 $content_type->save or die $content_type->errstr;
 
-SKIP: {
-# https://github.com/movabletype/internal-movabletype/commit/16bd412baad05da4024e3900d98eb17d4203131c
-    skip
-        'temporarily. The cause in this commit: 16bd412baad05da4024e3900d98eb17d4203131c',
-        1;
+subtest 'make_list_props' => sub {
+    my $props = MT::ContentData::make_list_props();
+    ok( $props && ref $props eq 'HASH', 'make_list_properties returns hash' );
+    MT->registry( 'list_properties', $props )
+        ;    # registry will be updated after rebooting.
+};
 
-    subtest 'make_list_props' => sub {
-        my $props = MT::ContentData::make_list_props();
-        ok( $props && ref $props eq 'HASH',
-            'make_list_properties returns hash'
-        );
-        MT->registry( 'list_properties', $props )
-            ;    # registry will be updated after rebooting.
-    };
-}
+subtest 'make_title' => sub {
+    my $prop = MT::ListProperty->new( 'content_data.content_data_1', 'content_field_1' );
+    my $content_data = MT::Test::Permission->make_content_data(
+        blog_id         => $content_type->blog_id,
+        author_id       => 1,
+        content_type_id => $content_type->id,
+        data            => { 1 => 'test' },
+    );
+    my $app = MT->instance;
+
+    my $html
+        = MT::ContentData::_make_title_html( $prop, $content_data, $app );
+    ok( $html =~ /^<span class/, 'no error occurs' );
+};
 
 done_testing;
 
