@@ -669,8 +669,8 @@ sub listing {
 sub json_result {
     my $app = shift;
     my ($result) = @_;
-    $app->send_http_header("application/json");
     $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
+    $app->send_http_header("application/json");
     $app->{no_print_body} = 1;
     $app->print_encode(
         MT::Util::to_json( { error => undef, result => $result } ) );
@@ -682,8 +682,8 @@ sub json_error {
     my ( $error, $status ) = @_;
     $app->response_code($status)
         if defined $status;
-    $app->send_http_header("application/json");
     $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
+    $app->send_http_header("application/json");
     $app->{no_print_body} = 1;
     $app->print_encode( MT::Util::to_json( { error => $error } ) );
     return undef;
