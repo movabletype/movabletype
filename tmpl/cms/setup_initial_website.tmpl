@@ -57,7 +57,7 @@
          id="website_theme"
          label="<__trans phrase="Theme">"
          label_class="top-label">
-        <select name="website_theme" class="custom-select">
+        <select name="website_theme" class="custom-select form-control">
         <mt:loop name="theme_loop">
           <option value="<mt:var name="value" escape="html">"<mt:if name="website_theme"><mt:if name="value" eq="$website_theme"> selected="selected"</mt:if><mt:else><mt:if name="value" eq="$config.DefaultWebsiteTheme"> selected="selected"</mt:if></mt:if>><mt:var name="label" escape="html"></option>
         </mt:loop>
@@ -69,7 +69,7 @@
          id="website_timezone"
          label="<__trans phrase="Time Zone">"
          label_class="top-label">
-        <select name="website_timezone" id="website_timezone" class="custom-select se">
+        <select name="website_timezone" id="website_timezone" class="custom-select form-control se">
           <option value=""><__trans phrase="Time zone not selected"></option>
           <option value="13"<mt:if name="WEBSITE_TIMEZONE_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
           <option value="12"<mt:if name="WEBSITE_TIMEZONE_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
@@ -130,10 +130,6 @@
     </form>
   </div>
 </div>
-</mt:setvarblock>
-
-<mt:setvarblock name="css_include" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/login.css" />
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">

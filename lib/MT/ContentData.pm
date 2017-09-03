@@ -570,7 +570,7 @@ sub make_list_props {
 
     my $iter = MT::ContentType->load_iter;
     while ( my $content_type = $iter->() ) {
-        my $key   = 'content_data_' . $content_type->id;
+        my $key   = 'content_data.content_data_' . $content_type->id;
         my $order = 1000;
         my $field_list_props
             = _make_field_list_props( $content_type, $order );

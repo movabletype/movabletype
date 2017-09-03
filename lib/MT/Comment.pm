@@ -245,16 +245,16 @@ sub list_props {
                 }
 
                 my $status = $commenter->status;
-                my $status_icon;
+                my $badge_type;
 
                 if ( MT->config->SingleCommunity ) {
                     if ( $commenter->type == MT::Author::AUTHOR() ) {
-                        $status_icon
+                        $badge_type
                             = $commenter->status == MT::Author::ACTIVE()
-                            ? 'user-enabled.gif'
+                            ? 'success'
                             : $commenter->status == MT::Author::INACTIVE()
-                            ? 'user-disabled.gif'
-                            : 'user-pending.gif';
+                            ? 'secondary'
+                            : 'default';
                         $status_class
                             = $commenter->status == MT::Author::ACTIVE()
                             ? 'Enabled'
@@ -263,10 +263,10 @@ sub list_props {
                             : 'Pending';
                     }
                     else {
-                        $status_icon
-                            = $commenter->is_trusted(0) ? 'trusted.gif'
-                            : $commenter->is_banned(0)  ? 'banned.gif'
-                            :                             'authenticated.gif';
+                        $badge_type
+                            = $commenter->is_trusted(0) ? 'success'
+                            : $commenter->is_banned(0)  ? 'secondary'
+                            :                             'default';
                         $status_class
                             = $commenter->is_trusted(0) ? 'Trusted'
                             : $commenter->is_banned(0)  ? 'Banned'
@@ -275,10 +275,10 @@ sub list_props {
                 }
                 else {
                     my $blog_id = $opts->{blog_id};
-                    $status_icon
-                        = $commenter->is_trusted($blog_id) ? 'trusted.gif'
-                        : $commenter->is_banned($blog_id)  ? 'banned.gif'
-                        :   'authenticated.gif';
+                    $badge_type
+                        = $commenter->is_trusted($blog_id) ? 'success'
+                        : $commenter->is_banned($blog_id)  ? 'secondary'
+                        :                                    'default';
                     $status_class
                         = $commenter->is_trusted($blog_id) ? 'Trusted'
                         : $commenter->is_banned($blog_id)  ? 'Banned'
@@ -286,9 +286,7 @@ sub list_props {
                 }
 
                 $lc_status_class = lc $status_class;
-                my $status_url
-                    = $static . 'images/status_icons/' . $status_icon;
-                $status_img = qq{<img src="$status_url" />};
+                my $translated_status_class = MT->translate($status_class);
 
                 $auth_img = $static;
                 if (   $commenter->auth_type eq 'MT'
@@ -309,7 +307,8 @@ sub list_props {
                     MT->translate($status_class),
                 );
 
-                my $out = qq{
+                my $static_uri = MT->static_path;
+                my $out        = qq{
                     <span class="auth-type">
                       <img alt="$auth_label" src="$auth_img" class="auth-type-icon" />
                     </span>
@@ -324,8 +323,11 @@ sub list_props {
                 $out .= qq{
                     </span>
                     <span class="status $lc_status_class">
-                      $status_img
+                      <svg title="$translated_status_class" role="img" class="mt-icon mt-icon--sm">
+                        <use xlink:href="${static_uri}images/sprite.svg#ic_user">
+                      </svg>
                     </span>
+                    <span class="badge badge-$badge_type">$translated_status_class</span>
                 };
             },
         },
@@ -425,11 +427,17 @@ sub list_props {
                     : '';
             },
             label_via_param => sub {
-                my $prop     = shift;
-                my $app      = shift;
-                my $entry_id = $app->param('filter_val');
-                my $entry    = MT->model('entry')->load($entry_id);
-                my $label    = MT->translate( 'Comments on [_1]: [_2]',
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                my $entry = MT->model('entry')->load($val)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        MT->translate("Entry"),
+                        defined $val ? $val : ''
+                    )
+                    );
+                my $label = MT->translate( 'Comments on [_1]: [_2]',
                     $entry->class_label, $entry->title, );
                 $prop->{filter_label} = MT::Util::encode_html($label);
                 $label;
@@ -486,7 +494,14 @@ sub list_props {
             label_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
-                my $user = MT->model('author')->load($val);
+                my $user = MT->model('author')->load($val)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        MT->translate("Author"),
+                        defined $val ? $val : ''
+                    )
+                    );
                 return MT->translate(
                     "All comments by [_1] '[_2]'",
                     (     $user->type == MT::Author::COMMENTER()

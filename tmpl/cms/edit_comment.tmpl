@@ -220,11 +220,11 @@
     <div class="form-group">
     <mt:if name="commenter_approved">
       <mt:if name="can_edit_commenters">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">"><img src="<mt:var name="static_uri">images/status_icons/trusted.gif" alt="<__trans phrase="Trusted">" /></a>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm"></a>
       <mt:else>
-      <img src="<mt:var name="static_uri">images/status_icons/trusted.gif" alt="<__trans phrase="Trusted">" />
+      <mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm">
       </mt:if>
-      <span class="hint"><__trans phrase="(Trusted)"></span>
+      <span class="badge badge-success hint"><__trans phrase="Trusted"></span>
       <mt:unless name="is_mine">
       <span class="commenter-actions">
         <mt:if name="can_edit_commenters">
@@ -238,13 +238,11 @@
 
     <mt:else name="commenter_banned">
       <mt:if name="can_edit_commenters">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link"  title="<__trans phrase="View this commenter detail">">
-        <img src="<mt:var name="static_uri">images/status_icons/banned.gif" alt="<__trans phrase="Banned">" />
-      </a>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link"  title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Banned">" size="sm"></a>
       <mt:else>
-      <img src="<mt:var name="static_uri">images/status_icons/banned.gif" alt="<__trans phrase="Banned">" />
+      <mtapp:svgicon id="ic_user" title="<__trans phrase="Banned">" size="sm">
       </mt:if>
-      <span class="hint"><__trans phrase="(Banned)"></span>
+      <span class="badge badge-secondary hint"><__trans phrase="Banned"></span>
       <mt:unless name="is_mine">
         <mt:if name="can_edit_commenters">
       <span class="commenter-actions">
@@ -258,13 +256,11 @@
 
     <mt:else>
       <mt:if name="can_edit_commenters">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">">
-        <img src="<mt:var name="static_uri">images/status_icons/authenticated.gif" alt="<__trans phrase="Pending">" />
-      </a>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Pending">" size="sm" color="secondary"></a>
       <mt:else>
-      <img src="<mt:var name="static_uri">images/status_icons/authenticated.gif" alt="<__trans phrase="Pending">" />
+      <mtapp:svgicon id="ic_user" title="<__trans phrase="Pending">" size="sm" color="secondary">
       </mt:if>
-      <span class="hint"><__trans phrase="(Pending)"></span>
+      <span class="badge badge-default hint"><__trans phrase="Pending"></span>
       <mt:unless name="is_mine">
         <mt:if name="can_edit_commenters">
       <span class="commenter-actions">
@@ -295,7 +291,7 @@
       <input type="text" name="email" id="email" class="text" value="<mt:var name="email" escape="html">" />
   </mt:if>
   <mt:if name="email">
-      <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><img src="<mt:var name="static_uri">images/status_icons/email.gif" alt="<__trans phrase="Email">" width="16" height="9" /></a>
+      <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><mtapp:svgicon id="ic_mail" title="<__trans phrase="Email">" size="sm"></a>
       <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
   </mt:if>
     </div>
@@ -316,7 +312,7 @@
       <input type="text" name="url" id="url" class="text" value="<mt:var name="url" escape="html">" />
   </mt:if>
   <mt:if name="url">
-      <a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/status_icons/link.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a>
+      <a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><mtapp:svgicon id="ic_link" title="<__trans phrase="Link">" size="sm"></a>
     <mt:unless name="commenter_id">
       <a title="<__trans phrase="View all comments with this URL">" href="<mt:var name="script_url">?__mode=list&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;_type=comment&amp;filter=url&amp;filter_val=<mt:var name="url" escape="url">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
     </mt:unless>

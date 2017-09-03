@@ -99,7 +99,7 @@ sub init_request {
                 = { map { $_ => 1 } split /\s*,\s*/, $list };
         }
         next if $no_override{$type};
-        for my $blog_id ( $q->param($type) ) {
+        for my $blog_id ( $app->multi_param($type) ) {
             if ( $blog_id =~ m/,/ ) {
                 my @ids = split /,/, $blog_id;
                 s/\D+//g for @ids;    # only numeric values.

@@ -341,7 +341,7 @@ sub save_role {
     $app->can_do('save_role') or return $app->permission_denied();
 
     my $id    = $q->param('id');
-    my @perms = $q->param('permission');
+    my @perms = $app->multi_param('permission');
     my $role;
     require MT::Role;
     $role = $id ? MT::Role->load($id) : MT::Role->new;
@@ -412,7 +412,7 @@ sub set_object_status {
     my @sync;
     my $saved       = 0;
     my $not_enabled = 0;
-    for my $id ( $q->param('id') ) {
+    for my $id ( $q->multi_param('id') ) {
         next unless $id;    # avoid 'empty' ids
         my $obj = $class->load($id);
         next unless $obj;
@@ -499,7 +499,7 @@ sub unlock {
 
     my @sync;
     my $saved = 0;
-    for my $id ( $app->param('id') ) {
+    for my $id ( $app->multi_param('id') ) {
         next unless $id;    # avoid 'empty' ids
         my $obj = $class->load($id);
         next unless $obj;
@@ -848,7 +848,7 @@ sub remove_user_assoc {
 
     $app->setup_filtered_ids
         if $app->param('all_selected');
-    my @ids = $app->param('id');
+    my @ids = $app->multi_param('id');
     return $app->errtrans("Invalid request.")
         unless $blog_id && @ids;
 
@@ -1690,7 +1690,7 @@ sub pre_save {
         $obj->password('(none)');
     }
 
-    my ( $delim, $delim2 ) = $app->param('tag_delim');
+    my ( $delim, $delim2 ) = $app->multi_param('tag_delim');
     $delim ||= $delim2 || '';
     if ( $delim =~ m/comma/i ) {
         $delim = ord(',');

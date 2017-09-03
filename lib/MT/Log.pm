@@ -328,10 +328,9 @@ sub list_props {
         id => {
             base            => '__virtual.id',
             label_via_param => sub {
-                my $prop  = shift;
-                my ($app) = @_;
-                my $id    = $app->param('filter_val');
-                return MT->translate( 'Showing only ID: [_1]', $id );
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                return MT->translate( 'Showing only ID: [_1]', $val );
             },
             display         => 'none',
             filter_editable => 0,

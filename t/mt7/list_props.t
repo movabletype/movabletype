@@ -46,7 +46,7 @@ subtest 'make_list_props' => sub {
 };
 
 subtest 'make_title' => sub {
-    my $prop = MT::ListProperty->new( 'content_data_1', 'content_field_1' );
+    my $prop = MT::ListProperty->new( 'content_data.content_data_1', 'content_field_1' );
     my $content_data = MT::Test::Permission->make_content_data(
         blog_id         => $content_type->blog_id,
         author_id       => 1,

@@ -123,7 +123,7 @@ __TMPL__
 sub data_load_handler_multiple {
     my ( $app, $field_data ) = @_;
     my $field_id = $field_data->{id};
-    [ $app->param("content-field-${field_id}") ];
+    [ $app->multi_param("content-field-${field_id}") ];
 }
 
 sub data_load_handler_asset {

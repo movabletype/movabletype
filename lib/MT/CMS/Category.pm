@@ -109,7 +109,7 @@ sub save {
         move_category($app) or return;
     }
     else {
-        for my $p ( $q->param ) {
+        for my $p ( $app->multi_param ) {
             my ($parent) = $p =~ /^category-new-parent-(\d+)$/;
             next unless ( defined $parent );
 

@@ -263,8 +263,10 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
           <div class="col-8">
             <h4 class="plugin-name">
         <mt:if name="plugin_disabled">
-              <span><img src="<mt:var name="static_uri">images/plugin-error.gif" /></span>
-              <span class="plugin-name-disabled">
+              <span class="pr-3">
+                <mtapp:svgicon id="ic_stop" title="<__trans phrase="Disabled">" color="danger">
+              </span>
+              <span class="plugin-name-disabled text-secondary">
                 <$mt:var name="plugin_name" escape="html"$>
                 <mt:if name="plugin_version">
                   <span class="plugin-version">
@@ -273,15 +275,17 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
                 </mt:if>
               </span>
         <mt:else>
-              <mt:unless name="plugin_error">
-                <span>
-                <mt:if name="plugin_icon" like="#ic_plugin">
-                  <mt:var name="plugin_icon">
-                <mt:else>
-                  <img src="<mt:var name="plugin_icon">" />
-                </mt:if>
-                </span>
-              </mt:unless>
+              <span>
+            <mt:unless name="plugin_error">
+              <mt:if name="plugin_icon" like="#ic_plugin">
+                <mt:var name="plugin_icon">
+              <mt:else>
+                <img src="<mt:var name="plugin_icon">" />
+              </mt:if>
+            <mt:else>
+                <mtapp:svgicon id="ic_stop" title="<__trans phrase="Disabled">" color="danger">
+            </mt:unless>
+              </span>
               <a class="btn btn-link" aria-expanded="false" aria-controls="plugin-<mt:var name="plugin_id" escape="html">-content" href="#plugin-<mt:var name="plugin_id" escape="html">-content" title="<__trans phrase="Settings for [_1]" params="<mt:var name="plugin_name" escape="html">">" data-toggle="collapse">
                 <$mt:var name="plugin_name" escape="html"$>
                 <mt:if name="plugin_version">
@@ -313,7 +317,7 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
                 <__trans phrase="Disable">
               </a>
               <mt:else>
-              <span class="icon-left icon-neutral">
+              <span class="text-secondary icon-left icon-neutral">
                 <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Disabled">" color="secondary">
                 <__trans phrase="Disabled">
               </span>
@@ -337,7 +341,7 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
                 <__trans phrase="Enabled">
               </span>
               <mt:else>
-              <span class="icon-left icon-neutral">
+              <span class="text-secondary icon-left icon-neutral">
                 <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Disabled">" color="secondary">
                 <__trans phrase="Disabled">
               </span>
@@ -380,14 +384,14 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
         <ul class="nav nav-tabs plugin-tabs-list tabs"> <!-- Plugin Tab -->
           <li class="nav-item tab">
             <a href="#plugin-<mt:var name="plugin_id">-info" class="nav-link active icon-mini-left icon-mini-comments" data-toggle="tab">
-              <mtapp:svgicon id="ic_info" size="sm" title="<__trans phrase="Info">">
+              <mtapp:svgicon id="ic_file" size="sm" title="<__trans phrase="Info">">
               <__trans phrase="Info">
             </a>
           </li>
       <mt:if name="plugin_resources">
           <li class="nav-item tab">
             <a href="#plugin-<mt:var name="plugin_id">-resources" class="nav-link icon-mini-left icon-mini-templates" data-toggle="tab">
-              <mtapp:svgicon id="ic_template" size="sm" title="<__trans phrase="Resources">">
+              <mtapp:svgicon id="ic_permalink" size="sm" title="<__trans phrase="Resources">">
               <__trans phrase="Resources">
             </a>
           </li>

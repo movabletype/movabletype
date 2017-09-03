@@ -846,7 +846,7 @@ sub edit {
     if ( ( $q->param('msg') || "" ) eq 'nosuch' ) {
         $param{nosuch} = 1;
     }
-    for my $p ( $q->param ) {
+    for my $p ( $app->multi_param ) {
         $param{$p} = $q->param($p) if $p =~ /^saved/;
     }
     $param{page_actions} = $app->page_actions( $type, $obj );
@@ -879,9 +879,10 @@ sub edit {
 }
 
 sub list {
-    my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $app     = shift;
+    my $q       = $app->param;
+    my $type    = $q->param('_type');
+    my $subtype = $q->param('type') ? '.' . $q->param('type') : '';
     my $scope
         = $app->blog ? ( $app->blog->is_blog ? 'blog' : 'website' )
         : defined $app->param('blog_id') ? 'system'
@@ -895,15 +896,15 @@ sub list {
         return $app->forward($list_mode);
     }
     my %param;
-    $param{list_type} = $type;
+    $param{list_type} = $type . $subtype;
     my @messages;
 
     my @list_components = grep {
-               $_->registry( list_properties => $type )
-            || $_->registry( listing_screens => $type )
-            || $_->registry( list_actions    => $type )
-            || $_->registry( content_actions => $type )
-            || $_->registry( system_filters  => $type )
+               $_->registry( list_properties => $type . $subtype )
+            || $_->registry( listing_screens => $type . $subtype )
+            || $_->registry( list_actions    => $type . $subtype )
+            || $_->registry( content_actions => $type . $subtype )
+            || $_->registry( system_filters  => $type . $subtype )
     } MT::Component->select;
 
     my @list_headers;
@@ -922,7 +923,7 @@ sub list {
         push @list_headers, { filename => $f, component => $c->id } if -e $f;
     }
 
-    my $screen_settings = MT->registry( listing_screens => $type )
+    my $screen_settings = MT->registry( listing_screens => $type . $subtype )
         or return $app->error(
         $app->translate( 'Unknown action [_1]', $list_mode ) );
 
@@ -999,9 +1000,9 @@ sub list {
 
     my $initial_filter;
 
-    my $list_prefs = $app->user->list_prefs         || {};
-    my $list_pref  = $list_prefs->{$type}{$blog_id} || {};
-    my $rows       = $list_pref->{rows}             || 50; ## FIXME: Hardcoded
+    my $list_prefs = $app->user->list_prefs || {};
+    my $list_pref = $list_prefs->{ ( $subtype || $type ) }{$blog_id} || {};
+    my $rows        = $list_pref->{rows}        || 50;    ## FIXME: Hardcoded
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
     my $last_items = $list_pref->{last_items} || [];
@@ -1014,14 +1015,14 @@ sub list {
     require MT::ListProperty;
     my $obj_type   = $screen_settings->{object_type} || $type;
     my $obj_class  = MT->model($obj_type);
-    my $list_props = MT::ListProperty->list_properties($type);
+    my $list_props = MT::ListProperty->list_properties( $type . $subtype );
 
     if ( $app->param('no_filter') ) {
 
         # Nothing to do.
     }
-    elsif ( my @cols = $app->param('filter') ) {
-        my @vals = $app->param('filter_val');
+    elsif ( my @cols = $app->multi_param('filter') ) {
+        my @vals = $app->multi_param('filter_val');
         my @items;
         my @labels;
         for my $col (@cols) {
@@ -1090,8 +1091,8 @@ sub list {
     }
     elsif ($initial_sys_filter) {
         require MT::CMS::Filter;
-        $initial_filter
-            = MT::CMS::Filter::filter( $app, $type, $initial_sys_filter );
+        $initial_filter = MT::CMS::Filter::filter( $app, $type . $subtype,
+            $initial_sys_filter );
     }
     elsif ($last_filter) {
         my $filter = MT->model('filter')->load($last_filter);
@@ -1239,7 +1240,8 @@ sub list {
 #}
 
     require MT::CMS::Filter;
-    my $filters = MT::CMS::Filter::filters( $app, $type, encode_html => 1 );
+    my $filters = MT::CMS::Filter::filters( $app, $type . $subtype,
+        encode_html => 1 );
 
     my $allpass_filter = {
         label => MT->translate(
@@ -1326,7 +1328,7 @@ sub list {
         # set component for template loading
         my @compo = MT::Component->select;
         foreach my $c (@compo) {
-            my $r = $c->registry( 'object_types' => $type );
+            my $r = $c->registry( 'object_types' => ( $type ) );
             if ($r) {
                 $component = $c->id;
                 last;
@@ -1341,7 +1343,7 @@ sub list {
     $feed_link = $feed_link->($app)
         if 'CODE' eq ref $feed_link;
     if ($feed_link) {
-        $param{feed_url} = $app->make_feed_link( $type,
+        $param{feed_url} = $app->make_feed_link( ( $subtype || $type ),
             $blog_id ? { blog_id => $blog_id } : undef );
         $param{object_type_feed}
             = $screen_settings->{feed_label}
@@ -1350,8 +1352,8 @@ sub list {
     }
 
     if ( $param{use_actions} ) {
-        $app->load_list_actions( $type, \%param );
-        $app->load_content_actions( $type, \%param );
+        $app->load_list_actions( ( $type . $subtype ), \%param );
+        $app->load_content_actions( ( $type . $subtype ), \%param );
     }
 
     push @{ $param{debug_panels} },
@@ -1588,7 +1590,11 @@ sub filtered_list {
         blog_ids => $blog_ids,
     );
 
-    MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds,
+    my $callback_ds = $ds;
+    if ( $ds =~ m/(.*)\./ ) {
+        $callback_ds = $1;
+    }
+    MT->run_callbacks( 'cms_pre_load_filtered_list.' . $callback_ds,
         $app, $filter, \%count_options, \@cols );
 
     my $count_result = $filter->count_objects(%count_options);
@@ -1801,7 +1807,7 @@ sub delete {
     my @not_deleted;
     my $delete_count = 0;
     my %return_arg;
-    for my $id ( $q->param('id') ) {
+    for my $id ( $app->multi_param('id') ) {
         next unless $id;    # avoid 'empty' ids
         if ( ( $type eq 'association' ) && ( $id =~ /PSEUDO-/ ) ) {
             require MT::CMS::User;
