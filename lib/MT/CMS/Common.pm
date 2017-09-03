@@ -2106,12 +2106,12 @@ sub build_revision_table {
 }
 
 sub list_revision {
-    my $app   = shift;
-    my $q     = $app->param;
-    my $type  = $q->param('_type');
-    my $class = $app->model($type);
-    my $id    = $q->param('id');
-    my $rn    = $q->param('r');
+    my $app     = shift;
+    my $type    = $app->param('_type');
+    my $class   = $app->model($type);
+    my $id      = $app->param('id');
+    my $rn      = $app->param('r');
+    my $blog_id = $app->param('blog_id');
 
     return $app->errtrans('Invalid request')
         unless $class->isa('MT::Revisable');
@@ -2129,7 +2129,7 @@ sub list_revision {
         || return $app->permission_denied();
 
     my $obj  = $obj_promise->force();
-    my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') );
+    my $blog = $obj->blog || MT::Blog->load($blog_id);
     my $js   = "parent.location.href='" . $app->uri;
     if ( $type eq 'cd' ) {
         $js .= '?__mode=edit_content_data&amp;content_type_id='
