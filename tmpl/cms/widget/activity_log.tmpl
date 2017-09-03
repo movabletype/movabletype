@@ -1,0 +1,19 @@
+<mtapp:widget
+  class="activity-log-widget"
+  label="<__trans phrase="Activity Log">"
+  can_close="1">
+  <mt:if name="logs">
+    <mt:Loop name="logs">
+  <div class="row<mt:unless name="__last__"> mb-2</mt:unless>">
+    <div class="col-6"><mt:var name="created_on_formatted"></div>
+    <div class="col-6"><div class="float-right"><mt:var name="site_name" escape="html"></div></div>
+    <div class="col-12"><mt:var name="log_message" escape="html"></div>
+  </div>
+    </mt:Loop>
+  <mt:Else>
+  <div class="row">
+    <div class="col"><__trans phrase="No [_1] could be found." params="<__trans phrase="Log">"></div>
+  </div>
+  </mt:if>
+</mtapp:widget>
+

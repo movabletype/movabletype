@@ -33,7 +33,7 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0005' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0010' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 5;
+        $RELEASE_NUMBER = 0;
     }
 
     $DebugMode = 0;
