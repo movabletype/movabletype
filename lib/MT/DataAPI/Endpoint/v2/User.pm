@@ -128,9 +128,10 @@ sub recover {
         );
     }
 
+    my $email = $app->param('email');
     my $message = $app->translate(
         'An email with a link to reset your password has been sent to your email address ([_1]).',
-        $app->param('email')
+        $email
     );
     return +{ status => 'success', message => $message };
 }
