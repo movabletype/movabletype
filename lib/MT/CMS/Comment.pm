@@ -1250,10 +1250,11 @@ sub map_comment_to_commenter {
 
 sub _prepare_reply {
     my $app = shift;
-    my $q   = $app->param;
+
+    my $reply_to = $app->param('reply_to');
 
     my $comment_class = $app->model('comment');
-    my $parent        = $comment_class->load( $q->param('reply_to') );
+    my $parent        = $comment_class->load($reply_to);
     my $entry         = $app->model('entry')->load( $parent->entry_id );
 
     if ( !$parent || !$parent->is_published ) {
@@ -1272,7 +1273,7 @@ sub _prepare_reply {
     my $comment = $comment_class->new;
 
     ## Strip linefeed characters.
-    my $text = $q->param('comment-reply');
+    my $text = $app->param('comment-reply');
     $text = '' unless defined $text;
     $text =~ tr/\r//d;
     $comment->ip( $app->remote_ip );
