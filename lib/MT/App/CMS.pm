@@ -4248,16 +4248,16 @@ sub archive_type_sorter {
 
 sub preview_object_basename {
     my $app = shift;
-    my $q   = $app->param;
     my @parts;
     my $blog = $app->blog;
     my $blog_id;
     $blog_id = $blog->id if $blog;
-    my $id = $q->param('id');
+    my $id   = $app->param('id');
+    my $type = $app->param('_type');
     push @parts, $app->user->id;
     push @parts, $blog_id || 0;
     push @parts, $id || 0;
-    push @parts, $q->param('_type');
+    push @parts, $type;
     push @parts, $app->config->SecretToken;
     my $data = join ",", @parts;
     return 'mt-preview-' . perl_sha1_digest_hex($data);
