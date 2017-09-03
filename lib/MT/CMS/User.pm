@@ -1039,9 +1039,11 @@ sub dialog_select_author {
 
     my %hash = $app->param_hash();
 
-    my $entry_type;
-    $entry_type = $app->param('entry_type') if $app->param('entry_type');
-    $entry_type ||= 'entry';
+    my $entry_type = $app->param('entry_type') || 'entry';
+    my $json       = $app->param('json');
+    my $multi      = $app->param('multi');
+    my $idfield    = $app->param('idfield');
+    my $namefield  = $app->param('namefield');
 
     my @blog_ids;
     if ( !$blog->is_blog && $app->param('include_child') ) {
@@ -1086,7 +1088,7 @@ sub dialog_select_author {
                 ),
             },
             code     => $hasher,
-            template => $app->param('json') ? 'include/listing_panel.tmpl'
+            template => $json ? 'include/listing_panel.tmpl'
             : 'dialog/select_users.tmpl',
             params => {
                 (   $entry_type eq 'entry'
@@ -1101,15 +1103,13 @@ sub dialog_select_author {
                 panel_label       => $app->translate('Username'),
                 panel_description => $app->translate('Display Name'),
                 panel_type        => 'author',
-                panel_multi       => defined $app->param('multi')
-                ? $app->param('multi')
-                : 0,
-                panel_searchable => 1,
-                panel_first      => 1,
-                panel_last       => 1,
-                list_noncron     => 1,
-                idfield          => scalar( $app->param('idfield') ),
-                namefield        => scalar( $app->param('namefield') ),
+                panel_multi       => defined $multi ? $multi : 0,
+                panel_searchable  => 1,
+                panel_first       => 1,
+                panel_last        => 1,
+                list_noncron      => 1,
+                idfield           => $idfield,
+                namefield         => $namefield,
             },
         }
     );
