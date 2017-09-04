@@ -1328,7 +1328,7 @@ sub list {
         # set component for template loading
         my @compo = MT::Component->select;
         foreach my $c (@compo) {
-            my $r = $c->registry( 'object_types' => ( $type ) );
+            my $r = $c->registry( 'object_types' => ($type) );
             if ($r) {
                 $component = $c->id;
                 last;
@@ -1613,7 +1613,7 @@ sub filtered_list {
 
     my ( $objs, @data );
     if ($count) {
-        MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds,
+        MT->run_callbacks( 'cms_pre_load_filtered_list.' . $callback_ds,
             $app, $filter, \%load_options, \@cols );
 
         $objs = $filter->load_objects(%load_options);
