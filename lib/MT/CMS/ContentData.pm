@@ -618,7 +618,7 @@ sub make_list_actions {
     my $iter         = MT::ContentType->load_iter;
     my $list_actions = {};
     while ( my $ct = $iter->() ) {
-        my $key = 'content_data_' . $ct->id;
+        my $key = 'content_data.content_data_' . $ct->id;
         $list_actions->{$key} = $common_delete_action;
     }
     $list_actions;
