@@ -433,21 +433,29 @@ sub do_export {
     $app->can_do('do_export_theme')
         or return $app->permission_denied();
 
-    my $q    = $app->param;
     my $cfg  = $app->config;
     my $blog = $app->blog;
-    my $theme_id
-        = dirify( $q->param('theme_id') )
-        || dirify( $q->param('theme_name') )
+
+    my $theme_id          = $app->param('theme_id');
+    my $theme_name        = $app->param('theme_name');
+    my $theme_version     = $app->param('theme_version') || '1.0';
+    my $theme_author_name = $app->param('theme_author_name');
+    my $theme_author_link = $app->param('theme_author_link') || '';
+    my $description       = $app->param('description') || '';
+
+    $theme_id
+        = dirify($theme_id)
+        || dirify($theme_name)
         || 'theme_from_' . dirify( $blog->name )
         || 'theme_from_blog_' . $blog->id;
-    my $theme_name    = $q->param('theme_name')    || $theme_id;
-    my $theme_version = $q->param('theme_version') || '1.0';
+    $theme_name ||= $theme_id;
 
     my $fmgr = MT::FileMgr->new('Local');
 
     ## $output should have 'themedir' or 'zipdownload'.
-    my $output = $q->param('output') || 'themedir';
+    my $output = $app->param('output') || 'themedir';
+
+    my @include = $app->multi_param('include');
 
     ## Abort if theme directory is not okey for output.
     my ( $theme_dir, $output_path );
@@ -481,11 +489,11 @@ sub do_export {
         $output_path = File::Spec->catdir( $theme_dir, $theme_id );
 
         if ( $fmgr->exists($output_path) ) {
-            if ( $q->param('overwrite_yes') ) {
+            if ( $app->param('overwrite_yes') ) {
                 use File::Path 'rmtree';
                 rmtree($output_path);
             }
-            elsif ( $q->param('overwrite_no') ) {
+            elsif ( $app->param('overwrite_no') ) {
                 return $app->redirect(
                     $app->uri(
                         mode => 'export_theme',
@@ -499,7 +507,6 @@ sub do_export {
                     $params{$_} = $app->param($_);
                 }
 
-                my @include = $app->multi_param('include');
                 $params{include}      = \@include;
                 $params{theme_folder} = $output_path;
                 return $app->load_tmpl( 'theme_export_replace.tmpl',
@@ -510,7 +517,7 @@ sub do_export {
 
     ## Pick up settings.
     my $hdlrs = MT->registry('theme_element_handlers');
-    my %includes = map { $_ => 1 } ( $app->multi_param('include') );
+    my %includes = map { $_ => 1 } @include;
     my %exporter;
     my $settings = $blog->theme_export_settings || {};
     my $elements = {};
@@ -529,14 +536,14 @@ sub do_export {
         id    => $theme_id,
         name  => $theme_name,
         label => $theme_name,
-        (   $q->param('theme_author_name')
-            ? ( author_name => $q->param('theme_author_name') )
+        (   $theme_author_name
+            ? ( author_name => $theme_author_name )
             : ()
         ),
-        author_link => $q->param('theme_author_link') || '',
-        version => $theme_version,
-        class => ( $blog->is_blog ? 'blog' : 'website' ),
-        description => $q->param('description') || '',
+        author_link => $theme_author_link,
+        version     => $theme_version,
+        class       => ( $blog->is_blog ? 'blog' : 'website' ),
+        description => $description,
     };
 
     for my $exporter_id ( keys %$hdlrs ) {
