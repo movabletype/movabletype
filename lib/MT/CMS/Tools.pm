@@ -1840,10 +1840,14 @@ sub adjust_sitepath {
 
     require MT::BackupRestore;
 
-    my $q         = $app->param;
-    my $tmp_dir   = $q->param('tmp_dir');
-    my $error     = $q->param('error') || q();
-    my %asset_ids = split ',', $q->param('asset_ids') || '';
+    my $tmp_dir   = $app->param('tmp_dir');
+    my $error     = $app->param('error') || q();
+    my $asset_ids = $app->param('asset_ids') || '';
+    my %asset_ids = split ',', $asset_ids;
+
+    my $redirect     = $app->param('redirect');
+    my $current_file = $app->param('current_file');
+    my $assets       = $app->param('assets');
 
     $app->{no_print_body} = 1;
 
@@ -1869,22 +1873,22 @@ sub adjust_sitepath {
         my $blog = $app->model('blog')->load($id)
             or return $app->error(
             $app->translate( 'Cannot load site #[_1].', $id ) );
-        my $old_site_path      = scalar $q->param("old_site_path_$id");
-        my $old_site_url       = scalar $q->param("old_site_url_$id");
-        my $site_path          = scalar $q->param("site_path_$id") || q();
-        my $site_url           = scalar $q->param("site_url_$id") || q();
-        my $site_url_path      = scalar $q->param("site_url_path_$id") || q();
-        my $site_url_subdomain = scalar $q->param("site_url_subdomain_$id")
+        my $old_site_path      = $app->param("old_site_path_$id");
+        my $old_site_url       = $app->param("old_site_url_$id");
+        my $site_path          = $app->param("site_path_$id") || q();
+        my $site_url           = $app->param("site_url_$id") || q();
+        my $site_url_path      = $app->param("site_url_path_$id") || q();
+        my $site_url_subdomain = $app->param("site_url_subdomain_$id")
             || q();
         $site_url_subdomain .= '.'
             if $site_url_subdomain && $site_url_subdomain !~ /\.$/;
-        my $parent_id          = scalar $q->param("parent_id_$id");
-        my $site_path_absolute = scalar $q->param("site_path_absolute_$id")
+        my $parent_id          = $app->param("parent_id_$id");
+        my $site_path_absolute = $app->param("site_path_absolute_$id")
             || q();
-        my $use_absolute = scalar $q->param("use_absolute_$id") || q();
+        my $use_absolute = $app->param("use_absolute_$id") || q();
 
         if ($use_absolute) {
-            $site_path = scalar $q->param("site_path_absolute_$id") || q();
+            $site_path = $app->param("site_path_absolute_$id") || q();
             if ( $path_limit and ( $site_path !~ m/^$path_limit_quote/i ) ) {
                 $site_path = $path_limit;
             }
@@ -1924,20 +1928,20 @@ sub adjust_sitepath {
                 )
             );
         }
-        my $old_archive_path = scalar $q->param("old_archive_path_$id");
-        my $old_archive_url  = scalar $q->param("old_archive_url_$id");
-        my $archive_path     = scalar $q->param("archive_path_$id") || q();
-        my $archive_url      = scalar $q->param("archive_url_$id") || q();
-        my $archive_url_path = scalar $q->param("archive_url_path_$id")
+        my $old_archive_path = $app->param("old_archive_path_$id");
+        my $old_archive_url  = $app->param("old_archive_url_$id");
+        my $archive_path     = $app->param("archive_path_$id") || q();
+        my $archive_url      = $app->param("archive_url_$id") || q();
+        my $archive_url_path = $app->param("archive_url_path_$id")
             || q();
         my $archive_url_subdomain
-            = scalar $q->param("archive_url_subdomain_$id") || q();
+            = $app->param("archive_url_subdomain_$id") || q();
         $archive_url_subdomain .= '.'
             if $archive_url_subdomain && $archive_url_subdomain !~ /\.$/;
         my $archive_path_absolute
-            = scalar $q->param("archive_path_absolute_$id") || q();
+            = $app->param("archive_path_absolute_$id") || q();
         my $use_absolute_archive
-            = scalar $q->param("use_absolute_archive_$id") || q();
+            = $app->param("use_absolute_archive_$id") || q();
 
         if ($use_absolute_archive) {
             $archive_path = $archive_path_absolute;
@@ -2122,7 +2126,7 @@ sub adjust_sitepath {
                 or $app->print_encode( $app->translate("failed") . "\n" ),
                 next;
             $app->print_encode( $app->translate("ok") . "\n" );
-            unless ( $q->param('redirect') ) {
+            unless ($redirect) {
                 my $old_id   = delete $asset_ids{ $asset->id };
                 my $filename = "$old_id-" . $asset->file_name;
                 my $file     = File::Spec->catfile( $tmp_dir, $filename );
@@ -2131,7 +2135,7 @@ sub adjust_sitepath {
             }
         }
     }
-    unless ( $q->param('redirect') ) {
+    unless ($redirect) {
         _restore_non_blog_asset( $app, $tmp_dir, \%asset_ids,
             \%error_assets );
     }
@@ -2155,7 +2159,7 @@ sub adjust_sitepath {
     }
 
     if ($tmp_dir) {
-        if ( $q->param('restore_upload') ) {
+        if ( $app->param('restore_upload') ) {
             require File::Path;
             File::Path::rmtree($tmp_dir);
         }
@@ -2251,7 +2255,7 @@ sub adjust_sitepath {
     }
 
     my $param = {};
-    if ( scalar $q->param('redirect') && $q->param('current_file') ) {
+    if ( $redirect && $current_file ) {
         $param->{restore_end}
             = 0;    # redirect=1 means we are from multi-uploads
         $param->{blogs_meta} = MT::Util::to_json( \%blogs_meta );
@@ -2268,10 +2272,10 @@ sub adjust_sitepath {
     for my $key (
         qw(files last redirect is_dirty is_asset objects_json deferred_json))
     {
-        $param->{$key} = scalar $q->param($key);
+        $param->{$key} = $app->param($key);
     }
-    $param->{name}   = $q->param('current_file');
-    $param->{assets} = encode_html( $q->param('assets') );
+    $param->{name}   = $current_file;
+    $param->{assets} = encode_html($assets);
     $app->print_encode(
         $app->build_page( 'dialog/restore_end.tmpl', $param ) );
 }
