@@ -3332,12 +3332,13 @@ sub _hdlr_app_widget {
     my $singular = $ctx->var('widget_singular') || '';
 
     my $vars = $ctx->{__stash}{vars};
-    local $vars->{widget_id}     = $id;
-    my $app = MT->instance;
-    my $blog = $app->can('blog') ? $app->blog : $ctx->stash('blog');
+    local $vars->{widget_id} = $id;
+    my $app        = MT->instance;
+    my $blog       = $app->can('blog') ? $app->blog : $ctx->stash('blog');
     my $blog_field = "";
-    if ( $blog ) {
-        $blog_field = qq{<input type="hidden" name="blog_id" value="} . $blog->id . q{" />};
+    if ($blog) {
+        $blog_field = qq{<input type="hidden" name="blog_id" value="}
+            . $blog->id . q{" />};
         local $vars->{blog_id} = $blog->id;
     }
     my $insides = $ctx->slurp( $args, $cond );
@@ -3364,10 +3365,10 @@ EOT
     my $block = $ctx->var('widget_block') || 'main';
     my $widget_class;
     if ( 'main' eq $block ) {
-        $widget_class= "mt-widget";
+        $widget_class = "mt-widget";
     }
     else {
-        $widget_class= "mt-widget--panel";
+        $widget_class = "mt-widget--panel";
     }
 
     my $widget = <<"EOT";
