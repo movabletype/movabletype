@@ -588,6 +588,19 @@ function toggleCache(id) {
     return false;
 }
 
+function setSyntaxHighlight(on_or_off) {
+    syncEditor();
+    var wrapper = editor.getWrapperElement();
+    if (on_or_off == 'off') {
+        jQuery('#text').show();
+        jQuery(wrapper).hide();
+    } else {
+        jQuery('#text').hide();
+        jQuery(wrapper).show();
+    }
+    return false;
+}
+
     Template.templates.autoSave = '<mt:section encode_js="1">
     [# if ( saving ) { #]
         [#= trans("Auto-saving..." ) #]
@@ -653,13 +666,12 @@ function toggleCache(id) {
      help_page="templates"
      help_section="template_name">
     <div class="card">
-      <div id="template-editor-toolbar" class="card-header template editor-toolbar toolbar">
-        <button type="button" id="syntaxon" class="command-highlight-on toolbar button active" title="<__trans phrase="Syntax highlighting On">">
-          <span class="button-label"><__trans phrase="Syntax highlighting On"></span>
-        </button>
-        <button type="button" id="syntaxoff" class="command-highlight-off toolbar button" title="<__trans phrase="Syntax highlighting Off">">
-          <span class="button-label"><__trans phrase="Syntax highlighting Off"></span>
-        </button>
+      <div class="card-header mr-0">
+        <div class="custom-control float-right mr-0">
+          <span class="custom-control-description mr-2"><__trans phrase="Code Highlight"></span>
+          <input type="checkbox" class="mt-switch" id="code-highlight-switch" />
+          <label for="code-highlight-switch"><__trans phrase="Code Highlight"></label>
+        </div>
       </div>
       <div id="textarea-enclosure" class="editor">
         <textarea name="text" style="height: 550px;" id="text" class="form-control monospace text full" tabindex="3" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" ><mt:var name="text" escape="html"></textarea>
@@ -1073,6 +1085,12 @@ function saveTemplatePrefs( sync ) {
         plural: 'Templates',
         phrase: 'to act upon'
     });
+    jQuery('#code-highlight-switch').change(function() {
+        var syntax = this.checked ? 'on' : 'off';
+        setSyntaxHighlight( syntax );
+        saveTemplatePrefs( syntax );
+        return false;
+    });
     jQuery('#syntaxon, #syntaxoff').click(function() {
         syncEditor();
         var wrapper = editor.getWrapperElement();
@@ -1091,7 +1109,11 @@ function saveTemplatePrefs( sync ) {
         saveTemplatePrefs( syntax );
         return false;
     });
-    jQuery('#syntax<mt:var name="disp_prefs_syntax" default="on">').click();
+<mt:if name="disp_prefs_syntax" ne="off">
+    jQuery('#code-highlight-switch').attr('checked', 'checked');
+<mt:else>
+    setSyntaxHighlight('off');
+</mt:if>
     jQuery(window).bind('pre_autosave', function(){
         syncEditor();
     });
