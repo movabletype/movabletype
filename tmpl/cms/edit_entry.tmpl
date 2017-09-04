@@ -659,6 +659,7 @@
           <label for="allow_comments"><__trans phrase="Accept Comments"></label>
         <mt:unless name="new_object">
           <span class="comments-link feedback-count">
+            <mtapp:svgicon id="ic_comment" title="<__trans phrase="Accept Comments">" size="sm">
             <__trans phrase="<a href="[_2]">[_1]</a>" params="<$mt:var name="num_comments"$>%%<$mt:var name="script_url">?__mode=list&_type=comment&amp;filter=entry&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>">
           </span>
         </mt:unless>
@@ -668,6 +669,7 @@
           <label for="allow_pings"><__trans phrase="Accept Trackbacks"></label>
         <mt:unless name="new_object">
           <span class="pings-link feedback-count">
+            <mtapp:svgicon id="ic_trackback" title="<__trans phrase="Accept Trackbacks">" size="sm">
             <__trans phrase="<a href="[_2]">[_1]</a>" params="<$mt:var name="num_pings"$>%%<$mt:var name="script_url">?__mode=list&amp;_type=ping&amp;filter=entry_id&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>">
           </span>
         </mt:unless>
