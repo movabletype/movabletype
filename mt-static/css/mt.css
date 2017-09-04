@@ -88,7 +88,7 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "ヒラギノ角ゴ ProN W3", Meiryo, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "Hiragino Sans", ヒラギノ角ゴシック, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", Meiryo, メイリオ, sans-serif;
   font-size: 1rem;
   font-weight: normal;
   line-height: 1.5;
@@ -4759,7 +4759,7 @@ button.close {
   z-index: 1070;
   display: block;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "ヒラギノ角ゴ ProN W3", Meiryo, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "Hiragino Sans", ヒラギノ角ゴシック, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", Meiryo, メイリオ, sans-serif;
   font-style: normal;
   font-weight: normal;
   line-height: 1.5;
@@ -4873,7 +4873,7 @@ button.close {
   display: block;
   max-width: 276px;
   padding: 1px;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "ヒラギノ角ゴ ProN W3", Meiryo, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "Hiragino Sans", ヒラギノ角ゴシック, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", Meiryo, メイリオ, sans-serif;
   font-style: normal;
   font-weight: normal;
   line-height: 1.5;
@@ -8039,7 +8039,7 @@ h4, .h4 {
 }
 
 h4 small, .h4 small {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
 }
 
 p, ul, ol, dl {
@@ -8536,6 +8536,10 @@ fieldset.form-group {
   background: transparent;
 }
 
+.mt-widget .mt-widget__list li:last-child, .mt-widget--panel .mt-widget__list li:last-child {
+  border-bottom: 0;
+}
+
 .mt-widget__title {
   margin: 0;
   padding: 1rem;
@@ -8552,6 +8556,22 @@ fieldset.form-group {
   margin-bottom: 0;
 }
 
+.mt-widget__list {
+  padding: 0;
+  list-style: none;
+}
+
+.mt-widget__list li {
+  padding: 1rem 0 1.2rem;
+  border-bottom: 1px solid #CACACA;
+}
+
+.mt-widget--info {
+  padding-bottom: 0.2rem;
+  color: #2F2F2F;
+  font-size: 0.85rem;
+}
+
 .mt-widget--panel {
   border: 0;
 }
@@ -8563,6 +8583,10 @@ fieldset.form-group {
 
 .mt-widget--panel .mt-widget__content {
   padding: 0.5rem 1rem 1rem;
+}
+
+.mt-widget--panel .mt-widget__list li:last-child {
+  border-bottom: 1px solid #CACACA;
 }
 
 /* Draggable */
