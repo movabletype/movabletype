@@ -8367,13 +8367,14 @@ fieldset.form-group {
 
 .btn {
   cursor: pointer;
-  font-weight: 600;
+  font-weight: bold;
   text-decoration: none;
 }
 
 .btn-default {
   border: 1px solid #A5A5A5;
   background: #FFFFFF;
+  font-weight: normal;
 }
 
 .btn-default:hover {
@@ -8566,7 +8567,41 @@ fieldset.form-group {
   border-bottom: 1px solid #CACACA;
 }
 
-.mt-widget--info {
+.mt-widget__latest {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #E0E0E0;
+}
+
+.mt-widget__latest + ul {
+  padding: 0;
+  list-style: none;
+}
+
+.mt-widget__latest li {
+  padding: 0.2rem 0;
+}
+
+.mt-widget__sitename {
+  margin: 0 0 1rem 0;
+}
+
+.mt-widget__url {
+  margin: 0 0 1rem;
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.mt-widget__sitelist {
+  display: inline-block;
+  line-height: 2;
+}
+
+.mt-widget__contenttype {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #CACACA;
+}
+
+.mt-widget__info {
   padding-bottom: 0.2rem;
   color: #2F2F2F;
   font-size: 0.85rem;
@@ -8587,6 +8622,27 @@ fieldset.form-group {
 
 .mt-widget--panel .mt-widget__list li:last-child {
   border-bottom: 1px solid #CACACA;
+}
+
+.mt-widget--site {
+  margin-bottom: 1rem;
+  padding: 1rem 1rem 2rem;
+  border-bottom: 1px solid #CACACA;
+}
+
+.mt-widget--site *:last-child {
+  margin-bottom: 0;
+}
+
+.mt-widget--site:last-child {
+  margin-bttom: 0;
+  padding-bottom: 1rem;
+  border-bottom: 0;
+}
+
+.mt-widget--site .col .row, .mt-widget--site .mt-globalNavigation .row, .mt-widget--site .mt-mainContent .row, .mt-widget--site .mt-footer .row {
+  margin-left: 0;
+  margin-right: 0;
 }
 
 /* Draggable */
