@@ -44,8 +44,8 @@
 
 <mt:setvarblock name="form_header">
 <form name="edit-content-type-data-form" id="edit-content-type-data-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewnewwindow"> mt:once</mt:unless> mt:auto-save="1" mt:auto-save-delay="<mt:var name="autosave_frequency">000" novalidate>
-  <input type="hidden" name="__mode" value="save_content_data" />
-  <input type="hidden" name="_type" value="cd" />
+  <input type="hidden" name="__mode" value="save" />
+  <input type="hidden" name="_type" value="content_data" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
   <input type="hidden" name="cfg_screen" value="edit_content_data" />

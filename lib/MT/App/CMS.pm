@@ -357,6 +357,7 @@ sub core_methods {
         ## MT7 - Content Data
         'view_content_data' => "${pkg}ContentData::edit",
         'edit_content_data' => "${pkg}ContentData::edit",
+        'save_content_data' => "${pkg}ContentData::save",
 
         ## MT7
         'cfg_content_type_description' =>
@@ -373,7 +374,6 @@ sub core_methods {
             code     => " ${pkg}ContentType::validate_content_fields",
             app_mode => 'JSON',
         },
-        'save_content_data' => "${pkg}ContentType::save_content_data",
         'dialog_content_data_modal' =>
             "${pkg}ContentType::dialog_content_data_modal",
         'dialog_list_content_data' => {
