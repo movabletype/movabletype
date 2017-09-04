@@ -423,7 +423,7 @@ sub core_widgets {
             singular => 1,
             set      => 'main',
             view     => [ 'website', 'blog' ],
-            order    => 100,
+            order    => 200,
             default  => 1,
         },
         system_information => {
