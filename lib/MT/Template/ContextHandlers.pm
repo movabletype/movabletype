@@ -3310,7 +3310,7 @@ sub _hdlr_app_widget {
     # Close button support
     if ($closable) {
         $header_action
-            = qq{<button type="button" class="close" aria-label="Close" onClick="javascript:removeWidget('${id}'); return false;"><span aria-hidden="true">x</span></button>};
+            = qq{<button type="button" class="close" aria-label="Close" onClick="javascript:removeWidget('${id}'); return false;"><span aria-hidden="true">&times;</span></button>};
     }
 
     # Widget label
