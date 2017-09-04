@@ -393,10 +393,10 @@ function archiveFileSelect(sel) {
     var edit = getByID(fld);
     var map = sel.options[sel.selectedIndex].value;
     if (map == '') {
-        jQuery(sel).hide();
         jQuery(edit).show();
         edit.focus();
     } else {
+        jQuery(edit).hide();
         edit.value = map;
     }
 }
@@ -710,9 +710,15 @@ function toggleCache(id) {
         </a>
       </p>
       <div id="msg-block"></div>
-      <div class="form-inline create-inline" id="create-inline-mapping" style="display: none;">
-        <mt:if name="type" like="^ct"><div></mt:if>
-        <label for="new_archive_type"><strong><__trans phrase="Type"></strong></label>
+      <div class="form-group" id="create-inline-mapping" style="display: none;">
+        <mtapp:setting
+           id="new_archive_type"
+           class="new_archive_type"
+           label="<__trans phrase="Type">"
+           label_for="new_archive_type"
+           label_class="top-label"
+           help_page="templates"
+           help_section="new_archive_type">
         <mt:if name="type" eq="ct">
           <__trans phrase="CONTENTTYPE_ADV">
           <input type="hidden" name="new_archive_type" id="new_archive_type" value="ContentType" />
@@ -723,24 +729,48 @@ function toggleCache(id) {
         </mt:loop>
         </select>
         </mt:if>
+        </mtapp:setting>
         <mt:if name="type" like="^ct">
-        </div>
-        <div id="archive_file_sel-block">
-          <label for="archive_file_sel"><strong><__trans phrase="Archive Path"></strong></label>
+
+        <mtapp:setting
+           id="archive_file_sel"
+           class="archive_file_sel"
+           label="<__trans phrase="Archive Path">"
+           label_for="archive_file_sel"
+           label_class="top-label"
+           help_page="templates"
+           help_section="archive_file_sel">
           <select name="archive_file_sel" id="archive_file_sel" tabindex="11" class="form-control">
           </select>
           <input type="text" id="archive_file_tmpl" name="archive_file_tmpl" class="form-control tmpl-path tmpl-path-custom hidden last-child" value="" style="display:none;" />
-        </div>
-        <div id="cat_field_id-block" style="display:none;">
-          <label for="cat_field_id"><strong><__trans phrase="Category Field"></strong></label>
+        </mtapp:setting>
+
+        <mtapp:setting
+           id="cat_field_id"
+           class="cat_field_id"
+           label="<__trans phrase="Category Field">"
+           label_for="cat_field_id"
+           label_class="top-label"
+           help_page="templates"
+           help_section="cat_field_id"
+           shown="0">
           <select name="cat_field_id" id="cat_field_id" tabindex="12" class="form-control">
           </select>
-        </div>
-        <div id="dt_field_id-block" style="display:none;">
-          <label for="dt_field_id"><strong><__trans phrase="Date & Time Field"></strong></label>
+        </mtapp:setting>
+
+        <mtapp:setting
+           id="dt_field_id"
+           class="dt_field_id"
+           label="<__trans phrase="Date & Time Field">"
+           label_for="dt_field_id"
+           label_class="top-label"
+           help_page="templates"
+           help_section="dt_field_id"
+           shown="0">
           <select name="dt_field_id" id="dt_field_id" tabindex="13" class="form-control">
           </select>
-        </div>
+        </mtapp:setting>
+
         <div>
         </mt:if>
         <span class="buttons">
@@ -1120,10 +1150,10 @@ function saveTemplatePrefs( sync ) {
       if (!archive_file_sel) {
         cat_field = 1;
         dt_field  = 1;
-        jQuery("#archive_file_sel").css("display", "none");
         jQuery("#archive_file_tmpl").css("display", "block");
       }
       else {
+        jQuery("#archive_file_tmpl").css("display", "none");
         jQuery("#archive_file_tmpl").val(archive_file_sel);
         var rf = required_fields[archive_file_sel];
         if ( rf && rf.category ) {
@@ -1149,16 +1179,16 @@ function saveTemplatePrefs( sync ) {
         jQuery('#dt_field_id').append($option);
       });
       if (cat_field) {
-        jQuery("#cat_field_id-block").css('display', 'block');
+        jQuery("#cat_field_id-field").css('display', 'block');
       }
       else {
-        jQuery("#cat_field_id-block").css('display', 'none');
+        jQuery("#cat_field_id-field").css('display', 'none');
       }
       if (dt_field) {
-        jQuery("#dt_field_id-block").css('display', 'block');
+        jQuery("#dt_field_id-field").css('display', 'block');
       }
       else {
-        jQuery("#dt_field_id-block").css('display', 'none');
+        jQuery("#dt_field_id-field").css('display', 'none');
       }
     }
 

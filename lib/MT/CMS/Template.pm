@@ -1718,13 +1718,15 @@ sub _populate_archive_loop {
             $name =~ s/index$ext$/$index$ext/;
             push @$tmpl_loop,
                 {
-                name    => $name,
-                value   => $_->{template},
-                default => ( $_->{default} || 0 ),
+                name            => $name,
+                value           => $_->{template},
+                default         => ( $_->{default} || 0 ),
+                required_fields => $_->{required_fields},
                 };
         }
 
         my $custom = 1;
+        my $required_fields;
 
         foreach (@$tmpl_loop) {
             if (   ( !$map->{file_template} && $_->{default} )
@@ -1734,6 +1736,7 @@ sub _populate_archive_loop {
                 $custom               = 0;
                 $map->{file_template} = $_->{value}
                     if !$map->{file_template};
+                $required_fields = $_->{required_fields};
             }
         }
         if ($custom) {
@@ -1752,6 +1755,44 @@ sub _populate_archive_loop {
             )
         {
             $map->{has_multiple_archives} = 1;
+        }
+
+        # Content Fields
+        if ( $at =~ /^ContentType/ ) {
+            my $tmpl         = MT::Template->load( $obj->id );
+            my $ct_id        = $tmpl->content_type_id;
+            my $ct           = MT::ContentType->load( $obj->content_type_id );
+            my $fields       = $ct->fields;
+            my $cat_field_id = $map_obj->cat_field_id;
+            my $dt_field_id  = $map_obj->dt_field_id || 0;
+            my $content_fields = {
+                categories => [
+                    map {
+                        {   id       => $_->{id},
+                            label    => $_->{options}{label},
+                            selected => $_->{id} eq $cat_field_id ? 1 : 0
+                        }
+                        }
+                        grep { $_->{type} eq 'categories' } @$fields
+                ],
+                date_and_times => [
+                    map {
+                        {   id       => $_->{id},
+                            label    => $_->{options}{label},
+                            selected => $_->{id} eq $dt_field_id ? 1 : 0
+                        }
+                        }
+                        grep { $_->{type} eq 'date_and_time' } @$fields
+                ],
+            };
+            $map->{cat_fields} = $content_fields->{categories};
+            $map->{dt_fields}  = $content_fields->{date_and_times};
+            unshift @{ $content_fields->{date_and_times} },
+                { id => 0, label => $app->translate('Published Date') };
+            $map->{show_cat_field} = 1
+                if $required_fields->{category} || $custom;
+            $map->{show_dt_field} = 1
+                if $required_fields->{date_and_time} || $custom;
         }
 
         push @maps, $map;
@@ -2041,6 +2082,26 @@ sub post_save {
                     $map->build_interval($sec);
                 }
                 $map->save;
+            }
+            elsif ( $p =~ /^cat_field_id_(\d+)$/ ) {
+                my $map_id = $1;
+                $map = MT::TemplateMap->load($map_id)
+                    or next;
+                my $cat_field_id = $q->param("cat_field_id_$map_id");
+                if ( $map->cat_field_id != $cat_field_id ) {
+                    $map->cat_field_id($cat_field_id);
+                    $map->save;
+                }
+            }
+            elsif ( $p =~ /^dt_field_id_(\d+)$/ ) {
+                my $map_id = $1;
+                $map = MT::TemplateMap->load($map_id)
+                    or next;
+                my $dt_field_id = $q->param("dt_field_id_$map_id");
+                if ( $map->dt_field_id != $dt_field_id ) {
+                    $map->dt_field_id($dt_field_id);
+                    $map->save;
+                }
             }
             if (  !$dynamic
                 && $map
