@@ -817,6 +817,7 @@ sub core_content_actions {
             'download_log' => {
                 class         => 'icon-download',
                 label         => 'Download Log (CSV)',
+                icon          => 'ic_download',
                 mode          => 'export_log',
                 order         => 200,
                 permit_action => {
