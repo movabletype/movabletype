@@ -289,19 +289,6 @@ sub edit {
     $app->build_page( $app->load_tmpl('edit_content_data.tmpl'), $param );
 }
 
-sub post_save {
-    my ( $eh, $app, $obj, $orig_obj ) = @_;
-
-    if ( $app->can('autosave_session_obj') ) {
-        my $sess_obj = $app->autosave_session_obj;
-        $sess_obj->remove if $sess_obj;
-    }
-
-    # TODO: save log
-
-    1;
-}
-
 sub save {
     my ($app) = @_;
     my $blog  = $app->blog;
@@ -528,7 +515,8 @@ sub save {
         )
         );
 
-    $app->run_callbacks( 'cms_post_save.cd', $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_post_save.content_data',
+        $app, $content_data, $orig );
 
     return $app->redirect(
         $app->uri(
@@ -558,6 +546,52 @@ sub delete {
     MT::CMS::Common::delete($app);
 }
 
+sub post_save {
+    my ( $eh, $app, $obj, $orig_obj ) = @_;
+
+    if ( $app->can('autosave_session_obj') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        $sess_obj->remove if $sess_obj;
+    }
+
+    my $ct = $obj->content_type or return;
+    my $author = $app->user;
+    my $message;
+    if ( !$orig_obj->id ) {
+        $message
+            = $app->translate( "[_1] '[_2]' (ID:[_3]) added by user '[_4]'",
+            $ct->name, $obj->title, $obj->id, $author->name );
+    }
+    elsif ( $orig_obj->status ne $obj->status ) {
+        $message = $app->translate(
+            "[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'",
+            $ct->name,
+            $obj->title,
+            $obj->id,
+            $app->translate( MT::Entry::status_text( $orig_obj->status ) ),
+            $app->translate( MT::Entry::status_text( $obj->status ) ),
+            $author->name
+        );
+
+    }
+    else {
+        $message
+            = $app->translate( "[_1] '[_2]' (ID:[_3]) edited by user '[_4]'",
+            $ct->name, $obj->title, $obj->id, $author->name );
+    }
+    require MT::Log;
+    $app->log(
+        {   message => $message,
+            level   => MT::Log::INFO(),
+            class   => 'content_data_' . $ct->id,
+            $orig_obj->id ? ( category => 'edit' ) : ( category => 'new' ),
+            metadata => $obj->id
+        }
+    );
+
+    1;
+}
+
 sub post_delete {
     my ( $eh, $app, $obj ) = @_;
 
@@ -566,16 +600,16 @@ sub post_delete {
         $sess_obj->remove if $sess_obj;
     }
 
-    my $content_type = $obj->content_type or return;
+    my $ct = $obj->content_type or return;
+    my $author = $app->user;
 
-    # TODO: add content data label.
     $app->log(
         {   message => $app->translate(
-                "[_1] (ID:[_2]) deleted by '[_3]'", $content_type->name,
-                $obj->id,                           $app->user->name
+                "[_1] '[_2]' (ID:[_3]) deleted by '[_4]'",
+                $ct->name, $obj->title, $obj->id, $author->name
             ),
             level    => MT::Log::INFO(),
-            class    => 'content_data_' . $content_type->id,
+            class    => 'content_data_' . $ct->id,
             category => 'delete'
         }
     );
