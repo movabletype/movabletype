@@ -2966,9 +2966,9 @@ sub api {
         $app->param( $k, $params->{$k} );
     }
     if ( my $default_params = $endpoint->{default_params} ) {
-        my $request_param = $app->param->Vars;
+        my %request_param_key = map { $_ => 1 } $app->multi_param;
         foreach my $k (%$default_params) {
-            if ( !exists( $request_param->{$k} ) ) {
+            if ( !exists( $request_param_key{$k} ) ) {
                 $app->param( $k, $default_params->{$k} );
             }
         }
