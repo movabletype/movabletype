@@ -862,7 +862,7 @@ sub start_upload_entry {
     $app->param( 'text',     $text );
     $app->param( 'asset_id', $id );
     $app->param( 'id',       0 );
-    $app->param( 'tags', '' );
+    $app->param( 'tags',     '' );
     $app->forward("view");
 }
 
@@ -3149,8 +3149,8 @@ sub dialog_asset_modal {
         if ( my $content_field = MT::ContentField->load($content_field_id) ) {
             $param{content_field_id} = $content_field_id;
             my $options = $content_field->options;
-            $param{can_multi}  = $options->{multiple}   ? 1 : 0;
-            $param{can_upload} = $options->{can_upload} ? 1 : 0;
+            $param{can_multi}  = $options->{multiple}     ? 1 : 0;
+            $param{can_upload} = $options->{allow_upload} ? 1 : 0;
         }
     }
 
