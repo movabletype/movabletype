@@ -1,14 +1,19 @@
-<mtapp:widget class="news-widget" tabbed="1" label="<__trans phrase="News">" can_close="1">
-  <div id="mt-news-panel">
-    <mt:if name="news_html">
-      <$mt:var name="news_html"$>
-    <mt:else>
-      <p><__trans phrase="No Movable Type news available."></p>
-    </mt:if>
+<mtapp:widget class="news-widget" label="<__trans phrase="News">" can_close="1">
+  <mt:if name="news_html">
+    <mt:var name="news_html">
+  <mt:elseif name="news_json">
+    <mt:Loop name="news_json_news">
+  <div class="row<mt:if name="__last__"><mt:if name="news_json_links"> mb-3</mt:if><mt:else> mb-2</mt:if>">
+    <div class="col-12"><mt:var name="date"></div>
+    <div class="col-12"><a href="<mt:var name="url">" title="<mt:var name="title" escape="html">" target="_blank"><mt:var name="title" escape="html"></a></div>
   </div>
+    </mt:Loop>
+    <mt:Loop name="news_json_links">
+  <div class="row">
+    <div class="col-12"><a<mt:if name="style" eq="button"> class="btn btn-default"</mt:if> href="<mt:var name="url"> title="<mt:var name="title" escape="html">" target="_blank"><mt:var name="title" escape="html"></a></div>
+  </div>
+    </mt:Loop>
+  <mt:else>
+    <p><__trans phrase="No Movable Type news available."></p>
+  </mt:if>
 </mtapp:widget>
-
-<mt:setvarblock name="css_include" append="1">
-<link rel="stylesheet" href="<$mt:var name="static_uri"$>css/mt7/widget/mt_news.css">
-</mt:setvarblock>
-

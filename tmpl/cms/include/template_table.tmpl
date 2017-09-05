@@ -190,7 +190,7 @@
     <mt:if name="template_type" like="/(index|archive|ct)/">
       <td class="output-file">
       <mt:if name="outfile">
-        <mt:var name="outfile" escape="html"> <mt:if name="published_url"><a href="<mt:var name="published_url" escape="html" >" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/status_icons/view.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a></mt:if>
+        <mt:var name="outfile" escape="html"> <mt:if name="published_url"><a href="<mt:var name="published_url" escape="html" >" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><mtapp:svgicon id="ic_permalink" title="<__trans phrase="View Published Template">" size="sm"></a></mt:if>
         <mt:else name="template_type" like="/(archive|ct)/">
         <ul class="list-unstyled">
         <mt:loop name="archive_types">
@@ -267,7 +267,7 @@
     <mt:unless name="screen_id" eq="search-replace">
       <td class="linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>">
       <mt:if name="linked_file">
-        <mtapp:svgicon id="ic_checkbox" size="sm" title="<__trans phrase="Linked">" color="success">
+        <mtapp:svgicon id="ic_success" size="sm" title="<__trans phrase="Linked">" color="success">
       <mt:else>
         <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Unlinked">" color="secondary">
       </mt:if>
@@ -278,7 +278,7 @@
       <mt:if name="outfile">
         <mt:if name="published_url">
         <a href="<mt:var name="published_url" escape="html">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">">
-          <img src="<mt:var name="static_uri">images/status_icons/view.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" />
+          <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View Published Template">" size="sm">
         </a>
         </mt:if>
       <mt:else>

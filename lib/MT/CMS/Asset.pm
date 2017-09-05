@@ -852,16 +852,16 @@ sub start_upload_entry {
 
     $app->validate_magic() or return;
 
-    my $q    = $app->param;
+    my $id   = $app->param('id');
     my $blog = $app->blog;
     my $type = 'entry';
     $type = 'page'
         if ( $blog && !$blog->is_blog() );
-    $q->param( '_type', $type );
+    $app->param( '_type', $type );
     defined( my $text = _process_post_upload($app) ) or return;
-    $q->param( 'text',     $text );
-    $q->param( 'asset_id', $q->param('id') );
-    $q->param( 'id',       0 );
+    $app->param( 'text',     $text );
+    $app->param( 'asset_id', $id );
+    $app->param( 'id',       0 );
     $app->param( 'tags', '' );
     $app->forward("view");
 }

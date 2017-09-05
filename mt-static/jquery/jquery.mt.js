@@ -932,7 +932,7 @@ $.extend( $.mtValidator.prototype, {
         return false;
     },
     validClass: 'valid',
-    errorClass: 'error',
+    errorClass: 'is-invalid',
     doFocus: true,
     wrapError: function ( $target, msg ) {
         return $('<label/>')

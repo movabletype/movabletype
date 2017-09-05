@@ -130,27 +130,75 @@
    label="<__trans phrase="Useful Links">">
   <ul class="list-unstyled">
   <mt:if name="type" eq="backup">
-    <li><a href="<mt:var name="script_url">?__mode=list_template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
+    <mt:setvarblock name="list_templates_label"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></mt:setvarblock>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related">
+        <mtapp:svgicon id="ic_related" title="$list_templates_label" size="sm">
+        <mt:var name="list_templates_label">
+      </a>
+    </li>
   </mt:if>
   <mt:if name="template_group" eq="widget">
-    <li><a href="<mt:var name="script_url">?__mode=list_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Widgets"></a></li>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=list_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related">
+        <mtapp:svgicon id="ic_related" title="<__trans phrase="Widgets">" size="sm">
+        <__trans phrase="Widgets">
+      </a>
+    </li>
     <mt:if name="can_edit_config">
-    <li><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related"><__trans phrase="Module Option Settings"></a></li>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related">
+        <mtapp:svgicon id="ic_related" title="<__trans phrase="Module Option Settings">" size="sm">
+        <__trans phrase="Module Option Settings">
+      </a>
+    </li>
     </mt:if>
   <mt:elseif name="template_group" eq="module">
-    <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
-    <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="List all templates"></a></li>
+    <mt:setvarblock name="template_group_label"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></mt:setvarblock>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related">
+        <mtapp:svgicon id="ic_related" title="$template_group_label" size="sm">
+        <mt:var name="template_group_label">
+      </a>
+    </li>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related">
+        <mtapp:svgicon id="ic_related" title="<__trans phrase="List all templates">" size="sm">
+        <__trans phrase="List all templates">
+      </a>
+    </li>
     <mt:if name="can_edit_config">
-    <li><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related"><__trans phrase="Module Option Settings"></a></li>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related">
+        <mtapp:svgicon id="ic_related" title="<__trans phrase="Module Option Settings">" size="sm">
+        <__trans phrase="Module Option Settings">
+      </a>
+    </li>
     </mt:if>
   <mt:else>
     <mt:unless name="type" eq="backup">
-    <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
+    <mt:setvarblock name="template_group_label"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></mt:setvarblock>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related">
+        <mtapp:svgicon id="ic_related" title="$template_group_label" size="sm">
+        <mt:var name="template_group_label">
+      </a>
+    </li>
     </mt:unless>
-    <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="List all templates"></a></li>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related">
+        <mtapp:svgicon id="ic_related" title="<__trans phrase="List all templates">" size="sm">
+        <__trans phrase="List all templates">
+      </a>
+    </li>
   </mt:if>
   <mt:if name="published_url">
-    <li><a href="<mt:var name="published_url" escape="html" />" class="icon-left icon-related" target="<__trans phrase="_external_link_target">"><__trans phrase="View Published Template"></a></li>
+    <li>
+      <a href="<mt:var name="published_url" escape="html" />" class="icon-left icon-related" target="<__trans phrase="_external_link_target">">
+        <mtapp:svgicon id="ic_related" title="<__trans phrase="View Published Template">" size="sm">
+        <__trans phrase="View Published Template">
+      </a>
+    </li>
   </mt:if>
   </ul>
 </mtapp:widget>
@@ -162,15 +210,29 @@
   <ul class="list-unstyled">
   <mt:loop name="include_loop">
   <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:if name="scope_type" eq="system">global<mt:else><mt:var name="scope_type"></mt:if><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
+  <mt:setvarblock name="template_status_icon">
+    <mt:if name="include_scope_type" eq="global">
+      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Template">" size="sm">
+    <mt:elseif name="include_scope_type" eq="website">
+      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Template">" size="sm" color="success">
+    <mt:elseif name="include_scope_type" eq="blog">
+      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Template">" size="sm" color="primary">
+    </mt:if>
+  </mt:setvarblock>
     <li>
   <mt:if name="include_link">
     <mt:if name="can_link">
-      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></a>
+      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl">
+        <mt:var name="template_status_icon">
+        <mt:var name="include_module">
+      </a>
     <mt:else>
+      <mt:var name="template_status_icon">
       <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></span>
     </mt:if>
       <mt:if name="include_from" ne="self"><span class="include-from">(<mt:var name="include_blog_name">)</span></mt:if>
   <mt:else>
+      <mtapp:svgicon id="ic_stop" title="<__trans phrase="Error">" size="sm" color="danger">
       <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
   </mt:if>
@@ -531,6 +593,19 @@ function toggleCache(id) {
     return false;
 }
 
+function setSyntaxHighlight(on_or_off) {
+    syncEditor();
+    var wrapper = editor.getWrapperElement();
+    if (on_or_off == 'off') {
+        jQuery('#text').show();
+        jQuery(wrapper).hide();
+    } else {
+        jQuery('#text').hide();
+        jQuery(wrapper).show();
+    }
+    return false;
+}
+
     Template.templates.autoSave = '<mt:section encode_js="1">
     [# if ( saving ) { #]
         [#= trans("Auto-saving..." ) #]
@@ -613,13 +688,12 @@ function toggleCache(id) {
      help_page="templates"
      help_section="template_name">
     <div class="card">
-      <div id="template-editor-toolbar" class="card-header template editor-toolbar toolbar">
-        <button type="button" id="syntaxon" class="command-highlight-on toolbar button active" title="<__trans phrase="Syntax highlighting On">">
-          <span class="button-label"><__trans phrase="Syntax highlighting On"></span>
-        </button>
-        <button type="button" id="syntaxoff" class="command-highlight-off toolbar button" title="<__trans phrase="Syntax highlighting Off">">
-          <span class="button-label"><__trans phrase="Syntax highlighting Off"></span>
-        </button>
+      <div class="card-header mr-0">
+        <div class="custom-control float-right mr-0">
+          <span class="custom-control-description mr-2"><__trans phrase="Code Highlight"></span>
+          <input type="checkbox" class="mt-switch" id="code-highlight-switch" />
+          <label for="code-highlight-switch"><__trans phrase="Code Highlight"></label>
+        </div>
       </div>
       <div id="textarea-enclosure" class="editor">
         <textarea name="text" style="height: 550px;" id="text" class="form-control monospace text full" tabindex="3" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" ><mt:var name="text" escape="html"></textarea>
@@ -1089,6 +1163,12 @@ function saveTemplatePrefs( sync ) {
         plural: 'Templates',
         phrase: 'to act upon'
     });
+    jQuery('#code-highlight-switch').change(function() {
+        var syntax = this.checked ? 'on' : 'off';
+        setSyntaxHighlight( syntax );
+        saveTemplatePrefs( syntax );
+        return false;
+    });
     jQuery('#syntaxon, #syntaxoff').click(function() {
         syncEditor();
         var wrapper = editor.getWrapperElement();
@@ -1107,7 +1187,11 @@ function saveTemplatePrefs( sync ) {
         saveTemplatePrefs( syntax );
         return false;
     });
-    jQuery('#syntax<mt:var name="disp_prefs_syntax" default="on">').click();
+<mt:if name="disp_prefs_syntax" ne="off">
+    jQuery('#code-highlight-switch').attr('checked', 'checked');
+<mt:else>
+    setSyntaxHighlight('off');
+</mt:if>
     jQuery(window).bind('pre_autosave', function(){
         syncEditor();
     });

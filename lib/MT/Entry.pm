@@ -284,15 +284,16 @@ sub list_props {
                     :                                     '';
                 my $status_img
                     = MT->static_path . 'images/status_icons/' . $status_file;
-                my $view_img
-                    = MT->static_path . 'images/status_icons/view.gif';
                 my $view_link_text
                     = MT->translate( 'View [_1]', $class_label );
-                my $view_link = $obj->status == MT::Entry::RELEASE()
+                my $static_uri = MT->static_path;
+                my $view_link  = $obj->status == MT::Entry::RELEASE()
                     ? qq{
                     <span class="view-link">
                       <a href="$permalink" target="_blank">
-                        <img alt="$view_link_text" src="$view_img" />
+                        <svg title="$view_link_text" role="img" class="mt-icon mt-icon--sm">
+                          <use xlink:href="${static_uri}images/sprite.svg#ic_permalink">
+                        </svg>
                       </a>
                     </span>
                 }

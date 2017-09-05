@@ -152,7 +152,8 @@ sub mt_postsave_obj {
             my $max = $blog->$col;
             $obj->handle_max_revisions($max);
         }
-        my $revision = $obj->save_revision( $app->param('revision-note') );
+        my $revision_note = $app->param('revision-note');
+        my $revision = $obj->save_revision($revision_note);
         $obj->current_revision($revision);
 
         # call update to bypass instance save method

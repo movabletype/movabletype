@@ -357,6 +357,7 @@ sub core_methods {
         ## MT7 - Content Data
         'view_content_data' => "${pkg}ContentData::edit",
         'edit_content_data' => "${pkg}ContentData::edit",
+        'save_content_data' => "${pkg}ContentData::save",
 
         ## MT7
         'cfg_content_type_description' =>
@@ -373,7 +374,6 @@ sub core_methods {
             code     => " ${pkg}ContentType::validate_content_fields",
             app_mode => 'JSON',
         },
-        'save_content_data' => "${pkg}ContentType::save_content_data",
         'dialog_content_data_modal' =>
             "${pkg}ContentType::dialog_content_data_modal",
         'dialog_list_content_data' => {
@@ -400,64 +400,24 @@ sub core_widgets {
     my $pkg = '$Core::MT::CMS::';
 
     my $core_widgets = {
-        personal_stats => {
-            label    => 'Personal Stats',
-            template => 'widget/personal_stats.tmpl',
-            handler  => "${pkg}Dashboard::personal_stats_widget",
-            set      => 'sidebar',
-            singular => 1,
-            view     => 'user',
-            order    => { 'user' => 400 },
-            default  => 1,
-        },
         mt_news => {
             label    => 'Movable Type News',
             template => 'widget/mt_news.tmpl',
             handler  => "${pkg}Dashboard::mt_news_widget",
             singular => 1,
             set      => 'sidebar',
-            view     => 'user',
-            order    => { 'user' => 500 },
-            default  => 1,
-        },
-        recent_websites => {
-            label    => 'Sites',
-            template => 'widget/recent_websites.tmpl',
-            handler  => "${pkg}Dashboard::recent_websites_widget",
-            singular => 1,
-            set      => 'main',
-            view     => 'system',
-            order    => { 'system' => 100 },
-            default  => 1,
-        },
-        recent_blogs => {
-            label    => 'Child Sites',
-            template => 'widget/recent_blogs.tmpl',
-            handler  => "${pkg}Dashboard::recent_blogs_widget",
-            singular => 1,
-            set      => 'main',
-            view     => 'website',
-            order    => { 'website' => 200 },
-            default  => 1,
-        },
-        favorite_blogs => {
-            label    => 'Sites and Child Sites',
-            template => 'widget/favorite_blogs.tmpl',
-            handler  => "${pkg}Dashboard::favorite_blogs_widget",
-            singular => 1,
-            set      => 'main',
-            view     => 'user',
-            param    => { tab => 'website' },
-            order    => { 'user' => 300 },
+            view     => [ 'user', 'system' ],
+            order    => 100,
             default  => 1,
         },
         notification_dashboard => {
             label    => 'Notification Dashboard',
             template => 'widget/notification_dashboard.tmpl',
+            handler  => "${pkg}Dashboard::notification_widget",
             singular => 1,
             set      => 'main',
-            view     => 'user',
-            order    => { 'user' => 100 },
+            view     => [ 'user', 'system' ],
+            order    => 0,
             default  => 1,
         },
         site_stats => {
@@ -466,55 +426,56 @@ sub core_widgets {
             handler  => "${pkg}Dashboard::site_stats_widget",
             singular => 1,
             set      => 'main',
-            view     => [ 'user', 'website', 'blog' ],
-            order    => {
-                'user'    => 200,
-                'website' => 100,
-                'blog'    => 100,
-            },
-            default => 1,
+            view     => [ 'website', 'blog' ],
+            order    => 200,
+            default  => 1,
         },
-    };
-
-    if ( $app->config('EnableBlogStats') ) {
-        $core_widgets->{'blog_stats'} = {
-            label    => 'Blog Stats',
-            template => 'widget/blog_stats.tmpl',
-            handler  => "${pkg}Dashboard::mt_blog_stats_widget",
+        system_information => {
+            label    => 'System Infromation',
+            template => 'widget/system_information.tmpl',
+            handler  => "${pkg}Dashboard::system_information_widget",
             singular => 1,
             set      => 'main',
-            view     => 'blog',
-            param    => { tab => 'entry' },
-            order    => { 'blog' => 200 },
+            view     => 'system',
+            order    => 100,
             default  => 1,
-        };
-    }
-
-    return $core_widgets;
-}
-
-sub core_blog_stats_tabs {
-    my $app = shift;
-    my $pkg = '$Core::MT::CMS::';
-    return {
-        entry => {
-            label    => 'Entries',
-            template => 'widget/blog_stats_entry.tmpl',
-            handler  => "${pkg}Dashboard::mt_blog_stats_widget_entry_tab",
-            stats    => "${pkg}Dashboard::generate_dashboard_stats_entry_tab",
         },
-        comment => {
-            label    => 'Comments',
-            template => 'widget/blog_stats_comment.tmpl',
-            handler  => "${pkg}Dashboard::mt_blog_stats_widget_comment_tab",
-            stats => "${pkg}Dashboard::generate_dashboard_stats_comment_tab",
+        updates => {
+            label     => 'Updates',
+            template  => 'widget/updates.tmpl',
+            handler   => "${pkg}Dashboard::updates_widget",
+            singular  => 1,
+            set       => 'sidebar',
+            view      => [ 'user', 'system' ],
+            order     => 0,
+            default   => 1,
+            condition => sub {
+                MT->config('DisableVersionCheck') ? 0 : 1;
+            }
         },
-        tag_cloud => {
-            label    => 'Tag Cloud',
-            handler  => "${pkg}Dashboard::mt_blog_stats_tag_cloud_tab",
-            template => 'widget/blog_stats_tag_cloud.tmpl',
+        activity_log => {
+            label    => 'Activity Log',
+            template => 'widget/activity_log.tmpl',
+            handler  => "${pkg}Dashboard::activity_log_widget",
+            singular => 1,
+            set      => 'sidebar',
+            view     => [ 'system', 'user', 'website', 'blog' ],
+            order    => 200,
+            default  => 1,
+        },
+        site_list => {
+            label    => 'Site List',
+            template => 'widget/site_list.tmpl',
+            handler  => "${pkg}Dashboard::site_list_widget",
+            singular => 1,
+            set      => 'main',
+            view     => [ 'user', 'website', 'blog' ],
+            order    => 100,
+            default  => 1,
         },
     };
+
+    return $core_widgets;
 }
 
 sub core_page_actions {
@@ -860,6 +821,7 @@ sub core_content_actions {
             'download_log' => {
                 class         => 'icon-download',
                 label         => 'Download Log (CSV)',
+                icon          => 'ic_download',
                 mode          => 'export_log',
                 order         => 200,
                 permit_action => {
@@ -1891,10 +1853,12 @@ sub core_menus {
     return {
         'website' => {
             label => "Sites",
+            icon  => 'ic_sites',
             order => 100,
         },
         'blog' => {
             label => "Sites",
+            icon  => 'ic_sites',
             order => 100,
         },
         'content_data' => {
@@ -1911,24 +1875,29 @@ sub core_menus {
         },
         'category_set' => {
             label => 'Category Sets',
+            icon  => 'ic_category',
             order => 500,
         },
         'tag' => {
             label => "Tags",
+            icon  => 'ic_tag',
             order => 600,
         },
         'asset' => {
             label => "Assets",
+            icon  => 'ic_asset',
             order => 700,
         },
         'content_type' => {
             label => 'Content Types',
+            icon  => 'ic_contentstype',
             order => 800,
         },
         'user' => {
             label => sub {
                 $app->translate( $app->blog ? 'Members' : 'Users' );
             },
+            icon  => 'ic_user',
             order => 900,
         },
         'feedback' => {
@@ -1937,22 +1906,27 @@ sub core_menus {
         },
         'role' => {
             label => 'Roles',
+            icon  => 'ic_role',
             order => 1100,
         },
         'design' => {
             label => "Design",
+            icon  => 'ic_design',
             order => 1200,
         },
         'filter' => {
             label => "Filters",
+            icon  => 'ic_filter',
             order => 1400,
         },
         'settings' => {
             label => "Settings",
+            icon  => 'ic_setting',
             order => 1500,
         },
         'tools' => {
             label => "Tools",
+            icon  => 'ic_tool',
             order => 1600,
         },
 
@@ -2939,13 +2913,6 @@ sub set_default_tmpl_params {
 
     $param->{ "mode_$mode" . ( $type ? "_$type" : '' ) } = 1;
     $param->{return_args} ||= $app->make_return_args;
-
-    # Message Center
-    my $loop_nd = $app->request('loop_notification_dashboard');
-    if ( ref $loop_nd eq 'ARRAY' ) {
-        $param->{loop_notification_dashboard} = $loop_nd;
-        $param->{count_notification_dashboard} = @{$loop_nd} if $loop_nd;
-    }
 
     $tmpl->param($param);
 }
@@ -4286,16 +4253,16 @@ sub archive_type_sorter {
 
 sub preview_object_basename {
     my $app = shift;
-    my $q   = $app->param;
     my @parts;
     my $blog = $app->blog;
     my $blog_id;
     $blog_id = $blog->id if $blog;
-    my $id = $q->param('id');
+    my $id   = $app->param('id');
+    my $type = $app->param('_type');
     push @parts, $app->user->id;
     push @parts, $blog_id || 0;
     push @parts, $id || 0;
-    push @parts, $q->param('_type');
+    push @parts, $type;
     push @parts, $app->config->SecretToken;
     my $data = join ",", @parts;
     return 'mt-preview-' . perl_sha1_digest_hex($data);
@@ -4319,9 +4286,38 @@ sub object_edit_uri {
     );
 }
 
+sub add_to_favorite_sites {
+    my $app = shift;
+    my ($fav) = @_;
+
+    my $user = $app->user;
+    return unless $user;
+
+    my $site = MT->model('blog')->load($fav);
+    return unless $site;
+
+    return
+           unless $user->has_perm($fav)
+        || $user->is_superuser
+        || $user->permissions(0)->can_do('edit_templates');
+
+    my @current = @{ $user->favorite_sites || [] };
+
+    return if @current && ( $current[0] == $fav );
+    @current = grep { $_ != $fav } @current;
+    unshift @current, $fav;
+    @current = @current[ 0 .. 19 ]
+        if @current > 20;
+
+    $user->favorite_sites( \@current );
+    $user->save;
+}
+
 sub add_to_favorite_blogs {
     my $app = shift;
     my ($fav) = @_;
+
+    add_to_favorite_sites( $app, $fav );
 
     my $auth = $app->user;
     return unless $auth;
@@ -4350,6 +4346,8 @@ sub add_to_favorite_blogs {
 sub add_to_favorite_websites {
     my $app = shift;
     my ($fav) = @_;
+
+    add_to_favorite_sites( $app, $fav );
 
     my $auth = $app->user;
     return unless $auth;
@@ -5039,154 +5037,6 @@ sub sanitize_tainted_param {
                 $app->config->GlobalSanitizeSpec );
         }
     }
-}
-
-sub pre_run {
-    my $app = shift;
-    $app->SUPER::pre_run(@_) or return;
-    my $user = $app->user;
-
-    # Return if setting nortification dashboard is unnecessary.
-    my $method_info = MT->request('method_info') || {};
-    return
-        if ( exists $method_info->{requires_login}
-        && $method_info->{requires_login} == 0 )
-        or $app->param('xhr')
-        or ( $method_info->{app_mode} || '' ) eq 'JSON'
-        or $app->request('already_set_notification_dashboard');
-
-    # Message Center
-    my @messages;
-
-    require MT::FileMgr;
-    my $fmgr = MT::FileMgr->new('Local');
-    my $support_path;
-    my $has_uploads_path;
-    foreach my $subdir (qw( uploads userpics )) {
-        $support_path
-            = File::Spec->catdir( $app->support_directory_path, $subdir );
-        if ( !$fmgr->exists($support_path) ) {
-            $fmgr->mkpath($support_path);
-        }
-        if (   $fmgr->exists($support_path)
-            && $fmgr->can_write($support_path) )
-        {
-            $has_uploads_path = 1;
-        }
-    }
-    unless ( $has_uploads_path || $fmgr->exists($support_path) ) {
-
-        # the path didn't exist - change the warning a little
-        $support_path = $app->support_directory_path;
-    }
-    unless ($has_uploads_path) {
-        my $message = {
-            level => 'warning',
-            text => $app->translate('The support directory is not writable.'),
-        };
-        if ( $user && $user->is_superuser ) {
-            $message->{detail} = $app->translate(
-                'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.',
-                $support_path
-            );
-        }
-        else {
-            $message->{text}
-                .= ' '
-                . $app->translate(
-                'Please contact your Movable Type system administrator.');
-        }
-        push @messages, $message;
-    }
-
-    if ( $app->request('image_driver_error') ) {
-        my $message = {
-            level => 'warning',
-            text  => $app->translate('ImageDriver is not configured.'),
-        };
-        if ( $user && $user->is_superuser ) {
-            $message->{detail}
-                = $app->translate(
-                'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.'
-                );
-        }
-        else {
-            $message->{text}
-                .= ' '
-                . $app->translate(
-                'Please contact your Movable Type system administrator.');
-        }
-        push @messages, $message;
-    }
-
-    unless ( $app->config('EmailAddressMain') ) {
-        my $message = {
-            level => 'warning',
-            text =>
-                $app->translate('System Email Address is not configured.'),
-        };
-        if ( $user && $user->is_superuser ) {
-            $message->{detail} = $app->translate(
-                q{The System Email Address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events. Please confirm your <a href="[_1]">settings.</a>},
-                $app->uri(
-                    mode => 'cfg_system_general',
-                    args => { blog_id => 0 }
-                )
-            );
-        }
-        else {
-            $message->{text}
-                .= ' '
-                . $app->translate(
-                'Please contact your Movable Type system administrator.');
-        }
-        push @messages, $message;
-    }
-
-    my $has_mozilla_ca = eval { require Mozilla::CA; 1 };
-    unless ( $app->config('SSLVerifyNone') || $has_mozilla_ca ) {
-        my $message = {
-            level => 'warning',
-            text  => $app->translate('Cannot verify SSL certificate.'),
-        };
-        if ( $user && $user->is_superuser ) {
-            $message->{detail}
-                = $app->translate(
-                'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this is not recommended.'
-                );
-        }
-        else {
-            $message->{text}
-                .= ' '
-                . $app->translate(
-                'Please contact your Movable Type system administrator.');
-        }
-        push @messages, $message;
-    }
-    elsif ( $app->config('SSLVerifyNone') && $has_mozilla_ca ) {
-        my $message = {
-            level => 'warning',
-            text  => $app->translate(
-                'Can verify SSL certificate, but verification is disabled.'),
-        };
-        if ( $user && $user->is_superuser ) {
-            $message->{detail}
-                = $app->translate(
-                'You should remove "SSLVerifyNone 1" in mt-config.cgi.');
-        }
-        else {
-            $message->{text}
-                .= ' '
-                . $app->translate(
-                'Please contact your Movable Type system administrator.');
-        }
-        push @messages, $message;
-    }
-
-    $app->run_callbacks( 'set_notification_dashboard', \@messages );
-
-    $app->request( 'loop_notification_dashboard',        \@messages );
-    $app->request( 'already_set_notification_dashboard', 1 );
 }
 
 sub validate_request_params {

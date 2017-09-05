@@ -88,7 +88,7 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "ヒラギノ角ゴ ProN W3", Meiryo, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "Hiragino Sans", ヒラギノ角ゴシック, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", Meiryo, メイリオ, sans-serif;
   font-size: 1rem;
   font-weight: normal;
   line-height: 1.5;
@@ -647,13 +647,13 @@ pre code {
   margin-left: -15px;
 }
 
-.no-gutters {
+.no-gutters, .mt-draggable {
   margin-right: 0;
   margin-left: 0;
 }
 
-.no-gutters > .col, .no-gutters > .mt-globalNavigation, .no-gutters > .mt-mainContent, .no-gutters > .mt-footer,
-.no-gutters > [class*="col-"] {
+.no-gutters > .col, .mt-draggable > .col, .no-gutters > .mt-globalNavigation, .mt-draggable > .mt-globalNavigation, .no-gutters > .mt-mainContent, .mt-draggable > .mt-mainContent, .no-gutters > .mt-footer, .mt-draggable > .mt-footer,
+.no-gutters > [class*="col-"], .mt-draggable > [class*="col-"] {
   padding-right: 0;
   padding-left: 0;
 }
@@ -4759,7 +4759,7 @@ button.close {
   z-index: 1070;
   display: block;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "ヒラギノ角ゴ ProN W3", Meiryo, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "Hiragino Sans", ヒラギノ角ゴシック, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", Meiryo, メイリオ, sans-serif;
   font-style: normal;
   font-weight: normal;
   line-height: 1.5;
@@ -4873,7 +4873,7 @@ button.close {
   display: block;
   max-width: 276px;
   padding: 1px;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "ヒラギノ角ゴ ProN W3", Meiryo, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "Hiragino Sans", ヒラギノ角ゴシック, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", Meiryo, メイリオ, sans-serif;
   font-style: normal;
   font-weight: normal;
   line-height: 1.5;
@@ -5460,7 +5460,7 @@ a.bg-dark:focus, a.bg-dark:hover {
   display: table-cell !important;
 }
 
-.d-flex, .mt-globalNavigation {
+.d-flex, .mt-globalNavigation, .mt-draggable {
   display: -ms-flexbox !important;
   display: flex !important;
 }
@@ -7971,6 +7971,7 @@ Basic Layout
 Forms
 Tables
 Widgets
+Draggable
 Alert
 Badges
 Icons
@@ -8038,7 +8039,7 @@ h4, .h4 {
 }
 
 h4 small, .h4 small {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
 }
 
 p, ul, ol, dl {
@@ -8157,7 +8158,7 @@ li {
   font-weight: normal;
 }
 
-.mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--primary, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--secondary, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--success, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--info, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--warning, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--danger,
+.mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--primary, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--secondary, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--success, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--info, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--warning, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--danger, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--inverse,
 .mt-globalNavigation__logo > a[aria-expanded="false"] .mt-icon,
 .mt-globalNavigation__logo > a[aria-expanded="false"] .mt-icon--primary,
 .mt-globalNavigation__logo > a[aria-expanded="false"] .mt-icon--secondary,
@@ -8165,6 +8166,7 @@ li {
 .mt-globalNavigation__logo > a[aria-expanded="false"] .mt-icon--info,
 .mt-globalNavigation__logo > a[aria-expanded="false"] .mt-icon--warning,
 .mt-globalNavigation__logo > a[aria-expanded="false"] .mt-icon--danger,
+.mt-globalNavigation__logo > a[aria-expanded="false"] .mt-icon--inverse,
 .float-right > button[aria-expanded="false"] .mt-icon,
 .float-right > button[aria-expanded="false"] .mt-icon--primary,
 .float-right > button[aria-expanded="false"] .mt-icon--secondary,
@@ -8172,6 +8174,7 @@ li {
 .float-right > button[aria-expanded="false"] .mt-icon--info,
 .float-right > button[aria-expanded="false"] .mt-icon--warning,
 .float-right > button[aria-expanded="false"] .mt-icon--danger,
+.float-right > button[aria-expanded="false"] .mt-icon--inverse,
 .float-right > a[aria-expanded="false"] .mt-icon,
 .float-right > a[aria-expanded="false"] .mt-icon--primary,
 .float-right > a[aria-expanded="false"] .mt-icon--secondary,
@@ -8179,6 +8182,7 @@ li {
 .float-right > a[aria-expanded="false"] .mt-icon--info,
 .float-right > a[aria-expanded="false"] .mt-icon--warning,
 .float-right > a[aria-expanded="false"] .mt-icon--danger,
+.float-right > a[aria-expanded="false"] .mt-icon--inverse,
 .mt-primaryNavigation__item > button[aria-expanded="false"] .mt-icon,
 .mt-primaryNavigation__item > button[aria-expanded="false"] .mt-icon--primary,
 .mt-primaryNavigation__item > button[aria-expanded="false"] .mt-icon--secondary,
@@ -8186,13 +8190,15 @@ li {
 .mt-primaryNavigation__item > button[aria-expanded="false"] .mt-icon--info,
 .mt-primaryNavigation__item > button[aria-expanded="false"] .mt-icon--warning,
 .mt-primaryNavigation__item > button[aria-expanded="false"] .mt-icon--danger,
+.mt-primaryNavigation__item > button[aria-expanded="false"] .mt-icon--inverse,
 .mt-primaryNavigation__item > a[aria-expanded="false"] .mt-icon,
 .mt-primaryNavigation__item > a[aria-expanded="false"] .mt-icon--primary,
 .mt-primaryNavigation__item > a[aria-expanded="false"] .mt-icon--secondary,
 .mt-primaryNavigation__item > a[aria-expanded="false"] .mt-icon--success,
 .mt-primaryNavigation__item > a[aria-expanded="false"] .mt-icon--info,
 .mt-primaryNavigation__item > a[aria-expanded="false"] .mt-icon--warning,
-.mt-primaryNavigation__item > a[aria-expanded="false"] .mt-icon--danger {
+.mt-primaryNavigation__item > a[aria-expanded="false"] .mt-icon--danger,
+.mt-primaryNavigation__item > a[aria-expanded="false"] .mt-icon--inverse {
   fill: #737373;
 }
 
@@ -8217,7 +8223,7 @@ li {
   font-weight: bold;
 }
 
-.mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--primary, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--secondary, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--success, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--info, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--warning, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--danger,
+.mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--primary, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--secondary, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--success, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--info, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--warning, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--danger, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--inverse,
 .mt-globalNavigation__logo > a[aria-expanded="true"] .mt-icon,
 .mt-globalNavigation__logo > a[aria-expanded="true"] .mt-icon--primary,
 .mt-globalNavigation__logo > a[aria-expanded="true"] .mt-icon--secondary,
@@ -8225,6 +8231,7 @@ li {
 .mt-globalNavigation__logo > a[aria-expanded="true"] .mt-icon--info,
 .mt-globalNavigation__logo > a[aria-expanded="true"] .mt-icon--warning,
 .mt-globalNavigation__logo > a[aria-expanded="true"] .mt-icon--danger,
+.mt-globalNavigation__logo > a[aria-expanded="true"] .mt-icon--inverse,
 .float-right > button[aria-expanded="true"] .mt-icon,
 .float-right > button[aria-expanded="true"] .mt-icon--primary,
 .float-right > button[aria-expanded="true"] .mt-icon--secondary,
@@ -8232,6 +8239,7 @@ li {
 .float-right > button[aria-expanded="true"] .mt-icon--info,
 .float-right > button[aria-expanded="true"] .mt-icon--warning,
 .float-right > button[aria-expanded="true"] .mt-icon--danger,
+.float-right > button[aria-expanded="true"] .mt-icon--inverse,
 .float-right > a[aria-expanded="true"] .mt-icon,
 .float-right > a[aria-expanded="true"] .mt-icon--primary,
 .float-right > a[aria-expanded="true"] .mt-icon--secondary,
@@ -8239,6 +8247,7 @@ li {
 .float-right > a[aria-expanded="true"] .mt-icon--info,
 .float-right > a[aria-expanded="true"] .mt-icon--warning,
 .float-right > a[aria-expanded="true"] .mt-icon--danger,
+.float-right > a[aria-expanded="true"] .mt-icon--inverse,
 .mt-primaryNavigation__item > button[aria-expanded="true"] .mt-icon,
 .mt-primaryNavigation__item > button[aria-expanded="true"] .mt-icon--primary,
 .mt-primaryNavigation__item > button[aria-expanded="true"] .mt-icon--secondary,
@@ -8246,13 +8255,15 @@ li {
 .mt-primaryNavigation__item > button[aria-expanded="true"] .mt-icon--info,
 .mt-primaryNavigation__item > button[aria-expanded="true"] .mt-icon--warning,
 .mt-primaryNavigation__item > button[aria-expanded="true"] .mt-icon--danger,
+.mt-primaryNavigation__item > button[aria-expanded="true"] .mt-icon--inverse,
 .mt-primaryNavigation__item > a[aria-expanded="true"] .mt-icon,
 .mt-primaryNavigation__item > a[aria-expanded="true"] .mt-icon--primary,
 .mt-primaryNavigation__item > a[aria-expanded="true"] .mt-icon--secondary,
 .mt-primaryNavigation__item > a[aria-expanded="true"] .mt-icon--success,
 .mt-primaryNavigation__item > a[aria-expanded="true"] .mt-icon--info,
 .mt-primaryNavigation__item > a[aria-expanded="true"] .mt-icon--warning,
-.mt-primaryNavigation__item > a[aria-expanded="true"] .mt-icon--danger {
+.mt-primaryNavigation__item > a[aria-expanded="true"] .mt-icon--danger,
+.mt-primaryNavigation__item > a[aria-expanded="true"] .mt-icon--inverse {
   fill: #2F2F2F;
 }
 
@@ -8268,7 +8279,7 @@ li {
   border-bottom: .4rem solid;
 }
 
-.mt-primaryNavigation__item .mt-icon, .mt-primaryNavigation__item .mt-icon--primary, .mt-primaryNavigation__item .mt-icon--secondary, .mt-primaryNavigation__item .mt-icon--success, .mt-primaryNavigation__item .mt-icon--info, .mt-primaryNavigation__item .mt-icon--warning, .mt-primaryNavigation__item .mt-icon--danger {
+.mt-primaryNavigation__item .mt-icon, .mt-primaryNavigation__item .mt-icon--primary, .mt-primaryNavigation__item .mt-icon--secondary, .mt-primaryNavigation__item .mt-icon--success, .mt-primaryNavigation__item .mt-icon--info, .mt-primaryNavigation__item .mt-icon--warning, .mt-primaryNavigation__item .mt-icon--danger, .mt-primaryNavigation__item .mt-icon--inverse {
   margin-right: 0.5rem;
   fill: #737373;
 }
@@ -8356,13 +8367,14 @@ fieldset.form-group {
 
 .btn {
   cursor: pointer;
-  font-weight: 600;
+  font-weight: bold;
   text-decoration: none;
 }
 
 .btn-default {
   border: 1px solid #A5A5A5;
   background: #FFFFFF;
+  font-weight: normal;
 }
 
 .btn-default:hover {
@@ -8525,6 +8537,10 @@ fieldset.form-group {
   background: transparent;
 }
 
+.mt-widget .mt-widget__list li:last-child, .mt-widget--panel .mt-widget__list li:last-child {
+  border-bottom: 0;
+}
+
 .mt-widget__title {
   margin: 0;
   padding: 1rem;
@@ -8541,6 +8557,56 @@ fieldset.form-group {
   margin-bottom: 0;
 }
 
+.mt-widget__list {
+  padding: 0;
+  list-style: none;
+}
+
+.mt-widget__list li {
+  padding: 1rem 0 1.2rem;
+  border-bottom: 1px solid #CACACA;
+}
+
+.mt-widget__latest {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #E0E0E0;
+}
+
+.mt-widget__latest + ul {
+  padding: 0;
+  list-style: none;
+}
+
+.mt-widget__latest li {
+  padding: 0.2rem 0;
+}
+
+.mt-widget__sitename {
+  margin: 0 0 1rem 0;
+}
+
+.mt-widget__url {
+  margin: 0 0 1rem;
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.mt-widget__sitelist {
+  display: inline-block;
+  line-height: 2;
+}
+
+.mt-widget__contenttype {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #CACACA;
+}
+
+.mt-widget__info {
+  padding-bottom: 0.2rem;
+  color: #2F2F2F;
+  font-size: 0.85rem;
+}
+
 .mt-widget--panel {
   border: 0;
 }
@@ -8552,6 +8618,52 @@ fieldset.form-group {
 
 .mt-widget--panel .mt-widget__content {
   padding: 0.5rem 1rem 1rem;
+}
+
+.mt-widget--panel .mt-widget__list li:last-child {
+  border-bottom: 1px solid #CACACA;
+}
+
+.mt-widget--site {
+  margin-bottom: 1rem;
+  padding: 1rem 1rem 2rem;
+  border-bottom: 1px solid #CACACA;
+}
+
+.mt-widget--site *:last-child {
+  margin-bottom: 0;
+}
+
+.mt-widget--site:last-child {
+  margin-bttom: 0;
+  padding-bottom: 1rem;
+  border-bottom: 0;
+}
+
+.mt-widget--site .col .row, .mt-widget--site .mt-globalNavigation .row, .mt-widget--site .mt-mainContent .row, .mt-widget--site .mt-footer .row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Draggable */
+.mt-draggable {
+  padding: 0.5rem 0 0.5rem 1rem;
+  border: 1px solid #A5A5A5;
+  border-radius: 0.25rem;
+  cursor: move;
+}
+
+.mt-draggable .mt-icon, .mt-draggable .mt-icon--primary, .mt-draggable .mt-icon--secondary, .mt-draggable .mt-icon--success, .mt-draggable .mt-icon--info, .mt-draggable .mt-icon--warning, .mt-draggable .mt-icon--danger, .mt-draggable .mt-icon--inverse {
+  margin: 0 0 0 .5rem;
+}
+
+.mt-draggable .mt-icon--secondary {
+  margin: 0 .5rem 0 0;
+}
+
+.mt-draggable[aria-grabbed="true"] {
+  border-color: #5FBCEB;
+  font-weight: bold;
 }
 
 /* Alert */
@@ -8584,12 +8696,12 @@ h1 .badge, h2 .badge, h3 .badge,
   opacity: 0.8;
 }
 
-.mt-icon, .mt-icon--primary, .mt-icon--secondary, .mt-icon--success, .mt-icon--info, .mt-icon--warning, .mt-icon--danger {
+.mt-icon, .mt-icon--primary, .mt-icon--secondary, .mt-icon--success, .mt-icon--info, .mt-icon--warning, .mt-icon--danger, .mt-icon--inverse {
   position: relative;
   height: 24px;
   top: -1px;
   width: 24px;
-  fill: #2F2F2F;
+  fill: #595959;
   vertical-align: middle;
 }
 
@@ -8634,6 +8746,10 @@ a:hover .mt-icon--secondary {
 
 .mt-icon--danger {
   fill: #D33638;
+}
+
+.mt-icon--inverse {
+  fill: #FFFFFF;
 }
 
 /* Pagination */
