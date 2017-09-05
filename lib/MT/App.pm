@@ -4180,13 +4180,10 @@ sub is_valid_redirect_target {
     my $target;
     if ( ( $static eq '' ) || ( $static eq '1' ) ) {
         require MT::Entry;
-        my $entry = MT::Entry->load( $app->param('entry_id') || 0 )
+        my $entry_id = $app->param('entry_id') || 0;
+        my $entry = MT::Entry->load($entry_id)
             or return $app->error(
-            $app->translate(
-                'Cannot load entry #[_1].',
-                $app->param('entry_id')
-            )
-            );
+            $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
         $target = $entry->archive_url;
     }
     else {
