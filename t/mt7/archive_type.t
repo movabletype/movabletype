@@ -100,69 +100,117 @@ my $tmpl_archive = MT::Test::Permission->make_template(
 
 my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
 
-my $contents_html = "\na\nb";
-my %html          = (
+my $contents_html = "\na\n";
+my $archive_date  = {
+    none_ao    => '2017/09/09',
+    none_cf    => '2017/06/03',
+    daily_ao   => '2017/09/09',
+    daily_cf   => '2017/06/03',
+    weekly_ao  => '2017/09/03',
+    weekly_cf  => '2017/05/28',
+    monthly_ao => '2017/09/01',
+    monthly_cf => '2017/06/01',
+    yearly_ao  => '2017/01/01',
+    yearly_cf  => '2017/01/01',
+};
+my %html = (
     'ContentType' => {
-        ao => 'Sample Content Data' . $contents_html,
-        cf => 'Sample Content Data' . $contents_html,
+        ao => 'Sample Content Data'
+            . $contents_html
+            . $archive_date->{none_ao},
+        cf => 'Sample Content Data'
+            . $contents_html
+            . $archive_date->{none_cf},
     },
     'ContentType-Daily' => {
-        ao => 'September  9, 2017' . $contents_html,
-        cf => 'June  3, 2017' . $contents_html,
+        ao => 'September  9, 2017'
+            . $contents_html
+            . $archive_date->{daily_ao},
+        cf => 'June  3, 2017' . $contents_html . $archive_date->{daily_cf},
     },
     'ContentType-Weekly' => {
-        ao => 'September  3, 2017 - September  9, 2017' . $contents_html,
-        cf => 'May 28, 2017 - June  3, 2017' . $contents_html,
+        ao => 'September  3, 2017 - September  9, 2017'
+            . $contents_html
+            . $archive_date->{weekly_ao},
+        cf => 'May 28, 2017 - June  3, 2017'
+            . $contents_html
+            . $archive_date->{weekly_cf},
     },
     'ContentType-Monthly' => {
-        ao => 'September 2017' . $contents_html,
-        cf => 'June 2017' . $contents_html,
+        ao => 'September 2017' . $contents_html . $archive_date->{monthly_ao},
+        cf => 'June 2017' . $contents_html . $archive_date->{monthly_cf},
     },
     'ContentType-Yearly' => {
-        ao => '2017' . $contents_html,
-        cf => '2017' . $contents_html,
+        ao => '2017' . $contents_html . $archive_date->{yearly_ao},
+        cf => '2017' . $contents_html . $archive_date->{yearly_cf},
     },
     'ContentType_Author' => {
         ao => 'Yuki Ishikawa' . $contents_html,
         cf => 'Yuki Ishikawa' . $contents_html,
     },
     'ContentType_Author-Daily' => {
-        ao => 'Yuki Ishikawa: September  9, 2017' . $contents_html,
-        cf => 'Yuki Ishikawa: June  3, 2017' . $contents_html,
+        ao => 'Yuki Ishikawa: September  9, 2017'
+            . $contents_html
+            . $archive_date->{daily_ao},
+        cf => 'Yuki Ishikawa: June  3, 2017'
+            . $contents_html
+            . $archive_date->{daily_cf},
     },
     'ContentType_Author-Weekly' => {
         ao => 'Yuki Ishikawa: September  3, 2017 - September  9, 2017'
-            . $contents_html,
-        cf => 'Yuki Ishikawa: May 28, 2017 - June  3, 2017' . $contents_html,
+            . $contents_html
+            . $archive_date->{weekly_ao},
+        cf => 'Yuki Ishikawa: May 28, 2017 - June  3, 2017'
+            . $contents_html
+            . $archive_date->{weekly_cf},
     },
     'ContentType_Author-Monthly' => {
-        ao => 'Yuki Ishikawa: September 2017' . $contents_html,
-        cf => 'Yuki Ishikawa: June 2017' . $contents_html,
+        ao => 'Yuki Ishikawa: September 2017'
+            . $contents_html
+            . $archive_date->{monthly_ao},
+        cf => 'Yuki Ishikawa: June 2017'
+            . $contents_html
+            . $archive_date->{monthly_cf},
     },
     'ContentType_Author-Yearly' => {
-        ao => 'Yuki Ishikawa: 2017' . $contents_html,
-        cf => 'Yuki Ishikawa: 2017' . $contents_html,
+        ao => 'Yuki Ishikawa: 2017'
+            . $contents_html
+            . $archive_date->{yearly_ao},
+        cf => 'Yuki Ishikawa: 2017'
+            . $contents_html
+            . $archive_date->{yearly_cf},
     },
     'ContentType_Category' => {
         ao => 'category1' . $contents_html,
         cf => 'category1' . $contents_html,
     },
     'ContentType_Category-Daily' => {
-        ao => 'category1: September  9, 2017' . $contents_html,
-        cf => 'category1: June  3, 2017' . $contents_html,
+        ao => 'category1: September  9, 2017'
+            . $contents_html
+            . $archive_date->{daily_ao},
+        cf => 'category1: June  3, 2017'
+            . $contents_html
+            . $archive_date->{daily_cf},
     },
     'ContentType_Category-Weekly' => {
         ao => 'category1: September  3, 2017 - September  9, 2017'
-            . $contents_html,
-        cf => 'category1: May 28, 2017 - June  3, 2017' . $contents_html,
+            . $contents_html
+            . $archive_date->{weekly_ao},
+        cf => 'category1: May 28, 2017 - June  3, 2017'
+            . $contents_html
+            . $archive_date->{weekly_cf},
     },
     'ContentType_Category-Monthly' => {
-        ao => 'category1: September 2017' . $contents_html,
-        cf => 'category1: June 2017' . $contents_html,
+        ao => 'category1: September 2017'
+            . $contents_html
+            . $archive_date->{monthly_ao},
+        cf => 'category1: June 2017'
+            . $contents_html
+            . $archive_date->{monthly_cf},
     },
     'ContentType_Category-Yearly' => {
-        ao => 'category1: 2017' . $contents_html,
-        cf => 'category1: 2017' . $contents_html,
+        ao => 'category1: 2017' . $contents_html . $archive_date->{yearly_ao},
+        cf => 'category1: 2017' . $contents_html . $archive_date->{yearly_cf},
     },
 );
 
@@ -207,7 +255,7 @@ for my $s (@suite) {
     $template->text( $text
             . '<mt:ArchiveList archive_type="'
             . $at
-            . '">b</mt:ArchiveList>' );
+            . '"><$mt:ArchiveDate format="%Y/%m/%d"$></mt:ArchiveList>' );
     $template->save;
     $blog->archive_type($at);
     $blog->save;
