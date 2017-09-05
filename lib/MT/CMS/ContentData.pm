@@ -12,6 +12,7 @@ use warnings;
 use MT::Blog;
 use MT::ContentType;
 use MT::Log;
+use MT::Util;
 
 sub edit {
     my ($app) = @_;
@@ -253,8 +254,8 @@ sub edit {
         $param->{$name} = $app->param($name) if $app->param($name);
     }
 
-    $param->{new_object}          = $content_data_id ? 0 : 1;
-    $param->{object_label}        = $content_type->name;
+    $param->{new_object} = $content_data_id ? 0 : 1;
+    $param->{object_label} = MT::Util::encode_html( $content_type->name );
     $param->{sitepath_configured} = $blog && $blog->site_path ? 1 : 0;
 
     ## Load text filters if user displays them
@@ -382,7 +383,7 @@ sub save {
     }
     else {
         my $status = $app->param('status');
-        $content_data->status( $status );
+        $content_data->status($status);
     }
     if ( ( $content_data->status || 0 ) != MT::Entry::HOLD() ) {
         if ( !$blog->site_path || !$blog->site_url ) {
@@ -512,7 +513,7 @@ sub save {
         MT::Serialize->serialize( \$convert_breaks ) );
 
     my $block_editor_data = $app->param('blockeditor-data');
-    $content_data->block_editor_data( $block_editor_data );
+    $content_data->block_editor_data($block_editor_data);
 
     $app->run_callbacks( 'cms_pre_save.cd', $app, $content_data, $orig );
 
@@ -587,7 +588,7 @@ sub make_content_actions {
         my $key = 'content_data.content_data_' . $ct->id;
         $content_actions->{$key} = {
             new => {
-                label => 'Create new ' . $ct->name,
+                label => 'Create new ' . MT::Util::encode_html( $ct->name ),
                 order => 100,
                 mode  => 'view',
                 args  => {
