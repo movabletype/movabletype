@@ -2,16 +2,16 @@
   <mt:if name="news_html">
     <mt:var name="news_html">
   <mt:elseif name="news_json">
-    <mt:Loop name="news_json_news">
   <ul class="mt-widget__list">
+    <mt:Loop name="news_json_news">
     <li>
       <span class="row">
         <span class="col mt-widget--info"><mt:var name="date"></span>
       </span>
       <a href="<mt:var name="url">" title="<mt:var name="title" escape="html">" target="_blank"><mt:var name="title" escape="html"></a>
     </li>
-  </ul>
     </mt:Loop>
+  </ul>
     <mt:Loop name="news_json_links">
   <div class="row">
     <div class="col-12"><a<mt:if name="style" eq="button"> class="btn btn-default"</mt:if> href="<mt:var name="url"> title="<mt:var name="title" escape="html">" target="_blank"><mt:var name="title" escape="html"></a></div>
