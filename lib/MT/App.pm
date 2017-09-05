@@ -1061,7 +1061,7 @@ sub init_query {
         }
         while ( my ( $key, $val ) = each %params ) {
             if ( ref($val) && ( 'ARRAY' eq ref($val) ) ) {
-                $app->param( $key, @{ $params{$key} } );
+                $app->multi_param( $key, @{ $params{$key} } );
             }
             else {
                 $app->param( $key, $val );
