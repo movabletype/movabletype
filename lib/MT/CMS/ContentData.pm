@@ -691,6 +691,9 @@ sub make_menus {
             },
             order => $blog->is_blog ? $blog_order : $website_order,
             view  => $blog->is_blog ? 'blog'      : 'website',
+            condition => sub {
+                $ct->blog_id == MT->app->blog->id;
+            },
         };
         if ( $blog->is_blog ) {
             $blog_order += 100;
