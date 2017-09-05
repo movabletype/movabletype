@@ -3,10 +3,14 @@
     <mt:var name="news_html">
   <mt:elseif name="news_json">
     <mt:Loop name="news_json_news">
-  <div class="row<mt:if name="__last__"><mt:if name="news_json_links"> mb-3</mt:if><mt:else> mb-2</mt:if>">
-    <div class="col-12"><mt:var name="date"></div>
-    <div class="col-12"><a href="<mt:var name="url">" title="<mt:var name="title" escape="html">" target="_blank"><mt:var name="title" escape="html"></a></div>
-  </div>
+  <ul class="mt-widget__list">
+    <li>
+      <span class="row">
+        <span class="col mt-widget--info"><mt:var name="date"></span>
+      </span>
+      <a href="<mt:var name="url">" title="<mt:var name="title" escape="html">" target="_blank"><mt:var name="title" escape="html"></a>
+    </li>
+  </ul>
     </mt:Loop>
     <mt:Loop name="news_json_links">
   <div class="row">
