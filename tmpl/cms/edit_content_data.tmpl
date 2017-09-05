@@ -338,11 +338,13 @@
   <script src="<mt:var name="static_uri">a-table.js/build/a-table.js"></script>
 </mt:setvarblock>
 
-<mt:unless name="editors">
-  <mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
-<mt:else>
-  <mt:include name="include/editor_script.tmpl" id="editor_script_include">
-</mt:unless>
+<mt:if name="has_multi_line_text_field">
+  <mt:unless name="editors">
+    <mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
+  <mt:else>
+    <mt:include name="include/editor_script.tmpl" id="editor_script_include">
+  </mt:unless>
+</mt:if>
 
 <mt:setvarblock name="html_head" append="1">
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/content-type.css?v=<$mt:var name="mt_version_id" escape="url"$>">
@@ -378,6 +380,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 
+<mt:if name="has_multi_line_text_field">
 <script>
   // editor load
   var editor_strategy = MT.App.EditorStrategy.Multi;
@@ -564,9 +567,12 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   jQuery(document).on('change', '.convert_breaks', changedTextFormat);
   jQuery(document).on('click', '.field-convert_breaks .help-link', openTFDocs);
 </script>
+</mt:if>
 </mt:setvarblock>
 
-<mt:var name="blockeditor_tmpl">
+<mt:if name="has_multi_line_text_field">
+  <mt:var name="blockeditor_tmpl">
+</mt:if>
 
 <mt:setvarblock name="page_content">
 <mtapp:settinggroup id="content_data">

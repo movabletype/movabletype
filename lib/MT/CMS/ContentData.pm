@@ -63,6 +63,8 @@ sub edit {
 
     $param->{autosave_frequency} = $app->config->AutoSaveFrequency;
     $param->{name}               = $content_type->name;
+    $param->{has_multi_line_text_field}
+        = $content_type->has_multi_line_text_field;
 
     my $array           = $content_type->fields;
     my $ct_unique_id    = $content_type->unique_id;
