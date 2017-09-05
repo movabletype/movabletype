@@ -545,6 +545,19 @@ sub save {
     );
 }
 
+sub delete {
+    my $app = shift;
+
+    my $orig_type = $app->param('type');
+    my ($content_type_id) = $orig_type =~ /^content_data_(\d+)$/;
+
+    unless ( $app->param('content_type_id') ) {
+        $app->param( 'content_type_id', $content_type_id );
+    }
+
+    MT::CMS::Common::delete($app);
+}
+
 sub post_delete {
     my ( $eh, $app, $obj ) = @_;
 
@@ -610,7 +623,7 @@ sub make_list_actions {
         delete => {
             label      => 'Delete',
             order      => 100,
-            code       => '$Core::MT::CMS::ContentType::delete_content_data',
+            code       => '$Core::MT::CMS::ContentData::delete',
             button     => 1,
             js_message => 'delete',
         }

@@ -949,20 +949,6 @@ sub _autosave_content_data {
 
 }
 
-sub delete_content_data {
-    my $app = shift;
-
-    my $orig_type = $app->param('_type');
-    my ($content_type_id) = $orig_type =~ /^content_data_(\d+)$/;
-
-    $app->param( '_type', 'cd' );
-    unless ( $app->param('content_type_id') ) {
-        $app->param( 'content_type_id', $content_type_id );
-    }
-
-    MT::CMS::Common::delete($app);
-}
-
 sub dialog_content_data_modal {
     my $app = shift;
 
