@@ -2977,7 +2977,7 @@ sub pre_run {
     # allow language override
     my $lang = $app->session ? $app->session('lang') : '';
     $app->set_language($lang) if ($lang);
-    if ( $lang = $app->{query}->param('__lang') ) {
+    if ( $lang = $app->param('__lang') ) {
         $app->set_language($lang);
         if ( $app->session ) {
             $app->session( 'lang', $lang );
