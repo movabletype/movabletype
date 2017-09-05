@@ -4090,7 +4090,7 @@ sub autosave_session_obj {
     if ( my $blog = $app->blog ) {
         $ident .= ':blog_id=' . $blog->id;
     }
-    if ( $type eq 'cd' ) {
+    if ( $type eq 'content_data' ) {
         my $content_type_id = $q->param('content_type_id');
         $ident .= ':content_type_id=' . $content_type_id;
     }

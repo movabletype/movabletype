@@ -24,6 +24,15 @@
   </mt:if>
 </mt:if>
 
+<mt:if name="recovered_failed">
+  <mtapp:statusmsg
+    id="recovered-failed"
+    class="error"
+    can_close="0">
+    <__trans phrase="An error occurred while trying to recover your saved content data.">
+  </mtapp:statusmsg>
+</mt:if>
+
 <mt:if name="saved">
   <mtapp:statusmsg
      id="saved"

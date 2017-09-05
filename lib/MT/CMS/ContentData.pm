@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use MT::Blog;
+use MT::CMS::ContentType;
 use MT::ContentType;
 use MT::Log;
 use MT::Util;
@@ -29,6 +30,7 @@ sub edit {
         or return $app->errtrans('Invalid request.');
 
     if ( $app->param('_recover') ) {
+        $app->param( '_type', 'content_data' );
         my $sess_obj = $app->autosave_session_obj;
         if ($sess_obj) {
             my $autosave_data = $sess_obj->thaw_data;
@@ -51,6 +53,7 @@ sub edit {
     }
 
     if ( !$app->param('reedit') ) {
+        $app->param( '_type', 'content_data' );
         if ( my $sess_obj = $app->autosave_session_obj ) {
             $param->{autosaved_object_exists} = 1;
             $param->{autosaved_object_ts}
@@ -338,7 +341,7 @@ sub save {
     }
 
     if ( $app->param('_autosave') ) {
-        return _autosave_content_data( $app, $data );
+        return MT::CMS::ContentType::_autosave_content_data( $app, $data );
     }
 
     if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
