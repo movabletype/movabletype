@@ -14,25 +14,24 @@ sub password_exists {0}
 sub handle_sign_in {
     my $class = shift;
     my ( $app, $auth_type ) = @_;
-    my $q = $app->param;
 
-    my $sig_str = $q->param('sig');
+    my $sig_str = $app->param('sig');
     unless ($sig_str) {
         $app->error(
             $app->translate('Sign in requires a secure signature.') );
         return 0;
     }
 
-    my $entry_id = $q->param('entry_id');
+    my $entry_id = $app->param('entry_id');
     my $entry    = MT::Entry->load($entry_id)
         or return 0;
-    my $blog = MT::Blog->load( $q->param('blog_id') || $entry->blog_id )
+    my $blog = MT::Blog->load( $app->param('blog_id') || $entry->blog_id )
         or return 0;
 
-    my $ts    = $q->param('ts')    || "";
-    my $email = $q->param('email') || "";
-    my $name  = $q->param('name')  || "";
-    my $nick  = $q->param('nick')  || "";
+    my $ts    = $app->param('ts')    || "";
+    my $email = $app->param('email') || "";
+    my $name  = $app->param('name')  || "";
+    my $nick  = $app->param('nick')  || "";
     my $cmntr;
     my $session;
 
@@ -54,7 +53,8 @@ sub handle_sign_in {
     }
 
     if ( $blog->require_typekey_emails && !is_valid_email($email) ) {
-        $q->param( 'email', '' ); # blank out email address since it's invalid
+        $app->param( 'email', '' )
+            ;    # blank out email address since it's invalid
         $app->error(
             $app->translate(
                 "This weblog requires commenters to pass an email address. If you would like to do so you may log in again, and give the authentication service permission to pass your email address."
@@ -82,7 +82,7 @@ sub handle_sign_in {
                 || $app->translate("Could not save the session") );
         return 0;
     }
-    if ( $q->param('sig') && !$cmntr ) {
+    if ( $sig_str && !$cmntr ) {
         return 0;
     }
     return ( $cmntr, $session );
