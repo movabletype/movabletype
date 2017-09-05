@@ -756,7 +756,7 @@ sub activity_log_widget {
     my ( $tmpl, $param ) = @_;
 
     my $user    = $app->user;
-    my $blog_id = scalar $app->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $blog    = $app->blog || undef;
 
     my $terms;
@@ -772,10 +772,13 @@ sub activity_log_widget {
             $terms->{author_id} = $user->id;
         }
     }
+    $terms->{class} = '*';
     $args = {
-        limit      => 5,
-        sort_by    => 'created_on',
-        sort_order => 'asc',
+        limit => 5,
+        sort  => [
+            { column => 'created_on', desc => 'DESC', },
+            { column => 'id',         desc => 'DESC' },
+        ],
     };
 
     my $is_relative
@@ -791,8 +794,18 @@ sub activity_log_widget {
         my $row = {
             log_message => $log->message,
             id          => $log->id,
-            blog_id     => $log->blog_id
+            blog_id     => $log->blog_id,
         };
+        if ( $log->blog_id ) {
+            $row->{can_view_site_log}
+                = $user->permissions( $log->blog_id )->can_do('view_blog_log')
+                ? 1
+                : 0;
+            if ( !$row->{can_view_site_log} ) {
+                $row->{can_access_site}
+                    = $user->permissions( $log->blog_id ) ? 1 : 0;
+            }
+        }
         if ( my $ts = $log->created_on ) {
             if ($site_view) {
                 $row->{created_on_formatted} = format_ts(
