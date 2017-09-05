@@ -32,8 +32,6 @@ sub handle_sign_in {
     my $email = $app->param('email') || "";
     my $name  = $app->param('name')  || "";
     my $nick  = $app->param('nick')  || "";
-    my $cmntr;
-    my $session;
 
     if (!$class->_validate_signature(
             $app, $sig_str,
@@ -68,7 +66,7 @@ sub handle_sign_in {
     $url .= $name;
 
     # Signature was valid, so create a session, etc.
-    $cmntr = $app->make_commenter(
+    my $cmntr = $app->make_commenter(
         email     => $email,
         nickname  => $nick,
         name      => $name,
@@ -76,13 +74,10 @@ sub handle_sign_in {
         auth_type => $auth_type,
     );
     return 0 unless $cmntr;
-    $session = $app->make_commenter_session($cmntr);
+    my $session = $app->make_commenter_session($cmntr);
     unless ($session) {
         $app->error( $app->errstr()
                 || $app->translate("Could not save the session") );
-        return 0;
-    }
-    if ( $sig_str && !$cmntr ) {
         return 0;
     }
     return ( $cmntr, $session );
