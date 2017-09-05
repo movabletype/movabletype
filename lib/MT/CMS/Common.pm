@@ -1281,6 +1281,7 @@ sub list {
     $param{list_columns_json} = $json->encode( \@list_columns );
     $param{filter_types}      = \@filter_types;
     $param{object_type}       = $type;
+    $param{subtype}           = $q->param('type');
     $param{page_title}        = $screen_settings->{screen_label};
     $param{list_headers}      = \@list_headers;
     $param{build_user_menus}  = $screen_settings->{has_user_properties};

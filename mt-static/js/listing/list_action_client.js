@@ -7,6 +7,7 @@
     this.siteId = args.siteId || 0;
     this.datasource = args.datasource;
     this.objectType = args.objectType;
+    this.subType    = args.subType;
     this.magicToken = args.magicToken;
     this.returnArgs = args.returnArgs;
   };
@@ -46,6 +47,9 @@
       magic_token: args.xhr ? 1 : this.magicToken,
       return_args: this.returnArgs + '&does_act=1'
     };
+    if ( this.subType ) {
+      data.type = this.subType;
+    }
     if (args.itemsetActionInput) {
       data.itemset_action_input = args.itemsetActionInput;
     }

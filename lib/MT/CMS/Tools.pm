@@ -340,9 +340,10 @@ sub do_list_action {
     # plugin_action_selector should always (?) be in the query; use it?
     my $action_name = $app->param('action_name');
     my $type        = $app->param('_type');
+    my $subtype     = $app->param('type') ? '.' . $app->param('type') : '';
     my ($the_action)
         = ( grep { $_->{key} eq $action_name }
-            @{ $app->list_actions($type) } );
+            @{ $app->list_actions($type . $subtype) } );
     return $app->errtrans(
         "That action ([_1]) is apparently not implemented!", $action_name )
         unless $the_action;

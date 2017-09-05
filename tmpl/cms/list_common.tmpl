@@ -137,7 +137,8 @@
     datasource: '<mt:var name="list_type" escape="js">',
     objectType: objectType,
     magicToken: '<mt:var name="magic_token">',
-    returnArgs: '<mt:var name="return_args">'
+    returnArgs: '<mt:var name="return_args">',
+    subType: '<mt:if name="subtype"><mt:var name="subtype"></mt:if>'
   });
 
   var listActionClient = new ListActionClient({
@@ -146,7 +147,8 @@
     datasource: listClient.datasource,
     objectType: listClient.objectType,
     magicToken: listClient.magicToken,
-    returnArgs: listClient.returnArgs
+    returnArgs: listClient.returnArgs,
+    subType: '<mt:if name="subtype"><mt:var name="subtype"></mt:if>'
   });
 
   <mt:if name="zero_state">
