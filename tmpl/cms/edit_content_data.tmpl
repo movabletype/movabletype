@@ -260,22 +260,24 @@
   </mtapp:setting>
 </mt:if>
 
-  <div class="d-flex justify-content-center">
-    <button
-       name="status"
-       type="submit"
-       title="<mt:var name="button_title">"
-       class="publish action primary button btn btn-primary mx-1">
-      <mt:var name="button_text">
-    </button>
-    <button
-       name="preview_entry"
-       type="submit"
-       accesskey="v"
-       title="<mt:var name="preview_button_title">"
-       class="preview action button btn btn-default mx-1">
-      <__trans phrase="Preview">
-    </button>
+  <div class="row">
+    <div class="col">
+      <button
+         name="status"
+         type="submit"
+         title="<mt:var name="button_title">"
+         class="publish action primary button btn btn-primary mx-1">
+        <mt:var name="button_text">
+      </button>
+      <button
+         name="preview_entry"
+         type="submit"
+         accesskey="v"
+         title="<mt:var name="preview_button_title">"
+         class="preview action button btn btn-default mx-1">
+        <__trans phrase="Preview">
+      </button>
+    </div>
   </div>
 
 <mt:if name="id">
