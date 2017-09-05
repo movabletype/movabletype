@@ -24,6 +24,7 @@
     background: transparent;
 }
 
+/*
 .upload-status-block-left-panel {
     float: left;
     width: 100%;
@@ -38,6 +39,7 @@
 .upload-status-block-left-content {
     margin: 0 80px 0 0;
 }
+*/
 
 .upload-status-block-left-content.full-width {
     margin: 0 0 0 0;
@@ -429,11 +431,11 @@ var numOfRows = 0;
 function createUploadBlock () {
   numOfRows++;
 
-  this.uploadBlockPanel = jQuery('<div class="card"><div class="card-block"></div></div>');
+  this.uploadBlockPanel = jQuery('<div class="card"><div class="card-block p-2"></div></div>');
   this.uploadBlock  = jQuery('<div class="row upload-status-block" id="upload-status_' + numOfRows + '"></div>').appendTo(this.uploadBlockPanel.children());
 
-  this.leftPanel    = jQuery('<div class="col-11 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
-  this.rightPanel   = jQuery('<div class="col-1 text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
+  this.leftPanel    = jQuery('<div class="col-10 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
+  this.rightPanel   = jQuery('<div class="col-2 text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
   this.leftContent  = jQuery('<div class="upload-status-block-left-content"></div>').appendTo(this.leftPanel);
   this.progressbar  = jQuery('<div class="progress"><div class="progress-bar"></div></div>').appendTo(this.leftContent);
   this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);
