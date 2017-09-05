@@ -77,6 +77,7 @@ my $cd = MT::Test::Permission->make_content_data(
     blog_id         => $blog->id,
     content_type_id => $ct->id,
     author_id       => $author->id,
+    authored_on     => '20170909130530',
     data            => {
         $cf_datetime->id => '20170603180500',
         $cf_category->id => [ $category1->id ],
@@ -101,26 +102,68 @@ my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
 
 my $contents_html = "\na\nb";
 my %html          = (
-    'ContentType'         => 'Sample Content Data' . $contents_html,
-    'ContentType-Daily'   => 'June  3, 2017' . $contents_html,
-    'ContentType-Weekly'  => 'May 28, 2017 - June  3, 2017' . $contents_html,
-    'ContentType-Monthly' => 'June 2017' . $contents_html,
-    'ContentType-Yearly'  => '2017' . $contents_html,
-    'ContentType_Author'  => 'Yuki Ishikawa' . $contents_html,
-    'ContentType_Author-Daily' => 'Yuki Ishikawa: June  3, 2017'
-        . $contents_html,
-    'ContentType_Author-Weekly' =>
-        'Yuki Ishikawa: May 28, 2017 - June  3, 2017' . $contents_html,
-    'ContentType_Author-Monthly' => 'Yuki Ishikawa: June 2017'
-        . $contents_html,
-    'ContentType_Author-Yearly'  => 'Yuki Ishikawa: 2017' . $contents_html,
-    'ContentType_Category'       => 'category1' . $contents_html,
-    'ContentType_Category-Daily' => 'category1: June  3, 2017'
-        . $contents_html,
-    'ContentType_Category-Weekly' =>
-        'category1: May 28, 2017 - June  3, 2017' . $contents_html,
-    'ContentType_Category-Monthly' => 'category1: June 2017' . $contents_html,
-    'ContentType_Category-Yearly'  => 'category1: 2017' . $contents_html,
+    'ContentType' => {
+        ao => 'Sample Content Data' . $contents_html,
+        cf => 'Sample Content Data' . $contents_html,
+    },
+    'ContentType-Daily' => {
+        ao => 'September  9, 2017' . $contents_html,
+        cf => 'June  3, 2017' . $contents_html,
+    },
+    'ContentType-Weekly' => {
+        ao => 'September  3, 2017 - September  9, 2017' . $contents_html,
+        cf => 'May 28, 2017 - June  3, 2017' . $contents_html,
+    },
+    'ContentType-Monthly' => {
+        ao => 'September 2017' . $contents_html,
+        cf => 'June 2017' . $contents_html,
+    },
+    'ContentType-Yearly' => {
+        ao => '2017' . $contents_html,
+        cf => '2017' . $contents_html,
+    },
+    'ContentType_Author' => {
+        ao => 'Yuki Ishikawa' . $contents_html,
+        cf => 'Yuki Ishikawa' . $contents_html,
+    },
+    'ContentType_Author-Daily' => {
+        ao => 'Yuki Ishikawa: September  9, 2017' . $contents_html,
+        cf => 'Yuki Ishikawa: June  3, 2017' . $contents_html,
+    },
+    'ContentType_Author-Weekly' => {
+        ao => 'Yuki Ishikawa: September  3, 2017 - September  9, 2017'
+            . $contents_html,
+        cf => 'Yuki Ishikawa: May 28, 2017 - June  3, 2017' . $contents_html,
+    },
+    'ContentType_Author-Monthly' => {
+        ao => 'Yuki Ishikawa: September 2017' . $contents_html,
+        cf => 'Yuki Ishikawa: June 2017' . $contents_html,
+    },
+    'ContentType_Author-Yearly' => {
+        ao => 'Yuki Ishikawa: 2017' . $contents_html,
+        cf => 'Yuki Ishikawa: 2017' . $contents_html,
+    },
+    'ContentType_Category' => {
+        ao => 'category1' . $contents_html,
+        cf => 'category1' . $contents_html,
+    },
+    'ContentType_Category-Daily' => {
+        ao => 'category1: September  9, 2017' . $contents_html,
+        cf => 'category1: June  3, 2017' . $contents_html,
+    },
+    'ContentType_Category-Weekly' => {
+        ao => 'category1: September  3, 2017 - September  9, 2017'
+            . $contents_html,
+        cf => 'category1: May 28, 2017 - June  3, 2017' . $contents_html,
+    },
+    'ContentType_Category-Monthly' => {
+        ao => 'category1: September 2017' . $contents_html,
+        cf => 'category1: June 2017' . $contents_html,
+    },
+    'ContentType_Category-Yearly' => {
+        ao => 'category1: 2017' . $contents_html,
+        cf => 'category1: 2017' . $contents_html,
+    },
 );
 
 my @suite;
@@ -128,27 +171,29 @@ foreach my $prefix (qw( ContentType ContentType_Author ContentType_Category ))
 {
     foreach my $suffix ( ( '', '-Daily', '-Weekly', '-Monthly', '-Yearly' ) )
     {
-        my $at  = $prefix . $suffix;
-        my $map = MT::Test::Permission->make_templatemap(
-            template_id =>
-                ( $at eq 'ContentType' ? $tmpl->id : $tmpl_archive->id ),
-            blog_id      => $blog->id,
-            archive_type => $at,
-            cat_field_id => $cf_category->id,
-            dt_field_id  => $cf_datetime->id,
-        );
-        my $archiver = $publisher->archiver($at);
-        my $tmpls    = $archiver->default_archive_templates;
-        my ($default) = grep { $_->{default} } @$tmpls;
-        $map->file_template( $default->{template} );
-        push @suite,
-            {
-            ArchiveType => $at,
-            Template    => ( $at eq 'ContentType' ? $tmpl : $tmpl_archive ),
-            TemplateMap => $map,
-            Html        => $html{$at},
-            Published   => 1,
-            };
+        foreach my $dt_field (qw( ao cf )) {
+            my $at  = $prefix . $suffix;
+            my $map = MT::Test::Permission->make_templatemap(
+                template_id =>
+                    ( $at eq 'ContentType' ? $tmpl->id : $tmpl_archive->id ),
+                blog_id      => $blog->id,
+                archive_type => $at,
+                cat_field_id => $cf_category->id,
+                dt_field_id  => $dt_field eq 'ao' ? 0 : $cf_datetime->id,
+            );
+            my $archiver = $publisher->archiver($at);
+            my $tmpls    = $archiver->default_archive_templates;
+            my ($default) = grep { $_->{default} } @$tmpls;
+            $map->file_template( $default->{template} );
+            push @suite,
+                {
+                ArchiveType => $at,
+                Template => ( $at eq 'ContentType' ? $tmpl : $tmpl_archive ),
+                TemplateMap => $map,
+                Html        => $html{$at}{$dt_field},
+                Published   => 1,
+                };
+        }
     }
 }
 
@@ -157,10 +202,12 @@ for my $s (@suite) {
     my $template = $s->{Template};
     my $map      = $s->{TemplateMap};
 
-
     note( 'ArchiveType: ' . $at );
 
-    $template->text( $text . '<mt:ArchiveList archive_type="' . $at . '">b</mt:ArchiveList>' );
+    $template->text( $text
+            . '<mt:ArchiveList archive_type="'
+            . $at
+            . '">b</mt:ArchiveList>' );
     $template->save;
     $blog->archive_type($at);
     $blog->save;
