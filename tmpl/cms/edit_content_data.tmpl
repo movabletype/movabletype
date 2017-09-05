@@ -1,5 +1,9 @@
 <mt:setvar name="edit_screen" value="1">
-<mt:setvar name="page_title" value="<__trans phrase="Edit Content Type Data">">
+<mt:if name="new_object">
+  <mt:setvarblock name="page_title"><__trans phrase="Create [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
+<mt:else>
+  <mt:setvarblock name="page_title"><__trans phrase="Edit [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
+</mt:if>
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="screen_id" value="edit-content-type-data">
 <mt:setvar name="screen_class" value="edit-content-type-data">
@@ -566,8 +570,6 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 
 <mt:setvarblock name="page_content">
 <mtapp:settinggroup id="content_data">
-
-  <legend class="h3"><__trans phrase="Edit <mt:var name="name" escape="html">"></legend>
 
   <div>
     <__trans phrase="Title"> *
