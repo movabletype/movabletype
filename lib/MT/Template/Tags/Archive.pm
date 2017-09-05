@@ -215,8 +215,11 @@ sub _hdlr_archives {
     my $save_tse;
     my $tmpl = $ctx->stash('template');
 
-    if ( ( $tmpl && ( $tmpl->type || '' ) eq 'archive' )
-        && $archiver->date_based )
+    if ((   $tmpl && ( ( $tmpl->type || '' ) eq 'archive'
+                || ( $tmpl->type || '' ) eq 'ct_archive' )
+        )
+        && $archiver->date_based
+        )
     {
         my $uncompiled = $ctx->stash('uncompiled') || '';
         if ( $uncompiled =~ /<mt:?archivelist>?/i ) {
@@ -256,9 +259,16 @@ sub _hdlr_archives {
                 $content = $curr{contents}->[0]
                     if exists( $curr{contents} );
                 my $map = $ctx->stash('template_map');
-                my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
-                my $data = $content->data;
-                ( $start, $end ) = ( $data ? $data->{$dt_field_id} : "" );
+                my $dt_field_id
+                    = defined $map && $map ? $map->dt_field_id : '';
+                if ($dt_field_id) {
+                    my $data = $content->data;
+                    ( $start, $end ) = ( $data ? $data->{$dt_field_id} : "" );
+                }
+                else {
+                    ( $start, $end )
+                        = ( ref $content ? $content->authored_on : "" );
+                }
             }
             else {
                 my $entry;
@@ -280,6 +290,11 @@ sub _hdlr_archives {
                 $archiver->archive_group_entries( $ctx, %curr );
             }
         ) if $archiver->group_based;
+        local $ctx->{__stash}{archive_contents} = delay(
+            sub {
+                $archiver->archive_group_contents( $ctx, %curr );
+            }
+        ) if $archiver->contenttype_group_based;
         $ctx->{__stash}{$_} = $curr{$_} for keys %curr;
         local $ctx->{inside_archive_list} = 1;
 
