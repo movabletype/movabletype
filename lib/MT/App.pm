@@ -415,10 +415,11 @@ sub listing {
     my $args    = $opt->{args}    || $opt->{Args} || {};
     my $no_html = $opt->{no_html} || $opt->{NoHTML};
     my $json    = $opt->{json}    || $app->param('json');
+    my $search = $app->param('search');
     my $no_limit
         = exists( $opt->{no_limit} )
         ? $opt->{no_limit}
-        : ( $app->param('search') ? 1 : 0 );
+        : ( $search ? 1 : 0 );
     my $pre_build;
     $pre_build = $opt->{pre_build} if ref( $opt->{pre_build} ) eq 'CODE';
     $param->{json} = 1 if $json;
@@ -442,7 +443,7 @@ sub listing {
     $param->{limit_none} = 1 if $no_limit;
 
     # handle search parameter
-    if ( my $search = $app->param('search') ) {
+    if ($search) {
         $app->param( 'do_search', 1 );
         if ( $app->can('do_search_replace') ) {
             my $search_param = $app->do_search_replace(
@@ -465,7 +466,9 @@ sub listing {
 
         # handle filter options
         my $filter_key = $app->param('filter_key');
-        if ( !$filter_key && !$app->param('filter') ) {
+        my $filter_col = $app->param('filter');
+        my $filter_val = $app->param('filter_val');
+        if ( !$filter_key && !$filter_col ) {
             $filter_key = 'default';
         }
         if ($filter_key) {
@@ -487,20 +490,19 @@ sub listing {
                 }
             }
         }
-        if (   ( my $filter_col = $app->param('filter') )
-            && ( my $val = $app->param('filter_val') ) )
-        {
+        if ( $filter_col && $filter_val ) {
             if ((      ( $filter_col eq 'normalizedtag' )
                     || ( $filter_col eq 'exacttag' )
                 )
                 && ( $class->isa('MT::Taggable') )
                 )
             {
-                my $normalize   = ( $filter_col eq 'normalizedtag' );
-                my $tag_class   = $app->model('tag');
-                my $ot_class    = $app->model('objecttag');
-                my $tag_delim   = chr( $app->user->entry_prefs->{tag_delim} );
-                my @filter_vals = $tag_class->split( $tag_delim, $val );
+                my $normalize = ( $filter_col eq 'normalizedtag' );
+                my $tag_class = $app->model('tag');
+                my $ot_class  = $app->model('objecttag');
+                my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
+                my @filter_vals
+                    = $tag_class->split( $tag_delim, $filter_val );
                 my @filter_tags = @filter_vals;
                 if ($normalize) {
                     push @filter_tags, MT::Tag->normalize($_)
@@ -531,19 +533,19 @@ sub listing {
             elsif ( !exists( $terms->{$filter_col} ) ) {
                 if ( $class->is_meta_column($filter_col) ) {
                     my @result
-                        = $class->search_by_meta( $filter_col, $val, {},
-                        $args );
+                        = $class->search_by_meta( $filter_col, $filter_val,
+                        {}, $args );
                     $iter_method = sub {
                         return shift @result;
                     };
                 }
                 elsif ( $class->has_column($filter_col) ) {
-                    $terms->{$filter_col} = $val;
+                    $terms->{$filter_col} = $filter_val;
                 }
             }
             $param->{filter}     = $filter_col;
-            $param->{filter_val} = $val;
-            my $url_val = encode_url($val);
+            $param->{filter_val} = $filter_val;
+            my $url_val = encode_url($filter_val);
             $param->{filter_args} = "&filter=$filter_col&filter_val=$url_val";
             $param->{"filter_col_$filter_col"} = 1;
         }
