@@ -4112,8 +4112,9 @@ sub autosave_object {
     my $app = shift;
     my $sess_obj = $app->autosave_session_obj(1) or return;
     $sess_obj->data('');
-    my $class = $app->model( $app->param('_type') ) or return;
-    my %data = $app->param_hash;
+    my $type  = $app->param('_type');
+    my $class = $app->model($type) or return;
+    my %data  = $app->param_hash;
     delete $data{_autosave};
     delete $data{magic_token};
 
