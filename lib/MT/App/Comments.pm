@@ -227,9 +227,8 @@ sub _create_commenter_assign_role {
 
 sub do_login {
     my $app     = shift;
-    my $q       = $app->param;
-    my $name    = $q->param('username');
-    my $blog_id = $q->param('blog_id');
+    my $name    = $app->param('username');
+    my $blog_id = $app->param('blog_id');
     my $blog    = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
@@ -257,11 +256,10 @@ sub do_login {
         || ( MT::Auth::SUCCESS() == $result ) )
     {
         my $commenter = $app->user;
-        if ( $q->param('external_auth') && !$commenter ) {
+        if ( $app->param('external_auth') && !$commenter ) {
             $app->param( 'name', $name );
             if ( MT::Auth::NEW_USER() == $result ) {
-                $commenter = $app->_create_commenter_assign_role(
-                    $q->param('blog_id') );
+                $commenter = $app->_create_commenter_assign_role($blog_id);
                 return $app->login_form(
                     error => $app->translate('Invalid login') )
                     unless $commenter;
