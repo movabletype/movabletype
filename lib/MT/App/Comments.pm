@@ -163,9 +163,9 @@ sub login_form {
 
 sub login_external {
     my $app = shift;
-    my $q   = $app->param;
 
-    my $authenticator = MT->commenter_authenticator( $q->param('key') );
+    my $key           = $app->param('key') || '';
+    my $authenticator = MT->commenter_authenticator($key);
     my $auth_class    = $authenticator->{class};
     eval "require $auth_class;";
     if ( my $e = $@ ) {
