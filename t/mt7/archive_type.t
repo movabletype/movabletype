@@ -84,12 +84,14 @@ my $cd = MT::Test::Permission->make_content_data(
     },
 );
 
-my $text
-    = "<\$mt:ArchiveTitle\$>\n<mt:Contents>a</mt:Contents>\n"
-    . '<mt:Archives>'
-    . '<mt:ArchiveList><$mt:ArchiveDate format="%Y/%m/%d"$>'
-    . '</mt:ArchiveList>'
-    . '</mt:Archives>';
+my $text = <<TEXT;
+<\$mt:ArchiveTitle\$>
+<mt:Contents>a</mt:Contents>
+<mt:Archives><mt:ArchiveList><mt:ArchiveListHeader>Header</mt:ArchiveListHeader>
+<\$mt:ArchiveDate format="%Y/%m/%d"\$>
+<mt:ArchiveListFooter>Footer</mt:ArchiveListFooter></mt:ArchiveList></mt:Archives>
+TEXT
+warn $text;
 my $tmpl = MT::Test::Permission->make_template(
     blog_id         => $blog->id,
     content_type_id => $cd->id,
@@ -107,117 +109,201 @@ my $tmpl_archive = MT::Test::Permission->make_template(
 
 my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
 
-my $contents_html = "\na\n";
-my $archive_date  = {
-    none_ao    => '2017/09/09',
-    none_cf    => '2017/06/03',
-    daily_ao   => '2017/09/09',
-    daily_cf   => '2017/06/03',
-    weekly_ao  => '2017/09/03',
-    weekly_cf  => '2017/05/28',
-    monthly_ao => '2017/09/01',
-    monthly_cf => '2017/06/01',
-    yearly_ao  => '2017/01/01',
-    yearly_cf  => '2017/01/01',
+my $contents_html       = "\na\n";
+my $archive_list_header = "Header\n";
+my $archive_date        = {
+    none_ao    => "2017/09/09\n",
+    none_cf    => "2017/06/03\n",
+    daily_ao   => "2017/09/09\n",
+    daily_cf   => "2017/06/03\n",
+    weekly_ao  => "2017/09/03\n",
+    weekly_cf  => "2017/05/28\n",
+    monthly_ao => "2017/09/01\n",
+    monthly_cf => "2017/06/01\n",
+    yearly_ao  => "2017/01/01\n",
+    yearly_cf  => "2017/01/01\n",
 };
-my %html = (
+my $archive_list_footer = "Footer\n";
+my %html                = (
     'ContentType' => {
         ao => 'Sample Content Data'
             . $contents_html
-            . $archive_date->{none_ao},
+            . $archive_list_header
+            . $archive_date->{none_ao}
+            . $archive_list_footer,
         cf => 'Sample Content Data'
             . $contents_html
-            . $archive_date->{none_cf},
+            . $archive_list_header
+            . $archive_date->{none_cf}
+            . $archive_list_footer,
     },
     'ContentType-Daily' => {
         ao => 'September  9, 2017'
             . $contents_html
-            . $archive_date->{daily_ao},
-        cf => 'June  3, 2017' . $contents_html . $archive_date->{daily_cf},
+            . $archive_list_header
+            . $archive_date->{daily_ao}
+            . $archive_list_footer,
+        cf => 'June  3, 2017'
+            . $contents_html
+            . $archive_list_header
+            . $archive_date->{daily_cf}
+            . $archive_list_footer,
     },
     'ContentType-Weekly' => {
         ao => 'September  3, 2017 - September  9, 2017'
             . $contents_html
-            . $archive_date->{weekly_ao},
+            . $archive_list_header
+            . $archive_date->{weekly_ao}
+            . $archive_list_footer,
         cf => 'May 28, 2017 - June  3, 2017'
             . $contents_html
-            . $archive_date->{weekly_cf},
+            . $archive_list_header
+            . $archive_date->{weekly_cf}
+            . $archive_list_footer,
     },
     'ContentType-Monthly' => {
-        ao => 'September 2017' . $contents_html . $archive_date->{monthly_ao},
-        cf => 'June 2017' . $contents_html . $archive_date->{monthly_cf},
+        ao => 'September 2017'
+            . $contents_html
+            . $archive_list_header
+            . $archive_date->{monthly_ao}
+            . $archive_list_footer,
+        cf => 'June 2017'
+            . $contents_html
+            . $archive_list_header
+            . $archive_date->{monthly_cf}
+            . $archive_list_footer,
     },
     'ContentType-Yearly' => {
-        ao => '2017' . $contents_html . $archive_date->{yearly_ao},
-        cf => '2017' . $contents_html . $archive_date->{yearly_cf},
+        ao => '2017'
+            . $contents_html
+            . $archive_list_header
+            . $archive_date->{yearly_ao}
+            . $archive_list_footer,
+        cf => '2017'
+            . $contents_html
+            . $archive_list_header
+            . $archive_date->{yearly_cf}
+            . $archive_list_footer,
     },
     'ContentType_Author' => {
-        ao => 'Yuki Ishikawa' . $contents_html,
-        cf => 'Yuki Ishikawa' . $contents_html,
+        ao => 'Yuki Ishikawa'
+            . $contents_html
+            . $archive_list_header
+            . "\n"
+            . $archive_list_footer,
+        cf => 'Yuki Ishikawa'
+            . $contents_html
+            . $archive_list_header
+            . "\n"
+            . $archive_list_footer,
     },
     'ContentType_Author-Daily' => {
         ao => 'Yuki Ishikawa: September  9, 2017'
             . $contents_html
-            . $archive_date->{daily_ao},
+            . $archive_list_header
+            . $archive_date->{daily_ao}
+            . $archive_list_footer,
         cf => 'Yuki Ishikawa: June  3, 2017'
             . $contents_html
-            . $archive_date->{daily_cf},
+            . $archive_list_header
+            . $archive_date->{daily_cf}
+            . $archive_list_footer,
     },
     'ContentType_Author-Weekly' => {
         ao => 'Yuki Ishikawa: September  3, 2017 - September  9, 2017'
             . $contents_html
-            . $archive_date->{weekly_ao},
+            . $archive_list_header
+            . $archive_date->{weekly_ao}
+            . $archive_list_footer,
         cf => 'Yuki Ishikawa: May 28, 2017 - June  3, 2017'
             . $contents_html
-            . $archive_date->{weekly_cf},
+            . $archive_list_header
+            . $archive_date->{weekly_cf}
+            . $archive_list_footer,
     },
     'ContentType_Author-Monthly' => {
         ao => 'Yuki Ishikawa: September 2017'
             . $contents_html
-            . $archive_date->{monthly_ao},
+            . $archive_list_header
+            . $archive_date->{monthly_ao}
+            . $archive_list_footer,
         cf => 'Yuki Ishikawa: June 2017'
             . $contents_html
-            . $archive_date->{monthly_cf},
+            . $archive_list_header
+            . $archive_date->{monthly_cf}
+            . $archive_list_footer,
     },
     'ContentType_Author-Yearly' => {
         ao => 'Yuki Ishikawa: 2017'
             . $contents_html
-            . $archive_date->{yearly_ao},
+            . $archive_list_header
+            . $archive_date->{yearly_ao}
+            . $archive_list_footer,
         cf => 'Yuki Ishikawa: 2017'
             . $contents_html
-            . $archive_date->{yearly_cf},
+            . $archive_list_header
+            . $archive_date->{yearly_cf}
+            . $archive_list_footer,
     },
     'ContentType_Category' => {
-        ao => 'category1' . $contents_html,
-        cf => 'category1' . $contents_html,
+        ao => 'category1'
+            . $contents_html
+            . $archive_list_header
+            . "\n"
+            . $archive_list_footer,
+        cf => 'category1'
+            . $contents_html
+            . $archive_list_header
+            . "\n"
+            . $archive_list_footer,
     },
     'ContentType_Category-Daily' => {
         ao => 'category1: September  9, 2017'
             . $contents_html
-            . $archive_date->{daily_ao},
+            . $archive_list_header
+            . $archive_date->{daily_ao}
+            . $archive_list_footer,
         cf => 'category1: June  3, 2017'
             . $contents_html
-            . $archive_date->{daily_cf},
+            . $archive_list_header
+            . $archive_date->{daily_cf}
+            . $archive_list_footer,
     },
     'ContentType_Category-Weekly' => {
         ao => 'category1: September  3, 2017 - September  9, 2017'
             . $contents_html
-            . $archive_date->{weekly_ao},
+            . $archive_list_header
+            . $archive_date->{weekly_ao}
+            . $archive_list_footer,
         cf => 'category1: May 28, 2017 - June  3, 2017'
             . $contents_html
-            . $archive_date->{weekly_cf},
+            . $archive_list_header
+            . $archive_date->{weekly_cf}
+            . $archive_list_footer,
     },
     'ContentType_Category-Monthly' => {
         ao => 'category1: September 2017'
             . $contents_html
-            . $archive_date->{monthly_ao},
+            . $archive_list_header
+            . $archive_date->{monthly_ao}
+            . $archive_list_footer,
         cf => 'category1: June 2017'
             . $contents_html
-            . $archive_date->{monthly_cf},
+            . $archive_list_header
+            . $archive_date->{monthly_cf}
+            . $archive_list_footer,
     },
     'ContentType_Category-Yearly' => {
-        ao => 'category1: 2017' . $contents_html . $archive_date->{yearly_ao},
-        cf => 'category1: 2017' . $contents_html . $archive_date->{yearly_cf},
+        ao => 'category1: 2017'
+            . $contents_html
+            . $archive_list_header
+            . $archive_date->{yearly_ao}
+            . $archive_list_footer,
+        cf => 'category1: 2017'
+            . $contents_html
+            . $archive_list_header
+            . $archive_date->{yearly_cf}
+            . $archive_list_footer,
     },
 );
 
