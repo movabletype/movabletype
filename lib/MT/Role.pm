@@ -79,6 +79,7 @@ sub list_props {
                 my $prop = shift;
                 my ( $objs, $app, $opts ) = @_;
                 my $asc_count = $prop->asc_count( $objs, $opts );
+                my $static_uri = $app->static_path;
                 my @out;
                 for my $obj (@$objs) {
                     my $len  = 40;                  ## FIXME: Hard coded
@@ -96,18 +97,15 @@ sub list_props {
                             blog_id => 0,
                         }
                     );
-                    my $cnt        = $asc_count->{ $obj->id };
-                    my $name       = MT::Util::encode_html( $obj->name );
-                    my $status_img = MT->static_path
-                        . (
-                        $cnt
-                        ? '/images/status_icons/role-active.gif'
-                        : '/images/status_icons/role-inactive.gif'
-                        );
+                    my $cnt          = $asc_count->{ $obj->id };
+                    my $name         = MT::Util::encode_html( $obj->name );
                     my $status_class = $cnt ? 'role-active' : 'role-inactive';
+                    my $icon_type    = $cnt ? 'success' : 'secondary';
                     push @out, qq{
-                        <span class="icon status $status_class">
-                            <img alt="$status_class" src="$status_img" />
+                        <span class="mr-2 icon status $status_class">
+                            <svg title="" role="img" class="mt-icon--$icon_type mt-icon--sm">
+                                <use xlink:href="${static_uri}images/sprite.svg#ic_dot">
+                            </svg>
                         </span>
                         <a href="$url">$name</a>
                     } . (
