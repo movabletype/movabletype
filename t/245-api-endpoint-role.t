@@ -70,7 +70,7 @@ sub suite {
         {    # Search name.
             path      => '/v2/roles',
             method    => 'GET',
-            params    => { search => 'Designer', },
+            params    => { search => 'Designer (MT6)', },
             callbacks => [
                 {   name  => 'data_api_pre_load_filtered_list.role',
                     count => 2,
@@ -78,7 +78,7 @@ sub suite {
             ],
             result => sub {
                 my $role
-                    = $app->model('role')->load( { name => 'Designer' } );
+                    = $app->model('role')->load( { name => 'Designer (MT6)' } );
 
                 $app->user($author);
 

@@ -59,7 +59,7 @@ my $admin = MT::Author->load(1);
 
 # Role
 require MT::Role;
-my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+my $designer = MT::Role->load( { name => MT->translate( 'Designer (MT6)' ) } );
 my $blog_admin = MT::Role->load( { name => MT->translate( 'Child Site Administrator' ) } );
 my $website_admin = MT::Role->load( { name => MT->translate( 'Site Administrator' ) } );
 

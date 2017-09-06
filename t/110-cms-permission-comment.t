@@ -121,7 +121,7 @@ my $create_post = MT::Test::Permission->make_role(
     permissions => "'create_post'",
 );
 
-my $designer  = MT::Role->load( { name => MT->translate('Designer') } );
+my $designer  = MT::Role->load( { name => MT->translate('Designer (MT6)') } );
 my $commenter = MT::Role->load( { name => MT->translate('Commenter') } );
 
 require MT::Association;

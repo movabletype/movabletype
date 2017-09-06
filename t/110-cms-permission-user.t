@@ -88,7 +88,7 @@ my $edit_all_posts = MT::Test::Permission->make_role(
     name        => 'Edit All Posts',
     permissions => "'edit_all_posts'",
 );
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+my $designer = MT::Role->load( { name => MT->translate('Designer (MT6)') } );
 
 require MT::Association;
 MT::Association->link( $aikawa   => $manage_users   => $blog );

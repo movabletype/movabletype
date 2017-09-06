@@ -40,7 +40,7 @@ $obj->set_values({
 });
 $obj->save or die $obj->errstr;
 
-my ($author_role) = $mt->model('role')->load({ name => 'Author' });
+my ($author_role) = $mt->model('role')->load({ name => 'Author (MT6)' });
 
 my $author = $mt->model('author')->new;
 $author->set_values({

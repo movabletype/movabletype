@@ -54,7 +54,7 @@ users:
             password: 'flute'
         roles:
             blog_narnia:
-                - 'Author'
+                - 'Author (MT6)'
     user_johnd:
         type: commenter
         values:

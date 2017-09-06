@@ -93,7 +93,7 @@ sub BEGIN {
         # The order here is the same order they are presented on the
         # role definition screen.
         2**0  => 'comment',             # 'Add Comments', 1, 'blog'],
-        2**12 => 'administer_blog',     # 'Blog Administrator', 1, 'blog'],
+        2**12 => 'administer_site',     # 'Blog Administrator', 1, 'blog'],
         2**6  => 'edit_config',         # 'Configure Blog', 1, 'blog'],
         2**3  => 'edit_all_posts',      # 'Edit All Entries', 1, 'blog'],
         2**4  => 'edit_templates',      # 'Manage Templates', 1, 'blog'],

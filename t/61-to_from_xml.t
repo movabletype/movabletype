@@ -298,8 +298,8 @@ sub finish {
     use MT::Association;
     use MT::Role;
     my $ba = MT::Role->load( { name => 'Child Site Administrator' } );
-    my $ed = MT::Role->load( { name => 'Editor' } );
-    my $au = MT::Role->load( { name => 'Author' } );
+    my $ed = MT::Role->load( { name => 'Editor (MT6)' } );
+    my $au = MT::Role->load( { name => 'Author (MT6)' } );
     MT::Association->remove(
         { author_id => $chuck->id, blog_id => 1, role_id => $ba->id },
     );
@@ -366,10 +366,10 @@ sub setup {
     my $r = MT::Role->load( { name => 'Child Site Administrator' } );
     MT::Association->link( $chuck => $r => $b1 );    # Chuck is a blog admin
 
-    my $r2 = MT::Role->load( { name => 'Editor' } );
+    my $r2 = MT::Role->load( { name => 'Editor (MT6)' } );
     MT::Association->link( $bob => $r2 => $b1 );     # Bob is a editor
 
-    my $r3 = MT::Role->load( { name => 'Author' } );
+    my $r3 = MT::Role->load( { name => 'Author (MT6)' } );
     MT::Association->link( $mel => $r3 => $b1 );     # Melody is a author
 
     # Add website records

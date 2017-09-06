@@ -112,7 +112,7 @@ my $website_admin
     = MT::Role->load( { name => MT->translate('Site Administrator') } );
 my $blog_admin
     = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+my $designer = MT::Role->load( { name => MT->translate('Designer (MT6)') } );
 
 require MT::Association;
 MT::Association->link( $aikawa => $website_admin => $website );
@@ -138,7 +138,7 @@ require MT::Permission;
 my $p = MT::Permission->new;
 $p->blog_id(0);
 $p->author_id( $ukawa->id );
-$p->permissions("'create_website'");
+$p->permissions("'create_site'");
 $p->save;
 
 $p = MT::Permission->new;

@@ -49,10 +49,8 @@ subtest 'Upgrade from MT4 to MT6' => sub {
         'Administrator has "Child Site Administrator" role.'
     );
     my $perms = $admin->permissions( $blog->id );
-    ok( $perms->has('administer_blog'),
-        'Administrator has "administer_blog" permission.' );
-    ok( !$perms->has('administer_website'),
-        'Administer does not have "administer_website" permission.' );
+    ok( $perms->has('administer_site'),
+        'Administrator has "administer_site" permission.' );
 
     my $cfg = MT->config;
     $cfg->MTVersion(4.38);
@@ -135,10 +133,8 @@ subtest 'Upgrade from MT4 to MT6' => sub {
     );
 
     $perms = $admin->permissions( $blog->id );
-    ok( $perms->has('administer_blog'),
-        'Administrator has "administer_blog" permission.' );
-    ok( $perms->has('administer_website'),
-        'Administrator has "administer_website" permission.' );
+    ok( $perms->has('administer_site'),
+        'Administrator has "administer_site" permission.' );
 };
 
 subtest 'Upgrade from MT5 to MT6' => sub {
@@ -172,10 +168,8 @@ subtest 'Upgrade from MT5 to MT6' => sub {
         'Administrator has "Child Site Administrator" role.'
     );
     my $perms = $admin->permissions( $blog->id );
-    ok( $perms->has('administer_blog'),
-        'Administrator has "administer_blog" permission.' );
-    ok( !$perms->has('administer_website'),
-        'Administrator does not have "administer_website" permission.' );
+    ok( $perms->has('administer_site'),
+        'Administrator has "administer_site" permission.' );
 
     my $cfg = MT->config;
     $cfg->MTVersion(5.2);
@@ -261,10 +255,8 @@ subtest 'Upgrade from MT5 to MT6' => sub {
     );
 
     $perms = $admin->permissions( $blog->id );
-    ok( $perms->has('administer_blog'),
-        'Administrator has "administer_blog" permission.' );
-    ok( !$perms->has('administer_website'),
-        'Administrator does not have "administer_website" permission.' );
+    ok( $perms->has('administer_site'),
+        'Administrator has "administer_site" permission.' );
 };
 
 done_testing;

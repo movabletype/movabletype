@@ -40,18 +40,20 @@ sub suite {
                 totalResults => 2,
                 items        => [
                     {   permissions => [
-                            qw(administer create_blog create_website edit_templates
-                                manage_content_types manage_plugins view_log)
+                            qw(administer create_blog create_site edit_templates
+                                manage_content_types manage_plugins manage_users_groups
+                                sign_in_cms sign_in_data_api view_log)
                         ],
                         blog => undef
                     },
                     {   permissions => [
-                            qw(administer_blog administer_website comment create_post
-                                edit_all_posts edit_assets edit_categories edit_config
-                                edit_content_types edit_notifications edit_tags edit_templates manage_feedback
-                                manage_member_blogs manage_pages manage_themes manage_users
-                                publish_post rebuild send_notifications
-                                set_publish_paths upload view_blog_log)
+                            qw(administer_site comment create_post create_site
+                                edit_all_content_types edit_all_posts
+                                edit_assets edit_categories edit_config edit_notifications
+                                edit_tags edit_templates manage_category_set
+                                manage_content_datas manage_content_types manage_feedback
+                                manage_pages manage_themes manage_users publish_post rebuild
+                                send_notifications set_publish_paths upload view_blog_log)
                         ],
                         blog => { id => 1 },
                     },

@@ -104,7 +104,7 @@ my $edit_templates = MT::Test::Permission->make_role(
    permissions => "'edit_templates'",
 );
 
-my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+my $designer = MT::Role->load( { name => MT->translate( 'Designer (MT6)' ) } );
 
 require MT::Association;
 MT::Association->link( $aikawa => $create_post => $blog );

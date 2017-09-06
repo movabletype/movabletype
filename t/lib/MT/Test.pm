@@ -595,16 +595,16 @@ sub init_data {
     require MT::Role;
     my ( $admin_role, $author_role )
         = map { MT::Role->load( { name => $_ } ) }
-        ( 'Child Site Administrator', 'Author' );
+        ( 'Child Site Administrator', 'Author (MT6)' );
 
     unless ( $admin_role && $author_role ) {
         my @default_roles = (
             {   name        => 'Child Site Administrator',
                 description => 'Can administer the child site.',
                 role_mask   => 2**12,
-                perms       => ['administer_blog']
+                perms       => ['administer_site']
             },
-            {   name => 'Author',
+            {   name => 'Author (MT6)',
                 description =>
                     'Can create entries, edit their own entries, upload files and publish.',
                 perms => [
@@ -631,7 +631,7 @@ sub init_data {
         MT::Object->driver->clear_cache;
         ( $admin_role, $author_role )
             = map { MT::Role->load( { name => $_ } ) }
-            ( 'Child Site Administrator', 'Author' );
+            ( 'Child Site Administrator', 'Author (MT6)' );
     }
 
     require MT::Association;

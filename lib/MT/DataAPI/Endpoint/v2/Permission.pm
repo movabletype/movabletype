@@ -135,7 +135,7 @@ sub _can_grant {
 
     if ( !$perms->can_do('grant_administer_role') ) {
         return if !$perms->can_do('grant_role_for_blog');
-        return if $role->has('administer_blog');
+        return if $role->has('administer_site');
     }
 
     return 1;
@@ -143,7 +143,7 @@ sub _can_grant {
 
 sub _exists_administer_blog_role {
 
-    # Load permission which has administer_blog
+    # Load permission which has administer_site
     my @admin_roles = MT::Role->load_by_permission("administer_site");
     my $admin_role;
     foreach my $r (@admin_roles) {
@@ -171,7 +171,7 @@ sub _grant {
         && _exists_administer_blog_role() )
     {
 # Load Blog Administrator role. If no roles found, should be return successfully.
-        my @admin_roles = MT::Role->load_by_permission("administer_blog");
+        my @admin_roles = MT::Role->load_by_permission("administer_site");
         return 1 unless @admin_roles;
         my $admin_role = $admin_roles[0];
 
@@ -254,7 +254,7 @@ sub _can_revoke {
     return if !$perms->can_do('revoke_role');
     return
         if !$perms->can_do('revoke_administer_role')
-        && $role->has('administer_blog');
+        && $role->has('administer_site');
 
     return 1;
 }

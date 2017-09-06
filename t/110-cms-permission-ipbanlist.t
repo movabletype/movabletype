@@ -61,7 +61,7 @@ my $manage_feedback = MT::Test::Permission->make_role(
     permissions => "'manage_feedback'",
 );
 
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+my $designer = MT::Role->load( { name => MT->translate('Designer (MT6)') } );
 
 require MT::Association;
 MT::Association->link( $aikawa   => $edit_config     => $blog );

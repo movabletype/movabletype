@@ -102,7 +102,7 @@ sub upgrade_functions {
                     require MT::Association;
                     require MT::Role;
                     my ($role)
-                        = MT::Role->load_by_permission("administer_blog");
+                        = MT::Role->load_by_permission("administer_site");
                     if ($role) {
                         my $user = MT::Author->load( $_[0]->author_id );
                         my $blog = MT::Author->load( $_[0]->blog_id );
@@ -111,7 +111,7 @@ sub upgrade_functions {
                         }
                     }
                     else {
-                        $_[0]->can_administer_blog(1);
+                        $_[0]->can_administer_site(1);
                     }
                 },
             }
@@ -240,7 +240,7 @@ sub upgrade_functions {
             updater       => {
                 type      => 'permission',
                 condition => sub {
-                    !$_[0]->can_edit_tags && !$_[0]->can_administer_blog;
+                    !$_[0]->can_edit_tags && !$_[0]->can_administer_site;
                 },
                 code =>
                     sub { $_[0]->can_edit_tags( $_[0]->can_edit_categories ) }

@@ -184,8 +184,7 @@ sub seed_database {
         : ''
     );
     $author->is_superuser(1);
-    $author->can_create_blog(1);
-    $author->can_create_website(1);
+    $author->can_create_site(1);
     $author->can_view_log(1);
     $author->can_manage_plugins(1);
     $author->preferred_language($lang);

@@ -48,7 +48,7 @@ my $edit_categories = MT::Test::Permission->make_role(
     permissions => "'edit_categories'",
 );
 
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+my $designer = MT::Role->load( { name => MT->translate('Designer (MT6)') } );
 
 require MT::Association;
 MT::Association->link( $aikawa, $edit_categories, $blog );

@@ -90,7 +90,7 @@ my $publish_post = MT::Test::Permission->make_role(
    name  => 'Publish Post',
    permissions => "'publish_post','create_post'",
 );
-my $designer = MT::Role->load({ name => MT->translate('Designer') });
+my $designer = MT::Role->load({ name => MT->translate('Designer (MT6)') });
 
 require MT::Association;
 MT::Association->link( $aikawa => $manage_feedback => $blog );

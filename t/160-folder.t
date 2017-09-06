@@ -85,7 +85,7 @@ subtest 'permission_filter methods check' => sub {
         permissions => "'manage_pages'",
     );
 
-    my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+    my $designer = MT::Role->load( { name => MT->translate('Designer (MT6)') } );
 
     require MT::Association;
     MT::Association->link( $aikawa, $manage_pages, $website );

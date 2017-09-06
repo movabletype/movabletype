@@ -7,7 +7,7 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
-use Test::More tests => 76;
+use Test::More;
 
 use MT;
 use MT::Author;
@@ -50,7 +50,7 @@ isa_ok( $mt, 'MT' );
     ok( $perm->can_send_notifications,  'can_send_notifications' );
     ok( $perm->can_edit_categories,     'can_edit_categories' );
     ok( $perm->can_edit_notifications,  'can_edit_notifications' );
-    ok( $perm->can_administer_blog,     'can_administer_blog' );
+    ok( $perm->can_administer_site,     'can_administer_site' );
     ok( $perm->can_edit_assets,         'can_edit_assets' );
     ok( $perm->can_manage_feedback,     'can_manage_feedback' );
 }
@@ -124,7 +124,7 @@ isa_ok( $mt, 'MT' );
     ok( $perm->can_send_notifications,   'Bob D can send notifications' );
     ok( !$perm->can_edit_categories,     'can_edit_categories' );
     ok( !$perm->can_edit_notifications,  'can_edit_notifications' );
-    ok( !$perm->can_administer_blog,     'can_administer_blog' );
+    ok( !$perm->can_administer_site,     'can_administer_site' );
     ok( !$perm->can_edit_assets,         'can_edit_assets' );
     ok( !$perm->can_manage_feedback,     'can_manage_feedback' );
 }
@@ -156,27 +156,27 @@ isa_ok( $mt, 'MT' );
 
     $author->$_(1)
         for
-        qw( can_create_website can_create_blog can_edit_templates can_manage_plugins can_view_log );
+        qw( can_create_site can_edit_templates can_manage_plugins can_view_log );
     is( $perm->(),
-        "'create_website','create_blog','edit_templates','manage_plugins','view_log'",
+        "'create_site','edit_templates','manage_plugins','view_log'",
         'Add 5 permissions.'
     );
 
-    $author->can_create_website(0);
+    $author->can_create_site(0);
     is( $perm->(),
-        "'create_blog','edit_templates','manage_plugins','view_log'",
-        'Delete create_website permission.'
+        "'edit_templates','manage_plugins','view_log'",
+        'Delete create_site permission.'
     );
 
     $author->can_view_log(0);
     is( $perm->(),
-        "'create_blog','edit_templates','manage_plugins'",
+        "'edit_templates','manage_plugins'",
         'Delete view_log permission.'
     );
 
     $author->can_edit_templates(0);
     is( $perm->(),
-        "'create_blog','manage_plugins'",
+        "'manage_plugins'",
         'Delete edit_templates permission.'
     );
 
@@ -187,3 +187,4 @@ isa_ok( $mt, 'MT' );
     ok( !$perm->(), 'Delete manage_plugins permission.' );
 }
 
+done_testing();

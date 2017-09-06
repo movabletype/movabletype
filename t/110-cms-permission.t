@@ -1552,8 +1552,8 @@ sub make_data {
         or die "Couldn't save role record 20: " . $role->errstr;
 
     ### Association
-    my $designer_role = MT::Role->load( { name => 'Designer' } );
-    my $author_role   = MT::Role->load( { name => 'Author' } );
+    my $designer_role = MT::Role->load( { name => 'Designer (MT6)' } );
+    my $author_role   = MT::Role->load( { name => 'Author (MT6)' } );
     my $blog_role = MT::Role->load( { name => 'Child Site Administrator' } );
     my $website_role = MT::Role->load( { name => 'Site Administrator' } );
     my $page_role    = MT::Role->load( { name => 'Webmaster' } );

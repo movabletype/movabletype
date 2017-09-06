@@ -59,7 +59,7 @@ my $view_blog_log = MT::Test::Permission->make_role(
    permissions => "'view_blog_log'",
 );
 
-my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+my $designer = MT::Role->load( { name => MT->translate( 'Designer (MT6)' ) } );
 
 require MT::Association;
 MT::Association->link( $aikawa => $view_blog_log => $blog );

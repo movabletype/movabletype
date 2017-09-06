@@ -202,7 +202,7 @@ sub global_perms {
         my $perms = shift;
         my ($more_perm) = @_;
         if ( my $more = $more_perm->restrictions ) {
-            if ( $more =~ /'administer_site' | 'administer_website'/ ) {
+            if ( $more =~ /'administer_site'/ ) {
                 $more = _all_perms('blog');
             }
             my $cur_perm = $perms->restrictions;
@@ -355,9 +355,6 @@ sub global_perms {
                     return 1
                         if ( ( $_[0]->blog && $_[0]->blog->is_blog )
                         && $_[0]->has('administer_site') );
-                    return 1
-                        if ( ( $_[0]->blog && !$_[0]->blog->is_blog )
-                        && $_[0]->has('administer_website') );
                 }
             }
 
@@ -397,6 +394,7 @@ sub global_perms {
         }
         foreach (@list) {
             my $ref = $Perms{$_};
+            print $_ unless $ref;
             die "invalid permission" unless $ref;
             next if $pkg->_check_if( $perms, $column, $_ );
             my $val = $perms->$column || '';

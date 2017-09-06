@@ -144,7 +144,7 @@ my $edit_config = MT::Test::Permission->make_role(
     permissions => "'edit_config'",
 );
 
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+my $designer = MT::Role->load( { name => MT->translate('Designer (MT6)') } );
 
 require MT::Association;
 MT::Association->link( $aikawa   => $edit_config    => $blog );

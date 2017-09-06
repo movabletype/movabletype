@@ -2773,6 +2773,7 @@ sub load_core_permissions {
                 'remove_user_assoc'                => 1,
                 'edit_global_commenter_status'     => 1,
 
+                'administer_site'              => 1,
                 'manage_member_blogs'          => 1,
                 'open_blog_listing_screen'     => 1,
                 'open_all_blog_listing_screen' => 1,
