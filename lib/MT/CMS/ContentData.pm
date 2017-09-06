@@ -641,6 +641,7 @@ sub make_content_actions {
         $content_actions->{$key} = {
             new => {
                 label => 'Create new ' . MT::Util::encode_html( $ct->name ),
+                icon  => 'ic_add',
                 order => 100,
                 mode  => 'view',
                 args  => {
