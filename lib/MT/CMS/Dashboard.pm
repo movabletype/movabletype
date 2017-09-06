@@ -1034,62 +1034,78 @@ sub updates_widget {
     my $app = shift;
     my ( $tmpl, $param ) = @_;
 
-    # Update check
     if ( $app->config('DisableVersionCheck') ) {
         $param->{disable_version_check} = 1;
+        return;
+    }
+
+    # Update check
+    require MT::Session;
+    my $version_info;
+    my $use_cache;
+    if ( $app->param('reload') ) {
+
+        # Force reload, purge cache if exists
+        my $cache = MT->model('session')->load(
+            {   id   => 'Update Check',
+                kind => 'DW',
+            }
+        );
+        $cache->remove if $cache;
     }
     else {
-        require MT::Session;
-        if ( scalar $app->param('reload') ) {
-
-            # Force reload, purge cache if exists
-            my $cache = MT->model('session')->load(
-                {   id   => 'Update Check',
-                    kind => 'DW',
-                }
-            );
-            $cache->remove if $cache;
-        }
-        else {
-            # Check cache
-            my $ttl   = 4 * 60 * 60;                        # 4 hours
-            my $cache = MT::Session::get_unexpired_value(
-                $ttl,
-                {   id   => 'Update Check',
-                    kind => 'DW',
-                }
-            );
-
-            if ($cache) {
-                if ( $cache->get('version')
-                    and MT->version_id ne $cache->get('version') )
-                {
-                    $param->{available_version} = $cache->get('version');
-                    $param->{news_url}          = $cache->get('news_url');
-                }
-                return;
+        # Check cache
+        my $ttl   = 4 * 60 * 60;                        # 4 hours
+        my $cache = MT::Session::get_unexpired_value(
+            $ttl,
+            {   id   => 'Update Check',
+                kind => 'DW',
             }
-        }
+        );
 
-        # Read available version data.
+        if ($cache) {
+            $version_info->{version}  = $cache->get('version');
+            $version_info->{news_url} = $cache->get('news_url');
+            $use_cache                = 1;
+        }
+    }
+
+    if ( !$version_info ) {
+
+        # Read available version data from site.
         my $ua = MT->new_ua( { timeout => 10 } );
         if ( !$ua ) {
             $param->{update_check_failed} = 1;
+            return;
         }
-        else {
-            my $version_url = const('LATEST_VESION_URL');
-            my $req         = new HTTP::Request( GET => $version_url );
-            my $resp        = $ua->request($req);
-            my $result      = $resp->content();
-            if ( !$resp->is_success() || !$result ) {
-                $param->{update_check_failed} = 1;
+
+        my $version_url = const('LATEST_VESION_URL');
+        my $req         = new HTTP::Request( GET => $version_url );
+        my $resp        = $ua->request($req);
+        my $result      = $resp->content();
+        if ( !$resp->is_success() || !$result ) {
+            $param->{update_check_failed} = 1;
+            return;
+        }
+
+        $version_info = MT::Util::from_json($result);
+    }
+
+    if ($version_info) {
+        require version;
+        my $mt_version;
+        my $latest_version;
+        eval {
+            $mt_version     = version->parse( MT->version_id );
+            $latest_version = version->parse( $version_info->{version} );
+        };
+        if ( !$@ ) {
+            if ( $latest_version > $mt_version ) {
+                $param->{available_version} = $version_info->{version};
+                $param->{news_url}          = $version_info->{news_url};
             }
-            else {
-                $result = MT::Util::from_json($result);
-                if ( MT->version_id ne $result->{version} ) {
-                    $param->{available_version} = $result->{version};
-                    $param->{news_url}          = $result->{news_url};
-                }
+
+            if ( !$use_cache ) {
 
                 # Make a cache
                 my $cache = MT->model('session')->new;
@@ -1099,8 +1115,8 @@ sub updates_widget {
                         start => time,
                     }
                 );
-                $cache->set( 'version',  $result->{version} );
-                $cache->set( 'news_url', $result->{news_url} );
+                $cache->set( 'version',  $version_info->{version} );
+                $cache->set( 'news_url', $version_info->{news_url} );
                 $cache->save;
             }
         }
