@@ -3,26 +3,15 @@
    class="message-center-widget"
    label="<__trans phrase="Messages from the system">"
    can_close="0">
-<mt:setvarblock name="widget_header">
-</mt:setvarblock>
-<div class="panel-group" id="notification_accordion">
 <mt:loop name="loop_notification_dashboard">
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">
-        <a data-toggle="collapse" data-parent="#notification_accordion" href="#collapse<mt:var name="__index__">" aria-expanded="false" aria-controls="notification_accordion">
-          <img src="<mt:var name="static_uri">images/status_icons/<mt:if name="level"><mt:var name="level"><mt:else>warning</mt:if>.gif" />
-          <mt:var name="text">
-        </a>
-      </div>
-    </div>
-    <div id="collapse<mt:var name="__index__">" class="collapse">
-      <div class="card-block">
-        <mt:var name="detail">
+  <div class="mt-widget__content card">
+    <div class="card-block">
+      <a class="btn btn-link" data-toggle="collapse" href="#notify-<mt:var name="__counter__">" aria-expanded="false" aria-controls="notify-<mt:var name="__counter__">"><svg title="<__trans phrase="warning">" role="img" class="mt-icon mt-icon--warning"><use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_caution" /></svg><mt:var name="text"></a>
+      <div class="collapse" id="notify-<mt:var name="__counter__">">
+        <p><mt:var name="detail"></p>
       </div>
     </div>
   </div>
 </mt:loop>
-</div>
 </mtapp:widget>
 </mt:if>
