@@ -1794,7 +1794,7 @@ sub do_preview {
     require MT::Util;
     require MT::Comment;
     require MT::Blog;
-    my $entry_id = $q->param('entry_id')
+    my $entry_id = $app->param('entry_id')
         || return $app->error(
         $app->translate(
             'No entry was specified; perhaps there is a template problem?')
@@ -1822,8 +1822,9 @@ sub do_preview {
     $comment->created_on($ts);
     $comment->commenter_id( $commenter->id ) if $commenter;
 
+    my $static = $app->param('static');
     $ctx->stash( 'comment',           $comment );
-    $ctx->stash( 'comment_is_static', $q->param('static') );
+    $ctx->stash( 'comment_is_static', $static );
     $ctx->stash( 'entry',             $entry );
     $ctx->{current_timestamp} = $ts;
     $ctx->stash( 'commenter', $commenter );
