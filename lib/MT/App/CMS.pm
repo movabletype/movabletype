@@ -4087,10 +4087,9 @@ sub _translate_naughty_words {
 sub autosave_session_obj {
     my $app           = shift;
     my ($or_make_one) = @_;
-    my $q             = $app->param;
-    my $type          = $q->param('_type');
+    my $type          = $app->param('_type');
     return unless $type;
-    my $id = $q->param('id');
+    my $id = $app->param('id');
     $id = '0' unless $id;
     my $ident
         = 'autosave'
@@ -4104,7 +4103,7 @@ sub autosave_session_obj {
         $ident .= ':blog_id=' . $blog->id;
     }
     if ( $type eq 'content_data' ) {
-        my $content_type_id = $q->param('content_type_id');
+        my $content_type_id = $app->param('content_type_id');
         $ident .= ':content_type_id=' . $content_type_id;
     }
     require MT::Session;
