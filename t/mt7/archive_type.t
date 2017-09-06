@@ -84,18 +84,25 @@ my $cd = MT::Test::Permission->make_content_data(
     },
 );
 
-my $text = "<\$mt:ArchiveTitle\$>\n<mt:Contents>a</mt:Contents>\n";
+my $text
+    = "<\$mt:ArchiveTitle\$>\n<mt:Contents>a</mt:Contents>\n"
+    . '<mt:Archives>'
+    . '<mt:ArchiveList><$mt:ArchiveDate format="%Y/%m/%d"$>'
+    . '</mt:ArchiveList>'
+    . '</mt:Archives>';
 my $tmpl = MT::Test::Permission->make_template(
     blog_id         => $blog->id,
     content_type_id => $cd->id,
     name            => 'ContentType Test',
     type            => 'ct',
+    text            => $text,
 );
 my $tmpl_archive = MT::Test::Permission->make_template(
     blog_id         => $blog->id,
     content_type_id => $cd->id,
     name            => 'ContentType Archive Test',
     type            => 'ct_archive',
+    text            => $text,
 );
 
 my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
@@ -252,11 +259,6 @@ for my $s (@suite) {
 
     note( 'ArchiveType: ' . $at );
 
-    $template->text( $text
-            . '<mt:ArchiveList archive_type="'
-            . $at
-            . '"><$mt:ArchiveDate format="%Y/%m/%d"$></mt:ArchiveList>' );
-    $template->save;
     $blog->archive_type($at);
     $blog->save;
 
