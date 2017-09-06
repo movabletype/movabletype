@@ -781,10 +781,11 @@ sub dialog_post_comment {
             ;    # check for publish_post
     }
 
-    my $blog = $parent->blog
-        || $app->model('blog')->load( $app->param('blog_id') );
+    my $blog_id = $app->param('blog_id');
+    my $blog    = $parent->blog
+        || $app->model('blog')->load($blog_id);
     return $app->error(
-        $app->translate( 'Cannot load blog #[_1].', $app->param('blog_id') ) )
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) )
         unless $blog;
 
     require MT::Sanitize;
