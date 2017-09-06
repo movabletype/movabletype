@@ -1505,31 +1505,25 @@ sub handle_sign_in {
 
 sub redirect_to_target {
     my $app  = shift;
-    my $q    = $app->param;
     my %opts = @_;
     my $cfg  = $app->config;
     my $target;
     require MT::Util;
-    my $static = $q->param('static') || $q->param('return_url') || '';
+    my $static = $app->param('static') || $app->param('return_url') || '';
 
     if ( ( $static eq '' ) || ( $static eq '1' ) ) {
         require MT::Entry;
-        my $entry = MT::Entry->load( $q->param('entry_id') || 0 )
+        my $entry_id = $app->param('entry_id') || 0;
+        my $entry = MT::Entry->load($entry_id)
             or return $app->error(
-            $app->translate(
-                'Cannot load entry #[_1].',
-                $q->param('entry_id')
-            )
-            );
+            $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
         $target = $entry->archive_url;
     }
     elsif ( $static ne '' ) {
-        my $blog = $app->model('blog')->load( scalar $q->param('blog_id') )
+        my $blog_id = $app->param('blog_id') || 0;
+        my $blog = $app->model('blog')->load($blog_id)
             or return $app->error(
-            $app->translate(
-                'Cannot load blog #[_1].', $q->param('blog_id')
-            )
-            );
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         if ( !$app->is_valid_redirect_target ) {
             return $app->error(
                 $app->translate(
@@ -1543,7 +1537,7 @@ sub redirect_to_target {
     }
     $target =~ s!#.*$!!;    # strip off any existing anchor
 
-    if ( $q->param('logout') ) {
+    if ( $app->param('logout') ) {
         if ( $app->user
             && ( 'TypeKey' eq $app->user->auth_type ) )
         {
