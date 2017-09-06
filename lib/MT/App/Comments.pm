@@ -1930,8 +1930,8 @@ sub edit_commenter_profile {
             $url = $entry->permalink;
         }
         else {
-            $url = is_valid_url( $app->param('static')
-                    || $app->param('return_url') );
+            $url = $app->param('static') || $app->param('return_url');
+            $url = is_valid_url($url);
         }
 
         my $blog_id = $app->param('blog_id');
