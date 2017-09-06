@@ -868,12 +868,11 @@ sub _builtin_throttle {
 
 sub post {
     my $app = shift;
-    my $q   = $app->param;
 
     return $app->error( $app->translate("Invalid request") )
         if $app->request_method() ne 'POST';
 
-    my $entry_id = int( $q->param('entry_id') )
+    my $entry_id = int( $app->param('entry_id') || 0 )
         or return $app->error( $app->translate("No entry_id") );
     require MT::Entry;
     my $entry = MT::Entry->load($entry_id)
@@ -896,7 +895,7 @@ sub post {
         or return $app->error(
         $app->translate( 'Cannot load blog #[_1].', $entry->blog_id ) );
 
-    my $armor = $q->param('armor');
+    my $armor = $app->param('armor');
     if ( defined $armor ) {
 
         # For this to work, we must create a site path exactly like
@@ -923,7 +922,7 @@ sub post {
             $app->translate("Comments are not allowed on this entry.") );
     }
 
-    my $text = $q->param('text') || '';
+    my $text = $app->param('text') || '';
     $text =~ s/^\s+|\s+$//g;
     if ( $text eq '' ) {
         return $app->handle_error(
@@ -931,7 +930,8 @@ sub post {
     }
 
     # validate session parameter
-    if ( my $sid = $q->param('sid') ) {
+    my $sid = $app->param('sid');
+    if ($sid) {
         my ( $sess_obj, $commenter ) = $app->_get_commenter_session();
         if ( $sess_obj && $commenter && ( $sess_obj->id eq $sid ) ) {
 
@@ -955,7 +955,7 @@ sub post {
         $app->translate(
             "Your session has expired. Please sign in again to comment."
         )
-    ) if ( $commenter && !$q->param('sid') );
+    ) if ( $commenter && !$sid );
 
     if ( !$blog->allow_unreg_comments ) {
         if ( !$commenter ) {
@@ -975,8 +975,10 @@ sub post {
         return $app->handle_error(
             $app->translate("Name and E-mail address are required.") );
     }
+
+    my $email = $app->param('email');
     if ( $blog->allow_unreg_comments() ) {
-        $comment->email( $q->param('email') ) unless $comment->email();
+        $comment->email($email) unless $comment->email();
     }
 
     if ( $comment->email ) {
@@ -1062,13 +1064,13 @@ sub post {
 
     # Form a link to the comment
     my $comment_link;
-    if ( !$q->param('static') ) {
+    my $static = $app->param('static');
+    if ( !$static ) {
         my $url = $app->base . $app->uri;
-        $url .= '?entry_id=' . $q->param('entry_id');
+        $url .= '?entry_id=' . $entry_id;
         $comment_link = $url;
     }
     else {
-        my $static = $q->param('static');
         if ( $static eq '1' ) {
 
             # I think what we really want is the individual archive.
