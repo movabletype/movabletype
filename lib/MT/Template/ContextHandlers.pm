@@ -3724,7 +3724,7 @@ B<Attributes:>
 
 =over 4
 
-=item * id (required)
+=item * id (optional)
 
 A unique identifier for this group of settings.
 
@@ -3735,7 +3735,12 @@ If specified, applies this CSS class to the C<fieldset> tag produced.
 =item * shown (optional; default "1")
 
 Controls whether the C<fieldset> is initially shown or not. If hidden,
-a CSS "hidden" class is applied to the C<fieldset> tag.
+a CSS "collapse" class is applied to the C<fieldset> tag.
+id attribute is required if you want to control show/hide.
+
+=item * legend (optional)
+
+If specified, displays the label of this field group.
 
 =back
 
@@ -3753,17 +3758,35 @@ B<Example:>
 
 sub _hdlr_app_setting_group {
     my ( $ctx, $args, $cond ) = @_;
-    my $id = $args->{id};
-    return $ctx->error("'id' attribute missing") unless $id;
 
-    my $class = $args->{class} || "";
-    my $shown = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
-    $class .= ( $class ne '' ? " " : "" ) . "hidden" unless $shown;
-    $class = qq{ class="$class"} if $class ne '';
+    my $id = $args->{id} || '';
+    $id = qq{id="$id"} if $id ne '';
+
+    my $class = 'form-group';
+    $class .= ' ' . $args->{class}
+        if $args->{class};
+
+    if ( exists $args->{shown} ) {
+        return $ctx->error("'id' attribute missing") unless $id;
+
+        if ( $args->{shown} ) {
+            $class .= ' collapse show';
+        }
+        else {
+            $class .= ' collapse';
+        }
+    }
+    $class = qq{class="$class"};
+
+    my $legend = $args->{legend} || '';
+    $legend = qq{<legend class="h3">$legend</legend>}
+        if $legend;
 
     my $insides = $ctx->slurp( $args, $cond );
+
     return <<"EOT";
-<fieldset id="$id"$class class="form-group">
+<fieldset $id $class>
+    $legend
     $insides
 </fieldset>
 EOT
