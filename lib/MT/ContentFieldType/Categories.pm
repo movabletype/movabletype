@@ -80,8 +80,10 @@ sub _build_category_list {
 
 sub data_load_handler {
     my ( $app, $field_data ) = @_;
-    my $field_id = $field_data->{id};
-    [ split ',', $app->param("category-${field_id}") ];
+    my $field_id          = $field_data->{id};
+    my $category_field_id = $app->param("category-${field_id}");
+    $category_field_id = '' unless defined $category_field_id;
+    [ split ',', $category_field_id ];
 }
 
 sub ss_validator {
