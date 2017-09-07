@@ -398,8 +398,7 @@ sub set_object_status {
     return $app->error( $app->translate("Invalid request.") )
         if $app->request_method ne 'POST';
 
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $type = $app->param('_type') || '';
     return $app->error( $app->translate('Invalid type') )
         unless ( $type eq 'user' )
         || ( $type eq 'author' )
@@ -412,7 +411,7 @@ sub set_object_status {
     my @sync;
     my $saved       = 0;
     my $not_enabled = 0;
-    for my $id ( $q->multi_param('id') ) {
+    for my $id ( $app->multi_param('id') ) {
         next unless $id;    # avoid 'empty' ids
         my $obj = $class->load($id);
         next unless $obj;
@@ -474,7 +473,7 @@ sub set_object_status {
         );
     }
     $app->add_return_arg( is_power_edit => 1 )
-        if $q->param('is_power_edit');
+        if $app->param('is_power_edit');
     $app->add_return_arg( unchanged => $unchanged )
         if $unchanged;
     $app->add_return_arg( not_enabled => $not_enabled )
