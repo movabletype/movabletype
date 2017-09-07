@@ -1783,8 +1783,8 @@ sub restore_premature_cancel {
     $app->validate_magic() or return;
 
     require JSON;
-    my $deferred = JSON::from_json( $app->param('deferred_json') )
-        if $app->param('deferred_json');
+    my $deferred_json = $app->param('deferred_json');
+    my $deferred = $deferred_json ? JSON::from_json($deferred_json) : undef;
     my $param = { restore_success => 1 };
     if ( defined $deferred && ( scalar( keys %$deferred ) ) ) {
         _log_dirty_restore( $app, $deferred );
