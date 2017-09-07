@@ -2668,7 +2668,8 @@ sub convert_to_html {
 
 sub update_list_prefs {
     my $app   = shift;
-    my $prefs = $app->list_pref( $app->param('_type') );
+    my $type  = $app->param('_type');
+    my $prefs = $app->list_pref($type);
     $app->call_return;
 }
 
