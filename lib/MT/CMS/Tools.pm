@@ -2283,44 +2283,41 @@ sub dialog_restore_upload {
         if !$user->is_superuser;
     $app->validate_magic() or return;
 
-    my $q = $app->param;
-
-    my $current        = $q->param('current_file');
-    my $last           = $q->param('last');
-    my $files          = $q->param('files');
-    my $assets_json    = $q->param('assets');
-    my $is_asset       = $q->param('is_asset') || 0;
-    my $schema_version = $q->param('schema_version')
+    my $current        = $app->param('current_file');
+    my $last           = $app->param('last');
+    my $files          = $app->param('files');
+    my $assets_json    = $app->param('assets');
+    my $is_asset       = $app->param('is_asset') || 0;
+    my $schema_version = $app->param('schema_version')
         || $app->config('SchemaVersion');
-    my $overwrite_template = $q->param('overwrite_templates') ? 1 : 0;
+    my $overwrite_template = $app->param('overwrite_templates') ? 1 : 0;
 
     my $objects  = {};
     my $deferred = {};
-    my $objects_json;
     require JSON;
-    $objects_json = $q->param('objects_json') if $q->param('objects_json');
-    $deferred = JSON::from_json( $q->param('deferred_json') )
-        if $q->param('deferred_json');
+    my $deferred_json = $app->param('deferred_json');
+    my $objects_json  = $app->param('objects_json');
+    $deferred = JSON::from_json($deferred_json) if $deferred_json;
 
     my ($fh) = $app->upload_info('file');
 
     my $param = {};
-    $param->{start}         = $q->param('start') || 0;
+    $param->{start}         = $app->param('start') || 0;
     $param->{is_asset}      = $is_asset;
     $param->{name}          = $current;
     $param->{files}         = $files;
     $param->{assets}        = $assets_json;
     $param->{last}          = $last;
     $param->{redirect}      = 1;
-    $param->{is_dirty}      = $q->param('is_dirty');
-    $param->{objects_json}  = $objects_json if defined($objects_json);
+    $param->{is_dirty}      = $app->param('is_dirty');
+    $param->{objects_json}  = $objects_json if $objects_json;
     $param->{deferred_json} = MT::Util::to_json($deferred)
         if defined($deferred);
-    $param->{blogs_meta}          = $q->param('blogs_meta');
+    $param->{blogs_meta}          = $app->param('blogs_meta');
     $param->{schema_version}      = $schema_version;
     $param->{overwrite_templates} = $overwrite_template;
 
-    my $uploaded = $q->param('file') || $q->param('fname');
+    my $uploaded = $app->param('file') || $app->param('fname');
     if ( defined($uploaded) ) {
         $uploaded =~ s!\\!/!g;    ## Change backslashes to forward slashes
         $uploaded =~ s!^.*/!!;    ## Get rid of full directory paths
@@ -2346,7 +2343,7 @@ sub dialog_restore_upload {
 
     if ( !$fh ) {
         $param->{error} = $app->translate('File was not uploaded.')
-            if !( $q->param('redirect') );
+            if !( $app->param('redirect') );
         return $app->load_tmpl( 'dialog/restore_upload.tmpl', $param );
     }
 
@@ -2408,7 +2405,7 @@ sub dialog_restore_upload {
     if ($is_asset) {
         $asset = shift @$assets;
         $asset->{fh} = $fh;
-        my $blogs_meta = JSON::from_json( $q->param('blogs_meta') || '{}' );
+        my $blogs_meta = JSON::from_json( $app->param('blogs_meta') || '{}' );
         MT::BackupRestore->_restore_asset_multi( $asset, $objects,
             $error_assets, sub { $app->print_encode(@_); }, $blogs_meta );
         if ( defined( $error_assets->{ $asset->{asset_id} } ) ) {
