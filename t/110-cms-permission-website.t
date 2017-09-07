@@ -112,7 +112,7 @@ my $website_admin
     = MT::Role->load( { name => MT->translate('Site Administrator') } );
 my $blog_admin
     = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
-my $designer = MT::Role->load( { name => MT->translate('Designer (MT6)') } );
+my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
 require MT::Association;
 MT::Association->link( $aikawa => $website_admin => $website );
@@ -424,6 +424,7 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
+    note $out;
     ok( $out,                "Request: save" );
     ok( _is_not_error($out), "save (new) by permitted user" );
 

@@ -54,13 +54,13 @@ __SQL__
                     my $association = shift;
                     require MT::Role;
                     my @blog_admin
-                        = MT::Role->load_by_permission('administer_site');
+                        = MT::Role->load_by_permission('administer_blog');
                     grep { $_->id == $association->role_id } @blog_admin;
                 },
                 code => sub {
                     require MT::Role;
                     my $website_admin
-                        = MT::Role->load_by_permission('administer_site');
+                        = MT::Role->load_by_permission('administer_website');
                     $_[0]->role_id( $website_admin->id );
                     $_[0]->save;
                 },

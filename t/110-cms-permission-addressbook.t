@@ -57,7 +57,7 @@ my $edit_notification = MT::Test::Permission->make_role(
     permissions => "'edit_notifications'",
 );
 
-my $designer_role = MT::Role->load( { name => MT->translate('Designer (MT6)') } );
+my $designer_role = MT::Role->load( { name => MT->translate('Designer') } );
 
 require MT::Association;
 MT::Association->link( $ukawa    => $send_notification => $blog );

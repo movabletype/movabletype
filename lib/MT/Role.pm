@@ -297,18 +297,14 @@ sub create_default_roles {
     my @default_roles = (
         {   name        => MT->translate('Site Administrator'),
             description => MT->translate('Can administer the site.'),
-            perms       => ['administer_site']
-        },
-        {   name        => MT->translate('Website Administrator (MT6)'),
-            description => MT->translate('Can administer the website.'),
-            perms       => ['administer_site']
+            perms       => [ 'administer_site' ]
         },
         {   name        => MT->translate('Child Site Administrator'),
             description => MT->translate('Can administer the child site.'),
             role_mask   => 2**12,
             perms       => ['administer_site']
         },
-        {   name        => MT->translate('Editor (MT6)'),
+        {   name        => MT->translate('Editor'),
             description => MT->translate(
                 'Can upload files, edit all entries(categories), pages(folders), tags and publish the site.'
             ),
@@ -321,7 +317,7 @@ sub create_default_roles {
                 'manage_feedback', 'edit_assets'
             ],
         },
-        {   name        => MT->translate('Author (MT6)'),
+        {   name        => MT->translate('Author'),
             description => MT->translate(
                 'Can create entries, edit their own entries, upload files and publish.'
             ),
@@ -331,7 +327,7 @@ sub create_default_roles {
                 'send_notifications'
             ],
         },
-        {   name        => MT->translate('Designer (MT6)'),
+        {   name        => MT->translate('Designer'),
             description => MT->translate(
                 'Can edit, manage, and publish blog templates and themes.'),
             role_mask => ( 2**4 + 2**7 ),
@@ -343,7 +339,7 @@ sub create_default_roles {
             ),
             perms => [ 'manage_pages', 'rebuild', 'upload' ]
         },
-        {   name        => MT->translate('Contributor (MT6)'),
+        {   name        => MT->translate('Contributor'),
             description => MT->translate(
                 'Can create entries, edit their own entries, and comment.'),
             perms => [ 'comment', 'create_post' ],

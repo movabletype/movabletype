@@ -524,7 +524,7 @@ sub _process_masks {
                 push @perms, 'create_post', 'send_notifications';
             }
             elsif ( 4096 eq $key ) {    #adminsiter_blog
-                push @perms, 'administer_site';
+                push @perms, 'administer_blog';
             }
             elsif ( 2048 eq $key ) {    #not_comment
                 $perm->restrictions("'comment'");

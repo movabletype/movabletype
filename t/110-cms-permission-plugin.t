@@ -55,9 +55,8 @@ require MT::Role;
 my $blog_admin
     = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
 my $website_admin
-    = MT::Role->load(
-    { name => MT->translate('Website Administrator (MT6)') } );
-my $designer = MT::Role->load( { name => MT->translate('Designer (MT6)') } );
+    = MT::Role->load( { name => MT->translate('Site Administrator') } );
+my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
 require MT::Association;
 MT::Association->link( $aikawa   => $blog_admin    => $blog );

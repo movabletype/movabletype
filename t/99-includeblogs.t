@@ -61,7 +61,7 @@ $plim->set_values({
 $plim->set_password("flute");
 $plim->type( MT::Author::AUTHOR() );
 $plim->save() or die "Couldn't save author record: " . $plim->errstr;
-my $author_role = MT::Role->load({ name => 'Author (MT6)' });
+my $author_role = MT::Role->load({ name => 'Author' });
 my $assoc = MT::Association->new();
 $assoc = MT::Association->new();
 $assoc->author_id( $plim->id );

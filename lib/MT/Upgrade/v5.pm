@@ -259,7 +259,7 @@ sub _v5_migrate_blog {
     my $app     = $MT::Upgrade::App;
     my $user_id = ref $app ? $app->{author}->id : $MT::Upgrade::SuperUser;
     my $user    = MT::Author->load($user_id);
-    return if $user->permissions(0)->has('administer_site');
+    return if $user->permissions(0)->has('administer_website');
 
     # Create generic website.
     my $class = MT->model('website');
@@ -325,7 +325,7 @@ sub _v5_migrate_blog {
     return $self->error(
         $self->translate_escape( "Error loading class: [_1].", 'Role' ) )
         unless $role_class;
-    my $role = MT::Role->load_by_permission('administer_site');
+    my $role = MT::Role->load_by_permission('administer_website');
     $assoc_class->link( $user => $role => $website );
 
     return;
@@ -349,7 +349,7 @@ sub _v5_create_new_role {
         push @roles, $role;
     }
     for my $role (@roles) {
-        next if $role->has('administer_site');
+        next if $role->has('administer_website');
         $role->name( MT->translate('Webmaster (MT4)') );
         $role->save
             or return $self->error(
@@ -370,7 +370,7 @@ sub _v5_create_new_role {
         $role->description( MT->translate('Can administer the website.') );
         $role->clear_full_permissions;
         $role->set_these_permissions(
-            [ 'administer_site' ] );
+            [ 'administer_website', 'manage_member_blogs' ] );
         $role->save
             or return $self->error(
             $self->translate_escape(
@@ -461,7 +461,7 @@ sub _v5_migrate_system_privilege {
                     $perm->author->name
                 )
             );
-            $perm->set_these_permissions( ['create_site'] );
+            $perm->set_these_permissions( ['create_website'] );
             $perm->save
                 or return $self->error(
                 $self->translate_escape(
@@ -555,7 +555,7 @@ sub _v5_migrate_default_site {
         return $self->error(
             $self->translate_escape( "Error loading class: [_1].", 'Role' ) )
             unless $role_class;
-        my $role = MT::Role->load_by_permission('administer_site');
+        my $role = MT::Role->load_by_permission('administer_website');
         $assoc_class->link( $user => $role => $website );
     }
 }
@@ -674,11 +674,11 @@ sub _v5_generate_websites_place_blogs {
     return $self->error(
         $self->translate_escape( "Error loading class: [_1].", 'Role' ) )
         unless $role_class;
-    my $role = $role_class->load_by_permission('administer_site');
+    my $role = $role_class->load_by_permission('administer_website');
     return $self->error(
         $self->translate_escape(
             "Error loading role: [_1].",
-            'administer_site'
+            'administer_website'
         )
     ) unless $role;
 

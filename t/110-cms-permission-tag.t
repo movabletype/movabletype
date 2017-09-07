@@ -64,7 +64,7 @@ my $edit_tags = MT::Test::Permission->make_role(
    permissions => "'edit_tags'",
 );
 
-my $designer = MT::Role->load( { name => MT->translate( 'Designer (MT6)' ) } );
+my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
 
 require MT::Association;
 MT::Association->link( $aikawa => $create_post => $blog );

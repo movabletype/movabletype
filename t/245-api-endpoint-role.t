@@ -70,21 +70,23 @@ sub suite {
         {    # Search name.
             path      => '/v2/roles',
             method    => 'GET',
-            params    => { search => 'Designer (MT6)', },
+            params    => { search => 'Designer', },
             callbacks => [
                 {   name  => 'data_api_pre_load_filtered_list.role',
                     count => 2,
                 },
             ],
             result => sub {
-                my $role
-                    = $app->model('role')->load( { name => 'Designer (MT6)' } );
+                my @roles = $app->model('role')->load(
+                    { name => { like => '%Designer%' } },
+                    { sort => 'name', direction => 'ascend' },
+                );
 
                 $app->user($author);
 
                 return +{
-                    totalResults => 1,
-                    items => MT::DataAPI::Resource->from_object( [$role] ),
+                    totalResults => 2,
+                    items => MT::DataAPI::Resource->from_object( \@roles ),
                 };
             },
         },
