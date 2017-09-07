@@ -6,7 +6,7 @@ use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 use MT::Tag;
 
-sub _field_html_params {
+sub field_html_params {
     my ( $app, $field_data ) = @_;
     my $value = $field_data->{value};
     $value = [] unless defined $value;
