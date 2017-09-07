@@ -1,6 +1,8 @@
-<mt:unless name="page_title">
-<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:var name="object_label_plural">"></mt:setvarblock>
-</mt:unless>
+<mt:if name="page_title">
+<mt:setvarblock name="page_title"><mt:var name="page_title" escape="html"></mt:setvarblock>
+<mt:else>
+<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:var name="object_label_plural" escape="html">"></mt:setvarblock>
+</mt:if>
 <mt:setvar name="show_display_options_link" value="0">
 
 <mt:if name="build_user_menus">
