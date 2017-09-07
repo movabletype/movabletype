@@ -575,13 +575,12 @@ sub not_junk {
 
 sub reply {
     my $app = shift;
-    my $q   = $app->param;
 
-    my $reply_to    = encode_html( $q->param('reply_to') );
-    my $magic_token = encode_html( $q->param('magic_token') );
-    my $blog_id     = encode_html( $q->param('blog_id') );
-    my $return_url  = encode_html( $q->param('return_url') );
-    my $text        = encode_html( $q->param('comment-reply'), 1 );
+    my $reply_to    = encode_html( scalar $app->param('reply_to') );
+    my $magic_token = encode_html( scalar $app->param('magic_token') );
+    my $blog_id     = encode_html( scalar $app->param('blog_id') );
+    my $return_url  = encode_html( scalar $app->param('return_url') );
+    my $text        = encode_html( scalar $app->param('comment-reply'), 1 );
     my $indicator   = $app->static_path . 'images/indicator.gif';
     my $url         = $app->uri;
     <<SPINNER;
@@ -781,10 +780,11 @@ sub dialog_post_comment {
             ;    # check for publish_post
     }
 
-    my $blog = $parent->blog
-        || $app->model('blog')->load( $app->param('blog_id') );
+    my $blog_id = $app->param('blog_id');
+    my $blog    = $parent->blog
+        || $app->model('blog')->load($blog_id);
     return $app->error(
-        $app->translate( 'Cannot load blog #[_1].', $app->param('blog_id') ) )
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) )
         unless $blog;
 
     require MT::Sanitize;

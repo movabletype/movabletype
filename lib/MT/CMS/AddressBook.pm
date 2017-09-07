@@ -31,8 +31,8 @@ sub entry_notify {
 sub send_notify {
     my $app = shift;
     $app->validate_magic() or return;
-    my $q        = $app->param;
-    my $entry_id = $q->param('entry_id')
+
+    my $entry_id = $app->param('entry_id')
         or return $app->error( $app->translate("No entry ID was provided") );
     require MT::Entry;
     require MT::Blog;
@@ -55,13 +55,13 @@ sub send_notify {
     $params{entry}        = $entry;
     $params{entry_author} = $author ? 1 : 0;
 
-    if ( $q->param('send_excerpt') ) {
+    if ( $app->param('send_excerpt') ) {
         $params{send_excerpt} = 1;
     }
-    my $message = $q->param('message');
+    my $message = $app->param('message');
     $params{message}
         = defined $message ? wrap_text( $message, $cols, '', '' ) : '';
-    if ( $q->param('send_body') ) {
+    if ( $app->param('send_body') ) {
         $params{send_body} = 1;
     }
 
@@ -80,7 +80,7 @@ sub send_notify {
     $params{entry_editurl} = $entry_editurl;
 
     my $addrs;
-    if ( $q->param('send_notify_list') ) {
+    if ( $app->param('send_notify_list') ) {
         require MT::Notification;
         my $iter = MT::Notification->load_iter( { blog_id => $blog->id } );
         while ( my $note = $iter->() ) {
@@ -89,8 +89,8 @@ sub send_notify {
         }
     }
 
-    if ( $q->param('send_notify_emails') ) {
-        my @addr = split /[\n\r,]+/, $q->param('send_notify_emails');
+    if ( my $send_notify_emails = $app->param('send_notify_emails') ) {
+        my @addr = split /[\n\r,]+/, $send_notify_emails;
         for my $a (@addr) {
             next unless is_valid_email($a);
             $addrs->{$a} = 1;

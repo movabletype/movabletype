@@ -909,8 +909,12 @@ sub _tags_registry {
     {   label     => 'Tags',
         data_type => 'integer',
         order     => 180,
+
+      # prototype
+      # data_load_handler =>
+      #     '$Core::MT::ContentFieldType::Common::data_load_handler_multiple',
         data_load_handler =>
-            '$Core::MT::ContentFieldType::Common::data_load_handler_multiple',
+            '$Core::MT::ContentFieldType::Tags::data_load_handler',
         field_html => 'field_html/field_html_tags.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Tags::field_html_params',

@@ -174,10 +174,11 @@ sub recover_password {
             my $token   = MT::Util::perl_sha1_digest_hex(
                 $salt . $expires . $app->config->SecretToken );
 
+            my $return_to = $app->param('return_to');
+
             $user->password_reset($salt);
             $user->password_reset_expires($expires);
-            $user->password_reset_return_to( $app->param('return_to') )
-                if $app->param('return_to');
+            $user->password_reset_return_to($return_to) if $return_to;
             $user->save;
 
             # Send mail to user
@@ -417,10 +418,10 @@ sub test_system_mail {
     return $app->permission_denied()
         unless $app->user->is_superuser();
 
+    my $to_email_address = $app->param('to_email_address');
     return $app->json_error(
         $app->translate('Please enter a valid email address.') )
-        unless (
-        MT::Util::is_valid_email( $app->param('to_email_address') ) );
+        unless ( MT::Util::is_valid_email($to_email_address) );
 
     my $cfg = $app->config;
     return $app->json_error(
@@ -430,7 +431,7 @@ sub test_system_mail {
     ) unless ( $cfg->EmailAddressMain );
 
     my %head = (
-        To      => $app->param('to_email_address'),
+        To      => $to_email_address,
         From    => $cfg->EmailAddressMain,
         Subject => $app->translate("Test email from Movable Type")
     );
@@ -443,7 +444,7 @@ sub test_system_mail {
         $app->log(
             {   message => $app->translate(
                     'Test e-mail was successfully sent to [_1]',
-                    $app->param('to_email_address')
+                    $to_email_address
                 ),
                 level    => MT::Log::INFO(),
                 class    => 'system',
@@ -615,27 +616,27 @@ sub save_cfg_system_general {
     my $args = {};
 
     # construct the message to the activity log
-    my @meta_messages = ();
-    push(
-        @meta_messages,
-        $app->translate(
-            'Email address is [_1]',
-            $app->param('system_email_address')
-        )
-        )
-        if ( defined $app->param('system_email_address')
-        && $app->param('system_email_address') ne $cfg->EmailAddressMain );
-    push(
-        @meta_messages,
-        $app->translate(
-            'Debug mode is [_1]',
-            $app->param('system_debug_mode')
-        )
-        )
-        if ( defined $app->param('system_debug_mode')
-        and $app->param('system_debug_mode') =~ /\d+/ );
+    my @meta_messages        = ();
+    my $system_email_address = $app->param('system_email_address');
+    push( @meta_messages,
+        $app->translate( 'Email address is [_1]', $system_email_address ) )
+        if ( defined $system_email_address
+        && $system_email_address ne $cfg->EmailAddressMain );
+
+    my $system_debug_mode = $app->param('system_debug_mode');
+    push( @meta_messages,
+        $app->translate( 'Debug mode is [_1]', $system_debug_mode ) )
+        if ( defined $system_debug_mode
+        and $system_debug_mode =~ /\d+/ );
+
+    my $system_performance_logging
+        = $app->param('system_performance_logging');
+    my $system_performance_logging_path
+        = $app->param('system_performance_logging_path');
+    my $system_performance_logging_threshold
+        = $app->param('system_performance_logging_threshold');
     if ( not $cfg->HidePerformanceLoggingSettings ) {
-        if ( $app->param('system_performance_logging') ) {
+        if ($system_performance_logging) {
             push( @meta_messages,
                 $app->translate('Performance logging is on') );
         }
@@ -647,60 +648,53 @@ sub save_cfg_system_general {
             @meta_messages,
             $app->translate(
                 'Performance log path is [_1]',
-                $app->param('system_performance_logging_path')
+                $system_performance_logging_path
             )
             )
-            if ( defined $app->param('system_performance_logging_path')
-            and $app->param('system_performance_logging_path') =~ /\w+/ );
+            if ( defined $system_performance_logging_path
+            and $system_performance_logging_path =~ /\w+/ );
         push(
             @meta_messages,
             $app->translate(
                 'Performance log threshold is [_1]',
-                $app->param('system_performance_logging_threshold')
+                $system_performance_logging_threshold
             )
             )
-            if ( defined $app->param('system_performance_logging_threshold')
-            and $app->param('system_performance_logging_threshold')
-            =~ /\d+/ );
+            if ( defined $system_performance_logging_threshold
+            and $system_performance_logging_threshold =~ /\d+/ );
     }
 
     # actually assign the changes
-    $app->config( 'EmailAddressMain',
-        ( scalar $app->param('system_email_address') ), 1 );
-    $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
-        if ( defined $app->param('system_debug_mode')
-        and $app->param('system_debug_mode') =~ /\d+/ );
+    $app->config( 'EmailAddressMain', $system_email_address, 1 );
+    $app->config( 'DebugMode',        $system_debug_mode,    1 )
+        if ( defined $system_debug_mode
+        and $system_debug_mode =~ /\d+/ );
     if ( not $cfg->HidePerformanceLoggingSettings ) {
-        if ( $app->param('system_performance_logging') ) {
+        if ($system_performance_logging) {
             $app->config( 'PerformanceLogging', 1, 1 );
         }
         else {
             $app->config( 'PerformanceLogging', 0, 1 );
         }
         $app->config( 'PerformanceLoggingPath',
-            $app->param('system_performance_logging_path'), 1 )
-            if ( defined $app->param('system_performance_logging_path')
-            and $app->param('system_performance_logging_path') =~ /\w+/ );
+            $system_performance_logging_path, 1 )
+            if ( defined $system_performance_logging_path
+            and $system_performance_logging_path =~ /\w+/ );
         $app->config( 'PerformanceLoggingThreshold',
-            $app->param('system_performance_logging_threshold'), 1 )
-            if ( defined $app->param('system_performance_logging_threshold')
-            and $app->param('system_performance_logging_threshold')
-            =~ /\d+/ );
+            $system_performance_logging_threshold, 1 )
+            if ( defined $system_performance_logging_threshold
+            and $system_performance_logging_threshold =~ /\d+/ );
     }
 
+    my $sitepath_limit = $app->param('sitepath_limit');
     if ( not $cfg->HideBaseSitePath ) {
-        if ( not $app->param('sitepath_limit') ) {
+        if ( not $sitepath_limit ) {
             $app->config( 'BaseSitePath', undef, 1 );
         }
-        elsif (
-            File::Spec->file_name_is_absolute(
-                $app->param('sitepath_limit')
-            )
-            && -d $app->param('sitepath_limit')
-            )
+        elsif ( File::Spec->file_name_is_absolute($sitepath_limit)
+            && -d $sitepath_limit )
         {
-            my $count          = 0;
-            my $sitepath_limit = $app->param('sitepath_limit');
+            my $count = 0;
             foreach my $model_name (qw( website blog )) {
                 my $class = MT->model($model_name);
                 my $iter  = $class->load_iter();
@@ -718,7 +712,7 @@ sub save_cfg_system_general {
             }
             $args->{warning_sitepath_limit} = 1 if $count;
 
-            $app->config( 'BaseSitePath', $app->param('sitepath_limit'), 1 );
+            $app->config( 'BaseSitePath', $sitepath_limit, 1 );
         }
         else {
             return $app->errtrans(
@@ -729,19 +723,24 @@ sub save_cfg_system_general {
 
     # construct the message to the activity log
 
-    if ( $app->param('comment_disable') ) {
+    my $comment_disable = $app->param('comment_disable');
+    if ($comment_disable) {
         push( @meta_messages, $app->translate('Prohibit comments is on') );
     }
     else {
         push( @meta_messages, $app->translate('Prohibit comments is off') );
     }
-    if ( $app->param('ping_disable') ) {
+
+    my $ping_disable = $app->param('ping_disable');
+    if ($ping_disable) {
         push( @meta_messages, $app->translate('Prohibit trackbacks is on') );
     }
     else {
         push( @meta_messages, $app->translate('Prohibit trackbacks is off') );
     }
-    if ( $app->param('disable_notify_ping') ) {
+
+    my $disable_notify_ping = $app->param('disable_notify_ping');
+    if ($disable_notify_ping) {
         push( @meta_messages,
             $app->translate('Prohibit notification pings is on') );
     }
@@ -901,14 +900,13 @@ sub save_cfg_system_general {
     }
 
     # for feedback settings
-    $cfg->AllowComments( ( $app->param('comment_disable') ? 0 : 1 ), 1 );
-    $cfg->AllowPings( ( $app->param('ping_disable') ? 0 : 1 ), 1 );
-    $cfg->DisableNotificationPings(
-        ( $app->param('disable_notify_ping') ? 1 : 0 ), 1 );
-    my $send = $app->param('trackback_send') || 'any';
-    if ( $send =~ m/^(any|off|selected|local)$/ ) {
-        $cfg->OutboundTrackbackLimit( $send, 1 );
-        if ( $send eq 'selected' ) {
+    $cfg->AllowComments( ( $comment_disable ? 0 : 1 ), 1 );
+    $cfg->AllowPings( ( $ping_disable ? 0 : 1 ), 1 );
+    $cfg->DisableNotificationPings( ( $disable_notify_ping ? 1 : 0 ), 1 );
+    $trackback_send ||= 'any';
+    if ( $trackback_send =~ m/^(any|off|selected|local)$/ ) {
+        $cfg->OutboundTrackbackLimit( $trackback_send, 1 );
+        if ( $trackback_send eq 'selected' ) {
             my $domains = $app->param('trackback_send_domains') || '';
             $domains =~ s/[\r\n]+/ /gs;
             $domains =~ s/\s{2,}/ /gs;
@@ -1785,8 +1783,8 @@ sub restore_premature_cancel {
     $app->validate_magic() or return;
 
     require JSON;
-    my $deferred = JSON::from_json( $app->param('deferred_json') )
-        if $app->param('deferred_json');
+    my $deferred_json = $app->param('deferred_json');
+    my $deferred = $deferred_json ? JSON::from_json($deferred_json) : undef;
     my $param = { restore_success => 1 };
     if ( defined $deferred && ( scalar( keys %$deferred ) ) ) {
         _log_dirty_restore( $app, $deferred );
@@ -2285,44 +2283,41 @@ sub dialog_restore_upload {
         if !$user->is_superuser;
     $app->validate_magic() or return;
 
-    my $q = $app->param;
-
-    my $current        = $q->param('current_file');
-    my $last           = $q->param('last');
-    my $files          = $q->param('files');
-    my $assets_json    = $q->param('assets');
-    my $is_asset       = $q->param('is_asset') || 0;
-    my $schema_version = $q->param('schema_version')
+    my $current        = $app->param('current_file');
+    my $last           = $app->param('last');
+    my $files          = $app->param('files');
+    my $assets_json    = $app->param('assets');
+    my $is_asset       = $app->param('is_asset') || 0;
+    my $schema_version = $app->param('schema_version')
         || $app->config('SchemaVersion');
-    my $overwrite_template = $q->param('overwrite_templates') ? 1 : 0;
+    my $overwrite_template = $app->param('overwrite_templates') ? 1 : 0;
 
     my $objects  = {};
     my $deferred = {};
-    my $objects_json;
     require JSON;
-    $objects_json = $q->param('objects_json') if $q->param('objects_json');
-    $deferred = JSON::from_json( $q->param('deferred_json') )
-        if $q->param('deferred_json');
+    my $deferred_json = $app->param('deferred_json');
+    my $objects_json  = $app->param('objects_json');
+    $deferred = JSON::from_json($deferred_json) if $deferred_json;
 
     my ($fh) = $app->upload_info('file');
 
     my $param = {};
-    $param->{start}         = $q->param('start') || 0;
+    $param->{start}         = $app->param('start') || 0;
     $param->{is_asset}      = $is_asset;
     $param->{name}          = $current;
     $param->{files}         = $files;
     $param->{assets}        = $assets_json;
     $param->{last}          = $last;
     $param->{redirect}      = 1;
-    $param->{is_dirty}      = $q->param('is_dirty');
-    $param->{objects_json}  = $objects_json if defined($objects_json);
+    $param->{is_dirty}      = $app->param('is_dirty');
+    $param->{objects_json}  = $objects_json if $objects_json;
     $param->{deferred_json} = MT::Util::to_json($deferred)
         if defined($deferred);
-    $param->{blogs_meta}          = $q->param('blogs_meta');
+    $param->{blogs_meta}          = $app->param('blogs_meta');
     $param->{schema_version}      = $schema_version;
     $param->{overwrite_templates} = $overwrite_template;
 
-    my $uploaded = $q->param('file') || $q->param('fname');
+    my $uploaded = $app->param('file') || $app->param('fname');
     if ( defined($uploaded) ) {
         $uploaded =~ s!\\!/!g;    ## Change backslashes to forward slashes
         $uploaded =~ s!^.*/!!;    ## Get rid of full directory paths
@@ -2348,7 +2343,7 @@ sub dialog_restore_upload {
 
     if ( !$fh ) {
         $param->{error} = $app->translate('File was not uploaded.')
-            if !( $q->param('redirect') );
+            if !( $app->param('redirect') );
         return $app->load_tmpl( 'dialog/restore_upload.tmpl', $param );
     }
 
@@ -2410,7 +2405,7 @@ sub dialog_restore_upload {
     if ($is_asset) {
         $asset = shift @$assets;
         $asset->{fh} = $fh;
-        my $blogs_meta = JSON::from_json( $q->param('blogs_meta') || '{}' );
+        my $blogs_meta = JSON::from_json( $app->param('blogs_meta') || '{}' );
         MT::BackupRestore->_restore_asset_multi( $asset, $objects,
             $error_assets, sub { $app->print_encode(@_); }, $blogs_meta );
         if ( defined( $error_assets->{ $asset->{asset_id} } ) ) {
@@ -2673,7 +2668,8 @@ sub convert_to_html {
 
 sub update_list_prefs {
     my $app   = shift;
-    my $prefs = $app->list_pref( $app->param('_type') );
+    my $type  = $app->param('_type');
+    my $prefs = $app->list_pref($type);
     $app->call_return;
 }
 

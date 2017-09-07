@@ -2019,8 +2019,7 @@ sub post_save {
     }
 
     my $dynamic = 0;
-    my $q       = $app->param;
-    my $type    = $q->param('type') || '';
+    my $type = $app->param('type') || '';
 
     # FIXME: enumeration of types
     if (   $type eq 'custom'
@@ -2043,14 +2042,15 @@ sub post_save {
                 my $map_id = $2;
                 $map = MT::TemplateMap->load($map_id)
                     or next;
-                $map->prefer( $q->param($p) ); # prefer method saves in itself
+                my $preferred = $app->param($p);
+                $map->prefer($preferred);    # prefer method saves in itself
             }
             elsif ( $p =~ /^archive_file_tmpl_(\d+)$/ ) {
                 my $map_id = $1;
                 $map = MT::TemplateMap->load($map_id)
                     or next;
-                my $file_template = $q->param($p);
-                my $build_type_1  = $q->param("map_build_type_$map_id");
+                my $file_template = $app->param($p);
+                my $build_type_1  = $app->param("map_build_type_$map_id");
 
                 # Populate maps whose build type is dynamic
                 # and file template are changed
@@ -2064,7 +2064,7 @@ sub post_save {
                 my $map_id = $1;
                 $map = MT::TemplateMap->load($map_id)
                     or next;
-                my $build_type = $q->param($p);
+                my $build_type = $app->param($p);
                 require MT::PublishOption;
 
                 # Populate maps that are changed from static to dynamic
@@ -2075,9 +2075,9 @@ sub post_save {
                 $map->build_type($build_type);
                 if ( $build_type == MT::PublishOption::SCHEDULED() ) {
                     my $period
-                        = $q->param( 'map_schedule_period_' . $map_id );
+                        = $app->param( 'map_schedule_period_' . $map_id );
                     my $interval
-                        = $q->param( 'map_schedule_interval_' . $map_id );
+                        = $app->param( 'map_schedule_interval_' . $map_id );
                     my $sec = _get_interval( $period, $interval );
                     $map->build_interval($sec);
                 }
@@ -3002,7 +3002,9 @@ sub publish_archive_templates {
 
     require MT::CMS::Blog;
     my $return_args;
-    my $reedit = $app->param('reedit');
+    my $reedit      = $app->param('reedit');
+    my $blog_id     = $app->param('blog_id');
+    my $from_search = $app->param('from_search');
     if (@ids) {
 
         # we have more to do after this, so save the list
@@ -3011,11 +3013,10 @@ sub publish_archive_templates {
             mode => 'publish_archive_templates',
             args => {
                 magic_token => $app->current_magic,
-                blog_id     => scalar $app->param('blog_id'),
+                blog_id     => $blog_id,
                 id          => join( ",", @ids ),
                 reedit      => $reedit,
-                (   $app->param('from_search')
-                    ? ( from_search => $app->param('from_search') )
+                (   $from_search ? ( from_search => $from_search )
                     : ()
                 ),
                 (   $app->return_args ? ( return_args => $app->return_args )
@@ -3025,7 +3026,7 @@ sub publish_archive_templates {
         );
     }
     else {
-        if ( $app->param('from_search') ) {
+        if ($from_search) {
             $return_args = $app->return_args;
         }
         else {
@@ -3034,7 +3035,7 @@ sub publish_archive_templates {
                 mode => $mode,
                 args => {
                     ( $reedit ? ( _type => 'template' ) : () ),
-                    blog_id   => scalar $app->param('blog_id'),
+                    blog_id   => $blog_id,
                     published => 1,
                     ( $reedit ? ( saved => 1 )       : () ),
                     ( $reedit ? ( id    => $reedit ) : () ),
@@ -3055,12 +3056,11 @@ sub publish_archive_templates {
 
 sub save_widget {
     my $app = shift;
-    my $q   = $app->param;
 
     $app->validate_magic() or return;
     my $author = $app->user;
 
-    my $id = $q->param('id');
+    my $id = $app->param('id');
 
     if ( !$author->is_superuser ) {
         $app->run_callbacks( 'cms_save_permission_filter.template',
@@ -3090,10 +3090,13 @@ sub save_widget {
     }
 
     my $original = $obj->clone();
-    $obj->name( $q->param('name') );
+    my $name     = $app->param('name');
+    my $blog_id  = $app->param('blog_id') || 0;
+    my $modules  = $app->param('modules');
+    $obj->name($name);
     $obj->type('widgetset');
-    $obj->blog_id( $q->param('blog_id') || 0 );
-    $obj->modulesets( $q->param('modules') );
+    $obj->blog_id($blog_id);
+    $obj->modulesets($modules);
 
     unless (
         $app->run_callbacks( 'cms_pre_save.template', $app, $obj, $original )

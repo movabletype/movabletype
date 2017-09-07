@@ -81,9 +81,8 @@ sub edit {
 
 sub save {
     my $app   = shift;
-    my $q     = $app->param;
     my $perms = $app->permissions;
-    my $type  = $q->param('_type');
+    my $type  = $app->param('_type');
     my $class = $app->model($type)
         or return $app->errtrans("Invalid request.");
 
@@ -101,11 +100,10 @@ sub save {
 
     $app->validate_magic() or return;
 
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $cat;
-    if ( my $moved_cat_id = $q->param('move_cat_id') ) {
-        $cat = $class->load( $q->param('move_cat_id') )
-            or return;
+    if ( my $moved_cat_id = $app->param('move_cat_id') ) {
+        $cat = $class->load($moved_cat_id) or return;
         move_category($app) or return;
     }
     else {
@@ -113,7 +111,9 @@ sub save {
             my ($parent) = $p =~ /^category-new-parent-(\d+)$/;
             next unless ( defined $parent );
 
-            my $label = $q->param($p);
+            my $label = $app->param($p);
+            next unless defined $label;
+
             $label =~ s/(^\s+|\s+$)//g;
             next unless ( $label ne '' );
 
@@ -813,10 +813,11 @@ sub move_category {
         or return $app->errtrans("Invalid request.");
     $app->validate_magic() or return;
 
-    my $cat = $class->load( $app->param('move_cat_id') )
+    my $move_cat_id = $app->param('move_cat_id');
+    my $cat         = $class->load($move_cat_id)
         or return;
 
-    my $new_parent_id = $app->param('move-radio');
+    my $new_parent_id = $app->param('move-radio') || 0;
 
     return 1 if ( $new_parent_id == $cat->parent );
 

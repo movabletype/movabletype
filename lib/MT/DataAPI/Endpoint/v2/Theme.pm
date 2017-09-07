@@ -374,16 +374,16 @@ sub export {
 
     _set_default_params_if_all_params_not_set( $app, $q, $blog );
 
-    my $theme_id      = $q->param('theme_id');
-    my $theme_name    = $q->param('theme_name');
-    my $theme_version = $q->param('theme_version');
+    my $theme_id      = $app->param('theme_id');
+    my $theme_name    = $app->param('theme_name');
+    my $theme_version = $app->param('theme_version');
 
     return if !_check_params( $app, $theme_id, $theme_name, $theme_version );
 
     my $fmgr = MT::FileMgr->new('Local');
 
     ## $output should have 'themedir' or 'zipdownload'.
-    my $output = $q->param('output') || 'themedir';
+    my $output = $app->param('output') || 'themedir';
 
     ## Abort if theme directory is not okey for output.
     my ( $theme_dir, $output_path );
@@ -457,18 +457,21 @@ sub export {
     }
 
     ## Build data.
-    my $theme_hash = {
+    my $theme_author_name = $app->param('theme_author_name');
+    my $theme_author_link = $app->param('theme_author_link');
+    my $description       = $app->param('description');
+    my $theme_hash        = {
         id    => $theme_id,
         name  => $theme_name,
         label => $theme_name,
-        (   $q->param('theme_author_name')
-            ? ( author_name => $q->param('theme_author_name') )
+        (   $theme_author_name
+            ? ( author_name => $theme_author_name )
             : ()
         ),
-        author_link => $q->param('theme_author_link') || '',
+        author_link => $theme_author_link || '',
         version => $theme_version,
         class => ( $blog->is_blog ? 'blog' : 'website' ),
-        description => $q->param('description') || '',
+        description => $description || '',
     };
 
     for my $exporter_id ( keys %$hdlrs ) {

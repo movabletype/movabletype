@@ -374,7 +374,7 @@ sub save {
     }
     else {
         my $status = $app->param('status');
-        $content_data->status( $status );
+        $content_data->status($status);
     }
     if ( ( $content_data->status || 0 ) != MT::Entry::HOLD() ) {
         if ( !$blog->site_path || !$blog->site_url ) {
@@ -504,7 +504,7 @@ sub save {
         MT::Serialize->serialize( \$convert_breaks ) );
 
     my $block_editor_data = $app->param('blockeditor-data');
-    $content_data->block_editor_data( $block_editor_data );
+    $content_data->block_editor_data($block_editor_data);
 
     $app->run_callbacks( 'cms_pre_save.cd', $app, $content_data, $orig );
 
@@ -781,7 +781,8 @@ sub validate_content_fields {
 
     my $invalid_count = 0;
     my %invalid_fields;
-    if ( my $errors = _validate_content_fields( $app, $content_type ) ) {
+    if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
+    {
         $invalid_count = scalar @{$errors};
         %invalid_fields = map { $_->{field_id} => $_->{error} } @{$errors};
     }

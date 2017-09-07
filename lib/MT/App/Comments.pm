@@ -163,9 +163,9 @@ sub login_form {
 
 sub login_external {
     my $app = shift;
-    my $q   = $app->param;
 
-    my $authenticator = MT->commenter_authenticator( $q->param('key') );
+    my $key           = $app->param('key') || '';
+    my $authenticator = MT->commenter_authenticator($key);
     my $auth_class    = $authenticator->{class};
     eval "require $auth_class;";
     if ( my $e = $@ ) {
@@ -189,12 +189,17 @@ sub _create_commenter_assign_role {
         );
         return undef;
     }
-    my $commenter = $app->model('author')->new;
-    $commenter->name( $app->param('username') );
-    $commenter->nickname( $app->param('nickname') );
-    $commenter->set_password( $app->param('password') );
-    $commenter->email( $app->param('email') );
-    $commenter->external_id( $app->param('external_id') );
+    my $username    = $app->param('username');
+    my $nickname    = $app->param('nickname');
+    my $password    = $app->param('password');
+    my $email       = $app->param('email');
+    my $external_id = $app->param('external_id');
+    my $commenter   = $app->model('author')->new;
+    $commenter->name($username);
+    $commenter->nickname($nickname);
+    $commenter->set_password($password);
+    $commenter->email($email);
+    $commenter->external_id($external_id);
     $commenter->type( MT::Author::AUTHOR() );
     $commenter->status( MT::Author::ACTIVE() );
     $commenter->auth_type( $app->config->AuthenticationModule );
@@ -227,9 +232,8 @@ sub _create_commenter_assign_role {
 
 sub do_login {
     my $app     = shift;
-    my $q       = $app->param;
-    my $name    = $q->param('username');
-    my $blog_id = $q->param('blog_id');
+    my $name    = $app->param('username');
+    my $blog_id = $app->param('blog_id');
     my $blog    = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
@@ -257,11 +261,10 @@ sub do_login {
         || ( MT::Auth::SUCCESS() == $result ) )
     {
         my $commenter = $app->user;
-        if ( $q->param('external_auth') && !$commenter ) {
+        if ( $app->param('external_auth') && !$commenter ) {
             $app->param( 'name', $name );
             if ( MT::Auth::NEW_USER() == $result ) {
-                $commenter = $app->_create_commenter_assign_role(
-                    $q->param('blog_id') );
+                $commenter = $app->_create_commenter_assign_role($blog_id);
                 return $app->login_form(
                     error => $app->translate('Invalid login') )
                     unless $commenter;
@@ -868,12 +871,11 @@ sub _builtin_throttle {
 
 sub post {
     my $app = shift;
-    my $q   = $app->param;
 
     return $app->error( $app->translate("Invalid request") )
         if $app->request_method() ne 'POST';
 
-    my $entry_id = int( $q->param('entry_id') )
+    my $entry_id = int( $app->param('entry_id') || 0 )
         or return $app->error( $app->translate("No entry_id") );
     require MT::Entry;
     my $entry = MT::Entry->load($entry_id)
@@ -896,7 +898,7 @@ sub post {
         or return $app->error(
         $app->translate( 'Cannot load blog #[_1].', $entry->blog_id ) );
 
-    my $armor = $q->param('armor');
+    my $armor = $app->param('armor');
     if ( defined $armor ) {
 
         # For this to work, we must create a site path exactly like
@@ -923,7 +925,7 @@ sub post {
             $app->translate("Comments are not allowed on this entry.") );
     }
 
-    my $text = $q->param('text') || '';
+    my $text = $app->param('text') || '';
     $text =~ s/^\s+|\s+$//g;
     if ( $text eq '' ) {
         return $app->handle_error(
@@ -931,7 +933,8 @@ sub post {
     }
 
     # validate session parameter
-    if ( my $sid = $q->param('sid') ) {
+    my $sid = $app->param('sid');
+    if ($sid) {
         my ( $sess_obj, $commenter ) = $app->_get_commenter_session();
         if ( $sess_obj && $commenter && ( $sess_obj->id eq $sid ) ) {
 
@@ -955,7 +958,7 @@ sub post {
         $app->translate(
             "Your session has expired. Please sign in again to comment."
         )
-    ) if ( $commenter && !$q->param('sid') );
+    ) if ( $commenter && !$sid );
 
     if ( !$blog->allow_unreg_comments ) {
         if ( !$commenter ) {
@@ -975,8 +978,10 @@ sub post {
         return $app->handle_error(
             $app->translate("Name and E-mail address are required.") );
     }
+
+    my $email = $app->param('email');
     if ( $blog->allow_unreg_comments() ) {
-        $comment->email( $q->param('email') ) unless $comment->email();
+        $comment->email($email) unless $comment->email();
     }
 
     if ( $comment->email ) {
@@ -1062,13 +1067,13 @@ sub post {
 
     # Form a link to the comment
     my $comment_link;
-    if ( !$q->param('static') ) {
+    my $static = $app->param('static');
+    if ( !$static ) {
         my $url = $app->base . $app->uri;
-        $url .= '?entry_id=' . $q->param('entry_id');
+        $url .= '?entry_id=' . $entry_id;
         $comment_link = $url;
     }
     else {
-        my $static = $q->param('static');
         if ( $static eq '1' ) {
 
             # I think what we really want is the individual archive.
@@ -1413,11 +1418,10 @@ sub _expire_sessions {
 # This actually handles a UI-level sign-in or sign-out request.
 sub handle_sign_in {
     my $app = shift;
-    my $q   = $app->param;
 
     my $result = 0;
     my $sess;
-    if ( $q->param('logout') ) {
+    if ( $app->param('logout') ) {
         my ( $s, $commenter ) = $app->_get_commenter_session();
 
         # invalidate credentials in auth layer
@@ -1439,15 +1443,15 @@ sub handle_sign_in {
         $result = 1;
     }
     else {
-        my $authenticator = MT->commenter_authenticator( $q->param('key') );
+        my $key           = $app->param('key');
+        my $authenticator = MT->commenter_authenticator($key);
         my $auth_class    = $authenticator->{class};
         eval "require $auth_class;";
         if ( my $e = $@ ) {
             return $app->handle_error( $e, 403 );
         }
         my $cmtr_auth;
-        ( $cmtr_auth, $sess )
-            = $auth_class->handle_sign_in( $app, $q->param('key') );
+        ( $cmtr_auth, $sess ) = $auth_class->handle_sign_in( $app, $key );
         if ($cmtr_auth) {
             $result = $cmtr_auth;
             unless ($sess) {
@@ -1505,31 +1509,25 @@ sub handle_sign_in {
 
 sub redirect_to_target {
     my $app  = shift;
-    my $q    = $app->param;
     my %opts = @_;
     my $cfg  = $app->config;
     my $target;
     require MT::Util;
-    my $static = $q->param('static') || $q->param('return_url') || '';
+    my $static = $app->param('static') || $app->param('return_url') || '';
 
     if ( ( $static eq '' ) || ( $static eq '1' ) ) {
         require MT::Entry;
-        my $entry = MT::Entry->load( $q->param('entry_id') || 0 )
+        my $entry_id = $app->param('entry_id') || 0;
+        my $entry = MT::Entry->load($entry_id)
             or return $app->error(
-            $app->translate(
-                'Cannot load entry #[_1].',
-                $q->param('entry_id')
-            )
-            );
+            $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
         $target = $entry->archive_url;
     }
     elsif ( $static ne '' ) {
-        my $blog = $app->model('blog')->load( scalar $q->param('blog_id') )
+        my $blog_id = $app->param('blog_id') || 0;
+        my $blog = $app->model('blog')->load($blog_id)
             or return $app->error(
-            $app->translate(
-                'Cannot load blog #[_1].', $q->param('blog_id')
-            )
-            );
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         if ( !$app->is_valid_redirect_target ) {
             return $app->error(
                 $app->translate(
@@ -1543,7 +1541,7 @@ sub redirect_to_target {
     }
     $target =~ s!#.*$!!;    # strip off any existing anchor
 
-    if ( $q->param('logout') ) {
+    if ( $app->param('logout') ) {
         if ( $app->user
             && ( 'TypeKey' eq $app->user->auth_type ) )
         {
@@ -1794,7 +1792,7 @@ sub do_preview {
     require MT::Util;
     require MT::Comment;
     require MT::Blog;
-    my $entry_id = $q->param('entry_id')
+    my $entry_id = $app->param('entry_id')
         || return $app->error(
         $app->translate(
             'No entry was specified; perhaps there is a template problem?')
@@ -1822,8 +1820,9 @@ sub do_preview {
     $comment->created_on($ts);
     $comment->commenter_id( $commenter->id ) if $commenter;
 
+    my $static = $app->param('static');
     $ctx->stash( 'comment',           $comment );
-    $ctx->stash( 'comment_is_static', $q->param('static') );
+    $ctx->stash( 'comment_is_static', $static );
     $ctx->stash( 'entry',             $entry );
     $ctx->{current_timestamp} = $ts;
     $ctx->stash( 'commenter', $commenter );
@@ -1930,8 +1929,8 @@ sub edit_commenter_profile {
             $url = $entry->permalink;
         }
         else {
-            $url = is_valid_url( $app->param('static')
-                    || $app->param('return_url') );
+            $url = $app->param('static') || $app->param('return_url');
+            $url = is_valid_url($url);
         }
 
         my $blog_id = $app->param('blog_id');

@@ -378,7 +378,11 @@ sub core_methods {
             "${pkg}ContentType::dialog_content_data_modal",
         'dialog_list_content_data' => {
             code      => "${pkg}ContentType::dialog_list_content_data",
-            condition => sub { shift->param('dialog_view') },
+            condition => sub {
+                my $app = shift;
+                return 0 unless $app->param('dialog_view');
+                return 1;
+            }
         },
 
         'data_convert_to_html' => "${pkg}ContentData::data_convert_to_html",
@@ -4116,8 +4120,9 @@ sub autosave_object {
     my $app = shift;
     my $sess_obj = $app->autosave_session_obj(1) or return;
     $sess_obj->data('');
-    my $class = $app->model( $app->param('_type') ) or return;
-    my %data = $app->param_hash;
+    my $type  = $app->param('_type');
+    my $class = $app->model($type) or return;
+    my %data  = $app->param_hash;
     delete $data{_autosave};
     delete $data{magic_token};
 
@@ -4262,7 +4267,7 @@ sub preview_object_basename {
     push @parts, $app->user->id;
     push @parts, $blog_id || 0;
     push @parts, $id || 0;
-    push @parts, $type;
+    push @parts, $type if $type;
     push @parts, $app->config->SecretToken;
     my $data = join ",", @parts;
     return 'mt-preview-' . perl_sha1_digest_hex($data);

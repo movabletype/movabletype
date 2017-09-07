@@ -1126,6 +1126,10 @@ sub dialog_select_sysadmin {
         $row->{description} = $row->{nickname};
     };
 
+    my $json      = $app->param('json');
+    my $multi     = $app->param('multi');
+    my $idfield   = $app->param('idfield');
+    my $namefield = $app->param('namefield');
     $app->listing(
         {   type  => 'author',
             terms => {
@@ -1143,7 +1147,8 @@ sub dialog_select_sysadmin {
                 ),
             },
             code     => $hasher,
-            template => $app->param('json') ? 'include/listing_panel.tmpl'
+            template => $json
+            ? 'include/listing_panel.tmpl'
             : 'dialog/select_users.tmpl',
             params => {
                 dialog_title =>
@@ -1155,15 +1160,13 @@ sub dialog_select_sysadmin {
                 panel_label       => $app->translate("System Administrator"),
                 panel_description => $app->translate("Name"),
                 panel_type        => 'author',
-                panel_multi       => defined $app->param('multi')
-                ? $app->param('multi')
-                : 0,
-                panel_searchable => 1,
-                panel_first      => 1,
-                panel_last       => 1,
-                list_noncron     => 1,
-                idfield          => scalar( $app->param('idfield') ),
-                namefield        => scalar( $app->param('namefield') ),
+                panel_multi       => defined $multi ? $multi : 0,
+                panel_searchable  => 1,
+                panel_first       => 1,
+                panel_last        => 1,
+                list_noncron      => 1,
+                idfield           => $idfield,
+                namefield         => $namefield,
             },
         }
     );
