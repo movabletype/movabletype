@@ -10,6 +10,12 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
     $blog_id = $args['blog_id'];
     $blog_id or $blog_id = $ctx->stash('blog_id');
     $blog_id or $blog_id = 0;
+    if( isset( $args['parent'] ) ) {
+      if( $_stash_blog = $ctx->stash( 'blog' ) ){
+        $blog_id = $_stash_blog->blog_parent_id;
+      }
+    }
+
     $widgetmanager = $args['name']; // Should we try to load is there's only one?
     if (!$widgetmanager) 
         return;
