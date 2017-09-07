@@ -174,10 +174,11 @@ sub recover_password {
             my $token   = MT::Util::perl_sha1_digest_hex(
                 $salt . $expires . $app->config->SecretToken );
 
+            my $return_to = $app->param('return_to');
+
             $user->password_reset($salt);
             $user->password_reset_expires($expires);
-            $user->password_reset_return_to( $app->param('return_to') )
-                if $app->param('return_to');
+            $user->password_reset_return_to($return_to) if $return_to;
             $user->save;
 
             # Send mail to user
