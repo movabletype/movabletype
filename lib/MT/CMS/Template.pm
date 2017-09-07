@@ -1856,8 +1856,7 @@ sub post_save {
     }
 
     my $dynamic = 0;
-    my $q       = $app->param;
-    my $type    = $q->param('type') || '';
+    my $type = $app->param('type') || '';
 
     # FIXME: enumeration of types
     if (   $type eq 'custom'
@@ -1880,14 +1879,15 @@ sub post_save {
                 my $map_id = $2;
                 $map = MT::TemplateMap->load($map_id)
                     or next;
-                $map->prefer( $q->param($p) ); # prefer method saves in itself
+                my $preferred = $app->param($p);
+                $map->prefer($preferred);    # prefer method saves in itself
             }
             elsif ( $p =~ /^archive_file_tmpl_(\d+)$/ ) {
                 my $map_id = $1;
                 $map = MT::TemplateMap->load($map_id)
                     or next;
-                my $file_template = $q->param($p);
-                my $build_type_1  = $q->param("map_build_type_$map_id");
+                my $file_template = $app->param($p);
+                my $build_type_1  = $app->param("map_build_type_$map_id");
 
                 # Populate maps whose build type is dynamic
                 # and file template are changed
@@ -1901,7 +1901,7 @@ sub post_save {
                 my $map_id = $1;
                 $map = MT::TemplateMap->load($map_id)
                     or next;
-                my $build_type = $q->param($p);
+                my $build_type = $app->param($p);
                 require MT::PublishOption;
 
                 # Populate maps that are changed from static to dynamic
@@ -1912,9 +1912,9 @@ sub post_save {
                 $map->build_type($build_type);
                 if ( $build_type == MT::PublishOption::SCHEDULED() ) {
                     my $period
-                        = $q->param( 'map_schedule_period_' . $map_id );
+                        = $app->param( 'map_schedule_period_' . $map_id );
                     my $interval
-                        = $q->param( 'map_schedule_interval_' . $map_id );
+                        = $app->param( 'map_schedule_interval_' . $map_id );
                     my $sec = _get_interval( $period, $interval );
                     $map->build_interval($sec);
                 }
