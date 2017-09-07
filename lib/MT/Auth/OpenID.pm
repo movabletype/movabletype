@@ -48,12 +48,12 @@ sub login {
 sub handle_sign_in {
     my $class = shift;
     my ( $app, $auth_type ) = @_;
-    my $q        = $app->{query};
     my $INTERVAL = 60 * 60 * 24 * 7;
 
     $auth_type ||= 'OpenID';
 
-    my $blog         = $app->model('blog')->load( $q->param('blog_id') );
+    my $blog_id      = $app->param('blog_id');
+    my $blog         = $app->model('blog')->load($blog_id);
     my $author_class = $app->model('author');
 
     my $cmntr;
