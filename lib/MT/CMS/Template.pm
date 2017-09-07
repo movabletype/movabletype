@@ -2819,7 +2819,9 @@ sub publish_archive_templates {
 
     require MT::CMS::Blog;
     my $return_args;
-    my $reedit = $app->param('reedit');
+    my $reedit      = $app->param('reedit');
+    my $blog_id     = $app->param('blog_id');
+    my $from_search = $app->param('from_search');
     if (@ids) {
 
         # we have more to do after this, so save the list
@@ -2828,11 +2830,10 @@ sub publish_archive_templates {
             mode => 'publish_archive_templates',
             args => {
                 magic_token => $app->current_magic,
-                blog_id     => scalar $app->param('blog_id'),
+                blog_id     => $blog_id,
                 id          => join( ",", @ids ),
                 reedit      => $reedit,
-                (   $app->param('from_search')
-                    ? ( from_search => $app->param('from_search') )
+                (   $from_search ? ( from_search => $from_search )
                     : ()
                 ),
                 (   $app->return_args ? ( return_args => $app->return_args )
@@ -2842,7 +2843,7 @@ sub publish_archive_templates {
         );
     }
     else {
-        if ( $app->param('from_search') ) {
+        if ($from_search) {
             $return_args = $app->return_args;
         }
         else {
@@ -2851,7 +2852,7 @@ sub publish_archive_templates {
                 mode => $mode,
                 args => {
                     ( $reedit ? ( _type => 'template' ) : () ),
-                    blog_id   => scalar $app->param('blog_id'),
+                    blog_id   => $blog_id,
                     published => 1,
                     ( $reedit ? ( saved => 1 )       : () ),
                     ( $reedit ? ( id    => $reedit ) : () ),
