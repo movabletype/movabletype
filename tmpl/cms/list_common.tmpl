@@ -25,10 +25,11 @@
           <mt:if name="id"> id="<mt:var name="id">"</mt:if>
           <mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>
         >
+        <mt:setvarblock name="escaped_label"><mt:var name="label" escape="html"></mt:setvarblock>
         <mt:if name="icon">
-          <mtapp:svgicon id="$icon" size="sm" title="$label">
+          <mtapp:svgicon id="$icon" size="sm" title="$escaped_label">
         </mt:if>
-          <mt:var name="label">
+          <mt:var name="escaped_label">
         </a>
       </li>
     </mt:loop>
