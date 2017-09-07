@@ -378,7 +378,11 @@ sub core_methods {
             "${pkg}ContentType::dialog_content_data_modal",
         'dialog_list_content_data' => {
             code      => "${pkg}ContentType::dialog_list_content_data",
-            condition => sub { shift->param('dialog_view') },
+            condition => sub {
+                my $app = shift;
+                return 0 unless $app->param('dialog_view');
+                return 1;
+            }
         },
 
         'data_convert_to_html' => "${pkg}ContentData::data_convert_to_html",
