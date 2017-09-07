@@ -443,7 +443,7 @@ sub test_system_mail {
         $app->log(
             {   message => $app->translate(
                     'Test e-mail was successfully sent to [_1]',
-                    $app->param('to_email_address')
+                    $to_email_address
                 ),
                 level    => MT::Log::INFO(),
                 class    => 'system',
