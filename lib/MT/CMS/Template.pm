@@ -2087,7 +2087,7 @@ sub post_save {
                 my $map_id = $1;
                 $map = MT::TemplateMap->load($map_id)
                     or next;
-                my $cat_field_id = $q->param("cat_field_id_$map_id");
+                my $cat_field_id = $app->param("cat_field_id_$map_id");
                 if ( $map->cat_field_id != $cat_field_id ) {
                     $map->cat_field_id($cat_field_id);
                     $map->save;
@@ -2097,7 +2097,7 @@ sub post_save {
                 my $map_id = $1;
                 $map = MT::TemplateMap->load($map_id)
                     or next;
-                my $dt_field_id = $q->param("dt_field_id_$map_id");
+                my $dt_field_id = $app->param("dt_field_id_$map_id");
                 if ( $map->dt_field_id != $dt_field_id ) {
                     $map->dt_field_id($dt_field_id);
                     $map->save;
