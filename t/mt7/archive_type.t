@@ -83,6 +83,26 @@ my $cd = MT::Test::Permission->make_content_data(
         $cf_category->id => [ $category1->id ],
     },
 );
+my $cd1 = MT::Test::Permission->make_content_data(
+    blog_id         => $blog->id,
+    content_type_id => $ct->id,
+    author_id       => $author->id,
+    authored_on     => '20170809130530',
+    data            => {
+        $cf_datetime->id => '20170603180500',
+        $cf_category->id => [ $category1->id ],
+    },
+);
+my $cd2 = MT::Test::Permission->make_content_data(
+    blog_id         => $blog->id,
+    content_type_id => $ct->id,
+    author_id       => $author->id,
+    authored_on     => '20171009130530',
+    data            => {
+        $cf_datetime->id => '20170603180500',
+        $cf_category->id => [ $category1->id ],
+    },
+);
 
 my $text = <<TEXT;
 <\$mt:ArchiveTitle\$>
@@ -91,7 +111,6 @@ my $text = <<TEXT;
 <\$mt:ArchiveDate format="%Y/%m/%d"\$>
 <mt:ArchiveListFooter>Footer</mt:ArchiveListFooter></mt:ArchiveList></mt:Archives>
 TEXT
-warn $text;
 my $tmpl = MT::Test::Permission->make_template(
     blog_id         => $blog->id,
     content_type_id => $cd->id,
@@ -109,16 +128,29 @@ my $tmpl_archive = MT::Test::Permission->make_template(
 
 my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
 
-my $contents_html       = "\na\n";
+my $contents_html = {
+    none_ao    => "\naaa\n",
+    none_cf    => "\naaa\n",
+    daily_ao   => "\na\n",
+    daily_cf   => "\naaa\n",
+    weekly_ao  => "\na\n",
+    weekly_cf  => "\naaa\n",
+    monthly_ao => "\na\n",
+    monthly_cf => "\naaa\n",
+    yearly_ao  => "\naaa\n",
+    yearly_cf  => "\naaa\n",
+};
 my $archive_list_header = "Header\n";
 my $archive_date        = {
+    ct_ao      => "2017/10/09\n\n2017/09/09\n\n2017/08/09\n",
+    ct_cf      => "2017/06/03\n\n2017/06/03\n\n2017/06/03\n",
     none_ao    => "2017/09/09\n",
     none_cf    => "2017/06/03\n",
-    daily_ao   => "2017/09/09\n",
+    daily_ao   => "2017/10/09\n\n2017/09/09\n\n2017/08/09\n",
     daily_cf   => "2017/06/03\n",
-    weekly_ao  => "2017/09/03\n",
+    weekly_ao  => "2017/10/08\n\n2017/09/03\n\n2017/08/06\n",
     weekly_cf  => "2017/05/28\n",
-    monthly_ao => "2017/09/01\n",
+    monthly_ao => "2017/08/01\n\n2017/09/01\n\n2017/10/01\n",
     monthly_cf => "2017/06/01\n",
     yearly_ao  => "2017/01/01\n",
     yearly_cf  => "2017/01/01\n",
@@ -127,180 +159,176 @@ my $archive_list_footer = "Footer\n";
 my %html                = (
     'ContentType' => {
         ao => 'Sample Content Data'
-            . $contents_html
+            . $contents_html->{none_ao}
             . $archive_list_header
-            . $archive_date->{none_ao}
+            . $archive_date->{ct_ao}
             . $archive_list_footer,
         cf => 'Sample Content Data'
-            . $contents_html
+            . $contents_html->{none_cf}
             . $archive_list_header
-            . $archive_date->{none_cf}
+            . $archive_date->{ct_cf}
             . $archive_list_footer,
     },
     'ContentType-Daily' => {
         ao => 'September  9, 2017'
-            . $contents_html
+            . $contents_html->{daily_ao}
             . $archive_list_header
             . $archive_date->{daily_ao}
             . $archive_list_footer,
         cf => 'June  3, 2017'
-            . $contents_html
+            . $contents_html->{daily_cf}
             . $archive_list_header
             . $archive_date->{daily_cf}
             . $archive_list_footer,
     },
     'ContentType-Weekly' => {
         ao => 'September  3, 2017 - September  9, 2017'
-            . $contents_html
+            . $contents_html->{weekly_ao}
             . $archive_list_header
             . $archive_date->{weekly_ao}
             . $archive_list_footer,
         cf => 'May 28, 2017 - June  3, 2017'
-            . $contents_html
+            . $contents_html->{weekly_cf}
             . $archive_list_header
             . $archive_date->{weekly_cf}
             . $archive_list_footer,
     },
     'ContentType-Monthly' => {
         ao => 'September 2017'
-            . $contents_html
+            . $contents_html->{monthly_ao}
             . $archive_list_header
             . $archive_date->{monthly_ao}
             . $archive_list_footer,
         cf => 'June 2017'
-            . $contents_html
+            . $contents_html->{monthly_cf}
             . $archive_list_header
             . $archive_date->{monthly_cf}
             . $archive_list_footer,
     },
     'ContentType-Yearly' => {
         ao => '2017'
-            . $contents_html
+            . $contents_html->{yearly_ao}
             . $archive_list_header
             . $archive_date->{yearly_ao}
             . $archive_list_footer,
         cf => '2017'
-            . $contents_html
+            . $contents_html->{yearly_cf}
             . $archive_list_header
             . $archive_date->{yearly_cf}
             . $archive_list_footer,
     },
     'ContentType_Author' => {
         ao => 'Yuki Ishikawa'
-            . $contents_html
-            . $archive_list_header
-            . "\n"
+            . $contents_html->{none_ao}
+            . $archive_list_header . "\n"
             . $archive_list_footer,
         cf => 'Yuki Ishikawa'
-            . $contents_html
-            . $archive_list_header
-            . "\n"
+            . $contents_html->{none_cf}
+            . $archive_list_header . "\n"
             . $archive_list_footer,
     },
     'ContentType_Author-Daily' => {
         ao => 'Yuki Ishikawa: September  9, 2017'
-            . $contents_html
+            . $contents_html->{daily_ao}
             . $archive_list_header
             . $archive_date->{daily_ao}
             . $archive_list_footer,
         cf => 'Yuki Ishikawa: June  3, 2017'
-            . $contents_html
+            . $contents_html->{daily_cf}
             . $archive_list_header
             . $archive_date->{daily_cf}
             . $archive_list_footer,
     },
     'ContentType_Author-Weekly' => {
         ao => 'Yuki Ishikawa: September  3, 2017 - September  9, 2017'
-            . $contents_html
+            . $contents_html->{weekly_ao}
             . $archive_list_header
             . $archive_date->{weekly_ao}
             . $archive_list_footer,
         cf => 'Yuki Ishikawa: May 28, 2017 - June  3, 2017'
-            . $contents_html
+            . $contents_html->{weekly_cf}
             . $archive_list_header
             . $archive_date->{weekly_cf}
             . $archive_list_footer,
     },
     'ContentType_Author-Monthly' => {
         ao => 'Yuki Ishikawa: September 2017'
-            . $contents_html
+            . $contents_html->{monthly_ao}
             . $archive_list_header
             . $archive_date->{monthly_ao}
             . $archive_list_footer,
         cf => 'Yuki Ishikawa: June 2017'
-            . $contents_html
+            . $contents_html->{monthly_cf}
             . $archive_list_header
             . $archive_date->{monthly_cf}
             . $archive_list_footer,
     },
     'ContentType_Author-Yearly' => {
         ao => 'Yuki Ishikawa: 2017'
-            . $contents_html
+            . $contents_html->{yearly_ao}
             . $archive_list_header
             . $archive_date->{yearly_ao}
             . $archive_list_footer,
         cf => 'Yuki Ishikawa: 2017'
-            . $contents_html
+            . $contents_html->{yearly_cf}
             . $archive_list_header
             . $archive_date->{yearly_cf}
             . $archive_list_footer,
     },
     'ContentType_Category' => {
         ao => 'category1'
-            . $contents_html
-            . $archive_list_header
-            . "\n"
+            . $contents_html->{none_ao}
+            . $archive_list_header . "\n"
             . $archive_list_footer,
         cf => 'category1'
-            . $contents_html
-            . $archive_list_header
-            . "\n"
+            . $contents_html->{none_cf}
+            . $archive_list_header . "\n"
             . $archive_list_footer,
     },
     'ContentType_Category-Daily' => {
         ao => 'category1: September  9, 2017'
-            . $contents_html
+            . $contents_html->{daily_ao}
             . $archive_list_header
             . $archive_date->{daily_ao}
             . $archive_list_footer,
         cf => 'category1: June  3, 2017'
-            . $contents_html
+            . $contents_html->{daily_cf}
             . $archive_list_header
             . $archive_date->{daily_cf}
             . $archive_list_footer,
     },
     'ContentType_Category-Weekly' => {
         ao => 'category1: September  3, 2017 - September  9, 2017'
-            . $contents_html
+            . $contents_html->{weekly_ao}
             . $archive_list_header
             . $archive_date->{weekly_ao}
             . $archive_list_footer,
         cf => 'category1: May 28, 2017 - June  3, 2017'
-            . $contents_html
+            . $contents_html->{weekly_cf}
             . $archive_list_header
             . $archive_date->{weekly_cf}
             . $archive_list_footer,
     },
     'ContentType_Category-Monthly' => {
         ao => 'category1: September 2017'
-            . $contents_html
+            . $contents_html->{monthly_ao}
             . $archive_list_header
             . $archive_date->{monthly_ao}
             . $archive_list_footer,
         cf => 'category1: June 2017'
-            . $contents_html
+            . $contents_html->{monthly_cf}
             . $archive_list_header
             . $archive_date->{monthly_cf}
             . $archive_list_footer,
     },
     'ContentType_Category-Yearly' => {
         ao => 'category1: 2017'
-            . $contents_html
+            . $contents_html->{yearly_ao}
             . $archive_list_header
             . $archive_date->{yearly_ao}
             . $archive_list_footer,
         cf => 'category1: 2017'
-            . $contents_html
+            . $contents_html->{yearly_cf}
             . $archive_list_header
             . $archive_date->{yearly_cf}
             . $archive_list_footer,
@@ -326,6 +354,22 @@ foreach my $prefix (qw( ContentType ContentType_Author ContentType_Category ))
             my $tmpls    = $archiver->default_archive_templates;
             my ($default) = grep { $_->{default} } @$tmpls;
             $map->file_template( $default->{template} );
+            my $count
+                = $at eq 'ContentType'
+                ? 1
+                : $at =~ /Daily$/ ? $dt_field eq 'ao'
+                    ? 1
+                    : 3
+                : $at =~ /Weekly$/ ? $dt_field eq 'ao'
+                    ? 1
+                    : 3
+                : $at =~ /AuthorMonthly$/ ? 3
+                : $at =~ /Monthly$/       ? $dt_field eq 'ao'
+                    ? 1
+                    : 3
+                : $at =~ /Yearly$/  ? 3
+                : $dt_field eq 'ao' ? 3
+                :                     3;
             push @suite,
                 {
                 ArchiveType => $at,
@@ -333,6 +377,8 @@ foreach my $prefix (qw( ContentType ContentType_Author ContentType_Category ))
                 TemplateMap => $map,
                 Html        => $html{$at}{$dt_field},
                 Published   => 1,
+                DTField     => $dt_field,
+                Count       => $count,
                 };
         }
     }
@@ -374,7 +420,8 @@ for my $s (@suite) {
             TemplateMap => $map,
         }
     );
-    is( $does_publish_file, 1, ref($archiver) . '::does_publish_file' );
+    is( $does_publish_file, $s->{Count},
+        ref($archiver) . '::does_publish_file: ' . $s->{DTField} );
 
     my $file_name
         = $publisher->archive_file_for( $cd, $blog, $at, $category, $map,
@@ -418,9 +465,10 @@ for my $s (@suite) {
     is( -e $file ? 1 : 0,
         $s->{Published}, 'Rebuild: When a target file does not exists' );
     my $fmgr = MT::FileMgr->new('Local');
-    is( $fmgr->get_data($file),
-        $s->{Html},
-        'Published contents: When a target file does not exists' );
+    is( $fmgr->get_data($file), $s->{Html},
+              ref($archiver) . ': '
+            . $s->{DTField}
+            . ': Published contents: When a target file does not exists' );
 
     {
         my $dirname = dirname($file);
@@ -469,8 +517,10 @@ for my $s (@suite) {
     }
     is( -e $file ? 1 : 0,
         $s->{Published}, 'Rebuild: When a target file already exists' );
-    is( $fmgr->get_data($file),
-        $s->{Html}, 'Published contents: When a target file already exists' );
+    is( $fmgr->get_data($file), $s->{Html},
+              ref($archiver) . ': '
+            . $s->{DTField}
+            . ': Published contents: When a target file does not exists' );
 }
 
 done_testing;
