@@ -3206,7 +3206,7 @@ sub _hdlr_app_setting {
     }
 
     # 'Required' indicator plus CSS class
-    my $req       = $args->{required} ? " *"        : "";
+    my $req       = $args->{required} ? qq{ <span class="badge badge-danger">} . MT->translate('Required') . qq{</span>} : "";
     my $req_class = $args->{required} ? " required" : "";
 
     my $insides = $ctx->slurp( $args, $cond );
