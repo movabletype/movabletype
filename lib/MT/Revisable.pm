@@ -122,15 +122,16 @@ sub mt_presave_obj {
     my $modified_by = $obj->can('author') ? $obj->author : $app->user;
 
     if ( scalar @$changed_cols ) {
-        if ($app->isa('MT::App::CMS')
-            && $app->param( 'current_revision'
-            )    # not submitted if a user saves again on collision
-            && $app->param('current_revision') != $obj->current_revision
+        my $current_revision = $app->param('current_revision') || 0;
+        if (   $app->isa('MT::App::CMS')
+            && $current_revision # not submitted if a user saves again on collision
+            && $current_revision != $obj->current_revision
             )
         {
-            my %param = (
+            my $return_args = $app->param('return_args');
+            my %param       = (
                 collision            => 1,
-                return_args          => $app->param('return_args'),
+                return_args          => $return_args,
                 modified_by_nickname => $modified_by->nickname
             );
             return $app->forward( "view", \%param );
