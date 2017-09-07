@@ -813,10 +813,11 @@ sub move_category {
         or return $app->errtrans("Invalid request.");
     $app->validate_magic() or return;
 
-    my $cat = $class->load( $app->param('move_cat_id') )
+    my $move_cat_id = $app->param('move_cat_id');
+    my $cat         = $class->load($move_cat_id)
         or return;
 
-    my $new_parent_id = $app->param('move-radio');
+    my $new_parent_id = $app->param('move-radio') || 0;
 
     return 1 if ( $new_parent_id == $cat->parent );
 
