@@ -417,10 +417,10 @@ sub test_system_mail {
     return $app->permission_denied()
         unless $app->user->is_superuser();
 
+    my $to_email_address = $app->param('to_email_address');
     return $app->json_error(
         $app->translate('Please enter a valid email address.') )
-        unless (
-        MT::Util::is_valid_email( $app->param('to_email_address') ) );
+        unless ( MT::Util::is_valid_email($to_email_address) );
 
     my $cfg = $app->config;
     return $app->json_error(
@@ -430,7 +430,7 @@ sub test_system_mail {
     ) unless ( $cfg->EmailAddressMain );
 
     my %head = (
-        To      => $app->param('to_email_address'),
+        To      => $to_email_address,
         From    => $cfg->EmailAddressMain,
         Subject => $app->translate("Test email from Movable Type")
     );
