@@ -1,7 +1,5 @@
-<mt:setvar name="page_title" value="<__trans phrase="Start Content Type Settings">">
+<mt:setvar name="page_title" value="<__trans phrase="Create Content Type">">
 <mt:setvar name="position_actions_bottom" value="1">
-<mt:setvar name="screen_id" value="start-manege-content-type">
-<mt:setvar name="screen_class" value="content-type">
     
 <mt:setvarblock name="system_msg">
 <div id="msg-block"></div>
@@ -15,12 +13,6 @@
   </mt:if>
 </mt:setvarblock>
         
-<mt:setvarblock name="list_actions">
-<div class="button-actions actions">
-  <button type="button" class="naxt action primary button disabled" disabled="disabled"><__trans phrase="Next"></button>
-</div>
-</mt:setvarblock>
-
 <mt:setvarblock name="html_head" append="1">
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/content-type.css?v=<$mt:var name="mt_version_id" escape="url"$>">
 </mt:setvarblock>
@@ -28,44 +20,6 @@
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 </mt:setvarblock>
-
-<mt:include name="include/header.tmpl" id="header_include">
-
-<mtapp:form id="content-type-description-form" name="content-type-description-form" mode="save_cfg_content_type">
-  <input type="hidden" name="cfg_screen" value="start_cfg_content_type" />
-  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-
-  <mtapp:settinggroup id="content_type_description">
-
-    <legend class="h3"><__trans phrase="Content Type"></legend>
-
-    <mtapp:setting
-       id="name"
-       label="<__trans phrase="Content Type Name">"
-       required="1">
-      <input type="text" name="name" id="name" class="text med required" value="<mt:var name="name" escape="html">" />
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="description"
-       label="<__trans phrase="Description">">
-      <textarea name="description" id="description" class="text high"><mt:var name="description"></textarea>
-    </mtapp:setting>
-
-  </mtapp:settinggroup>
-
-  <mt:setvarblock name="action_buttons">
-    <button
-       type="submit"
-       accesskey="c"
-       title="<__trans phrase="Continue (c)">"
-       class="save action primary button disabled">
-      <__trans phrase="Continue">
-    </button> 
-  </mt:setvarblock>
-  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
-
-</mtapp:form>
 
 <mt:setvarblock name="jq_js_include" append="1">
   jQuery(function() {
@@ -92,4 +46,40 @@
 
 </mt:setvarblock>
 
-<mt:include name="include/old_footer.tmpl">
+<mt:setvarblock name="page_content">
+  <mtapp:form id="content-type-description-form" name="content-type-description-form" mode="save_cfg_content_type">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+  
+    <mtapp:setting
+       id="name"
+       label="<__trans phrase="Content Type Name">"
+       label_for="name"
+       required="1">
+      <input type="text" name="name" id="name" class="text med required form-control" value="<mt:var name="name" escape="html">" />
+    </mtapp:setting>
+  
+    <mtapp:setting
+       id="description"
+       label="<__trans phrase="Description">"
+       label_for="description">
+      <textarea name="description" id="description" class="text high form-control"><mt:var name="description"></textarea>
+    </mtapp:setting>
+  
+    </mtapp:settinggroup>
+  
+    <mt:setvarblock name="action_buttons">
+      <button
+         type="submit"
+         accesskey="c"
+         title="<__trans phrase="Continue (c)">"
+         class="save action primary button disabled">
+        <__trans phrase="Continue">
+      </button> 
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+  
+  </mtapp:form>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
