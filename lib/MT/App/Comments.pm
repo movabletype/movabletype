@@ -189,12 +189,17 @@ sub _create_commenter_assign_role {
         );
         return undef;
     }
-    my $commenter = $app->model('author')->new;
-    $commenter->name( $app->param('username') );
-    $commenter->nickname( $app->param('nickname') );
-    $commenter->set_password( $app->param('password') );
-    $commenter->email( $app->param('email') );
-    $commenter->external_id( $app->param('external_id') );
+    my $username    = $app->param('username');
+    my $nickname    = $app->param('nickname');
+    my $password    = $app->param('password');
+    my $email       = $app->param('email');
+    my $external_id = $app->param('external_id');
+    my $commenter   = $app->model('author')->new;
+    $commenter->name($username);
+    $commenter->nickname($nickname);
+    $commenter->set_password($password);
+    $commenter->email($email);
+    $commenter->external_id($external_id);
     $commenter->type( MT::Author::AUTHOR() );
     $commenter->status( MT::Author::ACTIVE() );
     $commenter->auth_type( $app->config->AuthenticationModule );
