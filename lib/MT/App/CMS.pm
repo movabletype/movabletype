@@ -4258,7 +4258,7 @@ sub preview_object_basename {
     push @parts, $app->user->id;
     push @parts, $blog_id || 0;
     push @parts, $id || 0;
-    push @parts, $type;
+    push @parts, $type if $type;
     push @parts, $app->config->SecretToken;
     my $data = join ",", @parts;
     return 'mt-preview-' . perl_sha1_digest_hex($data);
