@@ -1,3 +1,7 @@
+<input type="text" class="form-control text content-field html5-form" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="tags">" mt:watch-change="1" mt:raw-name="1" <mt:var name="required"> <mt:var name="multiple">>
+
+<mt:ignore>prototype</mt:ignore>
+<mt:ignore>
 <div class="group-container">
   <div>
     <a href="javascript:void(0)" class="toggle-link" id="open-category-selector-<mt:var name="content_field_id" escape="html">" onclick="app.fieldCategorySelectors[<mt:var name="content_field_id" escape="html">].open(this)" mt:close-el="close-category-selector-<mt:var name="content_field_id" escape="html">" title="<__trans phrase="Add category">"><__trans phrase="edit"/></a>
@@ -133,4 +137,5 @@
   <input id="category-ids-<mt:var name="content_field_id" escape="js">" type="hidden" disabled="disabled" name="category-<mt:var name="content_field_id" escape="html">" value="<$mt:var name="selected_category_loop" glue=","$>" <mt:var name="required"> <mt:var name="multiple"> />
 </mtapp:setting>
 </div>
+</mt:ignore>
 
