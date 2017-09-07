@@ -367,7 +367,7 @@ sub element_dialog {
                 category => 'export',
             }
         );
-        next;
+        return;
     }
 
     if ( ref $tmpl eq MT->model('template') ) {
