@@ -44,21 +44,25 @@ sub _v7_reset_default_widget {
     };
 
     # User Dashboard
+    $new_widgets->{'dashboard:system'}->{'updates'} = {
+        order => 0,
+        set   => 'sidebar',
+    };
     $new_widgets->{'dashboard:user'}->{'mt_news'} = {
         order => 100,
         set   => 'sidebar',
     };
-    $new_widgets->{'dashboard:system'}->{'updates'} = {
-        order => 0,
+    $new_widgets->{'dashboard:user'}->{'activity_log'} = {
+        order => 200,
         set   => 'sidebar',
     };
     $new_widgets->{'dashboard:user'}->{'notification_dashboard'} = {
         order => 0,
         set   => 'main',
     };
-    $new_widgets->{'dashboard:user'}->{'activity_log'} = {
-        order => 200,
-        set   => 'sidebar',
+    $new_widgets->{'dashboard:user'}->{'site_list'} = {
+        order => 100,
+        set   => 'main',
     };
 
     # Site
