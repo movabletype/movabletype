@@ -1418,11 +1418,10 @@ sub _expire_sessions {
 # This actually handles a UI-level sign-in or sign-out request.
 sub handle_sign_in {
     my $app = shift;
-    my $q   = $app->param;
 
     my $result = 0;
     my $sess;
-    if ( $q->param('logout') ) {
+    if ( $app->param('logout') ) {
         my ( $s, $commenter ) = $app->_get_commenter_session();
 
         # invalidate credentials in auth layer
@@ -1444,15 +1443,15 @@ sub handle_sign_in {
         $result = 1;
     }
     else {
-        my $authenticator = MT->commenter_authenticator( $q->param('key') );
+        my $key           = $app->param('key');
+        my $authenticator = MT->commenter_authenticator($key);
         my $auth_class    = $authenticator->{class};
         eval "require $auth_class;";
         if ( my $e = $@ ) {
             return $app->handle_error( $e, 403 );
         }
         my $cmtr_auth;
-        ( $cmtr_auth, $sess )
-            = $auth_class->handle_sign_in( $app, $q->param('key') );
+        ( $cmtr_auth, $sess ) = $auth_class->handle_sign_in( $app, $key );
         if ($cmtr_auth) {
             $result = $cmtr_auth;
             unless ($sess) {
