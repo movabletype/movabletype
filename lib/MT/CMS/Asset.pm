@@ -179,9 +179,8 @@ sub dialog_list_asset {
     my $blog;
     $blog = $blog_class->load($blog_id) if $blog_id;
 
-    if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
+    my $edit_field = $app->param('edit_field') || '';
+    if ( $edit_field =~ m/^customfield_.*$/ ) {
         return $app->permission_denied()
             unless $app->permissions;
     }
@@ -195,7 +194,7 @@ sub dialog_list_asset {
     my %args = ( sort => 'created_on', direction => 'descend' );
 
     my $class_filter;
-    my $filter = ( $app->param('filter') || '' );
+    my $filter = $app->param('filter') || '';
     if ( $filter eq 'class' ) {
         $class_filter = $app->param('filter_val');
     }
@@ -267,8 +266,8 @@ sub dialog_list_asset {
         if $filter eq 'userpic';
     _set_start_upload_params( $app, \%carry_params )
         if $app->can_do('upload');
-    my ( $ext_from, $ext_to )
-        = ( $app->param('ext_from'), $app->param('ext_to') );
+    my $ext_from = $app->param('ext_from');
+    my $ext_to   = $app->param('ext_to');
 
     # Check directory for thumbnail image
     _check_thumbnail_dir( $app, \%carry_params );
