@@ -615,27 +615,27 @@ sub save_cfg_system_general {
     my $args = {};
 
     # construct the message to the activity log
-    my @meta_messages = ();
-    push(
-        @meta_messages,
-        $app->translate(
-            'Email address is [_1]',
-            $app->param('system_email_address')
-        )
-        )
-        if ( defined $app->param('system_email_address')
-        && $app->param('system_email_address') ne $cfg->EmailAddressMain );
-    push(
-        @meta_messages,
-        $app->translate(
-            'Debug mode is [_1]',
-            $app->param('system_debug_mode')
-        )
-        )
-        if ( defined $app->param('system_debug_mode')
-        and $app->param('system_debug_mode') =~ /\d+/ );
+    my @meta_messages        = ();
+    my $system_email_address = $app->param('system_email_address');
+    push( @meta_messages,
+        $app->translate( 'Email address is [_1]', $system_email_address ) )
+        if ( defined $system_email_address
+        && $system_email_address ne $cfg->EmailAddressMain );
+
+    my $system_debug_mode = $app->param('system_debug_mode');
+    push( @meta_messages,
+        $app->translate( 'Debug mode is [_1]', $system_debug_mode ) )
+        if ( defined $system_debug_mode
+        and $system_debug_mode =~ /\d+/ );
+
+    my $system_performance_logging
+        = $app->param('system_performance_logging');
+    my $system_performance_logging_path
+        = $app->param('system_performance_logging_path');
+    my $system_performance_logging_threshold
+        = $app->param('system_performance_logging_threshold');
     if ( not $cfg->HidePerformanceLoggingSettings ) {
-        if ( $app->param('system_performance_logging') ) {
+        if ($system_performance_logging) {
             push( @meta_messages,
                 $app->translate('Performance logging is on') );
         }
@@ -647,60 +647,53 @@ sub save_cfg_system_general {
             @meta_messages,
             $app->translate(
                 'Performance log path is [_1]',
-                $app->param('system_performance_logging_path')
+                $system_performance_logging_path
             )
             )
-            if ( defined $app->param('system_performance_logging_path')
-            and $app->param('system_performance_logging_path') =~ /\w+/ );
+            if ( defined $system_performance_logging_path
+            and $system_performance_logging_path =~ /\w+/ );
         push(
             @meta_messages,
             $app->translate(
                 'Performance log threshold is [_1]',
-                $app->param('system_performance_logging_threshold')
+                $system_performance_logging_threshold
             )
             )
-            if ( defined $app->param('system_performance_logging_threshold')
-            and $app->param('system_performance_logging_threshold')
-            =~ /\d+/ );
+            if ( defined $system_performance_logging_threshold
+            and $system_performance_logging_threshold =~ /\d+/ );
     }
 
     # actually assign the changes
-    $app->config( 'EmailAddressMain',
-        ( scalar $app->param('system_email_address') ), 1 );
-    $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
-        if ( defined $app->param('system_debug_mode')
-        and $app->param('system_debug_mode') =~ /\d+/ );
+    $app->config( 'EmailAddressMain', $system_email_address, 1 );
+    $app->config( 'DebugMode',        $system_debug_mode,    1 )
+        if ( defined $system_debug_mode
+        and $system_debug_mode =~ /\d+/ );
     if ( not $cfg->HidePerformanceLoggingSettings ) {
-        if ( $app->param('system_performance_logging') ) {
+        if ($system_performance_logging) {
             $app->config( 'PerformanceLogging', 1, 1 );
         }
         else {
             $app->config( 'PerformanceLogging', 0, 1 );
         }
         $app->config( 'PerformanceLoggingPath',
-            $app->param('system_performance_logging_path'), 1 )
-            if ( defined $app->param('system_performance_logging_path')
-            and $app->param('system_performance_logging_path') =~ /\w+/ );
+            $system_performance_logging_path, 1 )
+            if ( defined $system_performance_logging_path
+            and $system_performance_logging_path =~ /\w+/ );
         $app->config( 'PerformanceLoggingThreshold',
-            $app->param('system_performance_logging_threshold'), 1 )
-            if ( defined $app->param('system_performance_logging_threshold')
-            and $app->param('system_performance_logging_threshold')
-            =~ /\d+/ );
+            $system_performance_logging_threshold, 1 )
+            if ( defined $system_performance_logging_threshold
+            and $system_performance_logging_threshold =~ /\d+/ );
     }
 
+    my $sitepath_limit = $app->param('sitepath_limit');
     if ( not $cfg->HideBaseSitePath ) {
-        if ( not $app->param('sitepath_limit') ) {
+        if ( not $sitepath_limit ) {
             $app->config( 'BaseSitePath', undef, 1 );
         }
-        elsif (
-            File::Spec->file_name_is_absolute(
-                $app->param('sitepath_limit')
-            )
-            && -d $app->param('sitepath_limit')
-            )
+        elsif ( File::Spec->file_name_is_absolute($sitepath_limit)
+            && -d $sitepath_limit )
         {
-            my $count          = 0;
-            my $sitepath_limit = $app->param('sitepath_limit');
+            my $count = 0;
             foreach my $model_name (qw( website blog )) {
                 my $class = MT->model($model_name);
                 my $iter  = $class->load_iter();
@@ -718,7 +711,7 @@ sub save_cfg_system_general {
             }
             $args->{warning_sitepath_limit} = 1 if $count;
 
-            $app->config( 'BaseSitePath', $app->param('sitepath_limit'), 1 );
+            $app->config( 'BaseSitePath', $sitepath_limit, 1 );
         }
         else {
             return $app->errtrans(
@@ -729,19 +722,24 @@ sub save_cfg_system_general {
 
     # construct the message to the activity log
 
-    if ( $app->param('comment_disable') ) {
+    my $comment_disable = $app->param('comment_disable');
+    if ($comment_disable) {
         push( @meta_messages, $app->translate('Prohibit comments is on') );
     }
     else {
         push( @meta_messages, $app->translate('Prohibit comments is off') );
     }
-    if ( $app->param('ping_disable') ) {
+
+    my $ping_disable = $app->param('ping_disable');
+    if ($ping_disable) {
         push( @meta_messages, $app->translate('Prohibit trackbacks is on') );
     }
     else {
         push( @meta_messages, $app->translate('Prohibit trackbacks is off') );
     }
-    if ( $app->param('disable_notify_ping') ) {
+
+    my $disable_notify_ping = $app->param('disable_notify_ping');
+    if ($disable_notify_ping) {
         push( @meta_messages,
             $app->translate('Prohibit notification pings is on') );
     }
@@ -901,14 +899,13 @@ sub save_cfg_system_general {
     }
 
     # for feedback settings
-    $cfg->AllowComments( ( $app->param('comment_disable') ? 0 : 1 ), 1 );
-    $cfg->AllowPings( ( $app->param('ping_disable') ? 0 : 1 ), 1 );
-    $cfg->DisableNotificationPings(
-        ( $app->param('disable_notify_ping') ? 1 : 0 ), 1 );
-    my $send = $app->param('trackback_send') || 'any';
-    if ( $send =~ m/^(any|off|selected|local)$/ ) {
-        $cfg->OutboundTrackbackLimit( $send, 1 );
-        if ( $send eq 'selected' ) {
+    $cfg->AllowComments( ( $comment_disable ? 0 : 1 ), 1 );
+    $cfg->AllowPings( ( $ping_disable ? 0 : 1 ), 1 );
+    $cfg->DisableNotificationPings( ( $disable_notify_ping ? 1 : 0 ), 1 );
+    $trackback_send ||= 'any';
+    if ( $trackback_send =~ m/^(any|off|selected|local)$/ ) {
+        $cfg->OutboundTrackbackLimit( $trackback_send, 1 );
+        if ( $trackback_send eq 'selected' ) {
             my $domains = $app->param('trackback_send_domains') || '';
             $domains =~ s/[\r\n]+/ /gs;
             $domains =~ s/\s{2,}/ /gs;
