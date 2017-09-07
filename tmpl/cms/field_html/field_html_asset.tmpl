@@ -3,7 +3,7 @@
 <mt:loop name="asset_loop">
     <li id="content-field-<mt:var name="content_field_id">-list-asset-<mt:var name="asset_id">" class="asset-file asset-type-<mt:var name="asset_type">"<mt:if name="asset_thumb"> onmouseover="show('content-field-<mt:var name="content_field_id">-list-image-<mt:var name="asset_id">')" onmouseout="hide('content-field-<mt:var name="content_field_id">-list-image-<mt:var name="asset_id">')"</mt:if>>
       <div class="row">
-        <div class="col text-trunate">
+        <div class="col text-truncate">
           <a href="<mt:var name="script_uri">?__mode=view&_type=asset&blog_id=<mt:var name="asset_blog_id">&id=<mt:var name="asset_id">" class="asset-title">
             <mt:var name="asset_label">
           </a>
