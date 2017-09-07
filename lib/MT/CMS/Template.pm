@@ -2873,12 +2873,11 @@ sub publish_archive_templates {
 
 sub save_widget {
     my $app = shift;
-    my $q   = $app->param;
 
     $app->validate_magic() or return;
     my $author = $app->user;
 
-    my $id = $q->param('id');
+    my $id = $app->param('id');
 
     if ( !$author->is_superuser ) {
         $app->run_callbacks( 'cms_save_permission_filter.template',
@@ -2908,10 +2907,13 @@ sub save_widget {
     }
 
     my $original = $obj->clone();
-    $obj->name( $q->param('name') );
+    my $name     = $app->param('name');
+    my $blog_id  = $app->param('blog_id') || 0;
+    my $modules  = $app->param('modules');
+    $obj->name($name);
     $obj->type('widgetset');
-    $obj->blog_id( $q->param('blog_id') || 0 );
-    $obj->modulesets( $q->param('modules') );
+    $obj->blog_id($blog_id);
+    $obj->modulesets($modules);
 
     unless (
         $app->run_callbacks( 'cms_pre_save.template', $app, $obj, $original )
