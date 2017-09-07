@@ -2117,7 +2117,7 @@ sub save_filter {
     my $screen = $app->param('cfg_screen') || '';
     return $eh->error( MT->translate("You did not specify a blog name.") )
         if ( !( $screen && $app->can_do('edit_blog_config') )
-        && ( defined $app->param('name') && ( $app->param('name') eq '' ) ) );
+        && ( !defined $name || $name eq '' ) );
 
 #TBD
 #    return $eh->error( MT->translate("Site URL must be an absolute URL.") )
@@ -2138,11 +2138,12 @@ sub save_filter {
             qw( max_revisions_entry max_revisions_cd max_revisions_template )
             )
         {
+            my $value = $app->param($param_name) || 0;
             return $eh->error(
                 MT->translate(
                     "The number of revisions to store must be a positive integer."
                 )
-            ) unless 0 < sprintf( '%d', $app->param($param_name) );
+            ) unless 0 < sprintf( '%d', $param_name );
         }
         return $eh->error(
             MT->translate("Please choose a preferred archive type.") )
