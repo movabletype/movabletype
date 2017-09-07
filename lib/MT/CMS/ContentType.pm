@@ -280,7 +280,6 @@ sub cfg_content_type {
 
 sub save_cfg_content_type {
     my ($app) = @_;
-    my $q     = $app->param;
     my $cfg   = $app->config;
     my $param = {};
 
@@ -292,13 +291,13 @@ sub save_cfg_content_type {
         || ( $perms
         && $perms->can_administer_blog );
 
-    my $blog_id = scalar $q->param('blog_id')
+    my $blog_id = $app->param('blog_id')
         or return $app->errtrans("Invalid request.");
 
-    my $content_type_id = $q->param('id');
+    my $content_type_id = $app->param('id');
 
     my $option_list;
-    if ( my $data = $q->param('data') ) {
+    if ( my $data = $app->param('data') ) {
         if ( $data =~ /^".*"$/ ) {
             $data =~ s/^"//;
             $data =~ s/"$//;
@@ -343,9 +342,10 @@ sub save_cfg_content_type {
         ? MT::ContentType->load($content_type_id)
         : MT::ContentType->new();
 
+    my $user_disp_option = $app->param('user_disp_option');
     $content_type->blog_id($blog_id);
     $content_type->name($name);
-    $content_type->user_disp_option( $app->param('user_disp_option') );
+    $content_type->user_disp_option($user_disp_option);
 
     $content_type->save
         or return $app->error(
