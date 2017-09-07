@@ -1772,7 +1772,7 @@
   }
 
   function addList( addButton, initial, label, value ) {
-    var id = jQuery(addButton).parent().parent().parent().attr("id");
+    var id = jQuery(addButton).parents('fieldset').attr('id');
     var type_name = (id.match(/(.*)-options/))[1];
     var div = jQuery('.' + type_name + '-values');
     var number = div.length + 1;

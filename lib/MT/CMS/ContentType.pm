@@ -23,7 +23,7 @@ use MT::ContentData;
 use MT::DateTime;
 use MT::Entry;
 use MT::Log;
-use MT::Util;
+use MT::Util ();
 use MT::Serialize;
 
 sub tmpl_param_list_common {
@@ -949,20 +949,6 @@ sub _autosave_content_data {
 
 }
 
-sub delete_content_data {
-    my $app = shift;
-
-    my $orig_type = $app->param('_type');
-    my ($content_type_id) = $orig_type =~ /^content_data_(\d+)$/;
-
-    $app->param( '_type', 'cd' );
-    unless ( $app->param('content_type_id') ) {
-        $app->param( 'content_type_id', $content_type_id );
-    }
-
-    MT::CMS::Common::delete($app);
-}
-
 sub dialog_content_data_modal {
     my $app = shift;
 
@@ -1102,13 +1088,12 @@ sub _make_content_data_listing_screens {
 
     my $iter = MT->model('content_type')->load_iter;
     while ( my $ct = $iter->() ) {
-        my $key             = 'content_data.content_data_' . $ct->id;
-        my $encoded_ct_name = MT::Util::encode_html( $ct->name );
+        my $key = 'content_data.content_data_' . $ct->id;
         $props->{$key} = {
             primary             => 'title',
-            screen_label        => 'Manage ' . $encoded_ct_name,
-            object_label        => $encoded_ct_name,
-            object_label_plural => $encoded_ct_name,
+            screen_label        => 'Manage ' . $ct->name,
+            object_label        => $ct->name,
+            object_label_plural => $ct->name,
             object_type         => 'content_data',
             scope_mode          => 'this',
             use_filters         => 0,

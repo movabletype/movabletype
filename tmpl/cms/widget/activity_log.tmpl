@@ -3,13 +3,17 @@
   label="<__trans phrase="Activity Log">"
   can_close="1">
   <mt:if name="logs">
+  <ul class="mt-widget__list">
     <mt:Loop name="logs">
-  <div class="row<mt:unless name="__last__"> mb-2</mt:unless>">
-    <div class="col-6"><mt:var name="created_on_formatted"></div>
-    <div class="col-6"><div class="float-right"><mt:var name="site_name" escape="html"></div></div>
-    <div class="col-12"><mt:var name="log_message" escape="html"></div>
-  </div>
+    <li>
+      <span class="row">
+        <span class="col mt-widget--info"><mt:var name="created_on_formatted"></span>
+        <span class="col mt-widget--info text-right"><mt:if name="can_view_site_log"><a href="<mt:var name="mt_url">?__mode=list&_type=log&blog_id=<mt:var name="blog_id" escape="html">" title="<mt:var name="site_name" escape="html">"><mt:var name="site_name" escape="html"></a><mt:elseif name="can_access_site"><a href="<mt:var name="mt_url">?__mode=dashboard&blog_id=<mt:var name="blog_id" escape="html">" title="<mt:var name="site_name" escape="html">"><mt:var name="site_name" escape="html"></a></mt:if></span>
+      </span>
+      <mt:var name="log_message" escape="html">
+    </li>
     </mt:Loop>
+  </ul>
   <mt:Else>
   <div class="row">
     <div class="col"><__trans phrase="No [_1] could be found." params="<__trans phrase="Log">"></div>

@@ -1,6 +1,8 @@
-<mt:unless name="page_title">
-<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:var name="object_label_plural">"></mt:setvarblock>
-</mt:unless>
+<mt:if name="page_title">
+<mt:setvarblock name="page_title"><mt:var name="page_title" escape="html"></mt:setvarblock>
+<mt:else>
+<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:var name="object_label_plural" escape="html">"></mt:setvarblock>
+</mt:if>
 <mt:setvar name="show_display_options_link" value="0">
 
 <mt:if name="build_user_menus">
@@ -25,10 +27,11 @@
           <mt:if name="id"> id="<mt:var name="id">"</mt:if>
           <mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>
         >
+        <mt:setvarblock name="escaped_label"><mt:var name="label" escape="html"></mt:setvarblock>
         <mt:if name="icon">
-          <mtapp:svgicon id="$icon" size="sm" title="$label">
+          <mtapp:svgicon id="$icon" size="sm" title="$escaped_label">
         </mt:if>
-          <mt:var name="label">
+          <mt:var name="escaped_label">
         </a>
       </li>
     </mt:loop>
@@ -137,7 +140,8 @@
     datasource: '<mt:var name="list_type" escape="js">',
     objectType: objectType,
     magicToken: '<mt:var name="magic_token">',
-    returnArgs: '<mt:var name="return_args">'
+    returnArgs: '<mt:var name="return_args">',
+    subType: '<mt:if name="subtype"><mt:var name="subtype"></mt:if>'
   });
 
   var listActionClient = new ListActionClient({
@@ -146,7 +150,8 @@
     datasource: listClient.datasource,
     objectType: listClient.objectType,
     magicToken: listClient.magicToken,
-    returnArgs: listClient.returnArgs
+    returnArgs: listClient.returnArgs,
+    subType: '<mt:if name="subtype"><mt:var name="subtype"></mt:if>'
   });
 
   <mt:if name="zero_state">

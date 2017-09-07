@@ -313,8 +313,8 @@ sub init_core_callbacks {
                 "${pfx}User::can_delete_role",
 
             # MT7
-            $pkg . 'post_save.cd'   => "${pfx}ContentData::post_save",
-            $pkg . 'post_delete.cd' => "${pfx}ContentData::post_delete",
+            $pkg . 'post_save.content_data'   => "${pfx}ContentData::post_save",
+            $pkg . 'post_delete.content_data' => "${pfx}ContentData::post_delete",
         }
     );
 }

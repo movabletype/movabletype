@@ -71,7 +71,11 @@ if (AssetList) {
         myRemoveLink.setAttribute('type', 'button');
         myRemoveLink.setAttribute('class', 'close');
         myRemoveLink.setAttribute('aria-label', 'Close');
+  <mt:if name="content_field_id">
+        myRemoveLink.setAttribute('onclick', "removeAssetFromList(<mt:AssetID>, 'content-field-<mt:var name="content_field_id">-', <mt:var name="content_field_id">);");
+  <mt:else>
         myRemoveLink.setAttribute('onclick', 'removeAssetFromList(<mt:AssetID>);');
+  </mt:if>
         myRemoveLink.innerHTML = '<span aria-hidden="true">&times;</span>';
 
         // create the remove link col

@@ -10,9 +10,9 @@ use strict;
 use warnings;
 
 use MT::Blog;
+use MT::CMS::ContentType;
 use MT::ContentType;
 use MT::Log;
-use MT::Util;
 
 sub edit {
     my ($app) = @_;
@@ -29,6 +29,7 @@ sub edit {
         or return $app->errtrans('Invalid request.');
 
     if ( $app->param('_recover') ) {
+        $app->param( '_type', 'content_data' );
         my $sess_obj = $app->autosave_session_obj;
         if ($sess_obj) {
             my $autosave_data = $sess_obj->thaw_data;
@@ -51,6 +52,7 @@ sub edit {
     }
 
     if ( !$app->param('reedit') ) {
+        $app->param( '_type', 'content_data' );
         if ( my $sess_obj = $app->autosave_session_obj ) {
             $param->{autosaved_object_exists} = 1;
             $param->{autosaved_object_ts}
@@ -60,6 +62,8 @@ sub edit {
 
     $param->{autosave_frequency} = $app->config->AutoSaveFrequency;
     $param->{name}               = $content_type->name;
+    $param->{has_multi_line_text_field}
+        = $content_type->has_multi_line_text_field;
 
     my $array           = $content_type->fields;
     my $ct_unique_id    = $content_type->unique_id;
@@ -254,8 +258,8 @@ sub edit {
         $param->{$name} = $app->param($name) if $app->param($name);
     }
 
-    $param->{new_object} = $content_data_id ? 0 : 1;
-    $param->{object_label} = MT::Util::encode_html( $content_type->name );
+    $param->{new_object}          = $content_data_id ? 0 : 1;
+    $param->{object_label}        = $content_type->name;
     $param->{sitepath_configured} = $blog && $blog->site_path ? 1 : 0;
 
     ## Load text filters if user displays them
@@ -284,19 +288,6 @@ sub edit {
     $app->setup_editor_param($param);
 
     $app->build_page( $app->load_tmpl('edit_content_data.tmpl'), $param );
-}
-
-sub post_save {
-    my ( $eh, $app, $obj, $orig_obj ) = @_;
-
-    if ( $app->can('autosave_session_obj') ) {
-        my $sess_obj = $app->autosave_session_obj;
-        $sess_obj->remove if $sess_obj;
-    }
-
-    # TODO: save log
-
-    1;
 }
 
 sub save {
@@ -338,7 +329,7 @@ sub save {
     }
 
     if ( $app->param('_autosave') ) {
-        return _autosave_content_data( $app, $data );
+        return MT::CMS::ContentType::_autosave_content_data( $app, $data );
     }
 
     if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
@@ -383,7 +374,7 @@ sub save {
     }
     else {
         my $status = $app->param('status');
-        $content_data->status($status);
+        $content_data->status( $status );
     }
     if ( ( $content_data->status || 0 ) != MT::Entry::HOLD() ) {
         if ( !$blog->site_path || !$blog->site_url ) {
@@ -513,7 +504,7 @@ sub save {
         MT::Serialize->serialize( \$convert_breaks ) );
 
     my $block_editor_data = $app->param('blockeditor-data');
-    $content_data->block_editor_data($block_editor_data);
+    $content_data->block_editor_data( $block_editor_data );
 
     $app->run_callbacks( 'cms_pre_save.cd', $app, $content_data, $orig );
 
@@ -525,7 +516,8 @@ sub save {
         )
         );
 
-    $app->run_callbacks( 'cms_post_save.cd', $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_post_save.content_data',
+        $app, $content_data, $orig );
 
     return $app->redirect(
         $app->uri(
@@ -542,6 +534,65 @@ sub save {
     );
 }
 
+sub delete {
+    my $app = shift;
+
+    my $orig_type = $app->param('type');
+    my ($content_type_id) = $orig_type =~ /^content_data_(\d+)$/;
+
+    unless ( $app->param('content_type_id') ) {
+        $app->param( 'content_type_id', $content_type_id );
+    }
+
+    MT::CMS::Common::delete($app);
+}
+
+sub post_save {
+    my ( $eh, $app, $obj, $orig_obj ) = @_;
+
+    if ( $app->can('autosave_session_obj') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        $sess_obj->remove if $sess_obj;
+    }
+
+    my $ct = $obj->content_type or return;
+    my $author = $app->user;
+    my $message;
+    if ( !$orig_obj->id ) {
+        $message
+            = $app->translate( "[_1] '[_2]' (ID:[_3]) added by user '[_4]'",
+            $ct->name, $obj->title, $obj->id, $author->name );
+    }
+    elsif ( $orig_obj->status ne $obj->status ) {
+        $message = $app->translate(
+            "[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'",
+            $ct->name,
+            $obj->title,
+            $obj->id,
+            $app->translate( MT::Entry::status_text( $orig_obj->status ) ),
+            $app->translate( MT::Entry::status_text( $obj->status ) ),
+            $author->name
+        );
+
+    }
+    else {
+        $message
+            = $app->translate( "[_1] '[_2]' (ID:[_3]) edited by user '[_4]'",
+            $ct->name, $obj->title, $obj->id, $author->name );
+    }
+    require MT::Log;
+    $app->log(
+        {   message => $message,
+            level   => MT::Log::INFO(),
+            class   => 'content_data_' . $ct->id,
+            $orig_obj->id ? ( category => 'edit' ) : ( category => 'new' ),
+            metadata => $obj->id
+        }
+    );
+
+    1;
+}
+
 sub post_delete {
     my ( $eh, $app, $obj ) = @_;
 
@@ -550,16 +601,16 @@ sub post_delete {
         $sess_obj->remove if $sess_obj;
     }
 
-    my $content_type = $obj->content_type or return;
+    my $ct = $obj->content_type or return;
+    my $author = $app->user;
 
-    # TODO: add content data label.
     $app->log(
         {   message => $app->translate(
-                "[_1] (ID:[_2]) deleted by '[_3]'", $content_type->name,
-                $obj->id,                           $app->user->name
+                "[_1] '[_2]' (ID:[_3]) deleted by '[_4]'",
+                $ct->name, $obj->title, $obj->id, $author->name
             ),
             level    => MT::Log::INFO(),
-            class    => 'content_data_' . $content_type->id,
+            class    => 'content_data_' . $ct->id,
             category => 'delete'
         }
     );
@@ -588,7 +639,8 @@ sub make_content_actions {
         my $key = 'content_data.content_data_' . $ct->id;
         $content_actions->{$key} = {
             new => {
-                label => 'Create new ' . MT::Util::encode_html( $ct->name ),
+                label => 'Create new ' . $ct->name,
+                icon  => 'ic_add',
                 order => 100,
                 mode  => 'view',
                 args  => {
@@ -607,7 +659,7 @@ sub make_list_actions {
         delete => {
             label      => 'Delete',
             order      => 100,
-            code       => '$Core::MT::CMS::ContentType::delete_content_data',
+            code       => '$Core::MT::CMS::ContentData::delete',
             button     => 1,
             js_message => 'delete',
         }
@@ -615,7 +667,7 @@ sub make_list_actions {
     my $iter         = MT::ContentType->load_iter;
     my $list_actions = {};
     while ( my $ct = $iter->() ) {
-        my $key = 'content_data_' . $ct->id;
+        my $key = 'content_data.content_data_' . $ct->id;
         $list_actions->{$key} = $common_delete_action;
     }
     $list_actions;
@@ -639,6 +691,9 @@ sub make_menus {
             },
             order => $blog->is_blog ? $blog_order : $website_order,
             view  => $blog->is_blog ? 'blog'      : 'website',
+            condition => sub {
+                $ct->blog_id == MT->app->blog->id;
+            },
         };
         if ( $blog->is_blog ) {
             $blog_order += 100;

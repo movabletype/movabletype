@@ -1,5 +1,9 @@
 <mt:setvar name="edit_screen" value="1">
-<mt:setvar name="page_title" value="<__trans phrase="Edit Content Type Data">">
+<mt:if name="new_object">
+  <mt:setvarblock name="page_title"><__trans phrase="Create [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
+<mt:else>
+  <mt:setvarblock name="page_title"><__trans phrase="Edit [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
+</mt:if>
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="screen_id" value="edit-content-type-data">
 <mt:setvar name="screen_class" value="edit-content-type-data">
@@ -22,6 +26,15 @@
   </mtapp:statusmsg>
     </mt:unless>
   </mt:if>
+</mt:if>
+
+<mt:if name="recovered_failed">
+  <mtapp:statusmsg
+    id="recovered-failed"
+    class="error"
+    can_close="0">
+    <__trans phrase="An error occurred while trying to recover your saved content data.">
+  </mtapp:statusmsg>
 </mt:if>
 
 <mt:if name="saved">
@@ -86,7 +99,7 @@
   </mt:unless>
   </div>
   <mt:if name="new_object">
-  <p class="zero-state"><__trans phrase="New [_1]" params="<mt:var name="object_label">"></p>
+  <p class="zero-state"><__trans phrase="New [_1]" params="<mt:var name="object_label" escape="html">"></p>
   <mt:else>
     <mt:if name="use_revision">
   <div class="revision-info">
@@ -157,7 +170,7 @@
   </mt:if>
 </mt:if>
 
-  <mt:setvarblock name="scheduled_button_title"><__trans phrase="Save this [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
+  <mt:setvarblock name="scheduled_button_title"><__trans phrase="Save this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
   <mtapp:setting
      id="status"
      label="<__trans phrase="Status">"
@@ -287,7 +300,9 @@
      mt:command="do-remove-items"
      mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
      mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
-     mt:object-type="content_data_<mt:var name="content_type_id" escape="html">" mt:blog-id="<mt:var name="blog_id">"
+     mt:subtype="content_data_<mt:var name="content_type_id" escape="html">"
+     mt:object-type="content_data"
+     mt:blog-id="<mt:var name="blog_id">"
      title="<mt:var name="delete_button_title">"
      class="delete"
      accesskey="x">
@@ -323,11 +338,13 @@
   <script src="<mt:var name="static_uri">a-table.js/build/a-table.js"></script>
 </mt:setvarblock>
 
-<mt:unless name="editors">
-  <mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
-<mt:else>
-  <mt:include name="include/editor_script.tmpl" id="editor_script_include">
-</mt:unless>
+<mt:if name="has_multi_line_text_field">
+  <mt:unless name="editors">
+    <mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
+  <mt:else>
+    <mt:include name="include/editor_script.tmpl" id="editor_script_include">
+  </mt:unless>
+</mt:if>
 
 <mt:setvarblock name="html_head" append="1">
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/content-type.css?v=<$mt:var name="mt_version_id" escape="url"$>">
@@ -363,6 +380,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 
+<mt:if name="has_multi_line_text_field">
 <script>
   // editor load
   var editor_strategy = MT.App.EditorStrategy.Multi;
@@ -549,14 +567,15 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   jQuery(document).on('change', '.convert_breaks', changedTextFormat);
   jQuery(document).on('click', '.field-convert_breaks .help-link', openTFDocs);
 </script>
+</mt:if>
 </mt:setvarblock>
 
-<mt:var name="blockeditor_tmpl">
+<mt:if name="has_multi_line_text_field">
+  <mt:var name="blockeditor_tmpl">
+</mt:if>
 
 <mt:setvarblock name="page_content">
 <mtapp:settinggroup id="content_data">
-
-  <legend class="h3"><__trans phrase="Edit <mt:var name="name" escape="html">"></legend>
 
   <div>
     <__trans phrase="Title"> *
@@ -669,7 +688,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     <mt:elseif name="data_type" eq="float">
       <input type="number" step="any" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
     </mt:if>
-      <div class="hint"><mt:var name="options{description}" escape="html"></div>
+      <div class="hint text-secondary"><mt:var name="options{description}" escape="html"></div>
   </div>
   </mt:if>
   </mt:loop>

@@ -647,13 +647,13 @@ pre code {
   margin-left: -15px;
 }
 
-.no-gutters, .mt-draggable {
+.no-gutters, .mt-draggable, .mt-collapse__container {
   margin-right: 0;
   margin-left: 0;
 }
 
-.no-gutters > .col, .mt-draggable > .col, .no-gutters > .mt-globalNavigation, .mt-draggable > .mt-globalNavigation, .no-gutters > .mt-mainContent, .mt-draggable > .mt-mainContent, .no-gutters > .mt-footer, .mt-draggable > .mt-footer,
-.no-gutters > [class*="col-"], .mt-draggable > [class*="col-"] {
+.no-gutters > .col, .mt-draggable > .col, .mt-collapse__container > .col, .no-gutters > .mt-globalNavigation, .mt-draggable > .mt-globalNavigation, .mt-collapse__container > .mt-globalNavigation, .no-gutters > .mt-mainContent, .mt-draggable > .mt-mainContent, .mt-collapse__container > .mt-mainContent, .no-gutters > .mt-footer, .mt-draggable > .mt-footer, .mt-collapse__container > .mt-footer,
+.no-gutters > [class*="col-"], .mt-draggable > [class*="col-"], .mt-collapse__container > [class*="col-"] {
   padding-right: 0;
   padding-left: 0;
 }
@@ -5460,7 +5460,7 @@ a.bg-dark:focus, a.bg-dark:hover {
   display: table-cell !important;
 }
 
-.d-flex, .mt-globalNavigation, .mt-draggable {
+.d-flex, .mt-globalNavigation, .mt-draggable, .mt-collapse__container {
   display: -ms-flexbox !important;
   display: flex !important;
 }
@@ -7972,6 +7972,7 @@ Forms
 Tables
 Widgets
 Draggable
+Collapse
 Alert
 Badges
 Icons
@@ -8116,7 +8117,7 @@ li {
 
 .mt-primaryNavigation__item a {
   display: block;
-  padding: 0.8rem 0.5rem;
+  padding: 0.8rem 1rem;
   color: #212529;
   line-height: 1;
   text-decoration: none;
@@ -8413,7 +8414,7 @@ fieldset.form-group {
   width: 3rem;
   height: 20px;
   background: #A5A5A5;
-  display: block;
+  display: inline-block;
   border-radius: 10px;
   cursor: pointer;
   text-indent: -9999px;
@@ -8569,7 +8570,7 @@ fieldset.form-group {
 
 .mt-widget__latest {
   margin-top: 1.5rem;
-  padding-top: 1rem;
+  padding-top: 1.5rem;
   border-top: 1px solid #E0E0E0;
 }
 
@@ -8664,6 +8665,59 @@ fieldset.form-group {
 .mt-draggable[aria-grabbed="true"] {
   border-color: #5FBCEB;
   font-weight: bold;
+}
+
+/* Collapse */
+.mt-collapse {
+  padding: 0.5rem 0 0.5rem 1rem;
+  border: 1px solid #A5A5A5;
+  border-radius: 0.25rem;
+}
+
+.mt-collapse__content {
+  padding: 1rem;
+}
+
+.mt-collapse__content *:last-child {
+  margin-bottom: 0;
+}
+
+.mt-archivemapping {
+  padding: 1rem 0 1rem 1rem;
+  border-bottom: 1px solid #A5A5A5;
+  border-top: 1px solid #A5A5A5;
+  background: #F4F4F4;
+}
+
+.mt-archivemapping:last-child {
+  border-top: 0;
+}
+
+.mt-archivemapping.mt-archivemapping--priority {
+  background: #E3F2F4;
+}
+
+.mt-archivemapping .mt-switch + label {
+  margin-right: 1rem;
+}
+
+.mt-archivemapping .custom-control-description {
+  font-weight: bold;
+}
+
+.mt-collapse .mt-icon--secondary, .mt-archivemapping .mt-icon--secondary {
+  margin: 0 .5rem;
+  transition: 0.2s ease-in-out;
+}
+
+.mt-collapse a[aria-expanded="false"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="false"] .mt-icon--secondary {
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+.mt-collapse a[aria-expanded="true"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="true"] .mt-icon--secondary {
+  -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
 }
 
 /* Alert */

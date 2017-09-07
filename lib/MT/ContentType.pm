@@ -412,4 +412,10 @@ sub get_first_category_field_id {
     undef;
 }
 
+sub has_multi_line_text_field {
+    my $self = shift;
+    ( grep { $_->{type} && $_->{type} eq 'multi_line_text' }
+            @{ $self->fields } ) ? 1 : 0;
+}
+
 1;
