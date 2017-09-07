@@ -449,20 +449,6 @@ function tagDocURL(name) {
     return;
 }
 
-function archiveFileSelect(sel) {
-    var fld = sel.name;
-    fld = fld.replace(/sel/, 'tmpl');
-    var edit = getByID(fld);
-    var map = sel.options[sel.selectedIndex].value;
-    if (map == '') {
-        jQuery(edit).show();
-        edit.focus();
-    } else {
-        jQuery(edit).hide();
-        edit.value = map;
-    }
-}
-
 function setRebuild(f) {
     f['rebuild'].value = 'Y';
 }
@@ -490,71 +476,9 @@ function validate (f, rebuild) {
     if (rebuild) setRebuild(f);
     return true;
 }
-function saveArchiveMapChange(param) {
-    showMsg('<__trans phrase="Processing request..." escape="js">', 'map-message', 'success')
-
-    // TBD: we need to get the blog id from the selector control
-    // itself
-    var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param, load: savedArchiveMapChange };
-    TC.Client.call(params);
-
-}
-function savedArchiveMapChange(c) {
-    var res = c.responseText;
-    if (res == '')
-        message = '<__trans phrase="Error occurred while updating archive maps." escape="js">';
-    else
-        message = '<__trans phrase="Archive map has been successfully updated." escape="js">';
-    showMsg(message, 'map-message', 'success');
-    var map = getByID('template-maps');
-    if (map)
-        map.innerHTML = res;
-}
-function deleteMap(mapid) {
-    if (!confirm('<__trans phrase="Are you sure you want to remove this template map?" escape="js">'))
-        return;
-    var tr = getByID(mapid);
-    if (tr) {
-        var tbody = tr.parentNode;
-        if (tbody)
-            tbody.deleteRow(tr.rowIndex - 1); // thead has a row - subtract it
-    }
-    var frm = document.forms['archive_map_form'];
-    if (!frm) return false;
-    var param = '__mode=delete_map'
-        + '&blog_id=' + frm['blog_id'].value
-        + '&template_id=<mt:var name="id" escape="url">'
-        + '&id=' + mapid
-        + '&magic_token=<mt:var name="magic_token" escape="url">';
-    saveArchiveMapChange(param);
-}
 function setCreateMode () {
     var el = getByID('map-message');
     if (el) el.style.display = 'none';
-    getByID('create-inline-mapping').style.display = 'block';
-    return false;
-}
-
-function cancelCreateMode () {
-    getByID('create-inline-mapping').style.display = 'none';
-    return false;
-}
-function addMap() {
-    getByID('create-inline-mapping').style.display = 'none';
-    var f = document.forms['template-listing-form'];
-    var frm = document.forms['archive_map_form'];
-    if (!frm) return false;
-    var param = '__mode=add_map'
-        + '&blog_id=' + frm['blog_id'].value
-        + '&template_id=<mt:var name="id" escape="url">'
-        + '&new_archive_type=' + f['new_archive_type'].value
-        <mt:if name="type" like="^ct">
-        + '&content_type_id=' + f['content_type_id'].value
-        + '&cat_field_id=' + f['cat_field_id'].value
-        + '&dt_field_id=' + f['dt_field_id'].value
-        </mt:if>
-        + '&magic_token=<mt:var name="magic_token" escape="url">';
-    saveArchiveMapChange(param);
 }
 
 function togglePreferred(checkbox, mapid) {
@@ -664,7 +588,7 @@ function setSyntaxHighlight(on_or_off) {
   <mt:if name="has_name">
     <select name="content_type_id">
   <mt:loop name="content_types">
-      <option value="<mt:var name="id">"><mt:var name="name"></option>
+      <option value="<mt:var name="id" escape="html">"><mt:var name="name" escape="html"></option>
   </mt:loop>
     </select>
   <mt:else>
@@ -709,28 +633,8 @@ function setSyntaxHighlight(on_or_off) {
   <$mt:setvar name="template_options_active" value="1"$>
 </mt:if>
 
-  <div id="template-options" class="card">
-    <div id="template-options-header" class="card-header line">
-      <div class="row">
-        <div class="col-8 template-options-toggle">
-          <a href="#template-options-content" class="icon-left icon-spinner" data-toggle="collapse" aria-expanded="false" aria-controls="template-options-content">
-            <span class="caret"></span>
-            <__trans phrase="Template Options">
-          </a>
-        </div>
-        <div class="col-4 text-right template-options-summary">
-        <mt:unless name="new_object">
-          <mt:if name="has_outfile">
-          <__trans phrase="Output file: <strong>[_1]</strong>" params="<mt:var name="outfile" escape="html" escape="html">">
-          </mt:if>
-        </mt:unless>
-        <mt:if name="enabled_archive_types">
-          <__trans phrase="Enabled Mappings: [_1]" params="<mt:var name="enabled_archive_types">">
-        </mt:if>
-        </div>
-      </div>
-    </div>
-    <div id="template-options-content" class="card-block collapse<mt:if name="template_options_active"> show</mt:if>">
+  <div id="template-options">
+    <div id="template-options-content" class="card-block">
     <mt:if name="has_outfile">
       <mtapp:setting
          id="outfile"
@@ -770,6 +674,7 @@ function setSyntaxHighlight(on_or_off) {
       </mtapp:setting>
 
 <mt:setvarblock name="publishing_hint"><__trans phrase="Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>"></mt:setvarblock>
+<mt:setvarblock name="archive_path_hint"><__trans phrase="Learn more about <a href="https://movabletype.org/documentation/appendices/archive-file-path-specifiers.html" target="_blank">Archive File Path Specifiers</a>"></mt:setvarblock>
 
     <mt:if name="archive_types">
     <mtapp:setting
@@ -777,14 +682,11 @@ function setSyntaxHighlight(on_or_off) {
        label="<__trans phrase="Archive Mapping">"
        label_for="new_archive_type"
        label_class="top-label">
-      <p>
-        <a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create">
-          <img src="<mt:var name="static_uri">images/status_icons/create.gif" />
-          <__trans phrase="Create Archive Mapping">
-        </a>
-      </p>
+      <div id="template-maps">
+        <mt:include name="include/archive_maps.tmpl">
+      </div>
       <div id="msg-block"></div>
-      <div class="form-group" id="create-inline-mapping" style="display: none;">
+      <div class="form-group collapse" id="create-inline-mapping">
         <mtapp:setting
            id="new_archive_type"
            class="new_archive_type"
@@ -794,8 +696,10 @@ function setSyntaxHighlight(on_or_off) {
            help_page="templates"
            help_section="new_archive_type">
         <mt:if name="type" eq="ct">
+          <div class="font-weight-bold">
           <__trans phrase="CONTENTTYPE_ADV">
           <input type="hidden" name="new_archive_type" id="new_archive_type" value="ContentType" />
+          </div>
         <mt:else>
         <select name="new_archive_type" id="new_archive_type" tabindex="9" class="custom-select form-control">
         <mt:loop name="archive_types">
@@ -816,7 +720,7 @@ function setSyntaxHighlight(on_or_off) {
            help_section="archive_file_sel">
           <select name="archive_file_sel" id="archive_file_sel" tabindex="11" class="form-control">
           </select>
-          <input type="text" id="archive_file_tmpl" name="archive_file_tmpl" class="form-control tmpl-path tmpl-path-custom hidden last-child" value="" style="display:none;" />
+          <input type="text" id="archive_file_tmpl" name="archive_file_tmpl" class="form-control tmpl-path tmpl-path-custom last-child" value="" style="display:none;" />
         </mtapp:setting>
 
         <mtapp:setting
@@ -848,20 +752,26 @@ function setSyntaxHighlight(on_or_off) {
         <div>
         </mt:if>
         <span class="buttons">
+          <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#create-inline-mapping" aria-expanded="false" aria-controls="create-inline-mapping"><__trans phrase="Cancel"></button>
           <a href="javascript:void(0)"
-             class="btn btn-default button"
-             onclick="addMap(); return false;">
+             id="add_map"
+             class="btn btn-primary button">
             <__trans phrase="Add"></a>
-          <a href="javascript:void(0)"
-             class="btn btn-default button"
-             onclick="cancelCreateMode(); return false">
-            <__trans phrase="Cancel"></a>
         </span>
         <mt:if name="type" like="^ct"></div></mt:if>
       </div>
-      <div id="template-maps">
-        <mt:include name="include/archive_maps.tmpl">
-        <div class="hint"><$mt:var name="publishing_hint"$></div>
+
+      <div class="row">
+        <div class="col">
+          <a class="btn btn-link" id="link-create-archive-mapping" data-toggle="collapse" href="#create-inline-mapping" aria-expanded="false" aria-controls="create-inline-mapping" onclick="return setCreateMode()">
+            <mtapp:svgicon id="ic_add" title="<__trans phrase="Create Archive Mapping">" size="sm">
+            <__trans phrase="Create Archive Mapping">
+          </a>
+        </div>
+        <div class="col-auto">
+          <div class="hint">&#x25B6; <$mt:var name="publishing_hint"$></div>
+          <div class="hint">&#x25B6; <$mt:var name="archive_path_hint"$></div>
+        </div>
       </div>
     </mtapp:setting>
     <mt:else>
@@ -1195,16 +1105,103 @@ function saveTemplatePrefs( sync ) {
     jQuery(window).bind('pre_autosave', function(){
         syncEditor();
     });
+    function saveArchiveMapChange(param) {
+        showMsg('<__trans phrase="Processing request..." escape="js">', 'map-message', 'success')
+    
+        // TBD: we need to get the blog id from the selector control
+        // itself
+        var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param, load: savedArchiveMapChange };
+        TC.Client.call(params);
+    }
+    function savedArchiveMapChange(c) {
+        var res = c.responseText;
+        if (res == '')
+            message = '<__trans phrase="Error occurred while updating archive maps." escape="js">';
+        else
+            message = '<__trans phrase="Archive map has been successfully updated." escape="js">';
+        showMsg(message, 'map-message', 'success');
+        var map = getByID('template-maps');
+        if (map)
+            map.innerHTML = res;
+        jQuery("[id^=archive_file_sel]").change(function(){
+          selectArchiveFile(this);
+        });
+    }
+    function deleteMap(mapid) {
+        if (!confirm('<__trans phrase="Are you sure you want to remove this template map?" escape="js">'))
+            return;
+        var tr = getByID(mapid);
+        if (tr) {
+            var tbody = tr.parentNode;
+            if (tbody)
+                tbody.deleteRow(tr.rowIndex - 1); // thead has a row - subtract it
+        }
+        var frm = document.forms['archive_map_form'];
+        if (!frm) return false;
+        var param = '__mode=delete_map'
+            + '&blog_id=' + frm['blog_id'].value
+            + '&template_id=<mt:var name="id" escape="url">'
+            + '&id=' + mapid
+            + '&magic_token=<mt:var name="magic_token" escape="url">';
+        saveArchiveMapChange(param);
+    }
+    function addMap() {
+        var block = getByID('create-inline-mapping');
+        block.classList.remove('show');
+        var link = getByID('link-create-archive-mapping');
+        link.classList.add('collapsed');
+        //getByID('create-inline-mapping').style.display = 'none';
+        var f = document.forms['template-listing-form'];
+        var frm = document.forms['archive_map_form'];
+        if (!frm) return false;
+        var param = '__mode=add_map'
+            + '&blog_id=' + frm['blog_id'].value
+            + '&template_id=<mt:var name="id" escape="url">'
+            + '&new_archive_type=' + f['new_archive_type'].value
+            <mt:if name="type" like="^ct">
+            + '&content_type_id=' + f['content_type_id'].value
+            + '&cat_field_id=' + f['cat_field_id'].value
+            + '&dt_field_id=' + f['dt_field_id'].value
+            </mt:if>
+            + '&magic_token=<mt:var name="magic_token" escape="url">';
+        saveArchiveMapChange(param);
+    }
+    function selectArchiveFile(sel) {
+      var archive_file_sel = jQuery(sel).val();
+      var archive_file_tmpl;
+      if ( !jQuery(sel).attr('id') || jQuery(sel).attr('id') === 'archive_file_sel' ) {
+        archive_file_tmpl = 'archive_file_tmpl';
+      }
+      else {
+        var map_id        = jQuery(sel).attr('id').match(/\d+/);
+        archive_file_tmpl = 'archive_file_tmpl_' + map_id;
+      }
+      if (!archive_file_sel) {
+        jQuery("#" + archive_file_tmpl).css("display", "block");
+      }
+      else {
+        jQuery("#" + archive_file_tmpl).css("display", "none");
+        jQuery("#" + archive_file_tmpl).val(archive_file_sel);
+      }
+      <mt:if name="type" like="^ct">
+      getContentFields(sel);
+      </mt:if>
+    }
+    jQuery("[id^=delete_map_]").click(function(){
+      deleteMap(jQuery(this).attr('id').match(/\d+/));
+    });
+    jQuery("#add_map").click(function(){
+      addMap();
+    });
+    jQuery("[id^=archive_file_sel]").change(function(){
+      selectArchiveFile(this);
+    });
     <mt:if name="type" like="^ct">
     jQuery("#new_archive_type").change(function(){
       jQuery("#archive_file_sel").css("display", "block");
       jQuery("#archive_file_tmpl").css("display", "none");
       getDefaultArchiveTemplates();
-      getContentFields();
-    });
-
-    jQuery("#archive_file_sel").change(function(){
-      getContentFields();
+      selectArchiveFile(jQuery("#archive_file_sel"));
     });
 
     function getDefaultArchiveTemplates() {
@@ -1224,21 +1221,32 @@ function saveTemplatePrefs( sync ) {
       );
     }
 
-    function getContentFields() {
-      var required_fields  = <mt:var name="required_fields">;
-      var archive_type     = jQuery("#new_archive_type").val();
+    function getContentFields(sel) {
+      var required_fields = <mt:var name="required_fields">;
+      var content_fields  = <mt:var name="content_fields">;
+      var archive_type;
+      var cat_field_id_sel;
+      var dt_field_id_sel;
+      if ( !jQuery(sel).attr('id') || jQuery(sel).attr('id') === 'archive_file_sel' ) {
+        archive_type      = jQuery("#new_archive_type").val();
+        cat_field_id_sel  = 'cat_field_id';
+        dt_field_id_sel   = 'dt_field_id';
+      }
+      else {
+        var map_id        = jQuery(sel).attr('id').match(/\d+/);
+        archive_type      = jQuery("#archive_type_" + map_id).val();
+        cat_field_id_sel  = 'cat_field_id_' + map_id;
+        dt_field_id_sel   = 'dt_field_id_' + map_id;
+      }
       var content_type_id  = jQuery("#content_type_id").val();
-      var archive_file_sel = jQuery("#archive_file_sel").val();
+      var archive_file_sel = jQuery(sel).val();
       var cat_field = 0;
       var dt_field = 0;
       if (!archive_file_sel) {
         cat_field = 1;
         dt_field  = 1;
-        jQuery("#archive_file_tmpl").css("display", "block");
       }
       else {
-        jQuery("#archive_file_tmpl").css("display", "none");
-        jQuery("#archive_file_tmpl").val(archive_file_sel);
         var rf = required_fields[archive_file_sel];
         if ( rf && rf.category ) {
           cat_field = 1;
@@ -1247,37 +1255,36 @@ function saveTemplatePrefs( sync ) {
           dt_field = 1;
         }
       }
-      var content_fields = <mt:var name="content_fields">;
       var categories     = content_fields.categories || [];
       var date_and_times = content_fields.date_and_times || [];
-      jQuery('#cat_field_id').children().remove();
-      jQuery('#dt_field_id').children().remove();
+      jQuery('#' + cat_field_id_sel).children().remove();
+      jQuery('#' + dt_field_id_sel).children().remove();
       jQuery.each(categories, function(index, value){
         $option = jQuery('<option>').val(value.id).text(value.label);
-        jQuery('#cat_field_id').append($option);
+        jQuery('#' + cat_field_id_sel).append($option);
       });
       $option = jQuery('<option>').val(0).text("<__trans phrase="Published Date">");
-      jQuery('#dt_field_id').append($option);
+      jQuery('#' + dt_field_id_sel).append($option);
       jQuery.each(date_and_times, function(index, value){
         $option = jQuery('<option>').val(value.id).text(value.label);
-        jQuery('#dt_field_id').append($option);
+        jQuery('#' + dt_field_id_sel).append($option);
       });
       if (cat_field) {
-        jQuery("#cat_field_id-field").css('display', 'block');
+        jQuery("#" + cat_field_id_sel + "-field").css('display', 'block');
       }
       else {
-        jQuery("#cat_field_id-field").css('display', 'none');
+        jQuery("#" + cat_field_id_sel + "-field").css('display', 'none');
       }
       if (dt_field) {
-        jQuery("#dt_field_id-field").css('display', 'block');
+        jQuery("#" + dt_field_id_sel + "-field").css('display', 'block');
       }
       else {
-        jQuery("#dt_field_id-field").css('display', 'none');
+        jQuery("#" + dt_field_id_sel + "-field").css('display', 'none');
       }
     }
 
     getDefaultArchiveTemplates();
-    getContentFields();
+    selectArchiveFile(jQuery("#archive_file_sel"));
     </mt:if>
 
 </mt:setvarblock>
