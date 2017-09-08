@@ -879,9 +879,9 @@ sub site_list_widget {
             blog_id   => $site->id,
         };
         my $args = {
-            limit      => $MAX_POSTS,
-            sort_by    => 'created_on',
-            sort_order => 'asc',
+            limit     => $MAX_POSTS,
+            sort      => 'created_on',
+            direction => 'descend',
         };
 
         # Recent post - Content Data
@@ -892,7 +892,8 @@ sub site_list_widget {
             $item->{site_id}         = $site->id;
             $item->{id}              = $p->id;
             $item->{title}           = $p->title;
-            $item->{object_tyoe}     = 'content_data';
+            $item->{object_type}     = 'content_data';
+            $item->{subtype}         = 'content_data_' . $p->content_type_id;
             $item->{content_type_id} = $p->content_type_id;
 
             if ( my $ts = $p->created_on ) {
@@ -917,7 +918,7 @@ sub site_list_widget {
                 $item->{site_id}     = $site->id;
                 $item->{id}          = $p->id;
                 $item->{title}       = $p->title;
-                $item->{object_tyoe} = 'entry';
+                $item->{object_type} = 'entry';
 
                 if ( my $ts = $p->created_on ) {
                     $item->{created_on_formatted} = format_ts(
@@ -942,7 +943,7 @@ sub site_list_widget {
                 $item->{site_id}     = $site->id;
                 $item->{id}          = $p->id;
                 $item->{title}       = $p->title;
-                $item->{object_tyoe} = 'page';
+                $item->{object_type} = 'page';
 
                 if ( my $ts = $p->created_on ) {
                     $item->{created_on_formatted} = format_ts(
@@ -962,8 +963,8 @@ sub site_list_widget {
         my $ct_class = MT->model('content_type');
         my $ct_iter  = $ct_class->load_iter(
             { blog_id => $site->id, },
-            {   sort_by    => 'name',
-                sort_order => 'asc',
+            {   sort      => 'name',
+                direction => 'ascend',
             }
         );
         while ( my $ct = $ct_iter->() ) {
