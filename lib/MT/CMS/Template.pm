@@ -602,7 +602,9 @@ sub edit {
                 ],
                 date_and_times => [
                     map { { id => $_->{id}, label => $_->{options}{label} } }
-                        grep { $_->{type} eq 'date_and_time' } @$fields
+                        grep {
+                        $_->{type} eq 'date_and_time' && $_->{required}
+                        } @$fields
                 ],
             };
             $param->{content_fields} = MT::Util::to_json($content_fields);
@@ -1782,7 +1784,9 @@ sub _populate_archive_loop {
                             selected => $_->{id} eq $dt_field_id ? 1 : 0
                         }
                         }
-                        grep { $_->{type} eq 'date_and_time' } @$fields
+                        grep {
+                        $_->{type} eq 'date_and_time' && $_->{required}
+                        } @$fields
                 ],
             };
             $map->{cat_fields} = $content_fields->{categories};
