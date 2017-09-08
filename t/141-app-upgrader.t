@@ -15,7 +15,7 @@ use Test::More;
 
 my ( $app, $out );
 
-SKIP: {subtest 'Upgrade from MT4 to MT7' => sub {
+subtest 'Upgrade from MT4 to MT7' => sub {
     plan 'skip_all';
     MT::Test->init_db;
     MT::Website->remove_all;
@@ -136,7 +136,7 @@ SKIP: {subtest 'Upgrade from MT4 to MT7' => sub {
     $perms = $admin->permissions( $blog->id );
     ok( $perms->has('administer_site'),
         'Administrator has "administer_site" permission.' );
-};};
+};
 
 subtest 'Upgrade from MT5 to MT7' => sub {
     MT::Test->init_db;
