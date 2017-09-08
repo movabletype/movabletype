@@ -481,9 +481,16 @@ sub edit {
             || $obj_type eq 'ct'
             || $obj_type eq 'ct_archive' )
         {
-            my @at = $app->publisher->archive_types;
+            my @at            = $app->publisher->archive_types;
+            my $has_cat_field = MT::ContentField->count(
+                {   content_type_id => $obj->content_type_id,
+                    type            => 'categories',
+                }
+            );
             if ( $obj_type eq 'ct' || $obj_type eq 'ct_archive' ) {
                 @at = grep { $_ =~ /^ContentType/ } @at;
+                @at = grep { $_ !~ /^ContentType_Category/ } @at
+                    unless $has_cat_field;
             }
             else {
                 @at = grep { $_ !~ /^ContentType/ } @at;
@@ -543,6 +550,8 @@ sub edit {
                 my $tmpls     = $archiver->default_archive_templates;
                 my $tmpl_loop = [];
                 foreach (@$tmpls) {
+                    next
+                        if !$has_cat_field && $_->{required_fields}{category};
                     my $name = $_->{label};
                     $name =~ s/\.html$/$ext/;
                     $name =~ s/index$ext$/$index$ext/;
@@ -603,7 +612,8 @@ sub edit {
                 date_and_times => [
                     map { { id => $_->{id}, label => $_->{options}{label} } }
                         grep {
-                        $_->{type} eq 'date_and_time' && $_->{required}
+                               $_->{type} eq 'date_and_time'
+                            && $_->{required}
                         } @$fields
                 ],
             };
@@ -1785,7 +1795,8 @@ sub _populate_archive_loop {
                         }
                         }
                         grep {
-                        $_->{type} eq 'date_and_time' && $_->{required}
+                               $_->{type} eq 'date_and_time'
+                            && $_->{required}
                         } @$fields
                 ],
             };

@@ -1269,7 +1269,7 @@ function saveTemplatePrefs( sync ) {
         $option = jQuery('<option>').val(value.id).text(value.label);
         jQuery('#' + dt_field_id_sel).append($option);
       });
-      if (cat_field) {
+      if ( cat_field && categories.length ) {
         jQuery("#" + cat_field_id_sel + "-field").css('display', 'block');
       }
       else {
