@@ -336,16 +336,15 @@ sub can_delete_role {
 
 sub save_role {
     my $app = shift;
-    my $q   = $app->param;
     $app->validate_magic() or return;
     $app->can_do('save_role') or return $app->permission_denied();
 
-    my $id    = $q->param('id');
+    my $id    = $app->param('id');
     my @perms = $app->multi_param('permission');
     my $role;
     require MT::Role;
     $role = $id ? MT::Role->load($id) : MT::Role->new;
-    my $name = $q->param('name') || '';
+    my $name = $app->param('name') || '';
     $name =~ s/(^\s+|\s+$)//g;
     return $app->errtrans("Role name cannot be blank.")
         if $name eq '';
@@ -359,8 +358,9 @@ sub save_role {
             "You cannot define a role without permissions.");
     }
 
-    $role->name( $q->param('name') );
-    $role->description( $q->param('description') );
+    my $description = $app->param('description');
+    $role->name($name);
+    $role->description($description);
     $role->clear_full_permissions;
     $role->set_these_permissions(@perms);
     if ( $role->id ) {
