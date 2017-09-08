@@ -2,32 +2,11 @@
   class="system-information-widget"
   label="<__trans phrase="System Information">"
   can_close="1">
-  <div class="card-group mb-3">
-    <div class="card text-center">
-      <div class="card-block">
-        <p class="card-text h1"><mt:var name="active_users"></p>
-        <p class="card-text"><__trans phrase="Active Users"></p>
-      </div>
-    </div>
-    <div class="card text-center">
-      <div class="card-block">
-        <p class="card-text h1"><mt:var name="total_sites"></p>
-        <p class="card-text"><__trans phrase="Sites"></p>
-      </div>
-    </div>
-    <div class="card text-center">
-      <div class="card-block">
-        <p class="card-text h1"><mt:var name="total_content_types"></p>
-        <p class="card-text"><__trans phrase="Content Types"></p>
-      </div>
-    </div>
-  </div>
-  <div>
-    <div>
-      <ul class="list-unstyled">
-        <li><__trans phrase="Server Model">: <mt:var name="server_model"></li>
-      </ul>
-    </div>
+  <div class="mt-widget__content row">
+    <div class="mt-widget__info"><__trans phrase="Active Users"><br><strong class="number"><mt:var name="active_users"></strong></div>
+    <div class="mt-widget__info"><__trans phrase="Sites"><br><strong class="number"><mt:var name="total_sites"></strong></div>
+    <div class="mt-widget__info"><__trans phrase="Content Types"><br><strong class="number"><mt:var name="total_content_types"></strong></div>
+    <div class="mt-widget__info"><__trans phrase="Server Model"><br><strong><mt:var name="server_model"></strong></div>
   </div>
 </mtapp:widget>
 

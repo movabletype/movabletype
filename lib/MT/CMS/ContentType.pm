@@ -68,7 +68,7 @@ sub tmpl_param_edit_role {
 
 sub _content_type_permission_tmpl {
     return <<'__TMPL__';
-    <mt:setvarblock name="ct_perm_group"><mt:var name="__VALUE__"></mt:setvarblock>
+    <mt:setvarblock name="ct_perm_group"><mt:var name="__VALUE__" escape="html"></mt:setvarblock>
     <mtapp:setting
       id="<mt:var name="ct_perm_group">"
       label="<mt:var name="ct_perm_group">"

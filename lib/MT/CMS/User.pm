@@ -336,16 +336,15 @@ sub can_delete_role {
 
 sub save_role {
     my $app = shift;
-    my $q   = $app->param;
     $app->validate_magic() or return;
     $app->can_do('save_role') or return $app->permission_denied();
 
-    my $id    = $q->param('id');
+    my $id    = $app->param('id');
     my @perms = $app->multi_param('permission');
     my $role;
     require MT::Role;
     $role = $id ? MT::Role->load($id) : MT::Role->new;
-    my $name = $q->param('name') || '';
+    my $name = $app->param('name') || '';
     $name =~ s/(^\s+|\s+$)//g;
     return $app->errtrans("Role name cannot be blank.")
         if $name eq '';
@@ -359,8 +358,9 @@ sub save_role {
             "You cannot define a role without permissions.");
     }
 
-    $role->name( $q->param('name') );
-    $role->description( $q->param('description') );
+    my $description = $app->param('description');
+    $role->name($name);
+    $role->description($description);
     $role->clear_full_permissions;
     $role->set_these_permissions(@perms);
     if ( $role->id ) {
@@ -398,8 +398,7 @@ sub set_object_status {
     return $app->error( $app->translate("Invalid request.") )
         if $app->request_method ne 'POST';
 
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $type = $app->param('_type') || '';
     return $app->error( $app->translate('Invalid type') )
         unless ( $type eq 'user' )
         || ( $type eq 'author' )
@@ -412,7 +411,7 @@ sub set_object_status {
     my @sync;
     my $saved       = 0;
     my $not_enabled = 0;
-    for my $id ( $q->multi_param('id') ) {
+    for my $id ( $app->multi_param('id') ) {
         next unless $id;    # avoid 'empty' ids
         my $obj = $class->load($id);
         next unless $obj;
@@ -474,7 +473,7 @@ sub set_object_status {
         );
     }
     $app->add_return_arg( is_power_edit => 1 )
-        if $q->param('is_power_edit');
+        if $app->param('is_power_edit');
     $app->add_return_arg( unchanged => $unchanged )
         if $unchanged;
     $app->add_return_arg( not_enabled => $not_enabled )
