@@ -1196,11 +1196,11 @@ sub save_content_data {
 
     $app->validate_magic
         or return $app->errtrans("Invalid request.");
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        or return $app->permission_denied();
+
     return $app->permission_denied()
-        unless $app->user->is_superuser()
-        || ( $perms
-        && $perms->can_administer_site );
+        unless $perms->can_do('edit_all_content_datas');
 
     my $blog_id = scalar $q->param('blog_id')
         or return $app->errtrans("Invalid request.");
