@@ -1012,18 +1012,61 @@ sub site_list_widget {
     }
     else {
         # from recent access
-        my @recent = @{ $user->favorite_sites || [] };
-        for my $site_id (@recent) {
-            next
-                unless $user->has_perm($site_id)
-                || $user->is_superuser
-                || $user->permissions(0)->can_do('edit_templates');
+        if ( my @recent = @{ $user->favorite_sites || [] } ) {
+            for my $site_id (@recent) {
+                next
+                    unless $user->has_perm($site_id)
+                    || $user->is_superuser
+                    || $user->permissions(0)->can_do('edit_templates');
 
-            my $site = MT->model('website')->load($site_id);
-            next unless $site;
+                my $site = MT->model('website')->load($site_id);
+                next unless $site;
 
-            my $row = $site_builder->($site);
-            push @sites, $row if $row;
+                my $row = $site_builder->($site);
+                push @sites, $row if $row;
+            }
+        }
+        else {
+            # User have no recent access list.
+            # Try to load site list from permission table.
+            my @accessible = MT->model('blog')->load(
+                { class => '*', },
+                {   join => MT::Permission->join_on(
+                        'blog_id',
+                        {   author_id   => $user->id,
+                            permissions => { not => "'comment'" }
+                        }
+                    ),
+                    sort => [
+                        { column => 'class',      desc => 'DESC' },
+                        { column => 'created_on', desc => 'DESC' }
+                    ],
+                }
+            );
+
+            if (!@accessible
+                and (  $user->is_superuser
+                    or $user->permissions(0)->can_do('edit_templates') )
+                )
+            {
+                #  No permission record? Okay loading from blog table
+                # if user is system administrator or having 'edit_template'
+                # for system. Otherwise, shown message.
+                @accessible = MT->model('blog')->load(
+                    { class => '*', },
+                    {   limit => 10,
+                        sort  => [
+                            { column => 'class',      desc => 'DESC' },
+                            { column => 'created_on', desc => 'DESC' }
+                        ],
+                    }
+                );
+            }
+
+            for my $site (@accessible) {
+                my $row = $site_builder->($site);
+                push @sites, $row if $row;
+            }
         }
     }
 
