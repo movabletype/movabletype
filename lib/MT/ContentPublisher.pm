@@ -1146,7 +1146,7 @@ sub _rebuild_content_archive_type {
         local $ctx->{__stash}{archive_category} = $cat if $cat;
         $timestamp = $obj->authored_on() if $obj && !$timestamp;
         local $ctx->{__stash}{entry} = $obj
-            if $obj && ref $obj eq 'MT::Entry';
+            if $obj && ( ref $obj eq 'MT::Entry' || ref $obj eq 'MT::Page' );
         local $ctx->{__stash}{content} = $obj
             if $obj && ref $obj eq 'MT::ContentData';
         local $ctx->{__stash}{author}
