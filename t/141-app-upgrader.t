@@ -136,6 +136,7 @@ subtest 'Upgrade from MT4 to MT7' => sub {
     $perms = $admin->permissions( $blog->id );
     ok( $perms->has('administer_site'),
         'Administrator has "administer_site" permission.' );
+
 };
 
 subtest 'Upgrade from MT5 to MT7' => sub {
@@ -258,6 +259,19 @@ subtest 'Upgrade from MT5 to MT7' => sub {
     $perms = $admin->permissions( $blog->id );
     ok( $perms->has('administer_site'),
         'Administrator has "administer_site" permission.' );
+
+    my @migrate_roles = (
+        'Designer (MT6)',
+        'Author (MT6)',
+        'Contributor (MT6)',
+        'Editor (MT6)'
+    );
+    foreach my $role_name (@migrate_roles) {
+        my $role_count
+            = MT::Role->count( { name => MT->translate($role_name) } );
+        is( $role_count, 1, $role_name . ' has one role.' );
+    }
+
 };
 
 subtest 'Upgrade from MT6 to MT7' => sub {
@@ -380,6 +394,19 @@ subtest 'Upgrade from MT6 to MT7' => sub {
     $perms = $admin->permissions( $blog->id );
     ok( $perms->has('administer_site'),
         'Administrator has "administer_site" permission.' );
+
+    my @migrate_roles = (
+        'Designer (MT6)',
+        'Author (MT6)',
+        'Contributor (MT6)',
+        'Editor (MT6)'
+    );
+    foreach my $role_name (@migrate_roles) {
+        my $role_count
+            = MT::Role->count( { name => MT->translate($role_name) } );
+        is( $role_count, 1, $role_name . ' has one role.' );
+    }
+
 };
 
 done_testing;
