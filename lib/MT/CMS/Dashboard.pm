@@ -897,6 +897,7 @@ sub site_list_widget {
             $item->{content_type_id} = $p->content_type_id;
 
             if ( my $ts = $p->created_on ) {
+                $item->{epochtime} = ts2epoch( undef, $ts );
                 $item->{created_on_formatted} = format_ts(
                     MT::App::CMS::LISTING_DATETIME_FORMAT(),
                     epoch2ts( $site, ts2epoch( undef, $ts ) ),
@@ -921,6 +922,7 @@ sub site_list_widget {
                 $item->{object_type} = 'entry';
 
                 if ( my $ts = $p->created_on ) {
+                    $item->{epochtime} = ts2epoch( undef, $ts );
                     $item->{created_on_formatted} = format_ts(
                         MT::App::CMS::LISTING_DATETIME_FORMAT(),
                         epoch2ts( $site, ts2epoch( undef, $ts ) ),
@@ -946,6 +948,7 @@ sub site_list_widget {
                 $item->{object_type} = 'page';
 
                 if ( my $ts = $p->created_on ) {
+                    $item->{epochtime} = ts2epoch( undef, $ts );
                     $item->{created_on_formatted} = format_ts(
                         MT::App::CMS::LISTING_DATETIME_FORMAT(),
                         epoch2ts( $site, ts2epoch( undef, $ts ) ),
@@ -956,7 +959,12 @@ sub site_list_widget {
                 push @recent, $item;
             }
         }
-        $row->{recent_post} = \@recent;
+
+        if ( @recent ) {
+            @recent
+                = reverse sort { $a->{epochtime} <=> $b->{epochtime} } @recent;
+            $row->{recent_post} = \@recent;
+        }
 
         # Content Type list
         my @content_types;
