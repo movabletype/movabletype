@@ -264,11 +264,18 @@ sub save_cfg_content_type {
 
     $app->validate_magic
         or return $app->errtrans("Invalid request.");
-    my $perms = $app->permissions;
-    return $app->permission_denied()
-        unless $app->user->is_superuser()
-        || ( $perms
-        && $perms->can_administer_site );
+    my $perms = $app->permissions
+        or return $app->permission_denied();
+
+    my $id = $app->param('id');
+    if ( !$id ) {
+        return $app->permission_denied()
+            unless $perms->can_do('create_new_content_type');
+    }
+    else {
+        return $app->permission_denied()
+            unless $perms->can_do('edit_all_content_types');
+    }
 
     my $blog_id = scalar $q->param('blog_id')
         or return $app->errtrans("Invalid request.");
