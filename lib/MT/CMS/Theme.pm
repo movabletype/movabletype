@@ -335,8 +335,8 @@ sub element_dialog {
     $app->can_do('open_theme_export_screen')
         or return $app->permission_denied();
 
-    my $q = $app->param;
-    my $blog = $app->blog || MT->model('blog')->load( $q->param('blog_id') )
+    my $blog_id = $app->param('blog_id');
+    my $blog = $app->blog || MT->model('blog')->load($blog_id)
         or return $app->error( MT->translate('Invalid request.') );
     my $exporter_id = $app->param('exporter_id')
         or return $app->error( $app->translate('Invalid request.') );
@@ -367,7 +367,7 @@ sub element_dialog {
                 category => 'export',
             }
         );
-        next;
+        return;
     }
 
     if ( ref $tmpl eq MT->model('template') ) {
