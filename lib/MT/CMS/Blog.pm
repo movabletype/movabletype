@@ -2330,22 +2330,27 @@ sub cfg_prefs_save {
             $path = $app->param('archive_url_path');
             $blog->archive_url("$subdomain/::/$path");
         }
-        $blog->site_path( $app->param('site_path_absolute') )
+        my $site_path_absolute    = $app->param('site_path_absolute');
+        my $use_absolute          = $app->param('use_absolute');
+        my $archive_path_absolute = $app->param('archive_path_absolute');
+        my $enable_archive_paths  = $app->param('enable_archive_paths');
+        my $use_absolute_archive  = $app->param('use_absolute_archive');
+        $blog->site_path($site_path_absolute)
             if (
             !$app->config->BaseSitePath
             || ($app->config->BaseSitePath
                 && MT::CMS::Common::is_within_base_sitepath(
-                    $app, $app->param('site_path_absolute')
+                    $app, $site_path_absolute
                 )
             )
             )
-            && $app->param('use_absolute')
-            && $app->param('site_path_absolute');
-        $blog->archive_path( $app->param('archive_path_absolute') )
+            && $use_absolute
+            && $site_path_absolute;
+        $blog->archive_path($archive_path_absolute)
             if !$app->config->BaseSitePath
-            && $app->param('enable_archive_paths')
-            && $app->param('use_absolute_archive')
-            && $app->param('archive_path_absolute');
+            && $enable_archive_paths
+            && $use_absolute_archive
+            && $archive_path_absolute;
     }
 
     require MT::PublishOption;
@@ -2374,25 +2379,32 @@ sub cfg_prefs_save {
             _create_dynamiccache_dir( $blog, $blog->archive_path ) if $cache;
         }
     }
-    $blog->use_revision( $app->param('use_revision') ? 1 : 0 );
-    if ( $app->param('use_revision') ) {
-        $blog->max_revisions_entry( $app->param('max_revisions_entry') )
-            if $app->param('max_revisions_entry');
-        $blog->max_revisions_cd( $app->param('max_revisions_cd') )
-            if $app->param('max_revisions_cd');
-        $blog->max_revisions_template( $app->param('max_revisions_template') )
-            if $app->param('max_revisions_template');
+    my $use_revision = $app->param('use_revision');
+    $blog->use_revision( $use_revision ? 1 : 0 );
+    if ($use_revision) {
+        my $max_revisions_entry    = $app->param('max_revisions_entry');
+        my $max_revisions_cd       = $app->param('max_revisions_cd');
+        my $max_revisions_template = $app->param('max_revisions_template');
+        $blog->max_revisions_entry($max_revisions_entry)
+            if $max_revisions_entry;
+        $blog->max_revisions_cd($max_revisions_cd)
+            if $max_revisions_cd;
+        $blog->max_revisions_template($max_revisions_template)
+            if $max_revisions_template;
     }
 
-    $blog->upload_destination( scalar $app->param('upload_destination') );
-    $blog->extra_path( scalar $app->param('extra_path') );
-    $blog->allow_to_change_at_upload(
-        $app->param('allow_to_change_at_upload') ? 1 : 0 );
-    $blog->operation_if_exists( scalar $app->param('operation_if_exists') );
-    $blog->normalize_orientation(
-        $app->param('normalize_orientation') ? 1 : 0 );
-    $blog->auto_rename_non_ascii(
-        $app->param('auto_rename_non_ascii') ? 1 : 0 );
+    my $upload_destination        = $app->param('upload_destination');
+    my $extra_path                = $app->param('extra_path');
+    my $allow_to_change_at_upload = $app->param('allow_to_change_at_upload');
+    my $operation_if_exists       = $app->param('operation_if_exists');
+    my $normalize_orientation     = $app->param('normalize_orientation');
+    my $auto_rename_non_ascii     = $app->param('auto_rename_non_ascii');
+    $blog->upload_destination($upload_destination);
+    $blog->extra_path($extra_path);
+    $blog->allow_to_change_at_upload( $allow_to_change_at_upload ? 1 : 0 );
+    $blog->operation_if_exists($operation_if_exists);
+    $blog->normalize_orientation( $normalize_orientation ? 1 : 0 );
+    $blog->auto_rename_non_ascii( $auto_rename_non_ascii ? 1 : 0 );
 
     $blog->save
         or return $app->error(

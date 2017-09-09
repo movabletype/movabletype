@@ -18,7 +18,7 @@
     right: -20px;
     width: 20px;
     height: 10px;
-    background: transparent url(../../images/arrow-target-mark.png) center bottom no-repeat;
+    background: transparent url(../images/arrow-target-mark.png) center bottom no-repeat;
 }
 
 .sort-tab {
@@ -31,7 +31,7 @@
 */
     width: 35px;
     height: 100%;
-    background: transparent url(../../images/sort_handle.png) center no-repeat;
+    background: transparent url(../images/sort_handle.png) center no-repeat;
     cursor: move ! important;
 }
 

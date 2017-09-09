@@ -1124,15 +1124,14 @@ sub _create_temp_entry {
 sub _build_entry_preview {
     my $app = shift;
     my ( $entry, %param ) = @_;
-    my $q           = $app->param;
-    my $type        = $q->param('_type') || 'entry';
+    my $type        = $app->param('_type') || 'entry';
     my $entry_class = $app->model($type);
-    my $blog_id     = $q->param('blog_id');
+    my $blog_id     = $app->param('blog_id');
     my $blog        = $app->blog;
-    my $id          = $q->param('id');
+    my $id          = $app->param('id');
     my $user_id     = $app->user->id;
     my $cat;
-    my $cat_ids = $q->param('category_ids');
+    my $cat_ids = $app->param('category_ids');
 
     if ($cat_ids) {
         my @cats = split /,/, $cat_ids;
@@ -1151,7 +1150,7 @@ sub _build_entry_preview {
         $entry->cache_property( 'categories', undef, [] );
     }
     my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
-    my $tags      = $q->param('tags');
+    my $tags      = $app->param('tags');
     my @tag_names
         = ( defined $tags and $tags ne '' )
         ? MT::Tag->split( $tag_delim, $tags )
@@ -1168,25 +1167,27 @@ sub _build_entry_preview {
         $entry->{__tag_objects} = \@tags;
     }
 
-    my $ao_date = $q->param('authored_on_date') || '';
-    my $ao_time = $q->param('authored_on_time') || '';
+    my $ao_date = $app->param('authored_on_date') || '';
+    my $ao_time = $app->param('authored_on_time') || '';
     my $ao_ts   = $ao_date . $ao_time;
     $ao_ts =~ s/\D//g;
     $entry->authored_on($ao_ts);
 
-    my $uo_date = $q->param('unpublished_on_date') || '';
-    my $uo_time = $q->param('unpublished_on_time') || '';
+    my $uo_date = $app->param('unpublished_on_date') || '';
+    my $uo_time = $app->param('unpublished_on_time') || '';
     my $uo_ts   = $uo_date . $uo_time;
     $uo_ts =~ s/\D//g;
     $entry->unpublished_on($uo_ts);
 
+    my $basename         = $app->param('basename');
     my $preview_basename = $app->preview_object_basename;
-    $entry->basename( $q->param('basename') || $preview_basename );
+    $entry->basename( $basename || $preview_basename );
 
     # translates naughty words when PublishCharset is NOT UTF-8
     MT::Util::translate_naughty_words($entry);
 
-    $entry->convert_breaks( scalar $q->param('convert_breaks') );
+    my $convert_breaks = $app->param('convert_breaks');
+    $entry->convert_breaks($convert_breaks);
 
     my @data = ( { data_name => 'author_id', data_value => $user_id } );
     $app->run_callbacks( 'cms_pre_preview', $app, $entry, \@data );
@@ -1361,20 +1362,22 @@ sub _build_entry_preview {
             || $col eq 'comment_count'
             || $col eq 'ping_count'
             || $col eq 'current_revision';
+        my $value = $app->param($col);
         push @data,
             {
             data_name  => $col,
-            data_value => scalar $q->param($col)
+            data_value => $value,
             };
     }
     for my $data (
         qw( authored_on_date authored_on_time unpublished_on_date unpublished_on_time basename_manual basename_old category_ids tags include_asset_ids save_revision revision-note )
         )
     {
+        my $value = $app->param($data);
         push @data,
             {
             data_name  => $data,
-            data_value => scalar $q->param($data)
+            data_value => $value,
             };
     }
 
@@ -1421,15 +1424,16 @@ sub _build_entry_preview {
     $param{object_type}  = $type;
     $param{object_label} = $entry_class->class_label;
 
-    $param{diff_view} = $app->param('rev_numbers')
-        || $app->param('collision');
+    my $rev_numbers = $app->param('rev_numbers') || '';
+    my $collision = $app->param('collision');
+    $param{diff_view} = $rev_numbers || $collision;
     $param{collision} = 1;
-    if ( my @rev_numbers = split /,/, $app->param('rev_numbers') ) {
+    if ( my @rev_numbers = split /,/, $rev_numbers ) {
         $param{comparing_revisions} = 1;
         $param{rev_a}               = $rev_numbers[0];
         $param{rev_b}               = $rev_numbers[1];
     }
-    $param{dirty} = $q->param('dirty') ? 1 : 0;
+    $param{dirty} = $app->param('dirty') ? 1 : 0;
 
     if ($fullscreen) {
         return $app->load_tmpl( 'preview_entry.tmpl', \%param );
@@ -3165,10 +3169,9 @@ sub delete {
     my $app = shift;
     $app->validate_magic() or return;
     require MT::Blog;
-    my $q = $app->param;
 
     my $blog;
-    if ( my $blog_id = $q->param('blog_id') ) {
+    if ( my $blog_id = $app->param('blog_id') ) {
         $blog = MT::Blog->load($blog_id)
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
@@ -3181,7 +3184,7 @@ sub delete {
     $app->setup_filtered_ids
         if $app->param('all_selected');
     my %rebuild_recipe;
-    for my $id ( $q->multi_param('id') ) {
+    for my $id ( $app->multi_param('id') ) {
         my $class = $app->model("entry");
         my $obj   = $class->load($id);
         return $app->call_return unless $obj;
@@ -3215,7 +3218,7 @@ sub delete {
     }
 
     $app->add_return_arg( saved_deleted => 1 );
-    if ( $q->param('is_power_edit') ) {
+    if ( $app->param('is_power_edit') ) {
         $app->add_return_arg( is_power_edit => 1 );
     }
 
