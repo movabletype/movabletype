@@ -11,10 +11,6 @@ dependencies:
     - "~/docker"
 
   override:
-    - cp ./t/mysql-test.cfg ./mt-config.cgi
-    - rm t/62-asset-editor.t
-    - rm plugins/MultiBlog/t/02.tags.t
-
     - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
     - docker build -t mt .
     - mkdir -p ~/docker; docker save mt > ~/docker/image.tar
