@@ -3165,10 +3165,9 @@ sub delete {
     my $app = shift;
     $app->validate_magic() or return;
     require MT::Blog;
-    my $q = $app->param;
 
     my $blog;
-    if ( my $blog_id = $q->param('blog_id') ) {
+    if ( my $blog_id = $app->param('blog_id') ) {
         $blog = MT::Blog->load($blog_id)
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
@@ -3181,7 +3180,7 @@ sub delete {
     $app->setup_filtered_ids
         if $app->param('all_selected');
     my %rebuild_recipe;
-    for my $id ( $q->multi_param('id') ) {
+    for my $id ( $app->multi_param('id') ) {
         my $class = $app->model("entry");
         my $obj   = $class->load($id);
         return $app->call_return unless $obj;
@@ -3215,7 +3214,7 @@ sub delete {
     }
 
     $app->add_return_arg( saved_deleted => 1 );
-    if ( $q->param('is_power_edit') ) {
+    if ( $app->param('is_power_edit') ) {
         $app->add_return_arg( is_power_edit => 1 );
     }
 
