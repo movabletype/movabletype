@@ -2165,9 +2165,8 @@ sub list_revision {
 # Currently, not in use.
 sub save_snapshot {
     my $app   = shift;
-    my $q     = $app->param;
-    my $type  = $q->param('_type');
-    my $id    = $q->param('id');
+    my $type  = $app->param('_type');
+    my $id    = $app->param('id');
     my $param = {};
 
     return $app->errtrans("Invalid request.")
@@ -2207,7 +2206,7 @@ sub save_snapshot {
 
     my $original = $obj->clone();
     my $names    = $obj->column_names;
-    my %values   = map { $_ => ( scalar $q->param($_) ) } @$names;
+    my %values   = map { $_ => scalar $app->param($_) } @$names;
 
     if ( ( 'entry' eq $type ) || ( 'page' eq $type ) ) {
         $app->_translate_naughty_words($obj);
@@ -2239,7 +2238,8 @@ sub save_snapshot {
             my $max = $blog->$col;
             $obj->handle_max_revisions($max);
         }
-        my $revision = $obj->save_revision( $q->param('revision-note') );
+        my $revision_note = $app->param('revision-note');
+        my $revision      = $obj->save_revision($revision_note);
         $app->add_return_arg( r => $revision );
         if ($id) {
             my $obj_revision = $original->revision || 0;
