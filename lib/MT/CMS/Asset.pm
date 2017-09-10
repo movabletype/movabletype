@@ -633,11 +633,14 @@ sub complete_insert {
 
     $app->validate_magic() or return;
 
-    if ( !$asset && $app->param('id') ) {
+    my $id      = $app->param('id');
+    my $blog_id = $app->param('blog_id');
+
+    if ( !$asset && $id ) {
         require MT::Asset;
-        $asset = MT::Asset->load( $app->param('id') )
+        $asset = MT::Asset->load($id)
             || return $app->errtrans( "Cannot load file #[_1].",
-            $app->param('id') );
+            $id );
     }
     return $app->errtrans('Invalid request.') unless $asset;
 
@@ -647,7 +650,7 @@ sub complete_insert {
     require MT::Blog;
     my $blog = $asset->blog
         or return $app->errtrans( "Cannot load blog #[_1].",
-        $app->param('blog_id') );
+        $blog_id );
     my $perms = $app->permissions
         or return $app->errtrans('No permissions');
 
@@ -657,21 +660,23 @@ sub complete_insert {
         return insert($app);
     }
 
+    my $middle_path = $app->param('middle_path') || '';
+    my $extra_path  = $app->param('extra_path') || '';
     my $param = {
         asset_id    => $asset->id,
         bytes       => $args{bytes},
         fname       => $asset->file_name,
         is_image    => $args{is_image} || 0,
         url         => $asset->url,
-        middle_path => scalar( $app->param('middle_path') ) || '',
-        extra_path  => scalar( $app->param('extra_path') ) || '',
+        middle_path => $middle_path,
+        extra_path  => $extra_path,
     };
     for my $field (
         qw( direct_asset_insert edit_field entry_insert site_path
         asset_select )
         )
     {
-        $param->{$field} = scalar $app->param($field) || '';
+        $param->{$field} = $app->param($field) || '';
     }
     if ( $args{is_image} ) {
         $param->{width}  = $asset->image_width;
@@ -688,9 +693,9 @@ sub complete_insert {
         $param->{ext_from}          = $ext_from;
         $param->{ext_to}            = $ext_to;
     }
-    if ( !$app->param('asset_select')
-        && ( $perms->can_do('insert_asset') ) )
-    {
+
+    # no need to check asset_select here (returns earlier if it's set)
+    if ( $perms->can_do('insert_asset') ) {
         my $html = $asset->insert_options($param);
         if ( $app->param('force_insert')
             || ( $param->{direct_asset_insert} && !$html ) )
@@ -722,8 +727,6 @@ sub complete_insert {
         }
 
         require MT::ObjectTag;
-        my $q       = $app->param;
-        my $blog_id = $q->param('blog_id');
         my $tags_js = MT::Util::to_json(
             [   map { $_->name } MT::Tag->load(
                     undef,
@@ -739,14 +742,16 @@ sub complete_insert {
         $param->{tags_js} = $tags_js;
     }
 
+    # XXX: useless? should always be false
     $param->{'no_insert'} = $app->param('no_insert');
+
     if ( $app->param('dialog') ) {
         $app->load_tmpl( 'dialog/asset_options.tmpl', $param );
     }
     else {
         if ( $app->user->can_do('access_to_asset_list') ) {
             my $redirect_args = {
-                blog_id => $app->param('blog_id'),
+                blog_id => $blog_id,
                 (     ( $ext_from && $ext_to )
                     ? ( ext_from => $ext_from, ext_to => $ext_to )
                     : ()
@@ -765,7 +770,7 @@ sub complete_insert {
                 $app->uri(
                     'mode' => 'start_upload',
                     args   => {
-                        blog_id           => $app->param('blog_id'),
+                        blog_id           => $blog_id,
                         uploaded          => 1,
                         uploaded_filename => $asset->file_name,
                     },
