@@ -813,6 +813,7 @@ sub cancel_upload {
 
 sub complete_upload {
     my $app   = shift;
+    my $blog_id = $app->param('blog_id');
     my %param = $app->param_hash;
     my $asset;
     require MT::Asset;
@@ -841,7 +842,7 @@ sub complete_upload {
         $app->uri(
             'mode' => 'list',
             args =>
-                { '_type' => 'asset', 'blog_id' => $app->param('blog_id') }
+                { '_type' => 'asset', 'blog_id' => $blog_id }
         )
     );
 }
