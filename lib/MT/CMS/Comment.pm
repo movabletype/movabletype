@@ -631,21 +631,23 @@ sub do_reply {
     $app->validate_magic
         or return $app->error( $app->translate("Invalid request") );
 
-    my $q = $app->param;
-
-    my $param = {
-        reply_to    => $q->param('reply_to'),
-        magic_token => $q->param('magic_token'),
-        blog_id     => $q->param('blog_id'),
+    my $reply_to    = $app->param('reply_to');
+    my $magic_token = $app->param('magic_token');
+    my $blog_id     = $app->param('blog_id');
+    my $return_url  = $app->param('return_url');
+    my $param       = {
+        reply_to    => $reply_to,
+        magic_token => $magic_token,
+        blog_id     => $blog_id,
     };
 
     my ( $comment, $parent, $entry ) = _prepare_reply($app);
     return unless $comment;
 
     my $blog = $parent->blog
-        || $app->model('blog')->load( $q->param('blog_id') );
+        || $app->model('blog')->load($blog_id);
     return $app->error(
-        $app->translate( 'Cannot load blog #[_1].', $q->param('blog_id') ) )
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) )
         unless $blog;
 
     can_do_reply( $app, $entry )
@@ -666,7 +668,7 @@ sub do_reply {
         { %$param, error => $app->errstr } )
         unless $comment;
 
-    $comment->parent_id( $param->{reply_to} );
+    $comment->parent_id($reply_to);
     $comment->approve;
     return $app->handle_error(
         $app->translate( "An error occurred: [_1]", $comment->errstr() ) )
@@ -681,12 +683,12 @@ sub do_reply {
                 or return $app->publish_error( "Publishing failed. [_1]",
                 $app->errstr );
             $app->_send_comment_notification( $comment, q(), $entry,
-                $app->model('blog')->load( $param->{blog_id} ),
+                $app->model('blog')->load($blog_id),
                 $app->user );
         }
     );
     return $app->build_page( 'dialog/comment_reply.tmpl',
-        { closing => 1, return_url => scalar( $q->param('return_url') ) } );
+        { closing => 1, return_url => $return_url } );
 }
 
 sub reply_preview {
