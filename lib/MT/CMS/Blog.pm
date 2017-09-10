@@ -734,8 +734,7 @@ sub rebuild_pages {
         or return $app->error( $app->translate("No permissions") );
     require MT::Entry;
     require MT::Blog;
-    my $q          = $app->param;
-    my $start_time = $q->param('start_time');
+    my $start_time = $app->param('start_time');
 
     if ( !$start_time ) {
 
@@ -744,15 +743,19 @@ sub rebuild_pages {
         $start_time = time;
     }
 
-    my $blog_id = int( $q->param('blog_id') );
+    my $blog_id = int( $app->param('blog_id') || 0 );
     return $app->errtrans("Invalid request.") unless $blog_id;
 
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
-    my $order = $q->param('type');
+
+    # param('type') is used differently
+    my $param_type = $app->param('type') || '';
+
+    my $order = $param_type;
     my @order = split /,/, $order;
-    my $next  = $q->param('next') || 0;
+    my $next  = $app->param('next') || 0;
     my $done  = 0;
     my $type  = $order[$next];
 
@@ -768,19 +771,27 @@ sub rebuild_pages {
     $next++;
     $done++ if $next >= @order;
     my $offset = 0;
-    my ($total) = $q->param('total');
+    my $total  = $app->param('total');
 
-    my $with_indexes = $q->param('with_indexes');
-    my $no_static    = $q->param('no_static');
-    my $template_id  = $q->param('template_id');
-    my $map_id       = $q->param('templatemap_id');
+    my $with_indexes   = $app->param('with_indexes');
+    my $no_static      = $app->param('no_static');
+    my $template_id    = $app->param('template_id');
+    my $map_id         = $app->param('templatemap_id');
+    my $fs             = $app->param('fs');
+    my $old_categories = $app->param('old_categories');
+    my $old_previous   = $app->param('old_previous');
+    my $old_next       = $app->param('old_next');
+    my $entry_id       = $app->param('entry_id');
+    my $is_new         = $app->param('is_new');
+    my $old_status     = $app->param('old_status');
+    my $return_args    = $app->param('return_args');
 
     my ($tmpl_saved);
 
     # Make sure errors go to a sensible place when in fs mode
     # TODO: create contin. earlier, pass it thru
-    if ( $app->param('fs') ) {
-        my ( $type, $obj_id ) = $app->param('type') =~ m/(entry|index)-(\d+)/;
+    if ($fs) {
+        my ( $type, $obj_id ) = $param_type =~ m/(entry|index)-(\d+)/;
         if ( $type && $obj_id ) {
             my $edit_type = $type;
             $edit_type = 'template' if $type eq 'index';
@@ -837,9 +848,9 @@ sub rebuild_pages {
         $app->rebuild_entry(
             Entry             => $entry,
             BuildDependencies => 1,
-            OldCategories     => $q->param('old_categories'),
-            OldPrevious       => $q->param('old_previous'),
-            OldNext           => $q->param('old_next')
+            OldCategories     => $old_categories,
+            OldPrevious       => $old_previous,
+            OldNext           => $old_next
         ) or return $app->publish_error();
         $order = "entry '" . $entry->title . "'";
     }
@@ -863,7 +874,7 @@ sub rebuild_pages {
                 ->can_do('rebuild');
         }
 
-        $offset = $q->param('offset') || 0;
+        $offset = $app->param('offset') || 0;
         my $start = time;
         my $count = 0;
         my $cb    = sub {
@@ -934,7 +945,7 @@ sub rebuild_pages {
                     ->can_do('rebuild');
             }
 
-            $offset = $q->param('offset') || 0;
+            $offset = $app->param('offset') || 0;
             if ( $offset < $total ) {
                 my $start = time;
                 my $count = 0;
@@ -971,7 +982,7 @@ sub rebuild_pages {
         }
     }
 
-    return if $q->param('no_rebuilding_tmpl');
+    return if $app->param('no_rebuilding_tmpl');
 
     # Rebuild done--now form the continuation.
     unless ($done) {
@@ -1056,29 +1067,25 @@ sub rebuild_pages {
             complete        => $complete,
             start_time      => $start_time,
             incomplete      => 100 - $complete,
-            entry_id        => scalar $q->param('entry_id'),
+            entry_id        => $entry_id,
             dynamic         => $dynamic,
-            is_new          => scalar $q->param('is_new'),
-            old_status      => scalar $q->param('old_status'),
-            is_full_screen  => scalar $q->param('fs'),
-            with_indexes    => scalar $q->param('with_indexes'),
-            no_static       => scalar $q->param('no_static'),
-            template_id     => scalar $q->param('template_id'),
-            return_args     => scalar $q->param('return_args')
+            is_new          => $is_new,
+            old_status      => $old_status,
+            is_full_screen  => $fs,
+            with_indexes    => $with_indexes,
+            no_static       => $no_static,
+            template_id     => $template_id,
+            return_args     => $return_args
         );
         $app->load_tmpl( 'rebuilding.tmpl', \%param );
     }
     else {
         $app->run_callbacks('post_build');
-        if ( $q->param('entry_id') ) {
+        if ($entry_id) {
             require MT::Entry;
-            my $entry = MT::Entry->load( scalar $q->param('entry_id') )
+            my $entry = MT::Entry->load($entry_id)
                 or return $app->error(
-                $app->translate(
-                    'Cannot load entry #[_1].',
-                    $q->param('entry_id')
-                )
-                );
+                $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
             require MT::Blog;
             my $blog = MT::Blog->load( $entry->blog_id )
                 or return $app->error(
@@ -1088,8 +1095,8 @@ sub rebuild_pages {
             MT::CMS::Entry::ping_continuation(
                 $app,
                 $entry, $blog,
-                OldStatus => scalar $q->param('old_status'),
-                IsNew     => scalar $q->param('is_new'),
+                OldStatus => $old_status,
+                IsNew     => $is_new,
             );
         }
         else {
@@ -1119,12 +1126,12 @@ sub rebuild_pages {
                 $param{tmpl_url} .= '/' if $param{tmpl_url} !~ m!/$!;
                 $param{tmpl_url} .= $tmpl_saved->outfile;
             }
-            if ( $q->param('fs') ) {    # full screen--go to a useful app page
-                if ( my $return_args = $q->param('return_args') ) {
+            if ($fs) {    # full screen--go to a useful app page
+                if ($return_args) {
                     $app->call_return;
                 }
                 else {
-                    my $type = $q->param('type');
+                    my $type = $param_type;
                     $type =~ /index-(\d+)/;
                     my $tmpl_id = $1;
                     $app->run_callbacks( 'rebuild', $blog );
