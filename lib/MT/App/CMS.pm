@@ -1867,6 +1867,7 @@ sub core_menus {
         },
         'content_data' => {
             label => 'Content Data',
+            icon  => 'ic_contentdata',
             order => 200,
         },
         'entry' => {
@@ -1906,6 +1907,7 @@ sub core_menus {
         },
         'feedback' => {
             label => "Feedbacks",
+            icon  => 'ic_feedback',
             order => 1000,
         },
         'role' => {

@@ -600,9 +600,8 @@ sub run_web_services_save_config_callbacks {
 sub edit {
     my $app = shift;
 
-    my $q               = $app->param;
-    my $type            = $q->param('_type');
-    my $id              = $q->param('id');
+    my $type            = $app->param('_type');
+    my $id              = $app->param('id');
     my @types_for_event = ($type);
 
     return $app->errtrans("Invalid request.")
@@ -632,7 +631,7 @@ sub edit {
 
     my %param = eval { $_[0] ? %{ $_[0] } : (); };
     die Carp::longmess if $@;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
 
     if ( defined($blog_id) && $blog_id ) {
         return $app->error( $app->translate("Invalid parameter") )
@@ -641,14 +640,15 @@ sub edit {
 
     $app->remove_preview_file;
 
-    if ( $q->param('_recover') ) {
+    if ( $app->param('_recover') ) {
         my $sess_obj = $app->autosave_session_obj;
         if ($sess_obj) {
             my $data = $sess_obj->thaw_data;
             if ($data) {
-                $q->param( $_, $data->{$_} ) for keys %$data;
+                $app->param( $_, $data->{$_} ) for keys %$data;
+                my $recovered_id = $app->param('id');
                 $app->delete_param('id')
-                    if defined $q->param('id') && !$q->param('id');
+                    if defined $recovered_id && !$recovered_id;
                 $param{'recovered_object'} = 1;
             }
             else {
@@ -659,10 +659,11 @@ sub edit {
             $param{'recovered_failed'} = 1;
         }
     }
-    elsif ( $q->param('qp') ) {
+    elsif ( $app->param('qp') ) {
+        # dedupe
         foreach (qw( title text )) {
-            my $data = $q->param($_);
-            $q->param( $_, $data );
+            my $data = $app->param($_);
+            $app->param( $_, $data );
         }
     }
 
@@ -735,8 +736,9 @@ sub edit {
 
         # Populate the param hash with the object's own values
         for my $col (@$cols) {
+            my $value = $app->param($col);
             $param{$col}
-                = defined $q->param($col) ? $q->param($col) : $obj->$col();
+                = defined $value ? $value : $obj->$col();
         }
 
         # Make certain any blog-specific element matches the blog we're
@@ -800,25 +802,25 @@ sub edit {
     else {    # object is new
         $param{new_object} = 1;
         for my $col (@$cols) {
-            $param{$col} = $q->param($col);
+            $param{$col} = $app->param($col);
         }
     }
 
     {
-        # If any column value is overridden by $q->param,
+        # If any column value is overridden by $app->param,
         # the MT (especially WYSISYG editor) will be working in tainted mode.
         $param{tainted_input} = 0;
         local $app->{login_again};
         unless ( $app->validate_magic ) {
-            $param{tainted_input} ||= ( $q->param($_) || '' ) !~ /^\d*$/
+            $param{tainted_input} ||= ( $app->param($_) || '' ) !~ /^\d*$/
                 for @$cols;
         }
     }
 
     if ( $type eq 'website' || $type eq 'blog' ) {
         require MT::Theme;
-        $param{theme_loop} = MT::Theme->load_theme_loop( $type,
-            $app->param( $type . '_theme' ) );
+        my $theme = $app->param( $type . '_theme' );
+        $param{theme_loop} = MT::Theme->load_theme_loop( $type, $theme );
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
         my $limit = File::Spec->catdir( $cfg->BaseSitePath, 'PATH' );
         $limit =~ s/PATH$//;
@@ -850,11 +852,11 @@ sub edit {
         }
     }
 
-    if ( ( $q->param('msg') || "" ) eq 'nosuch' ) {
+    if ( ( $app->param('msg') || "" ) eq 'nosuch' ) {
         $param{nosuch} = 1;
     }
     for my $p ( $app->multi_param ) {
-        $param{$p} = $q->param($p) if $p =~ /^saved/;
+        $param{$p} = $app->param($p) if $p =~ /^saved/;
     }
     $param{page_actions} = $app->page_actions( $type, $obj );
     if ( $class->can('class_label') ) {
