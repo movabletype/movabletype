@@ -1543,12 +1543,12 @@ sub can_delete {
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj ) = @_;
-    if (  !$app->param('overlay')
-        && $app->param('cfg_screen') )
-    {
+    my $overlay = $app->param('overlay');
+    my $screen = $app->param('cfg_screen') || '';
+
+    if ( !$overlay && $screen ) {
 
         # Checkbox options have to be blanked if they aren't passed.
-        my $screen = $app->param('cfg_screen');
         my @fields;
         if ( $screen eq 'cfg_web_services' ) {
         }
@@ -1594,27 +1594,31 @@ sub pre_save {
             # value for comments:  1 == Accept from anyone
             #                      2 == Accept authenticated only
             #                      0 == No comments
-            if ( $app->param('allow_comments') ) {
+            my $allow_comments    = $app->param('allow_comments');
+            my $moderate_comments = $app->param('moderate_comments');
+            my $nofollow_urls     = $app->param('nofollow_urls');
+            my $follow_auth_links = $app->param('follow_auth_links');
+            my $captcha_provider  = $app->param('captcha_provider');
+            if ($allow_comments) {
                 $obj->allow_reg_comments(1);
             }
             else {
                 $obj->allow_unreg_comments(0);
                 $obj->allow_reg_comments(0);
             }
-            $obj->moderate_unreg_comments( $app->param('moderate_comments') );
-            $obj->nofollow_urls( $app->param('nofollow_urls') ? 1 : 0 );
-            $obj->follow_auth_links(
-                $app->param('follow_auth_links') ? 1 : 0 );
+            $obj->moderate_unreg_comments($moderate_comments);
+            $obj->nofollow_urls( $nofollow_urls         ? 1 : 0 );
+            $obj->follow_auth_links( $follow_auth_links ? 1 : 0 );
             my $cp_old = $obj->captcha_provider;
-            $obj->captcha_provider( $app->param('captcha_provider') );
+            $obj->captcha_provider($captcha_provider);
             my $rebuild = $cp_old ne $obj->captcha_provider ? 1 : 0;
             $app->add_return_arg( need_full_rebuild => 1 ) if $rebuild;
 
             if ( my $pings = $app->param('allow_pings') ) {
                 if ($pings) {
-                    $obj->moderate_pings( $app->param('moderate_pings') );
-                    $obj->nofollow_urls(
-                        $app->param('nofollow_urls') ? 1 : 0 );
+                    my $moderate_pings = $app->param('moderate_pings');
+                    $obj->moderate_pings($moderate_pings);
+                    $obj->nofollow_urls( $nofollow_urls ? 1 : 0 );
                 }
                 else {
                     $obj->moderate_pings(1);
@@ -1647,20 +1651,21 @@ sub pre_save {
 
             my $ping_servers = $app->registry('ping_servers');
             my @pings_list;
-            push @pings_list, $_ foreach grep {
-                defined( $app->param( 'ping_' . $_ ) )
-                    && $app->param( 'ping_' . $_ )
-                }
+            push @pings_list, $_
+                foreach grep { scalar $app->param( 'ping_' . $_ ) }
                 keys %$ping_servers;
             $obj->update_pings( join( ',', @pings_list ) );
         }
         if ( $screen eq 'cfg_registration' ) {
-            $obj->allow_commenter_regist(
-                $app->param('allow_commenter_regist') );
-            $obj->allow_unreg_comments( $app->param('allow_unreg_comments') );
-            if ( $app->param('allow_unreg_comments') ) {
-                $obj->require_comment_emails(
-                    $app->param('require_comment_emails') );
+            my $allow_commenter_regist
+                = $app->param('allow_commenter_regist');
+            my $allow_unreg_comments = $app->param('allow_unreg_comments');
+            my $require_comment_emails
+                = $app->param('require_comment_emails');
+            $obj->allow_commenter_regist($allow_commenter_regist);
+            $obj->allow_unreg_comments($allow_unreg_comments);
+            if ($allow_unreg_comments) {
+                $obj->require_comment_emails($require_comment_emails);
             }
             else {
                 $obj->require_comment_emails(0);
@@ -1675,9 +1680,10 @@ sub pre_save {
             $obj->commenter_authenticators( join( ',', @authenticators ) );
             my $rebuild = $obj->commenter_authenticators ne $c_old ? 1 : 0;
             if ( $app->param('enabled_TypeKey') ) {
+                my $require_typekey_emails
+                    = $app->param('require_typekey_emails');
                 $rebuild = $obj->require_typekey_emails ? 0 : 1;
-                $obj->require_typekey_emails(
-                    $app->param('require_typekey_emails') );
+                $obj->require_typekey_emails($require_typekey_emails);
             }
             else {
                 $obj->require_typekey_emails(0);
@@ -1699,12 +1705,15 @@ sub pre_save {
             $param{words_in_excerpt} = 40
                 unless defined $param{words_in_excerpt}
                 && $param{words_in_excerpt} ne '';
-            if ( ( $app->param('days_or_posts') || '' ) eq 'days' ) {
-                $obj->days_on_index( $app->param('list_on_index') );
+
+            my $days_or_posts = $app->param('days_or_posts') || '';
+            my $list_on_index = $app->param('list_on_index');
+            if ( $days_or_posts eq 'days' ) {
+                $obj->days_on_index($list_on_index);
                 $obj->entries_on_index(0);
             }
             else {
-                $obj->entries_on_index( $app->param('list_on_index') );
+                $obj->entries_on_index($list_on_index);
                 $obj->days_on_index(0);
             }
             $obj->basename_limit(15)
@@ -1712,17 +1721,18 @@ sub pre_save {
             $obj->basename_limit(250)
                 if $obj->basename_limit > 250;    # 15 is the *maximum*
 
-            $obj->image_default_thumb(
-                $app->param('image_default_thumb') ? 1 : 0 );
-            $obj->image_default_width(
-                scalar $app->param('image_default_width') );
-            $obj->image_default_align(
-                scalar $app->param('image_default_align') );
-            $obj->image_default_popup(
-                $app->param('image_default_popup') ? 1 : 0 );
+            my $image_default_thumb = $app->param('image_default_thumb');
+            my $image_default_width = $app->param('image_default_width');
+            my $image_default_align = $app->param('image_default_align');
+            my $image_default_popup = $app->param('image_default_popup');
+            $obj->image_default_thumb( $image_default_thumb ? 1 : 0 );
+            $obj->image_default_width($image_default_width);
+            $obj->image_default_align($image_default_align);
+            $obj->image_default_popup( $image_default_popup ? 1 : 0 );
         }
         if ( $screen eq 'cfg_prefs' ) {
-            $obj->include_system( $app->param('include_system') || '' );
+            my $include_system = $app->param('include_system') || '';
+            $obj->include_system($include_system);
             if ( !$app->param('enable_archive_paths') ) {
                 $obj->archive_url('');
                 $obj->archive_path('');
@@ -1741,11 +1751,12 @@ sub pre_save {
 
     # assumation: if the it is a blog and its site path is relative, then
     # it is probably writeable.
-    if ( ( !$obj->id or ( $app->param('cfg_screen') || '' ) eq 'cfg_prefs' )
+    my $blog_id = $app->param('blog_id');
+    if (    ( !$obj->id or $screen eq 'cfg_prefs' )
         and ( $obj->class ne 'blog' or $obj->is_site_path_absolute() ) )
     {
         if ( !$obj->id and $obj->class eq 'blog' ) {
-            $obj->parent_id( $app->param('blog_id') );
+            $obj->parent_id($blog_id);
         }
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
@@ -1764,7 +1775,8 @@ sub pre_save {
     }
 
     if ( ( $obj->sanitize_spec || '' ) eq '1' ) {
-        $obj->sanitize_spec( scalar $app->param('sanitize_spec_manual') );
+        my $sanitize_spec_manual = $app->param('sanitize_spec_manual');
+        $obj->sanitize_spec($sanitize_spec_manual);
     }
 
     1;
