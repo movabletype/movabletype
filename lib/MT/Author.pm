@@ -1451,7 +1451,7 @@ sub auth_icon_url {
     return q() unless $auth_type;
 
     if ( $author->type == MT::Author::AUTHOR() ) {
-        return $static_path . 'images/comment/mt_logo.png';
+        return $static_path . 'images/logo-mark.svg';
     }
 
     my $authenticator = MT->commenter_authenticator( $auth_type, force => 1 );
