@@ -1145,6 +1145,9 @@ function saveTemplatePrefs( sync ) {
         var map = getByID('template-maps');
         if (map)
             map.innerHTML = res;
+        jQuery("[id^=delete_map_]").click(function(){
+          deleteMap(jQuery(this).attr('id').match(/\d+/));
+        });
         jQuery("[id^=archive_file_sel]").change(function(){
           selectArchiveFile(this);
         });
