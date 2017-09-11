@@ -1868,10 +1868,12 @@ sub core_menus {
         },
         'entry' => {
             label => "Entries",
+            icon  => 'ic_contentdata',
             order => 300,
         },
         'page' => {
             label => "Pages",
+            icon  => 'ic_contentdata',
             order => 400,
         },
         'category_set' => {
