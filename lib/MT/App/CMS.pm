@@ -2195,13 +2195,14 @@ sub core_menus {
             order      => 100,
             mode       => 'list',
             args       => { _type => 'content_type' },
-            permission => 'administer_site',
+            permission => 'manage_content_types',
             view       => [ 'website', 'blog' ],
         },
         'content_type:create_content_type' => {
             label => 'New',
             mode  => 'cfg_content_type_description',
             order => 200,
+            permission => 'manage_content_types',
             view  => [ 'website', 'blog' ],
         },
 
@@ -2460,14 +2461,6 @@ sub core_menus {
             mode       => "start_restore",
             permission => "administer_site",
             view       => "system",
-        },
-        'content_type:manage_content_type' => {
-            label      => 'Manage',
-            order      => 100,
-            mode       => 'list',
-            args       => { _type => 'content_type' },
-            permission => 'administer_site',
-            view       => [ 'website', 'blog' ],
         },
         'tools:system_export' => {
             label      => "Export Sites",
