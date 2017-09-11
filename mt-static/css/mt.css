@@ -4646,7 +4646,7 @@ button.close {
 .modal-dialog {
   position: relative;
   width: auto;
-  margin: 10px;
+  margin: 1rem;
 }
 
 .modal-content {
@@ -4688,7 +4688,7 @@ button.close {
   -ms-flex-pack: justify;
       justify-content: space-between;
   padding: 15px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid #CACACA;
 }
 
 .modal-header .close {
@@ -4704,7 +4704,7 @@ button.close {
   position: relative;
   -ms-flex: 1 1 auto;
       flex: 1 1 auto;
-  padding: 15px;
+  padding: 1rem;
 }
 
 .modal-footer {
@@ -4714,8 +4714,8 @@ button.close {
       align-items: center;
   -ms-flex-pack: end;
       justify-content: flex-end;
-  padding: 15px;
-  border-top: 1px solid #e9ecef;
+  padding: 1rem;
+  border-top: 1px solid #CACACA;
 }
 
 .modal-footer > :not(:first-child) {
@@ -4737,7 +4737,7 @@ button.close {
 @media (min-width: 576px) {
   .modal-dialog {
     max-width: 500px;
-    margin: 30px auto;
+    margin: 2rem auto;
   }
   .modal-sm {
     max-width: 300px;
@@ -7971,6 +7971,7 @@ Widgets
 Draggable
 Collapse
 Tabs
+Modal
 Alert
 Badges
 Icons
@@ -8546,6 +8547,7 @@ fieldset.form-group {
   border-bottom: 1px solid #A5A5A5;
   color: #2F2F2F;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .mt-table td {
@@ -8845,6 +8847,11 @@ fieldset.form-group {
 .mt-tabs .nav-link.active {
   border-bottom: 4px solid #0176BF;
   color: #000000;
+}
+
+/* Modal */
+.modal-title {
+  margin-top: 0;
 }
 
 /* Alert */
