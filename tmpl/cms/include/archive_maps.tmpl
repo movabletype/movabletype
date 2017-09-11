@@ -1,6 +1,6 @@
-<mtapp:listing
-   show_actions="0"
-   type="templatemap">
+<div id="templatemap-listing" class="form-group">
+
+<mt:loop name="template_map_loop">
 
   <div class="mt-archivemapping<mt:if name="map_is_preferred"> mt-archivemapping--priority</mt:if>">
     <div class="mt-collapse__container align-items-center">
@@ -120,4 +120,6 @@
     </div>
   </div>
 
-</mtapp:listing>
+</mt:loop>
+
+</div>
