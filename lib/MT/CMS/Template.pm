@@ -601,8 +601,8 @@ sub edit {
             my $cat_field = $q->param('cat_field');
             my $dt_field  = $q->param('dt_field');
 
-            my $ct     = MT::ContentType->load( $obj->content_type_id );
-            my $fields = $ct->fields;
+            my $ct = MT::ContentType->load( $obj->content_type_id );
+            my $fields = $ct ? $ct->fields : [];
 
             my $content_fields = {
                 categories => [
