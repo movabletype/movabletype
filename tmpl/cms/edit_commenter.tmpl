@@ -194,7 +194,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
     <div class="form-group">
       <mt:var name="nickname" escape="html">
       <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="nickname" escape="url">">
-        <img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" />
+        <mtapp:svgicon id="ic_search" title="<__trans phrase="Title">" size="sm">
       </a>
     </div>
   </mtapp:setting>
@@ -226,7 +226,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
       &nbsp;
   <mt:else>
       <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">">
-        <img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" />
+        <mtapp:svgicon id="ic_search" title="<__trans phrase="Title">" size="sm">
       </a>
     </div>
   </mt:if>
