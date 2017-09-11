@@ -623,7 +623,7 @@ sub _bulk_author_name_html {
             );
         }
         else {
-            $userpic_url = MT->static_path . 'images/default-userpic-36.jpg';
+            $userpic_url = MT->static_path . 'images/user-default.svg';
         }
         my ( $status_label, $translated_status_label, $badge_type );
         if ( MT->config->SingleCommunity ) {
@@ -689,7 +689,7 @@ sub _bulk_author_name_html {
         my $out   = qq{
             <div class="row">
                 <div class="col-1 pl-0 userpic picture small">
-                    <img src="$userpic_url" />
+                    <img src="$userpic_url" width="36" height="36" />
                     <img alt="$auth_label" src="$auth_img" width="12" height="12" class="icon auth-type" style="position: absolute; top: 24px; left: 24px;" />
                 </div>
                 <div class="col">
