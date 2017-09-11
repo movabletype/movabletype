@@ -729,7 +729,6 @@ sub first_blog_id {
 
 sub prepare_context {
     my $app = shift;
-    my $q   = $app->param;
     my ( $count, $iter ) = @_;
 
     ## Initialize and set up the context object.
@@ -738,31 +737,34 @@ sub prepare_context {
     if ( my $str = $app->{search_string} ) {
         $ctx->stash( 'search_string', encode_html($str) );
     }
-    if ( $q->param('type') ) {
+    if ( $app->param('type') ) {
         $ctx->stash( 'type', $app->{searchparam}{Type} );
     }
     if ( $app->{default_mode} ne $app->mode ) {
         $ctx->stash( 'mode', $app->mode );
     }
-    if ( my $template = $q->param('Template') ) {
+    if ( my $template = $app->param('Template') ) {
         $template =~ s/[^\w\-\.]//g;
         $ctx->stash( 'template_id', $template );
     }
+
+    my $limit = $app->param('count') || $app->param('limit');
+    my $offset = $app->param('startIndex') || $app->param('offset') || 0;
+    my $format = $app->param('format');
+
     $ctx->stash( 'stash_key',  $app->{searchparam}{Type} );
     $ctx->stash( 'maxresults', $app->{searchparam}{SearchMaxResults} );
     $ctx->stash( 'include_blogs', join ',',
         @{ $app->{searchparam}{IncludeBlogs} } );
     $ctx->stash( 'results', $iter );
     $ctx->stash( 'count',   $count );
-    $ctx->stash( 'offset',
-        $q->param('startIndex') || $q->param('offset') || 0 );
-    $ctx->stash( 'limit', $q->param('count') || $q->param('limit') );
-    $ctx->stash( 'format', $q->param('format') ) if $q->param('format');
+    $ctx->stash( 'offset',  $offset );
+    $ctx->stash( 'limit',   $limit );
+    $ctx->stash( 'format',  $format ) if $format;
 
-    my $blog_id
-        = defined $q->param('blog_id')
-        ? $q->param('blog_id')
-        : $app->first_blog_id();
+    my $blog_id = $app->param('blog_id');
+    $blog_id = $app->first_blog_id() unless defined $blog_id;
+
     if ($blog_id) {
         my $blog = $app->model('blog')->load($blog_id);
         $app->blog($blog);
@@ -779,14 +781,16 @@ sub prepare_context {
         if ( my $val = $app->param($key) ) {
             $ctx->stash( 'search_' . $key, $val );
         }
-        my @filters = ( $app->multi_param('filter'), $app->multi_param('filter_on') );  # XXX: filter_on is gone?
+        my @filters
+            = ( $app->multi_param('filter'), $app->multi_param('filter_on') )
+            ;    # XXX: filter_on is gone?
         if (@filters) {
             $ctx->stash( 'search_filters', \@filters );
         }
     }
 
     # now we need to figure out the archive types
-    if ( my $at = $q->param('archive_type') ) {
+    if ( my $at = $app->param('archive_type') ) {
         $ctx->stash( 'archive_count', $count );
         $ctx->{current_archive_type} = $at;
         my $archiver = MT->publisher->archiver($at);
@@ -797,18 +801,20 @@ sub prepare_context {
     }
     $ctx->{current_timestamp}
         = $app->param('context_date_start')
-        ? $app->param('context_date_start')
-        : MT::Util::epoch2ts( $blog_id, time );
-    if ( $app->param('author') && $app->param('author') =~ /^[0-9]*$/ ) {
+        || MT::Util::epoch2ts( $blog_id, time );
+
+    my $author_id   = $app->param('author');
+    my $category_id = $app->param('category');
+    if ( $author_id && $author_id =~ /^[0-9]*$/ ) {
         require MT::Author;
-        if ( my $author = MT::Author->load( $app->param('author') ) ) {
+        if ( my $author = MT::Author->load($author_id) ) {
             $ctx->stash( 'author', $author );
             $ctx->var( 'author_archive', 1 );
         }
     }
-    if ( $app->param('category') && $app->param('category') =~ /^[0-9]*$/ ) {
+    if ( $category_id && $category_id =~ /^[0-9]*$/ ) {
         require MT::Category;
-        if ( my $category = MT::Category->load( $app->param('category') ) ) {
+        if ( my $category = MT::Category->load($category_id) ) {
             $ctx->stash( 'category', $category );
             $ctx->var( 'category_archive', 1 );
         }
