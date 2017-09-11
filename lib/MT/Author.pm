@@ -690,7 +690,7 @@ sub _bulk_author_name_html {
             <div class="row">
                 <div class="col-1 pl-0 userpic picture small">
                     <img src="$userpic_url" class="rounded-circle" width="48" height="48" />
-                    <img alt="$auth_label" src="$auth_img" width="12" height="12" class="icon auth-type" style="position: absolute; top: 36px; left: 36px;" />
+                    <img alt="$auth_label" src="$auth_img" width="16" height="16" class="icon auth-type" style="position: absolute; top: 32px; left: 32px;" />
                 </div>
                 <div class="col">
                      <span class="icon status $status_label">
