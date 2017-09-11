@@ -617,8 +617,8 @@ sub _bulk_author_name_html {
         my $userpic_url;
         if ( my $userpic = $userpic{ $obj->userpic_asset_id || 0 } ) {
             ($userpic_url) = $userpic->thumbnail_url(
-                Width  => 36,
-                Height => 36,
+                Width  => 48,
+                Height => 48,
                 Square => 1
             );
         }
@@ -689,8 +689,8 @@ sub _bulk_author_name_html {
         my $out   = qq{
             <div class="row">
                 <div class="col-1 pl-0 userpic picture small">
-                    <img src="$userpic_url" class="rounded-circle" width="36" height="36" />
-                    <img alt="$auth_label" src="$auth_img" width="12" height="12" class="icon auth-type" style="position: absolute; top: 24px; left: 24px;" />
+                    <img src="$userpic_url" class="rounded-circle" width="48" height="48" />
+                    <img alt="$auth_label" src="$auth_img" width="12" height="12" class="icon auth-type" style="position: absolute; top: 36px; left: 36px;" />
                 </div>
                 <div class="col">
                      <span class="icon status $status_label">
