@@ -2117,7 +2117,7 @@ sub save_filter {
     my $screen = $app->param('cfg_screen') || '';
     return $eh->error( MT->translate("You did not specify a blog name.") )
         if ( !( $screen && $app->can_do('edit_blog_config') )
-        && ( !defined $name || $name eq '' ) );
+        && ( defined $name && $name eq '' ) );
 
 #TBD
 #    return $eh->error( MT->translate("Site URL must be an absolute URL.") )
