@@ -233,10 +233,10 @@ sub add_blog {
         require MT::Role;
         my $user = MT->instance->user;
         if ($user) {
-            my @roles = MT::Role->load_by_permission("administer_blog");
+            my @roles = MT::Role->load_by_permission("administer_site");
             my $role;
             foreach my $r (@roles) {
-                next if $r->permissions =~ m/\'administer_website\'/;
+                next if $r->permissions =~ m/\'administer_site\'/;
                 $role = $r;
                 last;
             }

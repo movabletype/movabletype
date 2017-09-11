@@ -772,8 +772,8 @@ sub suite {
             path   => '/v2/sites/1/widgets/' . $blog_widget->id . '/refresh',
             method => 'POST',
             restrictions => {
-                1 => [qw/ edit_templates administer_blog /],
-                0 => [qw/ edit_templates administer_blog /],
+                1 => [qw/ edit_templates administer_site /],
+                0 => [qw/ edit_templates administer_site /],
             },
             code  => 403,
             error => 'Do not have permission to refresh a widget.',
@@ -831,8 +831,8 @@ sub suite {
             path   => '/v2/sites/1/widgets/' . $blog_widget->id . '/clone',
             method => 'POST',
             restrictions => {
-                0 => [qw/ edit_templates administer_blog /],
-                1 => [qw/ edit_templates administer_blog /],
+                0 => [qw/ edit_templates administer_site /],
+                1 => [qw/ edit_templates administer_site /],
             },
             code  => 403,
             error => 'Do not have permission to clone a widget.',

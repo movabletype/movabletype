@@ -54,34 +54,14 @@ sub tmpl_param_list_common {
 sub tmpl_param_edit_role {
     my ( $cb, $app, $param, $tmpl ) = @_;
 
+    my @content_types;
+    my $iter = MT::ContentType->load_iter;
+    while ( my $ct = $iter->() ) {
+        push @content_types, $ct;
+    }
+    $param->{content_types}            = \@content_types;
     $param->{content_type_perm_groups} = MT::ContentType->permission_groups;
 
-    # Insert content type permission template.
-    my $privileges_settinggroup_node
-        = $tmpl->getElementById('role-privileges');
-    my $content_type_permission_node = $tmpl->createElement( 'loop',
-        { name => 'content_type_perm_groups' } );
-    $content_type_permission_node->innerHTML(
-        _content_type_permission_tmpl() );
-    $privileges_settinggroup_node->appendChild($content_type_permission_node);
-}
-
-sub _content_type_permission_tmpl {
-    return <<'__TMPL__';
-    <mt:setvarblock name="ct_perm_group"><mt:var name="__VALUE__" escape="html"></mt:setvarblock>
-    <mtapp:setting
-      id="<mt:var name="ct_perm_group">"
-      label="<mt:var name="ct_perm_group">"
-    >
-      <ul class="fixed-width multiple-selection">
-      <mt:loop name="loaded_permissions">
-      <mt:if name="group" eq="$ct_perm_group">
-        <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
-      </mt:if>
-      </mt:loop>
-      </ul>
-    </mtapp:setting>
-__TMPL__
 }
 
 sub cfg_content_type_description {
@@ -285,11 +265,18 @@ sub save_cfg_content_type {
 
     $app->validate_magic
         or return $app->errtrans("Invalid request.");
-    my $perms = $app->permissions;
-    return $app->permission_denied()
-        unless $app->user->is_superuser()
-        || ( $perms
-        && $perms->can_administer_blog );
+    my $perms = $app->permissions
+        or return $app->permission_denied();
+
+    my $id = $app->param('id');
+    if ( !$id ) {
+        return $app->permission_denied()
+            unless $perms->can_do('create_new_content_type');
+    }
+    else {
+        return $app->permission_denied()
+            unless $perms->can_do('edit_all_content_types');
+    }
 
     my $blog_id = $app->param('blog_id')
         or return $app->errtrans("Invalid request.");
@@ -917,9 +904,11 @@ sub select_edit_content_type {
         $hash->{blog_id} = $content_type->blog_id;
         $hash->{name}    = $content_type->name;
         my $unique_id = $content_type->unique_id;
+
         $hash->{can_edit} = 1
-            if $app->permissions->can_do(
-            'manage_content_type:' . $unique_id );
+            if (
+            $app->permissions->can_do( 'manage_content_type:' . $unique_id )
+            || $app->permissions->can_do('edit_all_content_types') );
         push @array, $hash;
     }
     $param->{content_types} = \@array;

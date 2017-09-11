@@ -61,7 +61,7 @@ my $website = MT::Website->load(2);
 is( !!$website->is_blog, '', 'Is a website' );
 
 my $admin_role
-    = MT::Role->load( { permissions => { like => '%administer_website%' } } );
+    = MT::Role->load( { permissions => { like => '%administer_site%' } } );
 require MT::Association;
 MT::Association->link( $user, $admin_role, $website );
 

@@ -164,11 +164,16 @@ sub edit {
     my $content_field_types = $app->registry('content_field_types');
     @$array = map {
         my $e_unique_id = $_->{unique_id};
-        $_->{can_edit} = 1
-            if $app->permissions->can_do( 'content_type:'
+        my $can_edit_field
+            = $app->permissions->can_do( 'content_type:'
                 . $ct_unique_id
                 . '-content_field:'
                 . $e_unique_id );
+        if (   $can_edit_field
+            || $app->permissions->can_do('edit_all_content_datas') )
+        {
+            $_->{can_edit} = 1;
+        }
         $_->{content_field_id} = $_->{id};
         delete $_->{id};
 
@@ -839,4 +844,3 @@ sub start_export {
 }
 
 1;
-

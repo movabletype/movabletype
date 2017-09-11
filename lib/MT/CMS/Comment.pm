@@ -1037,7 +1037,7 @@ sub can_delete_commenter {
     my $author = $app->user;
     return 1 if $author->is_superuser();
     my $perms = $author->permissions( $obj->blog_id );
-    ( $perms && $perms->can_do('administer_blog') );
+    ( $perms && $perms->can_do('administer_site') );
 }
 
 sub build_junk_table {

@@ -3230,8 +3230,6 @@ sub dialog_insert_options {
 
     my %param;
     $param{options_loop} = $options_loop;
-    $param{can_save_image_defaults}
-        = $perms->can_do('save_image_defaults') ? 1 : 0;
     $param{edit_field} = scalar $app->param('edit_field');
     $param{new_entry} = $app->param('asset_select') ? 0 : 1;
 

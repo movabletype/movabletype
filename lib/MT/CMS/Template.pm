@@ -2076,7 +2076,7 @@ sub dialog_publishing_profile {
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
         unless $app->user->is_superuser
-        || $perms->can_administer_blog
+        || $perms->can_administer_site
         || $perms->can_edit_templates;
 
     my $param = {};
@@ -2099,7 +2099,7 @@ sub dialog_refresh_templates {
         || (
         $perms
         && (   $perms->can_edit_templates()
-            || $perms->can_administer_blog()
+            || $perms->can_administer_site()
             || $perms->can_do('refresh_templates') )
         );
 
@@ -2203,7 +2203,7 @@ BLOG: for my $blog_id (@id) {
             my $can_refresh_blog
                 = !$perms                             ? 0
                 : $perms->can_edit_templates()        ? 1
-                : $perms->can_administer_blog()       ? 1
+                : $perms->can_administer_site()       ? 1
                 : $perms->can_do('refresh_templates') ? 1
                 :                                       0;
             if ( !$can_refresh_blog ) {
@@ -2506,7 +2506,7 @@ sub refresh_individual_templates {
         || (
         $perms
         && (   $perms->can_edit_templates()
-            || $perms->can_administer_blog )
+            || $perms->can_administer_site )
         );
 
     require MT::Util::Log;
@@ -2672,7 +2672,7 @@ sub clone_templates {
         || (
         $perms
         && (   $perms->can_edit_templates()
-            || $perms->can_administer_blog )
+            || $perms->can_administer_site )
         );
 
     my @id = $app->multi_param('id');
@@ -2751,7 +2751,7 @@ sub publish_index_templates {
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
         unless $app->user->is_superuser
-        || $perms->can_administer_blog
+        || $perms->can_administer_site
         || $perms->can_rebuild;
 
     my $blog = $app->blog;
@@ -2787,7 +2787,7 @@ sub publish_archive_templates {
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
         unless $app->user->is_superuser
-        || $perms->can_administer_blog
+        || $perms->can_administer_site
         || $perms->can_rebuild;
 
     my @ids = $app->multi_param('id');

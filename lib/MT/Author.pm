@@ -1091,6 +1091,50 @@ sub can_manage_content_types {
     }
 }
 
+sub can_sign_in_cms {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_sign_in_cms(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_sign_in_cms(@_);
+    }
+}
+
+sub can_sign_in_data_api {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_sign_in_data_api(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_sign_in_data_api(@_);
+    }
+}
+
+sub can_create_site {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_create_site(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_create_site(@_);
+    }
+}
+
+sub can_manage_users_groups {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_manage_users_groups(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_manage_users_groups(@_);
+    }
+}
+
 sub blog_perm {
     my $author = shift;
     my ($blog_id) = @_;

@@ -1933,11 +1933,7 @@ sub post_save {
     my $perms = $app->permissions;
     return 1
         unless $app->user->is_superuser
-        || (
-          $obj->is_blog
-        ? $app->user->can_create_blog
-        : $app->user->can_create_website
-        )
+        || $app->user->can_create_blog
         || ( $perms && $perms->can_edit_config );
 
     # check to see what changed and add a flag to meta_messages
@@ -2015,15 +2011,15 @@ sub post_save {
         my $role_class  = $app->model('role');
         my $role;
         if ( $obj->is_blog ) {
-            my @roles = $role_class->load_by_permission("administer_blog");
+            my @roles = $role_class->load_by_permission("administer_site");
             foreach my $r (@roles) {
-                next if $r->permissions =~ m/\'administer_website\'/;
+                next if $r->permissions =~ m/\'administer_site\'/;
                 $role = $r;
                 last;
             }
         }
         else {
-            my @roles = $role_class->load_by_permission("administer_website");
+            my @roles = $role_class->load_by_permission("administer_site");
             foreach my $r (@roles) {
                 $role = $r;
                 last;
@@ -2257,7 +2253,7 @@ sub make_blog_list {
         $row->{can_set_publish_paths} = $perms->can_do('set_publish_paths');
         $row->{can_manage_feedback}   = $perms->can_do('manage_feedback');
         $row->{can_edit_assets}       = $perms->can_do('edit_assets');
-        $row->{can_administer_blog}   = $perms->can_do('administer_blog');
+        $row->{can_administer_site}   = $perms->can_do('administer_site');
         $row->{can_list_blogs} = $perms->can_do('open_blog_listing_screen');
         $row->{checked} = grep { $_ == $blog->id } @ids;
         push @$data, $row;
@@ -2357,7 +2353,7 @@ sub build_blog_table {
                 $row->{can_edit_templates}    = 1;
                 $row->{can_edit_config}       = 1;
                 $row->{can_set_publish_paths} = 1;
-                $row->{can_administer_blog}   = 1;
+                $row->{can_administer_site}   = 1;
             }
             else {
                 my $perms = $author->permissions($blog_id);
@@ -2368,8 +2364,8 @@ sub build_blog_table {
                 $row->{can_edit_config}    = $perms->can_do('edit_config');
                 $row->{can_set_publish_paths}
                     = $perms->can_do('set_publish_paths');
-                $row->{can_administer_blog}
-                    = $perms->can_do('administer_blog');
+                $row->{can_administer_site}
+                    = $perms->can_do('administer_site');
             }
         }
         $row->{object} = $blog;

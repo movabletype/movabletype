@@ -138,7 +138,7 @@ require MT::Permission;
 my $p = MT::Permission->new;
 $p->blog_id(0);
 $p->author_id( $ukawa->id );
-$p->permissions("'create_website'");
+$p->permissions("'create_site'");
 $p->save;
 
 $p = MT::Permission->new;
@@ -921,4 +921,3 @@ subtest 'mode = delete' => sub {
 };
 
 done_testing();
-

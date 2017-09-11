@@ -1975,12 +1975,12 @@ sub core_menus {
         },
 
         'user:member' => {
-            label      => "Manage",
-            order      => 100,
-            mode       => 'list',
-            args       => { _type => 'member' },
-            view       => [ "blog", "website" ],
-            permission => 'administer_blog,manage_users,administer_website',
+            label             => "Manage",
+            order             => 100,
+            mode              => 'list',
+            args              => { _type => 'member' },
+            view              => [ "blog", "website" ],
+            permission        => 'administer_site,manage_users',
             system_permission => 'administer',
         },
         'user:manage' => {
@@ -2183,13 +2183,14 @@ sub core_menus {
             order      => 100,
             mode       => 'list',
             args       => { _type => 'content_type' },
-            permission => 'administer_website,administer_blog',
+            permission => 'manage_content_types',
             view       => [ 'website', 'blog' ],
         },
         'content_type:create_content_type' => {
             label => 'New',
             mode  => 'cfg_content_type_description',
             order => 200,
+            permission => 'manage_content_types',
             view  => [ 'website', 'blog' ],
         },
 
@@ -2312,7 +2313,7 @@ sub core_menus {
             label      => "General",
             order      => 100,
             mode       => 'cfg_prefs',
-            permission => 'administer_blog,edit_config,set_publish_paths',
+            permission => 'administer_site,edit_config,set_publish_paths',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
         },
@@ -2320,7 +2321,7 @@ sub core_menus {
             label      => "Compose",
             order      => 300,
             mode       => 'cfg_entry',
-            permission => 'administer_blog,edit_config,set_publish_paths',
+            permission => 'administer_site,edit_config,set_publish_paths',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
         },
@@ -2328,7 +2329,7 @@ sub core_menus {
             label      => "Feedback",
             order      => 400,
             mode       => 'cfg_feedback',
-            permission => 'administer_blog,edit_config,set_publish_paths',
+            permission => 'administer_site,edit_config,set_publish_paths',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
         },
@@ -2336,7 +2337,7 @@ sub core_menus {
             label      => "Registration",
             order      => 500,
             mode       => 'cfg_registration',
-            permission => 'administer_blog,edit_config,set_publish_paths',
+            permission => 'administer_site,edit_config,set_publish_paths',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
         },
@@ -2344,7 +2345,7 @@ sub core_menus {
             label      => "Web Services",
             order      => 600,
             mode       => 'cfg_web_services',
-            permission => 'administer_blog,edit_config,set_publish_paths',
+            permission => 'administer_site,edit_config,set_publish_paths',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
         },
@@ -2352,7 +2353,7 @@ sub core_menus {
             label             => "Plugins",
             order             => 700,
             mode              => "cfg_plugins",
-            permission        => "administer_blog",
+            permission        => "administer_site",
             system_permission => "manage_plugins",
             view              => [ "blog", "website" ],
         },
@@ -2382,7 +2383,7 @@ sub core_menus {
             label             => "Plugins",
             order             => 700,
             mode              => "cfg_plugins",
-            permission        => "administer_blog",
+            permission        => "administer_site",
             system_permission => "manage_plugins",
             view              => ['system'],
         },
@@ -2446,35 +2447,35 @@ sub core_menus {
             label      => "Import Sites",
             order      => 200,
             mode       => "start_restore",
-            permission => "administer_blog",
+            permission => "administer_site",
             view       => "system",
         },
         'tools:system_export' => {
             label      => "Export Sites",
             order      => 300,
             mode       => "start_backup",
-            permission => "administer_blog",
+            permission => "administer_site",
             view       => ['system'],
         },
         'tools:import' => {
             label      => "Import Content",
             order      => 200,
             mode       => "start_import_content",
-            permission => "administer_blog",
+            permission => "administer_site",
             view       => [ "blog", "website" ],
         },
         'tools:export' => {
             label      => "Export Content",
             order      => 300,
             mode       => "start_export_content",
-            permission => "administer_blog",
+            permission => "administer_site",
             view       => [ "blog", "website" ],
         },
         'tools:site_export' => {
             label      => "Export Site",
             order      => 400,
             mode       => "start_backup",
-            permission => "administer_blog",
+            permission => "administer_site",
             view       => [ "blog", "website" ],
         },
         'tools:themeexport' => {
@@ -2773,7 +2774,7 @@ sub user_can_admin_commenters {
     my $perms = $app->permissions;
     $app->user->is_superuser()
         || ( $perms
-        && ( $perms->can_administer_blog || $perms->can_manage_feedback ) );
+        && ( $perms->can_administer_site || $perms->can_manage_feedback ) );
 }
 
 sub validate_magic {
@@ -2834,7 +2835,7 @@ sub set_default_tmpl_params {
     if ( my $auth = $app->user ) {
         $param->{is_administrator}       = $auth->is_superuser;
         $param->{can_create_newblog}     = $auth->can_create_blog;
-        $param->{can_create_newbwebsite} = $auth->can_create_website;
+        $param->{can_create_newbwebsite} = $auth->can_create_site;
         $param->{can_view_log} ||= $auth->can_view_log;
         $param->{can_manage_plugins}    = $auth->can_manage_plugins;
         $param->{can_edit_templates}    = $auth->can_edit_templates;
@@ -2870,14 +2871,14 @@ sub set_default_tmpl_params {
         require MT::CMS::Search;
         $param->{can_search_replace}
             = MT::CMS::Search::can_search_replace($app);
-        $param->{can_edit_authors} = $param->{can_administer_blog};
+        $param->{can_edit_authors} = $param->{can_administer_site};
         $param->{can_access_assets}
             = $param->{can_create_post}
             || $param->{can_edit_all_posts}
             || $param->{can_edit_assets};
         $param->{has_manage_label}
             = $param->{can_edit_templates}
-            || $param->{can_administer_blog}
+            || $param->{can_administer_site}
             || $param->{can_edit_categories}
             || $param->{can_edit_config}
             || $param->{can_edit_tags}
@@ -3216,7 +3217,7 @@ sub build_blog_selector {
 
     $param->{load_selector_data}  = 1;
     $param->{can_create_blog}     = $auth->can_do('create_blog') && $blog;
-    $param->{can_create_website}  = $auth->can_do('create_website');
+    $param->{can_create_website}  = $auth->can_do('create_site');
     $param->{can_access_overview} = 1;
 }
 
@@ -3242,7 +3243,7 @@ sub build_menus {
     my $hide_disabled_options = $app->config('HideDisabledMenus') || 1;
 
     my $admin = $user->is_superuser()
-        ;    # || ($perms && $perms->has('administer_blog'));
+        ;    # || ($perms && $perms->has('administer_site'));
 
     foreach my $id (@top_ids) {
         ## skip only if false value was set explicitly.

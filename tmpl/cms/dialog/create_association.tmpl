@@ -78,6 +78,43 @@ function init() {
     panels = [];
     var panel;<mt:loop name="panel_loop">
     panel = new ListingPanel("<mt:var name="panel_type">");
+    <mt:if name="panel_type" eq="site">panel.listChanged = function(ts, row, checked) {
+        if (this.selectionList) {
+            var self = this;
+            if (checked){
+                this.selectionList.add(row.id);
+                if(jQuery(row).hasClass('has_child')){
+                  jQuery(row).find('.list-unstyled li').each(function(){
+                    self.selectionList.add(this.id);
+                  });
+                }
+            } else {
+                this.selectionList.remove(row.id);
+                if(jQuery(row).hasClass('has_child')){
+                  var self = this;
+                  jQuery(row).find('.list-unstyled li').each(function(){
+                    self.selectionList.remove(this.id);
+                  });
+                }
+            }
+        } else {
+            var count = ts.selected().length;
+            if (this.nextButton) {
+                if (count == 0)
+                    TC.addClassName(this.nextButton, "disabled");
+                else
+                    TC.removeClassName(this.nextButton, "disabled");
+                this.nextButton.disabled = count == 0;
+            }
+            if (this.closeButton) {
+                if (count == 0)
+                    TC.addClassName(this.closeButton, "disabled");
+                else
+                    TC.removeClassName(this.closeButton, "disabled");
+                this.closeButton.disabled = count == 0;
+            }
+        }
+    };</mt:if>
     panel.pager.setState(<mt:var name="pager_json">);
     panels[panels.length] = panel;</mt:loop>
     dialog.setPanels(panels);
