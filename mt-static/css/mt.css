@@ -7975,6 +7975,7 @@ Modal
 Alert
 Badges
 Icons
+User Badge
 Pagination
 */
 html {
@@ -8552,10 +8553,17 @@ fieldset.form-group {
 
 .mt-table td {
   border-bottom: 1px solid #E0E0E0;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .mt-table tbody tr:last-child td {
   border-bottom: 0;
+}
+
+.mt-table .nowrap {
+  word-break: normal;
+  word-wrap: normal;
 }
 
 .mt-table .custom-control {
@@ -8938,6 +8946,40 @@ a:hover .mt-icon--secondary {
 
 .mt-icon--inverse {
   fill: #FFFFFF;
+}
+
+/* User Badge */
+.mt-user {
+  display: inline-block;
+  position: relative;
+}
+
+.mt-user .mt-icon--sm {
+  display: block;
+  margin: 2px auto;
+}
+
+.mt-user__badge, .mt-user__badge--primary, .mt-user__badge--success, .mt-user__badge--danger {
+  height: 22px;
+  width: 22px;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  border: 2px solid #FFFFFF;
+  border-radius: 10px;
+  background: #868e96;
+}
+
+.mt-user__badge--primary {
+  background: #004B9A;
+}
+
+.mt-user__badge--success {
+  background: #399280;
+}
+
+.mt-user__badge--danger {
+  background: #D33638;
 }
 
 /* Pagination */
