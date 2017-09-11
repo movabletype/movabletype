@@ -487,8 +487,17 @@ function togglePreferred(checkbox, mapid) {
     var checkboxes = frm[checkbox.name];
     if (checkbox.length == undefined) {
         for (var j = 0; j < frm[checkbox.id].length; ++j) {
-            if (frm[checkbox.id][j].type == 'hidden')
+            if (frm[checkbox.id][j].type == 'hidden') {
                 frm[checkbox.id][j].value = checkbox.checked ? '1' : '0';
+                if (checkbox.checked) {
+                  jQuery(checkbox).parent().parent().parent().addClass("mt-archivemapping--priority");
+                  jQuery(checkbox).parent().find("span").removeClass("invisible");
+                }
+                else {
+                  jQuery(checkbox).parent().parent().parent().removeClass("mt-archivemapping--priority");
+                  jQuery(checkbox).parent().find("span").addClass("invisible");
+                }
+            }
         }
     } else {
         for (var i = 0; i < checkboxes.length; ++i) {
@@ -497,6 +506,14 @@ function togglePreferred(checkbox, mapid) {
             for (var j = 0; j < frm[checkboxes[i].id].length; ++j) {
                 if (frm[checkboxes[i].id][j].type == 'hidden') {
                     frm[checkboxes[i].id][j].value = checkboxes[i].checked ? '1' : '0';
+                    if (checkboxes[i].checked) {
+                      jQuery(checkboxes[i]).parent().parent().parent().addClass("mt-archivemapping--priority");
+                      jQuery(checkboxes[i]).parent().find("span").removeClass("invisible");
+                    }
+                    else {
+                      jQuery(checkboxes[i]).parent().parent().parent().removeClass("mt-archivemapping--priority");
+                      jQuery(checkboxes[i]).parent().find("span").addClass("invisible");
+                    }
                 }
             }
         }
