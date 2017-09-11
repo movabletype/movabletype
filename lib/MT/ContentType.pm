@@ -110,7 +110,6 @@ sub _make_name_html {
     my $mode    = $prop->{link_mode};
 
     my $name      = MT::Util::encode_html( $obj->name );
-    my $icon_url  = MT->static_path . 'images/nav_icons/color/settings.gif';
     my $edit_link = $app->uri(
         mode => $mode,
         args => {
@@ -119,9 +118,6 @@ sub _make_name_html {
         },
     );
     return qq{
-        <span class="icon settings">
-          <img src="$icon_url" />
-        </span>
         <span class="sync-name">
           <a href="$edit_link">$name</a>
         </span>
