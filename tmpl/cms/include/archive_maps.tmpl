@@ -2,7 +2,7 @@
    show_actions="0"
    type="templatemap">
 
-  <div class="mt-archivemapping">
+  <div class="mt-archivemapping<mt:if name="map_is_preferred"> mt-archivemapping--priority</mt:if>">
     <div class="mt-collapse__container align-items-center">
 
       <mtapp:setting
@@ -27,7 +27,7 @@
          class="col-auto"
          help_page="templates">
       <mt:if name="has_multiple_archives">
-      <span class="custom-control-description mr-2 invisible">優先</span><input type="checkbox" class="mt-switch" name="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">" id="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">"<mt:if name="map_is_preferred"> checked="checked"</mt:if> value="1" onchange="togglePreferred(this, '<mt:var name="map_id">')" /><label for="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">">優先</label>
+      <span class="custom-control-description mr-2<mt:unless name="map_is_preferred"> invisible</mt:unless>">優先</span><input type="checkbox" class="mt-switch" name="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">" id="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">"<mt:if name="map_is_preferred"> checked="checked"</mt:if> value="1" onchange="togglePreferred(this, '<mt:var name="map_id">')" /><label for="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">">優先</label>
       <input type="hidden" name="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">" value="<mt:if name="map_is_preferred">1<mt:else>0</mt:if>" />
       </mt:if>
       <a href="javascript:void(0)" id="delete_map_<mt:var name="map_id">"><mtapp:svgicon id="ic_trash" title="$delete_button_title" size="secondary"></a><a data-toggle="collapse" href="#edit-mapping-<mt:var name="map_id">" aria-expanded="false" aria-controls="edit-mapping-<mt:var name="map_id">"><mtapp:svgicon title="<__trans phrase="Collapse">" id="ic_collapse" size="secondary"></a>
