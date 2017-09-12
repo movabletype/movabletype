@@ -1767,12 +1767,15 @@ BEGIN {
                     comments => 'MT::AtomServer::Comments',
                 },
             },
-            'SchemaVersion'                => undef,
-            'MTVersion'                    => undef,
-            'MTReleaseNumber'              => undef,
-            'RequiredCompatibility'        => { default => 0 },
-            'EnableSessionKeyCompat'       => { default => 0 },
-            'EnableUploadCompat'           => { default => 0 },
+            'SchemaVersion'          => undef,
+            'MTVersion'              => undef,
+            'MTReleaseNumber'        => undef,
+            'RequiredCompatibility'  => { default => 0 },
+            'EnableSessionKeyCompat' => { default => 0 },
+            'EnableUploadCompat'     => {
+                handler => sub {0},    # deprecated
+                default => 0
+            },
             'NotifyUpgrade'                => { default => 1 },
             'Database'                     => undef,
             'DBHost'                       => undef,
@@ -1997,8 +2000,7 @@ BEGIN {
             'NewsURL' =>
                 { default => 'http://www.sixapart.com/movabletype/news/', },
             'NewsboxURL' => {
-                default =>
-                    'https://www.movabletype.org/news/newsbox.json',
+                default => 'https://www.movabletype.org/news/newsbox.json',
             },
             'FeedbackURL' =>
                 { default => 'http://www.movabletype.org/feedback.html', },
