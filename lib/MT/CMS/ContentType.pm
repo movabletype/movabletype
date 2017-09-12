@@ -134,59 +134,14 @@ sub edit {
     @type_array = sort { $a->{order} <=> $b->{order} } @type_array;
     $param->{content_field_types} = JSON::to_json( \@type_array );
 
-    # Content Filed Type Options
-    my %content_field_types_option_settings = ();
-    my %content_field_types_options         = map {
-        my $type_name = $_->{type};
-        (   $_->{type} => [
-                map {
-                    if ( ref($_) eq 'HASH' ) {
-                        my $key = ( keys( %{$_} ) )[0];
-                        $content_field_types_option_settings{$type_name}{$key}
-                            = $_->{$key};
-                        $key;
-                    }
-                    else {
-                        $_;
-                    }
-                } @{ $_->{options} }
-            ]
-            )
-        }
-        grep { $_->{options} } @type_array;
-    $param->{content_field_types_options}
-        = JSON::encode_json( \%content_field_types_options );
-
     foreach my $name (qw( saved err_msg id name )) {
         $param->{$name} = $app->param($name) if $app->param($name);
     }
 
-    my @category_sets;
-    my $cs_iter = MT::CategorySet->load_iter( { blog_id => $app->blog->id },
-        { fetchonly => { id => 1, name => 1 } } );
-    while ( my $cat_set = $cs_iter->() ) {
-        push @category_sets,
-            {
-            id   => $cat_set->id,
-            name => $cat_set->name,
-            };
-    }
-    $param->{category_sets} = \@category_sets;
-
-    my $content_type_loop
-        = MT::ContentType->get_related_content_type_loop( $app->blog->id,
-        $id );
-    $param->{content_types} = $content_type_loop;
-
-    my $tag_delim = $app->config('DefaultUserTagDelimiter') || ord(',');
-    $param->{tag_delim}
-        = $tag_delim eq ord(',') ? 'comma'
-        : $tag_delim eq ord(' ') ? 'space'
-        :                          'comma';
-
     # Content Field Options
     foreach my $key ( keys %$content_field_types ) {
 
+        # Template
         if ( my $options_html = $content_field_types->{$key}{options_html} ) {
             if ( !ref $options_html ) {
                 if ( $options_html =~ /\.tmpl$/ ) {
@@ -210,7 +165,50 @@ sub edit {
                     { id => $key, html => $options_html };
             }
         }
+
+        # Params
+        if ( my $options_html_params = $content_field_types->{$key}{options_html_params} ) {
+            if ( !ref $options_html_params ) {
+                $options_html_params
+                    = MT->handler_to_coderef($options_html_params);
+            }
+            if ( 'CODE' eq ref $options_html_params ) {
+                $options_html_params = $options_html_params->( $app, $param );
+            }
+
+            if ( ref $options_html_params eq 'HASH' ) {
+                for my $key ( keys %{$options_html_params} ) {
+                    unless ( exists $_->{$key} ) {
+                        $_->{$key} = $options_html_params->{$key};
+                    }
+                }
+            }
+        }
     }
+
+
+    my @category_sets;
+    my $cs_iter = MT::CategorySet->load_iter( { blog_id => $app->blog->id },
+        { fetchonly => { id => 1, name => 1 } } );
+    while ( my $cat_set = $cs_iter->() ) {
+        push @category_sets,
+            {
+            id   => $cat_set->id,
+            name => $cat_set->name,
+            };
+    }
+    $param->{category_sets} = \@category_sets;
+
+    my $content_type_loop
+        = MT::ContentType->get_related_content_type_loop( $app->blog->id,
+        $id );
+    $param->{content_types} = $content_type_loop;
+
+    my $tag_delim = $app->config('DefaultUserTagDelimiter') || ord(',');
+    $param->{tag_delim}
+        = $tag_delim eq ord(',') ? 'comma'
+        : $tag_delim eq ord(' ') ? 'space'
+        :                          'comma';
 
     $app->build_page( $app->load_tmpl('cfg_content_type.tmpl'), $param );
 }
