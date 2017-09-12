@@ -79,6 +79,7 @@ __PACKAGE__->install_properties(
             'revision'          => 'integer meta',
             'convert_breaks'    => 'string meta',
             'block_editor_data' => 'text meta',
+            'week_number'       => 'integer',
         },
         indexes => {
             content_type_id => 1,
@@ -158,6 +159,12 @@ sub save {
         $self->identifier($name);
     }
 
+    # Week Number for authored_on
+    if ( my $week_number = _get_week_number( $self, 'authored_on' ) ) {
+        $self->week_number( $week_number )
+            if $week_number != ( $self->week_number || 0 );
+    }
+
     $self->SUPER::save(@_) or return;
 
     my $data = $self->data;
@@ -203,6 +210,13 @@ sub save {
                     $data_type
                 )
                 );
+
+            # Week Number for Content Field
+            if ( $idx_type eq 'date_and_time' || $idx_type eq 'date' ) {
+                if ( my $week_number = _get_week_number( $cf_idx, 'value_datetime' ) ) {
+                    $cf_idx->value_integer( $week_number );
+                }
+            }
 
             $cf_idx->save
                 or return $self->error(
@@ -830,6 +844,15 @@ sub _make_title_html {
     $label = '' unless defined $label;
 
     return qq{<span class="label">$label</span>};
+}
+
+sub _get_week_number {
+    my ( $obj, $column ) = @_;
+    if ( my $dt = $obj->column_as_datetime($column) ) {
+        my ( $yr, $w ) = $dt->week;
+        return $yr * 100 + $w;
+    }
+    return undef;
 }
 
 1;

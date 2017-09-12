@@ -17,9 +17,10 @@ sub NODE () {'MT::Template::Node'}
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'      => 'integer not null auto_increment',
-            'blog_id' => 'integer not null',
-            'name'    => {
+            'id'              => 'integer not null auto_increment',
+            'blog_id'         => 'integer not null',
+            'content_type_id' => 'integer',
+            'name'            => {
                 type       => 'string',
                 size       => '255',
                 not_null   => 1,

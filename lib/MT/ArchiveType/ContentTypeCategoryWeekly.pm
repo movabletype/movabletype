@@ -4,18 +4,24 @@
 #
 # $Id$
 
-package MT::ArchiveType::CategoryWeekly;
+package MT::ArchiveType::ContentTypeCategoryWeekly;
 
 use strict;
-use base qw( MT::ArchiveType::Category MT::ArchiveType::Weekly );
-use MT::Util qw( dirify start_end_week week2ymd );
+use base
+    qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeWeekly MT::ArchiveType::CategoryWeekly );
+
+use MT::Util qw( start_end_week week2ymd );
 
 sub name {
-    return 'Category-Weekly';
+    return 'ContentType-Category-Weekly';
 }
 
 sub archive_label {
-    return MT->translate('CATEGORY-WEEKLY_ADV');
+    return MT->translate("CONTENTTYPE-CATEGORY-WEEKLY_ADV");
+}
+
+sub dynamic_template {
+    return 'category/<$MTCategoryID$>/week/<$MTArchiveDate format="%Y%m%d"$>';
 }
 
 sub default_archive_templates {
@@ -23,39 +29,40 @@ sub default_archive_templates {
         {   label    => 'category/sub-category/yyyy/mm/day-week/index.html',
             template => '%-c/%y/%m/%d-week/%i',
             default  => 1,
+            required_fields => { category => 1, date_and_time => 1 }
         },
         {   label    => 'category/sub_category/yyyy/mm/day-week/index.html',
-            template => '%c/%y/%m/%d-week/%i'
+            template => '%c/%y/%m/%d-week/%i',
+            required_fields => { category => 1, date_and_time => 1 }
         },
     ];
 }
 
-sub dynamic_template {
-    return 'category/<$MTCategoryID$>/week/<$MTArchiveDate format="%Y%m%d"$>';
-}
-
 sub template_params {
     return {
-        archive_class           => "category-weekly-archive",
-        category_weekly_archive => 1,
-        archive_template        => 1,
-        archive_listing         => 1,
-        datebased_archive       => 1,
-        category_based_archive  => 1,
+        archive_class                => "contenttype-category-weekly-archive",
+        category_weekly_archive      => 1,
+        archive_template             => 1,
+        archive_listing              => 1,
+        datebased_archive            => 1,
+        category_based_archive       => 1,
+        contenttype_archive_lisrting => 1,
     };
 }
 
 sub archive_file {
-    my $obj = shift;
+    my $archiver = shift;
     my ( $ctx, %param ) = @_;
-    my $timestamp = $param{Timestamp};
-    my $file_tmpl = $param{Template};
-    my $blog      = $ctx->{__stash}{blog};
-    my $cat       = $ctx->{__stash}{cat} || $ctx->{__stash}{category};
-    my $entry     = $ctx->{__stash}{entry};
+    my $timestamp    = $param{Timestamp};
+    my $file_tmpl    = $param{Template};
+    my $blog         = $ctx->{__stash}{blog};
+    my $cat          = $ctx->{__stash}{cat} || $ctx->{__stash}{category};
+    my $entry        = $ctx->{__stash}{entry};
+    my $content_data = $ctx->{__stash}{content};
     my $file;
 
-    my $this_cat = $cat ? $cat : ( $entry ? $entry->category : undef );
+    my $this_cat = $archiver->_get_this_cat( $cat, $content_data );
+
     if ($file_tmpl) {
         ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} )
             = start_end_week( $timestamp, $blog );
@@ -80,20 +87,6 @@ sub archive_file {
     $file;
 }
 
-sub archive_title {
-    my $obj = shift;
-    my ( $ctx, $entry_or_ts ) = @_;
-    my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
-    my ( $start, $end ) = start_end_week( $stamp, $ctx->stash('blog') );
-    my $start_date = MT::Template::Context::_hdlr_date( $ctx,
-        { ts => $start, 'format' => "%x" } );
-    my $end_date = MT::Template::Context::_hdlr_date( $ctx,
-        { ts => $end, 'format' => "%x" } );
-    my $cat = $obj->display_name($ctx);
-
-    sprintf( "%s%s - %s", $cat, $start_date, $end_date );
-}
-
 sub archive_group_iter {
     my $obj = shift;
     my ( $ctx, $args ) = @_;
@@ -110,27 +103,25 @@ sub archive_group_iter {
     my $ts    = $ctx->{current_timestamp};
     my $tsend = $ctx->{current_timestamp_end};
 
-    require MT::Placement;
-    require MT::Entry;
+    my $map          = $ctx->stash('template_map');
+    my $cat_field_id = defined $map && $map ? $map->cat_field_id : '';
+    my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
+    require MT::ContentData;
+    require MT::ContentFieldIndex;
+
+    my $group_terms
+        = $obj->make_archive_group_terms( $blog->id, $dt_field_id, $ts,
+        $tsend, '' );
+    my $group_args
+        = $obj->make_archive_group_args( 'category', 'weekly',
+        $map, $ts, $tsend, $args->{lastn}, $order, $cat );
+
     my $loop_sub = sub {
-        my $c          = shift;
-        my $entry_iter = MT::Entry->count_group_by(
-            {   blog_id => $blog->id,
-                status  => MT::Entry::RELEASE(),
-                ( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
-            },
-            {   (   $ts && $tsend
-                    ? ( range_incl => { authored_on => 1 } )
-                    : ()
-                ),
-                group  => ["week_number"],
-                sort   => [ { column => "week_number", desc => $order } ],
-                'join' => [
-                    'MT::Placement', 'entry_id', { category_id => $c->id }
-                ]
-            }
-        ) or return $ctx->error("Couldn't get weekly archive list");
-        while ( my @row = $entry_iter->() ) {
+        my $c = shift;
+        my $cd_iter
+            = MT::ContentData->count_group_by( $group_terms, $group_args )
+            or return $ctx->error("Couldn't get weekly archive list");
+        while ( my @row = $cd_iter->() ) {
             my ( $year, $week ) = unpack 'A4A2', $row[1];
             my $hash = {
                 year     => $year,
@@ -181,7 +172,7 @@ sub archive_group_iter {
         }
 }
 
-sub archive_group_entries {
+sub archive_group_contents {
     my $obj = shift;
     my ( $ctx, %param ) = @_;
     my $ts
@@ -191,26 +182,11 @@ sub archive_group_entries {
         : $ctx->stash('current_timestamp');
     my $cat = $param{category} || $ctx->stash('archive_category');
     my $limit = $param{limit};
-    $obj->dated_category_entries( $ctx, 'Category-Weekly', $cat, $ts,
+    $obj->dated_category_contents( $ctx, 'Category-Weekly', $cat, $ts,
         $limit );
 }
 
-sub archive_entries_count {
-    my $obj = shift;
-    my ( $blog, $at, $entry, $cat ) = @_;
-    $cat = $entry->category unless $cat;
-    return 0 unless $cat;
-    return $obj->SUPER::archive_entries_count(
-        {   Blog        => $blog,
-            ArchiveType => $at,
-            Timestamp   => $entry->authored_on,
-            Category    => $cat
-        }
-    );
-}
-
-*date_range             = \&MT::ArchiveType::Weekly::date_range;
-*next_archive_entry     = \&MT::ArchiveType::Date::next_archive_entry;
-*previous_archive_entry = \&MT::ArchiveType::Date::previous_archive_entry;
+*date_range    = \&MT::ArchiveType::Weekly::date_range;
+*archive_title = \&MT::ArchiveType::CategoryWeekly::archive_title;
 
 1;

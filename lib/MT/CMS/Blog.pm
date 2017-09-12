@@ -1008,38 +1008,7 @@ sub rebuild_pages {
 
             # determine total
             if ( my $archiver = $app->publisher->archiver($type_name) ) {
-                if ( $archiver->entry_based || $archiver->date_based ) {
-                    my $entry_class = $archiver->entry_class || 'entry';
-                    require MT::Entry;
-                    my $terms = {
-                        class   => $entry_class,
-                        status  => MT::Entry::RELEASE(),
-                        blog_id => $blog_id,
-                    };
-                    $total = MT::Entry->count($terms);
-                }
-                elsif ( $archiver->category_based ) {
-                    require MT::Category;
-                    my $terms = { blog_id => $blog_id, };
-                    $total = MT::Category->count($terms);
-                }
-                elsif ( $archiver->author_based ) {
-                    require MT::Author;
-                    require MT::Entry;
-                    my $terms = {
-                        blog_id => $blog_id,
-                        status  => MT::Entry::RELEASE(),
-                        class   => 'entry',
-                    };
-                    $total = MT::Author->count(
-                        { status => MT::Author::ACTIVE() },
-                        {   join => MT::Entry->join_on(
-                                'author_id', $terms, { unique => 1 }
-                            ),
-                            unique => 1,
-                        }
-                    );
-                }
+                $total = _determine_total( $archiver, $blog_id );
             }
         }
 
@@ -1194,41 +1163,7 @@ sub start_rebuild_pages {
     my $template_id  = $q->param('template_id');
 
     if ($archiver) {
-        if ( $archiver->entry_based || $archiver->date_based ) {
-            my $entry_class = $archiver->entry_class || 'entry';
-            require MT::Entry;
-            my $terms = {
-                class   => $entry_class,
-                status  => MT::Entry::RELEASE(),
-                blog_id => $blog_id,
-            };
-            $total = MT::Entry->count($terms);
-        }
-        elsif ( $archiver->category_based ) {
-            require MT::Category;
-            my $terms = {
-                blog_id => $blog_id,
-                class   => $archiver->category_class,
-            };
-            $total = MT::Category->count($terms);
-        }
-        elsif ( $archiver->author_based ) {
-            require MT::Author;
-            require MT::Entry;
-            my $terms = {
-                blog_id => $blog_id,
-                status  => MT::Entry::RELEASE(),
-                class   => 'entry',
-            };
-            $total = MT::Author->count(
-                { status => MT::Author::ACTIVE() },
-                {   join => MT::Entry->join_on(
-                        'author_id', $terms, { unique => 1 }
-                    ),
-                    unique => 1,
-                }
-            );
-        }
+        $total = _determine_total( $archiver, $blog_id );
     }
 
     my %param = (
@@ -3689,6 +3624,99 @@ sub save_data_api_settings {
     $cfg->save_config;
 
     return 1;
+}
+
+sub _determine_total {
+    my ( $archiver, $blog_id ) = @_;
+
+    my $total = 0;
+    if ( ( $archiver->entry_based || $archiver->date_based )
+        && !$archiver->category_based )
+    {
+        if (   $archiver->contenttype_based
+            || $archiver->contenttype_date_based )
+        {
+            require MT::ContentData;
+            my $terms = {
+                status  => MT::Entry::RELEASE(),
+                blog_id => $blog_id,
+            };
+            $total = MT::ContentData->count($terms);
+        }
+        else {
+            my $entry_class = $archiver->entry_class || 'entry';
+            require MT::Entry;
+            my $terms = {
+                class   => $entry_class,
+                status  => MT::Entry::RELEASE(),
+                blog_id => $blog_id,
+            };
+            $total = MT::Entry->count($terms);
+        }
+    }
+    elsif ( $archiver->category_based ) {
+        if ( $archiver->contenttype_category_based ) {
+            require MT::Category;
+            require MT::CategorySet;
+            my @cat_set = MT::CategorySet->load( { blog_id => $blog_id } );
+            $total
+                = MT::Category->count(
+                { category_set_id => [ map { $_->id } @cat_set ] } );
+        }
+        else {
+            require MT::Category;
+            my $terms = {
+                blog_id => $blog_id,
+                class   => $archiver->category_class,
+            };
+            $total = MT::Category->count($terms);
+        }
+    }
+    elsif ( $archiver->author_based ) {
+        require MT::Author;
+        require MT::Entry;
+        my $terms = {
+            blog_id => $blog_id,
+            status  => MT::Entry::RELEASE(),
+            class   => 'entry',
+        };
+        $total = MT::Author->count(
+            { status => MT::Author::ACTIVE() },
+            {   join => MT::Entry->join_on(
+                    'author_id', $terms, { unique => 1 }
+                ),
+                unique => 1,
+            }
+        );
+    }
+    elsif ($archiver->contenttype_based
+        || $archiver->contenttype_date_based )
+    {
+        require MT::ContentData;
+        my $terms = {
+            status  => MT::Entry::RELEASE(),
+            blog_id => $blog_id,
+        };
+        $total = MT::ContentData->count($terms);
+    }
+    elsif ( $archiver->contenttype_author_based ) {
+        require MT::Author;
+        require MT::ContentData;
+        my $terms = {
+            blog_id => $blog_id,
+            status  => MT::Entry::RELEASE(),
+        };
+        $total = MT::Author->count(
+            { status => MT::Author::ACTIVE() },
+            {   join => MT::ContentData->join_on(
+                    'author_id', $terms, { unique => 1 }
+                ),
+                unique => 1,
+            }
+        );
+    }
+
+    return $total;
 }
 
 1;

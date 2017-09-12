@@ -392,6 +392,10 @@ sub core_methods {
         'list_ct_boilerplates' => "${pkg}ContentType::list_boilerplates",
         'start_import_content' => "${pkg}ContentData::start_import",
         'start_export_content' => "${pkg}ContentData::start_export",
+
+        'get_archive_mapping_content_fields' =>
+            "${pkg}Template::get_archive_mapping_content_fields",
+
     };
 }
 
