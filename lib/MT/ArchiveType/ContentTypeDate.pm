@@ -5,6 +5,7 @@
 # $Id$
 package MT::ArchiveType::ContentTypeDate;
 
+use strict;
 use base qw( MT::ArchiveType::Date );
 
 sub contenttype_group_based {
