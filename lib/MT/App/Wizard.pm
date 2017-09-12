@@ -1120,11 +1120,12 @@ sub seed {
     }
 
     $param{static_file_path} = $param{set_static_file_to};
+    my $param_set_static_uri_to = $app->param('set_static_uri_to') || '';
 
     require URI;
     my $uri = URI->new( $app->cgipath );
-    $param{cgi_path} = $uri->path;
-    $uri = URI->new( $app->param->param('set_static_uri_to') );
+    $param{cgi_path}        = $uri->path;
+    $uri                    = URI->new($param_set_static_uri_to);
     $param{static_web_path} = $uri->path;
     $param{static_uri}      = $uri->path;
     my $drivers = $app->object_drivers;
@@ -1253,6 +1254,7 @@ sub seed {
 
     my $data = $app->build_page( "mt-config.tmpl", \%param );
 
+    my $manually = $app->param('manually');
     my $cfg_file = File::Spec->catfile( $app->{mt_dir}, 'mt-config.cgi' );
     if ( !-f $cfg_file ) {
 
@@ -1262,12 +1264,12 @@ sub seed {
             close OUT;
         }
         $param{config_created} = 1 if -f $cfg_file;
-        if ( ( !-f $cfg_file ) && $app->param->param('manually') ) {
+        if ( ( !-f $cfg_file ) && $manually ) {
             $param{file_not_found} = 1;
             $param{manually}       = 1;
         }
     }
-    elsif ( $app->param->param('manually') ) {
+    elsif ($manually) {
         $param{config_created} = 1 if -f $cfg_file;
     }
 
