@@ -11,29 +11,33 @@ use base 'MT::ErrorHandler';
 use MT::Author qw( AUTHOR );
 
 sub sanity_check {
-    my $auth  = shift;
+    my $auth = shift;
     my ($app) = @_;
-    my $q     = $app->param;
-    my $id    = $q->param('id');
 
-    if ( ( $q->param('pass') || '' ) ne ( $q->param('pass_verify') || '' ) ) {
+    my $id          = $app->param('id');
+    my $pass        = $app->param('pass');
+    my $pass_verify = $app->param('pass_verify');
+    my $old_pass    = $app->param('old_pass');
+
+    $pass        = '' unless defined $pass;
+    $pass_verify = '' unless defined $pass_verify;
+
+    if ( $pass ne $pass_verify ) {
         return $app->translate('Passwords do not match.');
     }
-    if ( length( scalar $q->param('pass') )
-        && ( $id && $app->user->id == $id ) )
-    {
+
+    return '' unless length($pass);
+
+    if ( $id && $app->user->id == $id ) {
         my $author = MT::Author->load($id)
             or
             return $app->translate('Failed to verify the current password.');
-        if ( !$auth->is_valid_password( $author, $q->param('old_pass') ) ) {
+        if ( !$auth->is_valid_password( $author, $old_pass ) ) {
             return $app->translate('Failed to verify the current password.');
         }
     }
-    if ( length( scalar $q->param('pass') ) ) {
-        my $pass = scalar $q->param('pass');
-        if ( $pass =~ /[^\x20-\x7E]/ ) {
-            return $app->translate('Password contains invalid character.');
-        }
+    if ( $pass =~ /[^\x20-\x7E]/ ) {
+        return $app->translate('Password contains invalid character.');
     }
     return '';
 }
