@@ -122,15 +122,17 @@ sub edit {
     # Content Field Types
     my $content_field_types = $app->registry('content_field_types');
     my @type_array          = map {
+        my $label = $content_field_types->{$_}{label};
+        $label = $label->()
+            if ref $label eq 'CODE';
         my $hash = {};
         $hash->{type}    = $_;
-        $hash->{label}   = $content_field_types->{$_}{label};
-        $hash->{options} = $content_field_types->{$_}{options};
+        $hash->{label}   = $label;
         $hash->{order}   = $content_field_types->{$_}{order};
         $hash;
     } keys %$content_field_types;
     @type_array = sort { $a->{order} <=> $b->{order} } @type_array;
-    $param->{content_field_types} = \@type_array;
+    $param->{content_field_types} = JSON::to_json( \@type_array );
 
     # Content Filed Type Options
     my %content_field_types_option_settings = ();

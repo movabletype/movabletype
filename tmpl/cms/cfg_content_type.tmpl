@@ -30,6 +30,16 @@
 
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+<script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-fields.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">riot/riot+compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script>
+(function () {
+  var content_field_types = JSON.parse('<mt:var name="content_field_types" escape="json">');
+  riot.mount('content-fields', {
+    types: content_field_types
+  });
+})();
+</script>
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
@@ -425,21 +435,9 @@
       </mtapp:setting>
     </div>
   </div>
-    
-    <mtapp:settinggroup
-       id="content-fields"
-       legend="<__trans phrase="Content Fields">">  
-      <div id="add-block" class="icon-create icon-left">
-        <select name="type" id="type" class="half-width required">
-      <mt:loop name="content_field_types">
-          <option value="<mt:var name="type">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
-      </mt:loop>
-        </select>
-        <span class="item-add"><a href="javascript:void(0);" class="add-link"> <__trans phrase="Add content field"></a></span>
-      </div>
-  
-      <div id="sortable" class="sortable"></div>
-    </mtapp:settinggroup>
+
+  <div data-is="content-fields"></div>
+
   
     <mtapp:settinggroup id="single_line_text-options">
   
