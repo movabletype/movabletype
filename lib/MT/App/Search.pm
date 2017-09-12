@@ -824,12 +824,12 @@ sub prepare_context {
 }
 
 sub load_search_tmpl {
-    my $app   = shift;
-    my $q     = $app->param;
+    my $app = shift;
     my ($ctx) = @_;
 
     my $tmpl;
-    if ( $q->param('Template') && ( 'default' ne $q->param('Template') ) ) {
+    my $param_template = $app->param('Template');
+    if ( $param_template && ( 'default' ne $param_template ) ) {
 
         # load specified template
         my $filename;
@@ -842,7 +842,7 @@ sub load_search_tmpl {
             for my $tmpl_ (@tmpls) {
                 next unless defined $tmpl_;
                 my ( $nickname, $file ) = split /\s+/, $tmpl_;
-                if ( $nickname eq $q->param('Template') ) {
+                if ( $nickname eq $param_template ) {
                     $filename = $file;
                     last;
                 }
@@ -850,7 +850,7 @@ sub load_search_tmpl {
         }
         return $app->errtrans(
             "No alternate template is specified for template '[_1]'",
-            encode_html( $q->param('Template') ) )
+            encode_html($param_template) )
             unless $filename;
 
         # template_paths method does the magic
@@ -861,7 +861,7 @@ sub load_search_tmpl {
         $tmpl->text( $app->translate_templatized( $tmpl->text ) );
     }
     else {
-        my $tmpl_id = $q->param('template_id');
+        my $tmpl_id = $app->param('template_id');
         if ( $tmpl_id && $tmpl_id =~ /^\d+$/ ) {
             $tmpl = $app->model('template')->lookup($tmpl_id);
             return $app->errtrans('No such template')
@@ -878,8 +878,7 @@ sub load_search_tmpl {
                     || $tmpl->outfile =~ /\.php/i )
                 );
 
-            if ( $q->param('archive_type') ) {
-                my $at       = $q->param('archive_type');
+            if ( my $at = $app->param('archive_type') ) {
                 my $archiver = MT->publisher->archiver($at);
                 return
                     return $app->errtrans(
