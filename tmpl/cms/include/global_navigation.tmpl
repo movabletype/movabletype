@@ -133,11 +133,11 @@
   </div>
 
 <mt:if name="blog_id">
-  <div class="ml-auto col-1">
-    <a href="<mt:var name="url">?__mode=view&_type=entry&blog_id=<mt:var name="blog_id">" id="create-entry-shortcut"><span class="fa fa-pencil"></span></a>
-    <a href="<$mt:var name="mt_url"$>?__mode=rebuild_confirm&blog_id=<$mt:var name="blog_id"$>" class="mt-rebuild"><img src="<mt:var name="static_uri">images/nav-icon-publish.png" /></a>
-    <a href="<mt:var name="blog_url" escape="html">" target="_blank"><span class="fa fa-external-link"></span></a>
-    <a href="#"><img src="<mt:var name="static_uri">images/search-submit.png" /></a>
+  <div class="ml-auto col-2 text-right">
+    <a href="<mt:var name="url">?__mode=view&_type=entry&blog_id=<mt:var name="blog_id">" id="create-entry-shortcut"><mtapp:svgicon id="ic_edit" title="<__trans phrase="Edit">"></a>
+    <a href="<$mt:var name="mt_url"$>?__mode=rebuild_confirm&blog_id=<$mt:var name="blog_id"$>" class="mt-rebuild"><mtapp:svgicon id="ic_build" title="<__trans phrase="Rebuild">"></a>
+    <a href="<mt:var name="blog_url" escape="html">" target="_blank"><mtapp:svgicon id="ic_permalink" title="<__trans phrase="View Link">"></a>
+    <a href="#"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">"></a>
   </div>
 </mt:if>
 
