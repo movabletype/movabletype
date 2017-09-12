@@ -1145,6 +1145,9 @@ function saveTemplatePrefs( sync ) {
         var map = getByID('template-maps');
         if (map)
             map.innerHTML = res;
+        jQuery("[id^=delete_map_]").click(function(){
+          deleteMap(jQuery(this).attr('id').match(/\d+/));
+        });
         jQuery("[id^=archive_file_sel]").change(function(){
           selectArchiveFile(this);
         });
@@ -1219,6 +1222,7 @@ function saveTemplatePrefs( sync ) {
       selectArchiveFile(this);
     });
     <mt:if name="type" like="^ct">
+    <mt:unless name="has_name">
     jQuery("#new_archive_type").change(function(){
       jQuery("#archive_file_sel").css("display", "block");
       jQuery("#archive_file_tmpl").css("display", "none");
@@ -1307,6 +1311,7 @@ function saveTemplatePrefs( sync ) {
 
     getDefaultArchiveTemplates();
     selectArchiveFile(jQuery("#archive_file_sel"));
+    </mt:unless>
     </mt:if>
 
 </mt:setvarblock>

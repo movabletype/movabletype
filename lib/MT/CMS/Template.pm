@@ -575,7 +575,7 @@ sub edit {
             # Populate template maps for this template
             my $maps = _populate_archive_loop( $app, $blog, $obj );
             if (@$maps) {
-                $param->{object_loop} = $param->{template_map_loop} = $maps
+                $param->{template_map_loop} = $maps
                     if @$maps;
                 my %at;
                 foreach my $map (@$maps) {
@@ -1668,10 +1668,9 @@ sub _generate_map_table {
     my $template = MT::Template->load($template_id);
     my $tmpl     = $app->load_tmpl('include/archive_maps.tmpl');
     my $maps     = _populate_archive_loop( $app, $blog, $template );
-    $tmpl->param( object_type => 'templatemap' );
     $tmpl->param( publish_queue_available => eval
             'require List::Util; require Scalar::Util; 1;' );
-    $tmpl->param( object_loop => $maps ) if @$maps;
+    $tmpl->param( template_map_loop => $maps ) if @$maps;
     my $html = $tmpl->output();
 
     if ( $html =~ m/<__trans / ) {
