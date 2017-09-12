@@ -10,8 +10,10 @@
 </mt:if>
 <mt:unless name="optimize_ui">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/mt.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
 <mt:else>
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/main.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/mt.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
 </mt:unless>
     <!--[if IE]>
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
@@ -50,6 +52,7 @@
     <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>svg4everybody/svg4everybody.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 <mt:else>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery-migrate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
@@ -57,6 +60,7 @@
     <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.json.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>svg4everybody/svg4everybody.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 </mt:unless>
 <mt:var name="html_head">
     <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
@@ -102,7 +106,7 @@
      value="save"
      accesskey="s"
      title="<__trans phrase="Save this template (s)">"
-     class="save action primary button">
+     class="btn btn-primary save action primary">
     <__trans phrase="Save this template">
   </button>
   <button
@@ -112,7 +116,7 @@
      value="reedit"
      accesskey="e"
      title="<__trans phrase="Re-Edit this template (e)">"
-     class="action button">
+     class="btn btn-default action">
     <__trans phrase="Re-Edit this template">
   </button>
 </mt:setvarblock>
@@ -139,6 +143,8 @@
 
     <script type="text/javascript">
       /* <![CDATA[ */
+      svg4everybody();
+
 <mt:unless name="delayed_bootstrap">
       App.bootstrapInline( false );
 </mt:unless>
