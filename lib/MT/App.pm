@@ -978,8 +978,7 @@ sub init_query {
     # it totally ignores any query parameters.
     if ( $app->request_method eq 'POST' ) {
         if ( !MT::Util::is_mod_perl1() ) {
-            my $query_string = $ENV{'QUERY_STRING'}
-                if defined $ENV{'QUERY_STRING'};
+            my $query_string = $ENV{'QUERY_STRING'};
             $query_string ||= $ENV{'REDIRECT_QUERY_STRING'}
                 if defined $ENV{'REDIRECT_QUERY_STRING'};
             if ( defined($query_string) and $query_string ne '' ) {
