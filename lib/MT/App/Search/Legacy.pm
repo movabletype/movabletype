@@ -330,7 +330,8 @@ sub execute {
             $blog = $results[0]{blog};
         }
         if ( !$blog ) {
-            $blog = MT::Blog->load( $app->param('blog_id') );
+            my $blog_id = $app->param('blog_id');
+            $blog = MT::Blog->load($blog_id);
         }
         $include = $blog->id if $blog;
     }
@@ -430,10 +431,11 @@ sub execute {
         or return $app->error(
         $app->translate( "Publishing results failed: [_1]", $build->errstr )
         );
+    my $help = $app->param('help');
     defined(
         my $res = $build->build(
             $ctx, $tokens,
-            {   NoSearch => $app->{query}->param('help')
+            {   NoSearch => $help
                     || (
                     $app->{searchparam}{Type} ne 'newcomments'
                     && (  !$ctx->stash('search_string')
