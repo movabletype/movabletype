@@ -858,7 +858,7 @@ sub pre_run_debug {
         print STDERR "Package: " . ref($app) . "\n";
         print STDERR "Session: " . $app->session->id . "\n"
             if $app->session;
-        print STDERR "Request: " . $app->param->request_method . "\n";
+        print STDERR "Request: " . $app->request_method . "\n";
         my @param = $app->multi_param;
         if (@param) {
             foreach my $key (@param) {
