@@ -2731,9 +2731,9 @@ MT
 <mt:Comments><mt:CommenterAuthIconURL>
 </mt:Comments>
 --- expected
-http://localhost/mt-static/images/comment/mt_logo.png
+http://localhost/mt-static/images/logo-mark.svg
 
-http://localhost/mt-static/images/comment/mt_logo.png
+http://localhost/mt-static/images/logo-mark.svg
 
 === mt:CommenterID
 --- template _mt_websites
@@ -2825,9 +2825,9 @@ Administrator Melody
 <mt:Comments><mt:CommentAuthorIdentity>
 </mt:Comments>
 --- expected
-<a class="commenter-profile" href="http://localhost/~melody/"><img alt="" src="http://localhost/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>
+<a class="commenter-profile" href="http://localhost/~melody/"><img alt="" src="http://localhost/mt-static/images/logo-mark.svg" width="16" height="16" /></a>
 <a class="commenter-profile" href="http://localhost/~guest/"><img alt="" src="http://localhost/mt-static/images/nav-commenters.gif" width="16" height="16" /></a>
-<a class="commenter-profile" href="http://localhost/~melody/"><img alt="" src="http://localhost/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>
+<a class="commenter-profile" href="http://localhost/~melody/"><img alt="" src="http://localhost/mt-static/images/logo-mark.svg" width="16" height="16" /></a>
 
 === mt:CommentEmail
 --- template _mt_websites
