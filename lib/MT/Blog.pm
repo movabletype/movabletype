@@ -900,9 +900,8 @@ sub file_mgr {
 }
 
 sub remove {
-    my $blog    = shift;
-    my $blog_id = $blog->id
-        if ref($blog);
+    my $blog = shift;
+    my $blog_id = ref $blog ? $blog->id : undef;
 
     # Load all the models explicitly.
     MT->all_models;
