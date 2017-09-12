@@ -3460,4 +3460,43 @@ sub save_template_prefs {
     return $app->json_result( { success => 1 } );
 }
 
+sub get_content_type_info {
+    my ($app) = @_;
+    my $cfg   = $app->config;
+    my $blog  = $app->blog;
+    my $param = {};
+
+    $app->validate_magic
+        or return $app->errtrans("Invalid request.");
+
+    my $ct_id = $app->param('ct_id');
+    my $ct    = MT::ContentType->load($ct_id);
+
+    my $ct_data = { unique_id => $ct->unique_id };
+
+    my $fields     = $ct->fields;
+    my @cfs        = MT::ContentField->load( { content_type_id => $ct_id } );
+    my @cf_selects = ();
+    my $cf_datas   = {};
+    foreach my $cf (@cfs) {
+        my ($field) = grep { $_->{id} == $cf->id } @{$fields};
+        my $label = $field->{options}{label};
+        push @cf_selects, { id => $cf->id, label => $cf->name };
+        $cf_datas->{ $cf->id } = {
+            id        => $cf->id,
+            label     => $label,
+            unique_id => $cf->unique_id,
+            type      => $cf->type,
+        };
+    }
+
+    return $app->json_result(
+        {   success      => 1,
+            content_type => $ct_data,
+            cf_selects   => \@cf_selects,
+            cf_datas     => $cf_datas,
+        }
+    );
+}
+
 1;

@@ -393,8 +393,7 @@ sub core_methods {
         'start_import_content' => "${pkg}ContentData::start_import",
         'start_export_content' => "${pkg}ContentData::start_export",
 
-        'get_archive_mapping_content_fields' =>
-            "${pkg}Template::get_archive_mapping_content_fields",
+        'get_content_type_info' => "${pkg}Template::get_content_type_info",
 
     };
 }
@@ -2191,11 +2190,11 @@ sub core_menus {
             view       => [ 'website', 'blog' ],
         },
         'content_type:create_content_type' => {
-            label => 'New',
-            mode  => 'cfg_content_type_description',
-            order => 200,
+            label      => 'New',
+            mode       => 'cfg_content_type_description',
+            order      => 200,
             permission => 'manage_content_types',
-            view  => [ 'website', 'blog' ],
+            view       => [ 'website', 'blog' ],
         },
 
         'tag:manage' => {

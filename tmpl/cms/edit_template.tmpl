@@ -266,6 +266,80 @@
 </mtapp:widget>
 </mt:if>
 
+<mt:if name="type" like="^ct">
+<mtapp:widget
+   id="content-type-info"
+   hidden="1"
+   label="<__trans phrase="Content Type">">
+  <mtapp:settinggroup id="content-type-info-inner">
+
+    <mtapp:setting
+       id="ct_unique_id"
+       class="ct_unique_id"
+       label="<__trans phrase="Unique ID">"
+       label_for="ct_unique_id">
+      <div id="ct_unique_id" class="word-wrap: break-word;">
+      </div>
+    </mtapp:setting>
+
+  </mtapp:settinggroup>
+</mtapp:widget>
+
+<mtapp:widget
+   id="content-field-info"
+   hidden="1"
+   label="<__trans phrase="Content field">">
+  <mtapp:settinggroup id="content-type-info-inner">
+
+    <mtapp:setting
+       id="content_field_sel"
+       class="content_field_sel"
+       label="<__trans phrase="Select Content Field">"
+       label_for="content_field_sel"
+       show_label="0">
+      <select name="content_field_sel" id="content_field_sel" tabindex="13" class="form-control">
+      </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="cf_label"
+       class="cf_label"
+       label="<__trans phrase="Label">"
+       label_for="cf_label">
+      <div id=cf_label>
+      </div>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="cf_id"
+       class="cf_id"
+       label="<__trans phrase="ID">"
+       label_for="cf_id">
+      <div id=cf_id>
+      </div>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="cf_unique_id"
+       class="cf_unique_id"
+       label="<__trans phrase="Unique ID">"
+       label_for="cf_unique_id">
+      <div id="cf_unique_id" class="word-wrap: break-word;">
+      </div>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="cf_type"
+       class="cf_type"
+       label="<__trans phrase="Type">"
+       label_for="cf_type">
+      <div id="cf_type">
+      </div>
+    </mtapp:setting>
+
+  </mtapp:settinggroup>
+</mtapp:widget>
+<mt:else>
 <mtapp:widget
    id="tag-list"
    hidden="1"
@@ -282,6 +356,7 @@
   <div id="badtag-list-inner">
   </div>
 </mtapp:widget>
+</mt:if>
 
 <$MTApp:PageActions from="edit_template"$>
 </mt:setvarblock>
@@ -606,7 +681,7 @@ function setSyntaxHighlight(on_or_off) {
      help_page="templates"
      help_section="content_type">
   <mt:if name="has_name">
-    <select name="content_type_id" class="custom-select form-control">
+    <select name="content_type_id" id="content_type_id" class="custom-select form-control">
   <mt:loop name="content_types">
       <option value="<mt:var name="id" escape="html">"><mt:var name="name" escape="html"></option>
   </mt:loop>
@@ -998,13 +1073,17 @@ App.singletonConstructor =
 MT.App = new Class( MT.App, {
 
     initComponents: function() {
-       arguments.callee.applySuper( this, arguments );
-       documentTags( true );
+        arguments.callee.applySuper( this, arguments );
+        <mt:unless name="type" like="^ct">
+        documentTags( true );
+        </mt:unless>
     },
 
     autoSave: function() {
         arguments.callee.applySuper( this, arguments );
+        <mt:unless name="type" like="^ct">
         documentTags();
+        </mt:unless>
     }
 
 } );
@@ -1215,13 +1294,58 @@ function saveTemplatePrefs( sync ) {
     jQuery("[id^=delete_map_]").click(function(){
       deleteMap(jQuery(this).attr('id').match(/\d+/));
     });
-    jQuery("#add_map").click(function(){
-      addMap();
-    });
     jQuery("[id^=archive_file_sel]").change(function(){
       selectArchiveFile(this);
     });
+    jQuery("#add_map").click(function(){
+      addMap();
+    });
     <mt:if name="type" like="^ct">
+    jQuery("#content_type_id").change(function(){
+      getContentTypeInfo();
+    });
+    function getContentTypeInfo() {
+      var ct_id = jQuery("#content_type_id").val();
+      jQuery.ajax({
+        type: 'POST',
+        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+        async: true,
+        url: ScriptURI,
+        dataType: 'json',
+        data: {
+          __mode: 'get_content_type_info',
+          magic_token: '<mt:var name="magic_token">',
+          blog_id: '<mt:var name="blog_id">',
+          id: '<mt:var name="id">',
+          ct_id: ct_id
+        }
+      }).done(
+        function(data) {
+          jQuery("#ct_unique_id").text(data.result.content_type.unique_id);
+          jQuery("#content_field_sel").empty();
+          jQuery.each(data.result.cf_selects, function( index, value ) {
+            jQuery("#content_field_sel").append('<option value="' + value.id + '">' + value.label + '</option>');
+          });
+          var cf_datas = data.result.cf_datas;
+          getContentFieldInfo(cf_datas);
+          jQuery("#content_field_sel").off('change').change(function(){
+            getContentFieldInfo(cf_datas);
+          });
+        }
+      ).fail(
+        function(xhr, status, errorThrown) {
+          alert(status+' '+errorThrown);
+        }
+      );
+    }
+    function getContentFieldInfo(cf_datas) {
+      var id = jQuery("#content_field_sel").val();
+      jQuery("#cf_label").text(cf_datas[id].label);
+      jQuery("#cf_id").text(cf_datas[id].id);
+      jQuery("#cf_unique_id").text(cf_datas[id].unique_id);
+      jQuery("#cf_type").text(cf_datas[id].type);
+    }
+    getContentTypeInfo();
     <mt:unless name="has_name">
     jQuery("#new_archive_type").change(function(){
       jQuery("#archive_file_sel").css("display", "block");
