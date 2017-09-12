@@ -26,93 +26,28 @@ use MT::Log;
 use MT::Util ();
 use MT::Serialize;
 
-sub tmpl_param_list_common {
-    my ( $cb, $app, $param, $tmpl ) = @_;
-    if ($app->mode eq 'list'
-        && (   $app->param('_type') eq 'content_data'
-            && $app->param('type') =~ /^content_data_(\d+)$/ )
-        )
-    {
-        my $content_type_id = $1;
-        my $content_type    = MT::ContentType->load($content_type_id);
-        $param->{disable_user_disp_option} = !$content_type->user_disp_option;
-
-        my $component = MT->component('core');
-        my $filename
-            = File::Spec->catfile( $component->path, 'tmpl', 'cms', 'listing',
-            'content_data_list_header.tmpl' );
-        push @{ $param->{list_headers} },
-            {
-            filename  => $filename,
-            component => $component->id,
-            };
-
-        $param->{saved_deleted} = $app->param('saved_deleted') ? 1 : 0;
-    }
-}
-
-sub tmpl_param_edit_role {
-    my ( $cb, $app, $param, $tmpl ) = @_;
-
-    $param->{content_type_perm_groups} = MT::ContentType->permission_groups;
-
-    # Insert content type permission template.
-    my $privileges_settinggroup_node
-        = $tmpl->getElementById('role-privileges');
-    my $content_type_permission_node = $tmpl->createElement( 'loop',
-        { name => 'content_type_perm_groups' } );
-    $content_type_permission_node->innerHTML(
-        _content_type_permission_tmpl() );
-    $privileges_settinggroup_node->appendChild($content_type_permission_node);
-}
-
-sub _content_type_permission_tmpl {
-    return <<'__TMPL__';
-    <mt:setvarblock name="ct_perm_group"><mt:var name="__VALUE__" escape="html"></mt:setvarblock>
-    <mtapp:setting
-      id="<mt:var name="ct_perm_group">"
-      label="<mt:var name="ct_perm_group">"
-    >
-      <ul class="fixed-width multiple-selection">
-      <mt:loop name="loaded_permissions">
-      <mt:if name="group" eq="$ct_perm_group">
-        <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
-      </mt:if>
-      </mt:loop>
-      </ul>
-    </mtapp:setting>
-__TMPL__
-}
-
-sub cfg_content_type_description {
+sub edit {
     my ( $app, $param ) = @_;
-    $app->build_page( $app->load_tmpl('cfg_content_type_description.tmpl'),
-        $param );
-}
-
-sub cfg_content_type {
-    my ( $app, $param ) = @_;
-    my $q   = $app->param;
     my $cfg = $app->config;
 
-    require MT::Promise;
-    my $content_type_id = $q->param('id');
-    my $obj_promise     = MT::Promise::delay(
-        sub {
-            return undef unless $content_type_id;
-            return MT::ContentType->load( { id => $content_type_id } );
-        }
-    );
+    my $id = $app->param('id') || undef;
+    my $class = $app->model('content_type');
+    my $obj;
 
-    my $content_type = $obj_promise->force();
-    if ($content_type) {
-        $param->{name}             = $content_type->name;
-        $param->{description}      = $content_type->description;
-        $param->{unique_id}        = $content_type->unique_id;
-        $param->{user_disp_option} = $content_type->user_disp_option;
+    if ( $id ) {
+        $obj = $class->load( $id )
+            or return $app->error(
+                $app->translate( "Load failed: [_1]", $class->errstr || $app->translate("(no reason given)") )
+            );
+
+        $param->{name}             = $obj->name;
+        $param->{description}      = $obj->description;
+        $param->{unique_id}        = $obj->unique_id;
+        $param->{user_disp_option} = $obj->user_disp_option;
+
         my $field_data;
-        if ( $q->param('err_msg') ) {
-            $field_data = $q->param('fields');
+        if ( $app->param('err_msg') ) {
+            $field_data = $app->param('fields');
             if ( $field_data =~ /^".*"$/ ) {
                 $field_data =~ s/^"//;
                 $field_data =~ s/"$//;
@@ -122,7 +57,7 @@ sub cfg_content_type {
                 = JSON::decode_json( MT::Util::decode_url($field_data) );
         }
         else {
-            $field_data = $content_type->fields;
+            $field_data = $obj->fields;
         }
         my @array = map {
             $_->{content_field_id} = $_->{id};
@@ -221,7 +156,7 @@ sub cfg_content_type {
         = JSON::encode_json( \%content_field_types_options );
 
     foreach my $name (qw( saved err_msg id name )) {
-        $param->{$name} = $q->param($name) if $q->param($name);
+        $param->{$name} = $app->param($name) if $app->param($name);
     }
 
     my @category_sets;
@@ -238,7 +173,7 @@ sub cfg_content_type {
 
     my $content_type_loop
         = MT::ContentType->get_related_content_type_loop( $app->blog->id,
-        $content_type_id );
+        $id );
     $param->{content_types} = $content_type_loop;
 
     my $tag_delim = $app->config('DefaultUserTagDelimiter') || ord(',');
@@ -276,6 +211,64 @@ sub cfg_content_type {
     }
 
     $app->build_page( $app->load_tmpl('cfg_content_type.tmpl'), $param );
+}
+
+sub tmpl_param_list_common {
+    my ( $cb, $app, $param, $tmpl ) = @_;
+    if ($app->mode eq 'list'
+        && (   $app->param('_type') eq 'content_data'
+            && $app->param('type') =~ /^content_data_(\d+)$/ )
+        )
+    {
+        my $content_type_id = $1;
+        my $content_type    = MT::ContentType->load($content_type_id);
+        $param->{disable_user_disp_option} = !$content_type->user_disp_option;
+
+        my $component = MT->component('core');
+        my $filename
+            = File::Spec->catfile( $component->path, 'tmpl', 'cms', 'listing',
+            'content_data_list_header.tmpl' );
+        push @{ $param->{list_headers} },
+            {
+            filename  => $filename,
+            component => $component->id,
+            };
+
+        $param->{saved_deleted} = $app->param('saved_deleted') ? 1 : 0;
+    }
+}
+
+sub tmpl_param_edit_role {
+    my ( $cb, $app, $param, $tmpl ) = @_;
+
+    $param->{content_type_perm_groups} = MT::ContentType->permission_groups;
+
+    # Insert content type permission template.
+    my $privileges_settinggroup_node
+        = $tmpl->getElementById('role-privileges');
+    my $content_type_permission_node = $tmpl->createElement( 'loop',
+        { name => 'content_type_perm_groups' } );
+    $content_type_permission_node->innerHTML(
+        _content_type_permission_tmpl() );
+    $privileges_settinggroup_node->appendChild($content_type_permission_node);
+}
+
+sub _content_type_permission_tmpl {
+    return <<'__TMPL__';
+    <mt:setvarblock name="ct_perm_group"><mt:var name="__VALUE__"></mt:setvarblock>
+    <mtapp:setting
+      id="<mt:var name="ct_perm_group">"
+      label="<mt:var name="ct_perm_group">"
+    >
+      <ul class="fixed-width multiple-selection">
+      <mt:loop name="loaded_permissions">
+      <mt:if name="group" eq="$ct_perm_group">
+        <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
+      </mt:if>
+      </mt:loop>
+      </ul>
+    </mtapp:setting>
+__TMPL__
 }
 
 sub save_cfg_content_type {

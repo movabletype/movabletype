@@ -359,9 +359,9 @@ sub core_methods {
         'edit_content_data' => "${pkg}ContentData::edit",
         'save_content_data' => "${pkg}ContentData::save",
 
-        ## MT7
-        'cfg_content_type_description' =>
-            "${pkg}ContentType::cfg_content_type_description",
+        ## MT7 - Content Type
+        'edit_content_type'     => "${pkg}ContentType::edit",
+        'view_content_type'     => "${pkg}ContentType::edit",
         'cfg_content_type'      => "${pkg}ContentType::cfg_content_type",
         'save_cfg_content_type' => "${pkg}ContentType::save_cfg_content_type",
 
@@ -2186,7 +2186,8 @@ sub core_menus {
         },
         'content_type:create_content_type' => {
             label => 'New',
-            mode  => 'cfg_content_type_description',
+            mode  => 'view',
+            args  => { _type => 'content_type' },
             order => 200,
             view  => [ 'website', 'blog' ],
         },
