@@ -3418,8 +3418,9 @@ sub load_core_permissions {
             'order'            => 800,
             'inherit_from'     => ['blog.manage_users'],
             'permitted_action' => {
-                'access_to_any_group_list', 'grant_administer_role',
-                'grant_role_for_blog',
+                'access_to_any_group_list' => 1,
+                'grant_administer_role'    => 1,
+                'grant_role_for_blog'      => 1,
             },
         },
         'system.manage_content_types' => {
