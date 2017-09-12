@@ -359,8 +359,8 @@
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetlabel$></MTAssets>", "e" : "Image photo"}, #358
 { "r" : "1", "t" : "<MTEntries id='1'><MTEntryAssets><$MTAssetID$></MTEntryAssets></MTEntries>", "e" : "1"}, #359
 { "r" : "1", "t" : "<MTPages id='20'><MTPageAssets><$MTAssetID$></MTPageAssets></MTPages>", "e" : "2"}, #360
-{ "r" : "1", "t" : "<MTAuthors><$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;</MTAuthors>", "e" : "MT:http://narnia.na/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/mt-static/images/comment/mt_logo.png;"}, #361
-{ "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;:;MT:http://narnia.na/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/mt-static/images/comment/mt_logo.png;:;TypeKey:http://narnia.na/mt-static/images/comment/typepad_logo.png;"}, #362
+{ "r" : "1", "t" : "<MTAuthors><$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;</MTAuthors>", "e" : "MT:http://narnia.na/mt-static/images/logo-mark.svg;MT:http://narnia.na/mt-static/images/logo-mark.svg;"}, #361
+{ "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;:;MT:http://narnia.na/mt-static/images/logo-mark.svg;MT:http://narnia.na/mt-static/images/logo-mark.svg;:;TypeKey:http://narnia.na/mt-static/images/comment/typepad_logo.png;"}, #362
 { "r" : "1", "t" : "<MTAuthors need_entry='0' ><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;Melody;"}, #363
 { "r" : "1", "t" : "<MTAuthors need_entry='0' status='disabled'><MTAuthorName>;</MTAuthors>", "e" : "Hiro Nakamura;"}, #364
 { "r" : "1", "t" : "<MTAuthors need_entry='0' status='enabled or disabled'><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;Hiro Nakamura;Melody;"}, #365
