@@ -2350,8 +2350,7 @@ sub logout {
 }
 
 sub create_user_pending {
-    my $app     = shift;
-    my $q       = $app->param;
+    my $app = shift;
     my ($param) = @_;
     $param ||= {};
 
@@ -2365,25 +2364,27 @@ sub create_user_pending {
             $app->translate( "Cannot load blog #[_1].", $param->{blog_id} ) );
     }
 
-    my ( $password, $url );
-    unless ( $q->param('external_auth') ) {
-        $password = $q->param('password');
+    my $external_auth = $app->param('external_auth');
+    my $password      = $app->param('password');
+    my $pass_verify   = $app->param('pass_verify');
+    my $url           = $app->param('url');
+
+    unless ($external_auth) {
         unless ($password) {
             return $app->error( $app->translate("User requires password.") );
         }
 
-        if ( $q->param('password') ne $q->param('pass_verify') ) {
+        if ( $password ne $pass_verify ) {
             return $app->error( $app->translate('Passwords do not match.') );
         }
 
-        $url = $q->param('url');
         if ( $url && ( !is_url($url) || ( $url =~ m/[<>]/ ) ) ) {
             return $app->error( $app->translate("URL is invalid.") );
         }
     }
 
-    my $nickname = $q->param('nickname');
-    if ( !$nickname && !( $q->param('external_auth') ) ) {
+    my $nickname = $app->param('nickname');
+    if ( !$nickname && !$external_auth ) {
         return $app->error( $app->translate("User requires display name.") );
     }
     if ( $nickname && $nickname =~ m/([<>])/ ) {
@@ -2396,7 +2397,7 @@ sub create_user_pending {
         );
     }
 
-    my $email = $q->param('email');
+    my $email = $app->param('email');
     if ($email) {
         unless ( is_valid_email($email) ) {
             delete $param->{email};
@@ -2413,14 +2414,14 @@ sub create_user_pending {
             );
         }
     }
-    elsif ( !( $q->param('external_auth') ) ) {
+    elsif ( !$external_auth ) {
         delete $param->{email};
         return $app->error(
             $app->translate("Email Address is required for password reset.")
         );
     }
 
-    my $name = $q->param('username');
+    my $name = $app->param('username');
     if ( defined $name ) {
         $name =~ s/(^\s+|\s+$)//g;
         $param->{name} = $name;
@@ -2471,8 +2472,8 @@ sub create_user_pending {
     $user->name($name);
     $user->nickname($nickname);
     $user->email($email);
-    unless ( $q->param('external_auth') ) {
-        $user->set_password( $q->param('password') );
+    unless ($external_auth) {
+        $user->set_password($password);
         $user->url($url) if $url;
     }
     else {
