@@ -110,7 +110,8 @@ sub edit {
             );
         }
 
-        $param->{title} = $content_data->title;
+        $param->{title}      = $content_data->title;
+        $param->{identifier} = $content_data->identifier;
 
         my $status = $app->param('status') || $content_data->status;
         $status =~ s/\D//g;
@@ -292,6 +293,8 @@ sub edit {
 
     $app->setup_editor_param($param);
 
+    $param->{basename_limit} = ( $blog ? $blog->basename_limit : 0 ) || 30;
+
     $app->build_page( $app->load_tmpl('edit_content_data.tmpl'), $param );
 }
 
@@ -373,6 +376,7 @@ sub save {
     $content_data->data($data);
 
     $content_data->title( scalar $app->param('title') );
+    $content_data->identifier( scalar $app->param('identifier') );
 
     if ( $app->param('scheduled') ) {
         $content_data->status( MT::Entry::FUTURE() );
