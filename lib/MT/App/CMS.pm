@@ -4398,11 +4398,10 @@ sub add_to_favorite_websites {
 sub _entry_prefs_from_params {
     my $app      = shift;
     my ($prefix) = @_;
-    my $q        = $app->param;
-    my $disp     = $q->param('entry_prefs') || '';
+    my $disp     = $app->param('entry_prefs') || '';
     my @fields;
     if ( lc $disp eq 'custom' ) {
-        @fields = split /,/, $q->param( $prefix . 'custom_prefs' ) || '';
+        @fields = split /,/, $app->param( $prefix . 'custom_prefs' ) || '';
     }
     elsif ($disp) {
         push @fields, $disp;
@@ -4411,11 +4410,11 @@ sub _entry_prefs_from_params {
         @fields = $app->multi_param( $prefix . 'custom_prefs' );
     }
 
-    if ( my $body_height = $q->param('text_height') ) {
+    if ( my $body_height = $app->param('text_height') ) {
         push @fields, 'body:' . $body_height;
     }
     return
-        join( ',', @fields ) . '|' . ( $q->param('bar_position') || 'top' );
+        join( ',', @fields ) . '|' . ( $app->param('bar_position') || 'top' );
 }
 
 # rebuild_set is a hash whose keys are entry IDs
