@@ -8954,12 +8954,12 @@ a:hover .mt-icon--secondary {
   position: relative;
 }
 
-.mt-user .mt-icon--sm {
+.mt-user .mt-icon--sm, .mt-user .mt-icon--img {
   display: block;
   margin: 2px auto;
 }
 
-.mt-user__badge, .mt-user__badge--primary, .mt-user__badge--success, .mt-user__badge--danger {
+.mt-user__badge, .mt-user__badge--img, .mt-user__badge--primary, .mt-user__badge--success, .mt-user__badge--danger {
   height: 22px;
   width: 22px;
   bottom: 0;
@@ -8968,6 +8968,10 @@ a:hover .mt-icon--secondary {
   border: 2px solid #FFFFFF;
   border-radius: 10px;
   background: #868e96;
+}
+
+.mt-user__badge--img {
+  background: #FFFFFF;
 }
 
 .mt-user__badge--primary {
