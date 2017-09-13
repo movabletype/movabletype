@@ -125,8 +125,10 @@ sub edit {
         my $label = $content_field_types->{$_}{label};
         $label = $label->()
             if ref $label eq 'CODE';
+        my $type = $_;
+        $type =~ s/_/-/g;
         my $hash = {};
-        $hash->{type}    = $_;
+        $hash->{type}    = $type;
         $hash->{label}   = $label;
         $hash->{order}   = $content_field_types->{$_}{order};
         $hash;
