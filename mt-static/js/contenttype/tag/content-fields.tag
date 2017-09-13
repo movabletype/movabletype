@@ -27,7 +27,8 @@
       var field = {
         'type': this.currentType,
         'label' : this.currentType,
-        'id' : newId
+        'id' : newId,
+        'isShow': 'show'
       };
       this.fields.push(field);
       e.preventDefault()
