@@ -692,7 +692,7 @@ sub _bulk_author_name_html {
                     <img src="$userpic_url" class="rounded-circle" width="48" height="48" />
                     <img alt="$auth_label" src="$auth_img" width="16" height="16" class="icon auth-type" style="position: absolute; top: 32px; left: 32px;" />
                 </div>
-                <div class="col pl-2">
+                <div class="col pl-4">
                      <span class="icon status $status_label">
                          <svg title="$translated_status_label" role="img" class="mt-icon mt-icon--sm">
                              <use xlink:href="${static_uri}images/sprite.svg#ic_user">
