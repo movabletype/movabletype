@@ -271,91 +271,78 @@
    id="content-type-info"
    hidden="1"
    label="<__trans phrase="Content Type">">
-  <mtapp:settinggroup id="content-type-info-inner">
 
-    <mtapp:setting
-       id="ct_unique_id"
-       class="ct_unique_id"
-       label="<__trans phrase="Unique ID">"
-       label_for="ct_unique_id">
-      <div class="form-row">
-        <div class="col">
-          <input type="text" id="ct_unique_id" class="form-control id text full" readonly="readonly">
+    <dl id="ct_unique_id-field" class="first-child">
+      <dt class="first-child"><__trans phrase="Unique ID"></dt>
+      <dd>
+        <div class="form-row">
+          <div class="col">
+            <input type="text" id="ct_unique_id" class="form-control id text full" readonly="readonly">
+          </div>
+          <div class="col-auto">
+            <button
+               type="button"
+               title="<__trans phrase="Copy">"
+               class="btn btn-default"
+               id="copy_ct_unique_id">
+              <__trans phrase="Copy"></button>
+          </div>
         </div>
-        <div class="col-auto">
-          <button
-             type="button"
-             title="<__trans phrase="Copy">"
-             class="btn btn-default"
-             id="copy_ct_unique_id">
-            <__trans phrase="Copy"></button>
-        </div>
-      </div>
-    </mtapp:setting>
+      </dd>
+    </dl>
 
-  </mtapp:settinggroup>
 </mtapp:widget>
 
 <mtapp:widget
    id="content-field-info"
    hidden="1"
    label="<__trans phrase="Content field">">
-  <mtapp:settinggroup id="content-type-info-inner">
 
-    <div id="content_field_sel-field" class="field field-content form-group field-left-label content_field_sel first-child">
-        <label for="content_field_sel" class="sr-only first-child"><__trans phrase="Select Content Field"></label>
+    <dl id="content_field_sel-field" class="first-child">
+      <dt for="content_field_sel" class="sr-only first-child"><__trans phrase="Select Content Field"></label>
+      <dd>
       <select name="content_field_sel" id="content_field_sel" tabindex="13" class="form-control">
       </select>
-    </div>
+      </dd>
+    </dl>
 
-    <mtapp:setting
-       id="cf_label"
-       class="cf_label"
-       label="<__trans phrase="Label">"
-       label_for="cf_label">
-      <div id=cf_label>
-      </div>
-    </mtapp:setting>
+    <dl id="cf_label-field">
+      <dt for="cf_label" class="first-child"><__trans phrase="Label"></label>
+      <dd id="cf_label">
+      </dd>
+    </dl>
 
-    <mtapp:setting
-       id="cf_id"
-       class="cf_id"
-       label="<__trans phrase="ID">"
-       label_for="cf_id">
-      <div id=cf_id>
-      </div>
-    </mtapp:setting>
+    <dl id="cf_id-field">
+      <dt for="cf_id" class="first-child"><__trans phrase="ID"></label>
+      <dd id="cf_id">
+      </dd>
+    </dl>
 
-    <mtapp:setting
-       id="cf_unique_id"
-       class="cf_unique_id"
-       label="<__trans phrase="Unique ID">"
-       label_for="cf_unique_id">
-      <div class="form-row">
-        <div class="col">
-          <input type="text" id="cf_unique_id" class="form-control id text full" readonly="readonly">
+    <dl id="cf_unique_id-field">
+      <dt class="first-child"><__trans phrase="Unique ID"></label>
+      <dd>
+        <div class="form-row">
+          <div class="col">
+            <input type="text" id="cf_unique_id" class="form-control id text full" readonly="readonly">
+          </div>
+          <div class="col-auto">
+            <button
+               type="button"
+               title="<__trans phrase="Copy">"
+               class="btn btn-default"
+               id="copy_cf_unique_id">
+              <__trans phrase="Copy"></button>
+          </div>
         </div>
-        <div class="col-auto">
-          <button
-             type="button"
-             title="<__trans phrase="Copy">"
-             class="btn btn-default"
-             id="copy_cf_unique_id">
-            <__trans phrase="Copy"></button>
-        </div>
-      </div>
-    </mtapp:setting>
+      </dd>
+    </dl>
 
-    <mtapp:setting
-       id="cf_type"
-       class="cf_type"
-       label="<__trans phrase="Type">"
-       label_for="cf_type">
-      <div id="cf_type">
-      </div>
-    </mtapp:setting>
+    <dl id="cf_type-field" class="last-child">
+      <dt class="first-child"><__trans phrase="Type"></label>
+      <dd id="cf_type">
+      </dd>
+    </dl>
 
-  </mtapp:settinggroup>
 </mtapp:widget>
 <mt:else>
 <mtapp:widget
