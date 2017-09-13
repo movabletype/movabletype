@@ -346,15 +346,16 @@ sub check_cache {
     my $cache
         = $app->{cache_driver}->get_multi( values %{ $app->{cache_keys} } );
 
-    my $count = $cache->{ $app->{cache_keys}{count} }
+    my ( $count, $result );
+    $count = $cache->{ $app->{cache_keys}{count} }
         if exists $cache->{ $app->{cache_keys}{count} };
-    my $result = $cache->{ $app->{cache_keys}{result} }
+    $result = $cache->{ $app->{cache_keys}{result} }
         if exists $cache->{ $app->{cache_keys}{result} };
     if ( exists $cache->{ $app->{cache_keys}{content_type} } ) {
         my $content_type = $cache->{ $app->{cache_keys}{content_type} };
         $app->{response_content_type} = $content_type;
     }
-    if ( !Encode::is_utf8($result) ) {
+    if ( $result and !Encode::is_utf8($result) ) {
         my $enc = MT->config->PublishCharset;
         $result = Encode::decode( $enc, $result );
     }
