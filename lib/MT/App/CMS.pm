@@ -3299,19 +3299,20 @@ sub build_menus {
             }
 
             my $app_param_type = $app->param('_type') || '';
+            my $filter_key     = $app->param('filter_key');
+            my $app_param_id   = $app->param('id');
             if ( $sub->{args} ) {
                 if (   $sub->{mode} eq $mode
-                    && defined( $app->param('_type') )
-                    && ( $sub->{args}->{_type} || '' ) eq $app->param('_type')
+                    && defined($app_param_type)
+                    && ( $sub->{args}->{_type} || '' ) eq $app_param_type
                     && (!defined( $sub->{args}->{filter_key} )
-                        || ( defined( $app->param('filter_key') )
-                            && $sub->{args}->{filter_key} eq
-                            $app->param('filter_key') )
+                        || ( defined($filter_key)
+                            && $sub->{args}->{filter_key} eq $filter_key )
                     )
                     )
                 {
                     $param->{screen_group} = $id;
-                    if ( $app->param('id') ) {
+                    if ($app_param_id) {
                         $sub->{current} = 1
                             if ( $app_param_type eq 'blog' )
                             || ( $app_param_type eq 'website' );
@@ -3324,7 +3325,7 @@ sub build_menus {
             else {
                 if ( $sub->{mode} eq $mode ) {
                     $param->{screen_group} = $id;
-                    if ( $app->param('id') ) {
+                    if ($app_param_id) {
                         $sub->{current} = 1
                             if ( $app_param_type eq 'blog' )
                             || ( $app_param_type eq 'website' );
