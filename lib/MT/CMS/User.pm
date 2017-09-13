@@ -107,8 +107,14 @@ sub edit {
         next if $key !~ m/^system./;
         my $perm;
         ( $perm->{id} = $key ) =~ s/^system\.//;
-        $perm->{id}    = 'can_' . $perm->{id};
-        $perm->{label} = $app->translate( $perms->{$key}->{label}->() );
+        $perm->{id} = 'can_' . $perm->{id};
+
+        my $label
+            = 'CODE' eq ref( $perms->{$key}{label} )
+            ? $perms->{$key}{label}->()
+            : $perms->{$key}{label};
+
+        $perm->{label} = $app->translate($label);
         $perm->{order} = $perms->{$key}->{order};
         $perm->{can_do}
             = $id ? $user_perms{$key} : $param->{ 'perm_' . $perm->{id} };
@@ -266,7 +272,13 @@ sub edit_role {
         next if $key !~ m/^blog./;
         my $perm;
         ( $perm->{id} = $key ) =~ s/^blog\.//;
-        $perm->{label} = $app->translate( $perms->{$key}->{label}->() );
+
+        my $label
+            = 'CODE' eq ref( $perms->{$key}{label} )
+            ? $perms->{$key}{label}->()
+            : $perms->{$key}{label};
+
+        $perm->{label} = $app->translate($label);
         $perm->{order} = $perms->{$key}->{order};
         $perm->{group} = $perms->{$key}->{group};
         $perm->{can_do}
