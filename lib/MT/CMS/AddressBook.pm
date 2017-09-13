@@ -261,9 +261,10 @@ sub save_filter {
     # duplicate check
     my $notification_iter
         = MT::Notification->load_iter( { blog_id => $blog_id } );
+    my $id = $app->param('id') || 0;
     while ( my $obj = $notification_iter->() ) {
         if (   ( lc( $obj->email ) eq $email )
-            && ( $obj->id ne $app->param('id') ) )
+            && ( $obj->id ne $id ) )
         {
             return $eh->error(
                 $app->translate(
