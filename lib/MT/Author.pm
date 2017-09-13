@@ -1528,24 +1528,27 @@ sub userpic {
 sub userpic_thumbnail_options {
     my $author = shift;
 
-    # Specify these to put an author's userpic thumbnail in a consistent
-    # place whenever userpic_url is called as an instance method on a
-    # particular author.
-    my %real_userpic_options = (
-        Path => File::Spec->catdir( MT->config->AssetCacheDir, 'userpics' ),
-        Format => MT->translate( 'userpic-[_1]-%wx%h%x', $author->id ),
-    ) if ref $author;
-
     my $cfg     = MT->config;
     my $max_dim = $cfg->UserpicThumbnailSize;
     my $square  = $cfg->UserpicAllowRect ? 0 : 1;
-    return (
+    my %options = (
         Width  => $max_dim,
         Height => $max_dim,
         Square => $square,
         Type   => 'png',
-        %real_userpic_options,
     );
+
+    # Specify these to put an author's userpic thumbnail in a consistent
+    # place whenever userpic_url is called as an instance method on a
+    # particular author.
+    if ( ref $author ) {
+        $options{Path}
+            = File::Spec->catdir( MT->config->AssetCacheDir, 'userpics' );
+        $options{Format}
+            = MT->translate( 'userpic-[_1]-%wx%h%x', $author->id );
+    }
+
+    return %options;
 }
 
 sub userpic_file {
