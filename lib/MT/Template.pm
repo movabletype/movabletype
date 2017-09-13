@@ -495,7 +495,8 @@ sub save_widgetset {
         @inst = split /,/, ( $obj->modulesets || '' );
     }
 
-    my @widgets = MT::Template->load(
+    my @widgets;
+    @widgets = MT::Template->load(
         {   id      => \@inst,
             type    => 'widget',
             blog_id => $obj->blog_id ? [ 0, $obj->blog_id ] : '0'
