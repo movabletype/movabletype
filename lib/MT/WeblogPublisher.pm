@@ -470,7 +470,8 @@ sub rebuild_deleted_entry {
         my $archiver = $mt->archiver($at);
         next unless $archiver;
 
-        my ( $start, $end ) = $archiver->date_range( $entry->authored_on )
+        my ( $start, $end );
+        ( $start, $end ) = $archiver->date_range( $entry->authored_on )
             if $archiver->date_based() && $archiver->can('date_range');
 
         # Remove archive file if archive file has not entries.
