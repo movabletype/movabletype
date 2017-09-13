@@ -278,7 +278,18 @@
        class="ct_unique_id"
        label="<__trans phrase="Unique ID">"
        label_for="ct_unique_id">
-      <div id="ct_unique_id" class="word-wrap: break-word;">
+      <div class="form-row">
+        <div class="col">
+          <input type="text" id="ct_unique_id" class="form-control id text full" readonly="readonly">
+        </div>
+        <div class="col-auto">
+          <button
+             type="button"
+             title="<__trans phrase="Copy">"
+             class="btn btn-default"
+             id="copy_ct_unique_id">
+            <__trans phrase="Copy"></button>
+        </div>
       </div>
     </mtapp:setting>
 
@@ -291,15 +302,11 @@
    label="<__trans phrase="Content field">">
   <mtapp:settinggroup id="content-type-info-inner">
 
-    <mtapp:setting
-       id="content_field_sel"
-       class="content_field_sel"
-       label="<__trans phrase="Select Content Field">"
-       label_for="content_field_sel"
-       show_label="0">
+    <div id="content_field_sel-field" class="field field-content form-group field-left-label content_field_sel first-child">
+        <label for="content_field_sel" class="sr-only first-child"><__trans phrase="Select Content Field"></label>
       <select name="content_field_sel" id="content_field_sel" tabindex="13" class="form-control">
       </select>
-    </mtapp:setting>
+    </div>
 
     <mtapp:setting
        id="cf_label"
@@ -324,7 +331,18 @@
        class="cf_unique_id"
        label="<__trans phrase="Unique ID">"
        label_for="cf_unique_id">
-      <div id="cf_unique_id" class="word-wrap: break-word;">
+      <div class="form-row">
+        <div class="col">
+          <input type="text" id="cf_unique_id" class="form-control id text full" readonly="readonly">
+        </div>
+        <div class="col-auto">
+          <button
+             type="button"
+             title="<__trans phrase="Copy">"
+             class="btn btn-default"
+             id="copy_cf_unique_id">
+            <__trans phrase="Copy"></button>
+        </div>
       </div>
     </mtapp:setting>
 
@@ -1321,7 +1339,7 @@ function saveTemplatePrefs( sync ) {
         }
       }).done(
         function(data) {
-          jQuery("#ct_unique_id").text(data.result.content_type.unique_id);
+          jQuery("#ct_unique_id").val(data.result.content_type.unique_id);
           jQuery("#content_field_sel").empty();
           jQuery.each(data.result.cf_selects, function( index, value ) {
             jQuery("#content_field_sel").append('<option value="' + value.id + '">' + value.label + '</option>');
@@ -1342,9 +1360,17 @@ function saveTemplatePrefs( sync ) {
       var id = jQuery("#content_field_sel").val();
       jQuery("#cf_label").text(cf_datas[id].label);
       jQuery("#cf_id").text(cf_datas[id].id);
-      jQuery("#cf_unique_id").text(cf_datas[id].unique_id);
+      jQuery("#cf_unique_id").val(cf_datas[id].unique_id);
       jQuery("#cf_type").text(cf_datas[id].type);
     }
+    jQuery("#copy_ct_unique_id").click(function(){
+      jQuery('#ct_unique_id').select();
+      document.execCommand('copy');
+    });
+    jQuery("#copy_cf_unique_id").click(function(){
+      jQuery('#cf_unique_id').select();
+      document.execCommand('copy');
+    });
     getContentTypeInfo();
     <mt:unless name="has_name">
     jQuery("#new_archive_type").change(function(){
