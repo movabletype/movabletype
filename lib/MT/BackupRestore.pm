@@ -1428,7 +1428,7 @@ sub restore_parent_ids {
     my $obj = shift;
     my ( $data, $objects ) = @_;
 
-    my ( $u, $b, $g, $r ) = ( 0, 0, 0, 0 );
+    my ( $author, $blog, $group, $role ) = ( 0, 0, 0, 0 );
 
     my $processor = sub {
         my ($elem)  = @_;
@@ -1444,11 +1444,11 @@ sub restore_parent_ids {
         return 1;
     };
 
-    $u = $processor->('author');
-    $g = $processor->('group')
+    $author = $processor->('author');
+    $group  = $processor->('group')
         if MT->component('Enterprise');
-    $b = $processor->('blog');
-    $r = $processor->('role');
+    $blog = $processor->('blog');
+    $role = $processor->('role');
 
     # Combination allowed are:
     # USER_BLOG_ROLE  => 1;
@@ -1457,9 +1457,11 @@ sub restore_parent_ids {
     # USER_ROLE       => 4;
     # GROUP_ROLE      => 5;
 
-    ( $u && $g )
-        || ( $u && $r )
-        || ( $g && $r ) ? 1 : 0;    # || ($u && $b && $r) || ($g && $b && $r)
+    ( $author && $group )
+        || ( $author && $role )
+        || ( $group  && $role )
+        ? 1
+        : 0;    # || ($author && $blog && $role) || ($group && $blog && $role)
 }
 
 package MT::Category;
