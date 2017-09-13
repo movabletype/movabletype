@@ -1113,7 +1113,8 @@ BEGIN {
                             $_->parent_id
                                 && !$blog_map{ $_->parent_id }
                             } @blogs;
-                        my @sites
+                        my @sites;
+                        @sites
                             = MT->model('website')
                             ->load( { id => [ keys %site_ids ], },
                             { fetchonly => { id => 1, name => 1, }, } )
