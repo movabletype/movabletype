@@ -719,7 +719,8 @@ sub cfg_system_users {
             }
         }
     }
-    my $config_warning = join( ", ", @config_warnings ) if (@config_warnings);
+    my $config_warning;
+    $config_warning = join( ", ", @config_warnings ) if (@config_warnings);
 
     $param{config_warning} = $app->translate(
         "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
