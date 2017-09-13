@@ -8789,13 +8789,12 @@ fieldset.form-group {
 .mt-pluginpanel {
   padding: 1rem 0 1rem 1rem;
   border-bottom: 1px solid #A5A5A5;
-  border-top: 1px solid #A5A5A5;
   background: #F4F4F4;
 }
 
-.mt-archivemapping:last-child,
-.mt-pluginpanel:last-child {
-  border-top: 0;
+.mt-archivemapping:first-of-type,
+.mt-pluginpanel:first-of-type {
+  border-top: 1px solid #A5A5A5;
 }
 
 .mt-archivemapping.mt-archivemapping--priority,
