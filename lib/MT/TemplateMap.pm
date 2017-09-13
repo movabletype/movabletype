@@ -53,7 +53,8 @@ sub save {
     my $blog = MT->model('blog')->load( $map->blog_id )
         or return;
     my $blog_at = $blog->archive_type;
-    my @ats = map {$_}
+    my @ats;
+    @ats = map {$_}
         grep { $map->archive_type ne $_ }
         split /,/, $blog_at
         if $blog_at ne 'None';
