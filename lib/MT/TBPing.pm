@@ -155,16 +155,19 @@ sub list_props {
                 my %tb_map = map { $_->id => $_ } @tbs;
                 my %entries
                     = map { $_->entry_id => 1 } grep { $_->entry_id } @tbs;
-                my @entries
-                    = MT->model('entry')->load( { id => [ keys %entries ] } )
-                    if scalar keys %entries;
+                my @entries;
+                if ( my @entry_ids = keys %entries ) {
+                    @entries
+                        = MT->model('entry')->load( { id => \@entry_ids } );
+                }
                 my %entry_map  = map { $_->id          => $_ } @entries;
                 my %categories = map { $_->category_id => 1 }
                     grep { $_->category_id } @tbs;
-                my @categories
-                    = MT->model('category')
-                    ->load( { id => [ keys %categories ] } )
-                    if scalar keys %categories;
+                my @categories;
+                if ( my @category_ids = keys %categories ) {
+                    @categories = MT->model('category')
+                        ->load( { id => \@category_ids } );
+                }
                 my %category_map = map { $_->id => $_ } @categories;
                 my ( $title_col, $alt_label );
                 require MT::Promise;
