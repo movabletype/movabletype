@@ -785,7 +785,8 @@ sub configure {
         # if check successfully and push continue then goto next step
         $ok = 0;
         my $dbtype = $param{dbtype};
-        my $driver = $drivers->{$dbtype}{config_package}
+        my $driver;
+        $driver = $drivers->{$dbtype}{config_package}
             if exists $drivers->{$dbtype};
         $param{dbserver_null} = 1 unless $param{dbserver};
 
