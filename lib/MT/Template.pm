@@ -464,7 +464,7 @@ sub widgets_to_modulesets {
             blog_id => $blog_id ? [ $blog_id, 0 ] : 0,
             type    => 'widget'
         }
-    ) if $widgets && @$widgets;
+    );
     my @wids;
     foreach my $name (@$widgets) {
         my ($widget) = grep { $_->name eq $name } @wtmpls;
