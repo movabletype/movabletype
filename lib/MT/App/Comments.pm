@@ -436,7 +436,8 @@ sub do_signup {
         }
     );
 
-    my $entry = MT::Entry->load( $param->{entry_id} )
+    my $entry;
+    $entry = MT::Entry->load( $param->{entry_id} )
         if ( $param->{entry_id} );
     if ($entry) {
         my $entry_url = $entry->permalink;
