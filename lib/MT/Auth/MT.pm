@@ -167,8 +167,7 @@ sub validate_credentials {
             if ( $ctx->{session_id} ) {
                 my $sess = $app->model('session')->load( $ctx->{session_id} );
 
-                my $sess_author_id = $sess->get('author_id')
-                    if $sess;
+                my $sess_author_id = $sess ? $sess->get('author_id') : undef;
                 if (   $sess
                     && $sess_author_id
                     && ( $sess_author_id == $author->id ) )
