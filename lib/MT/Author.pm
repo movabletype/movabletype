@@ -688,9 +688,11 @@ sub _bulk_author_name_html {
         my $url   = MT::Util::encode_html( $obj->url );
         my $out   = qq{
             <div class="row">
-                <div class="col-1 pl-0 userpic picture small">
-                    <img src="$userpic_url" class="rounded-circle" width="48" height="48" />
-                    <img alt="$auth_label" src="$auth_img" width="16" height="16" class="icon auth-type" style="position: absolute; top: 32px; left: 32px;" />
+                <div class="col-1 pl-0">
+                    <div class="mt-user">
+                        <img src="$userpic_url" alt="User" class="rounded-circle" width="48" height="48">
+                        <div class="mt-user__badge--img"><img alt="$auth_label" src="$auth_img" width="16" height="16" class="mt-icon--img" /></div>
+                    </div>
                 </div>
                 <div class="col pl-4">
                      <span class="icon status $status_label">
