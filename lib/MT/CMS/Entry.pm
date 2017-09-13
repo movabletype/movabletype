@@ -3266,7 +3266,8 @@ sub cms_pre_load_filtered_list {
     return if $user->is_superuser;
 
     my $terms = $load_options->{terms} || {};
-    my $blog_ids = delete $terms->{blog_id}
+    my $blog_ids;
+    $blog_ids = delete $terms->{blog_id}
         if exists $terms->{blog_id};
     delete $terms->{author_id}
         if exists $terms->{author_id};
