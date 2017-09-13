@@ -3210,8 +3210,7 @@ sub run {
                 }
 
                 if ($code) {
-                    my @forward_params = @{ $app->{forward_params} }
-                        if $app->{forward_params};
+                    my @forward_params = @{ $app->{forward_params} || [] };
                     $app->{forward_params} = undef;
                     local $app->{component} = $local_component
                         if $local_component;
