@@ -650,6 +650,11 @@ sub rebuild_entry {
         for my $at (@at) {
             my $archiver = $mt->archiver($at);
             next unless $archiver;    # invalid archive type
+            next
+                if $archiver->contenttype_based()
+                || $archiver->contenttype_date_based()
+                || $archiver->contenttype_category_based()
+                || $archiver->contenttype_author_based();
             next if $entry->class ne $archiver->entry_class;
             if ( $archiver->category_based ) {
                 for my $cat (@$categories_for_rebuild) {
