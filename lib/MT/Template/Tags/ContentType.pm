@@ -1173,6 +1173,8 @@ sub _hdlr_content_fields {
     my $content_type = $ctx->stash('content_type')
         or return $ctx->_no_content_type_error;
 
+    my $content_field_types = MT->registry('content_field_types');
+
     my @field_data = @{ $content_type->fields };
     my $builder    = $ctx->stash('builder');
     my $tokens     = $ctx->stash('tokens');
@@ -1194,6 +1196,8 @@ sub _hdlr_content_fields {
         local $vars->{content_field_type}      = $f->{type};
         local $vars->{content_field_order}     = $f->{order};
         local $vars->{content_field_options}   = $f->{options};
+        local $vars->{content_field_type_label}
+            = $content_field_types->{ $f->{type} }{label};
 
         my $out = $builder->build( $ctx, $tokens, {%$cond} );
         return $ctx->error( $builder->errstr ) unless defined $out;
