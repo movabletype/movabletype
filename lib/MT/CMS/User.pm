@@ -1074,7 +1074,8 @@ sub dialog_select_author {
     push @blog_ids, $blog->id;
 
     if ( !$app->user->is_superuser ) {
-        my @ids = map { $_->id } @{ $blog->blogs }
+        my @ids;
+        @ids = map { $_->id } @{ $blog->blogs }
             if !$blog->is_blog;
         push @ids, $blog->id;
         my $ok;
