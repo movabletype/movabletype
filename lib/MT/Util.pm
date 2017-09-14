@@ -2464,10 +2464,12 @@ sub get_newsbox_html {
     {
         $refresh_news = 1;
     }
-    my $last_available_news = $news_object->data()
-        if $news_object;
-    $last_available_news = Encode::decode( $enc, $last_available_news )
-        unless Encode::is_utf8($last_available_news);
+    my $last_available_news = '';
+    if ($news_object) {
+        $last_available_news = $news_object->data();
+        $last_available_news = Encode::decode( $enc, $last_available_news )
+            unless Encode::is_utf8($last_available_news);
+    }
     return $last_available_news unless $refresh_news || !$news_object;
     return q() if $cached_only;
 
