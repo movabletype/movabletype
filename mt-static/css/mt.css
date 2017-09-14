@@ -8138,10 +8138,6 @@ li {
   color: #A5A5A5;
 }
 
-.mt-primaryNavigation__item:last-child > a {
-  border-bottom: none;
-}
-
 .mt-globalNavigation__logo button, .mt-globalNavigation__logo a,
 .float-right button,
 .float-right a,
