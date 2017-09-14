@@ -2214,7 +2214,8 @@ sub build_template_table {
     my $i;
     my %blogs;
     while ( my $tmpl = $iter->() ) {
-        my $blog = $blogs{ $tmpl->blog_id }
+        my $blog;
+        $blog = $blogs{ $tmpl->blog_id }
             ||= MT::Blog->load( $tmpl->blog_id )
             if $tmpl->blog_id;
 
