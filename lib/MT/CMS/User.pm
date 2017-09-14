@@ -220,7 +220,8 @@ sub edit_role {
         $param{name}        = $role->name;
         $param{description} = $role->description;
         $param{id}          = $role->id;
-        my $creator = MT::Author->load( $role->created_by )
+        my $creator;
+        $creator = MT::Author->load( $role->created_by )
             if $role->created_by;
         $param{created_by} = $creator ? $creator->name : '';
 
