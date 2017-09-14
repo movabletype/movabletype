@@ -4221,33 +4221,33 @@ sub _hdlr_app_contentfield_option_group {
 <$type>
 
   <mtapp:ContentFieldOption
-     id="single_line_text-label"
+     id="$type-label"
      label="<__trans phrase="Label">"
      required="1">
-    <input type="text" name="single_line_text-label" id="single_line_text-label" class="text med form-control">
+    <input type="text" name="$type-label" id="$type-label" class="text med form-control">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
-     id="single_line_text-description"
+     id="$type-description"
      label="<__trans phrase="Description">"
      show_hint="1"
      hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-    <input type="text" name="single_line_text-description" id="single_line_text-description" class="form-control" aria-describedby="single_line_text-description-field-help">
+    <input type="text" name="$type-description" id="$type-description" class="form-control" aria-describedby="$type-description-field-help">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
-     id="single_line_text-required"
+     id="$type-required"
      label="<__trans phrase="Is this field required?">">
-    <input type="checkbox" class="mt-switch form-control" id="single_line_text-required" /><label for="single_line_text-required"><__trans phrase="Is this field required?"></label>
+    <input type="checkbox" class="mt-switch form-control" id="$type-required" /><label for="$type-required"><__trans phrase="Is this field required?"></label>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
-     id="single_line_text-display"
+     id="$type-display"
      label="<__trans phrase="Display Options">"
      required="1"
      show_hint="1"
      hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-    <select name="single_line_text-display" id="single_line_text-display" aria-describedby="singleLineTextDisplay">
+    <select name="$type-display" id="$type-display">
       <option value="force"><__trans phrase="Force"></option>
       <option value="default" selected="selected"><__trans phrase="Default"></option>
       <option value="optional"><__trans phrase="Optional"></option>
@@ -4362,7 +4362,7 @@ sub _hdlr_app_contentfield_option {
     my $insides = $ctx->slurp( $args, $cond );
 
     return $ctx->build(<<"EOT");
-  <div id="${id}" class="form-group$req_class">
+  <div id="${id}-field" class="form-group$req_class">
     <label$label_for>$label$req</label>
     $insides$hint
   </div>
