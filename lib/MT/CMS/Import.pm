@@ -182,7 +182,8 @@ sub do_import {
         $app->translate( 'Importer type [_1] was not found.', $import_type ) )
         unless $importer;
 
-    my %options
+    my %options;
+    %options
         = map { $_ => scalar $app->param($_); } @{ $importer->{options} }
         if $importer->{options};
     my $import_result = $imp->import_contents(
