@@ -1,0 +1,22 @@
+<mt:app:ContentFieldOptionGroup
+   type="multi_line_text">
+  
+  <mtapp:ContentFieldOption
+     id="multi_line_text-initial_value"
+     label="<__trans phrase="Initial Value">">
+    <textarea name="multi_line_text-initial_value" id="multi_line_text-initial_value" class="form-control" ></textarea>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="multi_line_text-input_format"
+     label="<__trans phrase="Input format">">
+    <select name"multi_line_text-input_format" id="multi_line_text-input_format" class="custom-select form-control">
+      <option value="plain_text"><__trans phrase="Plain Text"></option>
+      <option value="wysiwyg"><__trans phrase="WYSIWYG"></option>
+      <option value="markdown"><__trans phrase="Markdown"></option>
+      <option value="convert_breaks"><__trans phrase="Convert Breaks"></option>
+      <option value="block" selected="selected"><__trans phrase="Block Editor"></option>
+    </select>
+  </mtapp:ContentFieldOption>
+
+</mt:app:ContentFieldOptionGroup>
