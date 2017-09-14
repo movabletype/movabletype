@@ -258,7 +258,7 @@ sub uninstall {
 }
 
 sub _set_default_params_if_all_params_not_set {
-    my ( $app, $q, $blog ) = @_;
+    my ( $app, $blog ) = @_;
 
     my @save_params = qw(
         theme_name    theme_id    theme_author_name theme_author_link
@@ -267,7 +267,7 @@ sub _set_default_params_if_all_params_not_set {
     );
 
     for my $param (@save_params) {
-        return if defined $q->param($param);
+        return if defined $app->param($param);
     }
 
     my $saved_settings    = $blog->theme_export_settings;
@@ -289,10 +289,15 @@ sub _set_default_params_if_all_params_not_set {
             || $param_default{$param}
             || '';
         if ( $param eq 'include' ) {
-            $q->param( 'include', ref $val ? @$val : $val );
+            if ( ref $val ) {
+                $app->multi_param( 'include', @$val );
+            }
+            else {
+                $app->param( 'include', $val );
+            }
         }
         else {
-            $q->param( $param, ref $val ? $val->[0] : $val );
+            $app->param( $param, ref $val ? $val->[0] : $val );
         }
     }
 }
@@ -364,7 +369,6 @@ sub export {
 
     return $app->error(403) if !$app->can_do('do_export_theme');
 
-    my $q    = $app->param;
     my $cfg  = $app->config;
     my $blog = $app->blog;
 
@@ -372,7 +376,7 @@ sub export {
         return $app->error( $app->translate('Site not found'), 404 );
     }
 
-    _set_default_params_if_all_params_not_set( $app, $q, $blog );
+    _set_default_params_if_all_params_not_set( $app, $blog );
 
     my $theme_id      = $app->param('theme_id');
     my $theme_name    = $app->param('theme_name');
@@ -424,7 +428,7 @@ sub export {
         $output_path = File::Spec->catdir( $theme_dir, $theme_id );
 
         if ( $fmgr->exists($output_path) ) {
-            if ( $q->param('overwrite_yes') ) {
+            if ( $app->param('overwrite_yes') ) {
                 use File::Path 'rmtree';
                 rmtree($output_path);
             }
