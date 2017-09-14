@@ -260,6 +260,26 @@
     </div>
   </mtapp:setting>
 
+  <mt:setvar name="basename_label" value="<__trans phrase="Basename">">
+  <mtapp:setting
+     id="basename"
+     label="$basename_label"
+     label_class="top-label">
+    <br/>
+    <span class="basename">
+      <input type="text" name="identifier" id="basename" class="form-control text full" value="<$mt:var name="identifier" escape="html"$>" /><mt:if name="object_type" eq="page"><span class="file-extension"><mt:var name="file_extension" escape="html"></span></mt:if>
+      <input type="hidden" name="basename_manual" id="basename_manual" value="0" />
+    </span>
+    <p class="text-warning alert-warning-inline" id="basename-warning" style="display: none">
+      <img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
+    <mt:if name="new_object">
+      <__trans phrase="Warning: If you set the basename manually, it may conflict with another content data.">
+    <mt:else>
+      <__trans phrase="Warning: Changing this content data's basename may break inbound links.">
+    </mt:if>
+    </p>
+  </mtapp:setting>
+
 <mt:if name="object_type" eq="page">
   <mt:var name="category_setting">
 </mt:if>
@@ -336,6 +356,24 @@
   <link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/fonts/a-table-icon.css">
   <link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/css/a-table.css">
   <script src="<mt:var name="static_uri">a-table.js/build/a-table.js"></script>
+
+  <script>
+  function toggleFile() {
+      var fld = getByID("basename");
+      if (fld) {
+          fld.disabled = false;
+          fld.focus();
+          var baseman = getByID("basename_manual");
+          if (baseman) baseman.value = "1";
+          var basewarn = getByID("basename-warning");
+          if (basewarn) basewarn.style.display = "block";
+      }
+      var img = getByID("basename-lock");
+      if (img)
+          img.style.display = 'none';
+      return false;
+  }
+  </script>
 </mt:setvarblock>
 
 <mt:if name="has_multi_line_text_field">
@@ -577,118 +615,121 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 <mt:setvarblock name="page_content">
 <mtapp:settinggroup id="content_data">
 
-  <div>
-    <__trans phrase="Title"> *
-  </div>
-  <div>
-    <input type="text" name="title" class="form-control text content-field html5-form" required maxlength="255" mt:watch-change="1" value="<mt:var name="title">">
-  </div>
+  <mtapp:setting
+    id="title"
+    label="<__trans phrase="Title">"
+    required="1"
+  >
+    <input type="text" id="title" name="title" class="form-control text content-field html5-form" required maxlength="255" mt:watch-change="1" value="<mt:var name="title">">
+  </mtapp:setting>
 
   <mt:loop name="fields">
   <mt:if name="can_edit">
-  <div>
-    <mt:var name="options{label}"><mt:if name=options{required}> *</mt:if>
-
-    <mt:if name="options{min_length}">
-      <mt:if name="options{max_length}">
-    (min_length:<mt:var name="options{min_length}" escape="html">, max_length:<mt:var name="options{max_length}" escape="html">)
-      <mt:else>
-    (min_length:<mt:var name="options{min_length}" escape="html">)
-      </mt:if>
-    <mt:elseif name="options{max_length}">
-    (max_length:<mt:var name="options{max_length}" escape="html">)
-    </mt:if>
-
-    <mt:if name="options{min_value}" ne="">
-      <mt:if name="options{max_value}" ne="">
-        <mt:if name="options{decimal_places}">
-    (min_value:<mt:var name="options{min_value}" escape="html">, max_value:<mt:var name="options{max_value}" escape="html">, decimal_places:<mt:var name="options{decimal_places}" escape="html">)
+  <div class="form-group">
+    <label>
+      <mt:var name="options{label}"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></mt:if>
+  
+      <mt:if name="options{min_length}">
+        <mt:if name="options{max_length}">
+      (min_length:<mt:var name="options{min_length}" escape="html">, max_length:<mt:var name="options{max_length}" escape="html">)
         <mt:else>
-    (min_value:<mt:var name="options{min_value}" escape="html">, max_value:<mt:var name="options{max_value}" escape="html">)
+      (min_length:<mt:var name="options{min_length}" escape="html">)
+        </mt:if>
+      <mt:elseif name="options{max_length}">
+      (max_length:<mt:var name="options{max_length}" escape="html">)
+      </mt:if>
+  
+      <mt:if name="options{min_value}" ne="">
+        <mt:if name="options{max_value}" ne="">
+          <mt:if name="options{decimal_places}">
+      (min_value:<mt:var name="options{min_value}" escape="html">, max_value:<mt:var name="options{max_value}" escape="html">, decimal_places:<mt:var name="options{decimal_places}" escape="html">)
+          <mt:else>
+      (min_value:<mt:var name="options{min_value}" escape="html">, max_value:<mt:var name="options{max_value}" escape="html">)
+          </mt:if>
+        <mt:elseif name="options{decimal_places}">
+      (min_value:<mt:var name="options{min_value}" escape="html">, decimal_places:<mt:var name="options{decimal_places}" escape="html">)
+        <mt:else>
+      (min_value:<mt:var name="options{min_value}" escape="html">)
+        </mt:if>
+      <mt:elseif name="options{max_value}" ne="">
+        <mt:if name="options{decimal_places">
+      (max_value:<mt:var name="options{max_value}" escape="html">, decimal_places:<mt:var name="options{decimal_places}" escape="html">)
+        <mt:else>
+      (max_value:<mt:var name="options{max_value}" escape="html">)
         </mt:if>
       <mt:elseif name="options{decimal_places}">
-    (min_value:<mt:var name="options{min_value}" escape="html">, decimal_places:<mt:var name="options{decimal_places}" escape="html">)
-      <mt:else>
-    (min_value:<mt:var name="options{min_value}" escape="html">)
+      (decimal_places:<mt:var name="options{decimal_places}" escape="html">)
       </mt:if>
-    <mt:elseif name="options{max_value}" ne="">
-      <mt:if name="options{decimal_places">
-    (max_value:<mt:var name="options{max_value}" escape="html">, decimal_places:<mt:var name="options{decimal_places}" escape="html">)
-      <mt:else>
-    (max_value:<mt:var name="options{max_value}" escape="html">)
-      </mt:if>
-    <mt:elseif name="options{decimal_places}">
-    (decimal_places:<mt:var name="options{decimal_places}" escape="html">)
-    </mt:if>
-
-    <mt:if name="type" like="^select_box|checkboxes|category|asset|audio|video|image|content_type$">
-      <mt:if name="options{multiple}">
-        <mt:if name="options{min}">
-          <mt:if name="options{max}">
-    (min_select:<mt:var name="options{min}" escape="html">, max_select:<mt:var name="options{max}" escape="html">)
-          <mt:else>
-    (min_select:<mt:var name="options{min}" escape="html">)
+  
+      <mt:if name="type" like="^select_box|checkboxes|category|asset|audio|video|image|content_type$">
+        <mt:if name="options{multiple}">
+          <mt:if name="options{min}">
+            <mt:if name="options{max}">
+      (min_select:<mt:var name="options{min}" escape="html">, max_select:<mt:var name="options{max}" escape="html">)
+            <mt:else>
+      (min_select:<mt:var name="options{min}" escape="html">)
+            </mt:if>
+          <mt:elseif name="options{max}">
+      (max_select:<mt:var name="options{max}" escape="html">)
           </mt:if>
-        <mt:elseif name="options{max}">
-    (max_select:<mt:var name="options{max}" escape="html">)
         </mt:if>
       </mt:if>
-    </mt:if>
-
-    <mt:if name="type" eq="tags">
-      <mt:if name="options{multiple}">
-        <mt:if name="options{min}">
-          <mt:if name="options{max}">
-    (min_tag_count:<mt:var name="options{min}" escape="html">, max_tag_count:<mt:var name="options{max}" escape="html">)
-          <mt:else>
-    (min_tag_count:<mt:var name="options{min}" escape="html">)
+  
+      <mt:if name="type" eq="tags">
+        <mt:if name="options{multiple}">
+          <mt:if name="options{min}">
+            <mt:if name="options{max}">
+      (min_tag_count:<mt:var name="options{min}" escape="html">, max_tag_count:<mt:var name="options{max}" escape="html">)
+            <mt:else>
+      (min_tag_count:<mt:var name="options{min}" escape="html">)
+            </mt:if>
+          <mt:elseif name="options{max}">
+      (max_tag_count:<mt:var name="options{max}" escape="html">)
           </mt:if>
-        <mt:elseif name="options{max}">
-    (max_tag_count:<mt:var name="options{max}" escape="html">)
+        <mt:else>
+      (single tag)
         </mt:if>
-      <mt:else>
-    (single tag)
       </mt:if>
-    </mt:if>
-  </div>
-  <div>
-    <mt:if name="field_html">
-      <mt:var name="field_html" mteval="1">
-    <mt:elseif name="data_type" eq="varchar">
-      <input type="text" name="content-field-<mt:var name="content_field_id">" class="form-control text long html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>/>
-    <mt:elseif name="data_type" eq="blob">
-      <mt:if name="type" eq="multi_line_text">
-        <div class="field-convert_breaks">
-          <__trans phrase="Format:">
-          <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="convert_breaks" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>">
-          <mt:loop name="text_filters">
-            <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
-          </mt:loop>
-          </select>
-          <$mt:setvar name="show_formatting_help" value="1"$>
-        <mt:if name="convert_breaks" eq="richtext">
-          <$mt:setvar name="show_formatting_help" value="0"$>
-        </mt:if>
-        <mt:if name="convert_breaks" eq="0">
-          <$mt:setvar name="show_formatting_help" value="0"$>
-        </mt:if>
-        <mt:if name="convert_breaks" eq="__default__">
-          <$mt:setvar name="show_formatting_help" value="0"$>
-        </mt:if>
-          <a href="#" onclick="openTFDocs(); return false" id="formatting-help-link" class="help-link<mt:unless name="show_formatting_help"> disabled</mt:unless>">?</a>
-        </div>
-        <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
-          <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="text high html5-form content-field editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
-        </div>
-      <mt:else>
-        <textarea name="content-field-<mt:var name="content_field_id">" class="form-control text high html5-form content-field" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
+    </label>
+
+  <mt:if name="field_html">
+    <mt:var name="field_html" mteval="1">
+  <mt:elseif name="data_type" eq="varchar">
+    <input type="text" name="content-field-<mt:var name="content_field_id">" class="form-control text long html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>/>
+  <mt:elseif name="data_type" eq="blob">
+    <mt:if name="type" eq="multi_line_text">
+      <div class="field-convert_breaks">
+        <__trans phrase="Format:">
+        <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="convert_breaks" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>">
+        <mt:loop name="text_filters">
+          <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+        </mt:loop>
+        </select>
+        <$mt:setvar name="show_formatting_help" value="1"$>
+      <mt:if name="convert_breaks" eq="richtext">
+        <$mt:setvar name="show_formatting_help" value="0"$>
       </mt:if>
-    <mt:elseif name="data_type" eq="integer">
-      <input type="number" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
-    <mt:elseif name="data_type" eq="float">
-      <input type="number" step="any" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
+      <mt:if name="convert_breaks" eq="0">
+        <$mt:setvar name="show_formatting_help" value="0"$>
+      </mt:if>
+      <mt:if name="convert_breaks" eq="__default__">
+        <$mt:setvar name="show_formatting_help" value="0"$>
+      </mt:if>
+        <a href="#" onclick="openTFDocs(); return false" id="formatting-help-link" class="help-link<mt:unless name="show_formatting_help"> disabled</mt:unless>">?</a>
+      </div>
+      <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
+        <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="text high html5-form content-field editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
+      </div>
+    <mt:else>
+      <textarea name="content-field-<mt:var name="content_field_id">" class="form-control text high html5-form content-field" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
     </mt:if>
-      <div class="hint text-secondary"><mt:var name="options{description}" escape="html"></div>
+  <mt:elseif name="data_type" eq="integer">
+    <input type="number" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
+  <mt:elseif name="data_type" eq="float">
+    <input type="number" step="any" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
+  </mt:if>
+
+    <small class="form-text text-muted"><mt:var name="options{description}" escape="html"></small>
   </div>
   </mt:if>
   </mt:loop>
@@ -808,6 +849,11 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   jQuery('div.mt-edit-inputblock').mtEditInputBlock({
     edit: '<__trans phrase="Edit">',
     text: '<$mt:if name="unpublished_on_date"><$mt:var name="unpublished_on_date" escape="html"$> <__trans phrase="@"> <$mt:var name="unpublished_on_time" escape="html"$><mt:else><__trans phrase="Not specified"></mt:if>'
+  });
+  jQuery('input#title').mtRebasename({
+      edit: '<__trans phrase="Edit">',
+      limit: '<$mt:var name="basename_limit" escape="js"$>',
+      basename: '<$mt:var name="identifier" escape="js"$>'
   });
 
   jQuery('select#status').change(function() {

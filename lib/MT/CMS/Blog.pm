@@ -1008,38 +1008,7 @@ sub rebuild_pages {
 
             # determine total
             if ( my $archiver = $app->publisher->archiver($type_name) ) {
-                if ( $archiver->entry_based || $archiver->date_based ) {
-                    my $entry_class = $archiver->entry_class || 'entry';
-                    require MT::Entry;
-                    my $terms = {
-                        class   => $entry_class,
-                        status  => MT::Entry::RELEASE(),
-                        blog_id => $blog_id,
-                    };
-                    $total = MT::Entry->count($terms);
-                }
-                elsif ( $archiver->category_based ) {
-                    require MT::Category;
-                    my $terms = { blog_id => $blog_id, };
-                    $total = MT::Category->count($terms);
-                }
-                elsif ( $archiver->author_based ) {
-                    require MT::Author;
-                    require MT::Entry;
-                    my $terms = {
-                        blog_id => $blog_id,
-                        status  => MT::Entry::RELEASE(),
-                        class   => 'entry',
-                    };
-                    $total = MT::Author->count(
-                        { status => MT::Author::ACTIVE() },
-                        {   join => MT::Entry->join_on(
-                                'author_id', $terms, { unique => 1 }
-                            ),
-                            unique => 1,
-                        }
-                    );
-                }
+                $total = _determine_total( $archiver, $blog_id );
             }
         }
 
@@ -1194,41 +1163,7 @@ sub start_rebuild_pages {
     my $template_id  = $q->param('template_id');
 
     if ($archiver) {
-        if ( $archiver->entry_based || $archiver->date_based ) {
-            my $entry_class = $archiver->entry_class || 'entry';
-            require MT::Entry;
-            my $terms = {
-                class   => $entry_class,
-                status  => MT::Entry::RELEASE(),
-                blog_id => $blog_id,
-            };
-            $total = MT::Entry->count($terms);
-        }
-        elsif ( $archiver->category_based ) {
-            require MT::Category;
-            my $terms = {
-                blog_id => $blog_id,
-                class   => $archiver->category_class,
-            };
-            $total = MT::Category->count($terms);
-        }
-        elsif ( $archiver->author_based ) {
-            require MT::Author;
-            require MT::Entry;
-            my $terms = {
-                blog_id => $blog_id,
-                status  => MT::Entry::RELEASE(),
-                class   => 'entry',
-            };
-            $total = MT::Author->count(
-                { status => MT::Author::ACTIVE() },
-                {   join => MT::Entry->join_on(
-                        'author_id', $terms, { unique => 1 }
-                    ),
-                    unique => 1,
-                }
-            );
-        }
+        $total = _determine_total( $archiver, $blog_id );
     }
 
     my %param = (
@@ -1933,11 +1868,7 @@ sub post_save {
     my $perms = $app->permissions;
     return 1
         unless $app->user->is_superuser
-        || (
-          $obj->is_blog
-        ? $app->user->can_create_blog
-        : $app->user->can_create_website
-        )
+        || $app->user->can_create_blog
         || ( $perms && $perms->can_edit_config );
 
     # check to see what changed and add a flag to meta_messages
@@ -2015,15 +1946,15 @@ sub post_save {
         my $role_class  = $app->model('role');
         my $role;
         if ( $obj->is_blog ) {
-            my @roles = $role_class->load_by_permission("administer_blog");
+            my @roles = $role_class->load_by_permission("administer_site");
             foreach my $r (@roles) {
-                next if $r->permissions =~ m/\'administer_website\'/;
+                next if $r->permissions =~ m/\'administer_site\'/;
                 $role = $r;
                 last;
             }
         }
         else {
-            my @roles = $role_class->load_by_permission("administer_website");
+            my @roles = $role_class->load_by_permission("administer_site");
             foreach my $r (@roles) {
                 $role = $r;
                 last;
@@ -2136,7 +2067,7 @@ sub save_filter {
     my $screen = $app->param('cfg_screen') || '';
     return $eh->error( MT->translate("You did not specify a blog name.") )
         if ( !( $screen && $app->can_do('edit_blog_config') )
-        && ( defined $app->param('name') && ( $app->param('name') eq '' ) ) );
+        && ( defined $name && $name eq '' ) );
 
 #TBD
 #    return $eh->error( MT->translate("Site URL must be an absolute URL.") )
@@ -2157,11 +2088,12 @@ sub save_filter {
             qw( max_revisions_entry max_revisions_cd max_revisions_template )
             )
         {
+            my $value = $app->param($param_name) || 0;
             return $eh->error(
                 MT->translate(
                     "The number of revisions to store must be a positive integer."
                 )
-            ) unless 0 < sprintf( '%d', $app->param($param_name) );
+            ) unless 0 < sprintf( '%d', $param_name );
         }
         return $eh->error(
             MT->translate("Please choose a preferred archive type.") )
@@ -2256,7 +2188,7 @@ sub make_blog_list {
         $row->{can_set_publish_paths} = $perms->can_do('set_publish_paths');
         $row->{can_manage_feedback}   = $perms->can_do('manage_feedback');
         $row->{can_edit_assets}       = $perms->can_do('edit_assets');
-        $row->{can_administer_blog}   = $perms->can_do('administer_blog');
+        $row->{can_administer_site}   = $perms->can_do('administer_site');
         $row->{can_list_blogs} = $perms->can_do('open_blog_listing_screen');
         $row->{checked} = grep { $_ == $blog->id } @ids;
         push @$data, $row;
@@ -2356,7 +2288,7 @@ sub build_blog_table {
                 $row->{can_edit_templates}    = 1;
                 $row->{can_edit_config}       = 1;
                 $row->{can_set_publish_paths} = 1;
-                $row->{can_administer_blog}   = 1;
+                $row->{can_administer_site}   = 1;
             }
             else {
                 my $perms = $author->permissions($blog_id);
@@ -2367,8 +2299,8 @@ sub build_blog_table {
                 $row->{can_edit_config}    = $perms->can_do('edit_config');
                 $row->{can_set_publish_paths}
                     = $perms->can_do('set_publish_paths');
-                $row->{can_administer_blog}
-                    = $perms->can_do('administer_blog');
+                $row->{can_administer_site}
+                    = $perms->can_do('administer_site');
             }
         }
         $row->{object} = $blog;
@@ -3692,6 +3624,99 @@ sub save_data_api_settings {
     $cfg->save_config;
 
     return 1;
+}
+
+sub _determine_total {
+    my ( $archiver, $blog_id ) = @_;
+
+    my $total = 0;
+    if ( ( $archiver->entry_based || $archiver->date_based )
+        && !$archiver->category_based )
+    {
+        if (   $archiver->contenttype_based
+            || $archiver->contenttype_date_based )
+        {
+            require MT::ContentData;
+            my $terms = {
+                status  => MT::Entry::RELEASE(),
+                blog_id => $blog_id,
+            };
+            $total = MT::ContentData->count($terms);
+        }
+        else {
+            my $entry_class = $archiver->entry_class || 'entry';
+            require MT::Entry;
+            my $terms = {
+                class   => $entry_class,
+                status  => MT::Entry::RELEASE(),
+                blog_id => $blog_id,
+            };
+            $total = MT::Entry->count($terms);
+        }
+    }
+    elsif ( $archiver->category_based ) {
+        if ( $archiver->contenttype_category_based ) {
+            require MT::Category;
+            require MT::CategorySet;
+            my @cat_set = MT::CategorySet->load( { blog_id => $blog_id } );
+            $total
+                = MT::Category->count(
+                { category_set_id => [ map { $_->id } @cat_set ] } );
+        }
+        else {
+            require MT::Category;
+            my $terms = {
+                blog_id => $blog_id,
+                class   => $archiver->category_class,
+            };
+            $total = MT::Category->count($terms);
+        }
+    }
+    elsif ( $archiver->author_based ) {
+        require MT::Author;
+        require MT::Entry;
+        my $terms = {
+            blog_id => $blog_id,
+            status  => MT::Entry::RELEASE(),
+            class   => 'entry',
+        };
+        $total = MT::Author->count(
+            { status => MT::Author::ACTIVE() },
+            {   join => MT::Entry->join_on(
+                    'author_id', $terms, { unique => 1 }
+                ),
+                unique => 1,
+            }
+        );
+    }
+    elsif ($archiver->contenttype_based
+        || $archiver->contenttype_date_based )
+    {
+        require MT::ContentData;
+        my $terms = {
+            status  => MT::Entry::RELEASE(),
+            blog_id => $blog_id,
+        };
+        $total = MT::ContentData->count($terms);
+    }
+    elsif ( $archiver->contenttype_author_based ) {
+        require MT::Author;
+        require MT::ContentData;
+        my $terms = {
+            blog_id => $blog_id,
+            status  => MT::Entry::RELEASE(),
+        };
+        $total = MT::Author->count(
+            { status => MT::Author::ACTIVE() },
+            {   join => MT::ContentData->join_on(
+                    'author_id', $terms, { unique => 1 }
+                ),
+                unique => 1,
+            }
+        );
+    }
+
+    return $total;
 }
 
 1;

@@ -477,10 +477,27 @@ sub edit {
             || $obj_type eq 'page'
             || $obj_type eq 'author'
             || $obj_type eq 'category'
-            || $obj_type eq 'archive' )
+            || $obj_type eq 'archive'
+            || $obj_type eq 'ct'
+            || $obj_type eq 'ct_archive' )
         {
-            my @at = $app->publisher->archive_types;
+            my @at            = $app->publisher->archive_types;
+            my $has_cat_field = MT::ContentField->count(
+                {   content_type_id => $obj->content_type_id,
+                    type            => 'categories',
+                }
+            );
+            if ( $obj_type eq 'ct' || $obj_type eq 'ct_archive' ) {
+                @at = grep { $_ =~ /^ContentType/ } @at;
+                @at = grep { $_ !~ /^ContentType_Category/ } @at
+                    unless $has_cat_field;
+            }
+            else {
+                @at = grep { $_ !~ /^ContentType/ } @at;
+            }
             my @archive_types;
+            my %default_archive_templates;
+            my %required_fields;
             for my $at (@at) {
                 my $archiver      = $app->publisher->archiver($at);
                 my $archive_label = $archiver->archive_label;
@@ -507,6 +524,16 @@ sub edit {
                     next unless $archiver->entry_based;
                     next if $archiver->entry_class eq 'page';
                 }
+                elsif ( $obj_type eq 'ct_archive' ) {
+
+                 # only include if it is NOT an contenttype-based archive type
+                    next if $archiver->contenttype_based;
+                }
+                elsif ( $obj_type eq 'ct' ) {
+
+                    # only include if it is a contenttype-based archive type
+                    next unless $archiver->contenttype_based;
+                }
                 push @archive_types,
                     {
                     archive_type_translated => $archive_label,
@@ -515,13 +542,40 @@ sub edit {
                 @archive_types
                     = sort { MT::App::CMS::archive_type_sorter( $a, $b ) }
                     @archive_types;
+
+                # Default Archive Templates
+                my $index = $app->config('IndexBasename');
+                my $ext = $blog->file_extension || '';
+                $ext = '.' . $ext if $ext ne '';
+                my $tmpls     = $archiver->default_archive_templates;
+                my $tmpl_loop = [];
+                foreach (@$tmpls) {
+                    next
+                        if !$has_cat_field && $_->{required_fields}{category};
+                    my $name = $_->{label};
+                    $name =~ s/\.html$/$ext/;
+                    $name =~ s/index$ext$/$index$ext/;
+                    push @$tmpl_loop,
+                        {
+                        name    => $name,
+                        value   => $_->{template},
+                        default => ( $_->{default} || 0 ),
+                        };
+                    $required_fields{ $_->{template} }
+                        = $_->{required_fields};
+                }
+                $default_archive_templates{$at} = $tmpl_loop;
             }
             $param->{archive_types} = \@archive_types;
+            $param->{default_archive_templates}
+                = MT::Util::to_json( \%default_archive_templates );
+            $param->{required_fields}
+                = MT::Util::to_json( \%required_fields );
 
             # Populate template maps for this template
             my $maps = _populate_archive_loop( $app, $blog, $obj );
             if (@$maps) {
-                $param->{object_loop} = $param->{template_map_loop} = $maps
+                $param->{template_map_loop} = $maps
                     if @$maps;
                 my %at;
                 foreach my $map (@$maps) {
@@ -537,6 +591,33 @@ sub edit {
             else {
                 $param->{can_rebuild} = 0;
             }
+
+            # Content Fields
+            my $app       = shift;
+            my $q         = $app->param;
+            my $blog_id   = $q->param('blog_id');
+            my $at        = $q->param('archive_type');
+            my $ct_id     = $q->param('content_type_id');
+            my $cat_field = $q->param('cat_field');
+            my $dt_field  = $q->param('dt_field');
+
+            my $ct = MT::ContentType->load( $obj->content_type_id );
+            my $fields = $ct ? $ct->fields : [];
+
+            my $content_fields = {
+                categories => [
+                    map { { id => $_->{id}, label => $_->{options}{label} } }
+                    grep { $_->{type} eq 'categories' } @$fields
+                ],
+                date_and_times => [
+                    map { { id => $_->{id}, label => $_->{options}{label} } }
+                        grep {
+                               $_->{type} eq 'date_and_time'
+                            && $_->{required}
+                        } @$fields
+                ],
+            };
+            $param->{content_fields} = MT::Util::to_json($content_fields);
         }
 
         # publish options
@@ -547,6 +628,14 @@ sub edit {
         #$param->{ 'schedule_period_' . $period } = 1;
         #$param->{schedule_interval} = $interval;
         $param->{type} = 'custom' if $param->{type} eq 'module';
+
+        # Content Type
+        if ( $obj_type eq 'ct' || $obj_type eq 'ct_archive' ) {
+            my $content_type = MT::ContentType->load( $obj->content_type_id );
+            $param->{content_type_name} = $content_type->name
+                if $content_type;
+            $param->{content_type_id} = $content_type->id if $content_type;
+        }
     }
     else {
         my $new_tmpl = $q->param('create_new_template');
@@ -612,6 +701,20 @@ sub edit {
             );
             $param->{new_archive_types} = \@types;
         }
+        elsif ( $template_type eq 'ct' || $template_type eq 'ct_archive' ) {
+            $tab                           = 'ct';
+            $param->{template_group_trans} = $app->translate('Content Type');
+            $param->{type_ct_archive}      = 1;
+            my @types = (
+                {   key   => 'ct_archive',
+                    label => $app->translate('Content Type Archive')
+                },
+                {   key   => 'ct',
+                    label => $app->translate('Content Type')
+                },
+            );
+            $param->{new_archive_types} = \@types;
+        }
         elsif ( $template_type eq 'custom' ) {
             $tab = 'module';
             $param->{template_group_trans} = $app->translate('module');
@@ -636,7 +739,9 @@ sub edit {
             || $template_type eq 'archive'
             || $template_type eq 'category'
             || $template_type eq 'page'
-            || $template_type eq 'individual';
+            || $template_type eq 'individual'
+            || $template_type eq 'ct'
+            || $template_type eq 'ct_archive';
         $param->{has_outfile} = $template_type eq 'index';
         $param->{has_rebuild} = ( ( $template_type eq 'index' )
                 && ( ( $blog->custom_dynamic_templates || "" ) ne 'all' ) );
@@ -659,6 +764,14 @@ sub edit {
             && $param->{type} ne 'widget'
             && !$param->{is_special};
         $param->{name} = $app->param('name') if $app->param('name');
+
+        # Content Type
+        if ( $template_type eq 'ct' || $template_type eq 'ct_archive' ) {
+            my $iter = MT::ContentType->load_iter( { blog_id => $blog_id } );
+            while ( my $ct = $iter->() ) {
+                push @{ $param->{content_types} }, $ct;
+            }
+        }
     }
     $param->{publish_queue_available}
         = eval 'require List::Util; require Scalar::Util; 1;';
@@ -874,6 +987,15 @@ sub list {
         elsif ( $type eq 'backup' ) {
             $template_type = 'backup';
         }
+        elsif ( $type eq 'ct' || $type eq 'ct_archive' ) {
+            $template_type = 'ct';
+
+            # populate context with templatemap loop
+            if ($tblog) {
+                $row->{archive_types}
+                    = _populate_archive_loop( $app, $tblog, $obj );
+            }
+        }
         else {
             $template_type = 'system';
         }
@@ -954,15 +1076,20 @@ sub list {
                     type  => [ 'archive', 'individual', 'page', 'category' ],
                     order => 200,
                 },
+                'ct' => {
+                    label => $app->translate("Content Type Templates"),
+                    type  => [ 'ct', 'ct_archive' ],
+                    order => 300,
+                },
                 'module' => {
                     label => $app->translate("Template Modules"),
                     type  => 'custom',
-                    order => 300,
+                    order => 400,
                 },
                 'system' => {
                     label => $app->translate("System Templates"),
                     type  => [ keys %$sys_tmpl ],
-                    order => 400,
+                    order => 500,
                 },
             );
         }
@@ -1023,6 +1150,9 @@ sub list {
         }
         elsif ( $tmpl_type eq 'backup' ) {
             $app->param( 'filter_key', 'backup_templates' );
+        }
+        elsif ( $tmpl_type eq 'ct' ) {
+            $app->param( 'filter_key', 'contenttype_templates' );
         }
         my $tmpl_param = {};
         unless ( exists( $types{$tmpl_type}->{type} )
@@ -1538,10 +1668,9 @@ sub _generate_map_table {
     my $template = MT::Template->load($template_id);
     my $tmpl     = $app->load_tmpl('include/archive_maps.tmpl');
     my $maps     = _populate_archive_loop( $app, $blog, $template );
-    $tmpl->param( object_type => 'templatemap' );
     $tmpl->param( publish_queue_available => eval
             'require List::Util; require Scalar::Util; 1;' );
-    $tmpl->param( object_loop => $maps ) if @$maps;
+    $tmpl->param( template_map_loop => $maps ) if @$maps;
     my $html = $tmpl->output();
 
     if ( $html =~ m/<__trans / ) {
@@ -1600,13 +1729,15 @@ sub _populate_archive_loop {
             $name =~ s/index$ext$/$index$ext/;
             push @$tmpl_loop,
                 {
-                name    => $name,
-                value   => $_->{template},
-                default => ( $_->{default} || 0 ),
+                name            => $name,
+                value           => $_->{template},
+                default         => ( $_->{default} || 0 ),
+                required_fields => $_->{required_fields},
                 };
         }
 
         my $custom = 1;
+        my $required_fields;
 
         foreach (@$tmpl_loop) {
             if (   ( !$map->{file_template} && $_->{default} )
@@ -1616,6 +1747,7 @@ sub _populate_archive_loop {
                 $custom               = 0;
                 $map->{file_template} = $_->{value}
                     if !$map->{file_template};
+                $required_fields = $_->{required_fields};
             }
         }
         if ($custom) {
@@ -1634,6 +1766,47 @@ sub _populate_archive_loop {
             )
         {
             $map->{has_multiple_archives} = 1;
+        }
+
+        # Content Fields
+        if ( $at =~ /^ContentType/ ) {
+            my $tmpl         = MT::Template->load( $obj->id );
+            my $ct_id        = $tmpl->content_type_id;
+            my $ct           = MT::ContentType->load( $obj->content_type_id );
+            my $fields       = $ct->fields;
+            my $cat_field_id = $map_obj->cat_field_id;
+            my $dt_field_id  = $map_obj->dt_field_id || 0;
+            my $content_fields = {
+                categories => [
+                    map {
+                        {   id       => $_->{id},
+                            label    => $_->{options}{label},
+                            selected => $_->{id} eq $cat_field_id ? 1 : 0
+                        }
+                        }
+                        grep { $_->{type} eq 'categories' } @$fields
+                ],
+                date_and_times => [
+                    map {
+                        {   id       => $_->{id},
+                            label    => $_->{options}{label},
+                            selected => $_->{id} eq $dt_field_id ? 1 : 0
+                        }
+                        }
+                        grep {
+                               $_->{type} eq 'date_and_time'
+                            && $_->{required}
+                        } @$fields
+                ],
+            };
+            $map->{cat_fields} = $content_fields->{categories};
+            $map->{dt_fields}  = $content_fields->{date_and_times};
+            unshift @{ $content_fields->{date_and_times} },
+                { id => 0, label => $app->translate('Published Date') };
+            $map->{show_cat_field} = 1
+                if $required_fields->{category} || $custom;
+            $map->{show_dt_field} = 1
+                if $required_fields->{date_and_time} || $custom;
         }
 
         push @maps, $map;
@@ -1680,17 +1853,18 @@ sub add_map {
     return $app->error( $app->translate('No permissions') )
         unless $app->can_do('edit_templates');
 
-    my $q = $app->param;
-
     require MT::TemplateMap;
-    my $blog_id     = $q->param('blog_id');
-    my $template_id = $q->param('template_id');
-    my $at          = $q->param('new_archive_type');
+    my $blog_id     = $app->param('blog_id');
+    my $template_id = $app->param('template_id');
+    my $at          = $app->param('new_archive_type');
     my $exist       = MT::TemplateMap->exist(
         {   blog_id      => $blog_id,
             archive_type => $at
         }
     );
+    my $file_template = $app->param('file_template');
+    my $cat_field_id  = $app->param('cat_field_id');
+    my $dt_field_id   = $app->param('dt_field_id');
 
     $app->model('template')
         ->load( { id => $template_id, blog_id => $blog_id } )
@@ -1702,6 +1876,9 @@ sub add_map {
     $map->template_id($template_id);
     $map->blog_id($blog_id);
     $map->archive_type($at);
+    $map->file_template($file_template);
+    $map->cat_field_id($cat_field_id) if $cat_field_id;
+    $map->dt_field_id($dt_field_id)   if $dt_field_id;
     $map->save
         or return $app->error(
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
@@ -1917,6 +2094,26 @@ sub post_save {
                 }
                 $map->save;
             }
+            elsif ( $p =~ /^cat_field_id_(\d+)$/ ) {
+                my $map_id = $1;
+                $map = MT::TemplateMap->load($map_id)
+                    or next;
+                my $cat_field_id = $app->param("cat_field_id_$map_id");
+                if ( $map->cat_field_id != $cat_field_id ) {
+                    $map->cat_field_id($cat_field_id);
+                    $map->save;
+                }
+            }
+            elsif ( $p =~ /^dt_field_id_(\d+)$/ ) {
+                my $map_id = $1;
+                $map = MT::TemplateMap->load($map_id)
+                    or next;
+                my $dt_field_id = $app->param("dt_field_id_$map_id");
+                if ( $map->dt_field_id != $dt_field_id ) {
+                    $map->dt_field_id($dt_field_id);
+                    $map->save;
+                }
+            }
             if (  !$dynamic
                 && $map
                 && $map->build_type == MT::PublishOption::DYNAMIC() )
@@ -2017,8 +2214,8 @@ sub build_template_table {
     my $i;
     my %blogs;
     while ( my $tmpl = $iter->() ) {
-        my $blog = $blogs{ $tmpl->blog_id }
-            ||= MT::Blog->load( $tmpl->blog_id )
+        my $blog;
+        $blog = $blogs{ $tmpl->blog_id } ||= MT::Blog->load( $tmpl->blog_id )
             if $tmpl->blog_id;
 
         my $row = $tmpl->get_values;
@@ -2076,7 +2273,7 @@ sub dialog_publishing_profile {
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
         unless $app->user->is_superuser
-        || $perms->can_administer_blog
+        || $perms->can_administer_site
         || $perms->can_edit_templates;
 
     my $param = {};
@@ -2099,7 +2296,7 @@ sub dialog_refresh_templates {
         || (
         $perms
         && (   $perms->can_edit_templates()
-            || $perms->can_administer_blog()
+            || $perms->can_administer_site()
             || $perms->can_do('refresh_templates') )
         );
 
@@ -2203,7 +2400,7 @@ BLOG: for my $blog_id (@id) {
             my $can_refresh_blog
                 = !$perms                             ? 0
                 : $perms->can_edit_templates()        ? 1
-                : $perms->can_administer_blog()       ? 1
+                : $perms->can_administer_site()       ? 1
                 : $perms->can_do('refresh_templates') ? 1
                 :                                       0;
             if ( !$can_refresh_blog ) {
@@ -2506,7 +2703,7 @@ sub refresh_individual_templates {
         || (
         $perms
         && (   $perms->can_edit_templates()
-            || $perms->can_administer_blog )
+            || $perms->can_administer_site )
         );
 
     require MT::Util::Log;
@@ -2672,7 +2869,7 @@ sub clone_templates {
         || (
         $perms
         && (   $perms->can_edit_templates()
-            || $perms->can_administer_blog )
+            || $perms->can_administer_site )
         );
 
     my @id = $app->multi_param('id');
@@ -2751,7 +2948,7 @@ sub publish_index_templates {
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
         unless $app->user->is_superuser
-        || $perms->can_administer_blog
+        || $perms->can_administer_site
         || $perms->can_rebuild;
 
     my $blog = $app->blog;
@@ -2787,7 +2984,7 @@ sub publish_archive_templates {
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
         unless $app->user->is_superuser
-        || $perms->can_administer_blog
+        || $perms->can_administer_site
         || $perms->can_rebuild;
 
     my @ids = $app->multi_param('id');
@@ -3261,6 +3458,45 @@ sub save_template_prefs {
         $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
         );
     return $app->json_result( { success => 1 } );
+}
+
+sub get_content_type_info {
+    my ($app) = @_;
+    my $cfg   = $app->config;
+    my $blog  = $app->blog;
+    my $param = {};
+
+    $app->validate_magic
+        or return $app->errtrans("Invalid request.");
+
+    my $ct_id = $app->param('ct_id');
+    my $ct    = MT::ContentType->load($ct_id);
+
+    my $ct_data = { unique_id => $ct->unique_id };
+
+    my $fields     = $ct->fields;
+    my @cfs        = MT::ContentField->load( { content_type_id => $ct_id } );
+    my @cf_selects = ();
+    my $cf_datas   = {};
+    foreach my $cf (@cfs) {
+        my ($field) = grep { $_->{id} == $cf->id } @{$fields};
+        my $label = $field->{options}{label};
+        push @cf_selects, { id => $cf->id, label => $cf->name };
+        $cf_datas->{ $cf->id } = {
+            id        => $cf->id,
+            label     => $label,
+            unique_id => $cf->unique_id,
+            type      => $cf->type,
+        };
+    }
+
+    return $app->json_result(
+        {   success      => 1,
+            content_type => $ct_data,
+            cf_selects   => \@cf_selects,
+            cf_datas     => $cf_datas,
+        }
+    );
 }
 
 1;

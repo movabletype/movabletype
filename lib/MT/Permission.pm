@@ -118,7 +118,8 @@ sub global_perms {
         my $regs = MT::Component->registry('permissions');
         my %keys = map { $_ => 1 } map { keys %$_ } @$regs;
         %perms = map { $_ => MT->registry( 'permissions' => $_ ) } keys %keys;
-
+        %perms = +( %perms,
+            %{ MT->app->model('content_type')->all_permissions } );
         \%perms;
     }
 }
@@ -201,7 +202,7 @@ sub global_perms {
         my $perms = shift;
         my ($more_perm) = @_;
         if ( my $more = $more_perm->restrictions ) {
-            if ( $more =~ /'administer_blog' | 'administer_website'/ ) {
+            if ( $more =~ /'administer_site'/ ) {
                 $more = _all_perms('blog');
             }
             my $cur_perm = $perms->restrictions;
@@ -353,10 +354,7 @@ sub global_perms {
                         && $author->is_superuser );
                     return 1
                         if ( ( $_[0]->blog && $_[0]->blog->is_blog )
-                        && $_[0]->has('administer_blog') );
-                    return 1
-                        if ( ( $_[0]->blog && !$_[0]->blog->is_blog )
-                        && $_[0]->has('administer_website') );
+                        && $_[0]->has('administer_site') );
                 }
             }
 
@@ -498,7 +496,7 @@ sub can_post {
 sub can_edit_authors {
     my $perms  = shift;
     my $author = $perms->user;
-    $perms->can_administer_blog || ( $author && $author->is_superuser() );
+    $perms->can_administer_site || ( $author && $author->is_superuser() );
 }
 
 sub can_edit_entry {
@@ -980,7 +978,7 @@ permission.
 Returns true or false depending only on whether the bit identified by
 C<$permission_name> is set in this permission object.
 
-=head2 $perms->can_administer_blog
+=head2 $perms->can_administer_site
 
 Returns true if the user can administer the blog. This is a blog-level
 "superuser" capability.
@@ -1056,7 +1054,7 @@ Returns true if the user can set publishing paths, false otherwise.
 
 =head2 $perms->can_edit_authors()
 
-Returns true if the 'administer_blog' permission is set or the associated
+Returns true if the 'administer_site' permission is set or the associated
 author has superuser rights.
 
 =head2 $perms->can_edit_entry($entry, $author)

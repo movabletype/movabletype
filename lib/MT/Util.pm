@@ -432,10 +432,11 @@ sub relative_date {
         }
     }
     my $mt = MT->instance;
-    my $user = $mt->user if $mt->isa('MT::App');
     return $fmt
         ? format_ts( $fmt, $ts, $blog,
-        $lang || ( $user ? $user->preferred_language : undef ) )
+        $lang
+            || ( $mt->isa('MT::App') ? $mt->user->preferred_language : undef )
+        )
         : "";
 }
 
@@ -2463,10 +2464,12 @@ sub get_newsbox_html {
     {
         $refresh_news = 1;
     }
-    my $last_available_news = $news_object->data()
-        if $news_object;
-    $last_available_news = Encode::decode( $enc, $last_available_news )
-        unless Encode::is_utf8($last_available_news);
+    my $last_available_news = '';
+    if ($news_object) {
+        $last_available_news = $news_object->data();
+        $last_available_news = Encode::decode( $enc, $last_available_news )
+            unless Encode::is_utf8($last_available_news);
+    }
     return $last_available_news unless $refresh_news || !$news_object;
     return q() if $cached_only;
 

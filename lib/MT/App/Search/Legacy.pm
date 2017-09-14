@@ -67,14 +67,13 @@ sub init_request {
         delete $app->{$_} if exists $app->{$_};
     }
 
-    my $q   = $app->param;
     my $cfg = $app->config;
 
-    my $tag = $q->param('tag') || '';
+    my $tag = $app->param('tag') || '';
     $app->param( 'Type',   'tag' ) if $tag;
     $app->param( 'search', $tag )  if $tag;
-    my $blog_id         = $q->param('blog_id')      || '';
-    my $include_blog_id = $q->param('IncludeBlogs') || '';
+    my $blog_id         = $app->param('blog_id')      || '';
+    my $include_blog_id = $app->param('IncludeBlogs') || '';
 
     unless ($include_blog_id) {
         $app->param( 'IncludeBlogs', $blog_id ) if $blog_id;
@@ -139,10 +138,10 @@ sub init_request {
         $app->{searchparam}{$key}
             = $no_override{$key}
             ? $cfg->$key()
-            : ( $q->param($key) || $cfg->$key() );
+            : ( $app->param($key) || $cfg->$key() );
     }
-    $app->{searchparam}{entry_type} = $q->param('type');
-    $app->{searchparam}{Template}   = $q->param('Template')
+    $app->{searchparam}{entry_type} = $app->param('type');
+    $app->{searchparam}{Template}   = $app->param('Template')
         || (
         $app->{searchparam}{Type} eq 'newcomments' ? 'comments' : 'default' );
 
@@ -162,9 +161,10 @@ sub init_request {
     if (   ( $app->{searchparam}{Type} eq 'straight' )
         || ( $app->{searchparam}{Type} eq 'tag' ) )
     {
-        if ( $q->param('search') ) {
+        my $search = $app->param('search');
+        if ( defined $search and $search ne '' ) {
             $app->{search_string}
-                = Encode::decode( $cfg->PublishCharset, $q->param('search') );
+                = Encode::decode( $cfg->PublishCharset, $search );
             $app->{search_string_decoded} = $app->{search_string};
         }
         else {
@@ -330,7 +330,8 @@ sub execute {
             $blog = $results[0]{blog};
         }
         if ( !$blog ) {
-            $blog = MT::Blog->load( $app->param('blog_id') );
+            my $blog_id = $app->param('blog_id');
+            $blog = MT::Blog->load($blog_id);
         }
         $include = $blog->id if $blog;
     }
@@ -430,10 +431,11 @@ sub execute {
         or return $app->error(
         $app->translate( "Publishing results failed: [_1]", $build->errstr )
         );
+    my $help = $app->param('help');
     defined(
         my $res = $build->build(
             $ctx, $tokens,
-            {   NoSearch => $app->{query}->param('help')
+            {   NoSearch => $help
                     || (
                     $app->{searchparam}{Type} ne 'newcomments'
                     && (  !$ctx->stash('search_string')

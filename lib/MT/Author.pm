@@ -617,13 +617,13 @@ sub _bulk_author_name_html {
         my $userpic_url;
         if ( my $userpic = $userpic{ $obj->userpic_asset_id || 0 } ) {
             ($userpic_url) = $userpic->thumbnail_url(
-                Width  => 36,
-                Height => 36,
+                Width  => 48,
+                Height => 48,
                 Square => 1
             );
         }
         else {
-            $userpic_url = MT->static_path . 'images/default-userpic-36.jpg';
+            $userpic_url = MT->static_path . 'images/user-default.svg';
         }
         my ( $status_label, $translated_status_label, $badge_type );
         if ( MT->config->SingleCommunity ) {
@@ -688,11 +688,13 @@ sub _bulk_author_name_html {
         my $url   = MT::Util::encode_html( $obj->url );
         my $out   = qq{
             <div class="row">
-                <div class="col-1 pl-0 userpic picture small">
-                    <img src="$userpic_url" />
-                    <img alt="$auth_label" src="$auth_img" width="12" height="12" class="icon auth-type" style="position: absolute; top: 24px; left: 24px;" />
+                <div class="col-1 pl-0">
+                    <div class="mt-user">
+                        <img src="$userpic_url" alt="User" class="rounded-circle" width="48" height="48">
+                        <div class="mt-user__badge--img"><img alt="$auth_label" src="$auth_img" width="16" height="16" class="mt-icon--img" /></div>
+                    </div>
                 </div>
-                <div class="col">
+                <div class="col pl-4">
                      <span class="icon status $status_label">
                          <svg title="$translated_status_label" role="img" class="mt-icon mt-icon--sm">
                              <use xlink:href="${static_uri}images/sprite.svg#ic_user">
@@ -1091,6 +1093,50 @@ sub can_manage_content_types {
     }
 }
 
+sub can_sign_in_cms {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_sign_in_cms(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_sign_in_cms(@_);
+    }
+}
+
+sub can_sign_in_data_api {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_sign_in_data_api(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_sign_in_data_api(@_);
+    }
+}
+
+sub can_create_site {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_create_site(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_create_site(@_);
+    }
+}
+
+sub can_manage_users_groups {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_manage_users_groups(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_manage_users_groups(@_);
+    }
+}
+
 sub blog_perm {
     my $author = shift;
     my ($blog_id) = @_;
@@ -1451,7 +1497,7 @@ sub auth_icon_url {
     return q() unless $auth_type;
 
     if ( $author->type == MT::Author::AUTHOR() ) {
-        return $static_path . 'images/comment/mt_logo.png';
+        return $static_path . 'images/logo-mark.svg';
     }
 
     my $authenticator = MT->commenter_authenticator( $auth_type, force => 1 );
@@ -1482,24 +1528,27 @@ sub userpic {
 sub userpic_thumbnail_options {
     my $author = shift;
 
-    # Specify these to put an author's userpic thumbnail in a consistent
-    # place whenever userpic_url is called as an instance method on a
-    # particular author.
-    my %real_userpic_options = (
-        Path => File::Spec->catdir( MT->config->AssetCacheDir, 'userpics' ),
-        Format => MT->translate( 'userpic-[_1]-%wx%h%x', $author->id ),
-    ) if ref $author;
-
     my $cfg     = MT->config;
     my $max_dim = $cfg->UserpicThumbnailSize;
     my $square  = $cfg->UserpicAllowRect ? 0 : 1;
-    return (
+    my %options = (
         Width  => $max_dim,
         Height => $max_dim,
         Square => $square,
         Type   => 'png',
-        %real_userpic_options,
     );
+
+    # Specify these to put an author's userpic thumbnail in a consistent
+    # place whenever userpic_url is called as an instance method on a
+    # particular author.
+    if ( ref $author ) {
+        $options{Path}
+            = File::Spec->catdir( MT->config->AssetCacheDir, 'userpics' );
+        $options{Format}
+            = MT->translate( 'userpic-[_1]-%wx%h%x', $author->id );
+    }
+
+    return %options;
 }
 
 sub userpic_file {

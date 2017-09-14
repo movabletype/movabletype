@@ -110,7 +110,8 @@ sub edit {
             );
         }
 
-        $param->{title} = $content_data->title;
+        $param->{title}      = $content_data->title;
+        $param->{identifier} = $content_data->identifier;
 
         my $status = $app->param('status') || $content_data->status;
         $status =~ s/\D//g;
@@ -164,11 +165,16 @@ sub edit {
     my $content_field_types = $app->registry('content_field_types');
     @$array = map {
         my $e_unique_id = $_->{unique_id};
-        $_->{can_edit} = 1
-            if $app->permissions->can_do( 'content_type:'
+        my $can_edit_field
+            = $app->permissions->can_do( 'content_type:'
                 . $ct_unique_id
                 . '-content_field:'
                 . $e_unique_id );
+        if (   $can_edit_field
+            || $app->permissions->can_do('edit_all_content_datas') )
+        {
+            $_->{can_edit} = 1;
+        }
         $_->{content_field_id} = $_->{id};
         delete $_->{id};
 
@@ -287,6 +293,8 @@ sub edit {
 
     $app->setup_editor_param($param);
 
+    $param->{basename_limit} = ( $blog ? $blog->basename_limit : 0 ) || 30;
+
     $app->build_page( $app->load_tmpl('edit_content_data.tmpl'), $param );
 }
 
@@ -368,6 +376,7 @@ sub save {
     $content_data->data($data);
 
     $content_data->title( scalar $app->param('title') );
+    $content_data->identifier( scalar $app->param('identifier') );
 
     if ( $app->param('scheduled') ) {
         $content_data->status( MT::Entry::FUTURE() );
@@ -839,4 +848,3 @@ sub start_export {
 }
 
 1;
-

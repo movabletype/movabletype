@@ -133,24 +133,17 @@
   </div>
 
 <mt:if name="blog_id">
-  <div class="ml-auto col-1">
-    <a href="<mt:var name="url">?__mode=view&_type=entry&blog_id=<mt:var name="blog_id">" id="create-entry-shortcut"><span class="fa fa-pencil"></span></a>
-    <a href="<$mt:var name="mt_url"$>?__mode=rebuild_confirm&blog_id=<$mt:var name="blog_id"$>" class="mt-rebuild"><img src="<mt:var name="static_uri">images/nav-icon-publish.png" /></a>
-    <a href="<mt:var name="blog_url" escape="html">" target="_blank"><span class="fa fa-external-link"></span></a>
-    <a href="#"><img src="<mt:var name="static_uri">images/search-submit.png" /></a>
+  <div class="ml-auto col-2 text-right">
+    <a href="<mt:var name="url">?__mode=view&_type=entry&blog_id=<mt:var name="blog_id">" id="create-entry-shortcut"><mtapp:svgicon id="ic_edit" title="<__trans phrase="Edit">"></a>
+    <a href="<$mt:var name="mt_url"$>?__mode=rebuild_confirm&blog_id=<$mt:var name="blog_id"$>" class="mt-rebuild"><mtapp:svgicon id="ic_build" title="<__trans phrase="Rebuild">"></a>
+    <a href="<mt:var name="blog_url" escape="html">" target="_blank"><mtapp:svgicon id="ic_permalink" title="<__trans phrase="View Link">"></a>
+    <a href="#"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">"></a>
   </div>
 </mt:if>
 
   <div class="col-2">
     <div class="float-right">
-      <button class="btn btn-link dropdown-toggle" type="button" data-toggle="dropdown" id="userDropdownMenu" aria-haspopup="true" aria-expanded="false">
-      <mt:if name="author_userpic_url">
-        <img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle">
-      <mt:else>
-        <img src="<mt:var name="static_uri">images/user-default.svg" alt="" widht="32" height="32" class="mr-1">
-      </mt:if>
-        <mt:var name="user_screen_name">
-      </button>
+      <button class="btn btn-link dropdown-toggle" type="button" data-toggle="dropdown" id="userDropdownMenu" aria-haspopup="true" aria-expanded="false"><mt:if name="author_userpic_url"><img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle"><mt:else><img src="<mt:var name="static_uri">images/user-default.svg" alt="" widht="32" height="32" class="mr-1"></mt:if><mt:var name="user_screen_name"></button>
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdownMenu">
         <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=view&_type=author&id=<mt:var name="author_id" escape="url">"><__trans phrase="Profile"></a>
         <a class="dropdown-item" href="<__trans phrase="https://movabletype.org/documentation/">" target="_blank"><__trans phrase="Documentation"></a>

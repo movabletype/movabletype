@@ -38,7 +38,7 @@ sub start_import {
     $param{category_loop} = \@data;
     $param{nav_import}    = 1;
 
-    #$param{can_edit_authors} = $app->permissions->can_administer_blog;
+    #$param{can_edit_authors} = $app->permissions->can_administer_site;
     $param{encoding_names} = const('ENCODING_NAMES');
     require MT::Auth;
     $param{password_needed} = MT::Auth->password_exists;
@@ -182,7 +182,8 @@ sub do_import {
         $app->translate( 'Importer type [_1] was not found.', $import_type ) )
         unless $importer;
 
-    my %options
+    my %options;
+    %options
         = map { $_ => scalar $app->param($_); } @{ $importer->{options} }
         if $importer->{options};
     my $import_result = $imp->import_contents(

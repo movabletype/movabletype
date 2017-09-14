@@ -602,7 +602,7 @@ sub init_data {
             {   name        => 'Child Site Administrator',
                 description => 'Can administer the child site.',
                 role_mask   => 2**12,
-                perms       => ['administer_blog']
+                perms       => ['administer_site']
             },
             {   name => 'Author',
                 description =>

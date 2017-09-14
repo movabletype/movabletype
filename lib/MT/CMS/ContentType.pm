@@ -280,11 +280,18 @@ sub save_cfg_content_type {
 
     $app->validate_magic
         or return $app->errtrans("Invalid request.");
-    my $perms = $app->permissions;
-    return $app->permission_denied()
-        unless $app->user->is_superuser()
-        || ( $perms
-        && $perms->can_administer_blog );
+    my $perms = $app->permissions
+        or return $app->permission_denied();
+
+    my $id = $app->param('id');
+    if ( !$id ) {
+        return $app->permission_denied()
+            unless $perms->can_do('create_new_content_type');
+    }
+    else {
+        return $app->permission_denied()
+            unless $perms->can_do('edit_all_content_types');
+    }
 
     my $blog_id = $app->param('blog_id')
         or return $app->errtrans("Invalid request.");
@@ -912,9 +919,11 @@ sub select_edit_content_type {
         $hash->{blog_id} = $content_type->blog_id;
         $hash->{name}    = $content_type->name;
         my $unique_id = $content_type->unique_id;
+
         $hash->{can_edit} = 1
-            if $app->permissions->can_do(
-            'manage_content_type:' . $unique_id );
+            if (
+            $app->permissions->can_do( 'manage_content_type:' . $unique_id )
+            || $app->permissions->can_do('edit_all_content_types') );
         push @array, $hash;
     }
     $param->{content_types} = \@array;

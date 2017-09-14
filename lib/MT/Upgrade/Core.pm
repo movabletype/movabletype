@@ -184,8 +184,7 @@ sub seed_database {
         : ''
     );
     $author->is_superuser(1);
-    $author->can_create_blog(1);
-    $author->can_create_website(1);
+    $author->can_create_site(1);
     $author->can_view_log(1);
     $author->can_manage_plugins(1);
     $author->preferred_language($lang);
@@ -261,7 +260,7 @@ sub seed_database {
     require MT::Association;
     require MT::Role;
     my ($website_admin_role)
-        = MT::Role->load_by_permission("administer_website");
+        = MT::Role->load_by_permission("administer_site");
     MT::Association->link( $website => $website_admin_role => $author );
 
     if ( $param{use_system_email} ) {

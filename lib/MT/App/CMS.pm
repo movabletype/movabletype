@@ -392,6 +392,9 @@ sub core_methods {
         'list_ct_boilerplates' => "${pkg}ContentType::list_boilerplates",
         'start_import_content' => "${pkg}ContentData::start_import",
         'start_export_content' => "${pkg}ContentData::start_export",
+
+        'get_content_type_info' => "${pkg}Template::get_content_type_info",
+
     };
 }
 
@@ -1868,10 +1871,12 @@ sub core_menus {
         },
         'entry' => {
             label => "Entries",
+            icon  => 'ic_contentdata',
             order => 300,
         },
         'page' => {
             label => "Pages",
+            icon  => 'ic_contentdata',
             order => 400,
         },
         'category_set' => {
@@ -1973,12 +1978,12 @@ sub core_menus {
         },
 
         'user:member' => {
-            label      => "Manage",
-            order      => 100,
-            mode       => 'list',
-            args       => { _type => 'member' },
-            view       => [ "blog", "website" ],
-            permission => 'administer_blog,manage_users,administer_website',
+            label             => "Manage",
+            order             => 100,
+            mode              => 'list',
+            args              => { _type => 'member' },
+            view              => [ "blog", "website" ],
+            permission        => 'administer_site,manage_users',
             system_permission => 'administer',
         },
         'user:manage' => {
@@ -2181,7 +2186,7 @@ sub core_menus {
             order      => 100,
             mode       => 'list',
             args       => { _type => 'content_type' },
-            permission => 'administer_website,administer_blog',
+            permission => 'manage_content_types',
             view       => [ 'website', 'blog' ],
         },
         'content_type:create_content_type' => {
@@ -2311,7 +2316,7 @@ sub core_menus {
             label      => "General",
             order      => 100,
             mode       => 'cfg_prefs',
-            permission => 'administer_blog,edit_config,set_publish_paths',
+            permission => 'administer_site,edit_config,set_publish_paths',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
         },
@@ -2319,7 +2324,7 @@ sub core_menus {
             label      => "Compose",
             order      => 300,
             mode       => 'cfg_entry',
-            permission => 'administer_blog,edit_config,set_publish_paths',
+            permission => 'administer_site,edit_config,set_publish_paths',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
         },
@@ -2327,7 +2332,7 @@ sub core_menus {
             label      => "Feedback",
             order      => 400,
             mode       => 'cfg_feedback',
-            permission => 'administer_blog,edit_config,set_publish_paths',
+            permission => 'administer_site,edit_config,set_publish_paths',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
         },
@@ -2335,7 +2340,7 @@ sub core_menus {
             label      => "Registration",
             order      => 500,
             mode       => 'cfg_registration',
-            permission => 'administer_blog,edit_config,set_publish_paths',
+            permission => 'administer_site,edit_config,set_publish_paths',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
         },
@@ -2343,7 +2348,7 @@ sub core_menus {
             label      => "Web Services",
             order      => 600,
             mode       => 'cfg_web_services',
-            permission => 'administer_blog,edit_config,set_publish_paths',
+            permission => 'administer_site,edit_config,set_publish_paths',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
         },
@@ -2351,7 +2356,7 @@ sub core_menus {
             label             => "Plugins",
             order             => 700,
             mode              => "cfg_plugins",
-            permission        => "administer_blog",
+            permission        => "administer_site",
             system_permission => "manage_plugins",
             view              => [ "blog", "website" ],
         },
@@ -2381,7 +2386,7 @@ sub core_menus {
             label             => "Plugins",
             order             => 700,
             mode              => "cfg_plugins",
-            permission        => "administer_blog",
+            permission        => "administer_site",
             system_permission => "manage_plugins",
             view              => ['system'],
         },
@@ -2445,35 +2450,35 @@ sub core_menus {
             label      => "Import Sites",
             order      => 200,
             mode       => "start_restore",
-            permission => "administer_blog",
+            permission => "administer_site",
             view       => "system",
         },
         'tools:system_export' => {
             label      => "Export Sites",
             order      => 300,
             mode       => "start_backup",
-            permission => "administer_blog",
+            permission => "administer_site",
             view       => ['system'],
         },
         'tools:import' => {
             label      => "Import Content",
             order      => 200,
             mode       => "start_import_content",
-            permission => "administer_blog",
+            permission => "administer_site",
             view       => [ "blog", "website" ],
         },
         'tools:export' => {
             label      => "Export Content",
             order      => 300,
             mode       => "start_export_content",
-            permission => "administer_blog",
+            permission => "administer_site",
             view       => [ "blog", "website" ],
         },
         'tools:site_export' => {
             label      => "Export Site",
             order      => 400,
             mode       => "start_backup",
-            permission => "administer_blog",
+            permission => "administer_site",
             view       => [ "blog", "website" ],
         },
         'tools:themeexport' => {
@@ -2772,7 +2777,7 @@ sub user_can_admin_commenters {
     my $perms = $app->permissions;
     $app->user->is_superuser()
         || ( $perms
-        && ( $perms->can_administer_blog || $perms->can_manage_feedback ) );
+        && ( $perms->can_administer_site || $perms->can_manage_feedback ) );
 }
 
 sub validate_magic {
@@ -2833,7 +2838,7 @@ sub set_default_tmpl_params {
     if ( my $auth = $app->user ) {
         $param->{is_administrator}       = $auth->is_superuser;
         $param->{can_create_newblog}     = $auth->can_create_blog;
-        $param->{can_create_newbwebsite} = $auth->can_create_website;
+        $param->{can_create_newbwebsite} = $auth->can_create_site;
         $param->{can_view_log} ||= $auth->can_view_log;
         $param->{can_manage_plugins}    = $auth->can_manage_plugins;
         $param->{can_edit_templates}    = $auth->can_edit_templates;
@@ -2869,14 +2874,14 @@ sub set_default_tmpl_params {
         require MT::CMS::Search;
         $param->{can_search_replace}
             = MT::CMS::Search::can_search_replace($app);
-        $param->{can_edit_authors} = $param->{can_administer_blog};
+        $param->{can_edit_authors} = $param->{can_administer_site};
         $param->{can_access_assets}
             = $param->{can_create_post}
             || $param->{can_edit_all_posts}
             || $param->{can_edit_assets};
         $param->{has_manage_label}
             = $param->{can_edit_templates}
-            || $param->{can_administer_blog}
+            || $param->{can_administer_site}
             || $param->{can_edit_categories}
             || $param->{can_edit_config}
             || $param->{can_edit_tags}
@@ -3215,7 +3220,7 @@ sub build_blog_selector {
 
     $param->{load_selector_data}  = 1;
     $param->{can_create_blog}     = $auth->can_do('create_blog') && $blog;
-    $param->{can_create_website}  = $auth->can_do('create_website');
+    $param->{can_create_website}  = $auth->can_do('create_site');
     $param->{can_access_overview} = 1;
 }
 
@@ -3241,7 +3246,7 @@ sub build_menus {
     my $hide_disabled_options = $app->config('HideDisabledMenus') || 1;
 
     my $admin = $user->is_superuser()
-        ;    # || ($perms && $perms->has('administer_blog'));
+        ;    # || ($perms && $perms->has('administer_site'));
 
     foreach my $id (@top_ids) {
         ## skip only if false value was set explicitly.
@@ -3294,19 +3299,20 @@ sub build_menus {
             }
 
             my $app_param_type = $app->param('_type') || '';
+            my $filter_key     = $app->param('filter_key');
+            my $app_param_id   = $app->param('id');
             if ( $sub->{args} ) {
                 if (   $sub->{mode} eq $mode
-                    && defined( $app->param('_type') )
-                    && ( $sub->{args}->{_type} || '' ) eq $app->param('_type')
+                    && defined($app_param_type)
+                    && ( $sub->{args}->{_type} || '' ) eq $app_param_type
                     && (!defined( $sub->{args}->{filter_key} )
-                        || ( defined( $app->param('filter_key') )
-                            && $sub->{args}->{filter_key} eq
-                            $app->param('filter_key') )
+                        || ( defined($filter_key)
+                            && $sub->{args}->{filter_key} eq $filter_key )
                     )
                     )
                 {
                     $param->{screen_group} = $id;
-                    if ( $app->param('id') ) {
+                    if ($app_param_id) {
                         $sub->{current} = 1
                             if ( $app_param_type eq 'blog' )
                             || ( $app_param_type eq 'website' );
@@ -3319,7 +3325,7 @@ sub build_menus {
             else {
                 if ( $sub->{mode} eq $mode ) {
                     $param->{screen_group} = $id;
-                    if ( $app->param('id') ) {
+                    if ($app_param_id) {
                         $sub->{current} = 1
                             if ( $app_param_type eq 'blog' )
                             || ( $app_param_type eq 'website' );
@@ -4081,10 +4087,9 @@ sub _translate_naughty_words {
 sub autosave_session_obj {
     my $app           = shift;
     my ($or_make_one) = @_;
-    my $q             = $app->param;
-    my $type          = $q->param('_type');
+    my $type          = $app->param('_type');
     return unless $type;
-    my $id = $q->param('id');
+    my $id = $app->param('id');
     $id = '0' unless $id;
     my $ident
         = 'autosave'
@@ -4098,7 +4103,7 @@ sub autosave_session_obj {
         $ident .= ':blog_id=' . $blog->id;
     }
     if ( $type eq 'content_data' ) {
-        my $content_type_id = $q->param('content_type_id');
+        my $content_type_id = $app->param('content_type_id');
         $ident .= ':content_type_id=' . $content_type_id;
     }
     require MT::Session;
@@ -4393,11 +4398,10 @@ sub add_to_favorite_websites {
 sub _entry_prefs_from_params {
     my $app      = shift;
     my ($prefix) = @_;
-    my $q        = $app->param;
-    my $disp     = $q->param('entry_prefs') || '';
+    my $disp     = $app->param('entry_prefs') || '';
     my @fields;
     if ( lc $disp eq 'custom' ) {
-        @fields = split /,/, $q->param( $prefix . 'custom_prefs' ) || '';
+        @fields = split /,/, $app->param( $prefix . 'custom_prefs' ) || '';
     }
     elsif ($disp) {
         push @fields, $disp;
@@ -4406,11 +4410,11 @@ sub _entry_prefs_from_params {
         @fields = $app->multi_param( $prefix . 'custom_prefs' );
     }
 
-    if ( my $body_height = $q->param('text_height') ) {
+    if ( my $body_height = $app->param('text_height') ) {
         push @fields, 'body:' . $body_height;
     }
     return
-        join( ',', @fields ) . '|' . ( $q->param('bar_position') || 'top' );
+        join( ',', @fields ) . '|' . ( $app->param('bar_position') || 'top' );
 }
 
 # rebuild_set is a hash whose keys are entry IDs

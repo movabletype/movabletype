@@ -576,7 +576,7 @@ sub suite {
                 . $blog_index_tmpl->id
                 . '/publish',
             method       => 'POST',
-            restrictions => { 1 => [qw/ administer_blog rebuild /], },
+            restrictions => { 1 => [qw/ administer_site rebuild /], },
             code         => 403,
             error        => 'Do not have permission to publish a template.',
         },
@@ -760,8 +760,8 @@ sub suite {
                 . '/clone',
             method       => 'POST',
             restrictions => {
-                0 => [qw/ edit_templates administer_blog /],
-                1 => [qw/ edit_templates administer_blog /],
+                0 => [qw/ edit_templates administer_site /],
+                1 => [qw/ edit_templates administer_site /],
             },
             code  => 403,
             error => 'Do not have permission to clone a template.',
@@ -837,8 +837,8 @@ sub suite {
             method       => 'POST',
             params       => { template => { name => 'preview-template', }, },
             restrictions => {
-                0 => [qw/ edit_templates administer_blog /],
-                1 => [qw/ edit_templates administer_blog /],
+                0 => [qw/ edit_templates administer_site /],
+                1 => [qw/ edit_templates administer_site /],
             },
             code  => 403,
             error => 'Do not have permission to get template preview.',
@@ -913,8 +913,8 @@ sub suite {
                 },
             },
             restrictions => {
-                0 => [qw/ edit_templates administer_blog /],
-                1 => [qw/ edit_templates administer_blog /],
+                0 => [qw/ edit_templates administer_site /],
+                1 => [qw/ edit_templates administer_site /],
             },
             code  => 403,
             error => 'Do not have permission to get template preview.',

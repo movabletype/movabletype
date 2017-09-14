@@ -1558,7 +1558,8 @@ sub restore {
 
     my ($fh) = $app->upload_info('file');
     my $uploaded = $q->param('file');
-    my ( $volume, $directories, $uploaded_filename )
+    my ( $volume, $directories, $uploaded_filename );
+    ( $volume, $directories, $uploaded_filename )
         = File::Spec->splitpath($uploaded)
         if defined($uploaded);
     $app->mode('start_restore');
@@ -2396,7 +2397,8 @@ sub dialog_restore_upload {
         }
     }
 
-    my $assets = JSON::from_json( decode_html($assets_json) )
+    my $assets;
+    $assets = JSON::from_json( decode_html($assets_json) )
         if ( defined($assets_json) && $assets_json );
     $assets = [] if !defined($assets);
     my $asset;

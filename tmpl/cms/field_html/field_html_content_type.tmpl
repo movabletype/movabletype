@@ -1,19 +1,31 @@
 <div id="content-type-field-<mt:var name="content_field_id" escape="html">" class="content-type-field-container content-field" data-mt-content-type-name="<mt:var name="content_type_name" escape="html">" <mt:var name="required"> <mt:var name="multiple">>
-  <ul id="content-field-<mt:var name="content_field_id" escape="html">-list-content-data" class="list-unstyled content-data-list">
+  <ul id="content-field-<mt:var name="content_field_id" escape="html">-list-content-data" class="list-unstyled w-50 content-data-list">
 <mt:loop name="content_data_loop">
     <li>
-      <input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="cd_id" escape="html">" />
-      <a href="<mt:var name="script_url">?__mode=edit_content_data&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="content_type_id" escape="html">&id=<mt:var name="cd_id" escape="html">" target="_blank"><mt:var name="cd_title" escape="html"></a>
-      <a href="javascript:void(0)" class="icon-remove icon16 action-icon" style="cursor: pointer"></a>
+      <div class="row">
+        <div class="col text-truncate">
+          <input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="cd_id" escape="html">" />
+          <a href="<mt:var name="script_url">?__mode=edit_content_data&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="content_type_id" escape="html">&id=<mt:var name="cd_id" escape="html">" target="_blank"><mt:var name="cd_title" escape="html"></a>
+        </div>
+        <div class="col-1">
+          <a href="javascript:void(0)" class="icon-remove icon16 action-icon" style="cursor: pointer">
+            <button type="button" class="close" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </a>
+        </div>
+      </div>
     </li>
 </mt:loop>
 <mt:unless name="content_data_loop">
     <li class="empty-content-data-list">
-      <__trans phrase="No [_1]" params="<mt:var name="content_type_name" escape="html">">
+      <div class="alert alert-info">
+        <__trans phrase="No [_1]" params="<mt:var name="content_type_name" escape="html">">
+      </div>
     </li>
 </mt:unless>
   </ul>
-  <a href="<mt:var name="script_url">?__mode=dialog_content_data_modal&blog_id=<mt:var name="blog_id">&content_field_id=<mt:var name="content_field_id">" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+  <a href="<mt:var name="script_url">?__mode=dialog_content_data_modal&blog_id=<mt:var name="blog_id">&content_field_id=<mt:var name="content_field_id">" class="btn btn-default mt-open-dialog mt-modal-open" data-mt-modal-large>
     <__trans phrase="Choose [_1]" params="<mt:var name="content_type_name" escape="html">">
   </a>
 </div>
@@ -25,8 +37,10 @@ jQuery('ul.content-data-list').on('click', 'li > a.icon-remove', function () {
   var $ul = jQuery(this).parents('ul.content-data-list');
   jQuery(this).parent().remove();
   if ($ul.children('li').length == 0) {
+      var $infoDiv = jQuery('<div/>').addClass('alert alert-info')
+                                      .text('<__trans phrase="No [_1]" params="<mt:var name="content_type_name" escape="js">">');
       var $emptyLi = jQuery('<li/>').addClass('empty-content-data-list')
-                                    .text('<__trans phrase="No [_1]" params="<mt:var name="content_type_name" escape="js">">');
+                                    .append($infoDiv);
       $ul.append($emptyLi);
   }
 

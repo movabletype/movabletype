@@ -8,6 +8,7 @@
 
 package MT::DateTime;
 
+use strict;
 use Exporter;
 @MT::DateTime::ISA = qw( Exporter );
 use vars qw( @EXPORT_OK );

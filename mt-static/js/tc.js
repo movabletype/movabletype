@@ -563,7 +563,7 @@ TC.setAttributes = function( element, attr )
 // this and the following classname functions honor w3c case-sensitive classnames
 TC.hasClassName = function( element, className )
 {
-	if( !element || !element.className || !className )
+	if( !element || !element.className || typeof element.className != 'string' || !className )
 		return false;
 	var classNames = element.className.split( TC.matchSpace );
 	for( var i = 0; i < classNames.length; i++ )

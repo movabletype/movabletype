@@ -91,7 +91,7 @@ sub test_data_api {
 
         $data->{setup}->($data) if $data->{setup};
 
-        my @special_perms = qw/ edit_templates administer_blog rebuild /;
+        my @special_perms = qw/ edit_templates administer_site rebuild /;
 
         $mock_permission->unmock('can_do')
             if $mock_permission->is_mocked('can_do');

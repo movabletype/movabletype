@@ -7975,6 +7975,7 @@ Modal
 Alert
 Badges
 Icons
+User Badge
 Pagination
 */
 html {
@@ -8135,10 +8136,6 @@ li {
   margin-top: .5rem;
   content: "";
   color: #A5A5A5;
-}
-
-.mt-primaryNavigation__item:last-child > a {
-  border-bottom: none;
 }
 
 .mt-globalNavigation__logo button, .mt-globalNavigation__logo a,
@@ -8552,10 +8549,17 @@ fieldset.form-group {
 
 .mt-table td {
   border-bottom: 1px solid #E0E0E0;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .mt-table tbody tr:last-child td {
   border-bottom: 0;
+}
+
+.mt-table .nowrap {
+  word-break: normal;
+  word-wrap: normal;
 }
 
 .mt-table .custom-control {
@@ -8781,13 +8785,12 @@ fieldset.form-group {
 .mt-pluginpanel {
   padding: 1rem 0 1rem 1rem;
   border-bottom: 1px solid #A5A5A5;
-  border-top: 1px solid #A5A5A5;
   background: #F4F4F4;
 }
 
-.mt-archivemapping:last-child,
-.mt-pluginpanel:last-child {
-  border-top: 0;
+.mt-archivemapping:first-of-type,
+.mt-pluginpanel:first-of-type {
+  border-top: 1px solid #A5A5A5;
 }
 
 .mt-archivemapping.mt-archivemapping--priority,
@@ -8805,21 +8808,21 @@ fieldset.form-group {
   font-weight: bold;
 }
 
-.mt-collapse .mt-icon--secondary, .mt-collapse--contentblock .mt-icon--secondary, .mt-archivemappingm .mt-icon--secondary, .mt-pluginpanel .mt-icon--secondary {
+.mt-collapse .mt-icon--secondary, .mt-collapse--contentblock .mt-icon--secondary, .mt-archivemapping .mt-icon--secondary, .mt-pluginpanel .mt-icon--secondary {
   margin: 0 .5rem;
   transition: 0.2s ease-in-out;
 }
 
-.mt-collapse .mt-icon--secondary.mt-pluginpanel__icon, .mt-collapse--contentblock .mt-icon--secondary.mt-pluginpanel__icon, .mt-archivemappingm .mt-icon--secondary.mt-pluginpanel__icon, .mt-pluginpanel .mt-icon--secondary.mt-pluginpanel__icon {
+.mt-collapse .mt-icon--secondary.mt-pluginpanel__icon, .mt-collapse--contentblock .mt-icon--secondary.mt-pluginpanel__icon, .mt-archivemapping .mt-icon--secondary.mt-pluginpanel__icon, .mt-pluginpanel .mt-icon--secondary.mt-pluginpanel__icon {
   margin: 0 0.2rem 0 0;
 }
 
-.mt-collapse a[aria-expanded="false"] .mt-icon--secondary, .mt-collapse--contentblock a[aria-expanded="false"] .mt-icon--secondary, .mt-archivemappingm a[aria-expanded="false"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="false"] .mt-icon--secondary {
+.mt-collapse a[aria-expanded="false"] .mt-icon--secondary, .mt-collapse--contentblock a[aria-expanded="false"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="false"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="false"] .mt-icon--secondary {
   -webkit-transform: rotate(180deg);
           transform: rotate(180deg);
 }
 
-.mt-collapse a[aria-expanded="true"] .mt-icon--secondary, .mt-collapse--contentblock a[aria-expanded="true"] .mt-icon--secondary, .mt-archivemappingm a[aria-expanded="true"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="true"] .mt-icon--secondary {
+.mt-collapse a[aria-expanded="true"] .mt-icon--secondary, .mt-collapse--contentblock a[aria-expanded="true"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="true"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="true"] .mt-icon--secondary {
   -webkit-transform: rotate(0deg);
           transform: rotate(0deg);
 }
@@ -8938,6 +8941,44 @@ a:hover .mt-icon--secondary {
 
 .mt-icon--inverse {
   fill: #FFFFFF;
+}
+
+/* User Badge */
+.mt-user {
+  display: inline-block;
+  position: relative;
+}
+
+.mt-user .mt-icon--sm, .mt-user .mt-icon--img {
+  display: block;
+  margin: 2px auto;
+}
+
+.mt-user__badge, .mt-user__badge--img, .mt-user__badge--primary, .mt-user__badge--success, .mt-user__badge--danger {
+  height: 22px;
+  width: 22px;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  border: 2px solid #FFFFFF;
+  border-radius: 10px;
+  background: #868e96;
+}
+
+.mt-user__badge--img {
+  background: #FFFFFF;
+}
+
+.mt-user__badge--primary {
+  background: #004B9A;
+}
+
+.mt-user__badge--success {
+  background: #399280;
+}
+
+.mt-user__badge--danger {
+  background: #D33638;
 }
 
 /* Pagination */

@@ -122,7 +122,8 @@ sub init_request {
           $blog->entries_on_index ? $blog->entries_on_index
         : $cfg->SearchMaxResults
         );
-    my $offset = ( $page - 1 ) * $limit if ( $page && $limit );
+    my $offset;
+    $offset = ( $page - 1 ) * $limit if ( $page && $limit );
     $q->param( 'limit',  $limit )  if $limit;
     $q->param( 'offset', $offset ) if $offset;
 
@@ -346,15 +347,16 @@ sub check_cache {
     my $cache
         = $app->{cache_driver}->get_multi( values %{ $app->{cache_keys} } );
 
-    my $count = $cache->{ $app->{cache_keys}{count} }
+    my ( $count, $result );
+    $count = $cache->{ $app->{cache_keys}{count} }
         if exists $cache->{ $app->{cache_keys}{count} };
-    my $result = $cache->{ $app->{cache_keys}{result} }
+    $result = $cache->{ $app->{cache_keys}{result} }
         if exists $cache->{ $app->{cache_keys}{result} };
     if ( exists $cache->{ $app->{cache_keys}{content_type} } ) {
         my $content_type = $cache->{ $app->{cache_keys}{content_type} };
         $app->{response_content_type} = $content_type;
     }
-    if ( !Encode::is_utf8($result) ) {
+    if ( $result and !Encode::is_utf8($result) ) {
         my $enc = MT->config->PublishCharset;
         $result = Encode::decode( $enc, $result );
     }
@@ -824,12 +826,12 @@ sub prepare_context {
 }
 
 sub load_search_tmpl {
-    my $app   = shift;
-    my $q     = $app->param;
+    my $app = shift;
     my ($ctx) = @_;
 
     my $tmpl;
-    if ( $q->param('Template') && ( 'default' ne $q->param('Template') ) ) {
+    my $param_template = $app->param('Template');
+    if ( $param_template && ( 'default' ne $param_template ) ) {
 
         # load specified template
         my $filename;
@@ -842,7 +844,7 @@ sub load_search_tmpl {
             for my $tmpl_ (@tmpls) {
                 next unless defined $tmpl_;
                 my ( $nickname, $file ) = split /\s+/, $tmpl_;
-                if ( $nickname eq $q->param('Template') ) {
+                if ( $nickname eq $param_template ) {
                     $filename = $file;
                     last;
                 }
@@ -850,7 +852,7 @@ sub load_search_tmpl {
         }
         return $app->errtrans(
             "No alternate template is specified for template '[_1]'",
-            encode_html( $q->param('Template') ) )
+            encode_html($param_template) )
             unless $filename;
 
         # template_paths method does the magic
@@ -861,7 +863,7 @@ sub load_search_tmpl {
         $tmpl->text( $app->translate_templatized( $tmpl->text ) );
     }
     else {
-        my $tmpl_id = $q->param('template_id');
+        my $tmpl_id = $app->param('template_id');
         if ( $tmpl_id && $tmpl_id =~ /^\d+$/ ) {
             $tmpl = $app->model('template')->lookup($tmpl_id);
             return $app->errtrans('No such template')
@@ -878,8 +880,7 @@ sub load_search_tmpl {
                     || $tmpl->outfile =~ /\.php/i )
                 );
 
-            if ( $q->param('archive_type') ) {
-                my $at       = $q->param('archive_type');
+            if ( my $at = $app->param('archive_type') ) {
                 my $archiver = MT->publisher->archiver($at);
                 return
                     return $app->errtrans(

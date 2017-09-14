@@ -731,7 +731,7 @@ sub suite {
             path   => '/v2/users/3',
             method => 'PUT',
             params =>
-                { user => { systemPermissions => [qw( create_website )], }, },
+                { user => { systemPermissions => [qw( create_site )], }, },
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
@@ -740,7 +740,7 @@ sub suite {
             path   => '/v2/users/3',
             method => 'PUT',
             params =>
-                { user => { systemPermissions => [qw( create_website )], }, },
+                { user => { systemPermissions => [qw( create_site )], }, },
             code  => 403,
             error => 'Do not have permission to update the requested user.',
         },
@@ -751,7 +751,7 @@ sub suite {
             method       => 'PUT',
             is_superuser => 1,
             params =>
-                { user => { systemPermissions => [qw( create_website )], }, },
+                { user => { systemPermissions => [qw( create_site )], }, },
             result => sub {
                 $app->model('author')->load(3);
             },

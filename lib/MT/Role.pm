@@ -79,7 +79,6 @@ sub list_props {
                 my $prop = shift;
                 my ( $objs, $app, $opts ) = @_;
                 my $asc_count = $prop->asc_count( $objs, $opts );
-                my $static_uri = $app->static_path;
                 my @out;
                 for my $obj (@$objs) {
                     my $len  = 40;                  ## FIXME: Hard coded
@@ -97,16 +96,8 @@ sub list_props {
                             blog_id => 0,
                         }
                     );
-                    my $cnt          = $asc_count->{ $obj->id };
-                    my $name         = MT::Util::encode_html( $obj->name );
-                    my $status_class = $cnt ? 'role-active' : 'role-inactive';
-                    my $icon_type    = $cnt ? 'success' : 'secondary';
+                    my $name = MT::Util::encode_html( $obj->name );
                     push @out, qq{
-                        <span class="mr-2 icon status $status_class">
-                            <svg title="" role="img" class="mt-icon--$icon_type mt-icon--sm">
-                                <use xlink:href="${static_uri}images/sprite.svg#ic_dot">
-                            </svg>
-                        </span>
                         <a href="$url">$name</a>
                     } . (
                         $desc
@@ -295,12 +286,12 @@ sub create_default_roles {
     my @default_roles = (
         {   name        => MT->translate('Site Administrator'),
             description => MT->translate('Can administer the site.'),
-            perms       => [ 'administer_website', 'manage_member_blogs' ]
+            perms       => [ 'administer_site' ]
         },
         {   name        => MT->translate('Child Site Administrator'),
             description => MT->translate('Can administer the child site.'),
             role_mask   => 2**12,
-            perms       => ['administer_blog']
+            perms       => ['administer_site']
         },
         {   name        => MT->translate('Editor'),
             description => MT->translate(
@@ -350,6 +341,12 @@ sub create_default_roles {
             description => MT->translate('Can comment.'),
             role_mask   => 2**0,
             perms       => ['comment'],
+        },
+        {   name        => MT->translate('Content Designer'),
+            description => MT->translate(
+                'Can manage content types, content datas, edit their own content types, contentdatas.'
+            ),
+            perms => [ 'manage_content_types', 'manage_content_datas' ],
         },
     );
 

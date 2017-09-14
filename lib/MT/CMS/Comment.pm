@@ -900,12 +900,13 @@ sub can_save {
         return $c->entry->author_id == $app->user->id;
     }
     elsif ( $app->can_do('edit_own_entry_comment_without_status') ) {
+        my $status = $app->param('status') || '';
         return ( $c->entry->author_id == $app->user->id )
             && (
               $obj ? $obj->get_status_text eq $original->get_status_text
-            : $c->is_junk      ? 'junk' eq $app->param('status')
-            : $c->is_moderated ? 'moderate' eq $app->param('status')
-            : $c->is_published ? 'publish' eq $app->param('status')
+            : $c->is_junk      ? 'junk' eq $status
+            : $c->is_moderated ? 'moderate' eq $status
+            : $c->is_published ? 'publish' eq $status
             :                    1
             );
     }
@@ -1037,7 +1038,7 @@ sub can_delete_commenter {
     my $author = $app->user;
     return 1 if $author->is_superuser();
     my $perms = $author->permissions( $obj->blog_id );
-    ( $perms && $perms->can_do('administer_blog') );
+    ( $perms && $perms->can_do('administer_site') );
 }
 
 sub build_junk_table {

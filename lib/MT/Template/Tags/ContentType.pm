@@ -47,10 +47,12 @@ content listed by a L<Contentss> tag is reached.
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
+    my $archive_contents = $ctx->stash('archive_contents');
+
     my $terms;
     my $type    = $args->{type};
     my $name    = $args->{name};
-    my $blog_id = $args->{blog_id};
+    my $blog_id = $args->{blog_id} || $ctx->stash('blog_id');
     if ($type) {
         $terms = { unique_id => $type };
     }
@@ -61,10 +63,8 @@ sub _hdlr_contents {
         };
     }
     else {
-        return $ctx->error(
-            MT->translate(
-                '\'type\' or "\'name\' and \'blog_id\'" is required.')
-        );
+        my $tmpl = $ctx->stash('template');
+        $terms = $tmpl->content_type_id;
     }
     my $content_type = MT::ContentType->load($terms)
         or return $ctx->error( MT->translate('Content Type was not found.') );
@@ -92,7 +92,9 @@ sub _hdlr_contents {
     }
 
     my @contents
-        = MT::ContentData->load( { content_type_id => $content_type->id } );
+        = $archive_contents
+        ? @{$archive_contents}
+        : MT::ContentData->load( { content_type_id => $content_type->id } );
 
     my $i       = 0;
     my $res     = '';
@@ -1171,6 +1173,8 @@ sub _hdlr_content_fields {
     my $content_type = $ctx->stash('content_type')
         or return $ctx->_no_content_type_error;
 
+    my $content_field_types = MT->registry('content_field_types');
+
     my @field_data = @{ $content_type->fields };
     my $builder    = $ctx->stash('builder');
     my $tokens     = $ctx->stash('tokens');
@@ -1192,6 +1196,8 @@ sub _hdlr_content_fields {
         local $vars->{content_field_type}      = $f->{type};
         local $vars->{content_field_order}     = $f->{order};
         local $vars->{content_field_options}   = $f->{options};
+        local $vars->{content_field_type_label}
+            = $content_field_types->{ $f->{type} }{label};
 
         my $out = $builder->build( $ctx, $tokens, {%$cond} );
         return $ctx->error( $builder->errstr ) unless defined $out;

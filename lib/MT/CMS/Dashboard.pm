@@ -411,7 +411,7 @@ sub generate_site_stats_data {
         $result->{can_edit_config} = 1
             if $perms->can_do('edit_config')
             || $perms->can_do('set_publish_paths')
-            || $perms->can_do('administer_blog')
+            || $perms->can_do('administer_site')
             || $perms->can_do('administer');
         $result->{error} = $app->errstr if $app->errstr;
 

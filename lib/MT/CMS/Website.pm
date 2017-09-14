@@ -21,7 +21,7 @@ sub edit {
         if $blog && !$id;
 
     return $app->permission_denied()
-        if !$id && !$app->user->can_create_website();
+        if !$id && !$app->user->can_create_site();
 
     my $lang;
     if ($id) {
