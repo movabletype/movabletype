@@ -3193,7 +3193,8 @@ sub delete {
             $app, $obj )
             || return $app->permission_denied();
 
-        my %recipe = $app->publisher->rebuild_deleted_entry(
+        my %recipe;
+        %recipe = $app->publisher->rebuild_deleted_entry(
             Entry => $obj,
             Blog  => $obj->blog
         ) if $obj->status eq MT::Entry::RELEASE();
