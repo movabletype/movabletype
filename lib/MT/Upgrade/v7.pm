@@ -4,7 +4,7 @@ use warnings;
 
 sub upgrade_functions {
     return {
-        'v5_reset_default_widget' => {
+        'v7_reset_default_widget' => {
             version_limit => 7.0009,
             priority      => 5.0,
             updater       => {
