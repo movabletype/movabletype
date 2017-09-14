@@ -13,12 +13,11 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
 
     # FIXME: enumeration of types
     unless ($blog_id) {
-        my $type = $q->param('type') || ( $obj ? $obj->type : '' );
+        my $type = $app->param('type') || ( $obj ? $obj->type : '' );
         return $app->return_to_dashboard( redirect => 1 )
             if $type eq 'archive'
             || $type eq 'individual'
@@ -32,14 +31,14 @@ sub edit {
     # to trigger autosave logic in main edit routine
     $param->{autosave_support} = 1;
 
-    my $type  = $q->param('_type');
+    my $type  = $app->param('_type');
     my $cfg   = $app->config;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     my $can_preview = 0;
 
-    if ( $q->param('reedit') ) {
-        $param->{'revision-note'} = $q->param('revision-note');
-        if ( $q->param('save_revision') ) {
+    if ( $app->param('reedit') ) {
+        $param->{'revision-note'} = $app->param('revision-note');
+        if ( $app->param('save_revision') ) {
             $param->{'save_revision'} = 1;
         }
         else {
@@ -65,7 +64,7 @@ sub edit {
 
     if ($id) {
         if ( $blog && $blog->use_revision ) {
-            my $rn = $q->param('r') || 0;
+            my $rn = $app->param('r') || 0;
             if ( $obj->current_revision > 0 || $rn != $obj->current_revision )
             {
                 my $rev = $obj->load_revision( { rev_number => $rn } );
@@ -79,7 +78,7 @@ sub edit {
                 $param->{rev_date}   = format_ts( "%Y-%m-%d %H:%M:%S",
                     $obj->modified_on, $blog,
                     $app->user ? $app->user->preferred_language : undef );
-                $param->{no_snapshot} = 1 if $q->param('no_snapshot');
+                $param->{no_snapshot} = 1 if $app->param('no_snapshot');
             }
         }
         $param->{nav_templates} = 1;
@@ -159,7 +158,7 @@ sub edit {
         $param->{object_type}  = 'template';
         my $published_url = $obj->published_url;
         $param->{published_url} = $published_url if $published_url;
-        $param->{saved_rebuild} = 1 if $q->param('saved_rebuild');
+        $param->{saved_rebuild} = 1 if $app->param('saved_rebuild');
         require MT::PublishOption;
         $param->{static_maps}
             = (    $obj->build_type != MT::PublishOption::DYNAMIC()
@@ -594,12 +593,11 @@ sub edit {
 
             # Content Fields
             my $app       = shift;
-            my $q         = $app->param;
-            my $blog_id   = $q->param('blog_id');
-            my $at        = $q->param('archive_type');
-            my $ct_id     = $q->param('content_type_id');
-            my $cat_field = $q->param('cat_field');
-            my $dt_field  = $q->param('dt_field');
+            my $blog_id   = $app->param('blog_id');
+            my $at        = $app->param('archive_type');
+            my $ct_id     = $app->param('content_type_id');
+            my $cat_field = $app->param('cat_field');
+            my $dt_field  = $app->param('dt_field');
 
             my $ct = MT::ContentType->load( $obj->content_type_id );
             my $fields = $ct ? $ct->fields : [];
@@ -638,7 +636,7 @@ sub edit {
         }
     }
     else {
-        my $new_tmpl = $q->param('create_new_template');
+        my $new_tmpl = $app->param('create_new_template');
         my $template_type;
         if ($new_tmpl) {
             if ( $new_tmpl =~ m/^blank:(.+)/ ) {
@@ -668,7 +666,7 @@ sub edit {
             }
         }
         else {
-            $template_type = $q->param('type');
+            $template_type = $app->param('type');
             $template_type = 'custom' if 'module' eq $template_type;
             $param->{type} = $template_type;
         }
