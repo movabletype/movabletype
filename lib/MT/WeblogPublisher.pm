@@ -1916,12 +1916,16 @@ sub rebuild_from_fileinfo {
     return 1 if $at eq 'None';
 
     my ( $start, $end );
-    my $blog = MT::Blog->load( $fi->blog_id )
-        if $fi->blog_id;
-    my $entry = MT::Entry->load( $fi->entry_id )
-        or return $pub->error(
-        MT->translate( "Parameter '[_1]' is required", 'Entry' ) )
-        if $fi->entry_id;
+    my $blog;
+    if ( $fi->blog_id ) {
+        $blog = MT::Blog->load( $fi->blog_id );
+    }
+    my $entry;
+    if ( $fi->entry_id ) {
+        $entry = MT::Entry->load( $fi->entry_id )
+            or return $pub->error(
+            MT->translate( "Parameter '[_1]' is required", 'Entry' ) );
+    }
     if ( $fi->startdate ) {
         my $archiver = $pub->archiver($at);
 
@@ -1932,10 +1936,14 @@ sub rebuild_from_fileinfo {
                 MT->translate( "Parameter '[_1]' is required", 'Entry' ) );
         }
     }
-    my $cat = MT::Category->load( $fi->category_id )
-        if $fi->category_id;
-    my $author = MT::Author->load( $fi->author_id )
-        if $fi->author_id;
+    my $cat;
+    if ( $fi->category_id ) {
+        $cat = MT::Category->load( $fi->category_id );
+    }
+    my $author;
+    if ( $fi->author_id ) {
+        $author = MT::Author->load( $fi->author_id );
+    }
 
     ## Load the template-archive-type map entries for this blog and
     ## archive type. We do this before we load the list of entries, because
