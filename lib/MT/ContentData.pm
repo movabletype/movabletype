@@ -161,7 +161,7 @@ sub save {
 
     # Week Number for authored_on
     if ( my $week_number = _get_week_number( $self, 'authored_on' ) ) {
-        $self->week_number( $week_number )
+        $self->week_number($week_number)
             if $week_number != ( $self->week_number || 0 );
     }
 
@@ -213,8 +213,10 @@ sub save {
 
             # Week Number for Content Field
             if ( $idx_type eq 'date_and_time' || $idx_type eq 'date' ) {
-                if ( my $week_number = _get_week_number( $cf_idx, 'value_datetime' ) ) {
-                    $cf_idx->value_integer( $week_number );
+                if ( my $week_number
+                    = _get_week_number( $cf_idx, 'value_datetime' ) )
+                {
+                    $cf_idx->value_integer($week_number);
                 }
             }
 
@@ -853,6 +855,24 @@ sub _get_week_number {
         return $yr * 100 + $w;
     }
     return undef;
+}
+
+sub archive_file {
+    my $self = shift;
+    my ($at) = @_;
+    my $blog = $self->blog or return '';
+    $at ||= 'ContentType';    # should check $blog->archive_type here
+    my $file = MT::Util::archive_file_for( $self, $blog, $at );
+    $file = '' unless defined $file;
+    return $file;
+}
+
+sub archive_url {
+    my $self = shift;
+    my $blog = $self->blog or return;
+    my $url = $blog->archive_url || '';
+    $url .= '/' unless $url =~ m!/$!;
+    $url . $self->archive_file(@_);
 }
 
 1;
