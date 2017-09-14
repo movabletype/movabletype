@@ -1196,10 +1196,9 @@ sub list {
 
 sub preview {
     my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $blog    = $app->blog;
-    my $id      = $q->param('id');
+    my $id      = $app->param('id');
     my $tmpl;
     my $user_id = $app->user->id;
 
@@ -1229,7 +1228,7 @@ sub preview {
 
     my $names = $tmpl->column_names;
     my %values = map { $_ => scalar $app->param($_) } @$names;
-    delete $values{'id'} unless $q->param('id');
+    delete $values{'id'} unless $id;
 
     ## Strip linefeed characters.
     for my $col (qw( text )) {
@@ -1480,15 +1479,16 @@ sub preview {
     $param{new_object} = $param{id} ? 0 : 1;
     $param{name} = $tmpl->name;
     if ( $type ne 'index' ) {
-        $q->param( 'build_dynamic', $tmpl->build_dynamic );
-        $q->param( 'build_type',    $tmpl->build_type );
+        $app->param( 'build_dynamic', $tmpl->build_dynamic );
+        $app->param( 'build_type',    $tmpl->build_type );
     }
     my $cols = $tmpl->column_names;
     for my $col ( ( @$cols, 'save_revision', 'revision-note' ) ) {
+        my $value = $app->param($col);
         push @data,
             {
             data_name  => $col,
-            data_value => scalar $q->param($col)
+            data_value => $value
             };
     }
 
@@ -1496,10 +1496,11 @@ sub preview {
     my @p = $app->multi_param;
     for my $p (@p) {
         if ( $p =~ /^archive_file_tmpl_(\d+)$/ ) {
+            my $value = $app->param($p);
             push @data,
                 {
                 data_name  => 'archive_file_tmpl_' . $1,
-                data_value => scalar $q->param($p)
+                data_value => $value
                 };
         }
     }
