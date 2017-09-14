@@ -122,7 +122,8 @@ sub init_request {
           $blog->entries_on_index ? $blog->entries_on_index
         : $cfg->SearchMaxResults
         );
-    my $offset = ( $page - 1 ) * $limit if ( $page && $limit );
+    my $offset;
+    $offset = ( $page - 1 ) * $limit if ( $page && $limit );
     $q->param( 'limit',  $limit )  if $limit;
     $q->param( 'offset', $offset ) if $offset;
 
