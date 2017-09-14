@@ -592,7 +592,6 @@ sub edit {
             }
 
             # Content Fields
-            my $app       = shift;
             my $blog_id   = $app->param('blog_id');
             my $at        = $app->param('archive_type');
             my $ct_id     = $app->param('content_type_id');
@@ -2213,8 +2212,7 @@ sub build_template_table {
     my %blogs;
     while ( my $tmpl = $iter->() ) {
         my $blog;
-        $blog = $blogs{ $tmpl->blog_id }
-            ||= MT::Blog->load( $tmpl->blog_id )
+        $blog = $blogs{ $tmpl->blog_id } ||= MT::Blog->load( $tmpl->blog_id )
             if $tmpl->blog_id;
 
         my $row = $tmpl->get_values;
