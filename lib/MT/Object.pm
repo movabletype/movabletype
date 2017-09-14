@@ -1346,7 +1346,8 @@ sub column_as_datetime {
         }
         my ( $y, $mo, $d, $h, $m, $s )
             = $ts
-            =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
+            =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/
+            or return;
         require MT::DateTime;
         my $four_digit_offset;
         if ($blog) {
