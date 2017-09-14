@@ -143,33 +143,9 @@ sub edit {
     # Content Field Options
     foreach my $key ( keys %$content_field_types ) {
 
-        # Template
-        if ( my $options_html = $content_field_types->{$key}{options_html} ) {
-            if ( !ref $options_html ) {
-                if ( $options_html =~ /\.tmpl$/ ) {
-                    my $plugin = $content_field_types->{$key}{plugin};
-                    $options_html
-                        = $plugin->id eq 'core'
-                        ? $app->load_tmpl($options_html)
-                        : $plugin->load_tmpl($options_html);
-                    $options_html = $options_html->text if $options_html;
-                }
-                else {
-                    $options_html = MT->handler_to_coderef($options_html);
-                }
-            }
-            if ( 'CODE' eq ref $options_html ) {
-                push @{ $param->{options_htmls} },
-                    { id => $key, html => $options_html->( $app, $key ) };
-            }
-            else {
-                push @{ $param->{options_htmls} },
-                    { id => $key, html => $options_html };
-            }
-        }
-
         # Params
-        if ( my $options_html_params = $content_field_types->{$key}{options_html_params} ) {
+        my $options_html_params = $content_field_types->{$key}{options_html_params};
+        if ( $options_html_params ) {
             if ( !ref $options_html_params ) {
                 $options_html_params
                     = MT->handler_to_coderef($options_html_params);
@@ -177,13 +153,43 @@ sub edit {
             if ( 'CODE' eq ref $options_html_params ) {
                 $options_html_params = $options_html_params->( $app, $param );
             }
+        }
 
-            if ( ref $options_html_params eq 'HASH' ) {
-                for my $key ( keys %{$options_html_params} ) {
-                    unless ( exists $_->{$key} ) {
-                        $_->{$key} = $options_html_params->{$key};
-                    }
+        # Template
+        if ( my $options_html = $content_field_types->{$key}{options_html} ) {
+            my $plugin = $content_field_types->{$key}{plugin};
+            my $tmpl;
+            if ( !ref $options_html ) {
+                if ( $options_html =~ /\.tmpl$/ ) {
+                    $tmpl
+                        = $plugin->id eq 'core'
+                        ? $app->load_tmpl($options_html)
+                        : $plugin->load_tmpl($options_html);
                 }
+                else {
+                    $options_html = MT->handler_to_coderef($options_html);
+                }
+            }
+            if ( 'CODE' eq ref $options_html ) {
+                $options_html =  $options_html->( $plugin );
+
+                require MT::Template;
+                $tmpl = MT::Template->new(
+                    type   => 'scalarref',
+                    source => ref $options_html
+                    ? $options_html
+                    : \$options_html
+                );
+            }
+
+            if ( $tmpl ) {
+                $tmpl->param( $options_html_params )
+                    if $options_html_params;
+                my $out = $tmpl->output();
+                $out = $plugin->translate_templatized($out)
+                    if $plugin->id ne 'core' and $out =~ m/<(?:__trans|mt_trans) /i;
+                push @{ $param->{options_htmls} },
+                    { id => $key, html => $out };
             }
         }
     }
