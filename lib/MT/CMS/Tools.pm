@@ -2397,7 +2397,8 @@ sub dialog_restore_upload {
         }
     }
 
-    my $assets = JSON::from_json( decode_html($assets_json) )
+    my $assets;
+    $assets = JSON::from_json( decode_html($assets_json) )
         if ( defined($assets_json) && $assets_json );
     $assets = [] if !defined($assets);
     my $asset;
