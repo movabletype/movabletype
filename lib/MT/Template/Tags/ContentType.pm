@@ -40,7 +40,7 @@ content listed by a L<Contents> tag is reached.
 The contents of this container tag will be displayed when the last
 content listed by a L<Contentss> tag is reached.
 
-=for tags entries
+=for tags contents 
 
 =cut
 
@@ -52,6 +52,7 @@ sub _hdlr_contents {
     my $name    = $args->{name};
     my $at      = $ctx->{current_archive_type} || $ctx->{archive_type};
     my $blog_id = $args->{blog_id} || $ctx->stash('blog_id');
+    my $blog    = $ctx->stash('blog');
     if ($type) {
         $terms = { unique_id => $type };
     }
@@ -247,11 +248,32 @@ sub _hdlr_contents {
         }
     }
 
+    # Adds an author filter to the filters list.
+    if ( my $author_name = $args->{author} ) {
+        require MT::Author;
+        my $author = MT::Author->load( { name => $author_name } )
+            or return $ctx->error(
+            MT->translate( "No such user '[_1]'", $author_name ) );
+        if ($archive_contents) {
+            push @filters, sub { $_[0]->author_id == $author->id };
+        }
+        else {
+            $terms{author_id} = $author->id;
+        }
+    }
+
     my $published = $ctx->{__stash}{content_ids_published} ||= {};
     if ( $args->{unique} ) {
         push @filters, sub { !exists $published->{ $_[0]->id } }
     }
 
+    $terms{content_type_id} = $content_type->id;
+
+    my $namespace        = $args->{namespace};
+    my $no_resort        = 0;
+    my $post_sort_limit  = 0;
+    my $post_sort_offset = 0;
+    my @contents;
     if ( !$archive_contents ) {
         my ( $start, $end )
             = ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} );
@@ -261,10 +283,17 @@ sub _hdlr_contents {
                 push @{ $args{joins} },
                     MT::ContentFieldIndex->join_on(
                     'content_data_id',
-                    {   content_field_id => $dt_field_id,
-                        value_datetime   => { op => '>=', value => $start },
-                        value_datetime   => { op => '<=', value => $end },
-                    },
+                    [   { content_field_id => $dt_field_id },
+                        '-and',
+                        [   {   value_datetime =>
+                                    { op => '>=', value => $start }
+                            },
+                            '-and',
+                            {   value_datetime =>
+                                    { op => '<=', value => $end }
+                            }
+                        ],
+                    ],
                     { alias => 'dt_cf_idx' }
                     );
             }
@@ -273,14 +302,285 @@ sub _hdlr_contents {
                 $args{range_incl}{authored_on} = 1;
             }
         }
+        if ( my $days = $args->{days} ) {
+            my @ago = offset_time_list( time - 3600 * 24 * $days, $blog_id );
+            my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
+                $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
+            $terms{authored_on} = [$ago];
+            $args{range_incl}{authored_on} = 1;
+        }
+        else {
+
+            # Check attributes
+            my $found_valid_args = 0;
+            foreach my $valid_key (
+                'lastn',     'category', 'categories', 'tag',
+                'tags',      'author',   'days',       'min_score',
+                'max_score', 'min_rate', 'max_rate',   'min_count',
+                'max_count'
+                )
+            {
+                if ( exists( $args->{$valid_key} ) ) {
+                    $found_valid_args = 1;
+                    last;
+                }
+            }
+
+            if ( !$found_valid_args ) {
+
+                # Uses weblog settings
+                if ( my $days = $blog ? $blog->days_on_index : 10 ) {
+                    my @ago = offset_time_list( time - 3600 * 24 * $days,
+                        $blog_id );
+                    my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
+                        $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
+                    $terms{authored_on} = [$ago];
+                    $args{range_incl}{authored_on} = 1;
+                }
+                elsif ( my $limit = $blog ? $blog->entries_on_index : 10 ) {
+                    $args->{lastn} = $limit;
+                }
+            }
+        }
+
+        # Adds class_type
+        $terms{class} = $class_type;
+
+        $args{'sort'} = 'authored_on';
+        if ( $args->{sort_by} ) {
+            $args->{sort_by} =~ s/:/./;    # for meta:name => meta.name
+            $args->{sort_by} = 'ping_count'
+                if $args->{sort_by} eq 'trackback_count';
+            if ( $class->is_meta_column( $args->{sort_by} ) ) {
+                $post_sort_limit  = delete( $args->{limit} )  || 0;
+                $post_sort_offset = delete( $args->{offset} ) || 0;
+                if ( $post_sort_limit || $post_sort_offset ) {
+                    delete $args->{lastn};
+                }
+                $no_resort = 0;
+            }
+            elsif ( $class->has_column( $args->{sort_by} ) ) {
+                $args{sort} = $args->{sort_by};
+                $no_resort = 1;
+            }
+            elsif (
+                $args->{limit}
+                && (   'score' eq $args->{sort_by}
+                    || 'rate' eq $args->{sort_by} )
+                )
+            {
+                $post_sort_limit  = delete( $args->{limit} )  || 0;
+                $post_sort_offset = delete( $args->{offset} ) || 0;
+                if ( $post_sort_limit || $post_sort_offset ) {
+                    delete $args->{lastn};
+                }
+                $no_resort = 0;
+            }
+        }
+
+        if (%fields) {
+
+            # specifies we need a join with entry_meta;
+            # for now, we support one join
+            my ( $col, $val ) = %fields;
+            my $type = MT::Meta->metadata_by_name( $class, 'field.' . $col );
+            $args{join} = [
+                $class->meta_pkg,
+                undef,
+                {   type          => 'field.' . $col,
+                    $type->{type} => $val,
+                    'entry_id'    => \'= entry_id'
+                }
+            ];
+        }
+
+        if ( !@filters ) {
+            if ( ( my $last = $args->{lastn} ) && ( !exists $args->{limit} ) )
+            {
+                $args{sort} = [
+                    { column => 'authored_on', desc => 'DESC' },
+                    { column => 'id',          desc => 'DESC' },
+                ];
+                $args{limit} = $last;
+                $no_resort = 0 if $args->{sort_by};
+            }
+            else {
+                if ( $args{sort} eq 'authored_on' ) {
+                    my $dir = $args->{sort_order} || 'descend';
+                    $dir = ( 'descend' eq $dir ) ? "DESC" : "ASC";
+                    $args{sort} = [
+                        { column => 'authored_on', desc => $dir },
+                        { column => 'id',          desc => $dir },
+                    ];
+                }
+                else {
+                    $args{direction} = $args->{sort_order} || 'descend';
+                }
+                $no_resort = 1 unless $args->{sort_by};
+                if (   ( my $last = $args->{lastn} )
+                    && ( exists $args->{limit} ) )
+                {
+                    $args{limit} = $last;
+                }
+            }
+            $args{offset} = $args->{offset} if $args->{offset};
+
+            #if ( $args->{recently_commented_on} ) {
+            #    my $contents_iter
+            #        = _rco_contents_iter( \%terms, \%args, \%blog_terms,
+            #        \%blog_args );
+            #    my $limit = $args->{recently_commented_on};
+            #    while ( my $e = $entries_iter->() ) {
+            #        push @entries, $e;
+            #        last unless --$limit;
+            #    }
+            #    $no_resort = $args->{sort_order} || $args->{sort_by} ? 0 : 1;
+            #}
+            #else {
+            @contents = $class->load( \%terms, \%args );
+
+            #}
+        }
+        else {
+            if ( ( $args->{lastn} ) && ( !exists $args->{limit} ) ) {
+                $args{direction} = 'descend';
+                $args{sort}      = 'authored_on';
+                $no_resort = 0 if $args->{sort_by};
+            }
+            else {
+                $args{direction} = $args->{sort_order} || 'descend';
+                $no_resort = 1 unless $args->{sort_by};
+            }
+            my $iter;
+
+            #if ( $args->{recently_commented_on} ) {
+            #    $args->{lastn} = $args->{recently_commented_on};
+            #    $iter = _rco_entries_iter( \%terms, \%args, \%blog_terms,
+            #        \%blog_args );
+            #    $no_resort = $args->{sort_order} || $args->{sort_by} ? 0 : 1;
+            #}
+            #else {
+            $iter = $class->load_iter( \%terms, \%args );
+
+            #}
+            my $i   = 0;
+            my $j   = 0;
+            my $off = $args->{offset} || 0;
+            my $n   = $args->{lastn};
+        ENTRY: while ( my $c = $iter->() ) {
+                for (@filters) {
+                    next ENTRY unless $_->($c);
+                }
+                next if $off && $j++ < $off;
+                push @contents, $c;
+                $i++;
+                $iter->end, last if $n && $i >= $n;
+            }
+        }
+    }
+    else {
+
+        # Don't resort a predefined list that's not in a published archive
+        # page when we didn't request sorting.
+        if ( $args->{sort_by} || $args->{sort_order} || $ctx->{archive_type} )
+        {
+            my $so
+                = $args->{sort_order}
+                || ( $blog ? $blog->sort_order_posts : undef )
+                || '';
+            my $col = $args->{sort_by} || 'authored_on';
+            if ( $col ne 'score' ) {
+                if ( my $def = $class->column_def($col) ) {
+                    if ( $def->{type} =~ m/^integer|float$/ ) {
+                        @$archive_contents
+                            = $so eq 'ascend'
+                            ? sort { $a->$col() <=> $b->$col() }
+                            @$archive_contents
+                            : sort { $b->$col() <=> $a->$col() }
+                            @$archive_contents;
+                    }
+                    else {
+                        @$archive_contents
+                            = $so eq 'ascend'
+                            ? sort { $a->$col() cmp $b->$col() }
+                            @$archive_contents
+                            : sort { $b->$col() cmp $a->$col() }
+                            @$archive_contents;
+                    }
+                    $no_resort = 1;
+                }
+                else {
+                    $col =~ s/(^field):(.*)/$1.$2/ig;
+                    if ( $class->is_meta_column($col) ) {
+                        my $type = MT::Meta->metadata_by_name( $class, $col );
+                        no warnings;
+                        if ( $type->{type} =~ m/integer|float/ ) {
+                            @$archive_contents
+                                = $so eq 'ascend'
+                                ? sort { $a->$col() <=> $b->$col() }
+                                @$archive_contents
+                                : sort { $b->$col() <=> $a->$col() }
+                                @$archive_contents;
+                        }
+                        else {
+                            @$archive_contents
+                                = $so eq 'ascend'
+                                ? sort { $a->$col() cmp $b->$col() }
+                                @$archive_contents
+                                : sort { $b->$col() cmp $a->$col() }
+                                @$archive_contents;
+                        }
+                        $no_resort = 1;
+                    }
+                }
+            }
+        }
+        else {
+            $no_resort = 1;
+        }
+
+        if (@filters) {
+            my $i   = 0;
+            my $j   = 0;
+            my $off = $args->{offset} || 0;
+            my $n   = $args->{lastn};
+        ENTRY2: foreach my $c (@$archive_contents) {
+                for (@filters) {
+                    next ENTRY2 unless $_->($c);
+                }
+                next if $off && $j++ < $off;
+                push @contents, $c;
+                $i++;
+                last if $n && $i >= $n;
+            }
+        }
+        else {
+            my $offset;
+            if ( $offset = $args->{offset} ) {
+                if ( $offset < scalar @$archive_contents ) {
+                    @contents
+                        = @$archive_contents[ $offset .. $#$archive_contents
+                        ];
+                }
+                else {
+                    @contents = ();
+                }
+            }
+            else {
+                @contents = @$archive_contents;
+            }
+            if ( my $last = $args->{lastn} ) {
+                if ( scalar @contents > $last ) {
+                    @contents = @contents[ 0 .. $last - 1 ];
+                }
+            }
+        }
     }
 
-    $terms{content_type_id} = $content_type->id;
-
-    my @contents
-        = $archive_contents
-        ? @{$archive_contents}
-        : MT::ContentData->load( \%terms, \%args );
+    #my @contents
+    #    = $archive_contents
+    #    ? @{$archive_contents}
+    #    : MT::ContentData->load( \%terms, \%args );
 
     my $i       = 0;
     my $res     = '';
