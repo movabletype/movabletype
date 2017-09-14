@@ -165,19 +165,14 @@ sub get_target_user {
                 : $app->error( $app->translate('User not found'), 404 );
         };
 
-        if ( $app->current_api_version == 1 ) {
-            return $active_user_or_error->();
-        }
-        else {
+        if ( $app->current_api_version != 1 ) {
             my $login_user = $app->user;
 
             if ( $login_user->is_superuser || $login_user->id == $user->id ) {
                 return $user;
             }
-            else {
-                return $active_user_or_error->();
-            }
         }
+        return $active_user_or_error->();
     }
 }
 
