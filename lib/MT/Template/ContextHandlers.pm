@@ -52,8 +52,10 @@ sub core_tags {
             'App:SettingGroup' =>
                 \&MT::Template::Tags::App::_hdlr_app_setting_group,
             'App:Form' => \&MT::Template::Tags::App::_hdlr_app_form,
-            'App:ContentFieldOptionGroup' => \&MT::Template::Tags::App::_hdlr_app_contentfield_option_group,
-            'App:ContentFieldOption' => \&MT::Template::Tags::App::_hdlr_app_contentfield_option,
+            'App:ContentFieldOptionGroup' =>
+                \&MT::Template::Tags::App::_hdlr_app_contentfield_option_group,
+            'App:ContentFieldOption' =>
+                \&MT::Template::Tags::App::_hdlr_app_contentfield_option,
 
             ## Site
             Sites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
@@ -3207,7 +3209,12 @@ sub _hdlr_app_setting {
     }
 
     # 'Required' indicator plus CSS class
-    my $req       = $args->{required} ? qq{ <span class="badge badge-danger">} . MT->translate('Required') . qq{</span>} : "";
+    my $req
+        = $args->{required}
+        ? qq{ <span class="badge badge-danger">}
+        . MT->translate('Required')
+        . qq{</span>}
+        : "";
     my $req_class = $args->{required} ? " required" : "";
 
     my $insides = $ctx->slurp( $args, $cond );
@@ -4210,8 +4217,44 @@ sub _hdlr_app_contentfield_option_group {
 
     # Build inside tags
     my $insides = $ctx->slurp( $args, $cond );
-    return <<"EOT";
+    return $ctx->build(<<"EOT");
 <$type>
+
+  <mtapp:ContentFieldOption
+     id="single_line_text-label"
+     label="<__trans phrase="Label">"
+     required="1">
+    <input type="text" name="single_line_text-label" id="single_line_text-label" class="text med form-control">
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="single_line_text-description"
+     label="<__trans phrase="Description">"
+     show_hint="1"
+     hint="<__trans phrase="The entered message is displayed as a input field hint.">">
+    <input type="text" name="single_line_text-description" id="single_line_text-description" class="form-control" aria-describedby="single_line_text-description-field-help">
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="single_line_text-required"
+     label="<__trans phrase="Is this field required?">">
+    <input type="checkbox" class="mt-switch form-control" id="single_line_text-required" /><label for="single_line_text-required"><__trans phrase="Is this field required?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="single_line_text-display"
+     label="<__trans phrase="Display Options">"
+     required="1"
+     show_hint="1"
+     hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
+    <select name="single_line_text-display" id="single_line_text-display" aria-describedby="singleLineTextDisplay">
+      <option value="force"><__trans phrase="Force"></option>
+      <option value="default" selected="selected"><__trans phrase="Default"></option>
+      <option value="optional"><__trans phrase="Optional"></option>
+      <option value="none"><__trans phrase="None"></option>
+    </select>
+  </mtapp:ContentFieldOption>
+
   $insides
 
   this.on('mount', function() {
@@ -4282,39 +4325,43 @@ sub _hdlr_app_contentfield_option {
     return $ctx->error("'id' attribute missing") unless $id;
 
     # label
-    my $label       = $args->{label};
-    my $show_label  = exists $args->{show_label} ? $args->{show_label} : 1;
-    my $label_for   = '';
+    my $label      = $args->{label};
+    my $show_label = exists $args->{show_label} ? $args->{show_label} : 1;
+    my $label_for  = '';
     if ( $label && $show_label ) {
         $label_for = qq{ for="$id"};
     }
     else {
-        $label     = '';
+        $label = '';
     }
 
     # hint
-    my $hint        = $args->{hint} || "";
-    my $show_hint   = $args->{show_hint} || 0;
+    my $hint      = $args->{hint}      || "";
+    my $show_hint = $args->{show_hint} || 0;
     if ( $hint && $show_hint ) {
         my $hint_id = "$id-field-help";
-        $hint = qq{\n<small id="$hint_id" class="form-text text-muted">$hint</small>};
+        $hint
+            = qq{\n<small id="$hint_id" class="form-text text-muted">$hint</small>};
     }
     else {
         $hint = '';
     }
 
     # 'Required' indicator plus CSS class
-    my $req = '';
+    my $req       = '';
     my $req_class = '';
     if ( $args->{required} ) {
-        $req =  qq{ <span class="badge badge-danger">} . MT->translate('Required') . qq{</span>};
+        $req
+            = qq{ <span class="badge badge-danger">}
+            . MT->translate('Required')
+            . qq{</span>};
         $req_class = ' required';
     }
 
     # Build inside
     my $insides = $ctx->slurp( $args, $cond );
 
-   return $ctx->build(<<"EOT");
+    return $ctx->build(<<"EOT");
   <div id="${id}" class="form-group$req_class">
     <label$label_for>$label$req</label>
     $insides$hint
