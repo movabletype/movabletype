@@ -229,7 +229,8 @@ sub build_plugin_table {
             }
             my $plugin_name = remove_html( $plugin->name() );
             my $config_link = $plugin->config_link();
-            my $plugin_page
+            my $plugin_page;
+            $plugin_page
                 = ( $cgi_path . '/' . $plugin->envelope . '/' . $config_link )
                 if $config_link;
             my $doc_link = $plugin->doc_link;
