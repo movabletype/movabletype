@@ -3310,9 +3310,9 @@ sub run {
                           <div class="col-12">
                             <div class="card debug-panel" style="margin: 0 -15px;">
                               <div class="card-header text-white" style="background: #EF7678;">
-                                <h4 class="card-title">$debug_panel_header</h4>
+                                <h4 class="my-0">$debug_panel_header</h4>
                               </div>
-                              <div class="card-block debug-panel-inner" style="background: #FFE0E0;">
+                              <div class="card-block p-4 debug-panel-inner" style="background: #FFE0E0;">
                                 <ul class="list-unstyled">
                                   $trace
                                 </ul>
