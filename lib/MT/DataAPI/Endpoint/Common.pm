@@ -151,7 +151,8 @@ sub resource_objects {
 sub get_target_user {
     my ($app) = @_;
 
-    if ( $app->param('user_id') eq 'me' ) {
+    my $user_id = $app->param('user_id') || '';
+    if ( $user_id eq 'me' ) {
         my $user = $app->user;
         $user->is_anonymous ? $app->error(401) : $user;
     }
