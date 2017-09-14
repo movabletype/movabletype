@@ -159,12 +159,6 @@ sub get_target_user {
     else {
         my ($user) = context_objects(@_);
 
-        my $active_user_or_error = sub {
-            ( $user && $user->status == MT::Author::ACTIVE() )
-                ? $user
-                : $app->error( $app->translate('User not found'), 404 );
-        };
-
         if ( $app->current_api_version != 1 ) {
             my $login_user = $app->user;
 
@@ -172,7 +166,8 @@ sub get_target_user {
                 return $user;
             }
         }
-        return $active_user_or_error->();
+        return $user if $user && $user->status == MT::Author::ACTIVE();
+        return $app->error( $app->translate('User not found'), 404 );
     }
 }
 
