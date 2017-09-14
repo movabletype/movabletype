@@ -1558,7 +1558,8 @@ sub restore {
 
     my ($fh) = $app->upload_info('file');
     my $uploaded = $q->param('file');
-    my ( $volume, $directories, $uploaded_filename )
+    my ( $volume, $directories, $uploaded_filename );
+    ( $volume, $directories, $uploaded_filename )
         = File::Spec->splitpath($uploaded)
         if defined($uploaded);
     $app->mode('start_restore');
