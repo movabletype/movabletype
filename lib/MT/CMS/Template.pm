@@ -1853,19 +1853,18 @@ sub add_map {
     return $app->error( $app->translate('No permissions') )
         unless $app->can_do('edit_templates');
 
-    my $q = $app->param;
-
     require MT::TemplateMap;
-    my $blog_id     = $q->param('blog_id');
-    my $template_id = $q->param('template_id');
-    my $at          = $q->param('new_archive_type');
+    my $blog_id     = $app->param('blog_id');
+    my $template_id = $app->param('template_id');
+    my $at          = $app->param('new_archive_type');
     my $exist       = MT::TemplateMap->exist(
         {   blog_id      => $blog_id,
             archive_type => $at
         }
     );
-    my $cat_field_id = $q->param('cat_field_id');
-    my $dt_field_id  = $q->param('dt_field_id');
+    my $file_template = $app->param('file_template');
+    my $cat_field_id  = $app->param('cat_field_id');
+    my $dt_field_id   = $app->param('dt_field_id');
 
     $app->model('template')
         ->load( { id => $template_id, blog_id => $blog_id } )
@@ -1877,6 +1876,7 @@ sub add_map {
     $map->template_id($template_id);
     $map->blog_id($blog_id);
     $map->archive_type($at);
+    $map->file_template($file_template);
     $map->cat_field_id($cat_field_id) if $cat_field_id;
     $map->dt_field_id($dt_field_id)   if $dt_field_id;
     $map->save
@@ -2215,8 +2215,7 @@ sub build_template_table {
     my %blogs;
     while ( my $tmpl = $iter->() ) {
         my $blog;
-        $blog = $blogs{ $tmpl->blog_id }
-            ||= MT::Blog->load( $tmpl->blog_id )
+        $blog = $blogs{ $tmpl->blog_id } ||= MT::Blog->load( $tmpl->blog_id )
             if $tmpl->blog_id;
 
         my $row = $tmpl->get_values;
