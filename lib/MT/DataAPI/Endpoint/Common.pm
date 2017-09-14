@@ -363,7 +363,8 @@ sub filtered_list {
     my $props = MT::ListProperty->list_properties($ds) || {};
 
     for my $key ( split ',', ( $app->param('filterKeys') || '' ) ) {
-        if ( defined( $app->param($key) ) ) {
+        my $value = $app->param($key);
+        if ( defined $value ) {
             ( my $obj_key = $key ) =~ s/([A-Z])/_\l$1/g;
             $obj_key =~ s/s\z// unless exists $props->{$obj_key};
 
@@ -380,7 +381,7 @@ sub filtered_list {
                                     },
                                 };
                                 } grep {$_}
-                                split( ',', scalar( $app->param($key) ) )
+                                split( ',', $value )
                         ],
                     },
                 }
