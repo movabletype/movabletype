@@ -341,13 +341,18 @@ sub save {
 
     my $convert_breaks = {};
     my $data           = {};
-    foreach my $f (@$field_data) {
-        my $content_field_type = $content_field_types->{ $f->{type} };
-        $data->{ $f->{id} }
-            = _get_form_data( $app, $content_field_type, $f );
-        if ( $f->{type} eq 'multi_line_text' ) {
-            $convert_breaks->{ $f->{id} } = $app->param(
-                'content-field-' . $f->{id} . '_convert_breaks' );
+    if ( $app->param('_preview_file') ) {
+        $data = JSON::decode_json( scalar $app->param('serialized_data') );
+    }
+    else {
+        foreach my $f (@$field_data) {
+            my $content_field_type = $content_field_types->{ $f->{type} };
+            $data->{ $f->{id} }
+                = _get_form_data( $app, $content_field_type, $f );
+            if ( $f->{type} eq 'multi_line_text' ) {
+                $convert_breaks->{ $f->{id} } = $app->param(
+                    'content-field-' . $f->{id} . '_convert_breaks' );
+            }
         }
     }
 
