@@ -143,6 +143,7 @@ sub _number_registry {
                 use_blank => 1,
             },
         },
+        options_html => 'content_field_type_options/number.tmpl',
         options => [
             qw(
                 label
