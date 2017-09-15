@@ -1990,17 +1990,18 @@ sub start_background_task {
     eval { require bytes; 1; };
 
     sub addbin {
-        my ( $a, $b ) = @_;
-        my $length = ( length $a > length $b ? length $a : length $b );
+        my ( $left, $right ) = @_;
+        my $length
+            = ( length $left > length $right ? length $left : length $right );
 
-        $a = "\0" x ( $length - ( length $a ) ) . $a;
-        $b = "\0" x ( $length - ( length $b ) ) . $b;
+        $left  = "\0" x ( $length - ( length $left ) ) . $left;
+        $right = "\0" x ( $length - ( length $right ) ) . $right;
         my $carry  = 0;
         my $result = '';
         for ( my $i = 1; $i <= $length; $i++ ) {
-            my $adigit = ord( substr( $a, -$i, 1 ) );
-            my $bdigit = ord( substr( $b, -$i, 1 ) );
-            my $rdigit = $adigit + $bdigit + $carry;
+            my $left_digit  = ord( substr( $left,  -$i, 1 ) );
+            my $right_digit = ord( substr( $right, -$i, 1 ) );
+            my $rdigit      = $left_digit + $right_digit + $carry;
             $carry  = $rdigit / 256;
             $result = chr( $rdigit % 256 ) . $result;
         }
