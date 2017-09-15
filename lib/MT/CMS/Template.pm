@@ -1568,7 +1568,6 @@ sub create_preview_content {
 ## Unused?
 sub reset_blog_templates {
     my $app   = shift;
-    my $q     = $app->param;
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
     return $app->permission_denied()
@@ -1679,7 +1678,6 @@ sub _generate_map_table {
 
 sub _populate_archive_loop {
     my $app = shift;
-    my $q   = $app->param;
     my ( $blog, $obj ) = @_;
 
     my $index = $app->config('IndexBasename');
@@ -1710,7 +1708,7 @@ sub _populate_archive_loop {
             = 1
             if $blog->archive_type_preferred;
         my $selected_file_template
-            = $q->param( 'archive_file_tmpl_' . $map->{map_id} );
+            = $app->param( 'archive_file_tmpl_' . $map->{map_id} );
         $map->{file_template}
             = $selected_file_template ? $selected_file_template
             : $map_obj->file_template ? $map_obj->file_template
