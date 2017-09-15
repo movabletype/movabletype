@@ -683,9 +683,6 @@ sub raw_archive_url {
     my $archive_url = $blog->column('archive_url') || '';
     if ( my ( $subdomain, $path ) = split( '/::/', $archive_url ) ) {
         return ( $subdomain, $path );
-        if ( $subdomain ne $archive_url ) {
-            return ( $subdomain, $path );
-        }
     }
     return $archive_url;
 }
