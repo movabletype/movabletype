@@ -13,12 +13,11 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
 
     # FIXME: enumeration of types
     unless ($blog_id) {
-        my $type = $q->param('type') || ( $obj ? $obj->type : '' );
+        my $type = $app->param('type') || ( $obj ? $obj->type : '' );
         return $app->return_to_dashboard( redirect => 1 )
             if $type eq 'archive'
             || $type eq 'individual'
@@ -32,14 +31,14 @@ sub edit {
     # to trigger autosave logic in main edit routine
     $param->{autosave_support} = 1;
 
-    my $type  = $q->param('_type');
+    my $type  = $app->param('_type');
     my $cfg   = $app->config;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     my $can_preview = 0;
 
-    if ( $q->param('reedit') ) {
-        $param->{'revision-note'} = $q->param('revision-note');
-        if ( $q->param('save_revision') ) {
+    if ( $app->param('reedit') ) {
+        $param->{'revision-note'} = $app->param('revision-note');
+        if ( $app->param('save_revision') ) {
             $param->{'save_revision'} = 1;
         }
         else {
@@ -65,7 +64,7 @@ sub edit {
 
     if ($id) {
         if ( $blog && $blog->use_revision ) {
-            my $rn = $q->param('r') || 0;
+            my $rn = $app->param('r') || 0;
             if ( $obj->current_revision > 0 || $rn != $obj->current_revision )
             {
                 my $rev = $obj->load_revision( { rev_number => $rn } );
@@ -79,7 +78,7 @@ sub edit {
                 $param->{rev_date}   = format_ts( "%Y-%m-%d %H:%M:%S",
                     $obj->modified_on, $blog,
                     $app->user ? $app->user->preferred_language : undef );
-                $param->{no_snapshot} = 1 if $q->param('no_snapshot');
+                $param->{no_snapshot} = 1 if $app->param('no_snapshot');
             }
         }
         $param->{nav_templates} = 1;
@@ -159,7 +158,7 @@ sub edit {
         $param->{object_type}  = 'template';
         my $published_url = $obj->published_url;
         $param->{published_url} = $published_url if $published_url;
-        $param->{saved_rebuild} = 1 if $q->param('saved_rebuild');
+        $param->{saved_rebuild} = 1 if $app->param('saved_rebuild');
         require MT::PublishOption;
         $param->{static_maps}
             = (    $obj->build_type != MT::PublishOption::DYNAMIC()
@@ -593,13 +592,11 @@ sub edit {
             }
 
             # Content Fields
-            my $app       = shift;
-            my $q         = $app->param;
-            my $blog_id   = $q->param('blog_id');
-            my $at        = $q->param('archive_type');
-            my $ct_id     = $q->param('content_type_id');
-            my $cat_field = $q->param('cat_field');
-            my $dt_field  = $q->param('dt_field');
+            my $blog_id   = $app->param('blog_id');
+            my $at        = $app->param('archive_type');
+            my $ct_id     = $app->param('content_type_id');
+            my $cat_field = $app->param('cat_field');
+            my $dt_field  = $app->param('dt_field');
 
             my $ct = MT::ContentType->load( $obj->content_type_id );
             my $fields = $ct ? $ct->fields : [];
@@ -638,7 +635,7 @@ sub edit {
         }
     }
     else {
-        my $new_tmpl = $q->param('create_new_template');
+        my $new_tmpl = $app->param('create_new_template');
         my $template_type;
         if ($new_tmpl) {
             if ( $new_tmpl =~ m/^blank:(.+)/ ) {
@@ -668,7 +665,7 @@ sub edit {
             }
         }
         else {
-            $template_type = $q->param('type');
+            $template_type = $app->param('type');
             $template_type = 'custom' if 'module' eq $template_type;
             $param->{type} = $template_type;
         }
@@ -1196,10 +1193,9 @@ sub list {
 
 sub preview {
     my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $blog    = $app->blog;
-    my $id      = $q->param('id');
+    my $id      = $app->param('id');
     my $tmpl;
     my $user_id = $app->user->id;
 
@@ -1229,7 +1225,7 @@ sub preview {
 
     my $names = $tmpl->column_names;
     my %values = map { $_ => scalar $app->param($_) } @$names;
-    delete $values{'id'} unless $q->param('id');
+    delete $values{'id'} unless $id;
 
     ## Strip linefeed characters.
     for my $col (qw( text )) {
@@ -1480,15 +1476,16 @@ sub preview {
     $param{new_object} = $param{id} ? 0 : 1;
     $param{name} = $tmpl->name;
     if ( $type ne 'index' ) {
-        $q->param( 'build_dynamic', $tmpl->build_dynamic );
-        $q->param( 'build_type',    $tmpl->build_type );
+        $app->param( 'build_dynamic', $tmpl->build_dynamic );
+        $app->param( 'build_type',    $tmpl->build_type );
     }
     my $cols = $tmpl->column_names;
     for my $col ( ( @$cols, 'save_revision', 'revision-note' ) ) {
+        my $value = $app->param($col);
         push @data,
             {
             data_name  => $col,
-            data_value => scalar $q->param($col)
+            data_value => $value
             };
     }
 
@@ -1496,10 +1493,11 @@ sub preview {
     my @p = $app->multi_param;
     for my $p (@p) {
         if ( $p =~ /^archive_file_tmpl_(\d+)$/ ) {
+            my $value = $app->param($p);
             push @data,
                 {
                 data_name  => 'archive_file_tmpl_' . $1,
-                data_value => scalar $q->param($p)
+                data_value => $value
                 };
         }
     }
@@ -1570,7 +1568,6 @@ sub create_preview_content {
 ## Unused?
 sub reset_blog_templates {
     my $app   = shift;
-    my $q     = $app->param;
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
     return $app->permission_denied()
@@ -1681,7 +1678,6 @@ sub _generate_map_table {
 
 sub _populate_archive_loop {
     my $app = shift;
-    my $q   = $app->param;
     my ( $blog, $obj ) = @_;
 
     my $index = $app->config('IndexBasename');
@@ -1712,7 +1708,7 @@ sub _populate_archive_loop {
             = 1
             if $blog->archive_type_preferred;
         my $selected_file_template
-            = $q->param( 'archive_file_tmpl_' . $map->{map_id} );
+            = $app->param( 'archive_file_tmpl_' . $map->{map_id} );
         $map->{file_template}
             = $selected_file_template ? $selected_file_template
             : $map_obj->file_template ? $map_obj->file_template
@@ -1861,8 +1857,9 @@ sub add_map {
             archive_type => $at
         }
     );
-    my $cat_field_id = $app->param('cat_field_id');
-    my $dt_field_id  = $app->param('dt_field_id');
+    my $file_template = $app->param('file_template');
+    my $cat_field_id  = $app->param('cat_field_id');
+    my $dt_field_id   = $app->param('dt_field_id');
 
     $app->model('template')
         ->load( { id => $template_id, blog_id => $blog_id } )
@@ -1874,6 +1871,7 @@ sub add_map {
     $map->template_id($template_id);
     $map->blog_id($blog_id);
     $map->archive_type($at);
+    $map->file_template($file_template);
     $map->cat_field_id($cat_field_id) if $cat_field_id;
     $map->dt_field_id($dt_field_id)   if $dt_field_id;
     $map->save

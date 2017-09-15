@@ -355,9 +355,10 @@ sub core_methods {
         'upload_userpic'    => "${pkg}User::upload_userpic",
 
         ## MT7 - Content Data
-        'view_content_data' => "${pkg}ContentData::edit",
-        'edit_content_data' => "${pkg}ContentData::edit",
-        'save_content_data' => "${pkg}ContentData::save",
+        'view_content_data'    => "${pkg}ContentData::edit",
+        'edit_content_data'    => "${pkg}ContentData::edit",
+        'save_content_data'    => "${pkg}ContentData::save",
+        'preview_content_data' => "${pkg}ContentData::preview",
 
         ## MT7
         'cfg_content_type_description' =>
@@ -4266,12 +4267,14 @@ sub preview_object_basename {
     my $blog = $app->blog;
     my $blog_id;
     $blog_id = $blog->id if $blog;
-    my $id   = $app->param('id');
-    my $type = $app->param('_type');
+    my $id              = $app->param('id');
+    my $type            = $app->param('_type');
+    my $content_type_id = $app->param('content_type_id');
     push @parts, $app->user->id;
     push @parts, $blog_id || 0;
     push @parts, $id || 0;
     push @parts, $type if $type;
+    push @parts, $content_type_id if $content_type_id;
     push @parts, $app->config->SecretToken;
     my $data = join ",", @parts;
     return 'mt-preview-' . perl_sha1_digest_hex($data);

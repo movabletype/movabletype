@@ -234,35 +234,41 @@ sub archive_contents_count {
     my $count = MT->model('cd')->count(
         {   blog_id => $blog->id,
             status  => MT::Entry::RELEASE(),
-            (         !$dt_field_id
-                    && $ts ? ( authored_on => [ $start, $end ] ) : ()
+            (   !$dt_field_id && $ts ? ( authored_on => [ $start, $end ] )
+                : ()
             ),
             ( $auth ? ( author_id => $auth->id ) : () ),
         },
-        {   ( !$dt_field_id ? ( range_incl => { authored_on => 1 } ) : () ),
-            (   $cat_field_id
-                ? ( 'join' => [
-                        'MT::ContentFieldIndex',
-                        'content_data_id',
-                        {   content_field_id => $cat_field_id,
-                            value_integer    => $cat->id
-                        }
-                    ]
-                    )
+        {   (   !$dt_field_id && $ts ? ( range_incl => { authored_on => 1 } )
                 : ()
             ),
-            (   $dt_field_id && $ts
-                ? ( 'join' => [
-                        'MT::ContentFieldIndex',
-                        'content_data_id',
-                        {   content_field_id => $dt_field_id,
-                            value_datetime   => [ $start, $end ]
-                        },
-                        { range_incl => { value_datetime => 1 } }
-                    ]
-                    )
-                : ()
-            ),
+            joins => [
+                (   $cat_field_id
+                    ? ( MT::ContentFieldIndex->join_on(
+                            'content_data_id',
+                            {   content_field_id => $cat_field_id,
+                                value_integer    => $cat->id
+                            },
+                            { alias => 'dt_cf_idx' }
+                        )
+                        )
+                    : ()
+                ),
+                (   $dt_field_id && $ts
+                    ? ( MT::ContentFieldIndex->join_on(
+                            'content_data_id',
+                            {   content_field_id => $dt_field_id,
+                                value_datetime =>
+                                    { op => '>=', value => $start },
+                                value_datetime =>
+                                    { op => '<=', value => $end }
+                            },
+                            { alias => 'cat_cf_idx' }
+                        )
+                        )
+                    : ()
+                ),
+            ]
         }
     );
     return $count;

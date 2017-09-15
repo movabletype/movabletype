@@ -2278,7 +2278,6 @@ sub remove_entry_archive_file {
         $file = File::Spec->catfile( $arch_root, $file );
         if ( !defined($file) ) {
             die MT->translate( $blog->errstr() );
-            return $mt->error( MT->translate( $blog->errstr() ) );
         }
 
         $mt->_delete_archive_file(
