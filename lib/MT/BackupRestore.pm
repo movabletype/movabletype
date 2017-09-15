@@ -305,7 +305,7 @@ sub backup {
 
     MT::Util::Log->info(' End   _populate_obj_to_backup.');
 
-    my $header .= "<movabletype xmlns='" . NS_MOVABLETYPE . "'\n";
+    my $header = "<movabletype xmlns='" . NS_MOVABLETYPE . "'\n";
     $header .= join ' ',
         map { $_ . "='" . $metadata->{$_} . "'" } keys %$metadata;
     $header .= ">\n";
