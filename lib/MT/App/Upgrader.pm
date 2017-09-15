@@ -321,10 +321,10 @@ sub init_user {
             else {
                 $initial_email = $app->param('email') || '';
                 $initial_nickname = $app->param('nickname');
-                $initial_external_id
-                    = MT::Author->unpack_external_id(
-                    $app->param('external_id') )
-                    if $app->param('external_id');
+                if ( my $external_id = $app->param('external_id') ) {
+                    $initial_external_id
+                        = MT::Author->unpack_external_id($external_id);
+                }
             }
         }
         else {

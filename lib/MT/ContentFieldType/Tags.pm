@@ -6,10 +6,20 @@ use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 use MT::Tag;
 
-sub _field_html_params {
+sub field_html_params {
     my ( $app, $field_data ) = @_;
     my $value = $field_data->{value};
-    $value = [] unless defined $value;
+    $value = []       unless $value;
+    $value = [$value] unless ref $value eq 'ARRAY';
+
+    my %tag_hash;    # id => name
+    my $iter = MT::Tag->load_iter( { id => $value },
+        { fetchonly => [ 'id', 'name' ] } );
+    while ( my $tag = $iter->() ) {
+        $tag_hash{ $tag->id } = $tag->name;
+    }
+    my @tag_names = map { $tag_hash{$_} } @$value;
+    my $tag_names = join ',', @tag_names;
 
     my $options = $field_data->{options};
 
@@ -22,25 +32,31 @@ sub _field_html_params {
         $multiple .= qq{ data-mt-min-select="${min}"} if $min;
     }
 
-    my $required = $options->{required} ? 'data-mt-required="1"' : '';
+    # -- prototype
+    # my $required = $options->{required} ? 'data-mt-required="1"' : '';
+    #
+    # my @tag_list;
+    # my $iter = MT::Tag->load_iter( { id => $value }, { sort => 'name' } );
+    # while ( my $t = $iter->() ) {
+    #     push @tag_list,
+    #         {
+    #         id       => $t->id,
+    #         label    => $t->name,
+    #         basename => $t->name,
+    #         path     => [],
+    #         fields   => [],
+    #         };
+    # }
 
-    my @tag_list;
-    my $iter = MT::Tag->load_iter( { id => $value }, { sort => 'name' } );
-    while ( my $t = $iter->() ) {
-        push @tag_list,
-            {
-            id       => $t->id,
-            label    => $t->name,
-            basename => $t->name,
-            path     => [],
-            fields   => [],
-            };
-    }
+    my $required = $options->{required} ? 'required' : '';
 
-    {   multiple          => $multiple,
-        required          => $required,
-        tag_list          => \@tag_list,
-        selected_tag_loop => $value,
+    {   multiple => $multiple,
+        required => $required,
+
+        # -- prototype
+        # tag_list          => \@tag_list,
+        # selected_tag_loop => $value,
+        tags => $tag_names,
     };
 }
 
@@ -104,28 +120,68 @@ sub html {
     join ', ', @links;
 }
 
+# prototype
+# sub ss_validator {
+#     my ( $app, $field_data, $data ) = @_;
+#
+#     my $options = $field_data->{options} || {};
+#     my $field_label = $options->{label};
+#
+#     my $iter
+#         = MT::Tag->load_iter( { id => $data }, { fetchonly => { id => 1 } } );
+#     my %valid_tags;
+#     while ( my $tag = $iter->() ) {
+#         $valid_tags{ $tag->id } = 1;
+#     }
+#     if ( my @invalid_tag_ids = grep { !$valid_tags{$_} } @{$data} ) {
+#         my $invalid_tag_ids = join ', ', sort(@invalid_tag_ids);
+#         return $app->translate( 'Invalid Tag IDs: [_1] in "[_2]" field.',
+#             $invalid_tag_ids, $field_label );
+#     }
+#
+#     my $type_label        = 'tag';
+#     my $type_label_plural = 'tags';
+#     MT::ContentFieldType::Common::ss_validator_multiple( @_, $type_label,
+#         $type_label_plural );
+# }
+
 sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
 
     my $options = $field_data->{options} || {};
     my $field_label = $options->{label};
 
-    my $iter
-        = MT::Tag->load_iter( { id => $data }, { fetchonly => { id => 1 } } );
-    my %valid_tags;
+    my $iter = MT::Tag->load_iter( { name => $data },
+        { binary => { name => 1 }, fetchonly => [ 'id', 'name' ] } );
+    my %valid_tag_hash;    # name => id
     while ( my $tag = $iter->() ) {
-        $valid_tags{ $tag->id } = 1;
+        $valid_tag_hash{ $tag->name } = $tag->id;
     }
-    if ( my @invalid_tag_ids = grep { !$valid_tags{$_} } @{$data} ) {
-        my $invalid_tag_ids = join ', ', sort(@invalid_tag_ids);
-        return $app->translate( 'Invalid Tag IDs: [_1] in "[_2]" field.',
-            $invalid_tag_ids, $field_label );
+
+    my @invalid_tag_names = grep { !$valid_tag_hash{$_} } @$data;
+    if ( !$options->{can_add} && @invalid_tag_names ) {
+        my $tag_names = join ', ', sort(@invalid_tag_names);
+        return $app->translate( 'Cannot create tags [_1] in "[_2]" field.',
+            $tag_names, $field_label );
+    }
+    else {
+        for my $tag_name (@invalid_tag_names) {
+            my $tag = MT::Tag->new( name => $tag_name );
+            $tag->save
+                or return $app->translate( 'Cannot create tag "[_1]": [_2]',
+                $tag_name, $tag->errstr );
+            $valid_tag_hash{$tag_name} = $tag->id;
+        }
     }
 
     my $type_label        = 'tag';
     my $type_label_plural = 'tags';
-    MT::ContentFieldType::Common::ss_validator_multiple( @_, $type_label,
-        $type_label_plural );
+    my $error = MT::ContentFieldType::Common::ss_validator_multiple( @_,
+        $type_label, $type_label_plural );
+    return $error if $error;
+
+    @$data = map { $valid_tag_hash{$_} } @$data;
+    return;
 }
 
 sub _link {
@@ -181,6 +237,13 @@ sub tag_handler {
         $res .= $out;
     }
     $res;
+}
+
+sub data_load_handler {
+    my ( $app, $field_data ) = @_;
+    my @tag_names = split ',',
+        $app->param( 'content-field-' . $field_data->{id} );
+    \@tag_names;
 }
 
 1;

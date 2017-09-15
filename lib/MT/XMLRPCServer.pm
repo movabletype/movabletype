@@ -1007,8 +1007,9 @@ sub _delete_entry {
         && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
 
     # Delete archive file
-    my $blog   = MT::Blog->load( $entry->blog_id );
-    my %recipe = $mt->publisher->rebuild_deleted_entry(
+    my $blog = MT::Blog->load( $entry->blog_id );
+    my %recipe;
+    %recipe = $mt->publisher->rebuild_deleted_entry(
         Entry => $entry,
         Blog  => $blog
     ) if $entry->status eq MT::Entry::RELEASE();

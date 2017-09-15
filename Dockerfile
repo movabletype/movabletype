@@ -110,3 +110,6 @@ RUN carton install
 
 ENV PERL5LIB /var/www/docker_build/local/lib/perl5
 
+# Copy MT files
+COPY ./ /var/www/mt/
+

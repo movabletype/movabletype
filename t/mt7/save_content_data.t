@@ -48,11 +48,13 @@ subtest 'mode=save_content_data (create)' => sub {
         'MT::App::CMS',
         {   __test_user                           => $admin,
             __request_method                      => 'POST',
-            __mode                                => 'save_content_data',
+            __mode                                => 'save',
             blog_id                               => $content_type->blog_id,
             content_type_id                       => $content_type->id,
             status                                => MT::Entry::HOLD(),
             'content-field-' . $content_field->id => 'test input',
+            _type                                 => 'content_data',
+            type                                  => 'content_data_' . $content_type->id,
         },
     );
     my $out = delete $app->{__test_output};
@@ -93,12 +95,14 @@ subtest 'mode=save_content_data (update)' => sub {
         'MT::App::CMS',
         {   __test_user                           => $user,
             __request_method                      => 'POST',
-            __mode                                => 'save_content_data',
+            __mode                                => 'save',
             id                                    => $content_data->id,
             blog_id                               => $content_type->blog_id,
             content_type_id                       => $content_type->id,
             status                                => MT::Entry::HOLD(),
             'content-field-' . $content_field->id => 'test input update',
+            _type                                 => 'content_data',
+            type                                  => 'content_data_' . $content_type->id,
         },
     );
     my $out = delete $app->{__test_output};

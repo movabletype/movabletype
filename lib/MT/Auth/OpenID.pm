@@ -18,11 +18,11 @@ sub password_exists {0}
 sub login {
     my $class    = shift;
     my ($app)    = @_;
-    my $q        = $app->param;
-    my $blog     = $app->model('blog')->load( scalar $q->param('blog_id') );
-    my $identity = $q->param('openid_url');
+    my $blog_id  = $app->param('blog_id');
+    my $blog     = $app->model('blog')->load($blog_id);
+    my $identity = $app->param('openid_url');
     if (   !$identity
-        && ( my $u = $q->param('openid_userid') )
+        && ( my $u = $app->param('openid_userid') )
         && $class->can('url_for_userid') )
     {
         $identity = $class->url_for_userid($u);
@@ -48,12 +48,12 @@ sub login {
 sub handle_sign_in {
     my $class = shift;
     my ( $app, $auth_type ) = @_;
-    my $q        = $app->{query};
     my $INTERVAL = 60 * 60 * 24 * 7;
 
     $auth_type ||= 'OpenID';
 
-    my $blog         = $app->model('blog')->load( $q->param('blog_id') );
+    my $blog_id      = $app->param('blog_id');
+    my $blog         = $app->model('blog')->load($blog_id);
     my $author_class = $app->model('author');
 
     my $cmntr;

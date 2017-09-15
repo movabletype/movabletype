@@ -734,8 +734,7 @@ sub rebuild_pages {
         or return $app->error( $app->translate("No permissions") );
     require MT::Entry;
     require MT::Blog;
-    my $q          = $app->param;
-    my $start_time = $q->param('start_time');
+    my $start_time = $app->param('start_time');
 
     if ( !$start_time ) {
 
@@ -744,15 +743,19 @@ sub rebuild_pages {
         $start_time = time;
     }
 
-    my $blog_id = int( $q->param('blog_id') );
+    my $blog_id = int( $app->param('blog_id') || 0 );
     return $app->errtrans("Invalid request.") unless $blog_id;
 
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
-    my $order = $q->param('type');
+
+    # param('type') is used differently
+    my $param_type = $app->param('type') || '';
+
+    my $order = $param_type;
     my @order = split /,/, $order;
-    my $next  = $q->param('next') || 0;
+    my $next  = $app->param('next') || 0;
     my $done  = 0;
     my $type  = $order[$next];
 
@@ -768,19 +771,27 @@ sub rebuild_pages {
     $next++;
     $done++ if $next >= @order;
     my $offset = 0;
-    my ($total) = $q->param('total');
+    my $total  = $app->param('total');
 
-    my $with_indexes = $q->param('with_indexes');
-    my $no_static    = $q->param('no_static');
-    my $template_id  = $q->param('template_id');
-    my $map_id       = $q->param('templatemap_id');
+    my $with_indexes   = $app->param('with_indexes');
+    my $no_static      = $app->param('no_static');
+    my $template_id    = $app->param('template_id');
+    my $map_id         = $app->param('templatemap_id');
+    my $fs             = $app->param('fs');
+    my $old_categories = $app->param('old_categories');
+    my $old_previous   = $app->param('old_previous');
+    my $old_next       = $app->param('old_next');
+    my $entry_id       = $app->param('entry_id');
+    my $is_new         = $app->param('is_new');
+    my $old_status     = $app->param('old_status');
+    my $return_args    = $app->param('return_args');
 
     my ($tmpl_saved);
 
     # Make sure errors go to a sensible place when in fs mode
     # TODO: create contin. earlier, pass it thru
-    if ( $app->param('fs') ) {
-        my ( $type, $obj_id ) = $app->param('type') =~ m/(entry|index)-(\d+)/;
+    if ($fs) {
+        my ( $type, $obj_id ) = $param_type =~ m/(entry|index)-(\d+)/;
         if ( $type && $obj_id ) {
             my $edit_type = $type;
             $edit_type = 'template' if $type eq 'index';
@@ -837,9 +848,9 @@ sub rebuild_pages {
         $app->rebuild_entry(
             Entry             => $entry,
             BuildDependencies => 1,
-            OldCategories     => $q->param('old_categories'),
-            OldPrevious       => $q->param('old_previous'),
-            OldNext           => $q->param('old_next')
+            OldCategories     => $old_categories,
+            OldPrevious       => $old_previous,
+            OldNext           => $old_next
         ) or return $app->publish_error();
         $order = "entry '" . $entry->title . "'";
     }
@@ -863,7 +874,7 @@ sub rebuild_pages {
                 ->can_do('rebuild');
         }
 
-        $offset = $q->param('offset') || 0;
+        $offset = $app->param('offset') || 0;
         my $start = time;
         my $count = 0;
         my $cb    = sub {
@@ -934,7 +945,7 @@ sub rebuild_pages {
                     ->can_do('rebuild');
             }
 
-            $offset = $q->param('offset') || 0;
+            $offset = $app->param('offset') || 0;
             if ( $offset < $total ) {
                 my $start = time;
                 my $count = 0;
@@ -971,7 +982,7 @@ sub rebuild_pages {
         }
     }
 
-    return if $q->param('no_rebuilding_tmpl');
+    return if $app->param('no_rebuilding_tmpl');
 
     # Rebuild done--now form the continuation.
     unless ($done) {
@@ -997,38 +1008,7 @@ sub rebuild_pages {
 
             # determine total
             if ( my $archiver = $app->publisher->archiver($type_name) ) {
-                if ( $archiver->entry_based || $archiver->date_based ) {
-                    my $entry_class = $archiver->entry_class || 'entry';
-                    require MT::Entry;
-                    my $terms = {
-                        class   => $entry_class,
-                        status  => MT::Entry::RELEASE(),
-                        blog_id => $blog_id,
-                    };
-                    $total = MT::Entry->count($terms);
-                }
-                elsif ( $archiver->category_based ) {
-                    require MT::Category;
-                    my $terms = { blog_id => $blog_id, };
-                    $total = MT::Category->count($terms);
-                }
-                elsif ( $archiver->author_based ) {
-                    require MT::Author;
-                    require MT::Entry;
-                    my $terms = {
-                        blog_id => $blog_id,
-                        status  => MT::Entry::RELEASE(),
-                        class   => 'entry',
-                    };
-                    $total = MT::Author->count(
-                        { status => MT::Author::ACTIVE() },
-                        {   join => MT::Entry->join_on(
-                                'author_id', $terms, { unique => 1 }
-                            ),
-                            unique => 1,
-                        }
-                    );
-                }
+                $total = _determine_total( $archiver, $blog_id );
             }
         }
 
@@ -1056,29 +1036,25 @@ sub rebuild_pages {
             complete        => $complete,
             start_time      => $start_time,
             incomplete      => 100 - $complete,
-            entry_id        => scalar $q->param('entry_id'),
+            entry_id        => $entry_id,
             dynamic         => $dynamic,
-            is_new          => scalar $q->param('is_new'),
-            old_status      => scalar $q->param('old_status'),
-            is_full_screen  => scalar $q->param('fs'),
-            with_indexes    => scalar $q->param('with_indexes'),
-            no_static       => scalar $q->param('no_static'),
-            template_id     => scalar $q->param('template_id'),
-            return_args     => scalar $q->param('return_args')
+            is_new          => $is_new,
+            old_status      => $old_status,
+            is_full_screen  => $fs,
+            with_indexes    => $with_indexes,
+            no_static       => $no_static,
+            template_id     => $template_id,
+            return_args     => $return_args
         );
         $app->load_tmpl( 'rebuilding.tmpl', \%param );
     }
     else {
         $app->run_callbacks('post_build');
-        if ( $q->param('entry_id') ) {
+        if ($entry_id) {
             require MT::Entry;
-            my $entry = MT::Entry->load( scalar $q->param('entry_id') )
+            my $entry = MT::Entry->load($entry_id)
                 or return $app->error(
-                $app->translate(
-                    'Cannot load entry #[_1].',
-                    $q->param('entry_id')
-                )
-                );
+                $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
             require MT::Blog;
             my $blog = MT::Blog->load( $entry->blog_id )
                 or return $app->error(
@@ -1088,8 +1064,8 @@ sub rebuild_pages {
             MT::CMS::Entry::ping_continuation(
                 $app,
                 $entry, $blog,
-                OldStatus => scalar $q->param('old_status'),
-                IsNew     => scalar $q->param('is_new'),
+                OldStatus => $old_status,
+                IsNew     => $is_new,
             );
         }
         else {
@@ -1119,12 +1095,12 @@ sub rebuild_pages {
                 $param{tmpl_url} .= '/' if $param{tmpl_url} !~ m!/$!;
                 $param{tmpl_url} .= $tmpl_saved->outfile;
             }
-            if ( $q->param('fs') ) {    # full screen--go to a useful app page
-                if ( my $return_args = $q->param('return_args') ) {
+            if ($fs) {    # full screen--go to a useful app page
+                if ($return_args) {
                     $app->call_return;
                 }
                 else {
-                    my $type = $q->param('type');
+                    my $type = $param_type;
                     $type =~ /index-(\d+)/;
                     my $tmpl_id = $1;
                     $app->run_callbacks( 'rebuild', $blog );
@@ -1187,41 +1163,7 @@ sub start_rebuild_pages {
     my $template_id  = $q->param('template_id');
 
     if ($archiver) {
-        if ( $archiver->entry_based || $archiver->date_based ) {
-            my $entry_class = $archiver->entry_class || 'entry';
-            require MT::Entry;
-            my $terms = {
-                class   => $entry_class,
-                status  => MT::Entry::RELEASE(),
-                blog_id => $blog_id,
-            };
-            $total = MT::Entry->count($terms);
-        }
-        elsif ( $archiver->category_based ) {
-            require MT::Category;
-            my $terms = {
-                blog_id => $blog_id,
-                class   => $archiver->category_class,
-            };
-            $total = MT::Category->count($terms);
-        }
-        elsif ( $archiver->author_based ) {
-            require MT::Author;
-            require MT::Entry;
-            my $terms = {
-                blog_id => $blog_id,
-                status  => MT::Entry::RELEASE(),
-                class   => 'entry',
-            };
-            $total = MT::Author->count(
-                { status => MT::Author::ACTIVE() },
-                {   join => MT::Entry->join_on(
-                        'author_id', $terms, { unique => 1 }
-                    ),
-                    unique => 1,
-                }
-            );
-        }
+        $total = _determine_total( $archiver, $blog_id );
     }
 
     my %param = (
@@ -1543,12 +1485,12 @@ sub can_delete {
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj ) = @_;
-    if (  !$app->param('overlay')
-        && $app->param('cfg_screen') )
-    {
+    my $overlay = $app->param('overlay');
+    my $screen = $app->param('cfg_screen') || '';
+
+    if ( !$overlay && $screen ) {
 
         # Checkbox options have to be blanked if they aren't passed.
-        my $screen = $app->param('cfg_screen');
         my @fields;
         if ( $screen eq 'cfg_web_services' ) {
         }
@@ -1594,27 +1536,31 @@ sub pre_save {
             # value for comments:  1 == Accept from anyone
             #                      2 == Accept authenticated only
             #                      0 == No comments
-            if ( $app->param('allow_comments') ) {
+            my $allow_comments    = $app->param('allow_comments');
+            my $moderate_comments = $app->param('moderate_comments');
+            my $nofollow_urls     = $app->param('nofollow_urls');
+            my $follow_auth_links = $app->param('follow_auth_links');
+            my $captcha_provider  = $app->param('captcha_provider');
+            if ($allow_comments) {
                 $obj->allow_reg_comments(1);
             }
             else {
                 $obj->allow_unreg_comments(0);
                 $obj->allow_reg_comments(0);
             }
-            $obj->moderate_unreg_comments( $app->param('moderate_comments') );
-            $obj->nofollow_urls( $app->param('nofollow_urls') ? 1 : 0 );
-            $obj->follow_auth_links(
-                $app->param('follow_auth_links') ? 1 : 0 );
+            $obj->moderate_unreg_comments($moderate_comments);
+            $obj->nofollow_urls( $nofollow_urls         ? 1 : 0 );
+            $obj->follow_auth_links( $follow_auth_links ? 1 : 0 );
             my $cp_old = $obj->captcha_provider;
-            $obj->captcha_provider( $app->param('captcha_provider') );
+            $obj->captcha_provider($captcha_provider);
             my $rebuild = $cp_old ne $obj->captcha_provider ? 1 : 0;
             $app->add_return_arg( need_full_rebuild => 1 ) if $rebuild;
 
             if ( my $pings = $app->param('allow_pings') ) {
                 if ($pings) {
-                    $obj->moderate_pings( $app->param('moderate_pings') );
-                    $obj->nofollow_urls(
-                        $app->param('nofollow_urls') ? 1 : 0 );
+                    my $moderate_pings = $app->param('moderate_pings');
+                    $obj->moderate_pings($moderate_pings);
+                    $obj->nofollow_urls( $nofollow_urls ? 1 : 0 );
                 }
                 else {
                     $obj->moderate_pings(1);
@@ -1647,20 +1593,21 @@ sub pre_save {
 
             my $ping_servers = $app->registry('ping_servers');
             my @pings_list;
-            push @pings_list, $_ foreach grep {
-                defined( $app->param( 'ping_' . $_ ) )
-                    && $app->param( 'ping_' . $_ )
-                }
+            push @pings_list, $_
+                foreach grep { scalar $app->param( 'ping_' . $_ ) }
                 keys %$ping_servers;
             $obj->update_pings( join( ',', @pings_list ) );
         }
         if ( $screen eq 'cfg_registration' ) {
-            $obj->allow_commenter_regist(
-                $app->param('allow_commenter_regist') );
-            $obj->allow_unreg_comments( $app->param('allow_unreg_comments') );
-            if ( $app->param('allow_unreg_comments') ) {
-                $obj->require_comment_emails(
-                    $app->param('require_comment_emails') );
+            my $allow_commenter_regist
+                = $app->param('allow_commenter_regist');
+            my $allow_unreg_comments = $app->param('allow_unreg_comments');
+            my $require_comment_emails
+                = $app->param('require_comment_emails');
+            $obj->allow_commenter_regist($allow_commenter_regist);
+            $obj->allow_unreg_comments($allow_unreg_comments);
+            if ($allow_unreg_comments) {
+                $obj->require_comment_emails($require_comment_emails);
             }
             else {
                 $obj->require_comment_emails(0);
@@ -1675,9 +1622,10 @@ sub pre_save {
             $obj->commenter_authenticators( join( ',', @authenticators ) );
             my $rebuild = $obj->commenter_authenticators ne $c_old ? 1 : 0;
             if ( $app->param('enabled_TypeKey') ) {
+                my $require_typekey_emails
+                    = $app->param('require_typekey_emails');
                 $rebuild = $obj->require_typekey_emails ? 0 : 1;
-                $obj->require_typekey_emails(
-                    $app->param('require_typekey_emails') );
+                $obj->require_typekey_emails($require_typekey_emails);
             }
             else {
                 $obj->require_typekey_emails(0);
@@ -1699,12 +1647,15 @@ sub pre_save {
             $param{words_in_excerpt} = 40
                 unless defined $param{words_in_excerpt}
                 && $param{words_in_excerpt} ne '';
-            if ( ( $app->param('days_or_posts') || '' ) eq 'days' ) {
-                $obj->days_on_index( $app->param('list_on_index') );
+
+            my $days_or_posts = $app->param('days_or_posts') || '';
+            my $list_on_index = $app->param('list_on_index');
+            if ( $days_or_posts eq 'days' ) {
+                $obj->days_on_index($list_on_index);
                 $obj->entries_on_index(0);
             }
             else {
-                $obj->entries_on_index( $app->param('list_on_index') );
+                $obj->entries_on_index($list_on_index);
                 $obj->days_on_index(0);
             }
             $obj->basename_limit(15)
@@ -1712,17 +1663,18 @@ sub pre_save {
             $obj->basename_limit(250)
                 if $obj->basename_limit > 250;    # 15 is the *maximum*
 
-            $obj->image_default_thumb(
-                $app->param('image_default_thumb') ? 1 : 0 );
-            $obj->image_default_width(
-                scalar $app->param('image_default_width') );
-            $obj->image_default_align(
-                scalar $app->param('image_default_align') );
-            $obj->image_default_popup(
-                $app->param('image_default_popup') ? 1 : 0 );
+            my $image_default_thumb = $app->param('image_default_thumb');
+            my $image_default_width = $app->param('image_default_width');
+            my $image_default_align = $app->param('image_default_align');
+            my $image_default_popup = $app->param('image_default_popup');
+            $obj->image_default_thumb( $image_default_thumb ? 1 : 0 );
+            $obj->image_default_width($image_default_width);
+            $obj->image_default_align($image_default_align);
+            $obj->image_default_popup( $image_default_popup ? 1 : 0 );
         }
         if ( $screen eq 'cfg_prefs' ) {
-            $obj->include_system( $app->param('include_system') || '' );
+            my $include_system = $app->param('include_system') || '';
+            $obj->include_system($include_system);
             if ( !$app->param('enable_archive_paths') ) {
                 $obj->archive_url('');
                 $obj->archive_path('');
@@ -1741,11 +1693,12 @@ sub pre_save {
 
     # assumation: if the it is a blog and its site path is relative, then
     # it is probably writeable.
-    if ( ( !$obj->id or ( $app->param('cfg_screen') || '' ) eq 'cfg_prefs' )
+    my $blog_id = $app->param('blog_id');
+    if (    ( !$obj->id or $screen eq 'cfg_prefs' )
         and ( $obj->class ne 'blog' or $obj->is_site_path_absolute() ) )
     {
         if ( !$obj->id and $obj->class eq 'blog' ) {
-            $obj->parent_id( $app->param('blog_id') );
+            $obj->parent_id($blog_id);
         }
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
@@ -1764,7 +1717,8 @@ sub pre_save {
     }
 
     if ( ( $obj->sanitize_spec || '' ) eq '1' ) {
-        $obj->sanitize_spec( scalar $app->param('sanitize_spec_manual') );
+        my $sanitize_spec_manual = $app->param('sanitize_spec_manual');
+        $obj->sanitize_spec($sanitize_spec_manual);
     }
 
     1;
@@ -2113,7 +2067,7 @@ sub save_filter {
     my $screen = $app->param('cfg_screen') || '';
     return $eh->error( MT->translate("You did not specify a blog name.") )
         if ( !( $screen && $app->can_do('edit_blog_config') )
-        && ( defined $app->param('name') && ( $app->param('name') eq '' ) ) );
+        && ( defined $name && $name eq '' ) );
 
 #TBD
 #    return $eh->error( MT->translate("Site URL must be an absolute URL.") )
@@ -2134,11 +2088,12 @@ sub save_filter {
             qw( max_revisions_entry max_revisions_cd max_revisions_template )
             )
         {
+            my $value = $app->param($param_name) || 0;
             return $eh->error(
                 MT->translate(
                     "The number of revisions to store must be a positive integer."
                 )
-            ) unless 0 < sprintf( '%d', $app->param($param_name) );
+            ) unless 0 < sprintf( '%d', $param_name );
         }
         return $eh->error(
             MT->translate("Please choose a preferred archive type.") )
@@ -2391,22 +2346,27 @@ sub cfg_prefs_save {
             $path = $app->param('archive_url_path');
             $blog->archive_url("$subdomain/::/$path");
         }
-        $blog->site_path( $app->param('site_path_absolute') )
+        my $site_path_absolute    = $app->param('site_path_absolute');
+        my $use_absolute          = $app->param('use_absolute');
+        my $archive_path_absolute = $app->param('archive_path_absolute');
+        my $enable_archive_paths  = $app->param('enable_archive_paths');
+        my $use_absolute_archive  = $app->param('use_absolute_archive');
+        $blog->site_path($site_path_absolute)
             if (
             !$app->config->BaseSitePath
             || ($app->config->BaseSitePath
                 && MT::CMS::Common::is_within_base_sitepath(
-                    $app, $app->param('site_path_absolute')
+                    $app, $site_path_absolute
                 )
             )
             )
-            && $app->param('use_absolute')
-            && $app->param('site_path_absolute');
-        $blog->archive_path( $app->param('archive_path_absolute') )
+            && $use_absolute
+            && $site_path_absolute;
+        $blog->archive_path($archive_path_absolute)
             if !$app->config->BaseSitePath
-            && $app->param('enable_archive_paths')
-            && $app->param('use_absolute_archive')
-            && $app->param('archive_path_absolute');
+            && $enable_archive_paths
+            && $use_absolute_archive
+            && $archive_path_absolute;
     }
 
     require MT::PublishOption;
@@ -2435,25 +2395,32 @@ sub cfg_prefs_save {
             _create_dynamiccache_dir( $blog, $blog->archive_path ) if $cache;
         }
     }
-    $blog->use_revision( $app->param('use_revision') ? 1 : 0 );
-    if ( $app->param('use_revision') ) {
-        $blog->max_revisions_entry( $app->param('max_revisions_entry') )
-            if $app->param('max_revisions_entry');
-        $blog->max_revisions_cd( $app->param('max_revisions_cd') )
-            if $app->param('max_revisions_cd');
-        $blog->max_revisions_template( $app->param('max_revisions_template') )
-            if $app->param('max_revisions_template');
+    my $use_revision = $app->param('use_revision');
+    $blog->use_revision( $use_revision ? 1 : 0 );
+    if ($use_revision) {
+        my $max_revisions_entry    = $app->param('max_revisions_entry');
+        my $max_revisions_cd       = $app->param('max_revisions_cd');
+        my $max_revisions_template = $app->param('max_revisions_template');
+        $blog->max_revisions_entry($max_revisions_entry)
+            if $max_revisions_entry;
+        $blog->max_revisions_cd($max_revisions_cd)
+            if $max_revisions_cd;
+        $blog->max_revisions_template($max_revisions_template)
+            if $max_revisions_template;
     }
 
-    $blog->upload_destination( scalar $app->param('upload_destination') );
-    $blog->extra_path( scalar $app->param('extra_path') );
-    $blog->allow_to_change_at_upload(
-        $app->param('allow_to_change_at_upload') ? 1 : 0 );
-    $blog->operation_if_exists( scalar $app->param('operation_if_exists') );
-    $blog->normalize_orientation(
-        $app->param('normalize_orientation') ? 1 : 0 );
-    $blog->auto_rename_non_ascii(
-        $app->param('auto_rename_non_ascii') ? 1 : 0 );
+    my $upload_destination        = $app->param('upload_destination');
+    my $extra_path                = $app->param('extra_path');
+    my $allow_to_change_at_upload = $app->param('allow_to_change_at_upload');
+    my $operation_if_exists       = $app->param('operation_if_exists');
+    my $normalize_orientation     = $app->param('normalize_orientation');
+    my $auto_rename_non_ascii     = $app->param('auto_rename_non_ascii');
+    $blog->upload_destination($upload_destination);
+    $blog->extra_path($extra_path);
+    $blog->allow_to_change_at_upload( $allow_to_change_at_upload ? 1 : 0 );
+    $blog->operation_if_exists($operation_if_exists);
+    $blog->normalize_orientation( $normalize_orientation ? 1 : 0 );
+    $blog->auto_rename_non_ascii( $auto_rename_non_ascii ? 1 : 0 );
 
     $blog->save
         or return $app->error(
@@ -3657,6 +3624,99 @@ sub save_data_api_settings {
     $cfg->save_config;
 
     return 1;
+}
+
+sub _determine_total {
+    my ( $archiver, $blog_id ) = @_;
+
+    my $total = 0;
+    if ( ( $archiver->entry_based || $archiver->date_based )
+        && !$archiver->category_based )
+    {
+        if (   $archiver->contenttype_based
+            || $archiver->contenttype_date_based )
+        {
+            require MT::ContentData;
+            my $terms = {
+                status  => MT::Entry::RELEASE(),
+                blog_id => $blog_id,
+            };
+            $total = MT::ContentData->count($terms);
+        }
+        else {
+            my $entry_class = $archiver->entry_class || 'entry';
+            require MT::Entry;
+            my $terms = {
+                class   => $entry_class,
+                status  => MT::Entry::RELEASE(),
+                blog_id => $blog_id,
+            };
+            $total = MT::Entry->count($terms);
+        }
+    }
+    elsif ( $archiver->category_based ) {
+        if ( $archiver->contenttype_category_based ) {
+            require MT::Category;
+            require MT::CategorySet;
+            my @cat_set = MT::CategorySet->load( { blog_id => $blog_id } );
+            $total
+                = MT::Category->count(
+                { category_set_id => [ map { $_->id } @cat_set ] } );
+        }
+        else {
+            require MT::Category;
+            my $terms = {
+                blog_id => $blog_id,
+                class   => $archiver->category_class,
+            };
+            $total = MT::Category->count($terms);
+        }
+    }
+    elsif ( $archiver->author_based ) {
+        require MT::Author;
+        require MT::Entry;
+        my $terms = {
+            blog_id => $blog_id,
+            status  => MT::Entry::RELEASE(),
+            class   => 'entry',
+        };
+        $total = MT::Author->count(
+            { status => MT::Author::ACTIVE() },
+            {   join => MT::Entry->join_on(
+                    'author_id', $terms, { unique => 1 }
+                ),
+                unique => 1,
+            }
+        );
+    }
+    elsif ($archiver->contenttype_based
+        || $archiver->contenttype_date_based )
+    {
+        require MT::ContentData;
+        my $terms = {
+            status  => MT::Entry::RELEASE(),
+            blog_id => $blog_id,
+        };
+        $total = MT::ContentData->count($terms);
+    }
+    elsif ( $archiver->contenttype_author_based ) {
+        require MT::Author;
+        require MT::ContentData;
+        my $terms = {
+            blog_id => $blog_id,
+            status  => MT::Entry::RELEASE(),
+        };
+        $total = MT::Author->count(
+            { status => MT::Author::ACTIVE() },
+            {   join => MT::ContentData->join_on(
+                    'author_id', $terms, { unique => 1 }
+                ),
+                unique => 1,
+            }
+        );
+    }
+
+    return $total;
 }
 
 1;

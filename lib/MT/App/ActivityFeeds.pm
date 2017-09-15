@@ -295,10 +295,9 @@ sub process_log_feed {
     $param->{loop_entries} = \@entries;
     my $str = qq();
     for my $key ( $app->multi_param ) {
-        $str
-            .= "&amp;"
-            . encode_url($key) . "="
-            . encode_url( $app->param($key) );
+        my $value = $app->param($key);
+        $value = '' unless defined $value;
+        $str .= "&amp;" . encode_url($key) . "=" . encode_url($value);
     }
     $str =~ s/^&amp;(.+)$/?$1/;
     $param->{feed_self}    = $app->base . $app->path . $app->script . $str;

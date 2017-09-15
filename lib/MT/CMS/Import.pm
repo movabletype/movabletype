@@ -97,9 +97,8 @@ sub start_import {
 sub do_import {
     my $app = shift;
 
-    my $q = $app->param;
     require MT::Blog;
-    my $blog_id = $q->param('blog_id')
+    my $blog_id = $app->param('blog_id')
         or return $app->return_to_dashboard( redirect => 1 );
 
     my $blog = MT::Blog->load($blog_id)
@@ -122,7 +121,7 @@ sub do_import {
     return $app->permission_denied()
         unless $app->user->permissions($blog_id)->can_do('import_blog');
 
-    my $import_as_me = $q->param('import_as_me');
+    my $import_as_me = $app->param('import_as_me');
 
     ## Determine the user as whom we will import the entries.
     my $author    = $app->user;
@@ -137,20 +136,22 @@ sub do_import {
             $app->translate('You do not have permission to create users') );
     }
 
-    my ($pass);
-    if ( !$import_as_me ) {
-        $pass = $q->param('password')
-            or return $app->error(
+    my $password       = $app->param('password');
+    my $default_cat_id = $app->param('default_cat_id');
+    my $convert_breaks = $app->param('convert_breaks');
+
+    if ( !$import_as_me and !$password and MT::Auth->password_exists ) {
+        return $app->error(
             $app->translate(
                 'You need to provide a password if you are going to create new users for each user listed in your blog.'
             )
-            ) if ( MT::Auth->password_exists );
+        );
     }
 
     $app->validate_magic() or return;
 
     my ($fh) = $app->upload_info('file');
-    my $encoding = $q->param('encoding');
+    my $encoding = $app->param('encoding');
     my $stream = $fh ? $fh : $app->config('ImportPath');
 
     $app->{no_print_body} = 1;
@@ -172,7 +173,7 @@ sub do_import {
     require MT::Comment;
     require MT::TBPing;
 
-    my $import_type = $q->param('import_type') || '';
+    my $import_type = $app->param('import_type') || '';
     require MT::Import;
     my $imp      = MT::Import->new;
     my $importer = $imp->importer($import_type);
@@ -181,7 +182,9 @@ sub do_import {
         $app->translate( 'Importer type [_1] was not found.', $import_type ) )
         unless $importer;
 
-    my %options = map { $_ => $q->param($_); } @{ $importer->{options} }
+    my %options;
+    %options
+        = map { $_ => scalar $app->param($_); } @{ $importer->{options} }
         if $importer->{options};
     my $import_result = $imp->import_contents(
         Key      => $import_type,
@@ -192,9 +195,9 @@ sub do_import {
         ($import_as_me)
         ? ( ImportAs => $author )
         : ( ParentAuthor => $author ),
-        NewAuthorPassword => ( scalar $q->param('password') ),
-        DefaultCategoryID => ( scalar $q->param('default_cat_id') ),
-        ConvertBreaks     => ( scalar $q->param('convert_breaks') ),
+        NewAuthorPassword => $password,
+        DefaultCategoryID => $default_cat_id,
+        ConvertBreaks     => $convert_breaks,
         (%options) ? (%options) : (),
     );
 

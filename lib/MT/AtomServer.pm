@@ -968,8 +968,9 @@ sub delete_post {
         unless $app->{perms}->can_edit_entry( $entry, $app->{user} );
 
     # Delete archive file
+    my %recipe;
     $blog = MT::Blog->load( $entry->blog_id );
-    my %recipe = $app->publisher->rebuild_deleted_entry(
+    %recipe = $app->publisher->rebuild_deleted_entry(
         Entry => $entry,
         Blog  => $blog
     ) if $entry->status eq MT::Entry::RELEASE();

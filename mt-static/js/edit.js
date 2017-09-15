@@ -107,14 +107,20 @@ MT.App = new Class( MT.App, {
                     return;
 
                 var e = event.target;
+                var return_args = '__mode=list&amp;_type='
+                    + e.getAttribute( "mt:object-type" )
+                    + '&amp;blog_id='
+                    + e.getAttribute( "mt:blog-id" );
+                if (e.hasAttribute('mt:subtype'))
+                    return_args += '&amp;type='
+                        + e.getAttribute('mt:subtype');
                 if( !doRemoveItems(
                         form,
                         e.getAttribute( "mt:object-singular" ),
                         e.getAttribute( "mt:object-plural" ),
                         false,
                         {
-                            'return_args': '__mode=list&amp;_type='+e.getAttribute( "mt:object-type" )
-                                +'&amp;blog_id='+e.getAttribute( "mt:blog-id" )
+                            'return_args': return_args
                         } ) )
                     return event.stop();
                 break;

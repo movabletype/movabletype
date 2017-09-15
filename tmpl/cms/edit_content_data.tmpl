@@ -1,12 +1,12 @@
 <mt:setvar name="edit_screen" value="1">
-<mt:setvar name="page_title" value="<__trans phrase="Edit Content Type Data">">
+<mt:if name="new_object">
+  <mt:setvarblock name="page_title"><__trans phrase="Create [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
+<mt:else>
+  <mt:setvarblock name="page_title"><__trans phrase="Edit [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
+</mt:if>
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="screen_id" value="edit-content-type-data">
 <mt:setvar name="screen_class" value="edit-content-type-data">
-
-<mt:setvarblock name="css_include" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/datepicker.css?v=<mt:var name="mt_version_id" escape="url">" />
-</mt:setvarblock>
 
 <mt:setvarblock name="system_msg">
 <div id="msg-block">
@@ -28,11 +28,20 @@
   </mt:if>
 </mt:if>
 
+<mt:if name="recovered_failed">
+  <mtapp:statusmsg
+    id="recovered-failed"
+    class="error"
+    can_close="0">
+    <__trans phrase="An error occurred while trying to recover your saved content data.">
+  </mtapp:statusmsg>
+</mt:if>
+
 <mt:if name="saved">
   <mtapp:statusmsg
      id="saved"
      class="success">
-    <__trans phrase="[_1] has been saved." params="<mt:var name="name">">
+    <__trans phrase="[_1] has been saved." params="<mt:var name="name" escape="html">">
   </mtapp:statusmsg>
 </mt:if>
 <mt:if name="err_msg">
@@ -48,8 +57,8 @@
 
 <mt:setvarblock name="form_header">
 <form name="edit-content-type-data-form" id="edit-content-type-data-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewnewwindow"> mt:once</mt:unless> mt:auto-save="1" mt:auto-save-delay="<mt:var name="autosave_frequency">000" novalidate>
-  <input type="hidden" name="__mode" value="save_content_data" />
-  <input type="hidden" name="_type" value="cd" />
+  <input type="hidden" name="__mode" value="save" />
+  <input type="hidden" name="_type" value="content_data" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
   <input type="hidden" name="cfg_screen" value="edit_content_data" />
@@ -90,7 +99,7 @@
   </mt:unless>
   </div>
   <mt:if name="new_object">
-  <p class="zero-state"><__trans phrase="New [_1]" params="<mt:var name="object_label">"></p>
+  <p class="zero-state"><__trans phrase="New [_1]" params="<mt:var name="object_label" escape="html">"></p>
   <mt:else>
     <mt:if name="use_revision">
   <div class="revision-info">
@@ -161,7 +170,7 @@
   </mt:if>
 </mt:if>
 
-  <mt:setvarblock name="scheduled_button_title"><__trans phrase="Save this [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
+  <mt:setvarblock name="scheduled_button_title"><__trans phrase="Save this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
   <mtapp:setting
      id="status"
      label="<__trans phrase="Status">"
@@ -251,6 +260,26 @@
     </div>
   </mtapp:setting>
 
+  <mt:setvar name="basename_label" value="<__trans phrase="Basename">">
+  <mtapp:setting
+     id="basename"
+     label="$basename_label"
+     label_class="top-label">
+    <br/>
+    <span class="basename">
+      <input type="text" name="identifier" id="basename" class="form-control text full" value="<$mt:var name="identifier" escape="html"$>" /><mt:if name="object_type" eq="page"><span class="file-extension"><mt:var name="file_extension" escape="html"></span></mt:if>
+      <input type="hidden" name="basename_manual" id="basename_manual" value="0" />
+    </span>
+    <p class="text-warning alert-warning-inline" id="basename-warning" style="display: none">
+      <img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
+    <mt:if name="new_object">
+      <__trans phrase="Warning: If you set the basename manually, it may conflict with another content data.">
+    <mt:else>
+      <__trans phrase="Warning: Changing this content data's basename may break inbound links.">
+    </mt:if>
+    </p>
+  </mtapp:setting>
+
 <mt:if name="object_type" eq="page">
   <mt:var name="category_setting">
 </mt:if>
@@ -264,22 +293,24 @@
   </mtapp:setting>
 </mt:if>
 
-  <div class="d-flex justify-content-center">
-    <button
-       name="status"
-       type="submit"
-       title="<mt:var name="button_title">"
-       class="publish action primary button btn btn-primary mx-1">
-      <mt:var name="button_text">
-    </button>
-    <button
-       name="preview_entry"
-       type="submit"
-       accesskey="v"
-       title="<mt:var name="preview_button_title">"
-       class="preview action button btn btn-default mx-1">
-      <__trans phrase="Preview">
-    </button>
+  <div class="row">
+    <div class="col">
+      <button
+         name="status"
+         type="submit"
+         title="<mt:var name="button_title">"
+         class="publish action primary button btn btn-primary mx-1">
+        <mt:var name="button_text">
+      </button>
+      <button
+         name="preview_content_data"
+         type="submit"
+         accesskey="v"
+         title="<mt:var name="preview_button_title">"
+         class="preview action button btn btn-default mx-1">
+        <__trans phrase="Preview">
+      </button>
+    </div>
   </div>
 
 <mt:if name="id">
@@ -289,10 +320,13 @@
      mt:command="do-remove-items"
      mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
      mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
-     mt:object-type="content_data_<mt:var name="content_type_id" escape="html">" mt:blog-id="<mt:var name="blog_id">"
+     mt:subtype="content_data_<mt:var name="content_type_id" escape="html">"
+     mt:object-type="content_data"
+     mt:blog-id="<mt:var name="blog_id">"
      title="<mt:var name="delete_button_title">"
      class="delete"
      accesskey="x">
+    <mtapp:svgicon id="ic_trash" size="sm" title="$delete_button_title">
     <__trans phrase="Delete">
   </a>
 </div>
@@ -322,13 +356,33 @@
   <link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/fonts/a-table-icon.css">
   <link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/css/a-table.css">
   <script src="<mt:var name="static_uri">a-table.js/build/a-table.js"></script>
+
+  <script>
+  function toggleFile() {
+      var fld = getByID("basename");
+      if (fld) {
+          fld.disabled = false;
+          fld.focus();
+          var baseman = getByID("basename_manual");
+          if (baseman) baseman.value = "1";
+          var basewarn = getByID("basename-warning");
+          if (basewarn) basewarn.style.display = "block";
+      }
+      var img = getByID("basename-lock");
+      if (img)
+          img.style.display = 'none';
+      return false;
+  }
+  </script>
 </mt:setvarblock>
 
-<mt:unless name="editors">
-  <mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
-<mt:else>
-  <mt:include name="include/editor_script.tmpl" id="editor_script_include">
-</mt:unless>
+<mt:if name="has_multi_line_text_field">
+  <mt:unless name="editors">
+    <mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
+  <mt:else>
+    <mt:include name="include/editor_script.tmpl" id="editor_script_include">
+  </mt:unless>
+</mt:if>
 
 <mt:setvarblock name="html_head" append="1">
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/content-type.css?v=<$mt:var name="mt_version_id" escape="url"$>">
@@ -364,6 +418,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 
+<mt:if name="has_multi_line_text_field">
 <script>
   // editor load
   var editor_strategy = MT.App.EditorStrategy.Multi;
@@ -550,127 +605,131 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   jQuery(document).on('change', '.convert_breaks', changedTextFormat);
   jQuery(document).on('click', '.field-convert_breaks .help-link', openTFDocs);
 </script>
+</mt:if>
 </mt:setvarblock>
 
-<mt:var name="blockeditor_tmpl">
+<mt:if name="has_multi_line_text_field">
+  <mt:var name="blockeditor_tmpl">
+</mt:if>
 
 <mt:setvarblock name="page_content">
 <mtapp:settinggroup id="content_data">
 
-  <legend class="h3"><__trans phrase="Edit <mt:var name="name" escape="html">"></legend>
-
-  <div>
-    <__trans phrase="Title"> *
-  </div>
-  <div>
-    <input type="text" name="title" class="form-control text content-field html5-form" required maxlength="255" mt:watch-change="1" value="<mt:var name="title">">
-  </div>
+  <mtapp:setting
+    id="title"
+    label="<__trans phrase="Title">"
+    required="1"
+  >
+    <input type="text" id="title" name="title" class="form-control text content-field html5-form" required maxlength="255" mt:watch-change="1" value="<mt:var name="title">">
+  </mtapp:setting>
 
   <mt:loop name="fields">
   <mt:if name="can_edit">
-  <div>
-    <mt:var name="options{label}"><mt:if name=options{required}> *</mt:if>
-
-    <mt:if name="options{min_length}">
-      <mt:if name="options{max_length}">
-    (min_length:<mt:var name="options{min_length}" escape="html">, max_length:<mt:var name="options{max_length}" escape="html">)
-      <mt:else>
-    (min_length:<mt:var name="options{min_length}" escape="html">)
-      </mt:if>
-    <mt:elseif name="options{max_length}">
-    (max_length:<mt:var name="options{max_length}" escape="html">)
-    </mt:if>
-
-    <mt:if name="options{min_value}" ne="">
-      <mt:if name="options{max_value}" ne="">
-        <mt:if name="options{decimal_places}">
-    (min_value:<mt:var name="options{min_value}" escape="html">, max_value:<mt:var name="options{max_value}" escape="html">, decimal_places:<mt:var name="options{decimal_places}" escape="html">)
+  <div class="form-group">
+    <label>
+      <mt:var name="options{label}"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></mt:if>
+  
+      <mt:if name="options{min_length}">
+        <mt:if name="options{max_length}">
+      (min_length:<mt:var name="options{min_length}" escape="html">, max_length:<mt:var name="options{max_length}" escape="html">)
         <mt:else>
-    (min_value:<mt:var name="options{min_value}" escape="html">, max_value:<mt:var name="options{max_value}" escape="html">)
+      (min_length:<mt:var name="options{min_length}" escape="html">)
+        </mt:if>
+      <mt:elseif name="options{max_length}">
+      (max_length:<mt:var name="options{max_length}" escape="html">)
+      </mt:if>
+  
+      <mt:if name="options{min_value}" ne="">
+        <mt:if name="options{max_value}" ne="">
+          <mt:if name="options{decimal_places}">
+      (min_value:<mt:var name="options{min_value}" escape="html">, max_value:<mt:var name="options{max_value}" escape="html">, decimal_places:<mt:var name="options{decimal_places}" escape="html">)
+          <mt:else>
+      (min_value:<mt:var name="options{min_value}" escape="html">, max_value:<mt:var name="options{max_value}" escape="html">)
+          </mt:if>
+        <mt:elseif name="options{decimal_places}">
+      (min_value:<mt:var name="options{min_value}" escape="html">, decimal_places:<mt:var name="options{decimal_places}" escape="html">)
+        <mt:else>
+      (min_value:<mt:var name="options{min_value}" escape="html">)
+        </mt:if>
+      <mt:elseif name="options{max_value}" ne="">
+        <mt:if name="options{decimal_places">
+      (max_value:<mt:var name="options{max_value}" escape="html">, decimal_places:<mt:var name="options{decimal_places}" escape="html">)
+        <mt:else>
+      (max_value:<mt:var name="options{max_value}" escape="html">)
         </mt:if>
       <mt:elseif name="options{decimal_places}">
-    (min_value:<mt:var name="options{min_value}" escape="html">, decimal_places:<mt:var name="options{decimal_places}" escape="html">)
-      <mt:else>
-    (min_value:<mt:var name="options{min_value}" escape="html">)
+      (decimal_places:<mt:var name="options{decimal_places}" escape="html">)
       </mt:if>
-    <mt:elseif name="options{max_value}" ne="">
-      <mt:if name="options{decimal_places">
-    (max_value:<mt:var name="options{max_value}" escape="html">, decimal_places:<mt:var name="options{decimal_places}" escape="html">)
-      <mt:else>
-    (max_value:<mt:var name="options{max_value}" escape="html">)
-      </mt:if>
-    <mt:elseif name="options{decimal_places}">
-    (decimal_places:<mt:var name="options{decimal_places}" escape="html">)
-    </mt:if>
-
-    <mt:if name="type" like="^select_box|checkboxes|category|asset|audio|video|image|content_type$">
-      <mt:if name="options{multiple}">
-        <mt:if name="options{min}">
-          <mt:if name="options{max}">
-    (min_select:<mt:var name="options{min}" escape="html">, max_select:<mt:var name="options{max}" escape="html">)
-          <mt:else>
-    (min_select:<mt:var name="options{min}" escape="html">)
+  
+      <mt:if name="type" like="^select_box|checkboxes|category|asset|audio|video|image|content_type$">
+        <mt:if name="options{multiple}">
+          <mt:if name="options{min}">
+            <mt:if name="options{max}">
+      (min_select:<mt:var name="options{min}" escape="html">, max_select:<mt:var name="options{max}" escape="html">)
+            <mt:else>
+      (min_select:<mt:var name="options{min}" escape="html">)
+            </mt:if>
+          <mt:elseif name="options{max}">
+      (max_select:<mt:var name="options{max}" escape="html">)
           </mt:if>
-        <mt:elseif name="options{max}">
-    (max_select:<mt:var name="options{max}" escape="html">)
         </mt:if>
       </mt:if>
-    </mt:if>
-
-    <mt:if name="type" eq="tag">
-      <mt:if name="options{multiple}">
-        <mt:if name="options{min}">
-          <mt:if name="options{max}">
-    (min_tag_count:<mt:var name="options{min}" escape="html">, max_tag_count:<mt:var name="options{max}" escape="html">)
-          <mt:else>
-    (min_tag_count:<mt:var name="options{min}" escape="html">)
+  
+      <mt:if name="type" eq="tags">
+        <mt:if name="options{multiple}">
+          <mt:if name="options{min}">
+            <mt:if name="options{max}">
+      (min_tag_count:<mt:var name="options{min}" escape="html">, max_tag_count:<mt:var name="options{max}" escape="html">)
+            <mt:else>
+      (min_tag_count:<mt:var name="options{min}" escape="html">)
+            </mt:if>
+          <mt:elseif name="options{max}">
+      (max_tag_count:<mt:var name="options{max}" escape="html">)
           </mt:if>
-        <mt:elseif name="options{max}">
-    (max_tag_count:<mt:var name="options{max}" escape="html">)
+        <mt:else>
+      (single tag)
         </mt:if>
-      <mt:else>
-    (single tag)
       </mt:if>
-    </mt:if>
-  </div>
-  <div>
-    <mt:if name="field_html">
-      <mt:var name="field_html" mteval="1">
-    <mt:elseif name="data_type" eq="varchar">
-      <input type="text" name="content-field-<mt:var name="content_field_id">" class="form-control text long html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>/>
-    <mt:elseif name="data_type" eq="blob">
-      <mt:if name="type" eq="multi_line_text">
-        <div class="field-convert_breaks">
-          <__trans phrase="Format:">
-          <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="convert_breaks" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>">
-          <mt:loop name="text_filters">
-            <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
-          </mt:loop>
-          </select>
-          <$mt:setvar name="show_formatting_help" value="1"$>
-        <mt:if name="convert_breaks" eq="richtext">
-          <$mt:setvar name="show_formatting_help" value="0"$>
-        </mt:if>
-        <mt:if name="convert_breaks" eq="0">
-          <$mt:setvar name="show_formatting_help" value="0"$>
-        </mt:if>
-        <mt:if name="convert_breaks" eq="__default__">
-          <$mt:setvar name="show_formatting_help" value="0"$>
-        </mt:if>
-          <a href="#" onclick="openTFDocs(); return false" id="formatting-help-link" class="help-link<mt:unless name="show_formatting_help"> disabled</mt:unless>">?</a>
-        </div>
-        <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
-          <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="text high html5-form content-field editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
-        </div>
-      <mt:else>
-        <textarea name="content-field-<mt:var name="content_field_id">" class="form-control text high html5-form content-field" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
+    </label>
+
+  <mt:if name="field_html">
+    <mt:var name="field_html" mteval="1">
+  <mt:elseif name="data_type" eq="varchar">
+    <input type="text" name="content-field-<mt:var name="content_field_id">" class="form-control text long html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>/>
+  <mt:elseif name="data_type" eq="blob">
+    <mt:if name="type" eq="multi_line_text">
+      <div class="field-convert_breaks">
+        <__trans phrase="Format:">
+        <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="convert_breaks" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>">
+        <mt:loop name="text_filters">
+          <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+        </mt:loop>
+        </select>
+        <$mt:setvar name="show_formatting_help" value="1"$>
+      <mt:if name="convert_breaks" eq="richtext">
+        <$mt:setvar name="show_formatting_help" value="0"$>
       </mt:if>
-    <mt:elseif name="data_type" eq="integer">
-      <input type="number" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
-    <mt:elseif name="data_type" eq="float">
-      <input type="number" step="any" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
+      <mt:if name="convert_breaks" eq="0">
+        <$mt:setvar name="show_formatting_help" value="0"$>
+      </mt:if>
+      <mt:if name="convert_breaks" eq="__default__">
+        <$mt:setvar name="show_formatting_help" value="0"$>
+      </mt:if>
+        <a href="#" onclick="openTFDocs(); return false" id="formatting-help-link" class="help-link<mt:unless name="show_formatting_help"> disabled</mt:unless>">?</a>
+      </div>
+      <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
+        <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="text high html5-form content-field editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
+      </div>
+    <mt:else>
+      <textarea name="content-field-<mt:var name="content_field_id">" class="form-control text high html5-form content-field" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
     </mt:if>
-      <div class="hint"><mt:var name="options{description}" escape="html"></div>
+  <mt:elseif name="data_type" eq="integer">
+    <input type="number" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
+  <mt:elseif name="data_type" eq="float">
+    <input type="number" step="any" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
+  </mt:if>
+
+    <small class="form-text text-muted"><mt:var name="options{description}" escape="html"></small>
   </div>
   </mt:if>
   </mt:loop>
@@ -684,6 +743,20 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
+  jQuery('button.preview').click(function(event) {
+    jQuery('form#edit-content-type-data-form input[name=__mode]').val('preview_content_data');
+  <mt:if name="config.previewinnewwindow">
+    jQuery('form#edit-content-type-data-form').attr('target', 'mt_preview_content_data_<mt:var name="blog_id" escape="js" default="0">_<mt:var name="id" escape="js" default="0">');
+  </mt:if>
+  });
+  <mt:if name="config.previewinnewwindow">
+    jQuery('button.publish').click(function(event) {
+        jQuery('form#edit-content-type-data-form input[name=__mode]').val('save');
+        jQuery('form#edit-content-type-data-form').removeAttr('target');
+        jQuery('form#edit-content-type-data-form').attr('mt:once', '1');
+    });
+  </mt:if>
+
   jQuery(function() {
     jQuery('fieldset#content_data')
       .on('keyup', 'input[type="text"],input[type="number"],textarea', function () {
@@ -790,6 +863,11 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   jQuery('div.mt-edit-inputblock').mtEditInputBlock({
     edit: '<__trans phrase="Edit">',
     text: '<$mt:if name="unpublished_on_date"><$mt:var name="unpublished_on_date" escape="html"$> <__trans phrase="@"> <$mt:var name="unpublished_on_time" escape="html"$><mt:else><__trans phrase="Not specified"></mt:if>'
+  });
+  jQuery('input#title').mtRebasename({
+      edit: '<__trans phrase="Edit">',
+      limit: '<$mt:var name="basename_limit" escape="js"$>',
+      basename: '<$mt:var name="identifier" escape="js"$>'
   });
 
   jQuery('select#status').change(function() {

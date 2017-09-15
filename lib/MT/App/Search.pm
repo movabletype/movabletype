@@ -122,7 +122,8 @@ sub init_request {
           $blog->entries_on_index ? $blog->entries_on_index
         : $cfg->SearchMaxResults
         );
-    my $offset = ( $page - 1 ) * $limit if ( $page && $limit );
+    my $offset;
+    $offset = ( $page - 1 ) * $limit if ( $page && $limit );
     $q->param( 'limit',  $limit )  if $limit;
     $q->param( 'offset', $offset ) if $offset;
 
@@ -346,15 +347,16 @@ sub check_cache {
     my $cache
         = $app->{cache_driver}->get_multi( values %{ $app->{cache_keys} } );
 
-    my $count = $cache->{ $app->{cache_keys}{count} }
+    my ( $count, $result );
+    $count = $cache->{ $app->{cache_keys}{count} }
         if exists $cache->{ $app->{cache_keys}{count} };
-    my $result = $cache->{ $app->{cache_keys}{result} }
+    $result = $cache->{ $app->{cache_keys}{result} }
         if exists $cache->{ $app->{cache_keys}{result} };
     if ( exists $cache->{ $app->{cache_keys}{content_type} } ) {
         my $content_type = $cache->{ $app->{cache_keys}{content_type} };
         $app->{response_content_type} = $content_type;
     }
-    if ( !Encode::is_utf8($result) ) {
+    if ( $result and !Encode::is_utf8($result) ) {
         my $enc = MT->config->PublishCharset;
         $result = Encode::decode( $enc, $result );
     }
@@ -729,7 +731,6 @@ sub first_blog_id {
 
 sub prepare_context {
     my $app = shift;
-    my $q   = $app->param;
     my ( $count, $iter ) = @_;
 
     ## Initialize and set up the context object.
@@ -738,31 +739,34 @@ sub prepare_context {
     if ( my $str = $app->{search_string} ) {
         $ctx->stash( 'search_string', encode_html($str) );
     }
-    if ( $q->param('type') ) {
+    if ( $app->param('type') ) {
         $ctx->stash( 'type', $app->{searchparam}{Type} );
     }
     if ( $app->{default_mode} ne $app->mode ) {
         $ctx->stash( 'mode', $app->mode );
     }
-    if ( my $template = $q->param('Template') ) {
+    if ( my $template = $app->param('Template') ) {
         $template =~ s/[^\w\-\.]//g;
         $ctx->stash( 'template_id', $template );
     }
+
+    my $limit = $app->param('count') || $app->param('limit');
+    my $offset = $app->param('startIndex') || $app->param('offset') || 0;
+    my $format = $app->param('format');
+
     $ctx->stash( 'stash_key',  $app->{searchparam}{Type} );
     $ctx->stash( 'maxresults', $app->{searchparam}{SearchMaxResults} );
     $ctx->stash( 'include_blogs', join ',',
         @{ $app->{searchparam}{IncludeBlogs} } );
     $ctx->stash( 'results', $iter );
     $ctx->stash( 'count',   $count );
-    $ctx->stash( 'offset',
-        $q->param('startIndex') || $q->param('offset') || 0 );
-    $ctx->stash( 'limit', $q->param('count') || $q->param('limit') );
-    $ctx->stash( 'format', $q->param('format') ) if $q->param('format');
+    $ctx->stash( 'offset',  $offset );
+    $ctx->stash( 'limit',   $limit );
+    $ctx->stash( 'format',  $format ) if $format;
 
-    my $blog_id
-        = defined $q->param('blog_id')
-        ? $q->param('blog_id')
-        : $app->first_blog_id();
+    my $blog_id = $app->param('blog_id');
+    $blog_id = $app->first_blog_id() unless defined $blog_id;
+
     if ($blog_id) {
         my $blog = $app->model('blog')->load($blog_id);
         $app->blog($blog);
@@ -779,14 +783,16 @@ sub prepare_context {
         if ( my $val = $app->param($key) ) {
             $ctx->stash( 'search_' . $key, $val );
         }
-        my @filters = ( $app->multi_param('filter'), $app->multi_param('filter_on') );  # XXX: filter_on is gone?
+        my @filters
+            = ( $app->multi_param('filter'), $app->multi_param('filter_on') )
+            ;    # XXX: filter_on is gone?
         if (@filters) {
             $ctx->stash( 'search_filters', \@filters );
         }
     }
 
     # now we need to figure out the archive types
-    if ( my $at = $q->param('archive_type') ) {
+    if ( my $at = $app->param('archive_type') ) {
         $ctx->stash( 'archive_count', $count );
         $ctx->{current_archive_type} = $at;
         my $archiver = MT->publisher->archiver($at);
@@ -797,18 +803,20 @@ sub prepare_context {
     }
     $ctx->{current_timestamp}
         = $app->param('context_date_start')
-        ? $app->param('context_date_start')
-        : MT::Util::epoch2ts( $blog_id, time );
-    if ( $app->param('author') && $app->param('author') =~ /^[0-9]*$/ ) {
+        || MT::Util::epoch2ts( $blog_id, time );
+
+    my $author_id   = $app->param('author');
+    my $category_id = $app->param('category');
+    if ( $author_id && $author_id =~ /^[0-9]*$/ ) {
         require MT::Author;
-        if ( my $author = MT::Author->load( $app->param('author') ) ) {
+        if ( my $author = MT::Author->load($author_id) ) {
             $ctx->stash( 'author', $author );
             $ctx->var( 'author_archive', 1 );
         }
     }
-    if ( $app->param('category') && $app->param('category') =~ /^[0-9]*$/ ) {
+    if ( $category_id && $category_id =~ /^[0-9]*$/ ) {
         require MT::Category;
-        if ( my $category = MT::Category->load( $app->param('category') ) ) {
+        if ( my $category = MT::Category->load($category_id) ) {
             $ctx->stash( 'category', $category );
             $ctx->var( 'category_archive', 1 );
         }
@@ -818,12 +826,12 @@ sub prepare_context {
 }
 
 sub load_search_tmpl {
-    my $app   = shift;
-    my $q     = $app->param;
+    my $app = shift;
     my ($ctx) = @_;
 
     my $tmpl;
-    if ( $q->param('Template') && ( 'default' ne $q->param('Template') ) ) {
+    my $param_template = $app->param('Template');
+    if ( $param_template && ( 'default' ne $param_template ) ) {
 
         # load specified template
         my $filename;
@@ -836,7 +844,7 @@ sub load_search_tmpl {
             for my $tmpl_ (@tmpls) {
                 next unless defined $tmpl_;
                 my ( $nickname, $file ) = split /\s+/, $tmpl_;
-                if ( $nickname eq $q->param('Template') ) {
+                if ( $nickname eq $param_template ) {
                     $filename = $file;
                     last;
                 }
@@ -844,7 +852,7 @@ sub load_search_tmpl {
         }
         return $app->errtrans(
             "No alternate template is specified for template '[_1]'",
-            encode_html( $q->param('Template') ) )
+            encode_html($param_template) )
             unless $filename;
 
         # template_paths method does the magic
@@ -855,7 +863,7 @@ sub load_search_tmpl {
         $tmpl->text( $app->translate_templatized( $tmpl->text ) );
     }
     else {
-        my $tmpl_id = $q->param('template_id');
+        my $tmpl_id = $app->param('template_id');
         if ( $tmpl_id && $tmpl_id =~ /^\d+$/ ) {
             $tmpl = $app->model('template')->lookup($tmpl_id);
             return $app->errtrans('No such template')
@@ -872,8 +880,7 @@ sub load_search_tmpl {
                     || $tmpl->outfile =~ /\.php/i )
                 );
 
-            if ( $q->param('archive_type') ) {
-                my $at       = $q->param('archive_type');
+            if ( my $at = $app->param('archive_type') ) {
                 my $archiver = MT->publisher->archiver($at);
                 return
                     return $app->errtrans(

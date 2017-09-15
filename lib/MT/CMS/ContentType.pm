@@ -28,8 +28,10 @@ use MT::Serialize;
 
 sub tmpl_param_list_common {
     my ( $cb, $app, $param, $tmpl ) = @_;
-    if (   $app->mode eq 'list'
-        && $app->param('_type') =~ /^content_data_(\d+)$/ )
+    if ($app->mode eq 'list'
+        && (   $app->param('_type') eq 'content_data'
+            && $app->param('type') =~ /^content_data_(\d+)$/ )
+        )
     {
         my $content_type_id = $1;
         my $content_type    = MT::ContentType->load($content_type_id);
@@ -258,7 +260,6 @@ sub cfg_content_type {
 
 sub save_cfg_content_type {
     my ($app) = @_;
-    my $q     = $app->param;
     my $cfg   = $app->config;
     my $param = {};
 
@@ -277,13 +278,13 @@ sub save_cfg_content_type {
             unless $perms->can_do('edit_all_content_types');
     }
 
-    my $blog_id = scalar $q->param('blog_id')
+    my $blog_id = $app->param('blog_id')
         or return $app->errtrans("Invalid request.");
 
-    my $content_type_id = $q->param('id');
+    my $content_type_id = $app->param('id');
 
     my $option_list;
-    if ( my $data = $q->param('data') ) {
+    if ( my $data = $app->param('data') ) {
         if ( $data =~ /^".*"$/ ) {
             $data =~ s/^"//;
             $data =~ s/"$//;
@@ -328,9 +329,10 @@ sub save_cfg_content_type {
         ? MT::ContentType->load($content_type_id)
         : MT::ContentType->new();
 
+    my $user_disp_option = $app->param('user_disp_option');
     $content_type->blog_id($blog_id);
     $content_type->name($name);
-    $content_type->user_disp_option( $app->param('user_disp_option') );
+    $content_type->user_disp_option($user_disp_option);
 
     $content_type->save
         or return $app->error(
@@ -915,525 +917,6 @@ sub select_edit_content_type {
         $param );
 }
 
-sub edit_content_data {
-    my ($app) = @_;
-    my $q     = $app->param;
-    my $blog  = $app->blog;
-    my $cfg   = $app->config;
-    my $param = {};
-    my $data;
-
-    my $blog_id = scalar $q->param('blog_id')
-        or return $app->errtrans("Invalid request.");
-    my $content_type_id = scalar $q->param('content_type_id')
-        or return $app->errtrans("Invalid request.");
-    my $content_type = MT::ContentType->load($content_type_id)
-        or return $app->errtrans('Invalid request.');
-
-    $q->param( '_type', 'cd' );
-
-    if ( $q->param('_recover') ) {
-        my $sess_obj = $app->autosave_session_obj;
-        if ($sess_obj) {
-            my $autosave_data = $sess_obj->thaw_data;
-            if ($autosave_data) {
-                $q->param( $_, $autosave_data->{$_} )
-                    for keys %$autosave_data;
-                $app->delete_param('id')
-                    if defined $q->param('id') && !$q->param('id');
-                $data = $autosave_data->{data};
-                $param->{'recovered_object'} = 1;
-            }
-            else {
-                $param->{'recovered_failed'} = 1;
-            }
-        }
-        else {
-            $param->{'recovered_failed'} = 1;
-        }
-    }
-
-    if ( !$q->param('reedit') ) {
-        if ( my $sess_obj = $app->autosave_session_obj ) {
-            $param->{autosaved_object_exists} = 1;
-            $param->{autosaved_object_ts}
-                = MT::Util::epoch2ts( $blog, $sess_obj->start );
-        }
-    }
-
-    $param->{autosave_frequency} = $app->config->AutoSaveFrequency;
-    $param->{name}               = $content_type->name;
-
-    my $array           = $content_type->fields;
-    my $ct_unique_id    = $content_type->unique_id;
-    my $content_data_id = scalar $q->param('id');
-
-    $param->{use_revision} = $blog->use_revision ? 1 : 0;
-
-    my $content_data;
-    if ($content_data_id) {
-        $content_data = MT::ContentData->load($content_data_id)
-            or return $app->error(
-            $app->translate(
-                'Load failed: [_1]',
-                MT::ContentData->errstr
-                    || $app->translate('(no reason given)')
-            )
-            );
-
-        if ( $blog->use_revision ) {
-
-            my $original_revision = $content_data->revision;
-            my $rn                = $q->param('r');
-            if ( defined $rn && $rn != $content_data->current_revision ) {
-                my $status_text
-                    = MT::Entry::status_text( $content_data->status );
-                $param->{current_status_text} = $status_text;
-                $param->{current_status_label}
-                    = $app->translate($status_text);
-                my $rev
-                    = $content_data->load_revision( { rev_number => $rn } );
-                if ( $rev && @$rev ) {
-                    $content_data = $rev->[0];
-                    my $values = $content_data->get_values;
-                    $param->{$_} = $values->{$_} for keys %$values;
-                    $param->{loaded_revision} = 1;
-                }
-                $param->{rev_number} = $rn;
-                $param->{no_snapshot} = 1 if $q->param('no_snapshot');
-            }
-            $param->{rev_date} = MT::Util::format_ts(
-                '%Y-%m-%d %H:%M:%S',
-                $content_data->modified_on,
-                $blog, $app->user ? $app->user->preferred_language : undef
-            );
-        }
-
-        $param->{title} = $content_data->title;
-
-        my $status = $q->param('status') || $content_data->status;
-        $status =~ s/\D//g;
-        $param->{status} = $status;
-        $param->{ 'status_' . MT::Entry::status_text($status) } = 1;
-
-        $param->{authored_on_date} = $q->param('authored_on_date')
-            || MT::Util::format_ts( '%Y-%m-%d', $content_data->authored_on,
-            $blog, $app->user ? $app->user->preferred_language : undef );
-        $param->{authored_on_time} = $q->param('authored_on_time')
-            || MT::Util::format_ts( '%H:%M:%S', $content_data->authored_on,
-            $blog, $app->user ? $app->user->preferred_language : undef );
-        $param->{unpublished_on_date} = $q->param('unpublished_on_date')
-            || MT::Util::format_ts( '%Y-%m-%d', $content_data->unpublished_on,
-            $blog, $app->user ? $app->user->preferred_language : undef );
-        $param->{unpublished_on_time} = $q->param('unpublished_on_time')
-            || MT::Util::format_ts( '%H:%M:%S', $content_data->unpublished_on,
-            $blog, $app->user ? $app->user->preferred_language : undef );
-    }
-    else {
-        $param->{title} = $app->param('title');
-
-        my $def_status;
-        if ( $def_status = $q->param('status') ) {
-            $def_status =~ s/\D//g;
-            $param->{status} = $def_status;
-        }
-        else {
-            $def_status = $blog->status_default;
-        }
-        $param->{ "status_" . MT::Entry::status_text($def_status) } = 1;
-
-        my @now = MT::Util::offset_time_list( time, $blog );
-        $param->{authored_on_date} = $q->param('authored_on_date')
-            || POSIX::strftime( '%Y-%m-%d', @now );
-        $param->{authored_on_time} = $q->param('authored_on_time')
-            || POSIX::strftime( '%H:%M:%S', @now );
-        $param->{unpublished_on_date} = $q->param('unpublished_on_date');
-        $param->{unpublished_on_time} = $q->param('unpublished_on_time');
-    }
-
-    $data = $content_data->data if $content_data && !$data;
-    my $convert_breaks
-        = $content_data
-        ? MT::Serialize->unserialize( $content_data->convert_breaks )
-        : undef;
-    my $blockeditor_data
-        = $content_data
-        ? $content_data->block_editor_data()
-        : undef;
-    my $content_field_types = $app->registry('content_field_types');
-    @$array = map {
-        my $e_unique_id = $_->{unique_id};
-        my $can_edit_field
-            = $app->permissions->can_do( 'content_type:'
-                . $ct_unique_id
-                . '-content_field:'
-                . $e_unique_id );
-        if (   $can_edit_field
-            || $app->permissions->can_do('edit_all_content_datas') )
-        {
-            $_->{can_edit} = 1;
-        }
-        $_->{content_field_id} = $_->{id};
-        delete $_->{id};
-
-        if ( $q->param( $_->{content_field_id} ) ) {
-            $_->{value} = $q->param( $_->{content_field_id} );
-        }
-        elsif ( $content_data_id || $data ) {
-            $_->{value} = $data->{ $_->{content_field_id} };
-        }
-        else {
-            # TODO: fix after updating values option.
-            if ( $_->{type} eq 'select_box' || $_->{type} eq 'checkboxes' ) {
-                my $delimiter = quotemeta( $_->{options_delimiter} || ',' );
-                my @values = split $delimiter, $_->{options}{initial_value};
-                $_->{value} = \@values;
-            }
-            else {
-                $_->{value} = $_->{options}{initial_value};
-            }
-        }
-
-        my $content_field_type = $content_field_types->{ $_->{type} };
-
-        if ( my $field_html_params
-            = $content_field_type->{field_html_params} )
-        {
-            if ( !ref $field_html_params ) {
-                $field_html_params
-                    = MT->handler_to_coderef($field_html_params);
-            }
-            if ( 'CODE' eq ref $field_html_params ) {
-                $field_html_params = $field_html_params->( $app, $_ );
-            }
-
-            if ( ref $field_html_params eq 'HASH' ) {
-                for my $key ( keys %{$field_html_params} ) {
-                    unless ( exists $_->{$key} ) {
-                        $_->{$key} = $field_html_params->{$key};
-                    }
-                }
-            }
-        }
-
-        if ( my $field_html = $content_field_type->{field_html} ) {
-            if ( !ref $field_html ) {
-                if ( $field_html =~ /\.tmpl$/ ) {
-                    my $plugin = $content_field_type->{plugin};
-                    $field_html
-                        = $plugin->id eq 'core'
-                        ? $app->load_tmpl($field_html)
-                        : $plugin->load_tmpl($field_html);
-                    $field_html = $field_html->text if $field_html;
-                }
-                else {
-                    $field_html = MT->handler_to_coderef($field_html);
-                }
-            }
-            if ( 'CODE' eq ref $field_html ) {
-                $_->{field_html} = $field_html->( $app, $_ );
-            }
-            else {
-                $_->{field_html} = $field_html;
-            }
-        }
-
-        $_->{data_type} = $content_field_types->{ $_->{type} }{data_type};
-        if ( $_->{type} eq 'multi_line_text' ) {
-            if ( $convert_breaks
-                && exists $$convert_breaks->{ $_->{content_field_id} } )
-            {
-                $_->{convert_breaks}
-                    = $$convert_breaks->{ $_->{content_field_id} };
-            }
-            else {
-                $_->{convert_breaks} = $_->{options}{input_format};
-            }
-        }
-        $_;
-    } @$array;
-
-    $param->{fields} = $array;
-    if ($blockeditor_data) {
-        $param->{block_editor_data} = $blockeditor_data;
-    }
-
-    foreach my $name (qw( saved err_msg content_type_id id )) {
-        $param->{$name} = $q->param($name) if $q->param($name);
-    }
-
-    $param->{new_object}          = $content_data_id ? 0 : 1;
-    $param->{object_label}        = $content_type->name;
-    $param->{sitepath_configured} = $blog && $blog->site_path ? 1 : 0;
-
-    ## Load text filters if user displays them
-    my $filters = MT->all_text_filters;
-    $param->{text_filters} = [];
-    for my $filter ( keys %$filters ) {
-        if ( my $cond = $filters->{$filter}{condition} ) {
-            $cond = MT->handler_to_coderef($cond) if !ref($cond);
-            next unless $cond->('content-type');
-        }
-        push @{ $param->{text_filters} },
-            {
-            filter_key   => $filter,
-            filter_label => $filters->{$filter}{label},
-            filter_docs  => $filters->{$filter}{docs},
-            };
-    }
-    $param->{text_filters} = [ sort { $a->{filter_key} cmp $b->{filter_key} }
-            @{ $param->{text_filters} } ];
-    unshift @{ $param->{text_filters} },
-        {
-        filter_key   => '0',
-        filter_label => $app->translate('None'),
-        };
-
-    $app->setup_editor_param($param);
-
-    $app->build_page( $app->load_tmpl('edit_content_data.tmpl'), $param );
-}
-
-sub save_content_data {
-    my ($app) = @_;
-    my $blog  = $app->blog;
-    my $q     = $app->param;
-    my $cfg   = $app->config;
-    my $param = {};
-
-    $app->validate_magic
-        or return $app->errtrans("Invalid request.");
-    my $perms = $app->permissions
-        or return $app->permission_denied();
-
-    return $app->permission_denied()
-        unless $perms->can_do('edit_all_content_datas');
-
-    my $blog_id = scalar $q->param('blog_id')
-        or return $app->errtrans("Invalid request.");
-    my $content_type_id = scalar $q->param('content_type_id')
-        or return $app->errtrans("Invalid request.");
-
-    my $content_type = MT::ContentType->load($content_type_id);
-    my $field_data   = $content_type->fields;
-
-    my $content_data_id = scalar $q->param('id');
-
-    my $content_field_types = $app->registry('content_field_types');
-
-    my $convert_breaks = {};
-    my $data           = {};
-    foreach my $f (@$field_data) {
-        my $content_field_type = $content_field_types->{ $f->{type} };
-        $data->{ $f->{id} }
-            = _get_form_data( $app, $content_field_type, $f );
-        if ( $f->{type} eq 'multi_line_text' ) {
-            $convert_breaks->{ $f->{id} } = $q->param(
-                'content-field-' . $f->{id} . '_convert_breaks' );
-        }
-    }
-
-    if ( $app->param('_autosave') ) {
-        return _autosave_content_data( $app, $data );
-    }
-
-    if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
-    {
-
-        # FIXME: this does not preserve content field values.
-        return $app->redirect(
-            $app->uri(
-                mode => 'edit_content_data',
-                args => {
-                    blog_id         => $blog_id,
-                    content_type_id => $content_type_id,
-                    id              => $content_data_id,
-                    err_msg         => $errors->[0]{error},
-                },
-            )
-        );
-    }
-
-    my $content_data
-        = $content_data_id
-        ? MT::ContentData->load($content_data_id)
-        : MT::ContentData->new();
-
-    my $orig = $content_data->clone;
-    my $status_old = $content_data_id ? $content_data->status : 0;
-
-    if ( $content_data->id ) {
-        $content_data->modified_by( $app->user->id );
-    }
-    else {
-        $content_data->author_id( $app->user->id );
-        $content_data->blog_id($blog_id);
-    }
-    $content_data->content_type_id($content_type_id);
-    $content_data->data($data);
-
-    $content_data->title( scalar $app->param('title') );
-
-    if ( $app->param('scheduled') ) {
-        $content_data->status( MT::Entry::FUTURE() );
-    }
-    else {
-        $content_data->status( scalar $q->param('status') );
-    }
-    if ( ( $content_data->status || 0 ) != MT::Entry::HOLD() ) {
-        if ( !$blog->site_path || !$blog->site_url ) {
-            return $app->error(
-                $app->translate(
-                    "Your blog has not been configured with a site path and URL. You cannot publish entries until these are defined."
-                )
-            );
-        }
-    }
-
-    my $ao_d = $q->param('authored_on_date');
-    my $ao_t = $q->param('authored_on_time');
-    my $uo_d = $q->param('unpublished_on_date');
-    my $uo_t = $q->param('unpublished_on_time');
-
-    # TODO: permission check
-    if ($ao_d) {
-        my %param = ();
-        my $ao    = $ao_d . ' ' . $ao_t;
-        unless ( $ao
-            =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
-            )
-        {
-            $param{error} = $app->translate(
-                "Invalid date '[_1]'; 'Published on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
-                $ao
-            );
-        }
-        unless ( $param{error} ) {
-            my $s = $6 || 0;
-            $param{error} = $app->translate(
-                "Invalid date '[_1]'; 'Published on' dates should be real dates.",
-                $ao
-                )
-                if (
-                   $s > 59
-                || $s < 0
-                || $5 > 59
-                || $5 < 0
-                || $4 > 23
-                || $4 < 0
-                || $2 > 12
-                || $2 < 1
-                || $3 < 1
-                || ( MT::Util::days_in( $2, $1 ) < $3
-                    && !MT::Util::leap_day( $1, $2, $3 ) )
-                );
-        }
-        $param{return_args} = $app->param('return_args');
-        return $app->forward( "view", \%param ) if $param{error};
-        my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
-            ( $6 || 0 );
-        $content_data->authored_on($ts);
-    }
-
-    # TODO: permission check
-    if ( $content_data->status != MT::Entry::UNPUBLISH() ) {
-        if ( $uo_d || $uo_t ) {
-            my %param = ();
-            my $uo    = $uo_d . ' ' . $uo_t;
-            $param{error} = $app->translate(
-                "Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
-                $uo
-                )
-                unless ( $uo
-                =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
-                );
-            unless ( $param{error} ) {
-                my $s = $6 || 0;
-                $param{error} = $app->translate(
-                    "Invalid date '[_1]'; 'Unpublished on' dates should be real dates.",
-                    $uo
-                    )
-                    if (
-                       $s > 59
-                    || $s < 0
-                    || $5 > 59
-                    || $5 < 0
-                    || $4 > 23
-                    || $4 < 0
-                    || $2 > 12
-                    || $2 < 1
-                    || $3 < 1
-                    || ( MT::Util::days_in( $2, $1 ) < $3
-                        && !MT::Util::leap_day( $1, $2, $3 ) )
-                    );
-            }
-            my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
-                ( $6 || 0 );
-            unless ( $param{error} ) {
-                $param{error} = $app->translate(
-                    "Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.",
-                    $uo
-                    )
-                    if (
-                    MT::DateTime->compare(
-                        blog => $blog,
-                        a    => { value => time(), type => 'epoch' },
-                        b    => $ts
-                    ) > 0
-                    );
-            }
-            if ( !$param{error} && $content_data->authored_on ) {
-                $param{error} = $app->translate(
-                    "Invalid date '[_1]'; 'Unpublished on' dates should be later than the corresponding 'Published on' date.",
-                    $uo
-                    )
-                    if (
-                    MT::DateTime->compare(
-                        blog => $blog,
-                        a    => $content_data->authored_on,
-                        b    => $ts
-                    ) > 0
-                    );
-            }
-            $param{show_input_unpublished_on} = 1 if $param{error};
-            $param{return_args} = $app->param('return_args');
-            return $app->forward( "view", \%param ) if $param{error};
-            $content_data->unpublished_on($ts);
-        }
-        else {
-            $content_data->unpublished_on(undef);
-        }
-    }
-    $content_data->convert_breaks(
-        MT::Serialize->serialize( \$convert_breaks ) );
-
-    $content_data->block_editor_data( $app->param('blockeditor-data') );
-
-    $app->run_callbacks( 'cms_pre_save.cd', $app, $content_data, $orig );
-
-    $content_data->save
-        or return $app->error(
-        $app->translate(
-            "Saving [_1] failed: [_2]", $content_type->name,
-            $content_data->errstr
-        )
-        );
-
-    $app->run_callbacks( 'cms_post_save.cd', $app, $content_data, $orig );
-
-    return $app->redirect(
-        $app->uri(
-            'mode' => 'edit_content_data',
-            args   => {
-                blog_id         => $blog_id,
-                content_type_id => $content_type_id,
-                id              => $content_data->id,
-                saved           => 1,
-            }
-        )
-    );
-}
-
 sub _autosave_content_data {
     my ( $app, $data ) = @_;
 
@@ -1453,53 +936,6 @@ sub _autosave_content_data {
     $app->{no_print_body} = 1;
     $app->print_encode("true");
 
-}
-
-sub cms_pre_load_filtered_list {
-    my ( $cb, $app, $filter, $load_options, $cols ) = @_;
-    my $object_ds = $filter->object_ds;
-    $object_ds =~ /content_data_(\d+)/;
-    my $content_type_id = $1;
-    $load_options->{terms}{content_type_id} = $content_type_id;
-}
-
-sub _get_form_data {
-    my ( $app, $content_field_type, $form_data ) = @_;
-
-    if ( my $data_load_handler = $content_field_type->{data_load_handler} ) {
-        if ( !ref $data_load_handler ) {
-            $data_load_handler = MT->handler_to_coderef($data_load_handler);
-        }
-        if ( 'CODE' eq ref $data_load_handler ) {
-            return $data_load_handler->( $app, $form_data );
-        }
-        else {
-            return $data_load_handler;
-        }
-    }
-    else {
-        my $value = $app->param( 'content-field-' . $form_data->{id} );
-        if ( defined $value && $value ne '' ) {
-            $value;
-        }
-        else {
-            undef;
-        }
-    }
-}
-
-sub delete_content_data {
-    my $app = shift;
-
-    my $orig_type = $app->param('_type');
-    my ($content_type_id) = $orig_type =~ /^content_data_(\d+)$/;
-
-    $app->param( '_type', 'cd' );
-    unless ( $app->param('content_type_id') ) {
-        $app->param( 'content_type_id', $content_type_id );
-    }
-
-    MT::CMS::Common::delete($app);
 }
 
 sub dialog_content_data_modal {
@@ -1598,92 +1034,6 @@ sub _build_content_data_hasher {
     };
 }
 
-sub _validate_content_fields {
-    my $app = shift;
-    my ( $content_type, $data ) = @_;
-    my $content_field_types = $app->registry('content_field_types');
-
-    my @errors;
-
-    foreach my $f ( @{ $content_type->fields } ) {
-        my $content_field_type = $content_field_types->{ $f->{type} };
-        my $param_name         = 'content-field-' . $f->{id};
-        my $d                  = $data->{ $f->{id} };
-
-        if ( exists $f->{options}{required}
-            && $f->{options}{required} )
-        {
-            my $has_data;
-            if ( ref $d eq 'ARRAY' ) {
-                $has_data = @{$d} ? 1 : 0;
-            }
-            else {
-                $has_data = ( defined $d && $d ne '' ) ? 1 : 0;
-            }
-            unless ($has_data) {
-                my $label = $f->{options}{label};
-                push @errors,
-                    {
-                    field_id => $f->{id},
-                    error =>
-                        $app->translate(qq{"${label}" field is required.}),
-                    };
-                next;
-            }
-        }
-
-        if ( my $ss_validator = $content_field_type->{ss_validator} ) {
-            if ( !ref $ss_validator ) {
-                $ss_validator = MT->handler_to_coderef($ss_validator);
-            }
-            if ( 'CODE' eq ref $ss_validator ) {
-                if ( my $error = $ss_validator->( $app, $f, $d ) ) {
-                    push @errors,
-                        {
-                        field_id => $f->{id},
-                        error    => $error,
-                        };
-                }
-            }
-        }
-    }
-
-    @errors ? \@errors : undef;
-}
-
-sub validate_content_fields {
-    my $app = shift;
-
-    # TODO: permission check
-
-    my $blog_id = $app->blog ? $app->blog->id : undef;
-    my $content_type_id = $app->param('content_type_id') || 0;
-    my $content_type = MT::ContentType->load(
-        { id => $content_type_id, blog_id => $blog_id } );
-
-    return $app->json_error( $app->translate('Invalid request.') )
-        unless $blog_id && $content_type;
-
-    my $content_field_types = $app->registry('content_field_types');
-    my $data                = {};
-    foreach my $f ( @{ $content_type->fields } ) {
-        my $content_field_type = $content_field_types->{ $f->{type} };
-        $data->{ $f->{id} }
-            = _get_form_data( $app, $content_field_type, $f );
-    }
-
-    my $invalid_count = 0;
-    my %invalid_fields;
-    if ( my $errors = _validate_content_fields( $app, $content_type ) ) {
-        $invalid_count = scalar @{$errors};
-        %invalid_fields = map { $_->{field_id} => $_->{error} } @{$errors};
-    }
-
-    $app->json_result(
-        { invalidCount => $invalid_count, invalidFields => \%invalid_fields }
-    );
-}
-
 sub content_actions {
     {   new => {
             label => 'Create new content type',
@@ -1720,23 +1070,6 @@ sub init_content_type {
     for my $key ( keys %{$content_data_list_props} ) {
         $core_list_props->{$key} = $content_data_list_props->{$key};
     }
-
-    _add_content_data_callbacks($app);
-}
-
-sub _add_content_data_callbacks {
-    my $app       = shift;
-    my $pkg       = $app->id . '_';
-    my $pfx       = '$Core::MT::CMS::';
-    my $callbacks = {};
-    my $iter      = eval { MT->model('content_type')->load_iter }
-        || sub { };    # FIXME: An error occurs on mt-app when installing.
-    while ( my $ct = $iter->() ) {
-        my $cd_name = 'content_data_' . $ct->id;
-        $callbacks->{"${pkg}pre_load_filtered_list.${cd_name}"}
-            = "${pfx}ContentType::cms_pre_load_filtered_list";
-    }
-    $app->_register_core_callbacks($callbacks);
 }
 
 sub _make_content_data_listing_screens {
@@ -1744,7 +1077,7 @@ sub _make_content_data_listing_screens {
 
     my $iter = MT->model('content_type')->load_iter;
     while ( my $ct = $iter->() ) {
-        my $key = 'content_data_' . $ct->id;
+        my $key = 'content_data.content_data_' . $ct->id;
         $props->{$key} = {
             primary             => 'title',
             screen_label        => 'Manage ' . $ct->name,

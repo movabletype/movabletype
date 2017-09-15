@@ -122,15 +122,16 @@ sub mt_presave_obj {
     my $modified_by = $obj->can('author') ? $obj->author : $app->user;
 
     if ( scalar @$changed_cols ) {
-        if ($app->isa('MT::App::CMS')
-            && $app->param( 'current_revision'
-            )    # not submitted if a user saves again on collision
-            && $app->param('current_revision') != $obj->current_revision
+        my $current_revision = $app->param('current_revision') || 0;
+        if (   $app->isa('MT::App::CMS')
+            && $current_revision # not submitted if a user saves again on collision
+            && $current_revision != $obj->current_revision
             )
         {
-            my %param = (
+            my $return_args = $app->param('return_args');
+            my %param       = (
                 collision            => 1,
-                return_args          => $app->param('return_args'),
+                return_args          => $return_args,
                 modified_by_nickname => $modified_by->nickname
             );
             return $app->forward( "view", \%param );
@@ -143,8 +144,8 @@ sub mt_presave_obj {
 sub mt_postsave_obj {
     my ( $cb, $app, $obj, $orig ) = @_;
 
-    return 1 unless $app->isa('MT::App');
-    return 1 unless $app || $app->param('save_revision');
+    return 1 unless $app && $app->isa('MT::App');
+    return 1 unless $app->param('save_revision');
 
     if ( exists $obj->{changed_revisioned_cols} ) {
         my $col = 'max_revisions_' . $obj->datasource;
@@ -152,7 +153,8 @@ sub mt_postsave_obj {
             my $max = $blog->$col;
             $obj->handle_max_revisions($max);
         }
-        my $revision = $obj->save_revision( $app->param('revision-note') );
+        my $revision_note = $app->param('revision-note');
+        my $revision      = $obj->save_revision($revision_note);
         $obj->current_revision($revision);
 
         # call update to bypass instance save method

@@ -49,6 +49,7 @@ __PACKAGE__->install_properties(
             'widgets'                  => 'hash meta',
             'favorite_blogs'           => 'array meta',
             'favorite_websites'        => 'array meta',
+            'favorite_sites'           => 'array meta',
             'password_reset'           => 'string meta',
             'password_reset_expires'   => 'string meta',
             'password_reset_return_to' => 'string meta',
@@ -610,57 +611,61 @@ sub _bulk_author_name_html {
         if keys %asset_for_load;
     my %userpic = map { $_->id => $_ } @userpics;
     my @results;
-    my $mail_icon = MT->static_path . 'images/status_icons/email.gif';
-    my $view_icon = MT->static_path . 'images/status_icons/link.gif';
+    my $static_uri = MT->static_path;
 
     for my $obj (@$objs) {
         my $userpic_url;
         if ( my $userpic = $userpic{ $obj->userpic_asset_id || 0 } ) {
             ($userpic_url) = $userpic->thumbnail_url(
-                Width  => 36,
-                Height => 36,
+                Width  => 48,
+                Height => 48,
                 Square => 1
             );
         }
         else {
-            $userpic_url = MT->static_path . 'images/default-userpic-36.jpg';
+            $userpic_url = MT->static_path . 'images/user-default.svg';
         }
-        my ( $status_img, $status_label );
+        my ( $status_label, $translated_status_label, $badge_type );
         if ( MT->config->SingleCommunity ) {
             if ( $obj->type == MT::Author::AUTHOR() ) {
-                $status_img
-                    = $obj->status == ACTIVE()   ? 'user-enabled.gif'
-                    : $obj->status == INACTIVE() ? 'user-disabled.gif'
-                    :                              'user-pending.gif';
                 $status_label
                     = $obj->status == ACTIVE()   ? 'Enabled'
                     : $obj->status == INACTIVE() ? 'Disabled'
                     :                              'Pending';
+                $translated_status_label = $app->translate($status_label);
+
+                $badge_type
+                    = $obj->status == ACTIVE()   ? 'success'
+                    : $obj->status == INACTIVE() ? 'secondary'
+                    :                              'default';
             }
             else {
-                $status_img
-                    = $obj->is_trusted(0) ? 'trusted.gif'
-                    : $obj->is_banned(0)  ? 'banned.gif'
-                    :                       'authenticated.gif';
                 $status_label
                     = $obj->is_trusted(0) ? 'Trusted'
                     : $obj->is_banned(0)  ? 'Banned'
                     :                       'Authenticated';
+                $translated_status_label = $app->translate($status_label);
+
+                $badge_type
+                    = $obj->is_trusted(0) ? 'success'
+                    : $obj->is_banned(0)  ? 'secondary'
+                    :                       'default';
             }
         }
         else {
             my $blog_id = $opts->{blog_id};
-            $status_img
-                = $obj->is_trusted($blog_id) ? 'trusted.gif'
-                : $obj->is_banned($blog_id)  ? 'banned.gif'
-                :                              'authenticated.gif';
             $status_label
                 = $obj->is_trusted($blog_id) ? 'Trusted'
                 : $obj->is_banned($blog_id)  ? 'Banned'
                 :                              'Authenticated';
+            $translated_status_label = $app->translate($status_label);
+
+            $badge_type
+                = $obj->is_trusted($blog_id) ? 'success'
+                : $obj->is_banned($blog_id)  ? 'secondary'
+                :                              'default';
         }
 
-        $status_img = MT->static_path . 'images/status_icons/' . $status_img;
         my $lc_status_label = lc $status_label;
         my $auth_img        = MT->static_path;
         my $auth_label;
@@ -683,13 +688,17 @@ sub _bulk_author_name_html {
         my $url   = MT::Util::encode_html( $obj->url );
         my $out   = qq{
             <div class="row">
-                <div class="col-1 pl-0 userpic picture small">
-                    <img src="$userpic_url" />
-                    <img alt="$auth_label" src="$auth_img" width="12" height="12" class="icon auth-type" style="position: absolute; top: 24px; left: 24px;" />
+                <div class="col-1 pl-0">
+                    <div class="mt-user">
+                        <img src="$userpic_url" alt="User" class="rounded-circle" width="48" height="48">
+                        <div class="mt-user__badge--img"><img alt="$auth_label" src="$auth_img" width="16" height="16" class="mt-icon--img" /></div>
+                    </div>
                 </div>
-                <div class="col">
+                <div class="col pl-4">
                      <span class="icon status $status_label">
-                         <img alt="$status_label" src="$status_img" class="status $lc_status_label" />
+                         <svg title="$translated_status_label" role="img" class="mt-icon mt-icon--sm">
+                             <use xlink:href="${static_uri}images/sprite.svg#ic_user">
+                         </svg>
                      </span>
         };
 
@@ -705,19 +714,34 @@ sub _bulk_author_name_html {
                 },
             );
             $out
-                .= qq{<span class="username"><a href="$edit_link">$name</a></span>};
+                .= qq{<span class="username"><a href="$edit_link">$name</a> <span class="badge badge-$badge_type">$translated_status_label</span></span>};
         }
         else {
-            $out .= qq{<span class="username">$name</span>};
+            $out
+                .= qq{<span class="username">$name <span class="badge badge-$badge_type">$status_label</span></span>};
         }
         if ( $url || $email ) {
             $out .= q{<ul class="list-unstyled user-info description">};
-            $out
-                .= qq{<li class="user-info-item user-email"><img alt="Email "src="$mail_icon" /> <a href="mailto:$email" title="$email">$email</a></li>}
-                if $email;
-            $out
-                .= qq{<li class="user-info-item user-url"><img alt="URL" src="$view_icon" /> <a href="$url" title="$url">$url</a></li>}
-                if $url;
+            if ($email) {
+                $out .= qq{
+                    <li class="user-info-item user-email">
+                        <svg title="Mail" role="img" class="mt-icon mt-icon--sm">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_mail">
+                        </svg>
+                        <a href="mailto:$email" title="$email">$email</a>
+                    </li>
+                };
+            }
+            if ($url) {
+                $out .= qq{
+                    <li class="user-info-item user-url">
+                        <svg title="Website" role="img" class="mt-icon mt-icon--sm">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_link">
+                        </svg>
+                        <a href="$url" title="$url">$url</a>
+                    </li>
+                };
+            }
             $out .= q{</ul>};
         }
         $out .= '</div>';    # <div class="col">
@@ -1473,7 +1497,7 @@ sub auth_icon_url {
     return q() unless $auth_type;
 
     if ( $author->type == MT::Author::AUTHOR() ) {
-        return $static_path . 'images/comment/mt_logo.png';
+        return $static_path . 'images/logo-mark.svg';
     }
 
     my $authenticator = MT->commenter_authenticator( $auth_type, force => 1 );
@@ -1504,24 +1528,27 @@ sub userpic {
 sub userpic_thumbnail_options {
     my $author = shift;
 
-    # Specify these to put an author's userpic thumbnail in a consistent
-    # place whenever userpic_url is called as an instance method on a
-    # particular author.
-    my %real_userpic_options = (
-        Path => File::Spec->catdir( MT->config->AssetCacheDir, 'userpics' ),
-        Format => MT->translate( 'userpic-[_1]-%wx%h%x', $author->id ),
-    ) if ref $author;
-
     my $cfg     = MT->config;
     my $max_dim = $cfg->UserpicThumbnailSize;
     my $square  = $cfg->UserpicAllowRect ? 0 : 1;
-    return (
+    my %options = (
         Width  => $max_dim,
         Height => $max_dim,
         Square => $square,
         Type   => 'png',
-        %real_userpic_options,
     );
+
+    # Specify these to put an author's userpic thumbnail in a consistent
+    # place whenever userpic_url is called as an instance method on a
+    # particular author.
+    if ( ref $author ) {
+        $options{Path}
+            = File::Spec->catdir( MT->config->AssetCacheDir, 'userpics' );
+        $options{Format}
+            = MT->translate( 'userpic-[_1]-%wx%h%x', $author->id );
+    }
+
+    return %options;
 }
 
 sub userpic_file {

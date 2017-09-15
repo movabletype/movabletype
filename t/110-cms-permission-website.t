@@ -424,7 +424,6 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    note $out;
     ok( $out,                "Request: save" );
     ok( _is_not_error($out), "save (new) by permitted user" );
 
@@ -922,4 +921,3 @@ subtest 'mode = delete' => sub {
 };
 
 done_testing();
-

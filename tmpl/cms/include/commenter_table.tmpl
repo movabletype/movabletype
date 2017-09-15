@@ -33,8 +33,8 @@
       </td>
       <td class="head commenter"><a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="author_id">" title="<__trans phrase="Edit this commenter">"><mt:var name="author_display" escape="html"></a></td>
       <td class="head identity"><mt:if name="commenter_url"><a href="<mt:var name="commenter_url">" title="<__trans phrase="View this commenter&rsquo;s profile">"><mt:var name="author" escape="html"></a><mt:else><mt:var name="author" escape="html"></mt:if></td>
-      <td class="head email status-email"><mt:unless name="email_hidden"><a href="mailto:<mt:var name="email" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Email">" width="16" height="9" /></a><mt:else>&nbsp;</mt:unless></td>
-      <td class="head url status-link"><mt:if name="url"><a href="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a><mt:else>&nbsp;</mt:if></td>
+      <td class="head email status-email"><mt:unless name="email_hidden"><a href="mailto:<mt:var name="email" escape="html">"><mtapp:statusicon id="ic_email" title="<__trans phrase="Email">" size="sm"></a><mt:else>&nbsp;</mt:unless></td>
+      <td class="head url status-link"><mt:if name="url"><a href="<mt:var name="url" escape="html">"><mtapp:svgicon id="ic_link" title="<__trans phrase="Link">" size="sm"></a><mt:else>&nbsp;</mt:if></td>
       <td class="head comments"><mt:var name="comment_count"></td>
       <td class="head recent"><span title="<mt:var name="most_recent_time_formatted">"><mt:if name="most_recent_relative"><mt:if name="dates_relative"><mt:var name="most_recent_relative"><mt:else><mt:var name="most_recent_formatted"></mt:if><mt:else><mt:var name="most_recent_formatted"></mt:if></span></td>
     </tr>

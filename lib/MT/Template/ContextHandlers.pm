@@ -3206,7 +3206,7 @@ sub _hdlr_app_setting {
     }
 
     # 'Required' indicator plus CSS class
-    my $req       = $args->{required} ? " *"        : "";
+    my $req       = $args->{required} ? qq{ <span class="badge badge-danger">} . MT->translate('Required') . qq{</span>} : "";
     my $req_class = $args->{required} ? " required" : "";
 
     my $insides = $ctx->slurp( $args, $cond );
@@ -3277,8 +3277,11 @@ Identifies whether widget may be closed or not.
 
 =item * tabbed (optional; default "0")
 
-If specified, the widget will be assigned an attribute that gives it
-a tabbed interface.
+Deprecated.
+
+=item * hidden (optional; default "0")
+
+Deprecated.
 
 =back
 
@@ -3303,59 +3306,42 @@ sub _hdlr_app_widget {
     my $label_onclick = $args->{label_onclick} || "";
     my $header_action = $args->{header_action} || "";
     my $closable      = $args->{can_close} ? 1 : 0;
-    my $hidden        = $args->{hidden};
+
+    # Close button support
     if ($closable) {
         $header_action
-            = qq{<button type="button" class="close remove-widget"><span>&times;</span></button>};
+            = qq{<button type="button" class="close" aria-label="Close" onClick="javascript:removeWidget('${id}'); return false;"><span aria-hidden="true">&times;</span></button>};
     }
+
+    # Widget label
     my $widget_header = "";
     if ( $label_link && $label_onclick ) {
         $widget_header
-            = "\n<a href=\"$label_link\" onclick=\"$label_onclick\"><span>$label</span></a>";
+            = qq{<a href="$label_link" onclick="$label_onclick"><span>$label</span></a>};
     }
     elsif ($label_link) {
-        $widget_header = "\n<a href=\"$label_link\"><span>$label</span></a>";
+        $widget_header = qq{<a href="$label_link"><span>$label</span></a>};
     }
     elsif ( defined $label ) {
-        $widget_header = "\n<span>$label</span>";
+        $widget_header = $label;
     }
+
+    # Make certain widget_id is set
     my $token    = $ctx->var('magic_token')     || '';
     my $scope    = $ctx->var('widget_scope')    || 'system';
     my $singular = $ctx->var('widget_singular') || '';
 
-    # Make certain widget_id is set
     my $vars = $ctx->{__stash}{vars};
-    local $vars->{widget_id}     = $id;
-    local $vars->{widget_header} = '';
-    local $vars->{widget_footer} = '';
-    my $app = MT->instance;
-    my $blog = $app->can('blog') ? $app->blog : $ctx->stash('blog');
-    my $blog_field
-        = $blog
-        ? qq{<input type="hidden" name="blog_id" value="}
-        . $blog->id . q{" />}
-        : "";
-    local $vars->{blog_id} = $blog->id if $blog;
+    local $vars->{widget_id} = $id;
+    my $app        = MT->instance;
+    my $blog       = $app->can('blog') ? $app->blog : $ctx->stash('blog');
+    my $blog_field = "";
+    if ($blog) {
+        $blog_field = qq{<input type="hidden" name="blog_id" value="}
+            . $blog->id . q{" />};
+        local $vars->{blog_id} = $blog->id;
+    }
     my $insides = $ctx->slurp( $args, $cond );
-    my $widget_footer = ( $ctx->var('widget_footer') || '' );
-    my $var_header    = ( $ctx->var('widget_header') || '' );
-
-    if ( $var_header =~ m/<h2[ >]/i ) {
-        $widget_header = $var_header;
-    }
-    else {
-        $widget_header .= $var_header;
-    }
-    my $corners
-        = $args->{corners}
-        ? '<div class="corners"><b></b><u></u><s></s><i></i></div>'
-        : "";
-    my $tabbed       = $args->{tabbed} ? ' mt:delegate="tab-container"' : "";
-    my $header_class = $tabbed         ? 'widget-header-tabs'           : '';
-    my $style        = '';
-    if ($hidden) {
-        $style = ' style="display: none;"';
-    }
     my $return_args = $app->make_return_args;
     $return_args = encode_html($return_args);
     my $cgi = $app->uri;
@@ -3374,25 +3360,29 @@ $insides
         </form>
 EOT
     }
+
+    # panel class
+    my $block = $ctx->var('widget_block') || 'main';
+    my $widget_class;
+    if ( 'main' eq $block ) {
+        $widget_class = "mt-widget";
+    }
+    else {
+        $widget_class = "mt-widget--panel";
+    }
+
     my $widget = <<"EOT";
-<div id="$id" class="card widget $class"$tabbed$style>
-  <div class="card-header widget-header $header_class">
-    <div class="widget-action">$header_action</div>
-    <div class="widget-label">$widget_header</div>
-  </div>
-  <div class="card-block widget-content">
+<div id="$id" class="$widget_class $class">
+  <h2 class="mt-widget__title">
+    $widget_header
+    $header_action
+  </h2>
+  <div class="mt-widget__content">
     $insides
   </div>
-EOT
-    if ($widget_footer) {
-        $widget .= <<"EOT";
-  <div class="card-footer widget-footer">$widget_footer</div>$corners
-EOT
-    }
-    $widget .= <<"EOT";
 </div>
 EOT
-    $widget;
+    return $widget;
 }
 
 ###########################################################################
@@ -3734,7 +3724,7 @@ B<Attributes:>
 
 =over 4
 
-=item * id (required)
+=item * id (optional)
 
 A unique identifier for this group of settings.
 
@@ -3745,7 +3735,12 @@ If specified, applies this CSS class to the C<fieldset> tag produced.
 =item * shown (optional; default "1")
 
 Controls whether the C<fieldset> is initially shown or not. If hidden,
-a CSS "hidden" class is applied to the C<fieldset> tag.
+a CSS "collapse" class is applied to the C<fieldset> tag.
+id attribute is required if you want to control show/hide.
+
+=item * legend (optional)
+
+If specified, displays the label of this field group.
 
 =back
 
@@ -3763,17 +3758,35 @@ B<Example:>
 
 sub _hdlr_app_setting_group {
     my ( $ctx, $args, $cond ) = @_;
-    my $id = $args->{id};
-    return $ctx->error("'id' attribute missing") unless $id;
 
-    my $class = $args->{class} || "";
-    my $shown = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
-    $class .= ( $class ne '' ? " " : "" ) . "hidden" unless $shown;
-    $class = qq{ class="$class"} if $class ne '';
+    my $id = $args->{id} || '';
+    $id = qq{id="$id"} if $id ne '';
+
+    my $class = 'form-group';
+    $class .= ' ' . $args->{class}
+        if $args->{class};
+
+    if ( exists $args->{shown} ) {
+        return $ctx->error("'id' attribute missing") unless $id;
+
+        if ( $args->{shown} ) {
+            $class .= ' collapse show';
+        }
+        else {
+            $class .= ' collapse';
+        }
+    }
+    $class = qq{class="$class"};
+
+    my $legend = $args->{legend} || '';
+    $legend = qq{<legend class="h3">$legend</legend>}
+        if $legend;
 
     my $insides = $ctx->slurp( $args, $cond );
+
     return <<"EOT";
-<fieldset id="$id"$class class="form-group">
+<fieldset $id $class>
+    $legend
     $insides
 </fieldset>
 EOT

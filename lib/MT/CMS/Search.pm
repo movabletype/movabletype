@@ -571,12 +571,13 @@ sub core_search_apis {
 
 sub can_search_replace {
     my $app = shift;
+    my $blog_id = $app->param('blog_id');
 
     return 1 if $app->user->is_superuser;
     return 1 if $app->user->permissions(0)->can_do('edit_templates');
     return 1 if $app->user->permissions(0)->can_do('view_log');
-    if ( $app->param('blog_id') ) {
-        my $perms = $app->user->permissions( $app->param('blog_id') );
+    if ($blog_id) {
+        my $perms = $app->user->permissions($blog_id);
         return 0 unless $perms;
         return 0 unless $perms->permissions;
         return 0 unless $perms->can_do('use_tools:search');
@@ -663,8 +664,7 @@ sub search_replace {
 sub do_search_replace {
     my $app     = shift;
     my ($param) = @_;
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $author  = $app->user;
 
     my ($search,        $replace,     $do_replace,     $case,
@@ -675,7 +675,7 @@ sub do_search_replace {
         $orig_search,   $quicksearch, $publish_status, $my_posts,
         $search_type,   $filter,      $filter_val
         )
-        = map scalar $q->param($_),
+        = map scalar $app->param($_),
         qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day from to show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val );
 
     # trim 'search' parameter
@@ -775,7 +775,7 @@ sub do_search_replace {
         $datefrom = substr( $from, 0, 8 );
         $dateto   = substr( $to,   0, 8 );
     }
-    my $tab = $q->param('tab') || 'entry';
+    my $tab = $app->param('tab') || 'entry';
     ## Sometimes we need to pass in the search columns like 'title,text', so
     ## we look for a comma (not a valid character in a column name) and split
     ## on it if it's there.
@@ -798,8 +798,9 @@ sub do_search_replace {
         || MT->config->default('CMSSearchLimit');
 
     # don't allow passed limit to be higher than config limit
-    if ( $q->param('limit') && ( $q->param('limit') < $limit ) ) {
-        $limit = $q->param('limit');
+    my $param_limit = $app->param('limit');
+    if ( $param_limit && ( $param_limit < $limit ) ) {
+        $limit = $param_limit;
     }
     $limit =~ s/\D//g if $limit ne 'all';
     my $matches;
@@ -815,7 +816,8 @@ sub do_search_replace {
         my %args;
         ## we need to search all user/group for 'grant permissions',
         ## if $blog_id is specified. it affects the setup_terms_args.
-        if ( $app->param('__mode') eq 'dialog_grant_role' ) {
+        my $mode = $app->param('__mode') || '';
+        if ( $mode eq 'dialog_grant_role' ) {
             if ($blog_id) {
                 my $perm = $author->permissions($blog_id);
                 return $app->permission_denied()
@@ -1295,9 +1297,10 @@ sub do_search_replace {
         $to = sprintf "%s-%s-%s", $dateto_year, $dateto_month, $dateto_day;
     }
 
+    my $error = $app->param('error') || '';
     my %res = (
-        error => $q->param('error') || '',
-        limit => $limit,
+        error               => $error,
+        limit               => $limit,
         limit_all           => $limit eq 'all',
         count_matches       => $matches,
         replace_count       => $replace_count,
@@ -1306,16 +1309,13 @@ sub do_search_replace {
         object_label        => $class->class_label,
         object_label_plural => $class->class_label_plural,
         object_type         => $type,
-        search              => (
-              $do_replace ? $q->param('orig_search')
-            : $q->param('search')
-            )
-            || '',
-        searched => (
-            $do_replace ? $q->param('orig_search')
+        search              => ( $do_replace ? $orig_search : $search ) || '',
+        searched            => (
+              $do_replace
+            ? $orig_search
             : (        $do_search
-                    && $q->param('search')
-                    && $q->param('search') ne '' )
+                    && defined $search
+                    && $search ne '' )
             )
             || $show_all
             || defined $publish_status

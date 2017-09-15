@@ -16,6 +16,15 @@ function smarty_function_mtarchivefile($args, &$ctx) {
         }
         if (!$e) return $ctx->error("Could not determine entry");
         $f = $e->entry_basename;
+    }
+    elseif (!$at or $at == 'ContentType') {
+        $c = $ctx->stash('content');
+        if (!$c) {
+            $contents = $ctx->stash('contents');
+            $c = $entries[0];
+        }
+        if (!$c) return $ctx->error("Could not determine content");
+        $f = $c->identifier;
     } else {
         $f = $ctx->stash('_basename')
             ? $ctx->stash('_basename')

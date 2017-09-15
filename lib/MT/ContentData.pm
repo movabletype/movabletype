@@ -79,6 +79,7 @@ __PACKAGE__->install_properties(
             'revision'          => 'integer meta',
             'convert_breaks'    => 'string meta',
             'block_editor_data' => 'text meta',
+            'week_number'       => 'integer',
         },
         indexes => {
             content_type_id => 1,
@@ -158,6 +159,12 @@ sub save {
         $self->identifier($name);
     }
 
+    # Week Number for authored_on
+    if ( my $week_number = _get_week_number( $self, 'authored_on' ) ) {
+        $self->week_number($week_number)
+            if $week_number != ( $self->week_number || 0 );
+    }
+
     $self->SUPER::save(@_) or return;
 
     my $data = $self->data;
@@ -203,6 +210,15 @@ sub save {
                     $data_type
                 )
                 );
+
+            # Week Number for Content Field
+            if ( $idx_type eq 'date_and_time' || $idx_type eq 'date' ) {
+                if ( my $week_number
+                    = _get_week_number( $cf_idx, 'value_datetime' ) )
+                {
+                    $cf_idx->value_integer($week_number);
+                }
+            }
 
             $cf_idx->save
                 or return $self->error(
@@ -570,7 +586,7 @@ sub make_list_props {
 
     my $iter = MT::ContentType->load_iter;
     while ( my $content_type = $iter->() ) {
-        my $key   = 'content_data_' . $content_type->id;
+        my $key   = 'content_data.content_data_' . $content_type->id;
         my $order = 1000;
         my $field_list_props
             = _make_field_list_props( $content_type, $order );
@@ -830,6 +846,33 @@ sub _make_title_html {
     $label = '' unless defined $label;
 
     return qq{<span class="label">$label</span>};
+}
+
+sub _get_week_number {
+    my ( $obj, $column ) = @_;
+    if ( my $dt = $obj->column_as_datetime($column) ) {
+        my ( $yr, $w ) = $dt->week;
+        return $yr * 100 + $w;
+    }
+    return undef;
+}
+
+sub archive_file {
+    my $self = shift;
+    my ($at) = @_;
+    my $blog = $self->blog or return '';
+    $at ||= 'ContentType';    # should check $blog->archive_type here
+    my $file = MT::Util::archive_file_for( $self, $blog, $at );
+    $file = '' unless defined $file;
+    return $file;
+}
+
+sub archive_url {
+    my $self = shift;
+    my $blog = $self->blog or return;
+    my $url = $blog->archive_url || '';
+    $url .= '/' unless $url =~ m!/$!;
+    $url . $self->archive_file(@_);
 }
 
 1;

@@ -96,19 +96,8 @@ sub list_props {
                             blog_id => 0,
                         }
                     );
-                    my $cnt        = $asc_count->{ $obj->id };
-                    my $name       = MT::Util::encode_html( $obj->name );
-                    my $status_img = MT->static_path
-                        . (
-                        $cnt
-                        ? '/images/status_icons/role-active.gif'
-                        : '/images/status_icons/role-inactive.gif'
-                        );
-                    my $status_class = $cnt ? 'role-active' : 'role-inactive';
+                    my $name = MT::Util::encode_html( $obj->name );
                     push @out, qq{
-                        <span class="icon status $status_class">
-                            <img alt="$status_class" src="$status_img" />
-                        </span>
                         <a href="$url">$name</a>
                     } . (
                         $desc

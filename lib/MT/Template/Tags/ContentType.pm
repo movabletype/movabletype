@@ -50,7 +50,8 @@ sub _hdlr_contents {
     my $terms;
     my $type    = $args->{type};
     my $name    = $args->{name};
-    my $blog_id = $args->{blog_id};
+    my $at      = $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $blog_id = $args->{blog_id} || $ctx->stash('blog_id');
     if ($type) {
         $terms = { unique_id => $type };
     }
@@ -61,10 +62,8 @@ sub _hdlr_contents {
         };
     }
     else {
-        return $ctx->error(
-            MT->translate(
-                '\'type\' or "\'name\' and \'blog_id\'" is required.')
-        );
+        my $tmpl = $ctx->stash('template');
+        $terms = $tmpl->content_type_id;
     }
     my $content_type = MT::ContentType->load($terms)
         or return $ctx->error( MT->translate('Content Type was not found.') );
@@ -91,8 +90,197 @@ sub _hdlr_contents {
             unless $match;
     }
 
+    my ( @filters, %blog_terms, %blog_args, %terms, %args );
+    $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
+        or return $ctx->error( $ctx->errstr );
+    %terms = %blog_terms;
+    %args  = %blog_args;
+
+    my $class_type     = $args->{class_type} || 'content_data';
+    my $class          = MT->model($class_type);
+    my $cat_class_type = 'category';
+    my $cat_class      = MT->model($cat_class_type);
+
+    my %fields;
+    foreach my $arg ( keys %$args ) {
+        if ( $arg =~ m/^field:(.+)$/ ) {
+            $fields{$1} = $args->{$arg};
+        }
+    }
+
+    my $use_stash = 1;
+
+    # For the stock Contents tags, clear any prepopulated
+    # contents list (placed by archive publishing) if we're invoked
+    # with any of the following attributes. A plugin tag may
+    # prepopulate the entries stash and then invoke this handler
+    # to permit further filtering of the contents.
+    my $tag = lc $ctx->stash('tag');
+    if ( $tag eq 'contents' ) {
+        foreach
+            my $args_key ( 'category', 'categories', 'tag', 'tags', 'author' )
+        {
+            if ( exists( $args->{$args_key} ) ) {
+                $use_stash = 0;
+                last;
+            }
+        }
+    }
+    if ($use_stash) {
+        foreach my $args_key (
+            'id',                    'days',
+            'recently_commented_on', 'include_subcategories',
+            'include_blogs',         'exclude_blogs',
+            'blog_ids'
+            )
+        {
+            if ( exists( $args->{$args_key} ) ) {
+                $use_stash = 0;
+                last;
+            }
+        }
+    }
+    if ( $use_stash && %fields ) {
+        $use_stash = 0;
+    }
+
+    my $archive_contents;
+    if ($use_stash) {
+        $archive_contents = $ctx->stash('archive_contents');
+        if ( !$archive_contents && $at ) {
+            my $archiver = MT->publisher->archiver($at);
+            if ( $archiver && $archiver->group_based ) {
+                $archive_contents
+                    = $archiver->archive_group_contents( $ctx, %$args );
+            }
+        }
+    }
+    if ( $archive_contents && scalar @$archive_contents ) {
+        my $content = @$archive_contents[0];
+        if ( !$content->isa($class) ) {
+
+            # class types do not match; we can't use stashed entries
+            undef $archive_contents;
+        }
+        elsif ( ( $tag eq 'contents' )
+            && $blog_id != $content->blog_id )
+        {
+
+            # Blog ID do not match; we can't use stashed entries
+            undef $archive_contents;
+        }
+    }
+
+    local $ctx->{__stash}{archive_contents};
+
+    # handle automatic offset based on 'offset' query parameter
+    # in case we're invoked through mt-view.cgi or some other
+    # app.
+    if ( ( $args->{offset} || '' ) eq 'auto' ) {
+        $args->{offset} = 0;
+        if (   ( $args->{lastn} || $args->{limit} )
+            && ( my $app = MT->instance ) )
+        {
+            if ( $app->isa('MT::App') ) {
+                if ( my $offset = $app->param('offset') ) {
+                    $args->{offset} = $offset;
+                }
+            }
+        }
+    }
+
+    if ( ( $args->{limit} || '' ) eq 'auto' ) {
+        my ( $days, $limit );
+        my $blog = $ctx->stash('blog');
+        if ( $blog && ( $days = $blog->days_on_index ) ) {
+            my @ago = offset_time_list( time - 3600 * 24 * $days, $blog_id );
+            my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
+                $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
+            $terms{authored_on} = [$ago];
+            $args{range_incl}{authored_on} = 1;
+        }
+        elsif ( $blog && ( $limit = $blog->entries_on_index ) ) {
+            $args->{lastn} = $limit;
+        }
+        else {
+            delete $args->{limit};
+        }
+    }
+    elsif ( $args->{limit} && ( $args->{limit} > 0 ) ) {
+        $args->{lastn} = $args->{limit};
+    }
+
+    $terms{status} = MT::Entry::RELEASE();
+
+    if ( !$archive_contents ) {
+        if ( $ctx->{inside_mt_categories} ) {
+            if ( my $cat = $ctx->stash('category') ) {
+                if ( $cat->class eq $cat_class_type ) {
+                    my $map = $ctx->stash('template_map');
+                    if ( $map && ( my $cat_field_id = $map->cat_field_id ) ) {
+                        push @{ $args{joins} },
+                            MT::ContentFieldIndex->join_on(
+                            'content_data_id',
+                            {   content_field_id => $cat_field_id,
+                                value_integer    => $cat->id
+                            },
+                            { alias => 'cat_cf_idx' }
+                            );
+                    }
+                }
+            }
+        }
+        elsif ( my $cat = $ctx->stash('archive_category') ) {
+            if ( $cat->class eq $cat_class_type ) {
+                my $map = $ctx->stash('template_map');
+                if ( $map && ( my $cat_field_id = $map->cat_field_id ) ) {
+                    push @{ $args{joins} },
+                        MT::ContentFieldIndex->join_on(
+                        'content_data_id',
+                        {   content_field_id => $cat_field_id,
+                            value_integer    => $cat->id
+                        },
+                        { alias => 'cat_cf_idx' }
+                        );
+                }
+            }
+        }
+    }
+
+    my $published = $ctx->{__stash}{content_ids_published} ||= {};
+    if ( $args->{unique} ) {
+        push @filters, sub { !exists $published->{ $_[0]->id } }
+    }
+
+    if ( !$archive_contents ) {
+        my ( $start, $end )
+            = ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} );
+        if ( $start && $end ) {
+            my $map = $ctx->stash('template_map');
+            if ( $map && ( my $dt_field_id = $map->dt_field_id ) ) {
+                push @{ $args{joins} },
+                    MT::ContentFieldIndex->join_on(
+                    'content_data_id',
+                    {   content_field_id => $dt_field_id,
+                        value_datetime   => { op => '>=', value => $start },
+                        value_datetime   => { op => '<=', value => $end },
+                    },
+                    { alias => 'dt_cf_idx' }
+                    );
+            }
+            else {
+                $terms{authored_on} = [ $start, $end ];
+                $args{range_incl}{authored_on} = 1;
+            }
+        }
+    }
+
+    $terms{content_type_id} = $content_type->id;
+
     my @contents
-        = MT::ContentData->load( { content_type_id => $content_type->id } );
+        = $archive_contents
+        ? @{$archive_contents}
+        : MT::ContentData->load( \%terms, \%args );
 
     my $i       = 0;
     my $res     = '';
@@ -1171,6 +1359,8 @@ sub _hdlr_content_fields {
     my $content_type = $ctx->stash('content_type')
         or return $ctx->_no_content_type_error;
 
+    my $content_field_types = MT->registry('content_field_types');
+
     my @field_data = @{ $content_type->fields };
     my $builder    = $ctx->stash('builder');
     my $tokens     = $ctx->stash('tokens');
@@ -1192,6 +1382,8 @@ sub _hdlr_content_fields {
         local $vars->{content_field_type}      = $f->{type};
         local $vars->{content_field_order}     = $f->{order};
         local $vars->{content_field_options}   = $f->{options};
+        local $vars->{content_field_type_label}
+            = $content_field_types->{ $f->{type} }{label};
 
         my $out = $builder->build( $ctx, $tokens, {%$cond} );
         return $ctx->error( $builder->errstr ) unless defined $out;

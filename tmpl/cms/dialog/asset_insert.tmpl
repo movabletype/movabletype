@@ -61,12 +61,33 @@ if (AssetList) {
         myAssetLink.setAttribute('class', 'asset-title');
         myAssetLink.appendChild(document.createTextNode('<mt:if name="id_prefix"><mt:AssetLabel encode_js="1"><mt:else><mt:AssetFileName encode_js="1"></mt:if>'));
 
+        // create the link col
+        var myAssetLinkCol = window.document.createElement('div');
+        myAssetLinkCol.setAttribute('class', 'col text-truncate');
+        myAssetLinkCol.appendChild(myAssetLink);
+
         // create the remove link for this asset
-        var myRemoveLink = window.document.createElement('a');
-        myRemoveLink.setAttribute('href', 'javascript:removeAssetFromList(<mt:AssetID><mt:if name="id_prefix">, \'<mt:var name="id_prefix" escape="js">\', <mt:var name="content_field_id" escape="js"></mt:if>)');
-        myRemoveLink.setAttribute('title', '<__trans phrase="Remove this asset.">');
-        myRemoveLink.setAttribute('class', 'remove-asset icon-remove icon16 action-icon');
-        myRemoveLink.appendChild(document.createTextNode('<__trans phrase="Remove">'));
+        var myRemoveLink = window.document.createElement('button');
+        myRemoveLink.setAttribute('type', 'button');
+        myRemoveLink.setAttribute('class', 'close');
+        myRemoveLink.setAttribute('aria-label', 'Close');
+  <mt:if name="content_field_id">
+        myRemoveLink.setAttribute('onclick', "removeAssetFromList(<mt:AssetID>, 'content-field-<mt:var name="content_field_id">-', <mt:var name="content_field_id">);");
+  <mt:else>
+        myRemoveLink.setAttribute('onclick', 'removeAssetFromList(<mt:AssetID>);');
+  </mt:if>
+        myRemoveLink.innerHTML = '<span aria-hidden="true">&times;</span>';
+
+        // create the remove link col
+        var myRemoveLinkCol = window.document.createElement('div');
+        myRemoveLinkCol.setAttribute('class', 'col-1');
+        myRemoveLinkCol.appendChild(myRemoveLink);
+
+        // create row
+        var myRow = window.document.createElement('div');
+        myRow.setAttribute('class', 'row');
+        myRow.appendChild(myAssetLinkCol);
+        myRow.appendChild(myRemoveLinkCol);
 
         // create the asset list item
         var myElement = window.document.createElement('li');
@@ -76,27 +97,9 @@ if (AssetList) {
             myElement.setAttribute('onmouseover', 'show(\'<mt:var name="id_prefix">list-image-<mt:AssetID>\', window.parent.document)');
             myElement.setAttribute('onmouseout','hide(\'<mt:var name="id_prefix">list-image-<mt:AssetID>\', window.parent.document)');
         </mt:If>
-        myElement.appendChild(myAssetLink);
-        myElement.appendChild(myRemoveLink);
+        myElement.appendChild(myRow);
 
-        // I HATE IE!
-        if (document.attachEvent) {
-            var oldLis = window.parent.document.getElementById("<mt:var name="id_prefix">asset-list").innerHTML;
-            var newLi  = '<li id="<mt:var name="id_prefix">list-asset-<mt:AssetID>" onmouseover="show(\'<mt:var name="id_prefix">list-image-<mt:AssetID>\', window.parent.document)" onmouseout="hide(\'<mt:var name="id_prefix">list-image-<mt:AssetID>\', window.parent.document)">' + myElement.innerHTML + '</li>';
-            window.parent.document.getElementById("<mt:var name="id_prefix">asset-list").innerHTML = oldLis + newLi;
-        }
-        else {
-            window.parent.document.getElementById("<mt:var name="id_prefix">asset-list").appendChild(myElement);
-        }
-
-        // create the image thumbnail if it exists
-        <mt:If name="asset_class" eq="image">
-            var myImageElement = window.document.createElement('img');
-            myImageElement.setAttribute('id', '<mt:var name="id_prefix">list-image-<mt:AssetID>');
-            myImageElement.setAttribute('src', '<mt:AssetThumbnailURL width="100" encode_js="1">');
-            myImageElement.setAttribute('class', 'list-image hidden');
-            myElement.appendChild(myImageElement);
-        </mt:If>
+        window.parent.document.getElementById("<mt:var name="id_prefix">asset-list").appendChild(myElement);
     }
 </mt:Assets>
 

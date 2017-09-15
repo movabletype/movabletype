@@ -6,7 +6,12 @@
 
 <mt:setvarblock name="content_header">
 <ul class="list-inline action-link-list">
-  <li><a href="<__trans phrase="_THEME_DIRECTORY_URL">" class="icon-left icon-related" target="_blank"><__trans phrase="Find Themes"></a></li>
+  <li>
+    <a href="<__trans phrase="_THEME_DIRECTORY_URL">" class="icon-left icon-related" target="_blank">
+      <mtapp:svgicon id="ic_related" title="<__trans phrase="Find Themes">" size="sm">
+      <__trans phrase="Find Themes">
+    </a>
+  </li>
 </ul>
 </mt:setvarblock>
 
@@ -206,7 +211,7 @@
   </mt:unless>
   <mt:if name="info">
     <div id="theme-<mt:var name="id">-info" class="tab-pane theme-info">
-      <h4><__trans phrase="Theme Information"></h4>
+      <h4 class="ml-3"><__trans phrase="Theme Information"></h4>
       <ul>
       <mt:loop name="info">
         <li><mt:var name="__value__"></li>

@@ -1113,7 +1113,8 @@ BEGIN {
                             $_->parent_id
                                 && !$blog_map{ $_->parent_id }
                             } @blogs;
-                        my @sites
+                        my @sites;
+                        @sites
                             = MT->model('website')
                             ->load( { id => [ keys %site_ids ], },
                             { fetchonly => { id => 1, name => 1, }, } )
@@ -1767,12 +1768,15 @@ BEGIN {
                     comments => 'MT::AtomServer::Comments',
                 },
             },
-            'SchemaVersion'                => undef,
-            'MTVersion'                    => undef,
-            'MTReleaseNumber'              => undef,
-            'RequiredCompatibility'        => { default => 0 },
-            'EnableSessionKeyCompat'       => { default => 0 },
-            'EnableUploadCompat'           => { default => 0 },
+            'SchemaVersion'          => undef,
+            'MTVersion'              => undef,
+            'MTReleaseNumber'        => undef,
+            'RequiredCompatibility'  => { default => 0 },
+            'EnableSessionKeyCompat' => { default => 0 },
+            'EnableUploadCompat'     => {
+                handler => sub {0},    # deprecated
+                default => 0
+            },
             'NotifyUpgrade'                => { default => 1 },
             'Database'                     => undef,
             'DBHost'                       => undef,
@@ -1997,8 +2001,7 @@ BEGIN {
             'NewsURL' =>
                 { default => 'http://www.sixapart.com/movabletype/news/', },
             'NewsboxURL' => {
-                default =>
-                    'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
+                default => 'https://www.movabletype.org/news/newsbox.json',
             },
             'FeedbackURL' =>
                 { default => 'http://www.movabletype.org/feedback.html', },
@@ -2122,7 +2125,6 @@ BEGIN {
             'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
             'PublishCommenterIcon' => { default => 1 },
             'EnableAddressBook'    => { default => 0 },
-            'EnableBlogStats'      => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultTemplateSet'   => { default => 'mt_blog' },
             'DefaultWebsiteTheme'  => { default => 'rainier' },
@@ -2201,6 +2203,12 @@ BEGIN {
             'LoggerLevel'  => { default => 'none' },
             'LoggerPath'   => undef,
             'LoggerModule' => undef,
+
+            # Notification Center
+            'NotificationCacheTTL' => { default => 3600 },
+
+            # Dashboard
+            'DisableVersionCheck' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2272,11 +2280,10 @@ BEGIN {
                     require MT::CMS::Search;
                     return MT::CMS::Search::core_search_apis( MT->app, @_ );
                 },
-                menus           => sub { MT->app->core_menus() },
-                methods         => sub { MT->app->core_methods() },
-                widgets         => sub { MT->app->core_widgets() },
-                blog_stats_tabs => sub { MT->app->core_blog_stats_tabs() },
-                import_formats  => sub {
+                menus          => sub { MT->app->core_menus() },
+                methods        => sub { MT->app->core_methods() },
+                widgets        => sub { MT->app->core_widgets() },
+                import_formats => sub {
                     require MT::Import;
                     return MT::Import->core_import_formats();
                 },
@@ -3414,8 +3421,9 @@ sub load_core_permissions {
             'order'            => 800,
             'inherit_from'     => ['blog.manage_users'],
             'permitted_action' => {
-                'access_to_any_group_list', 'grant_administer_role',
-                'grant_role_for_blog',
+                'access_to_any_group_list' => 1,
+                'grant_administer_role'    => 1,
+                'grant_role_for_blog'      => 1,
             },
         },
         'system.manage_content_types' => {
@@ -3437,8 +3445,8 @@ sub init_registry {
 # Config handlers for these settings...
 
 sub load_archive_types {
-    require MT::WeblogPublisher;
-    return MT::WeblogPublisher->core_archive_types;
+    require MT::ContentPublisher;
+    return MT::ContentPublisher->core_archive_types;
 }
 
 sub PerformanceLoggingPath {

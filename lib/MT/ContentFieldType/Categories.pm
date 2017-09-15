@@ -31,7 +31,17 @@ sub field_html_params {
     my ( $category_tree, $selected_category_loop )
         = _build_category_list( $app, $field_data );
 
+    my $invalid_category_set;
+    if ( $options->{category_set} ) {
+        $invalid_category_set
+            = MT::CategorySet->exist( $options->{category_set} ) ? 0 : 1;
+    }
+    else {
+        $invalid_category_set = 1;
+    }
+
     {   category_tree          => $category_tree,
+        invalid_category_set   => $invalid_category_set,
         multiple               => $multiple,
         required               => $required,
         selected_category_loop => $selected_category_loop,
@@ -80,8 +90,10 @@ sub _build_category_list {
 
 sub data_load_handler {
     my ( $app, $field_data ) = @_;
-    my $field_id = $field_data->{id};
-    [ split ',', $app->param("category-${field_id}") ];
+    my $field_id          = $field_data->{id};
+    my $category_field_id = $app->param("category-${field_id}");
+    $category_field_id = '' unless defined $category_field_id;
+    [ split ',', $category_field_id ];
 }
 
 sub ss_validator {

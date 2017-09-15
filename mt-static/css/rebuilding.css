@@ -1,0 +1,5 @@
+div.progress-indeterminate {
+    background: #c0c6c9 url(../images/progress-bar-indeterminate.gif) repeat;
+    border: 1px solid #c0c6c9;
+}
+

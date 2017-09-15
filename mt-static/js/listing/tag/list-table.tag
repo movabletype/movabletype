@@ -98,7 +98,7 @@
     this.mixin('listTop')
 
     toggleRow(e) {
-      if (e.target.tagName == 'A' || e.target.tagName == 'IMG') {
+      if (e.target.tagName == 'A' || e.target.tagName == 'IMG' || e.target.tagName == 'svg') {
         return false
       }
       e.preventDefault()
@@ -114,7 +114,7 @@
 
 <list-table-row>
   <td>
-    <label class="custom-control custom-checkbox">
+    <label class="custom-control custom-checkbox" if={ opts.object[0] }>
       <input type="checkbox"
         name="id"
         class="custom-control-input"

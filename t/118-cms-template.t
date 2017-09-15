@@ -59,46 +59,50 @@ subtest 'Manage Website Templates' => sub {
         '"No archives are active" message is not displayed' );
 };
 
-subtest 'Edit archive template in website' => sub {
-    my @options = (
-        '<option value="Daily">Daily</option>',
-        '<option value="Weekly">Weekly</option>',
-        '<option value="Monthly">Monthly</option>',
-        '<option value="Yearly">Yearly</option>',
-        '<option value="Author">Author</option>',
-        '<option value="Author-Daily">Author Daily</option>',
-        '<option value="Author-Weekly">Author Weekly</option>',
-        '<option value="Author-Monthly">Author Monthly</option>',
-        '<option value="Author-Yearly">Author Yearly</option>',
-        '<option value="Category">Category</option>',
-        '<option value="Category-Daily">Category Daily</option>',
-        '<option value="Category-Weekly">Category Weekly</option>',
-        '<option value="Category-Monthly">Category Monthly</option>',
-        '<option value="Category-Yearly">Category Yearly</option>',
-    );
+SKIP: {
+    skip 'new UI', 1 unless $ENV{MT_TEST_NEW_UI};
 
-    my $tmpl = MT::Test::Permission->make_template(
-        blog_id => $website->id,
-        type    => 'archive',
-    );
+    subtest 'Edit archive template in website' => sub {
+        my @options = (
+            '<option value="Daily">Daily</option>',
+            '<option value="Weekly">Weekly</option>',
+            '<option value="Monthly">Monthly</option>',
+            '<option value="Yearly">Yearly</option>',
+            '<option value="Author">Author</option>',
+            '<option value="Author-Daily">Author Daily</option>',
+            '<option value="Author-Weekly">Author Weekly</option>',
+            '<option value="Author-Monthly">Author Monthly</option>',
+            '<option value="Author-Yearly">Author Yearly</option>',
+            '<option value="Category">Category</option>',
+            '<option value="Category-Daily">Category Daily</option>',
+            '<option value="Category-Weekly">Category Weekly</option>',
+            '<option value="Category-Monthly">Category Monthly</option>',
+            '<option value="Category-Yearly">Category Yearly</option>',
+        );
 
-    my $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user => $admin,
-            __mode      => 'view',
-            _type       => 'template',
-            blog_id     => $website->id,
-            id          => $tmpl->id,
-        },
-    );
-    my $out = delete $app->{__test_output};
+        my $tmpl = MT::Test::Permission->make_template(
+            blog_id => $website->id,
+            type    => 'archive',
+        );
 
-    foreach my $opt (@options) {
-        my $opt_quotemeta = quotemeta $opt;
-        like( $out, qr/$opt_quotemeta/,
-            'Archive template in website has "' . $opt . '"' );
-    }
-};
+        my $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user => $admin,
+                __mode      => 'view',
+                _type       => 'template',
+                blog_id     => $website->id,
+                id          => $tmpl->id,
+            },
+        );
+        my $out = delete $app->{__test_output};
+
+        foreach my $opt (@options) {
+            my $opt_quotemeta = quotemeta $opt;
+            like( $out, qr/$opt_quotemeta/,
+                'Archive template in website has "' . $opt . '"' );
+        }
+    };
+}
 
 subtest 'Save prefs check' => sub {
     my $app = _run_app(

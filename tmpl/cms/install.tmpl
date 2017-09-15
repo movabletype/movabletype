@@ -15,16 +15,6 @@
 
 <mt:setvar name="complete" value="1">
 
-<mt:setvarblock name="css_include" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/login.css" />
-<style type="text/css">
-div.warning#version-warning {
-    position: relative;
-    padding: 1em;
-}
-</style>
-</mt:setvarblock>
-
 <mt:setvar name="version_warning">
 
 <mt:setvarblock name="page_content">
@@ -102,9 +92,10 @@ div.warning#version-warning {
              hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
              hind_id="systemEmail"
              show_hint="1">
-            <label class="form-inline">
-              <input type="checkbox" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" aria-describedby="systemEmail" />
-              <__trans phrase="Use this as system email address">
+            <label class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" aria-describedby="systemEmail" />
+              <span class="custom-control-indicator"></span>
+              <span class="custom-control-description"><__trans phrase="Use this as system email address"></span>
             </label>
           </mtapp:setting>
       </mt:unless>
@@ -113,7 +104,7 @@ div.warning#version-warning {
          id="preferred_language"
          label="<__trans phrase="Language">"
          label_class="top-label">
-        <select name="preferred_language" id="preferred_language" class="form-control"><mt:loop name="languages">
+        <select name="preferred_language" id="preferred_language" class="custom-select form-control"><mt:loop name="languages">
           <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
       </mtapp:setting>
@@ -153,7 +144,7 @@ div.warning#version-warning {
          id="preferred_language"
          label="<__trans phrase="Language">"
          label_class="top-label">
-        <select name="preferred_language" id="preferred_language" class="form-control"><mt:loop name="languages">
+        <select name="preferred_language" id="preferred_language" class="custom-control form-control"><mt:loop name="languages">
           <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
       </mtapp:setting>

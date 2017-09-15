@@ -33,7 +33,7 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0005' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0011' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 5;
+        $RELEASE_NUMBER = 0;
     }
 
     $DebugMode = 0;
@@ -1558,9 +1558,9 @@ sub component {
 sub publisher {
     my $mt = shift;
     $mt = $mt->instance unless ref $mt;
-    require MT::WeblogPublisher;
-    $mt->request('WeblogPublisher')
-        || $mt->request( 'WeblogPublisher', new MT::WeblogPublisher() );
+    require MT::ContentPublisher;
+    $mt->request('ContentPublisher')
+        || $mt->request( 'ContentPublisher', new MT::ContentPublisher() );
 }
 
 sub rebuild {

@@ -331,7 +331,13 @@ sub content_actions {
         else {
             %args = %{ $action->{args} || {} };
         }
-        $args{_type} ||= $type;
+        if ( $type =~ m/(.*)\.(.*)/ ) {
+            $args{_type} = $1;
+            $args{type}  = $2;
+        }
+        else {
+            $args{_type} ||= $type;
+        }
         $args{return_args} = $app->make_return_args if $action->{return_args};
         $action->{url} = $app->uri(
             mode => $action->{mode},
@@ -409,10 +415,11 @@ sub listing {
     my $args    = $opt->{args}    || $opt->{Args} || {};
     my $no_html = $opt->{no_html} || $opt->{NoHTML};
     my $json    = $opt->{json}    || $app->param('json');
+    my $search = $app->param('search');
     my $no_limit
         = exists( $opt->{no_limit} )
         ? $opt->{no_limit}
-        : ( $app->param('search') ? 1 : 0 );
+        : ( $search ? 1 : 0 );
     my $pre_build;
     $pre_build = $opt->{pre_build} if ref( $opt->{pre_build} ) eq 'CODE';
     $param->{json} = 1 if $json;
@@ -436,7 +443,7 @@ sub listing {
     $param->{limit_none} = 1 if $no_limit;
 
     # handle search parameter
-    if ( my $search = $app->param('search') ) {
+    if ($search) {
         $app->param( 'do_search', 1 );
         if ( $app->can('do_search_replace') ) {
             my $search_param = $app->do_search_replace(
@@ -459,7 +466,9 @@ sub listing {
 
         # handle filter options
         my $filter_key = $app->param('filter_key');
-        if ( !$filter_key && !$app->param('filter') ) {
+        my $filter_col = $app->param('filter');
+        my $filter_val = $app->param('filter_val');
+        if ( !$filter_key && !$filter_col ) {
             $filter_key = 'default';
         }
         if ($filter_key) {
@@ -481,20 +490,19 @@ sub listing {
                 }
             }
         }
-        if (   ( my $filter_col = $app->param('filter') )
-            && ( my $val = $app->param('filter_val') ) )
-        {
+        if ( $filter_col && $filter_val ) {
             if ((      ( $filter_col eq 'normalizedtag' )
                     || ( $filter_col eq 'exacttag' )
                 )
                 && ( $class->isa('MT::Taggable') )
                 )
             {
-                my $normalize   = ( $filter_col eq 'normalizedtag' );
-                my $tag_class   = $app->model('tag');
-                my $ot_class    = $app->model('objecttag');
-                my $tag_delim   = chr( $app->user->entry_prefs->{tag_delim} );
-                my @filter_vals = $tag_class->split( $tag_delim, $val );
+                my $normalize = ( $filter_col eq 'normalizedtag' );
+                my $tag_class = $app->model('tag');
+                my $ot_class  = $app->model('objecttag');
+                my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
+                my @filter_vals
+                    = $tag_class->split( $tag_delim, $filter_val );
                 my @filter_tags = @filter_vals;
                 if ($normalize) {
                     push @filter_tags, MT::Tag->normalize($_)
@@ -525,19 +533,19 @@ sub listing {
             elsif ( !exists( $terms->{$filter_col} ) ) {
                 if ( $class->is_meta_column($filter_col) ) {
                     my @result
-                        = $class->search_by_meta( $filter_col, $val, {},
-                        $args );
+                        = $class->search_by_meta( $filter_col, $filter_val,
+                        {}, $args );
                     $iter_method = sub {
                         return shift @result;
                     };
                 }
                 elsif ( $class->has_column($filter_col) ) {
-                    $terms->{$filter_col} = $val;
+                    $terms->{$filter_col} = $filter_val;
                 }
             }
             $param->{filter}     = $filter_col;
-            $param->{filter_val} = $val;
-            my $url_val = encode_url($val);
+            $param->{filter_val} = $filter_val;
+            my $url_val = encode_url($filter_val);
             $param->{filter_args} = "&filter=$filter_col&filter_val=$url_val";
             $param->{"filter_col_$filter_col"} = 1;
         }
@@ -663,8 +671,8 @@ sub listing {
 sub json_result {
     my $app = shift;
     my ($result) = @_;
-    $app->send_http_header("application/json");
     $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
+    $app->send_http_header("application/json");
     $app->{no_print_body} = 1;
     $app->print_encode(
         MT::Util::to_json( { error => undef, result => $result } ) );
@@ -676,8 +684,8 @@ sub json_error {
     my ( $error, $status ) = @_;
     $app->response_code($status)
         if defined $status;
-    $app->send_http_header("application/json");
     $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
+    $app->send_http_header("application/json");
     $app->{no_print_body} = 1;
     $app->print_encode( MT::Util::to_json( { error => $error } ) );
     return undef;
@@ -852,7 +860,7 @@ sub pre_run_debug {
         print STDERR "Package: " . ref($app) . "\n";
         print STDERR "Session: " . $app->session->id . "\n"
             if $app->session;
-        print STDERR "Request: " . $app->param->request_method . "\n";
+        print STDERR "Request: " . $app->request_method . "\n";
         my @param = $app->multi_param;
         if (@param) {
             foreach my $key (@param) {
@@ -970,8 +978,7 @@ sub init_query {
     # it totally ignores any query parameters.
     if ( $app->request_method eq 'POST' ) {
         if ( !MT::Util::is_mod_perl1() ) {
-            my $query_string = $ENV{'QUERY_STRING'}
-                if defined $ENV{'QUERY_STRING'};
+            my $query_string = $ENV{'QUERY_STRING'};
             $query_string ||= $ENV{'REDIRECT_QUERY_STRING'}
                 if defined $ENV{'REDIRECT_QUERY_STRING'};
             if ( defined($query_string) and $query_string ne '' ) {
@@ -1033,7 +1040,10 @@ sub init_query {
                     $request_charset, $charset )
                     if $transcode;
                 unless ( ref($d) && ( 'Fh' eq ref($d) ) ) {
-                    eval { $d = Encode::decode( $charset, $d, 1 ) unless Encode::is_utf8($d); };
+                    eval {
+                        $d = Encode::decode( $charset, $d, 1 )
+                            unless Encode::is_utf8($d);
+                    };
                     return $app->errtrans(
                         "Problem with this request: corrupt character data for character set [_1]",
                         $charset
@@ -1052,7 +1062,7 @@ sub init_query {
         }
         while ( my ( $key, $val ) = each %params ) {
             if ( ref($val) && ( 'ARRAY' eq ref($val) ) ) {
-                $app->param( $key, @{ $params{$key} } );
+                $app->multi_param( $key, @{ $params{$key} } );
             }
             else {
                 $app->param( $key, $val );
@@ -2339,8 +2349,7 @@ sub logout {
 }
 
 sub create_user_pending {
-    my $app     = shift;
-    my $q       = $app->param;
+    my $app = shift;
     my ($param) = @_;
     $param ||= {};
 
@@ -2354,25 +2363,27 @@ sub create_user_pending {
             $app->translate( "Cannot load blog #[_1].", $param->{blog_id} ) );
     }
 
-    my ( $password, $url );
-    unless ( $q->param('external_auth') ) {
-        $password = $q->param('password');
+    my $external_auth = $app->param('external_auth');
+    my $password      = $app->param('password');
+    my $pass_verify   = $app->param('pass_verify');
+    my $url           = $app->param('url');
+
+    unless ($external_auth) {
         unless ($password) {
             return $app->error( $app->translate("User requires password.") );
         }
 
-        if ( $q->param('password') ne $q->param('pass_verify') ) {
+        if ( $password ne $pass_verify ) {
             return $app->error( $app->translate('Passwords do not match.') );
         }
 
-        $url = $q->param('url');
         if ( $url && ( !is_url($url) || ( $url =~ m/[<>]/ ) ) ) {
             return $app->error( $app->translate("URL is invalid.") );
         }
     }
 
-    my $nickname = $q->param('nickname');
-    if ( !$nickname && !( $q->param('external_auth') ) ) {
+    my $nickname = $app->param('nickname');
+    if ( !$nickname && !$external_auth ) {
         return $app->error( $app->translate("User requires display name.") );
     }
     if ( $nickname && $nickname =~ m/([<>])/ ) {
@@ -2385,7 +2396,7 @@ sub create_user_pending {
         );
     }
 
-    my $email = $q->param('email');
+    my $email = $app->param('email');
     if ($email) {
         unless ( is_valid_email($email) ) {
             delete $param->{email};
@@ -2402,14 +2413,14 @@ sub create_user_pending {
             );
         }
     }
-    elsif ( !( $q->param('external_auth') ) ) {
+    elsif ( !$external_auth ) {
         delete $param->{email};
         return $app->error(
             $app->translate("Email Address is required for password reset.")
         );
     }
 
-    my $name = $q->param('username');
+    my $name = $app->param('username');
     if ( defined $name ) {
         $name =~ s/(^\s+|\s+$)//g;
         $param->{name} = $name;
@@ -2460,8 +2471,8 @@ sub create_user_pending {
     $user->name($name);
     $user->nickname($nickname);
     $user->email($email);
-    unless ( $q->param('external_auth') ) {
-        $user->set_password( $q->param('password') );
+    unless ($external_auth) {
+        $user->set_password($password);
         $user->url($url) if $url;
     }
     else {
@@ -2827,7 +2838,8 @@ sub bake_cookie {
 sub cookies {
     my $app = shift;
     unless ( $app->{cookies} ) {
-        my $class = MT::Util::is_mod_perl1() ? 'Apache::Cookie' : 'CGI::Cookie';
+        my $class
+            = MT::Util::is_mod_perl1() ? 'Apache::Cookie' : 'CGI::Cookie';
         eval "use $class;";
         $app->{cookies} = $class->fetch;
     }
@@ -2967,7 +2979,7 @@ sub pre_run {
     # allow language override
     my $lang = $app->session ? $app->session('lang') : '';
     $app->set_language($lang) if ($lang);
-    if ( $lang = $app->{query}->param('__lang') ) {
+    if ( $lang = $app->param('__lang') ) {
         $app->set_language($lang);
         if ( $app->session ) {
             $app->session( 'lang', $lang );
@@ -3198,8 +3210,7 @@ sub run {
                 }
 
                 if ($code) {
-                    my @forward_params = @{ $app->{forward_params} }
-                        if $app->{forward_params};
+                    my @forward_params = @{ $app->{forward_params} || [] };
                     $app->{forward_params} = undef;
                     local $app->{component} = $local_component
                         if $local_component;
@@ -3299,9 +3310,9 @@ sub run {
                           <div class="col-12">
                             <div class="card debug-panel" style="margin: 0 -15px;">
                               <div class="card-header text-white" style="background: #EF7678;">
-                                <h4 class="card-title">$debug_panel_header</h4>
+                                <h4 class="my-0">$debug_panel_header</h4>
                               </div>
-                              <div class="card-block debug-panel-inner" style="background: #FFE0E0;">
+                              <div class="card-block p-4 debug-panel-inner" style="background: #FFE0E0;">
                                 <ul class="list-unstyled">
                                   $trace
                                 </ul>
@@ -3906,7 +3917,9 @@ sub param_hash {
 
 sub query_string {
     my $app = shift;
-    MT::Util::is_mod_perl1() ? $app->{apache}->args : $app->{query}->query_string;
+    MT::Util::is_mod_perl1()
+        ? $app->{apache}->args
+        : $app->{query}->query_string;
 }
 
 sub return_uri {
@@ -4060,7 +4073,8 @@ sub envelope {''}
 sub script {
     my $app = shift;
     return $app->{__script} if exists $app->{__script};
-    my $script = MT::Util::is_mod_perl1() ? $app->{apache}->uri : $ENV{SCRIPT_NAME};
+    my $script
+        = MT::Util::is_mod_perl1() ? $app->{apache}->uri : $ENV{SCRIPT_NAME};
     if ( !$script ) {
         require File::Basename;
         import File::Basename qw(basename);
@@ -4167,13 +4181,10 @@ sub is_valid_redirect_target {
     my $target;
     if ( ( $static eq '' ) || ( $static eq '1' ) ) {
         require MT::Entry;
-        my $entry = MT::Entry->load( $app->param('entry_id') || 0 )
+        my $entry_id = $app->param('entry_id') || 0;
+        my $entry = MT::Entry->load($entry_id)
             or return $app->error(
-            $app->translate(
-                'Cannot load entry #[_1].',
-                $app->param('entry_id')
-            )
-            );
+            $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
         $target = $entry->archive_url;
     }
     else {
@@ -4200,7 +4211,8 @@ sub is_valid_redirect_target {
 sub param {
     my $app = shift;
     return unless $app->{query};
-    Carp::carp "app->param called in list context; use app->multi_param" if wantarray;
+    Carp::carp "app->param called in list context; use app->multi_param"
+        if wantarray;
     if (@_) {
         $app->{query}->param(@_);
     }
@@ -4314,7 +4326,7 @@ sub remote_ip {
 
     my $trusted = $app->config->TransparentProxyIPs || 0;
     my $remote_ip = (
-          MT::Util::is_mod_perl1()
+        MT::Util::is_mod_perl1()
         ? $app->{apache}->connection->remote_ip
         : $ENV{REMOTE_ADDR}
     );

@@ -220,7 +220,8 @@ sub edit_role {
         $param{name}        = $role->name;
         $param{description} = $role->description;
         $param{id}          = $role->id;
-        my $creator = MT::Author->load( $role->created_by )
+        my $creator;
+        $creator = MT::Author->load( $role->created_by )
             if $role->created_by;
         $param{created_by} = $creator ? $creator->name : '';
 
@@ -277,6 +278,7 @@ sub edit_role {
             = 'CODE' eq ref( $perms->{$key}{label} )
             ? $perms->{$key}{label}->()
             : $perms->{$key}{label};
+
         $perm->{label} = $app->translate($label);
         $perm->{order} = $perms->{$key}->{order};
         $perm->{group} = $perms->{$key}->{group};
@@ -347,16 +349,15 @@ sub can_delete_role {
 
 sub save_role {
     my $app = shift;
-    my $q   = $app->param;
     $app->validate_magic() or return;
     $app->can_do('save_role') or return $app->permission_denied();
 
-    my $id    = $q->param('id');
+    my $id    = $app->param('id');
     my @perms = $app->multi_param('permission');
     my $role;
     require MT::Role;
     $role = $id ? MT::Role->load($id) : MT::Role->new;
-    my $name = $q->param('name') || '';
+    my $name = $app->param('name') || '';
     $name =~ s/(^\s+|\s+$)//g;
     return $app->errtrans("Role name cannot be blank.")
         if $name eq '';
@@ -370,8 +371,9 @@ sub save_role {
             "You cannot define a role without permissions.");
     }
 
-    $role->name( $q->param('name') );
-    $role->description( $q->param('description') );
+    my $description = $app->param('description');
+    $role->name($name);
+    $role->description($description);
     $role->clear_full_permissions;
     $role->set_these_permissions(@perms);
     if ( $role->id ) {
@@ -409,8 +411,7 @@ sub set_object_status {
     return $app->error( $app->translate("Invalid request.") )
         if $app->request_method ne 'POST';
 
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $type = $app->param('_type') || '';
     return $app->error( $app->translate('Invalid type') )
         unless ( $type eq 'user' )
         || ( $type eq 'author' )
@@ -423,7 +424,7 @@ sub set_object_status {
     my @sync;
     my $saved       = 0;
     my $not_enabled = 0;
-    for my $id ( $q->multi_param('id') ) {
+    for my $id ( $app->multi_param('id') ) {
         next unless $id;    # avoid 'empty' ids
         my $obj = $class->load($id);
         next unless $obj;
@@ -485,7 +486,7 @@ sub set_object_status {
         );
     }
     $app->add_return_arg( is_power_edit => 1 )
-        if $q->param('is_power_edit');
+        if $app->param('is_power_edit');
     $app->add_return_arg( unchanged => $unchanged )
         if $unchanged;
     $app->add_return_arg( not_enabled => $not_enabled )
@@ -731,7 +732,8 @@ sub cfg_system_users {
             }
         }
     }
-    my $config_warning = join( ", ", @config_warnings ) if (@config_warnings);
+    my $config_warning;
+    $config_warning = join( ", ", @config_warnings ) if (@config_warnings);
 
     $param{config_warning} = $app->translate(
         "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
@@ -773,16 +775,18 @@ sub save_cfg_system_users {
         }
     }
 
-    my $cfg = $app->config;
-    my $tz  = $app->param('default_time_zone');
+    my $cfg              = $app->config;
+    my $tz               = $app->param('default_time_zone');
+    my $default_language = $app->param('default_language');
+    my $personal_weblog  = $app->param('personal_weblog');
+    my $default_user_tag_delimiter
+        = $app->param('default_user_tag_delimiter');
     $app->config( 'DefaultTimezone', $tz, 1 );
-    $app->config( 'NewUserAutoProvisioning',
-        $app->param('personal_weblog') ? 1 : 0, 1 );
-    $app->config( 'NewUserBlogTheme',        $theme_id,           1 );
-    $app->config( 'NewUserDefaultWebsiteId', $default_website_id, 1 );
-    $app->config( 'DefaultUserLanguage', $app->param('default_language'), 1 );
-    $app->config( 'DefaultUserTagDelimiter',
-        scalar $app->param('default_user_tag_delimiter'), 1 );
+    $app->config( 'NewUserAutoProvisioning', $personal_weblog ? 1 : 0, 1 );
+    $app->config( 'NewUserBlogTheme',        $theme_id,                   1 );
+    $app->config( 'NewUserDefaultWebsiteId', $default_website_id,         1 );
+    $app->config( 'DefaultUserLanguage',     $default_language,           1 );
+    $app->config( 'DefaultUserTagDelimiter', $default_user_tag_delimiter, 1 );
     my $registration = $cfg->CommenterRegistration;
 
     if ( my $reg = $app->param('registration') ) {
@@ -824,7 +828,7 @@ sub save_cfg_system_users {
 
     my $args = ();
 
-    if ( $app->param('personal_weblog')
+    if ( $personal_weblog
         && !$app->config('NewUserDefaultWebsiteId') )
     {
         $args->{error}
@@ -1054,9 +1058,11 @@ sub dialog_select_author {
 
     my %hash = $app->param_hash();
 
-    my $entry_type;
-    $entry_type = $app->param('entry_type') if $app->param('entry_type');
-    $entry_type ||= 'entry';
+    my $entry_type = $app->param('entry_type') || 'entry';
+    my $json       = $app->param('json');
+    my $multi      = $app->param('multi');
+    my $idfield    = $app->param('idfield');
+    my $namefield  = $app->param('namefield');
 
     my @blog_ids;
     if ( !$blog->is_blog && $app->param('include_child') ) {
@@ -1068,7 +1074,8 @@ sub dialog_select_author {
     push @blog_ids, $blog->id;
 
     if ( !$app->user->is_superuser ) {
-        my @ids = map { $_->id } @{ $blog->blogs }
+        my @ids;
+        @ids = map { $_->id } @{ $blog->blogs }
             if !$blog->is_blog;
         push @ids, $blog->id;
         my $ok;
@@ -1101,7 +1108,7 @@ sub dialog_select_author {
                 ),
             },
             code     => $hasher,
-            template => $app->param('json') ? 'include/listing_panel.tmpl'
+            template => $json ? 'include/listing_panel.tmpl'
             : 'dialog/select_users.tmpl',
             params => {
                 (   $entry_type eq 'entry'
@@ -1116,15 +1123,13 @@ sub dialog_select_author {
                 panel_label       => $app->translate('Username'),
                 panel_description => $app->translate('Display Name'),
                 panel_type        => 'author',
-                panel_multi       => defined $app->param('multi')
-                ? $app->param('multi')
-                : 0,
-                panel_searchable => 1,
-                panel_first      => 1,
-                panel_last       => 1,
-                list_noncron     => 1,
-                idfield          => scalar( $app->param('idfield') ),
-                namefield        => scalar( $app->param('namefield') ),
+                panel_multi       => defined $multi ? $multi : 0,
+                panel_searchable  => 1,
+                panel_first       => 1,
+                panel_last        => 1,
+                list_noncron      => 1,
+                idfield           => $idfield,
+                namefield         => $namefield,
             },
         }
     );
@@ -1141,6 +1146,10 @@ sub dialog_select_sysadmin {
         $row->{description} = $row->{nickname};
     };
 
+    my $json      = $app->param('json');
+    my $multi     = $app->param('multi');
+    my $idfield   = $app->param('idfield');
+    my $namefield = $app->param('namefield');
     $app->listing(
         {   type  => 'author',
             terms => {
@@ -1158,7 +1167,8 @@ sub dialog_select_sysadmin {
                 ),
             },
             code     => $hasher,
-            template => $app->param('json') ? 'include/listing_panel.tmpl'
+            template => $json
+            ? 'include/listing_panel.tmpl'
             : 'dialog/select_users.tmpl',
             params => {
                 dialog_title =>
@@ -1170,15 +1180,13 @@ sub dialog_select_sysadmin {
                 panel_label       => $app->translate("System Administrator"),
                 panel_description => $app->translate("Name"),
                 panel_type        => 'author',
-                panel_multi       => defined $app->param('multi')
-                ? $app->param('multi')
-                : 0,
-                panel_searchable => 1,
-                panel_first      => 1,
-                panel_last       => 1,
-                list_noncron     => 1,
-                idfield          => scalar( $app->param('idfield') ),
-                namefield        => scalar( $app->param('namefield') ),
+                panel_multi       => defined $multi ? $multi : 0,
+                panel_searchable  => 1,
+                panel_first       => 1,
+                panel_last        => 1,
+                list_noncron      => 1,
+                idfield           => $idfield,
+                namefield         => $namefield,
             },
         }
     );
@@ -1568,20 +1576,12 @@ sub can_delete {
 sub save_filter {
     my ( $eh, $app, $obj, $original, $opts ) = @_;
     $opts ||= {};
-    my $accessor = sub {
-        if ($obj) {
-            my $k = shift;
-            $obj->$k(@_);
-        }
-        else {
-            $app->param(@_);
-        }
-    };
     my $encode_html = sub {
         $opts->{skip_encode_html} ? $_[0] : encode_html( $_[0] );
     };
 
-    my $name = $accessor->('name');
+    my $name = $obj ? $obj->name : $app->param('name');
+    my $id   = $obj ? $obj->id   : $app->param('id');
     if ( $name && !$opts->{skip_validate_unique_name} ) {
         require MT::Author;
         my $existing = MT::Author->load(
@@ -1589,7 +1589,6 @@ sub save_filter {
                 type => MT::Author::AUTHOR()
             }
         );
-        my $id = $accessor->('id');
         if ( $existing
             && ( ( $id && $existing->id ne $id ) || !$id ) )
         {
@@ -1599,19 +1598,19 @@ sub save_filter {
         }
     }
 
-    my $status = $accessor->('status');
+    my $status = $obj ? $obj->status : $app->param('status');
     return 1 if $status and $status == MT::Author::INACTIVE();
 
     require MT::Auth;
     my $auth_mode = $app->config('AuthenticationModule');
     my ($pref) = split /\s+/, $auth_mode;
 
-    my $nickname = $accessor->('nickname');
+    my $nickname = $obj ? $obj->nickname : $app->param('nickname');
 
     if ( $pref eq 'MT' ) {
         if ( defined $name ) {
             $name =~ s/(^\s+|\s+$)//g;
-            $accessor->( 'name', $name );
+            $obj ? $obj->name($name) : $app->param( 'name', $name );
         }
         return $eh->error( $app->translate("User requires username") )
             if ( !$name );
@@ -1632,7 +1631,9 @@ sub save_filter {
     # undefined. Only check requirement if the value is defined.
     if ( defined $nickname ) {
         $nickname =~ s/(^\s+|\s+$)//g;
-        $accessor->( 'nickname', $nickname );
+        $obj
+            ? $obj->nickname($nickname)
+            : $app->param( 'nickname', $nickname );
         return $eh->error( $app->translate("User requires display name") )
             if ( !length($nickname) );
 
@@ -1647,8 +1648,10 @@ sub save_filter {
         }
     }
 
+    # MT::Auth::MT uses id, pass, pass_verify, old_pass
+    # MT::Auth::TypeKey uses name as well, but ...
     my $ori_name = $app->param('name');
-    $app->param( 'name', $accessor->('name') );
+    $app->param( 'name', $name );
     require MT::Auth;
     my $error = MT::Auth->sanity_check($app);
     $app->param( 'name', $ori_name );
@@ -1665,24 +1668,22 @@ sub save_filter {
     }
 
     return 1 if ( $pref ne 'MT' );
-    if ( !$accessor->('id') ) {    # it's a new object
+
+    my $pass     = $app->param('pass');
+    my $password = $app->param('password');
+    if ( !$id ) {    # it's a new object
         return $eh->error( $app->translate("User requires password") )
-            if (
-            !length(
-                $obj ? $accessor->('password') : scalar $app->param('pass')
-            )
-            );
+            if ( !length( $obj ? $obj->password : $pass ) );
     }
 
     # Password strength check
     # Why the name of password field is different in each forms...
-    if ( scalar $app->param('pass') || scalar $app->param('password') ) {
-        my $msg = $app->verify_password_strength( $accessor->('name'),
-            scalar $app->param('pass') );
+    if ( $pass || $password ) {
+        my $msg = $app->verify_password_strength( $name, $pass );
         return $eh->error($msg) if $msg;
     }
 
-    my $email = $accessor->('email');
+    my $email = $obj ? $obj->email : $app->param('email');
     return $eh->error(
         MT->translate("Email Address is required for password reset.") )
         unless $email;
@@ -1700,8 +1701,7 @@ sub save_filter {
         );
     }
 
-    if ( $accessor->('url') ) {
-        my $url = $accessor->('url');
+    if ( my $url = $obj ? $obj->url : $app->param('url') ) {
         return $eh->error( MT->translate("URL is invalid.") )
             if !is_url($url) || ( $url =~ m/[<>]/ );
     }
