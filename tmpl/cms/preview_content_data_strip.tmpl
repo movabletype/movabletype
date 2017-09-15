@@ -95,7 +95,7 @@
     <table id="entry-preview-layout" class="preview-layout">
       <tr>
         <td id="entry-preview-control-strip" class="preview-control-strip">
-          <p id="entry-preview-label" class="preview-label"><mt:if name="object_type" eq="entry"><__trans phrase="You are previewing the entry entitled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"><mt:else><__trans phrase="You are previewing the page entitled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"></mt:if></p>
+          <p id="entry-preview-label" class="preview-label"><__trans phrase="You are previewing &ldquo;[_1]&rdquo; content data entitled &ldquo;[_2]&rdquo;" params="<$mt:var name="object_label" escape="html"$>%%<$mt:var name="title" remove_html="1" escape="html"$>"></p>
           <form method="post" action="<$mt:var name="script_url"$>" mt:once="1">
             <input type="hidden" name="__mode" value="save" />
             <input type="hidden" name="_type" value="<$mt:var name="object_type"$>" />
