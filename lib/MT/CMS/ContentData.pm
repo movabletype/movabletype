@@ -525,8 +525,7 @@ sub save {
         )
         );
 
-    $app->run_callbacks( 'cms_post_save.content_data',
-        $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_post_save.cd', $app, $content_data, $orig );
 
     return $app->redirect(
         $app->uri(
