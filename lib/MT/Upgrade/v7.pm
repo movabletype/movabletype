@@ -28,6 +28,15 @@ sub upgrade_functions {
             priority      => 3.3,
             code          => \&_v7_migrate_privileges,
         },
+        'v7_rebuild_permissions' => {
+            version_limit => 7.0012,
+            priority      => 3.4,
+            updater       => {
+                type      => 'permission',
+                label     => 'Rebuilding permissions...',
+                code      => sub { $_[0]->rebuild; },
+            },
+        },
     };
 }
 
