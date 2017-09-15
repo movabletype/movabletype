@@ -151,32 +151,23 @@ sub resource_objects {
 sub get_target_user {
     my ($app) = @_;
 
-    if ( $app->param('user_id') eq 'me' ) {
+    my $user_id = $app->param('user_id') || '';
+    if ( $user_id eq 'me' ) {
         my $user = $app->user;
-        $user->is_anonymous ? $app->error(401) : $user;
+        return $user->is_anonymous ? $app->error(401) : $user;
     }
     else {
         my ($user) = context_objects(@_);
 
-        my $active_user_or_error = sub {
-            ( $user && $user->status == MT::Author::ACTIVE() )
-                ? $user
-                : $app->error( $app->translate('User not found'), 404 );
-        };
-
-        if ( $app->current_api_version == 1 ) {
-            return $active_user_or_error->();
-        }
-        else {
+        if ( $app->current_api_version != 1 ) {
             my $login_user = $app->user;
 
             if ( $login_user->is_superuser || $login_user->id == $user->id ) {
                 return $user;
             }
-            else {
-                return $active_user_or_error->();
-            }
         }
+        return $user if $user && $user->status == MT::Author::ACTIVE();
+        return $app->error( $app->translate('User not found'), 404 );
     }
 }
 
