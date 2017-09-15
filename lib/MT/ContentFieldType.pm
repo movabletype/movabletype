@@ -10,7 +10,7 @@ sub core_content_field_types {
         url              => _url_registry(),
         date_and_time    => _date_time_registry(),
         date_only        => _date_registry(),
-        time             => _time_registry(),
+        time_only        => _time_registry(),
         select_box       => _select_box_registry(),
         radio_button     => _radio_button_registry(),
         checkboxes       => _checkboxes_registry(),
@@ -282,6 +282,7 @@ sub _time_registry {
                 use_blank => 1,
             },
         },
+        options_html => 'content_field_type_options/time.tmpl',
         options => [
             qw(
                 label

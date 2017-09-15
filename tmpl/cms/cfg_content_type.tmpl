@@ -451,57 +451,7 @@
   
   
   
-    <mtapp:settinggroup id="time-options">
-  
-      <mtapp:setting
-         id="time-label"
-         label="<__trans phrase="Label">"
-         required="1">
-        <input type="text" name="time-label" id="time-label" class="text med" />
-      </mtapp:setting>
-  
-      <mtapp:setting
-         id="time-description"
-         label="<__trans phrase="Description">"
-         show_hint="1"
-         hint_id="timeDescription"
-         hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-        <input type="text" name="time-description" id="time-description" class="text med" aria-describedby="timeDescription" />
-      </mtapp:setting>
-  
-      <mtapp:setting
-         id="time-required"
-         label="<__trans phrase="Required?">">
-        <input type="checkbox" name="time-required" id="time-required" /> <label for="time-required"><__trans phrase="Must the user enter data into this content field before the content data may be saved?"></label>
-      </mtapp:setting>
-  
-      <mtapp:setting
-         id="time-display"
-         label="<__trans phrase="Display Options">"
-         required="1"
-         hint_id="timeDisplay"
-         show_hint="1"
-         hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-        <select name="time-display" id="time-display" aria-describedby="timeDisplay">
-          <option value="force"><__trans phrase="Force"></option>
-          <option value="default" selected="selected"><__trans phrase="Default"></option>
-          <option value="optional"><__trans phrase="Optional"></option>
-          <option value="none"><__trans phrase="None"></option>
-        </select>
-      </mtapp:setting>
-  
-      <mtapp:setting
-         id="time-initial_value"
-         label="<__trans phrase="Initial Value">">
-        <input type="text" name="time-initial_value" id="time-initial_value" class="text time" value="" placeholder="HH:mm:ss" />
-      </mtapp:setting>
-  
-      <div id="save-block" class="icon-save icon-left">
-        <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
-      </div>
-  
-    </mtapp:settinggroup>
-  
+    
     <mtapp:settinggroup id="select_box-options">
   
       <mtapp:setting
