@@ -9,7 +9,7 @@ sub core_content_field_types {
         number           => _number_registry(),
         url              => _url_registry(),
         date_and_time    => _date_time_registry(),
-        date             => _date_registry(),
+        date_only        => _date_registry(),
         time             => _time_registry(),
         select_box       => _select_box_registry(),
         radio_button     => _radio_button_registry(),
@@ -247,6 +247,7 @@ sub _date_registry {
                 use_future => 1,
             },
         },
+        options_html => 'content_field_type_options/date.tmpl',
         options => [
             qw(
                 label
