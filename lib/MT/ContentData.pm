@@ -98,6 +98,7 @@ __PACKAGE__->install_properties(
         audit       => 1,
         meta        => 1,
         child_of    => ['MT::ContentType'],
+        class_type  => 'content_data',
     }
 );
 
