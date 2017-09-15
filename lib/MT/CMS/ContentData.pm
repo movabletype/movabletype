@@ -341,7 +341,7 @@ sub save {
 
     my $convert_breaks = {};
     my $data           = {};
-    if ( $app->param('_preview_file') ) {
+    if ( $app->param('from_preview') ) {
         $data = JSON::decode_json( scalar $app->param('serialized_data') );
     }
     else {
