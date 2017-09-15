@@ -360,7 +360,6 @@ sub list_props {
                 allow_pings              => 1,
                 moderate_unreg_comments  => MT::Blog::MODERATE_UNTRSTD(),
                 moderate_pings           => 1,
-                require_comment_emails   => 1,
                 allow_comments_default   => 1,
                 allow_comment_html       => 1,
                 autolink_urls            => 1,
