@@ -4,8 +4,8 @@ use warnings;
 
 sub upgrade_functions {
     return {
-        'v5_reset_default_widget' => {
-            version_limit => 7.0009,
+        'v7_reset_default_widget' => {
+            version_limit => 7.0012,
             priority      => 5.0,
             updater       => {
                 type  => 'author',
@@ -14,17 +14,17 @@ sub upgrade_functions {
             },
         },
         'v7_create_new_role' => {
-            version_limit => 7.0000,
+            version_limit => 7.0012,
             priority      => 3.1,
             code          => \&_v7_create_new_role,
         },
         'v7_migrate_website_administrator' => {
-            version_limit => 7.0000,
+            version_limit => 7.0012,
             priority      => 3.2,
             code          => \&_v7_migrate_role,
         },
         'v7_migrate_privileges' => {
-            version_limit => 7.0000,
+            version_limit => 7.0012,
             priority      => 3.3,
             code          => \&_v7_migrate_privileges,
         },
@@ -254,4 +254,3 @@ sub _v7_migrate_privileges {
 }
 
 1;
-
