@@ -319,6 +319,7 @@ sub _select_box_registry {
                     '$Core::MT::ContentFieldType::Common::terms_multiple',
             },
         },
+        options_html => 'content_field_type_options/select_box.tmpl',
         options => [
             qw(
                 label
