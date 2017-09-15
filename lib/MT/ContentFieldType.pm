@@ -210,6 +210,7 @@ sub _date_time_registry {
                 use_future => 1,
             },
         },
+        options_html => 'content_field_type_options/date_time.tmpl',
         options => [
             qw(
                 label

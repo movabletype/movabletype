@@ -453,48 +453,6 @@
   
     <mtapp:settinggroup id="date_and_time-options">
   
-      <mtapp:setting
-         id="date_and_time-label"
-         label="<__trans phrase="Label">"
-         required="1">
-        <input type="text" name="date_and_time-label" id="date_and_time-label" class="text med" />
-      </mtapp:setting>
-  
-      <mtapp:setting
-         id="date_and_time-description"
-         label="<__trans phrase="Description">"
-         show_hint="1"
-         hint_id="dateAndTimeDescription"
-         hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-        <input type="text" name="date_and_time-description" id="date_and_time-description" class="text med" aria-describedby="dateAndTimeDescription" />
-      </mtapp:setting>
-  
-      <mtapp:setting
-         id="date_and_time-required"
-         label="<__trans phrase="Required?">">
-        <input type="checkbox" name="date_and_time-required" id="date_and_time-required" /> <label for="date_and_time-required"><__trans phrase="Must the user enter data into this content field before the content data may be saved?"></label>
-      </mtapp:setting>
-  
-      <mtapp:setting
-         id="date_and_time-display"
-         label="<__trans phrase="Display Options">"
-         required="1"
-         show_hint="1"
-         hint_id="dateAndTimeDisplay"
-         hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-        <select name="date_and_time-display" id="date_and_time-display" aria-describedby="dateAndTimeDisplay">
-          <option value="force"><__trans phrase="Force"></option>
-          <option value="default" selected="selected"><__trans phrase="Default"></option>
-          <option value="optional"><__trans phrase="Optional"></option>
-          <option value="none"><__trans phrase="None"></option>
-        </select>
-      </mtapp:setting>
-  
-      <mtapp:setting
-         id="date_and_time-initial_value"
-         label="<__trans phrase="Initial Value">">
-        <span><input type="text" name="date_and_time-initial_date" id="date_and_time-initial_date" class="text date text-date" value="" placeholder="YYYY-MM-DD" /></span> <span class="separator"><__trans phrase="@"></span> <span><input type="text" name="date_and_time-initial_time" id="date_and_time-initial_time" class="text time" value="" placeholder="HH:mm:ss" /></span>
-      </mtapp:setting>
   
       <div id="save-block" class="icon-save icon-left">
         <span class="item-save"><a href="javascript:void(0);" class="save-link"> <__trans phrase="Save content field options"></a></span>
