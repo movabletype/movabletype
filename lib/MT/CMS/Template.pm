@@ -115,6 +115,10 @@ sub edit {
             $tab = 'backup';
             $param->{template_group_trans} = $app->translate('backup');
         }
+        elsif ( $obj->type eq 'ct' || $obj->type eq 'ct_archive' ) {
+            $tab = 'ct';
+            $param->{template_group_trans} = $app->translate('ct');
+        }
         else {
             $tab = 'system';
             $param->{template_group_trans} = $app->translate('system');
@@ -700,7 +704,7 @@ sub edit {
         }
         elsif ( $template_type eq 'ct' || $template_type eq 'ct_archive' ) {
             $tab                           = 'ct';
-            $param->{template_group_trans} = $app->translate('Content Type');
+            $param->{template_group_trans} = $app->translate('ct');
             $param->{type_ct_archive}      = 1;
             my @types = (
                 {   key   => 'ct_archive',
