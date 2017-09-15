@@ -1331,42 +1331,40 @@ sub created_on_obj {
 }
 
 sub column_as_datetime {
-    my $obj = shift;
+    my $obj   = shift;
     my ($col) = @_;
-    if ( my $ts = $obj->column($col) ) {
-        my $blog;
-        if ( $obj->isa('MT::Blog') ) {
-            $blog = $obj;
-        }
-        else {
-            if ( my $blog_id = $obj->blog_id ) {
-                require MT::Blog;
-                $blog = MT::Blog->lookup($blog_id);
-            }
-        }
-        my ( $y, $mo, $d, $h, $m, $s )
-            = $ts
-            =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
-        require MT::DateTime;
-        my $four_digit_offset;
-        if ($blog) {
-            $four_digit_offset = sprintf( '%.02d%.02d',
-                int( $blog->server_offset ),
-                60 *
-                    abs( $blog->server_offset - int( $blog->server_offset ) )
-            );
-        }
-        return new MT::DateTime(
-            year      => $y,
-            month     => $mo,
-            day       => $d,
-            hour      => $h,
-            minute    => $m,
-            second    => $s,
-            time_zone => $four_digit_offset
-        );
+    my $ts    = $obj->column($col) or return;
+    my ( $y, $mo, $d, $h, $m, $s )
+        = $ts
+        =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/
+        or return;
+
+    my $blog;
+    if ( $obj->isa('MT::Blog') ) {
+        $blog = $obj;
     }
-    undef;
+    else {
+        if ( my $blog_id = $obj->blog_id ) {
+            require MT::Blog;
+            $blog = MT::Blog->lookup($blog_id);
+        }
+    }
+    require MT::DateTime;
+    my $four_digit_offset;
+    if ($blog) {
+        $four_digit_offset = sprintf( '%.02d%.02d',
+            int( $blog->server_offset ),
+            60 * abs( $blog->server_offset - int( $blog->server_offset ) ) );
+    }
+    return new MT::DateTime(
+        year      => $y,
+        month     => $mo,
+        day       => $d,
+        hour      => $h,
+        minute    => $m,
+        second    => $s,
+        time_zone => $four_digit_offset
+    );
 }
 
 sub join_on {
