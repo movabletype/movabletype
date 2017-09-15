@@ -227,10 +227,9 @@ sub filtered_list {
     $terms   ||= {};
     $args    ||= {};
     $options ||= {};
-    my $q         = $app->param;
-    my $blog_id   = $q->param('blog_id') || 0;
-    my $filter_id = $q->param('fid') || 0;
-    my $blog      = $blog_id ? $app->blog : undef;
+    my $blog_id   = $app->param('blog_id') || 0;
+    my $filter_id = $app->param('fid')     || 0;
+    my $blog = $blog_id ? $app->blog : undef;
     my $scope
         = !$blog         ? 'system'
         : $blog->is_blog ? 'blog'
@@ -317,7 +316,7 @@ sub filtered_list {
     my $class = $setting->{datasource} || MT->model($ds);
     my $filteritems;
     my $allpass = 0;
-    if ( my $items = $q->param('items') ) {
+    if ( my $items = $app->param('items') ) {
         if ( $items =~ /^".*"$/ ) {
             $items =~ s/^"//;
             $items =~ s/"$//;
@@ -364,7 +363,8 @@ sub filtered_list {
     my $props = MT::ListProperty->list_properties($ds) || {};
 
     for my $key ( split ',', ( $app->param('filterKeys') || '' ) ) {
-        if ( defined( $app->param($key) ) ) {
+        my $value = $app->param($key);
+        if ( defined $value ) {
             ( my $obj_key = $key ) =~ s/([A-Z])/_\l$1/g;
             $obj_key =~ s/s\z// unless exists $props->{$obj_key};
 
@@ -381,7 +381,7 @@ sub filtered_list {
                                     },
                                 };
                                 } grep {$_}
-                                split( ',', scalar( $app->param($key) ) )
+                                split( ',', $value )
                         ],
                     },
                 }
@@ -484,11 +484,12 @@ sub filtered_list {
         }
     }
 
-    my $limit  = $q->param('limit')  || 50;
-    my $offset = $q->param('offset') || 0;
+    my $limit  = $app->param('limit')  || 50;
+    my $offset = $app->param('offset') || 0;
 
     ## FIXME: take identifical column from column defs.
-    my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
+    my $cols
+        = defined( $app->param('columns') ) ? $app->param('columns') : '';
     my @cols = ( '__id', grep {/^[^\.]+$/} split( ',', $cols ) );
     my @subcols = ( '__id', grep {/\./} split( ',', $cols ) );
 
@@ -543,8 +544,8 @@ sub filtered_list {
     my %load_options = (
         terms => { %$terms, @blog_id_term },
         args  => {%$args},
-        sort_by    => $q->param('sortBy')    || '',
-        sort_order => $q->param('sortOrder') || '',
+        sort_by    => $app->param('sortBy')    || '',
+        sort_order => $app->param('sortOrder') || '',
         limit      => $limit,
         offset     => $offset,
         scope      => $scope,
