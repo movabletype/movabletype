@@ -11,8 +11,9 @@ use warnings;
 sub can_list {
     my ( $eh, $app, $terms, $args, $options ) = @_;
 
-    if (   defined( $app->param('status') )
-        && lc( $app->param('status') ) ne 'publish'
+    my $status = $app->param('status');
+    if (   defined($status)
+        && lc($status) ne 'publish'
         && $app->user->is_anonymous )
     {
         return 0;
