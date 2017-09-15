@@ -1536,7 +1536,8 @@ sub _hdlr_if {
             $key   = $args->{key}   if exists $args->{key};
         }
 
-        $value = $ctx->var($var);
+        $value = $ctx->var($var) || '';
+
         if ( ref($value) ) {
             if ( UNIVERSAL::isa( $value, 'MT::Template' ) ) {
                 local $value->{context} = $ctx;
