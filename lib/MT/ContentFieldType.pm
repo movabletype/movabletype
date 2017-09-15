@@ -173,6 +173,7 @@ sub _url_registry {
                 use_blank => 1,
             },
         },
+        options_html => 'content_field_type_options/url.tmpl',
         options => [
             qw(
                 label
