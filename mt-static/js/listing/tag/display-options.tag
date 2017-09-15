@@ -27,16 +27,16 @@
       <fieldset class="form-group">
         <div data-is="display-options-limit" id="per_page-field"></div>
       </fieldset>
-      <virtual if={ !listTop.opts.disableUserDispOption }>
-        <fieldset class="form-group">
-          <div data-is="display-options-columns" id="display_columns-field"></div>
-        </fieldset>
-        <div class="actions-bar actions-bar-bottom">
-          <a href="javascript:void(0);" id="reset-display-options" onclick={ resetColumns }>
-            { trans('Reset defaults') }
-          </a>
-        </div>
-      </virtual>
+      <fieldset class="form-group">
+        <div data-is="display-options-columns" id="display_columns-field"></div>
+      </fieldset>
+      <div if={ !listTop.opts.disableUserDispOption }
+        class="actions-bar actions-bar-bottom"
+      >
+        <a href="javascript:void(0);" id="reset-display-options" onclick={ resetColumns }>
+          { trans('Reset defaults') }
+        </a>
+      </div>
     </div>
   </div>
 
@@ -81,7 +81,14 @@
   <div class="field-header">
     <label>{ trans('Column') }</label>
   </div>
-  <div class="field-content">
+  <div if={ listTop.opts.disableUserDispOption }
+    class="alert alert-warning"
+  >
+    { trans('User Display Option is disabled now.') }
+  </div>
+  <div if={ !listTop.opts.disableUserDispOption }
+    class="field-content"
+  >
     <ul id="disp_cols" class="list-inline m-0">
       <virtual each={ column in store.columns }>
         <li hide={ column.force_display } class="list-inline-item">
