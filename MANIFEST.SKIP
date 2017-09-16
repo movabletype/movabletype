@@ -280,6 +280,11 @@ build-language-stamp
 ^plugins/TypePadAntiSpam
 
 # a-table.js
+^mt-static/a-table.js/.babelrc
+^mt-static/a-table.js/.editorconfig
+^mt-static/a-table.js/.eslintrc
+^mt-static/a-table.js/.gitignore
+^mt-static/a-table.js/.node-version
 ^mt-static/a-table.js/_config.yml
 ^mt-static/a-table.js/bin/
 ^mt-static/a-table.js/circle.yml
