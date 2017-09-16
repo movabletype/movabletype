@@ -1,0 +1,62 @@
+<mt:app:ContentFieldOptionGroup
+   type="check_box">
+
+  <mtapp:ContentFieldOption
+     id="check_box-min"
+     label="<__trans phrase="Minimum number of selection">">
+    <input type="number" name="check_box-min" id="check_box-min" class="form-control" />
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="check_box-max"
+     label="<__trans phrase="Maximum number of selection">">
+    <input type="number" name="check_box-max" id="check_box-max" class="form-control" />
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="check_box-values"
+     required="1"
+     label="<__trans phrase="Values">">
+    <table class="table mt-table">
+      <thead>
+        <tr>
+          <th scope="col"><__trans phrase="Selected"></th>
+          <th scope="col"><__trans phrase="Label"></th>
+          <th scope="col"><__trans phrase="Value"></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr each={ initialValues }>
+          <td><input type="radio" class="form-control" name="check_box_initial" checked={ checked }></td>
+          <td><input type="text" class="form-control" name="check_box_label"></td>
+          <td><input type="text" class="form-control" name="check_box_value"></td>
+          <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="delete">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash" /></svg><__trans phrase="delete"></button></td>
+        </tr>
+      </tbody>
+    </table>
+    <button onclick={ addRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="add">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_add" /></svg><__trans phrase="add"></button>
+  </mtapp:ContentFieldOption>
+  
+  this.initialValues = opts.initialValues;
+  if ( !this.initialValues ) {
+  this.initialValues = [{
+      "checked": "checked"
+    }];
+  }
+
+  addRow(e) {
+    this.initialValues.push({"checked": ""})
+  }
+
+  deleteRow(e) {
+    var item = e.item;
+    var index = this.initialValues.indexOf(item);
+    this.initialValues.splice(index, 1);
+    if ( this.initialValues.length == 0 ) {
+      this.initialValues = [{
+        "checked": "checked"
+      }];
+    }
+  }
+</mt:app:ContentFieldOptionGroup>
