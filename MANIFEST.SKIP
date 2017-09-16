@@ -265,6 +265,10 @@ readme\.html\..*
 build-language-stamp
 ^mt-config.cgi$
 ^exports/
+^Gruntfile.js
+^package-lock.json
+^package.json
+^node_modules/
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion
@@ -274,6 +278,18 @@ build-language-stamp
 ^plugins/ActionStreams
 ^plugins/CommunityActionStreams
 ^plugins/TypePadAntiSpam
+
+# a-table.js
+^mt-static/a-table.js/_config.yml
+^mt-static/a-table.js/bin/
+^mt-static/a-table.js/circle.yml
+^mt-static/a-table.js/examples/
+^mt-static/a-table.js/lib/
+^mt-static/a-table.js/node_modules/
+^mt-static/a-table.js/package.json
+^mt-static/a-table.js/src/
+^mt-static/a-table.js/test/
+^mt-static/a-table.js/yarn.lock
 
 # Travis
 \.travis.yml
