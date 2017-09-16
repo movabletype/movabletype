@@ -56,6 +56,23 @@ themes/broken_blog_theme
 #?package=MT ^addons/Sync.pack
 #?package=MT ^mt-static/addons/Sync.pack
 #?package=MT ^addons/AWS.pack
+#?package=MT ^mt-sp.cgi
+#?package=MT ^plugins/SmartphoneOption
+#?package=MT ^mt-static/SmartphoneOption
+#?pacakge=MT ^plugins/feeds-app-lite
+#?pacakge=MT ^mt-static/plugins/feeds-app-lite
+#?package=MT ^plugins/Motion
+#?package=MT ^mt-static/plugins/Motion
+#?package=MT ^mt-static/jquery/themes/Motion
+
+#?package=MT ^mt-cp.cgi
+#?package=MT ^addons/Community.pack
+#?package=MT ^mt-static/addons/Community.pack
+
+#?package=MT ^plugins/FacebookCommenters
+#?pacakge=MT ^mt-static/plugins/FacebookCommenters
+#?pacakge=MT ^plugins/mixiComment
+#?pacakge=MT ^mt-static/plugins/mixiComment
 
 #?package=MTAWS ^COPYING
 #?package=MTAWS ^COPYRIGHT
