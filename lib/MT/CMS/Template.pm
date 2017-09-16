@@ -1822,10 +1822,9 @@ sub delete_map {
     return $app->error( $app->translate('No permissions') )
         unless $app->can_do('edit_templates');
 
-    my $q           = $app->param;
-    my $id          = $q->param('id');
-    my $blog_id     = $q->param('blog_id');
-    my $template_id = $q->param('template_id');
+    my $id          = $app->param('id');
+    my $blog_id     = $app->param('blog_id');
+    my $template_id = $app->param('template_id');
 
     $app->model('template')
         ->load( { id => $template_id, blog_id => $blog_id } )
@@ -2343,7 +2342,7 @@ sub refresh_all_templates {
     my $t = time;
 
     my @id;
-    if ( $app->param('blog_id') ) {
+    if ( my $blog_id = $app->param('blog_id') ) {
         if ( 'refresh_blog_templates' eq
             ( $app->param('plugin_action_selector') || '' ) )
         {
@@ -2352,7 +2351,7 @@ sub refresh_all_templates {
         }
         else {
             ## called from template listing screen of each website/blog.
-            @id = ( scalar $app->param('blog_id') );
+            @id = ($blog_id);
         }
     }
     else {
@@ -2932,7 +2931,7 @@ TEMPLATE: for my $tmpl (@$templates) {
     }
 
     if ( scalar(@at_ids) > 0 ) {
-        $app->param( 'id', @at_ids );
+        $app->multi_param( 'id', @at_ids );
         publish_archive_templates($app) if ( scalar(@at_ids) > 0 );
     }
     else {
@@ -3142,10 +3141,9 @@ sub edit_widget {
     my $app = shift;
     my (%opt) = @_;
 
-    my $q       = $app->param();
-    my $id      = scalar( $q->param('id') ) || $opt{id};
-    my $name    = scalar( $q->param('name') );
-    my $blog_id = scalar $q->param('blog_id') || 0;
+    my $id      = $app->param('id') || $opt{id};
+    my $name    = $app->param('name');
+    my $blog_id = $app->param('blog_id') || 0;
 
     my $tmpl_class = $app->model('template');
     require MT::Promise;
@@ -3273,9 +3271,8 @@ sub edit_widget {
 }
 
 sub list_widget {
-    my $app   = shift;
+    my $app = shift;
     my (%opt) = @_;
-    my $q     = $app->param;
 
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->return_to_dashboard( redirect => 1 )
@@ -3283,7 +3280,7 @@ sub list_widget {
     if ( $perms && !$perms->can_edit_templates ) {
         return $app->permission_denied();
     }
-    my $blog_id = $q->param('blog_id') || 0;
+    my $blog_id = $app->param('blog_id') || 0;
 
     my $widget_loop = &build_template_table(
         $app,
@@ -3358,8 +3355,7 @@ sub list_widget {
 
 sub delete_widget {
     my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $type = $app->param('_type');
 
     return $app->errtrans("Invalid request.")
         unless $type;
@@ -3371,7 +3367,7 @@ sub delete_widget {
 
     my $tmpl_class = $app->model('template');
 
-    for my $id ( $q->multi_param('id') ) {
+    for my $id ( $app->multi_param('id') ) {
         next unless $id;    # avoid 'empty' ids
 
         my $obj = $tmpl_class->load($id);
