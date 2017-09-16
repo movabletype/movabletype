@@ -358,6 +358,7 @@ sub _radio_button_registry {
                     '$Core::MT::ContentFieldType::Common::terms_multiple',
             },
         },
+        options_html => 'content_field_type_options/radio_button.tmpl',
         options => [
             qw(
                 label

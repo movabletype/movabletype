@@ -1,0 +1,50 @@
+<mt:app:ContentFieldOptionGroup
+   type="radio_button">
+
+  <mtapp:ContentFieldOption
+     id="radio_button-values"
+     required="1"
+     label="<__trans phrase="Values">">
+    <table class="table mt-table">
+      <thead>
+        <tr>
+          <th scope="col"><__trans phrase="Selected"></th>
+          <th scope="col"><__trans phrase="Label"></th>
+          <th scope="col"><__trans phrase="Value"></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr each={ initialValues }>
+          <td><input type="radio" class="form-control" name="radio_button_initial" checked={ checked }></td>
+          <td><input type="text" class="form-control" name="radio_button_label"></td>
+          <td><input type="text" class="form-control" name="radio_button_value"></td>
+          <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="delete">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash" /></svg><__trans phrase="delete"></button></td>
+        </tr>
+      </tbody>
+    </table>
+    <button onclick={ addRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="add">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_add" /></svg><__trans phrase="add"></button>
+  </mtapp:ContentFieldOption>
+  
+  this.initialValues = opts.initialValues;
+  if ( !this.initialValues ) {
+  this.initialValues = [{
+      "checked": "checked"
+    }];
+  }
+
+  addRow(e) {
+    this.initialValues.push({"checked": ""})
+  }
+
+  deleteRow(e) {
+    var item = e.item;
+    var index = this.initialValues.indexOf(item);
+    this.initialValues.splice(index, 1);
+    if ( this.initialValues.length == 0 ) {
+      this.initialValues = [{
+        "checked": "checked"
+      }];
+    }
+  }
+</mt:app:ContentFieldOptionGroup>
