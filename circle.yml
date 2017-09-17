@@ -18,3 +18,10 @@ dependencies:
 test:
   override:
     - docker run -w /var/www/mt mt bash -c "cp ./t/mysql-test.cfg ./mt-config.cgi && rm t/62-asset-editor.t plugins/MultiBlog/t/02.tags.t && service mysqld start & sleep 10 && service memcached start & sleep 10 && prove ./t ./plugins/*/t && phpunit"
+
+  post:
+    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "perl build/exportmt.pl --local --no-lang-stamp --pack=MT --rel_num=0 --prod --alpha=1"
+    - mv *.zip $CIRCLE_CI_ARTIFACTS/
+    - mv *.tar.gz $CIRCLE_CI_ARTIFACTS/
+    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "make clean"
+
