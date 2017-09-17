@@ -21,7 +21,7 @@ test:
 
   post:
     - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "perl build/exportmt.pl --local --no-lang-stamp --pack=MT --rel_num=0 --prod --alpha=1"
-    - cp *.zip $CIRCLE_CI_ARTIFACTS/
-    - cp *.tar.gz $CIRCLE_CI_ARTIFACTS/
+    - mv *.zip $CIRCLE_CI_ARTIFACTS/
+    - mv *.tar.gz $CIRCLE_CI_ARTIFACTS/
     - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "make clean"
 
