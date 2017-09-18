@@ -948,6 +948,7 @@ sub _tags_registry {
                 use_blank => 1,
             },
         },
+        options_html => 'content_field_type_options/tags.tmpl',
         options => [
             qw(
                 label
@@ -983,6 +984,7 @@ sub _list_registry {
                 terms   => '$Core::MT::ContentFieldType::List::terms',
             },
         },
+        options_html => 'content_field_type_options/list.tmpl',
         options => [
             qw(
                 label
