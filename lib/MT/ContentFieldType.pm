@@ -864,6 +864,7 @@ sub _embedded_text_registry {
                 use_blank => 1,
             },
         },
+        options_html => 'content_field_type_options/embedded_text.tmpl',
         options => [
             qw(
                 label
