@@ -506,6 +506,7 @@ sub _asset_registry {
                 use_blank => 1,
             },
         },
+        options_html => 'content_field_type_options/asset.tmpl',
         options => [
             qw(
                 label
