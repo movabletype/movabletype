@@ -17,7 +17,7 @@ sub core_content_field_types {
         asset            => _asset_registry(),
         asset_audio      => _audio_registry(),
         asset_video      => _video_registry(),
-        image            => _image_registry(),
+        asset_image      => _image_registry(),
         embedded_text    => _embedded_text_registry(),
         categories       => _categories_registry(),
         tags             => _tags_registry(),
@@ -842,6 +842,7 @@ sub _image_registry {
                 use_blank => 1,
             },
         },
+        options_html => 'content_field_type_options/asset_image.tmpl',
         options => [
             qw(
                 label
