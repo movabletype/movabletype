@@ -16,7 +16,7 @@ sub core_content_field_types {
         checkboxes       => _checkboxes_registry(),
         asset            => _asset_registry(),
         asset_audio      => _audio_registry(),
-        video            => _video_registry(),
+        asset_video      => _video_registry(),
         image            => _image_registry(),
         embedded_text    => _embedded_text_registry(),
         categories       => _categories_registry(),
@@ -718,6 +718,7 @@ sub _video_registry {
                 use_blank => 1,
             },
         },
+        options_html => 'content_field_type_options/asset_video.tmpl',
         options => [
             qw(
                 label
