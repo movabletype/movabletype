@@ -107,8 +107,8 @@ sub terms_id {
 sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
 
-    my $options         = $field_data->{options}   || {};
-    my $content_type_id = $options->{content_type} || 0;
+    my $options         = $field_data->{options} || {};
+    my $content_type_id = $options->{source}     || 0;
     my $field_label     = $options->{label};
 
     my $iter = MT::ContentData->load_iter(
@@ -145,7 +145,7 @@ sub ss_validator {
 
 sub theme_import_handler {
     my ( $theme, $blog, $ct, $cf_value, $field ) = @_;
-    my $name_or_unique_id = $field->{options}{content_type};
+    my $name_or_unique_id = $field->{options}{source};
     if ( defined $name_or_unique_id && $name_or_unique_id ne '' ) {
         my $ct = MT::ContentType->load(
             {   blog_id   => $blog->id,
@@ -158,11 +158,22 @@ sub theme_import_handler {
             }
         );
         if ($ct) {
-            $field->{options}{content_type} = $ct->id;
+            $field->{options}{source} = $ct->id;
         }
         else {
-            delete $field->{options}{content_type};
+            delete $field->{options}{source};
         }
+    }
+}
+
+sub options_html_params {
+    my ( $app, $param ) = @_;
+    my $content_type_loop
+        = MT->model('content_type')
+        ->get_related_content_type_loop( $app->blog->id );
+
+    return {
+        content_types => $content_type_loop,
     }
 }
 

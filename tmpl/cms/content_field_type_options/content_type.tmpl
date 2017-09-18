@@ -1,0 +1,39 @@
+<mt:app:ContentFieldOptionGroup
+   type="content_type">
+
+  <mtapp:ContentFieldOption
+     id="content_type-multiple"
+     label="<__trans phrase="Allow users to select multiple values?">">
+    <input type="checkbox" class="mt-switch form-control" id="select_box-multiple" /><label for="select_box-multiple"><__trans phrase="Allow users to select multiple values?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="content_type-min_length"
+     label="<__trans phrase="Minimum number of selection">">
+    <input type="number" name="content_type-min_length" id="content_type-min" class="form-control" />
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="content_type-max_length"
+     label="<__trans phrase="maximum number of selection">">
+    <input type="number" name="content_type-max_length" id="content_type-max" class="form-control" />
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="content_type-can_add"
+     label="<__trans phrase="Allow users to create a new content data?">">
+    <input type="checkbox" class="mt-switch form-control" id="content_type-multiple" /><label for="content_type-multiple"><__trans phrase="Allow users to create a new content data?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="content_type-source"
+     required="1"  
+     label="<__trans phrase="Source Content Type">">
+    <select name="content_type-source" id="content_type-source" class="form-control">
+    <mt:loop name="content_types">
+      <option value="<mt:var name="id" escape="html">"><mt:var name="name" escape="html"></option>
+    </mt:loop>
+    </select>
+  </mtapp:ContentFieldOption>
+
+</mt:app:ContentFieldOptionGroup>

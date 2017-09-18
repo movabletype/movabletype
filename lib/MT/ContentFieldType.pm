@@ -49,6 +49,8 @@ sub _content_type_registry {
                 terms => '$Core::MT::ContentFieldType::ContentType::temrs_id',
             },
         },
+        options_html => 'content_field_type_options/content_type.tmpl',
+        options_html_params => '$Core::MT::ContentFieldType::ContentType::options_html_params',
         options => [
             qw(
                 label
@@ -59,7 +61,7 @@ sub _content_type_registry {
                 can_add
                 max
                 min
-                content_type
+                source
                 )
         ],
     };
