@@ -15,7 +15,7 @@ sub core_content_field_types {
         radio_button     => _radio_button_registry(),
         checkboxes       => _checkboxes_registry(),
         asset            => _asset_registry(),
-        audio            => _audio_registry(),
+        asset_audio      => _audio_registry(),
         video            => _video_registry(),
         image            => _image_registry(),
         embedded_text    => _embedded_text_registry(),
@@ -612,6 +612,7 @@ sub _audio_registry {
                 use_blank => 1,
             },
         },
+        options_html => 'content_field_type_options/asset_audio.tmpl',
         options => [
             qw(
                 label
