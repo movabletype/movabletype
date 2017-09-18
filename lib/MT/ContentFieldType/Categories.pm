@@ -300,4 +300,21 @@ sub theme_import_handler {
     }
 }
 
+sub options_html_params {
+    my ( $app, $param ) = @_;
+
+    my @category_sets;
+    my $iter = MT::CategorySet->load_iter( { blog_id => $app->blog->id },
+        { fetchonly => { id => 1, name => 1 } } );
+    while ( my $cat_set = $iter->() ) {
+        push @category_sets,
+            {
+            id   => $cat_set->id,
+            name => $cat_set->name,
+            };
+    }
+
+    return { category_sets => \@category_sets, };
+}
+
 1;

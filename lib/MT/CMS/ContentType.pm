@@ -194,24 +194,6 @@ sub edit {
         }
     }
 
-
-    my @category_sets;
-    my $cs_iter = MT::CategorySet->load_iter( { blog_id => $app->blog->id },
-        { fetchonly => { id => 1, name => 1 } } );
-    while ( my $cat_set = $cs_iter->() ) {
-        push @category_sets,
-            {
-            id   => $cat_set->id,
-            name => $cat_set->name,
-            };
-    }
-    $param->{category_sets} = \@category_sets;
-
-    my $content_type_loop
-        = MT::ContentType->get_related_content_type_loop( $app->blog->id,
-        $id );
-    $param->{content_types} = $content_type_loop;
-
     my $tag_delim = $app->config('DefaultUserTagDelimiter') || ord(',');
     $param->{tag_delim}
         = $tag_delim eq ord(',') ? 'comma'

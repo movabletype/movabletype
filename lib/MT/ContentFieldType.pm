@@ -906,6 +906,8 @@ sub _categories_registry {
                 use_blank => 1,
             },
         },
+        options_html => 'content_field_type_options/categories.tmpl',
+        options_html_params => '$Core::MT::ContentFieldType::Categories::options_html_params',
         options => [
             qw(
                 label

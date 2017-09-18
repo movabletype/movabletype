@@ -1,0 +1,38 @@
+<mt:app:ContentFieldOptionGroup
+   type="categories">
+
+  <mtapp:ContentFieldOption
+     id="categories-multiple"
+     label="<__trans phrase="Allow users to select multiple values?">">
+    <input type="checkbox" class="mt-switch form-control" id="categories-multiple" /><label for="categories-multiple"><__trans phrase="Allow users to select multiple values?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="categories-min_length"
+     label="<__trans phrase="Minimum number of selection">">
+    <input type="number" name="categories-min_length" id="categories-min" class="form-control" />
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="categories-max_length"
+     label="<__trans phrase="maximum number of selection">">
+    <input type="number" name="categories-max_length" id="categories-max" class="form-control" />
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="categories-can_add"
+     label="<__trans phrase="Allow users to create new categories?">">
+    <input type="checkbox" class="mt-switch form-control" id="categories-can_add" /><label for="categories-can_upload"><__trans phrase="Allow users to update a new video asset?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="categories-category_set"
+     label="<__trans phrase="Source Category Set">">
+    <select name="categories-category_set" id="categories-category_set" class="form-control">
+    <mt:loop name="category_sets">
+      <option value="<mt:var name="id" escape="html">"><mt:var name="name" escape="html"></option>
+    </mt:loop>
+    </select>
+  </mtapp:ContentFieldOption>
+  
+</mt:app:ContentFieldOptionGroup>
