@@ -22,7 +22,7 @@ sub core_content_field_types {
         categories       => _categories_registry(),
         tags             => _tags_registry(),
         list             => _list_registry(),
-        table            => _table_registry(),
+        tables           => _table_registry(),
     };
 }
 
@@ -1013,6 +1013,7 @@ sub _table_registry {
                 terms   => '$Core::MT::ContentFieldType::Common::terms_text',
             },
         },
+        options_html => 'content_field_type_options/tables.tmpl',
         options => [
             qw(
                 label
