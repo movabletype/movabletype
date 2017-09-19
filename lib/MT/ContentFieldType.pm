@@ -523,7 +523,7 @@ sub _asset_registry {
 }
 
 sub _audio_registry {
-    {   label     => 'Audio',
+    {   label     => 'Audio Asset',
         data_type => 'integer',
         order     => 130,
         data_load_handler =>
@@ -629,7 +629,7 @@ sub _audio_registry {
 }
 
 sub _video_registry {
-    {   label     => 'Video',
+    {   label     => 'Video Asset',
         data_type => 'integer',
         order     => 140,
         data_load_handler =>
