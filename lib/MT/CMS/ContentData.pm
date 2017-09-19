@@ -593,15 +593,107 @@ sub save {
 
 sub delete {
     my $app = shift;
+    return unless $app->validate_magic;
 
-    my $orig_type = $app->param('type') || '';
-    my ($content_type_id) = $orig_type =~ /^content_data_(\d+)$/;
-
-    unless ( $app->param('content_type_id') ) {
-        $app->param( 'content_type_id', $content_type_id );
+    my $blog;
+    if ( my $blog_id = $app->param('blog_id') ) {
+        $blog = MT::Blog->load($blog_id)
+            or return $app->error(
+            $app->translate( 'Cannot load blog #[_1].', $blog_id || '(none' )
+            );
     }
 
-    MT::CMS::Common::delete($app);
+    my $content_type;
+    my $content_type_id = $app->param('content_type_id');
+    if ($content_type_id) {
+        $content_type = MT::ContentType->load(
+            { id => $content_type_id, blog_id => $blog->id } );
+    }
+    unless ($content_type) {
+        return $app->errtrans(
+            'Cannot load content_type #[_1]',
+            $content_type_id || '(none)'
+        );
+    }
+
+    my $can_background
+        = ( ( $blog && $blog->count_static_templates('ContentType') == 0 )
+            || MT::Util->launch_background_tasks() ) ? 1 : 0;
+
+    $app->setup_filtered_ids
+        if $app->param('all_selected');
+    my %rebuild_recipe;
+    for my $id ( $app->multi_param('id') ) {
+        my $class = $app->model('content_data');
+        my $obj   = $class->load($id);
+        return $app->call_return unless $obj;
+
+        $app->run_callbacks( 'cms_delete_permission_filter.cd', $app, $obj )
+            or return $app->permission_denied;
+
+        my %recipe;
+        %recipe = $app->publisher->rebuild_deleted_content_data(
+            ContentData => $obj,
+            Blog        => $obj->blog,
+        ) if $obj->status eq MT::Entry::RELEASE();
+
+        # Remove object from database
+        my $content_type_name
+            = defined $content_type->name && $content_type->name ne ''
+            ? $content_type->name
+            : $app->translate('Content Data');
+        $obj->remove()
+            or return $app->errtrans( 'Removing [_1] failed: [_2]',
+            $content_type_name, $obj->errstr );
+        $app->run_callbacks( 'cms_post_delete.cd', $app, $obj );
+
+        my $child_hash = $rebuild_recipe{ $obj->blog_id } || {};
+        MT::__merge_hash( $child_hash, \%recipe );
+        $rebuild_recipe{ $obj->blog_id } = $child_hash;
+
+        # Clear cache for site stats dashboard widget.
+        require MT::Util;
+        MT::Util::clear_site_stats_widget_cache( $obj->blog->id )
+            or return $app->errtrans('Removing stats cache failed.');
+    }
+
+    $app->add_return_arg( saved_deleted => 1 );
+
+    if ( $app->config('RebuildAtDelete') ) {
+        $app->run_callbacks('pre_build');
+
+        my $rebuild_func = sub {
+            foreach my $b_id ( keys %rebuild_recipe ) {
+                my $b   = MT::Blog->load($b_id);
+                my $res = $app->rebuild_archives(
+                    Blog   => $b,
+                    Recipe => $rebuild_recipe{$b_id},
+                ) or return $app->publish_error();
+                $app->rebuild_indexes( Blog => $b )
+                    or return $app->publish_error();
+                $app->run_callbacks( 'rebuild', $b );
+            }
+        };
+
+        if ($can_background) {
+            MT::Util::start_background_task($rebuild_func);
+        }
+        else {
+            $rebuild_func->();
+        }
+
+        $app->add_return_arg( no_rebuild => 1 );
+        my %params = (
+            is_full_screen  => 1,
+            redirect_target => $app->base
+                . $app->path
+                . $app->script . '?'
+                . $app->return_args,
+        );
+        return $app->load_tmpl( 'rebuilding.tmpl', \%params );
+    }
+
+    return $app->call_return;
 }
 
 sub post_save {
