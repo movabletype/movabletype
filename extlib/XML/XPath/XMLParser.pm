@@ -1,11 +1,10 @@
-# $Id: XMLParser.pm 4532 2004-05-11 05:15:40Z ezra $
-
 package XML::XPath::XMLParser;
 
-use strict;
+$VERSION = '1.42';
+
+use strict; use warnings;
 
 use XML::Parser;
-#use XML::XPath;
 use XML::XPath::Node;
 use XML::XPath::Node::Element;
 use XML::XPath::Node::Text;
@@ -39,23 +38,23 @@ sub new {
 
 sub parse {
     my $self = shift;
-    
+
     $self->{IdNames} = {};
-    $self->{InScopeNamespaceStack} = [ { 
+    $self->{InScopeNamespaceStack} = [ {
             '_Default' => undef,
             'xmlns' => $xmlns_ns,
             'xml' => $xml_ns,
         } ];
-    
+
     $self->{NodeStack} = [ ];
-    
+
     $self->set_xml($_[0]) if $_[0];
-    
+
     my $parser = $self->get_parser || XML::Parser->new(
             ErrorContext => 2,
-            ParseParamEnt => 1,
+            ParseParamEnt => $XML::XPath::ParseParamEnt,
             );
-    
+
     $parser->setHandlers(
             Init => sub { $self->parse_init(@_) },
             Char => sub { $self->parse_char(@_) },
@@ -66,7 +65,7 @@ sub parse {
             Comment => sub { $self->parse_comment(@_) },
             Attlist => sub { $self->parse_attlist(@_) },
             );
-    
+
     my $toparse;
     if ($toparse = $self->get_filename) {
         return $parser->parsefile($toparse);
@@ -101,16 +100,16 @@ sub parse_char {
     my $self = shift;
     my $e = shift;
     my $text = shift;
-    
+
     my $parent = $self->{current};
-    
+
     my $last = $parent->getLastChild;
     if ($last && $last->isTextNode) {
         # append to previous text node
         $last->appendText($text);
         return;
     }
-    
+
     my $node = XML::XPath::Node::Text->new($text);
     $parent->appendChild($node, 1);
 }
@@ -119,15 +118,15 @@ sub parse_start {
     my $self = shift;
     my $e = shift;
     my $tag = shift;
-    
+
     push @{ $self->{InScopeNamespaceStack} },
          { %{ $self->{InScopeNamespaceStack}[-1] } };
     $self->_scan_namespaces(@_);
-    
+
     my ($prefix, $namespace) = $self->_namespace($tag);
-    
+
     my $node = XML::XPath::Node::Element->new($tag, $prefix);
-    
+
     my @attributes;
     for (my $ii = 0; $ii < $#_; $ii += 2) {
 	my ($name, $value) = ($_[$ii], $_[$ii+1]);
@@ -150,7 +149,7 @@ sub parse_start {
             }
         }
     }
-        
+
     $self->{current}->appendChild($node, 1);
     $self->{current} = $node;
 }
@@ -253,7 +252,7 @@ This module generates a node tree for use as the context node for XPath processi
 It aims to be a quick parser, nothing fancy, and yet has to store more information
 than most parsers. To achieve this I've used array refs everywhere - no hashes.
 I don't have any performance figures for the speedups achieved, so I make no
-appologies for anyone not used to using arrays instead of hashes. I think they
+apologies for anyone not used to using arrays instead of hashes. I think they
 make good sense here where we know the attributes of each type of node.
 
 =head1 Node Structure
@@ -262,7 +261,7 @@ All nodes have the same first 2 entries in the array: node_parent
 and node_pos. The type of the node is determined using the ref() function.
 The node_parent always contains an entry for the parent of the current
 node - except for the root node which has undef in there. And node_pos is the
-position of this node in the array that it is in (think: 
+position of this node in the array that it is in (think:
 $node == $node->[node_parent]->[node_children]->[$node->[node_pos]] )
 
 Nodes are structured as follows:
@@ -356,7 +355,7 @@ The new method takes either no parameters, or any of the following parameters:
 This uses the familiar hash syntax, so an example might be:
 
     use XML::XPath::XMLParser;
-    
+
     my $parser = XML::XPath::XMLParser->new(filename => 'example.xml');
 
 The parameters represent a filename, a string containing XML, an XML::Parser

@@ -1,9 +1,10 @@
-# $Id: Boolean.pm 4532 2004-05-11 05:15:40Z ezra $
-
 package XML::XPath::Boolean;
+
+$VERSION = '1.42';
+
 use XML::XPath::Number;
 use XML::XPath::Literal;
-use strict;
+use strict; use warnings;
 
 use overload
 		'""' => \&value,

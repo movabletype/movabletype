@@ -1,9 +1,10 @@
-# $Id: Number.pm 4532 2004-05-11 05:15:40Z ezra $
-
 package XML::XPath::Number;
+
+$VERSION = '1.42';
+
 use XML::XPath::Boolean;
 use XML::XPath::Literal;
-use strict;
+use strict; use warnings;
 
 use overload
         '""' => \&value,

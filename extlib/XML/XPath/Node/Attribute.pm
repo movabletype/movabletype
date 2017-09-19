@@ -1,31 +1,32 @@
-# $Id: Attribute.pm 4532 2004-05-11 05:15:40Z ezra $
-
 package XML::XPath::Node::Attribute;
 
-use strict;
-use vars qw/@ISA/;
+use strict; use warnings;
+use vars qw/@ISA $VERSION/;
 
 @ISA = ('XML::XPath::Node');
+$VERSION = '1.42';
 
 package XML::XPath::Node::AttributeImpl;
 
-use vars qw/@ISA/;
+use vars qw/@ISA $VERSION/;
 @ISA = ('XML::XPath::NodeImpl', 'XML::XPath::Node::Attribute');
 use XML::XPath::Node ':node_keys';
+
+$VERSION = '1.42';
 
 sub new {
 	my $class = shift;
 	my ($key, $val, $prefix) = @_;
-	
+
         my $pos = XML::XPath::Node->nextPos;
-        
+
         my @vals;
         @vals[node_global_pos, node_prefix, node_key, node_value] =
                 ($pos, $prefix, $key, $val);
 	my $self = \@vals;
-        
+
 	bless $self, $class;
-	
+
 }
 
 sub getNodeType { ATTRIBUTE_NODE }
