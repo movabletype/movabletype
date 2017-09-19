@@ -200,7 +200,7 @@ sub edit {
         : $tag_delim eq ord(' ') ? 'space'
         :                          'comma';
 
-    $app->build_page( $app->load_tmpl('cfg_content_type.tmpl'), $param );
+    $app->build_page( $app->load_tmpl('edit_content_type.tmpl'), $param );
 }
 
 sub tmpl_param_list_common {
@@ -261,7 +261,7 @@ sub _content_type_permission_tmpl {
 __TMPL__
 }
 
-sub save_cfg_content_type {
+sub save {
     my ($app) = @_;
     my $cfg   = $app->config;
     my $param = {};
@@ -305,9 +305,10 @@ sub save_cfg_content_type {
 
     return $app->redirect(
         $app->uri(
-            'mode' => 'cfg_content_type',
+            'mode' => 'view',
             args   => {
                 blog_id => $blog_id,
+                _type   => 'content_type',
                 id      => $content_type_id,
                 err_msg => $app->translate("Name is required."),
             }
@@ -316,9 +317,10 @@ sub save_cfg_content_type {
 
     return $app->redirect(
         $app->uri(
-            'mode' => 'cfg_content_type',
+            'mode' => 'view',
             args   => {
                 blog_id => $blog_id,
+                _type   => 'content_type',
                 id      => $content_type_id,
                 err_msg => $app->translate(
                     "Name \"[_1]\" is already used.", $name
@@ -427,9 +429,10 @@ sub save_cfg_content_type {
     # Validation error
     return $app->redirect(
         $app->uri(
-            'mode' => 'cfg_content_type',
+            'mode' => 'view',
             args   => {
                 blog_id => $blog_id,
+                _type   => 'content_type',
                 id      => $content_type_id,
                 fields =>
                     MT::Util::encode_url( JSON::encode_json( \@field_data ) ),
@@ -485,9 +488,10 @@ sub save_cfg_content_type {
 
     return $app->redirect(
         $app->uri(
-            'mode' => 'cfg_content_type',
+            'mode' => 'view',
             args   => {
                 blog_id => $blog_id,
+                _type   => 'content_type',
                 id      => $content_type->id,
                 saved   => 1,
             }
@@ -1038,10 +1042,19 @@ sub _build_content_data_hasher {
 }
 
 sub content_actions {
-    {   new => {
+    my $app = MT->instance;
+
+    return {
+        new => {
             label => 'Create new content type',
             order => 100,
-            mode  => 'cfg_content_type',
+            mode  => 'view',
+            args => sub {
+                return {
+                    _type => 'content_type',
+                    blog_id => $app->blog->id,
+                }
+            },
             class => 'icon-create',
         }
     };

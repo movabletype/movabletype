@@ -363,8 +363,7 @@ sub core_methods {
         ## MT7 - Content Type
         'edit_content_type'     => "${pkg}ContentType::edit",
         'view_content_type'     => "${pkg}ContentType::edit",
-        'cfg_content_type'      => "${pkg}ContentType::cfg_content_type",
-        'save_cfg_content_type' => "${pkg}ContentType::save_cfg_content_type",
+        'save' => "${pkg}ContentType::save",
 
      # 'cfg_content_type_data' => " ${pkg}ContentType::cfg_content_type_data",
         'select_list_content_type' =>
@@ -874,6 +873,7 @@ sub core_content_actions {
         # Hide create link temporarily and will fix in new UI.
         # 'content_type' => '$Core::MT::CMS::ContentType::content_actions',
 
+        # Make a content action for Content Data dynamically.
         %{ MT::CMS::ContentData::make_content_actions() },
     };
 }
