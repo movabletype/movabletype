@@ -5,7 +5,7 @@ use 5.005;
 
 =head1 NAME
 
-MIME::Charset - Charset Informations for MIME
+MIME::Charset - Charset Information for MIME
 
 =head1 SYNOPSIS
 
@@ -13,7 +13,7 @@ MIME::Charset - Charset Informations for MIME
 
     $charset = MIME::Charset->new("euc-jp");
 
-Getting charset informations:
+Getting charset information:
 
     $benc = $charset->body_encoding; # e.g. "Q"
     $cset = $charset->as_string; # e.g. "US-ASCII"
@@ -78,7 +78,7 @@ Non-OO functions (may be deprecated in near future):
 
 =head1 DESCRIPTION
 
-MIME::Charset provides informations about character sets used for
+MIME::Charset provides information about character sets used for
 MIME messages on Internet.
 
 =head2 Definitions
@@ -109,12 +109,21 @@ use Exporter;
 		);
 use Carp qw(croak);
 
-use constant USE_ENCODE => ($] >= 5.008)? 'Encode': '';
+use constant USE_ENCODE => ($] >= 5.007003)? 'Encode': '';
 
 my @ENCODE_SUBS = qw(FB_CROAK FB_PERLQQ FB_HTMLCREF FB_XMLCREF
 		     is_utf8 resolve_alias);
 if (USE_ENCODE) {
     eval "use ".USE_ENCODE." \@ENCODE_SUBS;";
+    if ($@) { # Perl 5.7.3 + Encode 0.40
+	eval "use ".USE_ENCODE." qw(is_utf8);";
+	require MIME::Charset::_Compat;
+	for my $sub (@ENCODE_SUBS) {
+	    no strict "refs";
+	    *{$sub} = \&{"MIME::Charset::_Compat::$sub"}
+		unless $sub eq 'is_utf8';
+	}
+    }
 } else {
     require MIME::Charset::_Compat;
     for my $sub (@ENCODE_SUBS) {
@@ -123,14 +132,14 @@ if (USE_ENCODE) {
     }
 }
 
-$VERSION = '1.007.1';
+$VERSION = '1.012.2';
 
 ######## Private Attributes ########
 
 my $DEFAULT_CHARSET = 'US-ASCII';
 my $FALLBACK_CHARSET = 'UTF-8';
 
-# This table was borrwed from Python email package.
+# This table was initially borrowed from Python email package.
 
 my %CHARSETS = (# input		    header enc body enc output conv
 		'ISO-8859-1' =>		['Q',	'Q',	undef],
@@ -147,18 +156,34 @@ my %CHARSETS = (# input		    header enc body enc output conv
 		'ISO-8859-13' =>	['Q',	'Q',	undef],
 		'ISO-8859-14' =>	['Q',	'Q',	undef],
 		'ISO-8859-15' =>	['Q',	'Q',	undef],
+		'ISO-8859-16' =>	['Q',	'Q',	undef],
 		'WINDOWS-1252' =>	['Q',	'Q',	undef],
 		'VISCII' =>		['Q',	'Q',	undef],
 		'US-ASCII' =>		[undef,	undef,	undef],
 		'BIG5' =>		['B',	'B',	undef],
 		'GB2312' =>		['B',	'B',	undef],
+		'HZ-GB-2312' =>		['B',	undef,	undef],
 		'EUC-JP' =>		['B',	undef,	'ISO-2022-JP'],
 		'SHIFT_JIS' =>		['B',	undef,	'ISO-2022-JP'],
 		'ISO-2022-JP' =>	['B',	undef,	undef],
+		'ISO-2022-JP-1' =>	['B',	undef,	undef],
+		'ISO-2022-JP-2' =>	['B',	undef,	undef],
+		'EUC-JISX0213' =>	['B',	undef,	'ISO-2022-JP-3'],
+		'SHIFT_JISX0213' =>	['B',	undef,	'ISO-2022-JP-3'],
+		'ISO-2022-JP-3' =>	['B',	undef,	undef],
+		'EUC-JIS-2004' =>	['B',	undef,	'ISO-2022-JP-2004'],
+		'SHIFT_JIS-2004' =>	['B',	undef,	'ISO-2022-JP-2004'],
+		'ISO-2022-JP-2004' =>	['B',	undef,	undef],
 		'KOI8-R' =>		['B',	'B',	undef],
-		'UTF-8' =>		['S',	'B',	undef],
-		'HZ-GB-2312' =>		['B',	undef,	undef],
+		'TIS-620' =>		['B',	'B',	undef], # cf. Mew
+		'UTF-16' =>		['B',	'B',	undef],
+		'UTF-16BE' => 		['B',	'B',	undef],
+		'UTF-16LE' =>		['B',	'B',	undef],
+		'UTF-32' =>		['B',	'B',	undef],
+		'UTF-32BE' => 		['B',	'B',	undef],
+		'UTF-32LE' =>		['B',	'B',	undef],
 		'UTF-7' =>		['Q',	undef,	undef],
+		'UTF-8' =>		['S',	'S',	undef],
 		'GSM03.38' =>		[undef,	undef,	undef], # not for MIME
 		# We're making this one up to represent raw unencoded 8bit
 		'8BIT' =>		[undef,	'B',	'ISO-8859-1'],
@@ -169,19 +194,28 @@ my %CHARSETS = (# input		    header enc body enc output conv
 my %CHARSET_ALIASES = (# unpreferred		preferred
 		       "ASCII" =>		"US-ASCII",
 		       "BIG5-ETEN" =>		"BIG5",
+		       "CP1250" =>		"WINDOWS-1250",
 		       "CP1251" =>		"WINDOWS-1251",
 		       "CP1252" =>		"WINDOWS-1252",
+		       "CP1253" =>		"WINDOWS-1253",
+		       "CP1254" =>		"WINDOWS-1254",
+		       "CP1255" =>		"WINDOWS-1255",
+		       "CP1256" =>		"WINDOWS-1256",
+		       "CP1257" =>		"WINDOWS-1257",
+		       "CP1258" =>		"WINDOWS-1258",
+		       "CP874" =>		"WINDOWS-874",
 		       "CP936" =>		"GBK",
 		       "CP949" =>		"KS_C_5601-1987",
 		       "EUC-CN" =>		"GB2312",
+		       "HZ" =>			"HZ-GB-2312", # RFC 1842
 		       "KS_C_5601" =>		"KS_C_5601-1987",
 		       "SHIFTJIS" =>		"SHIFT_JIS",
 		       "SHIFTJISX0213" =>	"SHIFT_JISX0213",
+		       "TIS620" =>		"TIS-620", # IANA MIBenum 2259
 		       "UNICODE-1-1-UTF-7" =>	"UTF-7", # RFC 1642 (obs.)
 		       "UTF8" =>		"UTF-8",
 		       "UTF-8-STRICT" =>	"UTF-8", # Perl internal use
-		       "HZ" =>			"HZ-GB-2312", # RFC 1842
-		       "GSM0338" =>		"GSM03.38",
+		       "GSM0338" =>		"GSM03.38", # not for MIME
 		       );
 
 # Some vendors encode characters beyond standardized mappings using extended
@@ -195,11 +229,16 @@ my %ENCODERS = (
 				     ['cp1256'],        # Encode::Byte
 				     # ['cp1006'],      # ditto, for Farsi
 				    ],
+		    'ISO-8859-6-I'=>[['cp1256'], ],     # ditto
 		    'ISO-8859-7' => [['cp1253'], ],     # Encode::Byte
 		    'ISO-8859-8' => [['cp1255'], ],     # Encode::Byte
+		    'ISO-8859-8-I'=>[['cp1255'], ],     # ditto
 		    'ISO-8859-9' => [['cp1254'], ],     # Encode::Byte
 		    'ISO-8859-13'=> [['cp1257'], ],     # Encode::Byte
-		    'GB2312'     => [['cp936'], ],      # Encode::CN
+		    'GB2312'     => [
+				     ['gb18030',	'Encode::HanExtra'],
+				     ['cp936'],		# Encode::CN
+				    ],
 		    'EUC-JP'     => [
 				     ['eucJP-ascii',	'Encode::EUCJPASCII'],
 				     # ['cp51932',	'Encode::EUCJPMS'],
@@ -215,6 +254,9 @@ my %ENCODERS = (
 		    'SHIFT_JIS'  => [
 				     ['cp932'],		# Encode::JP
 				    ],
+		    'EUC-JISX0213'  => [['euc-jis-2004', 'Encode::JISX0213'], ],
+		    'ISO-2022-JP-3' => [['iso-2022-jp-2004', 'Encode::JISX0213'], ],
+		    'SHIFT_JISX0213'=> [['shift_jis-2004', 'Encode::ShiftJIS2004'], ],
 		    'EUC-KR'     => [['cp949'], ],      # Encode::KR
 		    'BIG5'       => [
 				     # ['big5plus',     'Encode::HanExtra'],
@@ -222,17 +264,30 @@ my %ENCODERS = (
 				     ['cp950'],         # Encode::TW
 				     # ['big5-1984',    'Encode::HanExtra'], 
 				    ],
-		    'TIS620'     => [['iso-8859-11'], ], # Encode::Byte; NBSP
+		    'TIS-620'    => [['cp874'], ],      # Encode::Byte
 		    'UTF-8'      => [['utf8'], ],       # Special name on Perl
 		},
 		'STANDARD' => {
+		    'ISO-8859-6-E'  => [['iso-8859-6'],],# Encode::Byte
+		    'ISO-8859-6-I'  => [['iso-8859-6'],],# ditto
+		    'ISO-8859-8-E'  => [['iso-8859-8'],],# Encode::Byte
+		    'ISO-8859-8-I'  => [['iso-8859-8'],],# ditto
 		    'GB18030'       => [['gb18030',     'Encode::HanExtra'], ],
-		    'EUC-JISX0213'  => [['euc-jisx0213', 'Encode::JIS2K'], ],
-		    'ISO-2022-JP-3' => [['iso-2022-jp-3', 'Encode::JIS2K'], ],
-		    'SHIFT_JISX0213'=> [['shiftjisx0213', 'Encode::JIS2K'], ],
+		    'ISO-2022-JP-2' => [['iso-2022-jp-2','Encode::ISO2022JP2'], ],
+		    'EUC-JISX0213'  => [['euc-jisx0213', 'Encode::JISX0213'], ],
+		    'ISO-2022-JP-3' => [['iso-2022-jp-3', 'Encode::JISX0213'], ],
+		    'EUC-JIS-2004'  => [['euc-jis-2004', 'Encode::JISX0213'], ],
+		    'ISO-2022-JP-2004' => [['iso-2022-jp-2004', 'Encode::JISX0213'], ],
+		    'SHIFT_JIS-2004'=> [['shift_jis-2004', 'Encode::ShiftJIS2004'], ],
 		    'EUC-TW'        => [['euc-tw',      'Encode::HanExtra'], ],
 		    'HZ-GB-2312'    => [['hz'], ],	# Encode::CN
+		    'TIS-620'       => [['tis620'], ],  # (note*)
+		    'UTF-16'        => [['x-utf16auto', 'MIME::Charset::UTF'],],
+		    'UTF-32'        => [['x-utf32auto', 'MIME::Charset::UTF'],],
 		    'GSM03.38'      => [['gsm0338'], ],	# Encode::GSM0338
+
+		    # (note*) ISO-8859-11 was not registered by IANA.
+		    # L<Encode> treats it as canonical name of ``tis-?620''.
 		},
 );
 
@@ -247,6 +302,12 @@ my @ESCAPE_SEQS = (
 		   ["\033(I",	"ISO-2022-JP"],	# ditto (nonstandard)
 		   ["\033\$(D",	"ISO-2022-JP"],	# RFC 2237 (note*)
 		   # Following sequences are less commonly used.
+		   ["\033.A",   "ISO-2022-JP-2"], # RFC 1554
+		   ["\033.F",   "ISO-2022-JP-2"], # ditto
+		   ["\033\$(C", "ISO-2022-JP-2"], # ditto
+		   ["\033\$(O",	"ISO-2022-JP-3"], # JIS X 0213:2000
+		   ["\033\$(P",	"ISO-2022-JP-2004"], # JIS X 0213:2000/2004
+		   ["\033\$(Q",	"ISO-2022-JP-2004"], # JIS X 0213:2004
 		   ["\033\$)C",	"ISO-2022-KR"],	# RFC 1557
 		   ["\033\$)A",	"ISO-2022-CN"], # RFC 1922
 		   ["\033\$A",	"ISO-2022-CN"], # ditto (nonstandard)
@@ -284,6 +345,8 @@ $Config = {
     Mapping =>         'EXTENDED',
     Replacement =>     'DEFAULT',
 };
+local @INC = @INC;
+pop @INC if $INC[-1] eq '.';
 eval { require MIME::Charset::Defaults; };
 
 ######## Private Constants ########
@@ -337,11 +400,22 @@ sub new {
     my $class = shift;
     my $charset = shift;
     return bless {}, $class unless $charset;
+    return bless {}, $class if 75 < length $charset; # w/a for CPAN RT #65796.
     my %params = @_;
     my $mapping = uc($params{'Mapping'} || $Config->{Mapping});
 
-    $charset = "HZ" if $charset =~ /\bhz.?gb.?2312$/i; # workaround
-    $charset = resolve_alias($charset) || $charset;
+    if ($charset =~ /\bhz.?gb.?2312$/i) {
+	# workaround: "HZ-GB-2312" mistakenly treated as "EUC-CN" by Encode
+	# (2.12).
+	$charset = "HZ-GB-2312";
+    } elsif ($charset =~ /\btis-?620$/i) {
+	# workaround: "TIS620" treated as ISO-8859-11 by Encode.
+	# And "TIS-620" not known by some versions of Encode (cf.
+	# CPAN RT #20781).
+	$charset = "TIS-620";
+    } else {
+	$charset = resolve_alias($charset) || $charset
+    }
     $charset = $CHARSET_ALIASES{uc($charset)} || uc($charset);
     my ($henc, $benc, $outcset);
     my $spec = $CHARSETS{$charset};
@@ -369,6 +443,8 @@ sub new {
     }, $class;
 }
 
+my %encoder_cache = ();
+
 sub _find_encoder($$) {
     my $charset = uc(shift || "");
     return undef unless $charset;
@@ -376,6 +452,9 @@ sub _find_encoder($$) {
     my ($spec, $name, $module, $encoder);
 
     local($@);
+    $encoder = $encoder_cache{$charset, $mapping};
+    return $encoder if ref $encoder;
+
     foreach my $m (('EXTENDED', 'STANDARD')) {
 	next if $m eq 'EXTENDED' and $mapping ne 'EXTENDED';
 	$spec = $ENCODERS{$m}->{$charset};
@@ -383,19 +462,21 @@ sub _find_encoder($$) {
 	foreach my $s (@{$spec}) {
 	    ($name, $module) = @{$s};
 	    if ($module) {
-		eval "use $module;";
-		next if $@;
+		next unless eval "require $module;";
 	    }
 	    $encoder = Encode::find_encoding($name);
-	    return $encoder if ref $encoder;
+	    last if ref $encoder;
 	}
+	last if ref $encoder;
     }
-    return Encode::find_encoding($charset);
+    $encoder ||= Encode::find_encoding($charset);
+    $encoder_cache{$charset, $mapping} = $encoder if $encoder;
+    return $encoder;
 }
 
 =back
 
-=head2 Getting Informations of Charsets
+=head2 Getting Information of Charsets
 
 =over
 
@@ -405,7 +486,8 @@ sub _find_encoder($$) {
 
 Get recommended transfer-encoding of CHARSET for message body.
 
-Returned value will be one of C<"B"> (BASE64), C<"Q"> (QUOTED-PRINTABLE) or
+Returned value will be one of C<"B"> (BASE64), C<"Q"> (QUOTED-PRINTABLE),
+C<"S"> (shorter one of either) or
 C<undef> (might not be transfer-encoded; either 7BIT or 8BIT).  This may
 not be same as encoding for message header.
 
@@ -441,6 +523,8 @@ sub as_string($) {
 =item $charset->decoder
 
 Get L<"Encode::Encoding"> object to decode strings to Unicode by charset.
+If charset is not specified or not known by this module,
+undef will be returned.
 
 =cut
 
@@ -595,6 +679,8 @@ sub body_encode {
             $enc = '7BIT';
             $cset = 'US-ASCII';
         }
+    } elsif ($enc eq 'S') {
+	$enc = _resolve_S($encoded, 1);
     } elsif ($enc eq 'B') {
         $enc = 'BASE64';
     } elsif ($enc eq 'Q') {
@@ -625,13 +711,18 @@ sub decode($$$;) {
 =item detect_7bit_charset STRING
 
 Guess 7-bit charset that may encode a string STRING.
+If STRING contains any 8-bit bytes, C<undef> will be returned.
+Otherwise, Default Charset will be returned for unknown charset.
 
 =cut
 
 sub detect_7bit_charset($) {
-    return $DEFAULT_CHARSET unless USE_ENCODE;
+    return $DEFAULT_CHARSET unless &USE_ENCODE;
     my $s = shift;
     return $DEFAULT_CHARSET unless $s;
+
+    # Non-7bit string
+    return undef if $s =~ $NON7BITRE;
 
     # Try to detect 7-bit escape sequences.
     foreach (@ESCAPE_SEQS) {
@@ -659,7 +750,7 @@ sub _detect_7bit_charset {
     detect_7bit_charset(@_);
 }
 
-=item $charset->encode(STRING [,CHECK])
+=item $charset->encode(STRING [, CHECK])
 
 Encode STRING (Unicode or non-Unicode) using compatible charset recommended
 to be used for messages on Internet (if this module knows it).
@@ -681,7 +772,7 @@ sub encode($$$;) {
 	$s = $self->{Decoder}->decode($s, ($check & 0x1)? FB_CROAK(): 0);
     }
     my $enc = $self->{Encoder}->encode($s, $check);
-    Encode::_utf8_off($enc); # workaround for RT #35120
+    Encode::_utf8_off($enc) if is_utf8($enc); # workaround for RT #35120
     $enc;
 }
 
@@ -715,9 +806,8 @@ sub encoded_header_len($$$;) {
     my $enclen;
     if ($encoding eq 'Q') {
         $enclen = _enclen_Q($s);
-    } elsif ($encoding eq "S") {
-        my ($b, $q) = (_enclen_B($s), _enclen_Q($s));
-	$enclen = ($b < $q)? $b: $q;
+    } elsif ($encoding eq 'S' and _resolve_S($s) eq 'Q') {
+	$enclen = _enclen_Q($s);
     } else { # "B"
         $enclen = _enclen_B($s);
     }
@@ -729,10 +819,29 @@ sub _enclen_B($) {
     int((length(shift) + 2) / 3) * 4;
 }
 
-sub _enclen_Q($) {
+sub _enclen_Q($;$) {
     my $s = shift;
-    my @o = ($s =~ m{([^- !*+/0-9A-Za-z])}gos);
+    my $in_body = shift;
+    my @o;
+    if ($in_body) {
+	@o = ($s =~ m{([^-\t\r\n !*+/0-9A-Za-z])}go);
+    } else {
+	@o = ($s =~ m{([^- !*+/0-9A-Za-z])}gos);
+    }
     length($s) + scalar(@o) * 2;
+}
+
+sub _resolve_S($;$) {
+    my $s = shift;
+    my $in_body = shift;
+    my $e;
+    if ($in_body) {
+	$e = scalar(() = $s =~ m{[^-\t\r\n !*+/0-9A-Za-z]}g);
+	return (length($s) + 8 < $e * 6) ? 'BASE64' : 'QUOTED-PRINTABLE';
+    } else {
+	$e = scalar(() = $s =~ m{[^- !*+/0-9A-Za-z]}g);
+	return (length($s) + 8 < $e * 6) ? 'B' : 'Q';
+    }
 }
 
 =item $charset->header_encode(STRING [, OPTS])
@@ -795,11 +904,7 @@ sub header_encode {
             $cset = 'US-ASCII';
         }
     } elsif ($enc eq 'S') {
-	if (_enclen_B($encoded) < _enclen_Q($encoded)) {
-	    $enc = 'B';
-	} else {
-	    $enc = 'Q';
-	}
+	$enc = _resolve_S($encoded);
     } elsif ($enc !~ /^[BQ]$/) {
         $enc = 'B';
     }
@@ -995,7 +1100,7 @@ Otherwise, fallback charset won't be changed.  In any cases,
 current fallback charset will be returned.
 
 B<NOTE>: It I<is> useful that C<"US-ASCII"> is specified as fallback charset,
-since result of conversion will be readable without charset informations.
+since result of conversion will be readable without charset information.
 
 =cut
 
@@ -1026,7 +1131,8 @@ It may be one of C<"B">, C<"Q">, C<"S"> (shorter one of either) or
 C<undef> (might not be encoded).
 
 BODYENC is recommended transfer-encoding for message body.  It may be
-one of C<"B">, C<"Q"> or C<undef> (might not be transfer-encoded).
+one of C<"B">, C<"Q">, C<"S"> (shorter one of either) or
+C<undef> (might not be transfer-encoded).
 
 ENCCHARSET is a charset which is compatible with given CHARSET and
 is recommended to be used for MIME messages on Internet.
@@ -1073,7 +1179,7 @@ sub recommended ($;$;$;$) {
 
 Unicode/multibyte support flag.
 Non-empty string will be set when Unicode and multibyte support is enabled.
-Currently, this flag will be non-empty on Perl 5.8.0 or later and
+Currently, this flag will be non-empty on Perl 5.7.3 or later and
 empty string on earlier versions of Perl.
 
 =back
@@ -1135,6 +1241,49 @@ Consult $VERSION variable.
 Development versions of this module may be found at
 L<http://hatuka.nezumi.nu/repos/MIME-Charset/>.
 
+=head2 Incompatible Changes
+
+=over 4
+
+=item Release 1.001
+
+=over 4
+
+=item *
+
+new() method returns an object when CHARSET argument is not specified.
+
+=back
+
+=item Release 1.005
+
+=over 4
+
+=item *
+
+Restrict characters in encoded-word according to RFC 2047 section 5 (3).
+This also affects return value of encoded_header_len() method.
+
+=back
+
+=item Release 1.008.2
+
+=over 4
+
+=item *
+
+body_encoding() method may also returns C<"S">.
+
+=item *
+
+Return value of body_encode() method for UTF-8 may include
+C<"QUOTED-PRINTABLE"> encoding item that in earlier versions was fixed to
+C<"BASE64">.
+
+=back
+
+=back
+
 =head1 SEE ALSO
 
 Multipurpose Internet Mail Extensions (MIME).
@@ -1145,7 +1294,7 @@ Hatuka*nezumi - IKEDA Soji <hatuka(at)nezumi.nu>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2006-2009 Hatuka*nezumi - IKEDA Soji.
+Copyright (C) 2006-2017 Hatuka*nezumi - IKEDA Soji.
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
