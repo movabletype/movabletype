@@ -71,6 +71,7 @@ sub list_props {
             label                 => 'Category Set',
             display               => 'none',
         },
+        current_context => { filter_editable => 0 },
     };
 }
 

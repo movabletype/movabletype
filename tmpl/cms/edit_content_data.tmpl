@@ -303,7 +303,7 @@
         <mt:var name="button_text">
       </button>
       <button
-         name="preview_entry"
+         name="preview_content_data"
          type="submit"
          accesskey="v"
          title="<mt:var name="preview_button_title">"
@@ -743,6 +743,20 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
+  jQuery('button.preview').click(function(event) {
+    jQuery('form#edit-content-type-data-form input[name=__mode]').val('preview_content_data');
+  <mt:if name="config.previewinnewwindow">
+    jQuery('form#edit-content-type-data-form').attr('target', 'mt_preview_content_data_<mt:var name="blog_id" escape="js" default="0">_<mt:var name="id" escape="js" default="0">');
+  </mt:if>
+  });
+  <mt:if name="config.previewinnewwindow">
+    jQuery('button.publish').click(function(event) {
+        jQuery('form#edit-content-type-data-form input[name=__mode]').val('save');
+        jQuery('form#edit-content-type-data-form').removeAttr('target');
+        jQuery('form#edit-content-type-data-form').attr('mt:once', '1');
+    });
+  </mt:if>
+
   jQuery(function() {
     jQuery('fieldset#content_data')
       .on('keyup', 'input[type="text"],input[type="number"],textarea', function () {

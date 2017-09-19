@@ -30,7 +30,7 @@ sub list {
 
         my $filter_keys = $app->param('filterKeys');
         my $blog_ids = $app->param('blogIds') || '';
-        $filter_keys =~ s/blogIds/ids/;
+        $filter_keys =~ s/blogIds/ids/ if $filter_keys;
         $app->param( 'filterKeys', $filter_keys );
         $app->param( 'ids',        $blog_ids );
         my @blog_ids = split ',', $blog_ids;

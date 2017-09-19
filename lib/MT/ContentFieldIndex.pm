@@ -66,38 +66,36 @@ sub set_value {
 }
 
 sub column_as_datetime {
-    my $obj = shift;
+    my $obj   = shift;
     my ($col) = @_;
-    if ( my $ts = $obj->column($col) ) {
-        my ($ct) = MT::ContentType->load($obj->content_type_id);
-        my $blog;
-        if ( my $blog_id = $ct->blog_id ) {
-            require MT::Blog;
-            $blog = MT::Blog->load($blog_id);
-        }
-        my ( $y, $mo, $d, $h, $m, $s )
-            = $ts
-            =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
-        require MT::DateTime;
-        my $four_digit_offset;
-        if ($blog) {
-            $four_digit_offset = sprintf( '%.02d%.02d',
-                int( $blog->server_offset ),
-                60 *
-                    abs( $blog->server_offset - int( $blog->server_offset ) )
-            );
-        }
-        return new MT::DateTime(
-            year      => $y,
-            month     => $mo,
-            day       => $d,
-            hour      => $h,
-            minute    => $m,
-            second    => $s,
-            time_zone => $four_digit_offset
-        );
+    my $ts    = $obj->column($col) or return;
+    my ( $y, $mo, $d, $h, $m, $s )
+        = $ts
+        =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/
+        or return;
+
+    my ($ct) = MT::ContentType->load( $obj->content_type_id );
+    my $blog;
+    if ( my $blog_id = $ct->blog_id ) {
+        require MT::Blog;
+        $blog = MT::Blog->load($blog_id);
     }
-    undef;
+    require MT::DateTime;
+    my $four_digit_offset;
+    if ($blog) {
+        $four_digit_offset = sprintf( '%.02d%.02d',
+            int( $blog->server_offset ),
+            60 * abs( $blog->server_offset - int( $blog->server_offset ) ) );
+    }
+    return new MT::DateTime(
+        year      => $y,
+        month     => $mo,
+        day       => $d,
+        hour      => $h,
+        minute    => $m,
+        second    => $s,
+        time_zone => $four_digit_offset
+    );
 }
 
 1;

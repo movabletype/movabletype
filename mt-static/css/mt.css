@@ -8680,6 +8680,7 @@ fieldset.form-group {
 
 .mt-widget--panel {
   border: 0;
+  border-bottom: 1px solid #CACACA;
 }
 
 .mt-widget--panel .mt-widget__title {
@@ -8738,17 +8739,13 @@ fieldset.form-group {
 
 /* Draggable */
 .mt-draggable {
-  padding: 0.5rem 0 0.5rem 1rem;
+  padding: 0.5rem 0.5rem 0.5rem 0;
   border: 1px solid #A5A5A5;
   border-radius: 0.25rem;
   cursor: move;
 }
 
-.mt-draggable .mt-icon, .mt-draggable .mt-icon--primary, .mt-draggable .mt-icon--secondary, .mt-draggable .mt-icon--success, .mt-draggable .mt-icon--info, .mt-draggable .mt-icon--warning, .mt-draggable .mt-icon--danger, .mt-draggable .mt-icon--inverse {
-  margin: 0 0 0 .5rem;
-}
-
-.mt-draggable .mt-icon--secondary {
+.mt-draggable .mt-icon, .mt-draggable .mt-icon--primary, .mt-draggable .mt-icon--secondary, .mt-draggable .mt-icon--success, .mt-draggable .mt-icon--info, .mt-draggable .mt-icon--warning, .mt-draggable .mt-icon--danger, .mt-draggable .mt-icon--inverse, .mt-draggable .mt-icon--secondary {
   margin: 0 .5rem 0 0;
 }
 
@@ -8764,21 +8761,41 @@ fieldset.form-group {
   border-radius: 0.25rem;
 }
 
-.mt-collapse__content {
+.mt-collapse__content, .mt-collapse__blockset {
   padding: 1rem;
 }
 
-.mt-collapse__content *:last-child {
+.mt-collapse__content *:last-child, .mt-collapse__blockset *:last-child {
   margin-bottom: 0;
+}
+
+.mt-collapse__blockset {
+  padding: 0;
+}
+
+.mt-collapse__block {
+  padding: 1rem;
 }
 
 .mt-collapse--contentblock {
   border: 0;
+  border-bottom: 1px solid #A5A5A5;
 }
 
 .mt-collapse--contentblock .mt-collapse__container {
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #A5A5A5;
+}
+
+.mt-collapse--contentblock .mt-icon, .mt-collapse--contentblock .mt-icon--primary, .mt-collapse--contentblock .mt-icon--secondary, .mt-collapse--contentblock .mt-icon--success, .mt-collapse--contentblock .mt-icon--info, .mt-collapse--contentblock .mt-icon--warning, .mt-collapse--contentblock .mt-icon--danger, .mt-collapse--contentblock .mt-icon--inverse, .mt-collapse--contentblock .mt-icon--secondary, .mt-collapse--contentblock .mt-icon--contentblock {
+  margin: 0 .5rem 0 0;
+}
+
+.mt-collapse--contentblock .mt-icon.mt-icon--sm, .mt-collapse--contentblock .mt-icon--sm.mt-icon--primary, .mt-collapse--contentblock .mt-icon--sm.mt-icon--secondary, .mt-collapse--contentblock .mt-icon--sm.mt-icon--success, .mt-collapse--contentblock .mt-icon--sm.mt-icon--info, .mt-collapse--contentblock .mt-icon--sm.mt-icon--warning, .mt-collapse--contentblock .mt-icon--sm.mt-icon--danger, .mt-collapse--contentblock .mt-icon--sm.mt-icon--inverse, .mt-collapse--contentblock .mt-icon--secondary.mt-icon--sm, .mt-collapse--contentblock .mt-icon--contentblock.mt-icon--sm {
+  margin: 0;
+}
+
+.mt-collapse--contentblock .mt-ic_move {
+  cursor: move;
 }
 
 .mt-archivemapping,
@@ -8941,6 +8958,16 @@ a:hover .mt-icon--secondary {
 
 .mt-icon--inverse {
   fill: #FFFFFF;
+}
+
+.mt-icon--contentblock {
+  display: inline-block;
+  height: 24px;
+  width: 24px;
+  border: 1px solid #A5A5A5;
+  border-radius: 50%;
+  text-align: center;
+  vertical-align: middle;
 }
 
 /* User Badge */

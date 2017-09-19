@@ -9,10 +9,18 @@ package MT::CMS::ContentData;
 use strict;
 use warnings;
 
+use File::Basename ();
+use File::Spec;
+use JSON ();
+
+use MT;
 use MT::Blog;
 use MT::CMS::ContentType;
 use MT::ContentType;
 use MT::Log;
+use MT::Session;
+use MT::Template;
+use MT::TemplateMap;
 
 sub edit {
     my ($app) = @_;
@@ -28,7 +36,7 @@ sub edit {
     my $content_type = MT::ContentType->load($content_type_id)
         or return $app->errtrans('Invalid request.');
 
-    if ( $app->param('_recover') ) {
+    if ( $app->param('_recover') && !$app->param('reedit') ) {
         $app->param( '_type', 'content_data' );
         my $sess_obj = $app->autosave_session_obj;
         if ($sess_obj) {
@@ -51,7 +59,13 @@ sub edit {
         }
     }
 
-    if ( !$app->param('reedit') ) {
+    if ( $app->param('reedit') ) {
+        $data = JSON::decode_json( scalar $app->param('serialized_data') );
+        if ($data) {
+            $app->param( $_, $data->{$_} ) for keys %$data;
+        }
+    }
+    else {
         $app->param( '_type', 'content_data' );
         if ( my $sess_obj = $app->autosave_session_obj ) {
             $param->{autosaved_object_exists} = 1;
@@ -110,8 +124,9 @@ sub edit {
             );
         }
 
-        $param->{title}      = $content_data->title;
-        $param->{identifier} = $content_data->identifier;
+        $param->{title} = $app->param('title') || $content_data->title;
+        $param->{identifier}
+            = $app->param('identifier') || $content_data->identifier;
 
         my $status = $app->param('status') || $content_data->status;
         $status =~ s/\D//g;
@@ -326,13 +341,18 @@ sub save {
 
     my $convert_breaks = {};
     my $data           = {};
-    foreach my $f (@$field_data) {
-        my $content_field_type = $content_field_types->{ $f->{type} };
-        $data->{ $f->{id} }
-            = _get_form_data( $app, $content_field_type, $f );
-        if ( $f->{type} eq 'multi_line_text' ) {
-            $convert_breaks->{ $f->{id} } = $app->param(
-                'content-field-' . $f->{id} . '_convert_breaks' );
+    if ( $app->param('from_preview') ) {
+        $data = JSON::decode_json( scalar $app->param('serialized_data') );
+    }
+    else {
+        foreach my $f (@$field_data) {
+            my $content_field_type = $content_field_types->{ $f->{type} };
+            $data->{ $f->{id} }
+                = _get_form_data( $app, $content_field_type, $f );
+            if ( $f->{type} eq 'multi_line_text' ) {
+                $convert_breaks->{ $f->{id} } = $app->param(
+                    'content-field-' . $f->{id} . '_convert_breaks' );
+            }
         }
     }
 
@@ -525,8 +545,7 @@ sub save {
         )
         );
 
-    $app->run_callbacks( 'cms_post_save.content_data',
-        $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_post_save.cd', $app, $content_data, $orig );
 
     return $app->redirect(
         $app->uri(
@@ -845,6 +864,313 @@ sub start_export {
     my $app = shift;
     my $param = { page_title => $app->translate('Export Site Content'), };
     $app->load_tmpl( 'not_implemented_yet.tmpl', $param );
+}
+
+sub preview {
+    my $app = shift;
+    return unless $app->validate_magic;
+    my $content_data = _create_temp_content_data($app);
+    return _build_content_data_preview( $app, $content_data );
+}
+
+sub _create_temp_content_data {
+    my $app             = shift;
+    my $id              = $app->param('id');
+    my $blog_id         = $app->param('blog_id');
+    my $content_type_id = $app->param('content_type_id');
+
+    return $app->errtrans('Invalid request.')
+        unless $blog_id && $content_type_id;
+
+    my $content_data;
+    if ($id) {
+        $content_data = MT::ContentData->load(
+            {   id              => $id,
+                blog_id         => $blog_id,
+                content_type_id => $content_type_id
+            }
+        ) or return $app->errtrans('Invalid request.');
+    }
+    else {
+        $content_data = MT::ContentData->new;
+        $content_data->set_values(
+            {   id              => -1,
+                author_id       => $app->user->id,
+                blog_id         => $blog_id,
+                content_type_id => $content_type_id,
+            }
+        );
+    }
+
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->permissions->can_edit_content_data( $content_data,
+        $app->user );
+
+    $content_data->status( scalar $app->param('status') );
+    $content_data->title( scalar $app->param('title') );
+
+    my $content_field_types = $app->registry('content_field_types');
+    my $content_type        = $content_data->content_type;
+    my $field_data          = $content_type->fields;
+    my $data                = {};
+    for my $f (@$field_data) {
+        my $content_field_type = $content_field_types->{ $f->{type} };
+        $data->{ $f->{id} }
+            = _get_form_data( $app, $content_field_type, $f );
+    }
+    $content_data->data($data);
+
+    return $content_data;
+}
+
+sub _build_content_data_preview {
+    my $app = shift;
+    my ( $content_data, %param ) = @_;
+    my $content_type = $content_data->content_type;
+    my $blog_id      = $app->param('blog_id');
+    my $blog         = $app->blog;
+    my $id           = $app->param('id');
+    my $user_id      = $app->user->id;
+
+    my $basename         = $app->param('identifier');
+    my $preview_basename = $app->preview_object_basename;
+    $content_data->identifier( $basename || $preview_basename );
+
+    my @data = ( { data_name => 'author_id', data_value => $user_id } );
+    $app->run_callbacks( 'cms_pre_preview.content_data',
+        $app, $content_data, \@data );
+
+    my $at       = 'ContentType';
+    my $tmpl_map = MT::TemplateMap->load(
+        {   archive_type => $at,
+            is_preferred => 1,
+            blog_id      => $blog_id,
+        }
+    );
+
+    my $tmpl;
+    my $fullscreen;
+    my $archive_file = '';
+    my $orig_file    = '';
+    my $file_ext     = '';
+    if ($tmpl_map) {
+        $tmpl         = MT::Template->load( $tmpl_map->template_id );
+        $file_ext     = $blog->file_extension || '';
+        $archive_file = $content_data->archive_file;
+
+        my $blog_path = $blog->archive_path || $blog->site_path;
+        $archive_file = File::Spec->catfile( $blog_path, $archive_file );
+        my $path;
+        ( $orig_file, $path ) = File::Basename::fileparse($archive_file);
+        $file_ext = '.' . $file_ext if $file_ext ne '';
+        $archive_file
+            = File::Spec->catfile( $path, $preview_basename . $file_ext );
+    }
+    else {
+        $tmpl       = $app->load_tmpl('preview_content_data_content.tmpl');
+        $fullscreen = 1;
+    }
+    return $app->error( $app->translate('Cannot load template.') )
+        unless $tmpl;
+
+    my $ctx = $tmpl->context;
+    $ctx->stash( 'content',      $content_data );
+    $ctx->stash( 'content_type', $content_type );
+    $ctx->stash( 'blog',         $blog );
+    $ctx->{current_timestamp}    = $content_data->authored_on;
+    $ctx->{curernt_archive_type} = $at;
+    $ctx->var( 'preview_template', 1 );
+
+    my $archiver = MT->publisher->archiver($at);
+    if ( my $params = $archiver->template_params ) {
+        $ctx->var( $_, $params->{$_} ) for keys %$params;
+    }
+
+    my $html = $tmpl->output;
+
+    unless ( defined $html ) {
+        my $preview_error = $app->translate( "Publish error: [_1]",
+            MT::Util::encode_html( $tmpl->errstr ) );
+        $param{preview_error} = $preview_error;
+        my $tmpl_plain = $app->load_tmpl('preview_content_data_content.tmpl');
+        $tmpl->text( $tmpl_plain->text );
+        $html = $tmpl->output;
+        defined($html)
+            or return $app->error(
+            $app->translate( "Publish error: [_1]", $tmpl->errstr ) );
+        $fullscreen = 1;
+    }
+
+    # If MT is configured to do 'local' previews, convert all
+    # the normal blog URLs into the domain used by MT itself (ie,
+    # blog is published to www.example.com, which is a different
+    # server from where MT runs, mt.example.com; previews therefore
+    # should occur locally, so replace all http://www.example.com/
+    # with http://mt.example.com/).
+    my ( $old_url, $new_url );
+    if ( $app->config('LocalPreviews') ) {
+        $old_url = $blog->site_url;
+        $old_url =~ s!^(https?://[^/]+?/)(.*)?!$1!;
+        $new_url = $app->base . '/';
+        $html =~ s!\Q$old_url\E!$new_url!g;
+    }
+
+    if ( !$fullscreen ) {
+        my $fmgr = $blog->file_mgr;
+
+        ## Determine if we need to build directory structure,
+        ## and build it if we do. DirUmask determines
+        ## directory permissions.
+        my $path = File::Basename::dirname($archive_file);
+        $path =~ s!/$!!
+            unless $path eq '/'; ## OS X doesn't like / at the end in mkdir().
+        unless ( $fmgr->exists($path) ) {
+            $fmgr->mkpath($path);
+        }
+
+        if ( $fmgr->exists($path) && $fmgr->can_write($path) ) {
+            $fmgr->put_data( $html, $archive_file );
+            $param{preview_file} = $preview_basename;
+            my $preview_url = $content_data->archive_url;
+            $preview_url
+                =~ s! / \Q$orig_file\E ( /? ) $!/$preview_basename$file_ext$1!x;
+
+            # We also have to translate the URL used for the
+            # published file to be on the MT app domain.
+            if ( defined $new_url ) {
+                $preview_url =~ s!^\Q$old_url\E!$new_url!;
+            }
+
+            $param{preview_url} = $preview_url;
+
+            # we have to make a record of this preview just in case it
+            # isn't cleaned up by re-editing, saving or cancelling on
+            # by the user.
+            my $sess_obj = MT::Session->get_by_key(
+                {   id   => $preview_basename,
+                    kind => 'TF',                # TF = Temporary File
+                    name => $archive_file,
+                }
+            );
+            $sess_obj->start(time);
+            $sess_obj->save;
+
+        # In the preview screen, in order to use the site URL of the blog,
+        # there is likely to be mixed-contents.(http and https)
+        # If MT is configured to do 'PreviewInNewWindow', MT will open preview
+        # screen on the new window/tab.
+            if ( $app->config('PreviewInNewWindow') ) {
+                return $app->redirect($preview_url);
+            }
+        }
+        else {
+            $fullscreen = 1;
+            $param{preview_error}
+                = $app->translate(
+                "Unable to create preview files in this location: [_1]",
+                $path );
+            my $tmpl_plain
+                = $app->load_tmpl('preview_content_data_content.tmpl');
+            $tmpl->text( $tmpl_plain->text );
+            $tmpl->reset_tokens;
+            $html = $tmpl->output;
+            $param{preview_body} = $html;
+        }
+    }
+    else {
+        $param{preview_body} = $html;
+    }
+
+    $param{id} = $id if $id;
+    $param{new_object} = $param{id} ? 0 : 1;
+    $param{title}      = $content_data->title;
+    $param{status}     = $content_data->status;
+
+    my @cols = qw(
+        author_id
+        blog_id
+        content_type_id
+        convert_breaks
+        ct_unique_id
+        id
+        identifier
+        status
+        title
+        week_number
+
+        authored_on_date
+        authored_on_time
+        basename_manual
+        basename_old
+        revision-note
+        save_revision
+        unpublished_on_date
+        unpublished_on_time
+    );
+
+    for my $col (@cols) {
+        push @data,
+            {
+            data_name  => $col,
+            data_value => scalar $app->param($col),
+            };
+    }
+
+    push @data,
+        {
+        data_name  => 'serialized_data',
+        data_value => $content_data->column('data'),
+        };
+
+    $param{content_data_loop} = \@data;
+
+    my $list_title = $content_type->name;
+    $app->add_breadcrumb(
+        $app->translate($list_title),
+        $app->uri(
+            mode => 'list',
+            args => {
+                _type   => 'content_data',
+                type    => 'content_data_' . $content_type->id,
+                blog_id => $blog_id,
+            },
+        ),
+    );
+    if ($id) {
+        $app->add_breadcrumb( $content_data->title
+                || $app->translate('(untitled)') );
+    }
+    else {
+        $app->add_breadcrumb(
+            $app->translate(
+                'New [_1]', $content_type->name || '(untitled)'
+            )
+        );
+        $param{nav_new_content_data} = 1;
+    }
+
+    $param{object_type}  = 'content_data';
+    $param{object_label} = $content_type->name;
+
+    my $rev_numbers = $app->param('rev_numbers') || '';
+    my $collision = $app->param('collision');
+    $param{diff_view} = $rev_numbers || $collision;
+    $param{collision} = 1;
+    if ( my @rev_numbers = split /,/, $rev_numbers ) {
+        $param{comparing_revisions} = 1;
+        $param{rev_a}               = $rev_numbers[0];
+        $param{rev_b}               = $rev_numbers[1];
+    }
+
+    $param{dirty} = $app->param('dirty') ? 1 : 0;
+
+    if ($fullscreen) {
+        return $app->load_tmpl( 'preview_content_data.tmpl', \%param );
+    }
+    else {
+        $app->request( 'preview_object', $content_data );
+        return $app->load_tmpl( 'preview_content_data_strip.tmpl', \%param );
+    }
 }
 
 1;

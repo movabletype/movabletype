@@ -1,4 +1,4 @@
-<mt:if name="options{category_set}">
+<mt:unless name="invalid_category_set">
 <div class="group-container">
   <div class="ml-2">
     <a href="javascript:void(0)" class="toggle-link" id="open-category-selector-<mt:var name="content_field_id" escape="html">" onclick="app.fieldCategorySelectors[<mt:var name="content_field_id" escape="html">].open(this)" mt:close-el="close-category-selector-<mt:var name="content_field_id" escape="html">" title="<__trans phrase="Add category">"><__trans phrase="edit"/></a>
@@ -143,5 +143,7 @@
 </mtapp:setting>
 </div>
 <mt:else>
-<__trans phrase="Category Set is not selected in this field.">
-</mt:if>
+<div class="alert alert-warning">
+  <__trans phrase="Valid Category Set is not selected in this field.">
+</div>
+</mt:unless>
