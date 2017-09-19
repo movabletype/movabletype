@@ -1,10 +1,8 @@
-# $Id: AnyDBM_File.pm,v 1.10 2001/10/26 20:32:28 gisle Exp $
-
 package WWW::RobotRules::AnyDBM_File;
 
 require  WWW::RobotRules;
 @ISA = qw(WWW::RobotRules);
-$VERSION = sprintf("%d.%02d", q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/);
+$VERSION = "6.00";
 
 use Carp ();
 use AnyDBM_File;
@@ -21,8 +19,8 @@ WWW::RobotRules::AnyDBM_File - Persistent RobotRules
  require LWP::RobotUA;
 
  # Create a robot useragent that uses a diskcaching RobotRules
- my $rules = new WWW::RobotRules::AnyDBM_File 'my-robot/1.0', 'cachefile';
- my $ua = new WWW::RobotUA 'my-robot/1.0', 'me@foo.com', $rules;
+ my $rules = WWW::RobotRules::AnyDBM_File->new( 'my-robot/1.0', 'cachefile' );
+ my $ua = WWW::RobotUA->new( 'my-robot/1.0', 'me@foo.com', $rules );
 
  # Then just use $ua as usual
  $res = $ua->request($req);
@@ -52,7 +50,8 @@ sub new
   
   if ($ua) {
       $self->agent($ua);
-  } else {
+  }
+  else {
       # Try to obtain name from DBM file
       $ua = $self->{'dbm'}{"|ua-name|"};
       Carp::croak("No agent name specified") unless $ua;
