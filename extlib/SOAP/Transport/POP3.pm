@@ -4,15 +4,13 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: POP3.pm 386 2011-08-18 19:48:31Z kutterma $
-#
 # ======================================================================
 
 package SOAP::Transport::POP3;
 
 use strict;
 
-our $VERSION = 0.714;
+our $VERSION = 1.17;
 
 use Net::POP3;
 use URI;
@@ -61,7 +59,7 @@ sub AUTOLOAD {
 sub handle {
   my $self = shift->new;
   my $messages = $self->list or return;
-  # fixes [ 1416700 ] POP3 Processes Messages Out of Order
+  # fixes [ 1.17700 ] POP3 Processes Messages Out of Order
   foreach my $msgid (sort { $a <=> $b } (keys(%{$messages}) ) ) {
   # foreach my $msgid (keys %$messages) {
     $self->SUPER::handle(join '', @{$self->get($msgid)});

@@ -4,8 +4,6 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: MAILTO.pm 386 2011-08-18 19:48:31Z kutterma $
-#
 # ======================================================================
 
 package SOAP::Transport::MAILTO;
@@ -13,7 +11,7 @@ package SOAP::Transport::MAILTO;
 use strict;
 
 
-our $VERSION = 0.714;
+our $VERSION = 1.17;
 
 use MIME::Lite;
 use URI;

@@ -4,20 +4,19 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Test.pm 386 2011-08-18 19:48:31Z kutterma $
-#
 # ======================================================================
 
 package SOAP::Test;
 
 use 5.006;
-our $VERSION = 0.714;
+our $VERSION = 1.17;
 
 our $TIMEOUT = 5;
 
 # ======================================================================
 
-package My::PingPong; # we'll use this package in our tests
+package # hide from PAUSE
+    My::PingPong; # we'll use this package in our tests
 
 sub new {
   my $self = shift;
@@ -75,7 +74,7 @@ sub run_for {
 
   $r = $s->getStateStruct({item1 => 1, item2 => 4})->result;
   ok(ref $r && $r->{item2} eq 'Arkansas');
-
+print $s->transport->status, "\n";
   {
     my $autoresult = $s->autoresult;
     $s->autoresult(1);
