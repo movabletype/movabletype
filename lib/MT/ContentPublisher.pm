@@ -10,6 +10,11 @@ use strict;
 use base qw( MT::WeblogPublisher );
 our @EXPORT = qw(ArchiveFileTemplate ArchiveType);
 
+use MT;
+use MT::ArchiveType;
+use MT::Category;
+use MT::ContentData;
+use MT::Util::Log;
 use File::Basename;
 use File::Spec;
 
@@ -1245,6 +1250,201 @@ sub _delete_archive_file {
     my %param = @_;
     $param{Entry} = $param{ContentData} if $param{ContentData};
     $mt->SUPER::_delete_archive_file(%param);
+}
+
+# rebuild_deleted_content_data
+#
+# $mt->rebuild_deleted_content_data(
+#                    ContentData => $content_data | $content_data_id,
+#                    Blog => [ $blog | $blog_id ],
+#                    );
+sub rebuild_deleted_content_data {
+    my $mt           = shift;
+    my %param        = @_;
+    my $app          = MT->instance;
+    my $content_data = $param{ContentData}
+        or
+        return $mt->errtrans( "Parameter '[_1]' is required", 'ContentData' );
+    $content_data = MT::ContentData->load($content_data)
+        unless ref $content_data;
+    return unless $content_data;
+
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('--- Start rebuild_deleted_content_data.');
+
+    my $blog = $param{Blog};
+    unless ($blog) {
+        $blog = $content_data->blog
+            or return $mt->errtrans(
+            "Load of blog '[_1]' failed",
+            $content_data->blog_id || '(none)'
+            );
+    }
+
+    my %rebuild_recipe;
+    my $at = $blog->archive_type;
+    my @at;
+    if ( $at && $at ne 'None' ) {
+        my @at_orig = split /,/, $at;
+        @at = grep { $_ =~ /^ContentType/ && $_ ne 'ContentType' } @at_orig;
+    }
+
+    # Remove Individual archive file.
+    if ( $app->config('DeleteFilesAtRebuild') ) {
+        $mt->remove_content_data_archive_file( ContentData => $content_data );
+    }
+
+    # case #114721
+    #
+    # # Remove Individual fileinfo records.
+    # $mt->remove_fileinfo(
+    #     ArchiveType => 'Individual',
+    #     Blog        => $blog->id,
+    #     Entry       => $content_data->id
+    # );
+
+    for my $at (@at) {
+        my $archiver = $mt->archiver($at) or next;
+
+        my ( $start, $end );
+        my $target_dt;
+        my $map;
+        if ( $archiver->date_based && $archiver->can('date_range') ) {
+            $map = MT::TemplateMap->load(
+                {   blog_id      => $blog->id,
+                    archive_type => $at,
+                },
+                {   join => MT::Template->join_on(
+                        'template_id',
+                        { content_type_id => $content_data->content_type_id },
+                    ),
+                },
+            ) or next;
+            $target_dt = $archiver->target_dt( $content_data, $map );
+            ( $start, $end ) = $archiver->date_range($target_dt);
+        }
+
+        if ( $archiver->category_based ) {
+            my $category_ids
+                = $archiver->target_category_ids( $content_data, $map );
+            for my $cat_id (@$category_ids) {
+                my $cat = MT::Category->load($cat_id) or next;
+                if (!$archiver->does_publish_file(
+                        {   Blog        => $blog,
+                            ArchiveType => $at,
+                            ContentData => $content_data,
+                            Category    => $cat,
+                        }
+                    )
+                    )
+                {
+                    # case #114721
+                    #
+                    # $mt->remove_fileinfo(
+                    #     ArchiveType => $at,
+                    #     Blog        => $blog->id,
+                    #     Category    => $cat->id,
+                    #     (   $archiver->date_based()
+                    #         ? ( startdate => $start )
+                    #         : ()
+                    #     ),
+                    # );
+                    if (   $app->config('RebuildAtDelete')
+                        && $app->config('DeleteFilesAtRebuild') )
+                    {
+                        $mt->remove_content_data_archive_file(
+                            ContentData => $content_data,
+                            ArchiveType => $at,
+                            Category    => $cat,
+                        );
+                    }
+                }
+                else {
+                    if ( $app->config('RebuildAtDelete') ) {
+                        if ( $archiver->date_based ) {
+                            $rebuild_recipe{$at}{ $cat->id }{ $start . $end }
+                                {'Start'} = $start;
+                            $rebuild_recipe{$at}{ $cat->id }{ $start . $end }
+                                {'End'} = $end;
+                            $rebuild_recipe{$at}{ $cat->id }{ $start . $end }
+                                {'Timestamp'} = $target_dt;
+                        }
+                        else {
+                            $rebuild_recipe{$at}{ $cat->id }{id} = $cat->id;
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            if ($archiver->can('archive_contents_count')
+                && $archiver->archive_contents_count(
+                    $blog, $at, $content_data
+                ) == 1
+                )
+            {
+              # case #114721
+              #
+              # # Remove archives fileinfo records.
+              # $mt->remove_fileinfo(
+              #     ArchiveType => $at,
+              #     Blog        => $blog->id,
+              #     (   $archiver->author_based()
+              #             && $entry->author_id
+              #         ? ( author_id => $entry->author_id )
+              #         : ()
+              #     ),
+              #     (   $archiver->date_based() ? ( startdate => $start ) : ()
+              #     ),
+              # );
+
+                if (   $app->config('RebuildAtDelete')
+                    && $app->config('DeleteFilesAtRebuild') )
+                {
+                    $mt->remove_content_data_archive_file(
+                        ContentData => $content_data,
+                        ArchiveType => $at,
+                    );
+                }
+            }
+            else {
+                next unless $app->config('RebuildAtDelete');
+
+                if ( $archiver->author_based && $content_data->author ) {
+                    if ( $archiver->date_based ) {
+                        $rebuild_recipe{$at}{ $content_data->author->id }
+                            { $start . $end }{'Start'} = $start;
+                        $rebuild_recipe{$at}{ $content_data->author->id }
+                            { $start . $end }{'End'} = $end;
+                        $rebuild_recipe{$at}{ $content_data->author->id }
+                            { $start . $end }{'Timestamp'} = $target_dt;
+                    }
+                    else {
+                        $rebuild_recipe{$at}{ $content_data->author->id }{id}
+                            = $content_data->author->id;
+                    }
+                }
+                elsif ( $archiver->date_based ) {
+                    $rebuild_recipe{$at}{ $start . $end }{'Start'} = $start;
+                    $rebuild_recipe{$at}{ $start . $end }{'End'}   = $end;
+                    $rebuild_recipe{$at}{ $start . $end }{'Timestamp'}
+                        = $target_dt;
+                }
+
+                if ( my $prev = $content_data->previous(1) ) {
+                    $rebuild_recipe{ContentType}{ $prev->id }{id} = $prev->id;
+                }
+                if ( my $next = $content_data->next(1) ) {
+                    $rebuild_recipe{ContentType}{ $next->id }{id} = $next->id;
+                }
+            }
+        }
+    }
+
+    MT::Util::Log->info('--- End   rebuild_deleted_content_data.');
+
+    return %rebuild_recipe;
 }
 
 1;

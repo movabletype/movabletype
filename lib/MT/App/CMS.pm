@@ -362,6 +362,7 @@ sub core_methods {
         'edit_content_data'    => "${pkg}ContentData::edit",
         'save_content_data'    => "${pkg}ContentData::save",
         'preview_content_data' => "${pkg}ContentData::preview",
+        'delete_content_data'  => "${pkg}ContentData::delete",
 
         ## MT7
         'cfg_content_type_description' =>
