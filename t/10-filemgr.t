@@ -34,7 +34,7 @@ ok(-f $File, "$File is a regular file");
 ok($fmgr->delete($File), "delete($File)");
 ok(!-f $File, "$File is gone");
 
-my ($fh, $filename) = File::Temp->tempfile('XXXXXX', UNLINK => 1);
+my ($fh, $filename) = File::Temp::tempfile('XXXXXX', UNLINK => 1);
 $fmgr->rename( $filename, $filename );
 ok( -f $filename, '$file should not remove' );
 
