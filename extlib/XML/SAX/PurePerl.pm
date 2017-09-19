@@ -1,11 +1,11 @@
-# $Id: PurePerl.pm,v 1.28 2008-08-05 12:36:51 grant Exp $
+# $Id$
 
 package XML::SAX::PurePerl;
 
 use strict;
 use vars qw/$VERSION/;
 
-$VERSION = '0.96';
+$VERSION = '0.99';
 
 use XML::SAX::PurePerl::Productions qw($NameChar $SingleChar);
 use XML::SAX::PurePerl::Reader;
