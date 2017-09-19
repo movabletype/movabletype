@@ -615,6 +615,25 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 <mt:setvarblock name="page_content">
 <mtapp:settinggroup id="content_data">
 
+  <mt:unless name="new_object">
+    <mtapp:setting
+      id="permalink"
+      label="Permalink"
+      show_label="0"
+      label_class="no-header"
+      help_page="entries"
+      help_section="permalink">
+     <strong><__trans phrase="Permalink:"></strong> <mt:var name="content_data_permalink">
+       <mt:if name="status_publish">
+         <mt:if name="content_data_permalink">
+       <a class="btn btn-default button" href="<$mt:var name="content_data_permalink"$>" target="<__trans phrase="_external_link_target">">
+         <__trans phrase="View">
+       </a>
+         </mt:if>
+       </mt:if>
+    </mtapp:setting>
+  </mt:unless>
+
   <mtapp:setting
     id="title"
     label="<__trans phrase="Title">"

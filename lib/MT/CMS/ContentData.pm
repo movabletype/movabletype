@@ -133,6 +133,9 @@ sub edit {
         $param->{status} = $status;
         $param->{ 'status_' . MT::Entry::status_text($status) } = 1;
 
+        $param->{content_data_permalink}
+            = MT::Util::encode_html( $content_data->permalink );
+
         $param->{authored_on_date} = $app->param('authored_on_date')
             || MT::Util::format_ts( '%Y-%m-%d', $content_data->authored_on,
             $blog, $app->user ? $app->user->preferred_language : undef );

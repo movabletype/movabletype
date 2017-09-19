@@ -871,9 +871,23 @@ sub archive_file {
 sub archive_url {
     my $self = shift;
     my $blog = $self->blog or return;
-    my $url = $blog->archive_url || '';
+    my $url  = $blog->archive_url || '';
     $url .= '/' unless $url =~ m!/$!;
     $url . $self->archive_file(@_);
+}
+
+sub permalink {
+    my $self                   = shift;
+    my $blog                   = $self->blog or return;
+    my $url                    = $self->archive_url( $_[0] );
+    my $effective_archive_type = ( $_[0] || 'ContentType' );
+    $url
+        .= '#'
+        . ( $_[1]->{valid_html} ? 'a' : '' )
+        . sprintf( "%06d", $self->id )
+        unless ( $effective_archive_type eq 'ContentType'
+        || $_[1]->{no_anchor} );
+    $url;
 }
 
 1;
