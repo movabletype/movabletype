@@ -13,7 +13,7 @@ use strict;
 use Carp;
 use IO::SessionSet;
 use vars '$VERSION';
-$VERSION = 1.02;
+$VERSION = 1.03;
 
 use constant BUFSIZE => 3000;
 
