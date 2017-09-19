@@ -444,21 +444,19 @@
   </div>
 
   <div data-is="content-fields"></div>
-  
-  
-  
-  
+
     <mt:setvarblock name="action_buttons">
-      <button
-         type="button"
-         id="save-button"
-         accesskey="s"
-         title="<__trans phrase="Save changes to these settings (s)">"
-         class="save action primary button disabled">
-        <__trans phrase="Save Changes">
-      </button>
+  <button
+     type="button"
+     id="save-button"
+     accesskey="s"
+     title="<__trans phrase="Save (s)">"
+     class="btn btn-primary">
+    <__trans phrase="Save">
+  </button>
     </mt:setvarblock>
-    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
   
   </mtapp:form>
 </mt:setvarblock>
