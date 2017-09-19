@@ -236,7 +236,8 @@ sub get_options_html {
                 $options_param = MT->handler_to_coderef($options_param);
             }
         }
-        my $param = $options_param->($blog_id)
+        my $param;
+        $param = $options_param->($blog_id)
             if ref $options_param eq 'CODE';
 
         $param->{blog_id} = $blog_id;
@@ -246,6 +247,7 @@ sub get_options_html {
             ? 0
             : 1;
 
+        # XXX always true because of autovivification
         $tmpl->param($param) if $param;
     }
     my $html = $tmpl->output();

@@ -43,13 +43,13 @@ __END__
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentID> </mt:Contents>
 --- expected
-1 2
+2 1
 
 === MT::ContentID with pad modifier
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentID pad="1"> </mt:Contents>
 --- expected
-000001 000002
+000002 000001
 
 === MT::ContentID without content context
 --- template

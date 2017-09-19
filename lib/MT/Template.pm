@@ -17,9 +17,10 @@ sub NODE () {'MT::Template::Node'}
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'      => 'integer not null auto_increment',
-            'blog_id' => 'integer not null',
-            'name'    => {
+            'id'              => 'integer not null auto_increment',
+            'blog_id'         => 'integer not null',
+            'content_type_id' => 'integer',
+            'name'            => {
                 type       => 'string',
                 size       => '255',
                 not_null   => 1,
@@ -463,7 +464,7 @@ sub widgets_to_modulesets {
             blog_id => $blog_id ? [ $blog_id, 0 ] : 0,
             type    => 'widget'
         }
-    ) if $widgets && @$widgets;
+    );
     my @wids;
     foreach my $name (@$widgets) {
         my ($widget) = grep { $_->name eq $name } @wtmpls;
@@ -494,7 +495,8 @@ sub save_widgetset {
         @inst = split /,/, ( $obj->modulesets || '' );
     }
 
-    my @widgets = MT::Template->load(
+    my @widgets;
+    @widgets = MT::Template->load(
         {   id      => \@inst,
             type    => 'widget',
             blog_id => $obj->blog_id ? [ 0, $obj->blog_id ] : '0'

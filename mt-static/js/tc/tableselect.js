@@ -159,7 +159,17 @@ TC.TableSelect.prototype.click = function( evt ) {
     if ( !this.rowSelect && tagName != "td" ) return;
     if ( ( tagName == 'a') || ( TC.getParentByTagName( element, "a" ) ) )
         return;
-    var parent = TC.getParentByTagName( element, "tr" );
+
+    var parent;
+    if ( ( tagName == "li" || tagName == "label" || tagName == "span" ) && TC.hasClassName( TC.getParentByTagName( element, "div" ), "mt-table__hierarchy" ) ) {
+        if(tagName == "li") {
+            parent = element;
+        } else {
+            parent = TC.getParentByTagName( element, "li" );
+        }
+    } else {
+        parent = TC.getParentByTagName( element, "tr" );
+    }
     while ( TC.hasClassName( parent, "slave" ) )
         parent = this.getPreviousSibling( parent );
 
@@ -172,14 +182,14 @@ TC.TableSelect.prototype.click = function( evt ) {
                 if ( element.disabled ) return;
                 element.checked = !element.checked;
                 evt.preventDefault();
-                return this.select( element );
+                return this.select( element, parent );
             }
         }
     }
 }
 
 
-TC.TableSelect.prototype.select = function( checkbox ) {
+TC.TableSelect.prototype.select = function( checkbox, row ) {
     // setup
     this.thisClicked = checkbox;
     var checked = checkbox.checked ? true : false; // important, trinary value (null is valid)
@@ -192,7 +202,6 @@ TC.TableSelect.prototype.select = function( checkbox ) {
         return this.selectAll( checkbox );
     }
 
-    var row = TC.getParentByTagName( checkbox, "tr" );
     if (this.selectRow( row, checked )) {
         if (this.onChange) this.onChange(this, row, checked);
         if (checkbox.type == "radio") {

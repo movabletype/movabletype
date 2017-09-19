@@ -9,6 +9,7 @@ package MT::BasicSession;
 # fake out the require for this package since we're
 # declaring it inline...
 
+use strict;
 use MT::Object;
 @MT::BasicSession::ISA = qw( MT::Object );
 __PACKAGE__->install_properties(

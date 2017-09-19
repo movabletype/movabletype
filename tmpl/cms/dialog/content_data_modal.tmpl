@@ -104,6 +104,7 @@ jQuery('.actions-bar button.primary').click(function() {
     var $removeAnchor = jQuery('<a/>').addClass('icon-remove icon16 action-icon')
                                       .css('cursor', 'pointer')
                                       .attr('href', 'javascript:void(0)');
+    $removeAnchor.get(0).innerHTML = '<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
     var $li = jQuery('<li/>').append($inputId, $editAnchor, $removeAnchor);
     $ul.append($li);
   });

@@ -258,7 +258,7 @@ sub uninstall {
 }
 
 sub _set_default_params_if_all_params_not_set {
-    my ( $app, $q, $blog ) = @_;
+    my ( $app, $blog ) = @_;
 
     my @save_params = qw(
         theme_name    theme_id    theme_author_name theme_author_link
@@ -267,7 +267,7 @@ sub _set_default_params_if_all_params_not_set {
     );
 
     for my $param (@save_params) {
-        return if defined $q->param($param);
+        return if defined $app->param($param);
     }
 
     my $saved_settings    = $blog->theme_export_settings;
@@ -289,10 +289,15 @@ sub _set_default_params_if_all_params_not_set {
             || $param_default{$param}
             || '';
         if ( $param eq 'include' ) {
-            $q->param( 'include', ref $val ? @$val : $val );
+            if ( ref $val ) {
+                $app->multi_param( 'include', @$val );
+            }
+            else {
+                $app->param( 'include', $val );
+            }
         }
         else {
-            $q->param( $param, ref $val ? $val->[0] : $val );
+            $app->param( $param, ref $val ? $val->[0] : $val );
         }
     }
 }
@@ -364,7 +369,6 @@ sub export {
 
     return $app->error(403) if !$app->can_do('do_export_theme');
 
-    my $q    = $app->param;
     my $cfg  = $app->config;
     my $blog = $app->blog;
 
@@ -372,18 +376,18 @@ sub export {
         return $app->error( $app->translate('Site not found'), 404 );
     }
 
-    _set_default_params_if_all_params_not_set( $app, $q, $blog );
+    _set_default_params_if_all_params_not_set( $app, $blog );
 
-    my $theme_id      = $q->param('theme_id');
-    my $theme_name    = $q->param('theme_name');
-    my $theme_version = $q->param('theme_version');
+    my $theme_id      = $app->param('theme_id');
+    my $theme_name    = $app->param('theme_name');
+    my $theme_version = $app->param('theme_version');
 
     return if !_check_params( $app, $theme_id, $theme_name, $theme_version );
 
     my $fmgr = MT::FileMgr->new('Local');
 
     ## $output should have 'themedir' or 'zipdownload'.
-    my $output = $q->param('output') || 'themedir';
+    my $output = $app->param('output') || 'themedir';
 
     ## Abort if theme directory is not okey for output.
     my ( $theme_dir, $output_path );
@@ -424,7 +428,7 @@ sub export {
         $output_path = File::Spec->catdir( $theme_dir, $theme_id );
 
         if ( $fmgr->exists($output_path) ) {
-            if ( $q->param('overwrite_yes') ) {
+            if ( $app->param('overwrite_yes') ) {
                 use File::Path 'rmtree';
                 rmtree($output_path);
             }
@@ -457,18 +461,21 @@ sub export {
     }
 
     ## Build data.
-    my $theme_hash = {
+    my $theme_author_name = $app->param('theme_author_name');
+    my $theme_author_link = $app->param('theme_author_link');
+    my $description       = $app->param('description');
+    my $theme_hash        = {
         id    => $theme_id,
         name  => $theme_name,
         label => $theme_name,
-        (   $q->param('theme_author_name')
-            ? ( author_name => $q->param('theme_author_name') )
+        (   $theme_author_name
+            ? ( author_name => $theme_author_name )
             : ()
         ),
-        author_link => $q->param('theme_author_link') || '',
+        author_link => $theme_author_link || '',
         version => $theme_version,
         class => ( $blog->is_blog ? 'blog' : 'website' ),
-        description => $q->param('description') || '',
+        description => $description || '',
     };
 
     for my $exporter_id ( keys %$hdlrs ) {

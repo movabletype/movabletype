@@ -432,10 +432,11 @@ sub relative_date {
         }
     }
     my $mt = MT->instance;
-    my $user = $mt->user if $mt->isa('MT::App');
     return $fmt
         ? format_ts( $fmt, $ts, $blog,
-        $lang || ( $user ? $user->preferred_language : undef ) )
+        $lang
+            || ( $mt->isa('MT::App') ? $mt->user->preferred_language : undef )
+        )
         : "";
 }
 
@@ -1989,17 +1990,18 @@ sub start_background_task {
     eval { require bytes; 1; };
 
     sub addbin {
-        my ( $a, $b ) = @_;
-        my $length = ( length $a > length $b ? length $a : length $b );
+        my ( $left, $right ) = @_;
+        my $length
+            = ( length $left > length $right ? length $left : length $right );
 
-        $a = "\0" x ( $length - ( length $a ) ) . $a;
-        $b = "\0" x ( $length - ( length $b ) ) . $b;
+        $left  = "\0" x ( $length - ( length $left ) ) . $left;
+        $right = "\0" x ( $length - ( length $right ) ) . $right;
         my $carry  = 0;
         my $result = '';
         for ( my $i = 1; $i <= $length; $i++ ) {
-            my $adigit = ord( substr( $a, -$i, 1 ) );
-            my $bdigit = ord( substr( $b, -$i, 1 ) );
-            my $rdigit = $adigit + $bdigit + $carry;
+            my $left_digit  = ord( substr( $left,  -$i, 1 ) );
+            my $right_digit = ord( substr( $right, -$i, 1 ) );
+            my $rdigit      = $left_digit + $right_digit + $carry;
             $carry  = $rdigit / 256;
             $result = chr( $rdigit % 256 ) . $result;
         }
@@ -2330,7 +2332,7 @@ sub unescape_unicode {
 sub expat_parser {
     my $parser = XML::Parser->new(
         Handlers => {
-            ExternEnt => sub { die "External entities disabled."; '' },
+            ExternEnt => sub { die "External entities disabled."; },
             ExternEntFin => sub { },
         },
     );
@@ -2343,7 +2345,7 @@ sub libxml_parser {
         expand_xinclude => 0,
         expand_entities => 1,
         load_ext_dtd    => 0,
-        ext_ent_handler => sub { die "External entities disabled."; '' },
+        ext_ent_handler => sub { die "External entities disabled."; },
     );
 }
 
@@ -2463,10 +2465,12 @@ sub get_newsbox_html {
     {
         $refresh_news = 1;
     }
-    my $last_available_news = $news_object->data()
-        if $news_object;
-    $last_available_news = Encode::decode( $enc, $last_available_news )
-        unless Encode::is_utf8($last_available_news);
+    my $last_available_news = '';
+    if ($news_object) {
+        $last_available_news = $news_object->data();
+        $last_available_news = Encode::decode( $enc, $last_available_news )
+            unless Encode::is_utf8($last_available_news);
+    }
     return $last_available_news unless $refresh_news || !$news_object;
     return q() if $cached_only;
 
@@ -2506,7 +2510,7 @@ sub get_newsbox_html {
     require MT::Sanitize;
 
     # allowed html
-    my $spec = 'a href,* style class id,ul,li,div,span,br';
+    my $spec = 'a href,* target style class id,ul,li,div,span,br';
     $result = MT::Sanitize->sanitize( $result, $spec );
     $news_object = MT::Session->new();
     $news_object->set_values(

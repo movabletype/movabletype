@@ -78,6 +78,43 @@ function init() {
     panels = [];
     var panel;<mt:loop name="panel_loop">
     panel = new ListingPanel("<mt:var name="panel_type">");
+    <mt:if name="panel_type" eq="site">panel.listChanged = function(ts, row, checked) {
+        if (this.selectionList) {
+            var self = this;
+            if (checked){
+                this.selectionList.add(row.id);
+                if(jQuery(row).hasClass('has_child')){
+                  jQuery(row).find('.list-unstyled li').each(function(){
+                    self.selectionList.add(this.id);
+                  });
+                }
+            } else {
+                this.selectionList.remove(row.id);
+                if(jQuery(row).hasClass('has_child')){
+                  var self = this;
+                  jQuery(row).find('.list-unstyled li').each(function(){
+                    self.selectionList.remove(this.id);
+                  });
+                }
+            }
+        } else {
+            var count = ts.selected().length;
+            if (this.nextButton) {
+                if (count == 0)
+                    TC.addClassName(this.nextButton, "disabled");
+                else
+                    TC.removeClassName(this.nextButton, "disabled");
+                this.nextButton.disabled = count == 0;
+            }
+            if (this.closeButton) {
+                if (count == 0)
+                    TC.addClassName(this.closeButton, "disabled");
+                else
+                    TC.removeClassName(this.closeButton, "disabled");
+                this.closeButton.disabled = count == 0;
+            }
+        }
+    };</mt:if>
     panel.pager.setState(<mt:var name="pager_json">);
     panels[panels.length] = panel;</mt:loop>
     dialog.setPanels(panels);
@@ -104,7 +141,7 @@ TC.attachLoadEvent(init);
 </form>
 
 <div class="modal-header">
-    <h2 class="mt-0 modal-title"><mt:var name="page_title"></h2>
+    <h4 class="mt-0 modal-title"><mt:var name="page_title"></h4>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
       <span aria-hidden="true">&times;</span>
     </button>

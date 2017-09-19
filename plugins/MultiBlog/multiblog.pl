@@ -150,7 +150,7 @@ sub add_trigger {
     return $plugin->translate("Permission denied.")
         unless $app->user->is_superuser()
         || ( $app->blog
-        && $app->user->permissions( $app->blog->id )->can_administer_blog() );
+        && $app->user->permissions( $app->blog->id )->can_administer_site() );
 
     my $blog_id = $app->blog->id;
 

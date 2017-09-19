@@ -77,14 +77,16 @@ sub suite {
                 },
             ],
             result => sub {
-                my $role
-                    = $app->model('role')->load( { name => 'Designer' } );
+                my @roles = $app->model('role')->load(
+                    { name => { like => '%Designer%' } },
+                    { sort => 'name', direction => 'ascend' },
+                );
 
                 $app->user($author);
 
                 return +{
-                    totalResults => 1,
-                    items => MT::DataAPI::Resource->from_object( [$role] ),
+                    totalResults => 2,
+                    items => MT::DataAPI::Resource->from_object( \@roles ),
                 };
             },
         },

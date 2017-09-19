@@ -215,8 +215,11 @@ sub _hdlr_archives {
     my $save_tse;
     my $tmpl = $ctx->stash('template');
 
-    if ( ( $tmpl && ( $tmpl->type || '' ) eq 'archive' )
-        && $archiver->date_based )
+    if ((   $tmpl && ( ( $tmpl->type || '' ) eq 'archive'
+                || ( $tmpl->type || '' ) eq 'ct_archive' )
+        )
+        && $archiver->date_based
+        )
     {
         my $uncompiled = $ctx->stash('uncompiled') || '';
         if ( $uncompiled =~ /<mt:?archivelist>?/i ) {
@@ -251,9 +254,28 @@ sub _hdlr_archives {
             ( $start, $end ) = ( $curr{'start'}, $curr{'end'} );
         }
         else {
-            my $entry;
-            $entry = $curr{entries}->[0] if exists( $curr{entries} );
-            ( $start, $end ) = ( ref $entry ? $entry->authored_on : "" );
+            if ( $at eq 'ContentType' ) {
+                my $content;
+                $content = $curr{contents}->[0]
+                    if exists( $curr{contents} );
+                my $map = $ctx->stash('template_map');
+                my $dt_field_id
+                    = defined $map && $map ? $map->dt_field_id : '';
+                if ($dt_field_id) {
+                    my $data = $content->data;
+                    ( $start, $end ) = ( $data ? $data->{$dt_field_id} : "" );
+                }
+                else {
+                    ( $start, $end )
+                        = ( ref $content ? $content->authored_on : "" );
+                }
+            }
+            else {
+                my $entry;
+                $entry = $curr{entries}->[0]
+                    if exists( $curr{entries} );
+                ( $start, $end ) = ( ref $entry ? $entry->authored_on : "" );
+            }
         }
         local $ctx->{current_timestamp}      = $start;
         local $ctx->{current_timestamp_end}  = $end;
@@ -268,6 +290,11 @@ sub _hdlr_archives {
                 $archiver->archive_group_entries( $ctx, %curr );
             }
         ) if $archiver->group_based;
+        local $ctx->{__stash}{archive_contents} = delay(
+            sub {
+                $archiver->archive_group_contents( $ctx, %curr );
+            }
+        ) if $archiver->contenttype_group_based;
         $ctx->{__stash}{$_} = $curr{$_} for keys %curr;
         local $ctx->{inside_archive_list} = 1;
 
@@ -756,18 +783,18 @@ sub _hdlr_archive_title {
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
 
     my $archiver = MT->publisher->archiver($at);
-    my @entries;
+    my @objects;
     if ( $archiver->entry_based ) {
-        my $entries = $ctx->stash('entries');
-        if ( !$entries && ( my $e = $ctx->stash('entry') ) ) {
-            push @$entries, $e;
+        my $objects = $ctx->stash('entries');
+        if ( !$objects && ( my $e = $ctx->stash('entry') ) ) {
+            push @$objects, $e;
         }
-        if ( $entries && ref($entries) eq 'ARRAY' && $at ) {
-            @entries = @$entries;
+        if ( $objects && ref($objects) eq 'ARRAY' && $at ) {
+            @objects = @$objects;
         }
         else {
             my $blog = $ctx->stash('blog');
-            if ( !@entries ) {
+            if ( !@objects ) {
                 ## This situation arises every once in awhile. We have
                 ## a date-based archive page, but no entries to go on it--this
                 ## might happen, for example, if you have daily archives, and
@@ -783,7 +810,34 @@ sub _hdlr_archive_title {
                 if ( $at && $archiver->date_based() ) {
                     my $e = MT::Entry->new;
                     $e->authored_on( $ctx->{current_timestamp} );
-                    @entries = ($e);
+                    @objects = ($e);
+                }
+                else {
+                    return $ctx->error(
+                        MT->translate(
+                            "You used an [_1] tag outside of the proper context.",
+                            '<$MTArchiveTitle$>'
+                        )
+                    );
+                }
+            }
+        }
+    }
+    elsif ( $archiver->contenttype_based ) {
+        my $objects = $ctx->stash('contents');
+        if ( !$objects && ( my $c = $ctx->stash('content') ) ) {
+            push @$objects, $c;
+        }
+        if ( $objects && ref($objects) eq 'ARRAY' && $at ) {
+            @objects = @$objects;
+        }
+        else {
+            my $blog = $ctx->stash('blog');
+            if ( !@objects ) {
+                if ( $at && $archiver->contenttype_date_based() ) {
+                    my $c = MT::ContentData->new;
+                    $c->authored_on( $ctx->{current_timestamp} );
+                    @objects = ($c);
                 }
                 else {
                     return $ctx->error(
@@ -797,8 +851,8 @@ sub _hdlr_archive_title {
         }
     }
     my $title
-        = ( @entries && $entries[0] )
-        ? $archiver->archive_title( $ctx, $entries[0] )
+        = ( @objects && $objects[0] )
+        ? $archiver->archive_title( $ctx, $objects[0] )
         : $archiver->archive_title( $ctx, $ctx->{current_timestamp} );
     defined $title ? $title : '';
 }
@@ -1042,6 +1096,12 @@ sub _hdlr_archive_file {
         return $ctx->error( MT->translate("Could not determine entry") )
             if !$e;
         $f = $e->basename;
+    }
+    elsif ( !$at || ( $archiver->contenttype_based ) ) {
+        my $c = $ctx->stash('content');
+        return $ctx->error( MT->translate("Could not determine content") )
+            if !$c;
+        $f = $c->identifier;
     }
     else {
         $f = $ctx->stash('_basename') || $ctx->{config}->IndexBasename;

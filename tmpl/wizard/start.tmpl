@@ -74,10 +74,6 @@ label {
 </mt:setvarblock>
 </mt:unless>
 
-<mt:setvarblock name="css_include" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/login.css" />
-</mt:setvarblock>
-
 <mt:setvarblock name="page_content">
 <mt:unless name="cfg_exists">
 <form method="post" onsubmit="return check_static_uri();">
@@ -92,7 +88,7 @@ label {
      id="default_language"
      label="<__trans phrase="Language">"
      label_class="top-label">
-    <select name="default_language" id="default_language" class="form-control">
+    <select name="default_language" id="default_language" class="custom-select form-control">
     <mt:loop name="languages">
       <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
     </mt:loop>

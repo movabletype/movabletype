@@ -62,7 +62,7 @@ sub new {
         unless ($workers) {
             $workers = [];
 
-            my $all_workers ||= MT->registry("task_workers") || {};
+            my $all_workers = MT->registry("task_workers") || {};
 
             foreach my $id ( keys %$all_workers ) {
                 my $w = $all_workers->{$id};

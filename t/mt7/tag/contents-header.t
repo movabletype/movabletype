@@ -43,4 +43,4 @@ __END__
 --- template
 <mt:Contents blog_id="1" name="test content data"><mt:ContentsHeader><mt:ContentID></mt:ContentsHeader></mt:Contents>
 --- expected
-1
+5

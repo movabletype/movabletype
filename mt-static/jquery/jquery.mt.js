@@ -932,7 +932,7 @@ $.extend( $.mtValidator.prototype, {
         return false;
     },
     validClass: 'valid',
-    errorClass: 'error',
+    errorClass: 'is-invalid',
     doFocus: true,
     wrapError: function ( $target, msg ) {
         return $('<label/>')
@@ -1052,7 +1052,7 @@ $.mtValidator('simple-group', {
             .append(
                 $('<label/>')
                     .attr('for', $target.attr('id') )
-                    .addClass('validate-error msg-error')
+                    .addClass('validate-error msg-error text-danger')
                     .text(msg)
             );
     }

@@ -126,7 +126,7 @@ __END__
 --- template
 <mt:Contents blog_id="1" name="test content type"><mt:ContentNext><mt:ContentID></mt:ContentNext></mt:Contents>
 --- expected
-[% cd2_id %][% cd3_id %]
+[% cd3_id %][% cd2_id %]
 
 === MT:ContentNext with by_author="1"
 --- template
@@ -138,7 +138,7 @@ __END__
 --- template
 <mt:Contents blog_id="1" name="test content type"><mt:ContentNext by_modified_on="1"><mt:ContentID></mt:ContentNext></mt:Contents>
 --- expected
-[% cd1_id %][% cd2_id %]
+[% cd2_id %][% cd1_id %]
 
 === MT:ContentNext with by_category="1"
 --- template

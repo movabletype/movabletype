@@ -96,19 +96,8 @@ sub list_props {
                             blog_id => 0,
                         }
                     );
-                    my $cnt        = $asc_count->{ $obj->id };
-                    my $name       = MT::Util::encode_html( $obj->name );
-                    my $status_img = MT->static_path
-                        . (
-                        $cnt
-                        ? '/images/status_icons/role-active.gif'
-                        : '/images/status_icons/role-inactive.gif'
-                        );
-                    my $status_class = $cnt ? 'role-active' : 'role-inactive';
+                    my $name = MT::Util::encode_html( $obj->name );
                     push @out, qq{
-                        <span class="icon status $status_class">
-                            <img alt="$status_class" src="$status_img" />
-                        </span>
                         <a href="$url">$name</a>
                     } . (
                         $desc
@@ -297,12 +286,12 @@ sub create_default_roles {
     my @default_roles = (
         {   name        => MT->translate('Site Administrator'),
             description => MT->translate('Can administer the site.'),
-            perms       => [ 'administer_website', 'manage_member_blogs' ]
+            perms       => [ 'administer_site' ]
         },
         {   name        => MT->translate('Child Site Administrator'),
             description => MT->translate('Can administer the child site.'),
             role_mask   => 2**12,
-            perms       => ['administer_blog']
+            perms       => ['administer_site']
         },
         {   name        => MT->translate('Editor'),
             description => MT->translate(
@@ -352,6 +341,12 @@ sub create_default_roles {
             description => MT->translate('Can comment.'),
             role_mask   => 2**0,
             perms       => ['comment'],
+        },
+        {   name        => MT->translate('Content Designer'),
+            description => MT->translate(
+                'Can manage content types, content datas, edit their own content types, contentdatas.'
+            ),
+            perms => [ 'manage_content_types', 'manage_content_datas' ],
         },
     );
 

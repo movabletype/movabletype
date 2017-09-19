@@ -443,9 +443,6 @@ sub insert_options_compat {
     $param->{do_thumb}
         = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
 
-    $param->{can_save_image_defaults}
-        = $perms->can_do('save_image_defaults') ? 1 : 0;
-
     #$param->{constrain} = $blog->image_default_constrain ? 1 : 0;
     $param->{popup}      = $blog->image_default_popup     ? 1 : 0;
     $param->{wrap_text}  = $blog->image_default_wrap_text ? 1 : 0;
@@ -536,12 +533,6 @@ sub on_upload {
         undef $thumb;
     }
     if ( $param->{image_defaults} ) {
-        return $app->error(
-            $app->translate(
-                'Permission denied setting image defaults for blog #[_1]',
-                $blog_id
-            )
-        ) unless $app->{perms}->can_do('save_image_defaults');
 
         # Save new defaults if requested.
         $blog->image_default_wrap_text( $param->{wrap_text} ? 1 : 0 );

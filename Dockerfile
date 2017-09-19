@@ -110,3 +110,10 @@ RUN carton install
 
 ENV PERL5LIB /var/www/docker_build/local/lib/perl5
 
+# For building MT
+RUN cpanm JavaScript::Minifier CSS::Minifier
+RUN yum -y install git
+
+# Copy MT files
+COPY ./ /var/www/mt/
+

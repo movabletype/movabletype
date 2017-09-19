@@ -1,9 +1,5 @@
 <mt:setvarblock name="page_title"><__trans phrase="Mail Configuration"></mt:setvarblock>
 
-<mt:setvarblock name="css_include" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">css/mt7/login.css" />
-</mt:setvarblock>
-
 <mt:setvarblock name="page_content">
 <form id="optional_form" method="post">
   <input type="hidden" name="__mode" value="" />
@@ -69,7 +65,7 @@
          id="mail_transfer"
          label="<__trans phrase="Send mail via:">"
          label_class="top-label">
-        <select id="mail_transfer" class="form-control" name="mail_transfer">
+        <select id="mail_transfer" class="custom-select form-control" name="mail_transfer">
           <option value=""><__trans phrase="Select One..."></option>
         <mt:loop name="mail_loop">
           <option value="<mt:var name="ID">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="name"></option>
@@ -117,8 +113,11 @@
       <!-- SMTPAuth -->
           <mt:if name="has_net_smtp_auth">
             <p>
-              <input type="checkbox" name="smtp_auth" id="smtp_auth" class="cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
-              <label for="smtp_auth"><__trans phrase="Use SMTP Auth"></label>
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" name="smtp_auth" id="smtp_auth" class="custom-control-input cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Use SMTP Auth"></span>
+              </label>
             </p>
             <div id="smtpauth_params" <mt:unless name="smtp_auth">style="display: none"</mt:unless>>
       <!-- SMTPAuth Username -->
@@ -167,7 +166,7 @@
                 </mtapp:statusmsg>
               </mt:unless>
               <mt:if name="can_use_ssl">
-                <select id="smtp_ssl" class="form-control" name="smtp_ssl">
+                <select id="smtp_ssl" class="custom-select form-control" name="smtp_ssl">
                     <option value="0"<mt:if name="smtp_ssl" eq="0"> selected="selected"</mt:if>><__trans phrase="Do not use SSL"></option>
                     <mt:if name="has_net_smtp_ssl"><option value="ssl"<mt:if name="smtp_ssl" eq="ssl"> selected="selected"</mt:if>><__trans phrase="Use SSL"></option></mt:if>
                     <mt:if name="has_net_smtp_tls"><option value="tls"<mt:if name="smtp_ssl" eq="tls"> selected="selected"</mt:if>><__trans phrase="Use STARTTLS"></option></mt:if>

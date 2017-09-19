@@ -448,7 +448,7 @@ sub authenticate {
             $app->{perms} = new MT::Permission;
             $app->{perms}->blog_id($blog_id);
             $app->{perms}->author_id( $app->{user}->id );
-            $app->{perms}->can_administer_blog(1);
+            $app->{perms}->can_administer_site(1);
             return 1;
         }
         my $perms = $app->{perms} = MT::Permission->load(
@@ -968,8 +968,9 @@ sub delete_post {
         unless $app->{perms}->can_edit_entry( $entry, $app->{user} );
 
     # Delete archive file
+    my %recipe;
     $blog = MT::Blog->load( $entry->blog_id );
-    my %recipe = $app->publisher->rebuild_deleted_entry(
+    %recipe = $app->publisher->rebuild_deleted_entry(
         Entry => $entry,
         Blog  => $blog
     ) if $entry->status eq MT::Entry::RELEASE();

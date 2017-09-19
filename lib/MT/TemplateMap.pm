@@ -14,11 +14,13 @@ __PACKAGE__->install_properties(
             'id'             => 'integer not null auto_increment',
             'blog_id'        => 'integer not null',
             'template_id'    => 'integer not null',
-            'archive_type'   => 'string(25) not null',
+            'archive_type'   => 'string(100) not null',
             'file_template'  => 'string(255)',
             'is_preferred'   => 'boolean',
             'build_type'     => 'smallint',
             'build_interval' => 'integer',
+            'cat_field_id'   => 'integer',
+            'dt_field_id'    => 'integer',
         },
         indexes => {
             blog_id      => 1,
@@ -51,7 +53,8 @@ sub save {
     my $blog = MT->model('blog')->load( $map->blog_id )
         or return;
     my $blog_at = $blog->archive_type;
-    my @ats = map {$_}
+    my @ats;
+    @ats = map {$_}
         grep { $map->archive_type ne $_ }
         split /,/, $blog_at
         if $blog_at ne 'None';

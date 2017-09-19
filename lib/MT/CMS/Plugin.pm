@@ -16,12 +16,7 @@ sub cfg_plugins {
     if ( my $blog_id = $q->param('blog_id') ) {
         my $blog = $app->model('blog')->load($blog_id);
         return $app->permission_denied()
-            if $blog
-            && (
-            $blog->is_blog
-            ? !$app->can_do('administer_blog')
-            : !$app->can_do('administer_website')
-            );
+            if $blog && !$app->can_do('administer_site');
 
         $q->param( '_type', 'blog' );
         $q->param( 'id',    $blog_id );
@@ -234,7 +229,8 @@ sub build_plugin_table {
             }
             my $plugin_name = remove_html( $plugin->name() );
             my $config_link = $plugin->config_link();
-            my $plugin_page
+            my $plugin_page;
+            $plugin_page
                 = ( $cgi_path . '/' . $plugin->envelope . '/' . $config_link )
                 if $config_link;
             my $doc_link = $plugin->doc_link;

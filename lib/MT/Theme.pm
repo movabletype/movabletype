@@ -440,7 +440,7 @@ sub install_static_files {
                 );
         }
     };
-    File::Find::find( $sub, $src );
+    File::Find::find( { wanted => $sub, no_chdir => 1, }, $src );
 }
 
 sub validate_versions {

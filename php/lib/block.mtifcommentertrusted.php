@@ -32,7 +32,7 @@ function smarty_block_mtifcommentertrusted($args, $content, &$ctx, &$repeat) {
                 if ( !empty($perm) ) {
                     if ( preg_match("/'comment'/", $perm->permission_restrictions) )
                         $is_trust = 0;
-                    elseif ( preg_match("/'(comment|administer_blog|manage_feedback)'/", $perm->permission_permissions) )
+                    elseif ( preg_match("/'(comment|administer_site|manage_feedback)'/", $perm->permission_permissions) )
                         $is_trust = 1;
                 } else {
                     if ( !$mt->config('SingleCommunity') )

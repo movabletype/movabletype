@@ -2,7 +2,7 @@ riot.tag2('display-options', '<div class="row"> <div class="col-12"> <button cla
     this.mixin('listTop')
 });
 
-riot.tag2('display-options-detail', '<div id="display-options-detail" class="collapse"> <div class="card card-block p-3"> <fieldset class="form-group"> <div data-is="display-options-limit" id="per_page-field"></div> </fieldset> <virtual if="{!listTop.opts.disableUserDispOption}"> <fieldset class="form-group"> <div data-is="display-options-columns" id="display_columns-field"></div> </fieldset> <div class="actions-bar actions-bar-bottom"> <a href="javascript:void(0);" id="reset-display-options" onclick="{resetColumns}"> {trans(\'Reset defaults\')} </a> </div> </virtual> </div> </div>', '', '', function(opts) {
+riot.tag2('display-options-detail', '<div id="display-options-detail" class="collapse"> <div class="card card-block p-3"> <fieldset class="form-group"> <div data-is="display-options-limit" id="per_page-field"></div> </fieldset> <fieldset class="form-group"> <div data-is="display-options-columns" id="display_columns-field"></div> </fieldset> <div if="{!listTop.opts.disableUserDispOption}" class="actions-bar actions-bar-bottom"> <a href="javascript:void(0);" id="reset-display-options" onclick="{resetColumns}"> {trans(\'Reset defaults\')} </a> </div> </div> </div>', '', '', function(opts) {
     this.mixin('listTop')
 
     this.resetColumns = function(e) {
@@ -18,7 +18,7 @@ riot.tag2('display-options-limit', '<div class="field-header"> <label>{trans(\'S
     }.bind(this)
 });
 
-riot.tag2('display-options-columns', '<div class="field-header"> <label>{trans(\'Column\')}</label> </div> <div class="field-content"> <ul id="disp_cols" class="list-inline m-0"> <virtual each="{column in store.columns}"> <li hide="{column.force_display}" class="list-inline-item"> <label class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" id="{column.id}" checked="{column.checked}" onchange="{toggleColumn}"> <span class="custom-control-indicator"></span> <span class="custom-control-description">{column.label}</span> </label> </li> <li each="{subField in column.sub_fields}" hide="{subField.force_display}" class="list-inline-item"> <label class="custom-control custom-checkbox"> <input type="checkbox" id="{subField.id}" pid="{subField.parent_id}" class="custom-control-input {subField.class}" checked="{subField.checked}" onchange="{toggleSubField}"> <span class="custom-control-indicator"></span> <span class="custom-control-description">{subField.label}</span> </label> </li> </virtual> </ul> </div>', '', '', function(opts) {
+riot.tag2('display-options-columns', '<div class="field-header"> <label>{trans(\'Column\')}</label> </div> <div if="{listTop.opts.disableUserDispOption}" class="alert alert-warning"> {trans(\'User Display Option is disabled now.\')} </div> <div if="{!listTop.opts.disableUserDispOption}" class="field-content"> <ul id="disp_cols" class="list-inline m-0"> <virtual each="{column in store.columns}"> <li hide="{column.force_display}" class="list-inline-item"> <label class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" id="{column.id}" checked="{column.checked}" onchange="{toggleColumn}"> <span class="custom-control-indicator"></span> <span class="custom-control-description">{column.label}</span> </label> </li> <li each="{subField in column.sub_fields}" hide="{subField.force_display}" class="list-inline-item"> <label class="custom-control custom-checkbox"> <input type="checkbox" id="{subField.id}" pid="{subField.parent_id}" class="custom-control-input {subField.class}" checked="{subField.checked}" onchange="{toggleSubField}"> <span class="custom-control-indicator"></span> <span class="custom-control-description">{subField.label}</span> </label> </li> </virtual> </ul> </div>', '', '', function(opts) {
     this.mixin('listTop')
 
     this.toggleColumn = function(e) {
@@ -688,7 +688,7 @@ riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan=
     }.bind(this)
 });
 
-riot.tag2('list-table-row', '<td> <label class="custom-control custom-checkbox"> <input type="checkbox" name="id" class="custom-control-input" riot-value="{opts.object[0]}" checked="{opts.checked}"> <span class="custom-control-indicator"></span> </label> </td> <td data-is="list-table-column" each="{content, index in opts.object}" if="{index > 0}" class="{(parent.store.columns[0].id == \'id\' && !parent.store.columns[0].checked)       ? parent.store.columns[index+1].id       : parent.store.columns[index].id}" content="{content}"> </td>', '', '', function(opts) {
+riot.tag2('list-table-row', '<td> <label class="custom-control custom-checkbox" if="{opts.object[0]}"> <input type="checkbox" name="id" class="custom-control-input" riot-value="{opts.object[0]}" checked="{opts.checked}"> <span class="custom-control-indicator"></span> </label> </td> <td data-is="list-table-column" each="{content, index in opts.object}" if="{index > 0}" class="{(parent.store.columns[0].id == \'id\' && !parent.store.columns[0].checked)       ? parent.store.columns[index+1].id       : parent.store.columns[index].id}" content="{content}"> </td>', '', '', function(opts) {
     this.mixin('listTop')
 });
 

@@ -575,13 +575,12 @@ sub not_junk {
 
 sub reply {
     my $app = shift;
-    my $q   = $app->param;
 
-    my $reply_to    = encode_html( $q->param('reply_to') );
-    my $magic_token = encode_html( $q->param('magic_token') );
-    my $blog_id     = encode_html( $q->param('blog_id') );
-    my $return_url  = encode_html( $q->param('return_url') );
-    my $text        = encode_html( $q->param('comment-reply'), 1 );
+    my $reply_to    = encode_html( scalar $app->param('reply_to') );
+    my $magic_token = encode_html( scalar $app->param('magic_token') );
+    my $blog_id     = encode_html( scalar $app->param('blog_id') );
+    my $return_url  = encode_html( scalar $app->param('return_url') );
+    my $text        = encode_html( scalar $app->param('comment-reply'), 1 );
     my $indicator   = $app->static_path . 'images/indicator.gif';
     my $url         = $app->uri;
     <<SPINNER;
@@ -632,21 +631,23 @@ sub do_reply {
     $app->validate_magic
         or return $app->error( $app->translate("Invalid request") );
 
-    my $q = $app->param;
-
-    my $param = {
-        reply_to    => $q->param('reply_to'),
-        magic_token => $q->param('magic_token'),
-        blog_id     => $q->param('blog_id'),
+    my $reply_to    = $app->param('reply_to');
+    my $magic_token = $app->param('magic_token');
+    my $blog_id     = $app->param('blog_id');
+    my $return_url  = $app->param('return_url');
+    my $param       = {
+        reply_to    => $reply_to,
+        magic_token => $magic_token,
+        blog_id     => $blog_id,
     };
 
     my ( $comment, $parent, $entry ) = _prepare_reply($app);
     return unless $comment;
 
     my $blog = $parent->blog
-        || $app->model('blog')->load( $q->param('blog_id') );
+        || $app->model('blog')->load($blog_id);
     return $app->error(
-        $app->translate( 'Cannot load blog #[_1].', $q->param('blog_id') ) )
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) )
         unless $blog;
 
     can_do_reply( $app, $entry )
@@ -667,7 +668,7 @@ sub do_reply {
         { %$param, error => $app->errstr } )
         unless $comment;
 
-    $comment->parent_id( $param->{reply_to} );
+    $comment->parent_id($reply_to);
     $comment->approve;
     return $app->handle_error(
         $app->translate( "An error occurred: [_1]", $comment->errstr() ) )
@@ -682,12 +683,12 @@ sub do_reply {
                 or return $app->publish_error( "Publishing failed. [_1]",
                 $app->errstr );
             $app->_send_comment_notification( $comment, q(), $entry,
-                $app->model('blog')->load( $param->{blog_id} ),
+                $app->model('blog')->load($blog_id),
                 $app->user );
         }
     );
     return $app->build_page( 'dialog/comment_reply.tmpl',
-        { closing => 1, return_url => scalar( $q->param('return_url') ) } );
+        { closing => 1, return_url => $return_url } );
 }
 
 sub reply_preview {
@@ -699,22 +700,24 @@ sub reply_preview {
 
     $app->validate_magic or return;
 
-    my $q   = $app->param;
     my $cfg = $app->config;
 
-    my $param = {
-        reply_to    => $q->param('reply_to'),
+    my $reply_to   = $app->param('reply_to');
+    my $blog_id    = $app->param('blog_id');
+    my $return_url = $app->param('return_url');
+    my $param      = {
+        reply_to    => $reply_to,
         magic_token => $app->current_magic,
-        blog_id     => $q->param('blog_id'),
-        return_url  => scalar( $q->param('return_url') ),
+        blog_id     => $blog_id,
+        return_url  => $return_url,
     };
     my ( $comment, $parent, $entry ) = _prepare_reply($app);
     return unless $comment;
 
     my $blog = $parent->blog
-        || $app->model('blog')->load( $q->param('blog_id') );
+        || $app->model('blog')->load($blog_id);
     return $app->error(
-        $app->translate( 'Cannot load blog #[_1].', $q->param('blog_id') ) )
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) )
         unless $blog;
 
     require MT::Sanitize;
@@ -747,7 +750,7 @@ sub reply_preview {
     $ctx->stash( 'blog',    $parent->blog );
     $param->{'preview_html'} = $tmpl->output;
 
-    my $comment_reply = $q->param('comment-reply');
+    my $comment_reply = $app->param('comment-reply');
     $comment_reply = '' unless defined $comment_reply;
     return $app->build_page( 'dialog/comment_reply.tmpl',
         { %$param, 'text' => $comment_reply } );
@@ -781,10 +784,11 @@ sub dialog_post_comment {
             ;    # check for publish_post
     }
 
-    my $blog = $parent->blog
-        || $app->model('blog')->load( $app->param('blog_id') );
+    my $blog_id = $app->param('blog_id');
+    my $blog    = $parent->blog
+        || $app->model('blog')->load($blog_id);
     return $app->error(
-        $app->translate( 'Cannot load blog #[_1].', $app->param('blog_id') ) )
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) )
         unless $blog;
 
     require MT::Sanitize;
@@ -896,12 +900,13 @@ sub can_save {
         return $c->entry->author_id == $app->user->id;
     }
     elsif ( $app->can_do('edit_own_entry_comment_without_status') ) {
+        my $status = $app->param('status') || '';
         return ( $c->entry->author_id == $app->user->id )
             && (
               $obj ? $obj->get_status_text eq $original->get_status_text
-            : $c->is_junk      ? 'junk' eq $app->param('status')
-            : $c->is_moderated ? 'moderate' eq $app->param('status')
-            : $c->is_published ? 'publish' eq $app->param('status')
+            : $c->is_junk      ? 'junk' eq $status
+            : $c->is_moderated ? 'moderate' eq $status
+            : $c->is_published ? 'publish' eq $status
             :                    1
             );
     }
@@ -1033,7 +1038,7 @@ sub can_delete_commenter {
     my $author = $app->user;
     return 1 if $author->is_superuser();
     my $perms = $author->permissions( $obj->blog_id );
-    ( $perms && $perms->can_do('administer_blog') );
+    ( $perms && $perms->can_do('administer_site') );
 }
 
 sub build_junk_table {
@@ -1250,10 +1255,11 @@ sub map_comment_to_commenter {
 
 sub _prepare_reply {
     my $app = shift;
-    my $q   = $app->param;
+
+    my $reply_to = $app->param('reply_to');
 
     my $comment_class = $app->model('comment');
-    my $parent        = $comment_class->load( $q->param('reply_to') );
+    my $parent        = $comment_class->load($reply_to);
     my $entry         = $app->model('entry')->load( $parent->entry_id );
 
     if ( !$parent || !$parent->is_published ) {
@@ -1272,7 +1278,7 @@ sub _prepare_reply {
     my $comment = $comment_class->new;
 
     ## Strip linefeed characters.
-    my $text = $q->param('comment-reply');
+    my $text = $app->param('comment-reply');
     $text = '' unless defined $text;
     $text =~ tr/\r//d;
     $comment->ip( $app->remote_ip );

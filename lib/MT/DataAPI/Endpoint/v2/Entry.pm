@@ -500,6 +500,7 @@ sub import {
     my $param;
     local *MT::build_page = sub { $param = $_[2] };
     local *MT::App::print = sub { };
+    local *MT::App::send_http_header = sub { };
 
     MT::CMS::Import::do_import($app) or return;
 

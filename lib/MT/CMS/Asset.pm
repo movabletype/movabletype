@@ -179,9 +179,8 @@ sub dialog_list_asset {
     my $blog;
     $blog = $blog_class->load($blog_id) if $blog_id;
 
-    if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
+    my $edit_field = $app->param('edit_field') || '';
+    if ( $edit_field =~ m/^customfield_.*$/ ) {
         return $app->permission_denied()
             unless $app->permissions;
     }
@@ -195,7 +194,7 @@ sub dialog_list_asset {
     my %args = ( sort => 'created_on', direction => 'descend' );
 
     my $class_filter;
-    my $filter = ( $app->param('filter') || '' );
+    my $filter = $app->param('filter') || '';
     if ( $filter eq 'class' ) {
         $class_filter = $app->param('filter_val');
     }
@@ -267,8 +266,8 @@ sub dialog_list_asset {
         if $filter eq 'userpic';
     _set_start_upload_params( $app, \%carry_params )
         if $app->can_do('upload');
-    my ( $ext_from, $ext_to )
-        = ( $app->param('ext_from'), $app->param('ext_to') );
+    my $ext_from = $app->param('ext_from');
+    my $ext_to   = $app->param('ext_to');
 
     # Check directory for thumbnail image
     _check_thumbnail_dir( $app, \%carry_params );
@@ -634,11 +633,14 @@ sub complete_insert {
 
     $app->validate_magic() or return;
 
-    if ( !$asset && $app->param('id') ) {
+    my $id      = $app->param('id');
+    my $blog_id = $app->param('blog_id');
+
+    if ( !$asset && $id ) {
         require MT::Asset;
-        $asset = MT::Asset->load( $app->param('id') )
+        $asset = MT::Asset->load($id)
             || return $app->errtrans( "Cannot load file #[_1].",
-            $app->param('id') );
+            $id );
     }
     return $app->errtrans('Invalid request.') unless $asset;
 
@@ -648,7 +650,7 @@ sub complete_insert {
     require MT::Blog;
     my $blog = $asset->blog
         or return $app->errtrans( "Cannot load blog #[_1].",
-        $app->param('blog_id') );
+        $blog_id );
     my $perms = $app->permissions
         or return $app->errtrans('No permissions');
 
@@ -658,21 +660,23 @@ sub complete_insert {
         return insert($app);
     }
 
+    my $middle_path = $app->param('middle_path') || '';
+    my $extra_path  = $app->param('extra_path') || '';
     my $param = {
         asset_id    => $asset->id,
         bytes       => $args{bytes},
         fname       => $asset->file_name,
         is_image    => $args{is_image} || 0,
         url         => $asset->url,
-        middle_path => scalar( $app->param('middle_path') ) || '',
-        extra_path  => scalar( $app->param('extra_path') ) || '',
+        middle_path => $middle_path,
+        extra_path  => $extra_path,
     };
     for my $field (
         qw( direct_asset_insert edit_field entry_insert site_path
         asset_select )
         )
     {
-        $param->{$field} = scalar $app->param($field) || '';
+        $param->{$field} = $app->param($field) || '';
     }
     if ( $args{is_image} ) {
         $param->{width}  = $asset->image_width;
@@ -689,9 +693,9 @@ sub complete_insert {
         $param->{ext_from}          = $ext_from;
         $param->{ext_to}            = $ext_to;
     }
-    if ( !$app->param('asset_select')
-        && ( $perms->can_do('insert_asset') ) )
-    {
+
+    # no need to check asset_select here (returns earlier if it's set)
+    if ( $perms->can_do('insert_asset') ) {
         my $html = $asset->insert_options($param);
         if ( $app->param('force_insert')
             || ( $param->{direct_asset_insert} && !$html ) )
@@ -723,8 +727,6 @@ sub complete_insert {
         }
 
         require MT::ObjectTag;
-        my $q       = $app->param;
-        my $blog_id = $q->param('blog_id');
         my $tags_js = MT::Util::to_json(
             [   map { $_->name } MT::Tag->load(
                     undef,
@@ -740,14 +742,16 @@ sub complete_insert {
         $param->{tags_js} = $tags_js;
     }
 
+    # XXX: useless? should always be false
     $param->{'no_insert'} = $app->param('no_insert');
+
     if ( $app->param('dialog') ) {
         $app->load_tmpl( 'dialog/asset_options.tmpl', $param );
     }
     else {
         if ( $app->user->can_do('access_to_asset_list') ) {
             my $redirect_args = {
-                blog_id => $app->param('blog_id'),
+                blog_id => $blog_id,
                 (     ( $ext_from && $ext_to )
                     ? ( ext_from => $ext_from, ext_to => $ext_to )
                     : ()
@@ -766,7 +770,7 @@ sub complete_insert {
                 $app->uri(
                     'mode' => 'start_upload',
                     args   => {
-                        blog_id           => $app->param('blog_id'),
+                        blog_id           => $blog_id,
                         uploaded          => 1,
                         uploaded_filename => $asset->file_name,
                     },
@@ -814,6 +818,7 @@ sub cancel_upload {
 
 sub complete_upload {
     my $app   = shift;
+    my $blog_id = $app->param('blog_id');
     my %param = $app->param_hash;
     my $asset;
     require MT::Asset;
@@ -842,7 +847,7 @@ sub complete_upload {
         $app->uri(
             'mode' => 'list',
             args =>
-                { '_type' => 'asset', 'blog_id' => $app->param('blog_id') }
+                { '_type' => 'asset', 'blog_id' => $blog_id }
         )
     );
 }
@@ -852,17 +857,17 @@ sub start_upload_entry {
 
     $app->validate_magic() or return;
 
-    my $q    = $app->param;
+    my $id   = $app->param('id');
     my $blog = $app->blog;
     my $type = 'entry';
     $type = 'page'
         if ( $blog && !$blog->is_blog() );
-    $q->param( '_type', $type );
+    $app->param( '_type', $type );
     defined( my $text = _process_post_upload($app) ) or return;
-    $q->param( 'text',     $text );
-    $q->param( 'asset_id', $q->param('id') );
-    $q->param( 'id',       0 );
-    $app->param( 'tags', '' );
+    $app->param( 'text',     $text );
+    $app->param( 'asset_id', $id );
+    $app->param( 'id',       0 );
+    $app->param( 'tags',     '' );
     $app->forward("view");
 }
 
@@ -3149,8 +3154,8 @@ sub dialog_asset_modal {
         if ( my $content_field = MT::ContentField->load($content_field_id) ) {
             $param{content_field_id} = $content_field_id;
             my $options = $content_field->options;
-            $param{can_multi}  = $options->{multiple}   ? 1 : 0;
-            $param{can_upload} = $options->{can_upload} ? 1 : 0;
+            $param{can_multi}  = $options->{multiple}     ? 1 : 0;
+            $param{can_upload} = $options->{allow_upload} ? 1 : 0;
         }
     }
 
@@ -3225,8 +3230,6 @@ sub dialog_insert_options {
 
     my %param;
     $param{options_loop} = $options_loop;
-    $param{can_save_image_defaults}
-        = $perms->can_do('save_image_defaults') ? 1 : 0;
     $param{edit_field} = scalar $app->param('edit_field');
     $param{new_entry} = $app->param('asset_select') ? 0 : 1;
 

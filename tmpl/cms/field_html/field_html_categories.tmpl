@@ -1,8 +1,8 @@
-<mt:if name="options{category_set}">
+<mt:unless name="invalid_category_set">
 <div class="group-container">
-  <div>
+  <div class="ml-2">
     <a href="javascript:void(0)" class="toggle-link" id="open-category-selector-<mt:var name="content_field_id" escape="html">" onclick="app.fieldCategorySelectors[<mt:var name="content_field_id" escape="html">].open(this)" mt:close-el="close-category-selector-<mt:var name="content_field_id" escape="html">" title="<__trans phrase="Add category">"><__trans phrase="edit"/></a>
-    <a href="javascript:void(0)" class="toggle-link hidden" onclick="app.fieldCategorySelectors[<mt:var name="content_field_id" escape="html">].close(this)" id="close-category-selector-<mt:var name="content_field_id" escape="html">"><__trans phrase="close"></a>
+    <a href="javascript:void(0)" class="toggle-link hidden" style="display: none;" onclick="app.fieldCategorySelectors[<mt:var name="content_field_id" escape="html">].close(this)" id="close-category-selector-<mt:var name="content_field_id" escape="html">"><__trans phrase="close"></a>
   </div>
 
 <mtapp:setting
@@ -15,10 +15,10 @@
   /* <![CDATA[ */
       Template.templates.categoryList = '<mt:section encode_js="1">
           [# if ( !items.length ) { #]
-              <span class="disabled">[#|h trans("None selected") #]</span>
+              <span class="ml-3 disabled">[#|h trans("None selected") #]</span>
               [#* return #]
           [# } #]
-          <ul class="list-unstyled category-list">
+          <ul class="list-unstyled ml-3 category-list">
           [# var map = {}; #]
           [# for ( var i = 0; i < items.length; i++ ) { #]
               [# if ( items[ i ] == 0 && i == 0 ) { #]
@@ -44,9 +44,9 @@
               } #]
               [# if ( multiple ) { #]
                   [# if ( i == 0 ) { #]
-                  <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]"><strong>[#= label #]</strong><a href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h trans("Remove") #]">&nbsp;<span>[#|h trans("Remove") #]</span></a></li>
+                  <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]"><mtapp:svgicon id="ic_fav" title="Primary" size="sm"><strong>[#= label #]</strong><a href="javascript:void(0);" mt:command="remove" class="ml-1 delete" title="[#|h trans("Remove") #]"><span><mtapp:svgicon id="ic_remove" title="Remove" size="sm"></span></a></li>
                   [# } else { #]
-                  <li mt:focus-hover="1" mt:id="[#= cat.id #]"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h "Remove" #]">&nbsp;<span>[#|h trans("Remove") #]</span></a></li>
+                  <li style="margin-left: 1.1rem;" mt:focus-hover="1" mt:id="[#= cat.id #]"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="ml-1 delete" title="[#|h "Remove" #]"><mtapp:svgicon id="ic_remove" title="Remove" size="sm"></a></li>
                   [# } #]
               [# } else { #]
               <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
@@ -58,17 +58,17 @@
       Template.templates.categorySelectorList<mt:var name="content_field_id" escape="js"> = '<mt:section encode_js="1">
               [# if ( item.path == null ) item.path = [] #]
               <div style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
-              <mt:if name="options{can_add}">
-                  <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="add-category-new-link"><span>Add</span>&nbsp;</a>
-              </mt:if>
                   <div style="width: [#= 165 - (item.path.length * 10) #]px;">
                       <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" id="content-field-<mt:var name="content_field_id">-[#= item.id #]" class="add-category-checkbox category group content-field" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> mt:watch-change="1" mt:raw-name="1" /> [#|h item.label #]
+                  <mt:if name="options{can_add}">
+                      <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="add-category-new-link"><span><mtapp:svgicon id="ic_add" title="Add" size="sm"></span></a>
+                  </mt:if>
                   </div>
               </div>
       </mt:section>';
 
       Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
-      [# div.className="add-category-form hidden" #]<input id="add-category-input-movable-[#= contentFieldId #]" class="add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
+      [# div.className="add-category-form hidden" #]<input id="add-category-input-movable-[#= contentFieldId #]" class="add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span><mtapp:svgicon id="ic_add" title="Add" size="sm"></span></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span><mtapp:svgicon id="ic_remove" title="Remove" size="sm"></span></a>
       </mt:section>';
 
       new Timer(function () {
@@ -124,24 +124,26 @@
   /* ]]> */
   </script>
 
-  <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">" class="card category-selector hidden">
+  <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">" class="card mb-3 p-2 category-selector hidden" style="display: none;">
   <mt:if name="options{can_add}">
       <div class="category-selector-header">
-          <a class="add-category-new-parent-link" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><__trans phrase="Add"></a>
+          <a class="add-category-new-parent-link" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><mtapp:svgicon id="ic_add" title="<__trans phrase="Add">" size="sm"><__trans phrase="Add"></a>
       </div>
-      <div id="add-category-form-<mt:var name="content_field_id" escape="html">" class="add-category-form hidden">
+      <div id="add-category-form-<mt:var name="content_field_id" escape="html">" class="add-category-form hidden" style="display: none;">
           <input id="add-category-input-<mt:var name="content_field_id" escape="html">" class="add-category-input input-hint" type="text" value="" placeholder="<$mt:var name="container_label_name"$>" />
-          <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span></a>
-          <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>Cancel</span></a>
+          <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span><mtapp:svgicon id="ic_add" title="<__trans phrase="Add">" size="sm"></span></a>
+          <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm"></span></a>
       </div>
   </mt:if>
       <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">-list" class="category-selector-list"></div>
   </div><!-- /category-selector -->
 
   <div mt:delegate="category-list" id="category-list-<mt:var name="content_field_id" escape="html">" class="category-list-container"></div>
-  <input id="category-ids-<mt:var name="content_field_id" escape="js">" type="hidden" name="category-<mt:var name="content_field_id" escape="html">" value="<$mt:var name="selected_category_loop" glue=","$>" <mt:var name="required"> <mt:var name="multiple"> />
+  <input id="category-ids-<mt:var name="content_field_id" escape="js">" type="hidden" style="display: none;" name="category-<mt:var name="content_field_id" escape="html">" value="<$mt:var name="selected_category_loop" glue=","$>" <mt:var name="required"> <mt:var name="multiple"> />
 </mtapp:setting>
 </div>
 <mt:else>
-<__trans phrase="Category Set is not selected in this field.">
-</mt:if>
+<div class="alert alert-warning">
+  <__trans phrase="Valid Category Set is not selected in this field.">
+</div>
+</mt:unless>

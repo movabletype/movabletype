@@ -194,7 +194,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
     <div class="form-group">
       <mt:var name="nickname" escape="html">
       <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="nickname" escape="url">">
-        <img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" />
+        <mtapp:svgicon id="ic_search" title="<__trans phrase="Title">" size="sm">
       </a>
     </div>
   </mtapp:setting>
@@ -226,7 +226,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
       &nbsp;
   <mt:else>
       <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">">
-        <img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" />
+        <mtapp:svgicon id="ic_search" title="<__trans phrase="Title">" size="sm">
       </a>
     </div>
   </mt:if>
@@ -251,12 +251,21 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
      label="<__trans phrase="Status">">
     <div class="form-group">
   <mt:if name="commenter_approved">
-      <span class="icon-left-wide icon-trusted"><__trans phrase="Trusted"></span>
+      <span class="icon-left-wide icon-trusted">
+        <mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm">
+        <span class="badge badge-success"><__trans phrase="Trusted"></span>
+      </span>
   <mt:else>
     <mt:if name="commenter_banned">
-      <span class="icon-left-wide icon-banned"><__trans phrase="Banned"></span>
+      <span class="icon-left-wide icon-banned">
+        <mtapp:svgicon id="ic_user" title="<__trans phrase="Banned">" size="sm">
+        <span class="badge badge-secondary"><__trans phrase="Banned"></span>
+      </span>
     <mt:else>
-      <span class="icon-left-wide icon-authenticated"><__trans phrase="Authenticated"></span>
+      <span class="icon-left-wide icon-authenticated">
+        <mtapp:svgicon id="ic_user" title="<__trans phrase="Authenticated">" size="sm">
+        <span class="badge badge-default"><__trans phrase="Authenticated"></span>
+      </span>
     </mt:if>
   </mt:if>
     </div>

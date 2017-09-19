@@ -37,11 +37,11 @@ sub dynamic_template {
 
 sub template_params {
     return {
-        archive_class                    => "author-archive",
-        'module_author-monthly_archives' => 1,
-        author_archive                   => 1,
-        archive_template                 => 1,
-        archive_listing                  => 1,
+        archive_class        => "author-archive",
+        author_archive       => 1,
+        archive_template     => 1,
+        archive_listing      => 1,
+        author_based_archive => 1,
     };
 }
 
@@ -57,14 +57,14 @@ sub archive_title {
 }
 
 sub archive_file {
-    my $obj = shift;
+    my $archiver = shift;
     my ( $ctx, %param ) = @_;
     my $file_tmpl = $param{Template};
     my $author    = $ctx->{__stash}{author};
-    my $entry     = $ctx->{__stash}{entry};
+    my $obj       = $archiver->get_content($ctx);
     my $file;
 
-    my $this_author = $author ? $author : ( $entry ? $entry->author : undef );
+    my $this_author = $author ? $author : ( $obj ? $obj->author : undef );
     return "" unless $this_author;
 
     if ( !$file_tmpl ) {
@@ -196,6 +196,11 @@ sub author_based {
 
 sub group_based {
     return 1;
+}
+
+sub get_content {
+    my ( $archiver, $ctx ) = @_;
+    return $ctx->{__stash}{entry};
 }
 
 1;

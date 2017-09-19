@@ -71,6 +71,7 @@ sub list_props {
             label                 => 'Category Set',
             display               => 'none',
         },
+        current_context => { filter_editable => 0 },
     };
 }
 
@@ -110,7 +111,6 @@ sub _make_name_html {
     my $mode    = $prop->{link_mode};
 
     my $name      = MT::Util::encode_html( $obj->name );
-    my $icon_url  = MT->static_path . 'images/nav_icons/color/settings.gif';
     my $edit_link = $app->uri(
         mode => $mode,
         args => {
@@ -119,9 +119,6 @@ sub _make_name_html {
         },
     );
     return qq{
-        <span class="icon settings">
-          <img src="$icon_url" />
-        </span>
         <span class="sync-name">
           <a href="$edit_link">$name</a>
         </span>
@@ -209,9 +206,21 @@ sub permissions {
 
 sub permission {
     my $self = shift;
-    (   $self->_create_content_data_permission,
+    (   $self->_manage_content_data_permission,
+        $self->_create_content_data_permission,
         $self->_publish_content_data_permission,
         $self->_edit_all_content_data_permission,
+    );
+}
+
+sub _manage_content_data_permission {
+    my $self            = shift;
+    my $permission_name = 'blog.manage_content_data:' . $self->unique_id;
+    (   $permission_name => {
+            group => $self->permission_group,
+            label => 'Manage Content Data',
+            order => 100,
+        }
     );
 }
 
@@ -221,7 +230,7 @@ sub _create_content_data_permission {
     (   $permission_name => {
             group => $self->permission_group,
             label => 'Create Content Data',
-            order => 100,
+            order => 200,
         }
     );
 }
@@ -232,12 +241,11 @@ sub _publish_content_data_permission {
     (   $permission_name => {
             group            => $self->permission_group,
             label            => 'Publish Content Data',
-            order            => 200,
+            order            => 300,
             permitted_action => {
-                'edit_own_published_content_data_' . $self->id   => 1,  # TODO
-                'edit_own_unpublished_content_data_' . $self->id => 1,  # TODO
-                'publish_own_content_data_'
-                    . $self->id => 1,    # TODO: unique_id?
+                'edit_own_published_content_data_' . $self->unique_id   => 1,
+                'edit_own_unpublished_content_data_' . $self->unique_id => 1,
+                'publish_own_content_data_' . $self->unique_id          => 1,
             },
         }
     );
@@ -249,13 +257,12 @@ sub _edit_all_content_data_permission {
     (   $permission_name => {
             group            => $self->permission_group,
             label            => 'Edit All Content Data',
-            order            => 300,
+            order            => 400,
             permitted_action => {
-                'edit_all_content_data_' . $self->id => 1,  # TODO: unique_id?
-                'edit_all_published_content_data_' . $self->id   => 1,  # TODO
-                'edit_all_unpublished_content_data_' . $self->id => 1,  # TODO
-                'publish_all_content_data_'
-                    . $self->id => 1,    # TODO: unique_id?
+                'edit_all_content_data_' . $self->unique_id             => 1,
+                'edit_all_published_content_data_' . $self->unique_id   => 1,
+                'edit_all_unpublished_content_data_' . $self->unique_id => 1,
+                'publish_all_content_data_' . $self->unique_id          => 1,
             },
         }
     );
@@ -264,7 +271,7 @@ sub _edit_all_content_data_permission {
 sub field_permissions {
     my $obj = shift;
     my %permissions;
-    my $order = 200;
+    my $order = 500;
     for my $f ( @{ $obj->field_objs } ) {
         %permissions = ( %permissions, %{ $f->permission($order) } );
         $order += 100;
@@ -288,8 +295,10 @@ sub permission_groups {
 # class method
 sub all_permissions {
     my $class = shift;
-    my @content_types = eval { __PACKAGE__->load }
-        || ();    # TODO: many error occurs without "eval" in test.
+    my @content_types = eval { __PACKAGE__->load };
+    if ($@) {
+        @content_types = ();
+    }
     my %all_permission = map { %{ $_->permissions } } @content_types;
     return \%all_permission;
 }
@@ -410,6 +419,12 @@ sub get_first_category_field_id {
         }
     }
     undef;
+}
+
+sub has_multi_line_text_field {
+    my $self = shift;
+    ( grep { $_->{type} && $_->{type} eq 'multi_line_text' }
+            @{ $self->fields } ) ? 1 : 0;
 }
 
 1;

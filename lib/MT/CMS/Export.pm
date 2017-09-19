@@ -50,7 +50,7 @@ sub export {
     if ( $file eq ".txt" ) {
         my @ts = localtime(time);
         $file = sprintf "export-%06d-%04d%02d%02d%02d%02d%02d.txt",
-            $app->param('blog_id'), $ts[5] + 1900, $ts[4] + 1,
+            $blog_id, $ts[5] + 1900, $ts[4] + 1,
             @ts[ 3, 2, 1, 0 ];
     }
 
