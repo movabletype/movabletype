@@ -3,26 +3,26 @@
 
   <mtapp:ContentFieldOption
      id="asset_audio-multiple"
-     label="<__trans phrase="Allow users to select multiple values?">">
-    <input type="checkbox" class="mt-switch form-control" id="asset_audio-multiple" /><label for="asset_audio-multiple"><__trans phrase="Allow users to select multiple values?"></label>
+     label="<__trans phrase="Allow users to select multiple assets?">">
+    <input type="checkbox" class="mt-switch form-control" id="asset_audio-multiple" name="multiple"><label for="asset_audio-multiple"><__trans phrase="Allow users to select multiple assets?"></label>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
-     id="asset_audio-min_length"
+     id="asset_audio-min"
      label="<__trans phrase="Minimum number of selection">">
-    <input type="number" name="asset_audio-min_length" id="asset_audio-min" class="form-control" />
+    <input type="number" name="min" id="asset_audio-min" class="form-control w-25" min="0">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
-     id="asset_audio-max_length"
+     id="asset_audio-max"
      label="<__trans phrase="maximum number of selection">">
-    <input type="number" name="asset_audio-max_length" id="asset_audio-max" class="form-control" />
+    <input type="number" name="max" id="asset_audio-max" class="form-control w-25" min="1">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
-     id="asset_audio-can_add"
-     label="<__trans phrase="Allow users to update a new audio asset?">">
-    <input type="checkbox" class="mt-switch form-control" id="asset_audio-can_upload" /><label for="asset_audio-can_upload"><__trans phrase="Allow users to update a new audio asset?"></label>
+     id="asset_audio-allow_upload"
+     label="<__trans phrase="Allow users to upload a new audio asset?">">
+    <input type="checkbox" class="mt-switch form-control" id="asset_audio-allow_upload" name="allow_upload"><label for="asset_audio-allow_upload"><__trans phrase="Allow users to upload a new audio asset?"></label>
   </mtapp:ContentFieldOption>
 
 </mt:app:ContentFieldOptionGroup>

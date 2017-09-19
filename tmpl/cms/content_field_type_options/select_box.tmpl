@@ -4,19 +4,19 @@
   <mtapp:ContentFieldOption
      id="select_box-multiple"
      label="<__trans phrase="Allow users to select multiple values?">">
-    <input type="checkbox" class="mt-switch form-control" id="select_box-multiple" /><label for="select_box-multiple"><__trans phrase="Allow users to select multiple values?"></label>
+    <input type="checkbox" class="mt-switch form-control" id="select_box-multiple" name="multiple"><label for="select_box-multiple"><__trans phrase="Allow users to select multiple values?"></label>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="select_box-min"
      label="<__trans phrase="Minimum number of selection">">
-    <input type="number" name="select_box-min" id="select_box-min" class="form-control" />
+    <input type="number" name="min" id="select_box-min" class="form-control w-25" min="0">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="select_box-max"
      label="<__trans phrase="Maximum number of selection">">
-    <input type="number" name="select_box-max" id="select_box-max" class="form-control" />
+    <input type="number" name="smax" id="select_box-max" class="form-control w-25" min="1">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -34,9 +34,9 @@
       </thead>
       <tbody>
         <tr each={ initialValues }>
-          <td><input type="radio" class="form-control" name="select_box_initial" checked={ checked }></td>
-          <td><input type="text" class="form-control" name="select_box_label"></td>
-          <td><input type="text" class="form-control" name="select_box_value"></td>
+          <td><input type="radio" class="form-control" name="initial" checked={ checked }></td>
+          <td><input type="text" class="form-control" name="label"></td>
+          <td><input type="text" class="form-control" name="value"></td>
           <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="delete">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash" /></svg><__trans phrase="delete"></button></td>
         </tr>
       </tbody>
