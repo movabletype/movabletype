@@ -1,16 +1,12 @@
 use strict;
 use warnings;
-package Class::Method::Modifiers;
-BEGIN {
-  $Class::Method::Modifiers::AUTHORITY = 'cpan:SARTAK';
-}
-# git description: v2.10-10-gcae27a4
-$Class::Method::Modifiers::VERSION = '2.11';
+package Class::Method::Modifiers; # git description: v2.11-20-g6902f76
 # ABSTRACT: Provides Moose-like method modifiers
 # KEYWORDS: method wrap modification patch
-# vim: set ts=8 sw=4 tw=78 et :
+# vim: set ts=8 sts=4 sw=4 tw=115 et :
 
-# work around https://rt.cpan.org/Ticket/Display.html?id=89173
+our $VERSION = '2.12';
+
 use base 'Exporter';
 
 our @EXPORT = qw(before after around);
@@ -226,13 +222,17 @@ sub _is_in_package {
 
 __END__
 
+=pod
+
+=encoding UTF-8
+
 =head1 NAME
 
-Class::Method::Modifiers - provides Moose-like method modifiers
+Class::Method::Modifiers - Provides Moose-like method modifiers
 
 =head1 VERSION
 
-version 2.11
+version 2.12
 
 =head1 SYNOPSIS
 
@@ -262,7 +262,6 @@ version 2.11
         warn "freshly added method\n";
     };
 
-
 =head1 DESCRIPTION
 
 =for stopwords CLOS
@@ -290,7 +289,7 @@ those methods to flesh out the specifics.
 Parent classes need not know about C<Class::Method::Modifiers>. This means you
 should be able to modify methods in I<any> subclass. See
 L<Term::VT102::ZeroBased> for an example of subclassing with
-C<ClasS::Method::Modifiers>.
+C<Class::Method::Modifiers>.
 
 In short, C<Class::Method::Modifiers> solves the problem of making sure you
 call C<< $self->SUPER::foo(@_) >>, and provides a cleaner interface for it.
@@ -373,7 +372,7 @@ the same name, an exception is thrown.  The idea of this "modifier" is to
 increase safety when subclassing.  Suppose you're writing a subclass of a
 class Some::Base, and adding a new method:
 
-    package My::SubclassOf::C;
+    package My::Subclass;
     use base 'Some::Base';
 
     sub foo { ... }
@@ -382,7 +381,7 @@ If a later version of Some::Base also adds a new method named C<foo>, your
 method will shadow that method.  Alternatively, you can use C<fresh>
 to install the additional method into your subclass:
 
-    package My::SubclassOf::C;
+    package My::Subclass;
     use base 'Some::Base';
 
     use Class::Method::Modifiers 'fresh';
@@ -413,7 +412,7 @@ function is exported only when you ask for it specifically, or for C<:all>.
 
 All three normal modifiers; C<before>, C<after>, and C<around>; are exported
 into your namespace by default. You may C<use Class::Method::Modifiers ()> to
-avoid thrashing your namespace. I may steal more features from L<Moose>, namely
+avoid modifying your namespace. I may steal more features from L<Moose>, namely
 C<super>, C<override>, C<inner>, C<augment>, and whatever the L<Moose> folks
 come up with next.
 
@@ -466,13 +465,33 @@ become more correct. And, of course, faster. :)
 
 =head1 SEE ALSO
 
+=over 4
+
+=item *
+
 L<Class::Method::Modifiers::Fast>
-L<Moose>, L<Class::Trigger>, L<Class::MOP::Method::Wrapped>, L<MRO::Compat>,
-CLOS
 
-=head1 AUTHOR
+=item *
 
-Shawn M Moore, C<sartak@gmail.com>
+L<Moose>
+
+=item *
+
+L<Class::Trigger>
+
+=item *
+
+L<Class::MOP::Method::Wrapped>
+
+=item *
+
+L<MRO::Compat>,
+
+=item *
+
+L<CLOS|https://en.wikipedia.org/wiki/Common_Lisp_Object_System>
+
+=back
 
 =head1 ACKNOWLEDGEMENTS
 
@@ -483,11 +502,64 @@ method modifiers otherwise.
 
 Thanks to Matt Trout and Stevan Little for their advice.
 
+=head1 SUPPORT
+
+Bugs may be submitted through L<the RT bug tracker|https://rt.cpan.org/Public/Dist/Display.html?Name=Class-Method-Modifiers>
+(or L<bug-Class-Method-Modifiers@rt.cpan.org|mailto:bug-Class-Method-Modifiers@rt.cpan.org>).
+
+=head1 AUTHOR
+
+Shawn M Moore <sartak@gmail.com>
+
+=head1 CONTRIBUTORS
+
+=for stopwords Karen Etheridge Shawn M Moore Graham Knop Aaron Crane Peter Rabbitson Justin Hunter David Steinbrunner gfx mannih
+
+=over 4
+
+=item *
+
+Karen Etheridge <ether@cpan.org>
+
+=item *
+
+Shawn M Moore <code@sartak.org>
+
+=item *
+
+Graham Knop <haarg@haarg.org>
+
+=item *
+
+Aaron Crane <arc@cpan.org>
+
+=item *
+
+Peter Rabbitson <ribasushi@cpan.org>
+
+=item *
+
+Justin Hunter <justin.d.hunter@gmail.com>
+
+=item *
+
+David Steinbrunner <dsteinbrunner@pobox.com>
+
+=item *
+
+gfx <gfuji@cpan.org>
+
+=item *
+
+mannih <github@lxxi.org>
+
+=back
+
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2007-2009 Shawn M Moore.
+This software is copyright (c) 2007 by Shawn M Moore.
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
