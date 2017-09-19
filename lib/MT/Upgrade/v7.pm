@@ -32,9 +32,9 @@ sub upgrade_functions {
             version_limit => 7.0012,
             priority      => 3.4,
             updater       => {
-                type      => 'permission',
-                label     => 'Rebuilding permissions...',
-                code      => sub { $_[0]->rebuild; },
+                type  => 'permission',
+                label => 'Rebuilding permissions...',
+                code  => sub { $_[0]->rebuild; },
             },
         },
         'v7_migrate_system_privileges' => {
@@ -279,6 +279,17 @@ sub _migrate_system_privileges {
     );
     while ( my $author = $author_iter->() ) {
         $author->is_superuser(1) if $author->is_superuser();
+
+        if ( $author->type != MT::Author::COMMENTER() ) {
+            my $perm_count
+                = MT->model('association')
+                ->count(
+                { 'author_id' => $author->id, 'blog_id' => { not => '0' } } );
+            if ($perm_count) {
+                $author->can_sign_in_cms(1);
+                $author->can_sign_in_data_api(1);
+            }
+        }
         $author->save();
     }
 }
