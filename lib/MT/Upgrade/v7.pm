@@ -37,6 +37,11 @@ sub upgrade_functions {
                 code      => sub { $_[0]->rebuild; },
             },
         },
+        'v7_migrate_system_privileges' => {
+            code          => \&_migrate_system_privileges,
+            version_limit => 7.0012,
+            priority      => 3.5,
+        },
     };
 }
 
@@ -259,6 +264,22 @@ sub _v7_migrate_privileges {
             $author->add_role( $site_admin_role, $blog );
 
         }
+    }
+}
+
+sub _migrate_system_privileges {
+    my $self = shift;
+
+    require MT::Author;
+    my $author_iter
+        = MT::Author->load_iter( { type => MT::Author::AUTHOR() } );
+    $self->progress(
+        $self->translate_escape(
+            'Migrating system level permissions to new structure...')
+    );
+    while ( my $author = $author_iter->() ) {
+        $author->is_superuser(1) if $author->is_superuser();
+        $author->save();
     }
 }
 
