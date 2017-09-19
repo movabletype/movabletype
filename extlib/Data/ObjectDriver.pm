@@ -11,7 +11,7 @@ use Data::ObjectDriver::Iterator;
 
 __PACKAGE__->mk_accessors(qw( pk_generator txn_active ));
 
-our $VERSION = '0.13';
+our $VERSION = '0.15';
 our $DEBUG = $ENV{DOD_DEBUG} || 0;
 our $PROFILE = $ENV{DOD_PROFILE} || 0;
 our $PROFILER;
