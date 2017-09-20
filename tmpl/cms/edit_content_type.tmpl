@@ -65,13 +65,10 @@
     jQuery('select').change(function() {
       setDirty(true);
     });
+  };
 
-<mt:unless name="id">
-    var data = JSON.parse( localStorage.getItem("ContentType") ) || {};
-    jQuery("#setting-title").text( trans( 'Edit [_1]', data.name ) );
-</mt:unless>
+<mt:ignore>
 <mt:if name="name">
-    jQuery("#setting-title").text( trans( 'Edit [_1]', '<mt:var name="name" escape="js">' ) );
     var data = {};
     data['name'] = '<mt:var name="name" escape="js">';
     data['description'] = '<mt:var name="description" escape="js">';
@@ -94,9 +91,6 @@
     </mt:loop>
     localStorage.setItem("ContentType", JSON.stringify(data));
 </mt:if>
-    set_events();
-    set_sortable();
-  });
 
   jQuery('#save-button').click( function() {
     setDirty(false);
@@ -113,51 +107,6 @@
     .appendTo(document.body)
     .submit();
   });
-
-/*  jQuery('.add-link').click(function() {
-    var selected = jQuery('select#type').val();
-    if ( !selected )
-      return false;
-    if ( jQuery('.add-link').hasClass('disabled') )
-      return false;
-    var max_id = 0;
-    jQuery('[id^=content-field-block-]').each( function() {
-      var id = jQuery(this).attr('id').match(/\d+/);
-      if (Number(max_id) < Number(id))
-        max_id = id;
-    });
-    var id = Number(max_id) + 1;
-    var length = jQuery('#sortable').sortable('toArray').length;
-    var order = length + 1;
-    var type_name = jQuery("#type").val();
-    add_field(id, type_name);
-    var data = JSON.parse( localStorage.getItem("ContentType") );
-    if (!data['fields'])
-        data['fields'] = {};
-    if (!data['fields'][id])
-        data['fields'][id] = {};
-    data['fields'][id]['type'] = type_name;
-    data['fields'][id]['order'] = order;
-    data['fields'][id]['new'] = 1;
-    localStorage.setItem("ContentType", JSON.stringify(data));
-    set_sortable();
-    set_events();
-    return false;
-  });*/
-
-  function add_field(id, type) {
-    var data = JSON.parse( localStorage.getItem("ContentType") ) || {};
-    var label = data['fields'] && data['fields'][id] && data['fields'][id]['options'] && data['fields'][id]['options']['label']
-              ? data['fields'][id]['options']['label'] + ' (' + type + ')' : 'No label (' + type + ')';
-    var field='<div class="mt-draggable mb-2" draggable="true" aria-grabbed="false" id="content-field-block-' + id + '">'
-             + '<div class="col" id="content-field-block-' + id + '-label"><svg title="" role="img" class="mt-icon--secondary"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_contentstype" /></svg>' + label + '</div>'
-             + '<div class="col-auto" id="content-field-block-' + id + '-edit"><svg title="" role="img" class="mt-icon"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_edit" /></svg><__trans phrase="Edit"></div>'
-             + '<div class="col-auto" id="content-field-block-' + id + '-delete"><svg title="" role="img" class="mt-icon"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash" /></svg><__trans phrase="Delete"></div>'
-             + '<div class="col-auto"><svg title="" role="img" class="mt-icon"><use xlink:href="<mt:var name="static_uri">/images/sprite.svg#ic_move" /></svg></div>'
-             + '</div>';
-
-    jQuery("#sortable").append(field);
-  }
 
   function set_events() {
     jQuery('a.delete-link').unbind('click').click(function() {
@@ -397,6 +346,7 @@
 
     setDirty(true);
   }
+</mt:ignore>
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
