@@ -969,8 +969,6 @@ sub recover_profile_password {
     return $app->permission_denied()
         unless $app->user->is_superuser();
 
-    my $q = $app->param;
-
     require MT::Auth;
     require MT::Log;
     if ( !MT::Auth->can_recover_password ) {
@@ -987,7 +985,7 @@ sub recover_profile_password {
             "Cannot recover the password in this configuration");
     }
 
-    my $author_id = $q->param('author_id');
+    my $author_id = $app->param('author_id');
     my $author    = MT::Author->load($author_id);
 
     return $app->error( $app->translate("Invalid author_id") )
@@ -1126,10 +1124,9 @@ sub start_restore {
 sub backup {
     my $app      = shift;
     my $user     = $app->user;
-    my $q        = $app->param;
-    my $blog_id  = $q->param('blog_id');
+    my $blog_id  = $app->param('blog_id');
     my $perms    = $app->permissions;
-    my $blog_ids = $q->param('backup_what') || '';
+    my $blog_ids = $app->param('backup_what') || '';
     my @blog_ids = split ',', $blog_ids;
 
     require MT::Util::Log;
@@ -1169,11 +1166,11 @@ sub backup {
     }
     $app->validate_magic() or return;
 
-    my $size = $q->param('size_limit') || 0;
+    my $size = $app->param('size_limit') || 0;
     return $app->errtrans( '[_1] is not a number.', encode_html($size) )
         if $size !~ /^\d+$/;
 
-    my $archive = $q->param('backup_archive_format');
+    my $archive = $app->param('backup_archive_format');
     my $enc     = $app->charset || 'utf-8';
     my @ts      = gmtime(time);
     my $ts      = sprintf "%04d-%02d-%02d-%02d-%02d-%02d", $ts[5] + 1900,
@@ -1554,10 +1551,8 @@ sub restore {
 
     MT::Util::Log->info('=== Start import.');
 
-    my $q = $app->param;
-
     my ($fh) = $app->upload_info('file');
-    my $uploaded = $q->param('file');
+    my $uploaded = $app->param('file');
     my ( $volume, $directories, $uploaded_filename );
     ( $volume, $directories, $uploaded_filename )
         = File::Spec->splitpath($uploaded)
@@ -2539,12 +2534,11 @@ sub dialog_adjust_sitepath {
         if !$user->is_superuser;
     $app->validate_magic() or return;
 
-    my $q          = $app->param;
-    my $tmp_dir    = $q->param('tmp_dir');
-    my $error      = $q->param('error') || q();
-    my $uploaded   = $q->param('restore_upload') || 0;
-    my @blog_ids   = split ',', $q->param('blog_ids') || '';
-    my $asset_ids  = $q->param('asset_ids');
+    my $tmp_dir    = $app->param('tmp_dir');
+    my $error      = $app->param('error') || q();
+    my $uploaded   = $app->param('restore_upload') || 0;
+    my @blog_ids   = split ',', $app->param('blog_ids') || '';
+    my $asset_ids  = $app->param('asset_ids');
     my $blog_class = $app->model('blog');
     my @blogs      = $blog_class->load( { id => \@blog_ids } );
     my ( @blogs_loop, @website_loop );
@@ -2651,9 +2645,9 @@ sub dialog_adjust_sitepath {
         qw(files assets last redirect is_dirty is_asset objects_json deferred_json)
         )
     {
-        $param->{$key} = $q->param($key) if $q->param($key);
+        $param->{$key} = $app->param($key) if $app->param($key);
     }
-    $param->{name}      = $q->param('current_file');
+    $param->{name}      = $app->param('current_file');
     $param->{screen_id} = "adjust-sitepath";
     $app->load_tmpl( 'dialog/adjust_sitepath.tmpl', $param );
 }
@@ -2805,14 +2799,14 @@ sub reset_password {
 sub restore_file {
     my $app = shift;
     my ( $fh, $errormsg ) = @_;
-    my $q              = $app->param;
     my $schema_version = $app->config->SchemaVersion;
 
     #my $schema_version =
-    #  $q->param('ignore_schema_conflict')
+    #  $app->param('ignore_schema_conflict')
     #  ? 'ignore'
     #  : $app->config('SchemaVersion');
-    my $overwrite_template = $q->param('overwrite_global_templates') ? 1 : 0;
+    my $overwrite_template
+        = $app->param('overwrite_global_templates') ? 1 : 0;
 
     require MT::BackupRestore;
     my ( $deferred, $blogs )
@@ -2864,15 +2858,15 @@ sub restore_directory {
         return ( undef, undef );
     }
 
-    my $q              = $app->param;
     my $schema_version = $app->config->SchemaVersion;
 
     #my $schema_version =
-    #  $q->param('ignore_schema_conflict')
+    #  $app->param('ignore_schema_conflict')
     #  ? 'ignore'
     #  : $app->config('SchemaVersion');
 
-    my $overwrite_template = $q->param('overwrite_global_templates') ? 1 : 0;
+    my $overwrite_template
+        = $app->param('overwrite_global_templates') ? 1 : 0;
 
     my @errors;
     my %error_assets;
@@ -2947,8 +2941,6 @@ sub restore_upload_manifest {
         if !$user->is_superuser;
     $app->validate_magic() or return;
 
-    my $q = $app->param;
-
     require MT::BackupRestore;
     my $backups = MT::BackupRestore->process_manifest($fh);
     return $app->errtrans(
@@ -2979,11 +2971,11 @@ sub restore_upload_manifest {
     $param->{schema_version} = $app->config->SchemaVersion;
 
     #$param->{schema_version} =
-    #  $q->param('ignore_schema_conflict')
+    #  $app->param('ignore_schema_conflict')
     #  ? 'ignore'
     #  : $app->config('SchemaVersion');
     $param->{overwrite_templates}
-        = $q->param('overwrite_global_templates') ? 1 : 0;
+        = $app->param('overwrite_global_templates') ? 1 : 0;
 
     $param->{dialog_mode} = 'dialog_restore_upload';
     $param->{dialog_params}
