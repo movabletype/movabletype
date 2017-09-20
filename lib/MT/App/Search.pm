@@ -215,7 +215,6 @@ sub takedown {
 sub generate_cache_keys {
     my $app = shift;
 
-    my $q = $app->param;
     my @p = sort { $a cmp $b } $app->multi_param;
     my ( $key, $count_key );
     foreach my $p (@p) {
@@ -278,7 +277,6 @@ sub create_blog_list {
     my $app = shift;
     my (%no_override) = @_;
 
-    my $q   = $app->param;
     my $cfg = $app->config;
 
     unless (%no_override) {
@@ -294,8 +292,8 @@ sub create_blog_list {
 
     ## If IncludeBlogs is all, then set IncludeBlogs to ""
     ## this will get all the blogs by default later on
-    if ( $q->param('IncludeBlogs') eq 'all' ) {
-        $q->param( 'IncludeBlogs', '' );
+    if ( ( $app->param('IncludeBlogs') || '' ) eq 'all' ) {
+        $app->param( 'IncludeBlogs', '' );
     }
 
     ## Combine user-selected included/excluded blogs
