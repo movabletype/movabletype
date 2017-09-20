@@ -660,6 +660,7 @@ sub edit {
         }
     }
     elsif ( $app->param('qp') ) {
+
         # dedupe
         foreach (qw( title text )) {
             my $data = $app->param($_);
@@ -737,8 +738,7 @@ sub edit {
         # Populate the param hash with the object's own values
         for my $col (@$cols) {
             my $value = $app->param($col);
-            $param{$col}
-                = defined $value ? $value : $obj->$col();
+            $param{$col} = defined $value ? $value : $obj->$col();
         }
 
         # Make certain any blog-specific element matches the blog we're
@@ -1942,7 +1942,7 @@ sub delete {
 
             # FIXME: enumeration of types
             if ( $obj->type
-                !~ /(custom|index|archive|page|individual|category|widget|backup)/
+                !~ /(custom|index|archive|page|individual|category|widget|backup|ct|ct_archive)/
                 )
             {
                 $required_items++;
