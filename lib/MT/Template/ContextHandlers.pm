@@ -56,6 +56,8 @@ sub core_tags {
                 \&MT::Template::Tags::App::_hdlr_app_contentfield_option_group,
             'App:ContentFieldOption' =>
                 \&MT::Template::Tags::App::_hdlr_app_contentfield_option,
+            'App:ContentFieldOptionScript' =>
+                \&MT::Template::Tags::App::_hdlr_app_contentfield_option_script,
 
             ## Site
             Sites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
@@ -4217,6 +4219,12 @@ sub _hdlr_app_contentfield_option_group {
 
     # Build inside tags
     my $insides = $ctx->slurp( $args, $cond );
+
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+    my $script  = $ctx->var('option_script');
+    $ctx->var('option_script', undef)
+        if $script;
+
     return $ctx->build(<<"EOT");
 <$type>
 
@@ -4257,20 +4265,26 @@ sub _hdlr_app_contentfield_option_group {
 
   $insides
 
+  <div>
+    <button class="btn btn-default"><__trans phrase="Cancel"></button>
+    <button class="btn btn-primary"><__trans phrase="Apply"></button>
+  </div>
+
   this.on('mount', function() {
-    elms = this.root.querySelectorAll('*');
+    elms = this.root.querySelectorAll('*')
     elms.forEach( function(v) {
       if ( v.hasAttribute('id') ) {
-        v.setAttribute('id', v.getAttribute('id') + '-' + opts.id);
+        v.setAttribute('id', v.getAttribute('id') + '-' + opts.id)
       }
       if ( v.tagName.toLowerCase() == 'label' && v.hasAttribute('for') ) {
-        v.setAttribute('for', v.getAttribute('for') + '-' + opts.id);
+        v.setAttribute('for', v.getAttribute('for') + '-' + opts.id)
       }
-    });
-  });
+    })
+  })
+
+  $script
 </$type>
 EOT
-
 }
 
 ###########################################################################
@@ -4367,6 +4381,26 @@ sub _hdlr_app_contentfield_option {
     $insides$hint
   </div>
 EOT
+}
+
+###########################################################################
+
+=head2 App:ContentFieldOptionScript
+
+An application template tag used to insert script code for a content field option form field.
+
+=for tags application
+
+=cut
+
+sub _hdlr_app_contentfield_option_script {
+    my ( $ctx, $args, $cond ) = @_;
+
+    # Build inside
+    my $insides = $ctx->slurp( $args, $cond );
+    $ctx->var( 'option_script', $insides );
+
+    return '';
 }
 
 package MT::Template::Tags::System;
