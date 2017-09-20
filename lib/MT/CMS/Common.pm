@@ -1798,8 +1798,8 @@ sub delete {
     return $app->errtrans("Invalid request.")
         if is_disabled_mode( $app, 'delete', $type );
 
-    my $parent  = $q->param('parent');
-    my $blog_id = $q->param('blog_id');
+    my $parent  = $app->param('parent');
+    my $blog_id = $app->param('blog_id');
     my $class   = $app->model($type) or return;
     my $perms   = $app->permissions;
     my $author  = $app->user;
@@ -1990,7 +1990,7 @@ sub delete {
             = 1;
     }
 
-    if ( $q->param('is_power_edit') ) {
+    if ( $app->param('is_power_edit') ) {
         $return_arg{is_power_edit} = 1;
     }
     if ($required_items) {
