@@ -72,7 +72,9 @@ sub core_parameters {
         cache_driver => { 'package' => 'MT::Cache::Negotiate', },
     };
 
-    my @filters = ( $app->multi_param('filter'), $app->multi_param('filter_on') ); # XXX: filter_on is gone?
+    my @filters
+        = ( $app->multi_param('filter'), $app->multi_param('filter_on') )
+        ;    # XXX: filter_on is gone?
     if (@filters) {
         $core->{types}->{entry}->{columns}
             = { map { $_ => 'like' } @filters };
@@ -794,8 +796,7 @@ sub prepare_context {
             map { $ctx->var( $_, $params->{$_} ) } keys %$params;
         }
     }
-    $ctx->{current_timestamp}
-        = $app->param('context_date_start')
+    $ctx->{current_timestamp} = $app->param('context_date_start')
         || MT::Util::epoch2ts( $blog_id, time );
 
     my $author_id   = $app->param('author');
