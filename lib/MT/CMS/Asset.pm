@@ -318,9 +318,8 @@ sub insert {
 
     $app->validate_magic() or return;
 
-    if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
+    my $edit_field = $app->param('edit_field') || '';
+    if ( $edit_field =~ m/^customfield_.*$/ ) {
         return $app->permission_denied()
             unless $app->permissions;
     }
@@ -347,7 +346,7 @@ sub insert {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
             {   upload_html => $text || '',
-                edit_field => scalar $app->param('edit_field') || '',
+                edit_field => $edit_field,
                 extension_message => $extension_message,
                 asset_type        => $asset->class,
             },
@@ -356,8 +355,8 @@ sub insert {
     else {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
-            {   upload_html => $text                            || '',
-                edit_field  => scalar $app->param('edit_field') || '',
+            {   upload_html => $text || '',
+                edit_field  => $edit_field,
                 asset_type  => $asset->class,
             },
         );
@@ -3241,9 +3240,8 @@ sub insert_asset {
 
     $app->validate_magic() or return;
 
-    if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
+    my $edit_field = $app->param('edit_field') || '';
+    if ( $edit_field =~ m/^customfield_.*$/ ) {
         return $app->permission_denied()
             unless $app->permissions;
     }
@@ -3267,8 +3265,7 @@ sub insert_asset {
             $param{new_entry} = $app->param('new_entry') ? 1 : 0;
 
             $a->on_upload( \%param );
-            $param{enclose}
-                = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
+            $param{enclose} = $edit_field =~ /^customfield/ ? 1 : 0;
             my $html = $a->as_html( \%param );
             return $app->error( $a->error ) unless defined $html;
 
@@ -3304,8 +3301,7 @@ sub insert_asset {
             $param{new_entry} = $app->param('new_entry') ? 1 : 0;
 
             $asset->on_upload( \%param );
-            $param{enclose}
-                = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
+            $param{enclose} = $edit_field =~ /^customfield/ ? 1 : 0;
             my $html = $asset->as_html( \%param );
             return $app->error( $asset->error ) unless defined $html;
 
@@ -3331,7 +3327,7 @@ sub insert_asset {
     $tmpl = $app->load_tmpl(
         'dialog/asset_insert.tmpl',
         {   upload_html => $text || '',
-            edit_field => scalar $app->param('edit_field') || '',
+            edit_field => $edit_field,
             content_field_id => $content_field_id,
             $content_field_id ? ( can_multi => $can_multi ) : (),
         },
