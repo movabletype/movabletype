@@ -105,38 +105,34 @@ sub init_request {
         $app->mode('tag') if $app->param('tag');
     }
 
-    my $q = $app->param;
-
     my $cfg = $app->config;
     my $blog_id
-        = defined $q->param('blog_id')
-        ? $q->param('blog_id')
+        = defined $app->param('blog_id')
+        ? $app->param('blog_id')
         : $app->first_blog_id();
     my $blog = $app->model('blog')->load($blog_id)
         or return $app->errtrans( 'Cannot load blog #[_1].',
         MT::Util::encode_html($blog_id) );
-    my $page = $q->param('page') ? $q->param('page') : 1;
+    my $page = $app->param('page') || 1;
     my $limit
-        = $q->param('limit') ? $q->param('limit')
-        : (
-          $blog->entries_on_index ? $blog->entries_on_index
-        : $cfg->SearchMaxResults
-        );
+        = $app->param('limit')
+        || $blog->entries_on_index
+        || $cfg->SearchMaxResults;
     my $offset;
     $offset = ( $page - 1 ) * $limit if ( $page && $limit );
-    $q->param( 'limit',  $limit )  if $limit;
-    $q->param( 'offset', $offset ) if $offset;
+    $app->param( 'limit',  $limit )  if $limit;
+    $app->param( 'offset', $offset ) if $offset;
 
     # These parameters are strictly numeric; invalid request if they
     # are given and are not
     foreach my $param (qw( blog_id limit offset SearchMaxResults )) {
-        my $val = $q->param($param);
+        my $val = $app->param($param);
         next unless defined $val && ( $val ne '' );
         return $app->errtrans( 'Invalid [_1] parameter.', $param )
             if $val !~ m/^\d+$/;
     }
     foreach my $param (qw( IncludeBlogs ExcludeBlogs )) {
-        my $val = $q->param($param);
+        my $val = $app->param($param);
         next unless defined $val && ( $val ne '' );
         return $app->errtrans( 'Invalid [_1] parameter.', $param )
             if ( $val !~ m/^(\d+,?)+$/ && $val ne 'all' );
@@ -165,13 +161,13 @@ sub init_request {
         $app->{searchparam}{$key}
             = $no_override{$key}
             ? $app->config->$key()
-            : ( $q->param($key) || $app->config->$key() );
+            : ( $app->param($key) || $app->config->$key() );
     }
     $app->{searchparam}{SearchMaxResults} =~ s/\D//g
         if defined( $app->{searchparam}{SearchMaxResults} );
 
     $app->{searchparam}{Type} = 'entry';
-    if ( my $type = $q->param('type') ) {
+    if ( my $type = $app->param('type') ) {
         return $app->errtrans( 'Invalid type: [_1]', encode_html($type) )
             if $type !~ /[\w\.]+/;
         $app->{searchparam}{Type} = $type;
@@ -182,8 +178,8 @@ sub init_request {
 
     my $processed = 0;
     my $list      = {};
-    $q->param( 'IncludeBlogs', $blog_id )
-        unless $q->param('IncludeBlogs');
+    $app->param( 'IncludeBlogs', $blog_id )
+        unless $app->param('IncludeBlogs');
     if ( $app->run_callbacks( 'search_blog_list', $app, $list, \$processed ) )
     {
         if ($processed) {
