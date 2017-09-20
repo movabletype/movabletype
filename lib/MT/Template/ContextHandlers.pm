@@ -4232,7 +4232,7 @@ sub _hdlr_app_contentfield_option_group {
      id="$type-label"
      label="<__trans phrase="Label">"
      required="1">
-    <input type="text" name="$type-label" id="$type-label" class="text med form-control">
+    <input type="text" name="label" id="$type-label" class="text med form-control">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -4240,13 +4240,13 @@ sub _hdlr_app_contentfield_option_group {
      label="<__trans phrase="Description">"
      show_hint="1"
      hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-    <input type="text" name="$type-description" id="$type-description" class="form-control" aria-describedby="$type-description-field-help">
+    <input type="text" name="description" id="$type-description" class="form-control" aria-describedby="$type-description-field-help">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="$type-required"
      label="<__trans phrase="Is this field required?">">
-    <input type="checkbox" class="mt-switch form-control" id="$type-required" /><label for="$type-required"><__trans phrase="Is this field required?"></label>
+    <input type="checkbox" class="mt-switch form-control" id="$type-required" name="required"><label for="$type-required"><__trans phrase="Is this field required?"></label>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -4255,7 +4255,7 @@ sub _hdlr_app_contentfield_option_group {
      required="1"
      show_hint="1"
      hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-    <select name="$type-display" id="$type-display" class="custom-select form-control">
+    <select name="display" id="$type-display" class="custom-select form-control">
       <option value="force"><__trans phrase="Force"></option>
       <option value="default" selected="selected"><__trans phrase="Default"></option>
       <option value="optional"><__trans phrase="Optional"></option>
