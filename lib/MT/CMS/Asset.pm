@@ -638,8 +638,7 @@ sub complete_insert {
     if ( !$asset && $id ) {
         require MT::Asset;
         $asset = MT::Asset->load($id)
-            || return $app->errtrans( "Cannot load file #[_1].",
-            $id );
+            || return $app->errtrans( "Cannot load file #[_1].", $id );
     }
     return $app->errtrans('Invalid request.') unless $asset;
 
@@ -648,8 +647,7 @@ sub complete_insert {
 
     require MT::Blog;
     my $blog = $asset->blog
-        or return $app->errtrans( "Cannot load blog #[_1].",
-        $blog_id );
+        or return $app->errtrans( "Cannot load blog #[_1].", $blog_id );
     my $perms = $app->permissions
         or return $app->errtrans('No permissions');
 
@@ -660,8 +658,8 @@ sub complete_insert {
     }
 
     my $middle_path = $app->param('middle_path') || '';
-    my $extra_path  = $app->param('extra_path') || '';
-    my $param = {
+    my $extra_path  = $app->param('extra_path')  || '';
+    my $param       = {
         asset_id    => $asset->id,
         bytes       => $args{bytes},
         fname       => $asset->file_name,
@@ -816,9 +814,9 @@ sub cancel_upload {
 }
 
 sub complete_upload {
-    my $app   = shift;
+    my $app     = shift;
     my $blog_id = $app->param('blog_id');
-    my %param = $app->param_hash;
+    my %param   = $app->param_hash;
     my $asset;
     require MT::Asset;
     $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
@@ -845,8 +843,7 @@ sub complete_upload {
     return $app->redirect(
         $app->uri(
             'mode' => 'list',
-            args =>
-                { '_type' => 'asset', 'blog_id' => $blog_id }
+            args   => { '_type' => 'asset', 'blog_id' => $blog_id }
         )
     );
 }
