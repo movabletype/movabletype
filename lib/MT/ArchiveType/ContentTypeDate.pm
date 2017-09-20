@@ -35,8 +35,7 @@ sub dated_group_contents {
             ( !$dt_field_id ? ( authored_on => [ $start, $end ] ) : () ),
         },
         {   ( !$dt_field_id ? ( range_incl => { authored_on => 1 } ) : () ),
-            'sort' =>
-                ( $dt_field_id ? 'dt_cf_idx.value_datetime' : 'authored_on' ),
+            ( !$dt_field_id ? ( 'sort' => 'authored_on' ) : () ),
             'direction' => 'descend',
             ( $limit ? ( 'limit' => $limit ) : () ),
             (   $dt_field_id
@@ -46,7 +45,9 @@ sub dated_group_contents {
                         {   content_field_id => $dt_field_id,
                             value_datetime   => [ $start, $end ]
                         },
-                        { range_incl => { value_datetime => 1 } }
+                        {   sort       => 'value_datetime',
+                            range_incl => { value_datetime => 1 }
+                        }
                     ]
                     )
                 : ()
@@ -78,20 +79,26 @@ sub dated_category_contents {
             ( !$dt_field_id ? ( authored_on => [ $start, $end ] ) : () ),
         },
         {   ( !$dt_field_id ? ( range_incl => { authored_on => 1 } ) : () ),
-            'sort' =>
-                ( $dt_field_id ? 'dt_cf_idx.value_datetime' : 'authored_on' ),
+            ( !$dt_field_id ? ( 'sort' => 'authored_on' ) : () ),
             'direction' => 'descend',
             (   $dt_field_id
                 ? ( 'joins' => [
                         MT::ContentFieldIndex->join_on(
                             'content_data_id',
-                            {   content_field_id => $dt_field_id,
-                                value_datetime =>
-                                    { op => '>=', value => $start },
-                                value_datetime =>
-                                    { op => '<=', value => $end },
-                            },
-                            { alias => 'dt_cf_idx' }
+                            [   { content_field_id => $dt_field_id },
+                                '-and',
+                                [   {   value_datetime =>
+                                            { op => '>=', value => $start }
+                                    },
+                                    '-and',
+                                    {   value_datetime =>
+                                            { op => '<=', value => $end }
+                                    }
+                                ],
+                            ],
+                            {   sort  => 'value_datetime',
+                                alias => 'dt_cf_idx'
+                            }
                         ),
                         MT::ContentFieldIndex->join_on(
                             'content_data_id',
@@ -139,8 +146,7 @@ sub dated_author_contents {
         {   (   !$dt_field_id ? ( range_incl => { authored_on => 1 } )
                 : ()
             ),
-            'sort' =>
-                ( $dt_field_id ? 'dt_cf_idx.value_datetime' : 'authored_on' ),
+            ( !$dt_field_id ? ( 'sort' => 'authored_on' ) : () ),
             'direction' => 'descend',
             (   $dt_field_id
                 ? ( 'join' => [
@@ -149,7 +155,9 @@ sub dated_author_contents {
                         {   content_field_id => $dt_field_id,
                             value_datetime   => [ $start, $end ]
                         },
-                        { range_incl => { value_datetime => 1 } }
+                        {   sort       => 'value_datetime',
+                            range_incl => { value_datetime => 1 }
+                        }
                     ]
                     )
                 : ()
@@ -274,16 +282,25 @@ sub make_archive_group_args {
             (   $dt_field_id
                 ? ( MT::ContentFieldIndex->join_on(
                         'content_data_id',
-                        {   content_field_id => $dt_field_id,
+                        [   { content_field_id => $dt_field_id },
                             (   $ts && $tsend
-                                ? ( value_datetime =>
-                                        { op => '>=', value => $ts },
-                                    value_datetime =>
-                                        { op => '<=', value => $tsend }
+                                ? ( '-and',
+                                    [   {   value_datetime => {
+                                                op    => '>=',
+                                                value => $ts
+                                            }
+                                        },
+                                        '-and',
+                                        {   value_datetime => {
+                                                op    => '<=',
+                                                value => $tsend
+                                            }
+                                        }
+                                    ]
                                     )
                                 : ()
                             ),
-                        },
+                        ],
                         { alias => 'dt_cf_idx' }
                     )
                     )
@@ -303,12 +320,11 @@ sub make_archive_group_args {
             'content_data_id',
             {   content_field_id => $dt_field_id,
                 (   $ts && $tsend
-                    ? ( value_datetime => { op => '>=', value => $ts },
-                        value_datetime => { op => '<=', value => $tsend }
-                        )
+                    ? ( value_datetime => [ $ts, $tsend ] )
                     : ()
-                ),
+                )
             },
+            { range_incl => { value_datetime => 1 } },
         ) if $dt_field_id;
     }
     return $args;
