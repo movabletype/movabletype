@@ -1427,7 +1427,7 @@ sub filtered_list {
         $debug->{section} = sub { };
     }
 
-    my $ds = $q->param('datasource');
+    my $ds = $app->param('datasource');
     my $setting = MT->registry( listing_screens => $ds )
         or return $app->json_error( $app->translate('Unknown list type') );
 
@@ -1503,7 +1503,7 @@ sub filtered_list {
 
     my $filteritems;
     my $allpass = 0;
-    if ( my $items = $q->param('items') ) {
+    if ( my $items = $app->param('items') ) {
         if ( $items =~ /^".*"$/ ) {
             $items =~ s/^"//;
             $items =~ s/"$//;
@@ -1543,8 +1543,8 @@ sub filtered_list {
             blog_id   => $blog_id || 0,
         }
     );
-    my $limit = $q->param('limit') || 50;    # FIXME: hard coded.
-    my $page = $q->param('page');
+    my $limit = $app->param('limit') || 50;    # FIXME: hard coded.
+    my $page = $app->param('page');
     $page = 1 if !$page || $page =~ /\D/;
     my $offset = ( $page - 1 ) * $limit;
 
@@ -1553,7 +1553,8 @@ sub filtered_list {
     $MT::DebugMode && $debug->{section}->('initialize');
 
     ## FIXME: take identifical column from column defs.
-    my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
+    my $cols
+        = defined( $app->param('columns') ) ? $app->param('columns') : '';
     my @cols = grep {/^[^\.]+$/} split( ',', $cols );
     my @subcols = grep {/\./} split( ',', $cols );
     my $class = MT->model( $setting->{object_type} || $ds );
@@ -1579,8 +1580,8 @@ sub filtered_list {
     my %load_options = (
         terms      => {@blog_id_term},
         args       => {},
-        sort_by    => $q->param('sort_by') || '',
-        sort_order => $q->param('sort_order') || '',
+        sort_by    => $app->param('sort_by') || '',
+        sort_order => $app->param('sort_order') || '',
         limit      => $limit,
         offset     => $offset,
         scope      => $scope,
