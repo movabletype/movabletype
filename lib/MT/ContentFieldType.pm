@@ -398,7 +398,7 @@ sub _checkboxes_registry {
                     '$Core::MT::ContentFieldType::Common::terms_multiple',
             },
         },
-        options_html => 'content_field_type_options/check_box.tmpl',
+        options_html => 'content_field_type_options/checkboxes.tmpl',
         options => [
             qw(
                 label
