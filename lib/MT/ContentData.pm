@@ -643,10 +643,10 @@ sub _make_content_data_title_html {
     my $label     = $obj->$col;
     $label = '' if !defined $label;
     $label =~ s/^\s+|\s+$//g;
-    my $blog_id           = $app->blog ? $app->blog->id : 0;
-    my $datasource        = $app->param('datasource');
+    my $blog_id = $app->blog ? $app->blog->id : 0;
+    my $datasource = $app->param('datasource') || '';
     my ($content_type_id) = $datasource =~ /(\d+)$/;
-    my $edit_link         = $app->uri(
+    my $edit_link = $app->uri(
         mode => 'edit_content_data',
         args => {
             id              => $id,
