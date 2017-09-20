@@ -693,10 +693,10 @@ sub template_paths {
 
 sub first_blog_id {
     my $app = shift;
-    my $q   = $app->param;
 
     my $blog_id;
-    if (   !$q->param('IncludeBlogs')
+    my $include_blogs = $app->param('IncludeBlogs') || '';
+    if (   !$include_blogs
         && exists( $app->{searchparam}{IncludeBlogs} )
         && @{ $app->{searchparam}{IncludeBlogs} } )
     {
@@ -705,8 +705,8 @@ sub first_blog_id {
     else {
 
         # if IncludeBlogs is empty or all, get the first blog id available
-        if (  !$q->param('IncludeBlogs')
-            || $q->param('IncludeBlogs') eq 'all' )
+        if (  !$include_blogs
+            || $include_blogs eq 'all' )
         {
             my @blogs = $app->model('blog')
                 ->load( {}, { no_class => 1, limit => 1 } );
@@ -715,7 +715,7 @@ sub first_blog_id {
 
         # all other normal requests with a list of blog ids
         else {
-            my @ids = split ',', $q->param('IncludeBlogs');
+            my @ids = split ',', $include_blogs;
             $blog_id = $ids[0];
         }
     }
