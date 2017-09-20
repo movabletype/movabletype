@@ -469,6 +469,11 @@ sub rebuild_deleted_entry {
     for my $at (@at) {
         my $archiver = $mt->archiver($at);
         next unless $archiver;
+        next
+            if $archiver->contenttype_based
+            || $archiver->contenttype_date_based
+            || $archiver->contenttype_author_based
+            || $archiver->contenttype_category_based;
 
         my ( $start, $end );
         ( $start, $end ) = $archiver->date_range( $entry->authored_on )
