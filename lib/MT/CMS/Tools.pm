@@ -2941,8 +2941,6 @@ sub restore_upload_manifest {
         if !$user->is_superuser;
     $app->validate_magic() or return;
 
-    my $q = $app->param;
-
     require MT::BackupRestore;
     my $backups = MT::BackupRestore->process_manifest($fh);
     return $app->errtrans(
@@ -2973,11 +2971,11 @@ sub restore_upload_manifest {
     $param->{schema_version} = $app->config->SchemaVersion;
 
     #$param->{schema_version} =
-    #  $q->param('ignore_schema_conflict')
+    #  $app->param('ignore_schema_conflict')
     #  ? 'ignore'
     #  : $app->config('SchemaVersion');
     $param->{overwrite_templates}
-        = $q->param('overwrite_global_templates') ? 1 : 0;
+        = $app->param('overwrite_global_templates') ? 1 : 0;
 
     $param->{dialog_mode} = 'dialog_restore_upload';
     $param->{dialog_params}
