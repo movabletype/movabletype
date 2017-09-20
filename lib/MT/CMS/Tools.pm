@@ -2534,12 +2534,11 @@ sub dialog_adjust_sitepath {
         if !$user->is_superuser;
     $app->validate_magic() or return;
 
-    my $q          = $app->param;
-    my $tmp_dir    = $q->param('tmp_dir');
-    my $error      = $q->param('error') || q();
-    my $uploaded   = $q->param('restore_upload') || 0;
-    my @blog_ids   = split ',', $q->param('blog_ids') || '';
-    my $asset_ids  = $q->param('asset_ids');
+    my $tmp_dir    = $app->param('tmp_dir');
+    my $error      = $app->param('error') || q();
+    my $uploaded   = $app->param('restore_upload') || 0;
+    my @blog_ids   = split ',', $app->param('blog_ids') || '';
+    my $asset_ids  = $app->param('asset_ids');
     my $blog_class = $app->model('blog');
     my @blogs      = $blog_class->load( { id => \@blog_ids } );
     my ( @blogs_loop, @website_loop );
@@ -2646,9 +2645,9 @@ sub dialog_adjust_sitepath {
         qw(files assets last redirect is_dirty is_asset objects_json deferred_json)
         )
     {
-        $param->{$key} = $q->param($key) if $q->param($key);
+        $param->{$key} = $app->param($key) if $app->param($key);
     }
-    $param->{name}      = $q->param('current_file');
+    $param->{name}      = $app->param('current_file');
     $param->{screen_id} = "adjust-sitepath";
     $app->load_tmpl( 'dialog/adjust_sitepath.tmpl', $param );
 }
