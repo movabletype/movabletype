@@ -478,7 +478,6 @@ sub execute {
 
 sub search_terms {
     my $app = shift;
-    my $q   = $app->param;
 
     if ( my $limit = $app->param('limit_by') ) {
         if ( $limit eq 'all' ) {
@@ -506,12 +505,12 @@ sub search_terms {
             unless ( $archiver || $at eq 'Index' );
     }
 
-    my $search_string = $q->param('searchTerms') || $q->param('search');
+    my $search_string = $app->param('searchTerms') || $app->param('search');
     $app->{search_string} = $search_string;
-    my $offset = $q->param('startIndex') || $q->param('offset') || 0;
+    my $offset = $app->param('startIndex') || $app->param('offset') || 0;
     return $app->errtrans( 'Invalid value: [_1]', encode_html($offset) )
         if $offset && $offset !~ /^\d+$/;
-    my $limit = $q->param('count') || $q->param('limit');
+    my $limit = $app->param('count') || $app->param('limit');
     return $app->errtrans( 'Invalid value: [_1]', encode_html($limit) )
         if $limit && $limit !~ /^\d+$/;
     my $max = $app->{searchparam}{SearchMaxResults};
