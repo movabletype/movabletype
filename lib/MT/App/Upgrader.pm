@@ -71,7 +71,6 @@ sub init_request {
 
 sub login {
     my $app     = shift;
-    my $q       = $app->{query};
     my $cookies = $app->{cookies};
     my ( $user, $pass, $remember, $crypted, $cookie_middle );
     my $first_time  = 0;
@@ -90,11 +89,11 @@ sub login {
         $cookie_middle = '';
         $remember      = '';
     }
-    if ( $q->param('username') && $q->param('password') ) {
+    if ( $app->param('username') && $app->param('password') ) {
         $first_time = 1;
-        $user       = $q->param('username');
-        $pass       = $q->param('password');
-        $remember   = $q->param('remember') || '';
+        $user       = $app->param('username');
+        $pass       = $app->param('password');
+        $remember   = $app->param('remember') || '';
         $crypted    = 0;
     }
     return unless $user && ( $pass || $cookie_middle );
