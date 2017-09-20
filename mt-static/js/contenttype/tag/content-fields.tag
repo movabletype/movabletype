@@ -14,23 +14,25 @@
   </fieldset>
 
   <script>
-    this.fields = opts.fields;
-    this.currentType = opts.types[0].type;
-    this.currentTypeLabel = opts.types[0].label;
+    this.fields = opts.fields
+    this.currentType = opts.types[0].type
+    this.currentTypeLabel = opts.types[0].label
+
     changeType(e) {
-      this.currentType = e.target.options[e.target.selectedIndex].value;
-      this.currentTypeLabel = e.target.options[e.target.selectedIndex].text;
+      this.currentType = e.target.options[e.target.selectedIndex].value
+      this.currentTypeLabel = e.target.options[e.target.selectedIndex].text
     }
 
     addField(e) {
-      var newId = Math.floor(10000*Math.random()).toString(16);
-      var field = {
+      newId = Math.floor(10000*Math.random()).toString(16)
+      field = {
         'type': this.currentType,
         'typeLabel' : this.currentTypeLabel,
         'id' : newId,
         'isShow': 'show'
-      };
-      this.fields.push(field);
+      }
+      this.fields.push(field)
+      setDirty(true)
       e.preventDefault()
     }
   </script>
