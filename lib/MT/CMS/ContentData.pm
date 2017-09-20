@@ -565,7 +565,7 @@ sub save {
 sub delete {
     my $app = shift;
 
-    my $orig_type = $app->param('type');
+    my $orig_type = $app->param('type') || '';
     my ($content_type_id) = $orig_type =~ /^content_data_(\d+)$/;
 
     unless ( $app->param('content_type_id') ) {
