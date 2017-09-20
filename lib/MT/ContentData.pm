@@ -643,10 +643,10 @@ sub _make_content_data_title_html {
     my $label     = $obj->$col;
     $label = '' if !defined $label;
     $label =~ s/^\s+|\s+$//g;
-    my $blog_id           = $app->blog ? $app->blog->id : 0;
-    my $datasource        = $app->param('datasource');
+    my $blog_id = $app->blog ? $app->blog->id : 0;
+    my $datasource = $app->param('datasource') || '';
     my ($content_type_id) = $datasource =~ /(\d+)$/;
-    my $edit_link         = $app->uri(
+    my $edit_link = $app->uri(
         mode => 'edit_content_data',
         args => {
             id              => $id,
@@ -663,7 +663,7 @@ sub _make_content_data_title_html {
     else {
         return MT->translate(
             qq{[_1] (<a href="[_2]">id:[_3]</a>)},
-            $alt_label ? $alt_label : 'No ' . $label,
+            $alt_label ? $alt_label : 'No label',
             $edit_link, $id,
         );
     }
