@@ -15,7 +15,7 @@
     </div>
 
     <div id="sortable" class="sortable">
-      <div show={ isEmpty }>{ trans('Please add a content field.') }</div>
+      <div show={ isEmpty }>{ trans('Please add a piece of content field.') }</div>
       <div each={ fields } data-is="content-field"></div>
     </div>
   </fieldset>
