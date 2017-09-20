@@ -378,7 +378,7 @@ sub asset_userpic {
         $id = $asset->id;
     }
     else {
-        $id = $param->{asset_id} || scalar $app->param('id');
+        $id = $param->{asset_id} || $app->param('id');
         $asset = $app->model('asset')->lookup($id);
     }
 
@@ -2889,8 +2889,11 @@ sub js_save_asset {
 
     my $original = $asset->clone();
 
-    $asset->label( scalar $app->param('label') );
-    $asset->description( scalar $app->param('description') );
+    my $label       = $app->param('label');
+    my $description = $app->param('description');
+
+    $asset->label($label);
+    $asset->description($description);
     $asset->modified_by( $app->user->id ) if $asset->id;
 
     return $app->error(
@@ -3100,17 +3103,17 @@ sub dialog_asset_modal {
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
         && $app->param('can_multi');
 
-    $param{filter} = scalar $app->param('filter')
+    $param{filter} = $app->param('filter')
         if defined $app->param('filter');
-    $param{filter_val} = scalar $app->param('filter_val')
+    $param{filter_val} = $app->param('filter_val')
         if defined $app->param('filter_val');
     $param{search} = $app->param('search') if defined $app->param('search');
-    $param{edit_field} = scalar $app->param('edit_field')
+    $param{edit_field} = $app->param('edit_field')
         if defined $app->param('edit_field');
-    $param{next_mode}    = scalar $app->param('next_mode');
-    $param{no_insert}    = scalar $app->param('no_insert') ? 1 : 0;
-    $param{asset_select} = scalar $app->param('asset_select');
-    $param{require_type} = scalar $app->param('require_type');
+    $param{next_mode}    = $app->param('next_mode');
+    $param{no_insert}    = $app->param('no_insert') ? 1 : 0;
+    $param{asset_select} = $app->param('asset_select');
+    $param{require_type} = $app->param('require_type');
 
     if ($blog_id) {
         $param{blog_id}      = $blog_id;
@@ -3228,8 +3231,8 @@ sub dialog_insert_options {
 
     my %param;
     $param{options_loop} = $options_loop;
-    $param{edit_field} = scalar $app->param('edit_field');
-    $param{new_entry} = $app->param('asset_select') ? 0 : 1;
+    $param{edit_field}   = $app->param('edit_field');
+    $param{new_entry}    = $app->param('asset_select') ? 0 : 1;
 
     $app->load_tmpl( 'dialog/multi_asset_options.tmpl', \%param );
 }
