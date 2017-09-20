@@ -4232,7 +4232,7 @@ sub _hdlr_app_contentfield_option_group {
      id="$type-label"
      label="<__trans phrase="Label">"
      required="1">
-    <input type="text" name="label" id="$type-label" class="text med form-control" oninput={ inputLabel }>
+    <input type="text" ref="label" name="label" id="$type-label" class="text med form-control" oninput={ inputLabel }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -4240,13 +4240,13 @@ sub _hdlr_app_contentfield_option_group {
      label="<__trans phrase="Description">"
      show_hint="1"
      hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-    <input type="text" name="description" id="$type-description" class="form-control" aria-describedby="$type-description-field-help">
+    <input type="text" ref="description" name="description" id="$type-description" class="form-control" aria-describedby="$type-description-field-help">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="$type-required"
      label="<__trans phrase="Is this field required?">">
-    <input type="checkbox" class="mt-switch form-control" id="$type-required" name="required"><label for="$type-required"><__trans phrase="Is this field required?"></label>
+    <input ref="required" type="checkbox" class="mt-switch form-control" id="$type-required" name="required"><label for="$type-required"><__trans phrase="Is this field required?"></label>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -4255,7 +4255,7 @@ sub _hdlr_app_contentfield_option_group {
      required="1"
      show_hint="1"
      hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-    <select name="display" id="$type-display" class="custom-select form-control">
+    <select ref="display" name="display" id="$type-display" class="custom-select form-control">
       <option value="force"><__trans phrase="Force"></option>
       <option value="default" selected="selected"><__trans phrase="Default"></option>
       <option value="optional"><__trans phrase="Optional"></option>
@@ -4266,18 +4266,19 @@ sub _hdlr_app_contentfield_option_group {
   $insides
 
   <div>
-    <button class="btn btn-default"><__trans phrase="Cancel"></button>
-    <button class="btn btn-primary" onclick={ gatheringData }><__trans phrase="Apply"></button>
+    <button type="button" class="btn btn-default"><__trans phrase="Cancel"></button>
+    <button type="button" class="btn btn-primary" onclick={ gatheringData }><__trans phrase="Apply"></button>
   </div>
 
+  this.id = opts.id
   this.on('mount', function() {
     elms = this.root.querySelectorAll('*')
     elms.forEach( function(v) {
       if ( v.hasAttribute('id') ) {
-        v.setAttribute('id', v.getAttribute('id') + '-' + opts.id)
+        v.setAttribute('id', v.getAttribute('id') + '-' + this.id)
       }
       if ( v.tagName.toLowerCase() == 'label' && v.hasAttribute('for') ) {
-        v.setAttribute('for', v.getAttribute('for') + '-' + opts.id)
+        v.setAttribute('for', v.getAttribute('for') + '-' + this.id)
       }
     })
   })
@@ -4288,8 +4289,35 @@ sub _hdlr_app_contentfield_option_group {
   }
 
   gatheringData(e) {
+    data = {}
+    flds = this.refs
+    Object.keys(flds).forEach( function(k) {
+      f = flds[k]
+      if ( f.type == 'checkbox') {
+        val = f.checked ? 1 : 0
+        if ( f.name in data ) {
+          if ( Array.isArray(data[f.name]) ) {
+            data[f.name].push( val )
+          }
+          else {
+            array = [];
+            array.push( data[f.name] )
+            array.push( val )
+          }
+        }
+        else { 
+          data[f.name] = val
+        }
+      }
+      else {
+        data[f.name] = f.value
+      }
+    })
 
-
+    if ( typeof this.gather == 'function' ) {
+      customData = this.gather()
+      jQuery.extend( data, customData);
+    }
   }
 
   $script
