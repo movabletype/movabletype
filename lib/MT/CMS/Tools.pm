@@ -1166,11 +1166,11 @@ sub backup {
     }
     $app->validate_magic() or return;
 
-    my $size = $q->param('size_limit') || 0;
+    my $size = $app->param('size_limit') || 0;
     return $app->errtrans( '[_1] is not a number.', encode_html($size) )
         if $size !~ /^\d+$/;
 
-    my $archive = $q->param('backup_archive_format');
+    my $archive = $app->param('backup_archive_format');
     my $enc     = $app->charset || 'utf-8';
     my @ts      = gmtime(time);
     my $ts      = sprintf "%04d-%02d-%02d-%02d-%02d-%02d", $ts[5] + 1900,
