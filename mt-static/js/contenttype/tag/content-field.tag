@@ -24,7 +24,9 @@
       item = e.item
       index = this.parent.fields.indexOf(item)
       this.parent.fields.splice(index, 1)
-      this.parent.update()
+      this.parent.update({
+        isEmpty: this.parent.fields.length > 0 ? false : true
+      })
     }
   </script>
 </content-field>
