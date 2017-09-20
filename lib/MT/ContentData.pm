@@ -663,7 +663,7 @@ sub _make_content_data_title_html {
     else {
         return MT->translate(
             qq{[_1] (<a href="[_2]">id:[_3]</a>)},
-            $alt_label ? $alt_label : 'No ' . $label,
+            $alt_label ? $alt_label : 'No label',
             $edit_link, $id,
         );
     }
