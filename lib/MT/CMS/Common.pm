@@ -889,9 +889,8 @@ sub edit {
 
 sub list {
     my $app     = shift;
-    my $q       = $app->param;
-    my $type    = $q->param('_type');
-    my $subtype = $q->param('type') ? '.' . $q->param('type') : '';
+    my $type    = $app->param('_type');
+    my $subtype = $app->param('type') ? '.' . $app->param('type') : '';
     my $scope
         = $app->blog ? ( $app->blog->is_blog ? 'blog' : 'website' )
         : defined $app->param('blog_id') ? 'system'
@@ -1015,7 +1014,7 @@ sub list {
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
     my $last_items = $list_pref->{last_items} || [];
-    my $initial_sys_filter = $q->param('filter_key');
+    my $initial_sys_filter = $app->param('filter_key');
     if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
         $initial_sys_filter = $last_filter;
     }
@@ -1290,7 +1289,7 @@ sub list {
     $param{list_columns_json} = $json->encode( \@list_columns );
     $param{filter_types}      = \@filter_types;
     $param{object_type}       = $type;
-    $param{subtype}           = $q->param('type');
+    $param{subtype}           = $app->param('type');
     $param{page_title}        = $screen_settings->{screen_label};
     $param{list_headers}      = \@list_headers;
     $param{build_user_menus}  = $screen_settings->{has_user_properties};
@@ -1387,9 +1386,8 @@ sub list {
 sub filtered_list {
     my $app              = shift;
     my (%forward_params) = @_;
-    my $q                = $app->param;
-    my $blog_id          = $q->param('blog_id') || 0;
-    my $filter_id        = $q->param('fid') || $forward_params{saved_fid};
+    my $blog_id          = $app->param('blog_id') || 0;
+    my $filter_id        = $app->param('fid') || $forward_params{saved_fid};
     my $blog             = $blog_id ? $app->blog : undef;
     my $scope
         = !$blog         ? 'system'
