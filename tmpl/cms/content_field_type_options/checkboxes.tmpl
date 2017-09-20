@@ -38,11 +38,12 @@
     <button onclick={ addRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="add">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_add" /></svg><__trans phrase="add"></button>
   </mtapp:ContentFieldOption>
   
-  this.initialValues = opts.initialValues;
+  <mtapp:ContentFieldOptionScript>
+  this.initialValues = opts.initialValues
   if ( !this.initialValues ) {
   this.initialValues = [{
       "checked": "checked"
-    }];
+    }]
   }
 
   addRow(e) {
@@ -50,13 +51,14 @@
   }
 
   deleteRow(e) {
-    var item = e.item;
-    var index = this.initialValues.indexOf(item);
-    this.initialValues.splice(index, 1);
+    var item = e.item
+    var index = this.initialValues.indexOf(item)
+    this.initialValues.splice(index, 1)
     if ( this.initialValues.length == 0 ) {
       this.initialValues = [{
         "checked": "checked"
-      }];
+      }]
     }
   }
+  </mtapp:ContentFieldOptionScript>
 </mt:app:ContentFieldOptionGroup>
