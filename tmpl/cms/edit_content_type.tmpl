@@ -49,23 +49,21 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-  jQuery(function() {
-    jQuery('input[type="text"]').keyup(function() {
-      setDirty(true);
-    });
-    jQuery('textarea').keyup(function() {
-      setDirty(true);
-    });
-    jQuery('input[type="radio"]').change(function() {
-      setDirty(true);
-    });
-    jQuery('input[type="checkbox"]').change(function() {
-      setDirty(true);
-    });
-    jQuery('select').change(function() {
-      setDirty(true);
-    });
-  };
+  jQuery('input[type="text"]').keyup(function() {
+    setDirty(true);
+  });
+  jQuery('textarea').keyup(function() {
+    setDirty(true);
+  });
+  jQuery('input[type="radio"]').change(function() {
+    setDirty(true);
+  });
+  jQuery('input[type="checkbox"]').change(function() {
+    setDirty(true);
+  });
+  jQuery('select').change(function() {
+    setDirty(true);
+  });
 
 <mt:ignore>
 <mt:if name="name">
