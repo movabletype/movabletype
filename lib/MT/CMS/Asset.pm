@@ -1130,7 +1130,6 @@ sub build_asset_table {
 sub asset_insert_text {
     my $app     = shift;
     my ($param) = @_;
-    my $q       = $app->param;
     my $id      = $app->param('id')
         or return $app->errtrans("Invalid request.");
     require MT::Asset;
@@ -1488,27 +1487,26 @@ sub _upload_file_compat {
             \%param
         );
     };
-    my $q = $app->param;
     my ( $fh, $info ) = $app->upload_info('file');
     my $mimetype;
     if ($info) {
         $mimetype = $info->{'Content-Type'};
     }
-    my $has_overwrite = $q->param('overwrite_yes')
-        || $q->param('overwrite_no');
+    my $has_overwrite = $app->param('overwrite_yes')
+        || $app->param('overwrite_no');
     my %param = (
-        entry_insert => scalar( $q->param('entry_insert') ),
-        middle_path  => scalar( $q->param('middle_path') ),
-        edit_field   => scalar( $q->param('edit_field') ),
-        site_path    => scalar( $q->param('site_path') ),
-        extra_path   => scalar( $q->param('extra_path') ),
+        entry_insert => scalar( $app->param('entry_insert') ),
+        middle_path  => scalar( $app->param('middle_path') ),
+        edit_field   => scalar( $app->param('edit_field') ),
+        site_path    => scalar( $app->param('site_path') ),
+        extra_path   => scalar( $app->param('extra_path') ),
         upload_mode  => $app->mode,
     );
     return $eh->(
         $app, %param,
         error => $app->translate("Please select a file to upload.")
     ) if !$fh && !$has_overwrite;
-    my $basename = $q->param('file') || $q->param('fname');
+    my $basename = $app->param('file') || $app->param('fname');
     $basename =~ s!\\!/!g;    ## Change backslashes to forward slashes
     $basename =~ s!^.*/!!;    ## Get rid of full directory paths
     if ( $basename =~ m!\.\.|\0|\|! ) {
@@ -1563,7 +1561,7 @@ sub _upload_file_compat {
         $local_file,     $asset_file,   $base_url,
         $asset_base_url, $relative_url, $relative_path
     );
-    if ( $blog_id = $q->param('blog_id') ) {
+    if ( $blog_id = $app->param('blog_id') ) {
         unless ($has_overwrite) {
             if ( my $ext_new = MT::Image->get_image_type($fh) ) {
                 my $ext_old
@@ -1591,7 +1589,7 @@ sub _upload_file_compat {
         ## at either the Local Site Path or Local Archive Path, and could
         ## include an extra directory or two in the middle.
         my ( $root_path, $middle_path );
-        if ( $q->param('site_path') ) {
+        if ( $app->param('site_path') ) {
             $root_path = $blog->site_path;
         }
         else {
@@ -1602,8 +1600,8 @@ sub _upload_file_compat {
                 'Movable Type was unable to write to the "Upload Destination". Please make sure that the webserver can write to this folder.'
             )
         ) unless -d $root_path;
-        $relative_path = $q->param('extra_path')  || '';
-        $middle_path   = $q->param('middle_path') || '';
+        $relative_path = $app->param('extra_path')  || '';
+        $middle_path   = $app->param('middle_path') || '';
         my $relative_path_save = $relative_path;
         if ( $middle_path ne '' ) {
             $relative_path = $middle_path
@@ -1615,7 +1613,7 @@ sub _upload_file_compat {
             @$path_info{qw(rootPath relativePath basename)}
                 = ( $root_path, $relative_path, $basename );
 
-            if ( $q->param('auto_rename_if_exists') ) {
+            if ( $app->param('auto_rename_if_exists') ) {
                 _rename_if_exists( $app, $fmgr, $path_info );
             }
 
@@ -1659,7 +1657,7 @@ sub _upload_file_compat {
             = $relative_path
             ? File::Spec->catfile( $relative_path, $basename )
             : $basename;
-        $asset_file = $q->param('site_path') ? '%r' : '%a';
+        $asset_file = $app->param('site_path') ? '%r' : '%a';
         $relative_path =~ s/^[\/\\]//;
         $asset_file = File::Spec->catfile( $asset_file, $relative_path );
         $local_file = File::Spec->catfile( $path,       $basename );
@@ -1678,7 +1676,7 @@ sub _upload_file_compat {
         ## tempfile, then ask for confirmation of the upload.
         if ( $fmgr->exists($local_file) ) {
             if ($has_overwrite) {
-                my $tmp = $q->param('temp');
+                my $tmp = $app->param('temp');
 
                 return $app->error(
                     $app->translate( "Invalid temp file name '[_1]'", $tmp ) )
@@ -1686,7 +1684,7 @@ sub _upload_file_compat {
 
                 my $tmp_dir = $app->config('TempDir');
                 my $tmp_file = File::Spec->catfile( $tmp_dir, $tmp );
-                if ( $q->param('overwrite_yes') ) {
+                if ( $app->param('overwrite_yes') ) {
                     $fh = gensym();
                     open $fh, '<',
                         $tmp_file
@@ -1765,13 +1763,13 @@ sub _upload_file_compat {
                     $app,
                     temp         => $tmp,
                     extra_path   => $relative_path_save,
-                    site_path    => scalar $q->param('site_path'),
-                    asset_select => scalar $q->param('asset_select'),
-                    entry_insert => scalar $q->param('entry_insert'),
+                    site_path    => scalar $app->param('site_path'),
+                    asset_select => scalar $app->param('asset_select'),
+                    entry_insert => scalar $app->param('entry_insert'),
                     edit_field   => scalar $app->param('edit_field'),
                     middle_path  => $middle_path,
                     fname        => $basename,
-                    no_insert    => $q->param('no_insert') || "",
+                    no_insert    => $app->param('no_insert') || "",
                     (   $extension_message
                         ? ( extension_message => $extension_message )
                         : ()
@@ -1888,8 +1886,8 @@ sub _upload_file_compat {
 
     ## If we are overwriting the file, that means we still have a temp file
     ## lying around. Delete it.
-    if ( $q->param('overwrite_yes') ) {
-        my $tmp = $q->param('temp');
+    if ( $app->param('overwrite_yes') ) {
+        my $tmp = $app->param('temp');
 
         return $app->error(
             $app->translate( "Invalid temp file name '[_1]'", $tmp ) )
@@ -1978,7 +1976,7 @@ sub _upload_file_compat {
         $asset->image_width($w);
         $asset->image_height($h);
 
-        if ( $q->param('normalize_orientation') ) {
+        if ( $app->param('normalize_orientation') ) {
             $asset->normalize_orientation;
         }
 
