@@ -2858,15 +2858,15 @@ sub restore_directory {
         return ( undef, undef );
     }
 
-    my $q              = $app->param;
     my $schema_version = $app->config->SchemaVersion;
 
     #my $schema_version =
-    #  $q->param('ignore_schema_conflict')
+    #  $app->param('ignore_schema_conflict')
     #  ? 'ignore'
     #  : $app->config('SchemaVersion');
 
-    my $overwrite_template = $q->param('overwrite_global_templates') ? 1 : 0;
+    my $overwrite_template
+        = $app->param('overwrite_global_templates') ? 1 : 0;
 
     my @errors;
     my %error_assets;
