@@ -614,7 +614,7 @@ sub edit {
                     map { { id => $_->{id}, label => $_->{options}{label} } }
                         grep {
                                $_->{type} eq 'date_and_time'
-                            && $_->{required}
+                            && $_->{options}{required}
                         } @$fields
                 ],
             };
@@ -1803,7 +1803,7 @@ sub _populate_archive_loop {
                         }
                         grep {
                                $_->{type} eq 'date_and_time'
-                            && $_->{required}
+                            && $_->{options}{required}
                         } @$fields
                 ],
             };
