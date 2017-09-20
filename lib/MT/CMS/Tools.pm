@@ -969,8 +969,6 @@ sub recover_profile_password {
     return $app->permission_denied()
         unless $app->user->is_superuser();
 
-    my $q = $app->param;
-
     require MT::Auth;
     require MT::Log;
     if ( !MT::Auth->can_recover_password ) {
@@ -987,7 +985,7 @@ sub recover_profile_password {
             "Cannot recover the password in this configuration");
     }
 
-    my $author_id = $q->param('author_id');
+    my $author_id = $app->param('author_id');
     my $author    = MT::Author->load($author_id);
 
     return $app->error( $app->translate("Invalid author_id") )
