@@ -1124,10 +1124,9 @@ sub start_restore {
 sub backup {
     my $app      = shift;
     my $user     = $app->user;
-    my $q        = $app->param;
-    my $blog_id  = $q->param('blog_id');
+    my $blog_id  = $app->param('blog_id');
     my $perms    = $app->permissions;
-    my $blog_ids = $q->param('backup_what') || '';
+    my $blog_ids = $app->param('backup_what') || '';
     my @blog_ids = split ',', $blog_ids;
 
     require MT::Util::Log;
