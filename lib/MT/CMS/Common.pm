@@ -1778,8 +1778,7 @@ sub save_list_prefs {
 
 sub delete {
     my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $type = $app->param('_type');
 
     return $app->errtrans("Invalid request.")
         unless $type;
