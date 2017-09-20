@@ -106,8 +106,7 @@ sub _cs_single_select_options {
 
 sub _make_name_html {
     my ( $prop, $obj, $app ) = @_;
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $mode    = $prop->{link_mode};
 
     my $name      = MT::Util::encode_html( $obj->name );
