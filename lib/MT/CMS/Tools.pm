@@ -1551,10 +1551,8 @@ sub restore {
 
     MT::Util::Log->info('=== Start import.');
 
-    my $q = $app->param;
-
     my ($fh) = $app->upload_info('file');
-    my $uploaded = $q->param('file');
+    my $uploaded = $app->param('file');
     my ( $volume, $directories, $uploaded_filename );
     ( $volume, $directories, $uploaded_filename )
         = File::Spec->splitpath($uploaded)
