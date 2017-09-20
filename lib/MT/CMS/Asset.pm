@@ -2071,17 +2071,16 @@ sub _upload_file {
         start_upload(@_);
     };
 
-    my $q = $app->param;
     my ( $fh, $info ) = $app->upload_info('file');
     my $mimetype;
     if ($info) {
         $mimetype = $info->{'Content-Type'};
     }
     my %param = (
-        entry_insert => scalar( $q->param('entry_insert') ),
-        edit_field   => scalar( $q->param('edit_field') ),
-        destination  => scalar( $q->param('destination') ),
-        extra_path   => scalar( $q->param('extra_path') ),
+        entry_insert => scalar( $app->param('entry_insert') ),
+        edit_field   => scalar( $app->param('edit_field') ),
+        destination  => scalar( $app->param('destination') ),
+        extra_path   => scalar( $app->param('extra_path') ),
         upload_mode  => $app->mode,
     );
     return $eh->(
@@ -2089,7 +2088,7 @@ sub _upload_file {
         error => $app->translate("Please select a file to upload.")
     ) if !$fh;
 
-    my $basename = $q->param('file') || $q->param('fname');
+    my $basename = $app->param('file') || $app->param('fname');
     $basename =~ s!\\!/!g;    ## Change backslashes to forward slashes
     $basename =~ s!^.*/!!;    ## Get rid of full directory paths
     if ( $basename =~ m!\.\.|\0|\|! ) {
@@ -2162,7 +2161,7 @@ sub _upload_file {
         $asset_base_url, $relative_url, $extra_path
     );
     my $label = $basename;
-    if ( $blog_id = $q->param('blog_id') ) {
+    if ( $blog_id = $app->param('blog_id') ) {
 
         $param{blog_id} = $blog_id;
         require MT::Blog;
@@ -2172,7 +2171,7 @@ sub _upload_file {
         $fmgr = $blog->file_mgr;
 
         ## Build upload destination path
-        my $dest = $q->param('destination');
+        my $dest = $app->param('destination');
         my $dest_url;
         my $root_path;
         my $is_sitepath;
@@ -2189,7 +2188,7 @@ sub _upload_file {
         $dest = MT::Util::build_upload_destination($dest);
 
         # Make directory if not exists
-        $extra_path = $q->param('extra_path') || '';
+        $extra_path = $app->param('extra_path') || '';
         if ($extra_path) {
             if ( $extra_path =~ m!\.\.|\0|\|! ) {
                 return $eh->(
@@ -2229,16 +2228,18 @@ sub _upload_file {
                 ( $root_path, $extra_path, $basename ) );
 
             if ( $fmgr->exists($local_file) ) {
-                if ( $q->param('operation_if_exists') == 1 ) {
+                my $operation_if_exists
+                    = $app->param('operation_if_exists') || 0;
+                if ( $operation_if_exists == 1 ) {
 
                     # Auto-rename
                     _rename_filename( $app, $path_info );
                 }
-                elsif ( $q->param('operation_if_exists') == 2 ) {
+                elsif ( $operation_if_exists == 2 ) {
 
                     # Overwrite, do nothing
                 }
-                elsif ( $q->param('operation_if_exists') == 3 ) {
+                elsif ( $operation_if_exists == 3 ) {
 
                     # Call cancel handler
                     return $cancel_handler->(
@@ -2260,7 +2261,7 @@ sub _upload_file {
             }
 
             # Rename non-ascii filename automatically if option provided.
-            if (   $q->param('auto_rename_non_ascii')
+            if (   $app->param('auto_rename_non_ascii')
                 && $path_info->{basename} =~ m/[^\x20-\x7E]/ )
             {
                 # Auto-rename
@@ -2323,7 +2324,7 @@ sub _upload_file {
 
         # Rename non-ascii filename automatically if option provided.
         my $path_info = { basename => $stem };
-        if (   $q->param('auto_rename_non_ascii')
+        if (   $app->param('auto_rename_non_ascii')
             && $path_info->{basename} =~ m/[^\x20-\x7E]/ )
         {
             # Auto-rename
@@ -2333,7 +2334,7 @@ sub _upload_file {
         $local_file = File::Spec->catfile( $param{support_path},
             $unique_stem . $type );
         if ( $fmgr->exists($local_file) ) {
-            my $operation_if_exists = $q->param('operation_if_exists') || 0;
+            my $operation_if_exists = $app->param('operation_if_exists') || 0;
             if ( $operation_if_exists == 1 ) {
 
                 # Auto-rename
@@ -2514,7 +2515,7 @@ sub _upload_file {
         $asset->image_width($w);
         $asset->image_height($h);
 
-        if ( $q->param('normalize_orientation') ) {
+        if ( $app->param('normalize_orientation') ) {
             $asset->normalize_orientation;
         }
 
