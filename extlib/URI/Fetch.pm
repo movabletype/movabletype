@@ -1,15 +1,15 @@
-# $Id: Fetch.pm 1952 2006-07-25 05:41:24Z btrott $
-
 package URI::Fetch;
+$URI::Fetch::VERSION = '0.13';
+use 5.008_001;
 use strict;
+use warnings;
+
 use base qw( Class::ErrorHandler );
 
 use LWP::UserAgent;
 use Carp qw( croak );
 use URI;
 use URI::Fetch::Response;
-
-our $VERSION = '0.08';
 
 our $HAS_ZLIB;
 BEGIN {
@@ -67,9 +67,12 @@ sub fetch {
         return undef if $p_no_net == 1;
     }
 
-    $ua ||= LWP::UserAgent->new;
-    $ua->agent(join '/', $class, $class->VERSION)
-        if $ua->agent =~ /^libwww-perl/;
+    $ua ||= do {
+        my $ua = LWP::UserAgent->new;
+        $ua->agent(join '/', $class, $class->VERSION);
+        $ua->env_proxy;
+        $ua;
+    };
 
     my $req = HTTP::Request->new(GET => $uri);
     if ($HAS_ZLIB) {
@@ -131,7 +134,7 @@ sub fetch {
     if ($cache &&
         ($p_cache_grep ? $p_cache_grep->($fetch) : 1)) {
 
-        $cache->set($fetch->uri, $freeze->({
+        $cache->set($uri, $freeze->({
             ETag         => $fetch->etag,
             LastModified => $fetch->last_modified,
             Content      => $fetch->content,
@@ -156,9 +159,10 @@ URI::Fetch - Smart URI fetching/caching
     ## Simple fetch.
     my $res = URI::Fetch->fetch('http://example.com/atom.xml')
         or die URI::Fetch->errstr;
+    do_something($res->content) if $res->is_success;
 
     ## Fetch using specified ETag and Last-Modified headers.
-    my $res = URI::Fetch->fetch('http://example.com/atom.xml',
+    $res = URI::Fetch->fetch('http://example.com/atom.xml',
             ETag => '123-ABC',
             LastModified => time - 3600,
     )
@@ -166,7 +170,7 @@ URI::Fetch - Smart URI fetching/caching
 
     ## Fetch using an on-disk cache that URI::Fetch manages for you.
     my $cache = Cache::File->new( cache_root => '/tmp/cache' );
-    my $res = URI::Fetch->fetch('http://example.com/atom.xml',
+    $res = URI::Fetch->fetch('http://example.com/atom.xml',
             Cache => $cache
     )
         or die URI::Fetch->errstr;
@@ -226,6 +230,18 @@ Signals that a page/feed is gone and will never be coming back,
 so you should stop trying to fetch it.
 
 =back
+
+=back
+
+=head2 Change from 0.09
+
+If you make a request using a cache and get back a 304 response code
+(Not Modified), then if the content was returned from the cache,
+then C<is_success()> will return true, and C<$response-E<gt>content>
+will contain the cached content.
+
+I think this is the right behaviour, given the philosophy of C<URI::Fetch>,
+but please let me (NEILB) know if you disagree.
 
 =head1 USAGE
 
@@ -348,6 +364,10 @@ using the C<errstr> method on the class.
 
 =back
 
+=head1 REPOSITORY
+
+L<https://github.com/neilbowers/URI-Fetch>
+
 =head1 LICENSE
 
 I<URI::Fetch> is free software; you may redistribute it and/or modify it
@@ -358,4 +378,27 @@ under the same terms as Perl itself.
 Except where otherwise noted, I<URI::Fetch> is Copyright 2004 Benjamin
 Trott, ben+cpan@stupidfool.org. All rights reserved.
 
+Currently maintained by Neil Bowers.
+
+=head1 CONTRIBUTORS
+
+=over 4
+
+=item * Tim Appnel
+
+=item * Mario Domgoergen
+
+=item * Karen Etheridge
+
+=item * Brad Fitzpatrick
+
+=item * Jason Hall
+
+=item * Naoya Ito
+
+=item * Tatsuhiko Miyagawa
+
+=back
+
 =cut
+

@@ -1,10 +1,10 @@
-#!/usr/bin/perl
-
 package HTML::Diff;
 
-$VERSION = '0.561';
+our $VERSION = '0.60';
 
+use 5.006;
 use strict;
+use warnings;
 
 use Exporter;
 our @ISA = qw(Exporter);
@@ -172,9 +172,17 @@ sub word_diff {
 
 1;
 
-=pod
+=head1 NAME
 
-=head1 HTML::Diff
+HTML::Diff - compare two HTML strings and return a list of differences
+
+=head1 SYNOPSIS
+
+ use HTML::Diff;
+
+ $result = html_word_diff($left_text, $right_text);
+
+=head1 DESCRIPTION
 
 This module compares two strings of HTML and returns a list of a
 chunks which indicate the diff between the two input strings, where
@@ -187,12 +195,6 @@ produce the correct answer. But there may be some invalid HTML
 documents for which it gives you the answer you're looking for. Your
 mileage may vary; test it on lots of inputs from your domain before
 relying on it.
-
-=head1 SYNOPSIS
-
-    $result = html_word_diff($left_text, $right_text);
-
-=head1 DESCRIPTION
 
 Returns a reference to a list of triples [<flag>, <left>, <right>].
 Each triple represents a check of the input texts. The flag tells you
@@ -216,14 +218,28 @@ one of the neighboring words. For balanced tags, such as <b> </b>, it
 is intended that a change to the tag will be treated as a change to
 all words in between.
 
-=head1 AUTHOR
-
-Whipped up by Ezra elias kilty Cooper, <ezra@ezrakilty.net>.
-
-Patch contributed by Adam <asjo@koldfront.dk>.
-
 =head1 SEE ALSO
 
-Algorithm::Diff
+L<Algorithm::Diff> provides the diff algorithm used in this module.
+
+L<XML::Diff> can generate a diff between two XML files, and also
+patch an XML file, given a diff.
+
+=head1 REPOSITORY
+
+L<https://github.com/neilb/html-diff>
+
+=head1 AUTHOR
+
+Whipped up by Ezra elias kilty Cooper, E<lt>ezra@ezrakilty.netE<gt>.
+
+Patch contributed by Adam E<lt>asjo@koldfront.dkE<gt>.
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2003-2014 by Ezra elias kilty Cooper, E<lt>ezra@ezrakilty.netE<gt>
+
+This program is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
 
 =cut

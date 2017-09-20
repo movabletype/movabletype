@@ -1,11 +1,11 @@
-package URI::nntp;  # draft-gilman-news-url-01
+package URI::sftp;
 
 use strict;
 use warnings;
 
+use parent 'URI::ssh';
+
 our $VERSION = '1.72';
 $VERSION = eval $VERSION;
-
-use parent 'URI::news';
 
 1;

@@ -1,4 +1,4 @@
-# $Id: Productions.pm,v 1.13 2008-08-05 12:37:13 grant Exp $
+# $Id$
 
 package XML::SAX::PurePerl::Productions;
 
