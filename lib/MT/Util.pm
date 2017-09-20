@@ -2396,6 +2396,7 @@ sub multi_iter {
 
 sub trim {
     my $string = shift;
+    return unless defined $string;
     $string = ltrim($string);
     $string = rtrim($string);
     $string;
@@ -2403,12 +2404,14 @@ sub trim {
 
 sub ltrim {
     my $string = shift;
+    return unless defined $string;
     $string =~ s/^\s+//;
     $string;
 }
 
 sub rtrim {
     my $string = shift;
+    return unless defined $string;
     $string =~ s/\s+$//;
     $string;
 }
