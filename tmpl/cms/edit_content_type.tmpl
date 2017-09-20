@@ -53,7 +53,16 @@
     jQuery('input[type="text"]').keyup(function() {
       setDirty(true);
     });
+    jQuery('textarea').keyup(function() {
+      setDirty(true);
+    });
     jQuery('input[type="radio"]').change(function() {
+      setDirty(true);
+    });
+    jQuery('input[type="checkbox"]').change(function() {
+      setDirty(true);
+    });
+    jQuery('select').change(function() {
       setDirty(true);
     });
 
