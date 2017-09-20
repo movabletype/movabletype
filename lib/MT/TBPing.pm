@@ -120,8 +120,11 @@ sub list_props {
                     = MT::Util::encode_html( $obj->blog_name || '' );
                 my $title = MT::Util::encode_html( $obj->title      || '' );
                 my $url   = MT::Util::encode_html( $obj->source_url || '' );
-                my $view_img
-                    = MT->static_path . 'images/status_icons/view.gif';
+                my $view_img = qq{
+                    <svg title="View" role="img" class="mt-icon mt-icon--sm">
+                        <use xlink:href="${static_uri}images/sprite.svg#ic_permalink">
+                    </svg>
+                };
                 my $ping_from
                     = MT->translate(
                     '<a href="[_1]">Ping from: [_2] - [_3]</a>',
@@ -134,7 +137,7 @@ sub list_props {
                     <span class="ping-from">$ping_from</span>
                     <span class="view-link">
                       <a href="$url" target="_blank">
-                        <img alt="View" src="$view_img" />
+                        $view_img
                       </a>
                     </span>
                     <p class="ping-excerpt description">$text</p>
