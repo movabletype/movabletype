@@ -1,8 +1,8 @@
 <content-field>
-  <div class="mt-collapse mb-2" draggable="true" aria-grabbed="false" id="content-field-block-{ id }">
+  <div class="content-field-block mt-collapse mb-2" draggable="true" aria-grabbed="false" id="content-field-block-{ id }">
     <div class="mt-collapse__container">
       <div class="col">
-        <svg title="{ trans('ContentField') }" role="img" class="mt-icon--secondary"><use xlink:href="{ StaticURI }images/sprite.svg#ic_contentstype" /></svg>{ label }
+        <svg title="{ trans('ContentField') }" role="img" class="mt-icon--secondary"><use xlink:href="{ StaticURI }images/sprite.svg#ic_contentstype" /></svg>{ label } ({ typeLabel })
       </div>
       <div class="col-auto">
         <a data-toggle="collapse" href="#field-options-{ id }" aria-expanded="false" aria-controls="field-options-{ id }"><svg title="{ trans('Edit') }" role="img" class="mt-icon"><use xlink:href="{ StaticURI }images/sprite.svg#ic_edit" /></svg> { trans('Setting') }</a>

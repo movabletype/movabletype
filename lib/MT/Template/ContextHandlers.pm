@@ -4232,7 +4232,7 @@ sub _hdlr_app_contentfield_option_group {
      id="$type-label"
      label="<__trans phrase="Label">"
      required="1">
-    <input type="text" name="label" id="$type-label" class="text med form-control">
+    <input type="text" name="label" id="$type-label" class="text med form-control" oninput={ inputLabel }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -4267,7 +4267,7 @@ sub _hdlr_app_contentfield_option_group {
 
   <div>
     <button class="btn btn-default"><__trans phrase="Cancel"></button>
-    <button class="btn btn-primary"><__trans phrase="Apply"></button>
+    <button class="btn btn-primary" onclick={ gatheringData }><__trans phrase="Apply"></button>
   </div>
 
   this.on('mount', function() {
@@ -4281,6 +4281,16 @@ sub _hdlr_app_contentfield_option_group {
       }
     })
   })
+
+  inputLabel(e) {
+    this.parent.label = e.target.value
+    this.parent.update()
+  }
+
+  gatheringData(e) {
+
+
+  }
 
   $script
 </$type>

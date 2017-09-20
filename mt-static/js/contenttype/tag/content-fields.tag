@@ -16,17 +16,17 @@
   <script>
     this.fields = opts.fields;
     this.currentType = opts.types[0].type;
+    this.currentTypeLabel = opts.types[0].label;
     changeType(e) {
-      console.log('current: ' + this.currentType);
       this.currentType = e.target.options[e.target.selectedIndex].value;
-      console.log('New: ' + this.currentType);
+      this.currentTypeLabel = e.target.options[e.target.selectedIndex].text;
     }
 
     addField(e) {
       var newId = Math.floor(10000*Math.random()).toString(16);
       var field = {
         'type': this.currentType,
-        'label' : this.currentType,
+        'typeLabel' : this.currentTypeLabel,
         'id' : newId,
         'isShow': 'show'
       };
