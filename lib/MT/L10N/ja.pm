@@ -992,6 +992,51 @@ use vars qw( @ISA %Lexicon );
 	'YEARLY_ADV' => '年別',
 	'yyyy/index.html' => 'yyyy/index.html',
 
+## lib/MT/ArchiveType/ContentType.pm
+        'CONTENTTYPE_ADV' => 'コンテンツタイプ別',
+
+## lib/MT/ArchiveType/ContentTypeDaily.pm
+        'CONTENTTYPE-DAILY_ADV' => 'コンテンツタイプ 日別',
+
+## lib/MT/ArchiveType/ContentTypeWeekly.pm
+        'CONTENTTYPE-WEEKLY_ADV' => 'コンテンツタイプ 週別',
+
+## lib/MT/ArchiveType/ContentTypeMonthly.pm
+        'CONTENTTYPE-MONTHLY_ADV' => 'コンテンツタイプ 月別',
+
+## lib/MT/ArchiveType/ContentTypeYearly.pm
+        'CONTENTTYPE-YEARLY_ADV' => 'コンテンツタイプ 年別',
+
+## lib/MT/ArchiveType/ContentTypeCategory.pm
+        'CONTENTTYPE-CATEGORY_ADV' => 'コンテンツタイプ カテゴリ別',
+
+## lib/MT/ArchiveType/ContentTypeCategoryDaily.pm
+        'CONTENTTYPE-CATEGORY-DAILY_ADV' => 'コンテンツタイプ カテゴリ 日別',
+
+## lib/MT/ArchiveType/ContentTypeCategoryWeekly.pm
+        'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'コンテンツタイプ カテゴリ 週別',
+
+## lib/MT/ArchiveType/ContentTypeCategoryMonthly.pm
+        'CONTENTTYPE-CATEGORY-MONTHLY_ADV' => 'コンテンツタイプ カテゴリ 月別',
+
+## lib/MT/ArchiveType/ContentTypeCategoryYearly.pm
+        'CONTENTTYPE-CATEGORY-YEARLY_ADV' => 'コンテンツタイプ カテゴリ 年別',
+
+## lib/MT/ArchiveType/ContentTypeAuthor.pm
+        'CONTENTTYPE-AUTHOR_ADV' => 'コンテンツタイプ ユーザー別',
+
+## lib/MT/ArchiveType/ContentTypeAuthorDaily.pm
+        'CONTENTTYPE-AUTHOR-DAILY_ADV' => 'コンテンツタイプ ユーザー 日別',
+
+## lib/MT/ArchiveType/ContentTypeAuthorWeekly.pm
+        'CONTENTTYPE-AUTHOR-WEEKLY_ADV' => 'コンテンツタイプ ユーザー 週別',
+
+## lib/MT/ArchiveType/ContentTypeAuthorMonthly.pm
+        'CONTENTTYPE-AUTHOR-MONTHLY_ADV' => 'コンテンツタイプ ユーザー 月別',
+
+## lib/MT/ArchiveType/ContentTypeAuthorYearly.pm
+        'CONTENTTYPE-AUTHOR-YEARLY_ADV' => 'コンテンツタイプ ユーザー 年別',
+
 ## lib/MT/Asset.pm
 	'Deleted' => '削除済み',
 	'Enabled' => '有効',

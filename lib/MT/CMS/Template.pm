@@ -1684,6 +1684,12 @@ sub _populate_archive_loop {
     my $app = shift;
     my ( $blog, $obj ) = @_;
 
+    my $has_cat_field = MT::ContentField->count(
+        {   content_type_id => $obj->content_type_id,
+            type            => 'categories',
+        }
+    );
+
     my $index = $app->config('IndexBasename');
     my $ext = $blog->file_extension || '';
     $ext = '.' . $ext if $ext ne '';
@@ -1724,6 +1730,8 @@ sub _populate_archive_loop {
         my $tmpls     = $archiver->default_archive_templates;
         my $tmpl_loop = [];
         foreach (@$tmpls) {
+            next
+                if !$has_cat_field && $_->{required_fields}{category};
             my $name = $_->{label};
             $name =~ s/\.html$/$ext/;
             $name =~ s/index$ext$/$index$ext/;

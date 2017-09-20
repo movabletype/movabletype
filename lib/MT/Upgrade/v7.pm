@@ -5,7 +5,7 @@ use warnings;
 sub upgrade_functions {
     return {
         'v7_reset_default_widget' => {
-            version_limit => 7.0009,
+            version_limit => 7.0012,
             priority      => 5.0,
             updater       => {
                 type  => 'author',
@@ -14,19 +14,33 @@ sub upgrade_functions {
             },
         },
         'v7_create_new_role' => {
-            version_limit => 7.0000,
+            version_limit => 7.0012,
             priority      => 3.1,
             code          => \&_v7_create_new_role,
         },
         'v7_migrate_website_administrator' => {
-            version_limit => 7.0000,
+            version_limit => 7.0012,
             priority      => 3.2,
             code          => \&_v7_migrate_role,
         },
         'v7_migrate_privileges' => {
-            version_limit => 7.0000,
+            version_limit => 7.0012,
             priority      => 3.3,
             code          => \&_v7_migrate_privileges,
+        },
+        'v7_rebuild_permissions' => {
+            version_limit => 7.0012,
+            priority      => 3.4,
+            updater       => {
+                type  => 'permission',
+                label => 'Rebuilding permissions...',
+                code  => sub { $_[0]->rebuild; },
+            },
+        },
+        'v7_migrate_system_privileges' => {
+            code          => \&_migrate_system_privileges,
+            version_limit => 7.0012,
+            priority      => 3.5,
         },
     };
 }
@@ -253,5 +267,31 @@ sub _v7_migrate_privileges {
     }
 }
 
-1;
+sub _migrate_system_privileges {
+    my $self = shift;
 
+    require MT::Author;
+    my $author_iter
+        = MT::Author->load_iter( { type => MT::Author::AUTHOR() } );
+    $self->progress(
+        $self->translate_escape(
+            'Migrating system level permissions to new structure...')
+    );
+    while ( my $author = $author_iter->() ) {
+        $author->is_superuser(1) if $author->is_superuser();
+
+        if ( $author->type != MT::Author::COMMENTER() ) {
+            my $perm_count
+                = MT->model('association')
+                ->count(
+                { 'author_id' => $author->id, 'blog_id' => { not => '0' } } );
+            if ($perm_count) {
+                $author->can_sign_in_cms(1);
+                $author->can_sign_in_data_api(1);
+            }
+        }
+        $author->save();
+    }
+}
+
+1;

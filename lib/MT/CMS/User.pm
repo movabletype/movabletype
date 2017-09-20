@@ -1261,8 +1261,7 @@ PERMCHECK: {
         if (   $app->param('type')
             && $app->param('type') eq 'website'
             && UNIVERSAL::isa( $obj, 'MT::Role' )
-            && $obj->has('administer_site')
-            && !$obj->has('administer_site') )
+            && $obj->has('administer_site') )
         {
             $row->{disabled} = 1;
         }
