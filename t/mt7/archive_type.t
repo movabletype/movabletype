@@ -72,6 +72,10 @@ my $author = MT::Test::Permission->make_author(
     name     => 'yishikawa',
     nickname => 'Yuki Ishikawa',
 );
+my $author2 = MT::Test::Permission->make_author(
+    name     => 'myanagida',
+    nickname => 'Masahiro Yanagida',
+);
 
 my $cd = MT::Test::Permission->make_content_data(
     blog_id         => $blog->id,
@@ -103,7 +107,21 @@ my $cd2 = MT::Test::Permission->make_content_data(
         $cf_category->id => [ $category1->id ],
     },
 );
+my $cd_no_category_author2 = MT::Test::Permission->make_content_data(
+    blog_id         => $blog->id,
+    content_type_id => $ct->id,
+    author_id       => $author2->id,
+    authored_on     => '20160909130530',
+    data            => { $cf_datetime->id => '20180603180500', },
+);
 
+my $content_type_text = <<TEXT;
+<\$mt:ArchiveTitle\$>
+<\$mt:ContentTitle\$>
+<mt:Archives><mt:ArchiveList><mt:ArchiveListHeader>Header</mt:ArchiveListHeader>
+<\$mt:ArchiveDate format="%Y/%m/%d"\$>
+<mt:ArchiveListFooter>Footer</mt:ArchiveListFooter></mt:ArchiveList></mt:Archives>
+TEXT
 my $text = <<TEXT;
 <\$mt:ArchiveTitle\$>
 <mt:Contents>a</mt:Contents>
@@ -116,7 +134,7 @@ my $tmpl = MT::Test::Permission->make_template(
     content_type_id => $cd->id,
     name            => 'ContentType Test',
     type            => 'ct',
-    text            => $text,
+    text            => $content_type_text,
 );
 my $tmpl_archive = MT::Test::Permission->make_template(
     blog_id         => $blog->id,
@@ -129,42 +147,51 @@ my $tmpl_archive = MT::Test::Permission->make_template(
 my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
 
 my $contents_html = {
-    none_ao    => "\naaa\n",
-    none_cf    => "\naaa\n",
-    daily_ao   => "\na\n",
-    daily_cf   => "\naaa\n",
-    weekly_ao  => "\na\n",
-    weekly_cf  => "\naaa\n",
-    monthly_ao => "\na\n",
-    monthly_cf => "\naaa\n",
-    yearly_ao  => "\naaa\n",
-    yearly_cf  => "\naaa\n",
+    content_type => "\nSample Content Data\n",
+    none_ao      => "\naaa\n",
+    none_cf      => "\naaa\n",
+    daily_ao     => "\na\n",
+    daily_cf     => "\naaa\n",
+    weekly_ao    => "\na\n",
+    weekly_cf    => "\naaa\n",
+    monthly_ao   => "\na\n",
+    monthly_cf   => "\naaa\n",
+    yearly_ao    => "\naaa\n",
+    yearly_cf    => "\naaa\n",
 };
 my $archive_list_header = "Header\n";
 my $archive_date        = {
-    ct_ao      => "2017/10/09\n\n2017/09/09\n\n2017/08/09\n",
-    ct_cf      => "2017/06/03\n\n2017/06/03\n\n2017/06/03\n",
-    none_ao    => "2017/09/09\n",
-    none_cf    => "2017/06/03\n",
-    daily_ao   => "2017/10/09\n\n2017/09/09\n\n2017/08/09\n",
-    daily_cf   => "2017/06/03\n",
-    weekly_ao  => "2017/10/08\n\n2017/09/03\n\n2017/08/06\n",
-    weekly_cf  => "2017/05/28\n",
-    monthly_ao => "2017/08/01\n\n2017/09/01\n\n2017/10/01\n",
-    monthly_cf => "2017/06/01\n",
-    yearly_ao  => "2017/01/01\n",
-    yearly_cf  => "2017/01/01\n",
+    ct_ao                => "2017/10/09\n\n2017/09/09\n\n2017/08/09\n\n2016/09/09\n",
+    ct_cf                => "2017/06/03\n\n2017/06/03\n\n2017/06/03\n\n2018/06/03\n",
+    none_ao              => "2017/09/09\n",
+    none_cf              => "2017/06/03\n",
+    dated_only_daily_ao  => "2017/10/09\n\n2017/09/09\n\n2017/08/09\n\n2016/09/09\n",
+    dated_only_daily_cf  => "2018/06/03\n\n2017/06/03\n",
+    daily_ao             => "2017/10/09\n\n2017/09/09\n\n2017/08/09\n",
+    daily_cf             => "2017/06/03\n",
+    dated_only_weekly_ao => "2017/10/08\n\n2017/09/03\n\n2017/08/06\n\n2016/09/04\n",
+    dated_only_weekly_cf => "2018/06/03\n\n2017/05/28\n",
+    weekly_ao            => "2017/10/08\n\n2017/09/03\n\n2017/08/06\n",
+    weekly_cf            => "2017/05/28\n",
+    dated_only_monthly_ao => "2016/09/01\n\n2017/08/01\n\n2017/09/01\n\n2017/10/01\n",
+    dated_only_monthly_cf => "2017/06/01\n\n2018/06/01\n",
+    monthly_ao           => "2017/08/01\n\n2017/09/01\n\n2017/10/01\n",
+    monthly_cf           => "2017/06/01\n",
+    dated_only_yearly_ao => "2016/01/01\n\n2017/01/01\n",
+    dated_only_yearly_cf => "2017/01/01\n\n2018/01/01\n",
+    yearly_ao            => "2017/01/01\n",
+    yearly_cf            => "2017/01/01\n",
 };
 my $archive_list_footer = "Footer\n";
 my %html                = (
     'ContentType' => {
         ao => 'Sample Content Data'
-            . $contents_html->{none_ao}
+            . $contents_html->{content_type}
             . $archive_list_header
             . $archive_date->{ct_ao}
             . $archive_list_footer,
         cf => 'Sample Content Data'
-            . $contents_html->{none_cf}
+            . $contents_html->{content_type}
             . $archive_list_header
             . $archive_date->{ct_cf}
             . $archive_list_footer,
@@ -173,58 +200,60 @@ my %html                = (
         ao => 'September  9, 2017'
             . $contents_html->{daily_ao}
             . $archive_list_header
-            . $archive_date->{daily_ao}
+            . $archive_date->{dated_only_daily_ao}
             . $archive_list_footer,
         cf => 'June  3, 2017'
             . $contents_html->{daily_cf}
             . $archive_list_header
-            . $archive_date->{daily_cf}
+            . $archive_date->{dated_only_daily_cf}
             . $archive_list_footer,
     },
     'ContentType-Weekly' => {
         ao => 'September  3, 2017 - September  9, 2017'
             . $contents_html->{weekly_ao}
             . $archive_list_header
-            . $archive_date->{weekly_ao}
+            . $archive_date->{dated_only_weekly_ao}
             . $archive_list_footer,
         cf => 'May 28, 2017 - June  3, 2017'
             . $contents_html->{weekly_cf}
             . $archive_list_header
-            . $archive_date->{weekly_cf}
+            . $archive_date->{dated_only_weekly_cf}
             . $archive_list_footer,
     },
     'ContentType-Monthly' => {
         ao => 'September 2017'
             . $contents_html->{monthly_ao}
             . $archive_list_header
-            . $archive_date->{monthly_ao}
+            . $archive_date->{dated_only_monthly_ao}
             . $archive_list_footer,
         cf => 'June 2017'
             . $contents_html->{monthly_cf}
             . $archive_list_header
-            . $archive_date->{monthly_cf}
+            . $archive_date->{dated_only_monthly_cf}
             . $archive_list_footer,
     },
     'ContentType-Yearly' => {
         ao => '2017'
             . $contents_html->{yearly_ao}
             . $archive_list_header
-            . $archive_date->{yearly_ao}
+            . $archive_date->{dated_only_yearly_ao}
             . $archive_list_footer,
         cf => '2017'
             . $contents_html->{yearly_cf}
             . $archive_list_header
-            . $archive_date->{yearly_cf}
+            . $archive_date->{dated_only_yearly_cf}
             . $archive_list_footer,
     },
     'ContentType_Author' => {
         ao => 'Yuki Ishikawa'
             . $contents_html->{none_ao}
-            . $archive_list_header . "\n"
+            . $archive_list_header
+            . "\n\n\n"
             . $archive_list_footer,
         cf => 'Yuki Ishikawa'
             . $contents_html->{none_cf}
-            . $archive_list_header . "\n"
+            . $archive_list_header
+            . "\n\n\n"
             . $archive_list_footer,
     },
     'ContentType_Author-Daily' => {
@@ -367,9 +396,11 @@ foreach my $prefix (qw( ContentType ContentType_Author ContentType_Category ))
                 : $at =~ /Monthly$/       ? $dt_field eq 'ao'
                     ? 1
                     : 3
-                : $at =~ /Yearly$/  ? 3
-                : $dt_field eq 'ao' ? 3
-                :                     3;
+                : $at =~ /Yearly$/ ? $at =~ /Category/
+                    ? 3
+                    : $dt_field eq 'ao' ? 3
+                : 3
+                : 3;
             push @suite,
                 {
                 ArchiveType => $at,
