@@ -28,7 +28,7 @@
       </thead>
       <tbody>
         <tr each={ values }>
-          <td><input type="radio" class="form-control" name="initial" checked={ checked } onchange={ enterInitial }></td>
+          <td><input type="checkbox" class="form-control" name="initial" checked={ checked } onchange={ enterInitial }></td>
           <td><input type="text" class="form-control" name="label" oninput={ enterLabel }></td>
           <td><input type="text" class="form-control" name="value" oninput={ enterValue }></td>
           <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="delete">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash" /></svg><__trans phrase="delete"></button></td>
@@ -44,7 +44,7 @@
     this.values = this.initialValues.values  
   if ( !this.values ) {
     this.values = [{
-      "checked": "checked"
+      "checked": ""
     }]
   }
 
@@ -56,20 +56,6 @@
     item = e.item
     index = this.values.indexOf(item)
     this.values.splice(index, 1)
-    if ( this.values.length == 0 ) {
-      this.values = [{
-        "checked": "checked"
-      }]
-    }
-    else {
-      found = false
-      this.values.forEach( function(v) {
-        if ( v.checked == "checked" )
-          found = true;
-      });
-      if ( !found )
-        this.values[0].checked = "checked"
-    }
   }
 
   enterLabel(e) {
