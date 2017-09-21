@@ -172,7 +172,10 @@ sub _v7_create_new_role {
     );
     $new_role->clear_full_permissions;
     $new_role->set_these_permissions(
-        [ 'manage_content_types', 'manage_content_datas' ] );
+        [   'manage_content_types', 'manage_content_datas',
+            'manage_category_set'
+        ]
+    );
     $new_role->save
         or return $self->error(
         $self->translate_escape(
