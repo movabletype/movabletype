@@ -1901,6 +1901,17 @@ abstract class MTDatabase {
                 return $top_cats;
             }
         }
+
+        if ( isset($args['sort_by']) && 'user_custom' != $sort_by ) {
+            usort($categories, function($a,$b){
+                global $sort_by;
+                return strcmp($a->{'category_label'},$b->{'category_label'});
+            });
+            if($sort_order == 'desc') {
+                $categories = array_reverse($categories);
+            }
+        }
+
         return $categories;
     }
 
