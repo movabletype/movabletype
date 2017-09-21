@@ -482,7 +482,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: list" );
-    ok( $out =~ m!Permission=1!i, "list by other permission" );
+    ok( $out !~ m!Permission=1!i, "list by other permission" );
 };
 
 subtest 'mode = start_upload' => sub {
