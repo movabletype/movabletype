@@ -341,7 +341,15 @@ sub _migrate_system_privileges {
         $author->is_superuser(1) if $author->is_superuser();
         $author->can_sign_in_cms(1);
         $author->can_sign_in_data_api(1);
-        $author->save();
+        $author->can_create_site(1)
+            if ( $perm->permissions =~ /create_website/ );
+        $author->save
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $author->errstr
+            )
+            );
     }
 }
 
