@@ -25,15 +25,16 @@ use MT::TemplateMap;
 use MT::Util;
 
 sub edit {
-    my ($app) = @_;
-    my $blog  = $app->blog;
-    my $cfg   = $app->config;
-    my $param = {};
+    my ( $app, $param ) = @_;
+    my $blog = $app->blog;
+    my $cfg  = $app->config;
     my $data;
 
     unless ($blog) {
         return $app->return_to_dashboard( redirect => 1 );
     }
+
+    $param ||= {};
 
     my $content_type_id = $app->param('content_type_id')
         or return $app->errtrans("Invalid request.");
@@ -68,7 +69,10 @@ sub edit {
     }
 
     if ( $app->param('reedit') ) {
-        $data = JSON::decode_json( scalar $app->param('serialized_data') );
+        $data = $app->param('serialized_data');
+        unless ( ref $data ) {
+            $data = JSON::decode_json($data);
+        }
         if ($data) {
             $app->param( $_, $data->{$_} ) for keys %$data;
         }
@@ -373,19 +377,11 @@ sub save {
 
     if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
     {
-
-        # FIXME: this does not preserve content field values.
-        return $app->redirect(
-            $app->uri(
-                mode => 'edit_content_data',
-                args => {
-                    blog_id         => $blog_id,
-                    content_type_id => $content_type_id,
-                    id              => $content_data_id,
-                    err_msg         => $errors->[0]{error},
-                },
-            )
-        );
+        $app->param( 'reedit',          1 );
+        $app->param( 'serialized_data', $data );
+        my %param;
+        $param{err_msg} = $errors->[0]{error};
+        return $app->forward( 'edit_content_data', \%param );
     }
 
     my $content_data
