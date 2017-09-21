@@ -254,6 +254,15 @@ sub _v7_migrate_privileges {
     my @website_admin_roles
         = $role_class->load_by_permission("administer_website");
     foreach my $website_admin_role (@website_admin_roles) {
+        $website_admin_role->set_these_permissions( ['administer_site'] );
+        $website_admin_role->save
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $website_admin_role->errstr
+            )
+            );
+
         my $assoc_iter
             = $assoc_class->load_iter(
             { role_id => $website_admin_role->id } );
