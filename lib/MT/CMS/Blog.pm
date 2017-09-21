@@ -542,14 +542,13 @@ sub cfg_prefs {
 
 sub cfg_feedback {
     my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = scalar $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
-    $q->param( '_type', $app->blog ? $app->blog->class : 'blog' );
-    $q->param( 'id', scalar $q->param('blog_id') );
+    $app->param( '_type', $app->blog ? $app->blog->class : 'blog' );
+    $app->param( 'id', $blog_id );
     $app->forward(
         "view",
         {   output       => 'cfg_feedback.tmpl',
