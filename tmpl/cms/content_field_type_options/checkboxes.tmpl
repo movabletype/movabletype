@@ -4,13 +4,13 @@
   <mtapp:ContentFieldOption
      id="checkboxes-min"
      label="<__trans phrase="Minimum number of selection">">
-    <input type="number" name="min" id="checkboxes-min" class="form-control w-25" min="0">
+    <input ref="min" type="number" name="min" id="checkboxes-min" class="form-control w-25" min="0">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="checkboxes-max"
      label="<__trans phrase="Maximum number of selection">">
-    <input type="number" name="max" id="checkboxes-max" class="form-control w-25" min="1">
+    <input ref="max" type="number" name="max" id="checkboxes-max" class="form-control w-25" min="1">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -27,10 +27,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr each={ initialValues }>
-          <td><input type="radio" class="form-control" name="initial" checked={ checked }></td>
-          <td><input type="text" class="form-control" name="label"></td>
-          <td><input type="text" class="form-control" name="value"></td>
+        <tr each={ values }>
+          <td><input type="radio" class="form-control" name="initial" checked={ checked } onchange={ enterInitial }></td>
+          <td><input type="text" class="form-control" name="label" oninput={ enterLabel }></td>
+          <td><input type="text" class="form-control" name="value" oninput={ enterValue }></td>
           <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="delete">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash" /></svg><__trans phrase="delete"></button></td>
         </tr>
       </tbody>
@@ -40,24 +40,56 @@
   
   <mtapp:ContentFieldOptionScript>
   this.initialValues = opts.initialValues
-  if ( !this.initialValues ) {
-  this.initialValues = [{
+  if ( this.initialValues )
+    this.values = this.initialValues.values  
+  if ( !this.values ) {
+    this.values = [{
       "checked": "checked"
     }]
   }
 
   addRow(e) {
-    this.initialValues.push({"checked": ""})
+    this.values.push({"checked": ""})
   }
 
   deleteRow(e) {
-    var item = e.item
-    var index = this.initialValues.indexOf(item)
-    this.initialValues.splice(index, 1)
-    if ( this.initialValues.length == 0 ) {
-      this.initialValues = [{
+    item = e.item
+    index = this.values.indexOf(item)
+    this.values.splice(index, 1)
+    if ( this.values.length == 0 ) {
+      this.values = [{
         "checked": "checked"
       }]
+    }
+    else {
+      found = false
+      this.values.forEach( function(v) {
+        if ( v.checked == "checked" )
+          found = true;
+      });
+      if ( !found )
+        this.values[0].checked = "checked"
+    }
+  }
+
+  enterLabel(e) {
+    e.item.label = e.target.value
+  }
+
+  enterValue(e) {
+    e.item.value = e.target.value
+  }
+
+  enterInitial(e) {
+    if ( e.target.checked )
+      e.item.checked = "checked"
+    else 
+      e.item.checked = ""
+  }
+
+  gather() {
+    return {
+      values: this.values
     }
   }
   </mtapp:ContentFieldOptionScript>

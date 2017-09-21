@@ -4,31 +4,31 @@
   <mtapp:ContentFieldOption
      id="categories-multiple"
      label="<__trans phrase="Allow users to select multiple values?">">
-    <input type="checkbox" class="mt-switch form-control" id="categories-multiple" name="multiple"><label for="categories-multiple"><__trans phrase="Allow users to select multiple categories?"></label>
+    <input ref="multiple" type="checkbox" class="mt-switch form-control" id="categories-multiple" name="multiple"><label for="categories-multiple"><__trans phrase="Allow users to select multiple categories?"></label>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="categories-min"
      label="<__trans phrase="Minimum number of selection">">
-    <input type="number" name="min" id="categories-min" class="form-control w-25" min="0">
+    <input ref="min" type="number" name="min" id="categories-min" class="form-control w-25" min="0">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="categories-max"
      label="<__trans phrase="maximum number of selection">">
-    <input type="number" name="max" id="categories-max" class="form-control w-25" min="1">
+    <input ref="max" type="number" name="max" id="categories-max" class="form-control w-25" min="1">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="categories-can_add"
      label="<__trans phrase="Allow users to create new categories?">">
-    <input type="checkbox" class="mt-switch form-control" id="categories-can_add" name="can_add"><label for="categories-can_add"><__trans phrase="Allow users to create new categories?"></label>
+    <input ref="can_add" type="checkbox" class="mt-switch form-control" id="categories-can_add" name="can_add"><label for="categories-can_add"><__trans phrase="Allow users to create new categories?"></label>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="categories-category_set"
      label="<__trans phrase="Source Category Set">">
-    <select name="category_set" id="categories-category_set" class="form-control">
+    <select ref="category_set" name="category_set" id="categories-category_set" class="form-control">
     <mt:loop name="category_sets">
       <option value="<mt:var name="id" escape="html">"><mt:var name="name" escape="html"></option>
     </mt:loop>

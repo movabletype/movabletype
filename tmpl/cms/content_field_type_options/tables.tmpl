@@ -4,13 +4,13 @@
   <mtapp:ContentFieldOption
      id="tables-initial_rows"
      label="<__trans phrase="Initial Rows">">
-    <input type="number" name="initial_rows" id="tables-initial_rows" class="form-control w-25" value="5" min="1">
+    <input ref="initial_rows" type="number" name="initial_rows" id="tables-initial_rows" class="form-control w-25" value="5" min="1">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="tables-initial_cols"
      label="<__trans phrase="Initial Cols">">
-    <input type="number" name="initial_cols" id="tables-initial_cols" class="form-control w-25" value="5" min="1">
+    <input ref="initial_cols" type="number" name="initial_cols" id="tables-initial_cols" class="form-control w-25" value="5" min="1">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -19,7 +19,7 @@
      show_hint="1"
      hint_id="tables_row_heading"
      hint="<__trans phrase=" Commma separated list">">
-    <input type="text" name="row_heading" id="tables_row_heading" class="form-control" >
+    <input ref="row_heading" type="text" name="row_heading" id="tables_row_heading" class="form-control" >
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -28,19 +28,19 @@
      show_hint="1"
      hint_id="tables_col_heading"
      hint="<__trans phrase=" Commma separated list">">
-    <input type="text" name="col_heading" id="tables_col_heading" class="form-control">
+    <input ref="col_heading" type="text" name="col_heading" id="tables_col_heading" class="form-control">
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="tables-can_increase_decrease_rows"
      label="<__trans phrase="Allow users to increase/decrease rows?">">
-    <input type="checkbox" class="mt-switch form-control" id="tables-can_increase_decrease_rows" name="increase_decrease_rows"><label for="tables-can_increase_decrease_rows"><__trans phrase="Allow users to increase/decrease rows?"></label>
+    <input ref="increase_decrease_rows" type="checkbox" class="mt-switch form-control" id="tables-can_increase_decrease_rows" name="increase_decrease_rows"><label for="tables-can_increase_decrease_rows"><__trans phrase="Allow users to increase/decrease rows?"></label>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="tables-can_increase_decrease_cols"
      label="<__trans phrase="Allow users to increase/decrease cols?">">
-    <input type="checkbox" class="mt-switch form-control" id="tables-can_increase_decrease_cols" name="increase_decrease_cols"><label for="tables-can_increase_decrease_cols"><__trans phrase="Allow users to increase/decrease cols?"></label>
+    <input ref="increase_decrease_cols" type="checkbox" class="mt-switch form-control" id="tables-can_increase_decrease_cols" name="increase_decrease_cols"><label for="tables-can_increase_decrease_cols"><__trans phrase="Allow users to increase/decrease cols?"></label>
   </mtapp:ContentFieldOption>
 
 </mt:app:ContentFieldOptionGroup>
