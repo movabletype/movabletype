@@ -198,16 +198,20 @@ sub _v7_migrate_role {
         'Author',                'Contributor',
         'Editor'
     );
-    foreach my $role_name (@role_names) {
+    my %role_names = map { $_ => 1 } @role_names;
+    my @default_roles = $role_class->_default_roles();
+    foreach my $r (@default_roles) {
+        next unless $role_names{ $r->{name} };
         $self->progress( 'change '
-                . MT->translate($role_name) . ' to '
-                . MT->translate( $role_name . ' (MT6)' ) );
+                . MT->translate( $r->{name} ) . ' to '
+                . MT->translate( $r->{name} . ' (MT6)' ) );
 
         my $iter
-            = $role_class->load_iter( { name => MT->translate($role_name) } );
-
+            = $role_class->load_iter(
+            { name => MT->translate( $r->{name} ) } );
         while ( my $role = $iter->() ) {
-            $role->name( MT->translate( $role_name . ' (MT6)' ) );
+            $role->name( MT->translate( $r->{name} . ' (MT6)' ) );
+            $role->set_these_permissions( $r->{perms} );
             $role->save
                 or return $self->error(
                 $self->translate_escape(
@@ -216,11 +220,7 @@ sub _v7_migrate_role {
                 )
                 );
         }
-    }
-    my %role_names = map { $_ => 1 } @role_names;
-    my @default_roles = $role_class->_default_roles();
-    foreach my $r (@default_roles) {
-        next unless $role_names{ $r->{name} };
+
         my $role = MT::Role->new();
         $role->name( $r->{name} );
         $role->description( $r->{description} );
