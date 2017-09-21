@@ -89,6 +89,10 @@ sub cfg_content_type {
 
     my $content_type = $obj_promise->force();
     if ($content_type) {
+        if ( $content_type->blog_id != $app->blog->id ) {
+            return $app->return_to_dashboard( redirect => 1 );
+        }
+
         $param->{name}             = $content_type->name;
         $param->{description}      = $content_type->description;
         $param->{unique_id}        = $content_type->unique_id;
