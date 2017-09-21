@@ -10,8 +10,12 @@ use strict;
 use base qw( MT::WeblogPublisher );
 our @EXPORT = qw(ArchiveFileTemplate ArchiveType);
 
-use MT::ArchiveType;
 use File::Basename;
+use File::Spec;
+
+use MT::ArchiveType;
+use MT::PublishOption;
+use MT::TemplateMap;
 
 our %ArchiveTypes;
 
@@ -1177,6 +1181,69 @@ sub _rebuild_content_archive_type {
         $cache_file->{$cache_key} = $file;
         $file;
     }
+}
+
+sub remove_content_data_archive_file {
+    my $mt    = shift;
+    my %param = @_;
+
+    my $content_data = $param{ContentData};
+    my $at           = $param{ArchiveType} || 'ContentData';
+    my $author       = $param{Author};
+    my $force        = exists $param{Force} ? $param{Force} : 1;
+    my $blog         = $param{Blog};
+    my $template_id  = $param{TemplateID};
+
+    if ( !$blog && $content_data ) {
+        $blog = $content_data->blog;
+    }
+    return unless $blog;
+
+    my @maps = MT::TemplateMap->load(
+        {   archive_type => $at,
+            blog_id      => $blog->id,
+            $template_id ? ( template_id => $template_id ) : (),
+        }
+    );
+    return 1 unless @maps;
+
+    my $archive_root = $blog->archive_path;
+
+    for my $map (@maps) {
+        next if !$force && $map->build_type == MT::PublishOption::ASYNC();
+
+        my $timestamp;
+        if ( $mt->can('target_dt') ) {
+            $timestamp = $mt->target_dt( $content_data, $map );
+        }
+
+        my $category_id;
+        if ( $mt->can('target_category_id') ) {
+            $category_id = $mt->target_category_id( $content_data, $map );
+        }
+
+        my $file
+            = $mt->archive_file_for( $content_data, $blog, $at, $category_id,
+            $map, $timestamp, $author );
+        $file = File::Spec->catfile( $archive_root, $file );
+        if ( !defined $file ) {
+            die MT->translate( $blog->errstr );
+        }
+
+        $mt->_delete_archive_file(
+            Blog        => $blog,
+            File        => $file,
+            ArchiveType => $at,
+            ContentData => $content_data,
+        );
+    }
+}
+
+sub _delete_archive_file {
+    my $mt    = shift;
+    my %param = @_;
+    $param{Entry} = $param{ContentData} if $param{ContentData};
+    $mt->SUPER::_delete_archive_file(%param);
 }
 
 1;
