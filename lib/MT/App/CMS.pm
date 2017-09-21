@@ -25,9 +25,12 @@ sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
     $app->{state_params} = [
-        '_type',      'id',         'tab',     'offset',
-        'filter',     'filter_val', 'blog_id', 'is_power_edit',
-        'filter_key', 'type'
+        '_type',      'id',
+        'tab',        'offset',
+        'filter',     'filter_val',
+        'blog_id',    'is_power_edit',
+        'filter_key', 'type',
+        'content_type_id'
     ];
     $app->{template_dir}         = 'cms';
     $app->{plugin_template_path} = '';

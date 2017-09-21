@@ -31,12 +31,18 @@ sub edit {
     my $param = {};
     my $data;
 
-    my $blog_id = $app->param('blog_id')
-        or return $app->errtrans("Invalid request.");
+    unless ($blog) {
+        return $app->return_to_dashboard( redirect => 1 );
+    }
+
     my $content_type_id = $app->param('content_type_id')
         or return $app->errtrans("Invalid request.");
     my $content_type = MT::ContentType->load($content_type_id)
         or return $app->errtrans('Invalid request.');
+
+    if ( $content_type->blog_id != $blog->id ) {
+        return $app->return_to_dashboard( redirect => 1 );
+    }
 
     if ( $app->param('_recover') && !$app->param('reedit') ) {
         $app->param( '_type', 'content_data' );
