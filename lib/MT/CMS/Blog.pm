@@ -2311,10 +2311,11 @@ sub build_blog_table {
 }
 
 sub cfg_blog {
-    my $q = $_[0]->{query};
-    $q->param( '_type', 'blog' );
-    $q->param( 'id',    scalar $q->param('blog_id') );
-    $_[0]->forward( "view", { output => 'cfg_prefs.tmpl' } );
+    my $app     = shift;
+    my $blog_id = $app->param('blog_id');
+    $app->param( '_type', 'blog' );
+    $app->param( 'id',    $blog_id );
+    $app->forward( "view", { output => 'cfg_prefs.tmpl' } );
 }
 
 sub cfg_prefs_save {
