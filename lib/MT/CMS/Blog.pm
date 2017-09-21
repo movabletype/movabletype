@@ -12,7 +12,6 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    my $q       = $app->param;
     my $cfg     = $app->config;
     my $blog    = $obj || $app->blog;
     my $blog_id = $id;
@@ -20,7 +19,7 @@ sub edit {
     my $lang;
     if ($id) {
         my $output = $param->{output} ||= 'cfg_prefs.tmpl';
-        $param->{need_full_rebuild} = 1 if $q->param('need_full_rebuild');
+        $param->{need_full_rebuild} = 1 if $app->param('need_full_rebuild');
         $param->{show_ip_info}      = $cfg->ShowIPInformation;
         $param->{use_plugins}       = $cfg->UsePlugins;
 
