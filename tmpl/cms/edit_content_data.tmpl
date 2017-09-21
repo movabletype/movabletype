@@ -772,7 +772,6 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     jQuery('button.publish').click(function(event) {
         jQuery('form#edit-content-type-data-form input[name=__mode]').val('save');
         jQuery('form#edit-content-type-data-form').removeAttr('target');
-        jQuery('form#edit-content-type-data-form').attr('mt:once', '1');
     });
   </mt:if>
 
@@ -788,8 +787,14 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 
   var newCategoryClickEventAdded;
 
-  jQuery('#edit-content-type-data-form').submit( function() {
-    var form = this;
+  jQuery('#edit-content-type-data-form').submit( function(event) {
+    var $form = jQuery(this);
+
+    if ($form.children('input[name=__mode]').val() == 'preview_content_data') {
+        $form.get(0).submit();
+        return false;
+    }
+
     validateInServerSide().done(function () {
       if (validateInClientSide()) {
         var block_editor_data = {};
@@ -800,11 +805,14 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           }
         });
         if(Object.keys(block_editor_data).length > 0) {
-          jQuery(form).append(jQuery('<input type="hidden" name="blockeditor-data">').val(JSON.stringify(block_editor_data)))
+          $form.append(jQuery('<input type="hidden" name="blockeditor-data">').val(JSON.stringify(block_editor_data)))
         } else {
-          jQuery(form).append(jQuery('<input type="hidden" name="blockeditor-data">').val(''))
+          $form.append(jQuery('<input type="hidden" name="blockeditor-data">').val(''))
         }
-        form.submit();
+<mt:if name="config.previewinnewwindow">
+        $form.attr('mt:once', '1');
+</mt:if>
+        $form.get(0).submit();
       }
     })
     return false;
