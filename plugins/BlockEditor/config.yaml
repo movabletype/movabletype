@@ -32,6 +32,6 @@ blockeditor_fields:
   embed:
     label: 'Embed'
     order: 40
-  gallery:
-    label: 'Gallery'
-    order: 50
+  # gallery:
+  #   label: 'Gallery'
+  #   order: 50
