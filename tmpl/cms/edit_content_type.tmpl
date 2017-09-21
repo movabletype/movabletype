@@ -42,8 +42,16 @@
 <script>
   var content_field_types = JSON.parse('<mt:var name="content_field_types" escape="json">');
   riot.mount('content-fields', {
+    blog_id: "<mt:var name="blog_id" escape="js">",
+    magic_token: "<mt:var name="magic_token" escape="js">",
+    return_args: "<mt:var name="return_args" escape="js">",
+    id: "<mt:var name="id" escape="js">",
+    unique_id: "<mt:var name="unique_id" escape="js">",
+    name: "<mt:var name="name" escape="js">",
+    description: "<mt:var name="description" escape="js">",
+    user_disp_option: "<mt:if name="user_disp_option">checked</mt:if>",
+    fields: [],
     types: content_field_types,
-    fields: []
   });
 </script>
 </mt:setvarblock>
@@ -348,72 +356,8 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
-  <mtapp:form id="content-type-form" name="content-type-form" mode="save">
-  <input type="hidden" name="_type" value="content_type" />
-  <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
-  <input type="hidden" id="id" value="<mt:var name="id" escape="html">" />
-  <div class="row">
-    <div class="col">
-      <mtapp:setting
-       id="name"
-       label="<__trans phrase="Content Type Name">"
-       label_for="name"
-       required="1">
-        <input type="text" name="name" id="name" class="text med required form-control" value="<mt:var name="name" escape="html">">
-      </mtapp:setting>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col">
-    <mtapp:setting
-       id="name"
-       label="<__trans phrase="Description">"
-       label_for="description">
-        <textarea name="description" id="description" class="form-control"><mt:var name="description" escape="html"></textarea>
-      </mtapp:setting>
-    </div>
-  </div>
-
-  
-  <mt:unless name="new_object">
-  <div class="row">
-    <div class="col">
-    <mtapp:setting
-       id="unique_id"
-       label="<__trans phrase="Unique ID">"
-       label_for="unique_id">
-      <mt:var name="unique_id" escape="html">
-    </mtapp:setting>
-    </div>
-  </div>
-  </mt:unless>
-
-  <div class="row">
-    <div class="col">
-    <mtapp:setting
-       id="user_disp_option"
-       label="<__trans phrase="Allow users to change the display and sort of fields by display option">"
-       label_for="user_disp_option">
-      <input type="checkbox" class="mt-switch form-control" id="user_disp_option" /><label for="user_disp_option"></label>
-      </mtapp:setting>
-    </div>
-  </div>
 
   <div data-is="content-fields"></div>
-
-    <mt:setvarblock name="action_buttons">
-  <button
-     type="button"
-     id="save-button"
-     accesskey="s"
-     title="<__trans phrase="Save (s)">"
-     class="btn btn-primary">
-    <__trans phrase="Save">
-  </button>
-    </mt:setvarblock>
-
-  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
   
   </mtapp:form>
 </mt:setvarblock>
