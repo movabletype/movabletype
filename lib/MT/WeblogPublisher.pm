@@ -757,6 +757,11 @@ sub rebuild_entry {
         for my $at (@db_at) {
             if ( $at{$at} ) {
                 my $archiver = $mt->archiver($at);
+                next
+                    if $archiver->contenttype_based
+                    || $archiver->contenttype_date_based
+                    || $archiver->contenttype_author_based
+                    || $archiver->contenttype_category_based;
                 if ( $archiver->category_based ) {
                     for my $cat (@$categories_for_rebuild) {
                         if (my $prev_arch
