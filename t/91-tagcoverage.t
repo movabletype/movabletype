@@ -39,8 +39,9 @@ my $components = {
                 )
         ],
     },
-    'commercial' =>
-        { paths => [ 'CustomFields/Template/ContextHandlers.pm', ], },
+
+    # 'commercial' =>
+    #     { paths => [ 'CustomFields/Template/ContextHandlers.pm', ], },
     'community'    => { paths => [ 'MT/Community/Tags.pm', ], },
     'multiblog'    => { paths => [ 'MultiBlog/Tags.pm', ], },
     'FeedsAppLite' => { paths => [ 'MT/Feeds/Tags.pm', ], },

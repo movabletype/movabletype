@@ -72,7 +72,9 @@ sub core_parameters {
         cache_driver => { 'package' => 'MT::Cache::Negotiate', },
     };
 
-    my @filters = ( $app->multi_param('filter'), $app->multi_param('filter_on') ); # XXX: filter_on is gone?
+    my @filters
+        = ( $app->multi_param('filter'), $app->multi_param('filter_on') )
+        ;    # XXX: filter_on is gone?
     if (@filters) {
         $core->{types}->{entry}->{columns}
             = { map { $_ => 'like' } @filters };
@@ -105,38 +107,34 @@ sub init_request {
         $app->mode('tag') if $app->param('tag');
     }
 
-    my $q = $app->param;
-
     my $cfg = $app->config;
     my $blog_id
-        = defined $q->param('blog_id')
-        ? $q->param('blog_id')
+        = defined $app->param('blog_id')
+        ? $app->param('blog_id')
         : $app->first_blog_id();
     my $blog = $app->model('blog')->load($blog_id)
         or return $app->errtrans( 'Cannot load blog #[_1].',
         MT::Util::encode_html($blog_id) );
-    my $page = $q->param('page') ? $q->param('page') : 1;
+    my $page = $app->param('page') || 1;
     my $limit
-        = $q->param('limit') ? $q->param('limit')
-        : (
-          $blog->entries_on_index ? $blog->entries_on_index
-        : $cfg->SearchMaxResults
-        );
+        = $app->param('limit')
+        || $blog->entries_on_index
+        || $cfg->SearchMaxResults;
     my $offset;
     $offset = ( $page - 1 ) * $limit if ( $page && $limit );
-    $q->param( 'limit',  $limit )  if $limit;
-    $q->param( 'offset', $offset ) if $offset;
+    $app->param( 'limit',  $limit )  if $limit;
+    $app->param( 'offset', $offset ) if $offset;
 
     # These parameters are strictly numeric; invalid request if they
     # are given and are not
     foreach my $param (qw( blog_id limit offset SearchMaxResults )) {
-        my $val = $q->param($param);
+        my $val = $app->param($param);
         next unless defined $val && ( $val ne '' );
         return $app->errtrans( 'Invalid [_1] parameter.', $param )
             if $val !~ m/^\d+$/;
     }
     foreach my $param (qw( IncludeBlogs ExcludeBlogs )) {
-        my $val = $q->param($param);
+        my $val = $app->param($param);
         next unless defined $val && ( $val ne '' );
         return $app->errtrans( 'Invalid [_1] parameter.', $param )
             if ( $val !~ m/^(\d+,?)+$/ && $val ne 'all' );
@@ -165,13 +163,13 @@ sub init_request {
         $app->{searchparam}{$key}
             = $no_override{$key}
             ? $app->config->$key()
-            : ( $q->param($key) || $app->config->$key() );
+            : ( $app->param($key) || $app->config->$key() );
     }
     $app->{searchparam}{SearchMaxResults} =~ s/\D//g
         if defined( $app->{searchparam}{SearchMaxResults} );
 
     $app->{searchparam}{Type} = 'entry';
-    if ( my $type = $q->param('type') ) {
+    if ( my $type = $app->param('type') ) {
         return $app->errtrans( 'Invalid type: [_1]', encode_html($type) )
             if $type !~ /[\w\.]+/;
         $app->{searchparam}{Type} = $type;
@@ -182,8 +180,8 @@ sub init_request {
 
     my $processed = 0;
     my $list      = {};
-    $q->param( 'IncludeBlogs', $blog_id )
-        unless $q->param('IncludeBlogs');
+    $app->param( 'IncludeBlogs', $blog_id )
+        unless $app->param('IncludeBlogs');
     if ( $app->run_callbacks( 'search_blog_list', $app, $list, \$processed ) )
     {
         if ($processed) {
@@ -219,7 +217,6 @@ sub takedown {
 sub generate_cache_keys {
     my $app = shift;
 
-    my $q = $app->param;
     my @p = sort { $a cmp $b } $app->multi_param;
     my ( $key, $count_key );
     foreach my $p (@p) {
@@ -282,7 +279,6 @@ sub create_blog_list {
     my $app = shift;
     my (%no_override) = @_;
 
-    my $q   = $app->param;
     my $cfg = $app->config;
 
     unless (%no_override) {
@@ -298,8 +294,8 @@ sub create_blog_list {
 
     ## If IncludeBlogs is all, then set IncludeBlogs to ""
     ## this will get all the blogs by default later on
-    if ( $q->param('IncludeBlogs') eq 'all' ) {
-        $q->param( 'IncludeBlogs', '' );
+    if ( ( $app->param('IncludeBlogs') || '' ) eq 'all' ) {
+        $app->param( 'IncludeBlogs', '' );
     }
 
     ## Combine user-selected included/excluded blogs
@@ -484,7 +480,6 @@ sub execute {
 
 sub search_terms {
     my $app = shift;
-    my $q   = $app->param;
 
     if ( my $limit = $app->param('limit_by') ) {
         if ( $limit eq 'all' ) {
@@ -512,12 +507,12 @@ sub search_terms {
             unless ( $archiver || $at eq 'Index' );
     }
 
-    my $search_string = $q->param('searchTerms') || $q->param('search');
+    my $search_string = $app->param('searchTerms') || $app->param('search');
     $app->{search_string} = $search_string;
-    my $offset = $q->param('startIndex') || $q->param('offset') || 0;
+    my $offset = $app->param('startIndex') || $app->param('offset') || 0;
     return $app->errtrans( 'Invalid value: [_1]', encode_html($offset) )
         if $offset && $offset !~ /^\d+$/;
-    my $limit = $q->param('count') || $q->param('limit');
+    my $limit = $app->param('count') || $app->param('limit');
     return $app->errtrans( 'Invalid value: [_1]', encode_html($limit) )
         if $limit && $limit !~ /^\d+$/;
     my $max = $app->{searchparam}{SearchMaxResults};
@@ -700,10 +695,10 @@ sub template_paths {
 
 sub first_blog_id {
     my $app = shift;
-    my $q   = $app->param;
 
     my $blog_id;
-    if (   !$q->param('IncludeBlogs')
+    my $include_blogs = $app->param('IncludeBlogs') || '';
+    if (   !$include_blogs
         && exists( $app->{searchparam}{IncludeBlogs} )
         && @{ $app->{searchparam}{IncludeBlogs} } )
     {
@@ -712,8 +707,8 @@ sub first_blog_id {
     else {
 
         # if IncludeBlogs is empty or all, get the first blog id available
-        if (  !$q->param('IncludeBlogs')
-            || $q->param('IncludeBlogs') eq 'all' )
+        if (  !$include_blogs
+            || $include_blogs eq 'all' )
         {
             my @blogs = $app->model('blog')
                 ->load( {}, { no_class => 1, limit => 1 } );
@@ -722,7 +717,7 @@ sub first_blog_id {
 
         # all other normal requests with a list of blog ids
         else {
-            my @ids = split ',', $q->param('IncludeBlogs');
+            my @ids = split ',', $include_blogs;
             $blog_id = $ids[0];
         }
     }
@@ -801,8 +796,7 @@ sub prepare_context {
             map { $ctx->var( $_, $params->{$_} ) } keys %$params;
         }
     }
-    $ctx->{current_timestamp}
-        = $app->param('context_date_start')
+    $ctx->{current_timestamp} = $app->param('context_date_start')
         || MT::Util::epoch2ts( $blog_id, time );
 
     my $author_id   = $app->param('author');

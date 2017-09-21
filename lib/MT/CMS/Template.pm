@@ -13,12 +13,11 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
 
     # FIXME: enumeration of types
     unless ($blog_id) {
-        my $type = $q->param('type') || ( $obj ? $obj->type : '' );
+        my $type = $app->param('type') || ( $obj ? $obj->type : '' );
         return $app->return_to_dashboard( redirect => 1 )
             if $type eq 'archive'
             || $type eq 'individual'
@@ -32,14 +31,14 @@ sub edit {
     # to trigger autosave logic in main edit routine
     $param->{autosave_support} = 1;
 
-    my $type  = $q->param('_type');
+    my $type  = $app->param('_type');
     my $cfg   = $app->config;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     my $can_preview = 0;
 
-    if ( $q->param('reedit') ) {
-        $param->{'revision-note'} = $q->param('revision-note');
-        if ( $q->param('save_revision') ) {
+    if ( $app->param('reedit') ) {
+        $param->{'revision-note'} = $app->param('revision-note');
+        if ( $app->param('save_revision') ) {
             $param->{'save_revision'} = 1;
         }
         else {
@@ -65,7 +64,7 @@ sub edit {
 
     if ($id) {
         if ( $blog && $blog->use_revision ) {
-            my $rn = $q->param('r') || 0;
+            my $rn = $app->param('r') || 0;
             if ( $obj->current_revision > 0 || $rn != $obj->current_revision )
             {
                 my $rev = $obj->load_revision( { rev_number => $rn } );
@@ -79,7 +78,7 @@ sub edit {
                 $param->{rev_date}   = format_ts( "%Y-%m-%d %H:%M:%S",
                     $obj->modified_on, $blog,
                     $app->user ? $app->user->preferred_language : undef );
-                $param->{no_snapshot} = 1 if $q->param('no_snapshot');
+                $param->{no_snapshot} = 1 if $app->param('no_snapshot');
             }
         }
         $param->{nav_templates} = 1;
@@ -115,6 +114,10 @@ sub edit {
         elsif ( $obj->type eq 'backup' ) {
             $tab = 'backup';
             $param->{template_group_trans} = $app->translate('backup');
+        }
+        elsif ( $obj->type eq 'ct' || $obj->type eq 'ct_archive' ) {
+            $tab = 'ct';
+            $param->{template_group_trans} = $app->translate('ct');
         }
         else {
             $tab = 'system';
@@ -159,7 +162,7 @@ sub edit {
         $param->{object_type}  = 'template';
         my $published_url = $obj->published_url;
         $param->{published_url} = $published_url if $published_url;
-        $param->{saved_rebuild} = 1 if $q->param('saved_rebuild');
+        $param->{saved_rebuild} = 1 if $app->param('saved_rebuild');
         require MT::PublishOption;
         $param->{static_maps}
             = (    $obj->build_type != MT::PublishOption::DYNAMIC()
@@ -593,13 +596,11 @@ sub edit {
             }
 
             # Content Fields
-            my $app       = shift;
-            my $q         = $app->param;
-            my $blog_id   = $q->param('blog_id');
-            my $at        = $q->param('archive_type');
-            my $ct_id     = $q->param('content_type_id');
-            my $cat_field = $q->param('cat_field');
-            my $dt_field  = $q->param('dt_field');
+            my $blog_id   = $app->param('blog_id');
+            my $at        = $app->param('archive_type');
+            my $ct_id     = $app->param('content_type_id');
+            my $cat_field = $app->param('cat_field');
+            my $dt_field  = $app->param('dt_field');
 
             my $ct = MT::ContentType->load( $obj->content_type_id );
             my $fields = $ct ? $ct->fields : [];
@@ -612,8 +613,9 @@ sub edit {
                 date_and_times => [
                     map { { id => $_->{id}, label => $_->{options}{label} } }
                         grep {
-                               $_->{type} eq 'date_and_time'
-                            && $_->{required}
+                        (          $_->{type} eq 'date_and_time'
+                                || $_->{type} eq 'date' )
+                            && $_->{options}{required}
                         } @$fields
                 ],
             };
@@ -638,7 +640,7 @@ sub edit {
         }
     }
     else {
-        my $new_tmpl = $q->param('create_new_template');
+        my $new_tmpl = $app->param('create_new_template');
         my $template_type;
         if ($new_tmpl) {
             if ( $new_tmpl =~ m/^blank:(.+)/ ) {
@@ -668,7 +670,7 @@ sub edit {
             }
         }
         else {
-            $template_type = $q->param('type');
+            $template_type = $app->param('type');
             $template_type = 'custom' if 'module' eq $template_type;
             $param->{type} = $template_type;
         }
@@ -703,7 +705,7 @@ sub edit {
         }
         elsif ( $template_type eq 'ct' || $template_type eq 'ct_archive' ) {
             $tab                           = 'ct';
-            $param->{template_group_trans} = $app->translate('Content Type');
+            $param->{template_group_trans} = $app->translate('ct');
             $param->{type_ct_archive}      = 1;
             my @types = (
                 {   key   => 'ct_archive',
@@ -1196,10 +1198,9 @@ sub list {
 
 sub preview {
     my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $blog    = $app->blog;
-    my $id      = $q->param('id');
+    my $id      = $app->param('id');
     my $tmpl;
     my $user_id = $app->user->id;
 
@@ -1229,7 +1230,7 @@ sub preview {
 
     my $names = $tmpl->column_names;
     my %values = map { $_ => scalar $app->param($_) } @$names;
-    delete $values{'id'} unless $q->param('id');
+    delete $values{'id'} unless $id;
 
     ## Strip linefeed characters.
     for my $col (qw( text )) {
@@ -1480,15 +1481,16 @@ sub preview {
     $param{new_object} = $param{id} ? 0 : 1;
     $param{name} = $tmpl->name;
     if ( $type ne 'index' ) {
-        $q->param( 'build_dynamic', $tmpl->build_dynamic );
-        $q->param( 'build_type',    $tmpl->build_type );
+        $app->param( 'build_dynamic', $tmpl->build_dynamic );
+        $app->param( 'build_type',    $tmpl->build_type );
     }
     my $cols = $tmpl->column_names;
     for my $col ( ( @$cols, 'save_revision', 'revision-note' ) ) {
+        my $value = $app->param($col);
         push @data,
             {
             data_name  => $col,
-            data_value => scalar $q->param($col)
+            data_value => $value
             };
     }
 
@@ -1496,10 +1498,11 @@ sub preview {
     my @p = $app->multi_param;
     for my $p (@p) {
         if ( $p =~ /^archive_file_tmpl_(\d+)$/ ) {
+            my $value = $app->param($p);
             push @data,
                 {
                 data_name  => 'archive_file_tmpl_' . $1,
-                data_value => scalar $q->param($p)
+                data_value => $value
                 };
         }
     }
@@ -1570,7 +1573,6 @@ sub create_preview_content {
 ## Unused?
 sub reset_blog_templates {
     my $app   = shift;
-    my $q     = $app->param;
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
     return $app->permission_denied()
@@ -1681,8 +1683,13 @@ sub _generate_map_table {
 
 sub _populate_archive_loop {
     my $app = shift;
-    my $q   = $app->param;
     my ( $blog, $obj ) = @_;
+
+    my $has_cat_field = MT::ContentField->count(
+        {   content_type_id => $obj->content_type_id,
+            type            => 'categories',
+        }
+    );
 
     my $index = $app->config('IndexBasename');
     my $ext = $blog->file_extension || '';
@@ -1712,7 +1719,7 @@ sub _populate_archive_loop {
             = 1
             if $blog->archive_type_preferred;
         my $selected_file_template
-            = $q->param( 'archive_file_tmpl_' . $map->{map_id} );
+            = $app->param( 'archive_file_tmpl_' . $map->{map_id} );
         $map->{file_template}
             = $selected_file_template ? $selected_file_template
             : $map_obj->file_template ? $map_obj->file_template
@@ -1724,6 +1731,8 @@ sub _populate_archive_loop {
         my $tmpls     = $archiver->default_archive_templates;
         my $tmpl_loop = [];
         foreach (@$tmpls) {
+            next
+                if !$has_cat_field && $_->{required_fields}{category};
             my $name = $_->{label};
             $name =~ s/\.html$/$ext/;
             $name =~ s/index$ext$/$index$ext/;
@@ -1794,8 +1803,9 @@ sub _populate_archive_loop {
                         }
                         }
                         grep {
-                               $_->{type} eq 'date_and_time'
-                            && $_->{required}
+                        (          $_->{type} eq 'date_and_time'
+                                || $_->{type} eq 'date' )
+                            && $_->{options}{required}
                         } @$fields
                 ],
             };
@@ -1822,10 +1832,9 @@ sub delete_map {
     return $app->error( $app->translate('No permissions') )
         unless $app->can_do('edit_templates');
 
-    my $q           = $app->param;
-    my $id          = $q->param('id');
-    my $blog_id     = $q->param('blog_id');
-    my $template_id = $q->param('template_id');
+    my $id          = $app->param('id');
+    my $blog_id     = $app->param('blog_id');
+    my $template_id = $app->param('template_id');
 
     $app->model('template')
         ->load( { id => $template_id, blog_id => $blog_id } )
@@ -2343,7 +2352,7 @@ sub refresh_all_templates {
     my $t = time;
 
     my @id;
-    if ( $app->param('blog_id') ) {
+    if ( my $blog_id = $app->param('blog_id') ) {
         if ( 'refresh_blog_templates' eq
             ( $app->param('plugin_action_selector') || '' ) )
         {
@@ -2352,7 +2361,7 @@ sub refresh_all_templates {
         }
         else {
             ## called from template listing screen of each website/blog.
-            @id = ( scalar $app->param('blog_id') );
+            @id = ($blog_id);
         }
     }
     else {
@@ -2932,7 +2941,7 @@ TEMPLATE: for my $tmpl (@$templates) {
     }
 
     if ( scalar(@at_ids) > 0 ) {
-        $app->param( 'id', @at_ids );
+        $app->multi_param( 'id', @at_ids );
         publish_archive_templates($app) if ( scalar(@at_ids) > 0 );
     }
     else {
@@ -3142,10 +3151,9 @@ sub edit_widget {
     my $app = shift;
     my (%opt) = @_;
 
-    my $q       = $app->param();
-    my $id      = scalar( $q->param('id') ) || $opt{id};
-    my $name    = scalar( $q->param('name') );
-    my $blog_id = scalar $q->param('blog_id') || 0;
+    my $id      = $app->param('id') || $opt{id};
+    my $name    = $app->param('name');
+    my $blog_id = $app->param('blog_id') || 0;
 
     my $tmpl_class = $app->model('template');
     require MT::Promise;
@@ -3273,9 +3281,8 @@ sub edit_widget {
 }
 
 sub list_widget {
-    my $app   = shift;
+    my $app = shift;
     my (%opt) = @_;
-    my $q     = $app->param;
 
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->return_to_dashboard( redirect => 1 )
@@ -3283,7 +3290,7 @@ sub list_widget {
     if ( $perms && !$perms->can_edit_templates ) {
         return $app->permission_denied();
     }
-    my $blog_id = $q->param('blog_id') || 0;
+    my $blog_id = $app->param('blog_id') || 0;
 
     my $widget_loop = &build_template_table(
         $app,
@@ -3358,8 +3365,7 @@ sub list_widget {
 
 sub delete_widget {
     my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $type = $app->param('_type');
 
     return $app->errtrans("Invalid request.")
         unless $type;
@@ -3371,7 +3377,7 @@ sub delete_widget {
 
     my $tmpl_class = $app->model('template');
 
-    for my $id ( $q->multi_param('id') ) {
+    for my $id ( $app->multi_param('id') ) {
         next unless $id;    # avoid 'empty' ids
 
         my $obj = $tmpl_class->load($id);

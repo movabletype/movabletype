@@ -669,12 +669,11 @@ sub list {
     my $type = $app->param('type') || MT::Entry->class_type;
     my $pkg = $app->model($type) or return "Invalid request.";
 
-    my $q     = $app->param;
     my $perms = $app->permissions;
 
     my $list_pref = $app->list_pref($type);
     my %param     = %$list_pref;
-    my $blog_id   = $q->param('blog_id');
+    my $blog_id   = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;
     my $blog = $app->model('blog')->load($blog_id);
@@ -751,9 +750,9 @@ PERMCHECK: {
     my %arg;
     $arg{'sort'} = $type eq 'page' ? 'modified_on' : 'authored_on';
     $arg{direction} = 'descend';
-    my $filter_key = $q->param('filter_key') || '';
-    my $filter_col = $q->param('filter')     || '';
-    my $filter_val = $q->param('filter_val');
+    my $filter_key = $app->param('filter_key') || '';
+    my $filter_col = $app->param('filter')     || '';
+    my $filter_val = $app->param('filter_val');
     my $iter_method;
     my $total;
 
@@ -943,7 +942,7 @@ PERMCHECK: {
 
     my $iter = $iter_method || $pkg->load_iter( $terms_ref, \%arg );
 
-    my $is_power_edit = $q->param('is_power_edit');
+    my $is_power_edit = $app->param('is_power_edit');
     if ($is_power_edit) {
         $param{has_expanded_mode} = 0;
         delete $param{view_expanded};
@@ -1014,9 +1013,9 @@ PERMCHECK: {
         : $app->user->is_superuser;
     $param{blog_view}           = 1 if $blog->is_blog;
     $param{is_power_edit}       = $is_power_edit;
-    $param{saved_deleted}       = $q->param('saved_deleted');
-    $param{no_rebuild}          = $q->param('no_rebuild');
-    $param{saved}               = $q->param('saved');
+    $param{saved_deleted}       = $app->param('saved_deleted');
+    $param{no_rebuild}          = $app->param('no_rebuild');
+    $param{saved}               = $app->param('saved');
     $param{limit}               = $limit;
     $param{offset}              = $offset;
     $param{object_type}         = $type;
@@ -1446,14 +1445,13 @@ sub _build_entry_preview {
 
 sub cfg_entry {
     my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = scalar $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
-    $q->param( '_type', $app->blog->class );
-    $q->param( 'id',    scalar $q->param('blog_id') );
+    $app->param( '_type', $app->blog->class );
+    $app->param( 'id',    $blog_id );
     $app->forward(
         "view",
         {   output       => 'cfg_entry.tmpl',
@@ -2086,7 +2084,6 @@ PERMCHECK: {
 
     $app->validate_magic() or return;
 
-    my $q = $app->param;
     my @p = $app->multi_param;
     require MT::Entry;
     require MT::Placement;
@@ -2106,17 +2103,19 @@ PERMCHECK: {
         my $orig_obj   = $entry->clone;
         $perms = $app->user->permissions( $entry->blog_id );
         if ( $perms->can_edit_entry( $entry, $this_author ) ) {
-            my $author_id = $q->param( 'author_id_' . $id );
+            my $author_id = $app->param( 'author_id_' . $id );
+            my $title     = $app->param( 'title_' . $id )
+                || $app->param( 'no_title_' . $id );
             $entry->author_id( $author_id ? $author_id : 0 );
-            $entry->title( scalar $q->param( 'title_' . $id )
-                    || scalar $q->param( 'no_title_' . $id ) );
+            $entry->title($title);
         }
         else {
             return $app->permission_denied();
         }
         if ( $perms->can_edit_entry( $entry, $this_author, 1 ) )
         {    ## can he/she change status?
-            $entry->status( scalar $q->param( 'status_' . $id ) );
+            my $status = $app->param( 'status_' . $id );
+            $entry->status($status);
 
             my $date_closure = sub {
                 my ( $val, $col, $name ) = @_;
@@ -2186,11 +2185,11 @@ PERMCHECK: {
                 $entry->$col($ts);
             };
 
-            my $co = $q->param( 'created_on_' . $id ) || '';
+            my $co = $app->param( 'created_on_' . $id ) || '';
             $date_closure->(
                 $co, 'authored_on', MT->translate('authored on')
             ) or return;
-            $co = $q->param( 'modified_on_' . $id ) || '';
+            $co = $app->param( 'modified_on_' . $id ) || '';
             $date_closure->(
                 $co, 'modified_on', MT->translate('modified on')
             ) or return;
@@ -2234,7 +2233,7 @@ PERMCHECK: {
             }
         }
 
-        my $cat_id = $q->param("category_id_$id");
+        my $cat_id = $app->param("category_id_$id");
         my $place  = MT::Placement->load(
             {   entry_id   => $id,
                 is_primary => 1
@@ -2360,21 +2359,21 @@ sub do_send_pings {
 
 sub send_pings {
     my $app = shift;
-    my $q   = $app->param;
     $app->validate_magic() or return;
 
-    my $entry_id = $q->param('entry_id');
+    my $entry_id   = $app->param('entry_id');
+    my $blog_id    = $app->param('blog_id');
+    my $old_status = $app->param('old_status');
 
     do_send_pings(
-        $app,
-        scalar $q->param('blog_id'),
+        $app, $blog_id,
         $entry_id,
-        scalar $q->param('old_status'),
+        $old_status,
         sub {
             my ($has_errors) = @_;
-            my $entry = $app->model('entry')->load($entry_id);
-            _finish_rebuild_ping( $app, $entry, scalar $q->param('is_new'),
-                $has_errors );
+            my $entry        = $app->model('entry')->load($entry_id);
+            my $is_new       = $app->param('is_new');
+            _finish_rebuild_ping( $app, $entry, $is_new, $has_errors );
         }
     );
 }
@@ -2417,11 +2416,10 @@ sub save_entry_prefs {
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
     $app->validate_magic() or return;
-    my $q          = $app->param;
     my $prefs      = $app->_entry_prefs_from_params('');
-    my $disp       = $q->param('entry_prefs');
-    my $sort_only  = $q->param('sort_only');
-    my $prefs_type = $q->param('_type') . '_prefs';
+    my $disp       = $app->param('entry_prefs');
+    my $sort_only  = $app->param('sort_only');
+    my $prefs_type = $app->param('_type') . '_prefs';
 
     if ( $disp && lc $disp eq 'custom' && lc $sort_only eq 'true' ) {
         my $current = $perms->$prefs_type;
@@ -2453,7 +2451,8 @@ sub save_entry_prefs {
 sub publish_entries {
     my $app = shift;
     require MT::Entry;
-    update_entry_status( $app, MT::Entry::RELEASE(), $app->multi_param('id') );
+    update_entry_status( $app, MT::Entry::RELEASE(),
+        $app->multi_param('id') );
 }
 
 sub draft_entries {
@@ -2481,8 +2480,7 @@ sub open_batch_editor {
         unless $type_allowed{$type};
     my $pkg = $app->model($type) or return "Invalid request.";
 
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;
     my $blog = $app->model('blog')->load($blog_id);
@@ -2558,7 +2556,7 @@ sub open_batch_editor {
     delete $_->{object} foreach @$data;
     delete $param{entry_table} unless @$data;
 
-    $param{saved}               = $q->param('saved');
+    $param{saved}               = $app->param('saved');
     $param{object_type}         = $type;
     $param{object_label}        = $pkg->class_label;
     $param{object_label_plural} = $param{search_label}

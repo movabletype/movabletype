@@ -273,17 +273,34 @@ sub list_props {
                     : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
                     :                                     '';
                 my $lc_status_class = lc $status_class;
-                require MT::Entry;
-                my $status_file
-                    = $status == MT::Entry::HOLD()      ? 'draft.gif'
-                    : $status == MT::Entry::RELEASE()   ? 'success.gif'
-                    : $status == MT::Entry::REVIEW()    ? 'warning.gif'
-                    : $status == MT::Entry::FUTURE()    ? 'future.gif'
-                    : $status == MT::Entry::JUNK()      ? 'warning.gif'
-                    : $status == MT::Entry::UNPUBLISH() ? 'unpublished.gif'
+
+                my $status_icon_id
+                    = $status == MT::Entry::HOLD()      ? 'ic_statusdraft'
+                    : $status == MT::Entry::RELEASE()   ? 'ic_checkbox'
+                    : $status == MT::Entry::REVIEW()    ? 'ic_error'
+                    : $status == MT::Entry::FUTURE()    ? 'ic_time'
+                    : $status == MT::Entry::JUNK()      ? 'ic_error'
+                    : $status == MT::Entry::UNPUBLISH() ? 'ic_stop'
                     :                                     '';
-                my $status_img
-                    = MT->static_path . 'images/status_icons/' . $status_file;
+                my $status_icon_color_class
+                    = $status == MT::Entry::HOLD()      ? ''
+                    : $status == MT::Entry::RELEASE()   ? ' mt-icon--success'
+                    : $status == MT::Entry::REVIEW()    ? ' mt-icon--warning'
+                    : $status == MT::Entry::FUTURE()    ? ' mt-icon--info'
+                    : $status == MT::Entry::JUNK()      ? ' mt-icon--warning'
+                    : $status == MT::Entry::UNPUBLISH() ? ' mt-icon--danger'
+                    :                                     '';
+
+                my $status_img = '';
+                if ($status_icon_id) {
+                    my $static_uri = MT->static_path;
+                    $status_img = qq{
+                        <svg title="$status_class" role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
+                            <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id">
+                        </svg>
+                    };
+                }
+
                 my $view_link_text
                     = MT->translate( 'View [_1]', $class_label );
                 my $static_uri = MT->static_path;
@@ -301,7 +318,7 @@ sub list_props {
 
                 my $out = qq{
                     <span class="icon status $lc_status_class">
-                      <a href="$edit_url"><img alt="$status_class" src="$status_img" /></a>
+                      <a href="$edit_url">$status_img</a>
                     </span>
                     <span class="title">
                       $title

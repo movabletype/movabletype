@@ -179,7 +179,6 @@ sub set_extension_args {
 sub check_openid {
     my $class = shift;
     my ( $app, $blog, $identity ) = @_;
-    my $q = $app->param;
 
     my %param = $app->param_hash;
     my $csr = $class->get_csr( \%param, $blog );
@@ -489,7 +488,6 @@ sub _url_hash {
 sub check_url_params {
     my $class = shift;
     my ( $app, $blog ) = @_;
-    my $q = $app->{query};
 
     my $path = MT->config->CGIPath;
     if ( $path =~ m!^/! ) {
@@ -502,18 +500,18 @@ sub check_url_params {
     $path .= '/' unless $path =~ m!/$!;
     $path .= MT->config->CommentScript;
 
-    my $blog_id = $q->param('blog_id') || '';
+    my $blog_id = $app->param('blog_id') || '';
     $blog_id =~ s/\D//g;
 
-    my $static = $q->param('static') || '';
+    my $static = $app->param('static') || '';
     $static = MT::Util::encode_url($static)
         if $static =~ m/[^a-zA-Z0-9_.~%-]/;
 
-    my $key = $q->param('key') || '';
+    my $key = $app->param('key') || '';
     $key = MT::Util::encode_url($key)
         if $key =~ m/[^a-zA-Z0-9_.~%-]/;
 
-    my $entry_id = $q->param('entry_id') || '';
+    my $entry_id = $app->param('entry_id') || '';
     $entry_id =~ s/\D//g;
 
     my $return_to

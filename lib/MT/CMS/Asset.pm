@@ -318,9 +318,8 @@ sub insert {
 
     $app->validate_magic() or return;
 
-    if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
+    my $edit_field = $app->param('edit_field') || '';
+    if ( $edit_field =~ m/^customfield_.*$/ ) {
         return $app->permission_denied()
             unless $app->permissions;
     }
@@ -347,7 +346,7 @@ sub insert {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
             {   upload_html => $text || '',
-                edit_field => scalar $app->param('edit_field') || '',
+                edit_field => $edit_field,
                 extension_message => $extension_message,
                 asset_type        => $asset->class,
             },
@@ -356,8 +355,8 @@ sub insert {
     else {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
-            {   upload_html => $text                            || '',
-                edit_field  => scalar $app->param('edit_field') || '',
+            {   upload_html => $text || '',
+                edit_field  => $edit_field,
                 asset_type  => $asset->class,
             },
         );
@@ -379,7 +378,7 @@ sub asset_userpic {
         $id = $asset->id;
     }
     else {
-        $id = $param->{asset_id} || scalar $app->param('id');
+        $id = $param->{asset_id} || $app->param('id');
         $asset = $app->model('asset')->lookup($id);
     }
 
@@ -639,8 +638,7 @@ sub complete_insert {
     if ( !$asset && $id ) {
         require MT::Asset;
         $asset = MT::Asset->load($id)
-            || return $app->errtrans( "Cannot load file #[_1].",
-            $id );
+            || return $app->errtrans( "Cannot load file #[_1].", $id );
     }
     return $app->errtrans('Invalid request.') unless $asset;
 
@@ -649,8 +647,7 @@ sub complete_insert {
 
     require MT::Blog;
     my $blog = $asset->blog
-        or return $app->errtrans( "Cannot load blog #[_1].",
-        $blog_id );
+        or return $app->errtrans( "Cannot load blog #[_1].", $blog_id );
     my $perms = $app->permissions
         or return $app->errtrans('No permissions');
 
@@ -661,8 +658,8 @@ sub complete_insert {
     }
 
     my $middle_path = $app->param('middle_path') || '';
-    my $extra_path  = $app->param('extra_path') || '';
-    my $param = {
+    my $extra_path  = $app->param('extra_path')  || '';
+    my $param       = {
         asset_id    => $asset->id,
         bytes       => $args{bytes},
         fname       => $asset->file_name,
@@ -817,9 +814,9 @@ sub cancel_upload {
 }
 
 sub complete_upload {
-    my $app   = shift;
+    my $app     = shift;
     my $blog_id = $app->param('blog_id');
-    my %param = $app->param_hash;
+    my %param   = $app->param_hash;
     my $asset;
     require MT::Asset;
     $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
@@ -846,8 +843,7 @@ sub complete_upload {
     return $app->redirect(
         $app->uri(
             'mode' => 'list',
-            args =>
-                { '_type' => 'asset', 'blog_id' => $blog_id }
+            args   => { '_type' => 'asset', 'blog_id' => $blog_id }
         )
     );
 }
@@ -1130,7 +1126,6 @@ sub build_asset_table {
 sub asset_insert_text {
     my $app     = shift;
     my ($param) = @_;
-    my $q       = $app->param;
     my $id      = $app->param('id')
         or return $app->errtrans("Invalid request.");
     require MT::Asset;
@@ -1488,27 +1483,26 @@ sub _upload_file_compat {
             \%param
         );
     };
-    my $q = $app->param;
     my ( $fh, $info ) = $app->upload_info('file');
     my $mimetype;
     if ($info) {
         $mimetype = $info->{'Content-Type'};
     }
-    my $has_overwrite = $q->param('overwrite_yes')
-        || $q->param('overwrite_no');
+    my $has_overwrite = $app->param('overwrite_yes')
+        || $app->param('overwrite_no');
     my %param = (
-        entry_insert => scalar( $q->param('entry_insert') ),
-        middle_path  => scalar( $q->param('middle_path') ),
-        edit_field   => scalar( $q->param('edit_field') ),
-        site_path    => scalar( $q->param('site_path') ),
-        extra_path   => scalar( $q->param('extra_path') ),
+        entry_insert => scalar( $app->param('entry_insert') ),
+        middle_path  => scalar( $app->param('middle_path') ),
+        edit_field   => scalar( $app->param('edit_field') ),
+        site_path    => scalar( $app->param('site_path') ),
+        extra_path   => scalar( $app->param('extra_path') ),
         upload_mode  => $app->mode,
     );
     return $eh->(
         $app, %param,
         error => $app->translate("Please select a file to upload.")
     ) if !$fh && !$has_overwrite;
-    my $basename = $q->param('file') || $q->param('fname');
+    my $basename = $app->param('file') || $app->param('fname');
     $basename =~ s!\\!/!g;    ## Change backslashes to forward slashes
     $basename =~ s!^.*/!!;    ## Get rid of full directory paths
     if ( $basename =~ m!\.\.|\0|\|! ) {
@@ -1563,7 +1557,7 @@ sub _upload_file_compat {
         $local_file,     $asset_file,   $base_url,
         $asset_base_url, $relative_url, $relative_path
     );
-    if ( $blog_id = $q->param('blog_id') ) {
+    if ( $blog_id = $app->param('blog_id') ) {
         unless ($has_overwrite) {
             if ( my $ext_new = MT::Image->get_image_type($fh) ) {
                 my $ext_old
@@ -1591,7 +1585,7 @@ sub _upload_file_compat {
         ## at either the Local Site Path or Local Archive Path, and could
         ## include an extra directory or two in the middle.
         my ( $root_path, $middle_path );
-        if ( $q->param('site_path') ) {
+        if ( $app->param('site_path') ) {
             $root_path = $blog->site_path;
         }
         else {
@@ -1602,8 +1596,8 @@ sub _upload_file_compat {
                 'Movable Type was unable to write to the "Upload Destination". Please make sure that the webserver can write to this folder.'
             )
         ) unless -d $root_path;
-        $relative_path = $q->param('extra_path')  || '';
-        $middle_path   = $q->param('middle_path') || '';
+        $relative_path = $app->param('extra_path')  || '';
+        $middle_path   = $app->param('middle_path') || '';
         my $relative_path_save = $relative_path;
         if ( $middle_path ne '' ) {
             $relative_path = $middle_path
@@ -1615,7 +1609,7 @@ sub _upload_file_compat {
             @$path_info{qw(rootPath relativePath basename)}
                 = ( $root_path, $relative_path, $basename );
 
-            if ( $q->param('auto_rename_if_exists') ) {
+            if ( $app->param('auto_rename_if_exists') ) {
                 _rename_if_exists( $app, $fmgr, $path_info );
             }
 
@@ -1659,7 +1653,7 @@ sub _upload_file_compat {
             = $relative_path
             ? File::Spec->catfile( $relative_path, $basename )
             : $basename;
-        $asset_file = $q->param('site_path') ? '%r' : '%a';
+        $asset_file = $app->param('site_path') ? '%r' : '%a';
         $relative_path =~ s/^[\/\\]//;
         $asset_file = File::Spec->catfile( $asset_file, $relative_path );
         $local_file = File::Spec->catfile( $path,       $basename );
@@ -1678,7 +1672,7 @@ sub _upload_file_compat {
         ## tempfile, then ask for confirmation of the upload.
         if ( $fmgr->exists($local_file) ) {
             if ($has_overwrite) {
-                my $tmp = $q->param('temp');
+                my $tmp = $app->param('temp');
 
                 return $app->error(
                     $app->translate( "Invalid temp file name '[_1]'", $tmp ) )
@@ -1686,7 +1680,7 @@ sub _upload_file_compat {
 
                 my $tmp_dir = $app->config('TempDir');
                 my $tmp_file = File::Spec->catfile( $tmp_dir, $tmp );
-                if ( $q->param('overwrite_yes') ) {
+                if ( $app->param('overwrite_yes') ) {
                     $fh = gensym();
                     open $fh, '<',
                         $tmp_file
@@ -1765,13 +1759,13 @@ sub _upload_file_compat {
                     $app,
                     temp         => $tmp,
                     extra_path   => $relative_path_save,
-                    site_path    => scalar $q->param('site_path'),
-                    asset_select => scalar $q->param('asset_select'),
-                    entry_insert => scalar $q->param('entry_insert'),
+                    site_path    => scalar $app->param('site_path'),
+                    asset_select => scalar $app->param('asset_select'),
+                    entry_insert => scalar $app->param('entry_insert'),
                     edit_field   => scalar $app->param('edit_field'),
                     middle_path  => $middle_path,
                     fname        => $basename,
-                    no_insert    => $q->param('no_insert') || "",
+                    no_insert    => $app->param('no_insert') || "",
                     (   $extension_message
                         ? ( extension_message => $extension_message )
                         : ()
@@ -1888,8 +1882,8 @@ sub _upload_file_compat {
 
     ## If we are overwriting the file, that means we still have a temp file
     ## lying around. Delete it.
-    if ( $q->param('overwrite_yes') ) {
-        my $tmp = $q->param('temp');
+    if ( $app->param('overwrite_yes') ) {
+        my $tmp = $app->param('temp');
 
         return $app->error(
             $app->translate( "Invalid temp file name '[_1]'", $tmp ) )
@@ -1978,7 +1972,7 @@ sub _upload_file_compat {
         $asset->image_width($w);
         $asset->image_height($h);
 
-        if ( $q->param('normalize_orientation') ) {
+        if ( $app->param('normalize_orientation') ) {
             $asset->normalize_orientation;
         }
 
@@ -2073,17 +2067,16 @@ sub _upload_file {
         start_upload(@_);
     };
 
-    my $q = $app->param;
     my ( $fh, $info ) = $app->upload_info('file');
     my $mimetype;
     if ($info) {
         $mimetype = $info->{'Content-Type'};
     }
     my %param = (
-        entry_insert => scalar( $q->param('entry_insert') ),
-        edit_field   => scalar( $q->param('edit_field') ),
-        destination  => scalar( $q->param('destination') ),
-        extra_path   => scalar( $q->param('extra_path') ),
+        entry_insert => scalar( $app->param('entry_insert') ),
+        edit_field   => scalar( $app->param('edit_field') ),
+        destination  => scalar( $app->param('destination') ),
+        extra_path   => scalar( $app->param('extra_path') ),
         upload_mode  => $app->mode,
     );
     return $eh->(
@@ -2091,7 +2084,7 @@ sub _upload_file {
         error => $app->translate("Please select a file to upload.")
     ) if !$fh;
 
-    my $basename = $q->param('file') || $q->param('fname');
+    my $basename = $app->param('file') || $app->param('fname');
     $basename =~ s!\\!/!g;    ## Change backslashes to forward slashes
     $basename =~ s!^.*/!!;    ## Get rid of full directory paths
     if ( $basename =~ m!\.\.|\0|\|! ) {
@@ -2164,7 +2157,7 @@ sub _upload_file {
         $asset_base_url, $relative_url, $extra_path
     );
     my $label = $basename;
-    if ( $blog_id = $q->param('blog_id') ) {
+    if ( $blog_id = $app->param('blog_id') ) {
 
         $param{blog_id} = $blog_id;
         require MT::Blog;
@@ -2174,7 +2167,7 @@ sub _upload_file {
         $fmgr = $blog->file_mgr;
 
         ## Build upload destination path
-        my $dest = $q->param('destination');
+        my $dest = $app->param('destination');
         my $dest_url;
         my $root_path;
         my $is_sitepath;
@@ -2191,7 +2184,7 @@ sub _upload_file {
         $dest = MT::Util::build_upload_destination($dest);
 
         # Make directory if not exists
-        $extra_path = $q->param('extra_path') || '';
+        $extra_path = $app->param('extra_path') || '';
         if ($extra_path) {
             if ( $extra_path =~ m!\.\.|\0|\|! ) {
                 return $eh->(
@@ -2231,16 +2224,18 @@ sub _upload_file {
                 ( $root_path, $extra_path, $basename ) );
 
             if ( $fmgr->exists($local_file) ) {
-                if ( $q->param('operation_if_exists') == 1 ) {
+                my $operation_if_exists
+                    = $app->param('operation_if_exists') || 0;
+                if ( $operation_if_exists == 1 ) {
 
                     # Auto-rename
                     _rename_filename( $app, $path_info );
                 }
-                elsif ( $q->param('operation_if_exists') == 2 ) {
+                elsif ( $operation_if_exists == 2 ) {
 
                     # Overwrite, do nothing
                 }
-                elsif ( $q->param('operation_if_exists') == 3 ) {
+                elsif ( $operation_if_exists == 3 ) {
 
                     # Call cancel handler
                     return $cancel_handler->(
@@ -2262,7 +2257,7 @@ sub _upload_file {
             }
 
             # Rename non-ascii filename automatically if option provided.
-            if (   $q->param('auto_rename_non_ascii')
+            if (   $app->param('auto_rename_non_ascii')
                 && $path_info->{basename} =~ m/[^\x20-\x7E]/ )
             {
                 # Auto-rename
@@ -2325,7 +2320,7 @@ sub _upload_file {
 
         # Rename non-ascii filename automatically if option provided.
         my $path_info = { basename => $stem };
-        if (   $q->param('auto_rename_non_ascii')
+        if (   $app->param('auto_rename_non_ascii')
             && $path_info->{basename} =~ m/[^\x20-\x7E]/ )
         {
             # Auto-rename
@@ -2335,7 +2330,7 @@ sub _upload_file {
         $local_file = File::Spec->catfile( $param{support_path},
             $unique_stem . $type );
         if ( $fmgr->exists($local_file) ) {
-            my $operation_if_exists = $q->param('operation_if_exists') || 0;
+            my $operation_if_exists = $app->param('operation_if_exists') || 0;
             if ( $operation_if_exists == 1 ) {
 
                 # Auto-rename
@@ -2516,7 +2511,7 @@ sub _upload_file {
         $asset->image_width($w);
         $asset->image_height($h);
 
-        if ( $q->param('normalize_orientation') ) {
+        if ( $app->param('normalize_orientation') ) {
             $asset->normalize_orientation;
         }
 
@@ -2891,8 +2886,11 @@ sub js_save_asset {
 
     my $original = $asset->clone();
 
-    $asset->label( scalar $app->param('label') );
-    $asset->description( scalar $app->param('description') );
+    my $label       = $app->param('label');
+    my $description = $app->param('description');
+
+    $asset->label($label);
+    $asset->description($description);
     $asset->modified_by( $app->user->id ) if $asset->id;
 
     return $app->error(
@@ -3102,17 +3100,17 @@ sub dialog_asset_modal {
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
         && $app->param('can_multi');
 
-    $param{filter} = scalar $app->param('filter')
+    $param{filter} = $app->param('filter')
         if defined $app->param('filter');
-    $param{filter_val} = scalar $app->param('filter_val')
+    $param{filter_val} = $app->param('filter_val')
         if defined $app->param('filter_val');
     $param{search} = $app->param('search') if defined $app->param('search');
-    $param{edit_field} = scalar $app->param('edit_field')
+    $param{edit_field} = $app->param('edit_field')
         if defined $app->param('edit_field');
-    $param{next_mode}    = scalar $app->param('next_mode');
-    $param{no_insert}    = scalar $app->param('no_insert') ? 1 : 0;
-    $param{asset_select} = scalar $app->param('asset_select');
-    $param{require_type} = scalar $app->param('require_type');
+    $param{next_mode}    = $app->param('next_mode');
+    $param{no_insert}    = $app->param('no_insert') ? 1 : 0;
+    $param{asset_select} = $app->param('asset_select');
+    $param{require_type} = $app->param('require_type');
 
     if ($blog_id) {
         $param{blog_id}      = $blog_id;
@@ -3230,8 +3228,8 @@ sub dialog_insert_options {
 
     my %param;
     $param{options_loop} = $options_loop;
-    $param{edit_field} = scalar $app->param('edit_field');
-    $param{new_entry} = $app->param('asset_select') ? 0 : 1;
+    $param{edit_field}   = $app->param('edit_field');
+    $param{new_entry}    = $app->param('asset_select') ? 0 : 1;
 
     $app->load_tmpl( 'dialog/multi_asset_options.tmpl', \%param );
 }
@@ -3242,9 +3240,8 @@ sub insert_asset {
 
     $app->validate_magic() or return;
 
-    if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
+    my $edit_field = $app->param('edit_field') || '';
+    if ( $edit_field =~ m/^customfield_.*$/ ) {
         return $app->permission_denied()
             unless $app->permissions;
     }
@@ -3268,8 +3265,7 @@ sub insert_asset {
             $param{new_entry} = $app->param('new_entry') ? 1 : 0;
 
             $a->on_upload( \%param );
-            $param{enclose}
-                = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
+            $param{enclose} = $edit_field =~ /^customfield/ ? 1 : 0;
             my $html = $a->as_html( \%param );
             return $app->error( $a->error ) unless defined $html;
 
@@ -3305,8 +3301,7 @@ sub insert_asset {
             $param{new_entry} = $app->param('new_entry') ? 1 : 0;
 
             $asset->on_upload( \%param );
-            $param{enclose}
-                = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
+            $param{enclose} = $edit_field =~ /^customfield/ ? 1 : 0;
             my $html = $asset->as_html( \%param );
             return $app->error( $asset->error ) unless defined $html;
 
@@ -3332,7 +3327,7 @@ sub insert_asset {
     $tmpl = $app->load_tmpl(
         'dialog/asset_insert.tmpl',
         {   upload_html => $text || '',
-            edit_field => scalar $app->param('edit_field') || '',
+            edit_field => $edit_field,
             content_field_id => $content_field_id,
             $content_field_id ? ( can_multi => $can_multi ) : (),
         },

@@ -56,6 +56,23 @@ themes/broken_blog_theme
 #?package=MT ^addons/Sync.pack
 #?package=MT ^mt-static/addons/Sync.pack
 #?package=MT ^addons/AWS.pack
+#?package=MT ^mt-sp.cgi
+#?package=MT ^plugins/SmartphoneOption
+#?package=MT ^mt-static/SmartphoneOption
+#?pacakge=MT ^plugins/feeds-app-lite
+#?pacakge=MT ^mt-static/plugins/feeds-app-lite
+#?package=MT ^plugins/Motion
+#?package=MT ^mt-static/plugins/Motion
+#?package=MT ^mt-static/jquery/themes/Motion
+
+#?package=MT ^mt-cp.cgi
+#?package=MT ^addons/Community.pack
+#?package=MT ^mt-static/addons/Community.pack
+
+#?package=MT ^plugins/FacebookCommenters
+#?pacakge=MT ^mt-static/plugins/FacebookCommenters
+#?pacakge=MT ^plugins/mixiComment
+#?pacakge=MT ^mt-static/plugins/mixiComment
 
 #?package=MTAWS ^COPYING
 #?package=MTAWS ^COPYRIGHT
@@ -265,6 +282,10 @@ readme\.html\..*
 build-language-stamp
 ^mt-config.cgi$
 ^exports/
+^Gruntfile.js
+^package-lock.json
+^package.json
+^node_modules/
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion
@@ -274,6 +295,23 @@ build-language-stamp
 ^plugins/ActionStreams
 ^plugins/CommunityActionStreams
 ^plugins/TypePadAntiSpam
+
+# a-table.js
+^mt-static/a-table.js/.babelrc
+^mt-static/a-table.js/.editorconfig
+^mt-static/a-table.js/.eslintrc
+^mt-static/a-table.js/.gitignore
+^mt-static/a-table.js/.node-version
+^mt-static/a-table.js/_config.yml
+^mt-static/a-table.js/bin/
+^mt-static/a-table.js/circle.yml
+^mt-static/a-table.js/examples/
+^mt-static/a-table.js/lib/
+^mt-static/a-table.js/node_modules/
+^mt-static/a-table.js/package.json
+^mt-static/a-table.js/src/
+^mt-static/a-table.js/test/
+^mt-static/a-table.js/yarn.lock
 
 # Travis
 \.travis.yml

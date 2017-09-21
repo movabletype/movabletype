@@ -660,6 +660,7 @@ sub edit {
         }
     }
     elsif ( $app->param('qp') ) {
+
         # dedupe
         foreach (qw( title text )) {
             my $data = $app->param($_);
@@ -737,8 +738,7 @@ sub edit {
         # Populate the param hash with the object's own values
         for my $col (@$cols) {
             my $value = $app->param($col);
-            $param{$col}
-                = defined $value ? $value : $obj->$col();
+            $param{$col} = defined $value ? $value : $obj->$col();
         }
 
         # Make certain any blog-specific element matches the blog we're
@@ -889,9 +889,8 @@ sub edit {
 
 sub list {
     my $app     = shift;
-    my $q       = $app->param;
-    my $type    = $q->param('_type');
-    my $subtype = $q->param('type') ? '.' . $q->param('type') : '';
+    my $type    = $app->param('_type');
+    my $subtype = $app->param('type') ? '.' . $app->param('type') : '';
     my $scope
         = $app->blog ? ( $app->blog->is_blog ? 'blog' : 'website' )
         : defined $app->param('blog_id') ? 'system'
@@ -1015,7 +1014,7 @@ sub list {
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
     my $last_items = $list_pref->{last_items} || [];
-    my $initial_sys_filter = $q->param('filter_key');
+    my $initial_sys_filter = $app->param('filter_key');
     if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
         $initial_sys_filter = $last_filter;
     }
@@ -1290,7 +1289,7 @@ sub list {
     $param{list_columns_json} = $json->encode( \@list_columns );
     $param{filter_types}      = \@filter_types;
     $param{object_type}       = $type;
-    $param{subtype}           = $q->param('type');
+    $param{subtype}           = $app->param('type');
     $param{page_title}        = $screen_settings->{screen_label};
     $param{list_headers}      = \@list_headers;
     $param{build_user_menus}  = $screen_settings->{has_user_properties};
@@ -1387,9 +1386,8 @@ sub list {
 sub filtered_list {
     my $app              = shift;
     my (%forward_params) = @_;
-    my $q                = $app->param;
-    my $blog_id          = $q->param('blog_id') || 0;
-    my $filter_id        = $q->param('fid') || $forward_params{saved_fid};
+    my $blog_id          = $app->param('blog_id') || 0;
+    my $filter_id        = $app->param('fid') || $forward_params{saved_fid};
     my $blog             = $blog_id ? $app->blog : undef;
     my $scope
         = !$blog         ? 'system'
@@ -1429,7 +1427,7 @@ sub filtered_list {
         $debug->{section} = sub { };
     }
 
-    my $ds = $q->param('datasource');
+    my $ds = $app->param('datasource');
     my $setting = MT->registry( listing_screens => $ds )
         or return $app->json_error( $app->translate('Unknown list type') );
 
@@ -1505,7 +1503,7 @@ sub filtered_list {
 
     my $filteritems;
     my $allpass = 0;
-    if ( my $items = $q->param('items') ) {
+    if ( my $items = $app->param('items') ) {
         if ( $items =~ /^".*"$/ ) {
             $items =~ s/^"//;
             $items =~ s/"$//;
@@ -1545,8 +1543,8 @@ sub filtered_list {
             blog_id   => $blog_id || 0,
         }
     );
-    my $limit = $q->param('limit') || 50;    # FIXME: hard coded.
-    my $page = $q->param('page');
+    my $limit = $app->param('limit') || 50;    # FIXME: hard coded.
+    my $page = $app->param('page');
     $page = 1 if !$page || $page =~ /\D/;
     my $offset = ( $page - 1 ) * $limit;
 
@@ -1555,7 +1553,8 @@ sub filtered_list {
     $MT::DebugMode && $debug->{section}->('initialize');
 
     ## FIXME: take identifical column from column defs.
-    my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
+    my $cols
+        = defined( $app->param('columns') ) ? $app->param('columns') : '';
     my @cols = grep {/^[^\.]+$/} split( ',', $cols );
     my @subcols = grep {/\./} split( ',', $cols );
     my $class = MT->model( $setting->{object_type} || $ds );
@@ -1581,8 +1580,8 @@ sub filtered_list {
     my %load_options = (
         terms      => {@blog_id_term},
         args       => {},
-        sort_by    => $q->param('sort_by') || '',
-        sort_order => $q->param('sort_order') || '',
+        sort_by    => $app->param('sort_by') || '',
+        sort_order => $app->param('sort_order') || '',
         limit      => $limit,
         offset     => $offset,
         scope      => $scope,
@@ -1779,8 +1778,7 @@ sub save_list_prefs {
 
 sub delete {
     my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $type = $app->param('_type');
 
     return $app->errtrans("Invalid request.")
         unless $type;
@@ -1800,8 +1798,8 @@ sub delete {
     return $app->errtrans("Invalid request.")
         if is_disabled_mode( $app, 'delete', $type );
 
-    my $parent  = $q->param('parent');
-    my $blog_id = $q->param('blog_id');
+    my $parent  = $app->param('parent');
+    my $blog_id = $app->param('blog_id');
     my $class   = $app->model($type) or return;
     my $perms   = $app->permissions;
     my $author  = $app->user;
@@ -1942,7 +1940,7 @@ sub delete {
 
             # FIXME: enumeration of types
             if ( $obj->type
-                !~ /(custom|index|archive|page|individual|category|widget|backup)/
+                !~ /(custom|index|archive|page|individual|category|widget|backup|ct|ct_archive)/
                 )
             {
                 $required_items++;
@@ -1992,7 +1990,7 @@ sub delete {
             = 1;
     }
 
-    if ( $q->param('is_power_edit') ) {
+    if ( $app->param('is_power_edit') ) {
         $return_arg{is_power_edit} = 1;
     }
     if ($required_items) {

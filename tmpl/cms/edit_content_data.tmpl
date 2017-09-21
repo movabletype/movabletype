@@ -56,7 +56,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="form_header">
-<form name="edit-content-type-data-form" id="edit-content-type-data-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewnewwindow"> mt:once</mt:unless> mt:auto-save="1" mt:auto-save-delay="<mt:var name="autosave_frequency">000" novalidate>
+<form name="edit-content-type-data-form" id="edit-content-type-data-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewinnewwindow"> mt:once</mt:unless> mt:auto-save="1" mt:auto-save-delay="<mt:var name="autosave_frequency">000" novalidate>
   <input type="hidden" name="__mode" value="save" />
   <input type="hidden" name="_type" value="content_data" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
@@ -615,6 +615,25 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 <mt:setvarblock name="page_content">
 <mtapp:settinggroup id="content_data">
 
+  <mt:unless name="new_object">
+    <mtapp:setting
+      id="permalink"
+      label="Permalink"
+      show_label="0"
+      label_class="no-header"
+      help_page="entries"
+      help_section="permalink">
+     <strong><__trans phrase="Permalink:"></strong> <mt:var name="content_data_permalink">
+       <mt:if name="status_publish">
+         <mt:if name="content_data_permalink">
+       <a class="btn btn-default button" href="<$mt:var name="content_data_permalink"$>" target="<__trans phrase="_external_link_target">">
+         <__trans phrase="View">
+       </a>
+         </mt:if>
+       </mt:if>
+    </mtapp:setting>
+  </mt:unless>
+
   <mtapp:setting
     id="title"
     label="<__trans phrase="Title">"
@@ -753,7 +772,6 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     jQuery('button.publish').click(function(event) {
         jQuery('form#edit-content-type-data-form input[name=__mode]').val('save');
         jQuery('form#edit-content-type-data-form').removeAttr('target');
-        jQuery('form#edit-content-type-data-form').attr('mt:once', '1');
     });
   </mt:if>
 
@@ -769,8 +787,14 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 
   var newCategoryClickEventAdded;
 
-  jQuery('#edit-content-type-data-form').submit( function() {
-    var form = this;
+  jQuery('#edit-content-type-data-form').submit( function(event) {
+    var $form = jQuery(this);
+
+    if ($form.children('input[name=__mode]').val() == 'preview_content_data') {
+        $form.get(0).submit();
+        return false;
+    }
+
     validateInServerSide().done(function () {
       if (validateInClientSide()) {
         var block_editor_data = {};
@@ -781,11 +805,14 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           }
         });
         if(Object.keys(block_editor_data).length > 0) {
-          jQuery(form).append(jQuery('<input type="hidden" name="blockeditor-data">').val(JSON.stringify(block_editor_data)))
+          $form.append(jQuery('<input type="hidden" name="blockeditor-data">').val(JSON.stringify(block_editor_data)))
         } else {
-          jQuery(form).append(jQuery('<input type="hidden" name="blockeditor-data">').val(''))
+          $form.append(jQuery('<input type="hidden" name="blockeditor-data">').val(''))
         }
-        form.submit();
+<mt:if name="config.previewinnewwindow">
+        $form.attr('mt:once', '1');
+</mt:if>
+        $form.get(0).submit();
       }
     })
     return false;

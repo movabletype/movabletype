@@ -14,11 +14,10 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $perms   = $app->permissions;
     my $blog    = $app->blog;
-    my $type    = $q->param('_type');
+    my $type    = $app->param('_type');
 
     if ($id) {
         $param->{nav_comments} = 1;
@@ -144,10 +143,9 @@ sub edit_commenter {
 
     return $app->errtrans("Invalid request.") if !$id;
 
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $perms   = $app->permissions;
-    my $type    = $q->param('_type');
+    my $type    = $app->param('_type');
 
     $param->{is_email_hidden} = $obj->is_email_hidden;
     $param->{status}          = {
@@ -183,15 +181,14 @@ sub edit_commenter {
 sub save_commenter_perm {
     my $app      = shift;
     my ($params) = @_;
-    my $q        = $app->param;
-    my $action   = $q->param('action');
+    my $action   = $app->param('action');
 
     $app->validate_magic() or return;
 
     my $acted_on;
     my %rebuild_set;
     my @ids     = $params ? @$params : $app->multi_param('commenter_id');
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $author  = $app->user;
     my %permissions;
     foreach my $id (@ids) {

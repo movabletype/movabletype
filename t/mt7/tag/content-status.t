@@ -34,15 +34,16 @@ require MT::Entry;
 my $cd1 = MT::Test::Permission->make_content_data(
     blog_id         => $blog_id,
     content_type_id => $ct->id,
-    status => MT::Entry::HOLD(),
+    status          => MT::Entry::HOLD(),
 );
 my $cd2 = MT::Test::Permission->make_content_data(
     blog_id         => $blog_id,
     content_type_id => $ct->id,
-    status => MT::Entry::RELEASE(),
+    status          => MT::Entry::RELEASE(),
 );
 
 MT::Test::Tag->run_perl_tests($blog_id);
+
 # MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
@@ -52,5 +53,4 @@ __END__
 <mt:Contents blog_id="1" name="test content data"><mt:ContentStatus>
 </mt:Contents>
 --- expected
-Draft
 Publish

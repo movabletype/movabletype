@@ -146,13 +146,12 @@ h1.dialog-title {
 <fieldset class="form-group">
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
   <button class="action button primary btn btn-primary" id="open-file-dialog">
-    <img src="<mt:var name="static_uri">images/upload/ico_nowuploading_s@2x.png" width="12" height="10">
-      <mt:if name="can_multi">
-        <span><__trans phrase="Choose files to upload or drag files."></span>
-      <mt:else>
-        <span><__trans phrase="Choose file to upload or drag file."></span>
-      </mt:if>
-    </img>
+    <mtapp:svgicon id="ic_upload" title="<__trans phrase="Upload">" color="inverse" size="sm">
+  <mt:if name="can_multi">
+    <span><__trans phrase="Choose files to upload or drag files."></span>
+  <mt:else>
+    <span><__trans phrase="Choose file to upload or drag file."></span>
+  </mt:if>
   </button>
 </fieldset>
 

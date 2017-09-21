@@ -72,11 +72,10 @@ sub cfg_content_type_description {
 
 sub cfg_content_type {
     my ( $app, $param ) = @_;
-    my $q   = $app->param;
     my $cfg = $app->config;
 
     require MT::Promise;
-    my $content_type_id = $q->param('id');
+    my $content_type_id = $app->param('id');
     my $obj_promise     = MT::Promise::delay(
         sub {
             return undef unless $content_type_id;
@@ -91,8 +90,8 @@ sub cfg_content_type {
         $param->{unique_id}        = $content_type->unique_id;
         $param->{user_disp_option} = $content_type->user_disp_option;
         my $field_data;
-        if ( $q->param('err_msg') ) {
-            $field_data = $q->param('fields');
+        if ( $app->param('err_msg') ) {
+            $field_data = $app->param('fields') || '';
             if ( $field_data =~ /^".*"$/ ) {
                 $field_data =~ s/^"//;
                 $field_data =~ s/"$//;
@@ -201,7 +200,7 @@ sub cfg_content_type {
         = JSON::encode_json( \%content_field_types_options );
 
     foreach my $name (qw( saved err_msg id name )) {
-        $param->{$name} = $q->param($name) if $q->param($name);
+        $param->{$name} = $app->param($name) if $app->param($name);
     }
 
     my @category_sets;
@@ -869,11 +868,10 @@ sub _validate_content_field_type_options {
 
 sub select_list_content_type {
     my ($app) = @_;
-    my $q     = $app->param;
     my $cfg   = $app->config;
     my $param = {};
 
-    my $blog_id = scalar $q->param('blog_id')
+    my $blog_id = $app->param('blog_id')
         or return $app->errtrans("Invalid request.");
 
     my @content_types;
@@ -889,11 +887,10 @@ sub select_list_content_type {
 
 sub select_edit_content_type {
     my ($app) = @_;
-    my $q     = $app->param;
     my $cfg   = $app->config;
     my $param = {};
 
-    my $blog_id = scalar $q->param('blog_id')
+    my $blog_id = $app->param('blog_id')
         or return $app->errtrans("Invalid request.");
 
     my @array;
