@@ -10,16 +10,15 @@ use MT::Util qw( remove_html );
 
 sub cfg_plugins {
     my $app = shift;
-    my $q   = $app->param;
     my %param;
     $param{screen_class} = 'settings-screen';
-    if ( my $blog_id = $q->param('blog_id') ) {
+    if ( my $blog_id = $app->param('blog_id') ) {
         my $blog = $app->model('blog')->load($blog_id);
         return $app->permission_denied()
             if $blog && !$app->can_do('administer_site');
 
-        $q->param( '_type', 'blog' );
-        $q->param( 'id',    $blog_id );
+        $app->param( '_type', 'blog' );
+        $app->param( 'id',    $blog_id );
         $param{screen_id} = "list-plugins";
         $param{screen_class} .= " plugin-settings";
         $param{output} = 'cfg_plugin.tmpl';
@@ -51,10 +50,9 @@ sub cfg_plugins {
 sub save_config {
     my $app = shift;
 
-    my $q          = $app->param;
-    my $plugin_sig = $q->param('plugin_sig') || '';
+    my $plugin_sig = $app->param('plugin_sig') || '';
     my $profile    = $MT::Plugins{$plugin_sig};
-    my $blog_id    = $q->param('blog_id');
+    my $blog_id    = $app->param('blog_id');
 
     $app->validate_magic or return;
     return $app->permission_denied()
@@ -95,10 +93,9 @@ sub save_config {
 sub reset_config {
     my $app = shift;
 
-    my $q          = $app->param;
-    my $plugin_sig = $q->param('plugin_sig') || '';
+    my $plugin_sig = $app->param('plugin_sig') || '';
     my $profile    = $MT::Plugins{$plugin_sig};
-    my $blog_id    = $q->param('blog_id');
+    my $blog_id    = $app->param('blog_id');
 
     $app->validate_magic or return;
     return $app->permission_denied()
