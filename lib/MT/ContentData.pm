@@ -626,7 +626,8 @@ sub make_list_props {
                 base    => '__virtual.created_on',
                 display => 'none',
             },
-            author_status => { base => 'entry.author_status' },
+            author_status => { base    => 'entry.author_status' },
+            blog_name     => { display => 'none', filter_editable => 0 },
             %{$field_list_props},
         };
     }
