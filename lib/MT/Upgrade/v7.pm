@@ -284,6 +284,24 @@ sub _v7_migrate_privileges {
 
         }
     }
+
+    $self->progress(
+        $self->translate_escape(
+            'add administer_site permission for Blog Administrator...'
+        )
+    );
+    my @blog_admin_roles = $role_class->load_by_permission("administer_blog");
+    foreach my $blog_admin_role (@blog_admin_roles) {
+        $blog_admin_role->set_these_permissions( ['administer_site'] );
+        $blog_admin_role->save
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $blog_admin_role->errstr
+            )
+            );
+    }
+
 }
 
 sub _migrate_system_privileges {
