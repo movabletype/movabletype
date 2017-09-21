@@ -309,6 +309,16 @@ sub _v7_migrate_privileges {
                 $blog_admin_role->errstr
             )
             );
+
+        my $assoc_iter
+            = $assoc_class->load_iter( { role_id => $blog_admin_role->id } );
+        while ( my $assoc = $assoc_iter->() ) {
+            my $blog   = $assoc->blog;
+            my $author = $assoc->user;
+            $author->add_role( $site_admin_role, $blog );
+
+        }
+
     }
 
 }
@@ -325,7 +335,7 @@ sub _migrate_system_privileges {
     my $perm_iter
         = $permission_class->load_iter(
         { permissions => { not => '\'comment\'' } },
-        { group       => {'author_id'} } );
+        { group       => 'author_id' } );
     while ( my $perm = $perm_iter->() ) {
         my $author = $perm->user;
         $author->is_superuser(1) if $author->is_superuser();
