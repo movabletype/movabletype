@@ -532,6 +532,10 @@ function validate (f, rebuild) {
         alert('<__trans phrase="You must set the Template Name." escape="js">');
         return false;
     }
+    if (f.content_type_id && !f.content_type_id.value) {
+        alert('<__trans phrase="You must select the Content Type." escape="js">');
+        return false;
+    }
     if (f.outfile && !f.outfile.value) {
         alert('<__trans phrase="You must set the template Output File." escape="js">');
         return false;
