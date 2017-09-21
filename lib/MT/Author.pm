@@ -1093,6 +1093,17 @@ sub can_manage_content_types {
     }
 }
 
+sub can_manage_content_data {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_manage_content_data(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_manage_content_data(@_);
+    }
+}
+
 sub can_sign_in_cms {
     my $self = shift;
     if (@_) {

@@ -54,4 +54,3 @@ __END__
 --- expected
 Draft
 Publish
-
