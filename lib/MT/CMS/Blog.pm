@@ -453,8 +453,7 @@ sub cfg_prefs {
     my $app = shift;
     my %param;
     %param = %{ $_[0] } if $_[0];
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 ) unless $blog_id;
 
     my $blog_prefs = $app->user_blog_prefs;
@@ -467,6 +466,7 @@ sub cfg_prefs {
         $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
     my @data;
+    my $preferred_archive_type = $app->param('preferred_archive_type') || '';
     for my $at ( split /\s*,\s*/, $blog->archive_type ) {
         my $archiver = $app->publisher->archiver($at);
         next unless $archiver;
@@ -481,9 +481,7 @@ sub cfg_prefs {
             archive_type_is_preferred =>
                 ( $blog->archive_type_preferred eq $at ? 1 : 0 ),
         };
-        if (   $q->param('preferred_archive_type')
-            && $q->param('preferred_archive_type') eq $at )
-        {
+        if ( $preferred_archive_type eq $at ) {
             $row->{archive_type_is_preferred} = 1;
         }
         elsif ( $blog->archive_type_preferred eq $at ) {
@@ -497,12 +495,12 @@ sub cfg_prefs {
     }
     $param{entry_archive_types} = \@data;
 
-    $param{saved_deleted}    = 1 if $q->param('saved_deleted');
-    $param{saved_added}      = 1 if $q->param('saved_added');
-    $param{archives_changed} = 1 if $q->param('archives_changed');
-    $param{no_writedir}    = $q->param('no_writedir');
-    $param{no_cachedir}    = $q->param('no_cachedir');
-    $param{no_writecache}  = $q->param('no_writecache');
+    $param{saved_deleted}    = 1 if $app->param('saved_deleted');
+    $param{saved_added}      = 1 if $app->param('saved_added');
+    $param{archives_changed} = 1 if $app->param('archives_changed');
+    $param{no_writedir}    = $app->param('no_writedir');
+    $param{no_cachedir}    = $app->param('no_cachedir');
+    $param{no_writecache}  = $app->param('no_writecache');
     $param{include_system} = $blog->include_system || '';
 
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
@@ -518,8 +516,8 @@ sub cfg_prefs {
         close $fh;
     }
     $param{output} = 'cfg_prefs.tmpl';
-    $q->param( '_type', $blog->class );
-    $q->param( 'id',    $blog_id );
+    $app->param( '_type', $blog->class );
+    $app->param( 'id',    $blog_id );
     $param{screen_class} = 'settings-screen general-screen';
     $param{object_type}  = 'author';
     $param{search_label} = $app->translate('Users');
