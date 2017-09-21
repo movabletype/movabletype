@@ -17,10 +17,12 @@ use MT;
 use MT::Blog;
 use MT::CMS::ContentType;
 use MT::ContentType;
+use MT::Entry;
 use MT::Log;
 use MT::Session;
 use MT::Template;
 use MT::TemplateMap;
+use MT::Util;
 
 sub edit {
     my ($app) = @_;
@@ -388,8 +390,15 @@ sub save {
     my $orig = $content_data->clone;
     my $status_old = $content_data_id ? $content_data->status : 0;
 
+    my $archive_type = '';
+    my $orig_file    = '';
+
     if ( $content_data->id ) {
         $content_data->modified_by( $app->user->id );
+
+        $archive_type = 'ContentType';
+        $orig_file
+            = MT::Util::archive_file_for( $orig, $blog, $archive_type );
     }
     else {
         $content_data->author_id( $app->user->id );
@@ -549,6 +558,21 @@ sub save {
         );
 
     $app->run_callbacks( 'cms_post_save.cd', $app, $content_data, $orig );
+
+    # Delete old archive files.
+    if ( $app->config('DeleteFilesAtRebuild') && $content_data_id ) {
+        $app->request->cache( 'file', {} );    # clear cache
+        my $file = MT::Util::archive_file_for( $content_data, $blog,
+            $archive_type );
+        if (   $file ne $orig_file
+            || $content_data->status != MT::Entry::RELEASE() )
+        {
+            $app->publisher->remove_content_data_archive_file(
+                ContentData => $orig,
+                ArchiveType => $archive_type,
+            );
+        }
+    }
 
     return $app->redirect(
         $app->uri(
