@@ -28,42 +28,42 @@ my $other = MT::Author->load(998);    # ichikawa
 
 # Create a new Asset
 # __mode=save&_type=asset&blog_id=1
-$app = _run_app(
-    'MT::App::CMS',
-    {   __test_user      => $user,
-        __request_method => 'POST',
-        __mode           => 'save',
-        _type            => 'asset',
-        blog_id          => 1
-    }
-);
-$out = delete $app->{__test_output};
-ok( $out, "Create a new asset" );
-location_param_contains(
-    $out,
-    { __mode => 'dashboard', permission => 1 },
-    "Create a new Asset: result"
-);
+# $app = _run_app(
+#     'MT::App::CMS',
+#     {   __test_user      => $user,
+#         __request_method => 'POST',
+#         __mode           => 'save',
+#         _type            => 'asset',
+#         blog_id          => 1
+#     }
+# );
+# $out = delete $app->{__test_output};
+# ok( $out, "Create a new asset" );
+# location_param_contains(
+#     $out,
+#     { __mode => 'dashboard', permission => 1 },
+#     "Create a new Asset: result"
+# );
 
 # Delete Asset
 # __mode=delete&_type=asset&blog_id=1&id=1
-$app = _run_app(
-    'MT::App::CMS',
-    {   __test_user      => $user,
-        __request_method => 'POST',
-        __mode           => 'delete',
-        _type            => 'asset',
-        blog_id          => 1,
-        id               => 1
-    }
-);
-$out = delete $app->{__test_output};
-ok( $out, "Delete asset" );
-location_param_contains(
-    $out,
-    { __mode => 'dashboard', permission => 1 },
-    "Delete asset: result"
-);
+# $app = _run_app(
+#     'MT::App::CMS',
+#     {   __test_user      => $user,
+#         __request_method => 'POST',
+#         __mode           => 'delete',
+#         _type            => 'asset',
+#         blog_id          => 1,
+#         id               => 1
+#     }
+# );
+# $out = delete $app->{__test_output};
+# ok( $out, "Delete asset" );
+# location_param_contains(
+#     $out,
+#     { __mode => 'dashboard', permission => 1 },
+#     "Delete asset: result"
+# );
 
 # Update an asset
 # __mode=save&_type=asset&blog_id=1&id=1
@@ -1709,4 +1709,3 @@ sub make_data {
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
 }
-

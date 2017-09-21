@@ -283,10 +283,33 @@ sub create_default_roles {
     my $class = shift;
     my (%param) = @_;
 
-    my @default_roles = (
+    my @default_roles = _default_roles();
+
+    require MT::Role;
+    return 1 if MT::Role->exist();
+
+    foreach my $r (@default_roles) {
+        my $role = MT::Role->new();
+        $role->name( $r->{name} );
+        $role->description( $r->{description} );
+        $role->clear_full_permissions;
+        $role->set_these_permissions( $r->{perms} );
+        if ( $r->{name} =~ m/^System/ ) {
+            $role->is_system(1);
+        }
+        $role->role_mask( $r->{role_mask} ) if exists $r->{role_mask};
+        $role->save
+            or return $class->error( $role->errstr );
+    }
+
+    1;
+}
+
+sub _default_roles {
+    return +(
         {   name        => MT->translate('Site Administrator'),
             description => MT->translate('Can administer the site.'),
-            perms       => [ 'administer_site' ]
+            perms       => ['administer_site']
         },
         {   name        => MT->translate('Child Site Administrator'),
             description => MT->translate('Can administer the child site.'),
@@ -298,12 +321,13 @@ sub create_default_roles {
                 'Can upload files, edit all entries(categories), pages(folders), tags and publish the site.'
             ),
             perms => [
-                'comment',         'create_post',
-                'publish_post',    'edit_all_posts',
-                'edit_categories', 'edit_tags',
-                'manage_pages',    'rebuild',
-                'upload',          'send_notifications',
-                'manage_feedback', 'edit_assets'
+                'comment',              'create_post',
+                'publish_post',         'edit_all_posts',
+                'edit_categories',      'edit_tags',
+                'manage_pages',         'rebuild',
+                'upload',               'send_notifications',
+                'manage_feedback',      'edit_assets',
+                'manage_content_datas', 'manage_category_set'
             ],
         },
         {   name        => MT->translate('Author'),
@@ -320,7 +344,11 @@ sub create_default_roles {
             description => MT->translate(
                 'Can edit, manage, and publish blog templates and themes.'),
             role_mask => ( 2**4 + 2**7 ),
-            perms     => [ 'manage_themes', 'edit_templates', 'rebuild' ]
+            perms     => [
+                'manage_themes', 'edit_templates',
+                'rebuild',       'upload',
+                'edit_assets'
+            ]
         },
         {   name        => MT->translate('Webmaster'),
             description => MT->translate(
@@ -346,28 +374,12 @@ sub create_default_roles {
             description => MT->translate(
                 'Can manage content types, content datas, edit their own content types, contentdatas.'
             ),
-            perms => [ 'manage_content_types', 'manage_content_datas' ],
+            perms => [
+                'manage_content_types', 'manage_content_datas',
+                'manage_category_set'
+            ],
         },
     );
-
-    require MT::Role;
-    return 1 if MT::Role->exist();
-
-    foreach my $r (@default_roles) {
-        my $role = MT::Role->new();
-        $role->name( $r->{name} );
-        $role->description( $r->{description} );
-        $role->clear_full_permissions;
-        $role->set_these_permissions( $r->{perms} );
-        if ( $r->{name} =~ m/^System/ ) {
-            $role->is_system(1);
-        }
-        $role->role_mask( $r->{role_mask} ) if exists $r->{role_mask};
-        $role->save
-            or return $class->error( $role->errstr );
-    }
-
-    1;
 }
 
 1;
