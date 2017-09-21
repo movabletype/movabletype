@@ -1132,8 +1132,7 @@ sub rebuild_new_phase {
 
 sub start_rebuild_pages {
     my $app        = shift;
-    my $q          = $app->param;
-    my $start_time = $q->param('start_time');
+    my $start_time = $app->param('start_time');
 
     if ( !$start_time ) {
 
@@ -1142,20 +1141,20 @@ sub start_rebuild_pages {
         $start_time = time;
     }
 
-    my $type = $q->param('type') || '';
-    my $next = $q->param('next') || 0;
+    my $type = $app->param('type') || '';
+    my $next = $app->param('next') || 0;
     my @order = split /,/, $type;
-    my $total         = $q->param('total') || 0;
+    my $total         = $app->param('total') || 0;
     my $type_name     = $order[$next];
     my $archiver      = $app->publisher->archiver($type_name);
     my $archive_label = $archiver ? $archiver->archive_label : '';
     $archive_label = $app->translate($type_name) unless $archive_label;
     $archive_label = $archive_label->() if ( ref $archive_label ) eq 'CODE';
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
 
-    my $with_indexes = $q->param('with_indexes');
-    my $no_static    = $q->param('no_static');
-    my $template_id  = $q->param('template_id');
+    my $with_indexes = $app->param('with_indexes');
+    my $no_static    = $app->param('no_static');
+    my $template_id  = $app->param('template_id');
 
     if ($archiver) {
         $total = _determine_total( $archiver, $blog_id );
@@ -1199,14 +1198,14 @@ sub start_rebuild_pages {
         for my $col (
             qw( is_new old_status old_next old_previous old_categories ))
         {
-            $param{$col} = $q->param($col);
+            $param{$col} = $app->param($col);
         }
     }
-    $param{is_full_screen} = ( $param{is_entry} )
-        || $q->param('single_template');
+    $param{is_full_screen}
+        = $param{is_entry} || $app->param('single_template');
     $param{page_titles} = [ { bc_name => 'Rebuilding' } ];
-    if ( $q->param('no_rebuilding_tmpl') ) {
-        $q->param( 'total', $total );
+    if ( $app->param('no_rebuilding_tmpl') ) {
+        $app->param( 'total', $total );
         MT::CMS::Blog::rebuild_pages($app);
     }
     else {
