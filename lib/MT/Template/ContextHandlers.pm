@@ -4288,7 +4288,7 @@ sub _hdlr_app_contentfield_option_group {
     this.parent.update()
   }
 
-  gatheringData(e) {
+  gatheringData() {
     data = {}
     flds = this.refs
     Object.keys(flds).forEach( function(k) {
@@ -4318,6 +4318,7 @@ sub _hdlr_app_contentfield_option_group {
       customData = this.gather()
       jQuery.extend( data, customData);
     }
+    return data
   }
 
   $script
