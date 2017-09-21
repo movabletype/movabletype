@@ -74,6 +74,10 @@ sub cfg_content_type {
     my ( $app, $param ) = @_;
     my $cfg = $app->config;
 
+    unless ( $app->blog ) {
+        return $app->return_to_dashboard( redirect => 1 );
+    }
+
     require MT::Promise;
     my $content_type_id = $app->param('id');
     my $obj_promise     = MT::Promise::delay(
