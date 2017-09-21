@@ -303,7 +303,8 @@ sub create_default_roles {
                 'edit_categories', 'edit_tags',
                 'manage_pages',    'rebuild',
                 'upload',          'send_notifications',
-                'manage_feedback', 'edit_assets'
+                'manage_feedback', 'edit_assets',
+                'manage_content_datas', 'manage_category_set'
             ],
         },
         {   name        => MT->translate('Author'),
@@ -320,7 +321,11 @@ sub create_default_roles {
             description => MT->translate(
                 'Can edit, manage, and publish blog templates and themes.'),
             role_mask => ( 2**4 + 2**7 ),
-            perms     => [ 'manage_themes', 'edit_templates', 'rebuild' ]
+            perms     => [
+                'manage_themes', 'edit_templates',
+                'rebuild',       'upload',
+                'edit_assets'
+            ]
         },
         {   name        => MT->translate('Webmaster'),
             description => MT->translate(
