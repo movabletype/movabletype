@@ -314,28 +314,23 @@ sub _v7_migrate_privileges {
 }
 
 sub _migrate_system_privileges {
-    my $self = shift;
+    my $self             = shift;
+    my $permission_class = MT->model('permission');
 
-    require MT::Author;
-    my $author_iter
-        = MT::Author->load_iter( { type => MT::Author::AUTHOR() } );
     $self->progress(
         $self->translate_escape(
             'Migrating system level permissions to new structure...')
     );
-    while ( my $author = $author_iter->() ) {
-        $author->is_superuser(1) if $author->is_superuser();
 
-        if ( $author->type != MT::Author::COMMENTER() ) {
-            my $perm_count
-                = MT->model('association')
-                ->count(
-                { 'author_id' => $author->id, 'blog_id' => { not => '0' } } );
-            if ($perm_count) {
-                $author->can_sign_in_cms(1);
-                $author->can_sign_in_data_api(1);
-            }
-        }
+    my $perm_iter
+        = $permission_class->load_iter(
+        { permissions => { not => '\'comment\'' } },
+        { group       => {'author_id'} } );
+    while ( my $perm = $perm_iter->() ) {
+        my $author = $perm->user;
+        $author->is_superuser(1) if $author->is_superuser();
+        $author->can_sign_in_cms(1);
+        $author->can_sign_in_data_api(1);
         $author->save();
     }
 }
