@@ -657,8 +657,7 @@ sub cfg_registration {
 
 sub cfg_web_services {
     my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = scalar $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     return $app->permission_denied()
         unless $app->can_do('edit_config');
 
@@ -683,8 +682,8 @@ sub cfg_web_services {
             };
     }
 
-    $q->param( '_type', $app->blog ? $app->blog->class : 'blog' );
-    $q->param( 'id', scalar $q->param('blog_id') );
+    $app->param( '_type', $app->blog ? $app->blog->class : 'blog' );
+    $app->param( 'id', $blog_id );
     $app->forward(
         "view",
         {   output           => 'cfg_web_services.tmpl',
