@@ -71,6 +71,7 @@ sub list_props {
             label                 => 'Category Set',
             display               => 'none',
         },
+        blog_name => { display => 'none', filter_editable => 0 },
         current_context => { filter_editable => 0 },
     };
 }
