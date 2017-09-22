@@ -449,7 +449,11 @@ sub _hdlr_assets {
             }
             if ( my $last = $args->{lastn} || $args->{limit} ) {
                 if ( scalar @assets > $last ) {
-                    @assets = @assets[ 0 .. $last - 1 ];
+                    if( $args->{lastn} && $args->{sort_order} eq 'ascend' ){
+                        @assets = @assets[ $#assets - $last + 1 .. $#assets ];
+                    }else{
+                        @assets = @assets[ 0 .. $last - 1 ];
+                    }
                 }
             }
         }
