@@ -41,6 +41,9 @@ sub data_load_handler {
         }
         return $html;
     }
+    elsif ( $convert_breaks eq 'richtext' ) {
+        return scalar $app->param("editor-input-content-field-$field_id");
+    }
     else {
         return scalar $app->param("content-field-multi-$field_id");
     }
