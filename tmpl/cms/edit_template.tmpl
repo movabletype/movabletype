@@ -1310,6 +1310,7 @@ function saveTemplatePrefs( sync ) {
     });
     function getContentTypeInfo() {
       var ct_id = jQuery("#content_type_id").val();
+      if (!ct_id) return;
       jQuery.ajax({
         type: 'POST',
         contentType: 'application/x-www-form-urlencoded; charset=utf-8',
