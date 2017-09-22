@@ -1229,7 +1229,8 @@ PERMCHECK: {
         my ( $obj, $row ) = @_;
         $row->{label} = $row->{name};
         $row->{description} = $row->{nickname} if exists $row->{nickname};
-        if ( $app->param('type') eq 'site' ) {
+        my $type = $app->param('type') || '';
+        if ( $type eq 'site' ) {
             if ( $row->{class} eq 'website' && $obj->has_blog() ) {
                 $row->{has_child} = 1;
                 my $child_blogs = $obj->blogs();
@@ -1250,15 +1251,13 @@ PERMCHECK: {
             && !$app->can_do('grant_role_for_all_blogs')
             && !$this_user->permissions($blog_id)
             ->can_do('grant_role_for_blog');
-        if (   $app->param('type')
-            && $app->param('type') eq 'blog'
+        if (   $type eq 'blog'
             && UNIVERSAL::isa( $obj, 'MT::Role' )
             && $obj->has('administer_site') )
         {
             $row->{disabled} = 1;
         }
-        if (   $app->param('type')
-            && $app->param('type') eq 'website'
+        if (   $type eq 'website'
             && UNIVERSAL::isa( $obj, 'MT::Role' )
             && $obj->has('administer_site') )
         {
