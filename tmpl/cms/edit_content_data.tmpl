@@ -524,13 +524,6 @@ Template.templates.autoSave = '<mt:section encode_js="1">
               return;
           }
       }
-      if (url = docs[option]) {
-          if (url.indexOf('http://') == -1)
-              url = HelpBaseURI + url;
-          jQuery('#formatting-help-link').removeClass('disabled');
-      } else {
-          jQuery('#formatting-help-link').addClass('disabled');
-      }
 
       if (cur_text_format == 'richtext') {
           // changing to plaintext editor
@@ -587,23 +580,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       }
   }
 
-  var docs = new Array();
-  <mt:loop name="text_filters">
-  docs['<$mt:var name="filter_key" escape="js"$>'] = '<$mt:var name="filter_docs" escape="js"$>';
-  </mt:loop>
-  function openTFDocs() {
-      var key = jQuery(this).siblings('.convert_breaks').val();
-      if (url = docs[key]) {
-          if (url.indexOf('http://') == -1)
-              url = HelpBaseURI + url;
-          window.open(url, 'manual', 'width=450,height=550,scrollbars=yes,status=yes,resizable=yes');
-      } else {
-          return false;
-          // return openManual('entries', 'entry_text_formatting');
-      }
-  }
   jQuery(document).on('change', '.convert_breaks', changedTextFormat);
-  jQuery(document).on('click', '.field-convert_breaks .help-link', openTFDocs);
 </script>
 </mt:if>
 </mt:setvarblock>
@@ -734,7 +711,6 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       <mt:if name="convert_breaks" eq="__default__">
         <$mt:setvar name="show_formatting_help" value="0"$>
       </mt:if>
-        <a href="#" onclick="openTFDocs(); return false" id="formatting-help-link" class="help-link<mt:unless name="show_formatting_help"> disabled</mt:unless>">?</a>
       </div>
       <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
         <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="text high html5-form content-field editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
