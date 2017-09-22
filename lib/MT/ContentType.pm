@@ -64,6 +64,12 @@ sub list_props {
             link_mode => 'cfg_content_type',
             html      => \&_make_name_html,
         },
+        author_name  => { base => '__virtual.author_name', order => 300 },
+        modified_on => {
+            base    => '__virtual.modified_on',
+            display => 'default',
+            order   => 400,
+        },
         category_set => {
             base                  => '__virtual.single_select',
             terms                 => \&_cs_terms,
@@ -71,6 +77,7 @@ sub list_props {
             label                 => 'Category Set',
             display               => 'none',
         },
+        blog_name => { display => 'none', filter_editable => 0 },
         current_context => { filter_editable => 0 },
     };
 }
