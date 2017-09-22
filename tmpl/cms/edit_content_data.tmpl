@@ -524,13 +524,6 @@ Template.templates.autoSave = '<mt:section encode_js="1">
               return;
           }
       }
-      if (url = docs[option]) {
-          if (url.indexOf('http://') == -1)
-              url = HelpBaseURI + url;
-          jQuery('#formatting-help-link').removeClass('disabled');
-      } else {
-          jQuery('#formatting-help-link').addClass('disabled');
-      }
 
       if (cur_text_format == 'richtext') {
           // changing to plaintext editor
@@ -587,23 +580,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       }
   }
 
-  var docs = new Array();
-  <mt:loop name="text_filters">
-  docs['<$mt:var name="filter_key" escape="js"$>'] = '<$mt:var name="filter_docs" escape="js"$>';
-  </mt:loop>
-  function openTFDocs() {
-      var key = jQuery(this).siblings('.convert_breaks').val();
-      if (url = docs[key]) {
-          if (url.indexOf('http://') == -1)
-              url = HelpBaseURI + url;
-          window.open(url, 'manual', 'width=450,height=550,scrollbars=yes,status=yes,resizable=yes');
-      } else {
-          return false;
-          // return openManual('entries', 'entry_text_formatting');
-      }
-  }
   jQuery(document).on('change', '.convert_breaks', changedTextFormat);
-  jQuery(document).on('click', '.field-convert_breaks .help-link', openTFDocs);
 </script>
 </mt:if>
 </mt:setvarblock>
@@ -734,13 +711,12 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       <mt:if name="convert_breaks" eq="__default__">
         <$mt:setvar name="show_formatting_help" value="0"$>
       </mt:if>
-        <a href="#" onclick="openTFDocs(); return false" id="formatting-help-link" class="help-link<mt:unless name="show_formatting_help"> disabled</mt:unless>">?</a>
       </div>
       <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
-        <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="text high html5-form content-field editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
+        <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
       </div>
     <mt:else>
-      <textarea name="content-field-<mt:var name="content_field_id">" class="form-control text high html5-form content-field" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
+      <textarea name="content-field-<mt:var name="content_field_id">" class="form-control text high" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
     </mt:if>
   <mt:elseif name="data_type" eq="integer">
     <input type="number" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
@@ -785,12 +761,41 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       });
   });
 
-  var newCategoryClickEventAdded;
+  function resetMultiLineTextData($form) {
+    $form.find("input[name^=content-field-multi-]").remove();
+    $form.find("input[name=blockeditor-data]").remove();
+  }
+
+  function setMultiLineTextData($form) {
+    var fieldId, m;
+    $form.find('textarea[name^=content-field-]').each(function () {
+      m = this.name.match(/-(\d+)$/);
+      if (m) {
+        fieldId = m[1];
+        $form.append(jQuery('<input type="hidden" name="content-field-multi-' + fieldId + '" value="' + this.value + '">'));
+      }
+    });
+
+    var block_editor_data = {};
+    jQuery('.editorfield').each(function(i) {
+      var format = jQuery('.convert_breaks[data-target='+this.id+']').val();
+      if(format=="blockeditor"){
+        block_editor_data[this.id] = jQuery('#'+this.id).blockeditor('get_data');
+      }
+    });
+    if(Object.keys(block_editor_data).length > 0) {
+      $form.append(jQuery('<input type="hidden" name="blockeditor-data">').val(JSON.stringify(block_editor_data)))
+    } else {
+      $form.append(jQuery('<input type="hidden" name="blockeditor-data">').val(''))
+    }
+  }
 
   jQuery('#edit-content-type-data-form').submit( function(event) {
     var $form = jQuery(this);
 
     if ($form.children('input[name=__mode]').val() == 'preview_content_data') {
+        resetMultiLineTextData($form);
+        setMultiLineTextData($form);
         setDirty(false);
         $form.get(0).submit();
         return false;
@@ -798,18 +803,9 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 
     validateInServerSide().done(function () {
       if (validateInClientSide()) {
-        var block_editor_data = {};
-        jQuery('.editorfield').each(function(i) {
-          var format = jQuery('.convert_breaks[data-target='+this.id+']').val();
-          if(format=="blockeditor"){
-            block_editor_data[this.id] = jQuery('#'+this.id).blockeditor('get_data');
-          }
-        });
-        if(Object.keys(block_editor_data).length > 0) {
-          $form.append(jQuery('<input type="hidden" name="blockeditor-data">').val(JSON.stringify(block_editor_data)))
-        } else {
-          $form.append(jQuery('<input type="hidden" name="blockeditor-data">').val(''))
-        }
+        resetMultiLineTextData($form);
+        setMultiLineTextData($form);
+
 <mt:if name="config.previewinnewwindow">
         $form.attr('mt:once', '1');
 </mt:if>
@@ -843,6 +839,8 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       window.ssValidateError = null;
     });
   }
+
+  var newCategoryClickEventAdded;
 
   function validateInClientSide() {
     var validateSingle = jQuery('.content-field:not(.group)').mtValidate('simple');

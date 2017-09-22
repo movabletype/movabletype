@@ -1375,7 +1375,7 @@ $.mtValidateRules = {
         return true;
     },
     '.html5-form': function ($e) {
-        if ($e.get(0).checkValidity()) {
+        if (!$e.get(0).checkValidity || $e.get(0).checkValidity()) {
             return true;
         } else {
             this.error = true;
