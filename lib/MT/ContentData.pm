@@ -628,6 +628,7 @@ sub make_list_props {
             },
             author_status => { base    => 'entry.author_status' },
             blog_name     => { display => 'none', filter_editable => 0 },
+            current_context => { filter_editable => 0 },
             %{$field_list_props},
         };
     }
