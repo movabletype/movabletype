@@ -4218,7 +4218,8 @@ sub archive_type_sorter {
     my $ord_b = $order{ $b->{archive_type} };
 
     if ( defined($ord_a) && defined($ord_b) ) {
-        return $ord_a <=> $ord_b;
+        return $ord_a <=> $ord_b
+            || $b->{map_is_preferred} <=> $a->{map_is_preferred};
     }
 
     # in the event a custom archive type includes the keyword 'Weekly', etc.
@@ -4261,7 +4262,8 @@ sub archive_type_sorter {
     else {
         $str_b = "00" . $str_b if defined($ord_b);
     }
-    return $str_a cmp $str_b;
+    return $str_a cmp $str_b
+        || $b->{map_is_preferred} <=> $a->{map_is_preferred};
 }
 
 sub preview_object_basename {
