@@ -761,8 +761,6 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       });
   });
 
-  var newCategoryClickEventAdded;
-
   jQuery('#edit-content-type-data-form').submit( function(event) {
     var $form = jQuery(this);
 
@@ -830,6 +828,8 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       window.ssValidateError = null;
     });
   }
+
+  var newCategoryClickEventAdded;
 
   function validateInClientSide() {
     var validateSingle = jQuery('.content-field:not(.group)').mtValidate('simple');
