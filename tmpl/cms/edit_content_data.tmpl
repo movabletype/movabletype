@@ -791,6 +791,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     var $form = jQuery(this);
 
     if ($form.children('input[name=__mode]').val() == 'preview_content_data') {
+        setDirty(false);
         $form.get(0).submit();
         return false;
     }
