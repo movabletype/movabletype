@@ -15,7 +15,7 @@ dependencies:
   override:
     - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
     - make docker_build_image
-    - mkdir -p ~/docker; docker save $(DOCKER_IMAGE) > ~/docker/image.tar
+    - mkdir -p ~/docker; docker save $DOCKER_IMAGE > ~/docker/image.tar
 
 test:
   override:
