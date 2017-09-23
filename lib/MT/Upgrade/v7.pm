@@ -269,7 +269,13 @@ sub _v7_migrate_privileges {
             my $blog   = $assoc->blog;
             my $author = $assoc->user;
             $author->add_role( $site_admin_role, $blog );
-
+            if($blog && !$blog->is_blog){
+              my @child_blogs = @{ $blog->blogs };
+              foreach my $child_blog(@child_blogs){
+                my $author = $assoc->user;
+                $author->add_role( $site_admin_role, $child_blog );
+              }
+            }
         }
     }
 
