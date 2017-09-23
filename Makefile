@@ -250,7 +250,7 @@ docker_run_test:
 docker_test: docker_build_image docker_run_test
 
 docker_label:
-	echo "test:$(DOCKER_IMAGE):$$(git rev-parse HEAD)"
+	echo "test.$(DOCKER_IMAGE).$$(git rev-parse HEAD)"
 
 docker_stop:
 	docker stop $$(docker ps -q --filter "label=$$(make -s docker_label)")
