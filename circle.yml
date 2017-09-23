@@ -1,4 +1,6 @@
 machine:
+  environment:
+    DOCKER_IMAGE: mt
   services:
     - docker
 
@@ -12,16 +14,16 @@ dependencies:
 
   override:
     - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
-    - docker build -t mt .
-    - mkdir -p ~/docker; docker save mt > ~/docker/image.tar
+    - make docker_build_image
+    - mkdir -p ~/docker; docker save $(DOCKER_IMAGE) > ~/docker/image.tar
 
 test:
   override:
-    - docker run -w /var/www/mt mt bash -c "cp ./t/mysql-test.cfg ./mt-config.cgi && rm t/62-asset-editor.t plugins/MultiBlog/t/02.tags.t && service mysqld start & sleep 10 && service memcached start & sleep 10 && prove ./t ./plugins/*/t && phpunit"
+    - make docker_test
 
   post:
-    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "perl build/exportmt.pl --local --no-lang-stamp --pack=MT --rel_num=0 --prod --alpha=1"
+    - make docker_build_dist
     - mv *.zip $CIRCLE_ARTIFACTS/
     - mv *.tar.gz $CIRCLE_ARTIFACTS/
-    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "make clean"
+    - make docker_clean
 
