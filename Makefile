@@ -245,7 +245,7 @@ docker_build_dist:
 	docker run --rm -v $$PWD:/var/www/mt -w /var/www/mt $(DOCKER_IMAGE) bash -c "perl build/exportmt.pl --local --no-lang-stamp --pack=MT --rel_num=0 --prod --alpha=1"
 
 docker_run_test:
-	docker run --label="$$(make docker_label)" --rm -w /var/www/mt $(DOCKER_IMAGE) bash -c "$(DOCKER_TEST_COMMAND)"
+	docker run --label="$$(make -s docker_label)" --rm -w /var/www/mt $(DOCKER_IMAGE) bash -c "$(DOCKER_TEST_COMMAND)"
 
 docker_test: docker_build_image docker_run_test
 
@@ -253,7 +253,7 @@ docker_label:
 	echo "test:$(DOCKER_IMAGE):$$(git rev-parse HEAD)"
 
 docker_stop:
-	docker stop $$(docker ps -q --filter "label=$$(make docker_label)")
+	docker stop $$(docker ps -q --filter "label=$$(make -s docker_label)")
 
 docker_clean:
 	docker run --rm -v $$PWD:/var/www/mt -w /var/www/mt $(DOCKER_IMAGE) bash -c "make clean"
