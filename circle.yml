@@ -19,7 +19,7 @@ dependencies:
 
 test:
   override:
-    - make docker_test
+    - make docker_run_test
 
   post:
     - make docker_build_dist
