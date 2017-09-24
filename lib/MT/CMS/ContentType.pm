@@ -454,12 +454,15 @@ sub save {
             )
             );
 
+        my $type_label = $content_field_types->{$field->{type}}->{label};
+        $type_label = $type_label->() if 'CODE' eq ref $type_label;
         my $store_data = {
-            id        => $content_field->id,
-            unique_id => $content_field->unique_id,
-            order     => $field->{order},
-            type      => $field->{type},
-            options   => $field->{options},
+            id         => $content_field->id,
+            unique_id  => $content_field->unique_id,
+            order      => $field->{order},
+            type       => $field->{type},
+            type_label => $type_label,
+            options    => $field->{options},
         };
         push @field_data, $store_data;
     }
