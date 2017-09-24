@@ -41,22 +41,19 @@ sub init_callbacks {
 sub validate_request_params {
     my $app = shift;
 
-    my $q = $app->param;
-
     # attempt to determine character set encoding based on
     # 'charset' parameter:
-    my $enc = $q->param('charset');
+    my $enc = $app->param('charset');
     local $app->{charset} = $enc if $enc;
     return $app->SUPER::validate_request_params(@_);
 }
 
 sub view {
     my $app = shift;
-    my $q   = $app->param;
     require MT::Template;
     require MT::Template::Context;
     require MT::Entry;
-    my $entry_id = $q->param('entry_id');
+    my $entry_id = $app->param('entry_id');
     my $entry
         = MT::Entry->load(
         { id => $entry_id, status => MT::Entry::RELEASE() } )
@@ -188,7 +185,6 @@ sub _builtin_throttle {
 
 sub ping {
     my $app = shift;
-    my $q   = $app->param;
 
     return $app->_response(
         Error => $app->translate("Trackback pings must use HTTP POST") )
@@ -247,9 +243,10 @@ sub ping {
         );
     }
 
-    my ( $title, $excerpt, $url, $blog_name )
-        = map scalar $q->param($_),
-        qw( title excerpt url blog_name);
+    my $title     = $app->param('title');
+    my $excerpt   = $app->param('excerpt');
+    my $url       = $app->param('url');
+    my $blog_name = $app->param('blog_name');
 
     #no_utf8( $tb_id, $title, $excerpt, $url, $blog_name );
 

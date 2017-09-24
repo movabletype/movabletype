@@ -1021,11 +1021,12 @@ sub _list_registry {
         tag_handler => '$Core::MT::ContentFieldType::List::tag_handler',
         list_props  => {
             list => {
-                base    => '__virtual.string',
-                col     => 'value_varchar',
-                display => 'none',
-                html    => '$Core::MT::ContentFieldType::List::html',
-                terms   => '$Core::MT::ContentFieldType::List::terms',
+                base            => '__virtual.string',
+                col             => 'value_varchar',
+                display         => 'none',
+                filter_editable => 0,
+                html            => '$Core::MT::ContentFieldType::List::html',
+                terms           => '$Core::MT::ContentFieldType::List::terms',
             },
         },
         options_html => 'content_field_type_options/list.tmpl',
@@ -1050,11 +1051,12 @@ sub _table_registry {
         tag_handler => '$Core::MT::ContentFieldType::Table::tag_handler',
         list_props  => {
             table => {
-                base    => '__virtual.string',
-                col     => 'value_blob',
-                display => 'none',
-                html    => '$Core::MT::ContentFieldType::Table::html',
-                terms   => '$Core::MT::ContentFieldType::Common::terms_text',
+                base            => '__virtual.string',
+                col             => 'value_blob',
+                display         => 'none',
+                filter_editable => 0,
+                html            => '$Core::MT::ContentFieldType::Table::html',
+                terms => '$Core::MT::ContentFieldType::Common::terms_text',
             },
         },
         options_validation_handler =>

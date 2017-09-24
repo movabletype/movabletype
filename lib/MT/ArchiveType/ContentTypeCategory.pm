@@ -216,5 +216,18 @@ sub contenttype_group_based {
     return 1;
 }
 
+sub target_category_id {
+    my $archiver = shift;
+    my ( $content_data, $map ) = @_;
+
+    my $target_category_id;
+    if ( my $cat_field_id = $map->cat_field_id ) {
+        my $data = $content_data->data;
+        $target_category_id = $data->{$cat_field_id};
+    }
+
+    return $target_category_id;
+}
+
 1;
 

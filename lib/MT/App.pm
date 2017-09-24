@@ -2869,6 +2869,7 @@ sub show_error {
     }
 
     my $error = $param->{error};
+    $error = '' unless defined $error;
 
     if ($MT::DebugMode) {
         if ($@) {

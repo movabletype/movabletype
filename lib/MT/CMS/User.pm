@@ -193,9 +193,8 @@ sub edit_role {
         unless $app->can_do('create_role');
 
     my %param  = $_[0] ? %{ $_[0] } : ();
-    my $q      = $app->param;
     my $author = $app->user;
-    my $id     = $q->param('id');
+    my $id     = $app->param('id');
 
     require MT::Permission;
     if ( !$app->can_do('edit_role') ) {
@@ -314,7 +313,7 @@ sub edit_role {
             = ( $role && $role->has( $ref->[0] ) ) ? 1 : 0;
         $param{ 'prompt-' . $ref->[0] } = $ref->[1];
     }
-    $param{saved}          = $q->param('saved');
+    $param{saved}          = $app->param('saved');
     $param{nav_privileges} = 1;
     $app->add_breadcrumb(
         $app->translate('Roles'),
@@ -1230,7 +1229,8 @@ PERMCHECK: {
         my ( $obj, $row ) = @_;
         $row->{label} = $row->{name};
         $row->{description} = $row->{nickname} if exists $row->{nickname};
-        if ( $app->param('type') eq 'site' ) {
+        my $type = $app->param('type') || '';
+        if ( $type eq 'site' ) {
             if ( $row->{class} eq 'website' && $obj->has_blog() ) {
                 $row->{has_child} = 1;
                 my $child_blogs = $obj->blogs();
@@ -1251,15 +1251,13 @@ PERMCHECK: {
             && !$app->can_do('grant_role_for_all_blogs')
             && !$this_user->permissions($blog_id)
             ->can_do('grant_role_for_blog');
-        if (   $app->param('type')
-            && $app->param('type') eq 'blog'
+        if (   $type eq 'blog'
             && UNIVERSAL::isa( $obj, 'MT::Role' )
             && $obj->has('administer_site') )
         {
             $row->{disabled} = 1;
         }
-        if (   $app->param('type')
-            && $app->param('type') eq 'website'
+        if (   $type eq 'website'
             && UNIVERSAL::isa( $obj, 'MT::Role' )
             && $obj->has('administer_site') )
         {
@@ -1470,8 +1468,7 @@ PERMCHECK: {
 sub remove_userpic {
     my $app = shift;
     $app->validate_magic() or return;
-    my $q       = $app->param;
-    my $user_id = $q->param('user_id');
+    my $user_id = $app->param('user_id');
     my $user    = $app->model('author')->load($user_id)
         or return;
 

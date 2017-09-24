@@ -553,7 +553,7 @@ is( xliterate_utf8('Ã'), 'A', 'xliterate_utf8()' );
 {
     require File::Temp;
     my ( $fh, $file )
-        = File::Temp::tempfile( undef, DIR => MT->config->TempDir );
+        = File::Temp::tempfile( DIR => MT->config->TempDir );
     close($fh);
     unlink($file);
 

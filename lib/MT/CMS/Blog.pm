@@ -12,7 +12,6 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    my $q       = $app->param;
     my $cfg     = $app->config;
     my $blog    = $obj || $app->blog;
     my $blog_id = $id;
@@ -20,7 +19,7 @@ sub edit {
     my $lang;
     if ($id) {
         my $output = $param->{output} ||= 'cfg_prefs.tmpl';
-        $param->{need_full_rebuild} = 1 if $q->param('need_full_rebuild');
+        $param->{need_full_rebuild} = 1 if $app->param('need_full_rebuild');
         $param->{show_ip_info}      = $cfg->ShowIPInformation;
         $param->{use_plugins}       = $cfg->UsePlugins;
 
@@ -454,8 +453,7 @@ sub cfg_prefs {
     my $app = shift;
     my %param;
     %param = %{ $_[0] } if $_[0];
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 ) unless $blog_id;
 
     my $blog_prefs = $app->user_blog_prefs;
@@ -468,6 +466,7 @@ sub cfg_prefs {
         $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
     my @data;
+    my $preferred_archive_type = $app->param('preferred_archive_type') || '';
     for my $at ( split /\s*,\s*/, $blog->archive_type ) {
         my $archiver = $app->publisher->archiver($at);
         next unless $archiver;
@@ -482,9 +481,7 @@ sub cfg_prefs {
             archive_type_is_preferred =>
                 ( $blog->archive_type_preferred eq $at ? 1 : 0 ),
         };
-        if (   $q->param('preferred_archive_type')
-            && $q->param('preferred_archive_type') eq $at )
-        {
+        if ( $preferred_archive_type eq $at ) {
             $row->{archive_type_is_preferred} = 1;
         }
         elsif ( $blog->archive_type_preferred eq $at ) {
@@ -498,12 +495,12 @@ sub cfg_prefs {
     }
     $param{entry_archive_types} = \@data;
 
-    $param{saved_deleted}    = 1 if $q->param('saved_deleted');
-    $param{saved_added}      = 1 if $q->param('saved_added');
-    $param{archives_changed} = 1 if $q->param('archives_changed');
-    $param{no_writedir}    = $q->param('no_writedir');
-    $param{no_cachedir}    = $q->param('no_cachedir');
-    $param{no_writecache}  = $q->param('no_writecache');
+    $param{saved_deleted}    = 1 if $app->param('saved_deleted');
+    $param{saved_added}      = 1 if $app->param('saved_added');
+    $param{archives_changed} = 1 if $app->param('archives_changed');
+    $param{no_writedir}    = $app->param('no_writedir');
+    $param{no_cachedir}    = $app->param('no_cachedir');
+    $param{no_writecache}  = $app->param('no_writecache');
     $param{include_system} = $blog->include_system || '';
 
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
@@ -519,8 +516,8 @@ sub cfg_prefs {
         close $fh;
     }
     $param{output} = 'cfg_prefs.tmpl';
-    $q->param( '_type', $blog->class );
-    $q->param( 'id',    $blog_id );
+    $app->param( '_type', $blog->class );
+    $app->param( 'id',    $blog_id );
     $param{screen_class} = 'settings-screen general-screen';
     $param{object_type}  = 'author';
     $param{search_label} = $app->translate('Users');
@@ -545,14 +542,13 @@ sub cfg_prefs {
 
 sub cfg_feedback {
     my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = scalar $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
-    $q->param( '_type', $app->blog ? $app->blog->class : 'blog' );
-    $q->param( 'id', scalar $q->param('blog_id') );
+    $app->param( '_type', $app->blog ? $app->blog->class : 'blog' );
+    $app->param( 'id', $blog_id );
     $app->forward(
         "view",
         {   output       => 'cfg_feedback.tmpl',
@@ -661,8 +657,7 @@ sub cfg_registration {
 
 sub cfg_web_services {
     my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = scalar $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     return $app->permission_denied()
         unless $app->can_do('edit_config');
 
@@ -687,8 +682,8 @@ sub cfg_web_services {
             };
     }
 
-    $q->param( '_type', $app->blog ? $app->blog->class : 'blog' );
-    $q->param( 'id', scalar $q->param('blog_id') );
+    $app->param( '_type', $app->blog ? $app->blog->class : 'blog' );
+    $app->param( 'id', $blog_id );
     $app->forward(
         "view",
         {   output           => 'cfg_web_services.tmpl',
@@ -1137,8 +1132,7 @@ sub rebuild_new_phase {
 
 sub start_rebuild_pages {
     my $app        = shift;
-    my $q          = $app->param;
-    my $start_time = $q->param('start_time');
+    my $start_time = $app->param('start_time');
 
     if ( !$start_time ) {
 
@@ -1147,20 +1141,20 @@ sub start_rebuild_pages {
         $start_time = time;
     }
 
-    my $type = $q->param('type') || '';
-    my $next = $q->param('next') || 0;
+    my $type = $app->param('type') || '';
+    my $next = $app->param('next') || 0;
     my @order = split /,/, $type;
-    my $total         = $q->param('total') || 0;
+    my $total         = $app->param('total') || 0;
     my $type_name     = $order[$next];
     my $archiver      = $app->publisher->archiver($type_name);
     my $archive_label = $archiver ? $archiver->archive_label : '';
     $archive_label = $app->translate($type_name) unless $archive_label;
     $archive_label = $archive_label->() if ( ref $archive_label ) eq 'CODE';
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
 
-    my $with_indexes = $q->param('with_indexes');
-    my $no_static    = $q->param('no_static');
-    my $template_id  = $q->param('template_id');
+    my $with_indexes = $app->param('with_indexes');
+    my $no_static    = $app->param('no_static');
+    my $template_id  = $app->param('template_id');
 
     if ($archiver) {
         $total = _determine_total( $archiver, $blog_id );
@@ -1204,14 +1198,14 @@ sub start_rebuild_pages {
         for my $col (
             qw( is_new old_status old_next old_previous old_categories ))
         {
-            $param{$col} = $q->param($col);
+            $param{$col} = $app->param($col);
         }
     }
-    $param{is_full_screen} = ( $param{is_entry} )
-        || $q->param('single_template');
+    $param{is_full_screen}
+        = $param{is_entry} || $app->param('single_template');
     $param{page_titles} = [ { bc_name => 'Rebuilding' } ];
-    if ( $q->param('no_rebuilding_tmpl') ) {
-        $q->param( 'total', $total );
+    if ( $app->param('no_rebuilding_tmpl') ) {
+        $app->param( 'total', $total );
         MT::CMS::Blog::rebuild_pages($app);
     }
     else {
@@ -2317,10 +2311,11 @@ sub build_blog_table {
 }
 
 sub cfg_blog {
-    my $q = $_[0]->{query};
-    $q->param( '_type', 'blog' );
-    $q->param( 'id',    scalar $q->param('blog_id') );
-    $_[0]->forward( "view", { output => 'cfg_prefs.tmpl' } );
+    my $app     = shift;
+    my $blog_id = $app->param('blog_id');
+    $app->param( '_type', 'blog' );
+    $app->param( 'id',    $blog_id );
+    $app->forward( "view", { output => 'cfg_prefs.tmpl' } );
 }
 
 sub cfg_prefs_save {

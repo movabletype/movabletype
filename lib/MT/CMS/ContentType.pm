@@ -30,6 +30,9 @@ sub edit {
     my ( $app, $param ) = @_;
     my $cfg = $app->config;
 
+    return $app->return_to_dashboard( redirect => 1 )
+        unless $app->blog;
+
     my $id = $app->param('id') || undef;
     my $class = $app->model('content_type');
     my $obj;
@@ -565,11 +568,10 @@ sub _validate_content_field_type_options {
 
 sub select_list_content_type {
     my ($app) = @_;
-    my $q     = $app->param;
     my $cfg   = $app->config;
     my $param = {};
 
-    my $blog_id = scalar $q->param('blog_id')
+    my $blog_id = $app->param('blog_id')
         or return $app->errtrans("Invalid request.");
 
     my @content_types;
@@ -585,11 +587,10 @@ sub select_list_content_type {
 
 sub select_edit_content_type {
     my ($app) = @_;
-    my $q     = $app->param;
     my $cfg   = $app->config;
     my $param = {};
 
-    my $blog_id = scalar $q->param('blog_id')
+    my $blog_id = $app->param('blog_id')
         or return $app->errtrans("Invalid request.");
 
     my @array;

@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION %csType);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.08';
+$VERSION = '1.10';
 
 my %charsetTable;   # character set tables we've loaded
 
@@ -106,6 +106,33 @@ sub LoadCharset($)
 }
 
 #------------------------------------------------------------------------------
+# Does an array contain valid UTF-16 characters?
+# Inputs: 0) array reference to list of UCS-2 values
+# Returns: 0=invalid UTF-16, 1=valid UTF-16 with no surrogates, 2=valid UTF-16 with surrogates
+sub IsUTF16($)
+{
+    local $_;
+    my $uni = shift;
+    my $surrogate;
+    foreach (@$uni) {
+        my $hiBits = ($_ & 0xfc00);
+        if ($hiBits == 0xfc00) {
+            # check for invalid values in UTF-16
+            return 0 if $_ == 0xffff or $_ == 0xfffe or ($_ >= 0xfdd0 and $_ <= 0xfdef);
+        } elsif ($surrogate) {
+            return 0 if $hiBits != 0xdc00;
+            $surrogate = 0;
+        } else {
+            return 0 if $hiBits == 0xdc00;
+            $surrogate = 1 if $hiBits == 0xd800;
+        }
+    }
+    return 1 if not defined $surrogate;
+    return 2 unless $surrogate;
+    return 0;
+}
+
+#------------------------------------------------------------------------------
 # Decompose string with specified encoding into an array of integer code points
 # Inputs: 0) ExifTool object ref (or undef), 1) string, 2) character set name,
 #         3) optional byte order ('II','MM','Unknown' or undef to use ExifTool ordering)
@@ -114,6 +141,7 @@ sub LoadCharset($)
 # - byte order only used for fixed-width 2-byte and 4-byte character sets
 # - byte order mark observed and then removed with UCS2 and UCS4
 # - no warnings are issued if ExifTool object is not provided
+# - sets ExifTool WrongByteOrder flag if byte order is Unknown and current order is wrong
 sub Decompose($$$;$)
 {
     local $_;
@@ -195,6 +223,7 @@ sub Decompose($$$;$)
                     # we guessed wrong, so decode using the other byte order
                     $fmt =~ tr/nvNV/vnVN/;
                     @uni = unpack($fmt, $val);
+                    $$et{WrongByteOrder} = 1;
                 }
             }
             # handle surrogate pairs of UTF-16
@@ -224,7 +253,10 @@ sub Decompose($$$;$)
                     ++$e2;
                 }
                 # use this byte order if there are fewer errors
-                return \@try if $e2 < $e1;
+                if ($e2 < $e1) {
+                    $$et{WrongByteOrder} = 1;
+                    return \@try;
+                }
             }
         } else {
             # translate any characters found in the lookup
@@ -384,7 +416,7 @@ when decoding certain types of information.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

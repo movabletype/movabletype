@@ -520,7 +520,12 @@ sub save_widgetset {
 }
 
 sub save {
-    my $tmpl     = shift;
+    my $tmpl = shift;
+
+    return $tmpl->error( MT->translate('Content Type is required.') )
+        if ( $tmpl->type eq 'ct' || $tmpl->type eq 'ct_archive' )
+        && !$tmpl->content_type_id;
+
     my $existing = MT::Template->load(
         {   ( $tmpl->id ? ( id => { not => $tmpl->id } ) : () ),
             name    => $tmpl->name,

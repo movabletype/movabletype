@@ -1,11 +1,10 @@
-
-###
-# XML::NamespaceSupport - a simple generic namespace processor
-# Robin Berjon <robin@knowscape.com>
-###
-
 package XML::NamespaceSupport;
 use strict;
+
+our $VERSION = '1.12'; # VERSION
+
+# ABSTRACT: A simple generic namespace processor
+
 use constant FATALS         => 0; # root object
 use constant NSMAP          => 1;
 use constant UNKNOWN_PREF   => 2;
@@ -15,14 +14,12 @@ use constant DEFAULT        => 0; # maps
 use constant PREFIX_MAP     => 1;
 use constant DECLARATIONS   => 2;
 
-use vars qw($VERSION $NS_XMLNS $NS_XML);
-$VERSION    = '1.09';
+use vars qw($NS_XMLNS $NS_XML);
 $NS_XMLNS   = 'http://www.w3.org/2000/xmlns/';
 $NS_XML     = 'http://www.w3.org/XML/1998/namespace';
 
 
 # add the ns stuff that baud wants based on Java's xml-writer
-
 
 #-------------------------------------------------------------------#
 # constructor
@@ -47,7 +44,6 @@ sub new {
     $self->[XMLNS_11] = $options->{xmlns_11} if defined $options->{xmlns_11};
     return bless $self, $class;
 }
-#-------------------------------------------------------------------#
 
 #-------------------------------------------------------------------#
 # reset() - return to the original state (for reuse)
@@ -56,7 +52,6 @@ sub reset {
     my $self = shift;
     $#{$self->[NSMAP]} = 0;
 }
-#-------------------------------------------------------------------#
 
 #-------------------------------------------------------------------#
 # push_context() - add a new empty context to the stack
@@ -69,17 +64,15 @@ sub push_context {
                              [],
                             ];
 }
-#-------------------------------------------------------------------#
 
 #-------------------------------------------------------------------#
-# pop_context() - remove the topmost context fromt the stack
+# pop_context() - remove the topmost context from the stack
 #-------------------------------------------------------------------#
 sub pop_context {
     my $self = shift;
     die 'Trying to pop context without push context' unless @{$self->[NSMAP]} > 1;
     pop @{$self->[NSMAP]};
 }
-#-------------------------------------------------------------------#
 
 #-------------------------------------------------------------------#
 # declare_prefix() - declare a prefix in the current scope
@@ -113,7 +106,7 @@ sub declare_prefix {
         $self->[NSMAP]->[-1]->[DEFAULT] = $value;
     }
     else {
-        die "Cannot undeclare prefix $prefix" if $value eq '' and not $self->[XMLNS_11];
+        die "Cannot declare prefix $prefix" if $value eq '' and not $self->[XMLNS_11];
         if (not defined $prefix and $self->[AUTO_PREFIX]) {
             while (1) {
                 $prefix = $self->[UNKNOWN_PREF]++;
@@ -128,7 +121,6 @@ sub declare_prefix {
     push @{$self->[NSMAP]->[-1]->[DECLARATIONS]}, $prefix;
     return 1;
 }
-#-------------------------------------------------------------------#
 
 #-------------------------------------------------------------------#
 # declare_prefixes() - declare several prefixes in the current scope
@@ -140,7 +132,6 @@ sub declare_prefixes {
         $self->declare_prefix($k,$v);
     }
 }
-#-------------------------------------------------------------------#
 
 #-------------------------------------------------------------------#
 # undeclare_prefix
@@ -148,7 +139,7 @@ sub declare_prefixes {
 sub undeclare_prefix {
     my $self   = shift;
     my $prefix = shift;
-    return unless not defined $prefix or $prefix eq '';
+    return if not defined($prefix);
     return unless exists $self->[NSMAP]->[-1]->[PREFIX_MAP]->{$prefix};
 
     my ( $tfix ) = grep { $_ eq $prefix } @{$self->[NSMAP]->[-1]->[DECLARATIONS]};
@@ -159,7 +150,6 @@ sub undeclare_prefix {
     @{$self->[NSMAP]->[-1]->[DECLARATIONS]} = grep { $_ ne $prefix } @{$self->[NSMAP]->[-1]->[DECLARATIONS]};
     delete $self->[NSMAP]->[-1]->[PREFIX_MAP]->{$prefix};
 }
-#-------------------------------------------------------------------#
 
 #-------------------------------------------------------------------#
 # get_prefix() - get a (random) prefix for a given URI
@@ -176,7 +166,6 @@ sub get_prefix {
     }
     return $pref;
 }
-#-------------------------------------------------------------------#
 
 #-------------------------------------------------------------------#
 # get_prefixes() - get all the prefixes for a given URI
@@ -188,18 +177,20 @@ sub get_prefixes {
     return keys %{$self->[NSMAP]->[-1]->[PREFIX_MAP]} unless defined $uri;
     return grep { $self->[NSMAP]->[-1]->[PREFIX_MAP]->{$_} eq $uri } keys %{$self->[NSMAP]->[-1]->[PREFIX_MAP]};
 }
-#-------------------------------------------------------------------#
 
 #-------------------------------------------------------------------#
 # get_declared_prefixes() - get all prefixes declared in the last context
 #-------------------------------------------------------------------#
 sub get_declared_prefixes {
+    my $declarations = $_[0]->[NSMAP]->[-1]->[DECLARATIONS];
+    die "At least one context must be pushed onto stack with push_context()\n",
+	"before calling get_declared_prefixes()"
+	if not defined $declarations;
     return @{$_[0]->[NSMAP]->[-1]->[DECLARATIONS]};
 }
-#-------------------------------------------------------------------#
 
 #-------------------------------------------------------------------#
-# get_uri() - get an URI given a prefix
+# get_uri() - get a URI given a prefix
 #-------------------------------------------------------------------#
 sub get_uri {
     my $self    = shift;
@@ -211,7 +202,6 @@ sub get_uri {
     return $self->[NSMAP]->[-1]->[PREFIX_MAP]->{$prefix} if exists $self->[NSMAP]->[-1]->[PREFIX_MAP]->{$prefix};
     return undef;
 }
-#-------------------------------------------------------------------#
 
 #-------------------------------------------------------------------#
 # process_name() - provide details on a name
@@ -228,7 +218,6 @@ sub process_name {
         eval { return( ($self->_get_ns_details($qname, $aflag))[0,2], $qname ); }
     }
 }
-#-------------------------------------------------------------------#
 
 #-------------------------------------------------------------------#
 # process_element_name() - provide details on a element's name
@@ -244,7 +233,6 @@ sub process_element_name {
         eval { return $self->_get_ns_details($qname, 0); }
     }
 }
-#-------------------------------------------------------------------#
 
 
 #-------------------------------------------------------------------#
@@ -261,7 +249,6 @@ sub process_attribute_name {
         eval { return $self->_get_ns_details($qname, 1); }
     }
 }
-#-------------------------------------------------------------------#
 
 
 #-------------------------------------------------------------------#
@@ -301,7 +288,6 @@ sub _get_ns_details {
 
     return ($ns, $prefix, $lname);
 }
-#-------------------------------------------------------------------#
 
 #-------------------------------------------------------------------#
 # parse_jclark_notation() - parse the Clarkian notation
@@ -312,7 +298,6 @@ sub parse_jclark_notation {
     $jc =~ m/^\{(.*)\}([^}]+)$/;
     return $1, $2;
 }
-#-------------------------------------------------------------------#
 
 
 #-------------------------------------------------------------------#
@@ -331,19 +316,23 @@ sub parse_jclark_notation {
 *XML::NamespaceSupport::processAttributeName = \&process_attribute_name;
 *XML::NamespaceSupport::parseJClarkNotation  = \&parse_jclark_notation;
 *XML::NamespaceSupport::undeclarePrefix      = \&undeclare_prefix;
-#-------------------------------------------------------------------#
 
 
 1;
-#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
-#`,`, Documentation `,`,`,`,`,`,`,`,`,`,`,`,`,`,`,`,`,`,`,`,`,`,`,`,#
-#```````````````````````````````````````````````````````````````````#
+
+__END__
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
-XML::NamespaceSupport - a simple generic namespace support class
+XML::NamespaceSupport - A simple generic namespace processor
+
+=head1 VERSION
+
+version 1.12
 
 =head1 SYNOPSIS
 
@@ -386,7 +375,6 @@ XML::NamespaceSupport - a simple generic namespace support class
   # or (given that it doesn't care about the object
   my ($ns, $lname) = XML::NamespaceSupport->parse_jclark_notation('{http://foo}bar');
 
-
 =head1 DESCRIPTION
 
 This module offers a simple to process namespaced XML names (unames)
@@ -394,8 +382,12 @@ from within any application that may need them. It also helps maintain
 a prefix to namespace URI map, and provides a number of basic checks.
 
 The model for this module is SAX2's NamespaceSupport class, readable at
-http://www.megginson.com/SAX/Java/javadoc/org/xml/sax/helpers/NamespaceSupport.html.
+http://www.saxproject.org/namespaces.html
 It adds a few perlisations where we thought it appropriate.
+
+=head1 NAME
+
+XML::NamespaceSupport - a simple generic namespace support class
 
 =head1 METHODS
 
@@ -446,7 +438,7 @@ selected for you. If it is off you will get a warning.
 
 This is useful when you deal with code that hasn't kept prefixes around
 and need to reserialize the nodes. It also means that if you want to
-set the default namespace (ie with an empty prefix) you must use the
+set the default namespace (i.e. with an empty prefix) you must use the
 empty string instead of undef. This behaviour is consistent with the
 SAX 2.0 specification.
 
@@ -456,13 +448,13 @@ Declares a mapping of several prefixes to URIs, at the current level.
 
 =item * $nsup->get_prefix($uri)
 
-Returns a prefix given an URI. Note that as several prefixes may be
+Returns a prefix given a URI. Note that as several prefixes may be
 mapped to the same URI, it returns an arbitrary one. It'll return
 undef on failure.
 
 =item * $nsup->get_prefixes($uri)
 
-Returns an array of prefixes given an URI. It'll return all the
+Returns an array of prefixes given a URI. It'll return all the
 prefixes if the uri is undef.
 
 =item * $nsup->get_declared_prefixes
@@ -470,6 +462,9 @@ prefixes if the uri is undef.
 Returns an array of all the prefixes that have been declared within
 this context, ie those that were declared on the last element, not
 those that were declared above and are simply in scope.
+
+Note that at least one context must be added to the stack via
+C<push_context> before this method can be called.
 
 =item * $nsup->get_uri($prefix)
 
@@ -493,8 +488,8 @@ C<fatal_errors>.
 Removes a namespace prefix from the current context. This function may
 be used in SAX's end_prefix_mapping when there is fear that a namespace
 declaration might be available outside their scope (which shouldn't
-normally happen, but you never know ;). This may be needed in order to
-properly support Namespace 1.1.
+normally happen, but you never know ;) ). This may be needed in order
+to properly support Namespace 1.1.
 
 =item * $nsup->process_element_name($qname)
 
@@ -563,21 +558,53 @@ The namespace for xml prefixes, http://www.w3.org/XML/1998/namespace.
  - add more tests
  - optimise here and there
 
-=head1 AUTHOR
-
-Robin Berjon, robin@knowscape.com, with lots of it having been done
-by Duncan Cameron, and a number of suggestions from the perl-xml
-list.
-
-=head1 COPYRIGHT
-
-Copyright (c) 2001-2005 Robin Berjon. All rights reserved. This program is
-free software; you can redistribute it and/or modify it under the same terms
-as Perl itself.
-
 =head1 SEE ALSO
 
 XML::Parser::PerlSAX
 
-=cut
+=head1 AUTHORS
 
+=over 4
+
+=item *
+
+Robin Berjon <robin@knowscape.com>
+
+=item *
+
+Chris Prather <chris@prather.org>
+
+=back
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2015 by Robin Berjon.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=head1 CONTRIBUTORS
+
+=for stopwords Chris Prather David Steinbrunner Paul Cochrane Paulo Custodio
+
+=over 4
+
+=item *
+
+Chris Prather <cprather@hdpublishing.com>
+
+=item *
+
+David Steinbrunner <dsteinbrunner@pobox.com>
+
+=item *
+
+Paul Cochrane <paul@liekut.de>
+
+=item *
+
+Paulo Custodio <pauloscustodio@gmail.com>
+
+=back
+
+=cut

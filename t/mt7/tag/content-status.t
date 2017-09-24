@@ -54,4 +54,3 @@ __END__
 </mt:Contents>
 --- expected
 Publish
-

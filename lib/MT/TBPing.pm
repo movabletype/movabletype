@@ -98,19 +98,33 @@ sub list_props {
                     = $obj->is_junk      ? 'Junk'
                     : $obj->is_published ? 'Published'
                     :                      'Moderated';
-                my $lc_status  = lc $status;
-                my $status_img = MT->static_path . 'images/status_icons/';
-                $status_img .=
-                      $status eq 'Junk'      ? 'warning.gif'
-                    : $status eq 'Published' ? 'success.gif'
-                    :                          'draft.gif';
+                my $lc_status = lc $status;
+
+                my $status_icon_color_class
+                    = $obj->is_junk      ? ' mt-icon--warning'
+                    : $obj->is_published ? ' mt-icon--success'
+                    :                      '';
+                my $status_icon_id
+                    = $obj->is_junk      ? 'ic_error'
+                    : $obj->is_published ? 'ic_checkbox'
+                    :                      'ic_statusdraft';
+
+                my $static_uri = MT->static_path;
+                my $status_img = qq{
+                    <svg title="$status" role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
+                        <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id">
+                    </svg>
+                };
 
                 my $blog_name
                     = MT::Util::encode_html( $obj->blog_name || '' );
                 my $title = MT::Util::encode_html( $obj->title      || '' );
                 my $url   = MT::Util::encode_html( $obj->source_url || '' );
-                my $view_img
-                    = MT->static_path . 'images/status_icons/view.gif';
+                my $view_img = qq{
+                    <svg title="View" role="img" class="mt-icon mt-icon--sm">
+                        <use xlink:href="${static_uri}images/sprite.svg#ic_permalink">
+                    </svg>
+                };
                 my $ping_from
                     = MT->translate(
                     '<a href="[_1]">Ping from: [_2] - [_3]</a>',
@@ -118,12 +132,12 @@ sub list_props {
 
                 return qq{
                     <span class="icon status $lc_status">
-                        <img als="$status" src="$status_img" />
+                        $status_img
                     </span>
                     <span class="ping-from">$ping_from</span>
                     <span class="view-link">
                       <a href="$url" target="_blank">
-                        <img alt="View" src="$view_img" />
+                        $view_img
                       </a>
                     </span>
                     <p class="ping-excerpt description">$text</p>
@@ -333,7 +347,7 @@ sub list_props {
                         defined $val ? $val : ''
                     )
                     );
-                my $type  = $entry->class_label || '';
+                my $type = $entry->class_label || '';
                 return MT->translate( 'Trackbacks on [_1]: [_2]',
                     $type, $entry->title, );
             },

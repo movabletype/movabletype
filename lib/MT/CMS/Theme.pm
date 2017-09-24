@@ -12,7 +12,6 @@ use File::Spec;
 
 sub list {
     my $app = shift;
-    my $q   = $app->param;
     my %param;
     return $app->permission_denied()
         unless $app->can_do('open_theme_listing_screen');
@@ -58,11 +57,11 @@ sub list {
     $app->add_breadcrumb( $app->translate("Themes") );
     $param{screen_id}              = "list-themes";
     $param{screen_class}           = "theme-settings";
-    $param{applied}                = $q->param('applied');
-    $param{theme_uninstalled}      = $q->param('theme_uninstalled');
-    $param{uninstalled_theme_name} = $q->param('uninstalled_theme_name');
-    $param{warning_on_apply}       = $q->param('warning_on_apply');
-    $param{refreshed}              = $q->param('refreshed');
+    $param{applied}                = $app->param('applied');
+    $param{theme_uninstalled}      = $app->param('theme_uninstalled');
+    $param{uninstalled_theme_name} = $app->param('uninstalled_theme_name');
+    $param{warning_on_apply}       = $app->param('warning_on_apply');
+    $param{refreshed}              = $app->param('refreshed');
     $app->load_tmpl( 'list_theme.tmpl', \%param );
 }
 
@@ -136,7 +135,6 @@ sub _build_theme_table {
 
 sub dialog_select_theme {
     my $app = shift;
-    my $q   = $app->param;
     my %param;
     $param{idfield}    = $app->param('idfield');
     $param{namefield}  = $app->param('namefield');
@@ -178,8 +176,7 @@ sub apply {
         unless $app->can_do('apply_theme');
     my $blog = $app->blog
         or return $app->error( MT->translate('Invalid request') );
-    my $q        = $app->param;
-    my $theme_id = $q->param('theme_id')
+    my $theme_id = $app->param('theme_id')
         or return $app->error( MT->translate('Invalid request') );
     require MT::Theme;
     my $theme = MT::Theme->load($theme_id)
@@ -207,8 +204,7 @@ sub uninstall {
     $app->can_do('uninstall_theme_package')
         or return $app->permission_denied();
 
-    my $q        = $app->param;
-    my $theme_id = $q->param('theme_id');
+    my $theme_id = $app->param('theme_id');
     my $theme    = MT::Theme->load($theme_id);
     if ( $theme->{type} ne 'package' ) {
         return $app->error( MT->translate('Invalid request.') );
@@ -395,7 +391,6 @@ sub save_detail {
     $app->can_do('do_export_theme')
         or return $app->permission_denied();
 
-    my $q = $app->param;
     my %param;
     my $blog        = $app->blog;
     my $fmgr        = MT::FileMgr->new('Local');

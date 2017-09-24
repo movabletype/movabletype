@@ -626,7 +626,9 @@ sub make_list_props {
                 base    => '__virtual.created_on',
                 display => 'none',
             },
-            author_status => { base => 'entry.author_status' },
+            author_status => { base    => 'entry.author_status' },
+            blog_name     => { display => 'none', filter_editable => 0 },
+            current_context => { filter_editable => 0 },
             %{$field_list_props},
         };
     }
@@ -643,10 +645,10 @@ sub _make_content_data_title_html {
     my $label     = $obj->$col;
     $label = '' if !defined $label;
     $label =~ s/^\s+|\s+$//g;
-    my $blog_id           = $app->blog ? $app->blog->id : 0;
-    my $datasource        = $app->param('datasource');
+    my $blog_id = $app->blog ? $app->blog->id : 0;
+    my $datasource = $app->param('datasource') || '';
     my ($content_type_id) = $datasource =~ /(\d+)$/;
-    my $edit_link         = $app->uri(
+    my $edit_link = $app->uri(
         mode => 'edit_content_data',
         args => {
             id              => $id,
@@ -663,7 +665,7 @@ sub _make_content_data_title_html {
     else {
         return MT->translate(
             qq{[_1] (<a href="[_2]">id:[_3]</a>)},
-            $alt_label ? $alt_label : 'No ' . $label,
+            $alt_label ? $alt_label : 'No label',
             $edit_link, $id,
         );
     }
@@ -871,9 +873,23 @@ sub archive_file {
 sub archive_url {
     my $self = shift;
     my $blog = $self->blog or return;
-    my $url = $blog->archive_url || '';
+    my $url  = $blog->archive_url || '';
     $url .= '/' unless $url =~ m!/$!;
     $url . $self->archive_file(@_);
+}
+
+sub permalink {
+    my $self                   = shift;
+    my $blog                   = $self->blog or return;
+    my $url                    = $self->archive_url( $_[0] );
+    my $effective_archive_type = ( $_[0] || 'ContentType' );
+    $url
+        .= '#'
+        . ( $_[1]->{valid_html} ? 'a' : '' )
+        . sprintf( "%06d", $self->id )
+        unless ( $effective_archive_type eq 'ContentType'
+        || $_[1]->{no_anchor} );
+    $url;
 }
 
 1;
