@@ -366,7 +366,7 @@ sub core_methods {
         ## MT7 - Content Type
         'edit_content_type'     => "${pkg}ContentType::edit",
         'view_content_type'     => "${pkg}ContentType::edit",
-        'save' => "${pkg}ContentType::save",
+        'save_content_type'     => "${pkg}ContentType::save",
 
      # 'cfg_content_type_data' => " ${pkg}ContentType::cfg_content_type_data",
         'select_list_content_type' =>
