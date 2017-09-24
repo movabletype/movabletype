@@ -24,5 +24,23 @@ sub field_html_params {
     };
 }
 
+sub options_validation_handler {
+    my ( $app, $type, $label, $field_label, $options ) = @_;
+
+    my $values = $options->{values};
+    return $app->translate("You must enter at least one label-value pair.")
+        unless $values;
+
+    for my $value (@$values) {
+        return $app->translate("A label of values is required.")
+            unless $values->{label};
+
+        return $app->translate("A value of values is required.")
+            unless $values->{value};
+    }
+
+    return;
+}
+
 1;
 

@@ -95,5 +95,37 @@ sub _get_column_count {
     scalar @td_tag;
 }
 
+sub options_validation_handler {
+    my ( $app, $type, $label, $field_label, $options ) = @_;
+
+    my $initial_rows = $options->{initial_rows};
+    return $app->translate(
+        "An initial rows of '[_1]' ([_2]) must be a positive integer.",
+        $label, $field_label )
+        if $initial_rows and $initial_rows !~ /^\d+$/;
+
+    my $initial_cols = $options->{initial_cols};
+    return $app->translate(
+        "An initial columns of '[_1]' ([_2]) must be a positive integer.",
+        $label, $field_label )
+        if $initial_cols and $initial_cols !~ /^\d+$/;
+
+    my $row_heading = $options->{row_heading};
+    return $app->translate(
+        "A row heading of '[_1]' ([_2]) must be shorter than 255 characters",
+        $label,
+        $field_label
+    ) if $row_heading and length($row_heading) > 255;
+
+    my $col_heading = $options->{col_heading};
+    return $app->translate(
+        "A column heading of '[_1]' ([_2]) must be shorter than 255 characters",
+        $label,
+        $field_label
+    ) if $col_heading and length($col_heading) > 255;
+
+    return;
+}
+
 1;
 

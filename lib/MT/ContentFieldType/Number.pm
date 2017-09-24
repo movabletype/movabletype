@@ -2,6 +2,9 @@ package MT::ContentFieldType::Number;
 use strict;
 use warnings;
 
+sub MAX_VALUE() {2147483647}
+sub MIN_VALUE() {-2147483648}
+
 sub field_html_params {
     my ( $app, $field_data ) = @_;
 
@@ -79,6 +82,60 @@ sub ss_validator {
                 $field_label, $min_value );
         }
     }
+}
+
+sub options_validation_handler {
+    my ( $app, $type, $label, $field_label, $options ) = @_;
+
+    my $decimal_places = $options->{decimal_places};
+    if ($decimal_places) {
+        return $app->translate("A decimal places must be a positive integer.")
+            unless $decimal_places =~ /^\d+$/;
+    }
+
+    my $min_value = $options->{min};
+    if ($min_value) {
+        $min_value =~ /^[+\-]?\d+(\.\d+)?$/;
+
+        return $app->translate(
+            "A minimun value must be an integer, or must be set decimal places to use decimal value."
+        ) if !$decimal_places and defined $1;
+
+        return $app->translate(
+            "A minimun value must be an integer and between [_1] and [_2]",
+            MIN_VALUE(), MAX_VALUE() )
+            if $min_value < MIN_VALUE() || $min_value > MAX_VALUE();
+    }
+
+    my $max_value = $options->{max};
+    if ($max_value) {
+        $max_value =~ /^[+\-]?\d+(\.\d+)?$/;
+
+        return $app->translate(
+            "A maximum value must be an integer, or must be set decimal places to use decimal value."
+        ) if !$decimal_places and defined $1;
+
+        return $app->translate(
+            "A maximum value must be an integer and between [_1] and [_2]",
+            MIN_VALUE(), MAX_VALUE() )
+            if $max_value < MIN_VALUE() || $max_value > MAX_VALUE();
+    }
+
+    my $initial_value = $options->{initial_value};
+    if ($initial_value) {
+        $initial_value =~ /^[+\-]?\d+(\.\d+)?$/;
+
+        return $app->translate(
+            "An initial value must be an integer, or must be set decimal places to use decimal value."
+        ) if !$decimal_places and defined $1;
+
+        return $app->translate(
+            "An initial value must be an integer and between [_1] and [_2]",
+            MIN_VALUE(), MAX_VALUE() )
+            if $initial_value < MIN_VALUE() || $initial_value > MAX_VALUE();
+    }
+
+    return;
 }
 
 1;

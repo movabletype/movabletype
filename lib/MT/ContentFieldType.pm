@@ -49,8 +49,13 @@ sub _content_type_registry {
                 terms => '$Core::MT::ContentFieldType::ContentType::temrs_id',
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::ContentType::options_validation_handler',
+        options_pre_save_handler =>
+            '$Core::MT::ContentFieldType::ContentType::options_pre_save_handler',
         options_html => 'content_field_type_options/content_type.tmpl',
-        options_html_params => '$Core::MT::ContentFieldType::ContentType::options_html_params',
+        options_html_params =>
+            '$Core::MT::ContentFieldType::ContentType::options_html_params',
         options => [
             qw(
                 label
@@ -84,8 +89,10 @@ sub _single_line_text_registry {
                 use_blank => 1,
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::SingleLineText::options_validation_handler',
         options_html => 'content_field_type_options/single_line_text.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -116,7 +123,7 @@ sub _multi_line_text_registry {
         theme_data_import_handler =>
             '$Core::MT::ContentFieldType::MultiLineText::theme_data_import_handler',
         options_html => 'content_field_type_options/multi_line_text.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -145,8 +152,10 @@ sub _number_registry {
                 use_blank => 1,
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::Number::options_validation_handler',
         options_html => 'content_field_type_options/number.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -175,8 +184,10 @@ sub _url_registry {
                 use_blank => 1,
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::URL::options_validation_handler',
         options_html => 'content_field_type_options/url.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -212,8 +223,12 @@ sub _date_time_registry {
                 use_future => 1,
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::DateTime::options_validation_handler',
+        options_pre_save_handler =>
+            '$Core::MT::ContentFieldType::DateTime::options_pre_save_handler',
         options_html => 'content_field_type_options/date_time.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -249,8 +264,12 @@ sub _date_registry {
                 use_future => 1,
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::Date::options_validation_handler',
+        options_pre_save_handler =>
+            '$Core::MT::ContentFieldType::Date::options_pre_save_handler',
         options_html => 'content_field_type_options/date.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -284,8 +303,12 @@ sub _time_registry {
                 use_blank => 1,
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::Time::options_validation_handler',
+        options_pre_save_handler =>
+            '$Core::MT::ContentFieldType::Date::options_pre_save_handler',
         options_html => 'content_field_type_options/time.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -321,8 +344,10 @@ sub _select_box_registry {
                     '$Core::MT::ContentFieldType::Common::terms_multiple',
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::Checkboxes::options_validation_handler',
         options_html => 'content_field_type_options/select_box.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -360,8 +385,10 @@ sub _radio_button_registry {
                     '$Core::MT::ContentFieldType::Common::terms_multiple',
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::RadioButton::options_validation_handler',
         options_html => 'content_field_type_options/radio_button.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -398,8 +425,10 @@ sub _checkboxes_registry {
                     '$Core::MT::ContentFieldType::Common::terms_multiple',
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::Checkboxes::options_validation_handler',
         options_html => 'content_field_type_options/checkboxes.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -506,8 +535,10 @@ sub _asset_registry {
                 use_blank => 1,
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::Asset::options_validation_handler',
         options_html => 'content_field_type_options/asset.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -612,8 +643,10 @@ sub _audio_registry {
                 use_blank => 1,
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::Asset::options_validation_handler',
         options_html => 'content_field_type_options/asset_audio.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -718,8 +751,10 @@ sub _video_registry {
                 use_blank => 1,
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::Asset::options_validation_handler',
         options_html => 'content_field_type_options/asset_video.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -842,8 +877,10 @@ sub _image_registry {
                 use_blank => 1,
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::Asset::options_validation_handler',
         options_html => 'content_field_type_options/asset_image.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -871,7 +908,7 @@ sub _embedded_text_registry {
             },
         },
         options_html => 'content_field_type_options/embedded_text.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -906,8 +943,13 @@ sub _categories_registry {
                 use_blank => 1,
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::Categories::options_validation_handler',
+        options_pre_save_handler =>
+            '$Core::MT::ContentFieldType::Categories::options_pre_save_handler',
         options_html => 'content_field_type_options/categories.tmpl',
-        options_html_params => '$Core::MT::ContentFieldType::Categories::options_html_params',
+        options_html_params =>
+            '$Core::MT::ContentFieldType::Categories::options_html_params',
         options => [
             qw(
                 label
@@ -948,8 +990,10 @@ sub _tags_registry {
                 use_blank => 1,
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::Tags::options_validation_handler',
         options_html => 'content_field_type_options/tags.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -985,7 +1029,7 @@ sub _list_registry {
             },
         },
         options_html => 'content_field_type_options/list.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description
@@ -1013,8 +1057,10 @@ sub _table_registry {
                 terms   => '$Core::MT::ContentFieldType::Common::terms_text',
             },
         },
+        options_validation_handler =>
+            '$Core::MT::ContentFieldType::Table::options_validation_handler',
         options_html => 'content_field_type_options/tables.tmpl',
-        options => [
+        options      => [
             qw(
                 label
                 description

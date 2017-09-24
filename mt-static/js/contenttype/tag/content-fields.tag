@@ -5,7 +5,8 @@
     <input type="hidden" name="magic_token" value={ opts.magic_token }>
     <input type="hidden" name="return_args" value={ opts.return_args }>
     <input type="hidden" name="_type" value="content_type">
-    <input type="hidden" id="id" value={ opts.id }>
+    <input type="hidden" name="id" value={ opts.id }>
+    <input if={ data } type="hidden" name="data" value={ data }>
 
     <div class="row">
       <div class="col">
@@ -35,11 +36,13 @@
       <div class="col">
         <div id="user_disp_option-field" class="form-group">
           <label for="user_disp_option">{ trans('Allow users to change the display and sort of fields by display option') }</label>
-          <input type="checkbox" class="mt-switch form-control" id="user_disp_option" checked={ opts.user_disp_option }><label for="user_disp_option" class="last-child">{ trans('Allow users to change the display and sort of fields by display option') }</label>
+          <input type="checkbox" class="mt-switch form-control" id="user_disp_option" checked={ opts.user_disp_option } name="user_disp_option"><label for="user_disp_option" class="last-child">{ trans('Allow users to change the display and sort of fields by display option') }</label>
         </div>
       </div>
     </div>
+  </form>
 
+  <form>
     <fieldset id="content-fields" class="form-group">
       <legend class="h3">{ trans('Content Fields') }</legend>
       <div class="mb-3">
@@ -60,15 +63,15 @@
         <div each={ fields } data-is="content-field"></div>
       </div>
     </fieldset>
-    <button type="button" class="btn btn-primary" onclick={ submit }>{ trans("Save") }</button>
   </form>
+  <button type="button" class="btn btn-primary" onclick={ submit }>{ trans("Save") }</button>
 
   <script>
     this.fields = opts.fields
     this.currentType = opts.types[0].type
     this.currentTypeLabel = opts.types[0].label
     this.isEmpty = this.fields.length > 0 ? false : true
-    console.log(this.isEmpty)
+    this.data = "";
 
     changeType(e) {
       this.currentType = e.target.options[e.target.selectedIndex].value
@@ -91,7 +94,31 @@
       e.preventDefault()
     }
 
-}
+    submit(e) {
+      setDirty(false)
+      fieldOptions = [];
+      if ( this.fields ) {
+        child = this.tags['content-field']
+        if ( child ) {
+          i = 0;
+          child.forEach( function(c) {
+            field = c.tags[c.type]
+            options = field.gatheringData()
+            data = {}
+            data.type = c.type
+            data.order = ++i
+            data.options = options
+            fieldOptions.push(data)
+          })
+          this.data = JSON.stringify(fieldOptions)
+        }
+      }
+      else {
+        this.data = ""
+      }
+      this.update()
+      document.forms['content-type-form'].submit()
+    }
 
   </script>
 </content-fields>

@@ -142,5 +142,32 @@ sub _generate_query {
     $query;
 }
 
+sub options_validation_handler {
+    my ( $app, $type, $label, $field_label, $options ) = @_;
+
+    my $date = '1970-01-01';
+    my $time = $options->{initial_time} || '00:00:00';
+    my $ts   = "$date $time";
+    return $app->translate(
+        "Invalid date \'[_1]\'; An initial value times must be in the format HH:MM:SS.",
+        $time
+    ) if !MT::Util::is_valid_date($ts);
+
+    return;
+}
+
+sub options_pre_save_handler {
+    my ( $app, $type, $options ) = @_;
+
+    if ( exists $options->{initial_time} ) {
+        my $time = delete $options->{initial_time};
+        $options->{initial_value} = "1970-01-01 $time";
+    }
+    else {
+        $options->{initial_value} = undef;
+    }
+
+    return;
+}
 1;
 

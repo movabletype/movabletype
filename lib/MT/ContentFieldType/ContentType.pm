@@ -172,9 +172,56 @@ sub options_html_params {
         = MT->model('content_type')
         ->get_related_content_type_loop( $app->blog->id );
 
-    return {
-        content_types => $content_type_loop,
+    return { content_types => $content_type_loop, };
+}
+
+sub options_validation_handler {
+    my ( $app, $type, $label, $field_label, $options ) = @_;
+
+    my $source = $options->{source};
+    return $app->translate("You must select a source content type.")
+        unless $source;
+
+    my $class = MT->model('content_type');
+    return $app->translate(
+        "The source Content Type is not found in this site.",
+        $label, $field_label )
+        if !$class->exist( { id => $source, blog_id => $app->blog->id } );
+
+    my $multiple = $options->{multiple};
+    if ($multiple) {
+        my $min = $options->{min};
+        return $app->translate(
+            "A number of minimum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 0.",
+            $label, $field_label
+        ) if defined $min and $min !~ /^\d+$/;
+
+        my $max = $options->{max};
+        return $app->translate(
+            "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 1.",
+            $label,
+            $field_label
+        ) if defined $max and ( $max !~ /^\d+$/ or $max < 1 );
+
+        return $app->translate(
+            "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to a number of minimum selection.",
+            $label,
+            $field_label
+            )
+            if defined $min
+            and defined $max
+            and $max < $min;
     }
+
+    return;
+}
+
+sub options_pre_save_handler {
+    my ( $app, $type, $obj, $options ) = @_;
+
+    $obj->related_content_type_id( $options->{source} );
+
+    return;
 }
 
 1;

@@ -42,5 +42,47 @@ sub ss_validator {
     undef;
 }
 
+sub options_validation_handler {
+    my ( $app, $type, $label, $field_label, $options ) = @_;
+
+    my $min_length = $options->{min_length};
+    if ( defined $min_length and $min_length ne '' ) {
+        if (   $min_length !~ /^\d+$/
+            or $min_length < 0
+            or $min_length > 1024 )
+        {
+            return $app->translate(
+                "A number of minimum length of '[_1]' ([_2]) must be a positive integer between 0 and 1024.",
+                $label, $field_label
+            );
+        }
+    }
+
+    my $max_length = $options->{max_length};
+    if ( defined $max_length and $max_length ne '' ) {
+        if (   $max_length !~ /^\d+$/
+            or $max_length < 1
+            or $max_length > 1024 )
+        {
+            return $app->translate(
+                "A number of maximum length of '[_1]' ([_2]) must be a positive integer between 1 and 1024.",
+                $label, $field_label
+            );
+        }
+    }
+
+    my $initial_value = $options->{initial_value};
+    if ($initial_value) {
+        if ( length($initial_value) > 1024 ) {
+            return $app->translate(
+                "An initial value of '[_1]' ([_2]) must be shorter than 1024 characters",
+                $label, $field_label
+            );
+        }
+    }
+
+    return;
+}
+
 1;
 
