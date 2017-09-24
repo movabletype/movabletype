@@ -1,7 +1,8 @@
-# $Id: Expr.pm 4532 2004-05-11 05:15:40Z ezra $
-
 package XML::XPath::Expr;
-use strict;
+
+$VERSION = '1.42';
+
+use strict; use warnings;
 
 sub new {
     my $class = shift;
@@ -12,7 +13,8 @@ sub new {
 sub as_string {
     my $self = shift;
     local $^W; # Use of uninitialized value! grrr
-    my $string = "(" . $self->{lhs}->as_string;
+    my $string = "(" ;
+    $string .= $self->{lhs}->as_string||'' if defined $self->{lhs};
     $string .= " " . $self->{op} . " " if defined $self->{op};
     $string .= $self->{rhs}->as_string if defined $self->{rhs};
     $string .= ")";
@@ -42,7 +44,7 @@ sub op_xml {
     my $self = shift;
     my $op = $self->{op};
 
-    my $tag;    
+    my $tag;
     for ($op) {
         /^or$/    && do {
                     $tag = "Or";
@@ -87,7 +89,7 @@ sub op_xml {
                     $tag = "Union";
                 };
     }
-    
+
     return "<$tag>\n" . $self->{lhs}->as_xml() . $self->{rhs}->as_xml() . "</$tag>\n";
 }
 
@@ -108,10 +110,10 @@ sub set_rhs {
 
 sub push_predicate {
     my $self = shift;
-    
+
     die "Only 1 predicate allowed on FilterExpr in W3C XPath 1.0"
             if @{$self->{predicates}};
-    
+
     push @{$self->{predicates}}, $_[0];
 }
 
@@ -122,14 +124,14 @@ sub get_op { $_[0]->{op}; }
 sub evaluate {
     my $self = shift;
     my $node = shift;
-    
+
     # If there's an op, result is result of that op.
     # If no op, just resolve Expr
-    
+
 #    warn "Evaluate Expr: ", $self->as_string, "\n";
-    
+
     my $results;
-    
+
     if ($self->{op}) {
         die ("No RHS of ", $self->as_string) unless $self->{rhs};
         $results = $self->op_eval($node);
@@ -137,27 +139,27 @@ sub evaluate {
     else {
         $results = $self->{lhs}->evaluate($node);
     }
-    
+
     if (my @predicates = @{$self->{predicates}}) {
         if (!$results->isa('XML::XPath::NodeSet')) {
             die "Can't have predicates execute on object type: " . ref($results);
         }
-        
+
         # filter initial nodeset by each predicate
         foreach my $predicate (@{$self->{predicates}}) {
             $results = $self->filter_by_predicate($results, $predicate);
         }
     }
-    
+
     return $results;
 }
 
 sub op_eval {
     my $self = shift;
     my $node = shift;
-    
+
     my $op = $self->{op};
-    
+
     for ($op) {
         /^or$/    && do {
                     return op_or($node, $self->{lhs}, $self->{rhs});
@@ -201,7 +203,7 @@ sub op_eval {
         /^\|$/    && do {
                     return op_union($node, $self->{lhs}, $self->{rhs});
                 };
-        
+
         die "No such operator, or operator unimplemented in ", $self->as_string, "\n";
     }
 }
@@ -235,7 +237,7 @@ sub op_equals {
 
     my $lh_results = $lhs->evaluate($node);
     my $rh_results = $rhs->evaluate($node);
-    
+
     if ($lh_results->isa('XML::XPath::NodeSet') &&
             $rh_results->isa('XML::XPath::NodeSet')) {
         # True if and only if there is a node in the
@@ -256,7 +258,7 @@ sub op_equals {
             (!$lh_results->isa('XML::XPath::NodeSet') ||
              !$rh_results->isa('XML::XPath::NodeSet'))) {
         # (that says: one is a nodeset, and one is not a nodeset)
-        
+
         my ($nodeset, $other);
         if ($lh_results->isa('XML::XPath::NodeSet')) {
             $nodeset = $lh_results;
@@ -266,7 +268,7 @@ sub op_equals {
             $nodeset = $rh_results;
             $other = $lh_results;
         }
-        
+
         # True if and only if there is a node in the
         # nodeset such that the result of performing
         # the comparison on <type>(string_value($node))
@@ -330,7 +332,7 @@ sub op_nequals {
 
 sub op_le {
     my ($node, $lhs, $rhs) = @_;
-    op_gt($node, $rhs, $lhs);
+    op_ge($node, $rhs, $lhs);
 }
 
 sub op_ge {
@@ -338,7 +340,7 @@ sub op_ge {
 
     my $lh_results = $lhs->evaluate($node);
     my $rh_results = $rhs->evaluate($node);
-    
+
     if ($lh_results->isa('XML::XPath::NodeSet') &&
         $rh_results->isa('XML::XPath::NodeSet')) {
 
@@ -359,31 +361,22 @@ sub op_ge {
              !$rh_results->isa('XML::XPath::NodeSet'))) {
         # (that says: one is a nodeset, and one is not a nodeset)
 
-        my ($nodeset, $other);
-        my ($true, $false);
         if ($lh_results->isa('XML::XPath::NodeSet')) {
-            $nodeset = $lh_results;
-            $other = $rh_results;
-            # we do this because unlike ==, these ops are direction dependant
-            ($false, $true) = (XML::XPath::Boolean->False, XML::XPath::Boolean->True);
-        }
-        else {
-            $nodeset = $rh_results;
-            $other = $lh_results;
-            # ditto above comment
-            ($true, $false) = (XML::XPath::Boolean->False, XML::XPath::Boolean->True);
-        }
-        
-        # True if and only if there is a node in the
-        # nodeset such that the result of performing
-        # the comparison on <type>(string_value($node))
-        # is true.
-        foreach my $node ($nodeset->get_nodelist) {
-            if ($node->to_number->value >= $other->to_number->value) {
-                return $true;
+            foreach my $node ($lh_results->get_nodelist) {
+                if ($node->to_number->value >= $rh_results->to_number->value) {
+                    return XML::XPath::Boolean->True;
+                }
             }
         }
-        return $false;
+        else {
+            foreach my $node ($rh_results->get_nodelist) {
+                if ( $lh_results->to_number->value >= $node->to_number->value) {
+                    return XML::XPath::Boolean->True;
+                }
+            }
+        }
+
+        return XML::XPath::Boolean->False;
     }
     else { # Neither is a nodeset
         if ($lh_results->isa('XML::XPath::Boolean') ||
@@ -408,7 +401,7 @@ sub op_gt {
 
     my $lh_results = $lhs->evaluate($node);
     my $rh_results = $rhs->evaluate($node);
-    
+
     if ($lh_results->isa('XML::XPath::NodeSet') &&
         $rh_results->isa('XML::XPath::NodeSet')) {
 
@@ -429,31 +422,22 @@ sub op_gt {
              !$rh_results->isa('XML::XPath::NodeSet'))) {
         # (that says: one is a nodeset, and one is not a nodeset)
 
-        my ($nodeset, $other);
-        my ($true, $false);
         if ($lh_results->isa('XML::XPath::NodeSet')) {
-            $nodeset = $lh_results;
-            $other = $rh_results;
-            # we do this because unlike ==, these ops are direction dependant
-            ($false, $true) = (XML::XPath::Boolean->False, XML::XPath::Boolean->True);
-        }
-        else {
-            $nodeset = $rh_results;
-            $other = $lh_results;
-            # ditto above comment
-            ($true, $false) = (XML::XPath::Boolean->False, XML::XPath::Boolean->True);
-        }
-        
-        # True if and only if there is a node in the
-        # nodeset such that the result of performing
-        # the comparison on <type>(string_value($node))
-        # is true.
-        foreach my $node ($nodeset->get_nodelist) {
-            if ($node->to_number->value > $other->to_number->value) {
-                return $true;
+            foreach my $node ($lh_results->get_nodelist) {
+                if ($node->to_number->value > $rh_results->to_number->value) {
+                    return XML::XPath::Boolean->True;
+                }
             }
         }
-        return $false;
+        else {
+            foreach my $node ($rh_results->get_nodelist) {
+                if ( $lh_results->to_number->value > $node->to_number->value) {
+                    return XML::XPath::Boolean->True;
+                }
+            }
+        }
+
+        return XML::XPath::Boolean->False;
     }
     else { # Neither is a nodeset
         if ($lh_results->isa('XML::XPath::Boolean') ||
@@ -481,7 +465,7 @@ sub op_plus {
     my ($node, $lhs, $rhs) = @_;
     my $lh_results = $lhs->evaluate($node);
     my $rh_results = $rhs->evaluate($node);
-    
+
     my $result =
         $lh_results->to_number->value
             +
@@ -494,7 +478,7 @@ sub op_minus {
     my ($node, $lhs, $rhs) = @_;
     my $lh_results = $lhs->evaluate($node);
     my $rh_results = $rhs->evaluate($node);
-    
+
     my $result =
         $lh_results->to_number->value
             -
@@ -508,6 +492,18 @@ sub op_div {
     my $lh_results = $lhs->evaluate($node);
     my $rh_results = $rhs->evaluate($node);
 
+    # handle zero devided cases.
+    if ($rh_results->to_number->value == 0) {
+        my $lv = $lh_results->to_number->value;
+        if ($lv == 0) {
+            return XML::XPath::Literal->new('NaN');
+        } elsif ($lv > 0) {
+            return XML::XPath::Literal->new('Infinity');
+        } elsif ($lv < 0) {
+            return XML::XPath::Literal->new('-Infinity');
+        }
+    }
+
     my $result = eval {
         $lh_results->to_number->value
             /
@@ -516,7 +512,7 @@ sub op_div {
     };
     if ($@) {
         # assume divide by zero
-        # This is probably a terrible way to handle this! 
+        # This is probably a terrible way to handle this!
         # Ah well... who wants to live forever...
         return XML::XPath::Literal->new('Infinity');
     }
@@ -527,7 +523,7 @@ sub op_mod {
     my ($node, $lhs, $rhs) = @_;
     my $lh_results = $lhs->evaluate($node);
     my $rh_results = $rhs->evaluate($node);
-    
+
     my $result =
         $lh_results->to_number->value
             %
@@ -540,7 +536,7 @@ sub op_mult {
     my ($node, $lhs, $rhs) = @_;
     my $lh_results = $lhs->evaluate($node);
     my $rh_results = $rhs->evaluate($node);
-    
+
     my $result =
         $lh_results->to_number->value
             *
@@ -553,7 +549,7 @@ sub op_union {
     my ($node, $lhs, $rhs) = @_;
     my $lh_result = $lhs->evaluate($node);
     my $rh_result = $rhs->evaluate($node);
-    
+
     if ($lh_result->isa('XML::XPath::NodeSet') &&
             $rh_result->isa('XML::XPath::NodeSet')) {
         my %found;
@@ -575,22 +571,22 @@ sub op_union {
 sub filter_by_predicate {
     my $self = shift;
     my ($nodeset, $predicate) = @_;
-    
+
     # See spec section 2.4, paragraphs 2 & 3:
     # For each node in the node-set to be filtered, the predicate Expr
     # is evaluated with that node as the context node, with the number
     # of nodes in the node set as the context size, and with the
     # proximity position of the node in the node set with respect to
     # the axis as the context position.
-    
+
     if (!ref($nodeset)) { # use ref because nodeset has a bool context
         die "No nodeset!!!";
     }
-    
+
 #    warn "Filter by predicate: $predicate\n";
-    
+
     my $newset = XML::XPath::NodeSet->new();
-    
+
     for(my $i = 1; $i <= $nodeset->size; $i++) {
         # set context set each time 'cos a loc-path in the expr could change it
         $self->{pp}->set_context_set($nodeset);
@@ -612,7 +608,7 @@ sub filter_by_predicate {
             }
         }
     }
-    
+
     return $newset;
 }
 

@@ -1,7 +1,8 @@
-# $Id: Variable.pm 4532 2004-05-11 05:15:40Z ezra $
-
 package XML::XPath::Variable;
-use strict;
+
+$VERSION = '1.42';
+
+use strict; use warnings;
 
 # This class does NOT contain 1 instance of a variable
 # see the XML::XPath::Parser class for the instances

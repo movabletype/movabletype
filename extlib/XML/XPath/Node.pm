@@ -1,8 +1,8 @@
-# $Id: Node.pm 4532 2004-05-11 05:15:40Z ezra $
-
 package XML::XPath::Node;
 
-use strict;
+$VERSION = '1.42';
+
+use strict; use warnings;
 use vars qw(@ISA @EXPORT $AUTOLOAD %EXPORT_TAGS @EXPORT_OK);
 use Exporter;
 use Carp;
@@ -151,10 +151,10 @@ sub XMLescape {
     my ($str, $default) = @_;
     return undef unless defined $str;
     $default ||= '';
-    
+
     if ($XML::XPath::EncodeUtf8AsEntity) {
         $str =~ s/([\xC0-\xDF].|[\xE0-\xEF]..|[\xF0-\xFF]...)|([$default])|(]]>)/
-        defined($1) ? XmlUtf8Decode ($1) : 
+        defined($1) ? XmlUtf8Decode ($1) :
         defined ($2) ? $DecodeDefaultEntity{$2} : "]]&gt;" /egsx;
     }
     else {
@@ -185,12 +185,12 @@ sub XmlUtf8Decode
     }
     elsif ($len == 3) {
         my @n = unpack "C3", $str;
-        $n = (($n[0] & 0x1f) << 12) + (($n[1] & 0x3f) << 6) + 
+        $n = (($n[0] & 0x1f) << 12) + (($n[1] & 0x3f) << 6) +
             ($n[2] & 0x3f);
     }
     elsif ($len == 4) {
         my @n = unpack "C4", $str;
-        $n = (($n[0] & 0x0f) << 18) + (($n[1] & 0x3f) << 12) + 
+        $n = (($n[0] & 0x0f) << 18) + (($n[1] & 0x3f) << 12) +
             (($n[2] & 0x3f) << 6) + ($n[3] & 0x3f);
     }
     elsif ($len == 1) {    # just to be complete...
@@ -219,7 +219,7 @@ sub AUTOLOAD {
     $method =~ s/.*:://;
 #    warn "AUTOLOAD $method!\n";
     no strict 'refs';
-    *{$AUTOLOAD} = sub { 
+    *{$AUTOLOAD} = sub {
         my $self = shift;
         my $olderror = $@; # store previous exceptions
         my $obj = eval { $$self };
@@ -230,7 +230,7 @@ sub AUTOLOAD {
             croak $@;
         }
         if ($obj) {
-            # make sure $@ propogates if this method call was the result
+            # make sure $@ propagates if this method call was the result
             # of losing scope because of a die().
             if ($method =~ /^(DESTROY|del_parent_link)$/) {
                 $obj->$method(@_);
@@ -365,14 +365,14 @@ sub renumber {
     my $self = shift;
     my $search = shift;
     my $diff = shift;
-    
+
     foreach my $node ($self->findnodes($search)) {
         $node->set_global_pos(
                 $node->get_global_pos + $diff
                 );
     }
 }
-    
+
 sub insertAfter {
     my $self = shift;
     my $newnode = shift;
@@ -382,25 +382,25 @@ sub insertAfter {
     if (!defined $pos_number) {
         $pos_number = $posnode->get_global_pos() + 1;
     }
-    
+
     eval {
-        if ($pos_number == 
+        if ($pos_number ==
                 $posnode->findnodes(
                     'following::node()'
                     )->get_node(1)->get_global_pos()) {
             $posnode->renumber('following::node()', +5);
         }
     };
-    
+
     my $pos = $posnode->get_pos;
-    
+
     $newnode->setParentNode($self);
     splice @{$self->[XML::XPath::Node::node_children]}, $pos + 1, 0, $newnode;
-    
+
     for (my $i = $pos + 1; $i < @{$self->[XML::XPath::Node::node_children]}; $i++) {
         $self->[XML::XPath::Node::node_children][$i]->set_pos($i);
     }
-    
+
     $newnode->set_global_pos($pos_number);
 }
 
@@ -408,21 +408,21 @@ sub insertBefore {
     my $self = shift;
     my $newnode = shift;
     my $posnode = shift;
-    
+
     my $pos_number = ($posnode->getPreviousSibling() || $posnode->getParentNode)->get_global_pos();
     if ($pos_number == $posnode->get_global_pos()) {
         $posnode->renumber('self::node() | descendant::node() | following::node()', +5);
     }
-    
+
     my $pos = $posnode->get_pos;
-    
+
     $newnode->setParentNode($self);
     splice @{$self->[XML::XPath::Node::node_children]}, $pos, 0, $newnode;
-    
+
     for (my $i = $pos; $i < @{$self->[XML::XPath::Node::node_children]}; $i++) {
         $self->[XML::XPath::Node::node_children][$i]->set_pos($i);
     }
-    
+
     $newnode->set_global_pos($pos_number);
 }
 
@@ -503,7 +503,7 @@ sub to_sax {
     my $self = shift;
     unshift @_, 'Handler' if @_ == 1;
     my %handlers = @_;
-    
+
     my $doch = $handlers{DocumentHandler} || $handlers{Handler};
     my $dtdh = $handlers{DTDHandler} || $handlers{Handler};
     my $enth = $handlers{EntityResolver} || $handlers{Handler};
