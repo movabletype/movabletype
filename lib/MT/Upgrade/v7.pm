@@ -164,7 +164,6 @@ sub _v7_migrate_role {
         my $iter = $role_class->load_iter( { name => $r->{name} } );
         while ( my $role = $iter->() ) {
             $role->name( MT->translate( $r->{name} . ' (MT6)' ) );
-            $role->set_these_permissions( $r->{perms} );
             $role->save
                 or return $self->error(
                 $self->translate_escape(
