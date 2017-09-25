@@ -9,6 +9,14 @@ l10n_class: BlockEditor::L10N
 text_filters:
     blockeditor:
         label: 'Block Editor'
+        condition: |
+          sub {
+            my $app = MT->instance;
+            if( $app->mode eq 'view' && $app->param('_type') eq 'content_data' ){
+              return 1;
+            }
+            return 0;
+          }
 
 applications:
   cms:
@@ -32,6 +40,6 @@ blockeditor_fields:
   embed:
     label: 'Embed'
     order: 40
-  gallery:
-    label: 'Gallery'
-    order: 50
+  # gallery:
+  #   label: 'Gallery'
+  #   order: 50
