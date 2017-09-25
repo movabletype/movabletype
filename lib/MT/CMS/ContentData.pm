@@ -328,7 +328,7 @@ sub save {
     return $app->permission_denied()
         unless $app->user->is_superuser()
         || ( $perms
-        && $perms->can_administer_blog );
+        && $perms->can_administer_site );
 
     my $blog_id = $app->param('blog_id')
         or return $app->errtrans("Invalid request.");
