@@ -226,6 +226,22 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     'CATEGORY-WEEKLY_ADV'  => 'Category Weekly',
     'CATEGORY-DAILY_ADV'   => 'Category Daily',
 
+    'CONTENTTYPE_ADV'                  => 'ContentType',
+    'CONTENTTYPE-DAILY_ADV'            => 'ContentType Daily',
+    'CONTENTTYPE-WEEKLY_ADV'           => 'ContentType Weekly',
+    'CONTENTTYPE-MONTHLY_ADV'          => 'ContentType Monthly',
+    'CONTENTTYPE-YEARLY_ADV'           => 'ContentType Yearly',
+    'CONTENTTYPE-CATEGORY_ADV'         => 'ContentType Category',
+    'CONTENTTYPE-CATEGORY-DAILY_ADV'   => 'ContentType Category Daily',
+    'CONTENTTYPE-CATEGORY-WEEKLY_ADV'  => 'ContentType Category Weekly',
+    'CONTENTTYPE-CATEGORY-MONTHLY_ADV' => 'ContentType Category Monthly',
+    'CONTENTTYPE-CATEGORY-YEARLY_ADV'  => 'ContentType Category Yearly',
+    'CONTENTTYPE-AUTHOR_ADV'           => 'ContentType Author',
+    'CONTENTTYPE-AUTHOR-DAILY_ADV'     => 'ContentType Author Daily',
+    'CONTENTTYPE-AUTHOR-WEEKLY_ADV'    => 'ContentType Author Weekly',
+    'CONTENTTYPE-AUTHOR-MONTHLY_ADV'   => 'ContentType Author Monthly',
+    'CONTENTTYPE-AUTHOR-YEARLY_ADV'    => 'ContentType Author Yearly',
+
     'UTC+11' => 'UTC+11 (East Australian Daylight Savings Time)',
     'UTC+10' => 'UTC+10 (East Australian Standard Time)',
 

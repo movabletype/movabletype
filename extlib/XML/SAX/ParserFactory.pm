@@ -1,4 +1,4 @@
-# $Id: ParserFactory.pm,v 1.14 2008-08-04 04:51:29 grant Exp $
+# $Id$
 
 package XML::SAX::ParserFactory;
 

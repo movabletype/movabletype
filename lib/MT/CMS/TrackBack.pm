@@ -14,11 +14,10 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    my $q       = $app->param;
     my $perms   = $app->permissions;
     my $blog    = $app->blog;
-    my $blog_id = $q->param('blog_id');
-    my $type    = $q->param('_type');
+    my $blog_id = $app->param('blog_id');
+    my $type    = $app->param('_type');
 
     if ($id) {
         $param->{nav_trackbacks} = 1;

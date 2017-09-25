@@ -1,21 +1,23 @@
-# $Id: Literal.pm 4532 2004-05-11 05:15:40Z ezra $
-
 package XML::XPath::Literal;
+
+$VERSION = '1.42';
+
 use XML::XPath::Boolean;
 use XML::XPath::Number;
-use strict;
+use strict; use warnings;
 
-use overload 
+use overload
 		'""' => \&value,
+                'fallback' => 1,
 		'cmp' => \&cmp;
 
 sub new {
 	my $class = shift;
 	my ($string) = @_;
-	
+
 #	$string =~ s/&quot;/"/g;
 #	$string =~ s/&apos;/'/g;
-	
+
 	bless \$string, $class;
 }
 

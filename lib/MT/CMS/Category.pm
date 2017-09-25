@@ -418,12 +418,12 @@ sub bulk_update {
 
 # DEPRECATED: will be removed.
 sub category_add {
-    my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type') || 'category';
-    my $pkg  = $app->model($type);
-    my $data = $app->_build_category_list(
-        blog_id => scalar $q->param('blog_id'),
+    my $app     = shift;
+    my $type    = $app->param('_type') || 'category';
+    my $blog_id = $app->param('blog_id');
+    my $pkg     = $app->model($type);
+    my $data    = $app->_build_category_list(
+        blog_id => $blog_id,
         type    => $type
     );
     my %param;
@@ -436,24 +436,24 @@ sub category_add {
 }
 
 sub category_do_add {
-    my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type') || 'category';
+    my $app = shift;
+    my $type = $app->param('_type') || 'category';
     return $app->errtrans("Invalid request.")
         unless ( $type eq 'category' )
         or ( $type eq 'folder' );
     my $author = $app->user;
     my $pkg    = $app->model($type);
     $app->validate_magic() or return;
-    my $name = $q->param('label')
+    my $name = $app->param('label')
         or return $app->error( $app->translate("No label") );
     $name =~ s/(^\s+|\s+$)//g;
     return $app->errtrans("The category name cannot be blank.")
         if $name eq '';
-    my $parent   = $q->param('parent') || '0';
+    my $parent   = $app->param('parent') || '0';
+    my $blog_id  = $app->param('blog_id');
     my $cat      = $pkg->new;
     my $original = $cat->clone;
-    $cat->blog_id( scalar $q->param('blog_id') );
+    $cat->blog_id($blog_id);
     $cat->author_id( $app->user->id );
     $cat->label($name);
     $cat->parent($parent);

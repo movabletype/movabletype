@@ -1,8 +1,8 @@
-# $Id: Builder.pm 4532 2004-05-11 05:15:40Z ezra $
-
 package XML::XPath::Builder;
 
-use strict;
+$VERSION = '1.42';
+
+use strict; use warnings;
 
 # to get array index constants
 use XML::XPath::Node;
@@ -29,14 +29,14 @@ sub start_document {
     my $self = shift;
 
     $self->{IdNames} = {};
-    $self->{InScopeNamespaceStack} = [ { 
+    $self->{InScopeNamespaceStack} = [ {
             '_Default' => undef,
             'xmlns' => $xmlns_ns,
             'xml' => $xml_ns,
         } ];
-    
+
     $self->{NodeStack} = [ ];
-    
+
     my $document = XML::XPath::Node::Element->new();
     my $newns = XML::XPath::Node::Namespace->new('xml', $xml_ns);
     $document->appendNamespace($newns);
@@ -45,7 +45,7 @@ sub start_document {
 
 sub end_document {
     my $self = shift;
-    
+
     return $self->{DOC_Node};
 }
 
@@ -53,16 +53,16 @@ sub characters {
     my $self = shift;
     my $sarg = shift;
     my $text = $sarg->{Data};
-    
+
     my $parent = $self->{current};
-    
+
     my $last = $parent->getLastChild;
     if ($last && $last->isTextNode) {
         # append to previous text node
         $last->appendText($text);
         return;
     }
-    
+
     my $node = XML::XPath::Node::Text->new($text);
     $parent->appendChild($node, 1);
 }
@@ -76,11 +76,11 @@ sub start_element {
     push @{ $self->{InScopeNamespaceStack} },
          { %{ $self->{InScopeNamespaceStack}[-1] } };
     $self->_scan_namespaces(@_);
-    
+
     my ($prefix, $namespace) = $self->_namespace($tag);
-    
+
     my $node = XML::XPath::Node::Element->new($tag, $prefix);
-    
+
     foreach my $name (keys %$attr) {
 	my $value = $attr->{$name};
 
@@ -103,7 +103,7 @@ sub start_element {
             }
         }
     }
-        
+
     $self->{current}->appendChild($node, 1);
     $self->{current} = $node;
 }

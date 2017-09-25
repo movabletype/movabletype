@@ -110,16 +110,28 @@ sub list_props {
                         blog_id => $obj->blog_id,
                     }
                 );
-                my $status_img = MT->static_path . 'images/status_icons/';
-                $status_img .=
-                      $obj->is_junk      ? 'warning.gif'
-                    : $obj->is_published ? 'success.gif'
-                    :                      'draft.gif';
+
                 my $status_class
                     = $obj->is_junk      ? 'Junk'
                     : $obj->is_published ? 'Approved'
                     :                      'Unapproved';
                 my $lc_status_class = lc $status_class;
+
+                my $status_icon_color_class
+                    = $obj->is_junk      ? ' mt-icon--warning'
+                    : $obj->is_published ? ' mt-icon--success'
+                    :                      '';
+                my $status_icon_id
+                    = $obj->is_junk      ? 'ic_error'
+                    : $obj->is_published ? 'ic_checkbox'
+                    :                      'ic_statusdraft';
+
+                my $static_uri = MT->static_path;
+                my $status_img = qq{
+                    <svg title="$status_class" role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
+                        <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id">
+                    </svg>
+                };
 
                 my $blog = $app ? $app->blog : undef;
                 my $edit_str = MT->translate('Edit');
@@ -150,10 +162,12 @@ sub list_props {
                 }
 
                 return qq{
-                    <span class="icon comment status $lc_status_class">
-                      <img alt="$status_class" src="$status_img" />
-                    </span>
-                    <p class="comment-text content-text">$text</p>
+                    <div class="mb-3">
+                      <span class="icon comment status $lc_status_class">
+                        $status_img
+                      </span>
+                      <span class="comment-text content-text">$text</span>
+                    </div>
                     <div class="item-ctrl">
                       <a href="$link" class="edit action-link">$edit_str</a>
                       $reply_link

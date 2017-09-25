@@ -459,7 +459,6 @@ sub list_tag_for {
 
     my $pkg = $params{Package};
 
-    my $q         = $app->param;
     my $blog_id   = $app->param('blog_id');
     my $list_pref = $app->list_pref('tag');
     my %param     = %$list_pref;
@@ -565,8 +564,8 @@ sub list_tag_for {
     $param{filter_label} = $filter_label;
     $param{link_to}      = 'list_' . lc $params{TagObjectType};
 
-    $param{saved}         = $q->param('saved');
-    $param{saved_deleted} = $q->param('saved_deleted');
+    $param{saved}         = $app->param('saved');
+    $param{saved_deleted} = $app->param('saved_deleted');
     $param{nav_tags}      = 1;
     $app->add_breadcrumb( $app->translate('Tags') );
     $param{screen_class}   = "list-tag";

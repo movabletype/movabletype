@@ -17,24 +17,33 @@ use MT;
 use MT::Blog;
 use MT::CMS::ContentType;
 use MT::ContentType;
+use MT::Entry;
 use MT::Log;
 use MT::Session;
 use MT::Template;
 use MT::TemplateMap;
+use MT::Util;
 
 sub edit {
-    my ($app) = @_;
-    my $blog  = $app->blog;
-    my $cfg   = $app->config;
-    my $param = {};
+    my ( $app, $param ) = @_;
+    my $blog = $app->blog;
+    my $cfg  = $app->config;
     my $data;
 
-    my $blog_id = $app->param('blog_id')
-        or return $app->errtrans("Invalid request.");
+    unless ($blog) {
+        return $app->return_to_dashboard( redirect => 1 );
+    }
+
+    $param ||= {};
+
     my $content_type_id = $app->param('content_type_id')
         or return $app->errtrans("Invalid request.");
     my $content_type = MT::ContentType->load($content_type_id)
         or return $app->errtrans('Invalid request.');
+
+    if ( $content_type->blog_id != $blog->id ) {
+        return $app->return_to_dashboard( redirect => 1 );
+    }
 
     if ( $app->param('_recover') && !$app->param('reedit') ) {
         $app->param( '_type', 'content_data' );
@@ -60,7 +69,10 @@ sub edit {
     }
 
     if ( $app->param('reedit') ) {
-        $data = JSON::decode_json( scalar $app->param('serialized_data') );
+        $data = $app->param('serialized_data');
+        unless ( ref $data ) {
+            $data = JSON::decode_json($data);
+        }
         if ($data) {
             $app->param( $_, $data->{$_} ) for keys %$data;
         }
@@ -132,6 +144,9 @@ sub edit {
         $status =~ s/\D//g;
         $param->{status} = $status;
         $param->{ 'status_' . MT::Entry::status_text($status) } = 1;
+
+        $param->{content_data_permalink}
+            = MT::Util::encode_html( $content_data->permalink );
 
         $param->{authored_on_date} = $app->param('authored_on_date')
             || MT::Util::format_ts( '%Y-%m-%d', $content_data->authored_on,
@@ -362,19 +377,11 @@ sub save {
 
     if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
     {
-
-        # FIXME: this does not preserve content field values.
-        return $app->redirect(
-            $app->uri(
-                mode => 'edit_content_data',
-                args => {
-                    blog_id         => $blog_id,
-                    content_type_id => $content_type_id,
-                    id              => $content_data_id,
-                    err_msg         => $errors->[0]{error},
-                },
-            )
-        );
+        $app->param( 'reedit',          1 );
+        $app->param( 'serialized_data', $data );
+        my %param;
+        $param{err_msg} = $errors->[0]{error};
+        return $app->forward( 'edit_content_data', \%param );
     }
 
     my $content_data
@@ -385,8 +392,15 @@ sub save {
     my $orig = $content_data->clone;
     my $status_old = $content_data_id ? $content_data->status : 0;
 
+    my $archive_type = '';
+    my $orig_file    = '';
+
     if ( $content_data->id ) {
         $content_data->modified_by( $app->user->id );
+
+        $archive_type = 'ContentType';
+        $orig_file
+            = MT::Util::archive_file_for( $orig, $blog, $archive_type );
     }
     else {
         $content_data->author_id( $app->user->id );
@@ -547,6 +561,21 @@ sub save {
 
     $app->run_callbacks( 'cms_post_save.cd', $app, $content_data, $orig );
 
+    # Delete old archive files.
+    if ( $app->config('DeleteFilesAtRebuild') && $content_data_id ) {
+        $app->request->cache( 'file', {} );    # clear cache
+        my $file = MT::Util::archive_file_for( $content_data, $blog,
+            $archive_type );
+        if (   $file ne $orig_file
+            || $content_data->status != MT::Entry::RELEASE() )
+        {
+            $app->publisher->remove_content_data_archive_file(
+                ContentData => $orig,
+                ArchiveType => $archive_type,
+            );
+        }
+    }
+
     return $app->redirect(
         $app->uri(
             'mode' => 'view',
@@ -565,7 +594,7 @@ sub save {
 sub delete {
     my $app = shift;
 
-    my $orig_type = $app->param('type');
+    my $orig_type = $app->param('type') || '';
     my ($content_type_id) = $orig_type =~ /^content_data_(\d+)$/;
 
     unless ( $app->param('content_type_id') ) {

@@ -63,9 +63,8 @@ sub init_request {
     $app->SUPER::init_request(@_);
     $app->set_no_cache;
     $app->{default_mode} = 'post';
-    my $q = $app->param;
 
-    if ( my $blog_id = $q->param('blog_id') ) {
+    if ( my $blog_id = $app->param('blog_id') ) {
         if ( $blog_id ne int($blog_id) ) {
             die $app->translate("Invalid request");
         }
@@ -81,27 +80,27 @@ sub init_request {
 
     ## We don't really have a __mode parameter, because we have to
     ## use named submit buttons for Preview and Post. So we hack it.
-    if (   $q->param('post')
-        || $q->param('post_x')
-        || $q->param('post.x') )
+    if (   $app->param('post')
+        || $app->param('post_x')
+        || $app->param('post.x') )
     {
         $app->mode('post');
     }
-    elsif ($q->param('preview')
-        || $q->param('preview_x')
-        || $q->param('preview.x') )
+    elsif ($app->param('preview')
+        || $app->param('preview_x')
+        || $app->param('preview.x') )
     {
         $app->mode('preview');
     }
-    elsif ($q->param('reply')
-        || $q->param('reply_x')
-        || $q->param('reply.x') )
+    elsif ($app->param('reply')
+        || $app->param('reply_x')
+        || $app->param('reply.x') )
     {
         $app->mode('reply');
     }
-    elsif ($q->param('reply_preview')
-        || $q->param('reply_preview_x')
-        || $q->param('reply_preview.x') )
+    elsif ($app->param('reply_preview')
+        || $app->param('reply_preview_x')
+        || $app->param('reply_preview.x') )
     {
         $app->mode('reply_preview');
     }
@@ -375,13 +374,12 @@ sub signup {
 
 sub do_signup {
     my $app = shift;
-    my $q   = $app->param;
 
     return $app->error( $app->translate("Invalid request") )
         if $app->request_method() ne 'POST';
 
     my $param = {};
-    $param->{$_} = $q->param($_)
+    $param->{$_} = $app->param($_)
         foreach
         qw(blog_id entry_id static email url username nickname return_url );
 
@@ -551,14 +549,13 @@ sub _send_signup_confirmation {
 
 sub do_register {
     my $app = shift;
-    my $q   = $app->param;
     my $cfg = $app->config;
 
-    my $q_blog_id = $q->param('blog_id');
-    my $entry_id  = $q->param('entry_id');
-    my $static    = $q->param('static');
-    my $email     = $q->param('email');
-    my $token     = $q->param('token');
+    my $q_blog_id = $app->param('blog_id');
+    my $entry_id  = $app->param('entry_id');
+    my $static    = $app->param('static');
+    my $email     = $app->param('email');
+    my $token     = $app->param('token');
 
     if ($static) {
         return $app->errtrans('Invalid request.')
@@ -738,8 +735,7 @@ sub generate_captcha {
 
 sub do_red {
     my $app = shift;
-    my $q   = $app->param;
-    my $id  = $q->param('id')
+    my $id  = $app->param('id')
         or return $app->error( $app->translate("No id") );
     my $comment = MT::Comment->load($id)
         or return $app->error( $app->translate("No such comment") );
@@ -1313,10 +1309,9 @@ sub _check_commenter_author {
 #
 sub _make_comment {
     my ( $app, $entry, $blog ) = @_;
-    my $q = $app->param;
 
-    my $nick  = $q->param('author');
-    my $email = $q->param('email');
+    my $nick  = $app->param('author');
+    my $email = $app->param('email');
     my ( $sess_obj, $commenter );
     if ( $blog->accepts_registered_comments && !$app->param('bakecookie') ) {
         ( $sess_obj, $commenter ) = $app->_get_commenter_session();
@@ -1342,13 +1337,14 @@ sub _make_comment {
         $email = $commenter->email();
     }
 
-    my $url = $q->param('url') || '';  #($commenter ? $commenter->url() : '');
+    my $url
+        = $app->param('url') || '';    #($commenter ? $commenter->url() : '');
     my $comment = MT::Comment->new;
     if ($commenter) {
         $comment->commenter_id( $commenter->id );
     }
     ## Strip linefeed characters.
-    my $text = $q->param('text');
+    my $text = $app->param('text');
     $text = '' unless defined $text;
     $text =~ tr/\r//d;
     $comment->ip( $app->remote_ip );
@@ -1966,7 +1962,6 @@ sub edit_commenter_profile {
 
 sub save_commenter_profile {
     my $app = shift;
-    my $q   = $app->param;
 
     return $app->error( $app->translate("Invalid request") )
         if $app->request_method() ne 'POST';
@@ -1975,16 +1970,16 @@ sub save_commenter_profile {
     return $app->handle_error( $app->translate('Invalid login') )
         unless $cmntr;
 
-    my %param = map { $_ => scalar( $q->param($_) ) }
+    my %param = map { $_ => scalar( $app->param($_) ) }
         qw( name nickname email password pass_verify url entry_url return_url external_auth blog_id );
     $param{blog_id} =~ s/\D//g if defined $param{blog_id};
 
     $param{ 'auth_mode_' . $cmntr->auth_type } = 1;
 
     return $app->error( $app->translate("Invalid request") )
-        if $cmntr->name ne $q->param('name');
+        if $cmntr->name ne $app->param('name');
     return $app->error( $app->translate("Invalid request") )
-        if $q->param('id') && $cmntr->id ne $q->param('id');
+        if $app->param('id') && $cmntr->id ne $app->param('id');
 
     $app->user($cmntr);
     $app->{session} = $sess_obj;
@@ -2016,11 +2011,8 @@ sub save_commenter_profile {
             }
 
             require MT::Auth;
-            if (not MT::Auth->is_valid_password(
-                    $cmntr, scalar( $q->param('old_pass') )
-                )
-                )
-            {
+            my $old_pass = $app->param('old_pass');
+            if ( not MT::Auth->is_valid_password( $cmntr, $old_pass ) ) {
                 $param{error}
                     = $app->translate(
                     'Failed to verify the current password.');

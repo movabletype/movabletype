@@ -48,9 +48,8 @@ sub suite {
                     },
                     {   permissions => [
                             qw(administer_site comment create_post create_site
-                                edit_all_content_types edit_all_posts edit_assets
-                                edit_categories edit_config edit_content_types
-                                edit_notifications edit_tags edit_templates
+                                edit_all_posts edit_assets
+                                edit_categories edit_config edit_notifications edit_tags edit_templates
                                 manage_category_set manage_content_datas
                                 manage_content_types manage_feedback manage_pages
                                 manage_themes manage_users publish_post rebuild
@@ -911,4 +910,3 @@ sub suite {
         },
     ];
 }
-

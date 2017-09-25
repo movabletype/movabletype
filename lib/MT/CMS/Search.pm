@@ -10,8 +10,7 @@ use MT::Util qw( is_valid_date encode_html first_n_words );
 
 sub core_search_apis {
     my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $author  = $app->user;
 
     my $types = {

@@ -31,6 +31,7 @@
 #   19) http://nah6.com/~itsme/cvs-xdadevtools/iphone/tools/decodesinf.pl
 #   20) https://developer.apple.com/legacy/library/documentation/quicktime/reference/QT7-1_Update_Reference/QT7-1_Update_Reference.pdf
 #   21) Francois Bonzon private communication
+#   22) https://developer.apple.com/library/mac/documentation/QuickTime/QTFF/Metadata/Metadata.html
 #------------------------------------------------------------------------------
 
 package Image::ExifTool::QuickTime;
@@ -39,8 +40,9 @@ use strict;
 use vars qw($VERSION $AUTOLOAD);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
+use Image::ExifTool::GPS;
 
-$VERSION = '1.88';
+$VERSION = '2.02';
 
 sub FixWrongFormat($);
 sub ProcessMOV($$;$);
@@ -62,6 +64,7 @@ sub WriteMOV($$);
 my %mimeLookup = (
    '3G2' => 'video/3gpp2',
    '3GP' => 'video/3gpp',
+    AAX  => 'audio/vnd.audible.aax',
     DVB  => 'video/vnd.dvb.file',
     F4A  => 'audio/mp4',
     F4B  => 'audio/mp4',
@@ -94,6 +97,7 @@ my %ftypLookup = (
     '3gp6' => '3GPP Media (.3GP) Release 6 Progressive Download', # video/3gpp
     '3gp6' => '3GPP Media (.3GP) Release 6 Streaming Servers', # video/3gpp
     '3gs7' => '3GPP Media (.3GP) Release 7 Streaming Servers', # video/3gpp
+    'aax ' => 'Audible Enhanced Audiobook (.AAX)', #PH
     'avc1' => 'MP4 Base w/ AVC ext [ISO 14496-12:2005]', # video/mp4
     'CAEP' => 'Canon Digital Camera',
     'caqv' => 'Casio Digital Camera',
@@ -176,7 +180,7 @@ my %timeInfo = (
     # so assume a time zero of Jan 1, 1970 if the date is before this
     RawConv => q{
         my $offset = (66 * 365 + 17) * 24 * 3600;
-        return $val - $offset if $val >= $offset;
+        return $val - $offset if $val >= $offset or $$self{OPTIONS}{QuickTimeUTC};
         $self->WarnOnce('Patched incorrect time zero for QuickTime date/time tag',1) if $val;
         return $val;
     },
@@ -195,6 +199,11 @@ my %timeInfo = (
 my %durationInfo = (
     ValueConv => '$$self{TimeScale} ? $val / $$self{TimeScale} : $val',
     PrintConv => '$$self{TimeScale} ? ConvertDuration($val) : $val',
+);
+# handle unknown tags
+my %unknownInfo = (
+    Unknown => 1,
+    ValueConv => '$val =~ /^([\x20-\x7e]*)\0*$/ ? $1 : \$val',
 );
 # parsing for most of the 3gp udta language text boxes
 my %langText = (
@@ -296,9 +305,9 @@ my %graphicsMode = (
         stored as UTC.  Unfortunately, digital cameras often store local time values
         instead (presumably because they don't know the time zone).  For this
         reason, by default ExifTool does not assume a time zone for these values.
-        However, if the QuickTimeUTC option is set via the API or the ExifTool
-        configuration file, then ExifTool will assume these values are properly
-        stored as UTC, and will convert them to local time when extracting.
+        However, if the QuickTimeUTC API option is set, then ExifTool will assume
+        these values are properly stored as UTC, and will convert them to local time
+        when extracting.
 
         See
         L<http://developer.apple.com/mac/library/documentation/QuickTime/QTFF/QTFFChap1/qtff1.html>
@@ -347,10 +356,12 @@ my %graphicsMode = (
     },
     PICT => {
         Name => 'PreviewPICT',
+        Groups => { 2 => 'Preview' },
         Binary => 1,
     },
     pict => { #8
         Name => 'PreviewPICT',
+        Groups => { 2 => 'Preview' },
         Binary => 1,
     },
     moov => {
@@ -396,8 +407,7 @@ my %graphicsMode = (
         # "\x98\x7f\xa3\xdf\x2a\x85\x43\xc0\x8f\x8f\xd9\x7c\x47\x1e\x8e\xea" - unknown data in Flip videos
         { #8
             Name => 'UUID-Unknown',
-            Unknown => 1,
-            Binary => 1,
+            %unknownInfo,
         },
     ],
     _htc => {
@@ -410,7 +420,7 @@ my %graphicsMode = (
     },
     thum => { #PH
         Name => 'ThumbnailImage',
-        Groups => { 2 => 'Image' },
+        Groups => { 2 => 'Preview' },
         Binary => 1,
     },
     ardt => { #PH
@@ -611,12 +621,100 @@ my %graphicsMode = (
         SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::CleanAperture' },
     },
     # avcC - AVC configuration (ref http://thompsonng.blogspot.ca/2010/11/mp4-file-format-part-2.html)
+    # hvcC - HEVC configuration
     # svcC - 7 bytes: 00 00 00 00 ff e0 00
     # esds - elementary stream descriptor
     # d263
     gama => { Name => 'Gamma', Format => 'fixed32u' },
     # mjqt - default quantization table for MJPEG
     # mjht - default Huffman table for MJPEG
+#
+# spherical video v2 stuff (untested)
+#
+    st3d => {
+        Name => 'Stereoscopic3D',
+        Format => 'int8u',
+        ValueConv => '$val =~ s/.* //; $val', # (remove leading version/flags bytes?)
+        PrintConv => {
+            0 => 'Monoscopic',
+            1 => 'Stereoscopic Top-Bottom',
+            2 => 'Stereoscopic Left-Right',
+        },
+    },
+    sv3d => {
+        Name => 'SphericalVideo',
+        SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::sv3d' },
+    },
+);
+
+# 'sv3d' atom information (ref https://github.com/google/spatial-media/blob/master/docs/spherical-video-v2-rfc.md)
+%Image::ExifTool::QuickTime::sv3d = (
+    PROCESS_PROC => \&ProcessMOV,
+    GROUPS => { 2 => 'Video' },
+    NOTES => q{
+        Tags defined by the Spherical Video V2 specification (see
+        https://github.com/google/spatial-media/blob/master/docs/spherical-video-v2-rfc.md).
+    },
+    svhd => {
+        Name => 'MetadataSource',
+        Format => 'undef',
+        ValueConv => '$val=~tr/\0//d; $val', # (remove version/flags? and terminator?)
+    },
+    proj => {
+        Name => 'Projection',
+        SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::proj' },
+    },
+);
+
+# 'proj' atom information (ref https://github.com/google/spatial-media/blob/master/docs/spherical-video-v2-rfc.md)
+%Image::ExifTool::QuickTime::proj = (
+    PROCESS_PROC => \&ProcessMOV,
+    GROUPS => { 2 => 'Video' },
+    prhd => {
+        Name => 'ProjectionHeader',
+        SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::prhd' },
+    },
+    cbmp => {
+        Name => 'CubemapProj',
+        SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::cbmp' },
+    },
+    equi => {
+        Name => 'EquirectangularProj',
+        SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::equi' },
+    },
+);
+
+# 'prhd' atom information (ref https://github.com/google/spatial-media/blob/master/docs/spherical-video-v2-rfc.md)
+%Image::ExifTool::QuickTime::prhd = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 2 => 'Video' },
+    FORMAT => 'fixed32s',
+    # 0 - version (high 8 bits) / flags (low 24 bits)
+    1 => 'PoseYawDegrees',
+    2 => 'PosePitchDegrees',
+    3 => 'PoseRollDegrees',
+);
+
+# 'cbmp' atom information (ref https://github.com/google/spatial-media/blob/master/docs/spherical-video-v2-rfc.md)
+%Image::ExifTool::QuickTime::cbmp = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 2 => 'Video' },
+    FORMAT => 'int32u',
+    # 0 - version (high 8 bits) / flags (low 24 bits)
+    1 => 'Layout',
+    2 => 'Padding',
+);
+
+# 'equi' atom information (ref https://github.com/google/spatial-media/blob/master/docs/spherical-video-v2-rfc.md)
+%Image::ExifTool::QuickTime::equi = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 2 => 'Video' },
+    FORMAT => 'int32u', # (actually 0.32 fixed point)
+    # 0 - version (high 8 bits) / flags (low 24 bits)
+    1 => { Name => 'ProjectionBoundsTop',   ValueConv => '$val / 4294967296' },
+    2 => { Name => 'ProjectionBoundsBottom',ValueConv => '$val / 4294967296' },
+    3 => { Name => 'ProjectionBoundsLeft',  ValueConv => '$val / 4294967296' },
+    4 => { Name => 'ProjectionBoundsRight', ValueConv => '$val / 4294967296' },
 );
 
 # 'btrt' atom information (ref http://lists.freedesktop.org/archives/gstreamer-commits/2011-October/054459.html)
@@ -645,6 +743,7 @@ my %graphicsMode = (
 %Image::ExifTool::QuickTime::Preview = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
     WRITE_PROC => \&Image::ExifTool::WriteBinaryData,
+    CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
     GROUPS => { 2 => 'Image' },
     FORMAT => 'int16u',
     0 => {
@@ -705,8 +804,7 @@ my %graphicsMode = (
         },
         {
             Name => 'UUID-Unknown',
-            Unknown => 1,
-            Binary => 1,
+            %unknownInfo,
         },
     ],
     cmov => {
@@ -727,6 +825,7 @@ my %graphicsMode = (
 %Image::ExifTool::QuickTime::MovieHeader = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
     WRITE_PROC => \&Image::ExifTool::WriteBinaryData,
+    CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
     GROUPS => { 2 => 'Video' },
     FORMAT => 'int32u',
     DATAMEMBER => [ 0, 1, 2, 3, 4 ],
@@ -826,10 +925,18 @@ my %graphicsMode = (
                 Start => 16,
             },
         },
+        { #https://github.com/google/spatial-media/blob/master/docs/spherical-video-rfc.md
+            Name => 'SphericalVideoXML',
+            Condition => '$$valPt=~/^\xff\xcc\x82\x63\xf8\x55\x4a\x93\x88\x14\x58\x7a\x02\x52\x1f\xdd/',
+            Flags => [ 'Binary', 'BlockExtract' ],
+            SubDirectory => {
+                TagTable => 'Image::ExifTool::XMP::Main',
+                Start => 16,
+            },
+        },
         {
             Name => 'UUID-Unknown',
-            Unknown => 1,
-            Binary => 1,
+            %unknownInfo,
         },
     ],
     # edts - edits --> contains elst (edit list)
@@ -844,6 +951,7 @@ my %graphicsMode = (
 %Image::ExifTool::QuickTime::TrackHeader = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
     WRITE_PROC => \&Image::ExifTool::WriteBinaryData,
+    CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
     GROUPS => { 1 => 'Track#', 2 => 'Video' },
     FORMAT => 'int32u',
     DATAMEMBER => [ 0, 1, 2, 5 ],
@@ -990,6 +1098,22 @@ my %graphicsMode = (
         ValueConv => \&ConvertISO6709,
         PrintConv => \&PrintGPSCoordinates,
     },
+    # \xa9 tags written by DJI Phantom 3: (ref PH)
+    "\xa9xsp" => 'SpeedX', #PH (guess)
+    "\xa9ysp" => 'SpeedY', #PH (guess)
+    "\xa9zsp" => 'SpeedZ', #PH (guess)
+    "\xa9fpt" => 'Pitch', #PH
+    "\xa9fyw" => 'Yaw', #PH
+    "\xa9frl" => 'Roll', #PH
+    "\xa9gpt" => 'CameraPitch', #PH
+    "\xa9gyw" => 'CameraYaw', #PH
+    "\xa9grl" => 'CameraRoll', #PH
+    # and the following entries don't have the proper 4-byte header for \xa9 tags:
+    "\xa9dji" => { Name => 'UserData_dji', Format => 'undef', Binary => 1, Unknown => 1, Hidden => 1 },
+    "\xa9res" => { Name => 'UserData_res', Format => 'undef', Binary => 1, Unknown => 1, Hidden => 1 },
+    "\xa9uid" => { Name => 'UserData_uid', Format => 'undef', Binary => 1, Unknown => 1, Hidden => 1 },
+    "\xa9mdl" => { Name => 'Model',        Format => 'string', Notes => 'non-standard-format DJI tag' },
+    # end DJI tags
     name => 'Name',
     WLOC => {
         Name => 'WindowLocation',
@@ -1375,8 +1499,19 @@ my %graphicsMode = (
             ByteOrder => 'LittleEndian',
         },
     },
-    # ---- GoPro ----
-    GoPr => 'GoProType', #PH
+    # ---- GoPro ---- (ref PH)
+    GoPr => 'GoProType', # (Hero3+)
+    FIRM => 'FirmwareVersion', # (Hero4)
+    LENS => 'LensSerialNumber', # (Hero4)
+    CAME => { # (Hero4)
+        Name => 'SerialNumberHash',
+        Description => 'Camera Serial Number Hash',
+        ValueConv => 'unpack("H*",$val)',
+    },
+    # SETT? 12 bytes (Hero4)
+    # MUID? 32 bytes (Hero4, starts with serial number hash)
+    # HMMT? 404 bytes (Hero4, all zero)
+    # free (all zero)
     # --- HTC ----
     htcb => {
         Name => 'HTCBinary',
@@ -1457,13 +1592,16 @@ my %graphicsMode = (
         },{ #17 (format is in bytes 3-7)
             Name => 'ThumbnailImage',
             Condition => '$$valPt =~ /^.{8}\xff\xd8\xff\xdb/s',
+            Groups => { 2 => 'Preview' },
             ValueConv => 'substr($val, 8)',
         },{ #17 (format is in bytes 3-7)
             Name => 'ThumbnailPNG',
             Condition => '$$valPt =~ /^.{8}\x89PNG\r\n\x1a\n/s',
+            Groups => { 2 => 'Preview' },
             ValueConv => 'substr($val, 8)',
         },{
             Name => 'UnknownThumbnail',
+            Groups => { 2 => 'Preview' },
             Binary => 1,
         },
     ],
@@ -1505,6 +1643,7 @@ my %graphicsMode = (
     # ---- Ricoh ----
     RTHU => { #PH (GR)
         Name => 'PreviewImage',
+        Groups => { 2 => 'Preview' },
         RawConv => '$self->ValidateImage(\$val, $tag)',
     },
     RMKN => { #PH (GR)
@@ -1551,6 +1690,11 @@ my %graphicsMode = (
     albr => { Name => 'AlbumArtist', Groups => { 2 => 'Author' } },
     cvru => 'CoverURI',
     lrcu => 'LyricsURI',
+
+    tags => {   # found in Audible .m4b audio books (ref PH)
+        Name => 'Audible_tags',
+        SubDirectory => { TagTable => 'Image::ExifTool::Audible::tags' },
+    },
 );
 
 # Unknown information stored in HTC One (M8) videos - PH
@@ -1906,8 +2050,8 @@ my %graphicsMode = (
         Name => 'iTunesInfo',
         SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::iTunesInfo' },
     },
-    aART => 'AlbumArtist',
-    covr => 'CoverArt',
+    aART => { Name => 'AlbumArtist', Groups => { 2 => 'Author' } },
+    covr => { Name => 'CoverArt',    Groups => { 2 => 'Preview' } },
     cpil => { #10
         Name => 'Compilation',
         PrintConv => { 0 => 'No', 1 => 'Yes' },
@@ -1972,7 +2116,7 @@ my %graphicsMode = (
         Name => 'GenreID',
         Format => 'int32u',
         SeparateTable => 1,
-        PrintConv => { #21 (based on http://www.apple.com/itunes/affiliates/resources/documentation/genre-mapping.html)
+        PrintConv => { #21 (based on https://affiliate.itunes.apple.com/resources/documentation/genre-mapping/)
             2 => 'Music|Blues',
             3 => 'Music|Comedy',
             4 => "Music|Children's Music",
@@ -2135,9 +2279,9 @@ my %graphicsMode = (
             1118 => 'Music|Latino|Raices', # (Ra&iacute;ces)
             1119 => 'Music|Latino|Latin Urban',
             1120 => 'Music|Latino|Baladas y Boleros',
-            1121 => 'Music|Latino|Alternativo & Rock Latino',
+            1121 => 'Music|Latino|Rock y Alternativo',
             1122 => 'Music|Brazilian',
-            1123 => 'Music|Latino|Regional Mexicano',
+            1123 => 'Music|Latino|Musica Mexicana', # (M&uacute;sica Mexicana)
             1124 => 'Music|Latino|Salsa y Tropical',
             1125 => 'Music|New Age|Environmental',
             1126 => 'Music|New Age|Healing',
@@ -2221,7 +2365,7 @@ my %graphicsMode = (
             1206 => 'Music|World|South Africa',
             1207 => 'Music|Jazz|Hard Bop',
             1208 => 'Music|Jazz|Trad Jazz',
-            1209 => 'Music|Jazz|Cool',
+            1209 => 'Music|Jazz|Cool Jazz',
             1210 => 'Music|Blues|Acoustic Blues',
             1211 => 'Music|Classical|High Classical',
             1220 => 'Music|Brazilian|Axe', # (Ax&eacute;)
@@ -2594,7 +2738,7 @@ my %graphicsMode = (
             1826 => 'Music Videos|Jazz|Avant-Garde Jazz',
             1828 => 'Music Videos|Jazz|Bop',
             1829 => 'Music Videos|Jazz|Contemporary Jazz',
-            1830 => 'Music Videos|Jazz|Cool',
+            1830 => 'Music Videos|Jazz|Cool Jazz',
             1831 => 'Music Videos|Jazz|Crossover Jazz',
             1832 => 'Music Videos|Jazz|Dixieland',
             1833 => 'Music Videos|Jazz|Fusion',
@@ -2604,14 +2748,14 @@ my %graphicsMode = (
             1837 => 'Music Videos|Jazz|Ragtime',
             1838 => 'Music Videos|Jazz|Smooth Jazz',
             1839 => 'Music Videos|Jazz|Trad Jazz',
-            1840 => 'Music Videos|Latin|Alternativo & Rock Latino',
+            1840 => 'Music Videos|Latin|Alternative & Rock in Spanish',
             1841 => 'Music Videos|Latin|Baladas y Boleros',
             1842 => 'Music Videos|Latin|Contemporary Latin',
             1843 => 'Music Videos|Latin|Latin Jazz',
             1844 => 'Music Videos|Latin|Latin Urban',
-            1845 => 'Music Videos|Latin|Pop Latino',
+            1845 => 'Music Videos|Latin|Pop in Spanish',
             1846 => 'Music Videos|Latin|Raices',
-            1847 => 'Music Videos|Latin|Regional Mexicano',
+            1847 => 'Music Videos|Latin|Musica Mexicana', # (M&uacute;sica Mexicana)
             1848 => 'Music Videos|Latin|Salsa y Tropical',
             1849 => 'Music Videos|New Age|Healing',
             1850 => 'Music Videos|New Age|Meditation',
@@ -2712,6 +2856,7 @@ my %graphicsMode = (
             1947 => 'Music Videos|Alternative|Indie Pop',
             1948 => 'Music Videos|New Age|Yoga',
             1949 => 'Music Videos|Pop|Tribute',
+            1950 => 'Music Videos|Pop|Shows',
             4000 => 'TV Shows|Comedy',
             4001 => 'TV Shows|Drama',
             4002 => 'TV Shows|Animation',
@@ -2778,9 +2923,11 @@ my %graphicsMode = (
             6017 => 'App Store|Education',
             6018 => 'App Store|Books',
             6020 => 'App Store|Medical',
-            6021 => 'App Store|Newsstand',
+            6021 => 'App Store|Magazines & Newspapers',
             6022 => 'App Store|Catalogs',
             6023 => 'App Store|Food & Drink',
+            6024 => 'App Store|Shopping',
+            6025 => 'App Store|Stickers',
             7001 => 'App Store|Games|Action',
             7002 => 'App Store|Games|Adventure',
             7003 => 'App Store|Games|Arcade',
@@ -2982,7 +3129,7 @@ my %graphicsMode = (
             8201 => 'Tones|Ringtones|Jazz|Big Band',
             8202 => 'Tones|Ringtones|Jazz|Bop',
             8203 => 'Tones|Ringtones|Jazz|Contemporary Jazz',
-            8204 => 'Tones|Ringtones|Jazz|Cool',
+            8204 => 'Tones|Ringtones|Jazz|Cool Jazz',
             8205 => 'Tones|Ringtones|Jazz|Crossover Jazz',
             8206 => 'Tones|Ringtones|Jazz|Dixieland',
             8207 => 'Tones|Ringtones|Jazz|Fusion',
@@ -2999,14 +3146,14 @@ my %graphicsMode = (
             8218 => 'Tones|Ringtones|Korean|Korean Trad Instrumental',
             8219 => 'Tones|Ringtones|Korean|Korean Trad Song',
             8220 => 'Tones|Ringtones|Korean|Korean Trad Theater',
-            8221 => 'Tones|Ringtones|Latin|Alternativo & Rock Latino',
+            8221 => 'Tones|Ringtones|Latin|Alternative & Rock in Spanish',
             8222 => 'Tones|Ringtones|Latin|Baladas y Boleros',
             8223 => 'Tones|Ringtones|Latin|Contemporary Latin',
             8224 => 'Tones|Ringtones|Latin|Latin Jazz',
             8225 => 'Tones|Ringtones|Latin|Latin Urban',
-            8226 => 'Tones|Ringtones|Latin|Pop Latino',
+            8226 => 'Tones|Ringtones|Latin|Pop in Spanish',
             8227 => 'Tones|Ringtones|Latin|Raices',
-            8228 => 'Tones|Ringtones|Latin|Regional Mexicano',
+            8228 => 'Tones|Ringtones|Latin|Musica Mexicana', # (M&uacute;sica Mexicana)
             8229 => 'Tones|Ringtones|Latin|Salsa y Tropical',
             8230 => 'Tones|Ringtones|Marching Bands',
             8231 => 'Tones|Ringtones|New Age|Healing',
@@ -3144,6 +3291,7 @@ my %graphicsMode = (
             8364 => 'Tones|Ringtones|Alternative|Indie Pop',
             8365 => 'Tones|Ringtones|New Age|Yoga',
             8366 => 'Tones|Ringtones|Pop|Tribute',
+            8367 => 'Tones|Ringtones|Pop|Shows',
             9002 => 'Books|Nonfiction',
             9003 => 'Books|Romance',
             9004 => 'Books|Travel & Adventure',
@@ -3223,9 +3371,9 @@ my %graphicsMode = (
             10053 => 'Books|Mysteries & Thrillers|Short Stories',
             10054 => 'Books|Mysteries & Thrillers|British Detectives',
             10055 => 'Books|Mysteries & Thrillers|Women Sleuths',
-            10056 => 'Books|Romance|Erotica',
+            10056 => 'Books|Romance|Erotic Romance',
             10057 => 'Books|Romance|Contemporary',
-            10058 => 'Books|Romance|Fantasy, Futuristic & Ghost',
+            10058 => 'Books|Romance|Paranormal',
             10059 => 'Books|Romance|Historical',
             10060 => 'Books|Romance|Short Stories',
             10061 => 'Books|Romance|Suspense',
@@ -3357,7 +3505,6 @@ my %graphicsMode = (
             11038 => 'Books|Biographies & Memoirs|Sports',
             11039 => 'Books|Biographies & Memoirs|Women',
             11040 => 'Books|Romance|New Adult',
-            11041 => 'Books|Romance|Paranormal',
             11042 => 'Books|Romance|Romantic Comedy',
             11043 => 'Books|Romance|Gay & Lesbian',
             11044 => 'Books|Fiction & Literature|Essays',
@@ -3401,6 +3548,226 @@ my %graphicsMode = (
             11083 => 'Books|Nonfiction|Philosophy|Political',
             11084 => 'Books|Nonfiction|Philosophy|Religion',
             11085 => 'Books|Reference|Manuals',
+            11086 => 'Books|Kids',
+            11087 => 'Books|Kids|Animals',
+            11088 => 'Books|Kids|Basic Concepts',
+            11089 => 'Books|Kids|Basic Concepts|Alphabet',
+            11090 => 'Books|Kids|Basic Concepts|Body',
+            11091 => 'Books|Kids|Basic Concepts|Colors',
+            11092 => 'Books|Kids|Basic Concepts|Counting & Numbers',
+            11093 => 'Books|Kids|Basic Concepts|Date & Time',
+            11094 => 'Books|Kids|Basic Concepts|General',
+            11095 => 'Books|Kids|Basic Concepts|Money',
+            11096 => 'Books|Kids|Basic Concepts|Opposites',
+            11097 => 'Books|Kids|Basic Concepts|Seasons',
+            11098 => 'Books|Kids|Basic Concepts|Senses & Sensation',
+            11099 => 'Books|Kids|Basic Concepts|Size & Shape',
+            11100 => 'Books|Kids|Basic Concepts|Sounds',
+            11101 => 'Books|Kids|Basic Concepts|Words',
+            11102 => 'Books|Kids|Biography',
+            11103 => 'Books|Kids|Careers & Occupations',
+            11104 => 'Books|Kids|Computers & Technology',
+            11105 => 'Books|Kids|Cooking & Food',
+            11106 => 'Books|Kids|Arts & Entertainment',
+            11107 => 'Books|Kids|Arts & Entertainment|Art',
+            11108 => 'Books|Kids|Arts & Entertainment|Crafts',
+            11109 => 'Books|Kids|Arts & Entertainment|Music',
+            11110 => 'Books|Kids|Arts & Entertainment|Performing Arts',
+            11111 => 'Books|Kids|Family',
+            11112 => 'Books|Kids|Fiction',
+            11113 => 'Books|Kids|Fiction|Action & Adventure',
+            11114 => 'Books|Kids|Fiction|Animals',
+            11115 => 'Books|Kids|Fiction|Classics',
+            11116 => 'Books|Kids|Fiction|Comics & Graphic Novels',
+            11117 => 'Books|Kids|Fiction|Culture, Places & People',
+            11118 => 'Books|Kids|Fiction|Family & Relationships',
+            11119 => 'Books|Kids|Fiction|Fantasy',
+            11120 => 'Books|Kids|Fiction|Fairy Tales, Myths & Fables',
+            11121 => 'Books|Kids|Fiction|Favorite Characters',
+            11122 => 'Books|Kids|Fiction|Historical',
+            11123 => 'Books|Kids|Fiction|Holidays & Celebrations',
+            11124 => 'Books|Kids|Fiction|Monsters & Ghosts',
+            11125 => 'Books|Kids|Fiction|Mysteries',
+            11126 => 'Books|Kids|Fiction|Nature',
+            11127 => 'Books|Kids|Fiction|Religion',
+            11128 => 'Books|Kids|Fiction|Sci-Fi',
+            11129 => 'Books|Kids|Fiction|Social Issues',
+            11130 => 'Books|Kids|Fiction|Sports & Recreation',
+            11131 => 'Books|Kids|Fiction|Transportation',
+            11132 => 'Books|Kids|Games & Activities',
+            11133 => 'Books|Kids|General Nonfiction',
+            11134 => 'Books|Kids|Health',
+            11135 => 'Books|Kids|History',
+            11136 => 'Books|Kids|Holidays & Celebrations',
+            11137 => 'Books|Kids|Holidays & Celebrations|Birthdays',
+            11138 => 'Books|Kids|Holidays & Celebrations|Christmas & Advent',
+            11139 => 'Books|Kids|Holidays & Celebrations|Easter & Lent',
+            11140 => 'Books|Kids|Holidays & Celebrations|General',
+            11141 => 'Books|Kids|Holidays & Celebrations|Halloween',
+            11142 => 'Books|Kids|Holidays & Celebrations|Hanukkah',
+            11143 => 'Books|Kids|Holidays & Celebrations|Other',
+            11144 => 'Books|Kids|Holidays & Celebrations|Passover',
+            11145 => 'Books|Kids|Holidays & Celebrations|Patriotic Holidays',
+            11146 => 'Books|Kids|Holidays & Celebrations|Ramadan',
+            11147 => 'Books|Kids|Holidays & Celebrations|Thanksgiving',
+            11148 => "Books|Kids|Holidays & Celebrations|Valentine's Day",
+            11149 => 'Books|Kids|Humor',
+            11150 => 'Books|Kids|Humor|Jokes & Riddles',
+            11151 => 'Books|Kids|Poetry',
+            11152 => 'Books|Kids|Learning to Read',
+            11153 => 'Books|Kids|Learning to Read|Chapter Books',
+            11154 => 'Books|Kids|Learning to Read|Early Readers',
+            11155 => 'Books|Kids|Learning to Read|Intermediate Readers',
+            11156 => 'Books|Kids|Nursery Rhymes',
+            11157 => 'Books|Kids|Government',
+            11158 => 'Books|Kids|Reference',
+            11159 => 'Books|Kids|Religion',
+            11160 => 'Books|Kids|Science & Nature',
+            11161 => 'Books|Kids|Social Issues',
+            11162 => 'Books|Kids|Social Studies',
+            11163 => 'Books|Kids|Sports & Recreation',
+            11164 => 'Books|Kids|Transportation',
+            11165 => 'Books|Young Adult',
+            11166 => 'Books|Young Adult|Animals',
+            11167 => 'Books|Young Adult|Biography',
+            11168 => 'Books|Young Adult|Careers & Occupations',
+            11169 => 'Books|Young Adult|Computers & Technology',
+            11170 => 'Books|Young Adult|Cooking & Food',
+            11171 => 'Books|Young Adult|Arts & Entertainment',
+            11172 => 'Books|Young Adult|Arts & Entertainment|Art',
+            11173 => 'Books|Young Adult|Arts & Entertainment|Crafts',
+            11174 => 'Books|Young Adult|Arts & Entertainment|Music',
+            11175 => 'Books|Young Adult|Arts & Entertainment|Performing Arts',
+            11176 => 'Books|Young Adult|Family',
+            11177 => 'Books|Young Adult|Fiction',
+            11178 => 'Books|Young Adult|Fiction|Action & Adventure',
+            11179 => 'Books|Young Adult|Fiction|Animals',
+            11180 => 'Books|Young Adult|Fiction|Classics',
+            11181 => 'Books|Young Adult|Fiction|Comics & Graphic Novels',
+            11182 => 'Books|Young Adult|Fiction|Culture, Places & People',
+            11183 => 'Books|Young Adult|Fiction|Dystopian',
+            11184 => 'Books|Young Adult|Fiction|Family & Relationships',
+            11185 => 'Books|Young Adult|Fiction|Fantasy',
+            11186 => 'Books|Young Adult|Fiction|Fairy Tales, Myths & Fables',
+            11187 => 'Books|Young Adult|Fiction|Favorite Characters',
+            11188 => 'Books|Young Adult|Fiction|Historical',
+            11189 => 'Books|Young Adult|Fiction|Holidays & Celebrations',
+            11190 => 'Books|Young Adult|Fiction|Horror, Monsters & Ghosts',
+            11191 => 'Books|Young Adult|Fiction|Crime & Mystery',
+            11192 => 'Books|Young Adult|Fiction|Nature',
+            11193 => 'Books|Young Adult|Fiction|Religion',
+            11194 => 'Books|Young Adult|Fiction|Romance',
+            11195 => 'Books|Young Adult|Fiction|Sci-Fi',
+            11196 => 'Books|Young Adult|Fiction|Coming of Age',
+            11197 => 'Books|Young Adult|Fiction|Sports & Recreation',
+            11198 => 'Books|Young Adult|Fiction|Transportation',
+            11199 => 'Books|Young Adult|Games & Activities',
+            11200 => 'Books|Young Adult|General Nonfiction',
+            11201 => 'Books|Young Adult|Health',
+            11202 => 'Books|Young Adult|History',
+            11203 => 'Books|Young Adult|Holidays & Celebrations',
+            11204 => 'Books|Young Adult|Holidays & Celebrations|Birthdays',
+            11205 => 'Books|Young Adult|Holidays & Celebrations|Christmas & Advent',
+            11206 => 'Books|Young Adult|Holidays & Celebrations|Easter & Lent',
+            11207 => 'Books|Young Adult|Holidays & Celebrations|General',
+            11208 => 'Books|Young Adult|Holidays & Celebrations|Halloween',
+            11209 => 'Books|Young Adult|Holidays & Celebrations|Hanukkah',
+            11210 => 'Books|Young Adult|Holidays & Celebrations|Other',
+            11211 => 'Books|Young Adult|Holidays & Celebrations|Passover',
+            11212 => 'Books|Young Adult|Holidays & Celebrations|Patriotic Holidays',
+            11213 => 'Books|Young Adult|Holidays & Celebrations|Ramadan',
+            11214 => 'Books|Young Adult|Holidays & Celebrations|Thanksgiving',
+            11215 => "Books|Young Adult|Holidays & Celebrations|Valentine's Day",
+            11216 => 'Books|Young Adult|Humor',
+            11217 => 'Books|Young Adult|Humor|Jokes & Riddles',
+            11218 => 'Books|Young Adult|Poetry',
+            11219 => 'Books|Young Adult|Politics & Government',
+            11220 => 'Books|Young Adult|Reference',
+            11221 => 'Books|Young Adult|Religion',
+            11222 => 'Books|Young Adult|Science & Nature',
+            11223 => 'Books|Young Adult|Coming of Age',
+            11224 => 'Books|Young Adult|Social Studies',
+            11225 => 'Books|Young Adult|Sports & Recreation',
+            11226 => 'Books|Young Adult|Transportation',
+            11227 => 'Books|Communications & Media',
+            11228 => 'Books|Military & Warfare',
+            11229 => 'Books|Romance|Inspirational',
+            11231 => 'Books|Romance|Holiday',
+            11232 => 'Books|Romance|Wholesome',
+            11233 => 'Books|Romance|Military',
+            11234 => 'Books|Arts & Entertainment|Art History',
+            11236 => 'Books|Arts & Entertainment|Design',
+            11243 => 'Books|Business & Personal Finance|Accounting',
+            11244 => 'Books|Business & Personal Finance|Hospitality',
+            11245 => 'Books|Business & Personal Finance|Real Estate',
+            11246 => 'Books|Humor|Jokes & Riddles',
+            11247 => 'Books|Religion & Spirituality|Comparative Religion',
+            11255 => 'Books|Cookbooks, Food & Wine|Culinary Arts',
+            11259 => 'Books|Mysteries & Thrillers|Cozy',
+            11260 => 'Books|Politics & Current Events|Current Events',
+            11261 => 'Books|Politics & Current Events|Foreign Policy & International Relations',
+            11262 => 'Books|Politics & Current Events|Local Government',
+            11263 => 'Books|Politics & Current Events|National Government',
+            11264 => 'Books|Politics & Current Events|Political Science',
+            11265 => 'Books|Politics & Current Events|Public Administration',
+            11266 => 'Books|Politics & Current Events|World Affairs',
+            11273 => 'Books|Nonfiction|Family & Relationships|Family & Childcare',
+            11274 => 'Books|Nonfiction|Family & Relationships|Love & Romance',
+            11275 => 'Books|Sci-Fi & Fantasy|Fantasy|Urban',
+            11276 => 'Books|Reference|Foreign Languages|Arabic',
+            11277 => 'Books|Reference|Foreign Languages|Bilingual Editions',
+            11278 => 'Books|Reference|Foreign Languages|African Languages',
+            11279 => 'Books|Reference|Foreign Languages|Ancient Languages',
+            11280 => 'Books|Reference|Foreign Languages|Chinese',
+            11281 => 'Books|Reference|Foreign Languages|English',
+            11282 => 'Books|Reference|Foreign Languages|French',
+            11283 => 'Books|Reference|Foreign Languages|German',
+            11284 => 'Books|Reference|Foreign Languages|Hebrew',
+            11285 => 'Books|Reference|Foreign Languages|Hindi',
+            11286 => 'Books|Reference|Foreign Languages|Italian',
+            11287 => 'Books|Reference|Foreign Languages|Japanese',
+            11288 => 'Books|Reference|Foreign Languages|Korean',
+            11289 => 'Books|Reference|Foreign Languages|Linguistics',
+            11290 => 'Books|Reference|Foreign Languages|Other Languages',
+            11291 => 'Books|Reference|Foreign Languages|Portuguese',
+            11292 => 'Books|Reference|Foreign Languages|Russian',
+            11293 => 'Books|Reference|Foreign Languages|Spanish',
+            11294 => 'Books|Reference|Foreign Languages|Speech Pathology',
+            11295 => 'Books|Science & Nature|Mathematics|Advanced Mathematics',
+            11296 => 'Books|Science & Nature|Mathematics|Algebra',
+            11297 => 'Books|Science & Nature|Mathematics|Arithmetic',
+            11298 => 'Books|Science & Nature|Mathematics|Calculus',
+            11299 => 'Books|Science & Nature|Mathematics|Geometry',
+            11300 => 'Books|Science & Nature|Mathematics|Statistics',
+            11301 => 'Books|Professional & Technical|Medical|Veterinary',
+            11302 => 'Books|Professional & Technical|Medical|Neuroscience',
+            11303 => 'Books|Professional & Technical|Medical|Immunology',
+            11304 => 'Books|Professional & Technical|Medical|Nursing',
+            11305 => 'Books|Professional & Technical|Medical|Pharmacology & Toxicology',
+            11306 => 'Books|Professional & Technical|Medical|Anatomy & Physiology',
+            11307 => 'Books|Professional & Technical|Medical|Dentistry',
+            11308 => 'Books|Professional & Technical|Medical|Emergency Medicine',
+            11309 => 'Books|Professional & Technical|Medical|Genetics',
+            11310 => 'Books|Professional & Technical|Medical|Psychiatry',
+            11311 => 'Books|Professional & Technical|Medical|Radiology',
+            11312 => 'Books|Professional & Technical|Medical|Alternative Medicine',
+            11317 => 'Books|Nonfiction|Philosophy|Political Philosophy',
+            11319 => 'Books|Nonfiction|Philosophy|Philosophy of Language',
+            11320 => 'Books|Nonfiction|Philosophy|Philosophy of Religion',
+            11327 => 'Books|Nonfiction|Social Science|Sociology',
+            11329 => 'Books|Professional & Technical|Engineering|Aeronautics',
+            11330 => 'Books|Professional & Technical|Engineering|Chemical & Petroleum Engineering',
+            11331 => 'Books|Professional & Technical|Engineering|Civil Engineering',
+            11332 => 'Books|Professional & Technical|Engineering|Computer Science',
+            11333 => 'Books|Professional & Technical|Engineering|Electrical Engineering',
+            11334 => 'Books|Professional & Technical|Engineering|Environmental Engineering',
+            11335 => 'Books|Professional & Technical|Engineering|Mechanical Engineering',
+            11336 => 'Books|Professional & Technical|Engineering|Power Resources',
+            11337 => 'Books|Comics & Graphic Novels|Manga|Boys',
+            11338 => 'Books|Comics & Graphic Novels|Manga|Men',
+            11339 => 'Books|Comics & Graphic Novels|Manga|Girls',
+            11340 => 'Books|Comics & Graphic Novels|Manga|Women',
+            11341 => 'Books|Comics & Graphic Novels|Manga|Other',
             12001 => 'Mac App Store|Business',
             12002 => 'Mac App Store|Developer Tools',
             12003 => 'Mac App Store|Education',
@@ -3441,34 +3808,34 @@ my %graphicsMode = (
             12217 => 'Mac App Store|Games|Strategy',
             12218 => 'Mac App Store|Games|Trivia',
             12219 => 'Mac App Store|Games|Word',
-            13001 => 'App Store|Newsstand|News & Politics',
-            13002 => 'App Store|Newsstand|Fashion & Style',
-            13003 => 'App Store|Newsstand|Home & Garden',
-            13004 => 'App Store|Newsstand|Outdoors & Nature',
-            13005 => 'App Store|Newsstand|Sports & Leisure',
-            13006 => 'App Store|Newsstand|Automotive',
-            13007 => 'App Store|Newsstand|Arts & Photography',
-            13008 => 'App Store|Newsstand|Brides & Weddings',
-            13009 => 'App Store|Newsstand|Business & Investing',
-            13010 => "App Store|Newsstand|Children's Magazines",
-            13011 => 'App Store|Newsstand|Computers & Internet',
-            13012 => 'App Store|Newsstand|Cooking, Food & Drink',
-            13013 => 'App Store|Newsstand|Crafts & Hobbies',
-            13014 => 'App Store|Newsstand|Electronics & Audio',
-            13015 => 'App Store|Newsstand|Entertainment',
-            13017 => 'App Store|Newsstand|Health, Mind & Body',
-            13018 => 'App Store|Newsstand|History',
-            13019 => 'App Store|Newsstand|Literary Magazines & Journals',
-            13020 => "App Store|Newsstand|Men's Interest",
-            13021 => 'App Store|Newsstand|Movies & Music',
-            13023 => 'App Store|Newsstand|Parenting & Family',
-            13024 => 'App Store|Newsstand|Pets',
-            13025 => 'App Store|Newsstand|Professional & Trade',
-            13026 => 'App Store|Newsstand|Regional News',
-            13027 => 'App Store|Newsstand|Science',
-            13028 => 'App Store|Newsstand|Teens',
-            13029 => 'App Store|Newsstand|Travel & Regional',
-            13030 => "App Store|Newsstand|Women's Interest",
+            13001 => 'App Store|Magazines & Newspapers|News & Politics',
+            13002 => 'App Store|Magazines & Newspapers|Fashion & Style',
+            13003 => 'App Store|Magazines & Newspapers|Home & Garden',
+            13004 => 'App Store|Magazines & Newspapers|Outdoors & Nature',
+            13005 => 'App Store|Magazines & Newspapers|Sports & Leisure',
+            13006 => 'App Store|Magazines & Newspapers|Automotive',
+            13007 => 'App Store|Magazines & Newspapers|Arts & Photography',
+            13008 => 'App Store|Magazines & Newspapers|Brides & Weddings',
+            13009 => 'App Store|Magazines & Newspapers|Business & Investing',
+            13010 => "App Store|Magazines & Newspapers|Children's Magazines",
+            13011 => 'App Store|Magazines & Newspapers|Computers & Internet',
+            13012 => 'App Store|Magazines & Newspapers|Cooking, Food & Drink',
+            13013 => 'App Store|Magazines & Newspapers|Crafts & Hobbies',
+            13014 => 'App Store|Magazines & Newspapers|Electronics & Audio',
+            13015 => 'App Store|Magazines & Newspapers|Entertainment',
+            13017 => 'App Store|Magazines & Newspapers|Health, Mind & Body',
+            13018 => 'App Store|Magazines & Newspapers|History',
+            13019 => 'App Store|Magazines & Newspapers|Literary Magazines & Journals',
+            13020 => "App Store|Magazines & Newspapers|Men's Interest",
+            13021 => 'App Store|Magazines & Newspapers|Movies & Music',
+            13023 => 'App Store|Magazines & Newspapers|Parenting & Family',
+            13024 => 'App Store|Magazines & Newspapers|Pets',
+            13025 => 'App Store|Magazines & Newspapers|Professional & Trade',
+            13026 => 'App Store|Magazines & Newspapers|Regional News',
+            13027 => 'App Store|Magazines & Newspapers|Science',
+            13028 => 'App Store|Magazines & Newspapers|Teens',
+            13029 => 'App Store|Magazines & Newspapers|Travel & Regional',
+            13030 => "App Store|Magazines & Newspapers|Women's Interest",
             15000 => 'Textbooks|Arts & Entertainment',
             15001 => 'Textbooks|Arts & Entertainment|Art & Architecture',
             15002 => 'Textbooks|Arts & Entertainment|Art & Architecture|Urban Planning',
@@ -3683,8 +4050,8 @@ my %graphicsMode = (
             15211 => 'Textbooks|Religion & Spirituality|Spirituality',
             15212 => 'Textbooks|Romance',
             15213 => 'Textbooks|Romance|Contemporary',
-            15214 => 'Textbooks|Romance|Erotica',
-            15215 => 'Textbooks|Romance|Fantasy, Futuristic & Ghost',
+            15214 => 'Textbooks|Romance|Erotic Romance',
+            15215 => 'Textbooks|Romance|Paranormal',
             15216 => 'Textbooks|Romance|Historical',
             15217 => 'Textbooks|Romance|Short Stories',
             15218 => 'Textbooks|Romance|Suspense',
@@ -3782,6 +4149,21 @@ my %graphicsMode = (
             15310 => 'Textbooks|Travel & Adventure|Specialty Travel',
             15311 => 'Textbooks|Comics & Graphic Novels|Comics',
             15312 => 'Textbooks|Reference|Manuals',
+            16001 => 'App Store|Stickers|Emoji & Expressions',
+            16003 => 'App Store|Stickers|Animals & Nature',
+            16005 => 'App Store|Stickers|Art',
+            16006 => 'App Store|Stickers|Celebrations',
+            16007 => 'App Store|Stickers|Celebrities',
+            16008 => 'App Store|Stickers|Comics & Cartoons',
+            16009 => 'App Store|Stickers|Eating & Drinking',
+            16010 => 'App Store|Stickers|Gaming',
+            16014 => 'App Store|Stickers|Movies & TV',
+            16015 => 'App Store|Stickers|Music',
+            16017 => 'App Store|Stickers|People',
+            16019 => 'App Store|Stickers|Places & Objects',
+            16021 => 'App Store|Stickers|Sports & Activities',
+            16025 => 'App Store|Stickers|Kids & Family',
+            16026 => 'App Store|Stickers|Fashion',
             100000 => 'Music|Christian & Gospel',
             100001 => 'Music|Classical|Art Song',
             100002 => 'Music|Classical|Brass & Woodwinds',
@@ -3805,6 +4187,7 @@ my %graphicsMode = (
             100020 => 'Music|Alternative|Indie Pop',
             100021 => 'Music|New Age|Yoga',
             100022 => 'Music|Pop|Tribute',
+            100023 => 'Music|Pop|Shows',
             40000000 => 'iTunes U',
             40000001 => 'iTunes U|Business',
             40000002 => 'iTunes U|Business|Economics',
@@ -4027,6 +4410,8 @@ my %graphicsMode = (
             50000087 => 'Books|Comics & Graphic Novels|Manga|Sports',
             50000088 => 'Books|Fiction & Literature|Light Novels',
             50000089 => 'Books|Comics & Graphic Novels|Manga|Horror',
+            50000090 => 'Books|Comics & Graphic Novels|Comics',
+            50000091 => 'Books|Romance|Multicultural',
         },
     },
     grup => 'Grouping', #10
@@ -4061,161 +4446,161 @@ my %graphicsMode = (
         Format => 'int32u',
         SeparateTable => 1,
         PrintConv => { #21
-            143441 => 'United States', # USA
-            143442 => 'France', # FRA
-            143443 => 'Germany', # DEU
-            143444 => 'United Kingdom', # GBR
-            143445 => 'Austria', # AUT
-            143446 => 'Belgium', # BEL
-            143447 => 'Finland', # FIN
-            143448 => 'Greece', # GRC
-            143449 => 'Ireland', # IRL
-            143450 => 'Italy', # ITA
-            143451 => 'Luxembourg', # LUX
-            143452 => 'Netherlands', # NLD
-            143453 => 'Portugal', # PRT
-            143454 => 'Spain', # ESP
-            143455 => 'Canada', # CAN
-            143456 => 'Sweden', # SWE
-            143457 => 'Norway', # NOR
-            143458 => 'Denmark', # DNK
-            143459 => 'Switzerland', # CHE
-            143460 => 'Australia', # AUS
-            143461 => 'New Zealand', # NZL
-            143462 => 'Japan', # JPN
-            143463 => 'Hong Kong', # HKG
-            143464 => 'Singapore', # SGP
-            143465 => 'China', # CHN
-            143466 => 'Republic of Korea', # KOR
-            143467 => 'India', # IND
-            143468 => 'Mexico', # MEX
-            143469 => 'Russia', # RUS
-            143470 => 'Taiwan', # TWN
-            143471 => 'Vietnam', # VNM
-            143472 => 'South Africa', # ZAF
-            143473 => 'Malaysia', # MYS
-            143474 => 'Philippines', # PHL
-            143475 => 'Thailand', # THA
-            143476 => 'Indonesia', # IDN
-            143477 => 'Pakistan', # PAK
-            143478 => 'Poland', # POL
-            143479 => 'Saudi Arabia', # SAU
-            143480 => 'Turkey', # TUR
-            143481 => 'United Arab Emirates', # ARE
-            143482 => 'Hungary', # HUN
-            143483 => 'Chile', # CHL
-            143484 => 'Nepal', # NPL
-            143485 => 'Panama', # PAN
-            143486 => 'Sri Lanka', # LKA
-            143487 => 'Romania', # ROU
-            143489 => 'Czech Republic', # CZE
-            143491 => 'Israel', # ISR
-            143492 => 'Ukraine', # UKR
-            143493 => 'Kuwait', # KWT
-            143494 => 'Croatia', # HRV
-            143495 => 'Costa Rica', # CRI
-            143496 => 'Slovakia', # SVK
-            143497 => 'Lebanon', # LBN
-            143498 => 'Qatar', # QAT
-            143499 => 'Slovenia', # SVN
-            143501 => 'Colombia', # COL
-            143502 => 'Venezuela', # VEN
-            143503 => 'Brazil', # BRA
-            143504 => 'Guatemala', # GTM
-            143505 => 'Argentina', # ARG
-            143506 => 'El Salvador', # SLV
-            143507 => 'Peru', # PER
-            143508 => 'Dominican Republic', # DOM
-            143509 => 'Ecuador', # ECU
-            143510 => 'Honduras', # HND
-            143511 => 'Jamaica', # JAM
-            143512 => 'Nicaragua', # NIC
-            143513 => 'Paraguay', # PRY
-            143514 => 'Uruguay', # URY
-            143515 => 'Macau', # MAC
-            143516 => 'Egypt', # EGY
-            143517 => 'Kazakhstan', # KAZ
-            143518 => 'Estonia', # EST
-            143519 => 'Latvia', # LVA
-            143520 => 'Lithuania', # LTU
-            143521 => 'Malta', # MLT
-            143523 => 'Moldova', # MDA
-            143524 => 'Armenia', # ARM
-            143525 => 'Botswana', # BWA
-            143526 => 'Bulgaria', # BGR
-            143528 => 'Jordan', # JOR
-            143529 => 'Kenya', # KEN
-            143530 => 'Macedonia', # MKD
-            143531 => 'Madagascar', # MDG
-            143532 => 'Mali', # MLI
-            143533 => 'Mauritius', # MUS
-            143534 => 'Niger', # NER
-            143535 => 'Senegal', # SEN
-            143536 => 'Tunisia', # TUN
-            143537 => 'Uganda', # UGA
-            143538 => 'Anguilla', # AIA
-            143539 => 'Bahamas', # BHS
-            143540 => 'Antigua and Barbuda', # ATG
-            143541 => 'Barbados', # BRB
-            143542 => 'Bermuda', # BMU
-            143543 => 'British Virgin Islands', # VGB
-            143544 => 'Cayman Islands', # CYM
-            143545 => 'Dominica', # DMA
-            143546 => 'Grenada', # GRD
-            143547 => 'Montserrat', # MSR
-            143548 => 'St. Kitts and Nevis', # KNA
-            143549 => 'St. Lucia', # LCA
-            143550 => 'St. Vincent and The Grenadines', # VCT
-            143551 => 'Trinidad and Tobago', # TTO
-            143552 => 'Turks and Caicos', # TCA
-            143553 => 'Guyana', # GUY
-            143554 => 'Suriname', # SUR
-            143555 => 'Belize', # BLZ
-            143556 => 'Bolivia', # BOL
-            143557 => 'Cyprus', # CYP
-            143558 => 'Iceland', # ISL
-            143559 => 'Bahrain', # BHR
-            143560 => 'Brunei Darussalam', # BRN
-            143561 => 'Nigeria', # NGA
-            143562 => 'Oman', # OMN
-            143563 => 'Algeria', # DZA
-            143564 => 'Angola', # AGO
-            143565 => 'Belarus', # BLR
-            143566 => 'Uzbekistan', # UZB
-            143568 => 'Azerbaijan', # AZE
-            143571 => 'Yemen', # YEM
-            143572 => 'Tanzania', # TZA
-            143573 => 'Ghana', # GHA
-            143575 => 'Albania', # ALB
-            143576 => 'Benin', # BEN
-            143577 => 'Bhutan', # BTN
-            143578 => 'Burkina Faso', # BFA
-            143579 => 'Cambodia', # KHM
-            143580 => 'Cape Verde', # CPV
-            143581 => 'Chad', # TCD
-            143582 => 'Republic of the Congo', # COG
-            143583 => 'Fiji', # FJI
-            143584 => 'Gambia', # GMB
-            143585 => 'Guinea-Bissau', # GNB
-            143586 => 'Kyrgyzstan', # KGZ
-            143587 => "Lao People's Democratic Republic", # LAO
-            143588 => 'Liberia', # LBR
-            143589 => 'Malawi', # MWI
-            143590 => 'Mauritania', # MRT
-            143591 => 'Federated States of Micronesia', # FSM
-            143592 => 'Mongolia', # MNG
-            143593 => 'Mozambique', # MOZ
-            143594 => 'Namibia', # NAM
-            143595 => 'Palau', # PLW
-            143597 => 'Papua New Guinea', # PNG
-            143598 => 'Sao Tome and Principe', # STP (S&atilde;o Tom&eacute; and Pr&iacute;ncipe)
-            143599 => 'Seychelles', # SYC
-            143600 => 'Sierra Leone', # SLE
-            143601 => 'Solomon Islands', # SLB
-            143602 => 'Swaziland', # SWZ
-            143603 => 'Tajikistan', # TJK
-            143604 => 'Turkmenistan', # TKM
-            143605 => 'Zimbabwe', # ZWE
+            143441 => 'United States', # US
+            143442 => 'France', # FR
+            143443 => 'Germany', # DE
+            143444 => 'United Kingdom', # GB
+            143445 => 'Austria', # AT
+            143446 => 'Belgium', # BE
+            143447 => 'Finland', # FI
+            143448 => 'Greece', # GR
+            143449 => 'Ireland', # IE
+            143450 => 'Italy', # IT
+            143451 => 'Luxembourg', # LU
+            143452 => 'Netherlands', # NL
+            143453 => 'Portugal', # PT
+            143454 => 'Spain', # ES
+            143455 => 'Canada', # CA
+            143456 => 'Sweden', # SE
+            143457 => 'Norway', # NO
+            143458 => 'Denmark', # DK
+            143459 => 'Switzerland', # CH
+            143460 => 'Australia', # AU
+            143461 => 'New Zealand', # NZ
+            143462 => 'Japan', # JP
+            143463 => 'Hong Kong', # HK
+            143464 => 'Singapore', # SG
+            143465 => 'China', # CN
+            143466 => 'Republic of Korea', # KR
+            143467 => 'India', # IN
+            143468 => 'Mexico', # MX
+            143469 => 'Russia', # RU
+            143470 => 'Taiwan', # TW
+            143471 => 'Vietnam', # VN
+            143472 => 'South Africa', # ZA
+            143473 => 'Malaysia', # MY
+            143474 => 'Philippines', # PH
+            143475 => 'Thailand', # TH
+            143476 => 'Indonesia', # ID
+            143477 => 'Pakistan', # PK
+            143478 => 'Poland', # PL
+            143479 => 'Saudi Arabia', # SA
+            143480 => 'Turkey', # TR
+            143481 => 'United Arab Emirates', # AE
+            143482 => 'Hungary', # HU
+            143483 => 'Chile', # CL
+            143484 => 'Nepal', # NP
+            143485 => 'Panama', # PA
+            143486 => 'Sri Lanka', # LK
+            143487 => 'Romania', # RO
+            143489 => 'Czech Republic', # CZ
+            143491 => 'Israel', # IL
+            143492 => 'Ukraine', # UA
+            143493 => 'Kuwait', # KW
+            143494 => 'Croatia', # HR
+            143495 => 'Costa Rica', # CR
+            143496 => 'Slovakia', # SK
+            143497 => 'Lebanon', # LB
+            143498 => 'Qatar', # QA
+            143499 => 'Slovenia', # SI
+            143501 => 'Colombia', # CO
+            143502 => 'Venezuela', # VE
+            143503 => 'Brazil', # BR
+            143504 => 'Guatemala', # GT
+            143505 => 'Argentina', # AR
+            143506 => 'El Salvador', # SV
+            143507 => 'Peru', # PE
+            143508 => 'Dominican Republic', # DO
+            143509 => 'Ecuador', # EC
+            143510 => 'Honduras', # HN
+            143511 => 'Jamaica', # JM
+            143512 => 'Nicaragua', # NI
+            143513 => 'Paraguay', # PY
+            143514 => 'Uruguay', # UY
+            143515 => 'Macau', # MO
+            143516 => 'Egypt', # EG
+            143517 => 'Kazakhstan', # KZ
+            143518 => 'Estonia', # EE
+            143519 => 'Latvia', # LV
+            143520 => 'Lithuania', # LT
+            143521 => 'Malta', # MT
+            143523 => 'Moldova', # MD
+            143524 => 'Armenia', # AM
+            143525 => 'Botswana', # BW
+            143526 => 'Bulgaria', # BG
+            143528 => 'Jordan', # JO
+            143529 => 'Kenya', # KE
+            143530 => 'Macedonia', # MK
+            143531 => 'Madagascar', # MG
+            143532 => 'Mali', # ML
+            143533 => 'Mauritius', # MU
+            143534 => 'Niger', # NE
+            143535 => 'Senegal', # SN
+            143536 => 'Tunisia', # TN
+            143537 => 'Uganda', # UG
+            143538 => 'Anguilla', # AI
+            143539 => 'Bahamas', # BS
+            143540 => 'Antigua and Barbuda', # AG
+            143541 => 'Barbados', # BB
+            143542 => 'Bermuda', # BM
+            143543 => 'British Virgin Islands', # VG
+            143544 => 'Cayman Islands', # KY
+            143545 => 'Dominica', # DM
+            143546 => 'Grenada', # GD
+            143547 => 'Montserrat', # MS
+            143548 => 'St. Kitts and Nevis', # KN
+            143549 => 'St. Lucia', # LC
+            143550 => 'St. Vincent and The Grenadines', # VC
+            143551 => 'Trinidad and Tobago', # TT
+            143552 => 'Turks and Caicos', # TC
+            143553 => 'Guyana', # GY
+            143554 => 'Suriname', # SR
+            143555 => 'Belize', # BZ
+            143556 => 'Bolivia', # BO
+            143557 => 'Cyprus', # CY
+            143558 => 'Iceland', # IS
+            143559 => 'Bahrain', # BH
+            143560 => 'Brunei Darussalam', # BN
+            143561 => 'Nigeria', # NG
+            143562 => 'Oman', # OM
+            143563 => 'Algeria', # DZ
+            143564 => 'Angola', # AO
+            143565 => 'Belarus', # BY
+            143566 => 'Uzbekistan', # UZ
+            143568 => 'Azerbaijan', # AZ
+            143571 => 'Yemen', # YE
+            143572 => 'Tanzania', # TZ
+            143573 => 'Ghana', # GH
+            143575 => 'Albania', # AL
+            143576 => 'Benin', # BJ
+            143577 => 'Bhutan', # BT
+            143578 => 'Burkina Faso', # BF
+            143579 => 'Cambodia', # KH
+            143580 => 'Cape Verde', # CV
+            143581 => 'Chad', # TD
+            143582 => 'Republic of the Congo', # CG
+            143583 => 'Fiji', # FJ
+            143584 => 'Gambia', # GM
+            143585 => 'Guinea-Bissau', # GW
+            143586 => 'Kyrgyzstan', # KG
+            143587 => "Lao People's Democratic Republic", # LA
+            143588 => 'Liberia', # LR
+            143589 => 'Malawi', # MW
+            143590 => 'Mauritania', # MR
+            143591 => 'Federated States of Micronesia', # FM
+            143592 => 'Mongolia', # MN
+            143593 => 'Mozambique', # MZ
+            143594 => 'Namibia', # NA
+            143595 => 'Palau', # PW
+            143597 => 'Papua New Guinea', # PG
+            143598 => 'Sao Tome and Principe', # ST (S&atilde;o Tom&eacute; and Pr&iacute;ncipe)
+            143599 => 'Seychelles', # SC
+            143600 => 'Sierra Leone', # SL
+            143601 => 'Solomon Islands', # SB
+            143602 => 'Swaziland', # SZ
+            143603 => 'Tajikistan', # TJ
+            143604 => 'Turkmenistan', # TM
+            143605 => 'Zimbabwe', # ZW
         },
     },
     soaa => 'SortAlbumArtist', #10
@@ -4265,7 +4650,24 @@ my %graphicsMode = (
     gspu => { Name => 'GooglePingURL',      Format => 'string' },
     gssd => { Name => 'GoogleSourceData',   Format => 'string' },
     gsst => { Name => 'GoogleStartTime',    Format => 'string' },
-    gstd => { Name => 'GoogleTrackDuration',Format => 'string' },
+    gstd => { Name => 'GoogleTrackDuration',Format => 'string', ValueConv => '$val / 1000',  PrintConv => 'ConvertDuration($val)' },
+
+    # atoms observed in AAX audiobooks (ref PH)
+    "\xa9cpy" => { Name => 'Copyright',  Groups => { 2 => 'Author' } },
+    "\xa9pub" => 'Publisher',
+    "\xa9nrt" => 'Narrator',
+    '@pti' => 'ParentTitle', # (guess -- same as "\xa9nam")
+    '@PST' => 'ParentShortTitle', # (guess -- same as "\xa9nam")
+    '@ppi' => 'ParentProductID', # (guess -- same as 'prID')
+    '@sti' => 'ShortTitle', # (guess -- same as "\xa9nam")
+    prID => 'ProductID',
+    rldt => { Name => 'ReleaseDate', Groups => { 2 => 'Time' }},
+    CDEK => { Name => 'Unknown_CDEK', Unknown => 1 }, # eg: "B004ZMTFEG" - used in URL's ("asin=")
+    CDET => { Name => 'Unknown_CDET', Unknown => 1 }, # eg: "ADBL"
+    VERS => 'ProductVersion',
+    GUID => 'GUID',
+    AACR => { Name => 'Unknown_AACR', Unknown => 1 }, # eg: "CR!1T1H1QH6WX7T714G2BMFX3E9MC4S"
+    # ausr - 30 bytes (User Alias?)
 );
 
 # item list keys (ref PH)
@@ -4297,9 +4699,11 @@ my %graphicsMode = (
     },
     description => { },
     director    => { },
+    title       => { }, #22
     genre       => { },
     information => { },
     keywords    => { },
+    producer    => { }, #22
     make        => { Name => 'Make',        Groups => { 2 => 'Camera' } },
     model       => { Name => 'Model',       Groups => { 2 => 'Camera' } },
     publisher   => { },
@@ -4359,6 +4763,7 @@ my %graphicsMode = (
         PrintConv => { 0 => 'Off', 1 => 'On' },
     },
     'rating.user'  => 'UserRating', # (Canon ELPH 510 HS)
+    'collection.user' => 'UserCollection', #22
     'Encoded_With' => 'EncodedWith',
 );
 
@@ -4608,6 +5013,7 @@ my %graphicsMode = (
 %Image::ExifTool::QuickTime::MediaHeader = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
     WRITE_PROC => \&Image::ExifTool::WriteBinaryData,
+    CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
     GROUPS => { 1 => 'Track#', 2 => 'Video' },
     FORMAT => 'int32u',
     DATAMEMBER => [ 0, 1, 2, 3, 4 ],
@@ -4912,6 +5318,8 @@ my %graphicsMode = (
         SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::Wave' },
     },
     # alac - 28 bytes
+    # adrm - AAX DRM atom? 148 bytes
+    # aabd - AAX unknown 17kB (contains 'aavd' strings)
 );
 
 # AMR decode config box (ref 3)
@@ -5253,6 +5661,7 @@ my %graphicsMode = (
     },
     28 => {
         Name => 'PreviewImage',
+        Groups => { 2 => 'Preview' },
         Format => 'undef[$val{13}]',
         RawConv => '$self->ValidateImage(\$val, $tag)',
     },
@@ -5281,7 +5690,7 @@ my %graphicsMode = (
             my $size = $val[0];
             for (;;) {
                 $key = $self->NextTagKey($key) or last;
-                $size += $self->GetValue($key);
+                $size += $self->GetValue($key, 'ValueConv');
             }
             return int($size * 8 / $val[1] + 0.5);
         },
@@ -5291,19 +5700,13 @@ my %graphicsMode = (
         Require => 'QuickTime:GPSCoordinates',
         Groups => { 2 => 'Location' },
         ValueConv => 'my @c = split " ", $val; $c[0]',
-        PrintConv => q{
-            require Image::ExifTool::GPS;
-            Image::ExifTool::GPS::ToDMS($self, $val, 1, 'N');
-        },
+        PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "N")',
     },
     GPSLongitude => {
         Require => 'QuickTime:GPSCoordinates',
         Groups => { 2 => 'Location' },
         ValueConv => 'my @c = split " ", $val; $c[1]',
-        PrintConv => q{
-            require Image::ExifTool::GPS;
-            Image::ExifTool::GPS::ToDMS($self, $val, 1, 'E');
-        },
+        PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "E")',
     },
     # split altitude into GPSAltitude/GPSAltitudeRef like EXIF and XMP
     GPSAltitude => {
@@ -5328,20 +5731,14 @@ my %graphicsMode = (
         Require => 'QuickTime:LocationInformation',
         Groups => { 2 => 'Location' },
         ValueConv => '$val =~ /Lat=([-+.\d]+)/; $1',
-        PrintConv => q{
-            require Image::ExifTool::GPS;
-            Image::ExifTool::GPS::ToDMS($self, $val, 1, 'N');
-        },
+        PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "N")',
     },
     GPSLongitude2 => {
         Name => 'GPSLongitude',
         Require => 'QuickTime:LocationInformation',
         Groups => { 2 => 'Location' },
         ValueConv => '$val =~ /Lon=([-+.\d]+)/; $1',
-        PrintConv => q{
-            require Image::ExifTool::GPS;
-            Image::ExifTool::GPS::ToDMS($self, $val, 1, 'E');
-        },
+        PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "E")',
     },
     GPSAltitude2 => {
         Name => 'GPSAltitude',
@@ -5458,17 +5855,20 @@ sub FixWrongFormat($)
 sub ConvertISO6709($)
 {
     my $val = shift;
-    if ($val =~ /^([-+]\d{2}(?:\.\d*)?)([-+]\d{3}(?:\.\d*)?)([-+]\d+)?/) {
+    if ($val =~ /^([-+]\d{1,2}(?:\.\d*)?)([-+]\d{1,3}(?:\.\d*)?)([-+]\d+(?:\.\d*)?)?/) {
+        # +DD.DDD+DDD.DDD+AA.AAA
         $val = ($1 + 0) . ' ' . ($2 + 0);
         $val .= ' ' . ($3 + 0) if $3;
-    } elsif ($val =~ /^([-+])(\d{2})(\d{2}(?:\.\d*)?)([-+])(\d{3})(\d{2}(?:\.\d*)?)([-+]\d+)?/) {
+    } elsif ($val =~ /^([-+])(\d{2})(\d{2}(?:\.\d*)?)([-+])(\d{3})(\d{2}(?:\.\d*)?)([-+]\d+(?:\.\d*)?)?/) {
+        # +DDMM.MMM+DDDMM.MMM+AA.AAA
         my $lat = $2 + $3 / 60;
         $lat = -$lat if $1 eq '-';
         my $lon = $5 + $6 / 60;
         $lon = -$lon if $4 eq '-';
         $val = "$lat $lon";
         $val .= ' ' . ($7 + 0) if $7;
-    } elsif ($val =~ /^([-+])(\d{2})(\d{2})(\d{2}(?:\.\d*)?)([-+])(\d{3})(\d{2})(\d{2}(?:\.\d*)?)([-+]\d+)?/) {
+    } elsif ($val =~ /^([-+])(\d{2})(\d{2})(\d{2}(?:\.\d*)?)([-+])(\d{3})(\d{2})(\d{2}(?:\.\d*)?)([-+]\d+(?:\.\d*)?)?/) {
+        # +DDMMSS.SSS+DDDMMSS.SSS+AA.AAA
         my $lat = $2 + $3 / 60 + $4 / 3600;
         $lat = -$lat if $1 eq '-';
         my $lon = $6 + $7 / 60 + $8 / 3600;
@@ -5527,7 +5927,6 @@ sub PrintChapter($)
 sub PrintGPSCoordinates($)
 {
     my ($val, $et) = @_;
-    require Image::ExifTool::GPS;
     my @v = split ' ', $val;
     my $prt = Image::ExifTool::GPS::ToDMS($et, $v[0], 1, "N") . ', ' .
               Image::ExifTool::GPS::ToDMS($et, $v[1], 1, "E");
@@ -5756,7 +6155,7 @@ sub ProcessKeys($$$)
         if ($ns eq 'mdta') {
             $tag =~ s/^com\.apple\.quicktime\.//;   # remove common apple quicktime domain
         }
-        next unless $tag;
+        $tag = "Tag_$ns" unless $tag;
         # (I have some samples where the tag is a reversed ItemList or UserData tag ID)
         my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
         unless ($tagInfo) {
@@ -5800,7 +6199,7 @@ sub ProcessKeys($$$)
         if ($newInfo) {
             $msg or $msg = '';
             AddTagToTable($infoTable, $id, $newInfo);
-            $out and printf $out "$$et{INDENT}Added ItemList Tag $id = $tag$msg\n";
+            $out and print $out "$$et{INDENT}Added ItemList Tag $id = $tag$msg\n";
         }
         $pos += $len;
         ++$index;
@@ -5948,8 +6347,7 @@ sub ProcessMOV($$;$)
                 $tagInfo = {
                     Name => "Unknown_$name",
                     Description => "Unknown $name",
-                    Unknown => 1,
-                    Binary => 1,
+                    %unknownInfo,
                 };
             }
             AddTagToTable($tagTablePtr, $tag, $tagInfo);
@@ -5959,8 +6357,21 @@ sub ProcessMOV($$;$)
             $et->HandleTag($tagTablePtr, "$tag-size", $size);
             $et->HandleTag($tagTablePtr, "$tag-offset", $raf->Tell()) if $$tagTablePtr{"$tag-offset"};
         }
-        # load values only if associated with a tag (or verbose) and < 16MB long
-        if ((defined $tagInfo or $verbose) and $size < 0x1000000) {
+        # load values only if associated with a tag (or verbose) and not too big
+        my $ignore;
+        if ($size > 0x2000000) {    # start to get worried above 32 MB
+            $ignore = 1;
+            if ($tagInfo and not $$tagInfo{Unknown}) {
+                my $t = $tag;
+                $t =~ s/([\x00-\x1f\x7f-\xff])/'x'.unpack('H*',$1)/eg;
+                if ($size > 0x8000000) {
+                    $et->Warn("Skipping '$t' atom > 128 MB", 1);
+                } else {
+                    $et->Warn("Skipping '$t' atom > 32 MB", 2) or $ignore = 0;
+                }
+            }
+        }
+        if (defined $tagInfo and not $ignore) {
             my $val;
             my $missing = $size - $raf->Read($val, $size);
             if ($missing) {
@@ -6076,6 +6487,8 @@ sub ProcessMOV($$;$)
                             if ($stringEncoding{$flags}) {
                                 # handle all string formats
                                 $value = $et->Decode($value, $stringEncoding{$flags});
+                                # (shouldn't be null terminated, but some software writes it anyway)
+                                $value =~ s/\0$// unless $$tagInfo{Binary};
                             } else {
                                 if (not $format) {
                                     if ($flags == 0x15 or $flags == 0x16) {
@@ -6145,6 +6558,10 @@ sub ProcessMOV($$;$)
                 } elsif ($tag =~ /^\xa9/ or $$tagInfo{IText}) {
                     # parse international text to extract all languages
                     my $pos = 0;
+                    if ($$tagInfo{Format}) {
+                        $et->FoundTag($tagInfo, ReadValue(\$val, 0, $$tagInfo{Format}, undef, length($val)));
+                        $pos = $size;
+                    }
                     for (;;) {
                         last if $pos + 4 > $size;
                         my ($len, $lang) = unpack("x${pos}nn", $val);
@@ -6225,11 +6642,18 @@ sub ProcessMOV($$;$)
     # fill in missing defaults for alternate language tags
     # (the first language is taken as the default)
     if ($doDefaultLang and $$et{QTLang}) {
-        foreach $tag (@{$$et{QTLang}}) {
+QTLang: foreach $tag (@{$$et{QTLang}}) {
             next unless defined $$et{VALUE}{$tag};
             my $langInfo = $$et{TAG_INFO}{$tag} or next;
             my $tagInfo = $$langInfo{SrcTagInfo} or next;
-            next if defined $$et{VALUE}{$$tagInfo{Name}};
+            my $infoHash = $$et{TAG_INFO};
+            my $name = $$tagInfo{Name};
+            # loop through all instances of this tag name and generate the default-language
+            # version only if we don't already have a QuickTime tag with this name
+            my ($i, $key);
+            for ($i=0, $key=$name; $$infoHash{$key}; ++$i, $key="$name ($i)") {
+                next QTLang if $et->GetGroup($key, 0) eq 'QuickTime';
+            }
             $et->FoundTag($tagInfo, $$et{VALUE}{$tag});
         }
         delete $$et{QTLang};
@@ -6267,7 +6691,7 @@ information from QuickTime and MP4 video, and M4A audio files.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

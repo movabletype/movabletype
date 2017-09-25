@@ -33,8 +33,8 @@ sub IsCurPath($$)
 {
     local $_;
     my ($et, $dir) = @_;
-    $dir = $$et{DirMap}{$dir} and $dir eq $_ or last foreach reverse @{$$et{PATH}}; 
-    return($dir and $dir eq 'MOV');    
+    $dir = $$et{DirMap}{$dir} and $dir eq $_ or last foreach reverse @{$$et{PATH}};
+    return($dir and $dir eq 'MOV');
 }
 
 #------------------------------------------------------------------------------
@@ -248,7 +248,6 @@ sub WriteQuickTime($$$)
             my $subName = $$subdir{DirName} || $$tagInfo{Name};
             # QuickTime hierarchy is complex, so check full directory path before adding
             next unless IsCurPath($et, $subName);
-            delete $$addDirs{$subName}; # add only once
             my $buff = '';  # write from scratch
             my %subdirInfo = (
                 Parent   => $dirName,
@@ -270,6 +269,7 @@ sub WriteQuickTime($$$)
                 my $newHdr = Set32u(8+length($newData)+length($uuid)) . $tag . $uuid;
                 Write($outfile, $newHdr, $newData) or $rtnVal = 0;
             }
+            delete $$addDirs{$subName}; # add only once (must delete _after_ call to WriteDirectory())
         }
     }
     # write out any atoms that we are holding until the end
@@ -345,7 +345,7 @@ QuickTime-based file formats like MOV and MP4.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

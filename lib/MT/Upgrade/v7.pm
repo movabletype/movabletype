@@ -118,68 +118,27 @@ sub _v7_reset_default_widget {
 }
 
 sub _v7_create_new_role {
-    my $self = shift;
-
+    my $self       = shift;
     my $role_class = MT->model('role');
-    $self->progress(
-        $self->translate_escape('Updating existing role name...') );
 
-    $self->progress(
-        $self->translate_escape(
-            'Populating new role for Site Administrator...')
-    );
-    my $new_role = $role_class->new();
-    $new_role->name( MT->translate('Site Administrator') );
-    $new_role->description( MT->translate('Can administer the site.') );
-    $new_role->clear_full_permissions;
-    $new_role->set_these_permissions( ['administer_site'] );
-    $new_role->save
-        or return $self->error(
-        $self->translate_escape(
-            "Error saving record: [_1].",
-            $new_role->errstr
-        )
+    my @default_roles = $role_class->_default_roles();
+    foreach my $r (@default_roles) {
+        next if ( $role_class->exist( { name => $r->{name} } ) );
+        $self->progress(
+            $self->translate_escape( 'Create new role: [_1]...', $r->{name} )
         );
+        my $new_role = $role_class->new();
+        $new_role->name( $r->{name} );
+        $new_role->description( $r->{description} );
+        $new_role->clear_full_permissions;
+        $new_role->set_these_permissions( $r->{perms} );
 
-    $self->progress(
-        $self->translate_escape(
-            'Populating new role for Child Site Administrator...')
-    );
-    $new_role = $role_class->new();
-    $new_role->name( MT->translate('Child Site Administrator') );
-    $new_role->description( MT->translate('Can administer the child site.') );
-    $new_role->clear_full_permissions;
-    $new_role->set_these_permissions( ['administer_site'] );
-    $new_role->role_mask( 2**12 );
-    $new_role->save
-        or return $self->error(
-        $self->translate_escape(
-            "Error saving record: [_1].",
-            $new_role->errstr
-        )
-        );
-
-    $self->progress(
-        $self->translate_escape(
-            'Populating new role for Content Designer...')
-    );
-    $new_role = $role_class->new();
-    $new_role->name( MT->translate('Content Designer') );
-    $new_role->description(
-        MT->translate(
-            'Can manage content types, content datas, edit their own content types, contentdatas.'
-        )
-    );
-    $new_role->clear_full_permissions;
-    $new_role->set_these_permissions(
-        [ 'manage_content_types', 'manage_content_datas' ] );
-    $new_role->save
-        or return $self->error(
-        $self->translate_escape(
-            "Error saving record: [_1].",
-            $new_role->errstr
-        )
-        );
+        if ( $r->{name} =~ m/^System/ ) {
+            $new_role->is_system(1);
+        }
+        $new_role->role_mask( $r->{role_mask} ) if exists $r->{role_mask};
+        $new_role->save or return $self->error( $new_role->errstr );
+    }
 }
 
 sub _v7_migrate_role {
@@ -190,21 +149,22 @@ sub _v7_migrate_role {
     $self->progress(
         $self->translate_escape('Updating existing role name...') );
 
-    my @role_names = (
-        'Website Administrator', 'Designer',
-        'Author',                'Contributor',
-        'Editor'
-    );
-    foreach my $role_name (@role_names) {
-        $self->progress( 'change '
-                . MT->translate($role_name) . ' to '
-                . MT->translate( $role_name . ' (MT6)' ) );
+    my @role_names = ( 'Designer', 'Author', 'Contributor', 'Editor' );
+    my @default_roles = $role_class->_default_roles();
+    foreach my $r (@default_roles) {
+        next unless grep { $r->{name} eq MT->translate($_) } @role_names;
+        $self->progress(
+            $self->translate_escape(
+                'change [_1] to [_2]',
+                $r->{name},
+                MT->translate( $r->{name} . ' (MT6)' )
+            )
+        );
 
-        my $iter
-            = $role_class->load_iter( { name => MT->translate($role_name) } );
-
+        my $iter = $role_class->load_iter( { name => $r->{name} } );
         while ( my $role = $iter->() ) {
-            $role->name( MT->translate( $role_name . ' (MT6)' ) );
+            $role->name( MT->translate( $r->{name} . ' (MT6)' ) );
+            $role->set_these_permissions( $r->{perms} );
             $role->save
                 or return $self->error(
                 $self->translate_escape(
@@ -213,6 +173,44 @@ sub _v7_migrate_role {
                 )
                 );
         }
+
+        $self->progress(
+            $self->translate_escape( 'Create new role: [_1]...', $r->{name} )
+        );
+
+        my $role = MT::Role->new();
+        $role->name( $r->{name} );
+        $role->description( $r->{description} );
+        $role->clear_full_permissions;
+        $role->set_these_permissions( $r->{perms} );
+        if ( $r->{name} =~ m/^System/ ) {
+            $role->is_system(1);
+        }
+        $role->role_mask( $r->{role_mask} ) if exists $r->{role_mask};
+        $role->save
+            or return $role->error( $role->errstr );
+    }
+
+    # Website Administrator
+    my $webadmin_role = MT->translate('Website Administrator');
+    my $iter = $role_class->load_iter( { name => $webadmin_role } );
+    while ( my $role = $iter->() ) {
+        $self->progress(
+            $self->translate_escape(
+                'change [_1] to [_2]',
+                $webadmin_role,
+                MT->translate( $webadmin_role . ' (MT6)' )
+            )
+        );
+        $role->name( MT->translate( $webadmin_role . ' (MT6)' ) );
+        $role->set_these_permissions( ['administer_site'] );
+        $role->save
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $role->errstr
+            )
+            );
     }
 
 }
@@ -235,6 +233,15 @@ sub _v7_migrate_privileges {
     my @website_admin_roles
         = $role_class->load_by_permission("administer_website");
     foreach my $website_admin_role (@website_admin_roles) {
+        $website_admin_role->set_these_permissions( ['administer_site'] );
+        $website_admin_role->save
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $website_admin_role->errstr
+            )
+            );
+
         my $assoc_iter
             = $assoc_class->load_iter(
             { role_id => $website_admin_role->id } );
@@ -262,35 +269,72 @@ sub _v7_migrate_privileges {
             my $blog   = $assoc->blog;
             my $author = $assoc->user;
             $author->add_role( $site_admin_role, $blog );
-
+            if($blog && !$blog->is_blog){
+              my @child_blogs = @{ $blog->blogs };
+              foreach my $child_blog(@child_blogs){
+                my $author = $assoc->user;
+                $author->add_role( $site_admin_role, $child_blog );
+              }
+            }
         }
     }
+
+    $self->progress(
+        $self->translate_escape(
+            'add administer_site permission for Blog Administrator...'
+        )
+    );
+    my @blog_admin_roles = $role_class->load_by_permission("administer_blog");
+    foreach my $blog_admin_role (@blog_admin_roles) {
+        $blog_admin_role->set_these_permissions( ['administer_site'] );
+        $blog_admin_role->save
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $blog_admin_role->errstr
+            )
+            );
+
+        my $assoc_iter
+            = $assoc_class->load_iter( { role_id => $blog_admin_role->id } );
+        while ( my $assoc = $assoc_iter->() ) {
+            my $blog   = $assoc->blog;
+            my $author = $assoc->user;
+            $author->add_role( $site_admin_role, $blog );
+
+        }
+
+    }
+
 }
 
 sub _migrate_system_privileges {
-    my $self = shift;
+    my $self             = shift;
+    my $permission_class = MT->model('permission');
 
-    require MT::Author;
-    my $author_iter
-        = MT::Author->load_iter( { type => MT::Author::AUTHOR() } );
     $self->progress(
         $self->translate_escape(
             'Migrating system level permissions to new structure...')
     );
-    while ( my $author = $author_iter->() ) {
-        $author->is_superuser(1) if $author->is_superuser();
 
-        if ( $author->type != MT::Author::COMMENTER() ) {
-            my $perm_count
-                = MT->model('association')
-                ->count(
-                { 'author_id' => $author->id, 'blog_id' => { not => '0' } } );
-            if ($perm_count) {
-                $author->can_sign_in_cms(1);
-                $author->can_sign_in_data_api(1);
-            }
-        }
-        $author->save();
+    my $perm_iter
+        = $permission_class->load_iter(
+        { permissions => { not => '\'comment\'' } },
+        { group       => 'author_id' } );
+    while ( my $perm = $perm_iter->() ) {
+        my $author = $perm->user;
+        $author->is_superuser(1) if $author->is_superuser();
+        $author->can_sign_in_cms(1);
+        $author->can_sign_in_data_api(1);
+        $author->can_create_site(1)
+            if ( $perm->permissions =~ /create_website/ );
+        $author->save
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $author->errstr
+            )
+            );
     }
 }
 

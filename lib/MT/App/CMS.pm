@@ -25,9 +25,12 @@ sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
     $app->{state_params} = [
-        '_type',      'id',         'tab',     'offset',
-        'filter',     'filter_val', 'blog_id', 'is_power_edit',
-        'filter_key', 'type'
+        '_type',      'id',
+        'tab',        'offset',
+        'filter',     'filter_val',
+        'blog_id',    'is_power_edit',
+        'filter_key', 'type',
+        'content_type_id'
     ];
     $app->{template_dir}         = 'cms';
     $app->{plugin_template_path} = '';
@@ -4215,7 +4218,8 @@ sub archive_type_sorter {
     my $ord_b = $order{ $b->{archive_type} };
 
     if ( defined($ord_a) && defined($ord_b) ) {
-        return $ord_a <=> $ord_b;
+        return $ord_a <=> $ord_b
+            || $b->{map_is_preferred} <=> $a->{map_is_preferred};
     }
 
     # in the event a custom archive type includes the keyword 'Weekly', etc.
@@ -4258,7 +4262,8 @@ sub archive_type_sorter {
     else {
         $str_b = "00" . $str_b if defined($ord_b);
     }
-    return $str_a cmp $str_b;
+    return $str_a cmp $str_b
+        || $b->{map_is_preferred} <=> $a->{map_is_preferred};
 }
 
 sub preview_object_basename {

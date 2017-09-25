@@ -1,20 +1,20 @@
-# $Id: Parser.pm 4532 2004-05-11 05:15:40Z ezra $
-
 package XML::XPath::Parser;
 
-use strict;
+$VERSION = '1.42';
+
+use strict; use warnings;
 use vars qw/
-        $NCName 
-        $QName 
+        $NCName
+        $QName
         $NCWild
         $QNWild
-        $NUMBER_RE 
-        $NODE_TYPE 
-        $AXIS_NAME 
-        %AXES 
-        $LITERAL
-        %CACHE/;
+        $NUMBER_RE
+        $NODE_TYPE
+        $AXIS_NAME
+        %AXES
+        $LITERAL/;
 
+use Carp qw(croak);
 use XML::XPath::XMLParser;
 use XML::XPath::Step;
 use XML::XPath::Expr;
@@ -42,8 +42,12 @@ use XML::XPath::NodeSet;
         'self' => 'element',
         );
 
-$NCName = '([A-Za-z_][\w\\.\\-]*)';
-$QName = "($NCName:)?$NCName";
+my $NameStartCharClassBody = "a-zA-Z_\\xC0-\\xD6\\xD8-\\xF6\\xF8-\\x{2FF}\\x{370}-\\x{37D}\\x{37F}-\\x{1FFF}\\x{200C}-\\x{200D}\\x{2070}-\\x{218F}\\x{2C00}-\\x{2FEF}\\x{3001}-\\x{D7FF}\\x{F900}-\\x{FDCF}\\x{FDF0}-\\x{FFFD}\\x{10000}-\\x{EFFFF}";
+my $NameCharClassBody = "${NameStartCharClassBody}\\-.0-9\\xB7\\x{300}-\\x{36F}\\x{203F}-\\x{2040}";
+my $Name = "(?:[$NameStartCharClassBody][$NameCharClassBody]*)";
+
+$NCName = $Name;
+$QName  = "$NCName(?::$NCName)?";
 $NCWild = "${NCName}:\\*";
 $QNWild = "\\*";
 $NODE_TYPE = '((text|comment|processing-instruction|node)\\(\\))';
@@ -114,23 +118,25 @@ sub my_sub {
 sub parse {
     my $self = shift;
     my $path = shift;
-    if ($CACHE{$path}) {
-        return $CACHE{$path};
+
+    if ($self->{cache}->{$path}) {
+        return $self->{cache}->{$path};
     }
+
     my $tokens = $self->tokenize($path);
 
     $self->{_tokpos} = 0;
     my $tree = $self->analyze($tokens);
-    
+
     if ($self->{_tokpos} < scalar(@$tokens)) {
         # didn't manage to parse entire expression - throw an exception
         die "Parse of expression $path failed - junk after end of expression: $tokens->[$self->{_tokpos}]";
     }
-    
-    $CACHE{$path} = $tree;
-    
+
+    $self->{cache}->{$path} = $tree;
+
     debug("PARSED Expr to:\n", $tree->as_string, "\n") if $XML::XPath::Debug;
-    
+
     return $tree;
 }
 
@@ -138,11 +144,11 @@ sub tokenize {
     my $self = shift;
     my $path = shift;
     study $path;
-    
+
     my @tokens;
-    
+
     debug("Parsing: $path\n");
-    
+
     # Bug: We don't allow "'@' NodeType" which is in the grammar, but I think is just plain stupid.
 
     while($path =~ m/\G
@@ -172,20 +178,24 @@ sub tokenize {
             debug("TOKEN: $token\n");
             push @tokens, $token;
         }
-        
+
     }
-    
-    if (pos($path) < length($path)) {
-        my $marker = ("." x (pos($path)-1));
-        $path = substr($path, 0, pos($path) + 8) . "...";
+
+    my $path_pos = pos($path);
+    my $path_length = length($path);
+    if (defined $path_pos
+        && defined $path_length
+        && ($path_pos < $path_length)) {
+        my $marker = ("." x ($path_pos-1));
+        $path = substr($path, 0, $path_pos + 8) . "...";
         $path =~ s/\n/ /g;
         $path =~ s/\t/ /g;
         die "Query:\n",
-            "$path\n",
-            $marker, "^^^\n",
-            "Invalid query somewhere around here (I think)\n";
+        "$path\n",
+        $marker, "^^^\n",
+        "Invalid query somewhere around here (I think)\n";
     }
-    
+
     return \@tokens;
 }
 
@@ -193,20 +203,20 @@ sub analyze {
     my $self = shift;
     my $tokens = shift;
     # lexical analysis
-    
+
     return Expr($self, $tokens);
 }
 
 sub match {
     my ($self, $tokens, $match, $fatal) = @_;
-    
+
     $self->{_curr_match} = '';
     return 0 unless $self->{_tokpos} < @$tokens;
 
     local $^W;
-    
+
 #    debug ("match: $match\n");
-    
+
     if ($tokens->[$self->{_tokpos}] =~ /^$match$/) {
         $self->{_curr_match} = $tokens->[$self->{_tokpos}];
         $self->{_tokpos}++;
@@ -224,18 +234,18 @@ sub match {
 
 sub Expr {
     my ($self, $tokens) = @_;
-    
+
     debug("in SUB\n");
-    
+
     return OrExpr($self, $tokens);
 }
 
 sub OrExpr {
     my ($self, $tokens) = @_;
-    
+
     debug("in SUB\n");
-    
-    my $expr = AndExpr($self, $tokens); 
+
+    my $expr = AndExpr($self, $tokens);
     while (match($self, $tokens, 'or')) {
         my $or_expr = XML::XPath::Expr->new($self);
         $or_expr->set_lhs($expr);
@@ -246,115 +256,115 @@ sub OrExpr {
         $or_expr->set_rhs($rhs);
         $expr = $or_expr;
     }
-    
+
     return $expr;
 }
 
 sub AndExpr {
     my ($self, $tokens) = @_;
-    
+
     debug("in SUB\n");
-    
+
     my $expr = EqualityExpr($self, $tokens);
     while (match($self, $tokens, 'and')) {
         my $and_expr = XML::XPath::Expr->new($self);
         $and_expr->set_lhs($expr);
         $and_expr->set_op('and');
-        
+
         my $rhs = EqualityExpr($self, $tokens);
-        
+
         $and_expr->set_rhs($rhs);
         $expr = $and_expr;
     }
-    
+
     return $expr;
 }
 
 sub EqualityExpr {
     my ($self, $tokens) = @_;
-    
+
     debug("in SUB\n");
-    
+
     my $expr = RelationalExpr($self, $tokens);
     while (match($self, $tokens, '!?=')) {
         my $eq_expr = XML::XPath::Expr->new($self);
         $eq_expr->set_lhs($expr);
         $eq_expr->set_op($self->{_curr_match});
-        
+
         my $rhs = RelationalExpr($self, $tokens);
-        
+
         $eq_expr->set_rhs($rhs);
         $expr = $eq_expr;
     }
-    
+
     return $expr;
 }
 
 sub RelationalExpr {
     my ($self, $tokens) = @_;
-    
+
     debug("in SUB\n");
-    
+
     my $expr = AdditiveExpr($self, $tokens);
     while (match($self, $tokens, '(<|>|<=|>=)')) {
         my $rel_expr = XML::XPath::Expr->new($self);
         $rel_expr->set_lhs($expr);
         $rel_expr->set_op($self->{_curr_match});
-        
+
         my $rhs = AdditiveExpr($self, $tokens);
-        
+
         $rel_expr->set_rhs($rhs);
         $expr = $rel_expr;
     }
-    
+
     return $expr;
 }
 
 sub AdditiveExpr {
     my ($self, $tokens) = @_;
-    
+
     debug("in SUB\n");
-    
+
     my $expr = MultiplicativeExpr($self, $tokens);
     while (match($self, $tokens, '[\\+\\-]')) {
         my $add_expr = XML::XPath::Expr->new($self);
         $add_expr->set_lhs($expr);
         $add_expr->set_op($self->{_curr_match});
-        
+
         my $rhs = MultiplicativeExpr($self, $tokens);
-        
+
         $add_expr->set_rhs($rhs);
         $expr = $add_expr;
     }
-    
+
     return $expr;
 }
 
 sub MultiplicativeExpr {
     my ($self, $tokens) = @_;
-    
+
     debug("in SUB\n");
-    
+
     my $expr = UnaryExpr($self, $tokens);
     while (match($self, $tokens, '(\\*|div|mod)')) {
         my $mult_expr = XML::XPath::Expr->new($self);
         $mult_expr->set_lhs($expr);
         $mult_expr->set_op($self->{_curr_match});
-        
+
         my $rhs = UnaryExpr($self, $tokens);
-        
+
         $mult_expr->set_rhs($rhs);
         $expr = $mult_expr;
     }
-    
+
     return $expr;
 }
 
 sub UnaryExpr {
     my ($self, $tokens) = @_;
-    
+
     debug("in SUB\n");
-    
+
     if (match($self, $tokens, '-')) {
         my $expr = XML::XPath::Expr->new($self);
         $expr->set_lhs(XML::XPath::Number->new(0));
@@ -369,21 +379,21 @@ sub UnaryExpr {
 
 sub UnionExpr {
     my ($self, $tokens) = @_;
-    
+
     debug("in SUB\n");
-    
+
     my $expr = PathExpr($self, $tokens);
     while (match($self, $tokens, '\\|')) {
         my $un_expr = XML::XPath::Expr->new($self);
         $un_expr->set_lhs($expr);
         $un_expr->set_op('|');
-        
+
         my $rhs = PathExpr($self, $tokens);
-        
+
         $un_expr->set_rhs($rhs);
         $expr = $un_expr;
     }
-    
+
     return $expr;
 }
 
@@ -391,19 +401,19 @@ sub PathExpr {
     my ($self, $tokens) = @_;
 
     debug("in SUB\n");
-    
+
     # PathExpr is LocationPath | FilterExpr | FilterExpr '//?' RelativeLocationPath
-    
+
     # Since we are being predictive we need to find out which function to call next, then.
-        
+
     # LocationPath either starts with "/", "//", ".", ".." or a proper Step.
-    
+
     my $expr = XML::XPath::Expr->new($self);
-    
+
     my $test = $tokens->[$self->{_tokpos}];
-    
+
     # Test for AbsoluteLocationPath and AbbreviatedRelativeLocationPath
-    if ($test =~ /^(\/\/?|\.\.?)$/) {
+    if (defined $test && ($test =~ /^(\/\/?|\.\.?)$/)) {
         # LocationPath
         $expr->set_lhs(LocationPath($self, $tokens));
     }
@@ -414,13 +424,13 @@ sub PathExpr {
     else {
         # Not a LocationPath
         # Use FilterExpr instead:
-        
+
         $expr = FilterExpr($self, $tokens);
         if (match($self, $tokens, '//?')) {
             my $loc_path = XML::XPath::LocationPath->new();
             push @$loc_path, $expr;
             if ($self->{_curr_match} eq '//') {
-                push @$loc_path, XML::XPath::Step->new($self, 'descendant-or-self', 
+                push @$loc_path, XML::XPath::Step->new($self, 'descendant-or-self',
                                         XML::XPath::Step::test_nt_node);
             }
             push @$loc_path, RelativeLocationPath($self, $tokens);
@@ -429,22 +439,22 @@ sub PathExpr {
             return $new_expr;
         }
     }
-    
+
     return $expr;
 }
 
 sub FilterExpr {
     my ($self, $tokens) = @_;
-    
+
     debug("in SUB\n");
-    
+
     my $expr = PrimaryExpr($self, $tokens);
     while (match($self, $tokens, '\\[')) {
         # really PredicateExpr...
         $expr->push_predicate(Expr($self, $tokens));
         match($self, $tokens, '\\]', 1);
     }
-    
+
     return $expr;
 }
 
@@ -452,9 +462,9 @@ sub PrimaryExpr {
     my ($self, $tokens) = @_;
 
     debug("in SUB\n");
-    
+
     my $expr = XML::XPath::Expr->new($self);
-    
+
     if (match($self, $tokens, $LITERAL)) {
         # new Literal with $self->{_curr_match}...
         $self->{_curr_match} =~ m/^(["'])(.*)\1$/;
@@ -488,28 +498,28 @@ sub PrimaryExpr {
         match($self, $tokens, '\\)', 1);
     }
     else {
-        die "Not a PrimaryExpr at ", $tokens->[$self->{_tokpos}], "\n";
+        croak("Not a PrimaryExpr at " . ($tokens->[$self->{_tokpos}] ||''));
     }
-    
+
     return $expr;
 }
 
 sub Arguments {
     my ($self, $tokens) = @_;
-    
+
     debug("in SUB\n");
-    
+
     my @args;
-    
+
     if($tokens->[$self->{_tokpos}] eq ')') {
         return \@args;
     }
-    
+
     push @args, Expr($self, $tokens);
     while (match($self, $tokens, ',')) {
         push @args, Expr($self, $tokens);
     }
-    
+
     return \@args;
 }
 
@@ -517,9 +527,9 @@ sub LocationPath {
     my ($self, $tokens) = @_;
 
     debug("in SUB\n");
-    
+
     my $loc_path = XML::XPath::LocationPath->new();
-    
+
     if (match($self, $tokens, '/')) {
         # root
         debug("SUB: Matched root\n");
@@ -545,17 +555,17 @@ sub LocationPath {
     else {
         push @$loc_path, RelativeLocationPath($self, $tokens);
     }
-    
+
     return $loc_path;
 }
 
 sub optimise_descendant_or_self {
     my ($self, $tokens) = @_;
-    
+
     debug("in SUB\n");
-    
+
     my $tokpos = $self->{_tokpos};
-    
+
     # // must be followed by a Step.
     if ($tokens->[$tokpos+1] && $tokens->[$tokpos+1] eq '[') {
         # next token is a predicate
@@ -564,7 +574,7 @@ sub optimise_descendant_or_self {
     elsif ($tokens->[$tokpos] =~ /^\.\.?$/) {
         # abbreviatedStep - can't optimise.
         return;
-    }                                                                                              
+    }
     else {
         debug("Trying to optimise //\n");
         my $step = Step($self, $tokens);
@@ -583,11 +593,11 @@ sub optimise_descendant_or_self {
 
 sub RelativeLocationPath {
     my ($self, $tokens) = @_;
-    
+
     debug("in SUB\n");
-    
+
     my @steps;
-    
+
     push @steps, Step($self, $tokens);
     while (match($self, $tokens, '//?')) {
         if ($self->{_curr_match} eq '//') {
@@ -601,13 +611,15 @@ sub RelativeLocationPath {
             }
         }
         push @steps, Step($self, $tokens);
-        if (@steps > 1 && 
-                $steps[-1]->{axis} eq 'self' && 
-                $steps[-1]->{test} == XML::XPath::Step::test_nt_node) {
+        if ((scalar(@steps) > 1)
+            &&
+            (defined $steps[-1]->{axis} && ($steps[-1]->{axis} eq 'self'))
+            &&
+            (defined $steps[-1]->{test} && ($steps[-1]->{test} == XML::XPath::Step::test_nt_node))) {
             pop @steps;
         }
     }
-    
+
     return @steps;
 }
 
@@ -615,7 +627,7 @@ sub Step {
     my ($self, $tokens) = @_;
 
     debug("in SUB\n");
-    
+
     if (match($self, $tokens, '\\.')) {
         # self::node()
         return XML::XPath::Step->new($self, 'self', XML::XPath::Step::test_nt_node);
@@ -627,167 +639,189 @@ sub Step {
     else {
         # AxisSpecifier NodeTest Predicate(s?)
         my $token = $tokens->[$self->{_tokpos}];
-        
-        debug("SUB: Checking $token\n");
-        
+
+        debug("SUB: Checking $token\n") if defined $token;
+
         my $step;
-        if ($token eq 'processing-instruction') {
-            $self->{_tokpos}++;
-            match($self, $tokens, '\\(', 1);
-            match($self, $tokens, $LITERAL);
-            $self->{_curr_match} =~ /^["'](.*)["']$/;
-            $step = XML::XPath::Step->new($self, 'child',
-                                    XML::XPath::Step::test_nt_pi,
-                        XML::XPath::Literal->new($1));
-            match($self, $tokens, '\\)', 1);
-        }
-        elsif ($token =~ /^\@($NCWild|$QName|$QNWild)$/o) {
-            $self->{_tokpos}++;
-                        if ($token eq '@*') {
-                            $step = XML::XPath::Step->new($self,
-                                    'attribute',
-                                    XML::XPath::Step::test_attr_any,
-                                    '*');
-                        }
-                        elsif ($token =~ /^\@($NCName):\*$/o) {
-                            $step = XML::XPath::Step->new($self,
-                                    'attribute',
-                                    XML::XPath::Step::test_attr_ncwild,
-                                    $1);
-                        }
-                        elsif ($token =~ /^\@($QName)$/o) {
-                            $step = XML::XPath::Step->new($self,
-                                    'attribute',
-                                    XML::XPath::Step::test_attr_qname,
-                                    $1);
-                        }
-        }
-        elsif ($token =~ /^($NCName):\*$/o) { # ns:*
-            $self->{_tokpos}++;
-            $step = XML::XPath::Step->new($self, 'child', 
-                                XML::XPath::Step::test_ncwild,
-                                $1);
-        }
-        elsif ($token =~ /^$QNWild$/o) { # *
-            $self->{_tokpos}++;
-            $step = XML::XPath::Step->new($self, 'child', 
-                                XML::XPath::Step::test_any,
-                                $token);
-        }
-        elsif ($token =~ /^$QName$/o) { # name:name
-            $self->{_tokpos}++;
-            $step = XML::XPath::Step->new($self, 'child', 
-                                XML::XPath::Step::test_qname,
-                                $token);
-        }
-        elsif ($token eq 'comment()') {
-                    $self->{_tokpos}++;
-            $step = XML::XPath::Step->new($self, 'child',
-                            XML::XPath::Step::test_nt_comment);
-        }
-        elsif ($token eq 'text()') {
-            $self->{_tokpos}++;
-            $step = XML::XPath::Step->new($self, 'child',
-                    XML::XPath::Step::test_nt_text);
-        }
-        elsif ($token eq 'node()') {
-            $self->{_tokpos}++;
-            $step = XML::XPath::Step->new($self, 'child',
-                    XML::XPath::Step::test_nt_node);
-        }
-        elsif ($token eq 'processing-instruction()') {
-            $self->{_tokpos}++;
-            $step = XML::XPath::Step->new($self, 'child',
-                    XML::XPath::Step::test_nt_pi);
-        }
-        elsif ($token =~ /^$AXIS_NAME($NCWild|$QName|$QNWild|$NODE_TYPE)$/o) {
-                    my $axis = $1;
-                    $self->{_tokpos}++;
-                    $token = $2;
+        if (defined $token) {
             if ($token eq 'processing-instruction') {
+                $self->{_tokpos}++;
                 match($self, $tokens, '\\(', 1);
                 match($self, $tokens, $LITERAL);
                 $self->{_curr_match} =~ /^["'](.*)["']$/;
-                $step = XML::XPath::Step->new($self, $axis,
-                                        XML::XPath::Step::test_nt_pi,
-                            XML::XPath::Literal->new($1));
+                $step = XML::XPath::Step->new(
+                    $self, 'child',
+                    XML::XPath::Step::test_nt_pi,
+                    XML::XPath::Literal->new($1));
                 match($self, $tokens, '\\)', 1);
             }
+            elsif ($token =~ /^\@($NCWild|$QName|$QNWild)$/o) {
+                $self->{_tokpos}++;
+                if ($token eq '@*') {
+                    $step = XML::XPath::Step->new(
+                        $self,
+                        'attribute',
+                        XML::XPath::Step::test_attr_any,
+                        '*');
+                }
+                elsif ($token =~ /^\@($NCName):\*$/o) {
+                    $step = XML::XPath::Step->new(
+                        $self,
+                        'attribute',
+                        XML::XPath::Step::test_attr_ncwild,
+                        $1);
+                }
+                elsif ($token =~ /^\@($QName)$/o) {
+                    $step = XML::XPath::Step->new(
+                        $self,
+                        'attribute',
+                        XML::XPath::Step::test_attr_qname,
+                        $1);
+                }
+            }
             elsif ($token =~ /^($NCName):\*$/o) { # ns:*
-                $step = XML::XPath::Step->new($self, $axis, 
-                                    (($axis eq 'attribute') ? 
-                                    XML::XPath::Step::test_attr_ncwild
-                                        :
-                                    XML::XPath::Step::test_ncwild),
-                                    $1);
+                $self->{_tokpos}++;
+                $step = XML::XPath::Step->new(
+                    $self, 'child',
+                    XML::XPath::Step::test_ncwild,
+                    $1);
             }
             elsif ($token =~ /^$QNWild$/o) { # *
-                $step = XML::XPath::Step->new($self, $axis, 
-                                    (($axis eq 'attribute') ?
-                                    XML::XPath::Step::test_attr_any
-                                        :
-                                    XML::XPath::Step::test_any),
-                                    $token);
+                $self->{_tokpos}++;
+                $step = XML::XPath::Step->new(
+                    $self, 'child',
+                    XML::XPath::Step::test_any,
+                    $token);
             }
             elsif ($token =~ /^$QName$/o) { # name:name
-                $step = XML::XPath::Step->new($self, $axis, 
-                                    (($axis eq 'attribute') ?
-                                    XML::XPath::Step::test_attr_qname
-                                        :
-                                    XML::XPath::Step::test_qname),
-                                    $token);
+                $self->{_tokpos}++;
+                $step = XML::XPath::Step->new(
+                    $self, 'child',
+                    XML::XPath::Step::test_qname,
+                    $token);
             }
             elsif ($token eq 'comment()') {
-                $step = XML::XPath::Step->new($self, $axis,
-                                XML::XPath::Step::test_nt_comment);
+                $self->{_tokpos}++;
+                $step = XML::XPath::Step->new(
+                    $self, 'child',
+                    XML::XPath::Step::test_nt_comment);
             }
             elsif ($token eq 'text()') {
-                $step = XML::XPath::Step->new($self, $axis,
-                        XML::XPath::Step::test_nt_text);
+                $self->{_tokpos}++;
+                $step = XML::XPath::Step->new(
+                    $self, 'child',
+                    XML::XPath::Step::test_nt_text);
             }
             elsif ($token eq 'node()') {
-                $step = XML::XPath::Step->new($self, $axis,
-                        XML::XPath::Step::test_nt_node);
+                $self->{_tokpos}++;
+                $step = XML::XPath::Step->new(
+                    $self, 'child',
+                    XML::XPath::Step::test_nt_node);
             }
             elsif ($token eq 'processing-instruction()') {
-                $step = XML::XPath::Step->new($self, $axis,
+                $self->{_tokpos}++;
+                $step = XML::XPath::Step->new(
+                    $self, 'child',
+                    XML::XPath::Step::test_nt_pi);
+            }
+            elsif ($token =~ /^$AXIS_NAME($NCWild|$QName|$QNWild|$NODE_TYPE)$/o) {
+                my $axis = $1;
+                $self->{_tokpos}++;
+                $token = $2;
+                if ($token eq 'processing-instruction') {
+                    match($self, $tokens, '\\(', 1);
+                    match($self, $tokens, $LITERAL);
+                    $self->{_curr_match} =~ /^["'](.*)["']$/;
+                    $step = XML::XPath::Step->new(
+                        $self, $axis,
+                        XML::XPath::Step::test_nt_pi,
+                        XML::XPath::Literal->new($1));
+                    match($self, $tokens, '\\)', 1);
+                }
+                elsif ($token =~ /^($NCName):\*$/o) { # ns:*
+                    $step = XML::XPath::Step->new(
+                        $self, $axis,
+                        (($axis eq 'attribute') ?
+                         XML::XPath::Step::test_attr_ncwild
+                         :
+                         XML::XPath::Step::test_ncwild),
+                        $1);
+                }
+                elsif ($token =~ /^$QNWild$/o) { # *
+                    $step = XML::XPath::Step->new(
+                        $self, $axis,
+                        (($axis eq 'attribute') ?
+                         XML::XPath::Step::test_attr_any
+                         :
+                         XML::XPath::Step::test_any),
+                        $token);
+                }
+                elsif ($token =~ /^$QName$/o) { # name:name
+                    $step = XML::XPath::Step->new(
+                        $self, $axis,
+                        (($axis eq 'attribute') ?
+                         XML::XPath::Step::test_attr_qname
+                         :
+                         XML::XPath::Step::test_qname),
+                        $token);
+                }
+                elsif ($token eq 'comment()') {
+                    $step = XML::XPath::Step->new(
+                        $self, $axis,
+                        XML::XPath::Step::test_nt_comment);
+                }
+                elsif ($token eq 'text()') {
+                    $step = XML::XPath::Step->new(
+                        $self, $axis,
+                        XML::XPath::Step::test_nt_text);
+                }
+                elsif ($token eq 'node()') {
+                    $step = XML::XPath::Step->new(
+                        $self, $axis,
+                        XML::XPath::Step::test_nt_node);
+                }
+                elsif ($token eq 'processing-instruction()') {
+                    $step = XML::XPath::Step->new(
+                        $self, $axis,
                         XML::XPath::Step::test_nt_pi);
+                }
+                else {
+                    die "Shouldn't get here";
+                }
             }
             else {
-                die "Shouldn't get here";
+                die "token $token doesn't match format of a 'Step'\n";
             }
         }
-        else {
-            die "token $token doesn't match format of a 'Step'\n";
-        }
-        
+
         while (match($self, $tokens, '\\[')) {
             push @{$step->{predicates}}, Expr($self, $tokens);
             match($self, $tokens, '\\]', 1);
         }
-        
+
         return $step;
     }
 }
 
 sub is_step {
     my ($self, $tokens) = @_;
-    
+
     my $token = $tokens->[$self->{_tokpos}];
-    
+
     return unless defined $token;
-        
+
     debug("SUB: Checking if '$token' is a step\n");
-    
+
         local $^W;
-        
+
     if ($token eq 'processing-instruction') {
         return 1;
     }
     elsif ($token =~ /^\@($NCWild|$QName|$QNWild)$/o) {
         return 1;
     }
-    elsif ($token =~ /^($NCWild|$QName|$QNWild)$/o && $tokens->[$self->{_tokpos}+1] ne '(') {
+    elsif ($token =~ /^($NCWild|$QName|$QNWild)$/o
+           && (!defined $tokens->[$self->{_tokpos}+1] || ($tokens->[$self->{_tokpos}+1] ne '('))) {
         return 1;
     }
     elsif ($token =~ /^$NODE_TYPE$/o) {
@@ -796,7 +830,10 @@ sub is_step {
     elsif ($token =~ /^$AXIS_NAME($NCWild|$QName|$QNWild|$NODE_TYPE)$/o) {
         return 1;
     }
-    
+    elsif ($token =~ /^\.\.?$/) {
+        return 1;
+    }
+
     debug("SUB: '$token' not a step\n");
 
     return;
@@ -804,11 +841,11 @@ sub is_step {
 
 sub debug {
     return unless $XML::XPath::Debug;
-    
+
     my ($pkg, $file, $line, $sub) = caller(1);
-    
+
     $sub =~ s/^$pkg\:://;
-    
+
     while (@_) {
         my $x = shift;
         $x =~ s/\bPKG\b/$pkg/g;
