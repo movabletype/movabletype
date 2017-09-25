@@ -603,8 +603,14 @@ sub delete {
             );
     }
 
-    my $content_type;
     my $content_type_id = $app->param('content_type_id');
+    unless ($content_type_id) {
+        my $type = $app->param('type') || '';
+        if ( $type =~ /^content_data_(\d+)$/ ) {
+            $content_type_id = $1;
+        }
+    }
+    my $content_type;
     if ($content_type_id) {
         $content_type = MT::ContentType->load(
             { id => $content_type_id, blog_id => $blog->id } );
