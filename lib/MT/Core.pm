@@ -3266,7 +3266,7 @@ sub load_core_permissions {
                 'system.create_site',         'system.create_blog',
                 'system.sign_in_cms',         'system.sign_in_data_api',
                 'system.manage_users_groups', 'system.manage_content_types',
-
+                'system.manage_content_data'
             ],
             'order'            => 0,
             'permitted_action' => {
