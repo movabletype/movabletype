@@ -1217,13 +1217,14 @@ sub remove_content_data_archive_file {
             $timestamp = $mt->target_dt( $content_data, $map );
         }
 
-        my $category_id;
-        if ( $mt->can('target_category_id') ) {
-            $category_id = $mt->target_category_id( $content_data, $map );
+        my $category_ids = [];
+        if ( $mt->can('target_category_ids') ) {
+            $category_ids = $mt->target_category_ids( $content_data, $map );
         }
+        my $cat = @$category_ids ? $category_ids->[0] : undef;
 
         my $file
-            = $mt->archive_file_for( $content_data, $blog, $at, $category_id,
+            = $mt->archive_file_for( $content_data, $blog, $at, $cat,
             $map, $timestamp, $author );
         $file = File::Spec->catfile( $archive_root, $file );
         if ( !defined $file ) {
