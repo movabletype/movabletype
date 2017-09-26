@@ -892,5 +892,23 @@ sub permalink {
     $url;
 }
 
+sub field_categories {
+    my $self = shift;
+    my ($content_field_id) = @_ or return;
+    $self->cache_property(
+        "field_categories:$content_field_id",
+        sub {
+            my $category_ids = $self->data->{$content_field_id} || [];
+            return unless @$category_ids;
+            return MT::Category->load(
+                {   id              => $category_ids,
+                    blog_id         => $self->blog_id,
+                    category_set_id => { not => 0 },
+                },
+            );
+        }
+    );
+}
+
 1;
 

@@ -408,6 +408,312 @@ sub rebuild_archives {
     $mt->SUPER::rebuild_archives(@_);
 }
 
+#   rebuild_content_data
+#
+# $mt->rebuild_content_data(ContentData => $content_data_id,
+#                    Blog => [ $blog | $blog_id ],
+#                    [ BuildDependencies => (0 | 1), ]
+#                    [ OldPrevious => $old_previous_content_data_id,
+#                      OldNext => $old_next_content_data_id, ]
+#                    [ NoStatic => (0 | 1), ]
+#                    );
+sub rebuild_content_data {
+    my $mt    = shift;
+    my %param = @_;
+
+    my $content_data = $param{ContentData}
+        or
+        return $mt->errtrans( "Parameter '[_1]' is required", 'ContentData' );
+    unless ( ref $content_data ) {
+        $content_data = MT::ContentData->load($content_data);
+    }
+    unless ($content_data) {
+        return $mt->errtrans( "Parameter '[_1]' is invalid", 'ContentData' );
+    }
+
+    my $blog = $param{Blog} || $content_data->blog
+        or return $mt->errtrans( "Load of blog '[_1]' failed",
+        $content_data->blog_id );
+    return 1 if $blog->is_dynamic;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('--- Start rebuild_content_data.');
+
+    my %cache_maps;
+
+    my $at
+        = $param{PreferredArchiveOnly}
+        ? $blog->archive_type_preferred
+        : $blog->archive_type;
+    unless ( defined $at && $at ne '' ) {
+        $at = 'ContentType';
+    }
+    if ( $at && $at ne 'None' ) {
+        my @at = grep { $_ =~ /^ContentType/ } split( ',', $at );
+        for my $at (@at) {
+            my $archiver = $mt->archiver($at);
+            next unless $archiver;    # invalid archive type
+
+            my @maps;
+            if ( $param{TemplateMap} ) {
+                @maps = ( $param{TemplateMap} );
+            }
+            else {
+                @maps = MT::TemplateMap->load(
+                    {   blog_id      => $content_data->blog_id,
+                        archive_type => $at,
+                    },
+                    {   join => MT::Template->join_on(
+                            undef,
+                            {   id => \'= templatemap_template_id',
+                                content_type_id =>
+                                    $content_data->content_type_id,
+                            },
+                        ),
+                    },
+                );
+            }
+            $cache_maps{$at} = \@maps;
+
+            if ( $archiver->category_based ) {
+                for my $map (@maps) {
+                    for my $cat (
+                        $content_data->field_categories( $map->cat_field_id )
+                        )
+                    {
+                        $mt->_rebuild_content_archive_type(
+                            ContentData => $content_data,
+                            Blog        => $blog,
+                            ArchiveType => $at,
+                            Category    => $cat,
+                            NoStatic    => $param{NoStatic},
+
+                            # Force       => ($param{Force} ? 1 : 0),
+                            TemplateMap => $map,
+                        ) or return;
+                    }
+                }
+            }
+            else {
+                for my $map (@maps) {
+                    $mt->_rebuild_content_archive_type(
+                        ContentData => $content_data,
+                        Blog        => $blog,
+                        ArchiveType => $at,
+                        TemplateMap => $map,
+                        NoStatic    => $param{NoStatic},
+                        Force       => ( $param{Force} ? 1 : 0 ),
+                        Author      => $content_data->author,
+                    ) or return;
+                }
+            }
+        }
+    }
+
+    ## The above will just rebuild the archive pages for this particular
+    ## content data. If we want to rebuild all of the content data/archives/indexes
+    ## on which this entry could be featured etc., however, we need to
+    ## rebuild all of the entry's dependencies. Note that all of these
+    ## are not *necessarily* dependencies, depending on the usage of tags,
+    ## etc. There is not a good way to determine exact dependencies; it is
+    ## easier to just rebuild, rebuild, rebuild.
+
+    return 1
+        unless $param{BuildDependencies}
+        || $param{BuildIndexes}
+        || $param{BuildArchives};
+
+    if ( $param{BuildDependencies} ) {
+        ## Rebuild previous and next content data archive pages.
+        if ( my $prev = $content_data->previous(1) ) {
+            $mt->rebuild_content_data(
+                ContentData          => $prev,
+                PreferredArchiveOnly => 1
+            ) or return;
+            ## Rebuild the old previous and next content data, if we have some.
+            if (   $param{OldPrevious}
+                && ( $param{OldPrevious} != $prev->id )
+                && ( my $old_prev
+                    = MT::ContentData->load( $param{OldPrevious} ) )
+                )
+            {
+                $mt->rebuild_content_data(
+                    ContentData          => $old_prev,
+                    PreferredArchiveOnly => 1
+                ) or return;
+            }
+        }
+        if ( my $next = $content_data->next(1) ) {
+            $mt->rebuild_content_data(
+                ContentData          => $next,
+                PreferredArchiveOnly => 1
+            ) or return;
+
+            if (   $param{OldNext}
+                && ( $param{OldNext} != $next->id )
+                && ( my $old_next = MT::ContentData->load( $param{OldNext} ) )
+                )
+            {
+                $mt->rebuild_content_data(
+                    ContentData          => $old_next,
+                    PreferredArchiveOnly => 1
+                ) or return;
+            }
+        }
+    }
+
+    if ( $param{BuildDependencies} || $param{BuildIndexes} ) {
+        ## Rebuild all indexes, in case this entry is on an index.
+        if ( !( exists $param{BuildIndexes} ) || $param{BuildIndexes} ) {
+            $mt->rebuild_indexes( Blog => $blog ) or return;
+        }
+    }
+
+    if ( $param{BuildDependencies} || $param{BuildArchives} ) {
+        ## Rebuild previous and next daily, weekly, and monthly archives;
+        ## adding a new entry could cause changes to the intra-archive
+        ## navigation.
+        my %at = map { $_ => 1 } split /,/, $blog->archive_type;
+        my @db_at = grep {
+            my $archiver = $mt->archiver($_);
+            $archiver && $archiver->date_based
+        } $mt->archive_types;
+        for my $at (@db_at) {
+            if ( $at{$at} ) {
+                my $archiver = $mt->archiver($at);
+                if ( $archiver->category_based ) {
+                    my @maps;
+                    if ( $cache_maps{$at} ) {
+                        @maps = @{ $cache_maps{$at} };
+                    }
+                    else {
+                        @maps = MT::TemplateMap->load(
+                            {   blog_id      => $content_data->blog_id,
+                                archive_type => $at,
+                            },
+                            {   join => MT::Template->join_on(
+                                    undef,
+                                    {   id => \'= templatemap_template_id',
+                                        content_type_id =>
+                                            $content_data->content_type_id,
+                                    },
+                                ),
+                            },
+                        );
+                        $cache_maps{$at} = \@maps;
+                    }
+
+                    for my $map (@maps) {
+                        for my $cat (
+                            $content_data->field_categories(
+                                $map->cat_field_id
+                            )
+                            )
+                        {
+
+                            if (my $prev_arch
+                                = $archiver->previous_archive_content_data(
+                                    {   content_data => $content_data,
+                                        category     => $cat,
+                                    }
+                                )
+                                )
+                            {
+                                $mt->_rebuild_content_archive_type(
+                                    NoStatic => $param{NoStatic},
+
+                                    # Force    => ($param{Force} ? 1 : 0),
+                                    ContentData => $prev_arch,
+                                    Blog        => $blog,
+                                    Category    => $cat,
+                                    TemplateMap => $map,
+                                    ArchiveType => $at
+                                ) or return;
+                            }
+                            if (my $next_arch
+                                = $archiver->next_archive_content_data(
+                                    {   content_data => $content_data,
+                                        category     => $cat,
+                                    }
+                                )
+                                )
+                            {
+                                $mt->_rebuild_content_archive_type(
+                                    NoStatic => $param{NoStatic},
+
+                                    # Force    => ($param{Force} ? 1 : 0),
+                                    ContentData => $next_arch,
+                                    Blog        => $blog,
+                                    Category    => $cat,
+                                    TemplateMap => $map,
+                                    ArchiveType => $at
+                                ) or return;
+                            }
+                        }
+                    }
+                }
+                else {
+                    if (my $prev_arch
+                        = $archiver->previous_archive_content_data(
+                            {   content_data => $content_data,
+                                $archiver->author_based
+                                ? ( author => $content_data->author )
+                                : (),
+                            }
+                        )
+                        )
+                    {
+                        $mt->_rebuild_content_archive_type(
+                            NoStatic => $param{NoStatic},
+
+                            # Force       => ($param{Force} ? 1 : 0),
+                            ContentData => $prev_arch,
+                            Blog        => $blog,
+                            ArchiveType => $at,
+                            $param{TemplateMap}
+                            ? ( TemplateMap => $param{TemplateMap} )
+                            : (),
+                            $archiver->author_based
+                            ? ( Author => $content_data->author )
+                            : (),
+                        ) or return;
+                    }
+                    if (my $next_arch = $archiver->next_archive_content_data(
+                            {   content_data => $content_data,
+                                $archiver->author_based
+                                ? ( author => $content_data->author )
+                                : (),
+                            }
+                        )
+                        )
+                    {
+                        $mt->_rebuild_content_archive_type(
+                            NoStatic => $param{NoStatic},
+
+                            # Force       => ($param{Force} ? 1 : 0),
+                            ContentData => $next_arch,
+                            Blog        => $blog,
+                            ArchiveType => $at,
+                            $param{TemplateMap}
+                            ? ( TemplateMap => $param{TemplateMap} )
+                            : (),
+                            $archiver->author_based
+                            ? ( Author => $content_data->author )
+                            : (),
+                        ) or return;
+                    }
+                }
+            }
+        }
+    }
+
+    MT::Util::Log->info('--- End   rebuild_content_data.');
+
+    1;
+}
+
 sub rebuild_file {
     my $mt = shift;
     my ( $blog, $root_path, $map, $at, $ctx, $cond, $build_static, %args )
@@ -1357,6 +1663,7 @@ sub rebuild_deleted_content_data {
                             ArchiveType => $at,
                             ContentData => $content_data,
                             Category    => $cat,
+                            TemplateMap => $map,
                         }
                     )
                     )

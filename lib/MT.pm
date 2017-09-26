@@ -1575,6 +1575,12 @@ sub rebuild_entry {
         or return $mt->error( $mt->publisher->errstr );
 }
 
+sub rebuild_content_data {
+    my $mt = shift;
+    $mt->publisher->rebuild_content_data(@_)
+        or return $mt->error( $mt->publisher->errstr );
+}
+
 sub rebuild_indexes {
     my $mt = shift;
     $mt->publisher->rebuild_indexes(@_)

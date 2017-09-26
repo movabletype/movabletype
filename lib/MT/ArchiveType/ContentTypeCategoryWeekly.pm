@@ -188,5 +188,9 @@ sub archive_group_contents {
 
 *date_range    = \&MT::ArchiveType::Weekly::date_range;
 *archive_title = \&MT::ArchiveType::CategoryWeekly::archive_title;
+*next_archive_content_data
+    = \&MT::ArchiveType::ContentTypeDate::next_archive_content_data;
+*previous_archive_content_data
+    = \&MT::ArchiveType::ContentTypeDate::previous_archive_content_data;
 
 1;

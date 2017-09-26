@@ -330,4 +330,108 @@ sub make_archive_group_args {
     return $args;
 }
 
+# get a content data in the next or previous archive for dated-based ArchiveType
+sub next_archive_content_data {
+    $_[0]->adjacent_archive_content_data( { %{ $_[1] }, order => 'next' } );
+}
+
+sub previous_archive_content_data {
+    $_[0]->adjacent_archive_content_data(
+        { %{ $_[1] }, order => 'previous' } );
+}
+
+sub adjacent_archive_content_data {
+    my $obj = shift;
+    my ($param) = @_;
+
+    my $order = ( $param->{order} eq 'previous' ) ? 'descend' : 'ascend';
+
+    my $author;
+    $author = $param->{author} if $obj->author_based;
+
+    my ( $category_field_id, $category_id );
+    if ( $obj->category_based ) {
+        $category_field_id = $param->{category_field_id};
+        $category_id       = $param->{category_id};
+    }
+
+    my $datetime_field_id = $param->{datetime_field_id};
+
+    my $ts      = $param->{ts};
+    my $blog_id = $param->{blog_id}
+        || ( $param->{blog} ? $param->{blog}->id : undef );
+
+    # if $param->{content_data} given, override $ts and $blog_id.
+    if ( my $cd = $param->{content_data} ) {
+        if ($datetime_field_id) {
+            $ts = $cd->data->{$datetime_field_id};
+        }
+        $ts ||= $cd->authored_on;
+
+        $blog_id = $cd->blog_id;
+    }
+
+    my ( $start, $end ) = $obj->date_range($ts);
+    $ts = ( $order eq 'descend' ) ? $start : $end;
+
+    my $terms = {
+        status => MT::Entry::RELEASE(),
+        $blog_id ? ( blog_id   => $blog_id )    : (),
+        $author  ? ( author_id => $author->id ) : (),
+    };
+
+    my $category_join;
+    if ( $category_field_id && $category_id ) {
+        $category_join = MT::ContentFieldIndex->join_on(
+            undef,
+            {   content_data_id  => \'= cd_id',
+                content_field_id => $category_field_id,
+                value_integer    => $category_id,
+            },
+            { alias => 'cat_cf_idx' },
+        );
+    }
+
+    require MT::ContentData;
+    require MT::Entry;
+    my $content_data;
+    if ($datetime_field_id) {
+        $content_data = MT::ContentData->load(
+            $terms,
+            {   limit => 1,
+                joins => [
+                    MT::ContentFieldIndex->join_on(
+                        undef,
+                        {   content_data_id  => \'= cd_id',
+                            content_field_id => $datetime_field_id,
+                            value_datetime   => {
+                                op => $order eq 'descend' ? '<' : '>',
+                                value => $ts,
+                            },
+                        },
+                        {   sort      => 'value_datetime',
+                            direction => $order,
+                            alias     => 'dt_cf_idx',
+                        },
+                    ),
+                    $category_join || (),
+                ],
+            }
+        );
+    }
+    else {
+        $content_data = MT::ContentData->load(
+            $terms,
+            {   limit     => 1,
+                sort      => 'authored_on',
+                direction => $order,
+                start_val => $ts,
+                $category_join ? ( join => $category_join ) : (),
+            }
+        );
+    }
+
+    return $content_data;
+}
+
 1;

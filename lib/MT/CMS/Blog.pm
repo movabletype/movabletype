@@ -781,12 +781,16 @@ sub rebuild_pages {
     my $old_status     = $app->param('old_status');
     my $return_args    = $app->param('return_args');
 
+    my $content_type_id = $app->param('content_type_id');
+    my $content_data_id = $app->param('content_data_id');
+
     my ($tmpl_saved);
 
     # Make sure errors go to a sensible place when in fs mode
     # TODO: create contin. earlier, pass it thru
     if ($fs) {
-        my ( $type, $obj_id ) = $param_type =~ m/(entry|index)-(\d+)/;
+        my ( $type, $obj_id )
+            = $param_type =~ m/(entry|content_data|index)-(\d+)/;
         if ( $type && $obj_id ) {
             my $edit_type = $type;
             $edit_type = 'template' if $type eq 'index';
@@ -795,7 +799,23 @@ sub rebuild_pages {
                 my $entry = MT::Entry->load($obj_id);
                 $edit_type = $entry ? $entry->class : 'entry';
             }
-            $app->{goback} = $app->object_edit_uri( $edit_type, $obj_id );
+            if ( $type eq 'content_data' ) {
+                require MT::ContentData;
+                my $content_data = MT::ContentData->load($obj_id);
+                $app->{goback} = $app->uri(
+                    mode => 'edit_content_data',
+                    args => {
+                        id => $obj_id,
+                        $content_data
+                        ? ( blog_id => $content_data->blog_id )
+                        : (),
+                        content_type_id => $content_data->content_type_id,
+                    },
+                );
+            }
+            else {
+                $app->{goback} = $app->object_edit_uri( $edit_type, $obj_id );
+            }
             $app->{value} ||= $app->translate('Back');
         }
     }
@@ -848,6 +868,21 @@ sub rebuild_pages {
             OldNext           => $old_next
         ) or return $app->publish_error();
         $order = "entry '" . $entry->title . "'";
+    }
+    elsif ( $type =~ /^content_data-(\d+)$/ ) {
+        my $content_data_id = $1;
+        require MT::ContentData;
+        my $content_data = MT::ContentData->load($content_data_id);
+        return $app->permission_denied
+            unless $perms->can_edit_content_data( $content_data, $app->user );
+        $app->rebuild_content_data(
+            ContentData       => $content_data,
+            BuildDependencies => 1,
+            OldCategories     => $old_categories,
+            OldPrevious       => $old_previous,
+            OldNext           => $old_next,
+        ) or return $app->publish_error;
+        $order = "content data '" . $content_data->title . "'";
     }
     elsif ( $archiver && $archiver->category_based ) {
         return $app->permission_denied()
@@ -1032,6 +1067,8 @@ sub rebuild_pages {
             start_time      => $start_time,
             incomplete      => 100 - $complete,
             entry_id        => $entry_id,
+            content_type_id => $content_type_id,
+            content_data_id => $content_data_id,
             dynamic         => $dynamic,
             is_new          => $is_new,
             old_status      => $old_status,
@@ -1063,15 +1100,42 @@ sub rebuild_pages {
                 IsNew     => $is_new,
             );
         }
+        elsif ($content_data_id) {
+            require MT::ContentData;
+            my $content_data = MT::ContentData->load($content_data_id)
+                or return $app->errtrans( 'Cannot load content data #[_1].',
+                $content_data_id );
+            require MT::Blog;
+            my $blog = MT::Blog->load( $content_data->blog_id )
+                or return $app->errtrans( 'Cannot load blog #[_1].',
+                $content_data->blog_id );
+            return $app->redirect(
+                $app->uri(
+                    mode => 'view',
+                    args => {
+                        blog_id         => $blog->id,
+                        content_type_id => $content_data->content_type_id,
+                        _type           => 'content_data',
+                        type            => 'content_data_'
+                            . $content_data->content_type_id,
+                        id => $content_data->id,
+                        $is_new
+                        ? ( saved_added => 1 )
+                        : ( saved_changes => 1 ),
+                    }
+                )
+            );
+        }
         else {
-            my $all          = $order =~ /,/;
-            my $type         = $order;
-            my $is_one_index = $order =~ /index template/;
-            my $is_entry     = $order =~ /entry/;
+            my $all             = $order =~ /,/;
+            my $type            = $order;
+            my $is_one_index    = $order =~ /index template/;
+            my $is_entry        = $order =~ /entry/;
+            my $is_content_data = $order =~ /cotnent data/;
             my $built_type;
-            if ( $is_entry || $is_one_index ) {
+            if ( $is_entry || $is_content_data || $is_one_index ) {
                 ( $built_type = $type )
-                    =~ s/^(entry|index template)/$app->translate($1)/e;
+                    =~ s/^(entry|content data|index template)/$app->translate($1)/e;
             }
             else {
                 $built_type = $app->translate($type);
@@ -1081,6 +1145,7 @@ sub rebuild_pages {
                 type            => $archive_label,
                 is_one_index    => $is_one_index,
                 is_entry        => $is_entry,
+                is_content_data => $is_content_data,
                 archives        => $type ne 'index',
                 start_timestamp => MT::Util::epoch2ts( $blog, $start_time ),
                 total_time      => time - $start_time,
@@ -1193,8 +1258,31 @@ sub start_rebuild_pages {
         $param{build_type_name}
             = $app->translate( "[_1] '[_2]'", $entry->class_label,
             MT::Util::encode_html( $entry->title ) );
-        $param{is_entry} = 1;
-        $param{entry_id} = $entry_id;
+        $param{is_content} = 1;
+        $param{is_entry}   = 1;
+        $param{entry_id}   = $entry_id;
+        for my $col (
+            qw( is_new old_status old_next old_previous old_categories ))
+        {
+            $param{$col} = $app->param($col);
+        }
+    }
+    elsif ( $type_name =~ /^content_data-(\d+)$/ ) {
+        my $content_data_id = $1;
+        require MT::ContentData;
+        my $content_data = MT::ContentData->load($content_data_id)
+            or return $app->errtrans( 'Cannot load content data #[_1].',
+            $content_data_id );
+        $param{build_type_name} = $app->translate(
+            "[_1] '[_2]'",
+            $content_data->content_type->name || $app->translate('(no name)'),
+            MT::Util::encode_html( $content_data->title )
+        );
+        $param{is_content}      = 1;
+        $param{is_content_data} = 1;
+        $param{content_data_id} = $content_data_id;
+        $param{content_type_id} = $content_data->content_type_id;
+
         for my $col (
             qw( is_new old_status old_next old_previous old_categories ))
         {
@@ -1202,7 +1290,9 @@ sub start_rebuild_pages {
         }
     }
     $param{is_full_screen}
-        = $param{is_entry} || $app->param('single_template');
+        = $param{is_content}
+        || $param{is_content_data}
+        || $app->param('single_template');
     $param{page_titles} = [ { bc_name => 'Rebuilding' } ];
     if ( $app->param('no_rebuilding_tmpl') ) {
         $app->param( 'total', $total );

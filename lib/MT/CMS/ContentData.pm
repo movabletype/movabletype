@@ -389,11 +389,16 @@ sub save {
         ? MT::ContentData->load($content_data_id)
         : MT::ContentData->new();
 
-    my $orig = $content_data->clone;
-    my $status_old = $content_data_id ? $content_data->status : 0;
-
     my $archive_type = '';
-    my $orig_file    = '';
+
+    my $orig      = $content_data->clone;
+    my $orig_file = '';
+    if ( $content_data->id ) {
+        $archive_type = 'ContentType';
+        $orig_file
+            = MT::Util::archive_file_for( $orig, $blog, $archive_type );
+    }
+    my $status_old = $content_data_id ? $content_data->status : 0;
 
     if ( $content_data->id ) {
         $content_data->modified_by( $app->user->id );
@@ -434,6 +439,8 @@ sub save {
     my $uo_d = $app->param('unpublished_on_date');
     my $uo_t = $app->param('unpublished_on_time');
 
+    my ( $previous_old, $next_old );
+
     # TODO: permission check
     if ($ao_d) {
         my %param = ();
@@ -469,6 +476,10 @@ sub save {
         }
         $param{return_args} = $app->param('return_args');
         return $app->forward( "view", \%param ) if $param{error};
+        if ( $content_data->authored_on ) {
+            $previous_old = $content_data->previous(1);
+            $next_old     = $content_data->next(1);
+        }
         my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
             ( $6 || 0 );
         $content_data->authored_on($ts);
@@ -537,12 +548,19 @@ sub save {
             $param{show_input_unpublished_on} = 1 if $param{error};
             $param{return_args} = $app->param('return_args');
             return $app->forward( "view", \%param ) if $param{error};
+            if ( $content_data->unpublished_on ) {
+                $previous_old = $content_data->previous(1);
+                $next_old     = $content_data->next(1);
+            }
             $content_data->unpublished_on($ts);
         }
         else {
             $content_data->unpublished_on(undef);
         }
     }
+
+    my $is_new = $content_data->id ? 0 : 1;
+
     $content_data->convert_breaks(
         MT::Serialize->serialize( \$convert_breaks ) );
 
@@ -576,16 +594,65 @@ sub save {
         }
     }
 
+    ## If the saved status is RELEASE, or if the *previous* status was
+    ## RELEASE, then rebuild content data archives and indexes.
+    ## Otherwise the status was and is HOLD, and we don't have to do anything.
+    if ( ( $content_data->status || 0 ) == MT::Entry::RELEASE()
+        || $status_old == MT::Entry::RELEASE() )
+    {
+        if ( $blog->count_static_templates($archive_type) == 0
+            || MT::Util->launch_background_tasks )
+        {
+            my $res = MT::Util::start_background_task(
+                sub {
+                    $app->run_callbacks('pre_build');
+
+                    $app->rebuild_content_data(
+                        ContentData       => $content_data,
+                        BuildDependencies => 1,
+                        OldPrevious       => $previous_old
+                        ? $previous_old->id
+                        : undef,
+                        OldNext => $next_old ? $next_old->id : undef,
+                    );
+
+                    $app->run_callbacks( 'rebuild', $blog );
+                    $app->run_callbacks('post_build');
+                    1;
+                }
+            );
+            return unless $res;
+        }
+        else {
+            return $app->redirect(
+                $app->uri(
+                    mode => 'start_rebuild',
+                    args => {
+                        blog_id => $content_data->blog_id,
+                        next    => 0,
+                        type    => 'content_data-' . $content_data->id,
+                        content_data_id => $content_data->id,
+                        is_new          => $is_new,
+                        old_status      => $status_old,
+                        $previous_old
+                        ? ( old_previous => $previous_old->id )
+                        : (),
+                        $next_old ? ( old_next => $next_old->id ) : (),
+                    },
+                )
+            );
+        }
+    }
     return $app->redirect(
         $app->uri(
-            'mode' => 'view',
-            args   => {
+            mode => 'view',
+            args => {
                 blog_id         => $blog_id,
                 content_type_id => $content_type_id,
                 _type           => 'content_data',
                 type            => 'content_data_' . $content_type_id,
                 id              => $content_data->id,
-                saved           => 1,
+                $is_new ? ( saved_added => 1 ) : ( saved_changes => 1 ),
             }
         )
     );

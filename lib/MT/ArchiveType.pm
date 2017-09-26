@@ -291,6 +291,14 @@ sub previous_archive_entry {
     shift->_getset_coderef( 'previous_archive_entry', @_ );
 }
 
+sub next_archive_content_data {
+    shift->_getset_coderef( 'next_archive_content_data', @_ );
+}
+
+sub previous_archive_content_data {
+    shift->_getset_coderef( 'previous_archive_content_data', @_ );
+}
+
 sub get_content {
     shift->_getset_coderef( 'get_content', @_ );
 }
