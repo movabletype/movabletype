@@ -1527,36 +1527,42 @@ sub _hdlr_category_archive {
         or return $ctx->error( $ctx->errstr );
     return if ( $cat eq '' );
 
+    my $cat_at_label
+        = $ctx->stash('content')
+        ? 'ContentType_Category'
+        : 'Category';
+
     my $curr_at
         = $ctx->{current_archive_type}
         || $ctx->{archive_type}
-        || 'Category';
+        || $cat_at_label;
 
     my $blog = $ctx->stash('blog');
-    return '' unless $blog || $curr_at eq 'Category';
-    if ( $curr_at ne 'Category' ) {
+    return '' unless $blog || $curr_at eq $cat_at_label;
+    if ( $curr_at ne $cat_at_label ) {
 
         # Check if "Category" archive is published
         my $at      = $blog->archive_type;
         my @at      = split /,/, $at;
-        my $cat_arc = 0;
+        my $cat_arc = '';
         for (@at) {
-            if ( 'Category' eq $_ ) {
+            if ( $cat_at_label eq $_ ) {
                 $cat_arc = 1;
                 last;
             }
         }
         return $ctx->error(
             MT->translate(
-                "[_1] cannot be used without publishing Category archive.",
-                '<$MTCategoryArchiveLink$>'
+                "[_1] cannot be used without publishing [_2] archive.",
+                '<$MTCategoryArchiveLink$>',
+                $cat_at_label
             )
         ) unless $cat_arc;
     }
 
     my $arch = $blog->archive_url;
     $arch .= '/' unless $arch =~ m!/$!;
-    $arch = $arch . archive_file_for( undef, $blog, 'Category', $cat );
+    $arch = $arch . archive_file_for( undef, $blog, $cat_at_label, $cat );
     $arch = MT::Util::strip_index( $arch, $blog ) unless $args->{with_index};
     $arch;
 }
