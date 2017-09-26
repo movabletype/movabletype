@@ -1325,27 +1325,29 @@ sub rebuild_deleted_content_data {
     for my $at (@at) {
         my $archiver = $mt->archiver($at) or next;
 
+        my $map = MT::TemplateMap->load(
+            {   blog_id      => $blog->id,
+                archive_type => $at,
+            },
+            {   join => MT::Template->join_on(
+                    undef,
+                    {   id              => \'= templatemap_template_id',
+                        content_type_id => $content_data->content_type_id,
+                    },
+                ),
+            },
+        );
+
         my ( $start, $end );
         my $target_dt;
-        my $map;
         if ( $archiver->date_based && $archiver->can('date_range') ) {
-            $map = MT::TemplateMap->load(
-                {   blog_id      => $blog->id,
-                    archive_type => $at,
-                },
-                {   join => MT::Template->join_on(
-                        undef,
-                        {   id              => \'= templatemap_template_id',
-                            content_type_id => $content_data->content_type_id,
-                        },
-                    ),
-                },
-            ) or next;
+            next unless $map;
             $target_dt = $archiver->target_dt( $content_data, $map );
             ( $start, $end ) = $archiver->date_range($target_dt);
         }
 
         if ( $archiver->category_based ) {
+            next unless $map;
             my $category_ids
                 = $archiver->target_category_ids( $content_data, $map );
             for my $cat_id (@$category_ids) {
