@@ -115,20 +115,22 @@ my $cd_no_category_author2 = MT::Test::Permission->make_content_data(
     data            => { $cf_datetime->id => '20180603180500', },
 );
 
-my $content_type_text = <<TEXT;
+my $pre_text = <<PRE;
 <\$mt:ArchiveTitle\$>
-<\$mt:ContentTitle\$>
+PRE
+my $suf_text = <<SUF;
 <mt:Archives><mt:ArchiveList><mt:ArchiveListHeader>Header</mt:ArchiveListHeader>
 <\$mt:ArchiveDate format="%Y/%m/%d"\$>
 <mt:ArchiveListFooter>Footer</mt:ArchiveListFooter></mt:ArchiveList></mt:Archives>
-TEXT
-my $text = <<TEXT;
-<\$mt:ArchiveTitle\$>
-<mt:Contents>a</mt:Contents>
-<mt:Archives><mt:ArchiveList><mt:ArchiveListHeader>Header</mt:ArchiveListHeader>
-<\$mt:ArchiveDate format="%Y/%m/%d"\$>
-<mt:ArchiveListFooter>Footer</mt:ArchiveListFooter></mt:ArchiveList></mt:Archives>
-TEXT
+SUF
+my $content_type_text
+    = $pre_text
+    . "<mt:ContentNext>\"<mt:ContentID>\"</mt:ContentNext>\n"
+    . $suf_text;
+my $text
+    = $pre_text
+    . "<mt:Contents><mt:ContentNext>\"<mt:ContentID>\"</mt:ContentNext></mt:Contents>\n"
+    . $suf_text;
 my $tmpl = MT::Test::Permission->make_template(
     blog_id         => $blog->id,
     content_type_id => $cd->id,
@@ -147,40 +149,43 @@ my $tmpl_archive = MT::Test::Permission->make_template(
 my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
 
 my $contents_html = {
-    content_type => "\nSample Content Data\n",
-    none_ao      => "\naaa\n",
-    none_cf      => "\naaa\n",
-    daily_ao     => "\na\n",
-    daily_cf     => "\naaa\n",
-    weekly_ao    => "\na\n",
-    weekly_cf    => "\naaa\n",
-    monthly_ao   => "\na\n",
-    monthly_cf   => "\naaa\n",
-    yearly_ao    => "\naaa\n",
-    yearly_cf    => "\naaa\n",
+    content_type => "\n\"3\"\n",
+    none_ao      => "\n\"3\"\"1\"\n",
+    none_cf      => "\n\"3\"\"1\"\n",
+    daily_ao     => "\n\"3\"\n",
+    daily_cf     => "\n\"3\"\"1\"\n",
+    weekly_ao    => "\n\"3\"\n",
+    weekly_cf    => "\n\"3\"\"1\"\n",
+    monthly_ao   => "\n\"3\"\n",
+    monthly_cf   => "\n\"3\"\"1\"\n",
+    yearly_ao    => "\n\"3\"\"1\"\n",
+    yearly_cf    => "\n\"3\"\"1\"\n",
 };
 my $archive_list_header = "Header\n";
 my $archive_date        = {
-    ct_ao                => "2017/10/09\n\n2017/09/09\n\n2017/08/09\n\n2016/09/09\n",
-    ct_cf                => "2017/06/03\n\n2017/06/03\n\n2017/06/03\n\n2018/06/03\n",
-    none_ao              => "2017/09/09\n",
-    none_cf              => "2017/06/03\n",
-    dated_only_daily_ao  => "2017/10/09\n\n2017/09/09\n\n2017/08/09\n\n2016/09/09\n",
-    dated_only_daily_cf  => "2018/06/03\n\n2017/06/03\n",
-    daily_ao             => "2017/10/09\n\n2017/09/09\n\n2017/08/09\n",
-    daily_cf             => "2017/06/03\n",
-    dated_only_weekly_ao => "2017/10/08\n\n2017/09/03\n\n2017/08/06\n\n2016/09/04\n",
+    ct_ao   => "2017/10/09\n\n2017/09/09\n\n2017/08/09\n\n2016/09/09\n",
+    ct_cf   => "2017/06/03\n\n2017/06/03\n\n2017/06/03\n\n2018/06/03\n",
+    none_ao => "2017/09/09\n",
+    none_cf => "2017/06/03\n",
+    dated_only_daily_ao =>
+        "2017/10/09\n\n2017/09/09\n\n2017/08/09\n\n2016/09/09\n",
+    dated_only_daily_cf => "2018/06/03\n\n2017/06/03\n",
+    daily_ao            => "2017/10/09\n\n2017/09/09\n\n2017/08/09\n",
+    daily_cf            => "2017/06/03\n",
+    dated_only_weekly_ao =>
+        "2017/10/08\n\n2017/09/03\n\n2017/08/06\n\n2016/09/04\n",
     dated_only_weekly_cf => "2018/06/03\n\n2017/05/28\n",
     weekly_ao            => "2017/10/08\n\n2017/09/03\n\n2017/08/06\n",
     weekly_cf            => "2017/05/28\n",
-    dated_only_monthly_ao => "2016/09/01\n\n2017/08/01\n\n2017/09/01\n\n2017/10/01\n",
+    dated_only_monthly_ao =>
+        "2016/09/01\n\n2017/08/01\n\n2017/09/01\n\n2017/10/01\n",
     dated_only_monthly_cf => "2017/06/01\n\n2018/06/01\n",
-    monthly_ao           => "2017/08/01\n\n2017/09/01\n\n2017/10/01\n",
-    monthly_cf           => "2017/06/01\n",
-    dated_only_yearly_ao => "2016/01/01\n\n2017/01/01\n",
-    dated_only_yearly_cf => "2017/01/01\n\n2018/01/01\n",
-    yearly_ao            => "2017/01/01\n",
-    yearly_cf            => "2017/01/01\n",
+    monthly_ao            => "2017/08/01\n\n2017/09/01\n\n2017/10/01\n",
+    monthly_cf            => "2017/06/01\n",
+    dated_only_yearly_ao  => "2016/01/01\n\n2017/01/01\n",
+    dated_only_yearly_cf  => "2017/01/01\n\n2018/01/01\n",
+    yearly_ao             => "2017/01/01\n",
+    yearly_cf             => "2017/01/01\n",
 };
 my $archive_list_footer = "Footer\n";
 my %html                = (
