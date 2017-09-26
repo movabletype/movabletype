@@ -1084,7 +1084,7 @@ sub core_tags {
             ContentIdentifier =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_identifier',
             ContentPermalink =>
-                '$Core::MT::Teplate::Tags::ContentType::_hdlr_content_permalink',
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_permalink',
             ContentSiteDescription =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_site_description',
             ContentSiteID =>
