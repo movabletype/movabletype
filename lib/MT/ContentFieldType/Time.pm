@@ -169,5 +169,15 @@ sub options_pre_save_handler {
 
     return;
 }
+
+sub options_pre_load_handler {
+    my ( $app, $type, $obj, $options ) = @_;
+
+    if ( $options->{initial_value} ) {
+        my ( $date, $time ) = split ' ', $options->{initial_value};
+        $options->{initial_time} = $time;
+    }
+}
+
 1;
 

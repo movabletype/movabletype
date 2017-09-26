@@ -40,7 +40,8 @@
 </mt:if>
 <script type="text/javascript" src="<mt:var name="static_uri">riot/riot+compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script>
-  var content_field_types = JSON.parse('<mt:var name="content_field_types" escape="json">');
+  var content_field_types = JSON.parse('<mt:var name="content_field_types" escape="js">');
+  var fields = <mt:if name="fields">JSON.parse('<mt:var name="fields" escape="js">');<mt:else>[];</mt:if>
   riot.mount('content-fields', {
     blog_id: "<mt:var name="blog_id" escape="js">",
     magic_token: "<mt:var name="magic_token" escape="js">",
@@ -50,7 +51,7 @@
     name: "<mt:var name="name" escape="js">",
     description: "<mt:var name="description" escape="js">",
     user_disp_option: "<mt:if name="user_disp_option">checked</mt:if>",
-    fields: [],
+    fields: fields,
     types: content_field_types,
   });
 </script>

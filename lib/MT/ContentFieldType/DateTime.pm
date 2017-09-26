@@ -56,35 +56,43 @@ sub options_validation_handler {
     return $app->translate(
         "Invalid date \'[_1]\'; An initial value dates must be in the format YYYY-MM-DD HH:MM:SS.",
         $ts,
-        )
-        if (
-        MT::Util::is_valid_date($ts)
+    ) if !MT::Util::is_valid_date($ts);
 
-        return;
+    return;
+}
+
+sub options_pre_save_handler {
+    my ( $app, $type, $obj, $options ) = @_;
+
+    if (   exists $options->{initial_date}
+        or exists $options->{initial_time} )
+    {
+        my $date
+            = exists $options->{initial_date}
+            ? delete $options->{initial_date}
+            : '1970-01-01';
+        my $time
+            = exists $options->{initial_time}
+            ? delete $options->{initial_time}
+            : '00:00:00';
+        $options->{initial_value} = "$date $time";
+    }
+    else {
+        $options->{initial_value} = undef;
     }
 
-    sub options_pre_save_handler {
-        my ( $app, $type, $obj, $options ) = @_;
+    return;
+}
 
-        if (   exists $options->{initial_date}
-            or exists $options->{initial_time} )
-        {
-            my $date
-                = exists $options->{initial_date}
-                ? delete $options->{initial_date}
-                : '1970-01-01';
-            my $time
-                = exists $options->{initial_time}
-                ? delete $options->{initial_time}
-                : '00:00:00';
-            $options->{initial_value} = "$date $time";
-        }
-        else {
-            $options->{initial_value} = undef;
-        }
+sub options_pre_load_handler {
+    my ( $app, $options ) = @_;
 
-        return;
+    if ( $options->{initial_value} ) {
+        my ( $date, $time ) = split ' ', $options->{initial_value};
+        $options->{initial_date} = $date;
+        $options->{initial_time} = $time;
     }
+}
 
-    1;
+1;
 

@@ -4,25 +4,25 @@
   <mtapp:ContentFieldOption
      id="number-min_value"
      label="<__trans phrase="Min Value">">
-    <input ref="min" type="text" name="min_value" id="number-min_value" class="form-control w-25">
+    <input ref="min_value" type="text" name="min_value" id="number-min_value" class="form-control w-25" value={ options.min_value }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="number-max_value"
      label="<__trans phrase="Max Value">">
-    <input ref="max" type="text" name="max_value" id="number-max_value" class="form-control w-25">
+    <input ref="max_value" type="text" name="max_value" id="number-max_value" class="form-control w-25" value={ options.max_value} >
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="number-decimal_places"
      label="<__trans phrase="Number of decimal places">">
-    <input ref="decimal_places" type="text" name="decimal_places" id="number-decimal_places" class="form-control w-25" min="0">
+    <input ref="decimal_places" type="text" name="decimal_places" id="number-decimal_places" class="form-control w-25" min="0" value={ options.decimal_places }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="number-initial_value"
      label="<__trans phrase="Initial Value">">
-    <input ref="initial_value" type="text" name="initial_value" id="number-initial_value" class="form-control w-25" />
+    <input ref="initial_value" type="text" name="initial_value" id="number-initial_value" class="form-control w-25" value={ options.initial_value } />
   </mtapp:ContentFieldOption>
 
 </mt:app:ContentFieldOptionGroup>

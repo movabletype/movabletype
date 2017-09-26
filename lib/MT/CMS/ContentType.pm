@@ -35,10 +35,11 @@ sub edit {
 
     my $id = $app->param('id') || undef;
     my $class = $app->model('content_type');
-    my $obj;
 
+    # Content Type
+    my $field_data;
     if ($id) {
-        $obj = $class->load($id)
+        my $obj = $class->load($id)
             or return $app->error(
             $app->translate(
                 "Load failed: [_1]",
@@ -51,90 +52,68 @@ sub edit {
         $param->{unique_id}        = $obj->unique_id;
         $param->{user_disp_option} = $obj->user_disp_option;
 
-        my $field_data;
-        if ( $app->param('err_msg') ) {
-            $field_data = $app->param('fields');
-            if ( $field_data =~ /^".*"$/ ) {
-                $field_data =~ s/^"//;
-                $field_data =~ s/"$//;
-                $field_data = MT::Util::decode_js($field_data);
-            }
-            $field_data
-                = JSON::decode_json( MT::Util::decode_url($field_data) );
-        }
-        else {
-            $field_data = $obj->fields;
-        }
-        my @array = map {
-            $_->{content_field_id} = $_->{id};
-            delete $_->{id};
-            my $type    = $_->{type};
-            my @options = ();
-            foreach my $key ( keys %{ $_->{options} } ) {
-                if ( $type eq 'date_and_time' && $key eq 'initial_value' ) {
-                    my ( $date, $time ) = split ' ', $_->{options}{$key};
-                    push @options,
-                        {
-                        key   => 'initial_date',
-                        value => $date
-                        },
-                        {
-                        key   => 'initial_time',
-                        value => $time
-                        };
-                }
-                elsif (
-                    (      $type eq 'select_box'
-                        || $type eq 'radio_button'
-                        || $type eq 'checkboxes'
-                    )
-                    && $key eq 'values'
-                    )
-                {
-                    my $count  = 1;
-                    my $values = delete $_->{options}{$key};
-                    foreach my $trio ( @{$values} ) {
-                        push @options,
-                            {
-                            key   => 'values_initial_' . $count,
-                            value => $trio->{initial},
-                            },
-                            {
-                            key   => 'values_label_' . $count,
-                            value => $trio->{label},
-                            },
-                            {
-                            key   => 'values_value_' . $count,
-                            value => $trio->{value},
-                            };
-                        $count++;
-                    }
-                }
-                else {
-                    push @options,
-                        {
-                        key   => $key,
-                        value => $_->{options}{$key}
-                        };
-                }
-            }
-            $_->{options} = \@options;
-            $_;
-        } @{$field_data};
-        @array = sort { $a->{order} <=> $b->{order} } @array;
-        $param->{fields} = \@array;
+        $field_data = $obj->fields;
     }
-
-    if ( $param->{error} ) {
+    if ( $app->param('error') ) {
         for my $col (qw{ name description user_disp_option }) {
             $param->{$col} = $app->param($col);
         }
-        $param->{fields} = $app->param('data');
+
+        $field_data = $app->param('data');
+        if ( $field_data =~ /^".*"$/ ) {
+            $field_data =~ s/^"//;
+            $field_data =~ s/"$//;
+            $field_data = MT::Util::decode_js($field_data);
+        }
+        $field_data = JSON::decode_json( MT::Util::decode_url($field_data) );
     }
 
-    # Content Field Types
+    # Content Field
+    my @fields;
     my $content_field_types = $app->registry('content_field_types');
-    my @type_array          = map {
+    for my $f (@$field_data) {
+        my $type = $f->{type};
+        $type =~ s/_/-/g;
+
+        my $typeLabel = $content_field_types->{ $f->{type} }->{label};
+        $typeLabel = $typeLabel->()
+            if 'CODE' eq ref $typeLabel;
+
+        my $options = $f->{options};
+        if ( $options->{required} ) {
+            $options->{required} = 'checked';
+        }
+        else {
+            $options->{required} = '';
+        }
+
+        my $pre_load_handler
+            = $content_field_types->{ $f->{type} }{options_pre_load_handler};
+        if ($pre_load_handler) {
+            if ( !ref $pre_load_handler ) {
+                $pre_load_handler = MT->handler_to_coderef($pre_load_handler);
+            }
+            if ( 'CODE' eq ref $pre_load_handler ) {
+                $pre_load_handler->( $app, $options );
+            }
+        }
+
+        my $field = {
+            type      => $type,
+            typeLabel => $typeLabel,
+            label     => $f->{options}->{label},
+            id        => $f->{id},
+            order     => $f->{order},
+            options   => $options,
+            ( $f->{unique_id} ? ( unique_id => $f->{unique_id} ) : () ),
+        };
+
+        push @fields, $field;
+    }
+    $param->{fields} = JSON::to_json( @fields ? \@fields : [] );
+
+    # Content Field Types
+    my @type_array = map {
         my $label = $content_field_types->{$_}{label};
         $label = $label->()
             if ref $label eq 'CODE';
@@ -208,12 +187,6 @@ sub edit {
             }
         }
     }
-
-    my $tag_delim = $app->config('DefaultUserTagDelimiter') || ord(',');
-    $param->{tag_delim}
-        = $tag_delim eq ord(',') ? 'comma'
-        : $tag_delim eq ord(' ') ? 'space'
-        :                          'comma';
 
     $app->build_page( $app->load_tmpl('edit_content_type.tmpl'), $param );
 }
@@ -454,7 +427,7 @@ sub save {
             )
             );
 
-        my $type_label = $content_field_types->{$field->{type}}->{label};
+        my $type_label = $content_field_types->{ $field->{type} }->{label};
         $type_label = $type_label->() if 'CODE' eq ref $type_label;
         my $store_data = {
             id         => $content_field->id,

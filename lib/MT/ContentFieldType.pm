@@ -227,6 +227,8 @@ sub _date_time_registry {
             '$Core::MT::ContentFieldType::DateTime::options_validation_handler',
         options_pre_save_handler =>
             '$Core::MT::ContentFieldType::DateTime::options_pre_save_handler',
+        options_pre_load_handler =>
+            '$Core::MT::ContentFieldType::DateTime::options_pre_load_handler',
         options_html => 'content_field_type_options/date_time.tmpl',
         options      => [
             qw(
@@ -268,6 +270,8 @@ sub _date_registry {
             '$Core::MT::ContentFieldType::Date::options_validation_handler',
         options_pre_save_handler =>
             '$Core::MT::ContentFieldType::Date::options_pre_save_handler',
+        options_pre_load_handler =>
+            '$Core::MT::ContentFieldType::Date::options_pre_load_handler',
         options_html => 'content_field_type_options/date.tmpl',
         options      => [
             qw(
@@ -307,6 +311,8 @@ sub _time_registry {
             '$Core::MT::ContentFieldType::Time::options_validation_handler',
         options_pre_save_handler =>
             '$Core::MT::ContentFieldType::Date::options_pre_save_handler',
+        options_pre_load_handler =>
+            '$Core::MT::ContentFieldType::Time::options_pre_load_handler',
         options_html => 'content_field_type_options/time.tmpl',
         options      => [
             qw(
@@ -770,7 +776,7 @@ sub _video_registry {
 }
 
 sub _image_registry {
-    {   label     => 'Image',
+    {   label     => 'Image Asset',
         data_type => 'integer',
         order     => 150,
         data_load_handler =>

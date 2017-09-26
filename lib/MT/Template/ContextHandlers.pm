@@ -4220,9 +4220,9 @@ sub _hdlr_app_contentfield_option_group {
     # Build inside tags
     my $insides = $ctx->slurp( $args, $cond );
 
-    my $vars    = $ctx->{__stash}{vars} ||= {};
-    my $script  = $ctx->var('option_script');
-    $ctx->var('option_script', undef)
+    my $vars = $ctx->{__stash}{vars} ||= {};
+    my $script = $ctx->var('option_script');
+    $ctx->var( 'option_script', undef )
         if $script;
 
     return $ctx->build(<<"EOT");
@@ -4232,7 +4232,7 @@ sub _hdlr_app_contentfield_option_group {
      id="$type-label"
      label="<__trans phrase="Label">"
      required="1">
-    <input type="text" ref="label" name="label" id="$type-label" class="text med form-control" oninput={ inputLabel }>
+    <input type="text" ref="label" name="label" id="$type-label" class="form-control" oninput={ inputLabel } value={ options.label} >
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -4240,13 +4240,13 @@ sub _hdlr_app_contentfield_option_group {
      label="<__trans phrase="Description">"
      show_hint="1"
      hint="<__trans phrase="The entered message is displayed as a input field hint.">">
-    <input type="text" ref="description" name="description" id="$type-description" class="form-control" aria-describedby="$type-description-field-help">
+    <input type="text" ref="description" name="description" id="$type-description" class="form-control" aria-describedby="$type-description-field-help" value={ options.description }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="$type-required"
      label="<__trans phrase="Is this field required?">">
-    <input ref="required" type="checkbox" class="mt-switch form-control" id="$type-required" name="required"><label for="$type-required"><__trans phrase="Is this field required?"></label>
+    <input ref="required" type="checkbox" class="mt-switch form-control" id="$type-required" name="required" checked={ options.required }><label for="$type-required"><__trans phrase="Is this field required?"></label>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -4256,29 +4256,44 @@ sub _hdlr_app_contentfield_option_group {
      show_hint="1"
      hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
     <select ref="display" name="display" id="$type-display" class="custom-select form-control">
-      <option value="force"><__trans phrase="Force"></option>
-      <option value="default" selected="selected"><__trans phrase="Default"></option>
-      <option value="optional"><__trans phrase="Optional"></option>
-      <option value="none"><__trans phrase="None"></option>
+      <option value="force" selected={ options.displays.force }><__trans phrase="Force"></option>
+      <option value="default"  selected={ options.displays.default }><__trans phrase="Default"></option>
+      <option value="optional" selected={ options.displays.optional }><__trans phrase="Optional"></option>
+      <option value="none" selected={ options.displays.none }><__trans phrase="None"></option>
     </select>
   </mtapp:ContentFieldOption>
 
   $insides
 
   <div>
-    <button type="button" class="btn btn-default"><__trans phrase="Cancel"></button>
-    <button type="button" class="btn btn-primary" onclick={ gatheringData }><__trans phrase="Apply"></button>
+    <button type="button" class="btn btn-default" onclick={ closePanel }><__trans phrase="Close"></button>
   </div>
 
+  // Initialize
+  this.options = opts.options
+  if ( !this.options )
+    this.options = {}
+
+  this.options.displays = {}
+  this.options.displays.force = ""
+  this.options.displays.default = ""
+  this.options.displays.optional = ""
+  this.options.displays.none = ""
+  if ( this.options.display )
+    this.options.displays[this.options.display] = "selected"
+  else
+    this.options.displays['default'] = "selected"
+
   this.id = opts.id
+
   this.on('mount', function() {
     elms = this.root.querySelectorAll('*')
     elms.forEach( function(v) {
       if ( v.hasAttribute('id') ) {
-        v.setAttribute('id', v.getAttribute('id') + '-' + this.id)
+        v.setAttribute('id', v.getAttribute('id') + '-' + opts.id)
       }
       if ( v.tagName.toLowerCase() == 'label' && v.hasAttribute('for') ) {
-        v.setAttribute('for', v.getAttribute('for') + '-' + this.id)
+        v.setAttribute('for', v.getAttribute('for') + '-' + opts.id)
       }
     })
   })
@@ -4319,6 +4334,11 @@ sub _hdlr_app_contentfield_option_group {
       jQuery.extend( data, customData);
     }
     return data
+  }
+
+  closePanel(e) {
+    className = this.root.className
+    this.root.className = className.replace(/\s*show\s*/,'')
   }
 
   $script
@@ -4363,6 +4383,9 @@ forces it to display.
 =item * show_hint (optional; default "0")
 
 Controls whether the inline help 'hint' label is shown or not.
+
+=item * attr (optional)
+You can supply additional attributes by this modifier.
 
 =back
 
@@ -4411,11 +4434,13 @@ sub _hdlr_app_contentfield_option {
         $req_class = ' required';
     }
 
+    my $attr = $args->{attr} || '';
+
     # Build inside
     my $insides = $ctx->slurp( $args, $cond );
 
     return $ctx->build(<<"EOT");
-  <div id="${id}-field" class="form-group$req_class">
+  <div id="${id}-field" class="form-group$req_class" $attr>
     <label$label_for>$label$req</label>
     $insides$hint
   </div>

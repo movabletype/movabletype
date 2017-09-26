@@ -73,11 +73,11 @@ sub options_validation_handler {
 
     my $initial_value = $options->{initial_value};
     if ($initial_value) {
-        if ( length($initial_value) > 1024 ) {
+        my $max = '' ne $max_length ? $max_length : 1024;
+        if ( length($initial_value) > $max ) {
             return $app->translate(
-                "An initial value of '[_1]' ([_2]) must be shorter than 1024 characters",
-                $label, $field_label
-            );
+                "An initial value of '[_1]' ([_2]) must be shorter than [_3] characters",
+                $label, $field_label, $max );
         }
     }
 

@@ -4,19 +4,21 @@
   <mtapp:ContentFieldOption
      id="select_box-multiple"
      label="<__trans phrase="Allow users to select multiple values?">">
-    <input ref="multiple" type="checkbox" class="mt-switch form-control" id="select_box-multiple" name="multiple"><label for="select_box-multiple"><__trans phrase="Allow users to select multiple values?"></label>
+    <input ref="multiple" type="checkbox" class="mt-switch form-control" id="select_box-multiple" name="multiple" checked={ options.multiple } onclick={ changeStateMultiple }><label for="select_box-multiple"><__trans phrase="Allow users to select multiple values?"></label>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="select_box-min"
-     label="<__trans phrase="Minimum number of selection">">
-    <input ref="min" type="number" name="min" id="select_box-min" class="form-control w-25" min="0">
+     label="<__trans phrase="Minimum number of selection">"
+     attr="show={ options.multiple }">
+    <input ref="min" type="number" name="min" id="select_box-min" class="form-control w-25" min="0" value={ options.min }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="select_box-max"
-     label="<__trans phrase="Maximum number of selection">">
-    <input ref="max" type="number" name="smax" id="select_box-max" class="form-control w-25" min="1">
+     label="<__trans phrase="Maximum number of selection">"
+     attr="show={ options.multiple }">
+    <input ref="max" type="number" name="smax" id="select_box-max" class="form-control w-25" min="1" value={ options.max }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -35,8 +37,8 @@
       <tbody>
         <tr each={ values }>
           <td><input type="radio" class="form-control" name="initial" checked={ checked } onchange={ enterInitial }></td>
-          <td><input type="text" class="form-control" name="label" oninput={ enterLabel }></td>
-          <td><input type="text" class="form-control" name="value" oninput={ enterValue }></td>
+          <td><input type="text" class="form-control" name="label" oninput={ enterLabel } value={ label }></td>
+          <td><input type="text" class="form-control" name="value" oninput={ enterValue } value={ value }></td>
           <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="delete">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash" /></svg><__trans phrase="delete"></button></td>
         </tr>
       </tbody>
@@ -45,9 +47,7 @@
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOptionScript>
-  this.initialValues = opts.initialValues
-  if ( this.initialValues )
-    this.values = this.initialValues.values  
+  this.values = this.options.values
   if ( !this.values ) {
     this.values = [{
       "checked": "checked"
@@ -97,6 +97,9 @@
     return {
       values: this.values
     }
+  }
+  changeStateMultiple(e) {
+    this.options.multiple = e.target.checked
   }
   </mtapp:ContentFieldOptionScript>
 </mt:app:ContentFieldOptionGroup>

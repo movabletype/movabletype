@@ -4,25 +4,33 @@
   <mtapp:ContentFieldOption
      id="asset_audio-multiple"
      label="<__trans phrase="Allow users to select multiple assets?">">
-    <input ref="multiple" type="checkbox" class="mt-switch form-control" id="asset_audio-multiple" name="multiple"><label for="asset_audio-multiple"><__trans phrase="Allow users to select multiple assets?"></label>
+    <input ref="multiple" type="checkbox" class="mt-switch form-control" id="asset_audio-multiple" name="multiple" checked={ options.multiple } onclick={ changeStateMultiple }><label for="asset_audio-multiple"><__trans phrase="Allow users to select multiple assets?"></label>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="asset_audio-min"
-     label="<__trans phrase="Minimum number of selection">">
-    <input ref="min" type="number" name="min" id="asset_audio-min" class="form-control w-25" min="0">
+     label="<__trans phrase="Minimum number of selection">"
+     attr="show={ options.multiple }">
+    <input ref="min" type="number" name="min" id="asset_audio-min" class="form-control w-25" min="0" value={ options.min }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="asset_audio-max"
-     label="<__trans phrase="maximum number of selection">">
-    <input ref="max" type="number" name="max" id="asset_audio-max" class="form-control w-25" min="1">
+     label="<__trans phrase="maximum number of selection">"
+     attr="show={ options.multiple }">
+    <input ref="max" type="number" name="max" id="asset_audio-max" class="form-control w-25" min="1" value={ options.max }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="asset_audio-allow_upload"
      label="<__trans phrase="Allow users to upload a new audio asset?">">
-    <input ref="allow_upload" type="checkbox" class="mt-switch form-control" id="asset_audio-allow_upload" name="allow_upload"><label for="asset_audio-allow_upload"><__trans phrase="Allow users to upload a new audio asset?"></label>
+    <input ref="allow_upload" type="checkbox" class="mt-switch form-control" id="asset_audio-allow_upload" name="allow_upload" checked={ options.allow_upload }><label for="asset_audio-allow_upload"><__trans phrase="Allow users to upload a new audio asset?"></label>
   </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+    changeStateMultiple(e) {
+    this.options.multiple = e.target.checked
+    }
+  </mtapp:ContentFieldOptionScript>
 
 </mt:app:ContentFieldOptionGroup>

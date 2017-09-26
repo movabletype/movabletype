@@ -4,25 +4,33 @@
   <mtapp:ContentFieldOption
      id="asset-multiple"
      label="<__trans phrase="Allow users to select multiple assets?">">
-    <input ref="multiple" type="checkbox" class="mt-switch form-control" id="asset-multiple" name="multiple"><label for="asset-multiple"><__trans phrase="Allow users to select multiple assets?"></label>
+    <input ref="multiple" type="checkbox" class="mt-switch form-control" id="asset-multiple" name="multiple" checked={ options.multiple } onclick={ changeStateMultiple } ><label for="asset-multiple"><__trans phrase="Allow users to select multiple assets?"></label>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="asset-min"
-     label="<__trans phrase="Minimum number of selection">">
-    <input ref="min" type="number" name="min" id="asset-min" class="form-control w-25" min="0">
+     label="<__trans phrase="Minimum number of selection">"
+     attr="show={ options.multiple }">
+    <input ref="min" type="number" name="min" id="asset-min" class="form-control w-25" min="0" value={ options.min }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="asset-max"
-     label="<__trans phrase="maximum number of selection">">
-    <input ref="max" type="number" name="max" id="asset-max" class="form-control w-25" min="1">
+     label="<__trans phrase="maximum number of selection">"
+     attr="show={ options.multiple }">
+    <input ref="max" type="number" name="max" id="asset-max" class="form-control w-25" min="1" value={ options.max }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="asset-allow_upload"
      label="<__trans phrase="Allow users to upload a new asset?">">
-    <input ref="allow_upload" type="checkbox" class="mt-switch form-control" id="asset-allow_upload" name="allow_upload"><label for="asset-allow_upload"><__trans phrase="Allow users to upload a new asset?"></label>
+    <input ref="allow_upload" type="checkbox" class="mt-switch form-control" id="asset-allow_upload" name="allow_upload" checked={ options.allow_upload }><label for="asset-allow_upload"><__trans phrase="Allow users to upload a new asset?"></label>
   </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+    changeStateMultiple(e) {
+    this.options.multiple = e.target.checked
+    }
+  </mtapp:ContentFieldOptionScript>
 
 </mt:app:ContentFieldOptionGroup>

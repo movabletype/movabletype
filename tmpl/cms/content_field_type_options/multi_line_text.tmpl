@@ -4,19 +4,32 @@
   <mtapp:ContentFieldOption
      id="multi_line_text-initial_value"
      label="<__trans phrase="Initial Value">">
-    <textarea ref="initial_value" name="initial_value" id="multi_line_text-initial_value" class="form-control" ></textarea>
+    <textarea ref="initial_value" name="initial_value" id="multi_line_text-initial_value" class="form-control" >{ options.initial_value }</textarea>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="multi_line_text-input_format"
      label="<__trans phrase="Input format">">
-    <select ref="input_format" name"input_format" id="multi_line_text-input_format" class="custom-select form-control">
-      <option value="plain_text"><__trans phrase="Plain Text"></option>
-      <option value="wysiwyg"><__trans phrase="WYSIWYG"></option>
-      <option value="markdown"><__trans phrase="Markdown"></option>
-      <option value="convert_breaks"><__trans phrase="Convert Breaks"></option>
-      <option value="block" selected="selected"><__trans phrase="Block Editor"></option>
+    <select ref="input_format" name="input_format" id="multi_line_text-input_format" class="custom-select form-control">
+      <option value="plain_text" selected={ options.input_formats.plain_text }><__trans phrase="Plain Text"></option>
+      <option value="wysiwyg" selected={ options.input_formats.wysiwyg }><__trans phrase="WYSIWYG"></option>
+      <option value="markdown" selected={ options.input_formats.markdown }><__trans phrase="Markdown"></option>
+      <option value="convert_breaks" selected={ options.input_formats.convdrt_breaks }><__trans phrase="Convert Breaks"></option>
+      <option value="block" selected={ options.input_formats.block }><__trans phrase="Block Editor"></option>
     </select>
   </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+    this.options.input_formats = {}
+    this.options.input_formats.plain_text = ''
+    this.options.input_formats.wysiwyg = ''
+    this.options.input_formats.markdown = ''
+    this.options.input_formats.convert_breaks = ''
+    this.options.input_formats.block = ''
+    if ( this.options.input_format )
+      this.options.input_formats[this.options.input_format] = "selected"
+    else
+      this.options.input_formats['block'] = "selected"
+  </mtapp:ContentFieldOptionScript>
 
 </mt:app:ContentFieldOptionGroup>

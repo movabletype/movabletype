@@ -27,11 +27,6 @@ sub options_validation_handler {
             "An initial value of '[_1]' ([_2]) must be shorter than 2000 characters",
             $label, $field_label
         ) if length($initial_value) > 2000;
-
-        return $app->translate(
-            "An initial value of '[_1]' ([_2]) is invalid URL.",
-            $label, $field_label
-        ) if !MT::Util::is_url($initial_value);
     }
 
     return;
