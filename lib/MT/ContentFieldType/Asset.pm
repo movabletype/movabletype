@@ -27,6 +27,7 @@ sub field_html_params {
 
     my @asset_loop;
     my $type = $field_data->{type};
+    $type =~ s/_/\./g if $type =~ /_/;
     my $iter = $app->model($type)->load_iter( { id => $value } );
     while ( my $asset = $iter->() ) {
         push @asset_loop,
