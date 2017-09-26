@@ -306,8 +306,22 @@ sub _hdlr_contents {
             my @ago = offset_time_list( time - 3600 * 24 * $days, $blog_id );
             my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
                 $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
-            $terms{authored_on} = [$ago];
-            $args{range_incl}{authored_on} = 1;
+            my $map = $ctx->stash('template_map');
+            if ( $map && ( my $dt_field_id = $map->dt_field_id ) ) {
+                push @{ $args{joins} },
+                    MT::ContentFieldIndex->join_on(
+                    'content_data_id',
+                    [   { content_field_id => $dt_field_id },
+                        '-and',
+                        { value_datetime => { op => '>=', value => $ago } },
+                    ],
+                    { alias => 'dt_cf_idx' }
+                    );
+            }
+            else {
+                $terms{authored_on} = [$ago];
+                $args{range_incl}{authored_on} = 1;
+            }
         }
         else {
 
@@ -334,8 +348,24 @@ sub _hdlr_contents {
                         $blog_id );
                     my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
                         $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
-                    $terms{authored_on} = [$ago];
-                    $args{range_incl}{authored_on} = 1;
+                    my $map = $ctx->stash('template_map');
+                    if ( $map && ( my $dt_field_id = $map->dt_field_id ) ) {
+                        push @{ $args{joins} },
+                            MT::ContentFieldIndex->join_on(
+                            'content_data_id',
+                            [   { content_field_id => $dt_field_id },
+                                '-and',
+                                {   value_datetime =>
+                                        { op => '>=', value => $ago }
+                                },
+                            ],
+                            { alias => 'dt_cf_idx' }
+                            );
+                    }
+                    else {
+                        $terms{authored_on} = [$ago];
+                        $args{range_incl}{authored_on} = 1;
+                    }
                 }
                 elsif ( my $limit = $blog ? $blog->entries_on_index : 10 ) {
                     $args->{lastn} = $limit;
@@ -346,7 +376,9 @@ sub _hdlr_contents {
         # Adds class_type
         $terms{class} = $class_type;
 
-        $args{'sort'} = 'authored_on';
+        my $map = $ctx->stash('template_map');
+        $args{'sort'} = 'authored_on'
+            unless ( $map && $map->dt_field_id );
         if ( $args->{sort_by} ) {
             $args->{sort_by} =~ s/:/./;    # for meta:name => meta.name
             $args->{sort_by} = 'ping_count'
