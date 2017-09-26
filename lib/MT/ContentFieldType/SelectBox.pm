@@ -20,9 +20,7 @@ sub field_html_params {
     @{$options_values} = map {
         {   l => $_->{label},
             v => $_->{value},
-            $values{ $_->{value} }
-            ? ( selected => 'selected="selected"' )
-            : (),
+            ( $_->{checked} ? ( checked => 'selected="selected"' ) : () ),
         }
     } @{$options_values};
 
