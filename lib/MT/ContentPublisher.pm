@@ -20,6 +20,7 @@ use File::Spec;
 
 use MT::ArchiveType;
 use MT::PublishOption;
+use MT::Template;
 use MT::TemplateMap;
 
 our %ArchiveTypes;
@@ -1193,7 +1194,7 @@ sub remove_content_data_archive_file {
     my %param = @_;
 
     my $content_data = $param{ContentData};
-    my $at           = $param{ArchiveType} || 'ContentData';
+    my $at           = $param{ArchiveType} || 'ContentType';
     my $author       = $param{Author};
     my $force        = exists $param{Force} ? $param{Force} : 1;
     my $blog         = $param{Blog};
@@ -1204,12 +1205,29 @@ sub remove_content_data_archive_file {
     }
     return unless $blog;
 
-    my @maps = MT::TemplateMap->load(
-        {   archive_type => $at,
-            blog_id      => $blog->id,
-            $template_id ? ( template_id => $template_id ) : (),
-        }
-    );
+    my @maps;
+    if ($template_id) {
+        @maps = MT::TemplateMap->load(
+            {   archive_type => $at,
+                blog_id      => $blog->id,
+                template_id  => $template_id,
+            },
+        );
+    }
+    else {
+        @maps = MT::TemplateMap->load(
+            {   archive_type => $at,
+                blog_id      => $blog->id,
+            },
+            {   join => MT::Template->join_on(
+                    undef,
+                    {   id              => \'= templatemap_template_id',
+                        content_type_id => $content_data->content_type_id,
+                    },
+                ),
+            },
+        );
+    }
     return 1 unless @maps;
 
     my $archive_root = $blog->archive_path;
@@ -1316,8 +1334,10 @@ sub rebuild_deleted_content_data {
                     archive_type => $at,
                 },
                 {   join => MT::Template->join_on(
-                        'template_id',
-                        { content_type_id => $content_data->content_type_id },
+                        undef,
+                        {   id              => \'= templatemap_template_id',
+                            content_type_id => $content_data->content_type_id,
+                        },
                     ),
                 },
             ) or next;
