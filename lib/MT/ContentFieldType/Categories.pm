@@ -310,4 +310,70 @@ sub theme_import_handler {
     }
 }
 
+sub options_html_params {
+    my ( $app, $param ) = @_;
+
+    my @category_sets;
+    my $iter = MT::CategorySet->load_iter( { blog_id => $app->blog->id },
+        { fetchonly => { id => 1, name => 1 } } );
+    while ( my $cat_set = $iter->() ) {
+        push @category_sets,
+            {
+            id   => $cat_set->id,
+            name => $cat_set->name,
+            };
+    }
+
+    return { category_sets => \@category_sets, };
+}
+
+sub options_validation_handler {
+    my ( $app, $type, $label, $field_label, $options ) = @_;
+
+    my $source = $options->{category_set};
+    return $app->translate("You must select a source category set.")
+        unless $source;
+
+    my $class = MT->model('category_set');
+    return $app->translate(
+        "The source category set is not found in this site.",
+        $label, $field_label )
+        if !$class->exist( { id => $source, blog_id => $app->blog->id } );
+
+    my $multiple = $options->{multiple};
+    if ($multiple) {
+        my $min = $options->{min};
+        return $app->translate(
+            "A number of minimum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 0.",
+            $label, $field_label
+        ) if '' ne $min and $min !~ /^\d+$/;
+
+        my $max = $options->{max};
+        return $app->translate(
+            "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 1.",
+            $label,
+            $field_label
+        ) if '' ne $max and ( $max !~ /^\d+$/ or $max < 1 );
+
+        return $app->translate(
+            "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to a number of minimum selection.",
+            $label,
+            $field_label
+            )
+            if '' ne $min
+            and '' ne $max
+            and $max < $min;
+    }
+
+    return;
+}
+
+sub options_pre_save_handler {
+    my ( $app, $type, $obj, $options ) = @_;
+
+    $obj->related_cat_set_id( $options->{category_set} );
+
+    return;
+}
+
 1;

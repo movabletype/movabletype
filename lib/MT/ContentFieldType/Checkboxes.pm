@@ -21,7 +21,7 @@ sub field_html_params {
     @{$options_values} = map {
         {   l => $_->{label},
             v => $_->{value},
-            $values{ $_->{value} } ? ( checked => 'checked="checked"' ) : (),
+            ( $_->{checked} ? ( checked => 'checked="checked"' ) : () ),
         }
     } @{$options_values};
 
@@ -40,6 +40,46 @@ sub field_html_params {
         options_values => $options_values,
         required       => $required,
     };
+}
+
+sub options_validation_handler {
+    my ( $app, $type, $label, $field_label, $options ) = @_;
+
+    my $values = $options->{values};
+    return $app->translate("You must enter at least one label-value pair.")
+        unless $values;
+
+    for my $value (@$values) {
+        return $app->translate("A label of values is required.")
+            unless $value->{label};
+
+        return $app->translate("A value of values is required.")
+            unless $value->{value};
+    }
+
+    my $min = $options->{min};
+    return $app->translate(
+        "A number of minimum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 0.",
+        $label, $field_label
+    ) if '' ne $min and $min !~ /^\d+$/;
+
+    my $max = $options->{max};
+    return $app->translate(
+        "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 1.",
+        $label,
+        $field_label
+    ) if '' ne $max and ( $max !~ /^\d+$/ or $max < 1 );
+
+    return $app->translate(
+        "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to a number of minimum selection.",
+        $label,
+        $field_label
+        )
+        if '' ne $min
+        and '' ne $max
+        and $max < $min;
+
+    return;
 }
 
 1;

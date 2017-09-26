@@ -11,9 +11,7 @@ sub field_html_params {
     @{$options_values} = map {
         {   l => $_->{label},
             v => $_->{value},
-            ( $_->{value} eq $value )
-            ? ( checked => 'checked="checked"' )
-            : (),
+            ( $_->{checked} ? ( checked => 'checked="checked"' ) : () ),
         }
     } @{$options_values};
 
@@ -22,6 +20,24 @@ sub field_html_params {
     {   options_values => $options_values,
         required       => $required,
     };
+}
+
+sub options_validation_handler {
+    my ( $app, $type, $label, $field_label, $options ) = @_;
+
+    my $values = $options->{values};
+    return $app->translate("You must enter at least one label-value pair.")
+        unless $values;
+
+    for my $value (@$values) {
+        return $app->translate("A label of values is required.")
+            unless $value->{label};
+
+        return $app->translate("A value of values is required.")
+            unless $value->{value};
+    }
+
+    return;
 }
 
 1;

@@ -27,6 +27,7 @@ sub field_html_params {
 
     my @asset_loop;
     my $type = $field_data->{type};
+    $type =~ s/_/\./g if $type =~ /_/;
     my $iter = $app->model($type)->load_iter( { id => $value } );
     while ( my $asset = $iter->() ) {
         push @asset_loop,
@@ -537,6 +538,37 @@ sub ss_validator {
     my $type_label_plural = $field_type . 's';
     MT::ContentFieldType::Common::ss_validator_multiple( @_, $type_label,
         $type_label_plural );
+}
+
+sub options_validation_handler {
+    my ( $app, $type, $label, $field_label, $options ) = @_;
+
+    my $multiple = $options->{multiple};
+    if ($multiple) {
+        my $min = $options->{min};
+        return $app->translate(
+            "A number of minimum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 0.",
+            $label, $field_label
+        ) if '' ne $min and $min !~ /^\d+$/;
+
+        my $max = $options->{max};
+        return $app->translate(
+            "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 1.",
+            $label,
+            $field_label
+        ) if '' ne $max and ( $max !~ /^\d+$/ or $max < 1 );
+
+        return $app->translate(
+            "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to a number of minimum selection.",
+            $label,
+            $field_label
+            )
+            if '' ne $min
+            and '' ne $max
+            and $max < $min;
+    }
+
+    return;
 }
 
 1;

@@ -364,11 +364,10 @@ sub core_methods {
         'preview_content_data' => "${pkg}ContentData::preview",
         'delete_content_data'  => "${pkg}ContentData::delete",
 
-        ## MT7
-        'cfg_content_type_description' =>
-            "${pkg}ContentType::cfg_content_type_description",
-        'cfg_content_type'      => "${pkg}ContentType::cfg_content_type",
-        'save_cfg_content_type' => "${pkg}ContentType::save_cfg_content_type",
+        ## MT7 - Content Type
+        'edit_content_type'     => "${pkg}ContentType::edit",
+        'view_content_type'     => "${pkg}ContentType::edit",
+        'save_content_type'     => "${pkg}ContentType::save",
 
      # 'cfg_content_type_data' => " ${pkg}ContentType::cfg_content_type_data",
         'select_list_content_type' =>
@@ -878,6 +877,7 @@ sub core_content_actions {
         # Hide create link temporarily and will fix in new UI.
         # 'content_type' => '$Core::MT::CMS::ContentType::content_actions',
 
+        # Make a content action for Content Data dynamically.
         %{ MT::CMS::ContentData::make_content_actions() },
     };
 }
@@ -2195,11 +2195,11 @@ sub core_menus {
             view       => [ 'website', 'blog' ],
         },
         'content_type:create_content_type' => {
-            label      => 'New',
-            mode       => 'cfg_content_type_description',
-            order      => 200,
-            permission => 'manage_content_types',
-            view       => [ 'website', 'blog' ],
+            label => 'New',
+            mode  => 'view',
+            args  => { _type => 'content_type' },
+            order => 200,
+            view  => [ 'website', 'blog' ],
         },
 
         'tag:manage' => {

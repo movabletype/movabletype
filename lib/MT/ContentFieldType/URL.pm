@@ -18,5 +18,19 @@ sub ss_validator {
     undef;
 }
 
+sub options_validation_handler {
+    my ( $app, $type, $label, $field_label, $options ) = @_;
+
+    my $initial_value = $options->{initial_value};
+    if ( defined $initial_value and $initial_value ne '' ) {
+        return $app->translate(
+            "An initial value of '[_1]' ([_2]) must be shorter than 2000 characters",
+            $label, $field_label
+        ) if length($initial_value) > 2000;
+    }
+
+    return;
+}
+
 1;
 

@@ -20,9 +20,7 @@ sub field_html_params {
     @{$options_values} = map {
         {   l => $_->{label},
             v => $_->{value},
-            $values{ $_->{value} }
-            ? ( selected => 'selected="selected"' )
-            : (),
+            ( $_->{checked} ? ( checked => 'selected="selected"' ) : () ),
         }
     } @{$options_values};
 
@@ -44,6 +42,49 @@ sub field_html_params {
         options_values => $options_values,
         required       => $required,
     };
+}
+
+sub options_validation_handler {
+    my ( $app, $type, $label, $field_label, $options ) = @_;
+
+    my $values = $options->{values};
+    return $app->translate("You must enter at least one label-value pair.")
+        unless $values;
+
+    for my $value (@$values) {
+        return $app->translate("A label of values is required.")
+            unless $values->{label};
+
+        return $app->translate("A value of values is required.")
+            unless $values->{value};
+    }
+
+    my $multiple = $options->{multiple};
+    if ($multiple) {
+        my $min = $options->{min};
+        return $app->translate(
+            "A number of minimum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 0.",
+            $label, $field_label
+        ) if defined $min and $min !~ /^\d+$/;
+
+        my $max = $options->{max};
+        return $app->translate(
+            "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 1.",
+            $label,
+            $field_label
+        ) if defined $max and ( $max !~ /^\d+$/ or $max < 1 );
+
+        return $app->translate(
+            "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to a number of minimum selection.",
+            $label,
+            $field_label
+            )
+            if defined $min
+            and defined $max
+            and $max < $min;
+    }
+
+    return;
 }
 
 1;

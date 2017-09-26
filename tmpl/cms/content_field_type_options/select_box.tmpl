@@ -1,0 +1,105 @@
+<mt:app:ContentFieldOptionGroup
+   type="select_box">
+
+  <mtapp:ContentFieldOption
+     id="select_box-multiple"
+     label="<__trans phrase="Allow users to select multiple values?">">
+    <input ref="multiple" type="checkbox" class="mt-switch form-control" id="select_box-multiple" name="multiple" checked={ options.multiple } onclick={ changeStateMultiple }><label for="select_box-multiple"><__trans phrase="Allow users to select multiple values?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="select_box-min"
+     label="<__trans phrase="Minimum number of selection">"
+     attr="show={ options.multiple }">
+    <input ref="min" type="number" name="min" id="select_box-min" class="form-control w-25" min="0" value={ options.min }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="select_box-max"
+     label="<__trans phrase="Maximum number of selection">"
+     attr="show={ options.multiple }">
+    <input ref="max" type="number" name="smax" id="select_box-max" class="form-control w-25" min="1" value={ options.max }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="select_box-values"
+     required="1"
+     label="<__trans phrase="Values">">
+    <table class="table mt-table">
+      <thead>
+        <tr>
+          <th scope="col"><__trans phrase="Selected"></th>
+          <th scope="col"><__trans phrase="Label"></th>
+          <th scope="col"><__trans phrase="Value"></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr each={ values }>
+          <td><input type="radio" class="form-control" name="initial" checked={ checked } onchange={ enterInitial }></td>
+          <td><input type="text" class="form-control" name="label" oninput={ enterLabel } value={ label }></td>
+          <td><input type="text" class="form-control" name="value" oninput={ enterValue } value={ value }></td>
+          <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="delete">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash" /></svg><__trans phrase="delete"></button></td>
+        </tr>
+      </tbody>
+    </table>
+    <button onclick={ addRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="add">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_add" /></svg><__trans phrase="add"></button>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+  this.values = this.options.values
+  if ( !this.values ) {
+    this.values = [{
+      "checked": "checked"
+    }]
+  }
+
+  addRow(e) {
+    this.values.push({"checked": ""})
+  }
+
+  deleteRow(e) {
+    item = e.item
+    index = this.values.indexOf(item)
+    this.values.splice(index, 1)
+    if ( this.values.length == 0 ) {
+      this.values = [{
+        "checked": "checked"
+      }]
+    }
+    else {
+      found = false
+      this.values.forEach( function(v) {
+        if ( v.checked == "checked" )
+          found = true;
+      });
+      if ( !found )
+        this.values[0].checked = "checked"
+    }
+  }
+
+  enterLabel(e) {
+    e.item.label = e.target.value
+  }
+
+  enterValue(e) {
+    e.item.value = e.target.value
+  }
+
+  enterInitial(e) {
+    if ( e.target.checked )
+      e.item.checked = "checked"
+    else 
+      e.item.checked = ""
+  }
+
+  gather() {
+    return {
+      values: this.values
+    }
+  }
+  changeStateMultiple(e) {
+    this.options.multiple = e.target.checked
+  }
+  </mtapp:ContentFieldOptionScript>
+</mt:app:ContentFieldOptionGroup>

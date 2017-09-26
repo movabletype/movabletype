@@ -61,7 +61,7 @@ sub list_props {
         name => {
             base      => '__virtual.name',
             order     => 200,
-            link_mode => 'cfg_content_type',
+            link_mode => 'view',
             html      => \&_make_name_html,
         },
         author_name  => { base => '__virtual.author_name', order => 300 },
@@ -120,6 +120,7 @@ sub _make_name_html {
     my $edit_link = $app->uri(
         mode => $mode,
         args => {
+            _type   => 'content_type',
             id      => $obj->id,
             blog_id => $blog_id,
         },

@@ -52,6 +52,12 @@ sub core_tags {
             'App:SettingGroup' =>
                 \&MT::Template::Tags::App::_hdlr_app_setting_group,
             'App:Form' => \&MT::Template::Tags::App::_hdlr_app_form,
+            'App:ContentFieldOptionGroup' =>
+                \&MT::Template::Tags::App::_hdlr_app_contentfield_option_group,
+            'App:ContentFieldOption' =>
+                \&MT::Template::Tags::App::_hdlr_app_contentfield_option,
+            'App:ContentFieldOptionScript' =>
+                \&MT::Template::Tags::App::_hdlr_app_contentfield_option_script,
 
             ## Site
             Sites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
@@ -440,7 +446,6 @@ sub core_tags {
                 \&MT::Template::Tags::System::_hdlr_password_validation_rules,
 
             ## App
-
             'App:PageActions' =>
                 \&MT::Template::Tags::App::_hdlr_app_page_actions,
             'App:ListFilters' =>
@@ -3206,7 +3211,12 @@ sub _hdlr_app_setting {
     }
 
     # 'Required' indicator plus CSS class
-    my $req       = $args->{required} ? qq{ <span class="badge badge-danger">} . MT->translate('Required') . qq{</span>} : "";
+    my $req
+        = $args->{required}
+        ? qq{ <span class="badge badge-danger">}
+        . MT->translate('Required')
+        . qq{</span>}
+        : "";
     my $req_class = $args->{required} ? " required" : "";
 
     my $insides = $ctx->slurp( $args, $cond );
@@ -4175,6 +4185,286 @@ sub _hdlr_app_svg_icon {
     my $static_uri = MT->static_path;
 
     qq{<svg$title_attr role="img" class="mt-icon${color_class_suffix}${size_class}"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
+}
+
+###########################################################################
+
+=head2 App:ContentFieldOptionGroup
+
+An application template tag used to wrap a number of
+L<App:ContentFieldOption> tags.
+
+B<Attributes:>
+
+=over 4
+
+=item * type
+
+A field option type that using as a custom tag name. All underscores
+are replaced by hyphens.
+
+=back
+
+=for tags application
+
+=cut
+
+sub _hdlr_app_contentfield_option_group {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $type = $args->{type};
+    return $ctx->error('"type" attribute is required.')
+        unless $type;
+    $type =~ s/_/-/g;
+
+    # Build inside tags
+    my $insides = $ctx->slurp( $args, $cond );
+
+    my $vars = $ctx->{__stash}{vars} ||= {};
+    my $script = $ctx->var('option_script');
+    $ctx->var( 'option_script', undef )
+        if $script;
+
+    return $ctx->build(<<"EOT");
+<$type>
+
+  <mtapp:ContentFieldOption
+     id="$type-label"
+     label="<__trans phrase="Label">"
+     required="1">
+    <input type="text" ref="label" name="label" id="$type-label" class="form-control" oninput={ inputLabel } value={ options.label} >
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="$type-description"
+     label="<__trans phrase="Description">"
+     show_hint="1"
+     hint="<__trans phrase="The entered message is displayed as a input field hint.">">
+    <input type="text" ref="description" name="description" id="$type-description" class="form-control" aria-describedby="$type-description-field-help" value={ options.description }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="$type-required"
+     label="<__trans phrase="Is this field required?">">
+    <input ref="required" type="checkbox" class="mt-switch form-control" id="$type-required" name="required" checked={ options.required }><label for="$type-required"><__trans phrase="Is this field required?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="$type-display"
+     label="<__trans phrase="Display Options">"
+     required="1"
+     show_hint="1"
+     hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
+    <select ref="display" name="display" id="$type-display" class="custom-select form-control">
+      <option value="force" selected={ options.displays.force }><__trans phrase="Force"></option>
+      <option value="default"  selected={ options.displays.default }><__trans phrase="Default"></option>
+      <option value="optional" selected={ options.displays.optional }><__trans phrase="Optional"></option>
+      <option value="none" selected={ options.displays.none }><__trans phrase="None"></option>
+    </select>
+  </mtapp:ContentFieldOption>
+
+  $insides
+
+  <div>
+    <button type="button" class="btn btn-default" onclick={ closePanel }><__trans phrase="Close"></button>
+  </div>
+
+  // Initialize
+  this.options = opts.options
+  if ( !this.options )
+    this.options = {}
+
+  this.options.displays = {}
+  this.options.displays.force = ""
+  this.options.displays.default = ""
+  this.options.displays.optional = ""
+  this.options.displays.none = ""
+  if ( this.options.display )
+    this.options.displays[this.options.display] = "selected"
+  else
+    this.options.displays['default'] = "selected"
+
+  this.id = opts.id
+
+  this.on('mount', function() {
+    elms = this.root.querySelectorAll('*')
+    elms.forEach( function(v) {
+      if ( v.hasAttribute('id') ) {
+        v.setAttribute('id', v.getAttribute('id') + '-' + opts.id)
+      }
+      if ( v.tagName.toLowerCase() == 'label' && v.hasAttribute('for') ) {
+        v.setAttribute('for', v.getAttribute('for') + '-' + opts.id)
+      }
+    })
+  })
+
+  inputLabel(e) {
+    this.parent.label = e.target.value
+    this.parent.update()
+  }
+
+  gatheringData() {
+    data = {}
+    flds = this.refs
+    Object.keys(flds).forEach( function(k) {
+      f = flds[k]
+      if ( f.type == 'checkbox') {
+        val = f.checked ? 1 : 0
+        if ( f.name in data ) {
+          if ( Array.isArray(data[f.name]) ) {
+            data[f.name].push( val )
+          }
+          else {
+            array = [];
+            array.push( data[f.name] )
+            array.push( val )
+          }
+        }
+        else { 
+          data[f.name] = val
+        }
+      }
+      else {
+        data[f.name] = f.value
+      }
+    })
+
+    if ( typeof this.gather == 'function' ) {
+      customData = this.gather()
+      jQuery.extend( data, customData);
+    }
+    return data
+  }
+
+  closePanel(e) {
+    className = this.root.className
+    this.root.className = className.replace(/\s*show\s*/,'')
+  }
+
+  $script
+</$type>
+EOT
+}
+
+###########################################################################
+
+=head2 App:ContentFieldOption
+
+An application template tag used to display an content field option form field.
+
+B<Attributes:>
+
+=over 4
+
+=item * id (required)
+
+Each application setting tag requires a unique 'id' attribute. This id
+should not be re-used within the template.
+
+=item * required (optional; default "0")
+
+Controls whether the field is displayed with visual cues that the
+field is a required field or not.
+
+=item * label
+
+Supplies the label phrase for the setting.
+
+=item * show_label (optional; default "1")
+
+Controls whether the label portion of the setting is shown or not.
+
+=item * hint (optional)
+
+Supplies a "hint" phrase that provides inline instruction to the user.
+By default, this hint is hidden, unless the 'show_hint' attribute
+forces it to display.
+
+=item * show_hint (optional; default "0")
+
+Controls whether the inline help 'hint' label is shown or not.
+
+=item * attr (optional)
+You can supply additional attributes by this modifier.
+
+=back
+
+=for tags application
+
+=cut
+
+sub _hdlr_app_contentfield_option {
+    my ( $ctx, $args, $cond ) = @_;
+
+    # id
+    my $id = $args->{id};
+    return $ctx->error("'id' attribute missing") unless $id;
+
+    # label
+    my $label      = $args->{label};
+    my $show_label = exists $args->{show_label} ? $args->{show_label} : 1;
+    my $label_for  = '';
+    if ( $label && $show_label ) {
+        $label_for = qq{ for="$id"};
+    }
+    else {
+        $label = '';
+    }
+
+    # hint
+    my $hint      = $args->{hint}      || "";
+    my $show_hint = $args->{show_hint} || 0;
+    if ( $hint && $show_hint ) {
+        my $hint_id = "$id-field-help";
+        $hint
+            = qq{\n<small id="$hint_id" class="form-text text-muted">$hint</small>};
+    }
+    else {
+        $hint = '';
+    }
+
+    # 'Required' indicator plus CSS class
+    my $req       = '';
+    my $req_class = '';
+    if ( $args->{required} ) {
+        $req
+            = qq{ <span class="badge badge-danger">}
+            . MT->translate('Required')
+            . qq{</span>};
+        $req_class = ' required';
+    }
+
+    my $attr = $args->{attr} || '';
+
+    # Build inside
+    my $insides = $ctx->slurp( $args, $cond );
+
+    return $ctx->build(<<"EOT");
+  <div id="${id}-field" class="form-group$req_class" $attr>
+    <label$label_for>$label$req</label>
+    $insides$hint
+  </div>
+EOT
+}
+
+###########################################################################
+
+=head2 App:ContentFieldOptionScript
+
+An application template tag used to insert script code for a content field option form field.
+
+=for tags application
+
+=cut
+
+sub _hdlr_app_contentfield_option_script {
+    my ( $ctx, $args, $cond ) = @_;
+
+    # Build inside
+    my $insides = $ctx->slurp( $args, $cond );
+    $ctx->var( 'option_script', $insides );
+
+    return '';
 }
 
 package MT::Template::Tags::System;

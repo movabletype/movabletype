@@ -46,5 +46,42 @@ sub data_load_handler {
     }
 }
 
+sub options_validation_handler {
+    my ( $app, $type, $label, $field_label, $options ) = @_;
+
+    my $date = $options->{initial_value} || '1970-01-01';
+    my $time = '00:00:00';
+    my $ts   = "$date $time";
+    return $app->translate(
+        "Invalid date \'[_1]\'; An initial value must be in the format YYYY-MM-DD.",
+        $date
+    ) if !MT::Util::is_valid_date($ts);
+
+    return;
+}
+
+sub options_pre_save_handler {
+    my ( $app, $type, $options ) = @_;
+
+    if ( exists $options->{initial_date} ) {
+        my $date = delete $options->{initial_date};
+        $options->{initial_value} = "$date 00:00:00";
+    }
+    else {
+        $options->{initial_value} = undef;
+    }
+
+    return;
+}
+
+sub options_pre_load_handler {
+    my ( $app, $type, $obj, $options ) = @_;
+
+    if ( $options->{initial_value} ) {
+        my ( $date, $time ) = split ' ', $options->{initial_value};
+        $options->{initial_date} = $date;
+    }
+}
+
 1;
 
