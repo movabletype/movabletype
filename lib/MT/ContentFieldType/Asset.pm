@@ -520,10 +520,10 @@ sub _thumbnail_html {
 sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
 
-    my $options     = $field_data->{options} || {};
-    my $field_label = $options->{label};
-    my $field_type  = $field_data->{type};
-    my $type_label  = $field_data->{type_label};
+    my $options          = $field_data->{options} || {};
+    my $field_label      = $options->{label};
+    my $field_type       = $field_data->{type};
+    my $field_type_label = $field_data->{type_label};
 
     my $asset_class
         = $field_type eq 'asset'        ? '*'
@@ -549,7 +549,7 @@ sub ss_validator {
         my $invalid_asset_ids = join ', ', @invalid_asset_ids;
         return $app->translate(
             "You must select or upload correct assets for a field '[_1]' that asset type is '[_2]'.",
-            $field_label, $type_label
+            $field_label, $field_type_label
         );
     }
 
