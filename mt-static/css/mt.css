@@ -4262,8 +4262,8 @@ tbody.collapse.show {
   height: 1rem;
   overflow: hidden;
   font-size: 0.75rem;
-  background-color: #e9ecef;
-  border-radius: 0.25rem;
+  background-color: #FFFFFF;
+  border-radius: 0.125rem;
 }
 
 .progress-bar {
@@ -4274,7 +4274,7 @@ tbody.collapse.show {
   -ms-flex-pack: center;
       justify-content: center;
   color: #FFFFFF;
-  background-color: #004B9A;
+  background-color: #5FBCEB;
 }
 
 .progress-bar-striped {
@@ -7470,6 +7470,7 @@ Badges
 Icons
 User Badge
 Pagination
+Progress Bar
 */
 html {
   font-size: 14px;
@@ -7592,10 +7593,25 @@ li {
 
 /* Primary Navigation */
 .mt-primaryNavigation {
+  padding-bottom: 1rem;
   padding-right: 0;
   padding-left: 0;
   max-width: 240px;
   background: #F4F4F4;
+}
+
+.mt-primaryNavigation__sites {
+  padding: 1rem;
+  border-bottom: 1px solid #CACACA;
+  background: #E0E0E0;
+}
+
+.mt-primaryNavigation__sites *:last-child {
+  margin-bottom: 0;
+}
+
+.mt-primaryNavigation__sites .custom-select {
+  background-color: #F4F4F4;
 }
 
 .mt-primaryNavigation__list {
@@ -7801,6 +7817,7 @@ li {
 /* Secondary Panel */
 .mt-secondaryPanel {
   padding-bottom: 4rem;
+  padding-top: 1rem;
   max-width: 400px;
   background: #F4F4F4;
 }
@@ -8415,10 +8432,12 @@ fieldset.form-group {
 h1 .badge, h2 .badge,
 .h1 .badge, .h2 .badge {
   font-size: 50%;
+  vertical-align: middle;
 }
 
 h3 .badge, .h3 .badge {
   font-size: 60%;
+  vertical-align: middle;
 }
 
 /* Icons */
@@ -8583,5 +8602,15 @@ a:hover .mt-icon--secondary {
   color: #595959;
   background-color: #F4F4F4;
   border-color: #E0E0E0;
+}
+
+/* Progress Bar */
+.mt-progress {
+  border: 1px solid #CACACA;
+  border-radius: 0.25rem;
+}
+
+.mt-progress .progress {
+  margin: 1px;
 }
 /*# sourceMappingURL=mt.css.map */
