@@ -1798,6 +1798,12 @@ abstract class MTDatabase {
         }
         $class_filter = " and category_class='$class'";
 
+        if (isset($args['category_set_id'])) {
+            $category_set_filter = 'and category_category_set_id = ' . intval($args['category_set_id']);
+        } else {
+            $category_set_filter = 'and category_category_set_id = 0';
+        }
+
         $sql = "
             select category_id, count($count_column) as category_count
               from mt_category $join_clause
@@ -1807,6 +1813,7 @@ abstract class MTDatabase {
                    $blog_filter
                    $parent_filter
                    $class_filter
+                   $category_set_filter
              group by category_id
         ";
 
