@@ -1248,8 +1248,7 @@ sub make_unique_category_basename {
         if $base eq '';    #FIXME when does this happen?
 
     my $cat_class = ref $cat;
-    my $terms
-        = { category_set_id => $cat->category_set_id || [ \'IS NULL', 0 ], };
+    my $terms = { category_set_id => $cat->category_set_id || 0 };
     return _get_basename( $cat_class, $base, $blog, $terms );
 }
 
@@ -2358,7 +2357,7 @@ sub unescape_unicode {
 sub expat_parser {
     my $parser = XML::Parser->new(
         Handlers => {
-            ExternEnt => sub { die "External entities disabled."; },
+            ExternEnt    => sub { die "External entities disabled."; },
             ExternEntFin => sub { },
         },
     );

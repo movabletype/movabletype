@@ -15,6 +15,22 @@ use MT::CMS::Folder;
 
 my $folder_class = MT->model('folder');
 
+subtest 'category_set_id' => sub {
+    my $folder = $folder_class->new(
+        blog_id => 1,
+        label   => 'test',
+    );
+    is( $folder->category_set_id, 0, 'default value is 0' );
+
+    $folder->category_set_id(1);
+    is( $folder->category_set_id, 0, 'value is always 0' );
+
+    $folder->column( 'category_set_id', 2 );
+    $folder->save or die $folder->errstr;
+    is( $folder->category_set_id, 0,
+        'value cannot be changed even by column method' );
+};
+
 subtest 'remove' => sub {
     my $category_id = 1;
     my $init        = sub {
