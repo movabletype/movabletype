@@ -301,9 +301,9 @@ sub tag_handler_datetime {
     my $field_type = $field_data->{type};
 
     local $args->{format} = '%x'
-        if $field_type eq 'date' && !_has_some_modifier($args);
+        if $field_type eq 'date_only' && !_has_some_modifier($args);
     local $args->{format} = '%X'
-        if $field_type eq 'time' && !_has_some_modifier($args);
+        if $field_type eq 'time_only' && !_has_some_modifier($args);
 
     local $args->{ts} = $value;
 
@@ -354,6 +354,7 @@ sub tag_handler_asset {
 
     my $asset_class
         = $field_data->{type} eq 'asset' ? 'file' : $field_data->{type};
+    $asset_class =~ s/^asset_(.*)/$1/;
     my $asset_terms = {
         id     => $value,
         class  => $asset_class,

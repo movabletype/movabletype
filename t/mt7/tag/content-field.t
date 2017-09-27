@@ -68,14 +68,14 @@ my $cf_datetime = MT::Test::Permission->make_content_field(
 my $cf_date = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
     content_type_id => $ct->id,
-    name            => 'date',
-    type            => 'date',
+    name            => 'date_only',
+    type            => 'date_only',
 );
 my $cf_time = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
     content_type_id => $ct->id,
-    name            => 'time',
-    type            => 'time',
+    name            => 'time_only',
+    type            => 'time_only',
 );
 my $cf_select_box = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
@@ -104,8 +104,8 @@ my $cf_list = MT::Test::Permission->make_content_field(
 my $cf_table = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
     content_type_id => $ct->id,
-    name            => 'table',
-    type            => 'table',
+    name            => 'tables',
+    type            => 'tables',
 );
 my $cf_tag = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
@@ -140,8 +140,8 @@ my $category2 = MT::Test::Permission->make_category(
 my $cf_image = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
     content_type_id => $ct->id,
-    name            => 'image',
-    type            => 'image',
+    name            => 'asset_image',
+    type            => 'asset_image',
 );
 my $image1 = MT::Test::Permission->make_asset(
     class   => 'image',
@@ -392,27 +392,27 @@ June  3, 2017  6:05 PM
 --- expected
 2017-06-03T18:05:00+00:00
 
-=== mt:ContentField label="date"
+=== mt:ContentField label="date_only"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date"><mt:var name="__value__"></mt:ContentField></mt:Contents>
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date_only"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 June  5, 2017
 
-=== mt:ContentField label="date" format_name="iso8601"
+=== mt:ContentField label="date_only" format_name="iso8601"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date" format_name="iso8601"><mt:var name="__value__"></mt:ContentField></mt:Contents>
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date_only" format_name="iso8601"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 2017-06-05T00:00:00+00:00
 
-=== mt:ContentField label="time"
+=== mt:ContentField label="time_only"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="time"><mt:var name="__value__"></mt:ContentField></mt:Contents>
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="time_only"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 12:34 PM
 
-=== mt:ContentField label="time" format_name="iso8601"
+=== mt:ContentField label="time_only" format_name="iso8601"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="time" format_name="iso8601"><mt:var name="__value__"></mt:ContentField></mt:Contents>
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="time_only" format_name="iso8601"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 1970-01-01T12:34:56+00:00
 
@@ -442,9 +442,9 @@ ghi,3
 --- expected
 aaa:bbb:ccc
 
-=== mt:ContentField label="table"
+=== mt:ContentField label="tables"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="table"><mt:var name="__value__"></mt:ContentField></mt:Contents>
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="tables"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 <table>
 <tr><th></th><th>1</th><th>2</th><th>3</th></tr>
@@ -469,9 +469,9 @@ tag1
 category2
 category1
 
-=== mt:ContentField label="image"
+=== mt:ContentField label="asset_image"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="image"><mt:AssetLabel>
+<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="asset_image"><mt:AssetLabel>
 </mt:ContentField></mt:Contents>
 --- expected
 Sample Image 1
