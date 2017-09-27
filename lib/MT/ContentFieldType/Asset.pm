@@ -553,7 +553,6 @@ sub ss_validator {
         );
     }
 
-    my $type_label        = $field_type;
     my $type_label_plural = $field_type . 's';
     MT::ContentFieldType::Common::ss_validator_multiple( @_, $type_label,
         $type_label_plural );
