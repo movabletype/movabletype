@@ -39,9 +39,10 @@ my $app = _run_app(
     'MT::App::CMS',
     {   __test_user      => $admin,
         __request_method => 'POST',
-        __mode           => 'cfg_content_type',
+        __mode           => 'view',
         blog_id          => $ct->blog_id,
         id               => $ct->id,
+        _type            => 'content_type',
     },
 );
 my $out = delete $app->{__test_output};
