@@ -4338,7 +4338,7 @@ sub _hdlr_app_contentfield_option_group {
 
   closePanel(e) {
     className = this.root.className
-    this.root.className = className.replace(/\s*show\s*/,'')
+    this.root.className = className.replace(/\\s*show\\s*/,'')
   }
 
   $script
