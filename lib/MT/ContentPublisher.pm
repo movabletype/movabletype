@@ -161,6 +161,13 @@ sub rebuild {
         return $mt->rebuild_authors(%param);
     }
 
+    if (   $param{ArchiveType}
+        && ( !$param{ContentType} )
+        && ( $param{ArchiveType} eq 'ContentType_Category' ) )
+    {
+        return $mt->rebuild_content_categories(%param);
+    }
+
     my @entry_at = grep { $_ !~ /^ContentType/ } @at;
     my @ct_at    = grep { $_ =~ /^ContentType/ } @at;
     if (@entry_at) {
@@ -386,6 +393,58 @@ sub rebuild {
 sub rebuild_categories {
     my $mt = shift;
     $mt->SUPER::rebuild_categories(@_);
+}
+
+sub rebuild_content_categories {
+    my $mt    = shift;
+    my %param = @_;
+    my $blog;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info(' Start rebuild_content_categories.');
+
+    unless ( $blog = $param{Blog} ) {
+        my $blog_id = $param{BlogID};
+        $blog = MT::Blog->load($blog_id)
+            or return $mt->error(
+            MT->translate(
+                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                MT::Blog->errstr
+            )
+            );
+    }
+    my %arg;
+    $arg{'sort'} = 'id';
+    $arg{direction} = 'ascend';
+    $arg{offset} = $param{Offset} if $param{Offset};
+    $arg{limit}  = $param{Limit}  if $param{Limit};
+    my @caegory_set = MT::CategorySet->load( { blog_id => $blog->id } );
+    my @category_set_id = map { $_->id } @caegory_set;
+    my $cat_iter
+        = MT::Category->load_iter(
+        { blog_id => $blog->id, category_set_id => \@category_set_id },
+        \%arg );
+    my $fcb = $param{FilterCallback};
+
+    while ( my $cat = $cat_iter->() ) {
+        if ($fcb) {
+            $fcb->($cat) or last;
+        }
+        $mt->_rebuild_content_archive_type(
+            Blog        => $blog,
+            Category    => $cat,
+            ArchiveType => 'ContentType_Category',
+            $param{TemplateMap}
+            ? ( TemplateMap => $param{TemplateMap} )
+            : (),
+            NoStatic => $param{NoStatic},
+            Force    => ( $param{Force} ? 1 : 0 ),
+        ) or return;
+    }
+    MT::Util::Log->info(' End   rebuild_content_categories.');
+    1;
 }
 
 sub rebuild_authors {
@@ -1221,8 +1280,8 @@ sub _rebuild_content_archive_type {
         MT->translate( "Parameter '[_1]' is required", 'ArchiveType' ) );
     return 1 if $at eq 'None';
     my $content_data
-        = (    $param{ArchiveType} ne 'Content-Category'
-            && $param{ArchiveType} ne 'Content-Author'
+        = (    $param{ArchiveType} ne 'ContentType_Category'
+            && $param{ArchiveType} ne 'ContentType_Author'
             && !exists $param{Start}
             && !exists $param{End} )
         ? (
@@ -1291,12 +1350,11 @@ sub _rebuild_content_archive_type {
     my $done = MT->instance->request( '__published:' . $blog->id )
         || MT->instance->request( '__published:' . $blog->id, {} );
     for my $map (@map) {
-        my $ts;
-        my $dt_field_id = $map->dt_field_id;
-        if ($dt_field_id) {
-            my $data = $content_data->data;
-            $ts = $data->{$dt_field_id};
-        }
+        my $ts
+            = $content_data
+            && $map->dt_field_id ? $content_data->data->{ $map->dt_field_id }
+            : exists $param{Timestamp} ? $param{Timestamp}
+            :                            undef;
 
         my $file
             = exists $param{File}
