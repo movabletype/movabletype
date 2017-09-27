@@ -1238,20 +1238,6 @@ sub list {
             or $a->{label_for_sort} cmp $b->{label_for_sort}
     } @filter_types;
 
-#for my $filter_type ( @filter_types ) {
-#    if ( my $options = $filter_type->{single_select_options} ) {
-#        require MT::Util;
-#        if ( 'ARRAY' ne ref $options ) {
-#            $options = MT->handler_to_coderef($options)
-#                unless ref $options;
-#            $filter_type->{single_select_options} = $options->( $filter_type->{prop} );
-#        }
-#        for my $option ( @{$filter_type->{single_select_options}} ) {
-#            $option->{label} = MT::Util::encode_js($option->{label});
-#        }
-#    }
-#}
-
     require MT::CMS::Filter;
     my $filters = MT::CMS::Filter::filters( $app, $type . $subtype,
         encode_html => 1 );
