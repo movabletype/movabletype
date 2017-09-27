@@ -523,20 +523,34 @@ sub ss_validator {
     my $options     = $field_data->{options} || {};
     my $field_label = $options->{label};
     my $field_type  = $field_data->{type};
-    my $asset_class = $field_type eq 'asset' ? 'file' : $field_type;
+    my $type_label  = $field_data->{type_label};
+
+    my $asset_class
+        = $field_type eq 'asset'        ? '*'
+        : $field_type =~ /^asset_(.*)$/ ? $1
+        :                                 undef;
+    return $app->translate( '[_1] is invalid asset type ([_2].',
+        $field_label, $field_type )
+        unless $asset_class;
 
     my $iter = MT::Asset->load_iter(
-        { id => $data, blog_id => $app->blog->id, class => $asset_class },
-        { fetchonly => { id => 1 } },
+        {   id      => $data,
+            blog_id => $app->blog->id,
+            class   => $asset_class
+        },
+        { fetchonly => { id => 1 } }
     );
+
     my %valid_assets;
     while ( my $asset = $iter->() ) {
         $valid_assets{ $asset->id } = 1;
     }
     if ( my @invalid_asset_ids = grep { !$valid_assets{$_} } @{$data} ) {
         my $invalid_asset_ids = join ', ', @invalid_asset_ids;
-        return $app->translate( 'Invalid Asset Ids: [_1] in "[_2]" field.',
-            $invalid_asset_ids, $field_label );
+        return $app->translate(
+            "You must select or upload correct assets for a field '[_1]' that asset type is '[_2]'.",
+            $field_label, $type_label
+        );
     }
 
     my $type_label        = $field_type;
