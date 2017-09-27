@@ -54,12 +54,12 @@ subtest 'mode=save_content_data (create)' => sub {
             status                                => MT::Entry::HOLD(),
             'content-field-' . $content_field->id => 'test input',
             _type                                 => 'content_data',
-            type                                  => 'content_data_' . $content_type->id,
+            type => 'content_data_' . $content_type->id,
         },
     );
     my $out = delete $app->{__test_output};
-    ok( $out =~ /saved=1/,   'content data has been saved' );
-    ok( $out =~ /302 Found/, 'redirect to list_content_data screen' );
+    ok( $out =~ /saved_added=1/, 'content data has been saved' );
+    ok( $out =~ /302 Found/,     'redirect to list_content_data screen' );
 
     # check content data
     $content_data = MT::ContentData->load(
@@ -102,12 +102,12 @@ subtest 'mode=save_content_data (update)' => sub {
             status                                => MT::Entry::HOLD(),
             'content-field-' . $content_field->id => 'test input update',
             _type                                 => 'content_data',
-            type                                  => 'content_data_' . $content_type->id,
+            type => 'content_data_' . $content_type->id,
         },
     );
     my $out = delete $app->{__test_output};
-    ok( $out =~ /saved=1/,   'content data has been saved' );
-    ok( $out =~ /302 Found/, 'redirect to list_content_data screen' );
+    ok( $out =~ /saved_changes=1/, 'content data has been saved' );
+    ok( $out =~ /302 Found/,       'redirect to list_content_data screen' );
 
     # check content data
     is( MT::ContentData->count, 1, 'content data count is 1' );
