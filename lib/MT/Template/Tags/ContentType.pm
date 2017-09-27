@@ -1323,6 +1323,25 @@ TODO: This tag has not been implemented yet.
 =cut
 
 sub _hdlr_content_permalink {
+    my ( $ctx, $args ) = @_;
+    my $c = $ctx->stash('content')
+        or return $ctx->_no_entry_error();
+    my $blog = $ctx->stash('blog');
+    my $at = $args->{type} || $args->{archive_type};
+    if ($at) {
+        return $ctx->error(
+            MT->translate(
+                "You used an [_1] tag for linking into '[_2]' archives, but that archive type is not published.",
+                '<$MTEntryPermalink$>',
+                $at
+            )
+        ) unless $blog->has_archive_type($at);
+    }
+    my $link = $c->permalink( $args ? $at : undef,
+        { valid_html => $args->{valid_html} } )
+        or return $ctx->error( $c->errstr );
+    $link = MT::Util::strip_index( $link, $blog ) unless $args->{with_index};
+    $link;
 }
 
 =head2 AuthorHasContent
