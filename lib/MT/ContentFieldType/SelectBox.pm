@@ -65,22 +65,22 @@ sub options_validation_handler {
         return $app->translate(
             "A number of minimum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 0.",
             $label, $field_label
-        ) if defined $min and $min !~ /^\d+$/;
+        ) if '' ne $min and $min !~ /^\d+$/;
 
         my $max = $options->{max};
         return $app->translate(
             "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 1.",
             $label,
             $field_label
-        ) if defined $max and ( $max !~ /^\d+$/ or $max < 1 );
+        ) if '' ne $max and ( $max !~ /^\d+$/ or $max < 1 );
 
         return $app->translate(
             "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to a number of minimum selection.",
             $label,
             $field_label
             )
-            if defined $min
-            and defined $max
+            if '' ne $min
+            and '' ne $max
             and $max < $min;
     }
 
