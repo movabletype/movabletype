@@ -1194,44 +1194,49 @@ sub list {
             : $a->{order} <=> $b->{order}
     } @list_columns;
 
-    my @filter_types = map {
-        {   prop                  => $_,
-            id                    => $_->id,
-            type                  => $_->type,
-            label                 => $_->filter_label || $_->label,
-            field                 => $_->filter_tmpl,
-            single_select_options => $_->single_select_options($app),
-            verb                  => defined $_->verb ? $_->verb
+    my @filter_types;
+    for my $prop ( values %$list_props ) {
+        next unless $prop->can_filter($scope);
+
+        my $label_for_sort;
+        if ( defined $prop->filter_label ) {
+            $label_for_sort
+                = ref $prop->filter_label
+                ? $prop->filter_label->($screen_settings)
+                : $prop->filter_label;
+        }
+        if ( !defined $label_for_sort ) {
+            $label_for_sort
+                = ref $prop->label
+                ? $prop->label->($screen_settings)
+                : $prop->label;
+            $label_for_sort = '' unless defined $label_for_sort;
+        }
+
+        push @filter_types,
+            {
+            prop                  => $prop,
+            id                    => $prop->id,
+            type                  => $prop->type,
+            label                 => $prop->filter_label || $prop->label,
+            field                 => $prop->filter_tmpl,
+            single_select_options => $prop->single_select_options($app),
+            verb                  => defined $prop->verb ? $prop->verb
             : $app->translate('__SELECT_FILTER_VERB'),
-            singleton => $_->singleton ? 1
-            : $_->has('filter_editable') ? !$_->filter_editable
+            singleton => $prop->singleton ? 1
+            : $prop->has('filter_editable') ? !$prop->filter_editable
             : 0,
-            editable => $_->has('filter_editable') ? $_->filter_editable : 1,
-            base_type => $_->base_type,
-        }
-        }
-        sort {
-        ( $a->item_order && $b->item_order )
-            ? $a->item_order <=> $b->item_order
-            : ( !$a->item_order && $b->item_order )  ? 1
-            : ( $a->item_order  && !$b->item_order ) ? -1
-            : (
-            defined $a->filter_label
-            ? ( ref $a->filter_label
-                ? $a->filter_label->($screen_settings)
-                : $a->filter_label
-                )
-            : ( ref $a->label ? $a->label->($screen_settings) : $a->label )
-            ) cmp(
-            defined $b->filter_label
-            ? ( ref $b->filter_label
-                ? $b->filter_label->($screen_settings)
-                : $b->filter_label
-                )
-            : ( ref $b->label ? $b->label->($screen_settings) : $b->label )
-            );
-        }
-        grep { $_->can_filter($scope) } values %$list_props;
+            editable => $prop->has('filter_editable') ? $prop->filter_editable
+            : 1,
+            base_type      => $prop->base_type,
+            item_order     => $prop->item_order || 0,
+            label_for_sort => $label_for_sort,
+            };
+    }
+    @filter_types = sort {
+        $a->{item_order} <=> $b->{item_order}
+            or $a->{label_for_sort} cmp $b->{label_for_sort}
+    } @filter_types;
 
 #for my $filter_type ( @filter_types ) {
 #    if ( my $options = $filter_type->{single_select_options} ) {
