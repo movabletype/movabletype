@@ -327,7 +327,7 @@ sub _default_roles {
                 'manage_pages',         'rebuild',
                 'upload',               'send_notifications',
                 'manage_feedback',      'edit_assets',
-                'manage_content_datas', 'manage_category_set'
+                'manage_content_data', 'manage_category_set'
             ],
         },
         {   name        => MT->translate('Author'),
@@ -375,7 +375,7 @@ sub _default_roles {
                 'Can manage content types, content datas, edit their own content types, contentdatas.'
             ),
             perms => [
-                'manage_content_types', 'manage_content_datas',
+                'manage_content_types', 'manage_content_data',
                 'manage_category_set'
             ],
         },
