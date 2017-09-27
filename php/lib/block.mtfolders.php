@@ -10,6 +10,7 @@ function smarty_block_mtfolders($args, $content, &$ctx, &$repeat) {
     // status: incomplete
     // parameters: show_empty
     $args['class'] = 'folder';
+    unset($args['category_set_id']);
     return smarty_block_mtcategories($args, $content, $ctx, $repeat);
 }
 ?>
