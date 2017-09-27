@@ -47,7 +47,7 @@ my $app = _run_app(
 );
 my $out = delete $app->{__test_output};
 ok( $out !~ /An error occurred/,
-    'No error occurs on cfg_content_type screen' );
+    'No error occurs on edit_content_type screen' );
 
 done_testing;
 
