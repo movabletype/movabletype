@@ -4221,11 +4221,11 @@ sub _hdlr_app_contentfield_option_group {
     my $insides = $ctx->slurp( $args, $cond );
 
     my $vars = $ctx->{__stash}{vars} ||= {};
-    my $script = $ctx->var('option_script');
+    my $script = $ctx->var('option_script') || '';
     $ctx->var( 'option_script', undef )
         if $script;
 
-    return $ctx->build(<<"EOT");
+    return $ctx->build(<<EOT);
 <$type>
 
   <mtapp:ContentFieldOption
