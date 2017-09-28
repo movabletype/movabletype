@@ -27,6 +27,12 @@
     <input ref="initial_value" type="text" name="initial_value" id="tags-initial_value" class="form-control" value={ options.initial_value } >
   </mtapp:ContentFieldOption>
 
+  <mtapp:ContentFieldOption
+     id="tags-can_add"
+     label="<__trans phrase="Allow users to create new tags?">">
+    <input ref="can_add" type="checkbox" class="mt-switch form-control" id="tags-can_add" name="can_add" checked={ options.can_add }><label for="tags-can_add"><__trans phrase="Allow users to create new tags?"></label>
+  </mtapp:ContentFieldOption>
+
   <mtapp:ContentFieldOptionScript>
   changeStateMultiple(e) {
     this.options.multiple = e.target.checked
