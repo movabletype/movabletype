@@ -13,10 +13,10 @@ function smarty_block_mtentrynext($args, $content, &$ctx, &$repeat) {
         $entry = $ctx->stash('entry');
         if ($entry) {
             $label = $entry->entry_id;
-            if (isset($args['by_author'])) {
+            if (isset($args['by_author']) && $args['by_author']) {
                 $label .= ':author=' . $entry->entry_author_id;
             }
-            if (isset($args['by_category']) || isset($args['by_folder'])) {
+            if ((isset($args['by_category']) && $args['by_category']) || (isset($args['by_folder']) && $args['by_folder'])) {
                 $cat = $entry->category();
                 $cat_id = $cat ? $cat->category_id : 0;
                 $label .= ':category=' . $cat_id;
