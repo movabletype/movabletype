@@ -7,7 +7,7 @@
 </div>
 </mt:if>
 
-<mt:setvartemplate name="selectbox_values"><mt:var name="__key__" escape="html"> (ID:<mt:var name="__value__" escape="html">)</mt:ContentField></mt:setvartemplate>
+<mt:setvartemplate name="multiple_values"><mt:var name="__key__" escape="html">(<mt:var name="__value__" escape="html">)</mt:ContentField></mt:setvartemplate>
 
 <mt:setvartemplate name="asset_values"><mt:AssetLabel> (ID:<mt:AssetID>)</mt:setvartemplate>
 
@@ -17,11 +17,11 @@
     <b><mt:var name="content_field_options{label}" escape="html"> (<mt:var name="content_field_type_label" escape="html">)</b><br/>
   <mt:ContentField>
     <mt:if name="content_field_type" eq="select_box">
-      <mt:var name="selectbox_values">
+      <mt:var name="multiple_values">
     <mt:elseif name="content_field_type" eq="radio_button">
-      <mt:var name="selectbox_values">
+      <mt:var name="multiple_values">
     <mt:elseif name="content_field_type" eq="checkboxes">
-      <mt:var name="selectbox_values">
+      <mt:var name="multiple_values">
     <mt:elseif name="content_field_type" eq="asset">
       <mt:var name="asset_values">
     <mt:elseif name="content_field_type" eq="audio">

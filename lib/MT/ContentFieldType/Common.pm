@@ -322,13 +322,23 @@ sub tag_handler_multiple {
     my $i       = 1;
     my $glue    = $args->{glue};
 
+    my @values;
+    if ( defined $value ) {
+        if ( ref $value eq 'ARRAY' ) {
+            @values = @$value;
+        }
+        else {
+            @values = ($value);
+        }
+    }
+
     my $key_value_options = $field_data->{options}{values};
     my %value_key_hash
-        = map { $_->{value} => $_->{key} } @{ $key_value_options || [] };
+        = map { $_->{value} => $_->{label} } @{ $key_value_options || [] };
 
-    for my $v ( @{$value} ) {
+    for my $v (@values) {
         local $vars->{__first__}   = $i == 1;
-        local $vars->{__last__}    = $i == scalar @{$value};
+        local $vars->{__last__}    = $i == scalar @values;
         local $vars->{__odd__}     = ( $i % 2 ) == 1;
         local $vars->{__even__}    = ( $i % 2 ) == 0;
         local $vars->{__counter__} = $i;
