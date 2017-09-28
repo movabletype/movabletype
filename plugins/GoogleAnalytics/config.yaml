@@ -1,6 +1,6 @@
 id: GoogleAnalytics
 name: GoogleAnalytics
-version: 1.13
+version: 1.2
 author_link: http://www.movabletype.org/
 author_name: Six Apart, Ltd.
 description: <MT_TRANS phrase="Site statistics plugin using Google Analytics.">
