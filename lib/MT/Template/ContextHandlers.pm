@@ -4285,9 +4285,8 @@ sub _hdlr_app_contentfield_option_group {
     this.options.displays[this.options.display] = "selected"
   else
     this.options.displays['default'] = "selected"
-
   this.id = opts.id
-  this.fieldId = opts.fieldId
+  this.fieldId = opts.fieldid
   this.isNew = opts.isnew
 
   this.on('mount', function() {

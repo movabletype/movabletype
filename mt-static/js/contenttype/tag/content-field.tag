@@ -16,7 +16,7 @@
         <svg title="{ trans('Move') }" role="img" class="mt-icon"><use xlink:href="{ StaticURI }/images/sprite.svg#ic_move" /></svg>
       </div>
     </div>
-    <div data-is={ type } class="collapse mt-collapse__content { isShow }" id={ 'field-options-' + id } fieldId={ id } options={ this.options } isnew={ isNew }></div>
+    <div data-is={ type } class="collapse mt-collapse__content { isShow }" id={ 'field-options-' + id } fieldid={ id } options={ this.options } isnew={ isNew }></div>
   </div>
 
   <script>
