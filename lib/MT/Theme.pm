@@ -415,12 +415,13 @@ sub install_static_files {
         MT->config->ThemeStaticFileExtensions;
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
+    require File::Basename;
     require File::Find;
     my $sub = sub {
         my $name = $File::Find::name;
         return if -d $name;
         my $dir      = $File::Find::dir;
-        my $filename = $_;
+        my $filename = File::Basename::basename($name);
         my ($suffix) = $name =~ m/^.*\.(\w+)$/;
         if ( $allowed{ lc $suffix } ) {
             my $rel = File::Spec->abs2rel( $dir, $src );
