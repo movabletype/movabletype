@@ -924,7 +924,6 @@ sub list {
         component => 'Core'
         }
         if -e $core_include;
-
     for my $c (@list_components) {
         my $f = File::Spec->catfile( $c->path, 'tmpl', 'listing',
             $type . '_list_header.tmpl' );
@@ -1935,6 +1934,16 @@ sub delete {
                 )
             {
                 $required_items++;
+                next;
+            }
+        }
+        elsif ( $type eq 'content_type' ) {
+            my $template_class = $app->model('template');
+            my $count = $template_class->count({
+                content_type_id => $obj->id,
+            });
+            if ( $count > 0 ) {
+                push @not_deleted, $obj->id;
                 next;
             }
         }

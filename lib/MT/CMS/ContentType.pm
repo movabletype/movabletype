@@ -732,43 +732,9 @@ sub list_actions {
             order      => 100,
             button     => 1,
             js_message => 'delete',
-            code       => '$Core::MT::CMS::ContentType::delete',
+            code       => '$Core::MT::CMS::Common::delete',
         }
     };
-}
-
-sub delete {
-    my $app = shift;
-
-    my @templates = ();
-    foreach my $id ( $app->multi_param('id') ) {
-        my @tmpls = MT::Template->load( { content_type_id => $id } );
-        if (@tmpls) {
-            my $content_type = MT::ContentType->load($id);
-            push @templates,
-                {
-                name      => $content_type->name,
-                templates => \@tmpls,
-                };
-        }
-    }
-    if (@templates) {
-        my $param = {
-            error => $app->translate(
-                "Removing content types failed. These content types are used in following templates."
-            ),
-            tmpl_loop => \@templates,
-        };
-        $param->{goback} ||=
-            $app->{goback}
-            ? "window.location='" . $app->{goback} . "'"
-            : 'history.back()';
-        $param->{value} ||= $app->{value} || $app->translate("Back");
-        $param->{hide_goback_button} = $app->{hide_goback_button} || 0;
-        return $app->load_tmpl( 'delete_content_type_error.tmpl', $param );
-    }
-
-    MT::CMS::Common::delete($app);
 }
 
 sub init_content_type {
