@@ -35,6 +35,14 @@
 </mt:if>
 </mt:SetVarBlock>
 
+<mt:setvarblock name="css_include" append="1">
+<style>
+div.mce-notification-error {
+    display: none;
+}
+</style>
+</mt:setvarblock>
+
 <mt:setvarblock name="page_content">
 
 <mt:include name="include/editor_script.tmpl" id="editor_script_include">

@@ -348,6 +348,14 @@
 </mtapp:widget>
 </mt:setvarblock>
 
+<mt:setvarblock name="css_include" append="1">
+<style>
+div.mce-notification-error {
+    display: none;
+}
+</style>
+</mt:setvarblock>
+
 <mt:setvarblock name="js_include" append="1">
   <!--// this MUST loaded after mt.js // -->
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/edit.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
