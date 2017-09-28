@@ -25,17 +25,17 @@ sub data_load_handler {
         my $data_json = $app->param('blockeditor-data');
         my $data_obj;
         my $html = "";
-        my @blockdatas;
+        my @blockdata;
         if ($data_json) {
             $data_obj = JSON->new->utf8(0)->decode($data_json);
             my $editor_id = 'editor-input-content-field-' . $field_id;
             while ( my ( $block_id, $block_data )
                 = each( %{ $data_obj->{$editor_id} } ) )
             {
-                push( @blockdatas, $block_data );
+                push( @blockdata, $block_data );
             }
-            @blockdatas = sort { $a->{order} <=> $b->{order} } @blockdatas;
-            foreach my $val (@blockdatas) {
+            @blockdata = sort { $a->{order} <=> $b->{order} } @blockdata;
+            foreach my $val (@blockdata) {
                 $html .= $val->{html};
             }
         }
@@ -51,4 +51,3 @@ sub data_load_handler {
 }
 
 1;
-

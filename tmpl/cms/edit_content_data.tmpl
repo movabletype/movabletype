@@ -461,7 +461,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     block_editor_data = JSON.parse(block_editor_data_json);
   }</mt:if>
 
-  
+
 
   jQuery(function(){
     jQuery('.convert_breaks :selected[value=blockeditor]').each(function(){
@@ -494,7 +494,8 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       var editor_id = jQuery(this).data('target');
       var form = this.form;
       var option = this.options[this.selectedIndex].value;
-
+      var field_id = editor_id.replace(/editor-input-content-field-/,'');
+      jQuery('#' + field_id + '-collapseEditor').collapse('show');
       var editor_name = editor_id.replace(/editor-input-/, '');
       app.setEditor(editor_name);
       // app.initEditor();
@@ -525,7 +526,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           }
       }
 
-      if (cur_text_format == 'richtext') {
+      if (cur_text_format == 'richtext' && option != 'blockeditor') {
           // changing to plaintext editor
           jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
 
@@ -563,12 +564,6 @@ Template.templates.autoSave = '<mt:section encode_js="1">
                   arguments: param, load: convertedText
           };
           jQuery.post('<mt:var name="script_url">', param, convertedText);
-      } else if ( cur_text_format == 'blockeditor' ) {
-        // changing to other editor
-        jQuery('#' + editor_id).blockeditor('destroy');
-        jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
-        app.editor.setMode(option);
-        app.editor.focus();
       } else {
           jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
           app.editor.setMode(option);
@@ -624,7 +619,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   <div class="form-group">
     <label>
       <mt:var name="options{label}"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></mt:if>
-  
+
       <mt:if name="options{min_length}">
         <mt:if name="options{max_length}">
       (min_length:<mt:var name="options{min_length}" escape="html">, max_length:<mt:var name="options{max_length}" escape="html">)
@@ -634,7 +629,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       <mt:elseif name="options{max_length}">
       (max_length:<mt:var name="options{max_length}" escape="html">)
       </mt:if>
-  
+
       <mt:if name="options{min_value}" ne="">
         <mt:if name="options{max_value}" ne="">
           <mt:if name="options{decimal_places}">
@@ -656,7 +651,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       <mt:elseif name="options{decimal_places}">
       (decimal_places:<mt:var name="options{decimal_places}" escape="html">)
       </mt:if>
-  
+
       <mt:if name="type" like="^select_box|checkboxes|category|asset|audio|video|image|content_type$">
         <mt:if name="options{multiple}">
           <mt:if name="options{min}">
@@ -670,7 +665,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           </mt:if>
         </mt:if>
       </mt:if>
-  
+
       <mt:if name="type" eq="tags">
         <mt:if name="options{multiple}">
           <mt:if name="options{min}">
@@ -694,27 +689,43 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     <input type="text" name="content-field-<mt:var name="content_field_id">" class="form-control text long html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>/>
   <mt:elseif name="data_type" eq="blob">
     <mt:if name="type" eq="multi_line_text">
-      <div class="field-convert_breaks">
-        <__trans phrase="Format:">
-        <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="convert_breaks" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>">
-        <mt:loop name="text_filters">
-          <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
-        </mt:loop>
-        </select>
-        <$mt:setvar name="show_formatting_help" value="1"$>
-      <mt:if name="convert_breaks" eq="richtext">
-        <$mt:setvar name="show_formatting_help" value="0"$>
-      </mt:if>
-      <mt:if name="convert_breaks" eq="0">
-        <$mt:setvar name="show_formatting_help" value="0"$>
-      </mt:if>
-      <mt:if name="convert_breaks" eq="__default__">
-        <$mt:setvar name="show_formatting_help" value="0"$>
-      </mt:if>
+    <div class="mt-collapse--contentblock">
+      <div class="mt-collapse__container">
+        <div class="col">
+          <mt:var name="options{label}"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></mt:if>
+          <div class="field-convert_breaks">
+            <__trans phrase="Format:">
+            <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="convert_breaks" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>">
+            <mt:loop name="text_filters">
+              <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+            </mt:loop>
+            </select>
+            <$mt:setvar name="show_formatting_help" value="1"$>
+          <mt:if name="convert_breaks" eq="richtext">
+            <$mt:setvar name="show_formatting_help" value="0"$>
+          </mt:if>
+          <mt:if name="convert_breaks" eq="0">
+            <$mt:setvar name="show_formatting_help" value="0"$>
+          </mt:if>
+          <mt:if name="convert_breaks" eq="__default__">
+            <$mt:setvar name="show_formatting_help" value="0"$>
+          </mt:if>
+          </div>
+        </div>
+        <div class="col-auto"><a data-toggle="collapse" href="#<mt:var name="content_field_id">-collapseEditor" aria-expanded="false" aria-controls="<mt:var name="content_field_id">-collapseEditor"><svg title="Collapse" role="img" class="mt-icon--secondary"><use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_collapse" /></svg></a></div>
       </div>
-      <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
-        <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
+      <div class="collapse mt-collapse__blockset" id="<mt:var name="content_field_id">-collapseEditor">
+        <div class="row no-gutters">
+           <div class="col">
+              <div class="form-group">
+                <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
+                    <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high content-field editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
+                </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
     <mt:else>
       <textarea name="content-field-<mt:var name="content_field_id">" class="form-control text high" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
     </mt:if>
