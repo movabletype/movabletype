@@ -69,28 +69,6 @@ sub _hdlr_contents {
     my $content_type = MT::ContentType->load($terms)
         or return $ctx->error( MT->translate('Content Type was not found.') );
 
-    my $parent      = $ctx->stash('content_type');
-    my $parent_data = $ctx->stash('content');
-    my @data_ids;
-    my $e_hash = {};
-
-    if ($parent) {
-        my $match = 0;
-        foreach my $f ( @{ $content_type->fields } ) {
-            my $field_obj = MT::ContentField->load( $f->{id} );
-            if (   $f->{type} eq 'content_type'
-                && $field_obj->related_content_type_id == $content_type->id )
-            {
-                $match++;
-                my $data_ids = $parent_data->data->{ $f->{id} };
-                @data_ids = split ',', $data_ids;
-            }
-        }
-
-        return $ctx->error( MT->translate('Content Type was not found.') )
-            unless $match;
-    }
-
     my ( @filters, %blog_terms, %blog_args, %terms, %args );
     $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
         or return $ctx->error( $ctx->errstr );
@@ -622,8 +600,6 @@ sub _hdlr_contents {
     local $ctx->{__stash}{contents}
         = ( @contents && defined $contents[0] ) ? \@contents : undef;
     for my $content_data (@contents) {
-        next if $parent && !grep { $content_data->id == $_ } @data_ids;
-
         local $vars->{__first__}       = !$i;
         local $vars->{__last__}        = !defined $contents[ $i + 1 ];
         local $vars->{__odd__}         = ( $i % 2 ) == 0;
