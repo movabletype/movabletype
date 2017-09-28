@@ -16,7 +16,7 @@
       </thead>
       <tbody>
         <tr each={ values }>
-          <td><input type="radio" class="form-control" name="initial" checked={ checked } onchange={ enterInitial }></td>
+          <td><input type="radio" class="form-control" name={ id + '-initial' } checked={ checked } onchange={ enterInitial }></td>
           <td><input type="text" class="form-control" name="label" oninput={ enterLabel } value={ label }></td>
           <td><input type="text" class="form-control" name="value" oninput={ enterValue } value={ value } ></td>
           <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="delete">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash" /></svg><__trans phrase="delete"></button></td>
@@ -67,10 +67,10 @@
   }
 
   enterInitial(e) {
-    if ( e.target.checked )
-      e.item.checked = "checked"
-    else 
-      e.item.checked = ""
+    this.values.forEach( function(v) {
+      v.checked = "";
+    })
+    e.item.checked = "checked"
   }
 
   gather() {
