@@ -12,6 +12,7 @@ use warnings;
 use File::Spec;
 use JSON  ();
 use POSIX ();
+use Data::Dumper;
 
 use MT;
 use MT::CMS::Common;
@@ -383,6 +384,7 @@ sub save {
 
         # Pre save manipurator
         my $options = $field->{options};
+        delete $options->{id} if exists $options->{id};
 
         if ( my $pre_save
             = $content_field_types->{$type}{options_pre_save_handler} )
@@ -807,6 +809,131 @@ sub list_boilerplates {
         = { page_title => $app->translate('Manage Content Type Boilerplates'),
         };
     $app->load_tmpl( 'not_implemented_yet.tmpl', $param );
+}
+
+sub post_save {
+    my $eh = shift;
+    my ( $app, $obj, $orig_obj ) = @_;
+
+    return 1 unless $orig_obj;
+
+    my $author = $app->user;
+
+    my $message;
+    my $meta_message;
+    if ( !$orig_obj->id ) {
+        $message
+            = $app->translate(
+            "Content Type '[_1]' (ID:[_2]) added by user '[_3]'",
+            $obj->name, $obj->id, $author->name );
+    }
+    else {
+        # check to see what changed and add a flag to meta_messages
+        my %cols = %{ $obj->column_defs };
+        foreach my $key (
+            qw{ created_on created_by modified_on modified_by id fields } )
+        {
+            delete $cols{$key};
+        }
+
+        my @meta_messages = ();
+        for my $col ( keys %cols ) {
+            my $old
+                = defined $orig_obj->$col()
+                ? $orig_obj->$col()
+                : "";
+            my $new = defined $obj->$col() ? $obj->$col() : "";
+            if ( $new ne $old ) {
+                $old = "none" if $old eq "";
+                $new = "none" if $new eq "";
+                push(
+                    @meta_messages,
+                    $app->translate(
+                        "[_1] changed from [_2] to [_3]",
+                        $col, $old, $new
+                    )
+                );
+            }
+        }
+
+        my %new_fields = map { $_->{unique_id} => $_ } @{ $obj->fields };
+        my %old_fields = map { $_->{unique_id} => $_ } @{ $orig_obj->fields };
+        for my $field_id ( keys %new_fields ) {
+            if ( !exists $old_fields{$field_id} ) {
+                push(
+                    @meta_messages,
+                    $app->translate(
+                        "A content field '[_1]' ([_2]) was added",
+                        $new_fields{$field_id}->{options}->{label},
+                        $new_fields{$field_id}->{type_label}
+                    )
+                );
+            }
+            elsif ( exists $old_fields{$field_id} ) {
+                my $old_val = MT::Util::perl_sha1_digest_hex(
+                    Dumper( $old_fields{$field_id}->{options} ) );
+                my $new_val = MT::Util::perl_sha1_digest_hex(
+                    Dumper( $new_fields{$field_id}->{options} ) );
+                if ( $old_val ne $new_val ) {
+                    push(
+                        @meta_messages,
+                        $app->translate(
+                            "A content field options of '[_1]' ([_2]) was changed",
+                            $old_fields{$field_id}->{options}->{label},
+                            $old_fields{$field_id}->{type_label}
+                        )
+                    );
+                }
+                delete $old_fields{$field_id};
+            }
+        }
+        if ( keys %old_fields ) {
+            my $deleted = join ',',
+                map { $old_fields{$_}->{options}->{label} } keys %old_fields;
+            push(
+                @meta_messages,
+                $app->translate(
+                    "Some content fields were deleted: ([_1])", $deleted
+                )
+            );
+
+        }
+
+        if ( scalar(@meta_messages) > 0 ) {
+            $meta_message = join( ", ", @meta_messages );
+        }
+
+        $message
+            = $app->translate(
+            "Content Type '[_1]' (ID:[_2]) edited by user '[_3]'",
+            $obj->name, $obj->id, $author->name );
+    }
+    require MT::Log;
+    $app->log(
+        {   message => $message,
+            level   => MT::Log::INFO(),
+            class   => 'content_type',
+            $orig_obj->id ? ( category => 'edit' ) : ( category => 'new' ),
+            ( $meta_message ? ( metadata => $meta_message ) : () ),
+        }
+    );
+
+    1;
+}
+
+sub post_delete {
+    my ( $eh, $app, $obj ) = @_;
+
+    $app->log(
+        {   message => $app->translate(
+                "Content Type '[_1]' (ID:[_2]) deleted by '[_3]'",
+                $obj->name, $obj->id, $app->user->name
+            ),
+            level    => MT::Log::INFO(),
+            class    => 'content_type',
+            category => 'delete'
+        }
+    );
 }
 
 1;

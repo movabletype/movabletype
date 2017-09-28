@@ -315,6 +315,11 @@ sub init_core_callbacks {
             # content data
             $pkg . 'post_save.cd'   => "${pfx}ContentData::post_save",
             $pkg . 'post_delete.cd' => "${pfx}ContentData::post_delete",
+
+            # Contnt Tyoe
+            $pkg . 'post_save.content_type'   => "${pfx}ContentType::post_save",
+            $pkg . 'post_delete.content_type'   => "${pfx}ContentType::post_delete",
+
         }
     );
 }
