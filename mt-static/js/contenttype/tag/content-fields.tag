@@ -101,6 +101,8 @@
       if ( this.fields ) {
         child = this.tags['content-field']
         if ( child ) {
+          if ( !Array.isArray(child) )
+            child = [ child ]
           i = 0;
           child.forEach( function(c) {
             field = c.tags[c.type]
