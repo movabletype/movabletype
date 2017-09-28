@@ -2723,7 +2723,7 @@ sub load_core_permissions {
                 'blog.set_publish_paths',   'blog.upload',
                 'blog.view_blog_log',       'blog.manage_feedback',
                 'blog.manage_themes',       'blog.create_site',
-                'blog.manage_category_set', 'blog.manage_content_datas',
+                'blog.manage_category_set', 'blog.manage_content_data',
                 'blog.manage_content_types',
             ],
             'permitted_action' => {
@@ -3051,14 +3051,14 @@ sub load_core_permissions {
                 'save_page'                  => 1,
             }
         },
-        'blog.manage_content_datas' => {
+        'blog.manage_content_data' => {
             group            => 'auth_pub',
             label            => 'Manage Content Data',
             order            => 700,
             permitted_action => {
                 'access_to_content_data_list'             => 1,
                 'add_tags_to_content_data_via_list'       => 1,
-                'edit_all_content_datas'                  => 1,
+                'edit_all_content_data'                  => 1,
                 'edit_all_posts'                          => 1,
                 'edit_all_published_content_data'         => 1,
                 'edit_all_unpublished_content_data'       => 1,
@@ -3076,7 +3076,7 @@ sub load_core_permissions {
                 'use_content_data:manage_menu'            => 1,
                 'use_tools:search'                        => 1,
                 'get_content_data_feed'                   => 1,
-                'save_multiple_content_datas'             => 1,
+                'save_multiple_content_data'             => 1,
                 'open_select_author_dialog'               => 1,
                 'send_update_pings_content_data'          => 1,
                 'insert_asset'                            => 1,
@@ -3419,7 +3419,7 @@ sub load_core_permissions {
             permitted_action => {
                 'access_to_content_data_list'             => 1,
                 'add_tags_to_content_data_via_list'       => 1,
-                'edit_all_content_datas'                  => 1,
+                'edit_all_content_data'                  => 1,
                 'edit_all_posts'                          => 1,
                 'edit_all_published_content_data'         => 1,
                 'edit_all_unpublished_content_data'       => 1,
@@ -3437,7 +3437,7 @@ sub load_core_permissions {
                 'use_content_data:manage_menu'            => 1,
                 'use_tools:search'                        => 1,
                 'get_content_data_feed'                   => 1,
-                'save_multiple_content_datas'             => 1,
+                'save_multiple_content_data'             => 1,
                 'open_select_author_dialog'               => 1,
                 'send_update_pings_content_data'          => 1,
                 'insert_asset'                            => 1,
