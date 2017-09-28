@@ -227,9 +227,9 @@ my $fields = [
         options => {
             label  => $cf_select_box->name,
             values => [
-                { key => 'abc', value => 1 },
-                { key => 'def', value => 2 },
-                { key => 'ghi', value => 3 },
+                { label => 'abc', value => 1 },
+                { label => 'def', value => 2 },
+                { label => 'ghi', value => 3 },
             ],
         },
         unique_id => $cf_select_box->unique_id,
@@ -240,9 +240,9 @@ my $fields = [
         options => {
             label  => $cf_radio->name,
             values => [
-                { key => 'abc', value => 1 },
-                { key => 'def', value => 2 },
-                { key => 'ghi', value => 3 },
+                { label => 'abc', value => 1 },
+                { label => 'def', value => 2 },
+                { label => 'ghi', value => 3 },
             ],
         },
         unique_id => $cf_radio->unique_id,
@@ -253,9 +253,9 @@ my $fields = [
         options => {
             label  => $cf_checkbox->name,
             values => [
-                { key => 'abc', value => 1 },
-                { key => 'def', value => 2 },
-                { key => 'ghi', value => 3 },
+                { label => 'abc', value => 1 },
+                { label => 'def', value => 2 },
+                { label => 'ghi', value => 3 },
             ],
             multiple => 1,
             max      => 3,
