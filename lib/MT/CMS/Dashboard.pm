@@ -807,21 +807,34 @@ sub activity_log_widget {
             }
         }
         if ( my $ts = $log->created_on ) {
+            ## All Log records are saved with GMT, so do trick here.
+            my $epoch = ts2epoch( undef, $ts, 1 )
+                ;    # just get epoch with "no_offset" option
+            $epoch = offset_time( $epoch, ( $blog || undef ) )
+                ;    # from GMT to Blog( or system ) Timezone
+            $ts = epoch2ts( ( $blog || undef ), $epoch, 1 )
+                ;    # back to timestamp
             if ($site_view) {
-                $row->{created_on_formatted} = format_ts(
+                $row->{created_on_formatted}
+                    = $is_relative
+                    ? MT::Util::relative_date( $ts, time, $blog )
+                    : format_ts(
                     MT::App::CMS::LISTING_DATETIME_FORMAT(),
                     epoch2ts( $blog, ts2epoch( undef, $ts ) ),
                     $blog,
                     $user ? $user->preferred_language : undef
-                );
+                    );
             }
             else {
-                $row->{created_on_formatted} = format_ts(
+                $row->{created_on_formatted}
+                    = $is_relative
+                    ? MT::Util::relative_date( $ts, time, undef )
+                    : format_ts(
                     MT::App::CMS::LISTING_DATETIME_FORMAT(),
                     epoch2ts( undef, offset_time( ts2epoch( undef, $ts ) ) ),
                     undef,
                     $user ? $user->preferred_language : undef
-                );
+                    );
             }
 
             if ( $log->blog_id ) {
@@ -898,12 +911,19 @@ sub site_list_widget {
 
             if ( my $ts = $p->created_on ) {
                 $item->{epochtime} = ts2epoch( undef, $ts );
-                $item->{created_on_formatted} = format_ts(
+                my $is_relative
+                    = ( $app->user->date_format || 'relative' ) eq 'relative'
+                    ? 1
+                    : 0;
+                $item->{created_on_formatted}
+                    = $is_relative
+                    ? MT::Util::relative_date( $ts, time, $site )
+                    : format_ts(
                     MT::App::CMS::LISTING_DATETIME_FORMAT(),
                     epoch2ts( $site, ts2epoch( undef, $ts ) ),
                     $site,
                     $user ? $user->preferred_language : undef
-                );
+                    );
             }
             push @recent, $item;
         }
@@ -960,9 +980,10 @@ sub site_list_widget {
             }
         }
 
-        if ( @recent ) {
+        if (@recent) {
             @recent
-                = reverse sort { $a->{epochtime} <=> $b->{epochtime} } @recent;
+                = reverse sort { $a->{epochtime} <=> $b->{epochtime} }
+                @recent;
             $row->{recent_post} = \@recent;
         }
 
