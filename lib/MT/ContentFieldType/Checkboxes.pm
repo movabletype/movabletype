@@ -10,25 +10,38 @@ use warnings;
 sub field_html_params {
     my ( $app, $field_data ) = @_;
     my $value = $field_data->{value};
-    $value = ''       unless defined $value;
-    $value = [$value] unless ref $value eq 'ARRAY';
 
     my %values;
-    if ( ref $value eq 'ARRAY' ) {
-        %values = map { $_ => 1 } @{$value};
-    }
-    else {
-        $values{$value} = 1;
+    if ( defined $value ) {
+        if ( ref $value eq 'ARRAY' ) {
+            %values = map { $_ => 1 } @{$value};
+        }
+        else {
+            $values{$value} = 1;
+        }
     }
 
     my $options = $field_data->{options};
     my $options_values = $options->{values} || [];
-    @{$options_values} = map {
-        {   l => $_->{label},
-            v => $_->{value},
-            ( $_->{checked} ? ( checked => 'checked="checked"' ) : () ),
-        }
-    } @{$options_values};
+
+    if (%values) {
+        @$options_values = map {
+            {   l => $_->{label},
+                v => $_->{value},
+                $values{ $_->{value} }
+                ? ( checked => 'checked="checked"' )
+                : (),
+            }
+        } @$options_values;
+    }
+    else {
+        @{$options_values} = map {
+            {   l => $_->{label},
+                v => $_->{value},
+                ( $_->{checked} ? ( checked => 'checked="checked"' ) : () ),
+            }
+        } @{$options_values};
+    }
 
     my $multiple = '';
     if ( $options->{multiple} ) {
@@ -77,8 +90,7 @@ sub options_validation_handler {
 
     return $app->translate(
         "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to a number of minimum selection.",
-        $label,
-        $field_label
+        $label, $field_label
         )
         if '' ne $min
         and '' ne $max
