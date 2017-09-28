@@ -866,7 +866,10 @@ sub rebuild_file {
         require MT::ContentData;
         $content_data = MT::ContentData->load($content_data)
             if !ref $content_data;
+        my $content_type
+            = MT::ContentType->load( $content_data->content_type_id );
         $ctx->var( 'content_archive', 1 );
+        $ctx->{__stash}{content_type} = $content_type;
         $ctx->{__stash}{content}      = $content_data;
         $ctx->{__stash}{template_map} = $map;
     }
