@@ -3715,11 +3715,8 @@ sub _determine_total {
     my ( $archiver, $blog_id ) = @_;
 
     my $total = 0;
-    if ( ( $archiver->entry_based || $archiver->date_based )
-        && !$archiver->category_based )
-    {
-        if (   $archiver->contenttype_based
-            || $archiver->contenttype_date_based )
+    if ( $archiver->entry_based || $archiver->date_based ) {
+        if ( $archiver->contenttype_date_based )
         {
             require MT::ContentData;
             my $terms = {
@@ -3751,8 +3748,9 @@ sub _determine_total {
         else {
             require MT::Category;
             my $terms = {
-                blog_id => $blog_id,
-                class   => $archiver->category_class,
+                blog_id         => $blog_id,
+                class           => $archiver->category_class,
+                category_set_id => 0,
             };
             $total = MT::Category->count($terms);
         }
