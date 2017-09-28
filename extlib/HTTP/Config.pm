@@ -1,10 +1,9 @@
 package HTTP::Config;
-
+$HTTP::Config::VERSION = '6.13';
 use strict;
-use URI;
-use vars qw($VERSION);
+use warnings;
 
-$VERSION = "5.815";
+use URI;
 
 sub new {
     my $class = shift;
@@ -39,6 +38,7 @@ sub find2 {
  ITEM:
     for my $item (@$self) {
         for my $k (keys %spec) {
+            no warnings 'uninitialized';
             if (!exists $item->{$k} || $spec{$k} ne $item->{$k}) {
                 push(@rest, $item);
                 next ITEM;
@@ -71,7 +71,7 @@ my %MATCH = (
     },
     m_secure => sub {
         my($v, $uri) = @_;
-        my $secure = $uri->_scheme eq "https";
+        my $secure = $uri->can("secure") ? $uri->secure : $uri->_scheme eq "https";
         return $secure == !!$v;
     },
     m_host_port => sub {
@@ -146,7 +146,7 @@ my %MATCH = (
         my $ct = $response->content_type;
         return 2, 1 if $v =~ s,/\*\z,, && $ct =~ m,^\Q$v\E/,;
         return 3, 1 if $v eq "html" && $response->content_is_html;
-        return 4, 1 if $v eq "html" && $response->content_is_xhtml;
+        return 4, 1 if $v eq "xhtml" && $response->content_is_xhtml;
         return 10, 1 if $v eq $ct;
         return 0;
     },
@@ -233,11 +233,17 @@ sub matching_items {
 
 1;
 
-__END__
+=pod
+
+=encoding UTF-8
 
 =head1 NAME
 
 HTTP::Config - Configuration for request and response objects
+
+=head1 VERSION
+
+version 6.13
 
 =head1 SYNOPSIS
 
@@ -404,7 +410,7 @@ With a value of "xhtml" matches if $response->content_is_xhtml returns TRUE.
 
 =item m_uri__I<$method> => undef
 
-Matches if the URI object provide the method
+Matches if the URI object provides the method.
 
 =item m_uri__I<$method> => $string
 
@@ -418,7 +424,7 @@ Matches if either the request or the response have a header $field with the give
 
 =item m_response_attr__I<$key> => $string
 
-Matches if the response object has a that key; or the entry has the given value.
+Matches if the response object has that key, or the entry has the given value.
 
 =back
 
@@ -426,11 +432,21 @@ Matches if the response object has a that key; or the entry has the given value.
 
 L<URI>, L<HTTP::Request>, L<HTTP::Response>
 
-=head1 COPYRIGHT
+=head1 AUTHOR
 
-Copyright 2008, Gisle Aas
+Gisle Aas <gisle@activestate.com>
 
-This library is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself.
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 1994-2017 by Gisle Aas.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
+
+__END__
+
+
+#ABSTRACT: Configuration for request and response objects
+
