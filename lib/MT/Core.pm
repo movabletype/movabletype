@@ -2734,7 +2734,6 @@ sub load_core_permissions {
                 'administer_website'            => 1,
                 'clone_blog'                    => 1,
                 'delete_website'                => 1,
-                'remove_user_assoc'             => 1,
 
                 # administer_blog
                 'access_to_blog_association_list'  => 1,
@@ -2764,9 +2763,9 @@ sub load_core_permissions {
                 'start_backup'                     => 1,
                 'start_restore'                    => 1,
                 'use_tools:search'                 => 1,
-                'remove_user_assoc'                => 1,
                 'edit_global_commenter_status'     => 1,
 
+                'remove_user_assoc'            => 1,
                 'administer_site'              => 1,
                 'manage_member_blogs'          => 1,
                 'open_blog_listing_screen'     => 1,

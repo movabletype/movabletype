@@ -174,7 +174,6 @@ sub _load_from_registry {
     my $theme = $pkg->new($props);
     $theme->registry(
         {   id           => "$id",
-            label        => $reg->{label},
             description  => $reg->{description},
             l10n_class   => $reg->{l10n_class},
             l10n_lexicon => $reg->{l10n_lexicon},
@@ -238,7 +237,6 @@ sub _load_from_themes_directory {
     }
     $class->registry(
         {   id          => $theme_id,
-            label       => $y->{label},
             name        => $y->{name},
             description => $y->{description},
             label       => sub { $class->translate( $y->{label} ) },
