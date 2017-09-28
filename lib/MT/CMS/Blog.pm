@@ -2177,7 +2177,7 @@ sub save_filter {
                 MT->translate(
                     "The number of revisions to store must be a positive integer."
                 )
-            ) unless 0 < sprintf( '%d', $param_name );
+            ) unless 0 < sprintf( '%d', $value );
         }
         return $eh->error(
             MT->translate("Please choose a preferred archive type.") )
