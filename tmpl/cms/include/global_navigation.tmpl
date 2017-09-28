@@ -12,7 +12,7 @@
         </a>
 </mt:if>
 <mt:if name="scope_type" ne="system">
-        <a class="dropdown-item" href="<$mt:var name="mt_url">?blog_id=0&amp;<$mt:var name="return_args" escape="html"$>">
+        <a class="dropdown-item" href="<$mt:var name="mt_url">?__mode=dashboard&blog_id=0">
           <__trans phrase="System Overview">
         </a>
 </mt:if>
@@ -23,7 +23,7 @@
         </h6>
   <mt:loop name="fav_website_loop">
     <mt:if name="fav_website_can_link">
-        <a class="dropdown-item" href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;<$mt:var name="return_args" escape="html"$>">
+        <a class="dropdown-item" href="<$mt:var name="mt_url"$>?__mode=dashboard&blog_id=<$mt:var name="fav_website_id"$>">
           <mt:var name="fav_website_name" escape="html">
         </a>
     <mt:else>
@@ -31,7 +31,7 @@
     </mt:if>
     <mt:if name="__last__">
       <mt:unless name="selector_hide_website_chooser">
-        <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="dropdown-item text-right mt-open-dialog mt-modal-open scope-link" data-mt-modal-large>
+        <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1" class="dropdown-item text-right mt-open-dialog mt-modal-open scope-link" data-mt-modal-large>
           <__trans phrase="Select another site...">
         </a>
       </mt:unless>
@@ -42,7 +42,7 @@
         <h6 class="dropdown-header">
           <__trans phrase="Sites">
         </h6>
-        <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="dropdown-item text-right mt-open-dialog mt-modal-open scope-link" data-mt-modal-large>
+        <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1" class="dropdown-item text-right mt-open-dialog mt-modal-open scope-link" data-mt-modal-large>
           <__trans phrase="Select another site...">
         </a>
   </mt:unless>

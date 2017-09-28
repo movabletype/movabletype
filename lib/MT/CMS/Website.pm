@@ -515,7 +515,7 @@ sub dialog_select_website {
                 list_noncron     => 1,
                 return_url       => $app->base
                     . $app->uri . '?'
-                    . ( $app->param('return_args') || '' ),
+                    . '__mode=dashboard',
                 confirm_js  => $confirm_js,
                 idfield     => ( $app->param('idfield') || '' ),
                 namefield   => ( $app->param('namefield') || '' ),
