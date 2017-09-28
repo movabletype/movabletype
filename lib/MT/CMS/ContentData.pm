@@ -218,7 +218,8 @@ sub edit {
             # TODO: fix after updating values option.
             if ( $_->{type} eq 'select_box' || $_->{type} eq 'checkboxes' ) {
                 my $delimiter = quotemeta( $_->{options_delimiter} || ',' );
-                my @values = split $delimiter, $_->{options}{initial_value};
+                my @values = split $delimiter,
+                    ( $_->{options}{initial_value} || '' );
                 $_->{value} = \@values;
             }
             else {
