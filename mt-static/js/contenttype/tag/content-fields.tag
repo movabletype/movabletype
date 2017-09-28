@@ -84,6 +84,7 @@
         'type': this.currentType,
         'typeLabel' : this.currentTypeLabel,
         'id' : newId,
+        'isNew': true,
         'isShow': 'show'
       }
       this.fields.push(field)
@@ -108,6 +109,8 @@
             data.type = c.type
             data.order = ++i
             data.options = options
+            if ( !c.isNew )
+              data.id = c.id
             fieldOptions.push(data)
           })
           this.data = JSON.stringify(fieldOptions)

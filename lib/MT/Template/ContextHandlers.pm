@@ -4228,6 +4228,8 @@ sub _hdlr_app_contentfield_option_group {
     return $ctx->build(<<EOT);
 <$type>
 
+  <input if={ !this.isNew } type="hidden" ref="id" name="id" id="$type-id" class="form-control" value={ fieldId } >
+
   <mtapp:ContentFieldOption
      id="$type-label"
      label="<__trans phrase="Label">"
@@ -4285,6 +4287,8 @@ sub _hdlr_app_contentfield_option_group {
     this.options.displays['default'] = "selected"
 
   this.id = opts.id
+  this.fieldId = opts.fieldId
+  this.isNew = opts.isnew
 
   this.on('mount', function() {
     elms = this.root.querySelectorAll('*')
