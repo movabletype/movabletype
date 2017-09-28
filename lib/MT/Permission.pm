@@ -601,6 +601,8 @@ sub can_edit_content_data {
             or return;
     }
 
+    return 1 if $self->can_do('edit_all_content_data');
+
     my $content_data_name = 'content_data_' . $content_data->id;
 
     return 1
@@ -813,8 +815,8 @@ sub _load_recursive {
 }
 
 sub load_permissions_from_action {
-    my $pkg = shift;
-    my ($action) = @_;
+    my $pkg         = shift;
+    my ($action)    = @_;
     my $permissions = __PACKAGE__->perms_from_registry();
     my $perms;
 
