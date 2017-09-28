@@ -1081,9 +1081,9 @@ sub _table_registry {
                 initial_rows
                 row_heading
                 increase_decrease_rows
-                initial_columns
-                column_heading
-                increase_decrease_columns
+                initial_cols
+                col_heading
+                increase_decrease_cols
                 )
         ],
     };

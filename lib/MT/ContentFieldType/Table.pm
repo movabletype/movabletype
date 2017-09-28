@@ -23,17 +23,17 @@ sub field_html_params {
 
     my $value = $field_data->{value};
     unless ($value) {
-        my $initial_columns = $field_data->{options}{initial_columns} || 1;
-        my $initial_rows    = $field_data->{options}{initial_rows}    || 1;
-        $value = _create_empty_table( $initial_rows, $initial_columns );
+        my $initial_cols = $field_data->{options}{initial_cols} || 1;
+        my $initial_rows = $field_data->{options}{initial_rows} || 1;
+        $value = _create_empty_table( $initial_rows, $initial_cols );
     }
 
     { table_value => $value };
 }
 
 sub _create_empty_table {
-    my ( $initial_rows, $initial_columns ) = @_;
-    my $row = '<tr>' . ( '<td></td>' x $initial_columns ) . '</tr>';
+    my ( $initial_rows, $initial_cols ) = @_;
+    my $row = '<tr>' . ( '<td></td>' x $initial_cols ) . '</tr>';
     join "\n", ( map {$row} ( 1 .. $initial_rows ) );
 }
 
@@ -55,24 +55,23 @@ sub _table_with_heading {
     return $value unless $value;
     my $table_with_row_heading
         = _add_row_heading_to_table( $field_data, $value );
-    my $column_heading = _create_column_heading( $field_data, $value );
-    $column_heading =~ s/^(<tr>)/$1<th><\/th>/;
-    "${column_heading}\n${table_with_row_heading}";
+    my $col_heading = _create_col_heading( $field_data, $value );
+    $col_heading =~ s/^(<tr>)/$1<th><\/th>/;
+    "${col_heading}\n${table_with_row_heading}";
 }
 
-sub _create_column_heading {
+sub _create_col_heading {
     my ( $field_data, $value ) = @_;
-    my @column_heading = split ',',
-        ( $field_data->{options}{column_heading} || '' )
+    my @col_heading = split ',', ( $field_data->{options}{col_heading} || '' )
         or return '';
-    my $column_count = _get_column_count($value) or return '';
-    my $column_header = '';
-    for my $i ( 0 .. $column_count - 1 ) {
-        my $header = $column_heading[$i];
+    my $col_count = _get_col_count($value) or return '';
+    my $col_header = '';
+    for my $i ( 0 .. $col_count - 1 ) {
+        my $header = $col_heading[$i];
         $header = '' unless defined $header;
-        $column_header .= "<th>${header}</th>";
+        $col_header .= "<th>${header}</th>";
     }
-    "<tr>${column_header}</tr>";
+    "<tr>${col_header}</tr>";
 }
 
 sub _add_row_heading_to_table {
@@ -93,7 +92,7 @@ sub _add_row_heading_to_table {
     join "\n", @added_table_rows;
 }
 
-sub _get_column_count {
+sub _get_col_count {
     my $value = shift or return 0;
     my ($first_line) = split "\n", $value;
     my @td_tag = $first_line =~ /<td>/g;

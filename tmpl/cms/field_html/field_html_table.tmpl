@@ -5,7 +5,7 @@
 
 <mt:setvarblock name="jq_js_include" append="1">
 (function() {
-  var increaseDecreaseColumns = <mt:if name="options{increase_decrease_columns}">true<mt:else>false</mt:if>;
+  var increaseDecreaseColumns = <mt:if name="options{increase_decrease_cols}">true<mt:else>false</mt:if>;
   var increaseDecreaseRows = <mt:if name="options{increase_decrease_rows}">true<mt:else>false</mt:if>;
   var fieldId = '<mt:var name="content_field_id" escape="js">';
   var languageTag = '<mt:var name="language_tag" escape="js">';
