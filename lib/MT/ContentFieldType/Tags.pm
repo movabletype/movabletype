@@ -216,7 +216,7 @@ sub tag_handler {
     while ( my $tag = $iter->() ) {
         $tags{ $tag->id } = $tag;
     }
-    my @ordered_tags = map { $tags{$_} } @{$value};
+    my @ordered_tags = grep {$_} map { $tags{$_} } @{$value};
 
     my $glue = $args->{glue};
 
