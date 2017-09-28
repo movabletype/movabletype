@@ -10,24 +10,39 @@ use warnings;
 sub field_html_params {
     my ( $app, $field_data ) = @_;
     my $value = $field_data->{value};
-    $value = '' unless defined $value;
 
     my %values;
-    if ( ref $value eq 'ARRAY' ) {
-        %values = map { $_ => 1 } @$value;
-    }
-    else {
-        $values{$value} = 1;
+    if ( defined $value ) {
+        if ( ref $value eq 'ARRAY' ) {
+            %values = map { $_ => 1 } @$value;
+        }
+        else {
+            $values{$value} = 1;
+        }
     }
 
     my $options = $field_data->{options};
     my $options_values = $options->{values} || [];
-    @{$options_values} = map {
-        {   l => $_->{label},
-            v => $_->{value},
-            ( $_->{checked} ? ( checked => 'selected="selected"' ) : () ),
-        }
-    } @{$options_values};
+
+    if (%values) {
+        @$options_values = map {
+            {   l => $_->{label},
+                v => $_->{value},
+                $values{ $_->{value} }
+                ? ( selected => 'selected="selected"' )
+                : (),
+            }
+        } @$options_values;
+    }
+    else {
+        @{$options_values} = map {
+            {   l => $_->{label},
+                v => $_->{value},
+                (   $_->{checked} ? ( selected => 'selected="selected"' ) : ()
+                ),
+            }
+        } @{$options_values};
+    }
 
     my $required = $options->{required} ? 'required' : '';
 
