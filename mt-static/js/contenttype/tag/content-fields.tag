@@ -79,7 +79,7 @@
     }
 
     addField(e) {
-      newId = Math.floor(10000*Math.random()).toString(16)
+      newId = Math.random().toString(36).slice(-8);
       field = {
         'type': this.currentType,
         'typeLabel' : this.currentTypeLabel,
