@@ -450,14 +450,14 @@ sub save {
             =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
             )
         {
-            $param{error} = $app->translate(
+            $param{err_msg} = $app->translate(
                 "Invalid date '[_1]'; 'Published on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
                 $ao
             );
         }
-        unless ( $param{error} ) {
+        unless ( $param{err_msg} ) {
             my $s = $6 || 0;
-            $param{error} = $app->translate(
+            $param{err_msg} = $app->translate(
                 "Invalid date '[_1]'; 'Published on' dates should be real dates.",
                 $ao
                 )
@@ -476,7 +476,11 @@ sub save {
                 );
         }
         $param{return_args} = $app->param('return_args');
-        return $app->forward( "view", \%param ) if $param{error};
+        if ( $param{err_msg} ) {
+            $app->param( 'reedit',          1 );
+            $app->param( 'serialized_data', $data );
+            return $app->forward( "edit_content_data", \%param );
+        }
         if ( $content_data->authored_on ) {
             $previous_old = $content_data->previous(1);
             $next_old     = $content_data->next(1);
@@ -491,16 +495,16 @@ sub save {
         if ( $uo_d || $uo_t ) {
             my %param = ();
             my $uo    = $uo_d . ' ' . $uo_t;
-            $param{error} = $app->translate(
+            $param{err_msg} = $app->translate(
                 "Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
                 $uo
                 )
                 unless ( $uo
                 =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
                 );
-            unless ( $param{error} ) {
+            unless ( $param{err_msg} ) {
                 my $s = $6 || 0;
-                $param{error} = $app->translate(
+                $param{err_msg} = $app->translate(
                     "Invalid date '[_1]'; 'Unpublished on' dates should be real dates.",
                     $uo
                     )
@@ -520,8 +524,8 @@ sub save {
             }
             my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
                 ( $6 || 0 );
-            unless ( $param{error} ) {
-                $param{error} = $app->translate(
+            unless ( $param{err_msg} ) {
+                $param{err_msg} = $app->translate(
                     "Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.",
                     $uo
                     )
@@ -533,8 +537,8 @@ sub save {
                     ) > 0
                     );
             }
-            if ( !$param{error} && $content_data->authored_on ) {
-                $param{error} = $app->translate(
+            if ( !$param{err_msg} && $content_data->authored_on ) {
+                $param{err_msg} = $app->translate(
                     "Invalid date '[_1]'; 'Unpublished on' dates should be later than the corresponding 'Published on' date.",
                     $uo
                     )
@@ -546,9 +550,13 @@ sub save {
                     ) > 0
                     );
             }
-            $param{show_input_unpublished_on} = 1 if $param{error};
+            $param{show_input_unpublished_on} = 1 if $param{err_msg};
             $param{return_args} = $app->param('return_args');
-            return $app->forward( "view", \%param ) if $param{error};
+            if ( $param{err_msg} ) {
+                $app->param( 'reedit',          1 );
+                $app->param( 'serialized_data', $data );
+                return $app->forward( "edit_content_data", \%param );
+            }
             if ( $content_data->unpublished_on ) {
                 $previous_old = $content_data->previous(1);
                 $next_old     = $content_data->next(1);
