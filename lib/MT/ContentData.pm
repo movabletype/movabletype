@@ -178,10 +178,14 @@ sub save {
 
         $value = [ grep { defined $_ && $_ ne '' } @$value ];
 
-        if ( $idx_type eq 'asset' ) {
+        if (   $idx_type eq 'asset'
+            || $idx_type eq 'asset_audio'
+            || $idx_type eq 'asset_video'
+            || $idx_type eq 'asset_image' )
+        {
             $self->_update_object_assets( $content_type, $f, $value );
         }
-        elsif ( $idx_type eq 'tag' ) {
+        elsif ( $idx_type eq 'tags' ) {
             $self->_update_object_tags( $content_type, $f, $value );
         }
         elsif ( $idx_type eq 'categories' ) {
@@ -213,7 +217,7 @@ sub save {
                 );
 
             # Week Number for Content Field
-            if ( $idx_type eq 'date_and_time' || $idx_type eq 'date' ) {
+            if ( $idx_type eq 'date_and_time' || $idx_type eq 'date_only' ) {
                 if ( my $week_number
                     = _get_week_number( $cf_idx, 'value_datetime' ) )
                 {
