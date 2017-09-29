@@ -73,10 +73,10 @@ sub options_validation_handler {
 
     for my $value (@$values) {
         return $app->translate("A label of values is required.")
-            unless $values->{label};
+            unless $value->{label};
 
         return $app->translate("A value of values is required.")
-            unless $values->{value};
+            unless $value->{value};
     }
 
     my $multiple = $options->{multiple};
