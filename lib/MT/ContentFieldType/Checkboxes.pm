@@ -97,5 +97,13 @@ sub options_validation_handler {
     return;
 }
 
+sub options_pre_save_handler {
+    my ( $app, $type, $obj, $options ) = @_;
+
+    $options->{multiple} = 1; # Checkboxes is always enabeled.
+
+    return;
+}
+
 1;
 

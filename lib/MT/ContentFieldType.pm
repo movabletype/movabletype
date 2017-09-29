@@ -356,7 +356,7 @@ sub _select_box_registry {
             },
         },
         options_validation_handler =>
-            '$Core::MT::ContentFieldType::Checkboxes::options_validation_handler',
+            '$Core::MT::ContentFieldType::SelectBox::options_validation_handler',
         options_html => 'content_field_type_options/select_box.tmpl',
         options      => [
             qw(
@@ -438,6 +438,8 @@ sub _checkboxes_registry {
         },
         options_validation_handler =>
             '$Core::MT::ContentFieldType::Checkboxes::options_validation_handler',
+        options_pre_save_handler =>
+            '$Core::MT::ContentFieldType::Checkboxes::options_pre_save_handler',
         options_html => 'content_field_type_options/checkboxes.tmpl',
         options      => [
             qw(
