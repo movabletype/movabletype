@@ -236,10 +236,27 @@
      label_class="top-label"
      help_page="entries"
      help_section="date">
-    <div class="form-inline date-time-fields">
-      <input type="text" id="created-on" class="form-control text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/>
-      <span class="separator"> <__trans phrase="@"></span>
-      <input type="text" class="form-control text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>"  placeholder="HH:mm:ss"/>
+    <div class="date-time-fields">
+      <div class="row mb-2">
+        <div class="form-inline col-1">
+          <label for="created-on">
+            <mtapp:svgicon id="ic_date" title="<__trans phrase="Published Date">">
+          </label>
+        </div>
+        <div class="form-group col">
+          <input type="text" id="created-on" class="form-control text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-inline col-1">
+          <label for="create-on-time">
+            <mtapp:svgicon id="ic_time" title="<__trans phrase="Published Time">">
+          </label>
+        </div>
+        <div class="form-group col">
+          <input id="created-on-time" type="text" class="form-control text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>"  placeholder="HH:mm:ss"/>
+        </div>
+      </div>
     </div>
   </mtapp:setting>
 
@@ -251,11 +268,28 @@
      label_class="top-label"
      help_page="entries"
      help_section="date">
-    <div class="form-inline date-time-fields">
-      <div id="unpublished-on" class="mt-edit-inputblock<$mt:if name="show_input_unpublished_on"> show-input</mt:if>">
-        <input type="text" id="unpublished-on-date" class="form-control text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" />
-        <span class="separator"> <__trans phrase="@"></span>
-        <input type="text" id="unpublished-on-time" class="form-control text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" placeholder="HH:mm:ss" />
+    <div class="date-time-fields">
+      <div id="unpublished-on" class="mt-edit-inputblock<mt:if name="show_input_unpublished_on"> show-input</mt:if>">
+        <div class="row mb-2">
+          <div class="form-inline col-1">
+             <label for="unpublished-on-date">
+               <mtapp:svgicon id="ic_date" title="<__trans phrase="Unpublished Date">">
+             </label>
+          </div>
+          <div class="form-group col">
+             <input type="text" id="unpublished-on-date" class="form-control text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-inline col-1">
+             <label for="unpublished-on-time">
+               <mtapp:svgicon id="ic_time" title="<__trans phrase="Unpublished Time">">
+             </label>
+          </div>
+          <div class="form-group col">
+             <input type="text" id="unpublished-on-time" class="form-control text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" placeholder="HH:mm:ss" />
+          </div>
+        </div>
       </div>
     </div>
   </mtapp:setting>
