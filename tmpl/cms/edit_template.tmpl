@@ -1331,10 +1331,10 @@ function saveTemplatePrefs( sync ) {
           jQuery.each(data.result.cf_selects, function( index, value ) {
             jQuery("#content_field_sel").append('<option value="' + value.id + '">' + value.label + '</option>');
           });
-          var cf_datas = data.result.cf_datas;
-          getContentFieldInfo(cf_datas);
+          var cf_data = data.result.cf_data;
+          getContentFieldInfo(cf_data);
           jQuery("#content_field_sel").off('change').change(function(){
-            getContentFieldInfo(cf_datas);
+            getContentFieldInfo(cf_data);
           });
         }
       ).fail(
@@ -1343,12 +1343,12 @@ function saveTemplatePrefs( sync ) {
         }
       );
     }
-    function getContentFieldInfo(cf_datas) {
+    function getContentFieldInfo(cf_data) {
       var id = jQuery("#content_field_sel").val();
-      jQuery("#cf_label").text(cf_datas[id].label);
-      jQuery("#cf_id").text(cf_datas[id].id);
-      jQuery("#cf_unique_id").val(cf_datas[id].unique_id);
-      jQuery("#cf_type").text(cf_datas[id].type);
+      jQuery("#cf_label").text(cf_data[id].label);
+      jQuery("#cf_id").text(cf_data[id].id);
+      jQuery("#cf_unique_id").val(cf_data[id].unique_id);
+      jQuery("#cf_type").text(cf_data[id].type);
     }
     jQuery("#copy_ct_unique_id").click(function(){
       jQuery('#ct_unique_id').select();

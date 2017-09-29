@@ -3483,16 +3483,20 @@ sub get_content_type_info {
     my $fields     = $ct->fields;
     my @cfs        = MT::ContentField->load( { content_type_id => $ct_id } );
     my @cf_selects = ();
-    my $cf_datas   = {};
+    my $cf_data    = {};
     foreach my $cf (@cfs) {
         my ($field) = grep { $_->{id} == $cf->id } @{$fields};
         my $label = $field->{options}{label};
         push @cf_selects, { id => $cf->id, label => $cf->name };
-        $cf_datas->{ $cf->id } = {
+        my $content_field_types = $app->registry('content_field_types');
+        my $type_label = $content_field_types->{ $cf->type }->{label};
+        $type_label = $type_label->()
+            if 'CODE' eq ref $type_label;
+        $cf_data->{ $cf->id } = {
             id        => $cf->id,
             label     => $label,
             unique_id => $cf->unique_id,
-            type      => $cf->type,
+            type      => $type_label,
         };
     }
 
@@ -3500,7 +3504,7 @@ sub get_content_type_info {
         {   success      => 1,
             content_type => $ct_data,
             cf_selects   => \@cf_selects,
-            cf_datas     => $cf_datas,
+            cf_data      => $cf_data,
         }
     );
 }
