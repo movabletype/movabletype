@@ -1,9 +1,11 @@
 ; (function ($) {
     var BEF = MT.BlockEditorField;
+    var label = trans('image');
 
     BEF.Image = function () { BEF.apply(this, arguments) };
-    BEF.Image.createButton = function () {
-        return $('<span class="add">Image</span>');
+    BEF.Image.create_button = function () {
+        return $('<div class="row py-2 add"><div class="mt-icon--contentblock"><svg title="' + label + '" role="img" class="mt-icon mt-icon--sm"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_image"></use></svg></div><label>' + label + '</label></div>');
+
     };
     $.extend(BEF.Image.prototype, BEF.prototype, {
         id: '',
@@ -16,28 +18,41 @@
         get_type: function () {
             return 'image';
         },
+        get_svg_name: function() {
+            return 'ic_image';
+        },
         create: function (id, data) {
             var self = this;
             self.id = id;
-            self.input_field = $('<div class="asset_field"><a href="' + ScriptURI + '?__mode=dialog_list_asset&amp;edit_field=' + id + '&amp;blog_id=' + $('[name=blog_id]').val() + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;no_insert=1&amp;next_mode=block_editor_asset" class="mt-open-dialog mt-modal-open" data-mt-modal-large>edit Image</a><input type="hidden" name="' + id + '" id="' + id + '" value=""></div>');
+            self.input_field = $('<div class="row no-gutters py-2"><div class="col"><div class="form-group"><div class="asset_field"><input type="hidden" name="' + id + '-url" id="' + id + '-url" value=""><input type="hidden" name="' + id + '" id="' + id + '" value=""></div></div></div></div>');
+            var edit_link = $('<div class="edit-image-link"><div class="rounded-circle action-link"><a href="' + ScriptURI + '?__mode=dialog_list_asset&amp;edit_field=' + id + '&amp;blog_id=' + $('[name=blog_id]').val() + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;no_insert=1&amp;next_mode=block_editor_asset" class="edit_image mt-open-dialog mt-modal-open" data-mt-modal-large>' + trans('edit Image') + '</a></div><div class="remove_image rounded-circle action-link"><a href="#" class="remove_image">' + trans('delete') + '</a></div></div>');
             self.input_field.find('#' + id).val(data.value);
             self.preview_field = $('<div></div>');
             self.preview_field.attr('id', id + '-preview');
-            if (data.preview_html && data.preview_html != "") {
-                self.preview_field.append(data.preview_html);
+            self.preview_field.addClass('img-preview');
+            if (data.asset_url && data.asset_url != "") {
+                self.preview_field.css('background-image', 'url(' + data.asset_url + ')');
+                self.input_field.find('#' + id + '-url').val(data.asset_url);
             }
-            self.input_field.find('a').append(self.preview_field);
+            if(data.asset_id && data.asset_id != ""){
+                self.input_field.find('#' + id).val(data.asset_id);
+            }
+
+            self.preview_field.append(edit_link);
+            self.input_field.find('.asset_field').append(self.preview_field);
             self.input_field.find('a.mt-modal-open').mtModal();
 
-            if(data.options && Object.keys(data.options).length > 0){
-                self.options = data.options;
-            }
+            edit_link.on('click', '.remove_image', function(){
+                self.preview_field.css('background-image', 'none');
+                $('#' + id + '-url').val('');
+                $('#' + id).val('');
+            })
 
             return self.input_field;
         },
         get_field_options: function (field_options) {
             var self = this;
-            var option_alt = $('<label>alt<input type="text" name="field_option_alt"></label>');
+            var option_alt = $('<div class="form-group"><label for="' + self.id + '_option_lat" class="form-control-label">alt</label><input type="text" name="field_option_alt" id="' + self.id + '_option_alt" class="form-control"></div>');
             self.options_field = $('<div class="options"></div>');
             self.options_field.append(option_alt);
             var callback = function () {
@@ -58,31 +73,33 @@
             var style_name = name.replace('field_option_', '');
             this.options[style_name] = val;
         },
-        set_class_name: function (val) {
-            var self = this;
-            var class_names = val.split(' ');
-            self.class_names = [];
-            class_names.forEach(function (class_name) {
-                self.class_names.push(class_name);
-            });
-        },
         get_data: function () {
             var self = this;
-            return {
-                'class_name': self.class_names.join(' '),
-                'type': self.get_type(),
-                'value': self.input_field.find('#' + self.id).val(),
-                'preview_html': self.get_html(),
+            var data = {
+                'asset_id': $('#' + self.id).val(),
+                'asset_url': self.get_src(),
                 'html': self.get_html(),
                 'options': self.options,
             };
+
+            return data;
         },
         get_html: function () {
             var self = this;
+            if($('#' + self.id + '-url').val() == ""){
+                return '';
+            }
+            var html = '<img';
+            html += ' src="' + $('#' + self.id + '-url').val() + '"';
             Object.keys(self.options).forEach(function(key){
-                self.preview_field.find('img').attr(key, self.options[key]);
+                html += ' ' + key + '="' + self.options[key] + '"';
             })
-            return self.preview_field.html();
+            html += '>';
+            return html;
+        },
+        get_src: function() {
+            var self = this;
+            return $('#' + self.id + '-url').val();
         }
     });
 
