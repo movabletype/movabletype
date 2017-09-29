@@ -349,7 +349,7 @@ sub _migrate_system_privileges {
 
 sub _v7_migrate_templatemap_archive_type {
     my $self = shift;
-    my @maps = MT::TemplateMap->load();
+    my @maps = MT->model('templatemap')->load();
     foreach my $map (@maps) {
         my $type = $map->archive_type;
         $type =~ s/_/-/;
