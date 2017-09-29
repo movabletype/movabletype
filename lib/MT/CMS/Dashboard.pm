@@ -900,6 +900,8 @@ sub site_list_widget {
         # Recent post - Content Data
         my $cd_class = MT->model('content_data');
         my $cd_iter = $cd_class->load_iter( $terms, $args );
+        my $is_relative
+            = ( $app->user->date_format || 'relative' ) eq 'relative' ? 1 : 0;
         while ( my $p = $cd_iter->() ) {
             my $item;
             $item->{site_id}         = $site->id;
@@ -911,10 +913,6 @@ sub site_list_widget {
 
             if ( my $ts = $p->created_on ) {
                 $item->{epochtime} = ts2epoch( undef, $ts );
-                my $is_relative
-                    = ( $app->user->date_format || 'relative' ) eq 'relative'
-                    ? 1
-                    : 0;
                 $item->{created_on_formatted}
                     = $is_relative
                     ? MT::Util::relative_date( $ts, time, $site )
@@ -943,12 +941,15 @@ sub site_list_widget {
 
                 if ( my $ts = $p->created_on ) {
                     $item->{epochtime} = ts2epoch( undef, $ts );
-                    $item->{created_on_formatted} = format_ts(
+                    $item->{created_on_formatted}
+                        = $is_relative
+                        ? MT::Util::relative_date( $ts, time, $site )
+                        : format_ts(
                         MT::App::CMS::LISTING_DATETIME_FORMAT(),
                         epoch2ts( $site, ts2epoch( undef, $ts ) ),
                         $site,
                         $user ? $user->preferred_language : undef
-                    );
+                        );
                 }
                 push @recent, $item;
             }
@@ -969,12 +970,15 @@ sub site_list_widget {
 
                 if ( my $ts = $p->created_on ) {
                     $item->{epochtime} = ts2epoch( undef, $ts );
-                    $item->{created_on_formatted} = format_ts(
+                    $item->{created_on_formatted}
+                        = $is_relative
+                        ? MT::Util::relative_date( $ts, time, $site )
+                        : format_ts(
                         MT::App::CMS::LISTING_DATETIME_FORMAT(),
                         epoch2ts( $site, ts2epoch( undef, $ts ) ),
                         $site,
                         $user ? $user->preferred_language : undef
-                    );
+                        );
                 }
                 push @recent, $item;
             }
