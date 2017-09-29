@@ -47,9 +47,9 @@ sub upgrade_functions {
             version_limit => 7.0012,
             priority      => 3.5,
         },
-        'v7_migrate_templatemap_archive_type' => {
-            code          => \&_v7_migrate_templatemap_archive_type,
-            version_limit => 7.0013,
+        'v7_migrate_blog_templatemap_archive_type' => {
+            code          => \&_v7_migrate_blog_templatemap_archive_type,
+            version_limit => 7.0014,
             priority      => 3.1,
         },
     };
@@ -347,8 +347,19 @@ sub _migrate_system_privileges {
     }
 }
 
-sub _v7_migrate_templatemap_archive_type {
+sub _v7_migrate_blog_templatemap_archive_type {
     my $self = shift;
+
+    my @sites = MT->model('website')->load();
+    foreach my $site (@sites) {
+        _migrate_site_archive_type( $self, $site );
+    }
+
+    my @blogs = MT->model('blog')->load();
+    foreach my $blog (@blogs) {
+        _migrate_site_archive_type( $self, $blog );
+    }
+
     my @maps = MT->model('templatemap')->load();
     foreach my $map (@maps) {
         my $type = $map->archive_type;
@@ -362,6 +373,21 @@ sub _v7_migrate_templatemap_archive_type {
             )
             );
     }
+}
+
+sub _migrate_site_archive_type {
+    my ( $self, $site ) = @_;
+
+    my @archive_type = split ',', $site->archive_type;
+    my %hash = map { $_, 1 } map { $_ =~ s/_/-/; $_; } @archive_type;
+    my @unique_archive_type = keys %hash;
+    $site->archive_type( join( ',', @unique_archive_type ) );
+    $site->save
+        or return $self->error(
+        $self->translate_escape(
+            "Error saving record: [_1].", $site->errstr
+        )
+        );
 }
 
 1;
