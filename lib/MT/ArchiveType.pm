@@ -257,12 +257,17 @@ sub archive_contents_count {
                 (   $dt_field_id && $ts
                     ? ( MT::ContentFieldIndex->join_on(
                             'content_data_id',
-                            {   content_field_id => $dt_field_id,
-                                value_datetime =>
-                                    { op => '>=', value => $start },
-                                value_datetime =>
-                                    { op => '<=', value => $end }
-                            },
+                            [   { content_field_id => $dt_field_id },
+                                '-and',
+                                [   {   value_datetime =>
+                                            { op => '>=', value => $start }
+                                    },
+                                    '-and',
+                                    {   value_datetime =>
+                                            { op => '<=', value => $end }
+                                    }
+                                ],
+                            ],
                             { alias => 'cat_cf_idx' }
                         )
                         )
