@@ -11,25 +11,19 @@
      id="multi_line_text-input_format"
      label="<__trans phrase="Input format">">
     <select ref="input_format" name="input_format" id="multi_line_text-input_format" class="custom-select form-control">
-      <option value="plain_text" selected={ options.input_formats.plain_text }><__trans phrase="Plain Text"></option>
-      <option value="wysiwyg" selected={ options.input_formats.wysiwyg }><__trans phrase="WYSIWYG"></option>
-      <option value="markdown" selected={ options.input_formats.markdown }><__trans phrase="Markdown"></option>
-      <option value="convert_breaks" selected={ options.input_formats.convdrt_breaks }><__trans phrase="Convert Breaks"></option>
-      <option value="block" selected={ options.input_formats.block }><__trans phrase="Block Editor"></option>
+    <mt:loop name="text_filters">
+      <option value="<mt:var name="filter_key" escape="html">" selected={ options.input_formats['<mt:var name="filter_key" escape="html">'] }><mt:var name="filter_label" escape="html"></option>
+      </mt:loop>
     </select>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOptionScript>
     this.options.input_formats = {}
-    this.options.input_formats.plain_text = ''
-    this.options.input_formats.wysiwyg = ''
-    this.options.input_formats.markdown = ''
-    this.options.input_formats.convert_breaks = ''
-    this.options.input_formats.block = ''
+    <mt:loop name="text_filters">
+    this.options.input_formats['<mt:var name="filter_key" escape="js">'] = ''
+    </mt:loop>
     if ( this.options.input_format )
       this.options.input_formats[this.options.input_format] = "selected"
-    else
-      this.options.input_formats['block'] = "selected"
   </mtapp:ContentFieldOptionScript>
 
 </mt:app:ContentFieldOptionGroup>

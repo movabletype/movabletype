@@ -55,4 +55,26 @@ sub data_load_handler {
 
 }
 
+sub options_html_params {
+    my ( $app, $param ) = @_;
+    my $filters = MT->all_text_filters;
+
+    my @text_filters;
+    for my $filter ( keys %$filters ) {
+        push @text_filters,
+            {
+            filter_key   => $filter,
+            filter_label => $filters->{$filter}{label},
+            };
+    }
+    @text_filters
+        = sort { $a->{filter_key} cmp $b->{filter_key} } @text_filters;
+    unshift @text_filters,
+        {
+        filter_key   => '0',
+        filter_label => $app->translate('None'),
+        };
+    return { text_filters => \@text_filters };
+}
+
 1;

@@ -128,6 +128,8 @@ sub _multi_line_text_registry {
         theme_data_import_handler =>
             '$Core::MT::ContentFieldType::MultiLineText::theme_data_import_handler',
         options_html => 'content_field_type_options/multi_line_text.tmpl',
+        options_html_params =>
+            '$Core::MT::ContentFieldType::MultiLineText::options_html_params',
         options      => [
             qw(
                 label
