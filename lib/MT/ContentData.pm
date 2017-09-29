@@ -171,11 +171,14 @@ sub save {
     my $data = $self->data;
 
     foreach my $f ( @{ $content_type->fields } ) {
-        my $idx_type  = $f->{type};
-        my $data_type = $content_field_types->{$idx_type}{data_type};
-        my $value     = $data->{ $f->{id} };
-        $value = [$value] unless ref $value eq 'ARRAY';
+        my $idx_type = $f->{type};
+        next unless defined $idx_type;
 
+        my $data_type = $content_field_types->{$idx_type}{data_type};
+        next unless defined $data_type;
+
+        my $value = $data->{ $f->{id} };
+        $value = [$value] unless ref $value eq 'ARRAY';
         $value = [ grep { defined $_ && $_ ne '' } @$value ];
 
         if (   $idx_type eq 'asset'
