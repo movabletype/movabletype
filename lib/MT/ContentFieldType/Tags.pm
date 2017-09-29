@@ -211,12 +211,41 @@ sub _link {
 sub tag_handler {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
-    my $iter = MT::Tag->load_iter( { id => $value } );
+    my $is_preview = eval {
+        MT->app->can('mode')
+            && MT->app->mode
+            && MT->app->mode eq 'preview_content_data';
+    };
+
+    my $iter;
+    if ($is_preview) {
+        $iter = MT::Tag->load_iter( { name => $value },
+            { binary => { name => 1 } } );
+    }
+    else {
+        $iter = MT::Tag->load_iter( { id => $value } );
+    }
+
     my %tags;
     while ( my $tag = $iter->() ) {
-        $tags{ $tag->id } = $tag;
+        my $key = $is_preview ? $tag->name : $tag->id;
+        $tags{$key} = $tag;
     }
-    my @ordered_tags = grep {$_} map { $tags{$_} } @{$value};
+
+    my @ordered_tags;
+    for my $v (@$value) {
+        my $tag = $tags{$v};
+        if ( !$tag && $is_preview ) {
+            my $is_private = $v =~ /^@/ ? 1 : 0;
+            $tag = MT::Tag->new(
+                name       => $v,
+                is_private => $is_private,
+            );
+        }
+        if ($tag) {
+            push @ordered_tags, $tag;
+        }
+    }
 
     my $glue = $args->{glue};
 

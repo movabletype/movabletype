@@ -33,7 +33,7 @@
     <mt:elseif name="content_field_type" eq="categories">
       <mt:CategoryLabel> (ID:<mt:CategoryID>)
     <mt:elseif name="content_field_type" eq="tags">
-      <mt:TagLabel> (ID:<mt:TagID>)
+      <mt:TagLabel><mt:if tag="tagid"> (ID:<mt:TagID>)</mt:if>
     <mt:else>
       <mt:var name="__value__" escape="html">
     </mt:if>
