@@ -47,6 +47,11 @@ sub upgrade_functions {
             version_limit => 7.0012,
             priority      => 3.5,
         },
+        'v7_migrate_templatemap_archive_type' => {
+            code          => \&_v7_migrate_templatemap_archive_type,
+            version_limit => 7.0013,
+            priority      => 3.1,
+        },
     };
 }
 
@@ -273,12 +278,12 @@ sub _v7_migrate_privileges {
             my $blog   = $assoc->blog;
             my $author = $assoc->user;
             $author->add_role( $site_admin_role, $blog );
-            if($blog && !$blog->is_blog){
-              my @child_blogs = @{ $blog->blogs };
-              foreach my $child_blog(@child_blogs){
-                my $author = $assoc->user;
-                $author->add_role( $site_admin_role, $child_blog );
-              }
+            if ( $blog && !$blog->is_blog ) {
+                my @child_blogs = @{ $blog->blogs };
+                foreach my $child_blog (@child_blogs) {
+                    my $author = $assoc->user;
+                    $author->add_role( $site_admin_role, $child_blog );
+                }
             }
         }
     }
@@ -337,6 +342,23 @@ sub _migrate_system_privileges {
             $self->translate_escape(
                 "Error saving record: [_1].",
                 $author->errstr
+            )
+            );
+    }
+}
+
+sub _v7_migrate_templatemap_archive_type {
+    my $self = shift;
+    my @maps = MT::TemplateMap->load();
+    foreach my $map (@maps) {
+        my $type = $map->archive_type;
+        $type =~ s/_/-/;
+        $map->archive_type($type);
+        $map->save
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $map->errstr
             )
             );
     }

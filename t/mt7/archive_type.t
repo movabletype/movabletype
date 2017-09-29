@@ -249,7 +249,7 @@ my %html                = (
             . $archive_date->{dated_only_yearly_cf}
             . $archive_list_footer,
     },
-    'ContentType_Author' => {
+    'ContentType-Author' => {
         ao => 'Yuki Ishikawa'
             . $contents_html->{none_ao}
             . $archive_list_header
@@ -261,7 +261,7 @@ my %html                = (
             . "\n\n\n"
             . $archive_list_footer,
     },
-    'ContentType_Author-Daily' => {
+    'ContentType-Author-Daily' => {
         ao => 'Yuki Ishikawa: September  9, 2017'
             . $contents_html->{daily_ao}
             . $archive_list_header
@@ -273,7 +273,7 @@ my %html                = (
             . $archive_date->{daily_cf}
             . $archive_list_footer,
     },
-    'ContentType_Author-Weekly' => {
+    'ContentType-Author-Weekly' => {
         ao => 'Yuki Ishikawa: September  3, 2017 - September  9, 2017'
             . $contents_html->{weekly_ao}
             . $archive_list_header
@@ -285,7 +285,7 @@ my %html                = (
             . $archive_date->{weekly_cf}
             . $archive_list_footer,
     },
-    'ContentType_Author-Monthly' => {
+    'ContentType-Author-Monthly' => {
         ao => 'Yuki Ishikawa: September 2017'
             . $contents_html->{monthly_ao}
             . $archive_list_header
@@ -297,7 +297,7 @@ my %html                = (
             . $archive_date->{monthly_cf}
             . $archive_list_footer,
     },
-    'ContentType_Author-Yearly' => {
+    'ContentType-Author-Yearly' => {
         ao => 'Yuki Ishikawa: 2017'
             . $contents_html->{yearly_ao}
             . $archive_list_header
@@ -309,7 +309,7 @@ my %html                = (
             . $archive_date->{yearly_cf}
             . $archive_list_footer,
     },
-    'ContentType_Category' => {
+    'ContentType-Category' => {
         ao => 'category1'
             . $contents_html->{none_ao}
             . $archive_list_header . "\n"
@@ -319,7 +319,7 @@ my %html                = (
             . $archive_list_header . "\n"
             . $archive_list_footer,
     },
-    'ContentType_Category-Daily' => {
+    'ContentType-Category-Daily' => {
         ao => 'category1: September  9, 2017'
             . $contents_html->{daily_ao}
             . $archive_list_header
@@ -331,7 +331,7 @@ my %html                = (
             . $archive_date->{daily_cf}
             . $archive_list_footer,
     },
-    'ContentType_Category-Weekly' => {
+    'ContentType-Category-Weekly' => {
         ao => 'category1: September  3, 2017 - September  9, 2017'
             . $contents_html->{weekly_ao}
             . $archive_list_header
@@ -343,7 +343,7 @@ my %html                = (
             . $archive_date->{weekly_cf}
             . $archive_list_footer,
     },
-    'ContentType_Category-Monthly' => {
+    'ContentType-Category-Monthly' => {
         ao => 'category1: September 2017'
             . $contents_html->{monthly_ao}
             . $archive_list_header
@@ -355,7 +355,7 @@ my %html                = (
             . $archive_date->{monthly_cf}
             . $archive_list_footer,
     },
-    'ContentType_Category-Yearly' => {
+    'ContentType-Category-Yearly' => {
         ao => 'category1: 2017'
             . $contents_html->{yearly_ao}
             . $archive_list_header
@@ -370,7 +370,7 @@ my %html                = (
 );
 
 my @suite;
-foreach my $prefix (qw( ContentType ContentType_Author ContentType_Category ))
+foreach my $prefix (qw( ContentType ContentType-Author ContentType-Category ))
 {
     foreach my $suffix ( ( '', '-Daily', '-Weekly', '-Monthly', '-Yearly' ) )
     {

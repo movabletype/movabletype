@@ -83,23 +83,23 @@ sub core_archive_types {
         'ContentType-Monthly' => 'MT::ArchiveType::ContentTypeMonthly',
         'ContentType-Weekly'  => 'MT::ArchiveType::ContentTypeWeekly',
         'ContentType-Daily'   => 'MT::ArchiveType::ContentTypeDaily',
-        'ContentType_Author'  => 'MT::ArchiveType::ContentTypeAuthor',
-        'ContentType_Author-Yearly' =>
+        'ContentType-Author'  => 'MT::ArchiveType::ContentTypeAuthor',
+        'ContentType-Author-Yearly' =>
             'MT::ArchiveType::ContentTypeAuthorYearly',
-        'ContentType_Author-Monthly' =>
+        'ContentType-Author-Monthly' =>
             'MT::ArchiveType::ContentTypeAuthorMonthly',
-        'ContentType_Author-Weekly' =>
+        'ContentType-Author-Weekly' =>
             'MT::ArchiveType::ContentTypeAuthorWeekly',
-        'ContentType_Author-Daily' =>
+        'ContentType-Author-Daily' =>
             'MT::ArchiveType::ContentTypeAuthorDaily',
-        'ContentType_Category' => 'MT::ArchiveType::ContentTypeCategory',
-        'ContentType_Category-Yearly' =>
+        'ContentType-Category' => 'MT::ArchiveType::ContentTypeCategory',
+        'ContentType-Category-Yearly' =>
             'MT::ArchiveType::ContentTypeCategoryYearly',
-        'ContentType_Category-Monthly' =>
+        'ContentType-Category-Monthly' =>
             'MT::ArchiveType::ContentTypeCategoryMonthly',
-        'ContentType_Category-Weekly' =>
+        'ContentType-Category-Weekly' =>
             'MT::ArchiveType::ContentTypeCategoryWeekly',
-        'ContentType_Category-Daily' =>
+        'ContentType-Category-Daily' =>
             'MT::ArchiveType::ContentTypeCategoryDaily',
     };
 
@@ -163,7 +163,7 @@ sub rebuild {
 
     if (   $param{ArchiveType}
         && ( !$param{ContentType} )
-        && ( $param{ArchiveType} eq 'ContentType_Category' ) )
+        && ( $param{ArchiveType} eq 'ContentType-Category' ) )
     {
         return $mt->rebuild_content_categories(%param);
     }
@@ -435,7 +435,7 @@ sub rebuild_content_categories {
         $mt->_rebuild_content_archive_type(
             Blog        => $blog,
             Category    => $cat,
-            ArchiveType => 'ContentType_Category',
+            ArchiveType => 'ContentType-Category',
             $param{TemplateMap}
             ? ( TemplateMap => $param{TemplateMap} )
             : (),
@@ -1283,8 +1283,8 @@ sub _rebuild_content_archive_type {
         MT->translate( "Parameter '[_1]' is required", 'ArchiveType' ) );
     return 1 if $at eq 'None';
     my $content_data
-        = (    $param{ArchiveType} ne 'ContentType_Category'
-            && $param{ArchiveType} ne 'ContentType_Author'
+        = (    $param{ArchiveType} ne 'ContentType-Category'
+            && $param{ArchiveType} ne 'ContentType-Author'
             && !exists $param{Start}
             && !exists $param{End} )
         ? (

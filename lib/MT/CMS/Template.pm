@@ -492,7 +492,7 @@ sub edit {
             );
             if ( $obj_type eq 'ct' || $obj_type eq 'ct_archive' ) {
                 @at = grep { $_ =~ /^ContentType/ } @at;
-                @at = grep { $_ !~ /^ContentType_Category/ } @at
+                @at = grep { $_ !~ /^ContentType-Category/ } @at
                     unless $has_cat_field;
             }
             else {
