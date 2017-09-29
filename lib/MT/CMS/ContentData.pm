@@ -446,34 +446,12 @@ sub save {
     if ($ao_d) {
         my %param = ();
         my $ao    = $ao_d . ' ' . $ao_t;
-        unless ( $ao
-            =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
-            )
-        {
+        my $ts    = MT::Util::valid_date_time2ts($ao);
+        if ( !$ts ) {
             $param{err_msg} = $app->translate(
                 "Invalid date '[_1]'; 'Published on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
                 $ao
             );
-        }
-        unless ( $param{err_msg} ) {
-            my $s = $6 || 0;
-            $param{err_msg} = $app->translate(
-                "Invalid date '[_1]'; 'Published on' dates should be real dates.",
-                $ao
-                )
-                if (
-                   $s > 59
-                || $s < 0
-                || $5 > 59
-                || $5 < 0
-                || $4 > 23
-                || $4 < 0
-                || $2 > 12
-                || $2 < 1
-                || $3 < 1
-                || ( MT::Util::days_in( $2, $1 ) < $3
-                    && !MT::Util::leap_day( $1, $2, $3 ) )
-                );
         }
         $param{return_args} = $app->param('return_args');
         if ( $param{err_msg} ) {
@@ -485,8 +463,6 @@ sub save {
             $previous_old = $content_data->previous(1);
             $next_old     = $content_data->next(1);
         }
-        my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
-            ( $6 || 0 );
         $content_data->authored_on($ts);
     }
 
@@ -495,35 +471,13 @@ sub save {
         if ( $uo_d || $uo_t ) {
             my %param = ();
             my $uo    = $uo_d . ' ' . $uo_t;
-            $param{err_msg} = $app->translate(
-                "Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
-                $uo
-                )
-                unless ( $uo
-                =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
-                );
-            unless ( $param{err_msg} ) {
-                my $s = $6 || 0;
+            my $ts    = MT::Util::valid_date_time2ts($uo);
+            if ( !$ts ) {
                 $param{err_msg} = $app->translate(
-                    "Invalid date '[_1]'; 'Unpublished on' dates should be real dates.",
+                    "Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
                     $uo
-                    )
-                    if (
-                       $s > 59
-                    || $s < 0
-                    || $5 > 59
-                    || $5 < 0
-                    || $4 > 23
-                    || $4 < 0
-                    || $2 > 12
-                    || $2 < 1
-                    || $3 < 1
-                    || ( MT::Util::days_in( $2, $1 ) < $3
-                        && !MT::Util::leap_day( $1, $2, $3 ) )
-                    );
+                );
             }
-            my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
-                ( $6 || 0 );
             unless ( $param{err_msg} ) {
                 $param{err_msg} = $app->translate(
                     "Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.",
