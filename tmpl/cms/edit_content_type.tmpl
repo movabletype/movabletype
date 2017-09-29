@@ -50,7 +50,7 @@
     unique_id: "<mt:var name="unique_id" escape="js">",
     name: "<mt:var name="name" escape="js">",
     description: "<mt:var name="description" escape="js">",
-    user_disp_option: "<mt:if name="user_disp_option">checked</mt:if>",
+    user_disp_option: "<mt:unless name="id">checked<mt:else><mt:if name="user_disp_option">checked</mt:if></mt:unless>",
     fields: fields,
     types: content_field_types,
   });
