@@ -134,7 +134,9 @@ sub edit {
             || $obj->type eq 'archive'
             || $obj->type eq 'category'
             || $obj->type eq 'page'
-            || $obj->type eq 'individual';
+            || $obj->type eq 'individual'
+            || $obj->type eq 'ct'
+            || $obj->type eq 'ct_archive';
         if ( !$param->{has_name} ) {
             $param->{ 'type_' . $obj->type } = 1;
             $param->{name} = $obj->name;
