@@ -1585,7 +1585,7 @@ $.fn.mtEditInputBlock = function(options) {
           $time = $('input#'+id);
       if (!$div.hasClass('show-input')) {
           $div
-              .before('<span class="'+id+'-text"></span>')
+              .before('<span class="'+id+'-text mr-2"></span>')
               .after('<button type="button" id="mt-edit-'+id+'" class="btn btn-default button mt-edit-field-button">'+opts.edit+'</button>')
               .hide();
           $('span.'+id+'-text').text(opts.text);
