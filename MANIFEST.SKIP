@@ -322,3 +322,7 @@ wercker.yml
 # CircleCI
 circle.yml
 Dockerfile
+
+# Etc
+\.perltidyrc
+\.proverc
