@@ -744,15 +744,13 @@ sub post_save {
     my $author = $app->user;
     my $message;
     if ( !$orig_obj->id ) {
-        $message
-            = $app->translate( "[_1] '[_2]' (ID:[_3]) added by user '[_4]'",
-            $ct->name, $obj->title, $obj->id, $author->name );
+        $message = $app->translate( "New [_1] (ID:[_2]) added by user '[_3]'",
+            $ct->name, $obj->id, $author->name );
     }
     elsif ( $orig_obj->status ne $obj->status ) {
         $message = $app->translate(
-            "[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'",
+            "[_1] (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
             $ct->name,
-            $obj->title,
             $obj->id,
             $app->translate( MT::Entry::status_text( $orig_obj->status ) ),
             $app->translate( MT::Entry::status_text( $obj->status ) ),
@@ -761,9 +759,8 @@ sub post_save {
 
     }
     else {
-        $message
-            = $app->translate( "[_1] '[_2]' (ID:[_3]) edited by user '[_4]'",
-            $ct->name, $obj->title, $obj->id, $author->name );
+        $message = $app->translate( "[_1] (ID:[_2]) edited by user '[_3]'",
+            $ct->name, $obj->id, $author->name );
     }
     require MT::Log;
     $app->log(
@@ -791,8 +788,8 @@ sub post_delete {
 
     $app->log(
         {   message => $app->translate(
-                "[_1] '[_2]' (ID:[_3]) deleted by '[_4]'",
-                $ct->name, $obj->title, $obj->id, $author->name
+                "[_1] (ID:[_2]) deleted by '[_3]'",
+                $ct->name, $obj->id, $author->name
             ),
             level    => MT::Log::INFO(),
             class    => 'content_data_' . $ct->id,
