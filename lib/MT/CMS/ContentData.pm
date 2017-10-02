@@ -1064,7 +1064,6 @@ sub _create_temp_content_data {
         $app->user );
 
     $content_data->status( scalar $app->param('status') );
-    $content_data->title( scalar $app->param('title') );
 
     my $content_field_types = $app->registry('content_field_types');
     my $content_type        = $content_data->content_type;
@@ -1240,8 +1239,7 @@ sub _build_content_data_preview {
 
     $param{id} = $id if $id;
     $param{new_object} = $param{id} ? 0 : 1;
-    $param{title}      = $content_data->title;
-    $param{status}     = $content_data->status;
+    $param{status} = $content_data->status;
 
     my @cols = qw(
         author_id
@@ -1252,7 +1250,6 @@ sub _build_content_data_preview {
         id
         identifier
         status
-        title
         week_number
 
         authored_on_date
@@ -1294,7 +1291,7 @@ sub _build_content_data_preview {
         ),
     );
     if ($id) {
-        $app->add_breadcrumb( $content_data->title
+        $app->add_breadcrumb( $content_type->name
                 || $app->translate('(untitled)') );
     }
     else {
