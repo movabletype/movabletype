@@ -16,13 +16,20 @@ sub _load_sibling_categories {
     my ( $ctx, $cat, $class_type ) = @_;
     my $blog_id = $cat->blog_id;
     my $r       = MT::Request->instance;
-    my $cats    = $r->stash( '__cat_cache_' . $blog_id . '_' . $cat->parent );
+    my $cats
+        = $r->stash( '__cat_cache_'
+            . $blog_id . '_'
+            . $cat->parent . '_'
+            . $cat->category_set_id );
     return $cats if $cats;
 
     my $class = MT->model($class_type);
     my @cats  = $class->load(
-        { blog_id => $blog_id, parent    => $cat->parent },
-        { 'sort'  => 'label',  direction => 'ascend' }
+        {   blog_id         => $blog_id,
+            parent          => $cat->parent,
+            category_set_id => $cat->category_set_id,
+        },
+        { 'sort' => 'label', direction => 'ascend' },
     );
     $r->stash( '__cat_cache_' . $blog_id . '_' . $cat->parent, \@cats );
     \@cats;
@@ -454,9 +461,15 @@ sub _hdlr_category_prevnext {
             or return $ctx->error( $ctx->errstr );
     }
     elsif ( 'user_custom' eq $sort_by ) {
-        my $blog = $ctx->stash('blog');
-        my $meta = $class_type . '_order';
-        my $text = $blog->$meta || '';
+        my $text;
+        if ( $cat->category_set ) {
+            $text = $cat->category_set->order || '';
+        }
+        else {
+            my $blog = $ctx->stash('blog');
+            my $meta = $class_type . '_order';
+            $text = $blog->$meta || '';
+        }
         $cats = [ MT::Category::_sort_by_id_list( $text, $cats ) ];
         @$cats = reverse @$cats if $sort_order eq 'descend';
     }
