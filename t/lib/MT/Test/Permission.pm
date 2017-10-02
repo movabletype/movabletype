@@ -1030,7 +1030,6 @@ sub make_content_data {
     require MT::Entry;
     my $values = {
         blog_id        => 2,
-        title          => 'Sample Content Data',
         status         => MT::Entry::RELEASE(),
         author_id      => 1,
         authored_on    => '20170530163600',

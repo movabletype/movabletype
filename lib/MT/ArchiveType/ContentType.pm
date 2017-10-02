@@ -21,10 +21,10 @@ sub archive_label {
 
 sub template_params {
     return {
-        archive_class        => "contenttype-archive",
-        contenttype_archive  => 1,
-        archive_template     => 1,
-        archive_listing      => 1,
+        archive_class       => "contenttype-archive",
+        contenttype_archive => 1,
+        archive_template    => 1,
+        archive_listing     => 1,
     };
 }
 
@@ -56,8 +56,9 @@ sub archive_file {
 }
 
 sub archive_title {
-    my $obj = shift;
-    encode_html( remove_html( $_[1]->title ) );
+    my $obj   = shift;
+    my $title = $_[1]->content_type->name . ': ' . $_[1]->id;
+    encode_html( remove_html($title) );
 }
 
 sub archive_group_iter {

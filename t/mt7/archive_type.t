@@ -190,12 +190,12 @@ my $archive_date        = {
 my $archive_list_footer = "Footer\n";
 my %html                = (
     'ContentType' => {
-        ao => 'Sample Content Data'
+        ao => 'test content type: 1'
             . $contents_html->{content_type}
             . $archive_list_header
             . $archive_date->{ct_ao}
             . $archive_list_footer,
-        cf => 'Sample Content Data'
+        cf => 'test content type: 1'
             . $contents_html->{content_type}
             . $archive_list_header
             . $archive_date->{ct_cf}

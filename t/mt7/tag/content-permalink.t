@@ -45,9 +45,9 @@ my $ct = MT::Test::Permission->make_content_type(
 my $cd = MT::Test::Permission->make_content_data(
     blog_id         => $blog->id,
     content_type_id => $ct->id,
-    title           => 'mt:ContentPermalink Test Data',
     status          => MT::Entry::RELEASE(),
     authored_on     => '20170927112314',
+    identifier      => 'mtcontentpermalink-test-data',
 );
 
 MT::Test::Tag->run_perl_tests( $blog->id );

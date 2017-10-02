@@ -122,18 +122,18 @@ subtest 'ct_unique_id' => sub {
 
 subtest 'identifier' => sub {
     my $terms = {
-        title           => 'test content data',
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
     };
-    my $cd1 = MT::Test::Permission->make_content_data( %{$terms} );
-    is( $cd1->identifier, 'test_content_data',
-        'identifier is "test_content_data"' );
+    my $cd1 = MT::Test::Permission->make_content_data( %$terms,
+        identifier => 'identifier' );
+    is( $cd1->identifier, 'identifier', 'identifier is "identifier"' );
 
-    my $cd2 = MT::Test::Permission->make_content_data( %{$terms} );
-    is( $cd2->identifier, 'test_content_data_1',
-        'identifier is "test_content_data_1"' );
+    my $cd2 = MT::Test::Permission->make_content_data(%$terms);
+    is( $cd2->identifier, $cd2->unique_id,
+        'identifier is same as unique_id' );
+
 };
 
 done_testing;

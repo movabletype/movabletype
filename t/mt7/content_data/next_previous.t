@@ -64,7 +64,6 @@ my $cd = MT::Test::Permission->make_content_data(
 subtest 'no $opt or $opt = 1' => sub {
     MT::ContentData->remove_all;
     my $terms = {
-        title           => 'test next',
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
@@ -94,7 +93,6 @@ subtest 'no $opt or $opt = 1' => sub {
 subtest '$opt = { by_modified_on => 1 }' => sub {
     MT::ContentData->remove_all;
     my $terms = {
-        title           => 'test by_modified_on',
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
@@ -128,7 +126,6 @@ subtest '$opt = { by_author => 1 }' => sub {
     MT::ContentData->remove_all;
     my $author2 = MT::Test::Permission->make_author;
     my $terms   = {
-        title           => 'test by_author',
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
@@ -148,7 +145,6 @@ subtest '$opt = { by_author => 1 }' => sub {
 subtest '$opt = { by_category => 1 }' => sub {
     MT::ContentData->remove_all;
     my $terms = {
-        title           => 'test by_category',
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
@@ -182,7 +178,6 @@ subtest '$opt = { by_category => 1 }' => sub {
 subtest '$opt = { by_category => { content_field_id => ??? } }' => sub {
     MT::ContentData->remove_all;
     my $terms = {
-        title           => 'test by_category',
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
@@ -220,7 +215,6 @@ subtest
     => sub {
     MT::ContentData->remove_all;
     my $terms = {
-        title           => 'test by_category',
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
