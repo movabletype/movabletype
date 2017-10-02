@@ -105,8 +105,8 @@ sub edit {
                 content_type_id => $content_type->id,
             }
             )
-            or return $app->translate(
-            $app->error(
+            or return $app->error(
+            $app->translate(
                 'Load failed: [_1]',
                 MT::ContentData->errstr
                     || $app->translate('(no reason given)')
