@@ -906,7 +906,6 @@ sub site_list_widget {
             my $item;
             $item->{site_id}         = $site->id;
             $item->{id}              = $p->id;
-            $item->{title}           = $p->title;
             $item->{object_type}     = 'content_data';
             $item->{subtype}         = 'content_data_' . $p->content_type_id;
             $item->{content_type_id} = $p->content_type_id;
