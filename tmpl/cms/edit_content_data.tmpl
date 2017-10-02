@@ -648,14 +648,6 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     </mtapp:setting>
   </mt:unless>
 
-  <mtapp:setting
-    id="title"
-    label="<__trans phrase="Title">"
-    required="1"
-  >
-    <input type="text" id="title" name="title" class="form-control text content-field html5-form" required maxlength="255" mt:watch-change="1" value="<mt:var name="title">">
-  </mtapp:setting>
-
   <mt:loop name="fields">
   <mt:if name="can_edit">
   <div class="form-group">

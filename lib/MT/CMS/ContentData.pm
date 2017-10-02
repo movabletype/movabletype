@@ -136,7 +136,6 @@ sub edit {
             );
         }
 
-        $param->{title} = $app->param('title') || $content_data->title;
         $param->{identifier}
             = $app->param('identifier') || $content_data->identifier;
 
@@ -162,8 +161,6 @@ sub edit {
             $blog, $app->user ? $app->user->preferred_language : undef );
     }
     else {
-        $param->{title} = $app->param('title');
-
         my $def_status;
         if ( $def_status = $app->param('status') ) {
             $def_status =~ s/\D//g;
@@ -415,7 +412,6 @@ sub save {
     $content_data->content_type_id($content_type_id);
     $content_data->data($data);
 
-    $content_data->title( scalar $app->param('title') );
     $content_data->identifier( scalar $app->param('identifier') );
 
     if ( $app->param('scheduled') ) {
