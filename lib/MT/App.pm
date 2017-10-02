@@ -3511,7 +3511,6 @@ sub load_widgets {
         }
     }
 
-    my @loop;
     my @ordered_list;
     my %orders;
     my $order_num = 0;

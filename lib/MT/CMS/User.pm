@@ -307,7 +307,6 @@ sub edit_role {
 
     my $all_perm_flags = MT::Permission->perms('blog');
 
-    my @p_data;
     for my $ref (@$all_perm_flags) {
         $param{ 'have_access-' . $ref->[0] }
             = ( $role && $role->has( $ref->[0] ) ) ? 1 : 0;
