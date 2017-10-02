@@ -34,13 +34,7 @@ __PACKAGE__->install_properties(
     {   column_defs => {
             'id'      => 'integer not null auto_increment',
             'blog_id' => 'integer not null',
-            'title'   => {
-                type       => 'string',
-                size       => 255,
-                label      => 'Title',
-                revisioned => 1,
-            },
-            'status' => {
+            'status'  => {
                 type       => 'smallint',
                 not_null   => 1,
                 label      => 'Status',
@@ -85,7 +79,6 @@ __PACKAGE__->install_properties(
             content_type_id => 1,
             ct_unique_id    => 1,
             status          => 1,
-            title           => 1,
             unique_id       => { unique => 1 },
             site_author     => {
                 columns =>
