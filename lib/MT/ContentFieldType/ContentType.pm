@@ -18,16 +18,21 @@ sub field_html_params {
     $value = [$value] unless ref $value eq 'ARRAY';
 
     my %tmp_cd;
-    my $iter = MT::ContentData->load_iter( { id => $value },
-        { fetchonly => { id => 1, blog_id => 1, title => 1 } } );
+    my $iter = MT::ContentData->load_iter(
+        { id => $value },
+        {   fetchonly =>
+                { id => 1, blog_id => 1, title => 1, content_type_id => 1 },
+        },
+    );
     while ( my $cd = $iter->() ) {
         $tmp_cd{ $cd->id } = $cd;
     }
     my @content_data = grep {$_} map { $tmp_cd{$_} } @{$value};
     my @content_data_loop = map {
-        {   cd_id      => $_->id,
-            cd_blog_id => $_->blog_id,
-            cd_title   => $_->title,
+        {   cd_id              => $_->id,
+            cd_blog_id         => $_->blog_id,
+            cd_content_type_id => $_->content_type_id,
+            cd_title           => $_->title,
         }
     } @content_data;
 
