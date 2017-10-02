@@ -611,6 +611,7 @@ sub make_list_props {
                 base    => '__virtual.id',
                 display => 'force',
                 order   => 100,
+                html    => \&_make_id_html,
             },
             title => {
                 base    => '__virtual.title',
@@ -642,6 +643,23 @@ sub make_list_props {
     }
 
     return $props;
+}
+
+sub _make_id_html {
+    my ( $prop, $obj ) = @_;
+    my $app = MT->instance;
+
+    my $id        = $obj->id;
+    my $edit_link = $app->uri(
+        mode => 'edit_content_data',
+        args => {
+            id              => $obj->id,
+            blog_id         => $obj->blog_id,
+            content_type_id => $obj->content_type_id,
+        },
+    );
+
+    return qq{$id <a href="$edit_link">[Edit]</a>};
 }
 
 sub _make_content_data_title_html {
