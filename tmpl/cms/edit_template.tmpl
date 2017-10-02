@@ -813,7 +813,7 @@ function setSyntaxHighlight(on_or_off) {
         <mtapp:setting
            id="archive_file_sel"
            class="archive_file_sel"
-           label="<__trans phrase="Archive Path">"
+           label="<__trans phrase="Path">"
            label_for="archive_file_sel"
            label_class="top-label"
            help_page="templates"
@@ -1359,7 +1359,7 @@ function saveTemplatePrefs( sync ) {
       document.execCommand('copy');
     });
     getContentTypeInfo();
-    <mt:unless name="has_name">
+    <mt:if name="archive_types">
     jQuery("#new_archive_type").change(function(){
       jQuery("#archive_file_sel").css("display", "block");
       jQuery("#archive_file_tmpl").css("display", "none");
@@ -1448,7 +1448,7 @@ function saveTemplatePrefs( sync ) {
 
     getDefaultArchiveTemplates();
     selectArchiveFile(jQuery("#archive_file_sel"));
-    </mt:unless>
+    </mt:if>
     </mt:if>
 
 </mt:setvarblock>
