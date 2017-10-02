@@ -579,7 +579,7 @@ sub filtered_list {
 
     $load_options{total} = $count;
 
-    my ( $objs, @data );
+    my $objs;
     if ($count) {
         MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $ds,
             $app, $filter, \%load_options, \@cols );

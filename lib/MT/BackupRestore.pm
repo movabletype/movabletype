@@ -595,7 +595,6 @@ sub restore_directory {
     MT::Util::Log->info(' Start restore_directory');
 
     my $manifest;
-    my @files;
     opendir my $dh,
         $dir
         or push( @$errors,
@@ -773,7 +772,6 @@ sub cb_restore_objects {
 
     my %entries;
     my %assets;
-    my %old_ids;
     for my $key ( keys %$all_objects ) {
         my $obj = $all_objects->{$key};
         if ( $obj->properties->{audit} ) {

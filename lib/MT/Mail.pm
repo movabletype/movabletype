@@ -227,7 +227,6 @@ sub _send_mt_smtp {
         and ( !$user or !$pass );
 
     # Check required modules;
-    my $mod_reqd;
     my @modules = ();
     push @modules, @{ $SMTPModules{Core} };
     push @modules, @{ $SMTPModules{Auth} } if $auth;

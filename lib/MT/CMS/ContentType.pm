@@ -616,7 +616,7 @@ sub _autosave_content_data {
 sub dialog_content_data_modal {
     my $app = shift;
 
-    my ( $can_add, $can_multi, $content_type_id, $content_type_name );
+    my ( $can_multi, $content_type_id, $content_type_name );
     my $content_field_id = $app->param('content_field_id');
     if ($content_field_id) {
         if ( my $content_field = MT::ContentField->load($content_field_id) ) {

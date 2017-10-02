@@ -516,9 +516,8 @@ sub on_upload {
     my $blog = $asset->blog or return;
     my $blog_id = $blog->id;
 
-    my ( $thumb, $thumb_width, $thumb_height );
-    $thumb_width = $param->{thumb_width};
-    $thumb       = $param->{thumb};
+    my $thumb_width = $param->{thumb_width};
+    my $thumb       = $param->{thumb};
     if ($thumb) {
         if ( $thumb_width && ( $thumb_width !~ m/^\d+$/ ) ) {
             undef $thumb_width;

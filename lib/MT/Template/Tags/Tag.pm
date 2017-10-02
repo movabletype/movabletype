@@ -250,7 +250,6 @@ sub _hdlr_tags {
     $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
         or return $ctx->error( $ctx->errstr );
 
-    my @tag_filter;
     my $include_private = defined $args->{include_private}
         && $args->{include_private} == 1 ? 1 : 0;
     my ( $tags, $min, $max, $all_count )

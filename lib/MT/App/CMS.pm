@@ -4616,8 +4616,6 @@ sub _build_category_list {
     }
 
     my @data;
-    my %authors;
-
     my $class = $app->model($type) or return;
 
     my %expanded;

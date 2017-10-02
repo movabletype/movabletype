@@ -709,7 +709,6 @@ sub configure {
     $app->set_form_fields( $form_data, \@fields, \@advanced );
 
     my @DATA;
-    my @show;
     my $drivers = $app->object_drivers;
     foreach my $key ( keys %$drivers ) {
         my $driver  = $drivers->{$key};

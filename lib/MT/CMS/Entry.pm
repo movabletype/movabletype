@@ -2941,7 +2941,6 @@ sub update_entry_status {
         unless $new_status;
     return $app->errtrans("Need entries to update status")
         unless @ids;
-    my @bad_ids;
     my %rebuild_these;
     require MT::Entry;
 

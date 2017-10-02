@@ -307,7 +307,6 @@ sub edit_role {
 
     my $all_perm_flags = MT::Permission->perms('blog');
 
-    my @p_data;
     for my $ref (@$all_perm_flags) {
         $param{ 'have_access-' . $ref->[0] }
             = ( $role && $role->has( $ref->[0] ) ) ? 1 : 0;
@@ -1878,7 +1877,7 @@ sub build_author_table {
     my $param   = $args{param};
     $param->{has_edit_access}  = $app->user->is_superuser();
     $param->{is_administrator} = $app->user->is_superuser();
-    my ( %blogs, %entry_count_refs );
+    my %entry_count_refs;
     while ( my $author = $iter->() ) {
         my $row = {
             name           => $author->name,
@@ -1942,7 +1941,7 @@ sub _delete_pseudo_association {
     my ( $pid, $bid ) = @_;
     my $rid;
     if ($pid) {
-        ( my $pseudo, $rid, $bid ) = split '-', $pid;
+        ( undef, $rid, $bid ) = split '-', $pid;
     }
     my @newdef;
     if ( my $def = $app->config->DefaultAssignments ) {

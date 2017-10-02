@@ -2136,7 +2136,7 @@ sub start_background_task {
             elsif ( $which == 3 ) { $b ^ $c ^ $d }
         };
 
-        my ( $l, $r, $p, $t, $S, @W, $P );
+        my ( $l, $r, $p, $t, @W, $P );
         do {
             $P = substr( $message, 0, 64 );
             $message = length $message >= 64 ? substr( $message, 64 ) : "";
@@ -2283,7 +2283,7 @@ sub extract_domain {
 sub extract_urls {
     use bytes;
     my @strings = @_;
-    my ( %domain, @urls );
+    my %domain;
     foreach (@strings) {
         next unless ( $_ and $_ ne '' );
         local $_ = sanitize_input($_);

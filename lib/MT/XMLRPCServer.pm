@@ -1495,7 +1495,6 @@ sub publishScheduledFuturePosts {
 
     my $changed       = 0;
     my $total_changed = 0;
-    my @results;
     my %types;
     foreach my $entry_id (@queue) {
         my $entry = MT::Entry->load($entry_id);
