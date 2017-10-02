@@ -46,7 +46,6 @@ sub template_params {
     };
 }
 
-
 sub archive_group_iter {
     my $obj = shift;
     my ( $ctx, $args ) = @_;
@@ -107,7 +106,7 @@ sub archive_contents_count {
 
 sub archive_group_contents {
     my $obj = shift;
-    my ( $ctx, %param ) = @_;
+    my ( $ctx, %param, $content_type_id ) = @_;
     my $blog  = $ctx->stash('blog');
     my $a     = $param{author} || $ctx->stash('author');
     my $limit = $param{limit};
@@ -118,7 +117,11 @@ sub archive_group_contents {
     return [] unless $a;
     require MT::ContentData;
     my @contents = MT::ContentData->load(
-        {   blog_id   => $blog->id,
+        {   blog_id => $blog->id,
+            (   $content_type_id
+                ? ( content_type_id => $content_type_id )
+                : ()
+            ),
             author_id => $a->id,
             status    => MT::Entry::RELEASE()
         },

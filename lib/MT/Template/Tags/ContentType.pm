@@ -130,7 +130,8 @@ sub _hdlr_contents {
             my $archiver = MT->publisher->archiver($at);
             if ( $archiver && $archiver->group_based ) {
                 $archive_contents
-                    = $archiver->archive_group_contents( $ctx, %$args );
+                    = $archiver->archive_group_contents( $ctx, %$args,
+                    $content_type->id );
             }
         }
     }
