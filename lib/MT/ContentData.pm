@@ -147,8 +147,7 @@ sub save {
         or return $self->error( MT->translate('Invalid content type') );
 
     unless ( $self->id ) {
-        my $unique_id
-            = MT::ContentType::UniqueID::generate_unique_id( $self->title );
+        my $unique_id = MT::ContentType::UniqueID::generate_unique_id();
         $self->column( 'unique_id', $unique_id );
 
         $self->column( 'ct_unique_id', $content_type->unique_id );
