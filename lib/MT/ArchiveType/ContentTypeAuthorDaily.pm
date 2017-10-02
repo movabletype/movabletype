@@ -161,7 +161,7 @@ sub archive_group_iter {
 
 sub archive_group_contents {
     my $obj = shift;
-    my ( $ctx, %param ) = @_;
+    my ( $ctx, %param, $content_type_id ) = @_;
     my $ts
         = $param{year}
         ? sprintf( "%04d%02d%02d000000",
@@ -169,7 +169,8 @@ sub archive_group_contents {
         : $ctx->stash('current_timestamp');
     my $author = $param{author} || $ctx->stash('author');
     my $limit = $param{limit};
-    $obj->dated_author_contents( $ctx, 'Author-Daily', $author, $ts, $limit );
+    $obj->dated_author_contents( $ctx, 'Author-Daily', $author, $ts, $limit,
+        $content_type_id );
 }
 
 *date_range    = \&MT::ArchiveType::Daily::date_range;

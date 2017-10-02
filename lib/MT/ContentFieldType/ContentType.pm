@@ -19,14 +19,17 @@ sub field_html_params {
 
     my %tmp_cd;
     my $iter = MT::ContentData->load_iter( { id => $value },
-        { fetchonly => { id => 1, blog_id => 1 } } );
+        { fetchonly => { id => 1, blog_id => 1, content_type_id => 1 } } );
     while ( my $cd = $iter->() ) {
         $tmp_cd{ $cd->id } = $cd;
     }
     my @content_data = grep {$_} map { $tmp_cd{$_} } @{$value};
-    my @content_data_loop
-        = map { { cd_id => $_->id, cd_blog_id => $_->blog_id, } }
-        @content_data;
+    my @content_data_loop = map {
+        {   cd_id              => $_->id,
+            cd_blog_id         => $_->blog_id,
+            cd_content_type_id => $_->content_type_id,
+        }
+    } @content_data;
 
     my $content_field_id = $field_data->{content_field_id} || 0;
     my $content_field = MT::ContentField->load($content_field_id);

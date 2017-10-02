@@ -1457,7 +1457,6 @@ sub dialog_select_weblog {
     my $app = shift;
 
     my $favorites = $app->param('select_favorites');
-    my %favorite;
     my $confirm_js;
     my $terms = {};
     my $args  = {};
@@ -2307,7 +2306,6 @@ sub build_blog_table {
     my $author           = $app->user;
     my $can_edit_authors = $app->can_do('edit_authors');
     my @data;
-    my $i;
     my ( $entry_count, $page_count, $ping_count, $comment_count );
     while ( my $blog = $iter->() ) {
         my $blog_id = $blog->id;

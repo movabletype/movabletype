@@ -117,7 +117,7 @@ sub edit {
         }
         elsif ( $obj->type eq 'ct' || $obj->type eq 'ct_archive' ) {
             $tab = 'ct';
-            $param->{template_group_trans} = $app->translate('ct');
+            $param->{template_group_trans} = $app->translate('Content Type');
         }
         else {
             $tab = 'system';
@@ -1039,6 +1039,10 @@ sub list {
     $params->{saved_copied}  = $app->param('saved_copied');
     $params->{saved_deleted} = $app->param('saved_deleted');
     $params->{saved}         = $app->param('saved');
+
+    # Existence confirmation of content type
+    my @content_type = MT->model('content_type')->load();
+    $params->{content_type_exists} = 1 if @content_type;
 
     # determine list of system template types:
     my $scope;
@@ -2349,7 +2353,6 @@ sub refresh_all_templates {
         # refresh templates dialog uses a 'backup' field
         $backup = 1;
     }
-    my $template_set;
     my $refresh_type = $app->param('refresh_type') || 'refresh';
     my $t = time;
 

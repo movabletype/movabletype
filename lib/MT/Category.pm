@@ -518,7 +518,6 @@ sub _buildCatHier {
     unless ($all_cats) {
         $r->cache( 'sub_cats_cats', $all_cats = {} );
     }
-    my $cats;
     if ( defined $all_cats->{$blog_id} ) {
         my $children = $all_cats->{$blog_id}{'children'};
         return ($children);

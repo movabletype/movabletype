@@ -14,7 +14,7 @@ sub contenttype_group_based {
 
 sub dated_group_contents {
     my $obj = shift;
-    my ( $ctx, $at, $ts, $limit ) = @_;
+    my ( $ctx, $at, $ts, $limit, $content_type_id ) = @_;
     my $blog = $ctx->stash('blog');
     my ( $start, $end );
     if ($ts) {
@@ -29,9 +29,12 @@ sub dated_group_contents {
     my $map = $ctx->stash('template_map');
     my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
     require MT::ContentData;
-    my @entries = MT::ContentData->load(
+    my @content_data = MT::ContentData->load(
         {   blog_id => $blog->id,
-            status  => MT::Entry::RELEASE(),
+            (   $content_type_id ? ( content_type_id => $content_type_id )
+                : ()
+            ),
+            status => MT::Entry::RELEASE(),
             ( !$dt_field_id ? ( authored_on => [ $start, $end ] ) : () ),
         },
         {   ( !$dt_field_id ? ( range_incl => { authored_on => 1 } ) : () ),
@@ -54,7 +57,7 @@ sub dated_group_contents {
             ),
         }
     ) or return $ctx->error("Couldn't get $at archive list");
-    \@entries;
+    \@content_data;
 }
 
 sub dated_category_contents {

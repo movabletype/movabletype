@@ -2168,7 +2168,6 @@ sub _upload_file {
 
         ## Build upload destination path
         my $dest = $app->param('destination');
-        my $dest_url;
         my $root_path;
         my $is_sitepath;
         if ( $dest =~ m/^%s/i ) {

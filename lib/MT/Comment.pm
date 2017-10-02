@@ -905,11 +905,9 @@ sub system_filters {
 sub is_not_blocked {
     my ( $eh, $cmt ) = @_;
 
-    my ( $host, @hosts );
-
     # other URI schemes?
     require MT::Util;
-    @hosts = MT::Util::extract_urls( $cmt->text );
+    my @hosts = MT::Util::extract_urls( $cmt->text );
 
     my $not_blocked = 1;
     my $blog_id     = $cmt->blog_id;

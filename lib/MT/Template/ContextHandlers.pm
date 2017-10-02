@@ -1221,7 +1221,6 @@ sub cat_path_to_category {
         =~ m@(\[[^]]+?\]|[^]/]+)@g;    # split on slashes, fields quoted by []
     @cat_path = map { $_ =~ s/^\[(.*)\]$/$1/; $_ } @cat_path;  # remove any []
     my $last_cat_id = 0;
-    my $cat;
     my ( %blog_terms, %blog_args );
     if ( ref $blog_id eq 'ARRAY' ) {
         %blog_terms = %{ $blog_id->[0] };

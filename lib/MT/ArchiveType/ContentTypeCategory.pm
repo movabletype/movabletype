@@ -171,7 +171,7 @@ sub archive_contents_count {
 
 sub archive_group_contents {
     my $obj = shift;
-    my ( $ctx, %param ) = @_;
+    my ( $ctx, %param, $content_type_id ) = @_;
     my $limit = $param{limit};
     if ( $limit && ( $limit eq 'auto' ) ) {
         my $blog = $ctx->stash('blog');
@@ -182,7 +182,12 @@ sub archive_group_contents {
     my $cat_field_id = $map ? $map->cat_field_id : '';
     require MT::ContentData;
     my @contents = MT::ContentData->load(
-        { status => MT::Entry::RELEASE() },
+        {   status => MT::Entry::RELEASE(),
+            (   $content_type_id
+                ? ( content_type_id => $content_type_id )
+                : ()
+            ),
+        },
         {   'join' => [
                 'MT::ContentFieldIndex',
                 'content_data_id',
