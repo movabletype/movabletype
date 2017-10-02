@@ -8285,6 +8285,15 @@ fieldset.form-group {
 
 .mt-collapse__block {
   padding: 1rem;
+  border-bottom: 1px solid #CACACA;
+}
+
+.mt-collapse__block:last-of-type {
+  border-bottom: 0;
+}
+
+.mt-collapse__block--selected {
+  background: #E3F2F4;
 }
 
 .mt-collapse--contentblock {
@@ -8508,6 +8517,7 @@ a:hover .mt-icon--secondary {
   width: 24px;
   border: 1px solid #A5A5A5;
   border-radius: 50%;
+  background: #FFFFFF;
   text-align: center;
   vertical-align: middle;
 }
