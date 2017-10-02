@@ -1040,6 +1040,10 @@ sub list {
     $params->{saved_deleted} = $app->param('saved_deleted');
     $params->{saved}         = $app->param('saved');
 
+    # Existence confirmation of content type
+    my @content_type = MT->model('content_type')->load();
+    $params->{content_type_exists} = 1 if @content_type;
+
     # determine list of system template types:
     my $scope;
     my $set;

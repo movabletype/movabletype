@@ -28,6 +28,7 @@
     </li>
   </ul>
   <mt:elseif name="template_type" eq="ct">
+  <mt:if name="content_type_exists">
   <ul class="list-inline multiple-selection">
     <li class="list-inline-item">
       <__trans phrase="Create Content Type Template:">
@@ -45,6 +46,14 @@
       </a>
     </li>
   </ul>
+  <mt:else>
+      <mtapp:statusmsg
+         id="zero-state"
+         class="info zero-state"
+         can_close="0">
+        <__trans phrase="No content type could be found.">
+      </mtapp:statusmsg>
+  </mt:if>
   <mt:elseif name="template_type" eq="module">
   <ul class="list-inline multiple-selection">
     <mt:if name="template_type" eq="archive">
