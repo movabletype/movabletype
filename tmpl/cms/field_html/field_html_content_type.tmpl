@@ -33,9 +33,9 @@
 <mt:unless name="loaded_content_type_field_js">
   <mt:var name="loaded_content_type_field_js" value="1">
   <mt:setvarblock name="jq_js_include" append="1">
-jQuery('ul.content-data-list').on('click', 'li > a.icon-remove', function () {
+jQuery('ul.content-data-list').on('click', 'li a.icon-remove', function () {
   var $ul = jQuery(this).parents('ul.content-data-list');
-  jQuery(this).parent().remove();
+  jQuery(this).parents('li').remove();
   if ($ul.children('li').length == 0) {
       var $infoDiv = jQuery('<div/>').addClass('alert alert-info')
                                       .text('<__trans phrase="No [_1]" params="<mt:var name="content_type_name" escape="js">">');
