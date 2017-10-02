@@ -1095,8 +1095,6 @@ sub core_tags {
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_site_url',
             ContentStatus =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_status',
-            ContentTitle =>
-                '$Core::MT::Template::Tags::ContentType::_hdlr_content_title',
             ContentUniqueID =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_unique_id',
             ContentUnpublishedDate =>

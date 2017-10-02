@@ -898,19 +898,6 @@ sub _hdlr_content_status {
     _check_and_invoke( 'entrystatus', @_ );
 }
 
-=head2 ContentTitle
-
-Outputs the title of the current content in context.
-
-=cut
-
-sub _hdlr_content_title {
-    my ( $ctx, $args, $cond ) = @_;
-    my $cd = $ctx->stash('content')
-        or return $ctx->_no_content_error();
-    defined $cd->title ? $cd->title : '';
-}
-
 =head2 ContentAuthorDisplayName
 
 Outputs the display name of the author for the current content in context.
