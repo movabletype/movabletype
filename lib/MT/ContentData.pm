@@ -153,10 +153,9 @@ sub save {
         $self->column( 'ct_unique_id', $content_type->unique_id );
     }
 
-    ## If there's no identifier specified, create a unique identifier.
+    ## If there's no identifier specified, set unique_id.
     if ( !defined( $self->identifier ) || ( $self->identifier eq '' ) ) {
-        my $name = MT::Util::make_unique_basename($self);
-        $self->identifier($name);
+        $self->identifier( $self->unique_id );
     }
 
     # Week Number for authored_on
