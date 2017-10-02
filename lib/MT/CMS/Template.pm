@@ -117,7 +117,7 @@ sub edit {
         }
         elsif ( $obj->type eq 'ct' || $obj->type eq 'ct_archive' ) {
             $tab = 'ct';
-            $param->{template_group_trans} = $app->translate('ct');
+            $param->{template_group_trans} = $app->translate('Content Type');
         }
         else {
             $tab = 'system';
