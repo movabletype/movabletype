@@ -613,13 +613,6 @@ sub make_list_props {
                 order   => 100,
                 html    => \&_make_id_html,
             },
-            title => {
-                base    => '__virtual.title',
-                label   => 'Title',
-                display => 'force',
-                order   => 200,
-                html    => \&_make_content_data_title_html,
-            },
             modified_on => {
                 base    => '__virtual.modified_on',
                 display => 'force',
@@ -660,41 +653,6 @@ sub _make_id_html {
     );
 
     return qq{$id <a href="$edit_link">[Edit]</a>};
-}
-
-sub _make_content_data_title_html {
-    my $prop = shift;
-    my ( $obj, $app ) = @_;
-    my $col       = $prop->col;
-    my $alt_label = $prop->alternative_label;
-    my $id        = $obj->id;
-    my $label     = $obj->$col;
-    $label = '' if !defined $label;
-    $label =~ s/^\s+|\s+$//g;
-    my $blog_id = $app->blog ? $app->blog->id : 0;
-    my $datasource = $app->param('datasource') || '';
-    my ($content_type_id) = $datasource =~ /(\d+)$/;
-    my $edit_link = $app->uri(
-        mode => 'edit_content_data',
-        args => {
-            id              => $id,
-            blog_id         => $blog_id,
-            content_type_id => $content_type_id,
-        },
-    );
-
-    if ( defined $label && $label ne '' ) {
-        my $can_double_encode = 1;
-        $label = MT::Util::encode_html( $label, $can_double_encode );
-        return qq{<a href="$edit_link">$label</a>};
-    }
-    else {
-        return MT->translate(
-            qq{[_1] (<a href="[_2]">id:[_3]</a>)},
-            $alt_label ? $alt_label : 'No label',
-            $edit_link, $id,
-        );
-    }
 }
 
 sub _make_field_list_props {
