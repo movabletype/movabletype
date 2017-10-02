@@ -556,6 +556,11 @@ category attribute with square brackets:
 
 =item * glue
 
+=item * category_set_id
+
+    If specified, categories of specified category set will be output.
+    If not specified, categories for entry will be output.
+
 =back
 
 =for tags categories
@@ -593,14 +598,17 @@ sub _hdlr_sub_categories {
     ) if ( $sort_method && $sort_by );
     $sort_by = 'user_custom' if !$sort_by || !$class->has_column($sort_by);
 
+    my $category_set_id = $args->{category_set_id} || 0;
+
     # Store the tokens for recursion
     local $ctx->{__stash}{subCatTokens} = $tokens;
     my $current_cat;
     my @cats;
     if ( $args->{top} ) {
         @cats = $class->load(
-            {   blog_id => $ctx->stash('blog_id'),
-                parent  => '0'
+            {   blog_id         => $ctx->stash('blog_id'),
+                parent          => '0',
+                category_set_id => $category_set_id,
             },
             {   (     ( 'user_custom' eq $sort_by )
                     ? ( sort => 'label' )
@@ -645,9 +653,18 @@ sub _hdlr_sub_categories {
             or return $ctx->error( $ctx->errstr );
     }
     elsif ( 'user_custom' eq $sort_by ) {
-        my $blog = $ctx->stash('blog');
-        my $meta = $class_type . '_order';
-        my $text = $blog->$meta || '';
+        my $text;
+        if ($category_set_id) {
+            my $category_set
+                = MT->model('category_set')->load($category_set_id)
+                or return $ctx->error( MT->model('category_set') );
+            $text = $category_set->order || '';
+        }
+        else {
+            my $blog = $ctx->stash('blog');
+            my $meta = $class_type . '_order';
+            $text = $blog->$meta || '';
+        }
         @$cats = MT::Category::_sort_by_id_list( $text, \@cats );
         @$cats = reverse @$cats if $sort_order eq 'descend';
     }

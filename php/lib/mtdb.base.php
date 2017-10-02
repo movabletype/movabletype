@@ -35,6 +35,7 @@ abstract class MTDatabase {
     protected $_asset_tag_cache = array();
     protected $_blog_asset_tag_cache = array();
     protected $_author_id_cache = array();
+    protected $_category_set_id_cache = array();
 
 
     // Construction
@@ -1801,7 +1802,7 @@ abstract class MTDatabase {
         if (isset($args['category_set_id'])) {
             $category_set_filter = 'and category_category_set_id = ' . intval($args['category_set_id']);
         } else {
-            $category_set_filter = 'and category_category_set_id = 0';
+            $category_set_filter = '';
         }
 
         $sql = "
@@ -1841,11 +1842,16 @@ abstract class MTDatabase {
             $categories = $category->Find($where);
             if ( count($categories) > 1 && 'user_custom' == $sort_by ) {
                 $mt = MT::get_instance();
-                $ctx = $mt->context();
-                $blog = $ctx->stash('blog');
-                $meta = $class.'_order';
                 try {
-                    $custom_order = $blog->$meta;
+                    if (isset($args['category_set_id']) && $args['category_set_id']) {
+                        $category_set = $mt->db()->fetch_category_set($args['category_set_id']);
+                        $custom_order = $category_set->order;
+                    } else {
+                        $ctx = $mt->context();
+                        $blog = $ctx->stash('blog');
+                        $meta = $class.'_order';
+                        $custom_order = $blog->$meta;
+                    }
                     if ( !empty($custom_order) ) {
                         $order_list = preg_split('/\s*,\s*/', $custom_order);
                         $cats = array();
@@ -3819,6 +3825,17 @@ abstract class MTDatabase {
             $tmpl = $tmpls[0];
 
         return $tmpl;
+    }
+
+    public function fetch_category_set($category_set_id) {
+        if (!empty($this->_category_set_id_cache) && isset($this->_category_set_id_cache[$category_set_id])) {
+            return $this->_category_set_id_cache[$category_set_id];
+        }
+        require_once('class.mt_category_set.php');
+        $category_set = new CategorySet;
+        $category_set->Load("category_set_id = $category_set_id");
+        $this->_category_set_id_cache[$category_set_id] = $category_set;
+        return $category_set;
     }
 
     private function build_date_filter($args, $field) {
