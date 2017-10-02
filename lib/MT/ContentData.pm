@@ -608,8 +608,9 @@ sub make_list_props {
 
         $props->{$key} = {
             id => {
-                base  => '__virtual.id',
-                order => 100,
+                base    => '__virtual.id',
+                display => 'force',
+                order   => 100,
             },
             title => {
                 base    => '__virtual.title',

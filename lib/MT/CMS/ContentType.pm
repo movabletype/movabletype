@@ -763,7 +763,7 @@ sub _make_content_data_listing_screens {
     while ( my $ct = $iter->() ) {
         my $key = 'content_data.content_data_' . $ct->id;
         $props->{$key} = {
-            primary             => 'title',
+            primary             => 'id',
             screen_label        => 'Manage ' . $ct->name,
             object_label        => $ct->name,
             object_label_plural => $ct->name,
@@ -831,7 +831,7 @@ sub post_save {
         # check to see what changed and add a flag to meta_messages
         my %cols = %{ $obj->column_defs };
         foreach my $key (
-            qw{ created_on created_by modified_on modified_by id fields } )
+            qw{ created_on created_by modified_on modified_by id fields })
         {
             delete $cols{$key};
         }
