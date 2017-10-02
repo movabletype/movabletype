@@ -99,9 +99,14 @@ sub edit {
 
     my $content_data;
     if ($content_data_id) {
-        $content_data = MT::ContentData->load($content_data_id)
-            or return $app->error(
-            $app->translate(
+        $content_data = MT::ContentData->load(
+            {   id              => $content_data_id,
+                blog_id         => $content_type->blog_id,
+                content_type_id => $content_type->id,
+            }
+            )
+            or return $app->translate(
+            $app->error(
                 'Load failed: [_1]',
                 MT::ContentData->errstr
                     || $app->translate('(no reason given)')
