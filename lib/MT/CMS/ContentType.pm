@@ -764,6 +764,7 @@ sub _make_content_data_listing_screens {
         my $key = 'content_data.content_data_' . $ct->id;
         $props->{$key} = {
             primary             => 'id',
+            default_sort_key    => 'modified_on',
             screen_label        => 'Manage ' . $ct->name,
             object_label        => $ct->name,
             object_label_plural => $ct->name,
