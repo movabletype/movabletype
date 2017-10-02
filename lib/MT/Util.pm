@@ -25,7 +25,7 @@ our @EXPORT_OK
     mark_odd_rows dsa_verify perl_sha1_digest relative_date
     perl_sha1_digest_hex dec2bin bin2dec xliterate_utf8
     start_background_task launch_background_tasks substr_wref
-    extract_urls extract_domain extract_domains is_valid_date
+    extract_urls extract_domain extract_domains is_valid_date valid_date_time2ts
     epoch2ts ts2epoch escape_unicode unescape_unicode
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
@@ -1374,25 +1374,51 @@ sub get_entry {
 }
 
 sub is_valid_date {
-    my ($ts) = @_;
-    unless (
-        $ts =~ m!(\d{4})-?(\d{2})-?(\d{2})\s*(\d{2}):?(\d{2})(?::?(\d{2}))?! )
-    {
-        return 0;
-    }
-    my $s = $6 || 0;
+    my $ts = shift or return 0;
+    my ( $year, $month, $day, $hour, $minute, $second )
+        = $ts =~ m!(\d{4})-?(\d{2})-?(\d{2})\s*(\d{2}):?(\d{2})(?::?(\d{2}))?!
+        or return 0;
+    $second ||= 0;
     return 0
-        if ( $s > 59
-        || $s < 0
-        || $5 > 59
-        || $5 < 0
-        || $4 > 23
-        || $4 < 0
-        || $2 > 12
-        || $2 < 1
-        || $3 < 1
-        || ( days_in( $2, $1 ) < $3 && !leap_day( $1, $2, $3 ) ) );
+        if (
+           $second > 59
+        || $second < 0
+        || $minute > 59
+        || $minute < 0
+        || $hour > 23
+        || $hour < 0
+        || $month > 12
+        || $month < 1
+        || $day < 1
+        || ( days_in( $month, $year ) < $day
+            && !leap_day( $year, $month, $day ) )
+        );
     1;
+}
+
+sub valid_date_time2ts {
+    my $ts = shift or return;
+    my ( $year, $month, $day, $hour, $minute, $second )
+        = $ts
+        =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
+        or return;
+    $second ||= 0;
+    return
+        if (
+           $second > 59
+        || $second < 0
+        || $minute > 59
+        || $minute < 0
+        || $hour > 23
+        || $hour < 0
+        || $month > 12
+        || $month < 1
+        || $day < 1
+        || ( days_in( $month, $year ) < $day
+            && !leap_day( $year, $month, $day ) )
+        );
+    return sprintf "%04d%02d%02d%02d%02d%02d", $year, $month, $day, $hour,
+        $minute, $second;
 }
 
 sub is_valid_email {
