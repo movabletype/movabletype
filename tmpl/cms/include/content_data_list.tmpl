@@ -26,7 +26,7 @@
         <thead>
           <th class="head cb mt-table__control">&nbsp;</th>
           <th class="head string" scope="col">
-            <span class="col-label"><__trans phrase="Title"></span>
+            <span class="col-label"><__trans phrase="ID"></span>
           </th>
           <th class="head string" scope="col" style="width: 20%">
             <span class="col-label"><__trans phrase="Date Modified"></span>
@@ -43,7 +43,7 @@
               <input type="hidden" id="content-data-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
               <input type="<mt:if name="can_multi">checkbox<mt:else>radio</mt:if>" name="id" value="<mt:var name="id" escape="html">" class="select" id="content-data-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
             </td>
-            <td class="content-data-title primary"><mt:var name="title" escape="html"></td>
+            <td class="content-data-id primary"><mt:var name="id" escape="html"></td>
             <td class="content-data-modified-date">
               <mt:var name="modified_date" escape="html">
             </td>

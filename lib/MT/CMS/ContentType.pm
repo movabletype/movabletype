@@ -692,11 +692,7 @@ sub _build_content_data_hasher {
     sub {
         my ( $obj, $row, %param ) = @_;
 
-        $row->{id} = $obj->id;
-        $row->{title}
-            = ( defined $obj->title && $obj->title ne '' )
-            ? $obj->title
-            : $app->translate( 'No Title (id:[_1])', $obj->id );
+        $row->{id}            = $obj->id;
         $row->{modified_date} = MT::Util::format_ts( "%Y-%m-%d %H:%M:%S",
             $obj->modified_on, $obj->blog,
             $app->user ? $app->user->preferred_language : undef );

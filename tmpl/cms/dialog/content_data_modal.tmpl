@@ -97,10 +97,10 @@ jQuery('.actions-bar button.primary').click(function() {
       return;
     }
 
-    var title = jQuery(e).parent().next().text();
+    var id = jQuery(e).parent().next().text();
     var editUrl = getEditUrl(id);
     var $inputId = jQuery('<input/>').attr({type: 'hidden', name: 'content-field-' + contentFieldId}).val(id);
-    var $editAnchor = jQuery('<a/>').attr({href: editUrl, target: '_blank'}).text(title);
+    var $editAnchor = jQuery('<a/>').attr({href: editUrl, target: '_blank'}).text('(ID:' + id + ')');
     var $removeAnchor = jQuery('<a/>').addClass('icon-remove icon16 action-icon')
                                       .css('cursor', 'pointer')
                                       .attr('href', 'javascript:void(0)');
