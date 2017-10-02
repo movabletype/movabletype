@@ -1723,9 +1723,15 @@ sub _hdlr_sub_cats_recurse {
             or return $ctx->error( $ctx->errstr );
     }
     elsif ( 'user_custom' eq $sort_by ) {
-        my $blog = $ctx->stash('blog');
-        my $meta = $class_type . '_order';
-        my $text = $blog->$meta || '';
+        my $text;
+        if ( $cat->category_set ) {
+            $text = $cat->category_set->order || '';
+        }
+        else {
+            my $blog = $ctx->stash('blog');
+            my $meta = $class_type . '_order';
+            $text = $blog->$meta || '';
+        }
         @$cats = MT::Category::_sort_by_id_list( $text, \@cats );
         @$cats = reverse @$cats if $sort_order eq 'descend';
     }

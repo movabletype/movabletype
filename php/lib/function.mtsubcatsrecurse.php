@@ -37,6 +37,7 @@ function smarty_function_mtsubcatsrecurse($args, &$ctx) {
 
     $cats = $ctx->mt->db()->fetch_categories(array(
         'blog_id' => $ctx->stash('blog_id'),
+        'category_set_id' => $cat->category_category_set_id,
         'category_id' => $cat->category_id,
         'children' => 1,
         'show_empty' => 1,
