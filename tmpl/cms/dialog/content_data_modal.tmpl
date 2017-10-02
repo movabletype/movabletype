@@ -105,7 +105,13 @@ jQuery('.actions-bar button.primary').click(function() {
                                       .css('cursor', 'pointer')
                                       .attr('href', 'javascript:void(0)');
     $removeAnchor.get(0).innerHTML = '<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
-    var $li = jQuery('<li/>').append($inputId, $editAnchor, $removeAnchor);
+    var $inputCol = jQuery('<div/>').addClass('col text-truncate')
+                                    .append($inputId, $editAnchor);
+    var $removeCol = jQuery('<div/>').addClass('col-1')
+                                     .append($removeAnchor);
+    var $row = jQuery('<div/>').addClass('row')
+                               .append($inputCol, $removeCol);
+    var $li = jQuery('<li/>').append($row);
     $ul.append($li);
   });
 

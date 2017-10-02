@@ -5,7 +5,7 @@
       <div class="row">
         <div class="col text-truncate">
           <input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="cd_id" escape="html">" />
-          <a href="<mt:var name="script_url">?__mode=edit_content_data&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="content_type_id" escape="html">&id=<mt:var name="cd_id" escape="html">" target="_blank"><mt:var name="cd_title" escape="html"></a>
+          <a href="<mt:var name="script_url">?__mode=edit_content_data&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="cd_content_type_id" escape="html">&id=<mt:var name="cd_id" escape="html">" target="_blank"><mt:var name="cd_title" escape="html"></a>
         </div>
         <div class="col-1">
           <a href="javascript:void(0)" class="icon-remove icon16 action-icon" style="cursor: pointer">
@@ -33,9 +33,9 @@
 <mt:unless name="loaded_content_type_field_js">
   <mt:var name="loaded_content_type_field_js" value="1">
   <mt:setvarblock name="jq_js_include" append="1">
-jQuery('ul.content-data-list').on('click', 'li > a.icon-remove', function () {
+jQuery('ul.content-data-list').on('click', 'li a.icon-remove', function () {
   var $ul = jQuery(this).parents('ul.content-data-list');
-  jQuery(this).parent().remove();
+  jQuery(this).parents('li').remove();
   if ($ul.children('li').length == 0) {
       var $infoDiv = jQuery('<div/>').addClass('alert alert-info')
                                       .text('<__trans phrase="No [_1]" params="<mt:var name="content_type_name" escape="js">">');
