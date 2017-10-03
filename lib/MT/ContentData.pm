@@ -643,7 +643,7 @@ sub _make_id_html {
         },
     );
 
-    return qq{$id <a href="$edit_link">[Edit]</a>};
+    return qq{<a href="$edit_link">$id</a>};
 }
 
 sub _make_field_list_props {
