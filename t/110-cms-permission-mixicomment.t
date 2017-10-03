@@ -59,14 +59,13 @@ my $create_post = MT::Test::Permission->make_role(
    name  => 'Create Post',
    permissions => "'create_post'",
 );
-my $blog_admin = MT::Role->load({ name => MT->translate('Child Site Administrator') });
-my $website_admin = MT::Role->load({ name => MT->translate('Site Administrator') });
+my $site_admin = MT::Role->load({ name => MT->translate('Site Administrator') });
 
 require MT::Association;
-MT::Association->link( $aikawa => $blog_admin => $blog );
-MT::Association->link( $ichikawa => $website_admin => $website );
-MT::Association->link( $ukawa => $blog_admin => $second_blog );
-MT::Association->link( $egawa => $website_admin => $second_website );
+MT::Association->link( $aikawa => $site_admin => $blog );
+MT::Association->link( $ichikawa => $site_admin => $website );
+MT::Association->link( $ukawa => $site_admin => $second_blog );
+MT::Association->link( $egawa => $site_admin => $second_website );
 MT::Association->link( $ogawa => $create_post => $blog );
 
 # Run

@@ -18,13 +18,11 @@ use Test::More;
 my $website = MT::Test::Permission->make_website();
 
 # Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
+    name     => 'aikawa',
     nickname => 'Ichiro Aikawa',
 );
 
@@ -32,10 +30,11 @@ my $admin = MT::Author->load(1);
 
 # Role
 require MT::Role;
-my $blog_admin = MT::Role->load( { name => MT->translate( 'Child Site Administrator' ) } );
+my $site_admin
+    = MT::Role->load( { name => MT->translate('Site Administrator') } );
 
 require MT::Association;
-MT::Association->link( $aikawa => $blog_admin => $blog );
+MT::Association->link( $aikawa => $site_admin => $blog );
 
 # Run
 my ( $app, $out );
@@ -50,7 +49,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                       "Request: list" );
     ok( $out =~ m!Unknown action!i, "list by admin" );
 
     $app = _run_app(
@@ -62,7 +61,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                       "Request: list" );
     ok( $out =~ m!Unknown action!i, "list by non permitted user" );
 };
 
@@ -76,7 +75,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by admin" );
 
     $app = _run_app(
@@ -89,7 +88,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
 };
 
@@ -105,11 +104,11 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by admin" );
 
     $plugindata = MT::Test::Permission->make_plugindata();
-    $app = _run_app(
+    $app        = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
@@ -120,7 +119,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
 };
 
@@ -137,11 +136,11 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                        "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by admin" );
 
     $plugindata = MT::Test::Permission->make_plugindata();
-    $app = _run_app(
+    $app        = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
@@ -152,7 +151,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                        "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by non permitted user" );
 };
 

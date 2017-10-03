@@ -33,11 +33,10 @@ subtest 'Upgrade from MT4 to MT7' => sub {
     is( MT::Website->count(), 0, 'There is no website.' );
     is( MT::Blog->count(),    3, 'There are three blogs.' );
 
-    my $blog_admin
-        = MT::Role->load(
-        { name => MT->translate('Child Site Administrator') } );
+    my $site_admin
+        = MT::Role->load( { name => MT->translate('Site Administrator') } );
     my $blog = MT::Blog->load( $blog_ids[0] );
-    $admin->add_role( $blog_admin, $blog );
+    $admin->add_role( $site_admin, $blog );
 
     my @roles;
     my $iter = $admin->role_iter( { blog_id => $blog->id } );
@@ -46,8 +45,8 @@ subtest 'Upgrade from MT4 to MT7' => sub {
     }
     is( scalar @roles, 1, 'Administrator has one role.' );
     is( $roles[0]->name,
-        MT->translate('Child Site Administrator'),
-        'Administrator has "Child Site Administrator" role.'
+        MT->translate('Site Administrator'),
+        'Administrator has "Site Administrator" role.'
     );
     my $perms = $admin->permissions( $blog->id );
     ok( $perms->has('administer_site'),
@@ -154,10 +153,9 @@ subtest 'Upgrade from MT5 to MT7' => sub {
     $admin->favorite_blogs(    [ $blog->id ] );
     $admin->save or die $admin->errstr;
 
-    my $blog_admin
-        = MT::Role->load(
-        { name => MT->translate('Child Site Administrator') } );
-    $admin->add_role( $blog_admin, $blog );
+    my $site_admin
+        = MT::Role->load( { name => MT->translate('Site Administrator') } );
+    $admin->add_role( $site_admin, $blog );
 
     my @roles;
     my $iter = $admin->role_iter( { blog_id => $blog->id } );
@@ -166,8 +164,8 @@ subtest 'Upgrade from MT5 to MT7' => sub {
     }
     is( scalar @roles, 1, 'Administrator has one role.' );
     is( $roles[0]->name,
-        MT->translate('Child Site Administrator'),
-        'Administrator has "Child Site Administrator" role.'
+        MT->translate('Site Administrator'),
+        'Administrator has "Site Administrator" role.'
     );
     my $perms = $admin->permissions( $blog->id );
     ok( $perms->has('administer_site'),
@@ -252,8 +250,8 @@ subtest 'Upgrade from MT5 to MT7' => sub {
     }
     is( scalar @roles, 1, "Administrator has one role." );
     is( $roles[0]->name,
-        MT->translate('Child Site Administrator'),
-        'Administrator has "Child Site Administrator" role.'
+        MT->translate('Site Administrator'),
+        'Administrator has "Site Administrator" role.'
     );
 
     $perms = $admin->permissions( $blog->id );
@@ -289,10 +287,9 @@ subtest 'Upgrade from MT6 to MT7' => sub {
     $admin->favorite_blogs(    [ $blog->id ] );
     $admin->save or die $admin->errstr;
 
-    my $blog_admin
-        = MT::Role->load(
-        { name => MT->translate('Child Site Administrator') } );
-    $admin->add_role( $blog_admin, $blog );
+    my $site_admin
+        = MT::Role->load( { name => MT->translate('Site Administrator') } );
+    $admin->add_role( $site_admin, $blog );
 
     my @roles;
     my $iter = $admin->role_iter( { blog_id => $blog->id } );
@@ -301,8 +298,8 @@ subtest 'Upgrade from MT6 to MT7' => sub {
     }
     is( scalar @roles, 1, 'Administrator has one role.' );
     is( $roles[0]->name,
-        MT->translate('Child Site Administrator'),
-        'Administrator has "Child Site Administrator" role.'
+        MT->translate('Site Administrator'),
+        'Administrator has "Site Administrator" role.'
     );
     my $perms = $admin->permissions( $blog->id );
     ok( $perms->has('administer_site'),
@@ -387,8 +384,8 @@ subtest 'Upgrade from MT6 to MT7' => sub {
     }
     is( scalar @roles, 1, "Administrator has one role." );
     is( $roles[0]->name,
-        MT->translate('Child Site Administrator'),
-        'Administrator has "Child Site Administrator" role.'
+        MT->translate('Site Administrator'),
+        'Administrator has "Site Administrator" role.'
     );
 
     $perms = $admin->permissions( $blog->id );

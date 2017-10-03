@@ -156,9 +156,7 @@ my $manage_pages = MT::Test::Permission->make_role(
     permissions => "'manage_pages'",
 );
 
-my $blog_admin
-    = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
-my $website_admin
+my $site_admin
     = MT::Role->load( { name => MT->translate('Site Administrator') } );
 
 require MT::Association;
@@ -169,8 +167,8 @@ MT::Association->link( $egawa    => $edit_templates  => $blog );
 MT::Association->link( $ogawa    => $edit_assets     => $blog );
 MT::Association->link( $kagawa   => $view_blog_log   => $blog );
 MT::Association->link( $kikkawa  => $manage_pages    => $blog );
-MT::Association->link( $kumekawa => $blog_admin      => $blog );
-MT::Association->link( $kemikawa => $website_admin   => $website );
+MT::Association->link( $kumekawa => $site_admin      => $blog );
+MT::Association->link( $kemikawa => $site_admin      => $website );
 
 MT::Association->link( $shiki     => $create_post     => $second_blog );
 MT::Association->link( $suda      => $edit_all_posts  => $second_blog );
@@ -179,8 +177,8 @@ MT::Association->link( $sone      => $edit_templates  => $second_blog );
 MT::Association->link( $tachikawa => $edit_assets     => $second_blog );
 MT::Association->link( $tsuda     => $view_blog_log   => $second_blog );
 MT::Association->link( $terakawa  => $manage_pages    => $second_blog );
-MT::Association->link( $toda      => $blog_admin      => $second_blog );
-MT::Association->link( $nagayama  => $website_admin   => $second_website );
+MT::Association->link( $toda      => $site_admin      => $second_blog );
+MT::Association->link( $nagayama  => $site_admin      => $second_website );
 
 require MT::Permission;
 my $p = MT::Permission->new;

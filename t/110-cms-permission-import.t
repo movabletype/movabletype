@@ -42,13 +42,13 @@ my $admin = MT::Author->load(1);
 
 # Role
 require MT::Role;
-my $blog_admin
-    = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
+my $site_admin
+    = MT::Role->load( { name => MT->translate('Site Administrator') } );
 my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
 require MT::Association;
-MT::Association->link( $aikawa   => $blog_admin => $blog );
-MT::Association->link( $ichikawa => $blog_admin => $second_blog );
+MT::Association->link( $aikawa   => $site_admin => $blog );
+MT::Association->link( $ichikawa => $site_admin => $second_blog );
 MT::Association->link( $ukawa    => $designer   => $blog );
 
 # Run

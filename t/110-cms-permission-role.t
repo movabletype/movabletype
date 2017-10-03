@@ -18,13 +18,11 @@ use Test::More;
 my $website = MT::Test::Permission->make_website();
 
 # Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
+    name     => 'aikawa',
     nickname => 'Ichiro Aikawa',
 );
 
@@ -32,17 +30,18 @@ my $admin = MT::Author->load(1);
 
 # Role
 require MT::Role;
-my $blog_admin = MT::Role->load( { name => MT->translate( 'Child Site Administrator' ) } );
+my $site_admin
+    = MT::Role->load( { name => MT->translate('Site Administrator') } );
 
 require MT::Association;
-MT::Association->link( $aikawa => $blog_admin => $blog );
+MT::Association->link( $aikawa => $site_admin => $blog );
 
 # Run
 my ( $app, $out );
 
 subtest 'mode = delete' => sub {
     my $role = MT::Test::Permission->make_role(
-        name  => 'Create Post',
+        name        => 'Create Post',
         permissions => "'create_post'",
     );
     $app = _run_app(
@@ -55,11 +54,11 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete by admin" );
 
     $role = MT::Test::Permission->make_role(
-        name  => 'Create Post',
+        name        => 'Create Post',
         permissions => "'create_post'",
     );
     $app = _run_app(
@@ -72,7 +71,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by non permitted user" );
 
     done_testing();

@@ -1554,10 +1554,9 @@ sub make_data {
     ### Association
     my $designer_role = MT::Role->load( { name => 'Designer' } );
     my $author_role   = MT::Role->load( { name => 'Author' } );
-    my $blog_role = MT::Role->load( { name => 'Child Site Administrator' } );
-    my $website_role = MT::Role->load( { name => 'Site Administrator' } );
-    my $page_role    = MT::Role->load( { name => 'Webmaster' } );
-    my $editor_role  = MT::Role->load( { name => 'Entry Editor' } );
+    my $site_role     = MT::Role->load( { name => 'Site Administrator' } );
+    my $page_role     = MT::Role->load( { name => 'Webmaster' } );
+    my $editor_role   = MT::Role->load( { name => 'Entry Editor' } );
 
     require MT::Association;
     my $assoc = MT::Association->new();
@@ -1580,7 +1579,7 @@ sub make_data {
     $assoc = MT::Association->new();
     $assoc->author_id( $ukawa->id );
     $assoc->blog_id(1);
-    $assoc->role_id( $blog_role->id );
+    $assoc->role_id( $site_role->id );
     $assoc->type(1);
     $assoc->save();
 
@@ -1589,7 +1588,7 @@ sub make_data {
     $assoc = MT::Association->new();
     $assoc->author_id( $egawa->id );
     $assoc->blog_id(2);
-    $assoc->role_id( $website_role->id );
+    $assoc->role_id( $site_role->id );
     $assoc->type(1);
     $assoc->save();
 

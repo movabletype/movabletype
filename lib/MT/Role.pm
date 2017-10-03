@@ -311,11 +311,6 @@ sub _default_roles {
             description => MT->translate('Can administer the site.'),
             perms       => ['administer_site']
         },
-        {   name        => MT->translate('Child Site Administrator'),
-            description => MT->translate('Can administer the child site.'),
-            role_mask   => 2**12,
-            perms       => ['administer_site']
-        },
         {   name        => MT->translate('Editor'),
             description => MT->translate(
                 'Can upload files, edit all entries(categories), pages(folders), tags and publish the site.'

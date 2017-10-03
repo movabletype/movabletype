@@ -52,6 +52,11 @@ sub upgrade_functions {
             version_limit => 7.0014,
             priority      => 3.1,
         },
+        'v7_migrate_child_site_role' => {
+            code          => \&_v7_migrate_child_site_role,
+            version_limit => 7.0017,
+            priority      => 3.5,
+        },
     };
 }
 
@@ -388,6 +393,40 @@ sub _migrate_site_archive_type {
             "Error saving record: [_1].", $site->errstr
         )
         );
+}
+
+sub _v7_migrate_child_site_role {
+    my $self        = shift;
+    my $role_class  = MT->model('role');
+    my $assoc_class = MT->model('association');
+
+    $self->progress(
+        $self->translate_escape(
+            'Changing the Child Site Administrator role to the Site Administrator role.'
+        )
+    );
+
+    my $site_admin_role = $role_class->load(
+        { name => MT->translate('Site Administrator') } );
+    my $child_site_admin_role = $role_class->load(
+        { name => MT->translate('Child Site Administrator') } );
+
+    if ($child_site_admin_role) {
+        my $iter
+            = $assoc_class->load_iter(
+            { role_id => $child_site_admin_role->id } );
+        while ( my $assoc = $iter->() ) {
+            my $blog   = $assoc->blog;
+            my $author = $assoc->user;
+            $author->add_role( $site_admin_role, $blog );
+
+            # Child Site Administrator is remove
+            $assoc->remove();
+        }
+
+        # Child Site Administrator Role is remove
+        $child_site_admin_role->remove();
+    }
 }
 
 1;

@@ -108,27 +108,25 @@ my $edit_templates = MT::Test::Permission->make_role(
     name        => 'Edit Templates',
     permissions => "'edit_templates'",
 );
-my $website_admin
+my $site_admin
     = MT::Role->load( { name => MT->translate('Site Administrator') } );
-my $blog_admin
-    = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
 my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
 require MT::Association;
-MT::Association->link( $aikawa => $website_admin => $website );
+MT::Association->link( $aikawa => $site_admin => $website );
 MT::Association->link( $shiki, $designer, $website );
-MT::Association->link( $ichikawa => $designer      => $blog );
-MT::Association->link( $egawa    => $website_admin => $second_website );
-MT::Association->link( $ogawa    => $edit_config   => $website );
-MT::Association->link( $kagawa   => $edit_config   => $second_website );
-MT::Association->link( $koishikawa, $edit_config,   $blog );
-MT::Association->link( $sagawa,     $edit_config,   $second_blog );
-MT::Association->link( $suda,       $blog_admin,    $blog );
-MT::Association->link( $seta,       $website_admin, $website );
-MT::Association->link( $tada,       $website_admin, $website );
+MT::Association->link( $ichikawa => $designer    => $blog );
+MT::Association->link( $egawa    => $site_admin  => $second_website );
+MT::Association->link( $ogawa    => $edit_config => $website );
+MT::Association->link( $kagawa   => $edit_config => $second_website );
+MT::Association->link( $koishikawa, $edit_config, $blog );
+MT::Association->link( $sagawa,     $edit_config, $second_blog );
+MT::Association->link( $suda,       $site_admin,  $blog );
+MT::Association->link( $seta,       $site_admin,  $website );
+MT::Association->link( $tada,       $site_admin,  $website );
 
 foreach my $w ( MT::Website->load() ) {
-    MT::Association->link( $sorimachi, $website_admin, $w );
+    MT::Association->link( $sorimachi, $site_admin, $w );
 }
 
 MT::Association->link( $kikkawa  => $edit_templates => $website );
@@ -345,15 +343,16 @@ subtest 'mode = list' => sub {
     ok( _is_not_error($out),
         "list by permitted user with an empry system permission record." );
 SKIP: {
-    skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-    like( $out, qr/$button/, 'There is "Delete" button.' );
-}
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+        like( $out, qr/$button/, 'There is "Delete" button.' );
+    }
     my $refresh_tmpl = quotemeta
         '<option value="refresh_website_templates">Refresh Template(s)</option>';
 SKIP: {
-    skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-    like( $out, qr/$refresh_tmpl/, 'There is "Refresh Template(s)" action.' );
-}
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+        like( $out, qr/$refresh_tmpl/,
+            'There is "Refresh Template(s)" action.' );
+    }
 
     $app = _run_app(
         'MT::App::CMS',
@@ -370,9 +369,9 @@ SKIP: {
         "list by permitted user (system) with all website administrator permission"
     );
 SKIP: {
-    skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-    like( $out, qr/$button/, 'There is "Delete" button.' );
-}
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+        like( $out, qr/$button/, 'There is "Delete" button.' );
+    }
 
     $app = _run_app(
         'MT::App::CMS',
@@ -862,7 +861,7 @@ subtest 'mode = delete' => sub {
     ok( _is_not_error($out), "delete by admin" );
 
     $website = MT::Test::Permission->make_website();
-    MT::Association->link( $aikawa => $website_admin => $website );
+    MT::Association->link( $aikawa => $site_admin => $website );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,

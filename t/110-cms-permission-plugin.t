@@ -52,17 +52,15 @@ my $admin = MT::Author->load(1);
 
 # Role
 require MT::Role;
-my $blog_admin
-    = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
-my $website_admin
+my $site_admin
     = MT::Role->load( { name => MT->translate('Site Administrator') } );
 my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
 require MT::Association;
-MT::Association->link( $aikawa   => $blog_admin    => $blog );
-MT::Association->link( $ichikawa => $blog_admin    => $second_blog );
-MT::Association->link( $ukawa    => $website_admin => $website );
-MT::Association->link( $ogawa    => $designer      => $blog );
+MT::Association->link( $aikawa   => $site_admin => $blog );
+MT::Association->link( $ichikawa => $site_admin => $second_blog );
+MT::Association->link( $ukawa    => $site_admin => $website );
+MT::Association->link( $ogawa    => $designer   => $blog );
 
 require MT::Permission;
 my $p = MT::Permission->new;

@@ -124,14 +124,12 @@ my $edit_all_posts = MT::Test::Permission->make_role(
     permissions => "'edit_all_posts'",
 );
 my $designer = MT::Role->load( { name => MT->translate('Designer') } );
-my $blog_admin
-    = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
-my $website_admin
+my $site_admin
     = MT::Role->load( { name => MT->translate('Site Administrator') } );
 
 require MT::Association;
-MT::Association->link( $aikawa   => $blog_admin     => $blog );
-MT::Association->link( $ichikawa => $blog_admin     => $second_blog );
+MT::Association->link( $aikawa   => $site_admin     => $blog );
+MT::Association->link( $ichikawa => $site_admin     => $second_blog );
 MT::Association->link( $ukawa    => $designer       => $blog );
 MT::Association->link( $egawa    => $create_post    => $blog );
 MT::Association->link( $ogawa    => $edit_all_posts => $blog );
@@ -139,11 +137,11 @@ MT::Association->link( $kagawa   => $create_post    => $second_blog );
 MT::Association->link( $kikkawa  => $edit_all_posts => $second_blog );
 MT::Association->link( $kumekawa => $create_post    => $blog );
 
-MT::Association->link( $kemikawa,   $website_admin,  $website );
-MT::Association->link( $koishikawa, $website_admin,  $second_website );
-MT::Association->link( $sagawa,     $website_admin,  $blog );
-MT::Association->link( $shimoda,    $website_admin,  $second_website );
-MT::Association->link( $suda,       $blog_admin,     $website );
+MT::Association->link( $kemikawa,   $site_admin,     $website );
+MT::Association->link( $koishikawa, $site_admin,     $second_website );
+MT::Association->link( $sagawa,     $site_admin,     $blog );
+MT::Association->link( $shimoda,    $site_admin,     $second_website );
+MT::Association->link( $suda,       $site_admin,     $website );
 MT::Association->link( $seta,       $create_post,    $website );
 MT::Association->link( $sorimachi,  $designer,       $website );
 MT::Association->link( $tada,       $edit_all_posts, $website );
