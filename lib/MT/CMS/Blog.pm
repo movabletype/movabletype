@@ -882,7 +882,7 @@ sub rebuild_pages {
             OldPrevious       => $old_previous,
             OldNext           => $old_next,
         ) or return $app->publish_error;
-        $order = "content data '" . $content_data->title . "'";
+        $order = "content data (ID:" . $content_data->id . ")";
     }
     elsif ( $archiver && $archiver->category_based ) {
         return $app->permission_denied()
@@ -1274,9 +1274,9 @@ sub start_rebuild_pages {
             or return $app->errtrans( 'Cannot load content data #[_1].',
             $content_data_id );
         $param{build_type_name} = $app->translate(
-            "[_1] '[_2]'",
+            "[_1] (ID:[_2])",
             $content_data->content_type->name || $app->translate('(no name)'),
-            MT::Util::encode_html( $content_data->title )
+            $content_data->id,
         );
         $param{is_content}      = 1;
         $param{is_content_data} = 1;
@@ -3714,8 +3714,7 @@ sub _determine_total {
 
     my $total = 0;
     if ( $archiver->entry_based || $archiver->date_based ) {
-        if ( $archiver->contenttype_date_based )
-        {
+        if ( $archiver->contenttype_date_based ) {
             require MT::ContentData;
             my $terms = {
                 status  => MT::Entry::RELEASE(),
