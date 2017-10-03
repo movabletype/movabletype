@@ -107,10 +107,10 @@ sub _hdlr_contents {
     }
     if ($use_stash) {
         foreach my $args_key (
-            'id',                    'days',
-            'recently_commented_on', 'include_subcategories',
-            'include_blogs',         'exclude_blogs',
-            'blog_ids'
+            'type',                  'name',
+            'days',                  'recently_commented_on',
+            'include_subcategories', 'include_blogs',
+            'exclude_blogs',         'blog_ids'
             )
         {
             if ( exists( $args->{$args_key} ) ) {
