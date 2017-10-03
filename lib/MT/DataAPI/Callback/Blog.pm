@@ -131,7 +131,8 @@ sub _update_dynamicity {
     my $cache       = 0;
     my $conditional = 0;
     if ( -f $mtview_path ) {
-        open my ($fh), $mtview_path;
+        open my $fh, "<", $mtview_path
+            or die "Couldn't open $mtview_path: $!";
         while ( my $line = <$fh> ) {
             $cache = 1
                 if $line =~ m/^\s*\$mt->caching\(true\);/i;

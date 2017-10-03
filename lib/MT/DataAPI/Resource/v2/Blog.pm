@@ -224,7 +224,8 @@ sub fields {
                     = File::Spec->catfile( $obj->site_path(), "mtview.php" );
 
                 if ( -f $mtview_path ) {
-                    open my ($fh), $mtview_path;
+                    open my $fh, "<", $mtview_path
+                        or die "Couldn't open $mtview_path: $!";
                     while ( my $line = <$fh> ) {
                         $hash->{dynamicCache} = 1
                             if $line =~ m/^\s*\$mt->caching\(true\);/i;

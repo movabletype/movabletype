@@ -506,7 +506,8 @@ sub cfg_prefs {
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
 
     if ( -f $mtview_path ) {
-        open my ($fh), $mtview_path;
+        open my $fh, "<", $mtview_path
+            or die "Couldn't open $mtview_path: $!";
         while ( my $line = <$fh> ) {
             $param{dynamic_caching} = 1
                 if $line =~ m/^\s*\$mt->caching\(true\);/i;
@@ -2749,7 +2750,8 @@ sub update_dynamicity {
     my $cache       = 0;
     my $conditional = 0;
     if ( -f $mtview_path ) {
-        open my ($fh), $mtview_path;
+        open my $fh, "<", $mtview_path
+            or die "Couldn't open $mtview_path: $!";
         while ( my $line = <$fh> ) {
             $cache = 1
                 if $line =~ m/^\s*\$mt->caching\(true\);/i;
@@ -2817,7 +2819,8 @@ sub _create_mtview {
     eval {
         my $mv_contents = '';
         if ( -f $mtview_path ) {
-            open( my $mv, "<$mtview_path" );
+            open my $mv, "<", $mtview_path
+                or die "Couldn't open $mtview_path: $!";
             while ( my $line = <$mv> ) {
                 $mv_contents .= $line if ( $line !~ m!^//|<\?(?:php)?|\?>! );
             }
