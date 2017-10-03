@@ -19,7 +19,7 @@ __PACKAGE__->install_properties(
             'theme_id'               => 'string(255)',
             'name'                   => 'string(255) not null',
             'description'            => 'text',
-            'archive_type'           => 'string(255)',
+            'archive_type'           => 'string(2000)',
             'archive_type_preferred' => 'string(25)',
             'site_path'              => 'string(255)',
             'site_url'               => 'string(255)',
