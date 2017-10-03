@@ -5,7 +5,7 @@
 
     BEF.Embed = function () { BEF.apply(this, arguments) };
     BEF.Embed.create_button = function () {
-        return $('<div class="row py-2 add"><div class="mt-icon--contentblock"><svg title="' + label + '" role="img" class="mt-icon mt-icon--sm"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_code"></use></svg></div><label>' + label + '</label></div>');
+        return $('<div class="add"><div class="mt-icon--contentblock"><svg title="' + label + '" role="img" class="mt-icon mt-icon--sm"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_code"></use></svg></div><label>' + label + '</label></div>');
     };
     $.extend(BEF.Embed.prototype, BEF.prototype, {
         options: {},

@@ -51,16 +51,25 @@
     cursor: pointer;
     margin: 10px 0;
 }
+.addblock {
+  background-color:#737373;
+  color: #ffffff;
+}
+.addblock:hover {
+  background-color:#737373;
+  opacity: 0.7;
+}
 .add_menu {
-    margin: 10px 0;
+  cursor: pointer;
+}
+.add_menu:hover {
+  background: #E3F2F4;
 }
 .add_menu .add {
-    cursor: pointer;
-    margin: 0 3px;
-    padding: 5px;
-    font-size: 16px;
-    font-weight: bold;
     color: #737373;
+}
+.add_menu label {
+  cursor: pointer;
 }
 .add_menu .add .icon-wrap {
     padding: 5px;
@@ -77,7 +86,7 @@
   background-position: center center;
   background-repeat: no-repeat;
   background-image: none;
-  background-color: #E3F2F4;
+  background-color: #1E8CD2;
 }
 .asset_field img {
     width: 100%;

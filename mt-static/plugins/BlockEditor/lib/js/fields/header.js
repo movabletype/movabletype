@@ -9,7 +9,7 @@
         BEF.Header.svg_name = 'ic_header';
     };
     BEF.Header.create_button = function () {
-        return $('<div class="row py-2 add"><div class="mt-icon--contentblock"><svg title="' + label + '" role="img" class="mt-icon mt-icon--sm"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_header"></use></svg></div><label>' + label + '</label></div>');
+        return $('<div class="add"><div class="mt-icon--contentblock"><svg title="' + label + '" role="img" class="mt-icon mt-icon--sm"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_header"></use></svg></div><label>' + label + '</label></div>');
     };
     $.extend(BEF.Header.prototype, BEF.prototype, {
         options: {},
@@ -28,7 +28,7 @@
             self.edit_field = $('<div class="row no-gutters py-2"><div class="col"></div></div>');
             self.edit_field_input = $('<div class="form-group"><textarea id="' + id + '" class="form-control w-100"></textarea></div>');
             self.edit_field_input.find('textarea').val(data["value"]);
-            self.select_header = $('<div class="form-group"><label class="form-control-label" for="' + id + '-element">' + trans('select element') + '</label><select class="custom-select form-control w-100" name="' + id + '-element"><option value="h1">H1</option><option value="h2">H2</option><option value="h3">H3</option></select></div>');
+            self.select_header = $('<div class="form-group"><label class="form-control-label" for="' + id + '-element">' + trans('a rank') + '</label><select class="custom-select form-control w-100" name="' + id + '-element"><option value="h1">H1</option><option value="h2">H2</option><option value="h3">H3</option></select></div>');
             if (data["elem"]) {
                 self.select_header.find('select').val(data["elem"]);
             }
