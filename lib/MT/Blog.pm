@@ -20,7 +20,7 @@ __PACKAGE__->install_properties(
             'name'                   => 'string(255) not null',
             'description'            => 'text',
             'archive_type'           => 'string(2000)',
-            'archive_type_preferred' => 'string(25)',
+            'archive_type_preferred' => 'string(50)',
             'site_path'              => 'string(255)',
             'site_url'               => 'string(255)',
             'days_on_index'          => 'integer',
