@@ -302,14 +302,23 @@
 </mt:if>
 
 <mt:else>
-  <div id="<$mt:var name="template_type" default="template" escape="html"$>-listing" class="form-group mb-5 listing zero-state-listing zero-state">
-    <mt:var name="listing_header">
+  <mt:setvarblock name="zero_state_listing">
     <mtapp:statusmsg
        id="zero-state"
        class="info zero-state"
        can_close="0">
       <__trans phrase="No [_1] could be found." params="<$mt:var name="template_type_label" lower_case="1"$>">
     </mtapp:statusmsg>
+  </mt:setvarblock>
+  <div id="<$mt:var name="template_type" default="template" escape="html"$>-listing" class="form-group mb-5 listing zero-state-listing zero-state">
+    <mt:var name="listing_header">
+    <mt:if name="template_type" ne="ct">
+      <mt:var name="zero_state_listing">
+    <mt:else>
+      <mt:if name="content_type_exists">
+        <mt:var name="zero_state_listing">
+      </mt:if>
+    </mt:if>
   </div>
 </mtapp:listing>
 

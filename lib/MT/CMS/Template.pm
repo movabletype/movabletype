@@ -1041,8 +1041,8 @@ sub list {
     $params->{saved}         = $app->param('saved');
 
     # Existence confirmation of content type
-    my @content_type = MT->model('content_type')->load();
-    $params->{content_type_exists} = 1 if @content_type;
+    $params->{content_type_exists} = 1
+        if MT->model('content_type')->count;
 
     # determine list of system template types:
     my $scope;
