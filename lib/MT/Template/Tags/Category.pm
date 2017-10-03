@@ -275,9 +275,11 @@ sub _hdlr_categories {
         );
     };
 
-    $terms{category_set_id} = $args->{category_set_id} || 0;
-
-    my $iter    = $class->load_iter( \%terms, \%args );
+    my $iter;
+    {
+        local $terms{category_set_id} = $args->{category_set_id} || 0;
+        $iter = $class->load_iter( \%terms, \%args );
+    }
     my $res     = '';
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
