@@ -198,12 +198,12 @@ sub create_dashboard_stats_file {
 
     my $support_dir = $app->support_directory_path;
 
-    local *FOUT;
-    if ( !open( FOUT, ">$file" ) ) {
+    my $FOUT;
+    if ( !open( $FOUT, ">", $file ) ) {
         return;
     }
 
-    print FOUT <<EOT;
+    print $FOUT <<EOT;
 <?xml version="1.0"?>
 <rsp status_code="0" status_message="Success">
   <daily_counts>
@@ -216,13 +216,13 @@ EOT
             0, 8 )
             . 'T00:00:00';
         my $count = $data->{$ds} || 0;
-        print FOUT qq{    <count date="$ds">$count</count>\n};
+        print $FOUT qq{    <count date="$ds">$count</count>\n};
     }
-    print FOUT <<EOT;
+    print $FOUT <<EOT;
   </daily_counts>
 </rsp>
 EOT
-    close FOUT;
+    close $FOUT;
 }
 
 sub site_stats_widget {

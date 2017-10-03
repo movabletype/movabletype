@@ -1259,9 +1259,9 @@ sub seed {
     if ( !-f $cfg_file ) {
 
         # write!
-        if ( open OUT, ">$cfg_file" ) {
-            print OUT $data;
-            close OUT;
+        if ( open my $OUT, ">", $cfg_file ) {
+            print $OUT $data;
+            close $OUT;
         }
         $param{config_created} = 1 if -f $cfg_file;
         if ( ( !-f $cfg_file ) && $manually ) {

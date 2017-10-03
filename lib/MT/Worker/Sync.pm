@@ -83,9 +83,9 @@ sub work {
         require File::Spec;
         my $file = File::Spec->catfile( $mt->config('TempDir'),
             "publishq-rsync-$$.lst" );
-        open FOUT, ">$file";
-        print FOUT join( "\n", @files ) . "\n";
-        close FOUT;
+        open my $FOUT, ">", $file or die "Couldn't open $file: $!";
+        print $FOUT join( "\n", @files ) . "\n";
+        close $FOUT;
         foreach my $target (@targets) {
             my $cmd
                 = "$rsync_cmd $rsync_opt --files-from=\"$file\" / \"$target\"";

@@ -5021,8 +5021,7 @@ B<Example:> Passing Parameters to a Template Module
             return $ctx->error(
                 MT->translate( "Cannot find included file '[_1]'", $file ) )
                 unless $path;
-            local *FH;
-            open FH,
+            open my $FH, "<",
                 $path
                 or return $ctx->error(
                 MT->translate(
@@ -5032,8 +5031,8 @@ B<Example:> Passing Parameters to a Template Module
                 );
             my $c;
             local $/;
-            $c = <FH>;
-            close FH;
+            $c = <$FH>;
+            close $FH;
             $tokens = $builder->compile( $ctx, $c );
             return $ctx->error( $builder->errstr ) unless defined $tokens;
             $req->stash( $stash_id, $tokens );

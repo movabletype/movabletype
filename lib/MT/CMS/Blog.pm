@@ -3025,10 +3025,10 @@ sub prepare_dynamic_publishing {
     else {
         eval {
             my $contents = "";
-            if ( open( HT, $htaccess_path ) ) {
+            if ( open( my $HT, "<", $htaccess_path ) ) {
                 local $/ = undef;
-                $contents = <HT>;
-                close HT;
+                $contents = <$HT>;
+                close $HT;
             }
             if ( $contents !~ /^\s*Rewrite(Cond|Engine|Rule)\b/m ) {
                 my $htaccess = <<HTACCESS;
@@ -3079,10 +3079,10 @@ HTACCESS
 
                 $blog->file_mgr->mkpath($site_path);
 
-                open( HT, ">>$htaccess_path" )
+                open( my $HT, ">>", $htaccess_path )
                     || die "Couldn't open $htaccess_path for appending";
-                print HT $htaccess || die "Couldn't write to $htaccess_path";
-                close HT;
+                print $HT $htaccess || die "Couldn't write to $htaccess_path";
+                close $HT;
             }
         };
         if ($@) { print STDERR $@; }
