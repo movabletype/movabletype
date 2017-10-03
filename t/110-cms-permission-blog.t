@@ -159,9 +159,7 @@ my $admin = MT::Author->load(1);
 
 # Role
 require MT::Role;
-my $blog_admin
-    = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
-my $website_admin
+my $site_admin
     = MT::Role->load( { name => MT->translate('Site Administrator') } );
 my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
@@ -205,7 +203,7 @@ my $edit_templates = MT::Test::Permission->make_role(
 );
 
 require MT::Association;
-MT::Association->link( $aikawa   => $blog_admin      => $blog );
+MT::Association->link( $aikawa   => $site_admin      => $blog );
 MT::Association->link( $ichikawa => $edit_templates  => $blog );
 MT::Association->link( $ukawa    => $manage_pages    => $blog );
 MT::Association->link( $egawa    => $rebuild         => $blog );
@@ -214,11 +212,11 @@ MT::Association->link( $kagawa   => $edit_all_posts  => $blog );
 MT::Association->link( $kikkawa  => $publish_post    => $blog );
 MT::Association->link( $kumekawa => $manage_feedback => $blog );
 MT::Association->link( $tezuka   => $edit_templates  => $blog );
-MT::Association->link( $noda     => $blog_admin      => $blog );
-MT::Association->link( $hada     => $blog_admin      => $blog );
-MT::Association->link( $hida     => $blog_admin      => $blog );
+MT::Association->link( $noda     => $site_admin      => $blog );
+MT::Association->link( $hada     => $site_admin      => $blog );
+MT::Association->link( $hida     => $site_admin      => $blog );
 
-MT::Association->link( $kemikawa   => $blog_admin      => $second_blog );
+MT::Association->link( $kemikawa   => $site_admin      => $second_blog );
 MT::Association->link( $koishikawa => $designer        => $second_blog );
 MT::Association->link( $sagawa     => $manage_pages    => $second_blog );
 MT::Association->link( $shiki      => $rebuild         => $second_blog );
@@ -227,11 +225,11 @@ MT::Association->link( $seta       => $edit_all_posts  => $second_blog );
 MT::Association->link( $soneda     => $publish_post    => $second_blog );
 MT::Association->link( $taneda     => $manage_feedback => $second_blog );
 MT::Association->link( $toda       => $edit_templates  => $second_blog );
-MT::Association->link( $noda       => $blog_admin      => $second_blog );
+MT::Association->link( $noda       => $site_admin      => $second_blog );
 
-MT::Association->link( $niyagawa => $website_admin  => $website );
+MT::Association->link( $niyagawa => $site_admin     => $website );
 MT::Association->link( $noda     => $edit_all_posts => $website );
-MT::Association->link( $nunota   => $website_admin  => $second_website );
+MT::Association->link( $nunota   => $site_admin     => $second_website );
 
 MT::Association->link( $kemikawa   => $create_post => $blog );
 MT::Association->link( $koishikawa => $create_post => $blog );
@@ -645,10 +643,10 @@ subtest 'mode = list' => sub {
             "list by permitted user who is not parent website administrator"
         );
         my $button = quotemeta '<a href="#delete" class="button">Delete</a>';
-SKIP: {
-        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-        like( $out, qr/$button/, 'There is "Delete" button.' );
-}
+    SKIP: {
+            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+            like( $out, qr/$button/, 'There is "Delete" button.' );
+        }
 
         $app = _run_app(
             'MT::App::CMS',
@@ -676,17 +674,17 @@ SKIP: {
         $out = delete $app->{__test_output};
         ok( $out,                   "Request: list" );
         ok( $out !~ m!redirect=1!i, "list by permitted user" );
-SKIP: {
-        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-        like( $out, qr/$button/, 'There is "Delete" button.' );
-}
+    SKIP: {
+            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+            like( $out, qr/$button/, 'There is "Delete" button.' );
+        }
         my $refresh_tmpl = quotemeta
             '<option value="refresh_blog_templates">Refresh Template(s)</option>';
-SKIP: {
-        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-        like( $out, qr/$refresh_tmpl/,
-            'There is "Refresh Template(s)" action.' );
-}
+    SKIP: {
+            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+            like( $out, qr/$refresh_tmpl/,
+                'There is "Refresh Template(s)" action.' );
+        }
 
     }
 
@@ -1736,7 +1734,7 @@ subtest 'mode = delete' => sub {
     ok( $out !~ m!permission=1!i, "delete by admin" );
 
     $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-    MT::Association->link( $aikawa     => $blog_admin      => $blog );
+    MT::Association->link( $aikawa     => $site_admin      => $blog );
     MT::Association->link( $ichikawa   => $designer        => $blog );
     MT::Association->link( $ukawa      => $manage_pages    => $blog );
     MT::Association->link( $egawa      => $rebuild         => $blog );
@@ -1768,7 +1766,7 @@ subtest 'mode = delete' => sub {
     ok( $out !~ m!permission=1!i, "delete by permitted user (blog admin)" );
 
     $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-    MT::Association->link( $aikawa     => $blog_admin      => $blog );
+    MT::Association->link( $aikawa     => $site_admin      => $blog );
     MT::Association->link( $ichikawa   => $designer        => $blog );
     MT::Association->link( $ukawa      => $manage_pages    => $blog );
     MT::Association->link( $egawa      => $rebuild         => $blog );
@@ -1801,7 +1799,7 @@ subtest 'mode = delete' => sub {
         "delete by non permitted user (edit config)" );
 
     $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-    MT::Association->link( $aikawa     => $blog_admin      => $blog );
+    MT::Association->link( $aikawa     => $site_admin      => $blog );
     MT::Association->link( $ichikawa   => $designer        => $blog );
     MT::Association->link( $ukawa      => $manage_pages    => $blog );
     MT::Association->link( $egawa      => $rebuild         => $blog );
@@ -1834,7 +1832,7 @@ subtest 'mode = delete' => sub {
         "delete by non permitted user (create blog)" );
 
     $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-    MT::Association->link( $aikawa     => $blog_admin      => $blog );
+    MT::Association->link( $aikawa     => $site_admin      => $blog );
     MT::Association->link( $ichikawa   => $designer        => $blog );
     MT::Association->link( $ukawa      => $manage_pages    => $blog );
     MT::Association->link( $egawa      => $rebuild         => $blog );
@@ -1866,7 +1864,7 @@ subtest 'mode = delete' => sub {
     ok( $out =~ m!permission=1!i, "delete by other blog (blog admin)" );
 
     $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-    MT::Association->link( $aikawa     => $blog_admin      => $blog );
+    MT::Association->link( $aikawa     => $site_admin      => $blog );
     MT::Association->link( $ichikawa   => $designer        => $blog );
     MT::Association->link( $ukawa      => $manage_pages    => $blog );
     MT::Association->link( $egawa      => $rebuild         => $blog );
@@ -1898,7 +1896,7 @@ subtest 'mode = delete' => sub {
     ok( $out =~ m!permission=1!i, "delete by other blog (edit config)" );
 
     $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-    MT::Association->link( $aikawa     => $blog_admin      => $blog );
+    MT::Association->link( $aikawa     => $site_admin      => $blog );
     MT::Association->link( $ichikawa   => $designer        => $blog );
     MT::Association->link( $ukawa      => $manage_pages    => $blog );
     MT::Association->link( $egawa      => $rebuild         => $blog );

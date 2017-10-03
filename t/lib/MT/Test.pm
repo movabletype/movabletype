@@ -595,12 +595,12 @@ sub init_data {
     require MT::Role;
     my ( $admin_role, $author_role )
         = map { MT::Role->load( { name => $_ } ) }
-        ( 'Child Site Administrator', 'Author' );
+        ( 'Site Administrator', 'Author' );
 
     unless ( $admin_role && $author_role ) {
         my @default_roles = (
-            {   name        => 'Child Site Administrator',
-                description => 'Can administer the child site.',
+            {   name        => 'Site Administrator',
+                description => 'Can administer the site.',
                 role_mask   => 2**12,
                 perms       => ['administer_site']
             },
@@ -631,7 +631,7 @@ sub init_data {
         MT::Object->driver->clear_cache;
         ( $admin_role, $author_role )
             = map { MT::Role->load( { name => $_ } ) }
-            ( 'Child Site Administrator', 'Author' );
+            ( 'Site Administrator', 'Author' );
     }
 
     require MT::Association;
@@ -1655,9 +1655,11 @@ sub _run_app {
         elsif ( $k eq '__test_upload' ) {
             my ( $param, $src ) = @$v;
             require CGI::File::Temp;
-            my ($cgi_fh) = new CGI::File::Temp(UNLINK => 1) or die "CGI::File::Temp: $!";
-            $cgi_fh->_mp_filename(basename($src));
-            $CGI::DefaultClass->binmode($cgi_fh) if $CGI::needs_binmode
+            my ($cgi_fh) = new CGI::File::Temp( UNLINK => 1 )
+                or die "CGI::File::Temp: $!";
+            $cgi_fh->_mp_filename( basename($src) );
+            $CGI::DefaultClass->binmode($cgi_fh)
+                if $CGI::needs_binmode
                 && defined fileno($cgi_fh);
 
             {

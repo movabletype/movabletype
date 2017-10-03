@@ -67,17 +67,15 @@ my $admin = MT::Author->load(1);
 
 # Role
 require MT::Role;
-my $blog_admin
-    = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
-my $website_admin
+my $site_admin
     = MT::Role->load( { name => MT->translate('Site Administrator') } );
 my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
 require MT::Association;
-MT::Association->link( $aikawa   => $blog_admin    => $blog );
-MT::Association->link( $ichikawa => $website_admin => $website );
-MT::Association->link( $ogawa    => $blog_admin    => $second_blog );
-MT::Association->link( $kumekawa => $designer      => $blog );
+MT::Association->link( $aikawa   => $site_admin => $blog );
+MT::Association->link( $ichikawa => $site_admin => $website );
+MT::Association->link( $ogawa    => $site_admin => $second_blog );
+MT::Association->link( $kumekawa => $designer   => $blog );
 
 # Run
 my ( $app, $out );

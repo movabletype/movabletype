@@ -41,7 +41,7 @@ users:
             password: 'bass'
         roles:
             blog_narnia:
-                - 'Child Site Administrator'
+                - 'Site Administrator'
     user_bobd:
         type: author
         values:
@@ -78,7 +78,7 @@ users:
             status: 2
         roles:
             blog_narnia:
-                - 'Child Site Administrator'
+                - 'Site Administrator'
 categories:
     cat_foo:
         values:

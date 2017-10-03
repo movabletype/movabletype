@@ -297,7 +297,7 @@ sub finish {
 
     use MT::Association;
     use MT::Role;
-    my $ba = MT::Role->load( { name => 'Child Site Administrator' } );
+    my $ba = MT::Role->load( { name => 'Site Administrator' } );
     my $ed = MT::Role->load( { name => 'Editor' } );
     my $au = MT::Role->load( { name => 'Author' } );
     MT::Association->remove(
@@ -363,7 +363,7 @@ sub setup {
 
     require MT::Association;
     my $b1 = MT::Blog->load(1);
-    my $r = MT::Role->load( { name => 'Child Site Administrator' } );
+    my $r = MT::Role->load( { name => 'Site Administrator' } );
     MT::Association->link( $chuck => $r => $b1 );    # Chuck is a blog admin
 
     my $r2 = MT::Role->load( { name => 'Editor' } );

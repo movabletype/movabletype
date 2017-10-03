@@ -30,11 +30,11 @@ my $admin = MT::Author->load(1);
 
 # Role
 require MT::Role;
-my $blog_admin
-    = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
+my $site_admin
+    = MT::Role->load( { name => MT->translate('Site Administrator') } );
 
 require MT::Association;
-MT::Association->link( $aikawa => $blog_admin => $blog );
+MT::Association->link( $aikawa => $site_admin => $blog );
 
 # Run
 my ( $app, $out );

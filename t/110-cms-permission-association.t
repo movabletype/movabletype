@@ -35,11 +35,11 @@ my $admin = MT::Author->load(1);
 
 # Role
 require MT::Role;
-my $blog_admin
-    = MT::Role->load( { name => MT->translate('Child Site Administrator') } );
+my $site_admin
+    = MT::Role->load( { name => MT->translate('Site Administrator') } );
 
 require MT::Association;
-MT::Association->link( $aikawa => $blog_admin => $blog );
+MT::Association->link( $aikawa => $site_admin => $blog );
 
 # Run
 my ( $app, $out );
@@ -101,7 +101,7 @@ subtest 'mode = edit' => sub {
 };
 
 subtest 'mode = delete' => sub {
-    my $assoc = MT::Association->link( $ichikawa => $blog_admin => $blog );
+    my $assoc = MT::Association->link( $ichikawa => $site_admin => $blog );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -116,7 +116,7 @@ subtest 'mode = delete' => sub {
     ok( $out,                     "Request: delete" );
     ok( $out !~ m!Permission=1!i, "delete by admin" );
 
-    $assoc = MT::Association->link( $ichikawa => $blog_admin => $blog );
+    $assoc = MT::Association->link( $ichikawa => $site_admin => $blog );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
