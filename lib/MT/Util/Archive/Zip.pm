@@ -32,7 +32,7 @@ sub new {
         $obj->{_mode} = 'r';
     }
     elsif ( ( -e $file ) && ( -r $file ) ) {
-        open my $fh, '<', $file;
+        open my $fh, '<', $file or die "Couldn't open $file: $!";
         bless $fh, 'IO::File';
         my $status = $zip->readFromFileHandle($fh);
         return $pkg->error(
@@ -60,7 +60,7 @@ sub flush {
         MT->translate( 'File [_1] exists; could not overwrite.', $file ) )
         if -e $file;
 
-    open my $fh, '>', $file;
+    open my $fh, '>', $file or die "Couldn't open $file: $!";
     bless $fh, 'IO::File';
     $obj->{_file} = $fh;
     $obj->{_arc}->writeToFileHandle($fh);
