@@ -3754,17 +3754,17 @@ sub _determine_total {
     }
     elsif ( $archiver->author_based ) {
         require MT::Author;
-        require MT::Entry;
+        my $obj_class
+            = $archiver->contenttype_author_based ? 'content_data' : 'entry';
         my $terms = {
             blog_id => $blog_id,
             status  => MT::Entry::RELEASE(),
-            class   => 'entry',
+            class   => $obj_class,
         };
         $total = MT::Author->count(
             { status => MT::Author::ACTIVE() },
-            {   join => MT::Entry->join_on(
-                    'author_id', $terms, { unique => 1 }
-                ),
+            {   join => MT->model($obj_class)
+                    ->join_on( 'author_id', $terms, { unique => 1 } ),
                 unique => 1,
             }
         );
