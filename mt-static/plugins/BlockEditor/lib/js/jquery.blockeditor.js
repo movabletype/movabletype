@@ -24,7 +24,7 @@
             var $this = $(this);
             var editor_id = $this.attr('id');
             var block_field = $('<div class="' + block_field_class + ' sortable"></div>');
-            var add_field = $('<div class="form-group add_field-group"><button type="button" class="btn btn-primary add_field icon-mini-left addnew">' + trans('Create New') + '</button></div>');
+            var add_field = $('<div class="form-group add_field-group"><button type="button" class="btn btn-default add_field icon-mini-left addnew">' + trans('add block') + '</button></div>');
 
             var manager = new MT.BlockEditorFieldManager(editor_id);
             managers[editor_id] = manager;
@@ -63,6 +63,16 @@
                     _create_field(editor_id, input_field);
                 })
             }
+
+            block_field.on('mouseover', '.field-content div', function(){
+              $(this).parents('.mt-collapse__block').addClass('mt-collapse__block--selected');
+            });
+            block_field.on('mouseout', '.field-content div', function(){
+              $(this).parents('.mt-collapse__block').removeClass('mt-collapse__block--selected');
+            });
+
+
+
 
         });
     };

@@ -28,7 +28,7 @@
             self.edit_field = $('<div class="row no-gutters py-2"><div class="col"></div></div>');
             self.edit_field_input = $('<div class="form-group"><textarea id="' + id + '" class="form-control w-100"></textarea></div>');
             self.edit_field_input.find('textarea').val(data["value"]);
-            self.select_header = $('<div class="form-group"><label class="form-control-label" for="' + id + '-element">' + trans('select element') + '</label><select class="custom-select form-control w-100" name="' + id + '-element"><option value="h1">H1</option><option value="h2">H2</option><option value="h3">H3</option></select></div>');
+            self.select_header = $('<div class="form-group"><label class="form-control-label" for="' + id + '-element">' + trans('a rank') + '</label><select class="custom-select form-control w-100" name="' + id + '-element"><option value="h1">H1</option><option value="h2">H2</option><option value="h3">H3</option></select></div>');
             if (data["elem"]) {
                 self.select_header.find('select').val(data["elem"]);
             }
