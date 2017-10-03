@@ -7564,17 +7564,19 @@ li {
 /* Basic Layout */
 /* Global Navigation */
 .mt-globalNavigation {
-  padding: 0.5rem 0;
+  padding: 0;
   border-bottom: 1px solid #A5A5A5;
   background: #FFFFFF;
 }
 
-.mt-globalNavigation .dropdown-item {
+.mt-globalNavigation .dropdown-item,
+.mt-globalNavigation .dropdown-item:hover {
   text-decoration: none;
 }
 
 .mt-globalNavigation .btn {
   color: #212529;
+  font-weight: normal;
 }
 
 .mt-globalNavigation__logo {
@@ -7583,12 +7585,62 @@ li {
   text-decoration: none;
 }
 
+.mt-globalNavigation__logo a[role="home"] {
+  display: inherit;
+}
+
 .mt-globalNavigation__logo .btn {
   padding: .5rem;
 }
 
 .mt-globalNavigation__logo .dropdown-menu {
   line-height: 1.5;
+}
+
+.mt-globalNavigation__sites {
+  padding: 0.5rem 1rem;
+  border-bottom: 3px solid transparent;
+  border-right: 1px solid #A5A5A5;
+  background: transparent;
+}
+
+.mt-globalNavigation__system {
+  border-bottom: 3px solid transparent;
+  border-right: 1px solid #A5A5A5;
+  background: transparent;
+}
+
+.mt-globalNavigation__system a {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0;
+  color: #212529;
+  text-decoration: none;
+}
+
+.mt-globalNavigation__system a:hover {
+  text-decoration: none;
+}
+
+.mt-globalNavigation__system:hover {
+  background: #F4F4F4;
+}
+
+.mt-globalNavigation--selected {
+  border-bottom-color: #004B9A;
+  background: #F4F4F4;
+}
+
+.mt-globalNavigation__functions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: right;
+}
+
+.mt-globalNavigation__functions li {
+  display: inline-block;
+  margin: 0 0 0 0.5rem;
 }
 
 /* Primary Navigation */
@@ -7648,20 +7700,16 @@ li {
 }
 
 .mt-globalNavigation__logo button, .mt-globalNavigation__logo a,
+.mt-globalNavigation__logo button:hover, .mt-globalNavigation__logo a:hover,
 .float-right button,
 .float-right a,
+.float-right button:hover,
+.float-right a:hover,
 .mt-primaryNavigation__item button,
-.mt-primaryNavigation__item a {
+.mt-primaryNavigation__item a,
+.mt-primaryNavigation__item button:hover,
+.mt-primaryNavigation__item a:hover {
   text-decoration: none;
-}
-
-.mt-globalNavigation__logo > button[aria-expanded="false"],
-.mt-globalNavigation__logo > a[aria-expanded="false"],
-.float-right > button[aria-expanded="false"],
-.float-right > a[aria-expanded="false"],
-.mt-primaryNavigation__item > button[aria-expanded="false"],
-.mt-primaryNavigation__item > a[aria-expanded="false"] {
-  font-weight: normal;
 }
 
 .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--primary, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--secondary, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--success, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--info, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--warning, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--danger, .mt-globalNavigation__logo > button[aria-expanded="false"] .mt-icon--inverse,
@@ -7714,19 +7762,11 @@ li {
 .float-right > a[aria-expanded="false"]:after,
 .mt-primaryNavigation__item > button[aria-expanded="false"]:after,
 .mt-primaryNavigation__item > a[aria-expanded="false"]:after {
+  margin-left: .4rem;
   border-top: .4rem solid;
   border-right: .4rem solid transparent;
   border-left: .4rem solid transparent;
   border-bottom: 0;
-}
-
-.mt-globalNavigation__logo > button[aria-expanded="true"],
-.mt-globalNavigation__logo > a[aria-expanded="true"],
-.float-right > button[aria-expanded="true"],
-.float-right > a[aria-expanded="true"],
-.mt-primaryNavigation__item > button[aria-expanded="true"],
-.mt-primaryNavigation__item > a[aria-expanded="true"] {
-  font-weight: bold;
 }
 
 .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--primary, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--secondary, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--success, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--info, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--warning, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--danger, .mt-globalNavigation__logo > button[aria-expanded="true"] .mt-icon--inverse,
@@ -7779,6 +7819,7 @@ li {
 .float-right > a[aria-expanded="true"]:after,
 .mt-primaryNavigation__item > button[aria-expanded="true"]:after,
 .mt-primaryNavigation__item > a[aria-expanded="true"]:after {
+  margin-left: .4rem;
   border-top: 0;
   border-right: .4rem solid transparent;
   border-left: .4rem solid transparent;
