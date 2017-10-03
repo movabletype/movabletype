@@ -118,9 +118,11 @@
           <mt:var name="dropdown_content">
         </h1>
       </div>
-      <div class="col <mtif name="scope_type" ne="system">mt-globalNavigation__system </mt:if>d-flex">
+      <div class="col <mtif name="scope_type" ne="system"><mt:if name="can_access_overview">mt-globalNavigation__system </mt:if></mt:if>d-flex">
 <mt:if name="scope_type" ne="system">
+  <mt:if name="can_access_overview">
         <a href="<$mt:var name="mt_url">?__mode=dashboard&blog_id=0" class="align-self-center"><__trans phrase="System"></a>
+  </mt:if>
 </mt:if>
       </div>
     </div>
