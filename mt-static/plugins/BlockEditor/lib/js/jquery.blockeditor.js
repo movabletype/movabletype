@@ -24,7 +24,7 @@
             var $this = $(this);
             var editor_id = $this.attr('id');
             var block_field = $('<div class="' + block_field_class + ' sortable"></div>');
-            var add_field = $('<div class="form-group add_field-group"><button type="button" class="btn btn-default add_field icon-mini-left addnew">' + trans('add block') + '</button></div>');
+            var add_field = $('<div class="form-group add_field-group"><button type="button" class="btn btn-default add_field icon-mini-left addblock">' + trans('add block') + '</button></div>');
 
             var manager = new MT.BlockEditorFieldManager(editor_id);
             managers[editor_id] = manager;
@@ -36,6 +36,9 @@
                 var buttons = manager.create_button.call(manager, _create_field);
                 buttons.forEach(function(button){
                     add_field.find('button').before($('<div class="row no-gutters py-2 ' + add_menu_class + '"></div>').append(button));
+                });
+                add_field.find('.add_menu').on('click', function(){
+                  $(this).find('.add').click();
                 });
             });
 

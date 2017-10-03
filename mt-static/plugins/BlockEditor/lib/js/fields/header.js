@@ -9,7 +9,7 @@
         BEF.Header.svg_name = 'ic_header';
     };
     BEF.Header.create_button = function () {
-        return $('<div class="row py-2 add"><div class="mt-icon--contentblock"><svg title="' + label + '" role="img" class="mt-icon mt-icon--sm"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_header"></use></svg></div><label>' + label + '</label></div>');
+        return $('<div class="add"><div class="mt-icon--contentblock"><svg title="' + label + '" role="img" class="mt-icon mt-icon--sm"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_header"></use></svg></div><label>' + label + '</label></div>');
     };
     $.extend(BEF.Header.prototype, BEF.prototype, {
         options: {},
