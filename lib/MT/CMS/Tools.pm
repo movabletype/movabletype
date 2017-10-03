@@ -2178,7 +2178,7 @@ sub adjust_sitepath {
             closedir $dh;
             if ($manifest) {
                 my $fh = gensym;
-                open $fh, "<$manifest"
+                open $fh, "<", $manifest
                     or return $app->error(
                     MT->translate( "Cannot open [_1].", $manifest ) );
                 seek( $fh, 0, 0 ) or return undef;

@@ -80,7 +80,8 @@ sub process_log_files {
             $fh->gzclose;
         }
         else {
-            open my $fh, $log_file or croak "Couldn't open $log_file: $!";
+            open my $fh, "<", $log_file
+                or croak "Couldn't open $log_file: $!";
             while ( my $line = <$fh> ) {
                 last unless $process_line->( \$line );
             }

@@ -2680,7 +2680,7 @@ sub update_publishing_profile {
                             . "</configuration>\n";
 
                         my $fh;
-                        open( $fh, ">$web_config_path" )
+                        open( $fh, ">", $web_config_path )
                             || die
                             "Couldn't open $web_config_path for appending";
                         print $fh $out;
@@ -2848,7 +2848,7 @@ $mv_contents
 MTVIEW
 
             $blog->file_mgr->mkpath($site_path);
-            open( my $mv, ">$mtview_path" )
+            open( my $mv, ">", $mtview_path )
                 || die "Couldn't open $mtview_path for appending";
             print $mv $mtview || die "Couldn't write to $mtview_path";
             close $mv;
@@ -3017,7 +3017,7 @@ sub prepare_dynamic_publishing {
             . "</configuration>\n";
 
         my $fh;
-        open( $fh, ">$web_config_path" )
+        open( $fh, ">", $web_config_path )
             || die "Couldn't open $web_config_path for appending";
         print $fh $out;
         close $fh;

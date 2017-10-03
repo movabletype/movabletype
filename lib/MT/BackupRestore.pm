@@ -617,7 +617,7 @@ sub restore_directory {
     }
 
     my $fh = gensym;
-    open $fh, "<$manifest"
+    open $fh, "<", $manifest
         or push( @$errors, MT->translate( "Cannot open [_1].", $manifest ) ),
         return 0;
     my $backups = __PACKAGE__->process_manifest($fh);
@@ -642,7 +642,7 @@ sub restore_directory {
     for my $file (@$files) {
         my $fh = gensym;
         my $filepath = File::Spec->catfile( $dir, $file );
-        open $fh, "<$filepath"
+        open $fh, "<", $filepath
             or push @$errors, MT->translate("Cannot open [_1]."), next;
 
         my ( $tmp_blog_ids, $tmp_asset_ids ) = eval {
