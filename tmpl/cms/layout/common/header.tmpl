@@ -57,6 +57,17 @@
 </head>
 <body style="overflow: visible;">
   <div class="<mt:var name="container_class" _default="container-fluid"> body">
+<mt:if name="mt_alpha_or_beta">
+    <div class="row">
+      <div class="col mt-develperPreview">
+  <mt:if name="mt_alpha">
+        Developer Preview
+  <mt:elseif name="mt_beta">
+        Beta
+  </mt:if>
+      </div>
+    </div>
+</mt:if>
     <div class="row">
       <mt:include name="include/global_navigation.tmpl">
     </div>
