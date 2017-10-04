@@ -4,7 +4,7 @@
 <mt:if name="scope_type" eq="user">
 <__trans phrase="User Dashboard">
 <mt:elseif name="scope_type" eq="system">
-<__trans phrase="System Overview">
+<__trans phrase="Sites">
 <mt:elseif name="scope_type" eq="website">
 <mt:var name="curr_website_name" escape="html">
 <mt:elseif name="scope_type" eq="blog">
@@ -110,7 +110,7 @@
 <div class="mt-globalNavigation">
   <div class="col-4">
     <div class="row">
-      <div class="col mt-globalNavigation__sites mt-globalNavigation--selected">
+      <div class="col mt-globalNavigation__sites<mt:if name="scope_type" ne="system"> mt-globalNavigation--selected</mt:if>">
         <h1 class="mt-globalNavigation__logo btn-group">
           <a href="<mt:var name="mt_url">?__mode=dashboard" role="home"><img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="36" height="36"></a>
           <button type="button" class="btn btn-link dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" id="systemDropdownMenu" aria-haspopup="true" aria-expanded="false"><mt:var name="dropdown_label" strip_linefeeds="1"></button>
@@ -118,11 +118,9 @@
           <mt:var name="dropdown_content">
         </h1>
       </div>
-      <div class="col <mtif name="scope_type" ne="system"><mt:if name="can_access_overview">mt-globalNavigation__system </mt:if></mt:if>d-flex">
-<mt:if name="scope_type" ne="system">
-  <mt:if name="can_access_overview">
+      <div class="col d-flex<mt:if name="can_access_overview"> mt-globalNavigation__system</mt:if><mt:if name="scope_type" eq="system"> mt-globalNavigation--selected</mt:if>">
+<mt:if name="can_access_overview">
         <a href="<$mt:var name="mt_url">?__mode=dashboard&blog_id=0" class="align-self-center"><__trans phrase="System"></a>
-  </mt:if>
 </mt:if>
       </div>
     </div>
