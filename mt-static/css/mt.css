@@ -7562,6 +7562,13 @@ li {
 }
 
 /* Basic Layout */
+.mt-develperPreview {
+  background: #004B9A;
+  font-size: 0.8rem;
+  color: #FFFFFF;
+  text-align: center;
+}
+
 /* Global Navigation */
 .mt-globalNavigation {
   padding: 0;
@@ -7593,7 +7600,12 @@ li {
   font-size: 2rem;
 }
 
-.mt-globalNavigation__logo .btn {
+.mt-globalNavigation__logo .dropdown-menu {
+  line-height: 1.5;
+}
+
+.mt-globalNavigation__logo .btn,
+.mt-globalNavigation__user .btn {
   padding: .5rem;
   max-width: 10rem;
   overflow: hidden;
@@ -7601,8 +7613,8 @@ li {
   white-space: nowrap;
 }
 
-.mt-globalNavigation__logo .dropdown-menu {
-  line-height: 1.5;
+.mt-globalNavigation__user .btn {
+  max-width: 16rem;
 }
 
 .mt-globalNavigation__sites {
@@ -7640,7 +7652,8 @@ li {
 }
 
 .mt-globalNavigation__functions {
-  margin: 0;
+  display: inline-block;
+  margin: 0 1rem 0 0;
   padding: 0;
   list-style: none;
   text-align: right;
@@ -7709,10 +7722,10 @@ li {
 
 .mt-globalNavigation__logo button, .mt-globalNavigation__logo a,
 .mt-globalNavigation__logo button:hover, .mt-globalNavigation__logo a:hover,
-.float-right button,
-.float-right a,
-.float-right button:hover,
-.float-right a:hover,
+.mt-globalNavigation__user button,
+.mt-globalNavigation__user a,
+.mt-globalNavigation__user button:hover,
+.mt-globalNavigation__user a:hover,
 .mt-primaryNavigation__item button,
 .mt-primaryNavigation__item a,
 .mt-primaryNavigation__item button:hover,
@@ -7729,22 +7742,22 @@ li {
 .mt-globalNavigation__logo > a[aria-expanded="false"] .mt-icon--warning,
 .mt-globalNavigation__logo > a[aria-expanded="false"] .mt-icon--danger,
 .mt-globalNavigation__logo > a[aria-expanded="false"] .mt-icon--inverse,
-.float-right > button[aria-expanded="false"] .mt-icon,
-.float-right > button[aria-expanded="false"] .mt-icon--primary,
-.float-right > button[aria-expanded="false"] .mt-icon--secondary,
-.float-right > button[aria-expanded="false"] .mt-icon--success,
-.float-right > button[aria-expanded="false"] .mt-icon--info,
-.float-right > button[aria-expanded="false"] .mt-icon--warning,
-.float-right > button[aria-expanded="false"] .mt-icon--danger,
-.float-right > button[aria-expanded="false"] .mt-icon--inverse,
-.float-right > a[aria-expanded="false"] .mt-icon,
-.float-right > a[aria-expanded="false"] .mt-icon--primary,
-.float-right > a[aria-expanded="false"] .mt-icon--secondary,
-.float-right > a[aria-expanded="false"] .mt-icon--success,
-.float-right > a[aria-expanded="false"] .mt-icon--info,
-.float-right > a[aria-expanded="false"] .mt-icon--warning,
-.float-right > a[aria-expanded="false"] .mt-icon--danger,
-.float-right > a[aria-expanded="false"] .mt-icon--inverse,
+.mt-globalNavigation__user > button[aria-expanded="false"] .mt-icon,
+.mt-globalNavigation__user > button[aria-expanded="false"] .mt-icon--primary,
+.mt-globalNavigation__user > button[aria-expanded="false"] .mt-icon--secondary,
+.mt-globalNavigation__user > button[aria-expanded="false"] .mt-icon--success,
+.mt-globalNavigation__user > button[aria-expanded="false"] .mt-icon--info,
+.mt-globalNavigation__user > button[aria-expanded="false"] .mt-icon--warning,
+.mt-globalNavigation__user > button[aria-expanded="false"] .mt-icon--danger,
+.mt-globalNavigation__user > button[aria-expanded="false"] .mt-icon--inverse,
+.mt-globalNavigation__user > a[aria-expanded="false"] .mt-icon,
+.mt-globalNavigation__user > a[aria-expanded="false"] .mt-icon--primary,
+.mt-globalNavigation__user > a[aria-expanded="false"] .mt-icon--secondary,
+.mt-globalNavigation__user > a[aria-expanded="false"] .mt-icon--success,
+.mt-globalNavigation__user > a[aria-expanded="false"] .mt-icon--info,
+.mt-globalNavigation__user > a[aria-expanded="false"] .mt-icon--warning,
+.mt-globalNavigation__user > a[aria-expanded="false"] .mt-icon--danger,
+.mt-globalNavigation__user > a[aria-expanded="false"] .mt-icon--inverse,
 .mt-primaryNavigation__item > button[aria-expanded="false"] .mt-icon,
 .mt-primaryNavigation__item > button[aria-expanded="false"] .mt-icon--primary,
 .mt-primaryNavigation__item > button[aria-expanded="false"] .mt-icon--secondary,
@@ -7766,8 +7779,8 @@ li {
 
 .mt-globalNavigation__logo > button[aria-expanded="false"]:after,
 .mt-globalNavigation__logo > a[aria-expanded="false"]:after,
-.float-right > button[aria-expanded="false"]:after,
-.float-right > a[aria-expanded="false"]:after,
+.mt-globalNavigation__user > button[aria-expanded="false"]:after,
+.mt-globalNavigation__user > a[aria-expanded="false"]:after,
 .mt-primaryNavigation__item > button[aria-expanded="false"]:after,
 .mt-primaryNavigation__item > a[aria-expanded="false"]:after {
   margin-left: .4rem;
@@ -7786,22 +7799,22 @@ li {
 .mt-globalNavigation__logo > a[aria-expanded="true"] .mt-icon--warning,
 .mt-globalNavigation__logo > a[aria-expanded="true"] .mt-icon--danger,
 .mt-globalNavigation__logo > a[aria-expanded="true"] .mt-icon--inverse,
-.float-right > button[aria-expanded="true"] .mt-icon,
-.float-right > button[aria-expanded="true"] .mt-icon--primary,
-.float-right > button[aria-expanded="true"] .mt-icon--secondary,
-.float-right > button[aria-expanded="true"] .mt-icon--success,
-.float-right > button[aria-expanded="true"] .mt-icon--info,
-.float-right > button[aria-expanded="true"] .mt-icon--warning,
-.float-right > button[aria-expanded="true"] .mt-icon--danger,
-.float-right > button[aria-expanded="true"] .mt-icon--inverse,
-.float-right > a[aria-expanded="true"] .mt-icon,
-.float-right > a[aria-expanded="true"] .mt-icon--primary,
-.float-right > a[aria-expanded="true"] .mt-icon--secondary,
-.float-right > a[aria-expanded="true"] .mt-icon--success,
-.float-right > a[aria-expanded="true"] .mt-icon--info,
-.float-right > a[aria-expanded="true"] .mt-icon--warning,
-.float-right > a[aria-expanded="true"] .mt-icon--danger,
-.float-right > a[aria-expanded="true"] .mt-icon--inverse,
+.mt-globalNavigation__user > button[aria-expanded="true"] .mt-icon,
+.mt-globalNavigation__user > button[aria-expanded="true"] .mt-icon--primary,
+.mt-globalNavigation__user > button[aria-expanded="true"] .mt-icon--secondary,
+.mt-globalNavigation__user > button[aria-expanded="true"] .mt-icon--success,
+.mt-globalNavigation__user > button[aria-expanded="true"] .mt-icon--info,
+.mt-globalNavigation__user > button[aria-expanded="true"] .mt-icon--warning,
+.mt-globalNavigation__user > button[aria-expanded="true"] .mt-icon--danger,
+.mt-globalNavigation__user > button[aria-expanded="true"] .mt-icon--inverse,
+.mt-globalNavigation__user > a[aria-expanded="true"] .mt-icon,
+.mt-globalNavigation__user > a[aria-expanded="true"] .mt-icon--primary,
+.mt-globalNavigation__user > a[aria-expanded="true"] .mt-icon--secondary,
+.mt-globalNavigation__user > a[aria-expanded="true"] .mt-icon--success,
+.mt-globalNavigation__user > a[aria-expanded="true"] .mt-icon--info,
+.mt-globalNavigation__user > a[aria-expanded="true"] .mt-icon--warning,
+.mt-globalNavigation__user > a[aria-expanded="true"] .mt-icon--danger,
+.mt-globalNavigation__user > a[aria-expanded="true"] .mt-icon--inverse,
 .mt-primaryNavigation__item > button[aria-expanded="true"] .mt-icon,
 .mt-primaryNavigation__item > button[aria-expanded="true"] .mt-icon--primary,
 .mt-primaryNavigation__item > button[aria-expanded="true"] .mt-icon--secondary,
@@ -7823,8 +7836,8 @@ li {
 
 .mt-globalNavigation__logo > button[aria-expanded="true"]:after,
 .mt-globalNavigation__logo > a[aria-expanded="true"]:after,
-.float-right > button[aria-expanded="true"]:after,
-.float-right > a[aria-expanded="true"]:after,
+.mt-globalNavigation__user > button[aria-expanded="true"]:after,
+.mt-globalNavigation__user > a[aria-expanded="true"]:after,
 .mt-primaryNavigation__item > button[aria-expanded="true"]:after,
 .mt-primaryNavigation__item > a[aria-expanded="true"]:after {
   margin-left: .4rem;
