@@ -7589,6 +7589,10 @@ li {
   display: inherit;
 }
 
+.mt-globalNavigation__logo .ml-2 {
+  font-size: 2rem;
+}
+
 .mt-globalNavigation__logo .btn {
   padding: .5rem;
 }
