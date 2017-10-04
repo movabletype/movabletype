@@ -637,7 +637,9 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       label_class="no-header"
       help_page="entries"
       help_section="permalink">
-     <strong><__trans phrase="Permalink:"></strong> <mt:var name="content_data_permalink">
+     <span style="word-break: break-all;">
+       <strong><__trans phrase="Permalink:"></strong> <mt:var name="content_data_permalink">
+     </span>
        <mt:if name="status_publish">
          <mt:if name="content_data_permalink">
        <a class="btn btn-default button" href="<$mt:var name="content_data_permalink"$>" target="<__trans phrase="_external_link_target">">
