@@ -7619,12 +7619,14 @@ li {
 
 .mt-globalNavigation__sites {
   padding: 0.5rem 1rem;
+  max-width: 240px;
   border-bottom: 3px solid transparent;
   border-right: 1px solid #A5A5A5;
   background: transparent;
 }
 
 .mt-globalNavigation__system {
+  max-width: 240px;
   border-bottom: 3px solid transparent;
   border-right: 1px solid #A5A5A5;
   background: transparent;
