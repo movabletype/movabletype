@@ -19,13 +19,10 @@
               <__trans phrase="User Dashboard">
             </a>
 </mt:if>
-<mt:if name="scope_type" ne="system">
-            <a class="dropdown-item" href="<$mt:var name="mt_url">?__mode=dashboard&blog_id=0">
-              <__trans phrase="System Overview">
-            </a>
-</mt:if>
 <mt:if name="fav_website_loop">
+  <mt:if name="scope_type" ne="user">
             <div class="dropdown-divider"></div>
+  </mt:if>
             <h6 class="dropdown-header">
               <__trans phrase="Sites">
             </h6>
@@ -56,7 +53,14 @@
   </mt:unless>
 </mt:if>
 <mt:if name="fav_blog_loop">
+  <mt:if name="scope_type" eq="user">
+    <mt:unless name="fav_website_loop">
+      <mt:setvar name="hide_fav_blog_loop_divider" value="1">
+    </mt:unless>
+  </mt:if>
+  <mt:unless name="hide_fav_blog_loop_divider">
             <div class="dropdown-divider"></div>
+  </mt:unless>
             <h6 class="dropdown-header">
               <__trans phrase="Child Sites">
             </h6>
@@ -86,19 +90,41 @@
   </mt:unless>
 </mt:if>
 <mt:if name="can_create_website">
+  <mt:if name="scope_type" eq="user">
+    <mt:unless name="fav_website_loop">
+      <mt:unless name="fav_blog_loop">
+        <mt:setvar name="hide_can_create_website_divider" value="1">
+      </mt:unless>
+    </mt:unless>
+  </mt:if>
+  <mt:unless name="hide_can_create_website_divider">
             <div class="dropdown-divider"></div>
+  </mt:unless>
             <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0" class="dropdown-item create-link website">
               <__trans phrase="Create Site">
             </a>
 </mt:if>
 <mt:if name="can_create_blog">
+  <mt:if name="scope_type" eq="user">
+    <mt:unless name="fav_website_loop">
+      <mt:unless name="fav_blog_loop">
+        <mt:unless name="can_create_website">
+          <mt:setvar name="hide_can_create_blog_divider" value="1">
+        </mt:unless>
+      </mt:unless>
+    </mt:unless>
+  </mt:if>
   <mt:if name="scope_type" eq="website">
+    <mt:unless name="hide_can_create_blog_divider">
             <div class="dropdown-divider"></div>
+    </mt:unless>
             <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="blog_id"$>" class="dropdown-item create-link website">
               <__trans phrase="Create Child Site (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">">
             </a>
   <mt:elseif name="scope_type" eq="blog">
+    <mt:unless name="hide_can_create_blog_divider">
             <div class="dropdown-divider"></div>
+    </mt:unless>
             <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="curr_website_id"$>" class="dropdown-item create-link blog">
               <__trans phrase="Create Child Site (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">">
             </a>
