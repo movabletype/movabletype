@@ -41,7 +41,7 @@ sub template_params {
         archive_listing           => 1,
         datebased_archive         => 1,
         datebased_only_archive    => 1,
-        contenttype_archive_lisrting => 1,
+        contenttype_archive_listing => 1,
     };
 }
 

@@ -39,12 +39,12 @@ sub default_archive_templates {
 
 sub template_params {
     return {
-        archive_class                => "contenttype-category-archive",
-        category_archive             => 1,
-        archive_template             => 1,
-        archive_listing              => 1,
-        category_based_archive       => 1,
-        contenttype_archive_lisrting => 1,
+        archive_class               => "contenttype-category-archive",
+        category_archive            => 1,
+        archive_template            => 1,
+        archive_listing             => 1,
+        category_based_archive      => 1,
+        contenttype_archive_listing => 1,
     };
 }
 

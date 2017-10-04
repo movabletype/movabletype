@@ -35,13 +35,13 @@ sub default_archive_templates {
 
 sub template_params {
     return {
-        archive_class            => "contenttype-datebased-weekly-archive",
-        datebased_weekly_archive => 1,
-        archive_template         => 1,
-        archive_listing          => 1,
-        datebased_archive        => 1,
-        datebased_only_archive   => 1,
-        contenttype_archive_lisrting => 1,
+        archive_class               => "contenttype-datebased-weekly-archive",
+        datebased_weekly_archive    => 1,
+        archive_template            => 1,
+        archive_listing             => 1,
+        datebased_archive           => 1,
+        datebased_only_archive      => 1,
+        contenttype_archive_listing => 1,
     };
 }
 
