@@ -108,7 +108,7 @@ sub suite {
                 $app->user($author);
 
                 return +{
-                    totalResults => 2,
+                    totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( \@roles ),
                 };
             },
@@ -385,4 +385,3 @@ sub suite {
         },
     ];
 }
-

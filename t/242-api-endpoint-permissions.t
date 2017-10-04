@@ -540,7 +540,7 @@ sub suite {
             method => 'POST',
             params => {
                 user_id => $author->id,
-                role_id => 2,
+                role_id => 1,
             },
             restrictions => { 1 => [qw/ grant_administer_role /], },
             code         => 403,
@@ -649,7 +649,7 @@ sub suite {
             method => 'POST',
             params => {
                 site_id => 1,
-                role_id => 2,
+                role_id => 1,
             },
             restrictions => { 1 => [qw/ grant_administer_role /], },
             code         => 403,
@@ -766,7 +766,7 @@ sub suite {
             method => 'POST',
             params => {
                 user_id => $author->id,
-                role_id => 2,
+                role_id => 1,
             },
             restrictions => { 1 => [qw/ revoke_administer_role /], },
             code         => 403,
@@ -876,7 +876,7 @@ sub suite {
             method => 'POST',
             params => {
                 site_id => 1,
-                role_id => 2,
+                role_id => 1,
             },
             restrictions => { 1 => [qw/ revoke_administer_role /], },
             code         => 403,
