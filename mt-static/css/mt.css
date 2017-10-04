@@ -7595,6 +7595,10 @@ li {
 
 .mt-globalNavigation__logo .btn {
   padding: .5rem;
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mt-globalNavigation__logo .dropdown-menu {
