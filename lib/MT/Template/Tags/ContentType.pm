@@ -1626,6 +1626,12 @@ sub _hdlr_content_field {
         ($field_data)
             = grep { $_->{options}{label} eq $label }
             @{ $content_type->fields };
+        if ( $field_data && $field_data->{type} eq 'content_type' ) {
+            my $content_type_id = $field_data->{options}{source};
+            my $content_type    = MT::ContentType->load($content_type_id);
+            $args->{type} = $content_type->unique_id;
+            return $ctx->invoke_handler( 'contents', $args, $cond );
+        }
     }
     $field_data ||= $ctx->stash('content_field') || $content_type->fields->[0]
         or return $ctx->_no_content_field_error;
