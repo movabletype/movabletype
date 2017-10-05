@@ -4380,6 +4380,7 @@ use vars qw( @ISA %Lexicon );
 	'Custom Index Template' => 'カスタムインデックステンプレート',
 	'Link to File' => 'ファイルへのリンク',
 	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => '<a href="http://www.movabletype.jp/documentation/administrator/publishing/settings.html" target="_blank">公開プロファイルについて</a>',
+        'Learn more about <a href="https://www.movabletype.org/documentation/appendices/archive-file-path-specifiers.html" target="_blank">Archive File Path Specifiers</a>' => '<a href="https://www.movabletype.jp/documentation/appendices/archive-file-path-specifiers.html" target="_blank">カスタムマッピング変数</a>',
 	'Create Archive Mapping' => '新しいアーカイブマッピングを作成',
 	'Statically (default)' => 'スタティック(既定)',
 	'Via Publish Queue' => '公開キュー経由',
