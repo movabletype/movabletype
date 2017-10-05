@@ -1575,7 +1575,7 @@ sub save_filter {
             $accessor->( 'name', $name );
         }
         return $eh->error( $app->translate("User requires username") )
-            if ( !$name );
+            if ( !length($name) );
 
         if ( $name =~ m/([<>])/ ) {
             return $eh->error(
