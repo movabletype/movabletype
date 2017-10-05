@@ -820,7 +820,6 @@ sub rebuild_file {
             unless $args{Category};
         $category = MT::Category->load($category)
             unless ref $category;
-        $ctx->var( 'category_archive', 1 );
         $ctx->{__stash}{archive_category} = $category;
         $ctx->{__stash}{template_map}     = $map
             if $archiver->contenttype_category_based;
@@ -831,7 +830,6 @@ sub rebuild_file {
             unless $entry;
         require MT::Entry;
         $entry = MT::Entry->load($entry) if !ref $entry;
-        $ctx->var( 'entry_archive', 1 );
         $ctx->{__stash}{entry} = $entry;
     }
     if ( $archiver->date_based ) {
@@ -841,7 +839,6 @@ sub rebuild_file {
         $end   = $args{EndDate};
         Carp::confess("Date-based archive types require StartDate parameter")
             unless $args{StartDate};
-        $ctx->var( 'datebased_archive', 1 );
         $ctx->{__stash}{template_map} = $map
             if $archiver->contenttype_date_based;
     }
@@ -854,7 +851,6 @@ sub rebuild_file {
         require MT::Author;
         $author = MT::Author->load($author)
             unless ref $author;
-        $ctx->var( 'author_archive', 1 );
         $ctx->{__stash}{author}       = $author;
         $ctx->{__stash}{template_map} = $map
             if $archiver->contenttype_author_based;
