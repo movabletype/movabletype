@@ -506,7 +506,8 @@ sub cfg_prefs {
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
 
     if ( -f $mtview_path ) {
-        open my ($fh), $mtview_path;
+        open my $fh, "<", $mtview_path
+            or die "Couldn't open $mtview_path: $!";
         while ( my $line = <$fh> ) {
             $param{dynamic_caching} = 1
                 if $line =~ m/^\s*\$mt->caching\(true\);/i;
@@ -2680,7 +2681,7 @@ sub update_publishing_profile {
                             . "</configuration>\n";
 
                         my $fh;
-                        open( $fh, ">$web_config_path" )
+                        open( $fh, ">", $web_config_path )
                             || die
                             "Couldn't open $web_config_path for appending";
                         print $fh $out;
@@ -2749,7 +2750,8 @@ sub update_dynamicity {
     my $cache       = 0;
     my $conditional = 0;
     if ( -f $mtview_path ) {
-        open my ($fh), $mtview_path;
+        open my $fh, "<", $mtview_path
+            or die "Couldn't open $mtview_path: $!";
         while ( my $line = <$fh> ) {
             $cache = 1
                 if $line =~ m/^\s*\$mt->caching\(true\);/i;
@@ -2817,7 +2819,8 @@ sub _create_mtview {
     eval {
         my $mv_contents = '';
         if ( -f $mtview_path ) {
-            open( my $mv, "<$mtview_path" );
+            open my $mv, "<", $mtview_path
+                or die "Couldn't open $mtview_path: $!";
             while ( my $line = <$mv> ) {
                 $mv_contents .= $line if ( $line !~ m!^//|<\?(?:php)?|\?>! );
             }
@@ -2848,7 +2851,7 @@ $mv_contents
 MTVIEW
 
             $blog->file_mgr->mkpath($site_path);
-            open( my $mv, ">$mtview_path" )
+            open( my $mv, ">", $mtview_path )
                 || die "Couldn't open $mtview_path for appending";
             print $mv $mtview || die "Couldn't write to $mtview_path";
             close $mv;
@@ -3017,7 +3020,7 @@ sub prepare_dynamic_publishing {
             . "</configuration>\n";
 
         my $fh;
-        open( $fh, ">$web_config_path" )
+        open( $fh, ">", $web_config_path )
             || die "Couldn't open $web_config_path for appending";
         print $fh $out;
         close $fh;
@@ -3025,10 +3028,10 @@ sub prepare_dynamic_publishing {
     else {
         eval {
             my $contents = "";
-            if ( open( HT, $htaccess_path ) ) {
+            if ( open( my $HT, "<", $htaccess_path ) ) {
                 local $/ = undef;
-                $contents = <HT>;
-                close HT;
+                $contents = <$HT>;
+                close $HT;
             }
             if ( $contents !~ /^\s*Rewrite(Cond|Engine|Rule)\b/m ) {
                 my $htaccess = <<HTACCESS;
@@ -3079,10 +3082,10 @@ HTACCESS
 
                 $blog->file_mgr->mkpath($site_path);
 
-                open( HT, ">>$htaccess_path" )
+                open( my $HT, ">>", $htaccess_path )
                     || die "Couldn't open $htaccess_path for appending";
-                print HT $htaccess || die "Couldn't write to $htaccess_path";
-                close HT;
+                print $HT $htaccess || die "Couldn't write to $htaccess_path";
+                close $HT;
             }
         };
         if ($@) { print STDERR $@; }

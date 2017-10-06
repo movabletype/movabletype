@@ -19,10 +19,10 @@ sub new {
     $ENV{LM_DEBUG} = 1;
 
     my $fh;
-    open( $fh, '>>', $log_file );
+    open( $fh, '>>', $log_file ) or die "Couldn't open $log_file: $!";
     local $SIG{HUP} = sub {
         undef $fh;
-        open( $fh, '>>', $log_file );
+        open( $fh, '>>', $log_file ) or die "Couldn't open $log_file: $!";
     };
 
     $Log::Minimal::PRINT = sub {

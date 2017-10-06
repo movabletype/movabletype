@@ -1266,7 +1266,7 @@ sub backup {
         my @files;
         my $filename = File::Spec->catfile( $temp_dir, $file . "-1.xml" );
         $fh = gensym();
-        open $fh, ">$filename";
+        open $fh, ">", $filename or die "Couldn't open $filename: $!";
         my $url = $app->uri . "?__mode=backup_download&name=$file-1.xml";
         $url .= "&magic_token=" . $app->current_magic
             if defined( $app->current_magic );
@@ -1292,7 +1292,7 @@ sub backup {
             my $filename
                 = File::Spec->catfile( $temp_dir, $file . "-$findex.xml" );
             $fh = gensym();
-            open $fh, ">$filename";
+            open $fh, ">", $filename or die "Couldn't open $filename: $!";
             my $url
                 = $app->uri
                 . "?__mode=backup_download&name=$file-$findex.xml";
@@ -1311,7 +1311,7 @@ sub backup {
             close $fh;
             my $filename = File::Spec->catfile( $temp_dir, "$file.manifest" );
             $fh = gensym();
-            open $fh, ">$filename";
+            open $fh, ">", $filename or die "Couldn't open $filename: $!";
             print $fh "<manifest xmlns='"
                 . MT::BackupRestore::NS_MOVABLETYPE() . "'>\n";
             for my $file (@files) {
@@ -2178,7 +2178,7 @@ sub adjust_sitepath {
             closedir $dh;
             if ($manifest) {
                 my $fh = gensym;
-                open $fh, "<$manifest"
+                open $fh, "<", $manifest
                     or return $app->error(
                     MT->translate( "Cannot open [_1].", $manifest ) );
                 seek( $fh, 0, 0 ) or return undef;

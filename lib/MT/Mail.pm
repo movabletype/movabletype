@@ -374,7 +374,7 @@ sub _send_mt_sendmail {
         )
     ) unless $sm_loc;
     local $SIG{PIPE} = {};
-    my $pid = open MAIL, '|-';
+    my $pid = open my $MAIL, '|-';
     local $SIG{ALRM} = sub { CORE::exit() };
     return unless defined $pid;
     if ( !$pid ) {
@@ -387,11 +387,11 @@ sub _send_mt_sendmail {
             = ref( $hdrs->{$key} ) eq 'ARRAY'
             ? @{ $hdrs->{$key} }
             : ( $hdrs->{$key} );
-        print MAIL map "$key: $_\n", @arr;
+        print $MAIL map "$key: $_\n", @arr;
     }
-    print MAIL "\n";
-    print MAIL $body;
-    close MAIL;
+    print $MAIL "\n";
+    print $MAIL $body;
+    close $MAIL;
     1;
 }
 

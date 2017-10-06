@@ -121,7 +121,7 @@ sub _makerandom {
     my $rand;
     if ( -e "/dev/urandom" ) {
         my $fh;
-        open( $fh, '/dev/urandom' )
+        open( $fh, "<", '/dev/urandom' )
             or die "Couldn't open /dev/urandom";
         my $got = sysread $fh, $rand, $bytes;
         die "Didn't read all bytes from urandom" unless $got == $bytes;

@@ -643,7 +643,7 @@ sub do_export {
         my $newfilename = $theme_id;
         $newfilename .= $theme_version if $theme_version;
         $newfilename .= '.' . $arc_info->{extension};
-        open my $fh, "<", $arcfile;
+        open my $fh, "<", $arcfile or die "Couldn't open $arcfile: $!";
         binmode $fh;
         $app->{no_print_body} = 1;
         $app->set_header(

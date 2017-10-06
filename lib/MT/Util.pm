@@ -1992,11 +1992,11 @@ sub start_background_task {
 
             # child
             close STDIN;
-            open STDIN, "</dev/null";
+            open STDIN, "<", "/dev/null" or die $!;
             close STDOUT;
-            open STDOUT, ">/dev/null";
+            open STDOUT, ">", "/dev/null" or die $!;
             close STDERR;
-            open STDERR, ">/dev/null";
+            open STDERR, ">", "/dev/null" or die $!;
 
             MT::Object->driver;    # This inititalizes driver
             MT::ObjectDriverFactory->configure();

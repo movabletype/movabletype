@@ -92,7 +92,7 @@ sub _get_stream_iterator {
     else {
         if ( -f $stream ) {
             my $fh = gensym();
-            open $fh, $stream
+            open $fh, "<", $stream
                 or return $class->error(
                 MT->translate( "Cannot open '[_1]': [_2]", $stream, $! ) );
             $stream = $fh;
@@ -138,7 +138,7 @@ sub _get_stream_iterator {
                         $file )
                         . "\n"
                 );
-                open $fh, "<$file"
+                open $fh, "<", $file
                     or return $class->error(
                     MT->translate( "Cannot open '[_1]': [_2]", $file, $! ) );
                 $stream = $fh;

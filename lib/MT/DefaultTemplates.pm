@@ -347,7 +347,8 @@ sub templates {
                             = File::Spec->catfile( $base_path, $filename );
                         if ( ( -e $file ) && ( -r $file ) ) {
                             local $/ = undef;
-                            open my $fin, '<', $file;
+                            open my $fin, '<', $file
+                                or die "Couldn't open $file: $!";
                             my $data = <$fin>;
                             close $fin;
                             $tmpl->{text} = $data;

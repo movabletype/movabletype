@@ -1127,7 +1127,7 @@ sub _upload_to_asset {
         require MT::Image;
         my $fh;
         my $data = $content->body;
-        open( $fh, "+<", \$data );
+        open( $fh, "+<", \$data ) or die $!;
         close($fh),
             return $app->error(
             500,

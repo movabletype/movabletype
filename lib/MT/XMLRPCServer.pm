@@ -1658,7 +1658,7 @@ sub newMediaObject {
         require MT::Image;
         my $fh;
         my $data = $file->{bits};
-        open( $fh, "+<", \$data );
+        open( $fh, "+<", \$data ) or die $!;
         close($fh),
             die _fault(
             MT->translate(
