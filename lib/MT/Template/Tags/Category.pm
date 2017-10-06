@@ -1628,8 +1628,28 @@ sub _hdlr_category_count {
         or return $ctx->error( $ctx->errstr );
     return if ( $cat eq '' );
 
-    my $count = $ctx->stash('category_count');
-    $count = $cat->entry_count unless defined $count;
+    my $count;
+    unless ( $cat->category_set_id ) {
+        $count = $ctx->stash('category_count');
+        $count = $cat->entry_count unless defined $count;
+    }
+    else {
+        my $terms = {};
+        if ( my $cf_id = $args->{content_field_id} ) {
+            $terms->{content_field_id} = $cf_id;
+        }
+        elsif ( my $ct_id = $args->{content_type_id} ) {
+            $terms->{content_type_id} = $ct_id;
+        }
+        elsif ( my $cf = $ctx->stash('content_field') ) {
+            $terms->{content_field_id} = $cf->id;
+        }
+        elsif ( my $ct = $ctx->stash('content_type') ) {
+            $terms->{content_type_id} = $ct->id;
+        }
+        $count = $cat->content_data_count($terms);
+    }
+
     return $ctx->count_format( $count, $args );
 }
 
