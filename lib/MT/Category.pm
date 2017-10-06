@@ -646,6 +646,50 @@ sub entry_count {
     );
 }
 
+sub content_data_count {
+    my $self = shift;
+    my ($terms) = @_;
+    $terms ||= {};
+
+    my $content_type_id  = $terms->{content_type_id};
+    my $content_field_id = $terms->{content_field_id};
+
+    my $key_suffix = '';
+    if ($content_type_id) {
+        $key_suffix = ":ct-$content_type_id";
+    }
+    elsif ($content_field_id) {
+        $key_suffix = ":cf-$content_field_id";
+    }
+
+    require MT::ContentFieldIndex;
+    require MT::ContentData;
+    require MT::Entry;
+    return $self->cache_property(
+        "content_data_count$key_suffix",
+        sub {
+            return MT::ContentData->count(
+                {   blog_id => $self->blog_id,
+                    status  => MT::Entry::RELEASE(),
+                },
+                {   join => MT::ContentFieldIndex->join_on(
+                        'content_data_id',
+                        {   value_integer => $self->id,
+                            $content_type_id
+                            ? ( content_type_id => $content_type_id )
+                            : (),
+                            $content_field_id
+                            ? ( content_field_id => $content_field_id )
+                            : (),
+                        },
+                        { unique => 1 },
+                    ),
+                }
+            );
+        },
+    );
+}
+
 sub populate_category_hierarchy {
     my $class = shift;
     my ( $blog_id, $parent_id, $depth ) = @_;
@@ -794,6 +838,25 @@ I<MT::Object> for more information.
 When you remove a category using I<MT::Category::remove>, in addition to
 removing the category record, all of the entry-category mappings
 (I<MT::Placement> objects) will be removed.
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item * content_data_count([ $terms ])
+
+When no $terms is set, this returns total count of all published content data
+that has this category in any category field.
+
+When $terms->{content_type_id} is set, this returns total count of published content
+data that has this category in any category field of the specified content type.
+
+When $terms->{content_field_id} is set, this returns total count of published content
+data that has this category in specified category field.
+
+This result will be cached while a request.
 
 =back
 
