@@ -3,10 +3,13 @@ use warnings;
 
 use lib qw( t/lib lib extlib );
 
+BEGIN {
+    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+}
+
 use MT::Test::Tag;
 
-# plan tests => 2 * blocks;
-plan tests => scalar blocks;
+plan tests => 2 * blocks;
 
 use MT::Test qw( :db );
 use MT::Test::Permission;
@@ -167,8 +170,7 @@ for my $ct_id ( 1 .. 2 ) {
 }
 
 MT::Test::Tag->run_perl_tests($blog_id);
-
-# MT::Test::Tag->run_php_test($blog_id);
+MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
