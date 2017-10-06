@@ -9,7 +9,6 @@ use MT::Test qw( :db );
 use MT::Test::Permission;
 
 use MT::Category;
-use MT::ContentFieldIndex;
 
 my $blog_id = 1;
 
