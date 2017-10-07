@@ -45,6 +45,11 @@ my $category = MT::Test::Permission->make_category(
     category_set_id => $category_set->id,
     label           => 'category',
 );
+my $plain_category = MT::Test::Permission->make_category(
+    blog_id         => $category_set->blog_id,
+    category_set_id => 0,
+    label           => 'plain_category',
+);
 
 my $fields = [
     {   id        => $cf_datetime->id,
@@ -84,10 +89,17 @@ my $content_data = MT::Test::Permission->make_content_data(
     },
 );
 
+my $entry = MT::Test::Permission->make_entry(
+    blog_id   => $blog->id,
+    author_id => $author->id,
+);
+$entry->attach_categories($plain_category);
+
+my $page = MT::Test::Permission->make_page( blog_id => $blog->id );
+
 my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
 
 my $text = '';
-my %html;
 foreach my $param (
     qw/
     archive_template
@@ -121,29 +133,103 @@ foreach my $param (
     /
     )
 {
-    $text .= "<mt:if name=\"$param\">$param</mt:if>";
-
-    foreach
-        my $prefix (qw( ContentType ContentType-Author ContentType-Category ))
-    {
-        foreach
-            my $suffix ( ( '', '-Daily', '-Weekly', '-Monthly', '-Yearly' ) )
-        {
-            my $at       = $prefix . $suffix;
-            my $archiver = $publisher->archiver($at);
-            $html{$at} .= $param if $archiver->template_params->{$param};
-        }
-    }
+    $text .=
+        $param eq 'archive_class'
+        ? "<mt:if name=\"$param\"><mt:var name=\"$param\">,</mt:if>"
+        : "<mt:if name=\"$param\">$param,</mt:if>";
 }
 
-my $tmpl = MT::Test::Permission->make_template(
+my %html = (
+    'Page' =>
+        'archive_template,page_archive,page_template,feedback_template,page-archive,',
+    'Individual' =>
+        'archive_template,entry_archive,entry_template,feedback_template,entry-archive,',
+    'Daily' =>
+        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_daily_archive,datebased-daily-archive,',
+    'Weekly' =>
+        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_weekly_archive,datebased-weekly-archive,',
+    'Monthly' =>
+        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_monthly_archive,datebased-monthly-archive,',
+    'Yearly' =>
+        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_yearly_archive,datebased-yearly-archive,',
+    'Author' =>
+        'archive_template,archive_listing,author_archive,author_based_archive,author-archive,',
+    'Author-Daily' =>
+        'archive_template,archive_listing,datebased_archive,author_based_archive,author_daily_archive,author-daily-archive,',
+    'Author-Weekly' =>
+        'archive_template,archive_listing,datebased_archive,author_based_archive,author_weekly_archive,author-weekly-archive,',
+    'Author-Monthly' =>
+        'archive_template,archive_listing,datebased_archive,author_based_archive,author_monthly_archive,author-monthly-archive,',
+    'Author-Yearly' =>
+        'archive_template,archive_listing,datebased_archive,author_based_archive,author_yearly_archive,author-yearly-archive,',
+    'Category' =>
+        'archive_template,archive_listing,category_archive,category_based_archive,category-archive,',
+    'Category-Daily' =>
+        'archive_template,archive_listing,datebased_archive,category_based_archive,category_daily_archive,category-daily-archive,',
+    'Category-Weekly' =>
+        'archive_template,archive_listing,datebased_archive,category_based_archive,category_weekly_archive,category-weekly-archive,',
+    'Category-Monthly' =>
+        'archive_template,archive_listing,datebased_archive,category_based_archive,category_monthly_archive,category-monthly-archive,',
+    'Category-Yearly' =>
+        'archive_template,archive_listing,datebased_archive,category_based_archive,category_yearly_archive,category-yearly-archive,',
+    'ContentType' =>
+        'archive_template,archive_listing,contenttype-archive,contenttype_archive,',
+    'ContentType-Daily' =>
+        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_daily_archive,contenttype-datebased-daily-archive,contenttype_archive_listing,',
+    'ContentType-Weekly' =>
+        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_weekly_archive,contenttype-datebased-weekly-archive,contenttype_archive_listing,',
+    'ContentType-Monthly' =>
+        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_monthly_archive,contenttype-datebased-monthly-archive,contenttype_archive_listing,',
+    'ContentType-Yearly' =>
+        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_yearly_archive,contenttype-datebased-yearly-archive,contenttype_archive_listing,',
+    'ContentType-Author' =>
+        'archive_template,archive_listing,author_archive,author_based_archive,contenttype-author-archive,contenttype_archive_listing,',
+    'ContentType-Author-Daily' =>
+        'archive_template,archive_listing,datebased_archive,author_based_archive,author_daily_archive,contenttype-author-daily-archive,contenttype_archive_listing,',
+    'ContentType-Author-Weekly' =>
+        'archive_template,archive_listing,datebased_archive,author_based_archive,author_weekly_archive,contenttype-author-weekly-archive,contenttype_archive_listing,',
+    'ContentType-Author-Monthly' =>
+        'archive_template,archive_listing,datebased_archive,author_based_archive,author_monthly_archive,contenttype-author-monthly-archive,contenttype_archive_listing,',
+    'ContentType-Author-Yearly' =>
+        'archive_template,archive_listing,datebased_archive,author_based_archive,author_yearly_archive,contenttype-author-yearly-archive,contenttype_archive_listing,',
+    'ContentType-Category' =>
+        'archive_template,archive_listing,category_archive,category_based_archive,contenttype-category-archive,contenttype_archive_listing,',
+    'ContentType-Category-Daily' =>
+        'archive_template,archive_listing,datebased_archive,category_based_archive,category_daily_archive,contenttype-category-daily-archive,contenttype_archive_listing,',
+    'ContentType-Category-Weekly' =>
+        'archive_template,archive_listing,datebased_archive,category_based_archive,category_weekly_archive,contenttype-category-weekly-archive,contenttype_archive_listing,',
+    'ContentType-Category-Monthly' =>
+        'archive_template,archive_listing,datebased_archive,category_based_archive,category_monthly_archive,contenttype-category-monthly-archive,contenttype_archive_listing,',
+    'ContentType-Category-Yearly' =>
+        'archive_template,archive_listing,datebased_archive,category_based_archive,category_yearly_archive,contenttype-category-yearly-archive,contenttype_archive_listing,',
+);
+
+my $tmpl_entry = MT::Test::Permission->make_template(
+    blog_id => $blog->id,
+    name    => 'Entry Test',
+    type    => 'individual',
+    text    => $text,
+);
+my $tmpl_entry_archive = MT::Test::Permission->make_template(
+    blog_id => $blog->id,
+    name    => 'Entry Archive Test',
+    type    => 'archive',
+    text    => $text,
+);
+my $tmpl_page = MT::Test::Permission->make_template(
+    blog_id => $blog->id,
+    name    => 'Page Test',
+    type    => 'page',
+    text    => $text,
+);
+my $tmpl_ct = MT::Test::Permission->make_template(
     blog_id         => $blog->id,
     content_type_id => $content_data->id,
     name            => 'ContentType Test',
     type            => 'ct',
     text            => $text,
 );
-my $tmpl_archive = MT::Test::Permission->make_template(
+my $tmpl_ct_archive = MT::Test::Permission->make_template(
     blog_id         => $blog->id,
     content_type_id => $content_data->id,
     name            => 'ContentType Archive Test',
@@ -152,15 +238,24 @@ my $tmpl_archive = MT::Test::Permission->make_template(
 );
 
 my @suite;
-foreach my $prefix (qw( ContentType ContentType-Author ContentType-Category ))
+foreach my $prefix (
+    qw( Page Individual Author Category ContentType ContentType-Author ContentType-Category )
+    )
 {
-    foreach my $suffix ( ( '', '-Daily', '-Weekly', '-Monthly', '-Yearly' ) )
-    {
-        #foreach my $dt_field (qw( ao cf )) {
-        my $at  = $prefix . $suffix;
+    foreach my $suffix ( ( '', 'Daily', 'Weekly', 'Monthly', 'Yearly' ) ) {
+        next if $prefix eq 'Page' && $suffix;
+        my $at
+            = $suffix eq ''           ? $prefix
+            : $prefix eq 'Individual' ? $suffix
+            :                           $prefix . '-' . $suffix;
         my $map = MT::Test::Permission->make_templatemap(
-            template_id =>
-                ( $at eq 'ContentType' ? $tmpl->id : $tmpl_archive->id ),
+            template_id => (
+                  $at eq 'Page'          ? $tmpl_page->id
+                : $at eq 'Individual'    ? $tmpl_entry->id
+                : $at eq 'ContentType'   ? $tmpl_ct->id
+                : $at =~ /^ContentType-/ ? $tmpl_ct_archive->id
+                :                          $tmpl_entry_archive->id
+            ),
             blog_id      => $blog->id,
             archive_type => $at,
             cat_field_id => $cf_category->id,
@@ -173,13 +268,18 @@ foreach my $prefix (qw( ContentType ContentType-Author ContentType-Category ))
         push @suite,
             {
             ArchiveType => $at,
-            Template    => ( $at eq 'ContentType' ? $tmpl : $tmpl_archive ),
+            Template    => (
+                  $at eq 'Page'          ? $tmpl_page
+                : $at eq 'Individual'    ? $tmpl_entry
+                : $at eq 'ContentType'   ? $tmpl_ct
+                : $at =~ /^ContentType-/ ? $tmpl_ct_archive
+                :                          $tmpl_entry_archive
+            ),
             TemplateMap => $map,
             Html        => $html{$at},
             Published   => 1,
             };
-
-        #}
+        print "'$at' => '$html{$at}',\n";
     }
 }
 
@@ -196,23 +296,44 @@ for my $s (@suite) {
     my $archiver = $publisher->archiver($at);
 
     my $file_name
-        = $publisher->archive_file_for( $content_data, $blog, $at, $category,
-        $map, $content_data->authored_on,
+        = $at eq 'Page'
+        ? $publisher->archive_file_for( $page, $blog, $at, undef,
+        $map, $page->authored_on, $page->author )
+        : $at eq 'Individual' || $at !~ /^ContentType/
+        ? $publisher->archive_file_for( $entry, $blog, $at,
+        $plain_category, $map, $entry->authored_on, $entry->author )
+        : $publisher->archive_file_for( $content_data, $blog, $at,
+        $category, $map, $content_data->authored_on,
         $content_data->author );
     my $file = File::Spec->catfile( $blog->archive_path, $file_name );
 
     unlink $file if -e $file;
     $mt->request->reset;
-    $publisher->_rebuild_content_archive_type(
-        ContentData => $content_data,
-        Blog        => $blog,
-        ArchiveType => $at,
-        TemplateMap => $map,
-        TemplateID  => $map->template_id,
-        Force       => 1,
-        Category    => $category,
-        Author      => $content_data->author,
-    );
+    if ( $at eq 'Individual' || $at !~ /^ContentType/ ) {
+        my $obj = $at eq 'Page' ? $page : $entry;
+        $publisher->_rebuild_entry_archive_type(
+            Entry       => $obj,
+            Blog        => $blog,
+            ArchiveType => $at,
+            TemplateMap => $map,
+            TemplateID  => $map->template_id,
+            Force       => 1,
+            ( $at eq 'Page' ? () : ( Category => $plain_category ) ),
+            Author => $obj->author,
+        );
+    }
+    else {
+        $publisher->_rebuild_content_archive_type(
+            ContentData => $content_data,
+            Blog        => $blog,
+            ArchiveType => $at,
+            TemplateMap => $map,
+            TemplateID  => $map->template_id,
+            Force       => 1,
+            Category    => $category,
+            Author      => $content_data->author,
+        );
+    }
     is( -e $file ? 1 : 0,
         $s->{Published}, 'Rebuild: When a target file does not exists' );
     my $fmgr = MT::FileMgr->new('Local');

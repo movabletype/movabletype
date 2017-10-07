@@ -41,6 +41,7 @@ sub template_params {
         archive_template      => 1,
         archive_listing       => 1,
         datebased_archive     => 1,
+        author_based_archive  => 1,
     };
 }
 
