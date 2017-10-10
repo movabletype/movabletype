@@ -40,63 +40,16 @@ sub _create_empty_table {
 sub tag_handler {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
-    my $table = _table_with_heading( $field_data, $value );
-    $table = "<table>\n${table}\n</table>";
+    unless ( defined $value ) {
+        $value = '';
+    }
+    my $table = "<table>\n${value}\n</table>";
 
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
     my $vars    = $ctx->{__stash}{vars} ||= {};
     local $vars->{__value__} = $table;
     $builder->build( $ctx, $tok, {%$cond} );
-}
-
-sub _table_with_heading {
-    my ( $field_data, $value ) = @_;
-    return $value unless $value;
-    my $table_with_row_heading
-        = _add_row_heading_to_table( $field_data, $value );
-    my $col_heading = _create_col_heading( $field_data, $value );
-    $col_heading =~ s/^(<tr>)/$1<th><\/th>/;
-    "${col_heading}\n${table_with_row_heading}";
-}
-
-sub _create_col_heading {
-    my ( $field_data, $value ) = @_;
-    my @col_heading = split ',', ( $field_data->{options}{col_heading} || '' )
-        or return '';
-    my $col_count = _get_col_count($value) or return '';
-    my $col_header = '';
-    for my $i ( 0 .. $col_count - 1 ) {
-        my $header = $col_heading[$i];
-        $header = '' unless defined $header;
-        $col_header .= "<th>${header}</th>";
-    }
-    "<tr>${col_header}</tr>";
-}
-
-sub _add_row_heading_to_table {
-    my ( $field_data, $value ) = @_;
-    return $value unless $value;
-    my @row_heading = split ',', ( $field_data->{options}{row_heading} || '' )
-        or return $value;
-    my @table_rows = split "\n", $value;
-    my @added_table_rows;
-    for ( my $i = 0; $i < @table_rows; $i++ ) {
-        my $row        = $table_rows[$i];
-        my $row_header = $row_heading[$i];
-        $row_header = '' unless defined $row_header;
-        $row_header = "<th>${row_header}</th>";
-        $row =~ s/^(<tr>)/$1$row_header/;
-        push @added_table_rows, $row;
-    }
-    join "\n", @added_table_rows;
-}
-
-sub _get_col_count {
-    my $value = shift or return 0;
-    my ($first_line) = split "\n", $value;
-    my @td_tag = $first_line =~ /<td>/g;
-    scalar @td_tag;
 }
 
 sub options_validation_handler {
@@ -113,20 +66,6 @@ sub options_validation_handler {
         "An initial columns of '[_1]' ([_2]) must be a positive integer.",
         $label, $field_label )
         if $initial_cols and $initial_cols !~ /^\d+$/;
-
-    my $row_heading = $options->{row_heading};
-    return $app->translate(
-        "A row heading of '[_1]' ([_2]) must be shorter than 255 characters",
-        $label,
-        $field_label
-    ) if $row_heading and length($row_heading) > 255;
-
-    my $col_heading = $options->{col_heading};
-    return $app->translate(
-        "A column heading of '[_1]' ([_2]) must be shorter than 255 characters",
-        $label,
-        $field_label
-    ) if $col_heading and length($col_heading) > 255;
 
     return;
 }
