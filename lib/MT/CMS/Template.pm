@@ -1869,22 +1869,36 @@ sub add_map {
         unless $app->can_do('edit_templates');
 
     require MT::TemplateMap;
-    my $blog_id     = $app->param('blog_id');
-    my $template_id = $app->param('template_id');
-    my $at          = $app->param('new_archive_type');
-    my $exist       = MT::TemplateMap->exist(
-        {   blog_id      => $blog_id,
-            archive_type => $at
-        }
-    );
+    my $blog_id       = $app->param('blog_id');
+    my $template_id   = $app->param('template_id');
+    my $at            = $app->param('new_archive_type');
     my $file_template = $app->param('file_template');
     my $cat_field_id  = $app->param('cat_field_id');
     my $dt_field_id   = $app->param('dt_field_id');
 
-    $app->model('template')
+    my $template
+        = $app->model('template')
         ->load( { id => $template_id, blog_id => $blog_id } )
         or
         return $app->errtrans( 'Cannot load template #[_1].', $template_id );
+
+    my $args
+        = $at =~ /^ContentType/
+        ? {
+        join => MT::Template->join_on(
+            undef,
+            {   id              => \'= templatemap_template_id',
+                content_type_id => $template->content_type_id,
+            },
+        ),
+        }
+        : {};
+    my $exist = MT::TemplateMap->exist(
+        {   blog_id      => $blog_id,
+            archive_type => $at
+        },
+        $args,
+    );
 
     my $map = MT::TemplateMap->new;
     $map->is_preferred( $exist ? 0 : 1 );

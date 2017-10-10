@@ -74,18 +74,27 @@ sub remove {
     my $result = $map->SUPER::remove(@_);
 
     if ( ref $map ) {
-        my $remaining = MT::TemplateMap->load(
-            {   blog_id      => $map->blog_id,
-                archive_type => $map->archive_type,
-                id           => [ $map->id ],
-            },
-            {   limit => 1,
-                not   => { id => 1 }
-            }
-        );
+        my $terms = {
+            blog_id      => $map->blog_id,
+            archive_type => $map->archive_type,
+            id           => [ $map->id ],
+        };
+        my $args = {
+            limit => 1,
+            not   => { id => 1 }
+        };
+        my $remaining = MT::TemplateMap->load( $terms, $args );
         if ($remaining) {
-            $remaining->is_preferred(1);
-            $remaining->save;
+            if ( $map->archive_type =~ /^ContentType/ ) {
+                $args->{join} = _generate_join_on_template($map);
+                $remaining = MT::TemplateMap->load( $terms, $args );
+            }
+            $terms->{is_preferred} = 1;
+            my $preferred = MT::TemplateMap->load( $terms, $args );
+            if ( $remaining && !$preferred ) {
+                $remaining->is_preferred(1);
+                $remaining->save;
+            }
         }
         else {
             my $blog = MT->model('blog')->load( $map->blog_id )
@@ -149,24 +158,43 @@ sub remove {
                 : '' );
             $blog->save;
             for my $at ( @{ $ats{ $blog->id } } ) {
-                unless (
-                    __PACKAGE__->exist(
-                        {   blog_id      => $blog->id,
-                            archive_type => $at,
-                            is_preferred => 1
+                my $ct_iter
+                    = MT->model('content_type')
+                    ->load_iter( { blog_id => $blog->id } );
+                while ( my $content_type = $ct_iter->() ) {
+                    unless (
+                        __PACKAGE__->exist(
+                            {   blog_id      => $blog->id,
+                                archive_type => $at,
+                                is_preferred => 1
+                            },
+                            {   join => MT::Template->join_on(
+                                    undef,
+                                    {   id => \'= templatemap_template_id',
+                                        content_type_id => $content_type->id,
+                                    },
+                                )
+                            }
+                        )
+                        )
+                    {
+                        my $remaining = __PACKAGE__->load(
+                            {   blog_id      => $blog->id,
+                                archive_type => $at,
+                            },
+                            {   limit => 1,
+                                join  => MT::Template->join_on(
+                                    undef,
+                                    {   id => \'= templatemap_template_id',
+                                        content_type_id => $content_type->id,
+                                    },
+                                )
+                            }
+                        );
+                        if ($remaining) {
+                            $remaining->is_preferred(1);
+                            $remaining->save;
                         }
-                    )
-                    )
-                {
-                    my $remaining = __PACKAGE__->load(
-                        {   blog_id      => $blog->id,
-                            archive_type => $at,
-                        },
-                        { limit => 1, }
-                    );
-                    if ($remaining) {
-                        $remaining->is_preferred(1);
-                        $remaining->save;
                     }
                 }
             }
@@ -182,11 +210,13 @@ sub prefer {
 
     if ($prefer) {
         return 1 if $map->is_preferred;
+        my $args = { join => _generate_join_on_template($map) };
         my $preferred = MT::TemplateMap->load(
             {   blog_id      => $map->blog_id,
                 archive_type => $map->archive_type,
                 is_preferred => 1,
-            }
+            },
+            $args
         ) or return;
         $preferred->is_preferred(0);
         $preferred->save or return $map->error( $preferred->errstr );
@@ -203,11 +233,13 @@ sub prefer {
 }
 
 sub _prefer_next_map {
-    my $map = shift;
-    my @all = MT::TemplateMap->load(
+    my $map  = shift;
+    my $args = { join => _generate_join_on_template($map) };
+    my @all  = MT::TemplateMap->load(
         {   blog_id      => $map->blog_id,
             archive_type => $map->archive_type
-        }
+        },
+        $args
     );
     @all = grep { $_->id != $map->id } @all;
     if (@all) {
@@ -216,6 +248,19 @@ sub _prefer_next_map {
         return 1;
     }
     return 0;
+}
+
+sub _generate_join_on_template {
+    my $map = shift;
+    my $template
+        = MT->model('template')
+        ->load( { id => $map->template_id, blog_id => $map->blog_id } );
+    return MT->model('template')->join_on(
+        undef,
+        {   id              => \'= templatemap_template_id',
+            content_type_id => $template->content_type_id,
+        },
+    );
 }
 
 sub list_props {
