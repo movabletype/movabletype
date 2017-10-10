@@ -275,8 +275,6 @@ my $fields = [
             label        => $cf_table->name,
             initial_row  => 3,
             initial_cols => 3,
-            row_heading  => 'a,b,c',
-            col_heading  => '1,2,3',
         },
     },
     {   id      => $cf_tag->id,
@@ -447,10 +445,9 @@ aaa:bbb:ccc
 <mt:Contents blog_id="1" name="test content data"><mt:ContentField label="tables"><mt:var name="__value__"></mt:ContentField></mt:Contents>
 --- expected
 <table>
-<tr><th></th><th>1</th><th>2</th><th>3</th></tr>
-<tr><th>a</th><td>1</td><td></td><td></td></tr>
-<tr><th>b</th><td></td><td>2</td><td></td></tr>
-<tr><th>c</th><td></td><td></td><td>3</td></tr>
+<tr><td>1</td><td></td><td></td></tr>
+<tr><td></td><td>2</td><td></td></tr>
+<tr><td></td><td></td><td>3</td></tr>
 </table>
 
 === mt:ContentField label="tags"

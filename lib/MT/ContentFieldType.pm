@@ -1083,10 +1083,8 @@ sub _table_registry {
                 description
                 display
                 initial_rows
-                row_heading
                 increase_decrease_rows
                 initial_cols
-                col_heading
                 increase_decrease_cols
                 )
         ],
