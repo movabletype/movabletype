@@ -130,7 +130,7 @@ sub _multi_line_text_registry {
         options_html => 'content_field_type_options/multi_line_text.tmpl',
         options_html_params =>
             '$Core::MT::ContentFieldType::MultiLineText::options_html_params',
-        options      => [
+        options => [
             qw(
                 label
                 description
@@ -152,7 +152,7 @@ sub _number_registry {
             '$Core::MT::ContentFieldType::Number::field_html_params',
         ss_validator => '$Core::MT::ContentFieldType::Number::ss_validator',
         list_props   => {
-            float => {
+            number => {
                 base  => '__virtual.float',
                 col   => 'value_float',
                 terms => '$Core::MT::ContentFieldType::Common::terms_text',
@@ -263,7 +263,7 @@ sub _date_registry {
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_datetime',
         list_props => {
-            date => {
+            date_only => {
                 base => '__virtual.date',
                 col  => 'value_datetime',
                 html => '$Core::MT::ContentFieldType::Date::html',
@@ -306,7 +306,7 @@ sub _time_registry {
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_datetime',
         list_props => {
-            time => {
+            time_only => {
                 filter_tmpl =>
                     '$Core::MT::ContentFieldType::Time::filter_tmpl',
                 html      => '$Core::MT::ContentFieldType::Time::html',
@@ -581,7 +581,7 @@ sub _audio_registry {
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
         list_props => {
-            audio => {
+            asset_audio => {
                 filter_tmpl =>
                     '$Core::MT::ContentFieldType::Common::filter_tmpl_multiple',
                 html => '$Core::MT::ContentFieldType::Asset::html',
@@ -689,7 +689,7 @@ sub _video_registry {
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
         list_props => {
-            video => {
+            asset_video => {
                 filter_tmpl =>
                     '$Core::MT::ContentFieldType::Common::filter_tmpl_multiple',
                 html => '$Core::MT::ContentFieldType::Asset::html',
@@ -797,7 +797,7 @@ sub _image_registry {
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
         list_props => {
-            image => {
+            asset_image => {
                 filter_tmpl =>
                     '$Core::MT::ContentFieldType::Common::filter_tmpl_multiple',
                 html => '$Core::MT::ContentFieldType::Asset::html',
@@ -1065,7 +1065,7 @@ sub _table_registry {
             '$Core::MT::ContentFieldType::Table::field_html_params',
         tag_handler => '$Core::MT::ContentFieldType::Table::tag_handler',
         list_props  => {
-            table => {
+            tables => {
                 base            => '__virtual.string',
                 col             => 'value_blob',
                 display         => 'none',
