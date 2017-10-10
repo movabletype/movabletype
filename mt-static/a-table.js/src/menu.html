@@ -1,18 +1,29 @@
 <!-- BEGIN showBtnList:exist -->
 <div class="a-table-btn-group-list">
 	<div class="\{mark.btn.group\}">
-		<button type="button" class="\{mark.btn.item\}" data-action-click="mergeCells"><i class="\{mark.icon.merge\}"></i></button>
-		<button type="button" class="\{mark.btn.item\}" data-action-click="splitCell()"><i class="\{mark.icon.split\}"></i></button>
-		<button type="button" class="\{mark.btn.item\}" data-action-click="undo()"><i class="\{mark.icon.undo\}"></i></button>
+		<!-- BEGIN inputMode:touch#table -->
+		<button type="button" class="\{mark.btn.item\}" data-action-click="changeInputMode(source)"><i class="\{mark.icon.source\}"></i>\{message.source\}</button>
+		<!-- END inputMode:touch#table -->
+		<!-- BEGIN inputMode:touch#source -->
+		<button type="button" class="\{mark.btn.itemActive\}" data-action-click="changeInputMode(table)"><i class="\{mark.icon.source\}"></i>\{message.source\}</button>
+		<!-- END inputMode:touch#source -->
 	</div>
 	<div class="\{mark.btn.group\}">
-		<button type="button" class="\{mark.btn.item\}" data-action-click="changeCellTypeTo(td)"><!-- BEGIN mark.icon.td:empty -->td<!-- END mark.icon.td:empty --><!-- BEGIN mark.icon.td:exist --><i class="\{mark.icon.td\}"></i><!-- END mark.icon.td:exist --></button>
-		<button type="button" class="\{mark.btn.item\}" data-action-click="changeCellTypeTo(th)"><!-- BEGIN mark.icon.th:empty -->th<!-- END mark.icon.th:empty --><!-- BEGIN mark.icon.th:exist --><i class="\{mark.icon.th\}"></i><!-- END mark.icon.th:exist --></button>
+		<button type="button" class="\{mark.btn.item\}" data-action-click="mergeCells"><i class="\{mark.icon.merge\}"></i></button><button type="button" class="\{mark.btn.item\}" data-action-click="splitCell()"><i class="\{mark.icon.split\}"></i></button><button type="button" class="\{mark.btn.item\}" data-action-click="undo()"><i class="\{mark.icon.undo\}"></i></button>
 	</div>
 	<div class="\{mark.btn.group\}">
-		<button type="button" class="\{mark.btn.item\}" data-action-click="align(left)"><i class="\{mark.icon.alignLeft\}"></i></button>
-		<button type="button" class="\{mark.btn.item\}" data-action-click="align(center)"><i class="\{mark.icon.alignCenter\}"></i></button>
-		<button type="button" class="\{mark.btn.item\}" data-action-click="align(right)"><i class="\{mark.icon.alignRight\}"></i></button>
+		<button type="button" class="\{mark.btn.item\}" data-action-click="changeCellTypeTo(td)"><!-- BEGIN mark.icon.td:empty -->td<!-- END mark.icon.td:empty --><!-- BEGIN mark.icon.td:exist --><i class="\{mark.icon.td\}"></i><!-- END mark.icon.td:exist --></button><button type="button" class="\{mark.btn.item\}" data-action-click="changeCellTypeTo(th)"><!-- BEGIN mark.icon.th:empty -->th<!-- END mark.icon.th:empty --><!-- BEGIN mark.icon.th:exist --><i class="\{mark.icon.th\}"></i><!-- END mark.icon.th:exist --></button>
+	</div>
+	<div class="\{mark.btn.group\}">
+		<button type="button" class="\{mark.btn.item\}" data-action-click="align(left)"><i class="\{mark.icon.alignLeft\}"></i></button><button type="button" class="\{mark.btn.item\}" data-action-click="align(center)"><i class="\{mark.icon.alignCenter\}"></i></button><button type="button" class="\{mark.btn.item\}" data-action-click="align(right)"><i class="\{mark.icon.alignRight\}"></i></button>
+	</div>
+	<div class="\{mark.btn.group\}">
+		<select class="\{mark.selector.self\}" data-bind="cellClass" data-action-change="changeCellClass()">
+			<option value=""></option>
+			<!-- BEGIN selector.option:loop -->
+			<option value="{value}">{label}</option>
+			<!-- END selector.option:loop -->
+		</select>
 	</div>
 </div>
 <!-- END showBtnList:exist -->
