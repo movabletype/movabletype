@@ -277,6 +277,7 @@ sub _hdlr_sub_folders {
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
+    local $args->{category_set_id};
     $ctx->invoke_handler( 'subcategories', $args, $cond );
 }
 
@@ -358,6 +359,7 @@ sub _hdlr_top_level_folders {
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
+    local $args->{category_set_id};
     $ctx->invoke_handler( 'toplevelcategories', $args, $cond );
 }
 

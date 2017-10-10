@@ -8,6 +8,7 @@
 require_once('block.mtsubcategories.php');
 function smarty_block_mtsubfolders($args, $content, &$ctx, &$repeat) {
     $args['class'] = 'folder';
+    unset($args['category_set_id']);
     return smarty_block_mtsubcategories($args, $content, $ctx, $repeat);
 }
 ?>
