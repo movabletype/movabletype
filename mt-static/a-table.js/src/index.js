@@ -687,6 +687,9 @@ class aTable extends aTemplate {
     });
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   removeRow(selectedno) {
@@ -1089,6 +1092,9 @@ class aTable extends aTemplate {
     });
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   insertColLeft(selectedno) {
@@ -1114,6 +1120,9 @@ class aTable extends aTemplate {
       }
       data.history.push(clone(data.row));
       self.update();
+      if (self.afterAction) {
+        self.afterAction();
+      }
       return;
     }
     targetPoints.forEach((point) => {
@@ -1131,6 +1140,9 @@ class aTable extends aTemplate {
     });
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   beforeUpdated() {
@@ -1263,6 +1275,9 @@ class aTable extends aTemplate {
     data.showMenu = false;
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   splitCell() {
@@ -1344,6 +1359,9 @@ class aTable extends aTemplate {
     data.history.push(clone(data.row));
     data.splited = true;
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   changeCellTypeTo(type) {
@@ -1358,6 +1376,9 @@ class aTable extends aTemplate {
     data.showMenu = false;
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   align(align) {
@@ -1372,6 +1393,9 @@ class aTable extends aTemplate {
     data.showMenu = false;
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   getStyleByAlign(val) {
@@ -1434,6 +1458,9 @@ class aTable extends aTemplate {
     });
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   changeSelectOption() {

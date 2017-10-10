@@ -745,6 +745,9 @@ var aTable = function (_aTemplate) {
       });
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'removeRow',
@@ -1164,6 +1167,9 @@ var aTable = function (_aTemplate) {
       });
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'insertColLeft',
@@ -1190,6 +1196,9 @@ var aTable = function (_aTemplate) {
         }
         data.history.push((0, _clone2.default)(data.row));
         self.update();
+        if (self.afterAction) {
+          self.afterAction();
+        }
         return;
       }
       targetPoints.forEach(function (point) {
@@ -1207,6 +1216,9 @@ var aTable = function (_aTemplate) {
       });
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'beforeUpdated',
@@ -1343,6 +1355,9 @@ var aTable = function (_aTemplate) {
       data.showMenu = false;
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'splitCell',
@@ -1425,6 +1440,9 @@ var aTable = function (_aTemplate) {
       data.history.push((0, _clone2.default)(data.row));
       data.splited = true;
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'changeCellTypeTo',
@@ -1440,6 +1458,9 @@ var aTable = function (_aTemplate) {
       data.showMenu = false;
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'align',
@@ -1455,6 +1476,9 @@ var aTable = function (_aTemplate) {
       data.showMenu = false;
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'getStyleByAlign',
@@ -1522,6 +1546,9 @@ var aTable = function (_aTemplate) {
       });
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'changeSelectOption',
