@@ -6,11 +6,17 @@ var _aTemplate2 = require('a-template');
 
 var _aTemplate3 = _interopRequireDefault(_aTemplate2);
 
-var _zeptoBrowserify = require('zepto-browserify');
-
 var _clone = require('clone');
 
 var _clone2 = _interopRequireDefault(_clone);
+
+var _deepExtend = require('deep-extend');
+
+var _deepExtend2 = _interopRequireDefault(_deepExtend);
+
+var _util = require('./util.js');
+
+var _util2 = _interopRequireDefault(_util);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20,9 +26,10 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var template = '<!-- BEGIN showMenu:exist -->\n<ul class="a-table-menu" style="top:{menuY}px;left:{menuX}px;">\n\t<!-- BEGIN mode:touch#cell -->\n\t<li data-action-click="mergeCells"><!-- BEGIN lang:touch#ja -->\u30BB\u30EB\u306E\u7D50\u5408<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->merge cells<!-- END lang:touch#en --></li>\n\t<li data-action-click="splitCell()"><!-- BEGIN lang:touch#ja -->\u30BB\u30EB\u306E\u5206\u5272<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->split cell<!-- END lang:touch#en --></li>\n\t<li data-action-click="changeCellTypeTo(th)"><!-- BEGIN lang:touch#ja -->th\u306B\u5909\u66F4\u3059\u308B<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->change to th<!-- END lang:touch#en --></li>\n\t<li data-action-click="changeCellTypeTo(td)"><!-- BEGIN lang:touch#ja -->td\u306B\u5909\u66F4\u3059\u308B<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->change to td<!-- END lang:touch#en --></li>\n\t<li data-action-click="align(left)"><!-- BEGIN lang:touch#ja -->\u5DE6\u5BC4\u305B<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->align left<!-- END lang:touch#en --></li>\n\t<li data-action-click="align(center)"><!-- BEGIN lang:touch#ja -->\u4E2D\u592E\u5BC4\u305B<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->align center<!-- END lang:touch#en --></li>\n\t<li data-action-click="align(right)"><!-- BEGIN lang:touch#ja -->\u53F3\u5BC4\u305B<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->align right<!-- END lang:touch#en --></li>\n\t<!-- END mode:touch#cell -->\n\t<!-- BEGIN mode:touch#col -->\n\t<li data-action-click="insertColLeft({selectedRowNo})"><!-- BEGIN lang:touch#ja -->\u5DE6\u306B\u5217\u3092\u8FFD\u52A0<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->insert column on the left<!-- END lang:touch#en --></li>\n\t<li data-action-click="insertColRight({selectedRowNo})"><!-- BEGIN lang:touch#ja -->\u53F3\u306B\u5217\u3092\u8FFD\u52A0<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->insert column on the right<!-- END lang:touch#en --></li>\n\t<li data-action-click="removeCol({selectedRowNo})"><!-- BEGIN lang:touch#ja -->\u5217\u3092\u524A\u9664<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->remove column<!-- END lang:touch#en --></li>\n\t<!-- END mode:touch#col -->\n\t<!-- BEGIN mode:touch#row -->\n\t<li data-action-click="insertRowAbove({selectedColNo})"><!-- BEGIN lang:touch#ja -->\u4E0A\u306B\u884C\u3092\u8FFD\u52A0<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->insert row above<!-- END lang:touch#en --></li>\n\t<li data-action-click="insertRowBelow({selectedColNo})"><!-- BEGIN lang:touch#ja -->\u4E0B\u306B\u884C\u3092\u8FFD\u52A0<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->insert row below<!-- END lang:touch#en --></li>\n\t<li data-action-click="removeRow({selectedColNo})"><!-- BEGIN lang:touch#ja -->\u884C\u3092\u524A\u9664<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->remove row<!-- END lang:touch#en --></li>\n\t<!-- END mode:touch#row -->\n</ul>\n<!-- END showMenu:exist -->\n<div class="a-table-wrapper">\n\t<!-- BEGIN inputMode:touch#table -->\n\t<table class="a-table">\n\t\t<tr class="a-table-header js-table-header">\n\t\t\t<th class="a-table-first"></th>\n\t\t\t<!-- BEGIN highestRow:loop -->\n\t\t\t<th data-action-click="selectRow({i})"<!-- \\BEGIN selectedRowNo:touch#{i} -->class="selected"<!-- \\END selectedRowNo:touch#{i} -->><span class="a-table-toggle-btn"></span></th>\n\t\t\t<!-- END highestRow:loop -->\n\t\t</tr>\n\t\t<!-- BEGIN row:loop -->\n\t\t<tr>\n\t\t\t<th class="a-table-side js-table-side<!-- \\BEGIN selectedColNo:touch#{i} --> selected<!-- \\END selectedColNo:touch#{i} -->" data-action-click="selectCol({i})"><span class="a-table-toggle-btn"></span></th>\n\t\t\t<!-- \\BEGIN row.{i}.col:loop -->\n\t\t\t<td colspan="\\{colspan\\}" rowspan="\\{rowspan\\}" data-action="updateTable(\\{i\\},{i})" data-cell-id="\\{i\\}-{i}" class="<!-- \\BEGIN selected:exist -->a-table-selected<!-- \\END selected:exist --><!-- \\BEGIN type:touch#th --> a-table-th<!-- END \\type:touch#th --><!-- \\BEGIN mark.top:exist --> a-table-border-top<!-- \\END mark.top:exist --><!-- \\BEGIN mark.right:exist --> a-table-border-right<!-- \\END mark.right:exist --><!-- \\BEGIN mark.bottom:exist --> a-table-border-bottom<!-- \\END mark.bottom:exist --><!-- \\BEGIN mark.left:exist --> a-table-border-left<!-- \\END mark.left:exist --><!-- \\BEGIN cellClass:exist --> \\{cellClass\\}<!-- \\END cellClass:exist -->"><div class="a-table-editable \\{align\\}" contenteditable>\\{value\\}</div></td>\n\t\t\t<!-- \\END row.{i}.col:loop -->\n\t\t</tr>\n\t\t<!-- END row:loop -->\n\t</table>\n\t<!-- END inputMode:touch#table -->\n\t<!-- BEGIN inputMode:touch#source -->\n\t<textarea data-bind="tableResult" class="a-table-textarea" data-action-input="updateResult"></textarea>\n\t<!-- END inputMode:touch#source -->\n</div>\n';
-var menu = '<!-- BEGIN showBtnList:exist -->\n<div class="a-table-btn-group-list">\n\t<div class="\\{mark.btn.group\\}">\n\t\t<!-- BEGIN inputMode:touch#table -->\n\t\t<button type="button" class="\\{mark.btn.item\\}" data-action-click="changeInputMode(source)"><i class="\\{mark.icon.source\\}"></i><!-- BEGIN lang:touch#ja -->\u30BD\u30FC\u30B9<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->Source<!-- END lang:touch#en --></button>\n\t\t<!-- END inputMode:touch#table -->\n\t\t<!-- BEGIN inputMode:touch#source -->\n\t\t<button type="button" class="\\{mark.btn.itemActive\\}" data-action-click="changeInputMode(table)"><i class="\\{mark.icon.source\\}"></i><!-- BEGIN lang:touch#ja -->\u30BD\u30FC\u30B9<!-- END lang:touch#ja --><!-- BEGIN lang:touch#en -->Source<!-- END lang:touch#en --></button>\n\t\t<!-- END inputMode:touch#source -->\n\t</div>\n\t<div class="\\{mark.btn.group\\}">\n\t\t<button type="button" class="\\{mark.btn.item\\}" data-action-click="mergeCells"><i class="\\{mark.icon.merge\\}"></i></button>\n\t\t<button type="button" class="\\{mark.btn.item\\}" data-action-click="splitCell()"><i class="\\{mark.icon.split\\}"></i></button>\n\t\t<button type="button" class="\\{mark.btn.item\\}" data-action-click="undo()"><i class="\\{mark.icon.undo\\}"></i></button>\n\t</div>\n\t<div class="\\{mark.btn.group\\}">\n\t\t<button type="button" class="\\{mark.btn.item\\}" data-action-click="changeCellTypeTo(td)"><!-- BEGIN mark.icon.td:empty -->td<!-- END mark.icon.td:empty --><!-- BEGIN mark.icon.td:exist --><i class="\\{mark.icon.td\\}"></i><!-- END mark.icon.td:exist --></button>\n\t\t<button type="button" class="\\{mark.btn.item\\}" data-action-click="changeCellTypeTo(th)"><!-- BEGIN mark.icon.th:empty -->th<!-- END mark.icon.th:empty --><!-- BEGIN mark.icon.th:exist --><i class="\\{mark.icon.th\\}"></i><!-- END mark.icon.th:exist --></button>\n\t</div>\n\t<div class="\\{mark.btn.group\\}">\n\t\t<button type="button" class="\\{mark.btn.item\\}" data-action-click="align(left)"><i class="\\{mark.icon.alignLeft\\}"></i></button>\n\t\t<button type="button" class="\\{mark.btn.item\\}" data-action-click="align(center)"><i class="\\{mark.icon.alignCenter\\}"></i></button>\n\t\t<button type="button" class="\\{mark.btn.item\\}" data-action-click="align(right)"><i class="\\{mark.icon.alignRight\\}"></i></button>\n\t</div>\n\t<div class="\\{mark.btn.group\\}">\n\t\t<select class="\\{mark.selector.self\\}" data-bind="cellClass" data-action-change="changeCellClass()">\n\t\t\t<option value=""></option>\n\t\t\t<!-- BEGIN selector.option:loop -->\n\t\t\t<option value="{value}">{label}</option>\n\t\t\t<!-- END selector.option:loop -->\n\t\t</select>\n\t</div>\n</div>\n<!-- END showBtnList:exist -->\n';
+var template = '<!-- BEGIN showMenu:exist -->\n<ul class="a-table-menu" style="top:{menuY}px;left:{menuX}px;">\n\t<!-- BEGIN mode:touch#cell -->\n\t<li data-action-click="mergeCells">\\{message.mergeCells\\}</li>\n\t<li data-action-click="splitCell()">\\{message.splitCell\\}</li>\n\t<li data-action-click="changeCellTypeTo(th)">\\{message.changeToTh\\}</li>\n\t<li data-action-click="changeCellTypeTo(td)">\\{message.changeToTd\\}</li>\n\t<li data-action-click="align(left)">\\{message.alignLeft\\}</li>\n\t<li data-action-click="align(center)">\\{message.alignCenter\\}</li>\n\t<li data-action-click="align(right)">\\{message.alignRight\\}</li>\n\t<!-- END mode:touch#cell -->\n\t<!-- BEGIN mode:touch#col -->\n\t<li data-action-click="insertColLeft({selectedRowNo})">\\{message.addColumnLeft\\}</li>\n\t<li data-action-click="insertColRight({selectedRowNo})">\\{message.addColumnRight\\}</li>\n\t<li data-action-click="removeCol({selectedRowNo})">\\{message.removeColumn\\}</li>\n\t<!-- END mode:touch#col -->\n\t<!-- BEGIN mode:touch#row -->\n\t<li data-action-click="insertRowAbove({selectedColNo})">\\{message.addRowTop\\}</li>\n\t<li data-action-click="insertRowBelow({selectedColNo})">\\{message.addRowBottom\\}</li>\n\t<li data-action-click="removeRow({selectedColNo})">\\{message.removeRow\\}</li>\n\t<!-- END mode:touch#row -->\n</ul>\n<!-- END showMenu:exist -->\n<div class="a-table-wrapper">\n\t<!-- BEGIN inputMode:touch#table -->\n\t<table class="a-table">\n\t\t<tr class="a-table-header js-table-header">\n\t\t\t<th class="a-table-first"></th>\n\t\t\t<!-- BEGIN highestRow:loop -->\n\t\t\t<th data-action-click="selectRow({i})"<!-- \\BEGIN selectedRowNo:touch#{i} -->class="selected"<!-- \\END selectedRowNo:touch#{i} -->><span class="a-table-toggle-btn"></span></th>\n\t\t\t<!-- END highestRow:loop -->\n\t\t</tr>\n\t\t<!-- BEGIN row:loop -->\n\t\t<tr>\n\t\t\t<th class="a-table-side js-table-side<!-- \\BEGIN selectedColNo:touch#{i} --> selected<!-- \\END selectedColNo:touch#{i} -->" data-action-click="selectCol({i})"><span class="a-table-toggle-btn"></span></th>\n\t\t\t<!-- \\BEGIN row.{i}.col:loop -->\n\t\t\t<td colspan="\\{colspan\\}" rowspan="\\{rowspan\\}" data-action="updateTable(\\{i\\},{i})" data-cell-id="\\{i\\}-{i}" class="<!-- \\BEGIN selected:exist -->a-table-selected<!-- \\END selected:exist --><!-- \\BEGIN type:touch#th --> a-table-th<!-- END \\type:touch#th --><!-- \\BEGIN mark.top:exist --> a-table-border-top<!-- \\END mark.top:exist --><!-- \\BEGIN mark.right:exist --> a-table-border-right<!-- \\END mark.right:exist --><!-- \\BEGIN mark.bottom:exist --> a-table-border-bottom<!-- \\END mark.bottom:exist --><!-- \\BEGIN mark.left:exist --> a-table-border-left<!-- \\END mark.left:exist --><!-- \\BEGIN cellClass:exist --> \\{cellClass\\}<!-- \\END cellClass:exist -->"><div class="a-table-editable \\{align\\}" contenteditable>\\{value\\}</div></td>\n\t\t\t<!-- \\END row.{i}.col:loop -->\n\t\t</tr>\n\t\t<!-- END row:loop -->\n\t</table>\n\t<!-- END inputMode:touch#table -->\n\t<!-- BEGIN inputMode:touch#source -->\n\t<textarea data-bind="tableResult" class="a-table-textarea" data-action-input="updateResult"></textarea>\n\t<!-- END inputMode:touch#source -->\n</div>\n';
+var menu = '<!-- BEGIN showBtnList:exist -->\n<div class="a-table-btn-group-list">\n\t<div class="\\{mark.btn.group\\}">\n\t\t<button type="button" class="\\{mark.btn.item\\}" data-action-click="mergeCells"><i class="\\{mark.icon.merge\\}"></i></button><button type="button" class="\\{mark.btn.item\\}" data-action-click="splitCell()"><i class="\\{mark.icon.split\\}"></i></button><button type="button" class="\\{mark.btn.item\\}" data-action-click="undo()"><i class="\\{mark.icon.undo\\}"></i></button>\n\t</div>\n\t<div class="\\{mark.btn.group\\}">\n\t\t<button type="button" class="\\{mark.btn.item\\}" data-action-click="changeCellTypeTo(td)"><!-- BEGIN mark.icon.td:empty -->td<!-- END mark.icon.td:empty --><!-- BEGIN mark.icon.td:exist --><i class="\\{mark.icon.td\\}"></i><!-- END mark.icon.td:exist --></button><button type="button" class="\\{mark.btn.item\\}" data-action-click="changeCellTypeTo(th)"><!-- BEGIN mark.icon.th:empty -->th<!-- END mark.icon.th:empty --><!-- BEGIN mark.icon.th:exist --><i class="\\{mark.icon.th\\}"></i><!-- END mark.icon.th:exist --></button>\n\t</div>\n\t<div class="\\{mark.btn.group\\}">\n\t\t<button type="button" class="\\{mark.btn.item\\}" data-action-click="align(left)"><i class="\\{mark.icon.alignLeft\\}"></i></button><button type="button" class="\\{mark.btn.item\\}" data-action-click="align(center)"><i class="\\{mark.icon.alignCenter\\}"></i></button><button type="button" class="\\{mark.btn.item\\}" data-action-click="align(right)"><i class="\\{mark.icon.alignRight\\}"></i></button>\n\t</div>\n</div>\n<!-- END showBtnList:exist -->\n';
 var returnTable = '<table class="{tableClass}">\n\t<!-- BEGIN row:loop -->\n\t<tr>\n\t\t<!-- \\BEGIN row.{i}.col:loop -->\n\t\t<!-- \\BEGIN type:touch#th -->\n\t\t<th<!-- \\BEGIN colspan:touchnot#1 --> colspan="\\{colspan\\}"<!-- \\END colspan:touchnot#1 --><!-- \\BEGIN rowspan:touchnot#1 --> rowspan="\\{rowspan\\}"<!-- \\END rowspan:touchnot#1 --> class="<!-- \\BEGIN align:exist -->\\{align\\}[getStyleByAlign]<!-- \\END align:exist --><!-- \\BEGIN cellClass:exist --> \\{cellClass\\}<!-- \\END cellClass:exist -->">\\{value\\}</th>\n\t\t<!-- \\END type:touch#th -->\n\t\t<!-- \\BEGIN type:touch#td -->\n\t\t<td<!-- \\BEGIN colspan:touchnot#1 --> colspan="\\{colspan\\}"<!-- \\END colspan:touchnot#1 --><!-- \\BEGIN rowspan:touchnot#1 --> rowspan="\\{rowspan\\}"<!-- \\END rowspan:touchnot#1 --> class="<!-- \\BEGIN align:exist -->\\{align\\}[getStyleByAlign] <!-- \\END align:exist --><!-- \\BEGIN cellClass:exist -->\\{cellClass\\}<!-- \\END cellClass:exist -->">\\{value\\}</td>\n\t\t<!-- \\END type:touch#td -->\n\t\t<!-- \\END row.{i}.col:loop -->\n\t</tr>\n\t<!-- END row:loop -->\n</table>\n';
+
 
 var defs = {
   showBtnList: true,
@@ -54,6 +61,28 @@ var defs = {
     selector: {
       self: 'a-table-selector'
     }
+  },
+  message: {
+    mergeCells: 'merge cell',
+    splitCell: 'split cell',
+    changeToTh: 'change to th',
+    changeToTd: 'change to td',
+    alignLeft: 'align left',
+    alignCenter: 'align center',
+    alignRight: 'align right',
+    addColumnLeft: 'insert column on the left',
+    addColumnRight: 'insert column on the right',
+    removeColumn: 'remove column',
+    addRowTop: 'insert row above',
+    addRowBottom: 'insert row below',
+    removeRow: 'remove row',
+    source: 'Source',
+    mergeCellError1: 'All possible cells should be selected so to merge cells into one',
+    mergeCellConfirm1: 'The top left cell\'s value of the selected range will only be saved. Are you sure you want to continue?',
+    pasteError1: 'You can\'t paste here',
+    splitError1: 'Cell is not selected',
+    splitError2: 'Only one cell should be selected',
+    splitError3: 'You can\'t split the cell anymore'
   }
 };
 
@@ -69,14 +98,16 @@ var aTable = function (_aTemplate) {
     _this.menu_id = aTable.getUniqId();
     _this.addTemplate(_this.id, template);
     _this.addTemplate(_this.menu_id, menu);
-    _this.data = _zeptoBrowserify.$.extend(true, {}, defs, option);
+    _this.data = (0, _deepExtend2.default)({}, defs, option);
     var data = _this.data;
+    var selector = typeof ele === 'string' ? document.querySelector(ele) : ele;
     data.point = { x: -1, y: -1 };
     data.selectedRowNo = -1;
     data.selectedColNo = -1;
     data.showBtnList = true;
-    data.row = _this.parse((0, _zeptoBrowserify.$)(ele).html());
-    data.tableClass = _this.getTableClass(data.tableResult);
+    data.row = _this.parse('<table>' + selector.innerHTML + '</table>');
+    data.tableResult = _this.getTable();
+    data.tableClass = selector.getAttribute('class');
     data.highestRow = _this.highestRow;
     data.history = [];
     data.inputMode = 'table';
@@ -86,8 +117,8 @@ var aTable = function (_aTemplate) {
     _this.convert.getStyleByAlign = _this.getStyleByAlign;
     _this.convert.setClass = _this.setClass;
     var html = '\n    <div class=\'a-table-container\'>\n        <div data-id=\'' + _this.menu_id + '\'></div>\n        <div class=\'a-table-outer\'>\n          <div class=\'a-table-inner\'>\n            <div data-id=\'' + _this.id + '\'></div>\n          </div>\n        </div>\n    </div>';
-    (0, _zeptoBrowserify.$)(ele).before(html);
-    (0, _zeptoBrowserify.$)(ele).remove();
+    _util2.default.before(selector, html);
+    _util2.default.removeElement(selector);
     _this.update();
     return _this;
   }
@@ -112,32 +143,81 @@ var aTable = function (_aTemplate) {
       return arr;
     }
   }, {
+    key: '_getTableLength',
+    value: function _getTableLength(table) {
+      return {
+        x: this._getRowLength(table[0].col),
+        y: this._getColLength(table)
+      };
+    }
+  }, {
+    key: '_getRowLength',
+    value: function _getRowLength(row) {
+      var length = 0;
+      row.forEach(function (item) {
+        length += parseInt(item.colspan);
+      });
+      return length;
+    }
+  }, {
+    key: '_getColLength',
+    value: function _getColLength(table) {
+      var length = 0;
+      var rowspan = 0;
+      table.forEach(function (row) {
+        if (rowspan === 0) {
+          rowspan = parseInt(row.col[0].rowspan);
+          length += rowspan;
+        }
+        rowspan--;
+      });
+      return length;
+    }
+  }, {
+    key: '_getElementByQuery',
+    value: function _getElementByQuery(query) {
+      return document.querySelector('[data-id=\'' + this.id + '\'] ' + query);
+    }
+  }, {
+    key: '_getElementsByQuery',
+    value: function _getElementsByQuery(query) {
+      return document.querySelectorAll('[data-id=\'' + this.id + '\'] ' + query);
+    }
+  }, {
+    key: '_getSelf',
+    value: function _getSelf() {
+      return document.querySelector('[data-id=\'' + this.id + '\']');
+    }
+  }, {
     key: 'getCellByIndex',
     value: function getCellByIndex(x, y) {
-      return (0, _zeptoBrowserify.$)('[data-id=\'' + this.id + '\'] [data-cell-id=\'' + x + '-' + y + '\']');
+      return this._getElementByQuery('[data-cell-id=\'' + x + '-' + y + '\']');
     }
   }, {
     key: 'getCellInfoByIndex',
     value: function getCellInfoByIndex(x, y) {
       var id = this.id;
-      var $cell = this.getCellByIndex(x, y);
-      if ($cell.length === 0) {
+      var cell = this.getCellByIndex(x, y);
+      if (!cell) {
         return false;
       }
-      var left = $cell.offset().left;
-      var top = $cell.offset().top;
+      var pos = _util2.default.offset(cell);
+      var left = pos.left;
+      var top = pos.top;
       var returnLeft = -1;
       var returnTop = -1;
-      var width = parseInt($cell.attr('colspan'));
-      var height = parseInt($cell.attr('rowspan'));
-      (0, _zeptoBrowserify.$)('[data-id=\'' + this.id + '\'] .js-table-header th').each(function (i) {
-        if ((0, _zeptoBrowserify.$)(this).offset().left === left) {
-          returnLeft = i;
+      var width = parseInt(cell.getAttribute('colspan'));
+      var height = parseInt(cell.getAttribute('rowspan'));
+      var headers = this._getElementsByQuery('.js-table-header th');
+      var sides = this._getElementsByQuery('.js-table-side');
+      [].forEach.call(headers, function (header, index) {
+        if (_util2.default.offset(header).left === left) {
+          returnLeft = index;
         }
       });
-      (0, _zeptoBrowserify.$)('[data-id=\'' + this.id + '\'] .js-table-side').each(function (i) {
-        if ((0, _zeptoBrowserify.$)(this).offset().top === top) {
-          returnTop = i;
+      [].forEach.call(sides, function (side, index) {
+        if (_util2.default.offset(side).top === top) {
+          returnTop = index;
         }
       });
       return { x: returnLeft - 1, y: returnTop, width: width, height: height };
@@ -372,8 +452,6 @@ var aTable = function (_aTemplate) {
   }, {
     key: 'contextmenu',
     value: function contextmenu() {
-      var $ele = (0, _zeptoBrowserify.$)('[data-id=\'' + this.id + '\']');
-      var $target = (0, _zeptoBrowserify.$)(this.e.target);
       var data = this.data;
       this.e.preventDefault();
       data.showMenu = true;
@@ -384,27 +462,32 @@ var aTable = function (_aTemplate) {
   }, {
     key: 'parse',
     value: function parse(html) {
+      var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'html';
+
       var self = this;
       var arr1 = [];
-      (0, _zeptoBrowserify.$)('tr', html).each(function () {
+      var doc = _util2.default.parseHTML(html);
+      var trs = doc.querySelectorAll('tr');
+      [].forEach.call(trs, function (tr) {
         var ret2 = {};
         var arr2 = [];
+        var cells = tr.querySelectorAll('th,td');
         ret2.col = arr2;
-        (0, _zeptoBrowserify.$)('th,td', this).each(function () {
+        [].forEach.call(cells, function (cell) {
           var obj = {};
-          var html = (0, _zeptoBrowserify.$)(this).html();
-          if ((0, _zeptoBrowserify.$)(this).is('th')) {
+          var html = format === 'html' ? cell.innerHTML : cell.innerText;
+          if (cell.tagName === 'TH') {
             obj.type = 'th';
           } else {
             obj.type = 'td';
           }
-          obj.colspan = (0, _zeptoBrowserify.$)(this).attr('colspan') || 1;
-          obj.rowspan = (0, _zeptoBrowserify.$)(this).attr('rowspan') || 1;
+          obj.colspan = cell.getAttribute('colspan') || 1;
+          obj.rowspan = cell.getAttribute('rowspan') || 1;
           obj.value = '';
           if (html) {
-            obj.value = html.replace(/{(.*?)}/g, "&lcub;$1&rcub;");
+            obj.value = html.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
           }
-          var classAttr = (0, _zeptoBrowserify.$)(this).attr('class');
+          var classAttr = cell.getAttribute('class');
           var cellClass = '';
           if (classAttr) {
             var classList = classAttr.split(/\s+/);
@@ -428,7 +511,7 @@ var aTable = function (_aTemplate) {
     key: 'parseText',
     value: function parseText(text) {
       var arr1 = [];
-      //replace newline codes inside double quotes to <br> tag
+      // replace newline codes inside double quotes to <br> tag
       text = text.replace(/"(([\n\r\t]|.)*?)"/g, function (match, str) {
         return str.replace(/[\n\r]/g, '<br>');
       });
@@ -445,35 +528,35 @@ var aTable = function (_aTemplate) {
           obj.rowspan = 1;
           obj.value = '';
           if (cell) {
-            obj.value = cell.replace(/{(.*?)}/g, "&lcub;$1&rcub;");
+            obj.value = cell.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
           }
           arr2.push(obj);
         });
         arr1.push(ret2);
       });
-      arr1.pop();
       return arr1;
     }
   }, {
     key: 'getTableClass',
     value: function getTableClass(html) {
-      return (0, _zeptoBrowserify.$)(html).attr('class');
+      return _util2.default.parseHTML(html).getAttribute('class');
     }
   }, {
     key: 'toMarkdown',
     value: function toMarkdown(html) {
-      var $table = (0, _zeptoBrowserify.$)(html);
+      var table = _util2.default.parseHTML(html);
       var ret = '';
-      $table.find('tr').each(function (i) {
+      var trs = table.querySelectorAll('tr');
+      [].forEach.call(trs, function (tr, i) {
         ret += '| ';
-        var $children = (0, _zeptoBrowserify.$)(this).children();
-        $children.each(function () {
-          ret += (0, _zeptoBrowserify.$)(this).html();
+        var children = tr.querySelectorAll('td,th');
+        [].forEach.call(children, function (child) {
+          ret += child.innerHTML;
           ret += ' | ';
         });
         if (i === 0) {
           ret += '\n| ';
-          $children.each(function () {
+          [].forEach.call(children, function (child) {
             ret += '--- | ';
           });
         }
@@ -492,46 +575,51 @@ var aTable = function (_aTemplate) {
       return this.toMarkdown(this.getHtml(returnTable, true));
     }
   }, {
+    key: 'putCaret',
+    value: function putCaret(elem) {
+      if (!elem) {
+        return;
+      }
+      elem.focus();
+      if (typeof window.getSelection !== 'undefined' && typeof document.createRange !== 'undefined') {
+        var range = document.createRange();
+        range.selectNodeContents(elem);
+        range.collapse(false);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } else if (typeof document.body.createTextRange !== 'undefined') {
+        var textRange = document.body.createTextRange();
+        textRange.moveToElementText(elem);
+        textRange.collapse(false);
+        textRange.select();
+      }
+    }
+  }, {
     key: 'onUpdated',
     value: function onUpdated() {
+      var _this2 = this;
+
       var points = this.getAllPoints();
       var point = this.getLargePoint.apply(null, points);
       var width = point.width;
+      var table = this._getElementByQuery('table');
+      var inner = this._getSelf().parentNode;
+      var elem = this._getElementByQuery('.a-table-selected .a-table-editable');
       var selectedPoints = this.getSelectedPoints();
-      var $th = (0, _zeptoBrowserify.$)('.js-table-header th', '[data-id=\'' + this.id + '\']');
-      var $table = (0, _zeptoBrowserify.$)('table', '[data-id=\'' + this.id + '\']');
-      var $inner = $table.parents('.a-table-inner');
-      var elem = (0, _zeptoBrowserify.$)('.a-table-selected .a-table-editable', '[data-id=\'' + this.id + '\']')[0];
-      if (elem && !this.data.showMenu) {
+      if (elem && !this.data.showMenu && selectedPoints.length === 1) {
         setTimeout(function () {
-          elem.focus();
-          if (selectedPoints.length !== 1) {
-            return;
-          }
-          if (typeof window.getSelection !== 'undefined' && typeof document.createRange !== 'undefined') {
-            var range = document.createRange();
-            range.selectNodeContents(elem);
-            range.collapse(false);
-            var sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-          } else if (typeof document.body.createTextRange !== 'undefined') {
-            var textRange = document.body.createTextRange();
-            textRange.moveToElementText(elem);
-            textRange.collapse(false);
-            textRange.select();
-          }
+          _this2.putCaret(elem);
         }, 1);
       }
 
-      //for scroll
-      $inner.width(9999);
-      var tableWidth = $table.width();
-
-      if (tableWidth) {
-        $inner.width(tableWidth);
+      // for scroll
+      if (table) {
+        inner.style.width = '9999px';
+        var tableWidth = table.offsetWidth;
+        inner.style.width = tableWidth + 'px';
       } else {
-        $inner.width('auto');
+        inner.style.width = 'auto';
       }
 
       if (this.afterRendered) {
@@ -603,7 +691,9 @@ var aTable = function (_aTemplate) {
       data.mode = 'col';
       data.selectedColNo = -1;
       data.selectedRowNo = i;
-      this.contextmenu();
+      if (data.increaseDecreaseRows) {
+        this.contextmenu();
+      }
       this.update();
     }
   }, {
@@ -629,7 +719,9 @@ var aTable = function (_aTemplate) {
       data.mode = 'row';
       data.selectedRowNo = -1;
       data.selectedColNo = i;
-      this.contextmenu();
+      if (data.increaseDecreaseColumns) {
+        this.contextmenu();
+      }
       this.update();
     }
   }, {
@@ -657,6 +749,9 @@ var aTable = function (_aTemplate) {
       });
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'removeRow',
@@ -701,9 +796,8 @@ var aTable = function (_aTemplate) {
       insertCells.sort(function (a, b) {
         if (a.x > b.x) {
           return 1;
-        } else {
-          return -1;
         }
+        return -1;
       });
       removeCells.forEach(function (cell) {
         self.removeCell(cell);
@@ -742,8 +836,11 @@ var aTable = function (_aTemplate) {
         if (this.e.shiftKey) {
           this.selectRange(a, b);
         }
+      } else if (type === 'keydown' && e.keyCode == 67 && (e.ctrlKey || e.metaKey)) {
+        var elem = this._getElementByQuery('.a-table-selected .a-table-editable');
+        _util2.default.triggerEvent(elem, 'copy');
       } else if (type === 'copy') {
-        this.copyTable(e, points);
+        this.copyTable(e);
       } else if (type === 'paste') {
         this.pasteTable(e);
       } else if (type === 'mousedown' && !isSmartPhone) {
@@ -762,6 +859,10 @@ var aTable = function (_aTemplate) {
         }
       } else if (type === 'mouseup' && !isSmartPhone) {
         this.mousedown = false;
+        var _elem = this._getElementByQuery('.a-table-selected .a-table-editable');
+        if (points.length > 1) {
+          this.putCaret(_elem);
+        }
       } else if (type === 'contextmenu') {
         this.mousedown = false;
         this.contextmenu();
@@ -771,19 +872,19 @@ var aTable = function (_aTemplate) {
             this.select(a, b);
             this.update();
           }
-        }
+        } // todo
       } else if (type === 'input') {
-        if ((0, _zeptoBrowserify.$)(this.e.target).hasClass('a-table-editable') && (0, _zeptoBrowserify.$)(this.e.target).parents('td').attr('data-cell-id') === b + '-' + a) {
+        if (_util2.default.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === b + '-' + a) {
           data.history.push((0, _clone2.default)(data.row));
-          data.row[a].col[b].value = (0, _zeptoBrowserify.$)(this.e.target).html().replace(/{(.*?)}/g, "&lcub;$1&rcub;");
+          data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
         }
         if (this.afterEntered) {
           this.afterEntered();
         }
       } else if (type === 'keyup' && aTable.getBrowser().indexOf('ie') !== -1) {
-        if ((0, _zeptoBrowserify.$)(this.e.target).hasClass('a-table-editable') && (0, _zeptoBrowserify.$)(this.e.target).parents('td').attr('data-cell-id') === b + '-' + a) {
+        if (_util2.default.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === b + '-' + a) {
           data.history.push((0, _clone2.default)(data.row));
-          data.row[a].col[b].value = (0, _zeptoBrowserify.$)(this.e.target).html().replace(/{(.*?)}/g, "&lcub;$1&rcub;");
+          data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
         }
         if (this.afterEntered) {
           this.afterEntered();
@@ -792,29 +893,30 @@ var aTable = function (_aTemplate) {
     }
   }, {
     key: 'copyTable',
-    value: function copyTable(e, points) {
-      var _this2 = this;
-
+    value: function copyTable(e) {
+      var points = this.getSelectedPoints();
+      if (points.length <= 1) {
+        return;
+      }
       e.preventDefault();
-      var copy_y = -1;
       var copy_text = '<meta name="generator" content="Sheets"><table>';
-      var first = true;
-      points.forEach(function (point) {
-        var cell = _this2.getCellByPos(point.x, point.y);
-        if (copy_y !== point.y) {
-          if (!first) {
-            copy_text += '</tr>';
-            first = false;
-          }
-          copy_text += '<tr><' + cell.type + ' colspan="' + cell.colspan + '" rowspan="' + cell.rowspan + '">' + cell.value + '</' + cell.type + '>';
-        } else {
-          copy_text += '<' + cell.type + ' colspan="' + cell.colspan + '" rowspan="' + cell.rowspan + '">' + cell.value + '</' + cell.type + '>';
+      this.data.row.forEach(function (item, i) {
+        if (!item.col) {
+          return false;
         }
-        copy_y = point.y;
+        copy_text += '<tr>';
+        item.col.forEach(function (obj, t) {
+          if (obj.selected) {
+            copy_text += '<' + obj.type + ' colspan="' + obj.colspan + '" rowspan="' + obj.rowspan + '">' + obj.value + '</' + obj.type + '>';
+          }
+        });
+        copy_text += '</tr>';
       });
-      copy_text += '</tr></table>';
-      if (e.originalEvent.clipboardData) {
-        e.originalEvent.clipboardData.setData('text/html', copy_text);
+      copy_text += '</table>';
+      copy_text = copy_text.replace(/<table>(<tr><\/tr>)*/g, "<table>");
+      copy_text = copy_text.replace(/(<tr><\/tr>)*<\/table>/g, "</table>");
+      if (e.clipboardData) {
+        e.clipboardData.setData('text/html', copy_text);
       } else if (window.clipboardData) {
         window.clipboardData.setData('Text', copy_text);
       }
@@ -824,33 +926,205 @@ var aTable = function (_aTemplate) {
     value: function pasteTable(e) {
       var pastedData = void 0;
       var data = this.data;
-      if (e.originalEvent.clipboardData) {
-        pastedData = e.originalEvent.clipboardData.getData('text/html');
+      if (e.clipboardData) {
+        this.processPaste(e.clipboardData.getData('text/html'));
       } else if (window.clipboardData) {
-        pastedData = window.clipboardData.getData('Text');
+        this.getClipBoardData();
       }
-      if (pastedData) {
-        var tableHtml = pastedData.match(/<table(.*)>(([\n\r\t]|.)*?)<\/table>/i);
-        if (tableHtml && tableHtml[0]) {
-          var newRow = this.parse(tableHtml[0]);
-          if (newRow && newRow.length) {
-            e.preventDefault();
-            data.row = newRow;
-            data.history.push((0, _clone2.default)(data.row));
-            this.update();
-            return;
-          }
-        }
-        //for excel;
-        var row = this.parseText(pastedData);
-        if (row && row.length) {
-          e.preventDefault();
-          data.row = row;
-          this.update();
+    }
+  }, {
+    key: 'getClipBoardData',
+    value: function getClipBoardData() {
+      var savedContent = document.createDocumentFragment();
+      var point = this.getSelectedPoint();
+      var index = this.getCellIndexByPos(point.x, point.y);
+      var cell = this.getCellByIndex(index.col, index.row);
+      var editableDiv = cell.querySelector('.a-table-editable');
+      while (editableDiv.childNodes.length > 0) {
+        savedContent.appendChild(editableDiv.childNodes[0]);
+      }
+      this.waitForPastedData(editableDiv, savedContent);
+      return true;
+    }
+  }, {
+    key: 'waitForPastedData',
+    value: function waitForPastedData(elem, savedContent) {
+      var _this3 = this;
+
+      if (elem.childNodes && elem.childNodes.length > 0) {
+        var pastedData = elem.innerHTML;
+        elem.innerHTML = "";
+        elem.appendChild(savedContent);
+        this.processPaste(pastedData);
+      } else {
+        setTimeout(function () {
+          _this3.waitForPastedData(elem, savedContent);
+        }, 20);
+      }
+    }
+  }, {
+    key: 'processPaste',
+    value: function processPaste(pastedData) {
+      var e = this.e;
+      e.preventDefault();
+      var selectedPoint = this.getSelectedPoint();
+      var tableHtml = pastedData.match(/<table(.*)>(([\n\r\t]|.)*?)<\/table>/i);
+      var data = this.data;
+      if (tableHtml && tableHtml[0]) {
+        var newRow = this.parse(tableHtml[0], 'text');
+        if (newRow && newRow.length) {
+          this.insertTable(newRow, {
+            x: selectedPoint.x,
+            y: selectedPoint.y
+          });
           data.history.push((0, _clone2.default)(data.row));
           return;
         }
       }
+      // for excel;
+      var row = this.parseText(pastedData);
+      if (row && row[0] && row[0].col && row[0].col.length > 1) {
+        var _selectedPoint = this.getSelectedPoint();
+        this.insertTable(row, {
+          x: _selectedPoint.x,
+          y: _selectedPoint.y
+        });
+        this.update();
+        data.history.push((0, _clone2.default)(data.row));
+      } else {
+        if (e.clipboardData) {
+          var content = e.clipboardData.getData('text/plain');
+          document.execCommand('insertText', false, content);
+        } else if (window.clipboardData) {
+          var _content = window.clipboardData.getData('Text');
+          _util2.default.replaceSelectionWithHtml(_content);
+        }
+      }
+    }
+  }, {
+    key: 'insertTable',
+    value: function insertTable(table, pos) {
+      var _this4 = this;
+
+      var currentLength = this._getTableLength(this.data.row);
+      var copiedLength = this._getTableLength(table);
+      var offsetX = pos.x + copiedLength.x - currentLength.x;
+      var offsetY = pos.y + copiedLength.y - currentLength.y;
+      var length = currentLength.x;
+      var row = this.data.row;
+      var targets = [];
+      var rows = [];
+      var data = this.data;
+      var prevRow = (0, _clone2.default)(data.row);
+      while (offsetY > 0) {
+        var newRow = [];
+        for (var i = 0; i < length; i++) {
+          var newcell = { type: 'td', colspan: 1, rowspan: 1, value: '' };
+          newRow.push(newcell);
+        }
+        this.insertRow(currentLength.y, newRow);
+        offsetY--;
+      }
+      if (offsetX > 0) {
+        this.data.row.forEach(function (item) {
+          for (var _i = 0; _i < offsetX; _i++) {
+            item.col.push({ type: 'td', colspan: 1, rowspan: 1, value: '' });
+          }
+        });
+      }
+
+      this.update();
+      var destPos = {};
+      var vPos = {
+        x: pos.x,
+        y: pos.y
+      };
+
+      vPos.y += copiedLength.y - 1;
+      vPos.x += copiedLength.x - 1;
+
+      this.data.row.forEach(function (item, i) {
+        if (!item.col) {
+          return false;
+        }
+        item.col.forEach(function (obj, t) {
+          var point = _this4.getCellInfoByIndex(t, i);
+          if (point.x + point.width - 1 === vPos.x && point.y + point.height - 1 === vPos.y) {
+            destPos.x = t;
+            destPos.y = i;
+          }
+        });
+      });
+
+      if (typeof destPos.x === 'undefined') {
+        alert(this.data.message.pasteError1);
+        this.data.row = prevRow;
+        this.update();
+        return;
+      }
+
+      this.selectRange(destPos.y, destPos.x); //todo
+
+      var selectedPoints = this.getSelectedPoints();
+      var largePoint = this.getLargePoint.apply(null, selectedPoints);
+
+      if (largePoint.width !== copiedLength.x || largePoint.height !== copiedLength.y) {
+        alert(this.data.message.pasteError1);
+        this.data.row = prevRow;
+        this.update();
+        return;
+      }
+
+      var bound = { x: 0, y: largePoint.y, width: largePoint.x, height: largePoint.height };
+      var points = this.getAllPoints();
+
+      points.forEach(function (point) {
+        if (_this4.hitTest(bound, point)) {
+          var index = _this4.getCellIndexByPos(point.x, point.y);
+          var cell = _this4.getCellByPos(point.x, point.y);
+          targets.push(index);
+        }
+      });
+
+      targets.forEach(function (item) {
+        var row = item.row;
+        if (item.row < largePoint.y) {
+          return;
+        }
+        if (!rows[row]) {
+          rows[row] = [];
+        }
+        rows[row].push(item);
+      });
+      for (var _i2 = 1, n = rows.length; _i2 < n; _i2++) {
+        if (!rows[_i2]) {
+          continue;
+        }
+        rows[_i2].sort(function (a, b) {
+          if (a.col > b.col) {
+            return 1;
+          }
+          return -1;
+        });
+      }
+      for (var _i3 = largePoint.y, _n = _i3 + largePoint.height; _i3 < _n; _i3++) {
+        if (!rows[_i3]) {
+          rows[_i3] = [];
+          rows[_i3].push({ row: _i3, col: -1 });
+        }
+      }
+      this.removeSelectedCellExcept();
+      var t = 0;
+      rows.forEach(function (row) {
+        var index = row[row.length - 1];
+        if (table[t]) {
+          table[t].col.reverse().forEach(function (cell) {
+            _this4.insertCellAt(index.row, index.col + 1, { type: 'td', colspan: parseInt(cell.colspan), rowspan: parseInt(cell.rowspan), value: cell.value, selected: true });
+          });
+        }
+        t++;
+      });
+      this.update();
     }
   }, {
     key: 'updateResult',
@@ -897,6 +1171,9 @@ var aTable = function (_aTemplate) {
       });
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'insertColLeft',
@@ -923,6 +1200,9 @@ var aTable = function (_aTemplate) {
         }
         data.history.push((0, _clone2.default)(data.row));
         self.update();
+        if (self.afterAction) {
+          self.afterAction();
+        }
         return;
       }
       targetPoints.forEach(function (point) {
@@ -940,6 +1220,9 @@ var aTable = function (_aTemplate) {
       });
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'beforeUpdated',
@@ -988,7 +1271,7 @@ var aTable = function (_aTemplate) {
             cell.rowspan += '';
           } else if (index.row === selectedno + 1) {
             var _length = parseInt(cell.colspan);
-            for (var _i = 0; _i < _length; _i++) {
+            for (var _i4 = 0; _i4 < _length; _i4++) {
               newRow.push({ type: 'td', colspan: 1, rowspan: 1, value: '' });
             }
           } else {
@@ -1041,7 +1324,7 @@ var aTable = function (_aTemplate) {
             cell.rowspan += '';
           } else if (index.row === selectedno - 1) {
             var _length2 = parseInt(cell.colspan);
-            for (var _i2 = 0; _i2 < _length2; _i2++) {
+            for (var _i5 = 0; _i5 < _length2; _i5++) {
               newRow.push({ type: 'td', colspan: 1, rowspan: 1, value: '' });
             }
           } else {
@@ -1059,17 +1342,13 @@ var aTable = function (_aTemplate) {
       var data = this.data;
       var points = this.getSelectedPoints();
       if (!this.isSelectedCellsRectangle()) {
-        if (data.lang === 'en') {
-          alert('All possible cells should be selected so to merge cells into one');
-        } else if (data.lang === 'ja') {
-          alert('結合するには、結合範囲のすべてのセルを選択する必要があります。');
-        }
+        alert(this.data.message.mergeCellError1);
         return;
       }
       if (points.length === 0) {
         return;
       }
-      if (!confirm('セルを結合すると、一番左上の値のみが保持されます。 結合しますか？')) {
+      if (!confirm(this.data.message.mergeCellConfirm1)) {
         return;
       }
       var point = this.getLargePoint.apply(null, points);
@@ -1080,6 +1359,9 @@ var aTable = function (_aTemplate) {
       data.showMenu = false;
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'splitCell',
@@ -1088,18 +1370,10 @@ var aTable = function (_aTemplate) {
       var selectedPoints = this.getSelectedPoints();
       var length = selectedPoints.length;
       if (length === 0) {
-        if (data.lang === 'en') {
-          alert('No cell is selected');
-        } else if (data.lang === 'ja') {
-          alert('セルが選択されていません');
-        }
+        alert(this.data.message.splitError1);
         return;
       } else if (length > 1) {
-        if (data.lang === 'en') {
-          alert('Only One cell should be selected so to split');
-        } else if (data.lang === 'ja') {
-          alert('結合解除するには、セルが一つだけ選択されている必要があります');
-        }
+        alert(this.data.message.splitError2);
         return;
       }
       var selectedPoint = this.getSelectedPoint();
@@ -1115,11 +1389,7 @@ var aTable = function (_aTemplate) {
       var cells = [];
       var rows = [];
       if (width === 1 && height === 1) {
-        if (data.lang === 'en') {
-          alert('Selected cell cannnot be splited anymore');
-        } else if (data.lang === 'ja') {
-          alert('選択されたセルはこれ以上分割できません');
-        }
+        alert(this.data.message.splitError3);
         return;
       }
       points.forEach(function (point) {
@@ -1146,24 +1416,23 @@ var aTable = function (_aTemplate) {
         rows[i].sort(function (a, b) {
           if (a.col > b.col) {
             return 1;
-          } else {
-            return -1;
           }
+          return -1;
         });
       }
-      for (var _i3 = selectedPoint.y, _n = _i3 + height; _i3 < _n; _i3++) {
-        if (!rows[_i3]) {
-          rows[_i3] = [];
-          rows[_i3].push({ row: _i3, col: -1 });
+      for (var _i6 = selectedPoint.y, _n2 = _i6 + height; _i6 < _n2; _i6++) {
+        if (!rows[_i6]) {
+          rows[_i6] = [];
+          rows[_i6].push({ row: _i6, col: -1 });
         }
       }
       var first = true;
       rows.forEach(function (row) {
         var index = row[row.length - 1];
-        for (var _i4 = 0; _i4 < width; _i4++) {
+        for (var _i7 = 0; _i7 < width; _i7++) {
           var val = '';
-          //スプリットされる前のコルのデータを保存
-          if (first === true && _i4 === width - 1) {
+          // スプリットされる前のコルのデータを保存
+          if (first === true && _i7 === width - 1) {
             val = currentValue;
             first = false;
           }
@@ -1175,6 +1444,9 @@ var aTable = function (_aTemplate) {
       data.history.push((0, _clone2.default)(data.row));
       data.splited = true;
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'changeCellTypeTo',
@@ -1190,6 +1462,9 @@ var aTable = function (_aTemplate) {
       data.showMenu = false;
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'align',
@@ -1205,6 +1480,9 @@ var aTable = function (_aTemplate) {
       data.showMenu = false;
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'getStyleByAlign',
@@ -1272,6 +1550,9 @@ var aTable = function (_aTemplate) {
       });
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'changeSelectOption',
@@ -1302,9 +1583,8 @@ var aTable = function (_aTemplate) {
       var agent = navigator.userAgent;
       if (agent.indexOf('iPhone') > 0 || agent.indexOf('iPad') > 0 || agent.indexOf('ipod') > 0 || agent.indexOf('Android') > 0) {
         return true;
-      } else {
-        return false;
       }
+      return false;
     }
   }, {
     key: 'getBrowser',
@@ -1313,16 +1593,16 @@ var aTable = function (_aTemplate) {
       var ver = window.navigator.appVersion.toLowerCase();
       var name = 'unknown';
 
-      if (ua.indexOf("msie") != -1) {
-        if (ver.indexOf("msie 6.") != -1) {
+      if (ua.indexOf('msie') != -1) {
+        if (ver.indexOf('msie 6.') != -1) {
           name = 'ie6';
-        } else if (ver.indexOf("msie 7.") != -1) {
+        } else if (ver.indexOf('msie 7.') != -1) {
           name = 'ie7';
-        } else if (ver.indexOf("msie 8.") != -1) {
+        } else if (ver.indexOf('msie 8.') != -1) {
           name = 'ie8';
-        } else if (ver.indexOf("msie 9.") != -1) {
+        } else if (ver.indexOf('msie 9.') != -1) {
           name = 'ie9';
-        } else if (ver.indexOf("msie 10.") != -1) {
+        } else if (ver.indexOf('msie 10.') != -1) {
           name = 'ie10';
         } else {
           name = 'ie';
