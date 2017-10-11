@@ -1907,7 +1907,7 @@ sub add_map {
     $map->archive_type($at);
     $map->file_template($file_template);
     $map->cat_field_id($cat_field_id) if $cat_field_id;
-    $map->dt_field_id($dt_field_id)   if $dt_field_id;
+    $map->dt_field_id($dt_field_id)   if defined $dt_field_id;
     $map->save
         or return $app->error(
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
