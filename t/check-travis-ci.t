@@ -27,7 +27,5 @@ sub wanted {
     }
 }
 
-ok(1);
-
 done_testing;
 
