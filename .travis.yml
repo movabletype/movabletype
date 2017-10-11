@@ -3,25 +3,8 @@ dist: precise
 
 language: perl
 
-perl:
-  - "5.22"
-  - "5.20"
-  - "5.18"
-  - "5.16"
-  - "5.14"
-  - "5.12"
-  - "5.10"
-  - "5.8"
-
 services:
   - memcached
-
-cache:
-  directories:
-    - ./local
-    - ${HOME}/image-magick
-    - ${HOME}/perl5/perlbrew/perls/${TRAVIS_PERL_VERSION}/bin
-    - ${HOME}/perl5/perlbrew/perls/${TRAVIS_PERL_VERSION}/lib/site_perl
 
 addons:
   apt_packages:
@@ -37,34 +20,41 @@ addons:
     - libgif-dev
     - libjpeg-dev
     - cpanminus
+    - perlmagick
     - zip
     - unzip
 
 before_install:
+  # Use system Perl.
+  - perlbrew switch-off
+  - PATH=${PATH#/home/travis/perl5/perlbrew/bin:}
+
   # Use PHPUnit 4.8, because PHP version of Travis CI is 5.3.
   - wget -O phpunit https://phar.phpunit.de/phpunit-old.phar
   - chmod +x phpunit
 
 install:
-  # Install ImageMagick for installing Image::Magick.
-  - bash t/build-image-magick.sh
+  # Update to install Math::GMP2.11.
+  - sudo cpanm --self-upgrade
 
   # Tests fail with Perl 5.10.
-  - cpanm --notest -L ./local XML::Parser::PerlSAX
+  - sudo cpanm --notest --quiet XML::Parser::PerlSAX
+
+  # Use to install patched Coro.
+  - sudo cpanm --notest --quiet LWP::Protocol::https
 
   # Use patched Coro for Perl 5.22.
-  - cpanm -L ./local https://github.com/rurban/Coro/archive/rel-6.48_01.tar.gz
+  - sudo cpanm --notest --quiet https://github.com/rurban/Coro/archive/rel-6.48_01.tar.gz
 
   # Tests fail with Perl 5.8 and 5.10.
-  - cpanm --notest -L ./local Twiggy
+  - sudo cpanm --notest --quiet Twiggy
 
   # Cannot install Math::GMP 2.12 and 2.13 with Perl 5.8.
-  - cpanm -L ./local Math::GMP@2.11
+  - sudo cpanm --notest --quiet Math::GMP@2.11
 
   # Instal CPAN modules.
   - cp ./t/cpanfile .
-  - travis_retry cpanm Carton
-  - travis_retry carton install
+  - travis_retry sudo cpanm --notest --quiet --installdeps .
 
   # Build MT.
   #- SHELL=/bin/bash make me
@@ -78,7 +68,7 @@ before_script:
   - cp ./t/mysql-test.cfg ./mt-config.cgi
 
 script:
-  - bash -c "PERL_HASH_SEED=0 carton exec prove ./t* plugins/*/t && ./phpunit"
+  - bash -c "PERL_HASH_SEED=0 prove ./t* plugins/*/t && ./phpunit"
 
 notifications:
   slack:
