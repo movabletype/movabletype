@@ -15,12 +15,17 @@ function smarty_function_mtcategorycount($args, &$ctx) {
         $terms = array();
         if (isset($args['content_field_id']) && $args['content_field_id']) {
             $terms['content_field_id'] = $args['content_field_id'];
-        } else if (isset($args['content_type_id']) && $args['content_type_id']) {
-            $terms['content_type_id'] = $args['content_type_id'];
         } else if ($ctx->stash('content_field')) {
             $terms['content_field_id'] = $ctx->stash('content_field')->id;
-        } else if ($ctx->stash('content_type')) {
-            $terms['content_type_id'] = $ctx->stash('content_type')->id;
+        } else {
+            if (isset($args['content_field_name']) && $args['content_field_name']) {
+                $terms['content_field_name'] = $args['content_field_name'];
+            }
+            if (isset($args['content_type_id']) && $args['content_type_id']) {
+                $terms['content_type_id'] = $args['content_type_id'];
+            } else if ($ctx->stash('content_type')) {
+                $terms['content_type_id'] = $ctx->stash('content_type')->id;
+            }
         }
         $count = $category->content_data_count($terms);
     }

@@ -80,13 +80,41 @@ class Category extends BaseObject
                   and cd_blog_id = $blog_id";
 
         if (isset($terms['content_type_id']) && $terms['content_type_id']) {
-            $content_type_filter = 'and cf_idx_content_type_id = ' . $terms['content_type_id'];
+            $content_type_id = $terms['content_type_id'];
+        }
+        if (isset($terms['content_field_id']) && $terms['content_field_id']) {
+            $content_field_id = $terms['content_field_id'];
+        }
+
+        if (!$content_field_id
+            && isset($terms['content_field_name'])
+            && $terms['content_field_name']
+        ) {
+            $content_field_name = $terms['content_field_name'];
+            if ($content_type_id) {
+                $cf_content_type_filter = "and cf_content_type_id = $content_type_id";
+            } else {
+                $cf_content_type_filter = "";
+            }
+            $cf_where = "cf_name = \"$content_field_name\"
+                         $cf_content_type_filter";
+            require_once("class.mt_content_field.php");
+            $content_field = new ContentField();
+            $content_field->Load($cf_where);
+            if (!$content_field->id) {
+                return 0;
+            }
+            $content_field_id = $content_field->id;
+        }
+
+        if ($content_type_id) {
+            $content_type_filter = 'and cf_idx_content_type_id = ' . $content_type_id;
         } else {
             $content_type_filter = '';
         }
 
-        if (isset($terms['content_field_id']) && $terms['content_field_id']) {
-            $content_field_filter = 'and cf_idx_content_field_id = ' . $terms['content_field_id'];
+        if ($content_field_id) {
+            $content_field_filter = 'and cf_idx_content_field_id = ' . $content_field_id;
         } else {
             $content_field_filter = '';
         }

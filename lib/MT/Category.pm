@@ -654,6 +654,19 @@ sub content_data_count {
     my $content_type_id  = $terms->{content_type_id};
     my $content_field_id = $terms->{content_field_id};
 
+    if ( !$content_field_id && $terms->{content_field_name} ) {
+        my $cf = MT->model('content_field')->load(
+            {   blog_id => $self->blog_id,
+                name    => $terms->{content_field_name},
+                $content_type_id
+                ? ( content_type_id => $content_type_id )
+                : (),
+            }
+        );
+        return 0 unless $cf;
+        $content_field_id = $cf->id;
+    }
+
     my $key_suffix = '';
     if ($content_type_id) {
         $key_suffix = ":ct-$content_type_id";
@@ -853,8 +866,8 @@ that has this category in any category field.
 When $terms->{content_type_id} is set, this returns total count of published content
 data that has this category in any category field of the specified content type.
 
-When $terms->{content_field_id} is set, this returns total count of published content
-data that has this category in specified category field.
+When $terms->{content_field_id} or $terms->{category_field_name} is set, this returns
+total count of published content data that has this category in specified category field.
 
 This result will be cached while a request.
 

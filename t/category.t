@@ -108,9 +108,11 @@ for my $ct_id ( 1 .. 2 ) {
         );
         if ( $ct_id == 1 ) {
             $cat_field->id($field_id);
+            $cat_field->name( 'field' . ( $field_id - 1 ) );
         }
         else {
             $cat_field->id( $field_id + 2 );
+            $cat_field->name( 'field' . ( $field_id + 2 - 1 ) );
         }
         $cat_field->save or die $cat_field->errstr;
 
@@ -272,6 +274,41 @@ subtest 'content_data_count({ content_field_id => ??? })' => sub {
         ),
         0,
     );
+};
+
+subtest 'content_data_count({ content_field_name => ??? })' => sub {
+
+    # content type1, content field0
+    is( $cats[0]->content_data_count( { content_field_name => 'field0', } ),
+        1 );
+    is( $cats[1]->content_data_count( { content_field_name => 'field0', } ),
+        1 );
+    is( $cats[2]->content_data_count( { content_field_name => 'field0', } ),
+        0 );
+
+    # content type1, content field1
+    is( $cats[0]->content_data_count( { content_field_name => 'field1', } ),
+        1 );
+    is( $cats[1]->content_data_count( { content_field_name => 'field1', } ),
+        0 );
+    is( $cats[2]->content_data_count( { content_field_name => 'field1', } ),
+        0 );
+
+    # content type2, content field2
+    is( $cats[0]->content_data_count( { content_field_name => 'field2', } ),
+        1 );
+    is( $cats[1]->content_data_count( { content_field_name => 'field2', } ),
+        1 );
+    is( $cats[2]->content_data_count( { content_field_name => 'field2', } ),
+        0 );
+
+    # content type2, content field3
+    is( $cats[0]->content_data_count( { content_field_name => 'field3', } ),
+        1 );
+    is( $cats[1]->content_data_count( { content_field_name => 'field3', } ),
+        0 );
+    is( $cats[2]->content_data_count( { content_field_name => 'field3', } ),
+        0 );
 };
 
 subtest 'cache content_data_count while a request' => sub {
