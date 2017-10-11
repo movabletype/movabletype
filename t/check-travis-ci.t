@@ -1,6 +1,9 @@
 use strict;
 use warnings;
 
+# This test checks test files that may not be tested on Travis CI.
+# This test will be removed after resolving split tests issue.
+
 use Test::More;
 
 use File::Find ();
