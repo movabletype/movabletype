@@ -12,7 +12,7 @@ use MT::Test qw( :app :db );
 use MT::Test::Permission;
 use Test::More;
 
-plan skip_all => 'Community Pack does not installed.'
+plan skip_all => 'Advanced Pack does not installed.'
     unless MT->instance->component('enterprise');
 
 ### Make test data
