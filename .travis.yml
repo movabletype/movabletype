@@ -3,6 +3,11 @@ dist: precise
 
 language: perl
 
+env:
+  matrix:
+    - TEST_COMMAND="PERL_HASH_SEED=0 prove t/[0-9]*.t"
+    - TEST_COMMAND="PERL_HASH_SEED=0 prove t/[^0-9]*.t t/mt7 plugins/*/t && ./phpunit"
+
 services:
   - memcached
 
@@ -71,7 +76,7 @@ before_script:
   - rm plugins/MultiBlog/t/02.tags.t
 
 script:
-  - bash -c "PERL_HASH_SEED=0 prove ./t* plugins/*/t && ./phpunit"
+  - bash -c "${TEST_COMMAND}"
 
 notifications:
   slack:
