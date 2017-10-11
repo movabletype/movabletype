@@ -17,7 +17,7 @@ sub edit {
 
     # FIXME: enumeration of types
     unless ($blog_id) {
-        my $type = $app->param('type') || ( $obj ? $obj->type : '' );
+        my $type = $app->param('template_type') || ( $obj ? $obj->type : '' );
         return $app->return_to_dashboard( redirect => 1 )
             if $type eq 'archive'
             || $type eq 'individual'
@@ -672,7 +672,7 @@ sub edit {
             }
         }
         else {
-            $template_type = $app->param('type');
+            $template_type = $app->param('template_type');
             $template_type = 'custom' if 'module' eq $template_type;
             $param->{type} = $template_type;
         }
@@ -2059,7 +2059,7 @@ sub post_save {
     }
 
     my $dynamic = 0;
-    my $type = $app->param('type') || '';
+    my $type = $app->param('template_type') || '';
 
     # FIXME: enumeration of types
     if (   $type eq 'custom'
