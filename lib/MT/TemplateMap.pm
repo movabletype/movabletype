@@ -210,7 +210,10 @@ sub prefer {
 
     if ($prefer) {
         return 1 if $map->is_preferred;
-        my $args = { join => _generate_join_on_template($map) };
+        my $args
+            = $map->archive_type =~ /^ContentType/
+            ? { join => _generate_join_on_template($map) }
+            : {};
         my $preferred = MT::TemplateMap->load(
             {   blog_id      => $map->blog_id,
                 archive_type => $map->archive_type,
@@ -233,9 +236,12 @@ sub prefer {
 }
 
 sub _prefer_next_map {
-    my $map  = shift;
-    my $args = { join => _generate_join_on_template($map) };
-    my @all  = MT::TemplateMap->load(
+    my $map = shift;
+    my $args
+        = $map->archive_type =~ /^ContentType/
+        ? { join => _generate_join_on_template($map) }
+        : {};
+    my @all = MT::TemplateMap->load(
         {   blog_id      => $map->blog_id,
             archive_type => $map->archive_type
         },
