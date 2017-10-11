@@ -1,3 +1,6 @@
+sudo: required
+dist: precise
+
 language: perl
 
 perl:
@@ -12,8 +15,6 @@ perl:
 
 services:
   - memcached
-
-sudo: false
 
 cache:
   directories:
