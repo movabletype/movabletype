@@ -237,6 +237,9 @@ sub save {
 
     if ( $type eq 'author' ) {
 
+        # Load system permission record
+        my $prev_sys_perms = $obj->permissions(0)->permissions;
+
         #FIXME: Legacy columns - remove them
         my @cols
             = qw(is_superuser can_create_blog can_view_log can_edit_templates);
@@ -273,6 +276,24 @@ sub save {
             }
         }
         delete $values{'password'};
+
+        # Load current system permnission, then rebuild permissions if needed.
+        my $curr_sys_perms = $obj->permissions(0)->permissions;
+        if (( $prev_sys_perms and !$curr_sys_perms )
+            or (    $prev_sys_perms
+                and $curr_sys_perms
+                and $prev_sys_perms ne $curr_sys_perms )
+            )
+        {
+            my $perm_iter = MT->model('permission')->load_iter(
+                {   author_id => $obj->id,
+                    blog_id   => { not => 0 },
+                }
+            );
+            while ( my $perm = $perm_iter->() ) {
+                $perm->rebuild;
+            }
+        }
     }
 
     if ( $type eq 'blog' || $type eq 'website' ) {
