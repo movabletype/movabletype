@@ -4026,10 +4026,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## tmpl/cms/dialog/asset_modal.tmpl
 	'Library' => 'Bibliothèque',
 
-## tmpl/cms/dialog/asset_options_image.tmpl
-	q{Display image in entry/page} => q{Afficher l'image dans la note/page},
-	'Remember these settings' => 'Mémoriser ces paramètres',
-
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Options fichier',
 	q{Create entry using this uploaded file} => q{Créer une note à l'aide de ce fichier},

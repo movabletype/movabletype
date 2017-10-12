@@ -4028,10 +4028,6 @@ No se pudo escribir el fichero. Disco lleno.",
 ## tmpl/cms/dialog/asset_modal.tmpl
 	'Library' => 'Biblioteca',
 
-## tmpl/cms/dialog/asset_options_image.tmpl
-	'Display image in entry/page' => 'Mostrar una imagen en la entrada/página',
-	'Remember these settings' => 'Recordar estas opciones',
-
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Opciones de ficheros',
 	'Create entry using this uploaded file' => 'Crear entrada utilizando el fichero transferido',

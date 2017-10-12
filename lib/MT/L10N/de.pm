@@ -4017,10 +4017,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/asset_modal.tmpl
 	'Library' => 'Bibliothek',
 
-## tmpl/cms/dialog/asset_options_image.tmpl
-	'Display image in entry/page' => 'Bild in Eintrag/Seite anzeigen',
-	'Remember these settings' => 'Einstellungen speichern',
-
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Dateioptionen',
 	'Create entry using this uploaded file' => 'Eintrag mit hochgeladener Datei anlegen',

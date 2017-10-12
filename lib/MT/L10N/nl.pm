@@ -4030,10 +4030,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## tmpl/cms/dialog/asset_modal.tmpl
 	'Library' => 'Bibliotheek',
 
-## tmpl/cms/dialog/asset_options_image.tmpl
-	'Display image in entry/page' => 'Afbeelding tonen in bericht/pagina',
-	'Remember these settings' => 'Deze instellingen onthouden',
-
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Bestandsopties',
 	'Create entry using this uploaded file' => 'Bericht aanmaken met dit opgeladen bestand',

@@ -3860,10 +3860,6 @@ use vars qw( @ISA %Lexicon );
 	'Finish (s)' => '完了 (s)',
 	'Finish' => '完了',
 
-## tmpl/cms/dialog/asset_options_image.tmpl
-	'Display image in entry/page' => '画像を記事/ページに表示',
-	'Remember these settings' => '設定を記憶',
-
 ## tmpl/cms/dialog/asset_replace.tmpl
 
 ## tmpl/cms/dialog/asset_upload.tmpl
