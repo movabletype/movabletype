@@ -1452,9 +1452,11 @@ function saveTemplatePrefs( sync ) {
     </mt:if>
 
     jQuery('button.mx-1').click(function() {
-        var action = jQuery('select.action_selector').val();
-        if (action) {
+        var action = jQuery('select[name=plugin_action_selector]').val();
+        if ( action != 0 && action != '' ) {
             jQuery('form#template-listing-form input[name=type]').val('');
+            jQuery('form#template-listing-form').off('submit').submit();
+            return true;
         }
     });
 
