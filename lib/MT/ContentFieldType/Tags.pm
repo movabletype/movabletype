@@ -290,7 +290,11 @@ sub data_load_handler {
     my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
     my @tag_names = split $tag_delim,
         $app->param( 'content-field-' . $field_data->{id} );
-    \@tag_names;
+    for (@tag_names) {
+        $_ =~ s/^\s+//;
+        $_ =~ s/\s+$//;
+    }
+    return [ grep { defined $_ && $_ ne '' } @tag_names ];
 }
 
 sub options_validation_handler {
