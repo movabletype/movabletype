@@ -293,7 +293,9 @@ sub edit {
         $param->{block_editor_data} = $blockeditor_data;
     }
 
-    foreach my $name (qw( saved err_msg content_type_id id )) {
+    foreach
+        my $name (qw( saved_added saved_changes err_msg content_type_id id ))
+    {
         $param->{$name} = $app->param($name) if $app->param($name);
     }
 
