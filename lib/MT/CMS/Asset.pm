@@ -166,9 +166,7 @@ sub edit {
 sub dialog_list_asset {
     my $app = shift;
 
-    # Backward compatibility
-    return dialog_asset_modal( $app, @_ )
-        if !$app->param('json') && !$app->config('EnableUploadCompat');
+    return dialog_asset_modal( $app, @_ ) unless $app->param('json');
 
     my $blog_id = $app->param('blog_id');
     my $mode_userpic = $app->param('upload_mode') || '';
@@ -277,10 +275,8 @@ sub dialog_list_asset {
             args     => \%args,
             type     => 'asset',
             code     => $hasher,
-            template => $app->config('EnableUploadCompat')
-            ? 'dialog/asset_list.tmpl'
-            : 'include/async_asset_list.tmpl',
-            params => {
+            template => 'include/async_asset_list.tmpl',
+            params   => {
                 (   $blog
                     ? ( blog_id      => $blog_id,
                         blog_name    => $blog->name || '',
@@ -1168,113 +1164,6 @@ sub cms_save_filter {
     1;
 }
 
-### DEPRECATED: v6.2
-sub _set_start_upload_params_compat {
-    my $app = shift;
-    my ($param) = @_;
-
-    if ( my $perms = $app->permissions ) {
-        return $app->permission_denied()
-            unless $perms->can_do('upload');
-
-        my $blog_id = $app->param('blog_id');
-        require MT::Blog;
-        my $blog = MT::Blog->load($blog_id)
-            or return $app->error(
-            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
-
-        $param->{enable_archive_paths} = $blog->column('archive_path');
-        $param->{local_site_path}      = $blog->site_path;
-        $param->{local_archive_path}   = $blog->archive_path;
-        my $label_path;
-        if ( $param->{enable_archive_paths} ) {
-            $label_path = $app->translate('Archive Root');
-        }
-        else {
-            $label_path = $app->translate('Site Root');
-        }
-        my @extra_paths;
-        my $date_stamp = epoch2ts( $blog, time );
-        $date_stamp =~ s!^(\d\d\d\d)(\d\d)(\d\d).*!$1/$2/$3!;
-        my $path_hash = {
-            path  => $date_stamp,
-            label => '<' . $label_path . '>' . '/' . $date_stamp,
-        };
-
-        if ( exists( $param->{middle_path} )
-            && ( $date_stamp eq $param->{middle_path} ) )
-        {
-            $path_hash->{selected} = 1;
-            delete $param->{archive_path};
-        }
-        push @extra_paths, $path_hash;
-        $param->{extra_paths} = \@extra_paths;
-        $param->{refocus}     = 1;
-        $param->{missing_paths}
-            = (    ( defined $blog->site_path || defined $blog->archive_path )
-                && ( -d $blog->site_path || -d $blog->archive_path ) )
-            ? 0
-            : 1;
-
-        if ( $param->{missing_paths} ) {
-            if ($app->user->is_superuser
-                || $app->run_callbacks(
-                    'cms_view_permission_filter.blog',
-                    $app, $blog_id, $blog
-                )
-                )
-            {
-                $param->{have_permissions} = 1;
-            }
-        }
-
-        $param->{enable_destination} = 1;
-
-        my $data = $app->_build_category_list(
-            blog_id => $blog_id,
-            markers => 1,
-            type    => 'folder',
-        );
-        my $top_cat  = -1;
-        my $cat_tree = [
-            {   id       => -1,
-                label    => '/',
-                basename => '/',
-                path     => [],
-            }
-        ];
-        foreach (@$data) {
-            next unless exists $_->{category_id};
-            $_->{category_path_ids} ||= [];
-            unshift @{ $_->{category_path_ids} }, -1;
-            push @$cat_tree,
-                {
-                id       => $_->{category_id},
-                label    => $_->{category_label} . '/',
-                basename => $_->{category_basename} . '/',
-                path     => $_->{category_path_ids} || [],
-                };
-        }
-        $param->{category_tree} = $cat_tree;
-    }
-    else {
-        $param->{local_site_path}    = '';
-        $param->{local_archive_path} = '';
-    }
-    my $require_type
-        = defined( $param->{require_type} ) ? $param->{require_type} : '';
-    $require_type =~ s/\W//g;
-    $param->{require_type} = $require_type;
-
-    $param->{auto_rename_if_exists} = 0;
-    $param->{normalize_orientation}
-        = 1;    # TODO: Default value will be 1 in future version.
-
-    $param->{compat_upload_template} = 1;
-
-    $param;
-}
-
 sub _make_upload_destinations {
     my $app = shift;
     my ( $blog, $real_path ) = @_;
@@ -1415,10 +1304,6 @@ sub _make_upload_destinations {
 sub _set_start_upload_params {
     my $app = shift;
     my ($param) = @_;
-
-    # Backward compatibility
-    return _set_start_upload_params_compat( $app, @_ )
-        if $app->config('EnableUploadCompat');
 
     if ( my $perms = $app->permissions ) {
         my $blog_id = $app->param('blog_id');
@@ -2054,10 +1939,6 @@ sub _upload_file_compat {
 sub _upload_file {
     my $app = shift;
     my (%upload_param) = @_;
-
-    # Backward compatibility
-    return _upload_file_compat( $app, @_ )
-        if $app->config('EnableUploadCompat');
 
     require MT::Image;
     my $app_id = $app->id;
@@ -3067,10 +2948,6 @@ sub transform_image {
 
 sub dialog_asset_modal {
     my $app = shift;
-
-    # Backward compatibility
-    return dialog_list_asset( $app, @_ )
-        if $app->config('EnableUploadCompat');
 
     my $blog_id = $app->param('blog_id');
     my $mode_userpic = $app->param('upload_mode') || '';

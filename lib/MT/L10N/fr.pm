@@ -4010,21 +4010,12 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## tmpl/cms/dialog/asset_insert.tmpl
 
-## tmpl/cms/dialog/asset_list.tmpl
-	'Insert Image' => 'Insérer une image',
-	'Insert Asset' => 'Insérer un élément',
-	'Upload New File' => 'Envoyer un nouveau fichier',
-	'Upload New Image' => 'Envoyer une nouvelle image',
-	q{Asset Name} => q{Nom de l'élément},
-	'Size' => 'Taille',
+## tmpl/cms/dialog/asset_modal.tmpl
+	'Library' => 'Bibliothèque',
 	'Next (s)' => 'Suivant (s)',
 	'Insert (s)' => 'Insérer (s)',
 	'Insert' => 'Insérer',
 	'Cancel (x)' => 'Annuler (x)',
-	q{No assets could be found.} => q{Aucun élément n'a été trouvé.},
-
-## tmpl/cms/dialog/asset_modal.tmpl
-	'Library' => 'Bibliothèque',
 
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Options fichier',
@@ -4685,6 +4676,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{Check Spelling} => q{Vérifier l'orthographe},
 	'WYSIWYG Mode' => 'Mode WYSIWYG',
 	'HTML Mode' => 'Mode HTML',
+	'Insert Image' => 'Insérer une image',
 
 ## tmpl/cms/include/archive_maps.tmpl
 
@@ -4701,6 +4693,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Created On' => 'Créé le',
 	'Asset Missing' => 'Élément manquant',
 	'No thumbnail image' => 'Pas de miniature',
+	'Size' => 'Taille',
 
 ## tmpl/cms/include/asset_upload.tmpl
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{Avant de pouvoir télécharger un fichier, vous devez publier votre [_1]. [_2]Configurez les chemins de publication[_3] de votre [_1] et republiez-le.},

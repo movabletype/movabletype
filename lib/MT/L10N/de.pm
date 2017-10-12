@@ -4001,21 +4001,12 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/asset_insert.tmpl
 
-## tmpl/cms/dialog/asset_list.tmpl
-	'Insert Image' => 'Bild einfügen',
-	'Insert Asset' => 'Asset einfügen',
-	'Upload New File' => 'Neue Datei hochladen',
-	'Upload New Image' => 'Neues Bild hochladen',
-	'Asset Name' => 'Assetname',
-	'Size' => 'Größe',
+## tmpl/cms/dialog/asset_modal.tmpl
+	'Library' => 'Bibliothek',
 	'Next (s)' => 'Nächstes (s)',
 	'Insert (s)' => 'Einfügen (s)',
 	'Insert' => 'Einfügen',
 	'Cancel (x)' => 'Abbrechen (x)',
-	'No assets could be found.' => 'Keine Assets gefunden.',
-
-## tmpl/cms/dialog/asset_modal.tmpl
-	'Library' => 'Bibliothek',
 
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Dateioptionen',
@@ -4671,6 +4662,7 @@ use vars qw( @ISA %Lexicon );
 	'Check Spelling' => 'Rechtschreibung prüfen',
 	'WYSIWYG Mode' => 'Grafischer Editor',
 	'HTML Mode' => 'HTML-Modus',
+	'Insert Image' => 'Bild einfügen',
 
 ## tmpl/cms/include/archive_maps.tmpl
 
@@ -4687,6 +4679,7 @@ use vars qw( @ISA %Lexicon );
 	'Created On' => 'Angelegt',
 	'Asset Missing' => 'Asset fehlt',
 	'No thumbnail image' => 'Kein Vorschaubild',
+	'Size' => 'Größe',
 
 ## tmpl/cms/include/asset_upload.tmpl
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{Veröffentlichen Sie zuerst Ihr(e) [_1], um Dateien hochladen zu können. [_2]Konfigurieren Sie die jeweiligen Veröffentlichungs-Pfade[_3] und veröffentlichen Sie die Site bzw. das Blog dann erneut. },
