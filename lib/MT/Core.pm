@@ -1767,15 +1767,11 @@ BEGIN {
                     comments => 'MT::AtomServer::Comments',
                 },
             },
-            'SchemaVersion'          => undef,
-            'MTVersion'              => undef,
-            'MTReleaseNumber'        => undef,
-            'RequiredCompatibility'  => { default => 0 },
-            'EnableSessionKeyCompat' => { default => 0 },
-            'EnableUploadCompat'     => {
-                handler => sub {0},    # deprecated
-                default => 0
-            },
+            'SchemaVersion'                => undef,
+            'MTVersion'                    => undef,
+            'MTReleaseNumber'              => undef,
+            'RequiredCompatibility'        => { default => 0 },
+            'EnableSessionKeyCompat'       => { default => 0 },
             'NotifyUpgrade'                => { default => 1 },
             'Database'                     => undef,
             'DBHost'                       => undef,
