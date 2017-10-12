@@ -1610,11 +1610,11 @@ sub _hdlr_category_archive {
 
 =head2 CategoryCount
 
-The number of published entries for the category in context.
+The number of published entries or content data for the category in context.
 
 B<Example:>
 
-    Entries in this category: <$mt:CategoryCount$>
+    Contents in this category: <$mt:CategoryCount$>
 
 =for tags categories, count
 
@@ -1635,17 +1635,18 @@ sub _hdlr_category_count {
     }
     else {
         my $terms = {};
-        if ( my $cf_id = $args->{content_field_id} ) {
-            $terms->{content_field_id} = $cf_id;
+        if ( $args->{content_field_id} || $ctx->stash('content_field') ) {
+            $terms->{content_field_id} = $args->{content_field_id}
+                || $ctx->stash('content_field')->id;
         }
-        elsif ( my $ct_id = $args->{content_type_id} ) {
-            $terms->{content_type_id} = $ct_id;
-        }
-        elsif ( my $cf = $ctx->stash('content_field') ) {
-            $terms->{content_field_id} = $cf->id;
-        }
-        elsif ( my $ct = $ctx->stash('content_type') ) {
-            $terms->{content_type_id} = $ct->id;
+        else {
+            if ( my $cf_name = $args->{content_field_name} ) {
+                $terms->{content_field_name} = $cf_name;
+            }
+            if ( $args->{content_type_id} || $ctx->stash('content_type') ) {
+                $terms->{content_type_id} = $args->{content_type_id}
+                    || $ctx->stash('content_type')->id;
+            }
         }
         $count = $cat->content_data_count($terms);
     }

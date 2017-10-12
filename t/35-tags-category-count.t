@@ -117,9 +117,11 @@ for my $ct_id ( 1 .. 2 ) {
         );
         if ( $ct_id == 1 ) {
             $cat_field->id($field_id);
+            $cat_field->name( 'field' . $field_id );
         }
         else {
             $cat_field->id( $field_id + 2 );
+            $cat_field->name( 'field' . ( $field_id + 2 ) );
         }
         $cat_field->save or die $cat_field->errstr;
 
@@ -176,28 +178,37 @@ __END__
 
 === MTCategoryCount
 --- template
-<MTCategories category_set_id="1" show_empty="1" sort="label"><MTCategoryLabel>:<MTCategoryCount>
+<MTCategories category_set_id="1" show_empty="1" sort="label"><MTCategoryLabel>: <MTCategoryCount>
 </MTCategories>
 --- expected
-a:4
-b:2
-c:0
+a: 4
+b: 2
+c: 0
 
 === MTCategoryCount content_type_id="1"
 --- template
-<MTCategories category_set_id="1" show_empty="1" sort="label"><MTCategoryLabel>:<MTCategoryCount content_type_id="1">
+<MTCategories category_set_id="1" show_empty="1" sort="label"><MTCategoryLabel>: <MTCategoryCount content_type_id="1">
 </MTCategories>
 --- expected
-a:2
-b:1
-c:0
+a: 2
+b: 1
+c: 0
 
 === MTCategoryCount content_field_id="1"
 --- template
-<MTCategories category_set_id="1" show_empty="1" sort="label"><MTCategoryLabel>:<MTCategoryCount content_field_id="1">
+<MTCategories category_set_id="1" show_empty="1" sort="label"><MTCategoryLabel>: <MTCategoryCount content_field_id="1">
 </MTCategories>
 --- expected
-a:1
-b:1
-c:0
+a: 1
+b: 1
+c: 0
+
+=== MTCategoryCount content_field_name="field1"
+--- template
+<MTCategories category_set_id="1" show_empty="1" sort="label"><MTCategoryLabel>: <MTCategoryCount content_field_name="field1">
+</MTCategories>
+--- expected
+a: 1
+b: 1
+c: 0
 
