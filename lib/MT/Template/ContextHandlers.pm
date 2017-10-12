@@ -382,6 +382,10 @@ sub core_tags {
             ContentsFooter => \&slurp,
             ContentsHeader => \&slurp,
 
+            ## Category Set
+            CategorySets =>
+                '$Core::MT::Template::Tags::CategorySet::_hdlr_category_sets',
+
 # ContentAssets => '$Core::MT::Template::Tags::ContentType::_hdlr_assets',
 # ContentTags => '$Core::MT::Template::Tags::ContentType::_hdlr_content_tags',
 # ContentCategories => '$Core::MT::Template::Tags::ContentType::_hdlr_content_categories',
