@@ -33,7 +33,7 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '6.3', '6.0010' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.3', '6.0020' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
