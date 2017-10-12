@@ -924,6 +924,7 @@ sub list {
         component => 'Core'
         }
         if -e $core_include;
+
     for my $c (@list_components) {
         my $f = File::Spec->catfile( $c->path, 'tmpl', 'listing',
             $type . '_list_header.tmpl' );
@@ -1233,7 +1234,7 @@ sub list {
             };
     }
     @filter_types = sort {
-        $a->{item_order} <=> $b->{item_order}
+               $a->{item_order} <=> $b->{item_order}
             or $a->{label_for_sort} cmp $b->{label_for_sort}
     } @filter_types;
 
@@ -1939,9 +1940,8 @@ sub delete {
         }
         elsif ( $type eq 'content_type' ) {
             my $template_class = $app->model('template');
-            my $count = $template_class->count({
-                content_type_id => $obj->id,
-            });
+            my $count
+                = $template_class->count( { content_type_id => $obj->id, } );
             if ( $count > 0 ) {
                 push @not_deleted, $obj->id;
                 next;
@@ -2131,7 +2131,7 @@ sub list_revision {
     my $blog = $obj->blog || MT::Blog->load($blog_id);
     my $js   = "parent.location.href='" . $app->uri;
     if ( $type eq 'cd' ) {
-        $js .= '?__mode=edit_content_data&amp;content_type_id='
+        $js .= '?__mode=view&amp;_type=content_data&amp;content_type_id='
             . $obj->content_type_id;
     }
     else {

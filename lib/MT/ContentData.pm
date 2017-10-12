@@ -434,8 +434,9 @@ sub tag_cache_key {
 sub edit_link {
     my ( $self, $app ) = @_;
     $app->uri(
-        mode => 'edit_content_data',
+        mode => 'view',
         args => {
+            _type           => 'content_data',
             id              => $self->id,
             blog_id         => $self->blog_id,
             content_type_id => $self->content_type_id,
@@ -635,8 +636,9 @@ sub _make_id_html {
 
     my $id        = $obj->id;
     my $edit_link = $app->uri(
-        mode => 'edit_content_data',
+        mode => 'view',
         args => {
+            _type           => 'content_data',
             id              => $obj->id,
             blog_id         => $obj->blog_id,
             content_type_id => $obj->content_type_id,

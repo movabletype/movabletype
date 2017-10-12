@@ -22,7 +22,7 @@
   <mtapp:statusmsg
      id="recovered-object"
      class="info">
-    <__trans phrase="A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=edit_content_data&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="content_type_id">&amp;content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
+    <__trans phrase="A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=view&amp;_type=content_data&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="content_type_id">&amp;content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
   </mtapp:statusmsg>
     </mt:unless>
   </mt:if>
@@ -61,7 +61,6 @@
   <input type="hidden" name="_type" value="content_data" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-  <input type="hidden" name="cfg_screen" value="edit_content_data" />
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
   <input type="hidden" name="content_type_id" value="<mt:var name="content_type_id">" />
   <mt:if name="use_revision">

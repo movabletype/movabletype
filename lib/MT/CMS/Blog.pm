@@ -804,9 +804,10 @@ sub rebuild_pages {
                 require MT::ContentData;
                 my $content_data = MT::ContentData->load($obj_id);
                 $app->{goback} = $app->uri(
-                    mode => 'edit_content_data',
+                    mode => 'view',
                     args => {
-                        id => $obj_id,
+                        _type => 'content_data',
+                        id    => $obj_id,
                         $content_data
                         ? ( blog_id => $content_data->blog_id )
                         : (),
