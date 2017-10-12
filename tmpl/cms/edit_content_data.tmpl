@@ -7,6 +7,11 @@
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="screen_id" value="edit-content-type-data">
 <mt:setvar name="screen_class" value="edit-content-type-data">
+<mt:if name="status_publish">
+  <mt:if name="content_data_permalink">
+    <mt:setvarblock name="view_link"><a href="<$mt:var name="content_data_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View [_1]" params="<mt:var name="name" escape="html">"></a></mt:setvarblock>
+  </mt:if>
+</mt:if>
 
 <mt:setvarblock name="system_msg">
 <div id="msg-block">
@@ -37,13 +42,23 @@
   </mtapp:statusmsg>
 </mt:if>
 
-<mt:if name="saved">
+<mt:if name="saved_added">
   <mtapp:statusmsg
-     id="saved"
+     id="saved-added"
      class="success">
-    <__trans phrase="[_1] has been saved." params="<mt:var name="name" escape="html">">
+    <__trans phrase="This [_1] has been saved." params="<mt:var name="name" escape="html">">
+    <$mt:var name="view_link"$>
   </mtapp:statusmsg>
 </mt:if>
+<mt:if name="saved_changes">
+  <mtapp:statusmsg
+     id="saved-changes"
+     class="success">
+    <__trans phrase="Your changes have been saved.">
+    <$mt:var name="view_link"$>
+  </mtapp:statusmsg>
+</mt:if>
+
 <mt:if name="err_msg">
   <mtapp:statusmsg
      id="err_msg"
