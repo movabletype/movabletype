@@ -4014,25 +4014,12 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## tmpl/cms/dialog/asset_insert.tmpl
 
-## tmpl/cms/dialog/asset_list.tmpl
-	'Insert Image' => 'Afbeelding invoegen',
-	'Insert Asset' => 'Mediabestand invoegen',
-	'Upload New File' => 'Nieuw bestand opladen',
-	'Upload New Image' => 'Nieuwe afbeelding opladen',
-	'Asset Name' => 'Naam mediabestand',
-	'Size' => 'Grootte',
+## tmpl/cms/dialog/asset_modal.tmpl
+	'Library' => 'Bibliotheek',
 	'Next (s)' => 'Volgende (s)',
 	'Insert (s)' => 'Invoegen (s)',
 	'Insert' => 'Invoegen',
 	'Cancel (x)' => 'Annuleren (x)',
-	'No assets could be found.' => 'Kon geen mediabestand vinden',
-
-## tmpl/cms/dialog/asset_modal.tmpl
-	'Library' => 'Bibliotheek',
-
-## tmpl/cms/dialog/asset_options_image.tmpl
-	'Display image in entry/page' => 'Afbeelding tonen in bericht/pagina',
-	'Remember these settings' => 'Deze instellingen onthouden',
 
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Bestandsopties',
@@ -4690,6 +4677,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Check Spelling' => 'Spelling nakijken',
 	'WYSIWYG Mode' => 'WYSIWYG modus',
 	'HTML Mode' => 'HTML modus',
+	'Insert Image' => 'Afbeelding invoegen',
 
 ## tmpl/cms/include/archive_maps.tmpl
 
@@ -4706,6 +4694,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Created On' => 'Aangemaakt',
 	'Asset Missing' => 'Ontbrekend mediabestand',
 	'No thumbnail image' => 'Geen thumbnail',
+	'Size' => 'Grootte',
 
 ## tmpl/cms/include/asset_upload.tmpl
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{Voor u een bestand kunt uploaden, moet u eerst uw [_1] publiceren.  [_2]Configureer de publicatiepaden van uw [_1][_3] en herpubliceer uw [_1].},

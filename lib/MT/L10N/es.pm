@@ -4012,25 +4012,12 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## tmpl/cms/dialog/asset_insert.tmpl
 
-## tmpl/cms/dialog/asset_list.tmpl
-	'Insert Image' => 'Insertar imagen',
-	'Insert Asset' => 'Añadir un fichero multimedia',
-	'Upload New File' => 'Subir nuevo fichero',
-	'Upload New Image' => 'Subir nueva imagen',
-	'Asset Name' => 'Nombre del fichero multimedia',
-	'Size' => 'Tamaño',
+## tmpl/cms/dialog/asset_modal.tmpl
+	'Library' => 'Biblioteca',
 	'Next (s)' => 'Siguiente (s)',
 	'Insert (s)' => 'Insertar (s)',
 	'Insert' => 'Insertar',
 	'Cancel (x)' => 'Cancelar (x)',
-	'No assets could be found.' => 'No se encontraron ficheros multimedia.',
-
-## tmpl/cms/dialog/asset_modal.tmpl
-	'Library' => 'Biblioteca',
-
-## tmpl/cms/dialog/asset_options_image.tmpl
-	'Display image in entry/page' => 'Mostrar una imagen en la entrada/página',
-	'Remember these settings' => 'Recordar estas opciones',
 
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Opciones de ficheros',
@@ -4686,6 +4673,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Check Spelling' => 'Ortografía',
 	'WYSIWYG Mode' => 'Modo con formato (WYSIWYG)',
 	'HTML Mode' => 'Modo HTML',
+	'Insert Image' => 'Insertar imagen',
 
 ## tmpl/cms/include/archive_maps.tmpl
 
@@ -4702,6 +4690,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Created On' => 'Creado en',
 	'Asset Missing' => 'Fichero multimedia no existe',
 	'No thumbnail image' => 'Sin miniatura',
+	'Size' => 'Tamaño',
 
 ## tmpl/cms/include/asset_upload.tmpl
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{Antes de subir un fichero, debe publicar su [_1]. [_2]Configure las rutas de publicación[_3] de su [_1] y republique el [_1].},

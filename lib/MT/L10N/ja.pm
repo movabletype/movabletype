@@ -3837,21 +3837,12 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/asset_insert.tmpl
 
-## tmpl/cms/dialog/asset_list.tmpl
-	'Insert Image' => '画像の挿入',
-	'Insert Asset' => 'アイテムの挿入',
-	'Upload New File' => '新規ファイルのアップロード',
-	'Upload New Image' => '新しい画像をアップロード',
-	'Asset Name' => 'アイテム名',
-	'Size' => 'サイズ',
+## tmpl/cms/dialog/asset_modal.tmpl
+	'Library' => 'アイテム一覧',
 	'Next (s)' => '次へ (s)',
 	'Insert (s)' => '挿入 (s)',
 	'Insert' => '挿入',
 	'Cancel (x)' => 'キャンセル (x)',
-	'No assets could be found.' => 'アイテムが見つかりません。',
-
-## tmpl/cms/dialog/asset_modal.tmpl
-	'Library' => 'アイテム一覧',
 
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'ファイルオプション',
@@ -3859,10 +3850,6 @@ use vars qw( @ISA %Lexicon );
 	'Create a new entry using this uploaded file.' => 'アップロードしたファイルを使って記事を作成する',
 	'Finish (s)' => '完了 (s)',
 	'Finish' => '完了',
-
-## tmpl/cms/dialog/asset_options_image.tmpl
-	'Display image in entry/page' => '画像を記事/ページに表示',
-	'Remember these settings' => '設定を記憶',
 
 ## tmpl/cms/dialog/asset_replace.tmpl
 
@@ -4513,6 +4500,7 @@ use vars qw( @ISA %Lexicon );
 	'Check Spelling' => 'スペルチェック',
 	'WYSIWYG Mode' => 'WYSIWYGモード',
 	'HTML Mode' => 'HTMLモード',
+	'Insert Image' => '画像の挿入',
 
 ## tmpl/cms/include/archive_maps.tmpl
 
@@ -4529,6 +4517,7 @@ use vars qw( @ISA %Lexicon );
 	'Created On' => '作成日',
 	'Asset Missing' => 'アイテムなし',
 	'No thumbnail image' => 'サムネイル画像がありません。',
+	'Size' => 'サイズ',
 
 ## tmpl/cms/include/asset_upload.tmpl
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{ファイルのアップロードができるように、[_1]を再構築する必要があります。[_2]公開パスの設定[_3]をして、[_1]を再構築してください。},
