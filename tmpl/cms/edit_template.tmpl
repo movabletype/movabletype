@@ -1451,6 +1451,13 @@ function saveTemplatePrefs( sync ) {
     </mt:if>
     </mt:if>
 
+    jQuery('button.mx-1').click(function() {
+        var action = jQuery('select.action_selector').val();
+        if (action) {
+            jQuery('form#template-listing-form input[name=type]').val('');
+        }
+    });
+
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">
