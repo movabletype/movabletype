@@ -380,11 +380,12 @@ sub save {
 
     if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
     {
+        $app->param( '_type',           'content_data' );
         $app->param( 'reedit',          1 );
         $app->param( 'serialized_data', $data );
         my %param;
         $param{err_msg} = $errors->[0]{error};
-        return $app->forward( 'edit_content_data', \%param );
+        return $app->forward( 'view', \%param );
     }
 
     my $content_data
@@ -456,9 +457,10 @@ sub save {
         }
         $param{return_args} = $app->param('return_args');
         if ( $param{err_msg} ) {
+            $app->param( '_type',           'content_data' );
             $app->param( 'reedit',          1 );
             $app->param( 'serialized_data', $data );
-            return $app->forward( "edit_content_data", \%param );
+            return $app->forward( "view", \%param );
         }
         if ( $content_data->authored_on ) {
             $previous_old = $content_data->previous(1);
@@ -508,9 +510,10 @@ sub save {
             $param{show_input_unpublished_on} = 1 if $param{err_msg};
             $param{return_args} = $app->param('return_args');
             if ( $param{err_msg} ) {
+                $app->param( '_type',           'content_data' );
                 $app->param( 'reedit',          1 );
                 $app->param( 'serialized_data', $data );
-                return $app->forward( "edit_content_data", \%param );
+                return $app->forward( "view", \%param );
             }
             if ( $content_data->unpublished_on ) {
                 $previous_old = $content_data->previous(1);

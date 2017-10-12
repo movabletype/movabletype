@@ -83,7 +83,8 @@ jQuery('.actions-bar button.primary').click(function() {
 
   var getEditUrl = function (id) {
     var query = {
-      __mode: 'edit_content_data',
+      __mode: 'view',
+      _type: 'content_data',
       blog_id: '<mt:var name="blog_id" escape="js">',
       content_type_id: '<mt:var name="content_type_id" escape="js">',
       id: id
