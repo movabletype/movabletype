@@ -17,9 +17,12 @@ sub field_html_params {
     $value = []       unless $value;
     $value = [$value] unless ref $value eq 'ARRAY';
 
+    my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
+    $tag_delim .= ' ' if $tag_delim eq ',';
+
     my $tag_names;
     if ( $app->param('reedit') ) {
-        $tag_names = join ',', @$value;
+        $tag_names = join $tag_delim, @$value;
     }
     else {
         my %tag_hash;    # id => name
@@ -29,7 +32,7 @@ sub field_html_params {
             $tag_hash{ $tag->id } = $tag->name;
         }
         my @tag_names = grep { defined $_ } map { $tag_hash{$_} } @$value;
-        $tag_names = join ',', @tag_names;
+        $tag_names = join $tag_delim, @tag_names;
     }
 
     my $options = $field_data->{options};
@@ -128,7 +131,10 @@ sub html {
         push @links, qq{<a href="$link">${tag_name}</a>};
     }
 
-    join ', ', @links;
+    my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
+    $tag_delim .= ' ' if $tag_delim eq ',';
+
+    join $tag_delim, @links;
 }
 
 # prototype
@@ -212,7 +218,7 @@ sub tag_handler {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
     my $is_preview = eval {
-        MT->app->can('mode')
+               MT->app->can('mode')
             && MT->app->mode
             && MT->app->mode eq 'preview_content_data';
     };
@@ -281,7 +287,8 @@ sub tag_handler {
 
 sub data_load_handler {
     my ( $app, $field_data ) = @_;
-    my @tag_names = split ',',
+    my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
+    my @tag_names = split $tag_delim,
         $app->param( 'content-field-' . $field_data->{id} );
     \@tag_names;
 }
