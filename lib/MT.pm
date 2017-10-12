@@ -39,7 +39,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.3.5',              '__PRODUCT_VERSION_ID__',
+        '6.3.6',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 5;
+        $RELEASE_NUMBER = 6;
     }
 
     $DebugMode = 0;
