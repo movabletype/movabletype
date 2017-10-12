@@ -19,6 +19,7 @@ my $components = {
                 MT/Template/Tags/Blog.pm
                 MT/Template/Tags/Calendar.pm
                 MT/Template/Tags/Category.pm
+                MT/Template/Tags/CategorySet.pm
                 MT/Template/Tags/Comment.pm
                 MT/Template/Tags/Commenter.pm
                 MT/Template/Tags/ContentType.pm

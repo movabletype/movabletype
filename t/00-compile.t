@@ -392,6 +392,7 @@ use_ok('MT::Template::Tags::Author');
 use_ok('MT::Template::Tags::Blog');
 use_ok('MT::Template::Tags::Calendar');
 use_ok('MT::Template::Tags::Category');
+use_ok('MT::Template::Tags::CategorySet');
 use_ok('MT::Template::Tags::Comment');
 use_ok('MT::Template::Tags::Commenter');
 use_ok('MT::Template::Tags::Entry');
