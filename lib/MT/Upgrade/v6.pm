@@ -106,6 +106,15 @@ __SQL__
             priority      => 3.2,
             code          => \&_v6_remove_indexes,
         },
+        'v6_rebuild_permissions' => {
+            version_limit => 6.0020,
+            priority      => 5,
+            updater       => {
+                type  => 'permission',
+                label => "Rebuilding permission records...",
+                code  => \&_v6_rebuild_permissions,
+            },
+        },
     };
 }
 
@@ -188,6 +197,17 @@ sub _v6_renumbering_widget_orders {
 
     $user->widgets($widgets);
     $user->save;
+}
+
+sub _v6_rebuild_permissions {
+    my $perm = shift;
+
+    return 1 unless $perm->blog_id;
+
+    $perm->permissions('');
+    $perm->rebuild;
+
+    return 1;
 }
 
 sub _v6_remove_indexes {
