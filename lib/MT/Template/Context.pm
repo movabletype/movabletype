@@ -988,6 +988,11 @@ sub _no_page_error {
     );
 }
 
+sub _no_category_set_error {
+    my ($ctx) = @_;
+    $ctx->error( MT->translate('No Category Set could be found.') );
+}
+
 # overridden in other contexts
 sub context_script {''}
 

@@ -35,6 +35,8 @@ If specified, selects category sets defined for the content type matching the gi
 
     <mt:CategorySets content_type="a0b1c2d3e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9">
 
+=back
+
 =cut
 
 sub _hdlr_category_sets {
@@ -114,6 +116,26 @@ sub _hdlr_category_sets {
     }
 
     $res;
+}
+
+###########################################################################
+
+=head2 CategorySetName
+
+Outputs the name of the current category set in context.
+
+    <mt:CategorySets>
+      <mt:CategorySetName>
+    </mt:CategorySets>
+
+=cut
+
+sub _hdlr_category_set_name {
+    my ( $ctx, $args, $cond ) = @_;
+    my $category_set = $ctx->stash('category_set')
+        or return $ctx->_no_category_set_error();
+    my $name = defined $category_set->name ? $category_set->name : '';
+    return $name;
 }
 
 1;

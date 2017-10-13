@@ -1108,6 +1108,10 @@ sub core_tags {
             SiteContentCount =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_site_content_count',
 
+            ## Category Set
+            CategorySetName =>
+                '$Core::MT::Template::Tags::CategorySet::_hdlr_category_set_name',
+
          # Content => '$Core::MT::Template::Tags::ContentType::_hdlr_content',
          # Entity => '$Core::MT::Template::Tags::ContentType::_hdlr_entity',
 

@@ -116,7 +116,7 @@ $content_type_02->fields($fields_02);
 $content_type_02->save or die $content_type_02->errstr;
 
 $vars->{category_set_01_id}        = $category_set_01->id;
-$vars->{content_type_01_unique_id} = $content_type_01->unique_id;
+$vars->{content_type_02_unique_id} = $content_type_02->unique_id;
 
 MT::Test::Tag->run_perl_tests( $blog->id );
 
@@ -124,18 +124,18 @@ __END__
 
 === mt:CategorySets label="No ID"
 --- template
-<mt:CategorySets>a</mt:CategorySets>
+<mt:CategorySets><mt:CategorySetName></mt:CategorySets>
 --- expected
-aa
+test category set 01test category set 02
 
 === mt:CategorySets label="Set ID"
 --- template
-<mt:CategorySets id="[% category_set_01_id %]">a</mt:CategorySets>
+<mt:CategorySets id="[% category_set_01_id %]"><mt:CategorySetName></mt:CategorySets>
 --- expected
-a
+test category set 01
 
 === mt:CategorySets label="Set Content Type"
 --- template
-<mt:CategorySets content_type="[% content_type_01_unique_id %]">a</mt:CategorySets>
+<mt:CategorySets content_type="[% content_type_02_unique_id %]"><mt:CategorySetName></mt:CategorySets>
 --- expected
-a
+test category set 02
