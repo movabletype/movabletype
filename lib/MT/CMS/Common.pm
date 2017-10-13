@@ -291,6 +291,8 @@ sub save {
                 }
             );
             while ( my $perm = $perm_iter->() ) {
+                # Clear all permissions then rebuild it.
+                $perm->permissions('');
                 $perm->rebuild;
             }
         }
