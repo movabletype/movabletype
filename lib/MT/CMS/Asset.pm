@@ -1564,7 +1564,11 @@ sub _upload_file_compat {
                     && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
                     && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
                 {
-                    $basename =~ s/$ext_old$/$ext_new/;
+                    if( $basename eq $ext_old ) {
+                        $basename .= '.'  . $ext_new;
+                    } else {
+                        $basename =~ s/$ext_old$/$ext_new/;
+                    }
                     $app->param( "changed_file_ext", "$ext_old,$ext_new" );
                 }
             }
@@ -2093,11 +2097,16 @@ sub _upload_file {
         my $ext_old
             = ( File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
             [2];
+
         if (   $ext_new ne lc($ext_old)
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
             && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
         {
-            $basename =~ s/$ext_old$/$ext_new/;
+            if( $basename eq $ext_old ){
+                $basename .= '.' . $ext_new;
+            } else {
+                $basename =~ s/$ext_old$/$ext_new/;
+            }
             $app->param( "changed_file_ext", "$ext_old,$ext_new" );
         }
     }
