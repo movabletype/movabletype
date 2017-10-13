@@ -266,24 +266,45 @@ sub _update_object_assets {
     my $self = shift;
     my ( $content_type, $field_data, $values ) = @_;
 
-    MT::ObjectAsset->remove(
-        {   object_ds => 'content_data',
+    my $iter = MT::ObjectAsset->load_iter(
+        {   blog_id   => $self->blog_id,
+            object_ds => 'content_data',
             object_id => $self->id,
             cf_id     => $field_data->{id},
         }
     );
 
+    my %object_assets;
+    while ( my $oa = $iter->() ) {
+        push @{ $object_assets{ $oa->asset_id } ||= [] }, $oa;
+    }
+
+    my @new_asset_ids;
     for my $asset_id (@$values) {
-        my $obj_asset = MT::ObjectAsset->new;
-        $obj_asset->set_values(
-            {   blog_id   => $self->blog_id,
-                asset_id  => $asset_id,
-                object_ds => 'content_data',
-                object_id => $self->id,
-                cf_id     => $field_data->{id},
-            }
+        if ( $object_assets{$asset_id} && @{ $object_assets{$asset_id} } ) {
+            pop @{ $object_assets{$asset_id} };
+        }
+        else {
+            push @new_asset_ids, $asset_id;
+        }
+    }
+
+    my @removed_object_assets = map {@$_} values %object_assets;
+
+    for my $asset_id (@new_asset_ids) {
+        my $oa = pop @removed_object_assets;
+        $oa ||= MT::ObjectAsset->new(
+            blog_id   => $self->blog_id,
+            object_ds => 'content_data',
+            object_id => $self->id,
+            cf_id     => $field_data->{id},
         );
-        $obj_asset->save or die $obj_asset->errstr;
+        $oa->asset_id($asset_id);
+        $oa->save or die $oa->errstr;
+    }
+
+    for my $oa (@removed_object_assets) {
+        $oa->remove or die $oa->errstr;
     }
 }
 
