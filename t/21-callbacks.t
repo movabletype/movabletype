@@ -12,13 +12,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use Test::More tests => 5;
+plan tests => 5;
 use CGI;
-
-use lib 'extlib';
-use lib 't/lib';
-use lib 'lib';
 
 use MT;
 use MT::Test;

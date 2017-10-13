@@ -13,7 +13,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Test::More tests => 6;
+plan tests => 6;
 use Data::Dumper;
 
 use MT::Test qw( :db :app :data );

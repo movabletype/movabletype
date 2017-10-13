@@ -12,11 +12,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw( ../lib ../extlib lib extlib t/lib t/extlib);
-
 use MT::Test;
-use Test::More tests => 17;
+plan tests => 17;
 use Encode;
 
 require_ok('MT::Util::YAML');

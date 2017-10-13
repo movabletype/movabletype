@@ -12,13 +12,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw(lib extlib t/lib);
-
 use Data::Dumper;
 use File::Spec;
 use File::Temp qw( tempdir );
-use Test::More;
 use MT::Test::DataAPI;
 
 use MT::App::DataAPI;

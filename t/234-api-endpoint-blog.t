@@ -12,11 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw(lib extlib t/lib);
-
-use FindBin;
-use Test::More;
 use MT::Test::DataAPI;
 
 use MT::App::DataAPI;

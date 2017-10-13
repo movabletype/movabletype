@@ -12,14 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use lib 't/lib', 'lib', 'extlib', '../lib', '../extlib';
 use MT::Test qw( :app :db :data );
-use Test::More;
 
 my $app  = MT->instance;
 my $user = $app->model('author')->load(1);

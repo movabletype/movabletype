@@ -12,18 +12,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 't/lib';
-use lib 'lib';
-use lib 'extlib';
-
-use Test::More;
-
 use MT;
 use MT::Author;
 use vars qw( $DB_DIR $T_CFG );
-
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 
 use MT::Test qw(:db :data);
 

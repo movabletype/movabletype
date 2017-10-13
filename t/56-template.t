@@ -12,11 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 'extlib', 'lib', 't/lib';
-
 use MT::Test;
-use Test::More;
 use MT::Template;
 
 use MT::App::CMS;

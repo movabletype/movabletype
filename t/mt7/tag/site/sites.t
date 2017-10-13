@@ -12,13 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw(lib t/lib);
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
 use MT::Test::Tag;
 
 plan tests => 2 * blocks;

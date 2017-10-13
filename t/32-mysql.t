@@ -17,12 +17,7 @@ BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
-
-use Test::More;
-use lib 't/lib';
-
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test-disable-object-cache.cfg';
     plan skip_all => "Configuration file $ENV{MT_CONFIG} not found"
         if !-r "t/$ENV{MT_CONFIG}";
 

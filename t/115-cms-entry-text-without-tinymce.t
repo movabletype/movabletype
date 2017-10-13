@@ -12,20 +12,12 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-without-tinymce-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
-use lib 't/lib', 'lib', 'extlib', '../lib', '../extlib';
 use MT::Test qw( :app :db :data );
-use Test::More;
 
 my $app  = MT->instance;
 my $user = $app->model('author')->load(1);

@@ -12,8 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use Test::More tests => 73;
+plan tests => 73;
 use_ok 'MT::Serialize';
 use MT;
 use MT::Test;

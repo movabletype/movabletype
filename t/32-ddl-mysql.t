@@ -18,11 +18,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib';
-use Test::More;
-
 BEGIN {
-    $ENV{MT_CONFIG} = "mysql-test.cfg";
     plan skip_all => "Configuration file $ENV{MT_CONFIG} not found"
         if !-r "t/$ENV{MT_CONFIG}";
 

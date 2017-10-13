@@ -12,14 +12,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw( t/lib extlib lib ../lib ../extlib );
 
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-memcached-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require Test::MockObject }
         or plan skip_all => 'Test::MockObject is not installed';
 }

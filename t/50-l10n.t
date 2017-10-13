@@ -10,10 +10,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use Test::More;
-
-use lib qw( lib extlib t/lib );
 use MT::Test;
 use MT;
 use MT::L10N;

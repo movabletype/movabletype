@@ -12,20 +12,12 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use lib qw(lib extlib t/lib);
-
 eval(
     $ENV{SKIP_REINITIALIZE_DATABASE}
     ? "use MT::Test qw(:app);"
     : "use MT::Test qw(:app :db :data);"
 );
 
-use Test::More;
 use File::Basename;
 use MT::WeblogPublisher;
 

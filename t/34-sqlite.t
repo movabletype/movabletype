@@ -18,13 +18,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Test::More;
-use lib 't/lib';
-
 BEGIN {
     plan skip_all => "Test for 'sqlite' is not actively maintained";
 
-    $ENV{MT_CONFIG} = 'sqlite-test.cfg';
     plan skip_all => "Configuration file $ENV{MT_CONFIG} not found"
         if !-r "t/$ENV{MT_CONFIG}";
 

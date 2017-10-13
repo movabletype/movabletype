@@ -11,9 +11,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use Test::More;
-
 use File::Basename;
 use File::Spec;
 
@@ -22,7 +19,6 @@ BEGIN {
         or plan skip_all => 'GD is not installed';
 }
 
-use lib qw( lib extlib t/lib );
 use MT::Test;
 use MT::Image;
 

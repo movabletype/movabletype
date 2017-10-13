@@ -12,11 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 't/lib';
 use MT::Test qw(:newdb);
-
-use Test::More;
 
 plan tests => 8;
 

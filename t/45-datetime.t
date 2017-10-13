@@ -1,4 +1,5 @@
 # $Id: 45-datetime.t 1744 2008-04-03 08:14:20Z fumiakiy $
+use warnings;
 use strict;
 use warnings;
 use FindBin;
@@ -11,11 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-
 BEGIN {
-    use Test::More;
     my @modules = qw( DateTime DateTime::TimeZone );
     my $eval_string = join ';', map {"require $_"} @modules;
     eval $eval_string

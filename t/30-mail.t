@@ -8,19 +8,12 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
+    $ENV{MT_TEST_MAIL} = 1;
 }
 
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-    $ENV{MT_TEST_MAIL} = 1;
-};
-
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::Test;
 use MT;
 use MT::Mail;
-use Test::More;
 use MIME::Base64;
 
 plan skip_all => 'not for Win32' if $^O eq 'MSWin32';

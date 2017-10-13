@@ -12,11 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw( ../lib ../extlib lib extlib t/lib t/extlib);
-
 use MT::Test;
-use Test::More;
 use Test::MockModule;
 
 require_ok('MT::Util::Log');

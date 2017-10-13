@@ -12,12 +12,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw(t/lib lib extlib);
-
 use MT::Test qw( :app );
 use MT::Image;
-use Test::More;
 use File::Temp;
 use File::Copy;
 use Image::ExifTool;

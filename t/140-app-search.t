@@ -12,16 +12,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use lib 't/lib', 'lib', 'extlib';
 use MT::Test qw( :app :db :data );
 use MT::Test::Permission;
 use JSON;
-use Test::More;
 
 my $blog  = MT->model('blog')->load(1);
 my $entry = MT->model('entry')->load(

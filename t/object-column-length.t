@@ -11,12 +11,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
 # Check column length of MT::Object for Oracle Database.
 
-use Test::More;
-
-use lib qw( lib extlib t/lib );
 use MT;
 MT->instance;
 use MT::Test qw( :app :db );

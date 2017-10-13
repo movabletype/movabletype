@@ -12,13 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 'extlib';
-use lib 'lib';
-use lib 't/lib';
-
-use Test::More qw(no_plan);
-
 use MT;
 use MT::Blog;
 use MT::Entry;
@@ -81,3 +74,5 @@ $mt->rebuild( BlogID => $blog->id, Force => 1 ) || print "Rebuild error: ",
     $mt->errstr;
 my $out3 = $tmpl->build( $ctx, {} );
 ok( $out3 eq "hello yay", "Test template should be different" );
+
+done_testing;

@@ -12,11 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 't/lib';
-use lib 'lib';
-use lib 'extlib';
-
 use MT;
 use MT::Test;
 use MT::Util;
@@ -38,7 +33,7 @@ my @tests = (
     },
 );
 
-use Test::More tests => 5;
+plan tests => 5;
 
 MT->set_language('en_US');
 

@@ -12,16 +12,10 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw( t/lib lib extlib ../lib ../extlib );
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
 use MT::Test qw(:db :data);
 use MT;
 use constant HAS_LEAKTRACE => eval { require Test::LeakTrace };
-use Test::More HAS_LEAKTRACE
+plan HAS_LEAKTRACE
     ? ( tests => 36 )
     : ( skip_all => 'require Test::LeakTrace' );
 use Test::LeakTrace;

@@ -11,23 +11,14 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
 use File::Spec;
 
-use lib qw( t/lib extlib lib ../lib ../extlib );
-
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
 use MT::Test qw( :app :db :data );
-use Test::More;
 
 my $admin = MT::Author->load(1);
 my $blog  = MT::Blog->load(1);

@@ -12,13 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw(extlib lib t/lib);
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
 use MT;
 use MT::App::DataAPI;
 eval(
@@ -27,7 +20,6 @@ eval(
     : "use MT::Test qw(:db);"
 );
 use MT::Test::Permission;
-use Test::More;
 
 my $token_class   = MT->model('accesstoken');
 my $session_class = MT->model('session');

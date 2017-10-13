@@ -12,13 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw(lib t/lib);
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
 use Test::Base;
 plan skip_all => "new UI" unless $ENV{MT_TEST_NEW_UI};
 plan tests => 1 * blocks;

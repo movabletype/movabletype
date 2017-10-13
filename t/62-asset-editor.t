@@ -11,9 +11,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use Test::More;
-
 BEGIN {
     eval 'use Test::Spec; 1'
         or plan skip_all => 'Test::Spec is not installed';
@@ -22,12 +19,9 @@ BEGIN {
 }
 
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
     system 'perl -Ilib -Iextlib -It/lib -e "use MT::Test qw( :db :data );"';
 
-    $ENV{MT_CONFIG} = 't/mysql-test.cfg';
 }
-use lib qw( lib extlib );
 use MT;
 use MT::PSGI;
 

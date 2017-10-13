@@ -12,12 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 't/lib';
-use lib 'lib';
-use lib 'extlib';
-
-use Test::More tests => 57;
+plan tests => 57;
 
 use MT;
 use MT::Blog;
@@ -27,8 +22,6 @@ use MT::Entry;
 use MT::Placement;
 
 use vars qw( $DB_DIR $T_CFG );
-
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::Test qw(:db :data);
 
 my $mt = MT->instance( Config => $T_CFG ) or die MT->errstr;

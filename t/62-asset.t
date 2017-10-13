@@ -15,9 +15,7 @@ BEGIN {
 use File::Copy;
 use File::Temp qw( tempfile );
 
-use lib qw( t t/lib ./extlib ./lib);
-
-use Test::More tests => 71;
+plan tests => 71;
 use MT::Test qw(:db :data);
 
 use Image::ExifTool;

@@ -29,10 +29,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-#use Test::More tests => 35;
-use Test::More skip_all => 'MT::I18N functions were deprecated.';
-
+plan skip_all => 'MT::I18N functions were deprecated.';
 use Encode;
 use MT;
 use MT::Test;

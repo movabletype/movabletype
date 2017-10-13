@@ -12,8 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/extlib', 't/lib', 'extlib', 'lib';
-use Test::More;
 use MT::Test;
 use File::Spec;
 use Data::Dumper;

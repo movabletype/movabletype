@@ -12,10 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use Test::More qw(no_plan);    #tests => 3598;
-
 use MT;
 use MT::Tag;
 use MT::Author;
@@ -108,6 +104,8 @@ is( scalar(@errors), 0, 'no error during backup' );
 
 &finish;
 require MIME::Base64;
+
+done_testing;
 
 sub checkthemout {
     my ( $oldies, $objects ) = @_;

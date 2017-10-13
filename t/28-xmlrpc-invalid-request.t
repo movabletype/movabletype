@@ -10,17 +10,10 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::Test qw(:db :data);
 use MT::Test::Permission;
 use MT::Util qw(archive_file_for);
 use File::Basename qw(dirname);
-use Test::More;
 use MIME::Base64;
 use Clone qw/ clone /;
 

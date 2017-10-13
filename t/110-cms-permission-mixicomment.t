@@ -12,15 +12,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use lib 't/lib', 'lib', 'extlib', 'plugins/mixiComment/lib';
+use lib 'plugins/mixiComment/lib';
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
-use Test::More;
 
 ### Make test data
 

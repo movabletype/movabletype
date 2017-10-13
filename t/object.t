@@ -14,7 +14,6 @@ BEGIN {
 }
 
 use utf8;
-use Test::More;
 use MT;
 use MT::Test qw(:db :data);
 

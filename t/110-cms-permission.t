@@ -12,12 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use lib 't/lib', 'lib', 'extlib', 'addons/Commercial.pack/lib',
+use lib 'addons/Commercial.pack/lib',
     'addons/Enterprise.pack/lib';
 
 use MT;
@@ -28,8 +23,6 @@ use MT::Test qw( :app :db :data );
 # Make additional data
 my $mt = MT->instance;
 make_data();
-
-use Test::More;
 
 my ( $app, $out );
 my $blog  = MT::Blog->load(1);

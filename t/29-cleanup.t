@@ -13,7 +13,7 @@ BEGIN {
 }
 
 use File::Path qw( rmtree );
-use Test::More tests => 1;
+plan tests => 1;
 
 use vars qw( $DB_DIR $T_CFG );
 use lib 't';

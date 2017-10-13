@@ -12,9 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 't/lib', 'lib', 'extlib';
-use Test::More tests => 8;
+plan tests => 8;
 
 use MT;
 use MT::Author;

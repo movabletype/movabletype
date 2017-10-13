@@ -12,11 +12,10 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw( t/lib lib extlib ../lib ../extlib );
 use MT;
 use MT::Test;
 use constant HAS_LEAKTRACE => eval { require Test::LeakTrace };
-use Test::More HAS_LEAKTRACE
+plan HAS_LEAKTRACE
     ? ( tests => 12 )
     : ( skip_all => 'require Test::LeakTrace' );
 use Test::LeakTrace;

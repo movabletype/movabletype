@@ -9,17 +9,10 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
-}
-
-use lib qw( t/lib lib extlib ../lib ../extlib );
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-    $ENV{MT_APP}    = 'MT::App::CMS';
+    $ENV{MT_APP} = 'MT::App::CMS';
 }
 
 use MT::Test qw(:app :db :data);
-use Test::More qw( no_plan );
 use YAML::Tiny;
 use File::Spec;
 use FindBin qw( $Bin );
@@ -762,6 +755,8 @@ my $atom = MT->model('template')->load(
     }
 );
 is( $atom->text, 'ATOMTEMPLATE BODY FOR TEST' );
+
+done_testing;
 
 __DATA__
 MyTheme:

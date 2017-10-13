@@ -11,19 +11,16 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
 use File::Basename;
 use File::Copy;
 use File::Spec;
 use File::Temp qw( tempfile );
-use Test::More;
 
 BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
-use lib qw( lib extlib t/lib );
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
 use MT;

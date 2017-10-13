@@ -14,8 +14,6 @@ BEGIN {
 use utf8;
 use open ':std', ':encoding(utf8)';
 
-use Test::More;
-
 use File::Spec;
 use JSON;
 
@@ -24,11 +22,8 @@ BEGIN {
         or plan skip_all => 'Test::MockObject::Extends is not installed';
     eval 'use Test::Spec; 1'
         or plan skip_all => 'Test::Spec is not installed';
-
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
-use lib qw( lib extlib t/lib );
 use MT::Test qw( :app :db :data );
 use MT;
 

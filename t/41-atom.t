@@ -10,7 +10,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use POSIX;
 
 use MT;
@@ -22,8 +21,6 @@ use XML::Atom;
 use XML::Atom::Feed;
 use XML::Atom::Entry;
 use POSIX qw( ceil );
-
-use Test::More qw( no_plan );    #tests => 97;
 
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
@@ -602,3 +599,5 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
 
     }    #end foreach of blog_id
 }    #end foreach of base_uri
+
+done_testing;

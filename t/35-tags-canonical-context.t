@@ -12,22 +12,12 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw(lib t/lib);
-
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test-disable-object-cache.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
 use IPC::Run3;
-
-use Test::More;
 use URI;
 
 use MT::Test qw(:db :data);

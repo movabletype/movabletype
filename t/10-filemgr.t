@@ -12,8 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use Test::More;
 use File::Temp;
 
 use MT;

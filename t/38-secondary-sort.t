@@ -11,14 +11,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use Test::More;
-
-use lib qw( lib extlib t/lib );
 use MT::Test qw( :app :db );
 use MT;
 use MT::Object;

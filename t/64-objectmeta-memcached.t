@@ -12,14 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw( t/lib extlib lib ../lib ../extlib );
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-memcached-test.cfg';
-}
-
 use MT::Test;
-use Test::More;
 
 my $alive = eval {
     my $m = MT::Memcached->instance;

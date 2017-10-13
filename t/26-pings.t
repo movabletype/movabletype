@@ -12,13 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 't/lib';
-use lib 't/extlib';
-use lib 'lib';
-
-use Test::More;
-
 plan tests => 15;
 #plan skip_all => "Needs rewrite to eliminate HTTP server requirement.";
 #exit;

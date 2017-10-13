@@ -11,15 +11,11 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use Test::More;
-
 use File::Basename;
 use File::Copy;
 use File::Spec;
 use File::Temp qw( tempfile );
 
-use lib qw( lib extlib t/lib );
 use MT::Test qw( :app :db );
 use MT;
 use MT::Image;

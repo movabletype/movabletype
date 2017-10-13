@@ -11,17 +11,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use Test::More;
-
 use HTTP::Request;
 use Plack::Test;
 
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use lib qw( lib extlib t/lib );
 use MT::Test qw( :app :db );
 use MT;
 use MT::PSGI;

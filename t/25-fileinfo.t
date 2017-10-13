@@ -12,13 +12,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 'extlib', 'lib', 't/lib';
-
 use MT;
 use MT::Test qw(:db);
-
-use Test::More;
 
 my $mt = MT->instance;
 my $fileinfo = $mt->model('fileinfo');

@@ -12,11 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw(lib t/lib);
-
-use Test::More;
-
 use MT::Test qw(:db);
 use MT;
 

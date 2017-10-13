@@ -12,13 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 'extlib';
-use lib 'lib';
-use lib 't/lib';
-
-use Test::More qw(no_plan);
-
 use MT;
 
 use vars qw( $DB_DIR $T_CFG );
@@ -164,3 +157,4 @@ $site_url =~ s{ / \z }{}xms;
 like($out, qr(\Ahi <!--#include virtual="${site_url}/w/included_template_$include_id.html" --> bye\z)ms,
     'test template included template by ssi with \'key\' absolute path');
 
+done_testing;

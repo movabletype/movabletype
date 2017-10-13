@@ -12,8 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Test::More tests => 1;
-use lib 't/lib';
+plan tests => 1;
 use LWP::UserAgent::Local;
 $ENV{CONFIG} = 't/mt.cfg';
 my $ua = LWP::UserAgent::Local->new({ScriptAlias => '/'});

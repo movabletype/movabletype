@@ -11,13 +11,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw( lib extlib ../lib ../extlib t/lib );
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
 use MT;
 use MT::Association;
 use MT::CMS::User;
@@ -25,8 +18,6 @@ use MT::Role;
 
 use MT::Test qw( :app :db :data );
 use MT::Test::Permission;
-
-use Test::More;
 
 MT->instance;
 my $admin = MT::Author->load(1);

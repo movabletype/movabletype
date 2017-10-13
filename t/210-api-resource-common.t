@@ -12,20 +12,11 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
-use lib qw(lib extlib t/lib);
-
-use Test::More;
 eval(
     $ENV{SKIP_REINITIALIZE_DATABASE}
     ? "use MT::Test;"

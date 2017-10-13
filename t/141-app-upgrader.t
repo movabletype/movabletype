@@ -12,17 +12,10 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use lib 'lib', 'extlib', 't/lib', '../lib', '../extlib';
 use MT::Test qw( :app :newdb );
 use MT::Test::Permission;
 use MT::Test::Upgrade;
 use MT::Theme;
-use Test::More;
 
 my ( $app, $out );
 

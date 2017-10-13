@@ -18,13 +18,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib';
-use Test::More;
-
 BEGIN {
     plan skip_all => "Test for 'postgresql' is not actively maintained";
 
-    $ENV{MT_CONFIG} = "postgresql-test.cfg";
     plan skip_all => "Configuration file $ENV{MT_CONFIG} not found"
         if !-r "t/$ENV{MT_CONFIG}";
 

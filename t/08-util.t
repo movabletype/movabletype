@@ -14,8 +14,6 @@ BEGIN {
 }
 
 use utf8;
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use Test::More;
 use File::Spec;
 
 use MT;

@@ -12,15 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use Test::More tests => 3;
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use lib qw( t/lib t );
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+plan tests => 3;
 
 use CGI;
 

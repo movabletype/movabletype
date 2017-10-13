@@ -12,15 +12,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use lib 't/lib', 'lib', 'extlib';
 use MT::Test qw( :app :db :data);
 use MT::Test::Permission;
-use Test::More;
 
 my $aikawa = MT::Test::Permission->make_author(
     name     => 'aikawa',

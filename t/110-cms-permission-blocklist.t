@@ -12,15 +12,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use lib 't/lib', 'lib', 'extlib';
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
-use Test::More skip_all => 'MT::Blocklist is deprecated.';
+plan skip_all => 'MT::Blocklist is deprecated.';
 
 ### Make test data
 

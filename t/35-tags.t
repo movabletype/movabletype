@@ -15,15 +15,9 @@ BEGIN {
 use IPC::Run3;
 use IO::String;
 
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
 $| = 1;
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::Test qw(:db :data);
-use Test::More;
 use JSON -support_by_pp;
 use MT;
 use MT::Util qw(ts2epoch epoch2ts);

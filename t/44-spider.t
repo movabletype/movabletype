@@ -12,10 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use Test::More;
-
 BEGIN {
     plan $ENV{MT_TEST_SPIDER}
         ? (tests => 4)

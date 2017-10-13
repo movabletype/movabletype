@@ -12,19 +12,13 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw( t/lib extlib lib ../lib ../extlib );
-
 use Data::Dumper;
-use Test::More tests => 29;
+plan tests => 29;
 
 use MT;
 use MT::Object;
 
 use vars qw( $DB_DIR $T_CFG );
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
 use MT::Test qw(:db);
 
 my $mt = MT->instance;    # plugins are go!

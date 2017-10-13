@@ -12,12 +12,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw( t/lib lib extlib ../lib ../extlib );
-
 use MT;
 use MT::Test;
-use Test::More;
 use Data::Dumper;
 
 require MT::Serialize;

@@ -11,14 +11,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 't/lib';
-use lib 'lib';
-use lib 'extlib';
-
 # $Id: 20-setup.t 2562 2008-06-12 05:12:23Z bchoate $
-
-use Test::More qw(no_plan);
 
 use MT;
 use MT::Test;
@@ -32,7 +25,6 @@ use MT::Template;
 use MT::TemplateMap;
 
 use vars qw( $DB_DIR $T_CFG );
-use lib 't';
 
 use MT::Test qw(:db);
 MT->instance;
@@ -155,3 +147,5 @@ for my $tmpl (@arch_tmpl) {
         ok( $test, "saved $map" );
     }
 }
+
+done_testing;

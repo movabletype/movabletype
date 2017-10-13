@@ -12,14 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use lib 't/lib', 'extlib', 'lib';
-
-
 my $fixed_time = CORE::time;
 sub fixed_time() {
     return $fixed_time;
@@ -35,7 +27,6 @@ BEGIN {
     use MT::Test qw(:app :db);
 }
 
-use Test::More;
 use MT::Lockout;
 
 

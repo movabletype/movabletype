@@ -11,8 +11,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use Test::More;
 use MT::Test;
 use JSON;
 use MT::Tag;

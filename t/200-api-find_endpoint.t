@@ -12,14 +12,11 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
 BEGIN {
-    use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
-use lib qw(lib extlib t/lib);
 use MT::Test ();
 use MT;
 use MT::App::DataAPI;

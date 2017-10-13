@@ -12,20 +12,12 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use lib 't/lib', 'lib', 'extlib', '../lib', '../extlib';
-
 use JSON;
 
 use MT::Test;
 MT::Test->init_app;
 MT::Test->init_db;
 use MT::Test::Permission;
-use Test::More;
 
 ### Make test data
 

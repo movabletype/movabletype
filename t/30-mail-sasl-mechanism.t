@@ -11,11 +11,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use Test::More;
-
-use lib qw( lib extlib );
-
 BEGIN {
     eval 'use Net::SMTPS; 1'
         or plan skip_all => 'Net::SMTPS is not installed';
@@ -23,9 +18,8 @@ BEGIN {
         or plan skip_all => 'Test::MockModule is not installed';
     eval 'use Test::MockObject; 1'
         or plan skip_all => 'Test::MockObject is not installed';
-
-    $ENV{MT_CONFIG} = 't/mysql-test.cfg';
 }
+
 use MT;
 use MT::Mail;
 

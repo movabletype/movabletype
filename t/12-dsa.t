@@ -12,19 +12,12 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 't/lib';
-use lib 'lib';
-use lib 'extlib';
-
-use Test::More tests => 8;
+plan tests => 8;
 
 use MT;
 use MT::Test;
 use MT::Builder;
 use MT::Util qw(dsa_verify perl_sha1_digest_hex dec2bin);
-
-use lib 't';
 
 my $msg = 'nina@blues.org::Nina Simone::1072216494';
 my $sig = {

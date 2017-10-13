@@ -13,13 +13,6 @@ BEGIN {
 }
 
 use utf8;
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-use Test::More;
 
 use MT::Test qw(:db :data);
 

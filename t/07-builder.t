@@ -13,12 +13,11 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw( t t/lib lib extlib );
 use Data::Dumper;
 
 use MT::Test;
 
-use Test::More tests => 142;
+plan tests => 142;
 
 use MT;
 

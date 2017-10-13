@@ -12,18 +12,10 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw(lib extlib t/lib);
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
 use MT;
 use MT::Test qw(:db);
 use JSON;
 use File::Spec;
-use Test::More;
 
 use MT::BackupRestore;
 

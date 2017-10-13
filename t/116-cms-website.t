@@ -11,13 +11,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use Test::More;
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
 # Move addons/Cloud.pack/config.yaml to config.yaml.disabled.
 # An error occurs in save_community_prefs mode when Cloud.pack installed.
 use File::Spec;

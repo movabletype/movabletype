@@ -10,9 +10,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use Test::More;
-
 use File::Basename;
 use File::Spec;
 
@@ -26,7 +23,6 @@ BEGIN {
     $Image::ExifTool::configFile = $config_file;
 }
 
-use lib qw( lib extlib t/lib );
 use MT::Test qw( :app :db );
 
 use Image::ExifTool;

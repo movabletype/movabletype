@@ -11,23 +11,14 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
 BEGIN {
-    use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
-}
-
-use lib qw( lib extlib ../lib ../extlib t/lib );
-
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
 use MT;
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
-use Test::More;
 
 subtest 'Check transencoding in validate_request_params().' => sub {
     my $flag = 0;

@@ -12,9 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib 't/lib', 'lib', 'extlib';
-use Test::More tests => 42;
+plan tests => 42;
 
 BEGIN {
         $ENV{MT_APP} = 'MT::App::CMS';
