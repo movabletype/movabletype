@@ -18,10 +18,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-BEGIN {
-    system 'perl -Ilib -Iextlib -It/lib -e "use MT::Test qw( :db :data );"';
-
-}
+use MT::Test qw( :db :data );
 use MT;
 use MT::PSGI;
 
