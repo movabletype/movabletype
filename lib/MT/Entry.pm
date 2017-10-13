@@ -1668,7 +1668,7 @@ sub gather_changed_cols {
     MT::Revisable::gather_changed_cols( $obj, @_ );
     my $changed_cols = $obj->{changed_revisioned_cols} || [];
 
-    # When a entry is saved at first and 'unpublished_on' is undef,
+    # When an entry is saved at first and 'unpublished_on' is undef,
     # 'unpublished_on' is added to 'changed_revisioned_cols'.
     unless ( $obj->id ) {
         unless ( $obj->unpublished_on ) {
