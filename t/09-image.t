@@ -20,7 +20,7 @@ use MT::Image;
 use MT::ConfigMgr;
 use MT;
 
-use vars qw( @Img @drivers $TESTS_FOR_EACH );
+our( @Img, @drivers, $TESTS_FOR_EACH );
 
 BEGIN {
     $TESTS_FOR_EACH = 29;
