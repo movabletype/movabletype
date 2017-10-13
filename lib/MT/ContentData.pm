@@ -312,7 +312,7 @@ sub _update_object_tags {
     my $self = shift;
     my ( $content_type, $field_data, $values ) = @_;
 
-    MT::ObjectTag->remove(
+    my $iter = MT::ObjectTag->load_iter(
         {   blog_id           => $self->blog_id,
             object_datasource => 'content_data',
             object_id         => $self->id,
@@ -320,17 +320,37 @@ sub _update_object_tags {
         }
     );
 
+    my %object_tags;
+    while ( my $ot = $iter->() ) {
+        push @{ $object_tags{ $ot->tag_id } ||= [] }, $ot;
+    }
+
+    my @new_tag_ids;
     for my $tag_id (@$values) {
-        my $obj_tag = MT::ObjectTag->new;
-        $obj_tag->set_values(
-            {   blog_id           => $self->blog_id,
-                tag_id            => $tag_id,
-                object_datasource => 'content_data',
-                object_id         => $self->id,
-                cf_id             => $field_data->{id},
-            }
+        if ( $object_tags{$tag_id} && @{ $object_tags{$tag_id} } ) {
+            pop @{ $object_tags{$tag_id} };
+        }
+        else {
+            push @new_tag_ids, $tag_id;
+        }
+    }
+
+    my @removed_object_tags = map {@$_} values %object_tags;
+
+    for my $tag_id (@new_tag_ids) {
+        my $ot = pop @removed_object_tags;
+        $ot ||= MT::ObjectTag->new(
+            blog_id           => $self->blog_id,
+            object_datasource => 'content_data',
+            object_id         => $self->id,
+            cf_id             => $field_data->{id},
         );
-        $obj_tag->save or die $obj_tag->errstr;
+        $ot->tag_id($tag_id);
+        $ot->save or die $ot->errstr;
+    }
+
+    for my $ot (@removed_object_tags) {
+        $ot->remove or die $ot->errstr;
     }
 }
 
