@@ -365,9 +365,9 @@ sub core_methods {
         'delete_content_data'  => "${pkg}ContentData::delete",
 
         ## MT7 - Content Type
-        'edit_content_type'     => "${pkg}ContentType::edit",
-        'view_content_type'     => "${pkg}ContentType::edit",
-        'save_content_type'     => "${pkg}ContentType::save",
+        'edit_content_type' => "${pkg}ContentType::edit",
+        'view_content_type' => "${pkg}ContentType::edit",
+        'save_content_type' => "${pkg}ContentType::save",
 
      # 'cfg_content_type_data' => " ${pkg}ContentType::cfg_content_type_data",
         'select_list_content_type' =>
@@ -4215,12 +4215,14 @@ sub archive_type_sorter {
         'Monthly'    => 5,
         'Yearly'     => 6
     );
-    my $ord_a = $order{ $a->{archive_type} };
-    my $ord_b = $order{ $b->{archive_type} };
+    my $ord_a          = $order{ $a->{archive_type} };
+    my $ord_b          = $order{ $b->{archive_type} };
+    my $a_is_preferred = $a->{map_is_preferred} || 0;
+    my $b_is_preferred = $b->{map_is_preferred} || 0;
 
     if ( defined($ord_a) && defined($ord_b) ) {
         return $ord_a <=> $ord_b
-            || $b->{map_is_preferred} <=> $a->{map_is_preferred};
+            || $b_is_preferred <=> $a_is_preferred;
     }
 
     # in the event a custom archive type includes the keyword 'Weekly', etc.
@@ -4264,7 +4266,7 @@ sub archive_type_sorter {
         $str_b = "00" . $str_b if defined($ord_b);
     }
     return $str_a cmp $str_b
-        || $b->{map_is_preferred} <=> $a->{map_is_preferred};
+        || $b_is_preferred <=> $a_is_preferred;
 }
 
 sub preview_object_basename {
