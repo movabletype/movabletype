@@ -186,50 +186,80 @@ sub save {
             $self->_update_object_categories( $content_type, $f, $value );
         }
 
-        MT::ContentFieldIndex->remove(
-            {   content_type_id  => $content_type->id,
-                content_data_id  => $self->id,
-                content_field_id => $f->{id},
-            }
-        );
-
-        for my $v (@$value) {
-            my $cf_idx = MT::ContentFieldIndex->new;
-            $cf_idx->set_values(
-                {   content_type_id  => $content_type->id,
-                    content_data_id  => $self->id,
-                    content_field_id => $f->{id},
-                }
-            );
-
-            $cf_idx->set_value( $data_type, $v )
-                or return $self->error(
-                MT->translate(
-                    'Saving content field index failed: Invalid field type "[_1]"',
-                    $data_type
-                )
-                );
-
-            # Week Number for Content Field
-            if ( $idx_type eq 'date_and_time' || $idx_type eq 'date_only' ) {
-                if ( my $week_number
-                    = _get_week_number( $cf_idx, 'value_datetime' ) )
-                {
-                    $cf_idx->value_integer($week_number);
-                }
-            }
-
-            $cf_idx->save
-                or return $self->error(
-                MT->translate(
-                    "Saving content field index failed: [_1]",
-                    $cf_idx->errstr
-                )
-                );
-        }
+        my $cf_idx_data_col = 'value_' . $data_type;
+        next unless MT::ContentFieldIndex->has_column($cf_idx_data_col);
+        $self->_update_cf_idx( $content_type, $f, $value, $cf_idx_data_col,
+            $idx_type );
     }
 
     1;
+}
+
+sub _update_cf_idx {
+    my $self = shift;
+    my ( $content_type, $f, $value, $cf_idx_data_col, $idx_type ) = @_;
+
+    my $iter = MT::ContentFieldIndex->load_iter(
+        {   content_type_id  => $content_type->id,
+            content_data_id  => $self->id,
+            content_field_id => $f->{id},
+        }
+    );
+
+    my %cf_idx_hash;
+    while ( my $cf_idx = $iter->() ) {
+        push @{ $cf_idx_hash{ $cf_idx->$cf_idx_data_col } ||= [] }, $cf_idx;
+    }
+
+    my @new_values;
+    for my $v (@$value) {
+        if ( exists $cf_idx_hash{$v} && @{ $cf_idx_hash{$v} } ) {
+            pop @{ $cf_idx_hash{$v} };
+        }
+        else {
+            push @new_values, $v;
+        }
+    }
+
+    my @removed_cf_idx = map {@$_} values %cf_idx_hash;
+
+    for my $new_value (@new_values) {
+        my $cf_idx = pop @removed_cf_idx;
+        $cf_idx ||= MT::ContentFieldIndex->new(
+            content_type_id  => $content_type->id,
+            content_data_id  => $self->id,
+            content_field_id => $f->{id},
+        );
+
+        $cf_idx->$cf_idx_data_col($new_value);
+
+        # Week Number for Content Field
+        if ( $idx_type eq 'date_and_time' || $idx_type eq 'date_only' ) {
+            if ( my $week_number
+                = _get_week_number( $cf_idx, 'value_datetime' ) )
+            {
+                $cf_idx->value_integer($week_number);
+            }
+        }
+
+        $cf_idx->save
+            or return $self->error(
+            MT->translate(
+                'Saving content field index failed: [_1]',
+                $cf_idx->errstr
+            )
+            );
+    }
+
+    for my $cf_idx (@removed_cf_idx) {
+        $cf_idx->remove
+            or return $self->error(
+            MT->translate(
+                'Removing content field index failed: [_1]',
+                $cf_idx->errstr
+            )
+            );
+    }
 }
 
 sub _update_object_assets {

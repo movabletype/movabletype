@@ -1,7 +1,13 @@
+## -*- mode: perl; coding: utf-8 -*-
+
 use strict;
 use warnings;
 
 use Test::More;
+
+BEGIN {
+    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+}
 
 use lib qw( lib extlib t/lib );
 use MT::Test qw( :app :db );
