@@ -358,7 +358,10 @@ sub _update_object_categories {
     my $self = shift;
     my ( $content_type, $field_data, $values ) = @_;
 
-    MT::ObjectCategory->remove(
+    my $primary_cat_id = $values->[0];
+    my $is_primary     = 1;
+
+    my $iter = MT::ObjectCategory->load_iter(
         {   blog_id   => $self->blog_id,
             object_ds => 'content_data',
             object_id => $self->id,
@@ -366,20 +369,57 @@ sub _update_object_categories {
         }
     );
 
-    my $is_primary = 1;
+    my %object_cats;
+    while ( my $oc = $iter->() ) {
+        push @{ $object_cats{ $oc->category_id } ||= [] }, $oc;
+    }
+
+    my @new_cat_ids;
     for my $cat_id (@$values) {
-        my $obj_cat = MT::ObjectCategory->new;
-        $obj_cat->set_values(
-            {   blog_id     => $self->blog_id,
-                category_id => $cat_id,
-                object_ds   => 'content_data',
-                object_id   => $self->id,
-                cf_id       => $field_data->{id},
-                is_primary  => $is_primary,
+        if ( $object_cats{$cat_id} && @{ $object_cats{$cat_id} } ) {
+            my $cat = pop @{ $object_cats{$cat_id} };
+            if ( $cat_id == $primary_cat_id && $is_primary ) {
+                unless ( $cat->is_primary ) {
+                    $cat->is_primary(1);
+                    $cat->save or die $cat->errstr;
+                    $is_primary = 0;
+                }
             }
+            else {
+                if ( $cat->is_primary ) {
+                    $cat->is_primary(0);
+                    $cat->save or die $cat->errstr;
+                }
+            }
+        }
+        else {
+            push @new_cat_ids, $cat_id;
+        }
+    }
+
+    my @removed_object_cats = map {@$_} values %object_cats;
+
+    for my $cat_id (@new_cat_ids) {
+        my $oc = pop @removed_object_cats;
+        $oc ||= MT::ObjectCategory->new(
+            blog_id   => $self->blog_id,
+            object_ds => 'content_data',
+            object_id => $self->id,
+            cf_id     => $field_data->{id},
         );
-        $obj_cat->save or die $obj_cat->errstr;
-        $is_primary = 0;
+        $oc->category_id($cat_id);
+        if ( $cat_id == $primary_cat_id && $is_primary ) {
+            $oc->is_primary(1);
+            $is_primary = 0;
+        }
+        else {
+            $oc->is_primary(0);
+        }
+        $oc->save or die $oc->errstr;
+    }
+
+    for my $oc (@removed_object_cats) {
+        $oc->remove or die $oc->errstr;
     }
 }
 

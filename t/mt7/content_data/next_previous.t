@@ -57,7 +57,7 @@ my $cd = MT::Test::Permission->make_content_data(
     blog_id         => $ct->blog_id,
     author_id       => 1,
     content_type_id => $ct->id,
-    data            => { $cf->id => 'test text' },
+    data            => { $cf->id => $category1->id },
 );
 
 subtest 'no $opt or $opt = 1' => sub {

@@ -53,6 +53,10 @@ my $content_data = MT::Test::Permission->make_content_data(
 is( MT->model('objectcategory')->count( { object_ds => 'content_field' } ),
     0, 'no old MT::ObjectCategory' );
 
+my @object_categories
+    = MT->model('objectcategory')->load( { object_ds => 'content_data' } );
+is( scalar @object_categories, 3, '3 new MT::ObjectCategory' );
+
 my $terms = {
     blog_id   => $blog_id,
     object_ds => 'content_data',
@@ -86,6 +90,22 @@ is( MT->model('objectcategory')->count(
     1,
     'MT::ObjectCategory of $category[2]',
 );
+
+subtest 'Do not remove unchanged record' => sub {
+    $content_data->save or die $content_data->errstr;
+
+    is( MT->model('objectcategory')->count( { object_ds => 'content_data' } ),
+        3,
+        '3 MT::ObjectCategory'
+    );
+
+    for my $oc (@object_categories) {
+        my $oc_id = $oc->id;
+        ok( MT->model('objectcategory')->exist($oc_id),
+            "MT::ObjectCategory (ID:$oc_id) is not removed"
+        );
+    }
+};
 
 done_testing;
 
