@@ -16,19 +16,13 @@ plan tests => 5;
 use CGI;
 
 use MT;
-use MT::Test;
+use MT::Test qw(:db :data);
 use MT::Plugin;
 use MT::Entry;
 use MT::App::CMS;
 use MT::Permission;
 
-use vars qw($T_CFG);
-
-use lib 't';
-require 'test-common.pl';
-require 'blog-common.pl';
-
-my $mt = MT->new(Config => $T_CFG);
+my $mt = MT->new;
 die "Couldn't create MT (" . MT->errstr. ")" unless $mt;
 
 sub rot13 {

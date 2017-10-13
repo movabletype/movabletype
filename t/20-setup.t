@@ -24,8 +24,6 @@ use MT::Permission;
 use MT::Template;
 use MT::TemplateMap;
 
-use vars qw( $DB_DIR $T_CFG );
-
 use MT::Test qw(:db);
 MT->instance;
 

@@ -18,7 +18,6 @@ plan tests => 29;
 use MT;
 use MT::Object;
 
-use vars qw( $DB_DIR $T_CFG );
 use MT::Test qw(:db);
 
 my $mt = MT->instance;    # plugins are go!

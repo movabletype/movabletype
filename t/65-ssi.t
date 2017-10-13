@@ -14,10 +14,9 @@ BEGIN {
 
 use MT;
 
-use vars qw( $DB_DIR $T_CFG );
 use MT::Test qw(:db :data);
 
-my $mt = MT->instance( Config => $T_CFG ) or die MT->errstr;
+my $mt = MT->instance or die MT->errstr;
 isa_ok($mt, 'MT');
 
 

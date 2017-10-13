@@ -22,9 +22,6 @@ plan tests => 37;
 use MT;
 use MT::ConfigMgr;
 
-use vars qw( $BASE );
-require './t/test-common.pl';
-
 my ( $cfg_file, $cfg, $mt );
 
 my $db_dir = cwd() . '/t/db/';

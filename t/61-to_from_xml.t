@@ -24,8 +24,6 @@ use MT::Comment;
 use MT::Test qw(:app :db :data);
 use MT::Test::Permission;
 
-use vars qw( $DB_DIR $T_CFG );
-
 use MT::BackupRestore;
 use Data::Dumper;
 
@@ -35,7 +33,7 @@ my $bob   = MT::Author->load( { name => 'Bob D' } );
 my $mel   = MT::Author->load( { name => 'Melody' } );
 &setup;
 
-my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
+my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT' );
 
 my $backup_data = '';

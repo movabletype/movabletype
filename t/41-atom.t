@@ -25,8 +25,7 @@ use POSIX qw( ceil );
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
 
-use vars qw( $DB_DIR $T_CFG );
-my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
+my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT' );
 
 use MT::Test qw(:db :data);

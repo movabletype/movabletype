@@ -24,9 +24,8 @@ $Image::Size::NO_CACHE = 1;
 
 use MT;
 use MT::Asset;
-use vars qw( $DB_DIR $T_CFG );
 
-my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
+my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT', 'Is MT' );
 
 {

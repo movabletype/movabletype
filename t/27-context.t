@@ -24,11 +24,9 @@ use MT::Template;
 use MT::Template::Context;
 use MT::Util qw( first_n_words html_text_transform );
 
-use vars qw( $DB_DIR $T_CFG $BASE );
-
 use MT::Test qw(:db :data);
 
-my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
+my $mt = MT->new or die MT->errstr;
 isa_ok($mt, 'MT');
 
 sub build {
