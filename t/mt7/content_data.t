@@ -136,5 +136,28 @@ subtest 'identifier' => sub {
 
 };
 
+subtest 'gather_changed_cols' => sub {
+    my $cd = MT::Test::Permission->make_content_data(
+        author_id       => 1,
+        blog_id         => $ct->blog_id,
+        content_type_id => $ct->id,
+    );
+    my $cd_orig = $cd->clone;
+
+    $cd->gather_changed_cols($cd_orig);
+    is( $cd->{changed_revisioned_cols}, undef, 'same data column' );
+
+    $cd->data( { abc => 1 } );
+
+    $cd->gather_changed_cols($cd_orig);
+    is_deeply( $cd->{changed_revisioned_cols},
+        ['data'], 'different data column' );
+
+    $cd_orig->data( { abc => 1 } );
+
+    $cd->gather_changed_cols($cd_orig);
+    is( $cd->{changed_revisioned_cols}, undef, 'same data column' );
+};
+
 done_testing;
 

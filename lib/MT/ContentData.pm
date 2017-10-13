@@ -319,7 +319,13 @@ sub data {
         $obj->column( 'data', $json );
     }
     else {
-        eval { JSON::decode_json( $obj->column('data') ) } || {};
+        my $json = $obj->column('data');
+        if ( Encode::is_utf8($json) ) {
+            eval { JSON::from_json($json) } || {};
+        }
+        else {
+            eval { JSON::decode_json($json) } || {};
+        }
     }
 }
 
@@ -885,6 +891,34 @@ sub field_categories {
             );
         }
     );
+}
+
+# overrides MT::Revisable method
+sub gather_changed_cols {
+    my $obj = shift;
+    my ( $orig, $app ) = @_;
+
+    MT::Revisable::gather_changed_cols( $obj, @_ );
+    my $changed_cols = $obj->{changed_revisioned_cols} || [];
+
+    # Check data column.
+    my $obj_data  = MT::Util::to_json( $obj->data,  { canonical => 1 } );
+    my $orig_data = MT::Util::to_json( $orig->data, { canonical => 1 } );
+    if ( $obj_data eq $orig_data ) {
+        @$changed_cols = grep { $_ ne 'data' } @$changed_cols;
+    }
+
+    # When a content data is saved at first and 'unpublished_on' is undef,
+    # 'unpublished_on' is added to 'changed_revisioned_cols'.
+    unless ( $obj->id ) {
+        unless ( $obj->unpublished_on ) {
+            push @$changed_cols, 'unpublished_on';
+        }
+    }
+
+    $obj->{changed_revisioned_cols} = @$changed_cols ? $changed_cols : undef;
+
+    1;
 }
 
 1;
