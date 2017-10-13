@@ -5,6 +5,15 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+BEGIN {
+    if ( eval { require Archive::Tar } ) {
+        plan tests => 10;
+    }
+    else {
+        plan skip_all => 'Archive::Tar is not installed';
+    }
+}
+
 use MT::Test::Env;
 our $test_env;
 BEGIN {
@@ -15,13 +24,6 @@ BEGIN {
 use Cwd;
 use MT;
 use MT::Test;
-
-if ( eval { require Archive::Tar } ) {
-    plan tests => 10;
-}
-else {
-    plan skip_all => 'Archive::Tar is not installed';
-}
 
 my $mt = MT->new;
 use MT::Util::Archive;

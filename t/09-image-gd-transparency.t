@@ -4,6 +4,12 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+
+BEGIN {
+    eval 'use GD; 1'
+        or plan skip_all => 'GD is not installed';
+}
+
 use MT::Test::Env;
 our $test_env;
 BEGIN {
@@ -13,11 +19,6 @@ BEGIN {
 
 use File::Basename;
 use File::Spec;
-
-BEGIN {
-    eval 'use GD; 1'
-        or plan skip_all => 'GD is not installed';
-}
 
 use MT::Test;
 use MT::Image;

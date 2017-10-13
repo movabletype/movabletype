@@ -4,18 +4,18 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
-use MT::Test::Env;
-our $test_env;
-BEGIN {
-    $test_env = MT::Test::Env->new;
-    $ENV{MT_CONFIG} = $test_env->config_file;
-}
-
 BEGIN {
     eval 'use Test::Spec; 1'
         or plan skip_all => 'Test::Spec is not installed';
     eval 'use Test::Wight; 1'
         or plan skip_all => 'Wight is not installed';
+}
+
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 BEGIN {

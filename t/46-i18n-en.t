@@ -22,6 +22,8 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+BEGIN { plan skip_all => 'MT::I18N functions were deprecated'; }
+
 use MT::Test::Env;
 our $test_env;
 BEGIN {
@@ -29,7 +31,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-plan skip_all => 'MT::I18N functions were deprecated';
 use utf8;
 
 use Encode;

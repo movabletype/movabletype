@@ -5,6 +5,8 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+BEGIN { plan skip_all => 'MT::Blocklist is deprecated.'; }
+
 use MT::Test::Env;
 our $test_env;
 BEGIN {
@@ -14,7 +16,6 @@ BEGIN {
 
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
-plan skip_all => 'MT::Blocklist is deprecated.';
 
 ### Make test data
 

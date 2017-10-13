@@ -5,6 +5,13 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+BEGIN {
+    eval { require Test::MockModule }
+        or plan skip_all => 'Test::MockModule is not installed';
+    eval { require Test::MockObject }
+        or plan skip_all => 'Test::MockObject is not installed';
+}
+
 use MT::Test::Env;
 our $test_env;
 BEGIN {
@@ -17,13 +24,6 @@ use MT::Image;
 use File::Temp;
 use File::Copy;
 use Image::ExifTool;
-
-BEGIN {
-    eval { require Test::MockModule }
-        or plan skip_all => 'Test::MockModule is not installed';
-    eval { require Test::MockObject }
-        or plan skip_all => 'Test::MockObject is not installed';
-}
 
 my $src_file
     = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' );
