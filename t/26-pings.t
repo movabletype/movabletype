@@ -13,8 +13,6 @@ BEGIN {
 }
 
 plan tests => 15;
-#plan skip_all => "Needs rewrite to eliminate HTTP server requirement.";
-#exit;
 
 use HTTP::Response;
 use Net::Ping;
