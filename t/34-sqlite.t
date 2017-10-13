@@ -14,9 +14,6 @@ use Test::More;
 BEGIN {
     plan skip_all => "Test for 'sqlite' is not actively maintained";
 
-    plan skip_all => "Configuration file $ENV{MT_CONFIG} not found"
-        if !-r "t/$ENV{MT_CONFIG}";
-
     my $module = 'DBD::SQLite';
     eval "require $module;";
     plan skip_all => "Database driver '$module' not found."

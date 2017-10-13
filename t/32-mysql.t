@@ -12,9 +12,6 @@ use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 BEGIN {
-    plan skip_all => "Configuration file $ENV{MT_CONFIG} not found"
-        if !-r "t/$ENV{MT_CONFIG}";
-
     my $module = 'DBD::mysql';
     eval "require $module;";
     plan skip_all => "Database driver '$module' not found."
