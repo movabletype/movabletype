@@ -434,9 +434,6 @@ sub error {
 sub init_data {
     my $pkg = shift;
 
-    # nix the old site just in case
-    rmtree('t/site') if ( -d 't/site' );
-
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
     MT->config->ThemesDirectory( [$themedir] );
     require MT::Theme;
