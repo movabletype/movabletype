@@ -24,7 +24,7 @@ use MT::ConfigMgr;
 
 my ( $cfg_file, $cfg, $mt );
 
-my $db_dir = cwd() . '/t/db/';
+my $db_dir = $test_env->path('db');
 ( my ($fh), $cfg_file ) = tempfile();
 print $fh <<CFG;
 Database $db_dir/mt.db

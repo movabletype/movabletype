@@ -11,6 +11,7 @@ BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
+my $test_root = $test_env->root;
 
 use File::Copy;
 use File::Temp qw( tempfile );
@@ -47,12 +48,12 @@ isa_ok( $mt, 'MT', 'Is MT' );
     {
         note('Resize to 100 x 100 without square option');
         is( ( $asset->thumbnail_file( Height => 100, Width => 100 ) )[0],
-            "t/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg",
+            "$test_root/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg",
             'thumbnail file name'
         );
         my ( $width, $height )
             = imgsize(
-            "t/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg");
+            "$test_root/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg");
         is( $width,  100, "resized image's width: 100" );
         is( $height, 75,  "resized image's height: 75" );
     }
@@ -60,11 +61,11 @@ isa_ok( $mt, 'MT', 'Is MT' );
     {
         note('Resize to 100 x 100 with square option');
         is( ( $asset->thumbnail_file( Height => 100, Square => 1 ) )[0],
-            "t/site/assets_c/$cache_path/test-thumb-100x100-1.jpg",
+            "$test_root/site/assets_c/$cache_path/test-thumb-100x100-1.jpg",
             'thumbnail file name'
         );
         my ( $width, $height )
-            = imgsize("t/site/assets_c/$cache_path/test-thumb-100x100-1.jpg");
+            = imgsize("$test_root/site/assets_c/$cache_path/test-thumb-100x100-1.jpg");
         is( $width,  100, "resized image's width: 100" );
         is( $height, 100, "resized image's height: 100" );
     }
@@ -72,12 +73,12 @@ isa_ok( $mt, 'MT', 'Is MT' );
     {
         note('Resize to 100 x 100 without square option again');
         is( ( $asset->thumbnail_file( Height => 100, Width => 100 ) )[0],
-            "t/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg",
+            "$test_root/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg",
             'thumbnail file name'
         );
         my ( $width, $height )
             = imgsize(
-            "t/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg");
+            "$test_root/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg");
         is( $width,  100, "resized image's width: 100" );
         is( $height, 75,  "resized image's height: 75" );
     }
@@ -98,12 +99,12 @@ isa_ok( $mt, 'MT', 'Is MT' );
         ok( $asset->has_metadata, 'add metadata to image' );
 
         is( ( $asset->thumbnail_file( Height => 100, Width => 100 ) )[0],
-            "t/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg",
+            "$test_root/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg",
             'thumbnail file name'
         );
 
         my $info = Image::ExifTool->new->ImageInfo(
-            "t/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg");
+            "$test_root/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg");
         ok( !exists $info->{GPSVersionID},
             'removed metadata from thumbnail file'
         );
@@ -152,8 +153,7 @@ isa_ok( $mt, 'MT', 'Is MT' );
     # copy original image file
     my $orig_file
         = File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' );
-    my $copy_file
-        = File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test_.jpg' );
+    my $copy_file = $test_env->path('test_.jpg');
     copy( $orig_file, $copy_file );
 
     # Object creation
@@ -229,7 +229,7 @@ isa_ok( $mt, 'MT', 'Is MT' );
 
     # copy original image file
     my $orig_file_f = File::Spec->catfile( $ENV{MT_HOME}, "t", 'test.tmpl' );
-    my $copy_file_f = File::Spec->catfile( $ENV{MT_HOME}, "t", 'test_.tmpl' );
+    my $copy_file_f = $test_env->path('test_.tmpl');
     copy( $orig_file, $copy_file );
 
     # Object creation

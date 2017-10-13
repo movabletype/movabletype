@@ -72,7 +72,7 @@ subtest 'Regular JPEG image' => sub {
     my $out = delete $app->{__test_output};
 
     is( $put_args->[1],
-        File::Spec->catfile(qw/ t site archives test.jpg /),
+        $test_env->path(qw/ site archives test.jpg /),
         'Uploaded file path'
     );
     my $created_asset
@@ -123,7 +123,7 @@ subtest 'Regular JPEG image with wrong extension' => sub {
     );
 
     is( $put_args->[1],
-        File::Spec->catfile(qw/ t site archives wrong-extension-test.jpg /),
+        $test_env->path(qw/ site archives wrong-extension-test.jpg /),
         'Uploaded file path'
     );
     my $created_asset
@@ -168,7 +168,7 @@ subtest 'Regular PDF file' => sub {
     my $out = delete $app->{__test_output};
 
     is( $put_args->[1],
-        File::Spec->catfile(qw/ t site archives test.pdf /),
+        $test_env->path(qw/ site archives test.pdf /),
         'Uploaded file path'
     );
     my $expected_values = {

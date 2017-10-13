@@ -35,7 +35,7 @@ my $mt = MT->new();
 
 # Set config directives.
 $mt->config->AllowComments( 1, 1 );
-$mt->config->StaticFilePath( './mt-static', 1 );
+$mt->config->StaticFilePath( $test_env->path('mt-static'), 1 );
 $mt->config->CommenterRegistration( { Allow => 1 }, 1 );
 $mt->config->save_config;
 
@@ -86,6 +86,7 @@ my %const = (
     CURRENT_MONTH => POSIX::strftime("%m", gmtime(time + $blog->server_offset * 3600)),
     STATIC_FILE_PATH => MT->instance->static_file_path . '/',
     THREE_DAYS_AGO => epoch2ts($blog, time() - int(3.5 * 86400)),
+    TEST_ROOT => $test_env->root,
 );
 
 $test_json =~ s/\Q$_\E/$const{$_}/g for keys %const;
@@ -139,7 +140,7 @@ $cfg_file = '<CFG_FILE>';
 $const = array(
     'CFG_FILE' => $cfg_file,
     'VERSION_ID' => VERSION_ID,
-    'CURRENT_WORKING_DIRECTORY' => '',
+    'CURRENT_WORKING_DIRECTORY' => '<CURRENT_WORKING_DIRECTORY>',
     'STATIC_CONSTANT' => '',
     'DYNAMIC_CONSTANT' => '1',
     'DAYS_CONSTANT1' => '<DAYS_CONSTANT1>',
@@ -148,19 +149,13 @@ $const = array(
     'CURRENT_MONTH' => strftime("%m"),
     'STATIC_FILE_PATH' => '<STATIC_FILE_PATH>',
     'THREE_DAYS_AGO' => '<THREE_DAYS_AGO>',
+    'TEST_ROOT' => '<TEST_ROOT>',
 );
 
 $output_results = 0;
 
 $mt = MT::get_instance(1, $cfg_file);
 $ctx =& $mt->context();
-
-$path = $mt->config('mtdir');
-if (substr($path, strlen($path) - 1, 1) == '/')
-    $path = substr($path, 1, strlen($path)-1);
-if (substr($path, strlen($path) - 2, 2) == '/t')
-    $path = substr($path, 0, strlen($path) - 2);
-$const['CURRENT_WORKING_DIRECTORY'] = $path;
 
 $db = $mt->db();
 

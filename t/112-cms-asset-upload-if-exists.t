@@ -61,7 +61,7 @@ my $fmgr_module = Test::MockModule->new( ref $fmgr );
 $fmgr_module->mock(
     'exists',
     sub {
-        $_[1] eq File::Spec->catfile(qw/ t site archives test.jpg /);
+        $_[1] eq $test_env->path(qw/ site archives test.jpg /);
     }
 );
 
@@ -111,8 +111,8 @@ subtest 'With "auto_rename_if_exists"' => sub {
 
     my $regex
         = ( $^O eq 'MSWin32' )
-        ? qr!t\\site\\archives\\[0-9a-z]{40}\.jpg!
-        : qr!t/site/archives/[0-9a-z]{40}\.jpg!;
+        ? qr!\\site\\archives\\[0-9a-z]{40}\.jpg!
+        : qr!/site/archives/[0-9a-z]{40}\.jpg!;
     like( $put_args->[1], $regex, 'Uploaded file path' );
 
     my $created_asset
