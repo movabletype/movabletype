@@ -8,9 +8,14 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        ThemesDirectory => 'TEST_ROOT/themes/',
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
+
+use File::Path;
+File::Path::mkpath($test_env->path('themes'));
 
 use IPC::Run3;
 use IO::String;

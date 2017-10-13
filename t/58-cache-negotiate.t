@@ -13,7 +13,9 @@ BEGIN {
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        MemcachedServers => '127.0.0.1:11211',
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
