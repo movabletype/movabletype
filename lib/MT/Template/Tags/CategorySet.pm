@@ -48,8 +48,7 @@ sub _hdlr_category_sets {
     my @category_sets;
     if ( my $set_id = $args->{id} ) {
         my $category_set = MT->model('category_set')->load($set_id)
-            or return $ctx->error(
-            MT->translate('Category set was not found.') );
+            or return $ctx->_no_category_set_error();
         push @category_sets, $category_set;
     }
     else {
@@ -61,8 +60,7 @@ sub _hdlr_category_sets {
                 ($content_type)
                     = MT->model('content_type')
                     ->load( { unique_id => $unique_id } )
-                    or return $ctx->error(
-                    MT->translate('Content Type was not found.') );
+                    or return $ctx->_no_category_set_error();
             }
         }
         if ($content_type) {
