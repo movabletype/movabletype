@@ -5,6 +5,10 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+BEGIN {
+    eval { use Test::LeakTrace; 1 }
+        or plan skip_all => 'require Test::LeakTrace';
+}
 use MT::Test::Env;
 our $test_env;
 BEGIN {
@@ -14,11 +18,7 @@ BEGIN {
 
 use MT::Test qw(:db :data);
 use MT;
-use constant HAS_LEAKTRACE => eval { require Test::LeakTrace };
-plan HAS_LEAKTRACE
-    ? ( tests => 36 )
-    : ( skip_all => 'require Test::LeakTrace' );
-use Test::LeakTrace;
+plan tests => 36;
 
 my $mt = MT->new();
 
