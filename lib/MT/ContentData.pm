@@ -319,7 +319,13 @@ sub data {
         $obj->column( 'data', $json );
     }
     else {
-        eval { JSON::decode_json( $obj->column('data') ) } || {};
+        my $json = $obj->column('data');
+        if ( Encode::is_utf8($json) ) {
+            eval { JSON::from_json($json) } || {};
+        }
+        else {
+            eval { JSON::decode_json($json) } || {};
+        }
     }
 }
 
