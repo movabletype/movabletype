@@ -30,14 +30,11 @@ __PACKAGE__->install_properties(
             blog_ds_tag =>
                 { columns => [ 'blog_id', 'object_ds', 'category_id' ], },
 
-            # TODO: t/object-column-length.t fails.
-            # This name is too long for Oracle Database.
-            #
-            # # For category count
-            # blog_ds_obj_tag => {
-            #     columns =>
-            #         [ 'blog_id', 'object_ds', 'object_id', 'category_id' ],
-            # },
+            # For category count
+            blog_ds_obj => {
+                columns =>
+                    [ 'blog_id', 'object_ds', 'object_id', 'category_id' ],
+            },
         },
         child_of    => 'MT::Blog',
         datasource  => 'objectcategory',
