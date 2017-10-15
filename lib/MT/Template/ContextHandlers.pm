@@ -1111,10 +1111,6 @@ sub core_tags {
             ## Category Set
             CategorySetName =>
                 '$Core::MT::Template::Tags::CategorySet::_hdlr_category_set_name',
-
-         # Content => '$Core::MT::Template::Tags::ContentType::_hdlr_content',
-         # Entity => '$Core::MT::Template::Tags::ContentType::_hdlr_entity',
-
         },
         modifier => {
             'numify'  => '$Core::MT::Template::Tags::Filters::_fltr_numify',
