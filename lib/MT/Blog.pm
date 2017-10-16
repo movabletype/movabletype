@@ -551,6 +551,23 @@ sub create_default_templates {
                             $map->dt_field_id( $datetime_field->id );
                         }
                     }
+                    if ( $m->{category_field} ) {
+                        my $cat_field = MT->model('content_field')->load(
+                            {   blog_id         => $tmpl->blog_id,
+                                content_type_id => $tmpl->content_type_id,
+                                unique_id       => $m->{category_field},
+                            }
+                        );
+                        $cat_field ||= MT->model('content_field')->load(
+                            {   blog_id         => $tmpl->blog_id,
+                                content_type_id => $tmpl->content_type_id,
+                                name            => $m->{category_field},
+                            }
+                        );
+                        if ($cat_field) {
+                            $map->cat_field_id( $cat_field->id );
+                        }
+                    }
                 }
                 unless ( $map->dt_field_id ) {
                     $map->dt_field_id(0);
