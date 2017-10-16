@@ -677,21 +677,6 @@ sub core_theme_element_handlers {
                 info   => '$Core::MT::Theme::Pref::info',
             },
         },
-        default_categories => {
-            label    => 'Categories',
-            order    => 400,
-            importer => {
-                import => '$Core::MT::Theme::Category::import_categories',
-                info   => '$Core::MT::Theme::Category::info_categories',
-            },
-            exporter => {
-                params => 'default_category_export_ids',
-                template =>
-                    '$Core::MT::Theme::Category::category_export_template',
-                export    => '$Core::MT::Theme::Category::export_category',
-                condition => '$Core::MT::Theme::Category::category_condition',
-            },
-        },
         default_folders => {
             label    => 'Folders',
             order    => 200,
@@ -705,6 +690,29 @@ sub core_theme_element_handlers {
                     '$Core::MT::Theme::Category::folder_export_template',
                 export    => '$Core::MT::Theme::Category::export_folder',
                 condition => '$Core::MT::Theme::Category::folder_condition',
+            },
+        },
+        default_pages => {
+            label    => 'Default Pages',
+            order    => 300,
+            importer => {
+                import => '$Core::MT::Theme::Entry::import_pages',
+                info   => '$Core::MT::Theme::Entry::info_pages',
+            },
+        },
+        default_categories => {
+            label    => 'Categories',
+            order    => 400,
+            importer => {
+                import => '$Core::MT::Theme::Category::import_categories',
+                info   => '$Core::MT::Theme::Category::info_categories',
+            },
+            exporter => {
+                params => 'default_category_export_ids',
+                template =>
+                    '$Core::MT::Theme::Category::category_export_template',
+                export    => '$Core::MT::Theme::Category::export_category',
+                condition => '$Core::MT::Theme::Category::category_condition',
             },
         },
         template_set => {
@@ -735,14 +743,6 @@ sub core_theme_element_handlers {
                 template => '$Core::MT::Theme::StaticFiles::export_template',
                 export   => '$Core::MT::Theme::StaticFiles::export',
                 finalize => '$Core::MT::Theme::StaticFiles::finalize',
-            },
-        },
-        default_pages => {
-            label    => 'Default Pages',
-            order    => 300,
-            importer => {
-                import => '$Core::MT::Theme::Entry::import_pages',
-                info   => '$Core::MT::Theme::Entry::info_pages',
             },
         },
         default_category_sets => {
