@@ -475,6 +475,23 @@ sub create_default_templates {
                 MT::Template->widgets_to_modulesets( $modulesets, $blog->id )
             );
         }
+        if ( ( $val->{type} eq 'ct' || $val->{type} eq 'ct_archive' )
+            && exists $val->{content_type} )
+        {
+            my $ct = MT->model('content_type')->load(
+                {   blog_id   => $blog->id,
+                    unique_id => $val->{content_type},
+                }
+            );
+            $ct ||= MT->model('content_type')->load(
+                {   blog_id => $blog->id,
+                    name    => $val->{content_type},
+                }
+            );
+            if ($ct) {
+                $obj->content_type_id( $ct->id );
+            }
+        }
         $obj->save;
         if ( $val->{mappings} ) {
             push @arch_tmpl,
