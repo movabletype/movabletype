@@ -56,13 +56,18 @@ sub class_label_plural {
 
 sub unique_id {
     my $self = shift;
-    $self->column('unique_id');
+    if ( $self->id || !@_ ) {
+        $self->column('unique_id');
+    }
+    else {
+        $self->column( 'unique_id', @_ );
+    }
 }
 
 sub save {
     my $self = shift;
 
-    unless ( $self->id ) {
+    if ( !$self->id && !defined $self->unique_id ) {
         my $unique_id
             = MT::ContentType::UniqueID::generate_unique_id( $self->name );
         $self->column( 'unique_id', $unique_id );
