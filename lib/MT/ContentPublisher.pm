@@ -1480,15 +1480,34 @@ sub _rebuild_content_archive_type {
             unless ($cache_map) {
                 MT::Request->instance->cache( 'maps', $cache_map = {} );
             }
-            unless ( $map = $cache_map->{ $blog->id . $at } ) {
+            my $cache_map_key
+                = $blog->id . ':'
+                . (
+                ref $obj eq 'MT::ContentData'
+                ? $obj->content_type_id . ':'
+                : ''
+                ) . $at;
+            unless ( $map = $cache_map->{$cache_map_key} ) {
+                my $args
+                    = ref $obj eq 'MT::ContentData'
+                    ? {
+                    join => MT->model('template')->join_on(
+                        undef,
+                        {   id              => \'= templatemap_template_id',
+                            content_type_id => $obj->content_type_id,
+                        }
+                    )
+                    }
+                    : {};
                 require MT::TemplateMap;
                 $map = MT::TemplateMap->load(
                     {   blog_id      => $blog->id,
                         archive_type => $at,
                         is_preferred => 1
-                    }
+                    },
+                    $args,
                 );
-                $cache_map->{ $blog->id . $at } = $map if $map;
+                $cache_map->{$cache_map_key} = $map if $map;
             }
         }
         my $file_tmpl;
@@ -1749,15 +1768,16 @@ sub rebuild_deleted_content_data {
                 else {
                     if ( $app->config('RebuildAtDelete') ) {
                         if ( $archiver->date_based ) {
-                            $rebuild_recipe{$at}{ $cat->id }{ $start . $end }
-                                {'Start'} = $start;
-                            $rebuild_recipe{$at}{ $cat->id }{ $start . $end }
-                                {'End'} = $end;
-                            $rebuild_recipe{$at}{ $cat->id }{ $start . $end }
-                                {'Timestamp'} = $target_dt;
+                            $rebuild_recipe{$at}{ $cat->id }
+                                { $start . $end }{'Start'} = $start;
+                            $rebuild_recipe{$at}{ $cat->id }
+                                { $start . $end }{'End'} = $end;
+                            $rebuild_recipe{$at}{ $cat->id }
+                                { $start . $end }{'Timestamp'} = $target_dt;
                         }
                         else {
-                            $rebuild_recipe{$at}{ $cat->id }{id} = $cat->id;
+                            $rebuild_recipe{$at}{ $cat->id }{id}
+                                = $cat->id;
                         }
                     }
                 }
@@ -1812,17 +1832,20 @@ sub rebuild_deleted_content_data {
                     }
                 }
                 elsif ( $archiver->date_based ) {
-                    $rebuild_recipe{$at}{ $start . $end }{'Start'} = $start;
-                    $rebuild_recipe{$at}{ $start . $end }{'End'}   = $end;
+                    $rebuild_recipe{$at}{ $start . $end }{'Start'}
+                        = $start;
+                    $rebuild_recipe{$at}{ $start . $end }{'End'} = $end;
                     $rebuild_recipe{$at}{ $start . $end }{'Timestamp'}
                         = $target_dt;
                 }
 
                 if ( my $prev = $content_data->previous(1) ) {
-                    $rebuild_recipe{ContentType}{ $prev->id }{id} = $prev->id;
+                    $rebuild_recipe{ContentType}{ $prev->id }{id}
+                        = $prev->id;
                 }
                 if ( my $next = $content_data->next(1) ) {
-                    $rebuild_recipe{ContentType}{ $next->id }{id} = $next->id;
+                    $rebuild_recipe{ContentType}{ $next->id }{id}
+                        = $next->id;
                 }
             }
         }
