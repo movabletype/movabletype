@@ -715,6 +715,23 @@ sub core_theme_element_handlers {
                 condition => '$Core::MT::Theme::Category::category_condition',
             },
         },
+        default_category_sets => {
+            label    => 'Default Category Sets',
+            order    => 420,
+            importer => {
+                import => '$Core::MT::Theme::CategorySet::apply',
+                info   => '$Core::MT::Theme::CategorySet::info',
+            },
+        },
+        default_content_types => {
+            label    => 'Default Content Types',
+            order    => 450,
+            importer => {
+                import    => '$Core::MT::Theme::ContentType::apply',
+                info      => '$Core::MT::Theme::ContentType::info',
+                validator => '$Core::MT::Theme::ContentType::validator',
+            },
+        },
         template_set => {
             label    => 'Template Set',
             order    => 500,
@@ -730,6 +747,14 @@ sub core_theme_element_handlers {
                 condition => '$Core::MT::Theme::TemplateSet::condition',
             },
         },
+        default_content_data => {
+            label    => 'Default Content Data',
+            order    => 550,
+            importer => {
+                import => '$Core::MT::Theme::ContentData::apply',
+                info   => '$Core::MT::Theme::ContentData::info',
+            },
+        },
         blog_static_files => {
             label    => 'Static Files',
             order    => 600,
@@ -743,31 +768,6 @@ sub core_theme_element_handlers {
                 template => '$Core::MT::Theme::StaticFiles::export_template',
                 export   => '$Core::MT::Theme::StaticFiles::export',
                 finalize => '$Core::MT::Theme::StaticFiles::finalize',
-            },
-        },
-        default_category_sets => {
-            label    => 'Default Category Sets',
-            order    => 700,
-            importer => {
-                import => '$Core::MT::Theme::CategorySet::apply',
-                info   => '$Core::MT::Theme::CategorySet::info',
-            },
-        },
-        default_content_types => {
-            label    => 'Default Content Types',
-            order    => 800,
-            importer => {
-                import    => '$Core::MT::Theme::ContentType::apply',
-                info      => '$Core::MT::Theme::ContentType::info',
-                validator => '$Core::MT::Theme::ContentType::validator',
-            },
-        },
-        default_content_data => {
-            label    => 'Default Content Data',
-            order    => 900,
-            importer => {
-                import => '$Core::MT::Theme::ContentData::apply',
-                info   => '$Core::MT::Theme::ContentData::info',
             },
         },
     };
