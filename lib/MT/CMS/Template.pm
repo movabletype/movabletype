@@ -203,7 +203,7 @@ sub edit {
                     my $include = {};
                     my $attr    = $tag->attributes;
                     my $mod     = $include->{include_module} = $attr->{module}
-                        || $attr->{widget};
+                        || $attr->{widget} || $attr->{identifier};
                     next unless $mod;
                     next if $mod =~ /^\$.*/;
                     my $type = $attr->{widget} ? 'widget' : 'custom';
@@ -235,11 +235,17 @@ sub edit {
                         next if exists $seen{$type}{$mod_id};
                         $seen{$type}{$mod_id} = 1;
 
-                        my $other = MT::Template->load(
-                            {   blog_id => $inc_blog_id,
+                        my %terms
+                            = $attr->{identifier}
+                            ? ( identifier => $mod )
+                            : (
+                                blog_id => $inc_blog_id,
                                 name    => $mod,
                                 type    => $type,
-                            },
+                            );
+
+                        my $other = MT::Template->load(
+                            \%terms,
                             {   limit => 1,
                                 ref $inc_blog_id
                                 ? ( sort      => 'blog_id',
