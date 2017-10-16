@@ -5,6 +5,11 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../../../t/lib"; # t/lib
 use Test::More;
+BEGIN {
+    eval { require Test::MockObject }
+        or plan skip_all => 'Test::MockObject is not installed';
+}
+
 use MT::Test::Env;
 our $test_env;
 BEGIN {
@@ -12,10 +17,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-BEGIN {
-    eval { require Test::MockObject }
-        or plan skip_all => 'Test::MockObject is not installed';
-}
 use Test::MockObject::Extends;
 
 use MT;
