@@ -61,6 +61,7 @@ sub apply {
                 description =>
                     $theme->translate_templatized( $cf_value->{description} ),
                 type            => $cf_value->{type},
+                unique_id       => $cf_value->{unique_id},
                 blog_id         => $ct->blog_id,
                 content_type_id => $ct->id,
             );
