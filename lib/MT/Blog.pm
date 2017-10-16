@@ -531,6 +531,31 @@ sub create_default_templates {
                 $map->blog_id( $tmpl->blog_id );
                 $map->build_type( $m->{build_type} )
                     if defined $m->{build_type};
+
+                if ( $tmpl->content_type_id ) {
+                    if ( $m->{datetime_field} ) {
+                        my $datetime_field
+                            = MT->model('content_field')->load(
+                            {   blog_id         => $tmpl->blog_id,
+                                content_type_id => $tmpl->content_type_id,
+                                unique_id       => $m->{datetime_field},
+                            }
+                            );
+                        $datetime_field ||= MT->model('content_field')->load(
+                            {   blog_id         => $tmpl->blog_id,
+                                content_type_id => $tmpl->content_type_id,
+                                name            => $m->{datetime_field},
+                            }
+                        );
+                        if ($datetime_field) {
+                            $map->dt_field_id( $datetime_field->id );
+                        }
+                    }
+                }
+                unless ( $map->dt_field_id ) {
+                    $map->dt_field_id(0);
+                }
+
                 $map->save;
             }
         }
