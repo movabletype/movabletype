@@ -12,9 +12,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw( lib extlib plugins/Textile );
+use lib qw( plugins/Textile );
 
-use Test::More;
 use MT;
 
 $MT::plugin_envelope = 'plugins/Textile';    # Supress warning.

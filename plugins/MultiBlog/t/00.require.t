@@ -11,9 +11,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Test::More tests => 3;
+plan tests => 3;
 
-use lib qw( extlib lib plugins/MultiBlog plugins/MultiBlog/lib );
+use lib qw( plugins/MultiBlog plugins/MultiBlog/lib );
 use MT;
 
 $MT::plugin_envelope = 'plugins/MultiBlog';    # Supress warning.

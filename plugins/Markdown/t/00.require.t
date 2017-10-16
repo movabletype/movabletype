@@ -12,9 +12,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw(lib extlib plugins/Markdown);
+use lib qw(plugins/Markdown);
 
-use Test::More;
 use MT;
 
 $MT::plugin_envelope = 'plugins/Markdown';    # Supress warning.

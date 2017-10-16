@@ -11,9 +11,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Test::More;
-
-use lib qw( extlib lib plugins/WXRImporter/lib );
+use lib qw( plugins/WXRImporter/lib );
 
 use_ok('HTML::Entities::Numbered');
 use_ok('HTML::Entities::Numbered::Table');

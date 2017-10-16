@@ -12,9 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw(lib extlib t/lib);
-
-use Test::More;
 use Test::MockModule;
 use MT::Test::DataAPI;
 
