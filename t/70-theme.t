@@ -720,6 +720,31 @@ subtest 'default_content_types element' => sub {
     };
 };
 
+subtest 'default_content_data element' => sub {
+    my $child_content_type = MT->model('content_type')->load(
+        {   blog_id => $blog->id,
+            name    => 'child_content_type',
+        }
+    ) or die 'cannot load child_content_type';
+
+    my $terms = {
+        blog_id         => $blog->id,
+        content_type_id => $child_content_type->id,
+    };
+    is( MT->model('content_data')->count($terms), 1 );
+
+    my $content_data = MT->model('content_data')->load($terms);
+    ok($content_data);
+
+    my $single_line_text_field = MT->model('content_field')->load(
+        {   content_type_id => $child_content_type->id,
+            name            => 'single_line_text',
+        }
+    ) or die 'cannot load single_line_text field';
+    is_deeply( $content_data->data,
+        { $single_line_text_field->id => 'abcde' } );
+};
+
 ## ============================ Tests for loading theme package
 ## create second theme instance.
 my $theme2;
@@ -1151,6 +1176,14 @@ MyTheme:
                         multiple: 0
                         can_add: 0
                         source: 1234567890123456789012345678901234567890
+        default_content_data:
+            component: core
+            importer: default_content_data
+            data:
+                child_content_type:
+                    test1:
+                        data:
+                            single_line_text: abcde
 
 very_old_theme:
     id: old_theme
