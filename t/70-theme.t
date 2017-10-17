@@ -48,15 +48,293 @@ ok( $theme->apply($blog), 'apply theme' );
 is( $blog->allow_comment_html, 0 );
 is( $blog->allow_pings,        0 );
 
-## only applied template set has this.
-my $main_index;
-ok( $main_index = MT->model('template')
-        ->load( { blog_id => $blog->id, identifier => 'main_index' } ) );
-is( $main_index->text, "I am MT\nI am MT", 'loaded template' );
+subtest 'template_set element' => sub {
+    ## only applied template set has this.
+    my $main_index;
+    ok( $main_index = MT->model('template')
+            ->load( { blog_id => $blog->id, identifier => 'main_index' } ) );
+    is( $main_index->text, "I am MT\nI am MT", 'loaded template' );
 
-## and backuped templates exists.
-ok( MT->model('template')->load( { blog_id => $blog->id, type => 'backup' } )
-);
+    ## and backuped templates exists.
+    ok( MT->model('template')
+            ->load( { blog_id => $blog->id, type => 'backup' } ) );
+
+    my ( $datetime_field, $categories1_field, $categories2_field );
+    subtest 'ct' => sub {
+        my $tmpl = MT->model('template')
+            ->load( { blog_id => $blog->id, identifier => 'content_type' } );
+        ok($tmpl);
+        is( $tmpl->text, "content_type.mtml\n" );
+        is( MT->model('templatemap')->count( { template_id => $tmpl->id } ),
+            6 );
+
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType',
+                    file_template => '%y/%m/%-f',
+                    build_type    => 1,
+                    is_preferred  => 0,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType',
+                    file_template => '%y/%m/%-b/%i',
+                    build_type    => 1,
+                    is_preferred  => 1,
+                }
+            ),
+            1
+        );
+        $datetime_field = MT->model('content_field')->load(
+            {   blog_id         => $tmpl->blog_id,
+                content_type_id => $tmpl->content_type_id,
+                type            => 'date_and_time',
+                name            => 'datetime',
+            }
+        ) or die 'cannot load datetime field';
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType',
+                    file_template => '%y/%m/%d/%b/%i',
+                    build_type    => 2,
+                    is_preferred  => 0,
+                    dt_field_id   => $datetime_field->id,
+                }
+            ),
+            1
+        );
+        $categories1_field = MT->model('content_field')->load(
+            {   blog_id         => $tmpl->blog_id,
+                content_type_id => $tmpl->content_type_id,
+                type            => 'categories',
+                name            => 'categories 1',
+            }
+        ) or die 'cannot load category1 field';
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType',
+                    file_template => '%-c/%-f',
+                    build_type    => 3,
+                    is_preferred  => 0,
+                    cat_field_id  => $categories1_field->id,
+                }
+            ),
+            1
+        );
+        $categories2_field = MT->model('content_field')->load(
+            {   blog_id         => $tmpl->blog_id,
+                content_type_id => $tmpl->content_type_id,
+                type            => 'categories',
+                name            => 'categories 2',
+            }
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType',
+                    file_template => '%y/%m/%-f/%-c',
+                    build_type    => 4,
+                    is_preferred  => 0,
+                    cat_field_id  => $categories2_field->id,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType',
+                    file_template => '%m/%-f/%-c',
+                    build_type    => 1,
+                    is_preferred  => 0,
+                    dt_field_id   => $datetime_field->id,
+                    cat_field_id  => $categories1_field->id,
+                }
+            ),
+            1
+        );
+    };
+
+    subtest 'ct_archive' => sub {
+        my $tmpl
+            = MT->model('template')
+            ->load(
+            { blog_id => $blog->id, identifier => 'content_type_listing' } );
+        ok($tmpl);
+        is( $tmpl->text, "content_type_listing.mtml\n" );
+        is( MT->model('templatemap')->count( { template_id => $tmpl->id } ),
+            15 );
+
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Daily',
+                    file_template => '%y/%m/%d/%f',
+                    build_type    => 1,
+                    is_preferred  => 1,
+                    dt_field_id   => $datetime_field->id,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Weekly',
+                    file_template => '%y/%m/%d-week/%i',
+                    build_type    => 2,
+                    is_preferred  => 1,
+                    dt_field_id   => 0,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Monthly',
+                    file_template => '%y/%m/%i',
+                    build_type    => 3,
+                    is_preferred  => 1,
+                    dt_field_id   => $datetime_field->id,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Yearly',
+                    file_template => '%y/%i',
+                    build_type    => 4,
+                    is_preferred  => 1,
+                    dt_field_id   => 0,
+                }
+            ),
+            1
+        );
+
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Author',
+                    file_template => 'author/%-a/%f',
+                    build_type    => 1,
+                    is_preferred  => 0,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Author',
+                    file_template => 'author/%a/%f',
+                    build_type    => 1,
+                    is_preferred  => 1,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Author-Daily',
+                    file_template => 'author/%-a/%y/%m/%d/%f',
+                    build_type    => 0,
+                    is_preferred  => 1,
+                    dt_field_id   => $datetime_field->id,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Author-Weekly',
+                    file_template => 'author/%-a/%y/%m/%d-week/%f',
+                    build_type    => 2,
+                    is_preferred  => 1,
+                    dt_field_id   => 0,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Author-Monthly',
+                    file_template => 'author/%-a/%y/%m/%f',
+                    build_type    => 3,
+                    dt_field_id   => $datetime_field->id,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Author-Yearly',
+                    file_template => 'author/%-a/%y/%f',
+                    build_type    => 4,
+                    is_preferred  => 1,
+                    dt_field_id   => 0,
+                }
+            ),
+            1
+        );
+
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Category',
+                    file_template => '%-c/%i',
+                    build_type    => 1,
+                    is_preferred  => 1,
+                    cat_field_id  => $categories1_field->id,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Category-Daily',
+                    file_template => '%-c/%y/%m/%d/%i',
+                    build_type    => 0,
+                    is_preferred  => 1,
+                    dt_field_id   => $datetime_field->id,
+                    cat_field_id  => $categories2_field->id,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Category-Weekly',
+                    file_template => '%-c/%y/%m/%d-week/%i',
+                    build_type    => 2,
+                    is_preferred  => 1,
+                    dt_field_id   => 0,
+                    cat_field_id  => $categories1_field->id,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Category-Monthly',
+                    file_template => '%-c/%y/%m/%i',
+                    build_type    => 3,
+                    dt_field_id   => $datetime_field->id,
+                    cat_field_id  => $categories2_field->id,
+                }
+            ),
+            1
+        );
+        is( MT->model('templatemap')->count(
+                {   template_id   => $tmpl->id,
+                    archive_type  => 'ContentType-Category-Yearly',
+                    file_template => '%-c/%y/%i',
+                    build_type    => 4,
+                    is_preferred  => 1,
+                    dt_field_id   => 0,
+                    cat_field_id  => $categories1_field->id,
+                }
+            ),
+            1
+        );
+    };
+};
 
 subtest 'default_category_sets element' => sub {
     my $category_set = MT->model('category_set')
@@ -479,6 +757,124 @@ MyTheme:
                             label: Main Index
                             outfile: index.html
                             rebuild_me: 1
+                    ct:
+                        content_type:
+                            label: Content Type
+                            content_type: contenttypecontenttypecontenttype1234567
+                            mappings:
+                                ct:
+                                    archive_type: ContentType
+                                    file_template: "%y/%m/%-f"
+                                    build_type: 1
+                                    preferred: 0
+                                ct_preferred:
+                                    archive_type: ContentType
+                                    file_template: "%y/%m/%-b/%i"
+                                    build_type: 1
+                                ct_datetime:
+                                    archive_type: ContentType
+                                    file_template: "%y/%m/%d/%b/%i"
+                                    build_type: 2
+                                    preferred: 0
+                                    datetime_field: datetime
+                                ct_cat1:
+                                    archive_type: ContentType
+                                    file_template: "%-c/%-f"
+                                    build_type: 3
+                                    preferred: 0
+                                    category_field: categories 1
+                                ct_cat2:
+                                    archive_type: ContentType
+                                    file_template: "%y/%m/%-f/%-c"
+                                    build_type: 4
+                                    preferred: 0
+                                    category_field: categories 2
+                                ct_datetime_cat1:
+                                    archive_type: ContentType
+                                    file_template: "%m/%-f/%-c"
+                                    build_type: 1
+                                    preferred: 0
+                                    datetime_field: datetime
+                                    category_field: categoriescategoriescategoriescategories
+                    ct_archive:
+                        content_type_listing:
+                            label: 'Content Type Listing'
+                            content_type: test_content_type
+                            mappings:
+                                ct_daily:
+                                    archive_type: ContentType-Daily
+                                    file_template: "%y/%m/%d/%f"
+                                    build_type: 1
+                                    datetime_field: datetime
+                                ct_weekly:
+                                    archive_type: ContentType-Weekly
+                                    file_template: "%y/%m/%d-week/%i"
+                                    build_type: 2
+                                ct_monthly:
+                                    archive_type: ContentType-Monthly
+                                    file_template: "%y/%m/%i"
+                                    build_type: 3
+                                    datetime_field: datetime
+                                ct_yearly:
+                                    archive_type: ContentType-Yearly
+                                    file_template: "%y/%i"
+                                    build_type: 4
+
+                                ct_author:
+                                    archive_type: ContentType-Author
+                                    file_template: "author/%-a/%f"
+                                    build_type: 1
+                                    preferred: 0
+                                ct_author_preferred:
+                                    archive_type: ContentType-Author
+                                    file_template: "author/%a/%f"
+                                    build_type: 1
+                                ct_author_daily:
+                                    archive_type: ContentType-Author-Daily
+                                    file_template: "author/%-a/%y/%m/%d/%f"
+                                    build_type: 0
+                                    datetime_field: datetime
+                                ct_author_weekly:
+                                    archive_type: ContentType-Author-Weekly
+                                    file_template: "author/%-a/%y/%m/%d-week/%f"
+                                    build_type: 2
+                                ct_author_monthly:
+                                    archive_type: ContentType-Author-Monthly
+                                    file_template: "author/%-a/%y/%m/%f"
+                                    build_type: 3
+                                    datetime_field: datetime
+                                ct_author_yearly:
+                                    archive_type: ContentType-Author-Yearly
+                                    file_template: "author/%-a/%y/%f"
+                                    build_type: 4
+
+                                ct_cat:
+                                    archive_type: ContentType-Category
+                                    file_template: "%-c/%i"
+                                    build_type: 1
+                                    category_field: categories 1
+                                ct_cat_daily:
+                                    archive_type: ContentType-Category-Daily
+                                    file_template: "%-c/%y/%m/%d/%i"
+                                    build_type: 0
+                                    datetime_field: datetime
+                                    category_field: categories 2
+                                ct_cat_weekly:
+                                    archive_type: ContentType-Category-Weekly
+                                    file_template: "%-c/%y/%m/%d-week/%i"
+                                    build_type: 2
+                                    category_field: categories 1
+                                ct_cat_monthly:
+                                    archive_type: ContentType-Category-Monthly
+                                    file_template: "%-c/%y/%m/%i"
+                                    build_type: 3
+                                    datetime_field: datetime
+                                    category_field: abababababababababababababababababababab
+                                ct_cat_yearly:
+                                    archive_type: ContentType-Category-Yearly
+                                    file_template: "%-c/%y/%i"
+                                    build_type: 4
+                                    category_field: categories 1
         core_configs:
             component: core
             importer: default_prefs
@@ -707,6 +1103,7 @@ MyTheme:
                       - label: categories 2
                         description: categories field 2
                         type: categories
+                        unique_id: abababababababababababababababababababab
                         required: 1
                         display: optional
                         multiple: 0
