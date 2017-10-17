@@ -67,6 +67,11 @@ sub upgrade_functions {
             version_limit => 7.0020,
             priority      => 3.2,
         },
+        'v7_rebuild_object_assets' => {
+            code          => \&_v7_rebuild_object_assets,
+            version_limit => 7.0021,
+            priority      => 3.2,
+        },
     };
 }
 
@@ -526,6 +531,54 @@ sub _v7_rebuild_object_tags {
                     $self->translate_escape(
                         'Error saving record: [_1]',
                         $ot->errstr,
+                    )
+                    );
+            }
+        }
+    }
+}
+
+sub _v7_rebuild_object_assets {
+    my $self = shift;
+
+    $self->progress( $self->translate_escape('Rebuilding object assets...') );
+
+    MT->model('objectasset')->remove( { object_ds => 'content_field' } )
+        or return $self->error(
+        $self->translate_escape(
+            'Error removing records: [_1]',
+            MT->model('objectasset')->errstr,
+        )
+        );
+
+    my @asset_fields
+        = MT->model('content_field')
+        ->load(
+        { type => [ 'asset', 'asset_audio', 'asset_video', 'asset_image' ] }
+        );
+    for my $asset_field (@asset_fields) {
+        my @content_data = MT->model('content_data')
+            ->load( { content_type_id => $asset_field->content_type_id } );
+        for my $cd (@content_data) {
+            my $asset_ids = $cd->data->{ $asset_field->id } || [];
+            if ( ref $asset_ids ne 'ARRAY' ) {
+                $asset_ids = [$asset_ids];
+            }
+            @$asset_ids = grep {$_} @$asset_ids;
+
+            for my $asset_id (@$asset_ids) {
+                my $oa = MT->model('objectasset')->new(
+                    blog_id   => $cd->blog_id,
+                    object_id => $cd->id,
+                    object_ds => 'content_data',
+                    asset_id  => $asset_id,
+                    cf_id     => $asset_field->id,
+                );
+                $oa->save
+                    or return $self->error(
+                    $self->translate_escape(
+                        'Error saving record: [_1]',
+                        $oa->errstr,
                     )
                     );
             }
