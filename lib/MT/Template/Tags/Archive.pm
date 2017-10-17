@@ -199,6 +199,12 @@ sub _hdlr_archives {
     ## handle it here--instead hand it over to <MTCategories>.
     return $ctx->invoke_handler( 'categories', $args, $cond )
         if $at eq 'Category';
+    if ( $at eq 'ContentType-Category' ) {
+        my $category_set = $ctx->stash('category_set')
+            or return $ctx->_no_category_set_error();
+        $args->{category_set_id} = $category_set->id;
+        return $ctx->invoke_handler( 'categories', $args, $cond );
+    }
     my %args;
     my $sort_order
         = lc( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
@@ -687,21 +693,35 @@ sub _hdlr_archive_link {
         || $ctx->{current_archive_type}
         || $ctx->{archive_type};
     return $ctx->invoke_handler( 'categoryarchivelink', $args )
-        if ( $at && ( 'Category' eq $at ) )
-        || ( $ctx->{current_archive_type}
-        && 'Category' eq $ctx->{current_archive_type} );
+        if ( $at && ( 'Category' eq $at || 'ContentType-Category' eq $at ) )
+        || (
+        $ctx->{current_archive_type}
+        && (   'Category' eq $ctx->{current_archive_type}
+            || 'ContentType-Category' eq $ctx->{current_archive_type} )
+        );
 
     my $archiver = MT->publisher->archiver($at);
     return '' unless $archiver;
 
     my $blog = $ctx->stash('blog');
-    my $entry;
+    my $content;
     if ( $archiver->entry_based ) {
-        $entry = $ctx->stash('entry');
+        $content = $ctx->stash('entry');
     }
+    elsif ( $archiver->contenttype_based ) {
+        $content = $ctx->stash('content');
+    }
+
     my $author = $ctx->stash('author');
-    if ( $archiver->author_based && !$author && $ctx->stash('entry') ) {
-        $author = $ctx->stash('entry')->author;
+    if ( $archiver->author_based && !$author ) {
+        if (   $archiver->contenttype_author_based
+            && $ctx->stash('content') )
+        {
+            $author = $ctx->stash('content')->author;
+        }
+        elsif ( $ctx->stash('entry') ) {
+            $author = $ctx->stash('entry')->author;
+        }
     }
 
     #return $ctx->error(MT->translate(
@@ -723,11 +743,12 @@ sub _hdlr_archive_link {
     ) unless $blog->has_archive_type($at);
 
     my $arch = $blog->archive_url;
-    $arch = $blog->site_url if $entry && $entry->class eq 'page';
+    $arch = $blog->site_url if $content && $content->class eq 'page';
     $arch .= '/' unless $arch =~ m!/$!;
-    $arch .= archive_file_for( $entry, $blog, $at, $cat, undef,
+    $arch .= archive_file_for( $content, $blog, $at, $cat, undef,
         $ctx->{current_timestamp}, $author );
-    $arch = MT::Util::strip_index( $arch, $blog ) unless $args->{with_index};
+    $arch = MT::Util::strip_index( $arch, $blog )
+        unless $args->{with_index};
     return $arch;
 }
 
@@ -1150,7 +1171,8 @@ sub _hdlr_index_link {
     my $path = $blog->site_url;
     $path .= '/' unless $path =~ m!/$!;
     $path .= $idx->outfile;
-    $path = MT::Util::strip_index( $path, $blog ) unless $args->{with_index};
+    $path = MT::Util::strip_index( $path, $blog )
+        unless $args->{with_index};
     $path;
 }
 

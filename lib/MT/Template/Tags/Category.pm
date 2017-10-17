@@ -242,8 +242,9 @@ sub _hdlr_categories {
     ## with a single query (storing them in %counts).
     ## Otherwise, counts are collected on an as-needed basis, using the
     ## 'entry_count' method in MT::Category.
-    my $counts_fetched = 0;
-    my $entry_count_of = sub {
+    my $counts_fetched   = 0;
+    my $content_count_of = !$args->{category_set_id}
+        ? sub {
         my $cat = shift;
         return delay( sub { $cat->entry_count } )
             unless $count_all;
@@ -273,7 +274,44 @@ sub _hdlr_categories {
                 $counts{ $cat->id };
             }
         );
-    };
+        }
+        : sub {
+        my $cat = shift;
+        return delay( sub { $cat->content_data_count } )
+            unless $count_all;
+        return $cat->content_data_count(
+            {   count =>
+                    ( defined $counts{ $cat->id } ? $counts{ $cat->id } : 0 )
+            }
+        ) if $counts_fetched;
+        return $cat->cache_property(
+            'content_data_count',
+            sub {
+                my $blog = $ctx->stash('blog')
+                    or return $ctx->_no_blog_error();
+                my @category_fields = MT->model('content_field')
+                    ->load( { blog_id => $blog->id, type => 'categories' } );
+                my @content_field_ids = map { $_->id } @category_fields;
+
+                my $cnt_iter = MT::ContentFieldIndex->count_group_by(
+                    { content_field_id => [@content_field_ids] },
+                    {   group => ['value_integer'],
+                        join  => MT->model('content_data')->join_on(
+                            undef,
+                            {   id     => \'=cf_idx_content_data_id',
+                                status => MT::Entry::RELEASE(),
+                            }
+                        ),
+                    }
+                );
+                while ( my ( $count, $cat_id ) = $cnt_iter->() ) {
+                    $counts{$cat_id} = $count;
+                }
+                $counts_fetched = 1;
+                $counts{ $cat->id };
+            }
+        );
+        };
 
     my $iter;
     {
@@ -292,7 +330,8 @@ sub _hdlr_categories {
     my $i          = 0;
     my @categories = ();
     while ( my $cat = $iter->() ) {
-        next if ( ( !$args->{show_empty} ) && ( !$entry_count_of->($cat) ) );
+        next
+            if ( ( !$args->{show_empty} ) && ( !$content_count_of->($cat) ) );
         last if ( defined($n) && scalar(@categories) >= $n );
         push @categories, $cat;
     }
@@ -316,7 +355,7 @@ sub _hdlr_categories {
         local $vars->{__odd__}     = ( $i % 2 ) == 1;
         local $vars->{__even__}    = ( $i % 2 ) == 0;
         local $vars->{__counter__} = $i;
-        $ctx->{__stash}{category_count} = $entry_count_of->($cat);
+        $ctx->{__stash}{category_count} = $content_count_of->($cat);
         defined(
             my $out = $builder->build(
                 $ctx, $tokens,

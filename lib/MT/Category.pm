@@ -700,6 +700,7 @@ sub content_data_count {
                 }
             );
         },
+        ( $terms->{count} ? ( $terms->{count} ) : () ),
     );
 }
 
