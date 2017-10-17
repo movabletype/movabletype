@@ -285,8 +285,9 @@ sub _update_object_categories {
 
     MT::ObjectCategory->remove(
         {   blog_id   => $self->blog_id,
-            object_ds => 'content_field',
-            object_id => $field_data->{id},
+            object_ds => 'content_data',
+            object_id => $self->id,
+            cf_id     => $field_data->{id},
         }
     );
 
@@ -296,8 +297,9 @@ sub _update_object_categories {
         $obj_cat->set_values(
             {   blog_id     => $self->blog_id,
                 category_id => $cat_id,
-                object_ds   => 'content_field',
-                object_id   => $field_data->{id},
+                object_ds   => 'content_data',
+                object_id   => $self->id,
+                cf_id       => $field_data->{id},
                 is_primary  => $is_primary,
             }
         );

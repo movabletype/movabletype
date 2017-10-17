@@ -57,6 +57,11 @@ sub upgrade_functions {
             version_limit => 7.0017,
             priority      => 3.5,
         },
+        'v7_rebuild_object_categories' => {
+            code          => \&_v7_rebuild_object_categories,
+            version_limit => 7.0019,
+            priority      => 3.2,
+        },
     };
 }
 
@@ -426,6 +431,56 @@ sub _v7_migrate_child_site_role {
 
         # Child Site Administrator Role is remove
         $child_site_admin_role->remove();
+    }
+}
+
+sub _v7_rebuild_object_categories {
+    my $self = shift;
+
+    $self->progress(
+        $self->translate_escape('Rebuilding object categories...') );
+
+    MT->model('objectcategory')->remove( { object_ds => 'content_field' } )
+        or return $self->error(
+        $self->translate_escape(
+            'Error removing records: [_1]',
+            MT->model('objectcategory')->errstr,
+        )
+        );
+
+    my @category_fields
+        = MT->model('content_field')->load( { type => 'categories' } );
+    for my $cat_field (@category_fields) {
+        my @content_data = MT->model('content_data')
+            ->load( { content_type_id => $cat_field->content_type_id } );
+        for my $cd (@content_data) {
+            my $category_ids = $cd->data->{ $cat_field->id } || [];
+            if ( ref $category_ids ne 'ARRAY' ) {
+                $category_ids = [$category_ids];
+            }
+            @$category_ids = grep {$_} @$category_ids;
+
+            my $is_primary = 1;
+            for my $cat_id (@$category_ids) {
+                my $oc = MT->model('objectcategory')->new(
+                    blog_id     => $cd->blog_id,
+                    object_id   => $cd->id,
+                    object_ds   => 'content_data',
+                    category_id => $cat_id,
+                    is_primary  => $is_primary,
+                    cf_id       => $cat_field->id,
+                );
+                $oc->save
+                    or return $self->error(
+                    $self->translate_escape(
+                        'Error saving record: [_1]',
+                        $oc->errstr,
+                    )
+                    );
+
+                $is_primary = 0;
+            }
+        }
     }
 }
 

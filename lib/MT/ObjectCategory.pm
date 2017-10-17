@@ -19,6 +19,7 @@ __PACKAGE__->install_properties(
             'object_ds'   => 'string(50) not null',
             'category_id' => 'integer not null',
             'is_primary'  => 'boolean not null',
+            'cf_id'       => 'integer not null',
         },
         indexes => {
             object_id   => 1,
@@ -40,6 +41,7 @@ __PACKAGE__->install_properties(
         datasource  => 'objectcategory',
         primary_key => 'id',
         cacheable   => 0,
+        defaults    => { cf_id => 0 },
     }
 );
 
