@@ -21,7 +21,7 @@ my $data1 = [
     1, { a => 'value-a', b => $a, c => [ 'array', $a, $c, 2 ], d => 1 }, undef
 ];
 my $data2 = [
-    1, { a => 'value-a', b => $a, c => [ 'array', $a, \$c, 2 ], d => 1 },
+    1, { a => 'value-a', b => $a, c => [ 'array', $a, $c, 2 ], d => 1 },
     undef
 ];
 $data2->[1]->{z} = $data2;
@@ -47,7 +47,7 @@ for my $label ( keys %sers ) {
         };
         like(
             $@,
-            qr/cannot encode reference to scalar/,
+            qr/json text or perl structure exceeds maximum nesting level/,
             "$label doesn't support circular reference"
         );
     }
