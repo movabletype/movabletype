@@ -9,33 +9,47 @@ use MT::Test qw( :db );
 
 use MT::ContentField;
 
-subtest 'unique_id' => sub {
-    my $cf = MT::ContentField->new;
-    $cf->set_values(
-        {   blog_id         => 1,
-            content_type_id => 1,
-        }
+subtest 'set unique_id' => sub {
+    my $unique_id = '1234' x 10;
+
+    my $cf = MT::ContentField->new(
+        blog_id         => 1,
+        content_type_id => 1,
     );
 
-    $cf->unique_id('123');
-    is( $cf->unique_id, undef, 'cannot set unique_id' );
+    $cf->unique_id($unique_id);
+    is( $cf->unique_id, $unique_id, 'can set unique_id before save' );
 
     $cf->save or die $cf->errstr;
-    ok( $cf->unique_id, 'set unique_id after save' );
-    is( length $cf->unique_id, 40, 'length of unique_id is 40' );
+    $cf = MT::ContentField->load( $cf->id );
+    is( $cf->unique_id, $unique_id, 'can save unique_id' );
 
-    my $unique_id = $cf->unique_id;
-    $cf->unique_id( $unique_id . '456' );
-    is( $cf->unique_id, $unique_id, 'cannot set unique_id' );
+    $cf->unique_id( 'abcd' x 10 );
+    is( $cf->unique_id, $unique_id, 'cannot change unique_id after save' );
+};
 
-    my $cf2 = MT::ContentField->new;
-    $cf2->set_values(
-        {   blog_id         => 1,
-            content_type_id => 1,
-        }
+subtest 'generate unique_id automatically' => sub {
+    my $cf = MT::ContentField->new(
+        blog_id         => 1,
+        content_type_id => 1,
     );
-    $cf2->save or die $cf2->errstr;
-    $cf2->column( 'unique_id', $cf->unique_id );
+    $cf->save or die $cf->errstr;
+    ok( $cf->unique_id, 'unique_id is generated' );
+    is( length $cf->unique_id, 40, 'unique_id is valid' );
+};
+
+subtest 'forbid creating content_field with not unique unique_id' => sub {
+    my $cf1 = MT::ContentField->new(
+        blog_id         => 1,
+        content_type_id => 1,
+    );
+    $cf1->save or die $cf1->errstr;
+
+    my $cf2 = MT::ContentField->new(
+        blog_id         => 1,
+        content_type_id => 1,
+    );
+    $cf2->unique_id( $cf1->unique_id );
     $cf2->save;
     ok( $cf2->errstr, 'unique_id column must be unique' );
 };

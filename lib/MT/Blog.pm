@@ -475,6 +475,23 @@ sub create_default_templates {
                 MT::Template->widgets_to_modulesets( $modulesets, $blog->id )
             );
         }
+        if ( ( $val->{type} eq 'ct' || $val->{type} eq 'ct_archive' )
+            && exists $val->{content_type} )
+        {
+            my $ct = MT->model('content_type')->load(
+                {   blog_id   => $blog->id,
+                    unique_id => $val->{content_type},
+                }
+            );
+            $ct ||= MT->model('content_type')->load(
+                {   blog_id => $blog->id,
+                    name    => $val->{content_type},
+                }
+            );
+            if ($ct) {
+                $obj->content_type_id( $ct->id );
+            }
+        }
         $obj->save;
         if ( $val->{mappings} ) {
             push @arch_tmpl,
@@ -514,6 +531,48 @@ sub create_default_templates {
                 $map->blog_id( $tmpl->blog_id );
                 $map->build_type( $m->{build_type} )
                     if defined $m->{build_type};
+
+                if ( $tmpl->content_type_id ) {
+                    if ( $m->{datetime_field} ) {
+                        my $datetime_field
+                            = MT->model('content_field')->load(
+                            {   blog_id         => $tmpl->blog_id,
+                                content_type_id => $tmpl->content_type_id,
+                                unique_id       => $m->{datetime_field},
+                            }
+                            );
+                        $datetime_field ||= MT->model('content_field')->load(
+                            {   blog_id         => $tmpl->blog_id,
+                                content_type_id => $tmpl->content_type_id,
+                                name            => $m->{datetime_field},
+                            }
+                        );
+                        if ($datetime_field) {
+                            $map->dt_field_id( $datetime_field->id );
+                        }
+                    }
+                    if ( $m->{category_field} ) {
+                        my $cat_field = MT->model('content_field')->load(
+                            {   blog_id         => $tmpl->blog_id,
+                                content_type_id => $tmpl->content_type_id,
+                                unique_id       => $m->{category_field},
+                            }
+                        );
+                        $cat_field ||= MT->model('content_field')->load(
+                            {   blog_id         => $tmpl->blog_id,
+                                content_type_id => $tmpl->content_type_id,
+                                name            => $m->{category_field},
+                            }
+                        );
+                        if ($cat_field) {
+                            $map->cat_field_id( $cat_field->id );
+                        }
+                    }
+                }
+                unless ( $map->dt_field_id ) {
+                    $map->dt_field_id(0);
+                }
+
                 $map->save;
             }
         }
