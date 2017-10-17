@@ -2803,8 +2803,13 @@ sub is_authorized {
     my $app     = shift;
     my $blog_id = $app->param('blog_id');
     $app->permissions(undef);
-    return 1 unless $blog_id;
     return unless my $user = $app->user;
+    if ( !$user->can_sign_in_cms() ) {
+        return $app->error(
+            $app->translate("You are not authorized to log in to this blog.")
+        );
+    }
+    return 1 unless $blog_id;
     my $perms = $app->permissions( $user->permissions($blog_id) );
     $perms
         ? 1
