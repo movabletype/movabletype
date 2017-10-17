@@ -799,7 +799,7 @@ subtest 'mode = list (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out !~ m!(redirect|permission)=1|An error occurr?ed!i,
+    ok( $out =~ m!(redirect|permission)=1|An error occurr?ed!i,
         "list by child blog" );
 
     $app = _run_app(

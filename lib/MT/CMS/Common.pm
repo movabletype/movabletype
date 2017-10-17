@@ -989,9 +989,6 @@ sub list {
         my $blog_ids = undef;
         if ($blog_id) {
             push @$blog_ids, $blog_id;
-            if ( $scope eq 'website' && $inherit_blogs ) {
-                push @$blog_ids, $_->id foreach @{ $app->blog->blogs() };
-            }
         }
         foreach my $p (@act) {
             $allowed = 1,
@@ -1471,13 +1468,6 @@ sub filtered_list {
         }
         else {
             @act = split /\s*,\s*/, $list_permission;
-        }
-        my $blog_ids = undef;
-        if ($blog_id) {
-            push @$blog_ids, $blog_id;
-            if ( $scope eq 'website' && $inherit_blogs ) {
-                push @$blog_ids, $_->id foreach @{ $app->blog->blogs() };
-            }
         }
         foreach my $p (@act) {
             $allowed = 1,
