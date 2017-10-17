@@ -18,6 +18,7 @@ __PACKAGE__->install_properties(
             'object_id'         => 'integer not null',
             'object_datasource' => 'string(50) not null',
             'tag_id'            => 'integer not null',
+            'cf_id'             => 'integer not null',
         },
         indexes => {
             object_id         => 1,
@@ -38,6 +39,7 @@ __PACKAGE__->install_properties(
         datasource  => 'objecttag',
         primary_key => 'id',
         cacheable   => 0,
+        defaults    => { cf_id => 0, },
     }
 );
 

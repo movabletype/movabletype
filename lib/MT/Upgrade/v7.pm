@@ -62,6 +62,11 @@ sub upgrade_functions {
             version_limit => 7.0019,
             priority      => 3.2,
         },
+        'v7_rebuild_object_tags' => {
+            code          => \&_v7_rebuild_object_tags,
+            version_limit => 7.0020,
+            priority      => 3.2,
+        },
     };
 }
 
@@ -479,6 +484,50 @@ sub _v7_rebuild_object_categories {
                     );
 
                 $is_primary = 0;
+            }
+        }
+    }
+}
+
+sub _v7_rebuild_object_tags {
+    my $self = shift;
+
+    $self->progress( $self->translate_escape('Rebuilding object tags...') );
+
+    MT->model('objecttag')->remove( { object_datasource => 'content_field' } )
+        or return $self->error(
+        $self->translate_escape(
+            'Error removing records: [_1]',
+            MT->model('objecttag')->errstr,
+        )
+        );
+
+    my @tag_fields = MT->model('content_field')->load( { type => 'tags' } );
+    for my $tag_field (@tag_fields) {
+        my @content_data = MT->model('content_data')
+            ->load( { content_type_id => $tag_field->content_type_id } );
+        for my $cd (@content_data) {
+            my $tag_ids = $cd->data->{ $tag_field->id } || [];
+            if ( ref $tag_ids ne 'ARRAY' ) {
+                $tag_ids = [$tag_ids];
+            }
+            @$tag_ids = grep {$_} @$tag_ids;
+
+            for my $tag_id (@$tag_ids) {
+                my $ot = MT->model('objecttag')->new(
+                    blog_id           => $cd->blog_id,
+                    object_id         => $cd->id,
+                    object_datasource => 'content_data',
+                    tag_id            => $tag_id,
+                    cf_id             => $tag_field->id,
+                );
+                $ot->save
+                    or return $self->error(
+                    $self->translate_escape(
+                        'Error saving record: [_1]',
+                        $ot->errstr,
+                    )
+                    );
             }
         }
     }

@@ -261,8 +261,9 @@ sub _update_object_tags {
 
     MT::ObjectTag->remove(
         {   blog_id           => $self->blog_id,
-            object_datasource => 'content_field',
-            object_id         => $field_data->{id},
+            object_datasource => 'content_data',
+            object_id         => $self->id,
+            cf_id             => $field_data->{id},
         }
     );
 
@@ -271,8 +272,9 @@ sub _update_object_tags {
         $obj_tag->set_values(
             {   blog_id           => $self->blog_id,
                 tag_id            => $tag_id,
-                object_datasource => 'content_field',
-                object_id         => $field_data->{id},
+                object_datasource => 'content_data',
+                object_id         => $self->id,
+                cf_id             => $field_data->{id},
             }
         );
         $obj_tag->save or die $obj_tag->errstr;
