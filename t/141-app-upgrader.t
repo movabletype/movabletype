@@ -10,6 +10,7 @@ BEGIN {
 use lib 'lib', 'extlib', 't/lib', '../lib', '../extlib';
 use MT::Test qw( :app :newdb );
 use MT::Test::Permission;
+use MT::Test::Upgrade;
 use MT::Theme;
 use Test::More;
 
@@ -171,64 +172,7 @@ subtest 'Upgrade from MT5 to MT7' => sub {
     ok( $perms->has('administer_site'),
         'Administrator has "administer_site" permission.' );
 
-    my $cfg = MT->config;
-    $cfg->MTVersion(5.2);
-    $cfg->SchemaVersion(5.0036);
-    $cfg->save_config;
-
-    my $config = MT::Config->load;
-    my $data   = $config->data;
-    my @lines  = split /\n/, $data;
-    my @new_lines;
-    foreach my $line (@lines) {
-        if ( $line =~ /^MTVersion/ ) {
-            $line = 'MTVersion 5.2';
-        }
-        elsif ( $line =~ /^SchemaVersion/ ) {
-            $line = 'SchemaVersion 5.0036';
-        }
-        push @new_lines, $line;
-    }
-    my $new_data = join "\n", @new_lines;
-    $config->data($new_data);
-    $config->save or die $config->errstr;
-
-    $app = _run_app(
-        'MT::App::Upgrader',
-        {   __request_method => 'POST',
-            __mode           => 'upgrade',
-            username         => 'Melody',
-            password         => 'Nelson',
-        },
-    );
-    $out = delete $app->{__test_output};
-
-    my $json_steps = $app->response;
-    while ( @{ $json_steps->{steps} || [] } ) {
-
-        require MT::Util;
-        $json_steps = MT::Util::to_json( $json_steps->{steps} );
-
-        require MT::App::Upgrader;
-        $app = _run_app(
-            'MT::App::Upgrader',
-            {   __request_method => 'POST',
-                username         => 'Melody',
-                password         => 'Nelson',
-                __mode           => 'run_actions',
-                steps            => $json_steps,
-            },
-        );
-        $out = delete $app->{__test_output};
-
-        $out =~ s/^.*JSON://s;
-
-        require JSON;
-        $json_steps = JSON::from_json($out);
-
-        ok( !$json_steps->{error}, 'Request has no error.' );
-
-    }
+    MT::Test::Upgrade->upgrade( from => 5.0036 );
 
     is( MT::Website->count(), 1, 'There is one website.' );
     is( MT::Blog->count(),    1, 'There is one blog.' );
@@ -305,64 +249,7 @@ subtest 'Upgrade from MT6 to MT7' => sub {
     ok( $perms->has('administer_site'),
         'Administrator has "administer_site" permission.' );
 
-    my $cfg = MT->config;
-    $cfg->MTVersion(6.3);
-    $cfg->SchemaVersion(6.0010);
-    $cfg->save_config;
-
-    my $config = MT::Config->load;
-    my $data   = $config->data;
-    my @lines  = split /\n/, $data;
-    my @new_lines;
-    foreach my $line (@lines) {
-        if ( $line =~ /^MTVersion/ ) {
-            $line = 'MTVersion 6.3';
-        }
-        elsif ( $line =~ /^SchemaVersion/ ) {
-            $line = 'SchemaVersion 6.0010';
-        }
-        push @new_lines, $line;
-    }
-    my $new_data = join "\n", @new_lines;
-    $config->data($new_data);
-    $config->save or die $config->errstr;
-
-    $app = _run_app(
-        'MT::App::Upgrader',
-        {   __request_method => 'POST',
-            __mode           => 'upgrade',
-            username         => 'Melody',
-            password         => 'Nelson',
-        },
-    );
-    $out = delete $app->{__test_output};
-
-    my $json_steps = $app->response;
-    while ( @{ $json_steps->{steps} || [] } ) {
-
-        require MT::Util;
-        $json_steps = MT::Util::to_json( $json_steps->{steps} );
-
-        require MT::App::Upgrader;
-        $app = _run_app(
-            'MT::App::Upgrader',
-            {   __request_method => 'POST',
-                username         => 'Melody',
-                password         => 'Nelson',
-                __mode           => 'run_actions',
-                steps            => $json_steps,
-            },
-        );
-        $out = delete $app->{__test_output};
-
-        $out =~ s/^.*JSON://s;
-
-        require JSON;
-        $json_steps = JSON::from_json($out);
-
-        ok( !$json_steps->{error}, 'Request has no error.' );
-
-    }
+    MT::Test::Upgrade->upgrade( from => 6.0010 );
 
     is( MT::Website->count(), 1, 'There is one website.' );
     is( MT::Blog->count(),    1, 'There is one blog.' );
