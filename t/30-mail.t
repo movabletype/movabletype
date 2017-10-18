@@ -4,6 +4,10 @@ use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+BEGIN {
+    plan skip_all => 'not for Win32' if $^O eq 'MSWin32';
+}
+
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
@@ -15,8 +19,6 @@ use MT::Test;
 use MT;
 use MT::Mail;
 use MIME::Base64;
-
-plan skip_all => 'not for Win32' if $^O eq 'MSWin32';
 
 my $mt = MT->new() or die MT->errstr;
 $mt->config('MailTransfer', 'debug');

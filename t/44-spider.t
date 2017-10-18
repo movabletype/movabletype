@@ -6,17 +6,17 @@ use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
-our $test_env;
-BEGIN {
-    $test_env = MT::Test::Env->new;
-    $ENV{MT_CONFIG} = $test_env->config_file;
-}
-
 BEGIN {
     plan $ENV{MT_TEST_SPIDER}
         ? (tests => 4)
         : (skip_all => 'Enable spider test with MT_TEST_SPIDER environment variable')
         ;
+}
+
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use LWP::UserAgent::Local;

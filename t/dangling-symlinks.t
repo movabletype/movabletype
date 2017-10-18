@@ -5,6 +5,17 @@ use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+BEGIN {
+    if ( $^O eq 'MSWin32' ) {
+        plan skip_all => 'These tests are not for Windows';
+    }
+
+    eval 'use Test::File';
+    if ($@) {
+        plan skip_all => 'Test::File is not installed';
+    }
+}
+
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
@@ -16,15 +27,6 @@ BEGIN {
 
 use Cwd;
 use File::Find;
-
-if ( $^O eq 'MSWin32' ) {
-    plan skip_all => 'These tests are not for Windows';
-}
-
-eval 'use Test::File';
-if ($@) {
-    plan skip_all => 'Test::File is not installed';
-}
 
 sub test {
     my $name = $File::Find::name;
