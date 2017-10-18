@@ -314,7 +314,8 @@ sub save {
 
     # Duplication check
     my $exists = $ct_class->count(
-        {   name => $name,
+        {   name    => $name,
+            blog_id => $blog_id,
             ( $content_type_id ? ( id => $content_type_id ) : () ),
         },
         { ( $content_type_id ? ( not => { id => 1 } ) : () ) }

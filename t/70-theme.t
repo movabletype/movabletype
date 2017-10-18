@@ -372,9 +372,8 @@ subtest 'default_category_sets element' => sub {
 subtest 'default_content_types element' => sub {
     subtest 'child_content_type' => sub {
         my $child_content_type = MT->model('content_type')->load(
-            {   blog_id   => $blog->id,
-                name      => 'child_content_type',
-                unique_id => ( '1234567890' x 4 ),
+            {   blog_id => $blog->id,
+                name    => 'child_content_type',
             }
         );
         ok( $child_content_type, 'child_content_type is created' );
@@ -383,10 +382,6 @@ subtest 'default_content_types element' => sub {
         my $field = $child_content_type->fields->[0];
         is( $field->{type}, 'single_line_text',
             'field type is single_line_text' );
-        is( $field->{unique_id},
-            ( 'abcdefghij' x 4 ),
-            'field unique_id is ok'
-        );
         is( $field->{options}{label},
             'single_line_text', 'field label is single_line_text' );
         is( $field->{options}{display},
@@ -395,9 +390,8 @@ subtest 'default_content_types element' => sub {
 
     subtest 'test_content_type' => sub {
         my $test_content_type = MT->model('content_type')->load(
-            {   blog_id   => $blog->id,
-                name      => 'test_content_type',
-                unique_id => 'contenttypecontenttypecontenttype1234567',
+            {   blog_id => $blog->id,
+                name    => 'test_content_type',
             }
         );
         ok($test_content_type);
@@ -631,10 +625,9 @@ subtest 'default_content_types element' => sub {
 
         subtest 'categories field (1)' => sub {
             my $f = $test_content_type->fields->[17];
-            is( $f->{options}{label},       'categories 1' );
-            is( $f->{options}{description}, 'categories field 1' );
-            is( $f->{type},                 'categories' );
-            is( $f->{options}{unique_id}, ( 'categories' x 4 ) );
+            is( $f->{options}{label},        'categories 1' );
+            is( $f->{options}{description},  'categories field 1' );
+            is( $f->{type},                  'categories' );
             is( $f->{options}{required},     1 );
             is( $f->{options}{display},      'default' );
             is( $f->{options}{multiple},     1 );
@@ -691,7 +684,7 @@ subtest 'default_content_types element' => sub {
             is( $f->{options}{increase_decrease_cols}, 0 );
         };
 
-        subtest 'content_type field' => sub {
+        subtest 'content_type field 1' => sub {
             my $f = $test_content_type->fields->[22];
             is( $f->{options}{label},       'content_type_1' );
             is( $f->{options}{description}, 'content type field 1' );
@@ -705,17 +698,16 @@ subtest 'default_content_types element' => sub {
             is( $f->{options}{source},      1 );
         };
 
-        subtest 'content_type field (by unique_id)' => sub {
+        subtest 'content_type field 2' => sub {
             my $f = $test_content_type->fields->[23];
             is( $f->{options}{label},       'content_type_2' );
             is( $f->{options}{description}, 'content type field 2' );
             is( $f->{type},                 'content_type' );
-            is( $f->{options}{unique_id}, ( 'abcd' x 10 ) );
-            is( $f->{options}{required}, 1 );
-            is( $f->{options}{display},  'optional' );
-            is( $f->{options}{multiple}, 0 );
-            is( $f->{options}{can_add},  0 );
-            is( $f->{options}{source},   1 );
+            is( $f->{options}{required},    1 );
+            is( $f->{options}{display},     'optional' );
+            is( $f->{options}{multiple},    0 );
+            is( $f->{options}{can_add},     0 );
+            is( $f->{options}{source},      1 );
         };
     };
 };
@@ -785,7 +777,7 @@ MyTheme:
                     ct:
                         content_type:
                             label: Content Type
-                            content_type: contenttypecontenttypecontenttype1234567
+                            content_type: test_content_type
                             mappings:
                                 ct:
                                     archive_type: ContentType
@@ -820,7 +812,7 @@ MyTheme:
                                     build_type: 1
                                     preferred: 0
                                     datetime_field: datetime
-                                    category_field: categoriescategoriescategoriescategories
+                                    category_field: categories 1
                     ct_archive:
                         content_type_listing:
                             label: 'Content Type Listing'
@@ -894,7 +886,7 @@ MyTheme:
                                     file_template: "%-c/%y/%m/%i"
                                     build_type: 3
                                     datetime_field: datetime
-                                    category_field: abababababababababababababababababababab
+                                    category_field: categories 2
                                 ct_cat_yearly:
                                     archive_type: ContentType-Category-Yearly
                                     file_template: "%-c/%y/%i"
@@ -941,14 +933,11 @@ MyTheme:
             importer: default_content_types
             data:
                 - name: child_content_type
-                  unique_id: 1234567890123456789012345678901234567890
                   fields:
                       - label: single_line_text
                         type: single_line_text
                         display: default
-                        unique_id: abcdefghijabcdefghijabcdefghijabcdefghij
                 - name: test_content_type
-                  unique_id: contenttypecontenttypecontenttype1234567
                   fields:
                       - label: single
                         description: single line text
@@ -1117,7 +1106,6 @@ MyTheme:
                       - label: categories 1
                         description: categories field 1
                         type: categories
-                        unique_id: categoriescategoriescategoriescategories
                         required: 1
                         display: default
                         multiple: 1
@@ -1128,7 +1116,6 @@ MyTheme:
                       - label: categories 2
                         description: categories field 2
                         type: categories
-                        unique_id: abababababababababababababababababababab
                         required: 1
                         display: optional
                         multiple: 0
@@ -1170,12 +1157,11 @@ MyTheme:
                       - label: content_type_2
                         description: content type field 2
                         type: content_type
-                        unique_id: abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd
                         required: 1
                         display: optional
                         multiple: 0
                         can_add: 0
-                        source: 1234567890123456789012345678901234567890
+                        source: child_content_type
         default_content_data:
             component: core
             importer: default_content_data
