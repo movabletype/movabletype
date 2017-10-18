@@ -5,12 +5,12 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
 BEGIN {
     eval { require Image::Magick }
         or plan skip_all => 'Image::Magick is not installed';
 }
 
-use MT::Test::Env;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;

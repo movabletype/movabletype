@@ -11,6 +11,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
 BEGIN {
     my $module = 'DBD::mysql';
     eval "require $module;";
@@ -18,7 +19,6 @@ BEGIN {
         if $@;
 }
 
-use MT::Test::Env;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(

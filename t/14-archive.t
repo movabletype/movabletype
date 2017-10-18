@@ -5,6 +5,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
 BEGIN {
     if ( eval { require Archive::Tar } ) {
         plan tests => 10;
@@ -14,7 +15,6 @@ BEGIN {
     }
 }
 
-use MT::Test::Env;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;

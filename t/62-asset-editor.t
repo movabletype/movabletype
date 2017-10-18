@@ -4,6 +4,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
 BEGIN {
     eval 'use Test::Spec; 1'
         or plan skip_all => 'Test::Spec is not installed';
@@ -13,7 +14,6 @@ BEGIN {
         or plan skip_all => 'Imager is not installed';
 }
 
-use MT::Test::Env;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(

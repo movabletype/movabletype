@@ -11,6 +11,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
 BEGIN {
     plan skip_all => "Test for 'postgresql' is not actively maintained";
 
@@ -20,7 +21,6 @@ BEGIN {
         if $@;
 }
 
-use MT::Test::Env;
 our $test_env;
 BEGIN {
     local $ENV{MT_TEST_BACKEND} = 'postgresql';
