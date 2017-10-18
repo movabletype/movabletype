@@ -21,10 +21,6 @@ sub apply {
 
     for my $ct_value ( @{$content_types} ) {
 
-        if ( my $unique_id = $ct_value->{unique_id} ) {
-            next if MT::ContentType->exist( { unique_id => $unique_id } );
-        }
-
         MT->set_language( $blog->language );
 
         my $name = $theme->translate_templatized( $ct_value->{name} );
@@ -41,8 +37,7 @@ sub apply {
             description =>
                 $theme->translate_templatized( $ct_value->{description} ),
             user_disp_option => $ct_value->{user_disp_option} ? 1 : 0,
-            unique_id        => $ct_value->{unique_id},
-            blog_id          => $blog->id,
+            blog_id => $blog->id,
         );
         MT->set_language($current_lang);
 
@@ -61,7 +56,6 @@ sub apply {
                 description =>
                     $theme->translate_templatized( $cf_value->{description} ),
                 type            => $cf_value->{type},
-                unique_id       => $cf_value->{unique_id},
                 blog_id         => $ct->blog_id,
                 content_type_id => $ct->id,
             );
@@ -175,14 +169,6 @@ sub validator {
         }
 
         MT->set_language($current_lang);
-    }
-
-    my @unique_ids
-        = grep {$_} map { $_->{unique_id} } @{$content_types};
-    if ( @unique_ids
-        && MT::ContentType->exist( { unique_id => \@unique_ids } ) )
-    {
-        return $element->trans_error($error);
     }
 
     1;
