@@ -47,8 +47,6 @@ END {
     }
 }
 
-use lib qw(lib extlib t/lib);
-
 eval(
     $ENV{SKIP_REINITIALIZE_DATABASE}
     ? "use MT::Test;"

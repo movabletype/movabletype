@@ -52,8 +52,6 @@ use MT::Role;
 
 use MT::Test qw( :app :db :data );
 
-use Test::More;
-
 MT->instance;
 my $user        = MT::Author->load(1);
 my $mock_author = Test::MockModule->new('MT::Author');

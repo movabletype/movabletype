@@ -12,7 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Test::More;
 use Test::MockModule;
 use MT::Test::DataAPI;
 

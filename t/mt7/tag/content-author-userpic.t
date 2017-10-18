@@ -16,8 +16,6 @@ BEGIN {
 
 use utf8;
 
-use lib qw(lib t/lib);
-
 use MT::Test::Tag;
 
 # plan tests => 2 * blocks;

@@ -40,7 +40,6 @@ END {
     }
 }
 
-use lib 't/lib', 'lib', 'extlib';
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
 

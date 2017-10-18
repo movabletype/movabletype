@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-use lib 't/lib', 'lib', 'extlib';
 use strict;
 use warnings;
 use FindBin;

@@ -10,11 +10,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use Test::More;
 use Digest::SHA1 ();
-
-use lib qw( lib extlib );
 use MT::Util ();
 
 my @data = ( 123, 'abcdef', 'Welcome to Movable Type', );

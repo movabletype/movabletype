@@ -12,9 +12,6 @@ BEGIN {
 
 
 use Test::MockModule;
-use Test::More;
-
-use lib qw( lib extlib t/lib );
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
 

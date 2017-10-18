@@ -12,9 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
-use lib qw(lib t/lib);
-
 use MT::Test::Tag;
 
 # plan tests => 2 * blocks;
