@@ -710,12 +710,19 @@ sub _hdlr_archive_link {
         || $ctx->{current_archive_type}
         || $ctx->{archive_type};
     return $ctx->invoke_handler( 'categoryarchivelink', $args )
-        if ( $at && ( 'Category' eq $at || 'ContentType-Category' eq $at ) )
-        || (
-        $ctx->{current_archive_type}
-        && (   'Category' eq $ctx->{current_archive_type}
-            || 'ContentType-Category' eq $ctx->{current_archive_type} )
-        );
+        if ( $at && ( 'Category' eq $at ) )
+        || ( $ctx->{current_archive_type}
+        && 'Category' eq $ctx->{current_archive_type} );
+    if (( $at && 'ContentType-Category' eq $at )
+        || ( $ctx->{current_archive_type}
+            && 'ContentType-Category' eq $ctx->{current_archive_type} )
+        )
+    {
+        my $category_set = $ctx->stash('category_set')
+            or return $ctx->_no_category_set_error();
+        $args->{category_set_id} = $category_set->id;
+        return $ctx->invoke_handler( 'categoryarchivelink', $args );
+    }
 
     my $archiver = MT->publisher->archiver($at);
     return '' unless $archiver;

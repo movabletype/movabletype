@@ -1607,6 +1607,7 @@ sub _hdlr_category_archive {
 
     my $cat_at_label
         = $ctx->stash('content')
+        || $args->{category_set_id}
         ? 'ContentType-Category'
         : 'Category';
 
@@ -1619,7 +1620,8 @@ sub _hdlr_category_archive {
     return '' unless $blog || $curr_at eq $cat_at_label;
     if ( $curr_at ne $cat_at_label ) {
 
-        # Check if "Category" archive is published
+        # Check if "Category" or "ContentType-Category"
+        # archive is published
         my $at      = $blog->archive_type;
         my @at      = split /,/, $at;
         my $cat_arc = '';
