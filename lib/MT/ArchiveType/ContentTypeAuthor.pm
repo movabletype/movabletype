@@ -76,7 +76,12 @@ sub archive_group_iter {
             my $count = MT::ContentData->count(
                 {   blog_id   => $blog->id,
                     status    => MT::Entry::RELEASE(),
-                    author_id => $a->id
+                    author_id => $a->id,
+                    (   $ctx->stash('content_type')
+                        ? ( content_type_id =>
+                                $ctx->stash('content_type')->id )
+                        : ()
+                    ),
                 }
             );
             next if $count == 0 && !$args->{show_empty};
