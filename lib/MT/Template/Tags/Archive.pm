@@ -240,7 +240,15 @@ sub _hdlr_archives {
         $ctx->{current_timestamp_end} = undef;
     }
 
-    my $order = $sort_order eq 'ascend' ? 'asc' : 'desc';
+    # Isn't $order used?
+    #my $order = $sort_order eq 'ascend' ? 'asc' : 'desc';
+
+    if ( my $unique_id = $args->{content_type} ) {
+        my ($content_type)
+            = MT->model('content_type')->load( { unique_id => $unique_id } )
+            or return $ctx->_no_content_type_error;
+        local $ctx->{__stash}{content_type} = $content_type;
+    }
     my $group_iter = $archiver->archive_group_iter( $ctx, $args );
     return $ctx->error( MT->translate("Group iterator failed.") )
         unless defined($group_iter);
