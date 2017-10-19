@@ -20,7 +20,7 @@ use MT::Test::Permission;
 use MT::Util qw(archive_file_for);
 use File::Basename qw(dirname);
 use MIME::Base64;
-use Clone qw/ clone /;
+use Storable qw(dclone);
 
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
@@ -148,7 +148,7 @@ sub _blogger_post {
 
     for my $type (qw/ array hash /) {
         for my $i ( 1 .. ( scalar(@$base_params) - 1 ) ) {
-            my $params = clone($base_params);
+            my $params = dclone($base_params);
 
             my $value = $params->[$i];
             $params->[$i]
@@ -193,7 +193,7 @@ sub _meta_weblog_post {
                 for my $key ( sort keys %$base_items ) {
                     next if $key eq 'categories' || $key eq 'mt_tb_ping_urls';
 
-                    my $params = clone($base_params);
+                    my $params = dclone($base_params);
                     my $items  = $params->[$items_col];
                     my $value  = $items->{$key};
                     $items->{$key}
@@ -218,7 +218,7 @@ sub _meta_weblog_post {
 
             }
             else {
-                my $params = clone($base_params);
+                my $params = dclone($base_params);
 
                 $params->[$i]
                     = ( $type eq 'array' )
