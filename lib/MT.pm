@@ -33,13 +33,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '6.2', '6.0010' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.2', '6.0020' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.2.6',              '__PRODUCT_VERSION_ID__',
+        '6.2.7',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 6;
+        $RELEASE_NUMBER = 7;
     }
 
     $DebugMode = 0;
