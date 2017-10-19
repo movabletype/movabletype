@@ -216,10 +216,12 @@ sub target_dt {
 
 sub make_archive_group_terms {
     my $obj = shift;
-    my ( $blog_id, $dt_field_id, $ts, $tsend, $author_id ) = @_;
+    my ( $blog_id, $dt_field_id, $ts, $tsend, $author_id, $content_type_id )
+        = @_;
     my $terms = {
         blog_id => $blog_id,
-        status  => MT::Entry::RELEASE()
+        status  => MT::Entry::RELEASE(),
+        ( $content_type_id ? ( content_type_id => $content_type_id ) : () ),
     };
     $terms->{author_id} = $author_id
         if $author_id;

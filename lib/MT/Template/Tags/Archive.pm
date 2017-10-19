@@ -249,7 +249,11 @@ sub _hdlr_archives {
             = MT->model('content_type')->load( { unique_id => $unique_id } )
             or return $ctx->_no_content_type_error;
     }
-    my $group_iter = $archiver->archive_group_iter( $ctx, $args );
+    my $group_iter;
+    {
+        local $ctx->{__stash}{content_type} = $content_type if $content_type;
+        $group_iter = $archiver->archive_group_iter( $ctx, $args );
+    }
     return $ctx->error( MT->translate("Group iterator failed.") )
         unless defined($group_iter);
 

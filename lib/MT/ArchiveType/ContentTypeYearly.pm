@@ -57,12 +57,14 @@ sub archive_group_iter {
 
     my $map = $ctx->stash('template_map');
     my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
+    my $content_type_id
+        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
     require MT::ContentData;
     require MT::ContentFieldIndex;
 
     my $group_terms
         = $obj->make_archive_group_terms( $blog->id, $dt_field_id, '', '',
-        '' );
+        '', $content_type_id );
     my $group_args
         = $obj->make_archive_group_args( 'datebased_only', 'yearly',
         $map, '', '', $args->{lastn}, $order, '' );
