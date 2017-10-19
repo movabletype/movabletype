@@ -273,13 +273,22 @@ sub rebuild {
         }
     }
     if (@ct_at) {
+        my $content_type_id;
+        if ( my $template_id = $param{TemplateID} ) {
+            my $template = MT->model('template')->load($template_id);
+            $content_type_id = $template->content_type_id if $template;
+        }
         require MT::ContentData;
         my %arg = ( 'sort' => 'authored_on', direction => 'descend' );
         $arg{offset} = $param{Offset} if $param{Offset};
         $arg{limit}  = $param{Limit}  if $param{Limit};
         my $pre_iter = MT::ContentData->load_iter(
             {   blog_id => $blog->id,
-                status  => MT::Entry::RELEASE()
+                status  => MT::Entry::RELEASE(),
+                (   $content_type_id
+                    ? ( content_type_id => $content_type_id )
+                    : ()
+                ),
             },
             \%arg
         );
@@ -983,6 +992,10 @@ sub rebuild_file {
                 Author      => $author,
                 Timestamp   => $start,
                 TemplateMap => $map,
+                (   $args{ContentData}
+                    ? ( ContentData => $args{ContentData} )
+                    : ()
+                ),
             }
         )
         )
@@ -1350,6 +1363,17 @@ sub _rebuild_content_archive_type {
     my $done = MT->instance->request( '__published:' . $blog->id )
         || MT->instance->request( '__published:' . $blog->id, {} );
     for my $map (@map) {
+
+        # SKIP no relation content data
+        if ( $at eq 'ContentType' ) {
+            my $template = MT->model('template')->load( $map->template_id );
+            next
+                if $template
+                && $content_data
+                && $template->content_type_id ne
+                $content_data->content_type_id;
+        }
+
         my $ts
             = $content_data
             && $map->dt_field_id ? $content_data->data->{ $map->dt_field_id }

@@ -184,6 +184,7 @@ sub archive_contents_count {
             ArchiveType => $at,
             Timestamp   => $timestamp,
             TemplateMap => $map,
+            ContentData => $content_data,
         }
     );
 }

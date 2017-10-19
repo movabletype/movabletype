@@ -138,6 +138,23 @@ my $tmpl_archive = MT::Test::Permission->make_template(
     text            => $text,
 );
 
+my $ct_dummy = MT::Test::Permission->make_content_type(
+    blog_id => $blog->id,
+    name    => 'dummy content type',
+);
+$ct_dummy->fields($fields);
+$ct_dummy->save or die $ct->errstr;
+my $cd_dummy = MT::Test::Permission->make_content_data(
+    blog_id         => $blog->id,
+    content_type_id => $ct_dummy->id,
+    author_id       => $author->id,
+    authored_on     => '20170909130530',
+    data            => {
+        $cf_datetime->id => '20170603180500',
+        $cf_category->id => [ $category1->id ],
+    },
+);
+
 my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
 
 my $contents_html = {

@@ -1040,7 +1040,9 @@ sub rebuild_pages {
 
             # determine total
             if ( my $archiver = $app->publisher->archiver($type_name) ) {
-                $total = _determine_total( $archiver, $blog_id );
+                my $content_type_id = $app->param('content_type_id');
+                $total = _determine_total( $archiver, $blog_id,
+                    $content_type_id );
             }
         }
 
@@ -1219,12 +1221,13 @@ sub start_rebuild_pages {
     $archive_label = $archive_label->() if ( ref $archive_label ) eq 'CODE';
     my $blog_id = $app->param('blog_id');
 
-    my $with_indexes = $app->param('with_indexes');
-    my $no_static    = $app->param('no_static');
-    my $template_id  = $app->param('template_id');
+    my $with_indexes    = $app->param('with_indexes');
+    my $no_static       = $app->param('no_static');
+    my $template_id     = $app->param('template_id');
+    my $content_type_id = $app->param('content_type_id');
 
     if ($archiver) {
-        $total = _determine_total( $archiver, $blog_id );
+        $total = _determine_total( $archiver, $blog_id, $content_type_id );
     }
 
     my %param = (
@@ -1238,7 +1241,8 @@ sub start_rebuild_pages {
         with_indexes    => $with_indexes,
         no_static       => $no_static,
         template_id     => $template_id,
-        return_args     => $app->return_args
+        return_args     => $app->return_args,
+        ( $content_type_id ? ( content_type_id => $content_type_id ) : () ),
     );
 
     if ( $type_name =~ /^index-(\d+)$/ ) {
@@ -3714,17 +3718,25 @@ sub save_data_api_settings {
 }
 
 sub _determine_total {
-    my ( $archiver, $blog_id ) = @_;
+    my ( $archiver, $blog_id, $content_type_id ) = @_;
 
     my $total = 0;
-    if ( $archiver->entry_based || $archiver->date_based ) {
-        if ( $archiver->contenttype_date_based ) {
-            require MT::ContentData;
+    if (   $archiver->entry_based
+        || $archiver->contenttype_based
+        || $archiver->date_based )
+    {
+        if (   $archiver->contenttype_based
+            || $archiver->contenttype_date_based )
+        {
             my $terms = {
                 status  => MT::Entry::RELEASE(),
                 blog_id => $blog_id,
+                (   $content_type_id
+                    ? ( content_type_id => $content_type_id )
+                    : ()
+                ),
             };
-            $total = MT::ContentData->count($terms);
+            $total = MT->model('content_data')->count($terms);
         }
         else {
             my $entry_class = $archiver->entry_class || 'entry';
@@ -3739,12 +3751,11 @@ sub _determine_total {
     }
     elsif ( $archiver->category_based ) {
         if ( $archiver->contenttype_category_based ) {
-            require MT::Category;
-            require MT::CategorySet;
-            my @cat_set = MT::CategorySet->load( { blog_id => $blog_id } );
+            my @cat_set
+                = MT->model('category_set')->load( { blog_id => $blog_id } );
             $total
-                = MT::Category->count(
-                { category_set_id => [ map { $_->id } @cat_set ] } );
+                = MT->model('category')
+                ->count( { category_set_id => [ map { $_->id } @cat_set ] } );
         }
         else {
             require MT::Category;
@@ -3764,37 +3775,15 @@ sub _determine_total {
             blog_id => $blog_id,
             status  => MT::Entry::RELEASE(),
             class   => $obj_class,
+            (   $archiver->contenttype_author_based && $content_type_id
+                ? ( content_type_id => $content_type_id )
+                : ()
+            ),
         };
         $total = MT::Author->count(
             { status => MT::Author::ACTIVE() },
             {   join => MT->model($obj_class)
                     ->join_on( 'author_id', $terms, { unique => 1 } ),
-                unique => 1,
-            }
-        );
-    }
-    elsif ($archiver->contenttype_based
-        || $archiver->contenttype_date_based )
-    {
-        require MT::ContentData;
-        my $terms = {
-            status  => MT::Entry::RELEASE(),
-            blog_id => $blog_id,
-        };
-        $total = MT::ContentData->count($terms);
-    }
-    elsif ( $archiver->contenttype_author_based ) {
-        require MT::Author;
-        require MT::ContentData;
-        my $terms = {
-            blog_id => $blog_id,
-            status  => MT::Entry::RELEASE(),
-        };
-        $total = MT::Author->count(
-            { status => MT::Author::ACTIVE() },
-            {   join => MT::ContentData->join_on(
-                    'author_id', $terms, { unique => 1 }
-                ),
                 unique => 1,
             }
         );

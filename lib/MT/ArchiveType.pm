@@ -209,13 +209,15 @@ sub archive_contents_count {
     return $self->_getset_coderef( 'archive_contents_count', @_ )
         if ref($self) eq __PACKAGE__;
 
-    my ($params) = @_;
-    my $blog     = $params->{Blog};
-    my $at       = $params->{ArchiveType};
-    my $ts       = $params->{Timestamp};
-    my $cat      = $params->{Category};
-    my $auth     = $params->{Author};
-    my $map      = $params->{TemplateMap};
+    my ($params)     = @_;
+    my $blog         = $params->{Blog};
+    my $at           = $params->{ArchiveType};
+    my $ts           = $params->{Timestamp};
+    my $cat          = $params->{Category};
+    my $auth         = $params->{Author};
+    my $map          = $params->{TemplateMap};
+    my $content_data = $params->{ContentData};
+
     my ( $start, $end );
     if ($ts) {
         my $archiver = MT->publisher->archiver($at);
@@ -234,6 +236,10 @@ sub archive_contents_count {
     my $count = MT->model('cd')->count(
         {   blog_id => $blog->id,
             status  => MT::Entry::RELEASE(),
+            (   $content_data
+                ? ( content_type_id => $content_data->content_type_id )
+                : ()
+            ),
             (   !$dt_field_id && $ts ? ( authored_on => [ $start, $end ] )
                 : ()
             ),
