@@ -7,7 +7,7 @@ use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 BEGIN {
-    eval { use Test::LeakTrace; 1 }
+    eval qq{ use Test::LeakTrace; 1 }
         or plan skip_all => 'require Test::LeakTrace';
 }
 

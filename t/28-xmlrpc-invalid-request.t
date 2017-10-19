@@ -4,6 +4,11 @@ use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+BEGIN {
+    eval { require LWP::UserAgent::Local }
+        or plan skip_all => 'Some of the deps of LWP::UserAgent::Local are not available';
+}
+
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
@@ -39,7 +44,6 @@ use XMLRPC::Lite;
 my $ser   = XMLRPC::Serializer->new();
 my $deser = XMLRPC::Deserializer->new();
 
-require LWP::UserAgent::Local;
 my $ua = new LWP::UserAgent::Local( { ScriptAlias => '/' } );
 
 my $logo

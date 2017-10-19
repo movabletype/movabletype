@@ -5,6 +5,11 @@ use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+BEGIN {
+    eval qq{ use Plack::Test; 1 }
+        or plan skip_all => 'Plack::Test is not installed';
+}
+
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
@@ -12,7 +17,6 @@ BEGIN {
 }
 
 use HTTP::Request;
-use Plack::Test;
 
 use MT::Test qw( :app :db );
 use MT;

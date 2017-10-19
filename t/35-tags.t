@@ -6,6 +6,11 @@ use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+BEGIN {
+    eval qq{ use IPC::Run3 }
+        or plan skip_all => 'IPC::Run3 is not installed';
+}
+
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
@@ -17,7 +22,6 @@ BEGIN {
 use File::Path;
 File::Path::mkpath($test_env->path('themes'));
 
-use IPC::Run3;
 use IO::String;
 
 $| = 1;

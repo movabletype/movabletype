@@ -363,8 +363,10 @@ use_ok('MT::XMLRPC');
 use_ok('MT::XMLRPCServer');
 
 # Atom support
-use_ok('MT::Atom');
-use_ok('MT::AtomServer');
+if ( eval { require XML::Parser } ) {
+    use_ok('MT::Atom');
+    use_ok('MT::AtomServer');
+}
 
 # Backup/Restore
 use_ok('MT::BackupRestore');

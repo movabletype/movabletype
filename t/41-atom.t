@@ -4,6 +4,11 @@ use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+BEGIN {
+    eval { require XML::Parser }
+        or plan skip_all => 'XML::Parser is not installed';
+}
+
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;

@@ -6,6 +6,11 @@ use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+BEGIN {
+    eval { require LWP::UserAgent::Local }
+        or plan skip_all => 'Some of the deps of LWP::UserAgent::Local is not installed';
+}
+
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
@@ -13,7 +18,6 @@ BEGIN {
 }
 
 plan tests => 1;
-use LWP::UserAgent::Local;
 
 my $ua = LWP::UserAgent::Local->new({ScriptAlias => '/'});
 my $req = HTTP::Request->new(GET => 'http://localhost/mt-atom.cgi/weblog/blog_id=1');

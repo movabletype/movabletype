@@ -17,6 +17,9 @@ BEGIN {
     eval "require $module;";
     plan skip_all => "Database driver '$module' not found."
         if $@;
+
+    eval { require Test::Class }
+        or plan skip_all => 'Test::Class is not installed';
 }
 
 our $test_env;

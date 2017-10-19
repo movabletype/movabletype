@@ -7,9 +7,14 @@ package MT::Test::Tag;
 
 use strict;
 use warnings;
+use Test::More;
 use MT::Test 'has_php';
-use Test::Base -Base;
-use IPC::Run3 'run3';
+BEGIN {
+    eval qq{ use Test::Base -Base; 1 }
+        or plan skip_all => 'Test::Base is not installed';
+    eval qq{ use IPC::Run3 'run3'; 1 }
+        or plan skip_all => 'IPC::Run3 is not installed';
+}
 
 sub run_perl_tests {
     my ( $blog_id, $callback ) = @_;

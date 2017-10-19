@@ -4,13 +4,17 @@ use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+BEGIN {
+    eval { require Digest::SHA1 }
+        or plan skip_all => 'Digest::SHA1 is not installed';
+}
+
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Digest::SHA1 ();
 use MT::Util ();
 
 my @data = ( 123, 'abcdef', 'Welcome to Movable Type', );

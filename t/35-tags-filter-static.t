@@ -6,13 +6,17 @@ use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+BEGIN {
+    eval qq{ use Test::Base; 1 }
+        or plan skip_all => 'Test::Base is not installed';
+}
+
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Test::Base;
 plan tests => 1 * blocks;
 
 use MT;
