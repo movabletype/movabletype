@@ -188,19 +188,11 @@ END_OF_SQL
     }
 }
 
+# for App::Prove::Plugin::MySQLPool
 sub prepare {
     my ( $class, $mysqld ) = @_;
     my $dbh = DBI->connect( $mysqld->dsn );
     $class->_prepare_mysql_database($dbh);
-}
-
-# Until App::Prove::Plugin::MySQLPool supports -It/lib ...
-package t::lib::MT::Test::Env;
-
-sub prepare {
-    my ( $class, $mysqld ) = @_;
-    my $dbh = DBI->connect( $mysqld->dsn );
-    MT::Test::Env->_prepare_mysql_database($dbh);
 }
 
 1;
