@@ -4,9 +4,6 @@
 #
 
 package MT::Test::Permission;
-use base qw( Exporter );
-
-our @EXPORT = qw( make_base_data );
 
 use strict;
 
