@@ -30,6 +30,8 @@ use MT::Util;
 
 use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 
+our $MAX_DELETE_NUMBER_AT_ONE_TIME = 100;
+
 __PACKAGE__->install_properties(
     {   column_defs => {
             'id'      => 'integer not null auto_increment',
@@ -243,23 +245,15 @@ sub _update_cf_idx {
         }
 
         $cf_idx->save
-            or return $self->error(
-            MT->translate(
-                'Saving content field index failed: [_1]',
-                $cf_idx->errstr
-            )
-            );
+            or die MT->translate( 'Saving content field index failed: [_1]',
+            $cf_idx->errstr );
     }
 
-    for my $cf_idx (@removed_cf_idx) {
-        $cf_idx->remove
-            or return $self->error(
-            MT->translate(
-                'Removing content field index failed: [_1]',
-                $cf_idx->errstr
-            )
-            );
-    }
+    _remove_objects( \@removed_cf_idx )
+        or die MT->translate(
+        'Removing content field indexes failed: [_1]',
+        MT->model('content_field_index')->errstr,
+        );
 }
 
 sub _update_object_assets {
@@ -300,12 +294,16 @@ sub _update_object_assets {
             cf_id     => $field_data->{id},
         );
         $oa->asset_id($asset_id);
-        $oa->save or die $oa->errstr;
+        $oa->save
+            or die MT->translate( 'Saving object asset failed: [_1]',
+            $oa->errstr, );
     }
 
-    for my $oa (@removed_object_assets) {
-        $oa->remove or die $oa->errstr;
-    }
+    _remove_objects( \@removed_object_assets )
+        or die MT->translate(
+        'Removing object assets failed: [_1]',
+        MT->model('objectasset')->errstr,
+        );
 }
 
 sub _update_object_tags {
@@ -346,12 +344,15 @@ sub _update_object_tags {
             cf_id             => $field_data->{id},
         );
         $ot->tag_id($tag_id);
-        $ot->save or die $ot->errstr;
+        $ot->save
+            or
+            die MT->translate( 'Saving object tag failed: [_1]', $ot->errstr,
+            );
     }
 
-    for my $ot (@removed_object_tags) {
-        $ot->remove or die $ot->errstr;
-    }
+    _remove_objects( \@removed_object_tags )
+        or die MT->translate( 'Removing object tags failed: [_1]',
+        MT->model('objecttag')->errstr );
 }
 
 sub _update_object_categories {
@@ -415,12 +416,27 @@ sub _update_object_categories {
         else {
             $oc->is_primary(0);
         }
-        $oc->save or die $oc->errstr;
+        $oc->save
+            or die MT->translate( 'Saving object category failed: [_1]',
+            $oc->errstr, );
     }
 
-    for my $oc (@removed_object_cats) {
-        $oc->remove or die $oc->errstr;
+    _remove_objects( \@removed_object_cats )
+        or die MT->translate(
+        'Removing object categories failed: [_1]',
+        MT->model('objectcategory')->errstr,
+        );
+}
+
+sub _remove_objects {
+    my ($objs) = @_;
+    my $class = ref $objs->[0];
+    my @ids = map { $_->id } @$objs;
+    while ( my @partial_ids = splice @ids, 0, $MAX_DELETE_NUMBER_AT_ONE_TIME )
+    {
+        $class->remove( { id => \@partial_ids } ) or return;
     }
+    1;
 }
 
 sub data {
