@@ -17,7 +17,8 @@ __PACKAGE__->install_properties(
             object_id => 'integer not null',
             object_ds => 'string(50) not null',
             asset_id  => 'integer not null',
-            embedded => 'boolean',    # Deprecated (case #112321).
+            embedded => 'boolean',            # Deprecated (case #112321).
+            cf_id    => 'integer not null',
         },
         indexes => {
             blog_obj =>
@@ -26,7 +27,10 @@ __PACKAGE__->install_properties(
             id_ds    => { columns => [ 'object_id', 'object_ds' ], },
             asset_id => 1,
         },
-        defaults    => { embedded => 0, },
+        defaults => {
+            embedded => 0,
+            cf_id    => 0,
+        },
         child_of    => 'MT::Blog',
         datasource  => 'objectasset',
         primary_key => 'id',

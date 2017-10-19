@@ -321,8 +321,9 @@ sub rebuild {
                     );
                     foreach my $cat_cf (@cat_cfs) {
                         my @obj_cats = MT::ObjectCategory->load(
-                            {   object_ds => 'content_field',
-                                object_id => $cat_cf->id,
+                            {   object_ds => 'content_data',
+                                object_id => $content_data->id,
+                                cf_id     => $cat_cf->id,
                             }
                         );
                         foreach my $obj_cat (@obj_cats) {

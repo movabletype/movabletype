@@ -237,8 +237,9 @@ sub _update_object_assets {
     my ( $content_type, $field_data, $values ) = @_;
 
     MT::ObjectAsset->remove(
-        {   object_ds => 'content_field',
-            object_id => $field_data->{id},
+        {   object_ds => 'content_data',
+            object_id => $self->id,
+            cf_id     => $field_data->{id},
         }
     );
 
@@ -247,8 +248,9 @@ sub _update_object_assets {
         $obj_asset->set_values(
             {   blog_id   => $self->blog_id,
                 asset_id  => $asset_id,
-                object_ds => 'content_field',
-                object_id => $field_data->{id},
+                object_ds => 'content_data',
+                object_id => $self->id,
+                cf_id     => $field_data->{id},
             }
         );
         $obj_asset->save or die $obj_asset->errstr;
@@ -261,8 +263,9 @@ sub _update_object_tags {
 
     MT::ObjectTag->remove(
         {   blog_id           => $self->blog_id,
-            object_datasource => 'content_field',
-            object_id         => $field_data->{id},
+            object_datasource => 'content_data',
+            object_id         => $self->id,
+            cf_id             => $field_data->{id},
         }
     );
 
@@ -271,8 +274,9 @@ sub _update_object_tags {
         $obj_tag->set_values(
             {   blog_id           => $self->blog_id,
                 tag_id            => $tag_id,
-                object_datasource => 'content_field',
-                object_id         => $field_data->{id},
+                object_datasource => 'content_data',
+                object_id         => $self->id,
+                cf_id             => $field_data->{id},
             }
         );
         $obj_tag->save or die $obj_tag->errstr;
@@ -285,8 +289,9 @@ sub _update_object_categories {
 
     MT::ObjectCategory->remove(
         {   blog_id   => $self->blog_id,
-            object_ds => 'content_field',
-            object_id => $field_data->{id},
+            object_ds => 'content_data',
+            object_id => $self->id,
+            cf_id     => $field_data->{id},
         }
     );
 
@@ -296,8 +301,9 @@ sub _update_object_categories {
         $obj_cat->set_values(
             {   blog_id     => $self->blog_id,
                 category_id => $cat_id,
-                object_ds   => 'content_field',
-                object_id   => $field_data->{id},
+                object_ds   => 'content_data',
+                object_id   => $self->id,
+                cf_id       => $field_data->{id},
                 is_primary  => $is_primary,
             }
         );
