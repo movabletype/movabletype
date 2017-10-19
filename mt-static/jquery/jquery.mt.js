@@ -1691,6 +1691,10 @@ function initModal() {
 }
 
 function openModal(href, opts) {
+  if (!href.match(/[\?&]dialog=1/)) {
+    href += '&dialog=1';
+  }
+
   if (opts.form) {
     openModalWithForm(href, opts);
   } else {
