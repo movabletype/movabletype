@@ -25,5 +25,15 @@
     <input ref="increase_decrease_cols" type="checkbox" class="mt-switch form-control" id="tables-can_increase_decrease_cols" name="increase_decrease_cols" checked={ options.increase_decrease_cols }><label for="tables-can_increase_decrease_cols"><__trans phrase="Allow users to increase/decrease cols?"></label>
   </mtapp:ContentFieldOption>
 
+  <mtapp:ContentFieldOptionScript>
+  if ( this.options.increase_decrease_rows === "0" ) {
+    this.options.increase_decrease_rows = 0
+  }
+
+  if ( this.options.increase_decrease_cols === "0" ) {
+    this.options.increase_decrease_cols = 0
+  }
+  </mtapp:ContentFieldOptionScript>
+
 </mt:app:ContentFieldOptionGroup>
 
