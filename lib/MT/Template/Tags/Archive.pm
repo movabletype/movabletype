@@ -196,10 +196,9 @@ sub _hdlr_archives {
 
     # Set context of content type
     local $ctx->{__stash}{content_type}
-        = $args->{content_type}
-        ? MT->model('content_type')
+        = MT->model('content_type')
         ->load( { unique_id => $args->{content_type} } )
-        : '';
+        if $args->{content_type};
 
     local $ctx->{current_archive_type} = $at;
     ## If we are producing a Category archive list, don't bother to
@@ -777,11 +776,15 @@ sub _hdlr_archive_link {
         )
     ) unless $blog->has_archive_type($at);
 
+    my $content_type_id
+        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
     my $arch = $blog->archive_url;
     $arch = $blog->site_url if $content && $content->class eq 'page';
     $arch .= '/' unless $arch =~ m!/$!;
-    $arch .= archive_file_for( $content, $blog, $at, $cat, undef,
-        $ctx->{current_timestamp}, $author );
+    $arch
+        .= archive_file_for( $content, $blog, $at, $cat, undef,
+        $ctx->{current_timestamp},
+        $author, $content_type_id );
     $arch = MT::Util::strip_index( $arch, $blog )
         unless $args->{with_index};
     return $arch;

@@ -1640,9 +1640,13 @@ sub _hdlr_category_archive {
         ) unless $cat_arc;
     }
 
+    my $content_type_id
+        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
     my $arch = $blog->archive_url;
     $arch .= '/' unless $arch =~ m!/$!;
-    $arch = $arch . archive_file_for( undef, $blog, $cat_at_label, $cat );
+    $arch = $arch
+        . archive_file_for( undef, $blog, $cat_at_label, $cat, '', '', '',
+        $content_type_id );
     $arch = MT::Util::strip_index( $arch, $blog ) unless $args->{with_index};
     $arch;
 }

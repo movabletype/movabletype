@@ -1462,17 +1462,20 @@ sub _rebuild_content_archive_type {
 
     sub archive_file_cache_key {
         my $mt = shift;
-        my ( $obj, $blog, $at, $cat, $map, $timestamp, $author ) = @_;
+        my ( $obj, $blog, $at, $cat, $map, $timestamp, $author,
+            $content_type_id )
+            = @_;
 
         return join ':',
             (
-            $obj       ? $obj->id    : '0',
-            $blog      ? $blog->id   : '0',
-            $at        ? $at         : 'None',
-            $cat       ? $cat->id    : '0',
-            $map       ? $map->id    : '0',
-            $timestamp ? $timestamp  : '0',
-            $author    ? $author->id : '0'
+            $obj             ? $obj->id         : '0',
+            $blog            ? $blog->id        : '0',
+            $at              ? $at              : 'None',
+            $cat             ? $cat->id         : '0',
+            $map             ? $map->id         : '0',
+            $timestamp       ? $timestamp       : '0',
+            $author          ? $author->id      : '0',
+            $content_type_id ? $content_type_id : '0',
             );
     }
 
@@ -1480,7 +1483,9 @@ sub _rebuild_content_archive_type {
         my $mt = shift;
         init_archive_types() unless %ArchiveTypes;
 
-        my ( $obj, $blog, $at, $cat, $map, $timestamp, $author ) = @_;
+        my ( $obj, $blog, $at, $cat, $map, $timestamp, $author,
+            $content_type_id )
+            = @_;
         return if $at eq 'None';
         my $archiver = $mt->archiver($at);
         return '' unless $archiver;
@@ -1505,21 +1510,22 @@ sub _rebuild_content_archive_type {
             unless ($cache_map) {
                 MT::Request->instance->cache( 'maps', $cache_map = {} );
             }
+            $content_type_id
+                ||= ref $obj eq 'MT::ContentData'
+                ? $obj->content_type_id
+                : '';
             my $cache_map_key
                 = $blog->id . ':'
-                . (
-                ref $obj eq 'MT::ContentData'
-                ? $obj->content_type_id . ':'
-                : ''
-                ) . $at;
+                . ( $content_type_id ? $content_type_id . ':' : '' )
+                . $at;
             unless ( $map = $cache_map->{$cache_map_key} ) {
                 my $args
-                    = ref $obj eq 'MT::ContentData'
+                    = $content_type_id
                     ? {
                     join => MT->model('template')->join_on(
                         undef,
                         {   id              => \'= templatemap_template_id',
-                            content_type_id => $obj->content_type_id,
+                            content_type_id => $content_type_id,
                         }
                     )
                     }

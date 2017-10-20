@@ -105,6 +105,7 @@ sub _hdlr_category_sets {
         local $ctx->{__stash}{blog}    = $blog;
         local $ctx->{__stash}{blog_id} = $blog->id;
         local $ctx->{__stash}{category_set} = $category_set;
+        local $ctx->{__stash}{content_type} = $content_type if $content_type;
 
         my $out = $builder->build( $ctx, $tok, $cond );
         return $ctx->error( $builder->errstr ) unless defined $out;
