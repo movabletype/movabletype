@@ -27,8 +27,7 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do
-    deep_copy canonicalize_path is_valid_ip clear_site_stats_widget_cache
-    is_numeric );
+    deep_copy canonicalize_path is_valid_ip clear_site_stats_widget_cache);
 use MT::I18N qw( encode_text );
 
 my $mt = MT->new;
@@ -434,8 +433,8 @@ my $script_tag_encoded
     = '\\<s\\cript\\>alert(\\\'test\\\');alert(\\"test\\");\\<\\/s\\cript\\>';
 is( encode_js($script_tag), $script_tag_encoded, 'encode_js()' );
 is( 'description',          'description',       "encode_js('description')" );
-is( decode_js($script_tag_encoded), $script_tag, 'decode_js()' );
-is( encode_php( "\\\$\"\n\r\t", '' ), "\\\\\$\"\n\r\t", 'encode_php()' );
+is( decode_js($script_tag_encoded), $script_tag,      'decode_js()' );
+is( encode_php("\\\$\"\n\r\t", '' ),     "\\\\\$\"\n\r\t", 'encode_php()' );
 is( encode_php( "\\\$\"\n\r\t", 'qq' ),
     '\\\\\\$\\"\\n\\r\\t', 'encode_php() (qq)' );
 is( encode_php( "\\\$\"\n\r\t", 'here' ),
@@ -553,7 +552,8 @@ is( xliterate_utf8('Ã'), 'A', 'xliterate_utf8()' );
 
 {
     require File::Temp;
-    my ( $fh, $file ) = File::Temp::tempfile( DIR => MT->config->TempDir );
+    my ( $fh, $file )
+        = File::Temp::tempfile( DIR => MT->config->TempDir );
     close($fh);
     unlink($file);
 
@@ -859,22 +859,5 @@ my $fmgr = MT::FileMgr->new('Local');
     clear_site_stats_widget_cache();
     ok( !$fmgr->exists($dir), 'Site stats directory was removed' );
 }
-
-subtest 'is_numeric' => sub {
-    ok( is_numeric(0) );
-    ok( is_numeric(1) );
-    ok( is_numeric(12345) );
-    ok( is_numeric(-1) );
-    ok( is_numeric(3.14) );
-    ok( is_numeric(-58.33) );
-    ok( is_numeric(+99.99) );
-    ok( is_numeric('56.789') );
-
-    ok( !is_numeric('a') );
-    ok( !is_numeric('a10') );
-    ok( !is_numeric('20b') );
-    ok( !is_numeric('30c40') );
-    ok( !is_numeric('-99d99') );
-};
 
 done_testing();
