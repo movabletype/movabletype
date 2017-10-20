@@ -84,7 +84,6 @@ requires 'Net::CIDR';
 requires 'Net::IP';
 
 on 'test' => sub {
-    requires 'Clone';
     requires 'Date::Parse';
     requires 'DateTime';
     requires 'DateTime::TimeZone';

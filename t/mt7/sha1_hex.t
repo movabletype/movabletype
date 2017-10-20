@@ -1,10 +1,20 @@
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
-use Digest::SHA1 ();
+use MT::Test::Env;
+BEGIN {
+    eval { require Digest::SHA1 }
+        or plan skip_all => 'Digest::SHA1 is not installed';
+}
 
-use lib qw( lib extlib );
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Util ();
 
 my @data = ( 123, 'abcdef', 'Welcome to Movable Type', );

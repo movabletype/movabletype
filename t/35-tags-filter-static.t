@@ -2,14 +2,21 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    eval qq{ use Test::Base; 1 }
+        or plan skip_all => 'Test::Base is not installed';
 }
 
-use Test::Base;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 plan tests => 1 * blocks;
 
 use MT;

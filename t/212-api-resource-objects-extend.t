@@ -2,18 +2,20 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require YAML::Syck }
         or plan skip_all => 'YAML::Syck is not installed';
 }
 
-use lib qw(lib extlib t/lib);
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
 eval(
     $ENV{SKIP_REINITIALIZE_DATABASE}

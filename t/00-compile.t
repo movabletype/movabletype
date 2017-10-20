@@ -3,13 +3,18 @@
 
 use strict;
 use warnings;
-
-use lib 't/lib', 'lib', 'extlib';
 use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use File::Spec;
 use MT::Test;
-
-use Test::More;
 
 use_ok('MT::Bootstrap');
 use_ok('MT::ErrorHandler');
@@ -358,8 +363,10 @@ use_ok('MT::XMLRPC');
 use_ok('MT::XMLRPCServer');
 
 # Atom support
-use_ok('MT::Atom');
-use_ok('MT::AtomServer');
+if ( eval { require XML::Parser } ) {
+    use_ok('MT::Atom');
+    use_ok('MT::AtomServer');
+}
 
 # Backup/Restore
 use_ok('MT::BackupRestore');

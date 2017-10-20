@@ -1,16 +1,22 @@
 #!/usr/bin/perl
 
 use strict;
-use lib qw( t/lib extlib lib ../lib ../extlib );
-
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-memcached-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require Test::MockObject }
         or plan skip_all => 'Test::MockObject is not installed';
+}
+
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new(
+        MemcachedServers => '127.0.0.1:11211',
+    );
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test;

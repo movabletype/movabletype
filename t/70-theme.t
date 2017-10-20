@@ -1,15 +1,18 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use lib qw( t/lib lib extlib ../lib ../extlib );
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-    $ENV{MT_APP}    = 'MT::App::CMS';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+    $ENV{MT_APP} = 'MT::App::CMS';
 }
 
 use MT::Test qw(:app :db :data);
-use Test::More qw( no_plan );
 use YAML::Tiny;
 use File::Spec;
 use FindBin qw( $Bin );
@@ -752,6 +755,8 @@ my $atom = MT->model('template')->load(
     }
 );
 is( $atom->text, 'ATOMTEMPLATE BODY FOR TEST' );
+
+done_testing;
 
 __DATA__
 MyTheme:

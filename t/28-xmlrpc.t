@@ -1,16 +1,24 @@
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    eval { require LWP::UserAgent::Local }
+        or plan skip_all => 'Some of the deps of LWP::UserAgent::Local are not installed';
 }
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test qw(:db :data);
 use MT::Test::Permission;
 use MT::Util qw(archive_file_for);
 use File::Basename qw(dirname);
-use Test::More;
 use MIME::Base64;
 
 use MT::FileMgr;
@@ -38,7 +46,6 @@ use XMLRPC::Lite;
 my $ser   = XMLRPC::Serializer->new();
 my $deser = XMLRPC::Deserializer->new();
 
-require LWP::UserAgent::Local;
 my $ua = new LWP::UserAgent::Local( { ScriptAlias => '/' } );
 
 my $logo

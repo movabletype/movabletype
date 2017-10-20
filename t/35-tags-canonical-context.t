@@ -2,22 +2,24 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test-disable-object-cache.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
-use IPC::Run3;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new(
+        DisableObjectCache => 1,
+    );
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
-use Test::More;
+use IPC::Run3;
 use URI;
 
 use MT::Test qw(:db :data);

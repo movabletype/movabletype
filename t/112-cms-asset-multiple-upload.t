@@ -1,24 +1,29 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use utf8;
-use open ':std', ':encoding(utf8)';
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
-
-use File::Spec;
-use JSON;
-
+use MT::Test::Env;
 BEGIN {
     eval 'use Test::MockObject::Extends; 1'
         or plan skip_all => 'Test::MockObject::Extends is not installed';
     eval 'use Test::Spec; 1'
         or plan skip_all => 'Test::Spec is not installed';
-
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
-use lib qw( lib extlib t/lib );
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use utf8;
+use open ':std', ':encoding(utf8)';
+
+use File::Spec;
+use JSON;
+
 use MT::Test qw( :app :db :data );
 use MT;
 

@@ -1,23 +1,24 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-
-use File::Spec;
-
-use lib qw( t/lib extlib lib ../lib ../extlib );
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use File::Spec;
+
 use MT::Test qw( :app :db :data );
-use Test::More;
 
 my $admin = MT::Author->load(1);
 my $blog  = MT::Blog->load(1);
@@ -71,7 +72,7 @@ subtest 'Regular JPEG image' => sub {
     my $out = delete $app->{__test_output};
 
     is( $put_args->[1],
-        File::Spec->catfile(qw/ t site archives test.jpg /),
+        $test_env->path(qw/ site archives test.jpg /),
         'Uploaded file path'
     );
     my $created_asset
@@ -122,7 +123,7 @@ subtest 'Regular JPEG image with wrong extension' => sub {
     );
 
     is( $put_args->[1],
-        File::Spec->catfile(qw/ t site archives wrong-extension-test.jpg /),
+        $test_env->path(qw/ site archives wrong-extension-test.jpg /),
         'Uploaded file path'
     );
     my $created_asset
@@ -167,7 +168,7 @@ subtest 'Regular PDF file' => sub {
     my $out = delete $app->{__test_output};
 
     is( $put_args->[1],
-        File::Spec->catfile(qw/ t site archives test.pdf /),
+        $test_env->path(qw/ site archives test.pdf /),
         'Uploaded file path'
     );
     my $expected_values = {

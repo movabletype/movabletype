@@ -2,18 +2,31 @@
 # $Id: 35-tags.t 3531 2009-03-12 09:11:52Z fumiakiy $
 use strict;
 use warnings;
-use IPC::Run3;
-use IO::String;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    eval qq{ use IPC::Run3 }
+        or plan skip_all => 'IPC::Run3 is not installed';
 }
+
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new(
+        ThemesDirectory => 'TEST_ROOT/themes/',
+    );
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use File::Path;
+File::Path::mkpath($test_env->path('themes'));
+
+use IO::String;
 
 $| = 1;
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::Test qw(:db :data);
-use Test::More;
 use JSON -support_by_pp;
 use MT;
 use MT::Util qw(ts2epoch epoch2ts);
@@ -26,7 +39,7 @@ my $mt = MT->new();
 
 # Set config directives.
 $mt->config->AllowComments( 1, 1 );
-$mt->config->StaticFilePath( './mt-static', 1 );
+$mt->config->StaticFilePath( $test_env->path('mt-static'), 1 );
 $mt->config->CommenterRegistration( { Allow => 1 }, 1 );
 $mt->config->save_config;
 
@@ -77,6 +90,7 @@ my %const = (
     CURRENT_MONTH => POSIX::strftime("%m", gmtime(time + $blog->server_offset * 3600)),
     STATIC_FILE_PATH => MT->instance->static_file_path . '/',
     THREE_DAYS_AGO => epoch2ts($blog, time() - int(3.5 * 86400)),
+    TEST_ROOT => $test_env->root,
 );
 
 $test_json =~ s/\Q$_\E/$const{$_}/g for keys %const;
@@ -130,7 +144,7 @@ $cfg_file = '<CFG_FILE>';
 $const = array(
     'CFG_FILE' => $cfg_file,
     'VERSION_ID' => VERSION_ID,
-    'CURRENT_WORKING_DIRECTORY' => '',
+    'CURRENT_WORKING_DIRECTORY' => '<CURRENT_WORKING_DIRECTORY>',
     'STATIC_CONSTANT' => '',
     'DYNAMIC_CONSTANT' => '1',
     'DAYS_CONSTANT1' => '<DAYS_CONSTANT1>',
@@ -139,19 +153,13 @@ $const = array(
     'CURRENT_MONTH' => strftime("%m"),
     'STATIC_FILE_PATH' => '<STATIC_FILE_PATH>',
     'THREE_DAYS_AGO' => '<THREE_DAYS_AGO>',
+    'TEST_ROOT' => '<TEST_ROOT>',
 );
 
 $output_results = 0;
 
 $mt = MT::get_instance(1, $cfg_file);
 $ctx =& $mt->context();
-
-$path = $mt->config('mtdir');
-if (substr($path, strlen($path) - 1, 1) == '/')
-    $path = substr($path, 1, strlen($path)-1);
-if (substr($path, strlen($path) - 2, 2) == '/t')
-    $path = substr($path, 0, strlen($path) - 2);
-$const['CURRENT_WORKING_DIRECTORY'] = $path;
 
 $db = $mt->db();
 

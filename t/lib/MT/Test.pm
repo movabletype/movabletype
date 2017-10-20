@@ -434,9 +434,7 @@ sub error {
 sub init_data {
     my $pkg = shift;
 
-    # nix the old site just in case
-    rmtree('t/site') if ( -d 't/site' );
-
+    my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
     MT->config->ThemesDirectory( [$themedir] );
     require MT::Theme;
@@ -446,7 +444,7 @@ sub init_data {
     $website->set_values(
         {   name                     => 'Test site',
             site_url                 => 'http://narnia.na/',
-            site_path                => 't',
+            site_path                => $test_root,
             description              => "Narnia None Test Website",
             custom_dynamic_templates => 'custom',
             convert_paras            => 1,
@@ -485,8 +483,8 @@ sub init_data {
         {   name         => 'none',
             site_url     => '/::/nana/',
             archive_url  => '/::/nana/archives/',
-            site_path    => 'site/',
-            archive_path => 'site/archives/',
+            site_path    => "$test_root/site/",
+            archive_path => "$test_root/site/archives/",
             archive_type => 'Individual,Monthly,Weekly,Daily,Category,Page',
             archive_type_preferred   => 'Individual',
             description              => "Narnia None Test Blog",

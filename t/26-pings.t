@@ -2,28 +2,28 @@
 # $Id: 26-pings.t 2697 2008-07-03 19:58:49Z bchoate $
 use strict;
 use warnings;
-
-use lib 't/lib';
-use lib 't/extlib';
-use lib 'lib';
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
 plan tests => 15;
-#plan skip_all => "Needs rewrite to eliminate HTTP server requirement.";
-#exit;
 
 use HTTP::Response;
 use Net::Ping;
 
 use MT;
 use MT::XMLRPC;
-use vars qw( $DB_DIR $T_CFG );
 
 use MT::Test;
 MT::Test->import( qw(:db :data) );
 
-my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
+my $mt = MT->new or die MT->errstr;
 isa_ok($mt, 'MT');
 
 my $blog = MT::Blog->load(1);

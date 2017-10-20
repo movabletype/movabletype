@@ -2,8 +2,17 @@
 # $Id: 01-serialize.t 1100 2007-12-12 01:48:53Z hachi $
 use strict;
 use warnings;
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use Test::More tests => 73;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+plan tests => 73;
 use_ok 'MT::Serialize';
 use MT;
 use MT::Test;

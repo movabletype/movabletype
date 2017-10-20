@@ -2,27 +2,29 @@
 # $Id: 04-config.t 2562 2008-06-12 05:12:23Z bchoate $
 use strict;
 use warnings;
-
-use lib 'lib';
-use lib 'extlib';
-use lib 't/lib';
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
 use MT::Test;
 
 use Cwd;
 use File::Spec;
 use File::Temp qw( tempfile );
-use Test::More tests => 37;
+plan tests => 37;
 
 use MT;
 use MT::ConfigMgr;
 
-use vars qw( $BASE );
-require './t/test-common.pl';
-
 my ( $cfg_file, $cfg, $mt );
 
-my $db_dir = cwd() . '/t/db/';
+my $db_dir = $test_env->path('db');
 ( my ($fh), $cfg_file ) = tempfile();
 print $fh <<CFG;
 Database $db_dir/mt.db

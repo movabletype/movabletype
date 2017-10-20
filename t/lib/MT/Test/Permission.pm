@@ -4,9 +4,6 @@
 #
 
 package MT::Test::Permission;
-use base qw( Exporter );
-
-our @EXPORT = qw( make_base_data );
 
 use strict;
 
@@ -54,10 +51,11 @@ sub make_website {
     my $pkg    = shift;
     my %params = @_;
 
+    my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
     my $values = {
         name                     => 'Test site',
         site_url                 => 'http://narnia.na/',
-        site_path                => 't',
+        site_path                => $test_root,
         description              => "Narnia None Test Website",
         custom_dynamic_templates => 'custom',
         convert_paras            => 1,
@@ -108,12 +106,13 @@ sub make_blog {
     my $pkg    = shift;
     my %params = @_;
 
+    my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
     my $values = {
         name         => 'none',
         site_url     => '/::/nana/',
         archive_url  => '/::/nana/archives/',
-        site_path    => 'site/',
-        archive_path => 'site/archives/',
+        site_path    => "$test_root/site/",
+        archive_path => "$test_root/site/archives/",
         archive_type => 'Individual,Monthly,Weekly,Daily,Category,Page',
         archive_type_preferred   => 'Individual',
         description              => "Narnia None Test Blog",

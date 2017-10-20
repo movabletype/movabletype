@@ -2,9 +2,17 @@
 
 use strict;
 use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
-use lib 't/lib', 'lib', 'extlib';
-use Test::More tests => 8;
+plan tests => 8;
 
 use MT;
 use MT::Author;
@@ -24,8 +32,8 @@ $blog->set_values({
 	name         => 'none2',
 	site_url     => 'http://narnia.na/nana2/',
 	archive_url  => 'http://narnia.na/nana2/archives/',
-	site_path    => 't/site2/',
-	archive_path => 't/site2/archives/',
+	site_path    => $test_env->path('site2/'),
+	archive_path => $test_env->path('site2/archives/'),
 	archive_type => 'Individual,Monthly,Weekly,Daily,Category,Page',
 	archive_type_preferred   => 'Individual',
 	description              => "Narnia None Test Blog 2",

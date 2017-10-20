@@ -1,11 +1,10 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
-
-use lib qw( lib extlib );
-
+use MT::Test::Env;
 BEGIN {
     eval 'use Net::SMTPS; 1'
         or plan skip_all => 'Net::SMTPS is not installed';
@@ -13,9 +12,14 @@ BEGIN {
         or plan skip_all => 'Test::MockModule is not installed';
     eval 'use Test::MockObject; 1'
         or plan skip_all => 'Test::MockObject is not installed';
-
-    $ENV{MT_CONFIG} = 't/mysql-test.cfg';
 }
+
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT;
 use MT::Mail;
 

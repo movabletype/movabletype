@@ -2,11 +2,14 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/../../../lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test::Tag;
@@ -20,9 +23,14 @@ use MT::Test::Permission;
 filters {
     blog_id  => [qw( chomp )],
     template => [qw( chomp )],
-    expected => [qw( chomp )],
+    expected => [qw( chomp replace_test_root )],
     error    => [qw( chomp )],
 };
+
+my $test_root = $test_env->root;
+sub replace_test_root {
+    s/TEST_ROOT/$test_root/;
+}
 
 MT::Test::Tag->run_perl_tests;
 MT::Test::Tag->run_php_tests;
@@ -35,7 +43,7 @@ __END__
 --- template
 <mt:SitePath>
 --- expected
-t/site/
+TEST_ROOT/site/
 
 === mt:SitePath - website
 --- blog_id
@@ -43,5 +51,5 @@ t/site/
 --- template
 <mt:SitePath>
 --- expected
-t/
+TEST_ROOT/
 

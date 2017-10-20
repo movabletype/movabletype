@@ -2,17 +2,25 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/../../../t/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    eval qq{ use Test::Base; 1 }
+        or plan skip_all => 'Test::Base is not installed';
 }
 
-use lib qw( lib extlib t/lib );
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test qw( :app :db );
 
 use IPC::Open2;
 
-use Test::Base;
 delimiters( '@@@', '---' );
 plan tests => 4 * blocks() + 4 * blocks('decode_entities');
 

@@ -2,17 +2,19 @@
 
 use strict;
 use warnings;
-
-use lib qw( lib extlib ../lib ../extlib t/lib );
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
+}
+
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 # Move addons/Cloud.pack/config.yaml to config.yaml.disabled.
@@ -49,8 +51,6 @@ use MT::CMS::User;
 use MT::Role;
 
 use MT::Test qw( :app :db :data );
-
-use Test::More;
 
 MT->instance;
 my $user        = MT::Author->load(1);

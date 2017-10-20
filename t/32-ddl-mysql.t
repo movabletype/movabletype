@@ -8,18 +8,24 @@
 
 use strict;
 use warnings;
-use lib 't/lib';
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
-
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = "mysql-test.cfg";
-    plan skip_all => "Configuration file $ENV{MT_CONFIG} not found"
-        if !-r "t/$ENV{MT_CONFIG}";
-
     my $module = 'DBD::mysql';
     eval "require $module;";
     plan skip_all => "Database driver '$module' not found."
         if $@;
+
+    eval { require Test::Class }
+        or plan skip_all => 'Test::Class is not installed';
+}
+
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test::DDL;

@@ -2,9 +2,15 @@
 # $Id:$
 use strict;
 use warnings;
-
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use Test::More qw(no_plan);    #tests => 3598;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
 use MT;
 use MT::Tag;
@@ -18,8 +24,6 @@ use MT::Comment;
 use MT::Test qw(:app :db :data);
 use MT::Test::Permission;
 
-use vars qw( $DB_DIR $T_CFG );
-
 use MT::BackupRestore;
 use Data::Dumper;
 
@@ -29,7 +33,7 @@ my $bob   = MT::Author->load( { name => 'Bob D' } );
 my $mel   = MT::Author->load( { name => 'Melody' } );
 &setup;
 
-my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
+my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT' );
 
 my $backup_data = '';
@@ -98,6 +102,8 @@ is( scalar(@errors), 0, 'no error during backup' );
 
 &finish;
 require MIME::Base64;
+
+done_testing;
 
 sub checkthemout {
     my ( $oldies, $objects ) = @_;

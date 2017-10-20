@@ -1,5 +1,20 @@
 use strict;
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+BEGIN {
+    eval { require XML::Parser }
+        or plan skip_all => 'XML::Parser is not installed';
+}
+
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use POSIX;
 
 use MT;
@@ -12,13 +27,10 @@ use XML::Atom::Feed;
 use XML::Atom::Entry;
 use POSIX qw( ceil );
 
-use Test::More qw( no_plan );    #tests => 97;
-
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
 
-use vars qw( $DB_DIR $T_CFG );
-my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
+my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT' );
 
 use MT::Test qw(:db :data);
@@ -591,3 +603,5 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
 
     }    #end foreach of blog_id
 }    #end foreach of base_uri
+
+done_testing;

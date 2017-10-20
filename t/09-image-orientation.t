@@ -2,17 +2,23 @@
 
 use strict;
 use warnings;
-
-use lib qw(t/lib lib extlib);
-
-use MT::Test;
-use MT::Image;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
-
+use MT::Test::Env;
 BEGIN {
     eval { require Image::Magick }
         or plan skip_all => 'Image::Magick is not installed';
 }
+
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use MT::Test;
+use MT::Image;
 
 my @drivers = qw( ImageMagick NetPBM GD Imager );
 

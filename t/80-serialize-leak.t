@@ -2,14 +2,24 @@
 
 use strict;
 use warnings;
-use lib qw( t/lib lib extlib ../lib ../extlib );
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+BEGIN {
+    eval qq{ use Test::LeakTrace; 1 }
+        or plan skip_all => 'require Test::LeakTrace';
+}
+
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT;
 use MT::Test;
-use constant HAS_LEAKTRACE => eval { require Test::LeakTrace };
-use Test::More HAS_LEAKTRACE
-    ? ( tests => 12 )
-    : ( skip_all => 'require Test::LeakTrace' );
-use Test::LeakTrace;
+plan tests => 12;
 
 require MT::Serialize;
 my %sers
@@ -21,7 +31,7 @@ my $data1 = [
     1, { a => 'value-a', b => $a, c => [ 'array', $a, $c, 2 ], d => 1 }, undef
 ];
 my $data2 = [
-    1, { a => 'value-a', b => $a, c => [ 'array', $a, \$c, 2 ], d => 1 },
+    1, { a => 'value-a', b => $a, c => [ 'array', $a, $c, 2 ], d => 1 },
     undef
 ];
 $data2->[1]->{z} = $data2;
@@ -47,7 +57,7 @@ for my $label ( sort keys %sers ) {
         };
         like(
             $@,
-            qr/cannot encode reference to scalar/,
+            qr/json text or perl structure exceeds maximum nesting level/,
             "$label doesn't support circular reference"
         );
     }

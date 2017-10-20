@@ -1,24 +1,27 @@
 #!/usr/bin/perl
 
 use strict;
-use lib qw( t/lib extlib lib );
-
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
     eval { require Test::MockObject }
         or plan skip_all => 'Test::MockObject is not installed';
 }
 
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use File::Spec;
 
 use MT::Test qw( :app :db :data );
-use Test::More;
 
 my $admin = MT::Author->load(1);
 my $blog  = MT::Blog->load(1);
@@ -58,7 +61,7 @@ my $fmgr_module = Test::MockModule->new( ref $fmgr );
 $fmgr_module->mock(
     'exists',
     sub {
-        $_[1] eq File::Spec->catfile(qw/ t site archives test.jpg /);
+        $_[1] eq $test_env->path(qw/ site archives test.jpg /);
     }
 );
 
@@ -108,8 +111,8 @@ subtest 'With "auto_rename_if_exists"' => sub {
 
     my $regex
         = ( $^O eq 'MSWin32' )
-        ? qr!t\\site\\archives\\[0-9a-z]{40}\.jpg!
-        : qr!t/site/archives/[0-9a-z]{40}\.jpg!;
+        ? qr!\\site\\archives\\[0-9a-z]{40}\.jpg!
+        : qr!/site/archives/[0-9a-z]{40}\.jpg!;
     like( $put_args->[1], $regex, 'Uploaded file path' );
 
     my $created_asset
