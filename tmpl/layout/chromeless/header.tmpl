@@ -11,7 +11,9 @@
   <link rel="stylesheet" href="<mt:var name="static_uri">css/mt.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
   </mt:unless>
   <mt:unless name="screen_type" eq="popup-screen">
+    <mt:unless name="screen_type" eq="chromeless-screen">
   <link rel="stylesheet" href="<mt:var name="static_uri">css/chromeless.css" />
+    </mt:unless>
   </mt:unless>
   <mt:var name="css_include">
 
