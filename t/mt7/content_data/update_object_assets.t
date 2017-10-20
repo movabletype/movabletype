@@ -108,8 +108,9 @@ my $content_data = MT::Test::Permission->make_content_data(
 is( MT->model('objectasset')->count( { object_ds => 'content_field' } ),
     0, 'no old MT::ObjectAsset' );
 
-is( MT->model('objectasset')->count( { object_ds => 'content_data' } ),
-    4, '4 new MT::ObjectAsset' );
+my @object_assets
+    = MT->model('objectasset')->load( { object_ds => 'content_data' } );
+is( scalar @object_assets, 4, '4 new MT::ObjectAsset' );
 
 my $terms = {
     blog_id   => $blog_id,
@@ -152,6 +153,20 @@ is( MT->model('objectasset')->count(
     1,
     'MT::ObjectAsset of image'
 );
+
+subtest 'Do not remove unchanged record' => sub {
+    $content_data->save or die $content_data->errstr;
+
+    is( MT->model('objectasset')->count( { object_ds => 'content_data' } ),
+        4, '4 MT::ObjectAsset' );
+
+    for my $oa (@object_assets) {
+        my $oa_id = $oa->id;
+        ok( MT->model('objectasset')->exist($oa_id),
+            "MT::ObjectAsset (ID:$oa_id) is not removed"
+        );
+    }
+};
 
 done_testing;
 

@@ -50,6 +50,10 @@ is( MT->model('objecttag')->count( { object_datasource => 'content_field' } ),
     'no old MT::ObjectTag',
 );
 
+my @object_tags
+    = MT->model('objecttag')->load( { object_datasource => 'content_data' } );
+is( scalar @object_tags, 3, '3 new MT::ObjectTag' );
+
 my $terms = {
     blog_id           => $blog_id,
     object_datasource => 'content_data',
@@ -62,6 +66,23 @@ is( MT->model('objecttag')->count( { %$terms, tag_id => $tags[1]->id } ),
     1, 'MT::ObjectTag of $tags[1]' );
 is( MT->model('objecttag')->count( { %$terms, tag_id => $tags[2]->id } ),
     1, 'MT::ObjectTag of $tags[2]' );
+
+subtest 'Do not remove unchanged record' => sub {
+    $content_data->save or die $content_data->errstr;
+
+    is( MT->model('objecttag')
+            ->count( { object_datasource => 'content_data' } ),
+        3,
+        '3 MT::ObjectTag'
+    );
+
+    for my $ot (@object_tags) {
+        my $ot_id = $ot->id;
+        ok( MT->model('objecttag')->exist($ot_id),
+            "MT::ObjectTag (ID:$ot_id) is not removed"
+        );
+    }
+};
 
 done_testing;
 
