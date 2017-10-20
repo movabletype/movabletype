@@ -137,6 +137,11 @@ sub archive_group_iter {
                 {   id      => \'= cf_idx_content_data_id',
                     blog_id => $blog_id,
                     status  => MT::Entry::RELEASE(),
+                    (   $ctx->stash('content_type')
+                        ? ( content_type_id =>
+                                $ctx->stash('content_type')->id )
+                        : ()
+                    ),
                 }
             ),
         }

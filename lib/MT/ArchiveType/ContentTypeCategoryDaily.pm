@@ -105,18 +105,23 @@ sub archive_group_iter {
     my $map          = $ctx->stash('template_map');
     my $cat_field_id = defined $map && $map ? $map->cat_field_id : '';
     my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
+    my $content_type_id
+        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
     require MT::ContentData;
     require MT::ContentFieldIndex;
 
-    my $group_terms
-        = $obj->make_archive_group_terms( $blog->id, $dt_field_id, $ts,
-        $tsend, '' );
-    my $group_args
-        = $obj->make_archive_group_args( 'category', 'daily',
-        $map, $ts, $tsend, $args->{lastn}, $order, $cat );
-
     my $loop_sub = sub {
-        my $c = shift;
+        my ( $c, $cat_field_id ) = @_;
+
+        my $group_terms
+            = $obj->make_archive_group_terms( $blog->id, $dt_field_id, $ts,
+            $tsend, '', $content_type_id );
+        my $group_args = $obj->make_archive_group_args(
+            'category', 'daily',        $map,   $ts,
+            $tsend,     $args->{lastn}, $order, $c,
+            $cat_field_id
+        );
+
         my $cd_iter
             = MT::ContentData->count_group_by( $group_terms, $group_args )
             or return $ctx->error("Couldn't get yearly archive list");
@@ -140,11 +145,32 @@ sub archive_group_iter {
     }
     else {
         require MT::Category;
-        my $iter = MT::Category->load_iter( { blog_id => $blog->id },
-            { 'sort' => 'label', direction => $cat_order } );
+        my $iter = MT::Category->load_iter(
+            {   blog_id => $blog->id,
+                (   $args->{category_set_id}
+                    ? ( category_set_id => $args->{category_set_id} )
+                    : ( category_set_id => { op => '!=', value => 0 } )
+                )
+            },
+            { 'sort' => 'label', direction => $cat_order }
+        );
         while ( my $category = $iter->() ) {
-            $loop_sub->($category);
-            last if ( defined($limit) && $count == $limit );
+            my $last;
+            if ( $map && $map->cat_field_id ) {
+                $loop_sub->( $category, $map->cat_field_id );
+                $last++ if ( defined($limit) && $count == $limit );
+            }
+            else {
+                my $set_id
+                    = $args->{category_set_id} || $category->category_set_id;
+                my @fields = MT->model('content_field')
+                    ->load( { related_cat_set_id => $set_id } );
+                foreach my $field (@fields) {
+                    $loop_sub->( $category, $field->id );
+                    $last++ if ( defined($limit) && $count == $limit );
+                }
+            }
+            last if $last;
         }
     }
 

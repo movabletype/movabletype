@@ -194,6 +194,13 @@ sub _hdlr_archives {
         $save_stamps = 1;
     }
 
+    # Set context of content type
+    local $ctx->{__stash}{content_type}
+        = $args->{content_type}
+        ? MT->model('content_type')
+        ->load( { unique_id => $args->{content_type} } )
+        : '';
+
     local $ctx->{current_archive_type} = $at;
     ## If we are producing a Category archive list, don't bother to
     ## handle it here--instead hand it over to <MTCategories>.

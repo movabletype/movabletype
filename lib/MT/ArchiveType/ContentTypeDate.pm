@@ -232,9 +232,14 @@ sub make_archive_group_terms {
 
 sub make_archive_group_args {
     my $obj = shift;
-    my ( $type, $date_type, $map, $ts, $tsend, $lastn, $order, $cat ) = @_;
-    my $cat_field_id = defined $map && $map ? $map->cat_field_id : '';
-    my $dt_field_id  = defined $map && $map ? $map->dt_field_id  : '';
+    my ($type,  $date_type, $map, $ts, $tsend,
+        $lastn, $order,     $cat, $cat_field_id
+    ) = @_;
+    $cat_field_id ||= defined $map && $map ? $map->cat_field_id : '';
+    my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
+    if ( !$cat_field_id && $cat ) {
+        my $category_set_id = $cat->category_set_id;
+    }
     my $target_column
         = $date_type eq 'weekly'
         ? $dt_field_id
