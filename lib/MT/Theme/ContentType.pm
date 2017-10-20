@@ -10,6 +10,7 @@ use warnings;
 use MT;
 use MT::ContentField;
 use MT::ContentType;
+use MT::Util;
 
 sub apply {
     my ( $element, $theme, $blog, $opts ) = @_;
@@ -79,9 +80,14 @@ sub apply {
                         = $cf_value->{$cf_value_key};
                 }
                 else {
-                    $field->{options}{$cf_value_key}
-                        = $theme->translate_templatized(
+                    my $v = $theme->translate_templatized(
                         $cf_value->{$cf_value_key} );
+                    if ( MT::Util::is_numeric($v) ) {
+                        $field->{options}{$cf_value_key} = $v + 0;
+                    }
+                    else {
+                        $field->{options}{$cf_value_key} = $v;
+                    }
                 }
             }
 
