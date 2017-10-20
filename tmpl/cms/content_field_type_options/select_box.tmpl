@@ -54,6 +54,14 @@
     }]
   }
 
+  if ( this.options.can_add === "0" ) {
+    this.options.can_add = 0
+  }
+
+  if ( this.options.multiple === "0" ) {
+    this.options.multiple = 0
+  }
+
   addRow(e) {
     this.values.push({"checked": ""})
   }

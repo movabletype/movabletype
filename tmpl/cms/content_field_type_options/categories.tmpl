@@ -39,6 +39,14 @@
   </mtapp:ContentFieldOption>
   
   <mtapp:ContentFieldOptionScript>
+    if ( this.options.multiple === "0" ) {
+      this.options.multiple = 0
+    }
+
+    if ( this.options.can_add === "0" ) {
+      this.options.can_add = 0
+    }
+
     changeStateMultiple(e) {
     this.options.multiple = e.target.checked
     }
