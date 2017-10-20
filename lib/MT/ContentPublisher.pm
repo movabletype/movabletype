@@ -831,8 +831,12 @@ sub rebuild_file {
         $category = MT::Category->load($category)
             unless ref $category;
         $ctx->{__stash}{archive_category} = $category;
-        $ctx->{__stash}{template_map}     = $map
-            if $archiver->contenttype_category_based;
+        if ( $archiver->contenttype_category_based ) {
+            $ctx->{__stash}{template_map} = $map;
+            my $category_set = MT->model('category_set')
+                ->load( $category->category_set_id );
+            $ctx->{__stash}{category_set} = $category_set;
+        }
     }
     if ( $archiver->entry_based ) {
         $entry = $args{Entry};
@@ -1510,8 +1514,8 @@ sub _rebuild_content_archive_type {
             unless ($cache_map) {
                 MT::Request->instance->cache( 'maps', $cache_map = {} );
             }
-            $content_type_id
-                ||= ref $obj eq 'MT::ContentData'
+            $content_type_id ||=
+                ref $obj eq 'MT::ContentData'
                 ? $obj->content_type_id
                 : '';
             my $cache_map_key
