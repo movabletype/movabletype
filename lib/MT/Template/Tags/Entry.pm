@@ -1867,8 +1867,10 @@ returned.
 
 sub _hdlr_entry_basename {
     my ( $ctx, $args ) = @_;
-    my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error();
+    my $e = $ctx->stash('entry');
+    return $ctx->invoke_handler( 'contentidentifier', $args, '' )
+        if !$e && $ctx->stash('content');
+    return $ctx->_no_entry_error() unless $e;
     my $basename = $e->basename() || '';
     if ( my $sep = $args->{separator} ) {
         if ( $sep eq '-' ) {
