@@ -1428,6 +1428,8 @@ sub _hdlr_content_field {
 
     my $content_type = $ctx->stash('content_type')
         or return $ctx->_no_content_type_error;
+    my $content_data = $ctx->stash('content')
+        or return $ctx->_no_content_error;
 
     my $field_data;
     if ( my $unique_id = $args->{unique_id} ) {
@@ -1444,18 +1446,17 @@ sub _hdlr_content_field {
         ($field_data)
             = grep { $_->{options}{label} eq $label }
             @{ $content_type->fields };
-        if ( $field_data && $field_data->{type} eq 'content_type' ) {
-            my $content_type_id = $field_data->{options}{source};
-            my $content_type    = MT::ContentType->load($content_type_id);
-            $args->{type} = $content_type->unique_id;
-            return $ctx->invoke_handler( 'contents', $args, $cond );
-        }
+    }
+    if ( $field_data && $field_data->{type} eq 'content_type' ) {
+        my $ids = $content_data->data->{ $field_data->{id} };
+        my @archive_contents
+            = MT->model('content_data')->load( { id => $ids } );
+        local $ctx->{__stash}{archive_contents} = \@archive_contents;
+        return $ctx->invoke_handler( 'contents', $args, $cond );
     }
     $field_data ||= $ctx->stash('content_field') || $content_type->fields->[0]
         or return $ctx->_no_content_field_error;
 
-    my $content_data = $ctx->stash('content')
-        or return $ctx->_no_content_error;
     my $value = $content_data->data->{ $field_data->{id} };
 
     my $field_type
