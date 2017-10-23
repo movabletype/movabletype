@@ -514,7 +514,24 @@ sub create_default_templates {
             foreach my $map_key ( keys %$mappings ) {
                 my $m  = $mappings->{$map_key};
                 my $at = $m->{archive_type};
-                $archive_types{$at} = 1;
+
+                unless ( defined $at && $at ne '' ) {
+                    return $blog->error(
+                        MT->translate(
+                            "archive_type is needed in Archive Mapping '[_1]'",
+                            $map_key,
+                        )
+                    );
+                }
+
+                $archive_types{$at} ||= $app->publisher->archiver($at)
+                    or return $blog->error(
+                    MT->translate(
+                        "Invalid archive_type '[_1]' in Archive Mapping '[_2]'",
+                        $at,
+                        $map_key,
+                    )
+                    );
 
                 # my $preferred = $mappings->{$map_key}{preferred};
                 my $map = MT::TemplateMap->new;
