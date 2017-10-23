@@ -57,6 +57,33 @@ sub _get_category_context {
             # but there is no category to work with
             return '' if ( !defined $cat );
         }
+        elsif ( my $content_data = $ctx->stash('content') ) {
+            my $map = $ctx->stash('template_map');
+            unless ($map) {
+                my $content_type_id = $content_data->content_type_id;
+                ($map) = MT->model('templatemap')->load(
+                    { archive_type => 'ContentType', is_preferred => 1 },
+                    {   join => MT->model('template')->join_on(
+                            undef,
+                            {   id => \'= templatemap_template_id',
+                                content_type_id => $content_type_id,
+                            },
+                        )
+                    }
+                );
+            }
+            return '' if ( !$map || !$map->cat_field_id );
+            my ($objectcategory) = MT->model('objectcategory')->load(
+                {   object_ds  => 'content_data',
+                    object_id  => $content_data->content_type_id,
+                    cf_id      => $map->cat_field_id,
+                    is_primary => 1,
+                }
+            );
+            return '' unless ($objectcategory);
+            $cat
+                = MT->model('category')->load( $objectcategory->category_id );
+        }
         else {
             return $ctx->error(
                 MT->translate(
