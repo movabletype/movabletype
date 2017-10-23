@@ -600,6 +600,22 @@ sub create_default_templates {
                         $map->cat_field_id( $cat_field->id );
                     }
                 }
+
+                unless ( $map->cat_field_id ) {
+                    if ($archive_types{$at}->contenttype_category_based
+                        || (   $archive_types{$at}->contenttype_based
+                            && $map->file_template =~ /%[\-_]?[Cc]/ )
+                        )
+                    {
+                        return $blog->error(
+                            MT->translate(
+                                "category_field is required in Archive Mapping '[_1]'",
+                                $map_key,
+                            )
+                        );
+                    }
+                }
+
                 unless ( $map->dt_field_id ) {
                     $map->dt_field_id(0);
                 }
