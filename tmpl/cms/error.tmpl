@@ -1,6 +1,7 @@
 <mt:setvarblock name="page_title"><__trans phrase="An error occurred"></mt:setvarblock>
 <mt:setvar name="complete" value="1">
 <mt:setvar name="error_page" value="1">
+<mt:setvar name="screen_type" value="chromeless-screen">
 
 <mt:setvarblock name="page_content">
 
@@ -33,7 +34,7 @@
 <button
    type="submit"
 <mt:if name="dialog">
-   onclick="if ( window.opener ) { window.close(); } else { parent.jQuery.fn.mtDialog.close('<mt:var name="link" escape="js">'); }; return false;"
+   onclick="if ( window.opener ) { window.close(); } else { parent.jQuery.fn.mtModal.close('<mt:var name="link" escape="js">'); }; return false;"
 <mt:elseif name="fs">
    onclick="window.location='<mt:var name="link" escape="js">'; return false;"
 <mt:else>
@@ -47,10 +48,10 @@
 <mt:unless name="dialog">
 <button
    id="close-button"
-   onclick="if ( window.opener || is_toplevel_new_window() ) { window.close(); } else { parent.jQuery.fn.mtDialog.close(); }"
+   onclick="if ( window.opener || is_toplevel_new_window() ) { window.close(); } else { parent.jQuery.fn.mtModal.close(); }"
    type="submit"
    accesskey="x"
-   class="action button hidden btn btn-default"
+   class="action button btn btn-default"
    title="<__trans phrase="Close (x)">">
   <__trans phrase="Close">
 </button>
@@ -70,9 +71,10 @@
             && (history.length == 1);
     }
     /* <![CDATA[ */
-    // show the close button if error is in modal or popup
-    if ( window != window.parent || window.opener || is_toplevel_new_window() )
-        document.getElementById("close-button").className = "action button btn btn-default";
+    // hide the close button unless error is in modal or popup
+    if ( window == window.parent && !window.opener && !is_toplevel_new_window() ) {
+        jQuery('#close-button').hide();
+    }
     /* ]]> */
 </script>
 </mt:setvarblock>

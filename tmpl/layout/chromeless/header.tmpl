@@ -11,7 +11,9 @@
   <link rel="stylesheet" href="<mt:var name="static_uri">css/mt.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
   </mt:unless>
   <mt:unless name="screen_type" eq="popup-screen">
+    <mt:unless name="screen_type" eq="chromeless-screen">
   <link rel="stylesheet" href="<mt:var name="static_uri">css/chromeless.css" />
+    </mt:unless>
   </mt:unless>
   <mt:var name="css_include">
 
@@ -24,7 +26,7 @@
 </head>
 <body>
 
-  <div class="container body <mt:var name="screen_id"><mt:if name="template_filename" eq="signup"> signup</mt:if>">
+  <div class="container body mt-4 <mt:var name="screen_id"><mt:if name="template_filename" eq="signup"> signup</mt:if>">
 
     <mt:unless name="no_brand">
     <div class="row">

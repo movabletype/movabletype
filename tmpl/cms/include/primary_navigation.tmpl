@@ -16,7 +16,7 @@
   <mt:loop name="sub_nav_loop">
     <mt:if name="allowed">
         <li>
-          <a href="<mt:var name="link" escape="html">"<mt:if name="current"> class="selected"</mt:if>>
+          <a href="<mt:var name="link" escape="html">"<mt:if name="current"> class="selected"<mt:elseif name="dialog"> class="mt-modal-open" data-mt-modal-large</mt:if>>
             <mt:var name="label" escape="html">
           </a>
         </li>
