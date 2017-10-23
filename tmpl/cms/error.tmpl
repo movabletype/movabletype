@@ -51,7 +51,7 @@
    onclick="if ( window.opener || is_toplevel_new_window() ) { window.close(); } else { parent.jQuery.fn.mtDialog.close(); }"
    type="submit"
    accesskey="x"
-   class="action button hidden btn btn-default"
+   class="action button btn btn-default"
    title="<__trans phrase="Close (x)">">
   <__trans phrase="Close">
 </button>
@@ -71,9 +71,10 @@
             && (history.length == 1);
     }
     /* <![CDATA[ */
-    // show the close button if error is in modal or popup
-    if ( window != window.parent || window.opener || is_toplevel_new_window() )
-        document.getElementById("close-button").className = "action button btn btn-default";
+    // hide the close button unless error is in modal or popup
+    if ( window == window.parent && !window.opener && !is_toplevel_new_window() ) {
+        jQuery('#close-button').hide();
+    }
     /* ]]> */
 </script>
 </mt:setvarblock>
