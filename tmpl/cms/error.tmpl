@@ -34,7 +34,7 @@
 <button
    type="submit"
 <mt:if name="dialog">
-   onclick="if ( window.opener ) { window.close(); } else { parent.jQuery.fn.mtDialog.close('<mt:var name="link" escape="js">'); }; return false;"
+   onclick="if ( window.opener ) { window.close(); } else { parent.jQuery.fn.mtModal.close('<mt:var name="link" escape="js">'); }; return false;"
 <mt:elseif name="fs">
    onclick="window.location='<mt:var name="link" escape="js">'; return false;"
 <mt:else>
@@ -48,7 +48,7 @@
 <mt:unless name="dialog">
 <button
    id="close-button"
-   onclick="if ( window.opener || is_toplevel_new_window() ) { window.close(); } else { parent.jQuery.fn.mtDialog.close(); }"
+   onclick="if ( window.opener || is_toplevel_new_window() ) { window.close(); } else { parent.jQuery.fn.mtModal.close(); }"
    type="submit"
    accesskey="x"
    class="action button btn btn-default"
