@@ -2,10 +2,17 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/../../lib";    # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
 
-use lib qw( t/lib lib extlib );
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test qw( :db );
 use MT::Test::Permission;
 
