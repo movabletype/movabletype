@@ -514,7 +514,24 @@ sub create_default_templates {
             foreach my $map_key ( keys %$mappings ) {
                 my $m  = $mappings->{$map_key};
                 my $at = $m->{archive_type};
-                $archive_types{$at} = 1;
+
+                unless ( defined $at && $at ne '' ) {
+                    return $blog->error(
+                        MT->translate(
+                            "archive_type is needed in Archive Mapping '[_1]'",
+                            $map_key,
+                        )
+                    );
+                }
+
+                $archive_types{$at} ||= $app->publisher->archiver($at)
+                    or return $blog->error(
+                    MT->translate(
+                        "Invalid archive_type '[_1]' in Archive Mapping '[_2]'",
+                        $at,
+                        $map_key,
+                    )
+                    );
 
                 # my $preferred = $mappings->{$map_key}{preferred};
                 my $map = MT::TemplateMap->new;
@@ -547,9 +564,16 @@ sub create_default_templates {
                                 name            => $m->{datetime_field},
                             }
                         );
-                        if ($datetime_field) {
-                            $map->dt_field_id( $datetime_field->id );
-                        }
+
+                        return $blog->error(
+                            MT->translate(
+                                "Invalid datetime_field '[_1]' in Archive Mapping '[_2]'",
+                                $m->{datetime_field},
+                                $map_key,
+                            )
+                        ) unless $datetime_field;
+
+                        $map->dt_field_id( $datetime_field->id );
                     }
                     if ( $m->{category_field} ) {
                         my $cat_field = MT->model('content_field')->load(
@@ -564,11 +588,34 @@ sub create_default_templates {
                                 name            => $m->{category_field},
                             }
                         );
-                        if ($cat_field) {
-                            $map->cat_field_id( $cat_field->id );
-                        }
+
+                        return $blog->error(
+                            MT->translate(
+                                "Invalid category_field '[_1]' in Archive Mapping '[_2]'",
+                                $m->{category_field},
+                                $map_key,
+                            )
+                        ) unless $cat_field;
+
+                        $map->cat_field_id( $cat_field->id );
                     }
                 }
+
+                unless ( $map->cat_field_id ) {
+                    if ($archive_types{$at}->contenttype_category_based
+                        || (   $archive_types{$at}->contenttype_based
+                            && $map->file_template =~ /%[\-_]?[Cc]/ )
+                        )
+                    {
+                        return $blog->error(
+                            MT->translate(
+                                "category_field is required in Archive Mapping '[_1]'",
+                                $map_key,
+                            )
+                        );
+                    }
+                }
+
                 unless ( $map->dt_field_id ) {
                     $map->dt_field_id(0);
                 }

@@ -63,7 +63,8 @@ sub apply {
         }
 
         local MT->app->{component} = $theme->id;
-        $blog->create_default_templates($set);
+        $blog->create_default_templates($set)
+            or return $element->error( $blog->errstr );
     }
 
     return 1;
