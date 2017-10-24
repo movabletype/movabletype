@@ -1334,7 +1334,9 @@ sub _rebuild_content_archive_type {
     else {
         my $cached_maps = MT->instance->request('__cached_maps')
             || MT->instance->request( '__cached_maps', {} );
-        if ( my $maps = $cached_maps->{ $at . $blog->id } ) {
+        my $cache_key = join ':',
+            ( $at, $blog->id, $content_data->content_type_id );
+        if ( my $maps = $cached_maps->{$cache_key} ) {
             @map = @$maps;
         }
         else {
@@ -1358,7 +1360,7 @@ sub _rebuild_content_archive_type {
                 },
                 $args
             );
-            $cached_maps->{ $at . $blog->id } = \@map;
+            $cached_maps->{$cache_key} = \@map;
         }
     }
     return 1 unless @map;
