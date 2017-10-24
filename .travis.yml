@@ -41,7 +41,7 @@ before_install:
   - chmod +x phpunit
 
 install:
-  - cpanm -l --notest App::cpm
+  - cpanm --notest App::cpm
 
   # Tests fail with Perl 5.10.
   - cpm install XML::Parser::PerlSAX
