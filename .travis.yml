@@ -6,12 +6,12 @@ perl:
 
 env:
   matrix:
-    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
-    - TEST_COMMAND="prove -Mlocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
-    - TEST_COMMAND="prove -Mlocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
-    - TEST_COMMAND="prove -Mlocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
-    - TEST_COMMAND="prove -Mlocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
-    - TEST_COMMAND="prove -Mlocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - TEST_COMMAND="prove -Mlocal::lib -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
+    - TEST_COMMAND="prove -Mlocal::lib -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+    - TEST_COMMAND="prove -Mlocal::lib -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+    - TEST_COMMAND="prove -Mlocal::lib -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - TEST_COMMAND="prove -Mlocal::lib -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - TEST_COMMAND="prove -Mlocal::lib -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - TEST_COMMAND="./phpunit"
 
 services:
@@ -43,11 +43,13 @@ before_install:
 install:
   - cpanm --notest App::cpm
 
+  - cpm install -g App::Prove::Plugin::MySQLPool
+
   # Tests fail with Perl 5.10.
   - cpm install XML::Parser::PerlSAX
 
   # Use to install patched Coro.
-  - cpanm install LWP::Protocol::https
+  - cpanm --notest --quiet LWP::Protocol::https
 
   # Use patched Coro for Perl 5.22.
   - cpanm -l --notest --quiet https://github.com/rurban/Coro/archive/rel-6.48_01.tar.gz
