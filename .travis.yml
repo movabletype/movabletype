@@ -41,9 +41,6 @@ before_install:
   - chmod +x phpunit
 
 install:
-  # Update to install Math::GMP2.11.
-  - cpanm --self-upgrade
-
   # Tests fail with Perl 5.10.
   - cpanm -l --notest --quiet XML::Parser::PerlSAX
 
