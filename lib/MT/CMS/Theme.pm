@@ -184,7 +184,7 @@ sub apply {
     $blog->theme_id( $theme->id );
     $blog->theme_export_settings(undef);
     $blog->save;
-    $blog->apply_theme;
+    $blog->apply_theme or die $blog->errstr;
     $app->redirect(
         $app->uri(
             mode => 'list_theme',

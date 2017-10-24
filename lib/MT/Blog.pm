@@ -1779,8 +1779,8 @@ sub apply_theme {
     $theme->apply($blog)
         or return $blog->error(
         MT->translate(
-            "Failed to apply theme [_1]: [_2]", $theme_id,
-            MT::Theme->errstr
+            "Failed to apply theme [_1]: [_2]",
+            $theme_id, $theme->errstr
         )
         );
     return 1;
