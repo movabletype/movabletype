@@ -1,16 +1,17 @@
-sudo: required
 dist: precise
 
 language: perl
+perl:
+  - 5.18
 
 env:
   matrix:
-    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
-    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
-    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
-    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
-    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
-    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - TEST_COMMAND="prove -Mlocal::lib -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
+    - TEST_COMMAND="prove -Mlocal::lib -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+    - TEST_COMMAND="prove -Mlocal::lib -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+    - TEST_COMMAND="prove -Mlocal::lib -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - TEST_COMMAND="prove -Mlocal::lib -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - TEST_COMMAND="prove -Mlocal::lib -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - TEST_COMMAND="./phpunit"
 
 services:
@@ -35,38 +36,34 @@ addons:
     - unzip
 
 before_install:
-  # Use system Perl.
-  - perlbrew switch-off
-  - PATH=${PATH#/home/travis/perl5/perlbrew/bin:}
-
   # Use PHPUnit 4.8, because PHP version of Travis CI is 5.3.
   - wget -O phpunit https://phar.phpunit.de/phpunit-old.phar
   - chmod +x phpunit
 
 install:
   # Update to install Math::GMP2.11.
-  - sudo cpanm --self-upgrade
+  - cpanm --self-upgrade
 
   # Tests fail with Perl 5.10.
-  - sudo cpanm --notest --quiet XML::Parser::PerlSAX
+  - cpanm -l --notest --quiet XML::Parser::PerlSAX
 
   # Use to install patched Coro.
-  - sudo cpanm --notest --quiet LWP::Protocol::https
+  - cpanm -l --notest --quiet LWP::Protocol::https
 
   # Use patched Coro for Perl 5.22.
-  - sudo cpanm --notest --quiet https://github.com/rurban/Coro/archive/rel-6.48_01.tar.gz
+  - cpanm -l --notest --quiet https://github.com/rurban/Coro/archive/rel-6.48_01.tar.gz
 
   # Tests fail with Perl 5.8 and 5.10.
-  - sudo cpanm --notest --quiet Twiggy
+  - cpanm -l --notest --quiet Twiggy
 
   # Cannot install Math::GMP 2.12 and 2.13 with Perl 5.8.
-  - sudo cpanm --notest --quiet Math::GMP@2.11
+  - cpanm -l --notest --quiet Math::GMP@2.11
 
-  - sudo cpanm App::cpm
+  - cpanm -l --notest App::cpm
 
   # Instal CPAN modules.
   - cp ./t/cpanfile .
-  - travis_retry sudo cpm install -g
+  - travis_retry cpm install -l
 
   # Build MT.
   #- SHELL=/bin/bash make me
