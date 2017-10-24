@@ -137,6 +137,8 @@ class MT {
             if ($blog) {
                 $ctx =& $this->context();
                 $ctx->stash('blog', $blog);
+                $ctx->stash('blog_id',$this->blog_id);
+                $ctx->stash('local_blog_id',$this->blog_id);
             }
 
             $lang = substr(strtolower(
@@ -795,6 +797,7 @@ class MT {
 
     function display($tpl, $cid = null) {
         $ctx =& $this->context();
+        $this->init_plugins();
         $blog =& $ctx->stash('blog');
         if (!$blog) {
             $db =& $this->db();
