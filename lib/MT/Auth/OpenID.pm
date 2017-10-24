@@ -376,8 +376,10 @@ sub _asset_from_url {
         'image/gif'  => '.gif'
     }->{$mimetype};
 
-    require Image::Size;
-    my ( $w, $h, $id ) = Image::Size::imgsize( \$image );
+    require Image::Info;
+    my $info = Image::Info::image_info( \$image );
+    return undef if $info->{error};
+    my ( $w, $h, $id ) = ( $info->{width}, $info->{height}, uc $info->{file_ext} );
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
