@@ -1039,7 +1039,7 @@ sub init_query {
                     = MT::I18N::default->encode_text_encode( $d,
                     $request_charset, $charset )
                     if $transcode;
-                unless ( ref($d) && ( 'Fh' eq ref($d) ) ) {
+                unless ( UNIVERSAL::isa( $d, 'Fh' ) ) {
                     eval {
                         $d = Encode::decode( $charset, $d, 1 )
                             unless Encode::is_utf8($d);

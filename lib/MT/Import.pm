@@ -62,7 +62,7 @@ sub _get_stream_iterator {
     my $class = shift;
     my ( $stream, $cb ) = @_;
     my $iter;
-    if ( ref($stream) eq 'Fh' ) {
+    if ( UNIVERSAL::isa( $stream, 'Fh' ) ) {
         seek( $stream, 0, 0 )
             or return $class->error( MT->translate("Cannot rewind") );
         $iter = sub {
