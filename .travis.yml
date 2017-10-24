@@ -41,26 +41,26 @@ before_install:
   - chmod +x phpunit
 
 install:
+  - cpanm -l --notest App::cpm
+
   # Tests fail with Perl 5.10.
-  - cpanm -l --notest --quiet XML::Parser::PerlSAX
+  - cpm install XML::Parser::PerlSAX
 
   # Use to install patched Coro.
-  - cpanm -l --notest --quiet LWP::Protocol::https
+  - cpanm install LWP::Protocol::https
 
   # Use patched Coro for Perl 5.22.
   - cpanm -l --notest --quiet https://github.com/rurban/Coro/archive/rel-6.48_01.tar.gz
 
   # Tests fail with Perl 5.8 and 5.10.
-  - cpanm -l --notest --quiet Twiggy
+  - cpm install Twiggy
 
   # Cannot install Math::GMP 2.12 and 2.13 with Perl 5.8.
-  - cpanm -l --notest --quiet Math::GMP@2.11
-
-  - cpanm -l --notest App::cpm
+  - cpm install Math::GMP@2.11
 
   # Instal CPAN modules.
   - cp ./t/cpanfile .
-  - travis_retry cpm install -l
+  - travis_retry cpm install
 
   # Build MT.
   #- SHELL=/bin/bash make me
