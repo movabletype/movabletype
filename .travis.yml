@@ -5,8 +5,13 @@ language: perl
 
 env:
   matrix:
-    - TEST_COMMAND="PERL_HASH_SEED=0 prove t/[0-9]*.t"
-    - TEST_COMMAND="PERL_HASH_SEED=0 prove t/[^0-9]*.t t/mt7 plugins/*/t && ./phpunit"
+    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
+    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - TEST_COMMAND="./phpunit"
 
 services:
   - memcached
@@ -57,9 +62,11 @@ install:
   # Cannot install Math::GMP 2.12 and 2.13 with Perl 5.8.
   - sudo cpanm --notest --quiet Math::GMP@2.11
 
+  - sudo cpanm App::cpm
+
   # Instal CPAN modules.
   - cp ./t/cpanfile .
-  - travis_retry sudo cpanm --notest --quiet --installdeps .
+  - travis_retry sudo cpm install -g
 
   # Build MT.
   #- SHELL=/bin/bash make me
