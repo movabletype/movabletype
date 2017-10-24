@@ -14,6 +14,10 @@ env:
     - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - TEST_COMMAND="./phpunit"
 
+cache:
+  directories:
+    - ./local
+
 services:
   - memcached
 
