@@ -64,7 +64,7 @@ sub _build_category_list {
         $categories = $category_set->categories;
     }
 
-    my %value = map { $_ => 1 } @{ $field_data->{value} || [] };
+    my %value = map { $_ => 1 } @{ $field_data->{value} ||= [] };
     my %places = map { $_->id => 1 } grep { $value{ $_->id } } @{$categories};
 
     my $data = $app->_build_category_list(
@@ -74,7 +74,6 @@ sub _build_category_list {
         type       => 'category',
     );
 
-    my @sel_cats;
     my $cat_tree = [];
     foreach (@$data) {
         next unless exists $_->{category_id};
@@ -86,9 +85,9 @@ sub _build_category_list {
             path     => $_->{category_path_ids} || [],
             fields   => $_->{category_fields} || [],
             };
-        push @sel_cats, $_->{category_id}
-            if $places{ $_->{category_id} };
     }
+
+    my @sel_cats = grep { $places{$_} } @{ $field_data->{value} };
 
     ( $cat_tree, \@sel_cats );
 }
