@@ -678,7 +678,7 @@ sub process_manifest {
     my $class = shift;
     my ($stream) = @_;
 
-    if ( ( ref($stream) eq 'Fh' ) || ( ref($stream) eq 'GLOB' ) ) {
+    if ( UNIVERSAL::isa( $stream, 'Fh' ) || ( ref($stream) eq 'GLOB' ) ) {
         seek( $stream, 0, 0 ) or return undef;
         require XML::SAX;
         require MT::BackupRestore::ManifestFileHandler;
