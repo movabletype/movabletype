@@ -77,7 +77,7 @@ before_script:
   - mysql -uroot -e "grant all privileges on mt_test.* to mt@localhost;"
 
   # Some tests need mt-config.cgi.
-  - cp ./t/mysql-test.cfg ./mt-config.cgi
+  #- cp ./t/mysql-test.cfg ./mt-config.cgi
 
   # Skip failed test.
   - rm plugins/MultiBlog/t/02.tags.t
