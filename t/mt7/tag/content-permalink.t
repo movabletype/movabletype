@@ -166,6 +166,7 @@ my $map_03 = MT::Test::Permission->make_templatemap(
     archive_type  => 'ContentType',
     file_template => '%-c/%-f',
     is_preferred  => 1,
+    cat_field_id  => $cf_category->id,
 );
 
 $vars->{content_type_01_unique_id} = $content_type_01->unique_id;
@@ -193,3 +194,9 @@ __END__
 <mt:Contents type="[% content_type_02_unique_id %]"><mt:ContentPermalink></mt:Contents>
 --- expected
 /test/archives/2017/09/mtcontentpermalink-test-data-02/
+
+=== MT::ContentPermalink ContentType 03
+--- template
+<mt:Contents type="[% content_type_03_unique_id %]"><mt:ContentPermalink></mt:Contents>
+--- expected
+/test/archives/category/mtcontentpermalink-test-data-03.html
