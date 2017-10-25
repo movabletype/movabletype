@@ -438,7 +438,7 @@
 
             var save = ed.save;
             ed.save = function () {
-                if (! ed.isHidden()) {
+                if ( adapter.$editorIframe.css('display') != 'none' ) {
                     save.apply(ed, arguments);
                 }
             }
