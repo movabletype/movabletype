@@ -160,7 +160,7 @@ use vars qw( @ISA %Lexicon );
 	q{You're ready to go!} => q{Movable Typeを利用できます。},
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.' => 'お使いのサーバーには、Movable Type の動作に必要なすべてのモジュールがインストールされています。モジュールを追加インストール作業は必要はありません。マニュアルに従い、インストールを続けてください。',
 	'CGI is required for all Movable Type application functionality.' => 'CGIは、Movable Type のすべてのアプリケーションの動作に必須です。',
-	'Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Image::Sizeはファイルのアップロードを行うために必要です。各種のファイル形式に対応して画像のサイズを取得します。',
+	'Image::Info is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Image::Infoはファイルのアップロードを行うために必要です。各種のファイル形式に対応して画像のサイズを取得します。',
 	'File::Spec is required to work with file system path information on all supported operating systems.' => 'File::Specはオペレーティングシステムでパスの操作を行うために必要です。',
 	'CGI::Cookie is required for cookie authentication.' => 'CGI::Cookieはcookie 認証のために必要です。',
 	'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.' => 'LWP::UserAgentは構成ウィザードの実行に必要です。',
@@ -1116,7 +1116,7 @@ use vars qw( @ISA %Lexicon );
 	'\'[_1]\' is not allowed to upload by system settings.: [_2]' => '\'[_1]\'のアップロードはシステム設定にて許可されていません。: [_2]',
 	'Invalid image file format.' => '画像ファイルフォーマットが不正です。',
 	'Cannot make path \'[_1]\': [_2]' => 'パス\'[_1]\'を作成できませんでした: [_2]',
-	'Perl module Image::Size is required to determine the width and height of uploaded images.' => 'Image::Sizeをインストールしないと、画像の幅と高さを検出できません。',
+	'Perl module Image::Info is required to determine the width and height of uploaded images.' => 'Image::Infoをインストールしないと、画像の幅と高さを検出できません。',
 
 ## lib/MT/Auth.pm
 	'Bad AuthenticationModule config \'[_1]\': [_2]' => 'AuthenticationModule([_1])の設定が正しくありません: [_2]',
@@ -2876,7 +2876,7 @@ use vars qw( @ISA %Lexicon );
 	'Not allowed to upload files' => 'ファイルをアップロードする権限がありません。',
 	'No filename provided' => 'ファイル名がありません。',
 	'Error writing uploaded file: [_1]' => 'アップロードされたファイルを書き込めませんでした: [_1]',
-	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Image::Sizeをインストールしないと、画像の幅と高さを検出できません。',
+	'Perl module Image::Info is required to determine width and height of uploaded images.' => 'Image::Infoをインストールしないと、画像の幅と高さを検出できません。',
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Templateメソッドは実装されていません。',
 
 ## mt-static/addons/Cloud.pack/js/cfg_config_directives.js

@@ -2054,13 +2054,17 @@ class Textile {
 	function image_size($file) {
 		if ($Have_ImageSize) {
 			if (file_exists($file)) {
-				#return Image::Size::imgsize($file);
+				#my $info = Image::Info::image_info($file);
+				#return if $info->{error};
+				#return ( $info->{width}, $info->{height}, uc $info->{file_ext} );
 			} else {
 				if ($docroot = $this->docroot) {
 					#require File::Spec;
 					#$fullpath = File::Spec->catfile($docroot, $file);
 					#if (-f $fullpath) {
-					#	return Image::Size::imgsize($fullpath);
+						#my $info = Image::Info::image_info($fullpath);
+						#return if $info->{error};
+						#return ( $info->{width}, $info->{height}, uc $info->{file_ext} );
 					#}
 				}
 			}

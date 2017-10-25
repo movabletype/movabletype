@@ -14,7 +14,6 @@ Movable Type requires the following applications:
 * Access to a database like MySQL;
 * The following Perl modules:
  * [DBI](http://search.cpan.org/dist/DBI)
- * [Image::Size](http://search.cpan.org/dist/Image-Size)
  * [CGI::Cookie](http://search.cpan.org/search?query=cgi-cookie&mode=module)
 
 Consult the CPAN documentation to learn how to [determine if a Perl module is already installed](http://www.cpan.org/misc/cpan-faq.html#How_installed_modules) and,

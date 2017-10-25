@@ -897,7 +897,7 @@ sub encoding {"iso-8859-1"}    # Latin-1
     "Error writing upload to '[_1]': [_2]" => "",
     "Invalid temp file name '[_1]'"        => "",
     "Error deleting '[_1]': [_2]"          => "",
-    "Perl module Image::Size is required to determine width and height of uploaded images."
+    "Perl module Image::Info is required to determine width and height of uploaded images."
         => "",
     "No blog ID"                          => "",
     "You do not have export permissions"  => "",
