@@ -536,6 +536,33 @@ sub set_content_type_load_context {
     1;
 }
 
+sub get_content_type_context {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $blog         = $ctx->stash('blog');
+    my $content_type = $ctx->stash('content_type');
+    my $blog_id      = $args->{blog_id} || $blog->id || '';
+
+    if ( my $unique_id = $args->{content_type} ) {
+        if ( !$content_type
+            || ( $content_type && $content_type->unique_id != $unique_id ) )
+        {
+            ($content_type)
+                = MT->model('content_type')
+                ->load( { unique_id => $unique_id } );
+            unless ($content_type) {
+                my $name = $unique_id;
+                ($content_type)
+                    = MT->model('content_type')
+                    ->load( { blog_id => $blog_id, name => $name } )
+                    or return $ctx->_no_content_type_error();
+            }
+        }
+    }
+
+    return $content_type;
+}
+
 sub compile_category_filter {
     my ( $ctx, $cat_expr, $cats, $param ) = @_;
 

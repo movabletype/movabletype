@@ -44,6 +44,7 @@ sub _hdlr_category_sets {
 
     my $blog         = $ctx->stash('blog');
     my $content_type = $ctx->stash('content_type');
+    my $blog_id      = $args->{blog_id} || $blog->id || '';
 
     my @category_sets;
     if ( my $set_id = $args->{id} ) {
@@ -51,18 +52,15 @@ sub _hdlr_category_sets {
             or return $ctx->_no_category_set_error();
         push @category_sets, $category_set;
     }
+    elsif ( my $name = $args->{name} ) {
+        my ($category_set)
+            = MT->model('category_set')
+            ->load( { blog_id => $blog_id, name => $name } )
+            or return $ctx->_no_category_set_error();
+        push @category_sets, $category_set;
+    }
     else {
-        if ( my $unique_id = $args->{content_type} ) {
-            if ( !$content_type
-                || ( $content_type && $content_type->unique_id != $unique_id )
-                )
-            {
-                ($content_type)
-                    = MT->model('content_type')
-                    ->load( { unique_id => $unique_id } )
-                    or return $ctx->_no_category_set_error();
-            }
-        }
+        $content_type = $ctx->get_content_type_context( $args, $cond );
         if ($content_type) {
             my @set_ids;
             foreach my $f ( @{ $content_type->fields } ) {
