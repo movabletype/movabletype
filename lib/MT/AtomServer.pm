@@ -1161,19 +1161,14 @@ sub _upload_to_asset {
     defined( my $bytes = $fmgr->put_data( $data, $local, 'upload' ) )
         or return $app->error( 500, "Error writing uploaded file" );
 
-    eval { require Image::Info; };
+    eval { require Image::Size; };
     return $app->error(
         500,
         MT->translate(
-            "Perl module Image::Info is required to determine the width and height of uploaded images."
+            "Perl module Image::Size is required to determine the width and height of uploaded images."
         )
     ) if $@;
-    my $info = Image::Info::image_info($local);
-    return $app->error(
-        500,
-        MT->translate("Unknown file format"),
-    ) if $info->{error};
-    my ( $w, $h, $id ) = ( $info->{width}, $info->{height}, uc $info->{file_ext} );
+    my ( $w, $h, $id ) = Image::Size::imgsize($local);
 
     require MT::Asset;
     my $asset_pkg = MT::Asset->handler_for_file($local);

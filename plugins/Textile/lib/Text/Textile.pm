@@ -2187,25 +2187,21 @@ sub apply_filters {
 }
 
 {
-    my $Have_ImageInfo = eval 'use Image::Info; 1' ? 1 : 0;
+    my $Have_ImageSize = eval 'use Image::Size; 1' ? 1 : 0;
 
     sub image_size {
         my $self = shift;
         my ($file) = @_;
-        if ($Have_ImageInfo) {
+        if ($Have_ImageSize) {
             if ( -f $file ) {
-                my $info = Image::Info::image_info($file);
-                return if $info->{error};
-                return ( $info->{width}, $info->{height}, uc $info->{file_ext} );
+                return Image::Size::imgsize($file);
             }
             else {
                 if ( my $docroot = $self->docroot ) {
                     require File::Spec;
                     my $fullpath = File::Spec->catfile( $docroot, $file );
                     if ( -f $fullpath ) {
-                        my $info = Image::Info::image_info($fullpath);
-                        return if $info->{error};
-                        return ( $info->{width}, $info->{height}, uc $info->{file_ext} );
+                        return Image::Size::imgsize($fullpath);
                     }
                 }
             }
@@ -2685,7 +2681,7 @@ rather than HTML entities.
 
 Gets or sets the physical file path to root of document files.
 This path is utilized when images are referenced and size
-calculations are needed (the Image::Info module is used to read
+calculations are needed (the Image::Size module is used to read
 the image dimensions).
 
 =head2 trim_spaces( [$trim] )
@@ -3028,7 +3024,7 @@ when they aren't part of a HTML entity already.
 =head2 image_size( $file )
 
 Returns the size for the image identified in $file. This
-method relies upon the Image::Info Perl package. If unavailable,
+method relies upon the Image::Size Perl package. If unavailable,
 image_size will return undef. Otherwise, the expected return
 value is a list of the width and height (in that order), in
 pixels.

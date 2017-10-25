@@ -76,14 +76,12 @@ sub image_height {
     my $height = $asset->meta( 'image_height', @_ );
     return $height if $height || @_;
 
-    eval { require Image::Info; };
+    eval { require Image::Size; };
     return undef if $@;
     if ( !-e $asset->file_path || !-r $asset->file_path ) {
         return undef;
     }
-    my $info = Image::Info::image_info( $asset->file_path );
-    return undef if $info->{error};
-    my $h = $info->{height};
+    my ( $w, $h, $id ) = Image::Size::imgsize( $asset->file_path );
     $asset->meta( 'image_height', $h );
     if ( $asset->id ) {
         $asset->save;
@@ -96,14 +94,12 @@ sub image_width {
     my $width = $asset->meta( 'image_width', @_ );
     return $width if $width || @_;
 
-    eval { require Image::Info; };
+    eval { require Image::Size; };
     return undef if $@;
     if ( !-e $asset->file_path || !-r $asset->file_path ) {
         return undef;
     }
-    my $info = Image::Info::image_info( $asset->file_path );
-    return undef if $info->{error};
-    my $w = $info->{width};
+    my ( $w, $h, $id ) = Image::Size::imgsize( $asset->file_path );
     $asset->meta( 'image_width', $w );
     if ( $asset->id ) {
         $asset->save;

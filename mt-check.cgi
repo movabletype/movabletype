@@ -444,10 +444,10 @@ my @CORE_REQ = (
             'CGI is required for all Movable Type application functionality.')
     ],
 
-    [   'Image::Info',
+    [   'Image::Size',
         0, 1,
         translate(
-            'Image::Info is required for file uploads (to determine the size of uploaded images in many different formats).'
+            'Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).'
         )
     ],
 

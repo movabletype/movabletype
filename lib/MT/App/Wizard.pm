@@ -354,8 +354,8 @@ sub init_core_registry {
             },
         },
         required_packages => {
-            'Image::Info' => {
-                link => 'http://search.cpan.org/dist/Image-Info',
+            'Image::Size' => {
+                link => 'http://search.cpan.org/dist/Image-Size',
                 label =>
                     'This module is required for file uploads (to determine the size of uploaded images in many different formats).',
             },
