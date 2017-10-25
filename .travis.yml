@@ -1,12 +1,22 @@
-sudo: required
 dist: precise
 
 language: perl
+perl:
+  - 5.18
 
 env:
   matrix:
-    - TEST_COMMAND="PERL_HASH_SEED=0 prove t/[0-9]*.t"
-    - TEST_COMMAND="PERL_HASH_SEED=0 prove t/[^0-9]*.t t/mt7 plugins/*/t && ./phpunit"
+    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
+    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - TEST_COMMAND="./phpunit"
+
+cache:
+  directories:
+    - ./local
 
 services:
   - memcached
@@ -30,36 +40,33 @@ addons:
     - unzip
 
 before_install:
-  # Use system Perl.
-  - perlbrew switch-off
-  - PATH=${PATH#/home/travis/perl5/perlbrew/bin:}
-
   # Use PHPUnit 4.8, because PHP version of Travis CI is 5.3.
   - wget -O phpunit https://phar.phpunit.de/phpunit-old.phar
   - chmod +x phpunit
 
 install:
-  # Update to install Math::GMP2.11.
-  - sudo cpanm --self-upgrade
+  - cpanm --notest App::cpm
+
+  - cpm install -g App::Prove::Plugin::MySQLPool
 
   # Tests fail with Perl 5.10.
-  - sudo cpanm --notest --quiet XML::Parser::PerlSAX
+  - cpm install XML::Parser::PerlSAX
 
   # Use to install patched Coro.
-  - sudo cpanm --notest --quiet LWP::Protocol::https
+  - cpanm --notest --quiet LWP::Protocol::https
 
   # Use patched Coro for Perl 5.22.
-  - sudo cpanm --notest --quiet https://github.com/rurban/Coro/archive/rel-6.48_01.tar.gz
+  - cpanm -l --notest --quiet https://github.com/rurban/Coro/archive/rel-6.48_01.tar.gz
 
   # Tests fail with Perl 5.8 and 5.10.
-  - sudo cpanm --notest --quiet Twiggy
+  - cpm install Twiggy
 
   # Cannot install Math::GMP 2.12 and 2.13 with Perl 5.8.
-  - sudo cpanm --notest --quiet Math::GMP@2.11
+  - cpm install Math::GMP@2.11
 
   # Instal CPAN modules.
   - cp ./t/cpanfile .
-  - travis_retry sudo cpanm --notest --quiet --installdeps .
+  - travis_retry cpm install
 
   # Build MT.
   #- SHELL=/bin/bash make me
@@ -70,13 +77,13 @@ before_script:
   - mysql -uroot -e "grant all privileges on mt_test.* to mt@localhost;"
 
   # Some tests need mt-config.cgi.
-  - cp ./t/mysql-test.cfg ./mt-config.cgi
+  #- cp ./t/mysql-test.cfg ./mt-config.cgi
 
   # Skip failed test.
   - rm plugins/MultiBlog/t/02.tags.t
 
 script:
-  - bash -c "${TEST_COMMAND}"
+  - $TEST_COMMAND
 
 notifications:
   slack:

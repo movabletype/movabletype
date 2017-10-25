@@ -73,6 +73,9 @@ sub write_config {
         }
     }
 
+    my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER} ||
+        ( eval { require Image::Magick } ? 'ImageMagick' : 'Imager' );
+
     # common directives
     my %config = (
         PluginPath => [
@@ -95,6 +98,7 @@ sub write_config {
         StaticFilePath      => 'TEST_ROOT/mt-static',
         EmailAddressMain    => 'mt@localhost',
         WeblogTemplatesPath => 'MT_HOME/default_templates',
+        ImageDriver         => $image_driver,
     );
 
     if ($extra) {
@@ -111,6 +115,7 @@ sub write_config {
             }
         }
     }
+
     $config{$_} = $connect_info{$_} for keys %connect_info;
 
     my $root = $self->{root};
