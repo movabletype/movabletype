@@ -543,18 +543,23 @@ sub get_content_type_context {
     my $content_type = $ctx->stash('content_type');
     my $blog_id      = $args->{blog_id} || $blog->id || '';
 
-    if ( my $unique_id = $args->{content_type} ) {
-        if ( !$content_type
-            || ( $content_type && $content_type->unique_id != $unique_id ) )
+    if ( my $str = $args->{content_type} ) {
+        if (!$content_type
+            || (   $content_type
+                && $content_type->unique_id != $str
+                && ($content_type->blog_id != $blog_id
+                    || (   $content_type->blog_id == $blog_id
+                        && $content_type->name ne $str )
+                )
+            )
+            )
         {
             ($content_type)
-                = MT->model('content_type')
-                ->load( { unique_id => $unique_id } );
+                = MT->model('content_type')->load( { unique_id => $str } );
             unless ($content_type) {
-                my $name = $unique_id;
                 ($content_type)
                     = MT->model('content_type')
-                    ->load( { blog_id => $blog_id, name => $name } )
+                    ->load( { blog_id => $blog_id, name => $str } )
                     or return $ctx->_no_content_type_error();
             }
         }
