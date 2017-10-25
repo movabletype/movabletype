@@ -1704,17 +1704,13 @@ sub newMediaObject {
 
     require File::Basename;
     my $local_basename = File::Basename::basename($local_file);
-    eval { require Image::Info; };
+    eval { require Image::Size; };
     die _fault(
         MT->translate(
-            "Perl module Image::Info is required to determine width and height of uploaded images."
+            "Perl module Image::Size is required to determine width and height of uploaded images."
         )
     ) if $@;
-    my $info = Image::Info::image_info($local_file);
-    die _fault(
-        MT->translate("Unknown file format")
-    ) if $info->{error};
-    my ( $w, $h, $id ) = ( $info->{width}, $info->{height}, uc $info->{file_ext} );
+    my ( $w, $h, $id ) = Image::Size::imgsize($local_file);
 
     require MT::Asset;
     my $asset_pkg = MT::Asset->handler_for_file($local_basename);

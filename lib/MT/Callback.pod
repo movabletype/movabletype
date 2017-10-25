@@ -566,17 +566,17 @@ Either "image" or "thumbnail" (for generated thumbnails).
 
 =item * Height
 
-The height of the image in pixels (available if I<Image::Info> module
+The height of the image in pixels (available if I<Image::Size> module
 is present).
 
 =item * Width
 
-The width of the image in pixels (available if I<Image::Info> module
+The width of the image in pixels (available if I<Image::Size> module
 is present).
 
 =item * ImageType
 
-The image identifier as reported by the I<Image::Info> module. Typically,
+The image identifier as reported by the I<Image::Size> module. Typically,
 'GIF', 'JPG' or 'PNG'.
 
 =item * Blog

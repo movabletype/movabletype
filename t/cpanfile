@@ -4,6 +4,7 @@
 
 # These modules are installed in extlib directory.
 #requires 'CGI';
+#requires 'Image::Size';
 #requires 'CGI::Cookie';
 #requires 'LWP::UserAgent';
 

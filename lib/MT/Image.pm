@@ -142,24 +142,23 @@ sub get_image_info {
     my $class  = shift;
     my %params = @_;
 
-    ## Use Image::Info to check if the uploaded file is an image, and if so,
+    ## Use Image::Size to check if the uploaded file is an image, and if so,
     ## record additional image info (width, height).
-    eval { require Image::Info; };
+    eval { require Image::Size; };
     return $class->error(
         MT->translate(
-                  "Perl module Image::Info is required to determine "
+                  "Perl module Image::Size is required to determine "
                 . "the width and height of uploaded images."
         )
     ) if $@;
 
     if ( my $fh = $params{Fh} ) {
-        my $info = Image::Info::image_info($fh);
         seek $fh, 0, 0;
-        return ( $info->{width}, $info->{height}, uc $info->{file_ext} );
+        Image::Size::imgsize($fh);
     }
     elsif ( my $filename = $params{Filename} ) {
-        my $info = Image::Info::image_info($filename);
-        return ( $info->{width}, $info->{height}, uc $info->{file_ext} );
+        local $Image::Size::NO_CACHE = 1;
+        Image::Size::imgsize($filename);
     }
 }
 
@@ -484,7 +483,7 @@ The height of the uploaded image, in pixels.
 
 =item * $id
 
-A string identifying the type of image file (returned by L<Image::Info>,
+A string identifying the type of image file (returned by L<Image::Size>,
 so typically "GIF", "JPG", "PNG").
 
 =item * $write_coderef

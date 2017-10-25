@@ -160,7 +160,7 @@ use vars qw( @ISA %Lexicon );
 	q{You're ready to go!} => q{Sie können sofort anfangen!},
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.' => 'Alle erforderlichen Module sind auf Ihrem Server installiert. Beginnen Sie jetzt mit der Installation von Movable Type.',
 	'CGI is required for all Movable Type application functionality.' => 'CGI ist für sämtliche Movable Type-Funktionen erforderlich.',
-	'Image::Info is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Image::Info ist zum Hochladen von Dateien erforderlich (um die Größe hochgeladener Bilder bestimmen zu können)',
+	'Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Image::Size ist zum Hochladen von Dateien erforderlich (um die Größe hochgeladener Bilder bestimmen zu können)',
 	'File::Spec is required to work with file system path information on all supported operating systems.' => 'File::Spec ist auf allen unterstützten Betriebssystem ',
 	'CGI::Cookie is required for cookie authentication.' => 'CGI::Cookie ist zur Nutzung der Cookie-Authentifizierung erforderlich.',
 	'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.' => 'LWP::UserAgent ist zur Erzeugung von Movable Type-Konfigurationsdateien mit dem Konfigurationsassistenten erforderlich.',
@@ -1032,7 +1032,7 @@ use vars qw( @ISA %Lexicon );
 	'\'[_1]\' is not allowed to upload by system settings.: [_2]' => '\'[_1]\' hat laut System-Einstellungen keine Upload-Berechtigung: [_2]',
 	'Invalid image file format.' => 'Ungültiges Bildformat.',
 	'Cannot make path \'[_1]\': [_2]' => 'Kann Pfad &#8222;[_1]&#8220; nicht anlegen: [_2]',
-	'Perl module Image::Info is required to determine the width and height of uploaded images.' => 'Zur Bestimmung der Höhe und Breite hochgeladener Bilder ist das Perl-Modul Image::Info erforderlich.',
+	'Perl module Image::Size is required to determine the width and height of uploaded images.' => 'Zur Bestimmung der Höhe und Breite hochgeladener Bilder ist das Perl-Modul Image::Size erforderlich.',
 
 ## lib/MT/Auth/MT.pm
 	'Missing required module' => 'Ein erforderliches Modul fehlt',
@@ -2823,7 +2823,7 @@ use vars qw( @ISA %Lexicon );
 	'Not allowed to upload files' => 'Darf Dateien nicht hochladen',
 	'No filename provided' => 'Kein Dateiname angegeben',
 	'Error writing uploaded file: [_1]' => 'Fehler beim Schreiben der hochgeladenen Datei: [_1]',
-	'Perl module Image::Info is required to determine width and height of uploaded images.' => 'Zur Bestimmung von Höhe und Breite hochgeladener Bilddateien ist das Perl-Modul Image::Info erforderlich.',
+	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Zur Bestimmung von Höhe und Breite hochgeladener Bilddateien ist das Perl-Modul Image::Size erforderlich.',
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Funktionen zum Zugriff auf Vorlagen sind auf Grund von Unterschieden zwischen der Blogger-API und der MovableType-API nicht implementiert.',
 
 ## mt-static/addons/Sync.pack/js/cms.js

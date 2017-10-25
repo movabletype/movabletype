@@ -20,16 +20,11 @@ plan tests => 71;
 use MT::Test qw(:db :data);
 
 use Image::ExifTool;
-use Image::Info;
+use Image::Size;
+$Image::Size::NO_CACHE = 1;
 
 use MT;
 use MT::Asset;
-
-sub imgsize {
-    my $info = Image::Info::image_info(@_);
-    return if $info->{error};
-    return ( $info->{width}, $info->{height}, uc $info->{file_ext} );
-}
 
 my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT', 'Is MT' );
