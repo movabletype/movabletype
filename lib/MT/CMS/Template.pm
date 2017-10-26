@@ -942,6 +942,55 @@ sub edit {
  #    { show_actions => 0, hide_pager => 1 }
  #);
     }
+
+    # Content Type Selector
+    my @content_types
+        = MT->model('content_type')->load( { blog_id => $blog_id } );
+
+    my @ct_selects = ();
+    my $ct_data    = {};
+    my $cf_selects = {};
+    my $cf_data    = {};
+    foreach my $ct (@content_types) {
+
+        # Content Type
+        push @ct_selects,
+            {
+            id       => $ct->id,
+            label    => $ct->name,
+            selected => ( $obj->content_type_id == $ct->id ? 1 : 0 )
+            };
+        $ct_data->{ $ct->id } = {
+            id        => $ct->id,
+            label     => $ct->name,
+            unique_id => $ct->unique_id,
+        };
+
+        # Content Field
+        my $fields = $ct->fields;
+        my @cfs = MT::ContentField->load( { content_type_id => $ct->id } );
+        foreach my $cf (@cfs) {
+            my ($field) = grep { $_->{id} == $cf->id } @{$fields};
+            my $label = $field->{options}{label};
+            push @{ $cf_selects->{ $ct->id } },
+                { id => $cf->id, label => $cf->name };
+            my $content_field_types = $app->registry('content_field_types');
+            my $type_label = $content_field_types->{ $cf->type }->{label};
+            $type_label = $type_label->()
+                if 'CODE' eq ref $type_label;
+            $cf_data->{ $cf->id } = {
+                id        => $cf->id,
+                label     => $label,
+                unique_id => $cf->unique_id,
+                type      => $type_label,
+            };
+        }
+    }
+    $param->{ct_selects} = \@ct_selects;
+    $param->{ct_data}    = MT::Util::to_json($ct_data);
+    $param->{cf_selects} = MT::Util::to_json($cf_selects);
+    $param->{cf_data}    = MT::Util::to_json($cf_data);
+
     1;
 }
 
@@ -3483,49 +3532,6 @@ sub save_template_prefs {
         $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
         );
     return $app->json_result( { success => 1 } );
-}
-
-sub get_content_type_info {
-    my ($app) = @_;
-    my $cfg   = $app->config;
-    my $blog  = $app->blog;
-    my $param = {};
-
-    $app->validate_magic
-        or return $app->errtrans("Invalid request.");
-
-    my $ct_id = $app->param('ct_id');
-    my $ct    = MT::ContentType->load($ct_id);
-
-    my $ct_data = { unique_id => $ct->unique_id };
-
-    my $fields     = $ct->fields;
-    my @cfs        = MT::ContentField->load( { content_type_id => $ct_id } );
-    my @cf_selects = ();
-    my $cf_data    = {};
-    foreach my $cf (@cfs) {
-        my ($field) = grep { $_->{id} == $cf->id } @{$fields};
-        my $label = $field->{options}{label};
-        push @cf_selects, { id => $cf->id, label => $cf->name };
-        my $content_field_types = $app->registry('content_field_types');
-        my $type_label = $content_field_types->{ $cf->type }->{label};
-        $type_label = $type_label->()
-            if 'CODE' eq ref $type_label;
-        $cf_data->{ $cf->id } = {
-            id        => $cf->id,
-            label     => $label,
-            unique_id => $cf->unique_id,
-            type      => $type_label,
-        };
-    }
-
-    return $app->json_result(
-        {   success      => 1,
-            content_type => $ct_data,
-            cf_selects   => \@cf_selects,
-            cf_data      => $cf_data,
-        }
-    );
 }
 
 1;

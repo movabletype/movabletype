@@ -397,8 +397,6 @@ sub core_methods {
         'start_import_content' => "${pkg}ContentData::start_import",
         'start_export_content' => "${pkg}ContentData::start_export",
 
-        'get_content_type_info' => "${pkg}Template::get_content_type_info",
-
     };
 }
 

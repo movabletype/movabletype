@@ -266,11 +266,33 @@
 </mtapp:widget>
 </mt:if>
 
-<mt:if name="type" like="^ct">
 <mtapp:widget
    id="content-type-info"
    hidden="1"
    label="<__trans phrase="Content Type">">
+
+    <dl id="content_type_sel-field" class="first-child">
+      <dt for="content_type_sel" class="sr-only first-child"><__trans phrase="Select Content Type"></label>
+      <dd>
+      <select name="content_type_sel" id="content_type_sel" tabindex="13" class="form-control">
+      <mt:loop name="ct_selects">
+      <option value="<mt:var name="id">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+      </mt:loop>
+      </select>
+      </dd>
+    </dl>
+
+    <dl id="ct_label-field">
+      <dt for="ct_label" class="first-child"><__trans phrase="Label"></label>
+      <dd id="ct_label">
+      </dd>
+    </dl>
+
+    <dl id="ct_id-field">
+      <dt for="ct_id" class="first-child"><__trans phrase="ID"></label>
+      <dd id="ct_id">
+      </dd>
+    </dl>
 
     <dl id="ct_unique_id-field" class="first-child">
       <dt class="first-child"><__trans phrase="Unique ID"></dt>
@@ -338,7 +360,7 @@
     </dl>
 
 </mtapp:widget>
-<mt:else>
+<mt:ignore>
 <mtapp:widget
    id="tag-list"
    hidden="1"
@@ -355,7 +377,7 @@
   <div id="badtag-list-inner">
   </div>
 </mtapp:widget>
-</mt:if>
+</mt:ignore>
 
 <$MTApp:PageActions from="edit_template"$>
 </mt:setvarblock>
@@ -433,94 +455,6 @@ function setDirty () {
 function clearDirty () {
     log.warn('deprecated function clearDirty(), call app.clearDirty instead');
     app.clearDirty();
-}
-
-var tag_docs = <tmpl_var name="tag_docs" to_json="1">;
-
-function documentTags( useTextInput ) {
-    // scan text of editor for tags
-    var str;
-    var area = DOM.getElement('text');
-    str = area.value;
-
-    if ( !defined( str ) )
-        str = '';
-
-    // clear any ignore blocks
-    var re = new RegExp('(<m' + 't:?ignore([^>])*?>)[\\S\\s]*?</mt:?ignore>',
-        'gi');
-    str = str.replace(re, '$1');
-    // scan template string for MT tags and build
-    // a hash of unique tag names
-    var tags = {};
-    var matches = str.match(/<\$?[mM][tT]:?[^\s>]+/g);
-    if (matches) {
-        for (var i = 0; i < matches.length; i++ ) {
-            var orig_tag = matches[i];
-            if (orig_tag.match(/^<\$/)) {
-                if (!orig_tag.match(/\$$/))
-                    orig_tag += '$';
-            }
-            orig_tag = orig_tag.replace(/^</, '&lt;');
-            orig_tag += '&gt;';
-            var tag = matches[i].replace(/^<\$?[mM][tT]:?/, '');
-            tag = tag.replace(/\$$/, '');
-            tags[dirify(tag.toLowerCase())] = orig_tag;
-        }
-    }
-
-    // construct a set of bullets for all discovered tags
-    // separate into valid/invalid lists
-    var sorted_tags = [];
-    for ( var t in tags ) {
-        if ( !tags.hasOwnProperty( t ) )
-            continue;
-        sorted_tags.push(t);
-    }
-    sorted_tags.sort();
-    var list = '';
-    var bad_list = '';
-    for ( var i = 0; i < sorted_tags.length; i++ ) {
-        var t = sorted_tags[i];
-        var url = tagDocURL( t );
-        var tag_name = tags[t];
-        if (!url) {
-            bad_list = bad_list + "<li>" + tag_name + "</li>";
-            continue;
-        }
-        var link = "<a target=\"mt_docs\" href=\"" + url + "\">" + tag_name + "</a>";
-        list = list + "<li>" + link + "</li>";
-    }
-
-    // if we found tags to list, display the tag-list widget, otherwise
-    // hide it
-    if (list != '') {
-        list = '<ul class="list-unstyled">' + list + '</ul>';
-        DOM.getElement("tag-list-inner").innerHTML = list;
-        jQuery('#tag-list').show();
-    } else {
-        jQuery('#tag-list').hide();
-    }
-    // if we found invalid tags, display them in badtag-list, otherwise
-    // hide it
-    if (bad_list != '') {
-        bad_list = '<ul class="list-unstyled">' + bad_list + '</ul>';
-        DOM.getElement("badtag-list-inner").innerHTML = bad_list;
-        jQuery('#badtag-list').show();
-    } else {
-        jQuery('#badtag-list').hide();
-    }
-}
-
-function tagDocURL(name) {
-    var re = new RegExp('(?:^|,)' + name + '\\??(?:,|$)', 'i');
-    for ( var u in tag_docs ) {
-        if ( !tag_docs.hasOwnProperty(u) ) continue;
-        var m;
-        if (m = tag_docs[u].match(re))
-            return u.replace(/\%t/, name);
-    }
-    return;
 }
 
 function setRebuild(f) {
@@ -1077,16 +1011,10 @@ MT.App = new Class( MT.App, {
 
     initComponents: function() {
         arguments.callee.applySuper( this, arguments );
-        <mt:unless name="type" like="^ct">
-        documentTags( true );
-        </mt:unless>
     },
 
     autoSave: function() {
         arguments.callee.applySuper( this, arguments );
-        <mt:unless name="type" like="^ct">
-        documentTags();
-        </mt:unless>
     }
 
 } );
@@ -1304,52 +1232,44 @@ function saveTemplatePrefs( sync ) {
     jQuery("#add_map").click(function(){
       addMap();
     });
-    <mt:if name="type" like="^ct">
-    jQuery("#content_type_id").change(function(){
-      getContentTypeInfo();
-    });
-    function getContentTypeInfo() {
-      var ct_id = jQuery("#content_type_id").val();
-      if (!ct_id) return;
-      jQuery.ajax({
-        type: 'POST',
-        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-        async: true,
-        url: ScriptURI,
-        dataType: 'json',
-        data: {
-          __mode: 'get_content_type_info',
-          magic_token: '<mt:var name="magic_token">',
-          blog_id: '<mt:var name="blog_id">',
-          id: '<mt:var name="id">',
-          ct_id: ct_id
-        }
-      }).done(
-        function(data) {
-          jQuery("#ct_unique_id").val(data.result.content_type.unique_id);
-          jQuery("#content_field_sel").empty();
-          jQuery.each(data.result.cf_selects, function( index, value ) {
-            jQuery("#content_field_sel").append('<option value="' + value.id + '">' + value.label + '</option>');
-          });
-          var cf_data = data.result.cf_data;
-          getContentFieldInfo(cf_data);
-          jQuery("#content_field_sel").off('change').change(function(){
-            getContentFieldInfo(cf_data);
-          });
-        }
-      ).fail(
-        function(xhr, status, errorThrown) {
-          alert(status+' '+errorThrown);
-        }
-      );
+
+    function setContentTypeInfo() {
+      var ct_data = <mt:var name="ct_data">;
+      var id = jQuery("#content_type_sel").val();
+      jQuery("#ct_label").text(ct_data[id].label);
+      jQuery("#ct_id").text(ct_data[id].id);
+      jQuery("#ct_unique_id").val(ct_data[id].unique_id);
+      setContentFieldSelect(id);
     }
-    function getContentFieldInfo(cf_data) {
+
+    function setContentFieldSelect(id) {
+      var cf_selects = <mt:var name="cf_selects">;
+      jQuery("#content_field_sel").empty();
+      jQuery.each( cf_selects[id], function( index, cf_select ) {
+        var option = jQuery("<option/>").attr("value", cf_select.id).text(cf_select.label);
+        jQuery("#content_field_sel").append(option);
+      });
+      setContentFieldInfo();
+    }
+
+    function setContentFieldInfo() {
+      var cf_data = <mt:var name="cf_data">;
       var id = jQuery("#content_field_sel").val();
       jQuery("#cf_label").text(cf_data[id].label);
       jQuery("#cf_id").text(cf_data[id].id);
       jQuery("#cf_unique_id").val(cf_data[id].unique_id);
       jQuery("#cf_type").text(cf_data[id].type);
     }
+
+    jQuery("#content_type_id").change(function(){
+      setContentTypeInfo();
+    });
+    jQuery("#content_type_sel").change(function(){
+      setContentTypeInfo();
+    });
+    jQuery("#content_field_sel").change(function(){
+      setContentFieldInfo();
+    });
     jQuery("#copy_ct_unique_id").click(function(){
       jQuery('#ct_unique_id').select();
       document.execCommand('copy');
@@ -1358,7 +1278,17 @@ function saveTemplatePrefs( sync ) {
       jQuery('#cf_unique_id').select();
       document.execCommand('copy');
     });
-    getContentTypeInfo();
+    jQuery('button.mx-1').click(function() {
+        var action = jQuery('select[name=plugin_action_selector]').val();
+        if ( action != 0 && action != '' ) {
+            jQuery('form#template-listing-form input[name=type]').val('');
+            jQuery('form#template-listing-form').off('submit').submit();
+            return true;
+        }
+    });
+
+    setContentTypeInfo();
+
     <mt:if name="archive_types">
     jQuery("#new_archive_type").change(function(){
       jQuery("#archive_file_sel").css("display", "block");
@@ -1449,16 +1379,6 @@ function saveTemplatePrefs( sync ) {
     getDefaultArchiveTemplates();
     selectArchiveFile(jQuery("#archive_file_sel"));
     </mt:if>
-    </mt:if>
-
-    jQuery('button.mx-1').click(function() {
-        var action = jQuery('select[name=plugin_action_selector]').val();
-        if ( action != 0 && action != '' ) {
-            jQuery('form#template-listing-form input[name=type]').val('');
-            jQuery('form#template-listing-form').off('submit').submit();
-            return true;
-        }
-    });
 
 </mt:setvarblock>
 
