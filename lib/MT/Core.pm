@@ -2768,25 +2768,22 @@ sub load_core_permissions {
             }
         },
         'blog.administer_website' => {
-            'group'        => 'blog_admin',
-            'label'        => 'Manage Website',
-            'order'        => 100,
-            'display'      => 0,
-            'inherit_from' => ['blog.administer_blog'],
+            'group'   => 'blog_admin',
+            'label'   => 'Manage Website',
+            'order'   => 100,
+            'display' => 0,
         },
         'blog.administer_blog' => {
-            'group'        => 'blog_admin',
-            'label'        => 'Manage Blog',
-            'order'        => 100,
-            'display'      => 0,
-            'inherit_from' => ['blog.administer_site'],
+            'group'   => 'blog_admin',
+            'label'   => 'Manage Blog',
+            'order'   => 100,
+            'display' => 0,
         },
         'blog.manage_member_blogs' => {
-            'group'        => 'blog_admin',
-            'label'        => 'Manage Website with Blogs',
-            'order'        => 100,
-            'display'      => 0,
-            'inherit_from' => ['blog.administer_website'],
+            'group'   => 'blog_admin',
+            'label'   => 'Manage Website with Blogs',
+            'order'   => 100,
+            'display' => 0,
         },
         'blog.create_site' => {
             'group'            => 'blog_admin',
@@ -3418,11 +3415,10 @@ sub load_core_permissions {
 
         },
         'system.create_website' => {
-            'group'            => 'sys_admin',
-            'label'            => 'Create Websites',
-            'order'            => 700,
-            'inherit_from'     => ['system.create_site'],
-            'display'          => 0,
+            'group'   => 'sys_admin',
+            'label'   => 'Create Websites',
+            'order'   => 700,
+            'display' => 0,
         },
         'system.manage_users_groups' => {
             'group'            => 'sys_admin',
