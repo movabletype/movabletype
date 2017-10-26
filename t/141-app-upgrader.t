@@ -17,7 +17,6 @@ use Test::More;
 my ( $app, $out );
 
 subtest 'Upgrade from MT4 to MT7' => sub {
-    plan 'skip_all';
     MT::Test->init_db;
     MT::Website->remove_all;
 
