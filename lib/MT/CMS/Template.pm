@@ -958,7 +958,7 @@ sub edit {
             {
             id       => $ct->id,
             label    => $ct->name,
-            selected => ( $obj->content_type_id == $ct->id ? 1 : 0 )
+            selected => ( $obj && $obj->content_type_id == $ct->id ? 1 : 0 )
             };
         $ct_data->{ $ct->id } = {
             id        => $ct->id,
