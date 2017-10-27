@@ -250,7 +250,6 @@ lang-it
 ^tools/write-default-templates
 
 # Plugins
-#plugins/StyleCatcher
 #plugins/WidgetManager
 #plugins/feeds-app-lite
 plugins/feeds-app-lite/tools/
