@@ -18,6 +18,10 @@ sub archive_label {
     return MT->translate('CATEGORY-WEEKLY_ADV');
 }
 
+sub order {
+    return 140;
+}
+
 sub default_archive_templates {
     return [
         {   label    => 'category/sub-category/yyyy/mm/day-week/index.html',

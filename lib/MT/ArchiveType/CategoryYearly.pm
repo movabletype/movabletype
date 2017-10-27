@@ -18,6 +18,10 @@ sub archive_label {
     return MT->translate('CATEGORY-YEARLY_ADV');
 }
 
+sub order {
+    return 160;
+}
+
 sub default_archive_templates {
     return [
         {   label    => 'category/sub-category/yyyy/index.html',

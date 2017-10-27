@@ -19,6 +19,10 @@ sub archive_label {
     return MT->translate("INDIVIDUAL_ADV");
 }
 
+sub order {
+    return 10;
+}
+
 sub template_params {
     return {
         entry_archive     => 1,

@@ -4204,66 +4204,13 @@ sub user_blog_prefs {
 sub archive_type_sorter {
     my ( $a, $b ) = @_;
 
-    # Logical ordering for exact archive types
-    my %order = (
-        'Individual' => 1,
-        'Page'       => 2,
-        'Daily'      => 3,
-        'Weekly'     => 4,
-        'Monthly'    => 5,
-        'Yearly'     => 6
-    );
-    my $ord_a          = $order{ $a->{archive_type} };
-    my $ord_b          = $order{ $b->{archive_type} };
+    my $order_a = MT->publisher->archiver( $a->{archive_type} )->order();
+    my $order_b = MT->publisher->archiver( $b->{archive_type} )->order();
+
     my $a_is_preferred = $a->{map_is_preferred} || 0;
     my $b_is_preferred = $b->{map_is_preferred} || 0;
 
-    if ( defined($ord_a) && defined($ord_b) ) {
-        return $ord_a <=> $ord_b
-            || $b_is_preferred <=> $a_is_preferred;
-    }
-
-    # in the event a custom archive type includes the keyword 'Weekly', etc.
-    # order it based on the mapping above.
-    unless ($ord_a) {
-        if ( ( my $best ) = grep { $a->{archive_type} =~ m/$_/ } keys %order )
-        {
-            $ord_a = $order{$best};
-        }
-    }
-    unless ($ord_b) {
-        if ( ( my $best ) = grep { $b->{archive_type} =~ m/$_/ } keys %order )
-        {
-            $ord_b = $order{$best};
-        }
-    }
-
-    # Unknown archive types will follow this pattern (typically)
-    #    Foo
-    #    Foo-Bar
-    # ie, Tag, Tag-Daily, etc.
-    # So the archive_type is taken and we'll strip off the second
-    # piece, if it matches one of our keys in %order, the sort key
-    # becomes Tagnn (where nn is a zero-padded weight, selected from
-    # the order hash). Tag-Daily would become Tag02.
-    # 'Tag-Rank' would just become TagRank and would sort underneath 'Tag'
-    # and other 'Tagnn' keys.
-    my $str_a = $a->{archive_type};
-    if ( $str_a =~ s/-(.*)$// ) {
-        $str_a .= $ord_a ? sprintf( "%02d", $ord_a ) : $1;
-    }
-    else {
-        $str_a = "00" . $str_a if defined($ord_a);
-    }
-
-    my $str_b = $b->{archive_type};
-    if ( $str_b =~ s/-(.*)$// ) {
-        $str_b .= $ord_b ? sprintf( "%02d", $ord_b ) : $1;
-    }
-    else {
-        $str_b = "00" . $str_b if defined($ord_b);
-    }
-    return $str_a cmp $str_b
+    return $order_a <=> $order_b
         || $b_is_preferred <=> $a_is_preferred;
 }
 

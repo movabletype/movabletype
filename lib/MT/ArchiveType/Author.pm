@@ -19,6 +19,10 @@ sub archive_label {
     return MT->translate('AUTHOR_ADV');
 }
 
+sub order {
+    return 70;
+}
+
 sub default_archive_templates {
     return [
         {   label    => 'author/author-basename/index.html',

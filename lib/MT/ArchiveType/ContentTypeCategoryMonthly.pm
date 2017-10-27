@@ -20,6 +20,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-CATEGORY-MONTHLY_ADV");
 }
 
+sub order {
+    return 300;
+}
+
 sub dynamic_template {
     return 'category/<$MTCategoryID$>/<$MTArchiveDate format="%Y%m"$>';
 }

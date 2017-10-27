@@ -18,6 +18,10 @@ sub archive_label {
     return MT->translate('CATEGORY-DAILY_ADV');
 }
 
+sub order {
+    return 130;
+}
+
 sub default_archive_templates {
     return [
         {   label    => 'category/sub-category/yyyy/mm/dd/index.html',

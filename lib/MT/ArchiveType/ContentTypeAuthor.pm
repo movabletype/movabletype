@@ -19,6 +19,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-AUTHOR_ADV");
 }
 
+sub order {
+    return 220;
+}
+
 sub dynamic_template {
     return 'author/<$MTContentAuthorID$>/<$MTContentID$>';
 }

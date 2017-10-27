@@ -17,6 +17,10 @@ sub archive_label {
     return MT->translate("PAGE_ADV");
 }
 
+sub order {
+    return 20;
+}
+
 # archive_title proved by MT::ArchiveType::Individual
 sub dynamic_template {
     return 'page/<$MTEntryID$>';

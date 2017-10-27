@@ -18,6 +18,10 @@ sub archive_label {
     return MT->translate("WEEKLY_ADV");
 }
 
+sub order {
+    return 40;
+}
+
 sub dynamic_template {
     return 'archives/week/<$MTArchiveDate format="%Y%m%d"$>';
 }

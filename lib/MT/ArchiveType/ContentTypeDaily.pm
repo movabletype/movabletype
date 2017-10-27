@@ -19,6 +19,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-DAILY_ADV");
 }
 
+sub order {
+    return 180;
+}
+
 sub dynamic_template {
     return 'archives/<$MTArchiveDate format="%Y%m%d"$>';
 }
