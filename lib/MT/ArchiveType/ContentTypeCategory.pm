@@ -19,6 +19,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-CATEGORY_ADV");
 }
 
+sub order {
+    return 270;
+}
+
 sub dynamic_template {
     return 'category/<$MTCategoryID$>';
 }

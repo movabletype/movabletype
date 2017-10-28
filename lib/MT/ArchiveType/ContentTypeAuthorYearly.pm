@@ -20,6 +20,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-AUTHOR-YEARLY_ADV");
 }
 
+sub order {
+    return 260;
+}
+
 sub dynamic_template {
     return 'author/<$MTContentAuthorID$>/<$MTArchiveDate format="%Y"$>';
 }

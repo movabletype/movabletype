@@ -18,6 +18,10 @@ sub archive_label {
     return MT->translate("MONTHLY_ADV");
 }
 
+sub order {
+    return 50;
+}
+
 sub dynamic_template {
     'archives/<$MTArchiveDate format="%Y%m"$>';
 }

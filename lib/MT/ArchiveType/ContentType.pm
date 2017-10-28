@@ -19,6 +19,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE_ADV");
 }
 
+sub order {
+    return 170;
+}
+
 sub template_params {
     return {
         archive_class       => "contenttype-archive",

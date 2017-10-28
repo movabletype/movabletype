@@ -6907,48 +6907,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Facebook Application Secret' => 'Secreto de la aplicación de Facebook',
 	'The secret for the Facebook application associated with your blog.' => 'El secreto de la aplicación de Facebook asociada con su blog.',
 
-## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
-	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Ocurrió un error procesando [_1]. Se utilizó la versión previa de la fuente. Se devolvió el estado HTTP [_2].',
-	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Ocurrió un error procesando [_1]. La versión anterior de la fuente no estaba disponible. Se devolvió el estado HTTP [_2].',
-
-## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
-	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' es un argumento necesario de [_2]',
-	'MT[_1] was not used in the proper context.' => 'MT[_1] no se está utilizando en el contexto adecuado.',
-
-## plugins/feeds-app-lite/mt-feeds.pl
-	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Lite le ayuda a republicar fuentes de sindicación en los blogs. ¿Quiere hacer más cosas con la sindicación en Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Actualícese a Feeds.App</a>.',
-	'Create a Feed Widget' => 'Crear un widget de fuente',
-
-## plugins/feeds-app-lite/tmpl/config.tmpl
-	'Feeds.App Lite Widget Creator' => 'Creador de widgets de Feeds.App Lite',
-	'Configure feed widget settings' => 'Configurar widgets de sindicación',
-	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Teclee un título para su widget. Esto también se mostrará como título de la fuente en el blog.',
-	'[_1] Feed Widget' => 'Widget de sindicación [_1]',
-	'Select the maximum number of entries to display.' => 'Seleccione el máximo número de entradas a mostrar.',
-	'3' => '3',
-	'5' => '5',
-	'10' => '10',
-	'All' => 'Todos',
-
-## plugins/feeds-app-lite/tmpl/msg.tmpl
-	'No feeds could be discovered using [_1]' => 'No se descubrieron fuentes usando [_1]',
-	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{Ocurrió un error procesando [_1]. Compruebe <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">aquí</a> los detalles e inténtelo de nuevo.},
-	'A widget named <strong>[_1]</strong> has been created.' => 'Se creó un widget titulado <strong>[_1]</strong>.',
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{Ahora puede <a href="javascript:void(0)" onclick="closeDialog('[_2]')">editar &ldquo;[_1]&rdquo;</a> o incluir el widget su blog utilizando <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> o la siguiente etiqueta MTInclude:},
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{Ahora puede <a href="javascript:void(0)" onclick="closeDialog('[_2]')">editar &ldquo;[_1]&rdquo;</a> o incluir el widget en su blog utilizando la siguiente etiqueta MTInclude:},
-	'Create Another' => 'Crear otro',
-
-## plugins/feeds-app-lite/tmpl/select.tmpl
-	'Multiple feeds were found' => 'Se encontraron múltiples fuentes',
-	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => 'Seleccione la fuente que desea usar. <em>Feeds.App Lite soporta las fuentes con solo texto RSS 1.0, 2.0 y Atom.',
-	'URI' => 'URI',
-
-## plugins/feeds-app-lite/tmpl/start.tmpl
-	'You must enter a feed or site URL to proceed' => 'Debe introducir una fuente o una URL de un sitio para proceder.',
-	'Create a widget from a feed' => 'Crear un widget de una fuente',
-	'Feed or Site URL' => 'URL del sitio o fuente',
-	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'Introduzca la URL de una fuente de sindicación, o la URL de un sitio que tenga una fuente.',
-
 ## plugins/FormattedText/config.yaml
 	'Manage boilerplate.' => 'Administrar texto con formato.',
 
@@ -7259,59 +7217,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Incoming feedback can be monitored for specific keywords, domain names, and patterns. Matches can be held for moderation or scored as junk. Additionally, junk scores for these matches can be customized.' => 'Se puede monitorizar las respuestas entrantes por palabras claves, dominios y patrones concretos. Las coincidencias serán retenidas para su moderación o se puntuarán como basura. Además, se puede personalizar las puntuaciones de basura de estas coincidencias.',
 	'Keywords to Moderate' => 'Palabras clave para moderar',
 	'Keywords to Junk' => 'Palabras clave para marcar como basura',
-
-## plugins/StyleCatcher/config.yaml
-	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcher le permite navegar fácilmente por los estilos y aplicarlos en el blog con un par de clics.',
-	'MT 4 Style Library' => 'Librería de estilos de MT 4',
-	'A collection of styles compatible with Movable Type 4 default templates.' => 'Una colección de estilos compatible con las plantillas predefinidas de Movable Type.',
-	'Styles' => 'Estilos',
-	'Moving current style to blog_meta for website...' => 'Migrando el estilo actual a blog_meta para el sitio web...',
-	'Moving current style to blog_meta for blog...' => 'Migrando el estilo actual a blog_meta para el blog...',
-
-## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
-	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'No se encontró el directorio mt-static. Por favor, configure el \'StaticFilePath\' para continuar.',
-	'Permission Denied.' => 'Permiso denegado.',
-	'Successfully applied new theme selection.' => 'Se aplicó con éxito la nueva selección de estilo.',
-
-## plugins/StyleCatcher/lib/StyleCatcher/Library/Default.pm
-	'Invalid URL: [_1]' => 'URL no válida: [_1]',
-	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'No se pudo crear el directorio [_1] - Compruebe que el servidor web puede escribir en la carpeta \'themes\'.',
-
-## plugins/StyleCatcher/lib/StyleCatcher/Library/Local.pm
-	'Failed to load StyleCatcher Library: [_1]' => 'Fallí al cargar la librería de StyleCatcher: [_1]',
-
-## plugins/StyleCatcher/lib/StyleCatcher/Util.pm
-	'(Untitled)' => '(sin título)',
-
-## plugins/StyleCatcher/tmpl/view.tmpl
-	'Select a [_1] Style' => 'Seleccionar un estilo de [_1]',
-	'3-Columns, Wide, Thin, Thin' => '3 columnas, ancha, delgada, delgada',
-	'3-Columns, Thin, Wide, Thin' => '3 columnas, delgada, ancha, delgada',
-	'3-Columns, Thin, Thin, Wide' => '3 columnas, delgada, delgada, ancha',
-	'2-Columns, Thin, Wide' => '2 columnas, delgada, ancha',
-	'2-Columns, Wide, Thin' => '2 columnas, ancha, delgada',
-	'2-Columns, Wide, Medium' => '2 columnas, ancha, media',
-	'2-Columns, Medium, Wide' => '2 columnas, media, ancha',
-	'1-Column, Wide, Bottom' => '1 columna, ancha, abajo',
-	'None available' => 'Ninguno disponible',
-	'Applying...' => 'Aplicando...',
-	'Apply Design' => 'Aplicar diseño',
-	'Error applying theme: ' => 'Error aplicando tema:',
-	'The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.' => 'Se ha aplicado el tema seleccionado, pero como la disposición ha cambiado, deberá republicar el blog para que se aplique la disposición.',
-	'The selected theme has been applied!' => '¡Se ha aplicado el tema seleccionado!',
-	'Error loading themes! -- [_1]' => '¡Error cargando temas! -- [_1]',
-	'Stylesheet or Repository URL' => 'URL de la hoja de estilo o repositorio:',
-	'Stylesheet or Repository URL:' => 'URL de la hoja de estilo o repositorio:',
-	'Download Styles' => 'Descargar estilos',
-	'Current theme for your weblog' => 'Estilo actual de su weblog',
-	'Current Style' => 'Estilo actual',
-	'Locally saved themes' => 'Estilos guardados localmente',
-	'Saved Styles' => 'Estilos guardados',
-	'Default Styles' => 'Estilos predefinidos',
-	'Single themes from the web' => 'Estilos individuales del web',
-	'More Styles' => 'Más estilos',
-	'Selected Design' => 'Diseño seleccionado',
-	'Layout' => 'Disposición',
 
 ## plugins/Textile/textile2.pl
 	'A humane web text generator.' => 'Un generador de texto web humano',

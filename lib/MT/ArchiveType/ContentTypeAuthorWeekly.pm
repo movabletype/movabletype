@@ -20,6 +20,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-AUTHOR-WEEKLY_ADV");
 }
 
+sub order {
+    return 240;
+}
+
 sub dynamic_template {
     return
         'author/<$MTContentAuthorID$>/week/<$MTArchiveDate format="%Y%m%d"$>';

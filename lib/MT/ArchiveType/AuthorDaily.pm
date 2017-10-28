@@ -18,6 +18,10 @@ sub archive_label {
     return MT->translate('AUTHOR-DAILY_ADV');
 }
 
+sub order {
+    return 80;
+}
+
 sub default_archive_templates {
     return [
         {   label    => 'author/author-basename/yyyy/mm/dd/index.html',

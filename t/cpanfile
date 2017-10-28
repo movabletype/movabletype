@@ -84,6 +84,7 @@ requires 'Net::CIDR';
 requires 'Net::IP';
 
 on 'test' => sub {
+    requires 'App::Prove::Plugin::MySQLPool';
     requires 'Date::Parse';
     requires 'DateTime';
     requires 'DateTime::TimeZone';

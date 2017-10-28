@@ -18,6 +18,10 @@ sub archive_label {
     return MT->translate('AUTHOR-WEEKLY_ADV');
 }
 
+sub order {
+    return 90;
+}
+
 sub default_archive_templates {
     return [
         {   label    => 'author/author-basename/yyyy/mm/day-week/index.html',

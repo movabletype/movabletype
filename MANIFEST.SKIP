@@ -59,8 +59,6 @@ themes/broken_blog_theme
 #?package=MT ^mt-sp.cgi
 #?package=MT ^plugins/SmartphoneOption
 #?package=MT ^mt-static/SmartphoneOption
-#?pacakge=MT ^plugins/feeds-app-lite
-#?pacakge=MT ^mt-static/plugins/feeds-app-lite
 #?package=MT ^plugins/Motion
 #?package=MT ^mt-static/plugins/Motion
 #?package=MT ^mt-static/jquery/themes/Motion
@@ -93,13 +91,11 @@ themes/broken_blog_theme
 #?package=MTOS ^mt-static/addons
 #?package=MTOS ^mt-static/themes/tristan-blue
 #?package=MTOS ^mt-static/themes/tristan-blue-4.2
-#?package=MTOS ^mt-static/plugins/feeds-app-lite
 #?package=MTOS ^mt-static/plugins/Motion
 #?package=MTOS ^mt-static/jquery/themes/Motion
 #?package=MTOS ^mt-static/plugins/ActionStreams
 #?package=MTOS ^mt-static/plugins/FacebookCommenters
 #?package=MTOS ^mt-static/plugins/mixiComment
-#?package=MTOS ^plugins/feeds-app-lite
 #?package=MTOS ^plugins/Motion
 #?package=MTOS ^plugins/ActionStreams
 #?package=MTOS ^plugins/FacebookCommenters
@@ -250,11 +246,7 @@ lang-it
 ^tools/write-default-templates
 
 # Plugins
-#plugins/StyleCatcher
 #plugins/WidgetManager
-#plugins/feeds-app-lite
-plugins/feeds-app-lite/tools/
-plugins/feeds-app-lite/t/
 plugins/MultiBlog/t/
 plugins/FormattedText/t/
 plugins/Loupe
