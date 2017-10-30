@@ -432,6 +432,7 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
         case 'future':
         case 'past':
         case 'blank':
+        case 'not_blank':
           type = 'none';
           break
         default:

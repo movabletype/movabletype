@@ -414,6 +414,7 @@
         case 'future':
         case 'past':
         case 'blank':
+        case 'not_blank':
           type = 'none';
           break
         default:

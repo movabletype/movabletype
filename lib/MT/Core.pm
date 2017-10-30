@@ -255,6 +255,9 @@ BEGIN {
                         elsif ( 'blank' eq $option ) {
                             $query = [ \'IS NULL', '' ];
                         }
+                        elsif ( 'not_blank' eq $option ) {
+                            $query = { not => [ \'IS NULL', '' ] };
+                        }
                         if ( $prop->is_meta ) {
                             return $prop->join_meta( $db_args, $query );
                         }
@@ -325,6 +328,9 @@ BEGIN {
                         }
                         elsif ( 'blank' eq $option ) {
                             $query = \'IS NULL';
+                        }
+                        elsif ( 'not_blank' eq $option ) {
+                            $query = \'IS NOT NULL';
                         }
                         if ( $prop->is_meta ) {
                             return $prop->join_meta( $db_args, $query );
@@ -485,6 +491,9 @@ BEGIN {
                         }
                         elsif ( 'blank' eq $option ) {
                             $query = \'IS NULL';
+                        }
+                        elsif ( 'not_blank' eq $option ) {
+                            $query = \'IS NOT NULL';
                         }
 
                         if ( $prop->is_meta ) {
@@ -852,9 +861,6 @@ BEGIN {
                         elsif ( 'end' eq $option ) {
                             $query = { like => "%$query" };
                         }
-                        elsif ( 'blank' eq $option ) {
-                            $query = '';
-                        }
                         my $ds           = $prop->object_type;
                         my $tagged_class = $prop->tagged_class || $ds;
                         my $ds_join      = MT->model($ds)->join_on(
@@ -871,24 +877,29 @@ BEGIN {
                                 ),
                             }
                         );
-
                         my $tag_ds = $prop->tag_ds || $ds;
+
                         my @objecttag_terms_args = (
-                            { object_datasource => $tag_ds, },
+                            { object_datasource => $tag_ds },
                             {   fetchonly => { object_id => 1 },
                                 unique    => 1,
                                 joins     => [
                                     MT->model('tag')->join_on(
                                         undef,
-                                        {   name => $query,
-                                            id   => \'= objecttag_tag_id',
+                                        {   (          $option eq 'blank'
+                                                    || $option eq 'not_blank'
+                                                )
+                                            ? ()
+                                            : ( name => $query ),
+                                            id => \'= objecttag_tag_id',
                                         },
                                     ),
                                     $ds_join,
                                 ],
                             }
                         );
-                        if ( 'not_contains' eq $option ) {
+                        if ( 'not_contains' eq $option || 'blank' eq $option )
+                        {
                             my @ids = map( $_->object_id,
                                 MT->model('objecttag')
                                     ->load(@objecttag_terms_args) );
