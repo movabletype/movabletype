@@ -1876,6 +1876,7 @@ sub _populate_archive_loop {
         }
 
         if ( $new_map_id && $new_map_id == $map_obj->id ) {
+            $map->{show} = 1;
             $new_map = $map;
         }
         else {
