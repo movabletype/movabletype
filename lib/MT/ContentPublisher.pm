@@ -1059,6 +1059,8 @@ sub rebuild_file {
 
     return 1 if ( $map->build_type == MT::PublishOption::DYNAMIC() );
     return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
+    return 1
+        if ( $content_data && $content_data->status != MT::Entry::RELEASE() );
     return 1 unless ( $map->build_type );
 
     my $timer = MT->get_timer;
