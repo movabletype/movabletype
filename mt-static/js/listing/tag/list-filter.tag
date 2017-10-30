@@ -373,6 +373,7 @@
 
     this.on('mount', function () {
       this.initializeDateOption()
+      this.initializeOptionWithBlank()
     })
 
     addFilterItemContent(e) {
@@ -437,6 +438,21 @@
         onSelect: function( dateText, inst ) {
           inst.input.mtValid();
         }
+      })
+    }
+
+    initializeOptionWithBlank() {
+      const changeOption = ($node) => {
+        if ($node.val() == 'blank' || $node.val() == 'not_blank') {
+          $node.parent().find('input[type=text]').hide()
+        } else {
+          $node.parent().find('input[type=text]').show()
+        }
+      }
+      jQuery(this.root).find('.filter-blank').each((index, element) => {
+        const $node = jQuery(element)
+        changeOption($node)
+        $node.on('change', () => { changeOption($node) })
       })
     }
 
