@@ -266,6 +266,7 @@
 </mtapp:widget>
 </mt:if>
 
+<mt:if name="blog_id">
 <mtapp:widget
    id="content-type-info"
    hidden="1"
@@ -360,24 +361,7 @@
     </dl>
 
 </mtapp:widget>
-<mt:ignore>
-<mtapp:widget
-   id="tag-list"
-   hidden="1"
-   label="<__trans phrase="Template Tag Docs">"
-   label_link="$link_doc">
-  <div id="tag-list-inner">
-  </div>
-</mtapp:widget>
-
-<mtapp:widget
-   id="badtag-list"
-   hidden="1"
-   label="<__trans phrase="Unrecognized Tags">">
-  <div id="badtag-list-inner">
-  </div>
-</mtapp:widget>
-</mt:ignore>
+</mt:if>
 
 <$MTApp:PageActions from="edit_template"$>
 </mt:setvarblock>
@@ -1233,6 +1217,7 @@ function saveTemplatePrefs( sync ) {
       addMap();
     });
 
+    <mt:if name="blog_id">
     function setContentTypeInfo() {
       var ct_data = <mt:var name="ct_data">;
       var id = jQuery("#content_type_sel").val();
@@ -1278,6 +1263,10 @@ function saveTemplatePrefs( sync ) {
       jQuery('#cf_unique_id').select();
       document.execCommand('copy');
     });
+
+    setContentTypeInfo();
+    </mt:if>
+
     jQuery('button.mx-1').click(function() {
         var action = jQuery('select[name=plugin_action_selector]').val();
         if ( action != 0 && action != '' ) {
@@ -1286,8 +1275,6 @@ function saveTemplatePrefs( sync ) {
             return true;
         }
     });
-
-    setContentTypeInfo();
 
     <mt:if name="archive_types">
     jQuery("#new_archive_type").change(function(){
