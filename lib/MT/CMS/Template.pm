@@ -1717,14 +1717,14 @@ sub reset_blog_templates {
 
 sub _generate_map_table {
     my $app = shift;
-    my ( $blog_id, $template_id ) = @_;
+    my ( $blog_id, $template_id, $new_map_id ) = @_;
 
     require MT::Template;
     require MT::Blog;
     my $blog     = MT::Blog->load($blog_id);
     my $template = MT::Template->load($template_id);
     my $tmpl     = $app->load_tmpl('include/archive_maps.tmpl');
-    my $maps     = _populate_archive_loop( $app, $blog, $template );
+    my $maps = _populate_archive_loop( $app, $blog, $template, $new_map_id );
     $tmpl->param( publish_queue_available => eval
             'require List::Util; require Scalar::Util; 1;' );
     $tmpl->param( template_map_loop => $maps ) if @$maps;
@@ -1738,7 +1738,7 @@ sub _generate_map_table {
 
 sub _populate_archive_loop {
     my $app = shift;
-    my ( $blog, $obj ) = @_;
+    my ( $blog, $obj, $new_map_id ) = @_;
 
     my $has_cat_field = MT::ContentField->count(
         {   content_type_id => $obj->content_type_id,
@@ -1754,6 +1754,7 @@ sub _populate_archive_loop {
     my @tmpl_maps = MT::TemplateMap->load( { template_id => $obj->id } );
     my @maps;
     my %types;
+    my $new_map;
     foreach my $map_obj (@tmpl_maps) {
         my $map = {};
         $map->{map_id}           = $map_obj->id;
@@ -1874,9 +1875,15 @@ sub _populate_archive_loop {
                 if $required_fields->{date_and_time} || $custom;
         }
 
-        push @maps, $map;
+        if ( $new_map_id && $new_map_id == $map_obj->id ) {
+            $new_map = $map;
+        }
+        else {
+            push @maps, $map;
+        }
     }
     @maps = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @maps;
+    push @maps, $new_map if $new_map;
     return \@maps;
 }
 
@@ -1964,7 +1971,7 @@ sub add_map {
     my $blog = MT->model('blog')->load($blog_id);
     $blog->flush_has_archive_type_cache();
 
-    my $html = _generate_map_table( $app, $blog_id, $template_id );
+    my $html = _generate_map_table( $app, $blog_id, $template_id, $map->id );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
     $app->print_encode($html);
