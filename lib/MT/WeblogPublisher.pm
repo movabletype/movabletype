@@ -899,6 +899,11 @@ sub rebuild_archives {
         my $archiver = $mt->archiver($at);
         next unless $archiver;
 
+        my $rebuild_method
+            = $at =~ /^ContentType/
+            ? '_rebuild_content_archive_type'
+            : '_rebuild_entry_archive_type';
+
         if ( $archiver->category_based() ) {
             require MT::Category;
             for my $cat_id ( keys %{ $recipe->{$at} } ) {
@@ -906,7 +911,7 @@ sub rebuild_archives {
                     or next;
                 if ( $archiver->date_based() ) {
                     for my $key ( keys %{ $recipe->{$at}->{$cat_id} } ) {
-                        $mt->_rebuild_entry_archive_type(
+                        $mt->$rebuild_method(
                             NoStatic    => 0,
                             Force       => ( $param{Force} ? 1 : 0 ),
                             Blog        => $blog,
@@ -921,7 +926,7 @@ sub rebuild_archives {
                     }
                 }
                 else {
-                    $mt->_rebuild_entry_archive_type(
+                    $mt->$rebuild_method(
                         NoStatic    => 0,
                         Force       => ( $param{Force} ? 1 : 0 ),
                         Blog        => $blog,
@@ -938,7 +943,7 @@ sub rebuild_archives {
                     or next;
                 if ( $archiver->date_based() ) {
                     for my $key ( keys %{ $recipe->{$at}->{$auth_id} } ) {
-                        $mt->_rebuild_entry_archive_type(
+                        $mt->$rebuild_method(
                             NoStatic    => 0,
                             Force       => ( $param{Force} ? 1 : 0 ),
                             Blog        => $blog,
@@ -953,7 +958,7 @@ sub rebuild_archives {
                     }
                 }
                 else {
-                    $mt->_rebuild_entry_archive_type(
+                    $mt->$rebuild_method(
                         NoStatic    => 0,
                         Force       => ( $param{Force} ? 1 : 0 ),
                         Blog        => $blog,
@@ -965,7 +970,7 @@ sub rebuild_archives {
         }
         elsif ( $archiver->date_based() ) {
             for my $key ( keys %{ $recipe->{$at} } ) {
-                $mt->_rebuild_entry_archive_type(
+                $mt->$rebuild_method(
                     NoStatic    => 0,
                     Force       => ( $param{Force} ? 1 : 0 ),
                     Blog        => $blog,
@@ -973,6 +978,19 @@ sub rebuild_archives {
                     Start       => $recipe->{$at}->{$key}->{Start},
                     End         => $recipe->{$at}->{$key}->{End},
                     Timestamp   => $recipe->{$at}->{$key}->{Timestamp},
+                ) or return;
+            }
+        }
+        elsif ( $archiver->contenttype_based() ) {
+            require MT::ContentData;
+            for my $cd_id ( keys %{ $recipe->{$at} } ) {
+                my $cd = MT::ContentData->load($cd_id) or next;
+                $mt->_rebuild_content_archive_type(
+                    NoStatic    => 0,
+                    Force       => ( $param{Force} ? 1 : 0 ),
+                    ContentData => $cd,
+                    Blog        => $blog,
+                    ArchiveType => $at,
                 ) or return;
             }
         }
