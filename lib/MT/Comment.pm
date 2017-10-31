@@ -177,11 +177,12 @@ sub list_props {
             default_sort_order => 'descend',
         },
         author => {
-            label   => 'Commenter',
-            order   => 200,
-            auto    => 1,
-            display => 'default',
-            html    => sub {
+            label     => 'Commenter',
+            order     => 200,
+            auto      => 1,
+            display   => 'default',
+            use_blank => 1,
+            html      => sub {
                 my ( $prop, $obj, $app, $opts ) = @_;
                 my $name = MT::Util::remove_html( $obj->author );
                 my ( $link, $status_img, $status_class, $lc_status_class,
@@ -530,9 +531,10 @@ sub list_props {
             },
         },
         text => {
-            auto    => 1,
-            label   => 'Comment Text',
-            display => 'none',
+            auto      => 1,
+            label     => 'Comment Text',
+            display   => 'none',
+            use_blank => 1,
         },
         for_current_user => {
             base      => '__virtual.hidden',
@@ -552,10 +554,11 @@ sub list_props {
             },
         },
         email => {
-            auto    => 1,
-            display => 'none',
-            label   => 'Email Address',
-            terms   => sub {
+            auto      => 1,
+            display   => 'none',
+            label     => 'Email Address',
+            use_blank => 1,
+            terms     => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $option = $args->{option};
@@ -573,10 +576,11 @@ sub list_props {
             },
         },
         url => {
-            auto    => 1,
-            display => 'none',
-            label   => 'URL',
-            terms   => sub {
+            auto      => 1,
+            display   => 'none',
+            label     => 'URL',
+            use_blank => 1,
+            terms     => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $option = $args->{option};

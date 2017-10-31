@@ -235,9 +235,10 @@ sub list_props {
             order => 600,
         },
         description => {
-            auto    => 1,
-            display => 'none',
-            label   => 'Description',
+            auto      => 1,
+            display   => 'none',
+            label     => 'Description',
+            use_blank => 1,
         },
         blog_id => {
             auto            => 1,

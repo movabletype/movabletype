@@ -288,9 +288,10 @@ sub list_props {
             order => 900,
         },
         description => {
-            auto    => 1,
-            label   => 'Description',
-            display => 'none',
+            auto      => 1,
+            label     => 'Description',
+            display   => 'none',
+            use_blank => 1,
         },
         theme_id => {
             label                 => 'Theme',

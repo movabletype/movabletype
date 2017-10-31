@@ -84,11 +84,12 @@ sub list_props {
             },
         },
         message => {
-            auto    => 1,
-            label   => 'Message',
-            order   => 200,
-            display => 'force',
-            html    => sub {
+            auto      => 1,
+            label     => 'Message',
+            order     => 200,
+            display   => 'force',
+            use_blank => 1,
+            html      => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
                 my $msg = $obj->message;
@@ -308,9 +309,10 @@ sub list_props {
             ],
         },
         metadata => {
-            auto    => 1,
-            label   => 'Metadata',
-            display => 'none',
+            auto      => 1,
+            label     => 'Metadata',
+            use_blank => 1,
+            display   => 'none',
         },
         modified_on => {
             base    => '__virtual.modified_on',
@@ -321,9 +323,10 @@ sub list_props {
             display => 'none',
         },
         ip => {
-            auto    => 1,
-            label   => 'IP Address',
-            display => 'default',
+            auto      => 1,
+            label     => 'IP Address',
+            display   => 'default',
+            use_blank => 1,
         },
         id => {
             base            => '__virtual.id',

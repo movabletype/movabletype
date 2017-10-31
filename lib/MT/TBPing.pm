@@ -68,11 +68,12 @@ sub class_label_plural {
 sub list_props {
     return {
         excerpt => {
-            label   => 'Trackback Text',
-            auto    => 1,
-            display => 'force',
-            order   => 100,
-            html    => sub {
+            label     => 'Trackback Text',
+            auto      => 1,
+            display   => 'force',
+            order     => 100,
+            use_blank => 1,
+            html      => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $text = MT::Util::remove_html( $obj->excerpt );
                 ## FIXME: Hard coded...
@@ -303,21 +304,24 @@ sub list_props {
         },
         author_name      => { condition => sub {0}, },
         source_blog_name => {
-            label   => 'Source Site',
-            col     => 'blog_name',
-            display => 'none',
-            base    => '__virtual.string',
+            label     => 'Source Site',
+            col       => 'blog_name',
+            display   => 'none',
+            base      => '__virtual.string',
+            use_blank => 1,
         },
         source_url => {
-            auto    => 1,
-            label   => 'URL',
-            display => 'none',
+            auto      => 1,
+            label     => 'URL',
+            display   => 'none',
+            use_blank => 1,
         },
         status => { base => 'comment.status', },
         title  => {
-            label   => 'Source Title',
-            auto    => 1,
-            display => 'none',
+            label     => 'Source Title',
+            auto      => 1,
+            display   => 'none',
+            use_blank => 1,
         },
         entry_id => {
             base            => '__virtual.integer',

@@ -252,9 +252,10 @@ sub list_props {
             ],
         },
         description => {
-            auto    => 1,
-            display => 'none',
-            label   => 'Description',
+            auto      => 1,
+            display   => 'none',
+            label     => 'Description',
+            use_blank => 1,
         },
         file_name => {
             auto    => 1,
@@ -262,9 +263,10 @@ sub list_props {
             label   => 'Filename',
         },
         file_ext => {
-            auto    => 1,
-            display => 'none',
-            label   => 'File Extension',
+            auto      => 1,
+            display   => 'none',
+            label     => 'File Extension',
+            use_blank => 1,
         },
         image_width => {
             label     => 'Pixel width',
@@ -301,6 +303,7 @@ sub list_props {
         tag => {
             base         => '__virtual.tag',
             tagged_class => '*',
+            use_blank    => 1,
         },
         except_userpic => {
             base      => '__virtual.hidden',
