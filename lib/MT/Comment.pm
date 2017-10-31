@@ -810,6 +810,7 @@ sub list_props {
         entry_status => {
             base    => 'entry.status',
             col     => 'entry.status',
+            label   => 'Entry/Page Status',
             display => 'none',
         },
         blog_id => {
