@@ -218,6 +218,7 @@ sub list_props {
             auto      => 1,
             display   => 'none',
             label     => 'Website URL',
+            use_blank => 1,
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
                 return $obj->url;

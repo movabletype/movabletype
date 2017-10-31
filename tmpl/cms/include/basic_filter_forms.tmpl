@@ -17,7 +17,7 @@
   </mt:setvarblock>
   <__trans phrase="[_1] [_2] [_3]"
            params="<mt:var name="label" escape="js">%%<mt:var name="string_options">%%
-                   <input type="text" class="form-control m-1 prop-string <mt:var name="type">-string text med" value="" />">
+                   <input type="text" class="form-control m-1 prop-string <mt:var name="type">-string text med required" value="" />">
 </mt:setvartemplate>
 
 <mt:setvartemplate name="filter_form_blank_string">
@@ -27,13 +27,14 @@
     <option value="not_contains"><__trans phrase="does not contain" escape="js"></option>
     <option value="equal"><__trans phrase="__STRING_FILTER_EQUAL" escape="js"></option>
     <option value="blank"><__trans phrase="is blank" escape="js"></option>
+    <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
     <option value="beginning"><__trans phrase="starts with" escape="js"></option>
     <option value="end"><__trans phrase="ends with" escape="js"></option>
   </select>
   </mt:setvarblock>
   <__trans phrase="[_1] [_2] [_3]"
            params="<mt:var name="label" escape="js">%%<mt:var name="string_options">%%
-                   <input type="text" class="form-control m-1 prop-string <mt:var name="type">-string text med" value="" />">
+                   <input type="text" class="form-control m-1 prop-string <mt:var name="type">-string text med required" value="" />">
 </mt:setvartemplate>
 
 <mt:setvartemplate name="filter_form_integer">
@@ -61,6 +62,7 @@
                    <option value="less_than"><__trans phrase="is less than" escape="js"></option>
                    <option value="less_equal"><__trans phrase="is less than or equal to" escape="js"></option>
                    <option value="blank"><__trans phrase="is blank" escape="js"></option>
+                   <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
                  </select>%%
                  <input type="text" class="form-control m-1 prop-integer <mt:var name="type">-value text num required digit" value="" />">
 </mt:setvartemplate>
@@ -90,6 +92,7 @@
                    <option value="less_than"><__trans phrase="is less than" escape="js"></option>
                    <option value="less_equal"><__trans phrase="is less than or equal to" escape="js"></option>
                    <option value="blank"><__trans phrase="is blank" escape="js"></option>
+                   <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
                  </select>%%
                  <input type="text" class="form-control m-1 prop-float <mt:var name="type">-value text number required" value="" />">
 </mt:setvartemplate>
@@ -116,6 +119,7 @@
     <option value="future"><__trans phrase="is after now" escape="js"></option>
     <option value="past"><__trans phrase="is before now" escape="js"></option>
     <option value="blank"><__trans phrase="is blank" escape="js"></option>
+    <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
   </select>
   </mt:setvarblock>
 
@@ -149,6 +153,7 @@
     <option value="before"><__trans phrase="is before" escape="js"></option>
     <option value="after"><__trans phrase="is after" escape="js"></option>
     <option value="blank"><__trans phrase="is blank" escape="js"></option>
+    <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
   </select>
   </mt:setvarblock>
 
@@ -182,6 +187,7 @@
     <option value="before"><__trans phrase="is before" escape="js"></option>
     <option value="after"><__trans phrase="is after" escape="js"></option>
     <option value="blank"><__trans phrase="is blank" escape="js"></option>
+    <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
   </select>
   </mt:setvarblock>
 
@@ -245,6 +251,7 @@
     <option value="future"><__trans phrase="is after now" escape="js"></option>
     <option value="past"><__trans phrase="is before now" escape="js"></option>
     <option value="blank"><__trans phrase="is blank" escape="js"></option>
+    <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
   </select>
   </mt:setvarblock>
 

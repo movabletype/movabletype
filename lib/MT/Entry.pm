@@ -224,6 +224,7 @@ sub list_props {
             base       => '__virtual.title',
             label      => 'Title',
             display    => 'force',
+            use_blank  => 1,
             order      => 200,
             sub_fields => [
                 {   class   => 'status',
@@ -411,6 +412,7 @@ sub list_props {
         category => {
             label            => 'Primary Category',
             filter_label     => 'Category',
+            use_blank        => 1,
             order            => 500,
             display          => 'default',
             base             => '__virtual.string',
@@ -659,19 +661,22 @@ sub list_props {
             },
         },
         text => {
-            auto    => 1,
-            display => 'none',
-            label   => 'Body',
+            auto      => 1,
+            display   => 'none',
+            label     => 'Body',
+            use_blank => 1,
         },
         text_more => {
-            auto    => 1,
-            display => 'none',
-            label   => 'Extended',
+            auto      => 1,
+            display   => 'none',
+            label     => 'Extended',
+            use_blank => 1,
         },
         excerpt => {
-            auto    => 1,
-            display => 'none',
-            label   => 'Excerpt',
+            auto      => 1,
+            display   => 'none',
+            label     => 'Excerpt',
+            use_blank => 1,
         },
         status => {
             label                 => 'Status',
@@ -796,7 +801,7 @@ sub list_props {
                 return MT->translate( 'Entries by [_1]', $author->nickname, );
             },
         },
-        tag          => { base => '__virtual.tag', },
+        tag          => { base => '__virtual.tag', use_blank => 1 },
         current_user => {
             base            => '__common.current_user',
             label           => 'My Entries',

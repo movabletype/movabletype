@@ -143,6 +143,9 @@ sub _generate_query {
     elsif ( 'blank' eq $option ) {
         $query = \'IS NULL';
     }
+    elsif ( 'not_blank' eq $option ) {
+        $query = \'IS NOT NULL';
+    }
 
     $query;
 }

@@ -164,9 +164,10 @@ sub list_props {
             ],
         },
         description => {
-            auto    => 1,
-            label   => 'Description',
-            display => 'none',
+            auto      => 1,
+            label     => 'Description',
+            use_blank => 1,
+            display   => 'none',
         },
         created_on => {
             base  => '__virtual.created_on',
@@ -316,12 +317,12 @@ sub _default_roles {
                 'Can upload files, edit all entries(categories), pages(folders), tags and publish the site.'
             ),
             perms => [
-                'comment',              'create_post',
-                'publish_post',         'edit_all_posts',
-                'edit_categories',      'edit_tags',
-                'manage_pages',         'rebuild',
-                'upload',               'send_notifications',
-                'manage_feedback',      'edit_assets',
+                'comment',             'create_post',
+                'publish_post',        'edit_all_posts',
+                'edit_categories',     'edit_tags',
+                'manage_pages',        'rebuild',
+                'upload',              'send_notifications',
+                'manage_feedback',     'edit_assets',
                 'manage_content_data', 'manage_category_set'
             ],
         },

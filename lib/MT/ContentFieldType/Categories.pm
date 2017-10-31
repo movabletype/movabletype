@@ -194,6 +194,10 @@ sub terms {
         my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
         { id => $cd_ids };
     }
+    elsif ( $option eq 'not_blank' ) {
+        my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, undef, @_ );
+        { id => $cd_ids };
+    }
     else {
         my $cat_join
             = MT::Category->join_on( undef,

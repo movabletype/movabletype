@@ -216,12 +216,23 @@ sub terms_tag {
     elsif ( 'blank' eq $option ) {
         my $objecttag_join = MT::ObjectTag->join_on(
             undef,
-            { object_id => \'IS NULL' },
+            { tag_id => \'IS NULL' },
             {   type      => 'left',
                 condition => {
                     object_datasource => 'asset',
                     object_id         => \'= cf_idx_value_integer',
                 },
+            },
+        );
+        my $join_args = { join => $objecttag_join };
+        my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
+        { id => $cd_ids };
+    }
+    elsif ( 'not_blank' eq $option ) {
+        my $objecttag_join = MT::ObjectTag->join_on(
+            undef,
+            {   object_datasource => 'asset',
+                object_id         => \'= cf_idx_value_integer',
             },
         );
         my $join_args = { join => $objecttag_join };
@@ -554,8 +565,8 @@ sub ss_validator {
     }
 
     my $type_label_plural = $field_type . 's';
-    MT::ContentFieldType::Common::ss_validator_multiple( @_, $field_type_label,
-        $type_label_plural );
+    MT::ContentFieldType::Common::ss_validator_multiple( @_,
+        $field_type_label, $type_label_plural );
 }
 
 sub options_validation_handler {

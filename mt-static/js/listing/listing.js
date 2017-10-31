@@ -391,6 +391,7 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
 
     this.on('mount', function () {
       this.initializeDateOption()
+      this.initializeOptionWithBlank()
     })
 
     this.addFilterItemContent = function(e) {
@@ -431,6 +432,7 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
         case 'future':
         case 'past':
         case 'blank':
+        case 'not_blank':
           type = 'none';
           break
         default:
@@ -455,6 +457,21 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
         onSelect: function( dateText, inst ) {
           inst.input.mtValid();
         }
+      })
+    }.bind(this)
+
+    this.initializeOptionWithBlank = function() {
+      const changeOption = ($node) => {
+        if ($node.val() == 'blank' || $node.val() == 'not_blank') {
+          $node.parent().find('input[type=text]').hide()
+        } else {
+          $node.parent().find('input[type=text]').show()
+        }
+      }
+      jQuery(this.root).find('.filter-blank').each((index, element) => {
+        const $node = jQuery(element)
+        changeOption($node)
+        $node.on('change', () => { changeOption($node) })
       })
     }.bind(this)
 
