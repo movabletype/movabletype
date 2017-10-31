@@ -299,13 +299,15 @@ sub tag_handler {
 }
 
 sub theme_import_handler {
-    my ( $theme, $blog, $ct, $cf_value, $field ) = @_;
+    my ( $theme, $blog, $ct, $cf_value, $field, $cf ) = @_;
     my $cs_name = $field->{options}{category_set};
     if ( defined $cs_name && $cs_name ne '' ) {
         my $cs
             = MT::CategorySet->load(
             { blog_id => $blog->id, name => $cs_name } );
         if ($cs) {
+            $cf->related_cat_set_id( $cs->id );
+            $cf->save;
             $field->{options}{category_set} = $cs->id;
         }
         else {

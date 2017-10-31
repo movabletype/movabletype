@@ -148,7 +148,7 @@ sub ss_validator {
 }
 
 sub theme_import_handler {
-    my ( $theme, $blog, $ct, $cf_value, $field ) = @_;
+    my ( $theme, $blog, $ct, $cf_value, $field, $cf ) = @_;
     my $name_or_unique_id = $field->{options}{source};
     if ( defined $name_or_unique_id && $name_or_unique_id ne '' ) {
         my $ct = MT::ContentType->load(
@@ -163,6 +163,8 @@ sub theme_import_handler {
         );
         if ($ct) {
             $field->{options}{source} = $ct->id;
+            $cf->related_content_type_id( $ct->id );
+            $cf->save;
         }
         else {
             delete $field->{options}{source};
