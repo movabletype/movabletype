@@ -1179,7 +1179,7 @@ function saveTemplatePrefs( sync ) {
             + '&new_archive_type=' + f['new_archive_type'].value
             <mt:if name="type" like="^ct">
             + '&content_type_id=' + f['content_type_id'].value
-            + '&file_template=' + f['archive_file_tmpl'].value
+            + '&file_template=' + encodeURIComponent( f['archive_file_tmpl'].value )
             + '&cat_field_id=' + f['cat_field_id'].value
             + '&dt_field_id=' + f['dt_field_id'].value
             </mt:if>
