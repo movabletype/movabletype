@@ -95,7 +95,7 @@ sub apply {
                     die MT->translate(
                         'Invalid theme_import_handler of [_1].', $type );
                 }
-                $handler->( $theme, $blog, $ct, $cf_value, $field );
+                $handler->( $theme, $blog, $ct, $cf_value, $field, $cf );
             }
 
             MT->set_language($current_lang);
