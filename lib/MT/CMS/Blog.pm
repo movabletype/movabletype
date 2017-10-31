@@ -471,6 +471,7 @@ sub cfg_prefs {
         my $archiver = $app->publisher->archiver($at);
         next unless $archiver;
         next if 'entry' ne $archiver->entry_class;
+        next if ( $at =~ /^ContentType/ );
         my $archive_label = $archiver->archive_label;
         $archive_label = $at unless $archive_label;
         $archive_label = $archive_label->()
@@ -481,6 +482,7 @@ sub cfg_prefs {
             archive_type_is_preferred =>
                 ( $blog->archive_type_preferred eq $at ? 1 : 0 ),
         };
+
         if ( $preferred_archive_type eq $at ) {
             $row->{archive_type_is_preferred} = 1;
         }
