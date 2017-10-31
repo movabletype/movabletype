@@ -105,6 +105,7 @@ sub edit {
     my @keys = keys %$perms;
     foreach my $key (@keys) {
         next if $key !~ m/^system./;
+        next if( exists($perms->{$key}->{display}) && !$perms->{$key}->{display});
         my $perm;
         ( $perm->{id} = $key ) =~ s/^system\.//;
         $perm->{id} = 'can_' . $perm->{id};
@@ -270,6 +271,7 @@ sub edit_role {
     my @keys = keys %$perms;
     foreach my $key (@keys) {
         next if $key !~ m/^blog./;
+        next if( exists($perms->{$key}->{display}) && !$perms->{$key}->{display});
         my $perm;
         ( $perm->{id} = $key ) =~ s/^blog\.//;
 

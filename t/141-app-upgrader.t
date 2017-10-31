@@ -55,7 +55,64 @@ subtest 'Upgrade from MT4 to MT7' => sub {
     ok( $perms->has('administer_site'),
         'Administrator has "administer_site" permission.' );
 
-    MT::Test::Upgrade->upgrade( from => 4.0077 );
+    my $cfg = MT->config;
+    $cfg->MTVersion(4.38);
+    $cfg->SchemaVersion(4.0077);
+    $cfg->save_config;
+
+    my $config = MT::Config->load;
+    my $data   = $config->data;
+    my @lines  = split /\n/, $data;
+    my @new_lines;
+    foreach my $line (@lines) {
+        if ( $line =~ /^MTVersion/ ) {
+            $line = 'MTVersion 4.38';
+        }
+        elsif ( $line =~ /^SchemaVersion/ ) {
+            $line = 'SchemaVersion 4.0077';
+        }
+        push @new_lines, $line;
+    }
+    my $new_data = join "\n", @new_lines;
+    $config->data($new_data);
+    $config->save or die $config->errstr;
+
+    $app = _run_app(
+        'MT::App::Upgrader',
+        {   __request_method => 'POST',
+            __mode           => 'upgrade',
+            username         => 'Melody',
+            password         => 'Nelson',
+        },
+    );
+    $out = delete $app->{__test_output};
+
+    my $json_steps = $app->response;
+    while ( @{ $json_steps->{steps} || [] } ) {
+
+        require MT::Util;
+        $json_steps = MT::Util::to_json( $json_steps->{steps} );
+
+        require MT::App::Upgrader;
+        $app = _run_app(
+            'MT::App::Upgrader',
+            {   __request_method => 'POST',
+                username         => 'Melody',
+                password         => 'Nelson',
+                __mode           => 'run_actions',
+                steps            => $json_steps,
+            },
+        );
+        $out = delete $app->{__test_output};
+
+        $out =~ s/^.*JSON://s;
+
+        require JSON;
+        $json_steps = JSON::from_json($out);
+
+        ok( !$json_steps->{error}, 'Request has no error.' );
+
+    }
 
     is( MT::Website->count(), 3, 'There are three websites.' );
     is( MT::Blog->count(),    0, 'There is no blog.' );

@@ -2767,6 +2767,24 @@ sub load_core_permissions {
                 'open_all_blog_listing_screen' => 1,
             }
         },
+        'blog.administer_website' => {
+            'group'   => 'blog_admin',
+            'label'   => 'Manage Website',
+            'order'   => 100,
+            'display' => 0,
+        },
+        'blog.administer_blog' => {
+            'group'   => 'blog_admin',
+            'label'   => 'Manage Blog',
+            'order'   => 100,
+            'display' => 0,
+        },
+        'blog.manage_member_blogs' => {
+            'group'   => 'blog_admin',
+            'label'   => 'Manage Website with Blogs',
+            'order'   => 100,
+            'display' => 0,
+        },
         'blog.create_site' => {
             'group'            => 'blog_admin',
             'label'            => 'Create Sites',
@@ -3395,6 +3413,12 @@ sub load_core_permissions {
                 'set_new_site_publish_paths' => 1,
                 }
 
+        },
+        'system.create_website' => {
+            'group'   => 'sys_admin',
+            'label'   => 'Create Websites',
+            'order'   => 700,
+            'display' => 0,
         },
         'system.manage_users_groups' => {
             'group'            => 'sys_admin',
