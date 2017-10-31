@@ -1818,9 +1818,9 @@ sub _populate_archive_loop {
         if ($custom) {
             unshift @$tmpl_loop,
                 {
-                name     => $map->{file_template},
-                value    => $map->{file_template},
-                selected => 1,
+                name        => $map->{file_template},
+                value       => $map->{file_template},
+                custom_path => 1,
                 };
         }
 
@@ -1886,6 +1886,7 @@ sub _populate_archive_loop {
                 if $required_fields->{date_and_time} || $custom;
         }
 
+        $map->{custom} = 1 if $custom;
         if ( $new_map_id && $new_map_id == $map_obj->id ) {
             $map->{show} = 1;
             $new_map = $map;

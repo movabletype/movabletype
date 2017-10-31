@@ -15,11 +15,13 @@
          help_section="archive_path">
         <select id="archive_file_sel_<mt:var name="map_id">" class="form-control tmpl-path w-75" name="archive_file_sel_<mt:var name="map_id">">
         <mt:loop name="archive_tmpl_loop">
+          <mt:unless name="custom_path">
           <option value="<mt:var name="value" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="name" escape="html"></option>
+          </mt:unless>
         </mt:loop>
-          <option value=""><__trans phrase="Custom..."></option>
+          <option value=""<mt:if name="custom"> selected="selected"</mt:if>><__trans phrase="Custom..."></option>
         </select>
-        <input type="text" id="archive_file_tmpl_<mt:var name="map_id">" class="form-control tmpl-path tmpl-path-custom w-75" name="archive_file_tmpl_<mt:var name="map_id">" value="<mt:var name="file_template" escape="html">" style="display:none;" />
+        <input type="text" id="archive_file_tmpl_<mt:var name="map_id">" class="form-control tmpl-path tmpl-path-custom w-75" name="archive_file_tmpl_<mt:var name="map_id">" value="<mt:var name="file_template" escape="html">"<mt:unless name="custom"> style="display:none;"</mt:unless> />
       </mtapp:setting>
 
       <mtapp:setting
