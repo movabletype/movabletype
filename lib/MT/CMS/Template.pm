@@ -1825,8 +1825,19 @@ sub _populate_archive_loop {
         }
 
         $map->{archive_tmpl_loop} = $tmpl_loop;
+        my $args
+            = $at =~ /^ContentType/
+            ? {
+            join => MT::Template->join_on(
+                undef,
+                {   id              => \'= templatemap_template_id',
+                    content_type_id => $obj->content_type_id,
+                },
+            ),
+            }
+            : {};
         if (1 < MT::TemplateMap->count(
-                { archive_type => $at, blog_id => $obj->blog_id }
+                { archive_type => $at, blog_id => $obj->blog_id }, $args,
             )
             )
         {
