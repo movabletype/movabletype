@@ -466,6 +466,10 @@ sub init_website {
         return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
 
+    if ( $param{'support_unwritable'} == 1 ) {
+        return $app->build_page( 'setup_initial_website.tmpl', \%param );
+    }
+
     # check to publishing path (writable?)
     my $site_path;
     if ( -d $param{website_path} ) {
