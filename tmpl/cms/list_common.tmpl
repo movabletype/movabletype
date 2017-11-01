@@ -267,6 +267,12 @@
   var disableUserDispOption = false;
   </mt:if>
 
+  <mt:if name="use_filters">
+  var useFilters = true;
+  <mt:else>
+  var useFilters = false;
+  </mt:if>
+
   var listStore = new ListStore({
     listClient: listClient,
 
@@ -294,6 +300,7 @@
     moreListActions: moreListActions,
     plural: plural,
     useActions: useActions,
+    useFilters: useFilters,
     singular: singular,
     store: listStore,
 

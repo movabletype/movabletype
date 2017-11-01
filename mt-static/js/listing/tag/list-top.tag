@@ -7,7 +7,10 @@
   <div class="row mb-3">
     <div class="col-12">
       <div class="card">
-        <virtual data-is="list-filter"></virtual>
+        <virtual data-is="list-filter"
+          if={ opts.useFilters }
+        >
+        </virtual>
         <table data-is="list-table"
           id="{ opts.objectType }-table"
           class="table mt-table list-{ opts.objectType }"
