@@ -228,8 +228,8 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
       <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">">
         <mtapp:svgicon id="ic_search" title="<__trans phrase="Title">" size="sm">
       </a>
-    </div>
   </mt:if>
+    </div>
   </mtapp:setting>
 
   <mtapp:setting
@@ -259,12 +259,12 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
     <mt:if name="commenter_banned">
       <span class="icon-left-wide icon-banned">
         <mtapp:svgicon id="ic_user" title="<__trans phrase="Banned">" size="sm">
-        <span class="badge badge-secondary"><__trans phrase="Banned"></span>
+        <span class="badge badge-default"><__trans phrase="Banned"></span>
       </span>
     <mt:else>
       <span class="icon-left-wide icon-authenticated">
         <mtapp:svgicon id="ic_user" title="<__trans phrase="Authenticated">" size="sm">
-        <span class="badge badge-default"><__trans phrase="Authenticated"></span>
+        <span class="badge badge-info"><__trans phrase="Authenticated"></span>
       </span>
     </mt:if>
   </mt:if>
