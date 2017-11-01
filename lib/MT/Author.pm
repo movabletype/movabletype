@@ -637,8 +637,8 @@ sub _bulk_author_name_html {
 
                 $badge_type
                     = $obj->status == ACTIVE()   ? 'success'
-                    : $obj->status == INACTIVE() ? 'secondary'
-                    :                              'default';
+                    : $obj->status == INACTIVE() ? 'default'
+                    :                              'warning';
             }
             else {
                 $status_label
@@ -649,8 +649,8 @@ sub _bulk_author_name_html {
 
                 $badge_type
                     = $obj->is_trusted(0) ? 'success'
-                    : $obj->is_banned(0)  ? 'secondary'
-                    :                       'default';
+                    : $obj->is_banned(0)  ? 'default'
+                    :                       'info';
             }
         }
         else {
@@ -663,8 +663,8 @@ sub _bulk_author_name_html {
 
             $badge_type
                 = $obj->is_trusted($blog_id) ? 'success'
-                : $obj->is_banned($blog_id)  ? 'secondary'
-                :                              'default';
+                : $obj->is_trusted($blog_id) ? 'default'
+                :                              'info';
         }
 
         my $lc_status_label = lc $status_label;

@@ -268,8 +268,8 @@ sub list_props {
                             = $commenter->status == MT::Author::ACTIVE()
                             ? 'success'
                             : $commenter->status == MT::Author::INACTIVE()
-                            ? 'secondary'
-                            : 'default';
+                            ? 'default'
+                            : 'warning';
                         $status_class
                             = $commenter->status == MT::Author::ACTIVE()
                             ? 'Enabled'
@@ -280,8 +280,8 @@ sub list_props {
                     else {
                         $badge_type
                             = $commenter->is_trusted(0) ? 'success'
-                            : $commenter->is_banned(0)  ? 'secondary'
-                            :                             'default';
+                            : $commenter->is_banned(0)  ? 'default'
+                            :                             'info';
                         $status_class
                             = $commenter->is_trusted(0) ? 'Trusted'
                             : $commenter->is_banned(0)  ? 'Banned'
@@ -292,8 +292,8 @@ sub list_props {
                     my $blog_id = $opts->{blog_id};
                     $badge_type
                         = $commenter->is_trusted($blog_id) ? 'success'
-                        : $commenter->is_banned($blog_id)  ? 'secondary'
-                        :                                    'default';
+                        : $commenter->is_banned($blog_id)  ? 'default'
+                        :                                    'info';
                     $status_class
                         = $commenter->is_trusted($blog_id) ? 'Trusted'
                         : $commenter->is_banned($blog_id)  ? 'Banned'
