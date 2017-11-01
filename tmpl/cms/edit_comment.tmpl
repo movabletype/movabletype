@@ -199,8 +199,8 @@
   <mtapp:setting
      id="author"
      label="<__trans phrase="Commenter">">
-    <div class="form-group">
   <mt:if name="commenter_id">
+    <div class="form-group">
     <mt:if name="auth_icon_url">
       <img src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" />
     </mt:if>
@@ -210,11 +210,17 @@
       <mt:var name="nickname" escape="html"><mt:var name="author" escape="html">
     </mt:if>
       <a title="<__trans phrase="View all comments by this commenter">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;filter=commenter_id&amp;blog_id=<mt:var name="blog_id">&amp;filter_val=<mt:var name="commenter_id" escape="html">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
-  <mt:else>
-      <input type="text" name="author" id="author" class="text" value="<mt:var name="author" escape="html">" />
-      <a title="<__trans phrase="View all comments by this commenter">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="author" escape="html">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
-  </mt:if>
     </div>
+  <mt:else>
+    <div class="form-row align-items-center">
+      <div class="col">
+        <input type="text" name="author" id="author" class="form-control text" value="<mt:var name="author" escape="html">" />
+      </div>
+      <div class="col-1">
+        <a title="<__trans phrase="View all comments by this commenter">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="author" escape="html">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+      </div>
+    </div>
+  </mt:if>
   </mtapp:setting>
 
 <mt:if name="commenter_id">
@@ -284,20 +290,27 @@
      id="email"
      label="<__trans phrase="Email Address">"
      label_for="email">
-    <div class="form-group">
   <mt:if name="commenter_id">
+    <div class="form-group">
     <mt:if name="email">
       <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><mt:var name="email" escape="html"></a>
     <mt:else>
       <em><__trans phrase="Unavailable for OpenID user"></em>
     </mt:if>
   <mt:else>
-      <input type="text" name="email" id="email" class="text" value="<mt:var name="email" escape="html">" />
+    <div class="form-row align-items-center">
+      <div class="col">
+        <input type="text" name="email" id="email" class="form-control text" value="<mt:var name="email" escape="html">" />
+      </div>
+      <div class="col-1">
   </mt:if>
   <mt:if name="email">
-      <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><mtapp:svgicon id="ic_mail" title="<__trans phrase="Email">" size="sm"></a>
-      <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+        <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><mtapp:svgicon id="ic_mail" title="<__trans phrase="Email">" size="sm"></a>
+        <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
   </mt:if>
+  <mt:unless name="commenter_id">
+      </div>
+  </mt:unless>
     </div>
   </mtapp:setting>
 
@@ -305,22 +318,29 @@
      id="url"
      label="<__trans phrase="Website URL">"
      label_for="url">
-    <div class="form-group">
   <mt:if name="commenter_id">
+    <div class="form-group">
     <mt:if name="url">
       <a href="<mt:var name="url" escape="html">"><$mt:Var name="url" escape="html"$></a>
     <mt:else>
       <__trans phrase="No url in profile">
     </mt:if>
   <mt:else>
-      <input type="text" name="url" id="url" class="text" value="<mt:var name="url" escape="html">" />
+    <div class="form-row align-items-center">
+      <div class="col">
+        <input type="text" name="url" id="url" class="form-control text" value="<mt:var name="url" escape="html">" />
+      </div>
+      <div class="col-1">
   </mt:if>
   <mt:if name="url">
-      <a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><mtapp:svgicon id="ic_link" title="<__trans phrase="Link">" size="sm"></a>
+        <a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><mtapp:svgicon id="ic_link" title="<__trans phrase="Link">" size="sm"></a>
     <mt:unless name="commenter_id">
-      <a title="<__trans phrase="View all comments with this URL">" href="<mt:var name="script_url">?__mode=list&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;_type=comment&amp;filter=url&amp;filter_val=<mt:var name="url" escape="url">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+        <a title="<__trans phrase="View all comments with this URL">" href="<mt:var name="script_url">?__mode=list&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;_type=comment&amp;filter=url&amp;filter_val=<mt:var name="url" escape="url">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
     </mt:unless>
   </mt:if>
+  <mt:unless name="commenter_id">
+      </div>
+  </mt:unless>
     </div>
   </mtapp:setting>
 
