@@ -256,7 +256,8 @@ BEGIN {
                             $query = [ \'IS NULL', '' ];
                         }
                         elsif ( 'not_blank' eq $option ) {
-                            $query = { not => [ \'IS NULL', '' ] };
+                            $query
+                                = [ '-and', \'IS NOT NULL', { not => '' } ];
                         }
                         if ( $prop->is_meta ) {
                             return $prop->join_meta( $db_args, $query );
