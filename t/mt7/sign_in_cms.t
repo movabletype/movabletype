@@ -9,7 +9,6 @@ use MT::Test::Permission;
 
 my $admin = MT::Author->load(1);
 my $user = MT::Test::Permission->make_author;
-$user->can_sign_in_cms(0);
 $user->save or die $user->errstr;
 
 my ( $app, $out );
@@ -24,7 +23,7 @@ subtest 'user = administrator' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                       "Request: login" );
-    ok( $out !~ m!not authorized!i, "not authorized by admin" );
+    ok( $out !~ m!not authorized!i, "not authorized(mode=dashboard) by admin" );
 };
 
 subtest 'user = not administrator' => sub {
@@ -37,9 +36,20 @@ subtest 'user = not administrator' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                       "Request: login" );
-    ok( $out =~ m!not authorized!i, "not authorized by user" );
+    ok( $out !~ m!not authorized!i, "not authorized(mode=dashboard) by user(can_sign_in_cms=1)" );
 
-    $user->can_sign_in_cms(1);
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $user,
+            __request_method => 'GET',
+            __mode           => 'cfg_prefs',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                       "Request: login" );
+    ok( $out !~ m!not authorized!i, "not authorized(mode=cfg_prefs) by user(can_sign_in_cms=1)" );
+
+    $user->can_sign_in_cms(0);
     $user->save or die $user->errstr;
 
     $app = _run_app(
@@ -51,7 +61,19 @@ subtest 'user = not administrator' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                       "Request: login" );
-    ok( $out !~ m!not authorized!i, "not authorized by user" );
+    ok( $out =~ m!not authorized!i, "not authorized(mode=dashboard) by user(can_sign_in_cms=0)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $user,
+            __request_method => 'GET',
+            __mode           => 'cfg_prefs',
+            __blog_id        => 1,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                       "Request: login" );
+    ok( $out =~ m!not authorized!i, "not authorized(mode=cfg_prefs) by user(can_sign_in_cms=0)" );
 
 };
 

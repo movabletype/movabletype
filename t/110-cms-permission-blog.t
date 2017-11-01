@@ -243,29 +243,14 @@ MT::Association->link( $toda       => $create_post => $blog );
 
 MT::Association->link( $negoro => $create_post => $blog );
 
-require MT::Permission;
-my $p = MT::Permission->new;
-$p->blog_id(0);
-$p->author_id( $tsuda->id );
-$p->permissions("'create_blog'");
-$p->save;
+$tsuda->can_create_blog(1);
+$tsuda->save();
 
-$p = MT::Permission->new;
-$p->blog_id(0);
-$p->author_id( $namegawa->id );
-$p->permissions("'edit_templates'");
-$p->save;
+$namegawa->can_edit_templates(1);
+$namegawa->save();
 
-$p = MT::Permission->new;
-$p->blog_id(0);
-$p->author_id( $hada->id );
-$p->permissions("'edit_templates'");
-$p->save;
-
-$p = MT::Permission->new;
-$p->blog_id(0);
-$p->author_id( $hida->id );
-$p->save;
+$hada->can_edit_templates(1);
+$hada->save();
 
 # Entry
 my $entry = MT::Test::Permission->make_entry(
@@ -1535,6 +1520,7 @@ subtest 'action = refresh_blog_templates' => sub {
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
             plugin_action_selector => 'refresh_blog_templates',
             id                     => $blog->id,
+            blog_id                => $website->id,
             plugin_action_selector => 'refresh_blog_templates',
         }
     );
@@ -1553,6 +1539,7 @@ subtest 'action = refresh_blog_templates' => sub {
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
             plugin_action_selector => 'refresh_blog_templates',
             id                     => $blog->id,
+            blog_id                => $website->id,
             plugin_action_selector => 'refresh_blog_templates',
         }
     );
@@ -1591,6 +1578,7 @@ subtest 'action = refresh_blog_templates' => sub {
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
             plugin_action_selector => 'refresh_blog_templates',
             id                     => $blog->id,
+            blog_id                => $website->id,
             plugin_action_selector => 'refresh_blog_templates',
         }
     );
@@ -1609,6 +1597,7 @@ subtest 'action = refresh_blog_templates' => sub {
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
             plugin_action_selector => 'refresh_blog_templates',
             id                     => $blog->id,
+            blog_id                => $website->id,
             plugin_action_selector => 'refresh_blog_templates',
         }
     );

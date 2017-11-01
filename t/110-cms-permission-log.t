@@ -67,12 +67,8 @@ MT::Association->link( $ichikawa => $view_blog_log => $website );
 MT::Association->link( $ukawa => $view_blog_log => $second_blog );
 MT::Association->link( $egawa => $designer => $blog );
 
-require MT::Permission;
-my $p = MT::Permission->new();
-$p->blog_id( 0 );
-$p->author_id( $ogawa->id );
-$p->permissions("'view_log'");
-$p->save;
+$ogawa->can_view_log(1);
+$ogawa->save();
 
 
 # Run

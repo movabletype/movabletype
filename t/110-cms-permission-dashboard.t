@@ -46,6 +46,9 @@ require MT::Association;
 MT::Association->link( $aikawa => $designer => $blog );
 MT::Association->link( $ichikawa => $designer => $second_blog );
 
+# remove system permissions
+MT::Permission->remove({author_id => $ichikawa->id, blog_id => 0});
+
 # Run
 my ( $app, $out );
 
@@ -119,7 +122,7 @@ subtest 'mode = dashboard' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dashboard" );
-    ok( $out =~ m!permission=1!i, "dashboard by other blog" );
+    ok( $out =~ m!not authorized!i, "dashboard by other blog" );
 };
 
 done_testing();

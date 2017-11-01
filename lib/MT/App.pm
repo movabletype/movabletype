@@ -167,7 +167,7 @@ sub filter_conditional_list {
                 my $terms = {
                     author_id   => $app->user->id,
                     permissions => \'is not null',
-                    ( $blog_ids ? ( blog_id => $blog_ids ) : () ),
+                    ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
                 };
 
                 my $count = MT->model('permission')->count($terms);
