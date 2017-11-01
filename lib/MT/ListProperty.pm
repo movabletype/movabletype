@@ -226,8 +226,8 @@ sub join_meta {
     $meta_pk = $meta_pk->[0];   # we only need the first column, that's the id
     my $meta_id_cond = '= ' . $meta_pk;
 
-    my ( $j_terms, %j_args );
-    $j_terms->{type} = $prop->col;
+    my ( %j_terms, %j_args );
+    $j_terms{type}  = $prop->col;
     $j_args{unique} = 1;
     if ( $opts->{sort} ) {
         $j_args{sort}      = $prop->meta_col;
@@ -241,28 +241,15 @@ sub join_meta {
         $j_args{condition} = $meta_pk;
     }
     else {
-        $j_terms->{$meta_pk} = \$meta_id_cond;
-        if ( defined $cond ) {
-            if (   ref $cond
-                && ref $cond eq 'ARRAY'
-                && scalar( grep { ref $_ } @$cond ) )
-            {
-                my @terms = map {
-                    { $prop->meta_col => $_ }, '-or'
-                } @$cond;
-                pop @terms;
-                $j_terms = [ $j_terms, '-and', \@terms ];
-            }
-            else {
-                $j_terms->{ $prop->meta_col } = $cond;
-            }
-        }
-        $j_args{alias} = $prop->col;
+        $j_terms{ $prop->meta_col } = $cond if defined $cond;
+        $j_terms{$meta_pk}          = \$meta_id_cond;
+        $j_args{alias}              = $prop->col;
     }
 
     $to_args->{joins} ||= [];
     push @{ $to_args->{joins} },
-        $prop->datasource->meta_pkg->join_on( undef, [$j_terms], \%j_args, );
+        $prop->datasource->meta_pkg->join_on( undef, [ \%j_terms ], \%j_args,
+        );
     return;
 }
 
