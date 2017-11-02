@@ -47,17 +47,14 @@ END {
     }
 }
 
-eval(
-    $ENV{SKIP_REINITIALIZE_DATABASE}
-    ? "use MT::Test;"
-    : "use MT::Test qw(:db :data);"
-);
-
+use MT::Test;
 use File::Spec;
 use File::Basename;
 
 use MT::App::DataAPI;
 use MT::DataAPI::Resource;
+
+$test_env->prepare_fixture('db_data');
 
 my $app = MT::App::DataAPI->new;
 MT->set_instance($app);
