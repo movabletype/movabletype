@@ -113,6 +113,8 @@ sub import {
         }
     }
 
+    MT->instance unless $ENV{MT_TEST_ROOT};
+
     # Export requested or all exportable functions.
     $pkg->export_to_level( 1, @to_export || qw( :DEFAULT ) );
 }
