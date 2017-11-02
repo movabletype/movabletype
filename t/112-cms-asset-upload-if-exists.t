@@ -21,7 +21,11 @@ BEGIN {
 
 use File::Spec;
 
-use MT::Test qw( :app :db :data );
+use MT::Test;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $admin = MT::Author->load(1);
 my $blog  = MT::Blog->load(1);

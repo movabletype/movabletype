@@ -16,12 +16,9 @@ use Plack::Loader;
 use Getopt::Long;
 
 use MT;
-eval(
-    $ENV{SKIP_REINITIALIZE_DATABASE}
-    ? "use MT::Test;"
-    : "use MT::Test qw(:db :data);"
-);
-die $@ if $@;
+use MT::Test;
+
+$test_env->prepare_fixture('db_data');
 
 my $port         = 5000;
 my @plugin_paths = ();

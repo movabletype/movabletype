@@ -12,11 +12,15 @@ BEGIN {
     $ENV{MT_APP} = 'MT::App::CMS';
 }
 
-use MT::Test qw(:app :db :data);
+use MT::Test;
 use YAML::Tiny;
 use File::Spec;
 use FindBin qw( $Bin );
 use MT;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->instance;
 $mt->user( MT::Author->load(1) );

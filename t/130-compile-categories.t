@@ -11,9 +11,11 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT;
 use MT::Template::Context;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new();
 isnt( $mt, undef, "MT loaded" );

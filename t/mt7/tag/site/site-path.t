@@ -17,7 +17,7 @@ use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT::Test::Permission;
 
 filters {
@@ -31,6 +31,8 @@ my $test_root = $test_env->root;
 sub replace_test_root {
     s/TEST_ROOT/$test_root/;
 }
+
+$test_env->prepare_fixture('db_data');
 
 MT::Test::Tag->run_perl_tests;
 MT::Test::Tag->run_php_tests;

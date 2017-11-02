@@ -12,11 +12,11 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-eval(
-    $ENV{SKIP_REINITIALIZE_DATABASE}
-    ? "use MT::Test qw(:app);"
-    : "use MT::Test qw(:app :db :data);"
-);
+use MT::Test;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 use File::Basename;
 use MT::WeblogPublisher;

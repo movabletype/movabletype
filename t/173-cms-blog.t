@@ -50,7 +50,11 @@ use MT::Association;
 use MT::CMS::User;
 use MT::Role;
 
-use MT::Test qw( :app :db :data );
+use MT::Test;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 MT->instance;
 my $user        = MT::Author->load(1);

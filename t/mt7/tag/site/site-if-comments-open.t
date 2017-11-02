@@ -17,7 +17,7 @@ use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT::Test::Permission;
 
 filters {
@@ -34,6 +34,8 @@ PHP
 }
 
 MT->config->AllowComments(1);
+
+$test_env->prepare_fixture('db_data');
 
 MT::Test::Tag->run_perl_tests;
 MT::Test::Tag->run_php_tests( undef, \&_set_php_allow_comments );

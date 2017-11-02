@@ -12,7 +12,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw(:db :data);
+use MT::Test;
+
+$test_env->prepare_fixture('db_data');
 
 plan tests => 26;
 

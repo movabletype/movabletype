@@ -24,8 +24,12 @@ use open ':std', ':encoding(utf8)';
 use File::Spec;
 use JSON;
 
-use MT::Test qw( :app :db :data );
+use MT::Test;
 use MT;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $admin   = MT->model('author')->load(1);
 my $blog_id = 1;

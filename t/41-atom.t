@@ -33,8 +33,10 @@ $ENV{HTTP_HOST} = 'localhost';
 my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT' );
 
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT::Test::Permission;
+
+$test_env->prepare_fixture('db_data');
 
 my %test_data;
 $test_data{'/mt-atom.cgi/weblog'} = <<XML1;

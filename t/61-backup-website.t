@@ -14,8 +14,12 @@ BEGIN {
 # Fix the bug that website is not backed up.
 # https://movabletype.fogbugz.com/f/cases/113358/
 
-use MT::Test qw( :app :db :data );
+use MT::Test;
 use MT::BackupRestore;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 note 'System, all';
 {

@@ -24,7 +24,9 @@ use MT::Role;
 use MT::Tag;
 use MT::Template;
 use MT::Template::Context;
-use MT::Test qw( :db :data );
+use MT::Test;
+
+$test_env->prepare_fixture('db_data');
 
 # Adding another blog since MT::Test only creates one blog
 my $blog = MT::Blog->new();

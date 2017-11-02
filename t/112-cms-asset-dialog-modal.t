@@ -12,8 +12,12 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db :data );
+use MT::Test;
 plan tests => 1;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt    = MT->instance;
 my $admin = $mt->model('author')->load(1);

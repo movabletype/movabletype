@@ -17,7 +17,7 @@ use File::Copy;
 use File::Temp qw( tempfile );
 
 plan tests => 71;
-use MT::Test qw(:db :data);
+use MT::Test;
 
 use Image::ExifTool;
 use Image::Size;
@@ -25,6 +25,8 @@ $Image::Size::NO_CACHE = 1;
 
 use MT;
 use MT::Asset;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT', 'Is MT' );
