@@ -71,7 +71,7 @@ my @count_specs = (
             args  => {
                 'join' => MT::Comment->join_on(
                     'entry_id',
-                    { junk_status => MT::Comment::JUNK },
+                    { junk_status => MT::Comment::JUNK() },
                     { unique      => 1 }
                 ),
             },
