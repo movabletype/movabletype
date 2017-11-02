@@ -21,10 +21,10 @@ use Test::MockObject::Extends;
 
 use MT;
 use MT::Test;
-use MultiBlog;
 
 $test_env->prepare_fixture('db_data');
 
+require MultiBlog;
 
 my $app     = MT->instance;
 my $request = MT::Request->instance;

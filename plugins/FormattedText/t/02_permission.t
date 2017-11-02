@@ -236,7 +236,7 @@ $tsuda_template->set_values(
 );
 $tsuda_template->save;
 
-use FormattedText::App;
+require FormattedText::App;
 
 subtest 'Common scope' => sub {
 
