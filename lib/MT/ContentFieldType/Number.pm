@@ -7,9 +7,6 @@ package MT::ContentFieldType::Number;
 use strict;
 use warnings;
 
-sub MAX_VALUE() {2147483647}
-sub MIN_VALUE() {-2147483648}
-
 sub field_html_params {
     my ( $app, $field_data ) = @_;
 
@@ -92,10 +89,18 @@ sub ss_validator {
 sub options_validation_handler {
     my ( $app, $type, $label, $field_label, $options ) = @_;
 
+    my $cfg_decimal_places = $app->config('NumberFieldDecimalPlaces');
+    my $cfg_max_value      = $app->config('NumberFieldMaxValue');
+    my $cfg_min_value      = $app->config('NumberFieldMinValue');
+
     my $decimal_places = $options->{decimal_places};
     if ($decimal_places) {
         return $app->translate("A decimal places must be a positive integer.")
             unless $decimal_places =~ /^\d+$/;
+        return $app->translate(
+            "A decimal places must be a positive integer and between 0 and [_1].",
+            $cfg_decimal_places
+        ) if $decimal_places > $cfg_decimal_places;
     }
 
     my $min_value = $options->{min_value};
@@ -108,8 +113,8 @@ sub options_validation_handler {
 
         return $app->translate(
             "A minimun value must be an integer and between [_1] and [_2]",
-            MIN_VALUE(), MAX_VALUE() )
-            if $min_value < MIN_VALUE() || $min_value > MAX_VALUE();
+            $cfg_min_value, $cfg_max_value )
+            if $min_value < $cfg_min_value || $min_value > $cfg_max_value;
     }
 
     my $max_value = $options->{max_value};
@@ -122,8 +127,8 @@ sub options_validation_handler {
 
         return $app->translate(
             "A maximum value must be an integer and between [_1] and [_2]",
-            MIN_VALUE(), MAX_VALUE() )
-            if $max_value < MIN_VALUE() || $max_value > MAX_VALUE();
+            $cfg_min_value, $cfg_max_value )
+            if $max_value < $cfg_min_value || $max_value > $cfg_max_value;
     }
 
     my $initial_value = $options->{initial_value};
@@ -134,8 +139,8 @@ sub options_validation_handler {
             "An initial value must be an integer, or must be set decimal places to use decimal value."
         ) if !$decimal_places and defined $1;
 
-        my $min = '' ne $min_value ? $min_value : MIN_VALUE();
-        my $max = '' ne $max_value ? $max_value : MAX_VALUE();
+        my $min = '' ne $min_value ? $min_value : $cfg_min_value;
+        my $max = '' ne $max_value ? $max_value : $cfg_max_value;
 
         return $app->translate(
             "An initial value must be an integer and between [_1] and [_2]",

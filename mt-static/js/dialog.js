@@ -118,7 +118,7 @@ SelectionList = new Class(Object, {
             if (!data || (data && !data.label)) {
                 if (!data) data = {};
                 if (row) {
-                    var label = jQuery(row).find('label:not(.custom-control)').get(0);
+                    var label = jQuery(row).find('.panel-label').get(0);
                     if (label)
                         data.label = label.innerHTML;
                 }

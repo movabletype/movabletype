@@ -150,41 +150,20 @@ $test_env->prepare_fixture(sub {
     MT::Association->link( $kikkawa  => $edit_templates => $website );
     MT::Association->link( $kumekawa => $edit_templates => $second_website );
 
-    require MT::Permission;
-    my $p = MT::Permission->new;
-    $p->blog_id(0);
-    $p->author_id( $ukawa->id );
-    $p->permissions("'create_site'");
-    $p->save;
+    $ukawa->can_create_site(1);
+    $ukawa->save();
 
-    $p = MT::Permission->new;
-    $p->blog_id(0);
-    $p->author_id( $kemikawa->id );
-    $p->permissions("'edit_templates'");
-    $p->save;
+    $kemikawa->can_edit_templates(1);
+    $kemikawa->save();
 
-    $p = MT::Permission->new;
-    $p->blog_id(0);
-    $p->author_id( $suda->id );
-    $p->permissions("'edit_templates'");
-    $p->save;
+    $suda->can_edit_templates(1);
+    $suda->save();
 
-    $p = MT::Permission->new;
-    $p->blog_id(0);
-    $p->author_id( $seta->id );
-    $p->permissions("'edit_templates'");
-    $p->save;
+    $seta->can_edit_templates(1);
+    $seta->save();
 
-    $p = MT::Permission->new;
-    $p->blog_id(0);
-    $p->author_id( $sorimachi->id );
-    $p->permissions("'edit_templates'");
-    $p->save;
-
-    $p = MT::Permission->new;
-    $p->blog_id(0);
-    $p->author_id( $tada->id );
-    $p->save;
+    $sorimachi->can_edit_templates(1);
+    $sorimachi->save();
 });
 
 my $website = MT::Website->load( { name => 'my website' } );

@@ -131,12 +131,8 @@ $test_env->prepare_fixture(sub {
     MT::Association->link( $kumekawa => $edit_templates => $second_blog );
 
     # Assign system privilege.
-    require MT::Permission;
-    my $p = MT::Permission->new;
-    $p->blog_id( 0 );
-    $p->author_id( $kemikawa->id );
-    $p->permissions( "'edit_templates'" );
-    $p->save;
+    $kemikawa->can_edit_templates(1);
+    $kemikawa->save();
 
     # Entry
     my $entry = MT::Test::Permission->make_entry(

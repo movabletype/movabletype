@@ -1263,7 +1263,7 @@ subtest 'action = delete_user' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                        "Request: delete_user" );
-    ok( $out =~ m!not implemented!i, "delete_user by non permitted user" );
+    ok( $out =~ m!not authorized!i, "delete_user by non permitted user" );
 };
 
 done_testing();

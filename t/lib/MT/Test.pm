@@ -561,6 +561,8 @@ sub init_data {
     $bobd->set_password("flute");
     $bobd->type( MT::Author::AUTHOR() );
     $bobd->id(3);
+    $bobd->can_sign_in_cms(1);
+    $bobd->can_sign_in_data_api(1);
     $bobd->save() or die "Couldn't save author record 3: " . $bobd->errstr;
     $bobd->set_score( 'unit test', MT::Author->load(1), 3, 1 );
 
@@ -576,6 +578,8 @@ sub init_data {
     $johnd->type( MT::Author::COMMENTER() );
     $johnd->password('(none)');
     $johnd->id(4);
+    $johnd->can_sign_in_cms(1);
+    $johnd->can_sign_in_data_api(1);
     $johnd->save() or die "Couldn't save author record 4: " . $johnd->errstr;
 
     my $hiro = MT::Author->new();
@@ -591,6 +595,8 @@ sub init_data {
     $hiro->password('time');
     $hiro->id(5);
     $hiro->status(2);
+    $hiro->can_sign_in_cms(1);
+    $hiro->can_sign_in_data_api(1);
     $hiro->save() or die "Couldn't save author record 5: " . $hiro->errstr;
 
     require MT::Role;

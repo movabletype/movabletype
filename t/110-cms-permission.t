@@ -1446,6 +1446,7 @@ sub make_data {
     $aikawa->set_password("pass");
     $aikawa->type( MT::Author::AUTHOR() );
     $aikawa->id(999);
+    $aikawa->can_sign_in_cms(1);
     $aikawa->save()
         or die "Couldn't save author record 999: " . $aikawa->errstr;
 
@@ -1465,6 +1466,7 @@ sub make_data {
     $ichikawa->set_password("pass");
     $ichikawa->type( MT::Author::AUTHOR() );
     $ichikawa->id(998);
+    $ichikawa->can_sign_in_cms(1);
     $ichikawa->save()
         or die "Couldn't save author record 998: " . $ichikawa->errstr;
 
@@ -1484,6 +1486,7 @@ sub make_data {
     $ukawa->set_password("pass");
     $ukawa->type( MT::Author::AUTHOR() );
     $ukawa->id(997);
+    $ukawa->can_sign_in_cms(1);
     $ukawa->save()
         or die "Couldn't save author record 997: " . $ukawa->errstr;
 
@@ -1503,6 +1506,7 @@ sub make_data {
     $egawa->set_password("pass");
     $egawa->type( MT::Author::AUTHOR() );
     $egawa->id(996);
+    $egawa->can_sign_in_cms(1);
     $egawa->save()
         or die "Couldn't save author record 996: " . $egawa->errstr;
 
@@ -1522,6 +1526,7 @@ sub make_data {
     $ogawa->set_password("pass");
     $ogawa->type( MT::Author::AUTHOR() );
     $ogawa->id(995);
+    $ogawa->can_sign_in_cms(1);
     $ogawa->save()
         or die "Couldn't save author record 995: " . $ogawa->errstr;
 
@@ -1541,6 +1546,7 @@ sub make_data {
     $kagawa->set_password("pass");
     $kagawa->type( MT::Author::AUTHOR() );
     $kagawa->id(994);
+    $kagawa->can_sign_in_cms(1);
     $kagawa->save()
         or die "Couldn't save author record 994: " . $kagawa->errstr;
 

@@ -78,12 +78,8 @@ $test_env->prepare_fixture(sub {
     MT::Association->link( $ukawa => $view_blog_log => $second_blog );
     MT::Association->link( $egawa => $designer => $blog );
 
-    require MT::Permission;
-    my $p = MT::Permission->new();
-    $p->blog_id( 0 );
-    $p->author_id( $ogawa->id );
-    $p->permissions("'view_log'");
-    $p->save;
+    $ogawa->can_view_log(1);
+    $ogawa->save();
 });
 
 my $website = MT::Website->load( { name => 'my website' } );

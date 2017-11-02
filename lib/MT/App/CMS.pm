@@ -1767,7 +1767,12 @@ sub core_list_actions {
             copy_templates => {
                 label         => "Clone Template(s)",
                 code          => "${pkg}Template::clone_templates",
-                permit_action => 'copy_template_via_list',
+                permit_action => {
+                    permit_action => 'copy_template_via_list',
+                    include_all   => 1,
+                    system_action => 'copy_template_via_list',
+
+                },
                 condition     => sub {
                     my $app = MT->app;
                     my $tmpl_type = $app->param('filter_key') || '';
@@ -2801,8 +2806,13 @@ sub is_authorized {
     my $app     = shift;
     my $blog_id = $app->param('blog_id');
     $app->permissions(undef);
-    return 1 unless $blog_id;
     return unless my $user = $app->user;
+    if ( !$user->can_sign_in_cms() ) {
+        return $app->error(
+            $app->translate("You are not authorized to log in to this blog.")
+        );
+    }
+    return 1 unless $blog_id;
     my $perms = $app->permissions( $user->permissions($blog_id) );
     $perms
         ? 1

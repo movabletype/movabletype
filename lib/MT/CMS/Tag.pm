@@ -200,7 +200,8 @@ sub js_recent_entries_for_tag {
         && (   ( !$app->blog )
             || ( !$perms )
             || ( !$perms->permissions )
-            || ( $perms->permissions eq "'comment'" ) )
+            || ( $perms->permissions eq "'comment'" )
+            || ( $perms->blog_id == 0 ) )
         )
     {
         return $app->json_error( $app->translate('Permission denied.') );
@@ -699,4 +700,3 @@ sub js_add_tag {
 }
 
 1;
-
