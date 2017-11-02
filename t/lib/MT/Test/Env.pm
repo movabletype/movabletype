@@ -54,24 +54,7 @@ sub path {
 sub write_config {
     my ( $self, $extra ) = @_;
 
-    my $driver = $self->{driver};
-    my $method = '_connect_info_' . ( lc $driver );
-    my %connect_info;
-    if ($self->can($method)) {
-        %connect_info = $self->$method;
-    }
-    else {
-        my @keys = qw(
-            ObjectDriver Database DBPort DBHost DBSocket
-            DBUser DBPassword ODBCDriver
-        );
-        for my $key (@keys) {
-            my $env_key = "MT_TEST_" . (uc $key);
-            if ($ENV{$env_key}) {
-                $connect_info{$key} = $ENV{$env_key};
-            }
-        }
-    }
+    my %connect_info = $self->connect_info;
 
     my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER} ||
         ( eval { require Image::Magick } ? 'ImageMagick' : 'Imager' );
@@ -136,6 +119,31 @@ sub write_config {
         }
     }
     close $fh;
+}
+
+sub connect_info {
+    my $self   = shift;
+    my $driver = $self->{driver};
+    my $method = '_connect_info_' . ( lc $driver );
+    my %connect_info;
+    if ( $self->can($method) ) {
+        %connect_info = $self->$method;
+    }
+    else {
+        my @keys = qw(
+            ObjectDriver Database DBPort DBHost DBSocket
+            DBUser DBPassword ODBCDriver
+        );
+        for my $key (@keys) {
+            my $env_key = "MT_TEST_" . ( uc $key );
+            if ( $ENV{$env_key} ) {
+                $connect_info{$key} = $ENV{$env_key};
+            }
+        }
+
+        # TODO: $self->{dsn} = "dbi:$driver:...";
+    }
+    %connect_info;
 }
 
 sub _connect_info_mysql {
