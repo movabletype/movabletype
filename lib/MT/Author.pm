@@ -953,6 +953,8 @@ sub save {
                 for ( 1 .. 8 ) { $pass .= $pool[ rand @pool ] }
                 $auth->api_password($pass);
             }
+            $auth->can_sign_in_cms(1);
+            $auth->can_sign_in_data_api(1);
         }
 
         # Generate basename
@@ -1756,7 +1758,7 @@ Remove all failed-login histories that belong to this user
 =head2 $author->is_email_hidden()
 
 Indicate if author's email is hidden. Hidden emails are packed to hexadecimal
-strings, should not be displayed to the public, and need to be packed before 
+strings, should not be displayed to the public, and need to be packed before
 use. To retrive the real email use:
 
     $email = pack "H*", $author->email();
@@ -1774,7 +1776,7 @@ Set commenting permissions, where $action can be 'approve', 'ban' or 'pending'.
 
 =head2 $author->commenter_status($blog_id)
 
-Get the current commenting permissions for this author. returns one of these 
+Get the current commenting permissions for this author. returns one of these
 constants: C<MT::Author::BANNED> C<MT::Author::APPROVED> C<MT::Author::PENDING>
 
 =head2 $author->is_trusted($blog_id)
@@ -1855,39 +1857,39 @@ will return the system permissions for this author.
 =head2 $author->can_do($action, [ at_least_one => 1, [ blog_id => $blogs ] ])
 
 Search if this user have this permission. if at_least_one is not supplied,
-searches only on system permissions. if at_least_one is supplies, and blog_id 
+searches only on system permissions. if at_least_one is supplies, and blog_id
 is not supplied, search for this permission in ALL the blogs this author
 have permissions in. If blog_id is supplied, then the search is limited to
-these blogs. $blogs can be either an ID of a single blog, or an array ref 
+these blogs. $blogs can be either an ID of a single blog, or an array ref
 for a list of blog ids.
 
 =head2 $author->role_iter($terms, $args)
 
-Returns an iterator for the roles of this author. see L<MT::Object> to learn 
+Returns an iterator for the roles of this author. see L<MT::Object> to learn
 about iterators. if exist C<$terms->{blog_id}>, returns blog roles. otherwise,
 return system-wide roles.
 
-aside of C<$terms->{blog_id}>, $terms and $args are passed to 
+aside of C<$terms->{blog_id}>, $terms and $args are passed to
 MT::Role->load_iter
 
 =head2 $author->blog_iter($terms, $args)
 
-Returns an iterator for the blogs of this author. see L<MT::Object> to learn 
-about iterators. if author is not superuser, retrive also the permissions 
+Returns an iterator for the blogs of this author. see L<MT::Object> to learn
+about iterators. if author is not superuser, retrive also the permissions
 for each blog
 
 $terms and $args are passed to MT::Blog->load_iter
 
 =head2 $author->group_iter($terms, $args)
 
-Returns an iterator for the groups this author belongs to. see L<MT::Object> 
+Returns an iterator for the groups this author belongs to. see L<MT::Object>
 to learn about iterators.
 
 $terms and $args are passed to the groups handler class's load_iter
 
 =head2 $author->group_role_iter($terms, $args)
 
-Returns an iterator for the groups and roles this author belongs to. 
+Returns an iterator for the groups and roles this author belongs to.
 see L<MT::Object> to learn about iterators. If $terms->{blog_id} is defined,
 the function will return the author's roles and groups related to that blog.
 
@@ -1896,8 +1898,8 @@ $terms and $args are passed to the groups handler class's load_iter
 =head2 $author->add_role($role [, $blog])
 
 Add a role to this author. $role should be a MT::Role object, and $blog,
-is supplied, should be a MT::Blog object. also, if $blog is supplied, 
-the role will be added as related to this blog. otherwise, it will be 
+is supplied, should be a MT::Blog object. also, if $blog is supplied,
+the role will be added as related to this blog. otherwise, it will be
 added as system-wide role.
 
 =head2 $author->remove_role($role [, $blog])
@@ -1925,7 +1927,7 @@ in the format of "role_id,blog_id,role_id,blog_id"
 =head2 $author->auth_icon_url([$size])
 
 Returns an icon to show how this commenter is registered to the system - by
-MT account, or by external service. (for example, Facebook account, openid 
+MT account, or by external service. (for example, Facebook account, openid
 and such) returns the icon URL, or an empty string if can't find one.
 
 If supplied, $size should contain a string describing the size, such as
@@ -1945,7 +1947,7 @@ Returns the file location of this author's user picture
 Returns the URL for this author's user picture
 
 If called in scalar context, returns the URL. if called in list context
-returns (URL, width, height). returns undef (or an empty list) if the 
+returns (URL, width, height). returns undef (or an empty list) if the
 picture does not exists.
 
 =head2 $author->userpic_html()
@@ -1983,7 +1985,7 @@ The type of author record. Currently, MT stores authenticated commenters in the 
 
 =item * status
 
-A column that defines whether the records of an AUTHOR type are ACTIVE, INACTIVE or PENDING (constants declared in this package). 
+A column that defines whether the records of an AUTHOR type are ACTIVE, INACTIVE or PENDING (constants declared in this package).
 
 =item * email
 

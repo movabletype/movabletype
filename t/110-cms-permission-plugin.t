@@ -65,12 +65,8 @@ MT::Association->link( $ichikawa => $site_admin => $second_blog );
 MT::Association->link( $ukawa    => $site_admin => $website );
 MT::Association->link( $ogawa    => $designer   => $blog );
 
-require MT::Permission;
-my $p = MT::Permission->new;
-$p->author_id( $egawa->id );
-$p->blog_id(0);
-$p->permissions("'manage_plugins'");
-$p->save;
+$egawa->can_manage_plugins(1);
+$egawa->save();
 
 # Run
 my ( $app, $out );

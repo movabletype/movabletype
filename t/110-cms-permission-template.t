@@ -134,12 +134,8 @@ MT::Association->link( $suda,     $rebuild,        $other_website );
 MT::Association->link( $koishikawa, $edit_templates, $other_blog );
 MT::Association->link( $seta,       $rebuild,        $other_blog );
 
-require MT::Permission;
-my $p = MT::Permission->new;
-$p->blog_id(0);
-$p->author_id( $kagawa->id );
-$p->permissions("'edit_templates'");
-$p->save;
+$kagawa->can_edit_templates(1);
+$kagawa->save();
 
 # Template
 my $tmpl = MT::Test::Permission->make_template( blog_id => $blog->id, );
