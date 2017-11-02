@@ -2216,6 +2216,11 @@ BEGIN {
 
             # Dashboard
             'DisableVersionCheck' => undef,
+
+            # Content Field Type - MT7
+            'NumberFieldDecimalPlaces' => { default => 5 },
+            'NumberFieldMaxValue'      => { default => 2147483647 },
+            'NumberFieldMinValue'      => { default => -2147483648 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
