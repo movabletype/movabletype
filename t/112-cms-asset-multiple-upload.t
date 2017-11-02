@@ -19,7 +19,10 @@ BEGIN {
 }
 
 use utf8;
-use open ':std', ':encoding(utf8)';
+my $builder = Test::More->builder;
+binmode $builder->output,         ':encoding(utf8)';
+binmode $builder->failure_output, ':encoding(utf8)';
+binmode $builder->todo_output,    ':encoding(utf8)';
 
 use File::Spec;
 use JSON;
