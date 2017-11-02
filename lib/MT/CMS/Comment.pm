@@ -14,126 +14,129 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
+    return 1 unless $id;
+
     my $blog_id = $app->param('blog_id');
     my $perms   = $app->permissions;
     my $blog    = $app->blog;
     my $type    = $app->param('_type');
 
-    if ($id) {
-        $param->{nav_comments} = 1;
-        $app->add_breadcrumb(
-            $app->translate('Comments'),
-            $app->uri(
-                'mode' => 'list',
-                args   => {
-                    '_type' => 'comment',
-                    blog_id => $blog_id
-                }
-            )
-        );
-        $app->add_breadcrumb( $app->translate('Edit Comment') );
-        $param->{has_publish_access} = $app->can_do('edit_comment_status');
-        if ( my $entry = $obj->entry ) {
-            my $title_max_len = const('DISPLAY_LENGTH_EDIT_COMMENT_TITLE');
-            $param->{entry_title}
-                = ( !defined( $entry->title ) || $entry->title eq '' )
-                ? $app->translate('(untitled)')
-                : $entry->title;
-            $param->{entry_title}
-                = substr( $param->{entry_title}, 0, $title_max_len ) . '...'
-                if $param->{entry_title}
-                && length( $param->{entry_title} ) > $title_max_len;
-            $param->{entry_permalink}
-                = MT::Util::encode_html( $entry->permalink );
-            unless ( $param->{has_publish_access} ) {
-                $param->{has_publish_access}
-                    = $app->can_do('edit_comment_status_of_own_entry')
-                    ? 1
-                    : 0
-                    if $app->user->id == $entry->author_id;
+    $param->{nav_comments} = 1;
+    $app->add_breadcrumb(
+        $app->translate('Comments'),
+        $app->uri(
+            'mode' => 'list',
+            args   => {
+                '_type' => 'comment',
+                blog_id => $blog_id
             }
+        )
+    );
+    $app->add_breadcrumb( $app->translate('Edit Comment') );
+    $param->{has_publish_access} = $app->can_do('edit_comment_status');
+
+    if ( my $entry = $obj->entry ) {
+        my $title_max_len = const('DISPLAY_LENGTH_EDIT_COMMENT_TITLE');
+        $param->{entry_title}
+            = ( !defined( $entry->title ) || $entry->title eq '' )
+            ? $app->translate('(untitled)')
+            : $entry->title;
+        $param->{entry_title}
+            = substr( $param->{entry_title}, 0, $title_max_len ) . '...'
+            if $param->{entry_title}
+            && length( $param->{entry_title} ) > $title_max_len;
+        $param->{entry_permalink}
+            = MT::Util::encode_html( $entry->permalink );
+        unless ( $param->{has_publish_access} ) {
+            $param->{has_publish_access}
+                = $app->can_do('edit_comment_status_of_own_entry')
+                ? 1
+                : 0
+                if $app->user->id == $entry->author_id;
         }
-        else {
-            $param->{no_entry} = 1;
-        }
-
-        $param->{can_delete_comment}
-            = $param->{has_publish_access} ? 1
-            : !$obj->is_published()        ? 1
-            :                                0;
-
-        $param->{comment_approved} = $obj->is_published
-            or $param->{comment_pending} = $obj->is_moderated
-            or $param->{is_junk}         = $obj->is_junk;
-
-        $param->{created_on_time_formatted}
-            = format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(),
-            $obj->created_on(), $blog,
-            $app->user ? $app->user->preferred_language : undef );
-        $param->{created_on_day_formatted}
-            = format_ts( MT::App::CMS::LISTING_DATE_FORMAT(),
-            $obj->created_on(), $blog,
-            $app->user ? $app->user->preferred_language : undef );
-
-        $param->{approved}   = $app->param('approved');
-        $param->{unapproved} = $app->param('unapproved');
-        $param->{is_junk}    = $obj->is_junk;
-
-        $param->{entry_class_label} = $obj->entry->class_label;
-        $param->{entry_class}       = $obj->entry->class;
-
-        ## Load next and previous entries for next/previous links
-        if ( my $next = $obj->next ) {
-            $param->{next_comment_id} = $next->id;
-        }
-        if ( my $prev = $obj->previous ) {
-            $param->{previous_comment_id} = $prev->id;
-        }
-        if ( $obj->junk_log ) {
-            require MT::CMS::Comment;
-            MT::CMS::Comment::build_junk_table(
-                $app,
-                param  => $param,
-                object => $obj
-            );
-        }
-
-        if ( my $cmtr_id = $obj->commenter_id ) {
-            my $cmtr = $app->model('author')->load($cmtr_id);
-            if ($cmtr) {
-                $param->{is_mine} = 1 if $cmtr_id == $app->user->id;
-                $param->{commenter_approved}
-                    = $cmtr->commenter_status( $obj->blog_id )
-                    == MT::Author::APPROVED();
-                $param->{commenter_banned}
-                    = $cmtr->commenter_status( $obj->blog_id )
-                    == MT::Author::BANNED();
-                $param->{type_author} = 1
-                    if MT::Author::AUTHOR() == $cmtr->type;
-                $param->{auth_icon_url} = $cmtr->auth_icon_url;
-                $param->{email}         = $cmtr->email;
-                $param->{url}           = $cmtr->url;
-                $param->{commenter_url} = $app->uri(
-                    mode => 'view',
-                    args => { '_type' => 'author', 'id' => $cmtr->id, }
-                    )
-                    if ( MT::Author::AUTHOR() == $cmtr->type )
-                    && $app->user->is_superuser;
-            }
-        }
-        $param->{invisible_unregistered} = !$obj->visible
-            && !$obj->commenter_id;
-
-        $param->{search_label} = $app->translate('Comments');
-        $param->{object_type}  = 'comment';
-
-        my $children = build_comment_table( $app,
-            load_args =>
-                [ { parent_id => $obj->id }, { direction => 'descend' } ] );
-        $param->{object_loop} = $children if @$children;
-
-        $app->load_list_actions( $type, $param );
     }
+    else {
+        $param->{no_entry} = 1;
+    }
+
+    $param->{can_delete_comment}
+        = $param->{has_publish_access} ? 1
+        : !$obj->is_published()        ? 1
+        :                                0;
+
+    $param->{comment_approved} = $obj->is_published
+        or $param->{comment_pending} = $obj->is_moderated
+        or $param->{is_junk}         = $obj->is_junk;
+
+    $param->{created_on_time_formatted}
+        = format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(),
+        $obj->created_on(), $blog,
+        $app->user ? $app->user->preferred_language : undef );
+    $param->{created_on_day_formatted}
+        = format_ts( MT::App::CMS::LISTING_DATE_FORMAT(),
+        $obj->created_on(), $blog,
+        $app->user ? $app->user->preferred_language : undef );
+
+    $param->{approved}   = $app->param('approved');
+    $param->{unapproved} = $app->param('unapproved');
+    $param->{is_junk}    = $obj->is_junk;
+
+    $param->{entry_class_label} = $obj->entry->class_label;
+    $param->{entry_class}       = $obj->entry->class;
+
+    ## Load next and previous entries for next/previous links
+    if ( my $next = $obj->next ) {
+        $param->{next_comment_id} = $next->id;
+    }
+    if ( my $prev = $obj->previous ) {
+        $param->{previous_comment_id} = $prev->id;
+    }
+    if ( $obj->junk_log ) {
+        require MT::CMS::Comment;
+        MT::CMS::Comment::build_junk_table(
+            $app,
+            param  => $param,
+            object => $obj
+        );
+    }
+
+    if ( my $cmtr_id = $obj->commenter_id ) {
+        my $cmtr = $app->model('author')->load($cmtr_id);
+        if ($cmtr) {
+            $param->{is_mine} = 1 if $cmtr_id == $app->user->id;
+            $param->{commenter_approved}
+                = $cmtr->commenter_status( $obj->blog_id )
+                == MT::Author::APPROVED();
+            $param->{commenter_banned}
+                = $cmtr->commenter_status( $obj->blog_id )
+                == MT::Author::BANNED();
+            $param->{type_author} = 1
+                if MT::Author::AUTHOR() == $cmtr->type;
+            $param->{auth_icon_url} = $cmtr->auth_icon_url;
+            $param->{email}         = $cmtr->email;
+            $param->{url}           = $cmtr->url;
+            $param->{commenter_url} = $app->uri(
+                mode => 'view',
+                args => { '_type' => 'author', 'id' => $cmtr->id, }
+                )
+                if ( MT::Author::AUTHOR() == $cmtr->type )
+                && $app->user->is_superuser;
+            $param->{can_edit_commenters} = 0 if $cmtr->is_superuser;
+        }
+    }
+    $param->{invisible_unregistered} = !$obj->visible
+        && !$obj->commenter_id;
+
+    $param->{search_label} = $app->translate('Comments');
+    $param->{object_type}  = 'comment';
+
+    my $children = build_comment_table( $app,
+        load_args =>
+            [ { parent_id => $obj->id }, { direction => 'descend' } ] );
+    $param->{object_loop} = $children if @$children;
+
+    $app->load_list_actions( $type, $param );
+
     1;
 }
 
@@ -164,8 +167,8 @@ sub edit_commenter {
         if MT::Author::AUTHOR() == $obj->type;
 
     $param->{can_edit_commenters}
-        = $app->user->is_superuser
-        ? 1
+        = $obj->is_superuser            ? 0
+        : $app->user->is_superuser      ? 1
         : $app->config->SingleCommunity ? $app->blog
             ? 0
             : $app->user->can_do('edit_commenter_status') ? 1
