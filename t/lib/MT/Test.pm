@@ -344,7 +344,7 @@ sub init_memcached {
     };
 }
 
-sub init_newdb {
+sub _load_classes {
     my $pkg = shift;
     my ($cfg) = @_;
 
@@ -374,6 +374,13 @@ sub init_newdb {
                 or die $@;
         }
     }
+    @classes;
+}
+
+sub init_newdb {
+    my $pkg = shift;
+
+    my @classes = $pkg->_load_classes(@_);
 
     # Clear existing database tables
     my $driver = MT::Object->driver();
