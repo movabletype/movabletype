@@ -663,7 +663,7 @@ sub _bulk_author_name_html {
 
             $badge_type
                 = $obj->is_trusted($blog_id) ? 'success'
-                : $obj->is_trusted($blog_id) ? 'default'
+                : $obj->is_banned($blog_id)  ? 'default'
                 :                              'info';
         }
 
