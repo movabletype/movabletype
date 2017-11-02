@@ -350,7 +350,7 @@ sub save_schema {
     eval { require SQL::Translator } or return;
 
     # skip if updated quite recently
-    # return if -f $file and (stat($file))[9] - time < 300;
+    return if -f $file and (stat($file))[9] - time < 300;
 
     my $driver = lc $self->{driver};
     my $dbh    = $self->dbh;
