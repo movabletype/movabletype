@@ -17,8 +17,11 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+use MT;
 use MT::Test;
 use MT::Image;
+
+MT->instance;
 
 my @drivers = qw( ImageMagick NetPBM GD Imager );
 
