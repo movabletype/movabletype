@@ -22,8 +22,8 @@ subtest 'user = administrator' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                       "Request: login" );
-    ok( $out !~ m!not authorized!i, "not authorized(mode=dashboard) by admin" );
+    ok( $out,                       "Request: dashboard" );
+    ok( $out !~ m!not Invalid login.!i, "Invalid login(mode=dashboard) by admin" );
 };
 
 subtest 'user = not administrator' => sub {
@@ -35,8 +35,8 @@ subtest 'user = not administrator' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                       "Request: login" );
-    ok( $out !~ m!not authorized!i, "not authorized(mode=dashboard) by user(can_sign_in_cms=1)" );
+    ok( $out,                       "Request: dashboard" );
+    ok( $out !~ m!Invalid login.!i, "Invalid login(mode=dashboard) by user(can_sign_in_cms=1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -46,8 +46,8 @@ subtest 'user = not administrator' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                       "Request: login" );
-    ok( $out !~ m!not authorized!i, "not authorized(mode=cfg_prefs) by user(can_sign_in_cms=1)" );
+    ok( $out,                       "Request: cfg_prefs" );
+    ok( $out !~ m!Invalid login.!i, "Invalid login(mode=cfg_prefs) by user(can_sign_in_cms=1)" );
 
     $user->can_sign_in_cms(0);
     $user->save or die $user->errstr;
@@ -60,8 +60,8 @@ subtest 'user = not administrator' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                       "Request: login" );
-    ok( $out =~ m!not authorized!i, "not authorized(mode=dashboard) by user(can_sign_in_cms=0)" );
+    ok( $out,                       "Request: dashboard" );
+    ok( $out =~ m!Invalid login.!i, "Invalid login(mode=dashboard) by user(can_sign_in_cms=0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -72,8 +72,8 @@ subtest 'user = not administrator' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                       "Request: login" );
-    ok( $out =~ m!not authorized!i, "not authorized(mode=cfg_prefs) by user(can_sign_in_cms=0)" );
+    ok( $out,                       "Request: cfg_prefs" );
+    ok( $out =~ m!Invalid login.!i, "Invalid login(mode=cfg_prefs) by user(can_sign_in_cms=0)" );
 
 };
 

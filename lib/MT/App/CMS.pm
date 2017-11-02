@@ -1773,7 +1773,7 @@ sub core_list_actions {
                     system_action => 'copy_template_via_list',
 
                 },
-                condition     => sub {
+                condition => sub {
                     my $app = MT->app;
                     my $tmpl_type = $app->param('filter_key') || '';
                     return
@@ -2808,9 +2808,17 @@ sub is_authorized {
     $app->permissions(undef);
     return unless my $user = $app->user;
     if ( !$user->can_sign_in_cms() ) {
-        return $app->error(
-            $app->translate("You are not authorized to log in to this blog.")
+        $app->log(
+            {   message => $app->translate(
+                    "Failed login attempt by not permitted user '[_1]'",
+                    $user->name
+                ),
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            }
         );
+        return $app->error( $app->translate("Invalid login.") );
     }
     return 1 unless $blog_id;
     my $perms = $app->permissions( $user->permissions($blog_id) );
