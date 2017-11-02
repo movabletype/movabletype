@@ -18,46 +18,55 @@ use MT::Test::Permission;
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
+    MT::Test->init_data;
+
+    my $author = MT->model('author')->load(1);
+    $author->email('melody@example.com');
+    $author->save;
+
+    # Make a new role that including upload permission only.
+    require MT::Role;
+    my $role = MT::Role->new();
+    $role->name( 'upload' );
+    $role->description( 'upload' );
+    $role->clear_full_permissions;
+    $role->set_these_permissions( 'upload' );
+    $role->save;
+
+    # Make a new user who is associated with upload role.
+    my $uploader = MT::Author->new;
+    $uploader->set_values(
+        {   name             => 'uploader',
+            nickname         => 'Mr. Uploader',
+            email            => 'uploader@example.com',
+            url              => 'http://example.com/',
+            userpic_asset_id => 3,
+            api_password     => 'seecret',
+            auth_type        => 'MT',
+            created_on       => '19780131074500',
+        }
+    );
+    $uploader->set_password("bass");
+    $uploader->type( MT::Author::AUTHOR() );
+    $uploader->id(100);
+    $uploader->save()
+        or die "Couldn't save author record 100: " . $uploader->errstr;
+
+    require MT::Association;
+    my $assoc = MT::Association->new();
+    $assoc->author_id( $uploader->id );
+    $assoc->blog_id(1);
+    $assoc->role_id( $role->id );
+    $assoc->type(1);
+    $assoc->save();
+});
+
+my $blog = MT::Blog->load(1);
+File::Path::mkpath $blog->archive_path unless -d $blog->archive_path;
+
 my $author = MT->model('author')->load(1);
-$author->email('melody@example.com');
-$author->save;
-
-# Make a new role that including upload permission only.
-require MT::Role;
-my $role = MT::Role->new();
-$role->name( 'upload' );
-$role->description( 'upload' );
-$role->clear_full_permissions;
-$role->set_these_permissions( 'upload' );
-$role->save;
-
-# Make a new user who is associated with upload role.
-my $uploader = MT::Author->new;
-$uploader->set_values(
-    {   name             => 'uploader',
-        nickname         => 'Mr. Uploader',
-        email            => 'uploader@example.com',
-        url              => 'http://example.com/',
-        userpic_asset_id => 3,
-        api_password     => 'seecret',
-        auth_type        => 'MT',
-        created_on       => '19780131074500',
-    }
-);
-$uploader->set_password("bass");
-$uploader->type( MT::Author::AUTHOR() );
-$uploader->id(100);
-$uploader->save()
-    or die "Couldn't save author record 100: " . $uploader->errstr;
-
-require MT::Association;
-my $assoc = MT::Association->new();
-$assoc->author_id( $uploader->id );
-$assoc->blog_id(1);
-$assoc->role_id( $role->id );
-$assoc->type(1);
-$assoc->save();
-
 
 my $mock_filemgr_local = Test::MockModule->new('MT::FileMgr::Local');
 $mock_filemgr_local->mock( 'delete', sub {1} );

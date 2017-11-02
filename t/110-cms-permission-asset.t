@@ -12,130 +12,160 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 
+MT::Test->init_app;
+
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+    # Website
+    my $website = MT::Test::Permission->make_website(
+        name => 'my website',
+    );
 
-# Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-my $second_blog
-    = MT::Test::Permission->make_blog( parent_id => $website->id, );
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
+    my $second_blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'second blog',
+    );
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name     => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name     => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
 
-my $ichikawa = MT::Test::Permission->make_author(
-    name     => 'ichikawa',
-    nickname => 'Jiro Ichikawa',
-);
+    my $ichikawa = MT::Test::Permission->make_author(
+        name     => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
 
-my $ukawa = MT::Test::Permission->make_author(
-    name     => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
+    my $ukawa = MT::Test::Permission->make_author(
+        name     => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
 
-my $egawa = MT::Test::Permission->make_author(
-    name     => 'egawa',
-    nickname => 'Shiro Egawa',
-);
+    my $egawa = MT::Test::Permission->make_author(
+        name     => 'egawa',
+        nickname => 'Shiro Egawa',
+    );
 
-my $ogawa = MT::Test::Permission->make_author(
-    name     => 'ogawa',
-    nickname => 'Goro ogawa',
-);
+    my $ogawa = MT::Test::Permission->make_author(
+        name     => 'ogawa',
+        nickname => 'Goro ogawa',
+    );
 
-my $kagawa = MT::Test::Permission->make_author(
-    name     => 'kagawa',
-    nickname => 'Ichiro kagawa',
-);
+    my $kagawa = MT::Test::Permission->make_author(
+        name     => 'kagawa',
+        nickname => 'Ichiro kagawa',
+    );
 
-my $kikkawa = MT::Test::Permission->make_author(
-    name     => 'kikkawa',
-    nickname => 'Jiro Kikkawa',
-);
+    my $kikkawa = MT::Test::Permission->make_author(
+        name     => 'kikkawa',
+        nickname => 'Jiro Kikkawa',
+    );
 
-my $kumekawa = MT::Test::Permission->make_author(
-    name     => 'kumekawa',
-    nickname => 'Saburo Kumekawa',
-);
+    my $kumekawa = MT::Test::Permission->make_author(
+        name     => 'kumekawa',
+        nickname => 'Saburo Kumekawa',
+    );
 
-my $kemikawa = MT::Test::Permission->make_author(
-    name     => 'kemikawa',
-    nickname => 'Shiro Kemikawa',
-);
+    my $kemikawa = MT::Test::Permission->make_author(
+        name     => 'kemikawa',
+        nickname => 'Shiro Kemikawa',
+    );
+
+    my $admin = MT::Author->load(1);
+
+    # Asset
+    my $pic = MT::Test::Permission->make_asset(
+        class   => 'image',
+        blog_id => 0,
+        url     => 'http://narnia.na/nana/images/test.jpg',
+        file_path =>
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
+        file_name    => 'test.jpg',
+        file_ext     => 'jpg',
+        image_width  => 640,
+        image_height => 480,
+        mime_type    => 'image/jpeg',
+        label        => 'Userpic A',
+        description  => 'Userpic A',
+    );
+    $pic->tags('@userpic');
+    $pic->save;
+
+    my $pic2 = MT::Test::Permission->make_asset(
+        class   => 'image',
+        blog_id => $blog->id,
+        url     => 'http://narnia.na/nana/images/test.jpg',
+        file_path =>
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
+        file_name    => 'test.jpg',
+        file_ext     => 'jpg',
+        image_width  => 640,
+        image_height => 480,
+        mime_type    => 'image/jpeg',
+        label        => 'Sample Image',
+        description  => 'Sample photo',
+    );
+
+    # Role
+    my $create_post = MT::Test::Permission->make_role(
+        name        => 'Create Post',
+        permissions => "'create_post'",
+    );
+
+    my $manage_pages = MT::Test::Permission->make_role(
+        name        => 'Manage Pages',
+        permissions => "'manage_pages'",
+    );
+
+    my $edit_assets = MT::Test::Permission->make_role(
+        name        => 'Edit Assets',
+        permissions => "'edit_assets', 'upload'",
+    );
+
+    my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+
+    require MT::Association;
+    MT::Association->link( $aikawa   => $create_post  => $blog );
+    MT::Association->link( $ichikawa => $manage_pages => $blog );
+    MT::Association->link( $ukawa    => $create_post  => $second_blog );
+    MT::Association->link( $egawa    => $manage_pages => $second_blog );
+    MT::Association->link( $ogawa    => $designer     => $blog );
+    MT::Association->link( $kagawa   => $edit_assets  => $blog );
+    MT::Association->link( $kikkawa  => $edit_assets  => $second_blog );
+    MT::Association->link( $kumekawa => $edit_assets  => $blog );
+    MT::Association->link( $kumekawa => $create_post  => $blog );
+    MT::Association->link( $kemikawa => $edit_assets  => $second_blog );
+    MT::Association->link( $kemikawa => $create_post  => $second_blog );
+});
+
+my $website = MT::Website->load( { name => 'my website' } );
+my $blog    = MT::Blog->load( { name => 'my blog' } );
+
+my $aikawa   = MT::Author->load( { name => 'aikawa' } );
+my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
+my $ukawa    = MT::Author->load( { name => => 'ukawa' } );
+my $egawa    = MT::Author->load( { name => 'egawa' } );
+my $ogawa    = MT::Author->load( { name => 'ogawa' } );
+my $kagawa   = MT::Author->load( { name => 'kagawa' } );
+my $kikkawa  = MT::Author->load( { name => 'kikkawa' } );
+my $kumekawa = MT::Author->load( { name => 'kumekawa' } );
+my $kemikawa = MT::Author->load( { name => 'kemikawa' } );
 
 my $admin = MT::Author->load(1);
 
-# Asset
-my $pic = MT::Test::Permission->make_asset(
-    class   => 'image',
-    blog_id => 0,
-    url     => 'http://narnia.na/nana/images/test.jpg',
-    file_path =>
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
-    file_name    => 'test.jpg',
-    file_ext     => 'jpg',
-    image_width  => 640,
-    image_height => 480,
-    mime_type    => 'image/jpeg',
-    label        => 'Userpic A',
-    description  => 'Userpic A',
-);
-$pic->tags('@userpic');
-$pic->save;
-
-my $pic2 = MT::Test::Permission->make_asset(
-    class   => 'image',
-    blog_id => $blog->id,
-    url     => 'http://narnia.na/nana/images/test.jpg',
-    file_path =>
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
-    file_name    => 'test.jpg',
-    file_ext     => 'jpg',
-    image_width  => 640,
-    image_height => 480,
-    mime_type    => 'image/jpeg',
-    label        => 'Sample Image',
-    description  => 'Sample photo',
-);
-
-# Role
-my $create_post = MT::Test::Permission->make_role(
-    name        => 'Create Post',
-    permissions => "'create_post'",
-);
-
-my $manage_pages = MT::Test::Permission->make_role(
-    name        => 'Manage Pages',
-    permissions => "'manage_pages'",
-);
-
-my $edit_assets = MT::Test::Permission->make_role(
-    name        => 'Edit Assets',
-    permissions => "'edit_assets', 'upload'",
-);
-
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
-
-require MT::Association;
-MT::Association->link( $aikawa   => $create_post  => $blog );
-MT::Association->link( $ichikawa => $manage_pages => $blog );
-MT::Association->link( $ukawa    => $create_post  => $second_blog );
-MT::Association->link( $egawa    => $manage_pages => $second_blog );
-MT::Association->link( $ogawa    => $designer     => $blog );
-MT::Association->link( $kagawa   => $edit_assets  => $blog );
-MT::Association->link( $kikkawa  => $edit_assets  => $second_blog );
-MT::Association->link( $kumekawa => $edit_assets  => $blog );
-MT::Association->link( $kumekawa => $create_post  => $blog );
-MT::Association->link( $kemikawa => $edit_assets  => $second_blog );
-MT::Association->link( $kemikawa => $create_post  => $second_blog );
+my $pic  = MT::Asset::Image->load( { label => 'Userpic A' } );
+my $pic2 = MT::Asset::Image->load( { label => 'Sample Image' } );
 
 # Run
 my ( $app, $out );

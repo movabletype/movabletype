@@ -18,11 +18,19 @@ use lib 'addons/Commercial.pack/lib',
 use MT;
 use MT::Author;
 use MT::Blog;
-use MT::Test qw( :app :db :data );
+use MT::Test;
+
+MT::Test->init_app;
+
+my $mt = MT->instance;
 
 # Make additional data
-my $mt = MT->instance;
-make_data();
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
+    MT::Test->init_data;
+
+    make_data();
+});
 
 my ( $app, $out );
 my $blog  = MT::Blog->load(1);

@@ -17,7 +17,7 @@ use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT::Test::Permission;
 
 filters {
@@ -27,7 +27,12 @@ filters {
     error    => [qw( chomp )],
 };
 
-MT::Test::Permission->make_asset( blog_id => 2 );
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
+    MT::Test->init_data;
+
+    MT::Test::Permission->make_asset( blog_id => 2 );
+});
 
 MT::Test::Tag->run_perl_tests;
 MT::Test::Tag->run_php_tests;

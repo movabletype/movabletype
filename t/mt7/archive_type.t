@@ -10,7 +10,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :db );
+use MT::Test;
 use MT::Test::Permission;
 use File::Basename;
 
@@ -18,144 +18,170 @@ use MT::ContentFieldIndex;
 use MT::ContentPublisher;
 
 my $mt = MT->instance;
-my $blog
-    = MT::Test::Permission->make_blog( parent_id => 0, name => 'test blog' );
 
-my $ct = MT::Test::Permission->make_content_type(
-    blog_id => $blog->id,
-    name    => 'test content type',
-);
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-my $cf_datetime = MT::Test::Permission->make_content_field(
-    blog_id         => $ct->blog_id,
-    content_type_id => $ct->id,
-    name            => 'date and time',
-    type            => 'date_and_time',
-);
-my $cf_category = MT::Test::Permission->make_content_field(
-    blog_id         => $ct->blog_id,
-    content_type_id => $ct->id,
-    name            => 'categories',
-    type            => 'categories',
-);
-my $category_set = MT::Test::Permission->make_category_set(
-    blog_id => $ct->blog_id,
-    name    => 'test category set',
-);
-my $category1 = MT::Test::Permission->make_category(
-    blog_id         => $category_set->blog_id,
-    category_set_id => $category_set->id,
-    label           => 'category1',
-);
+    my $blog
+        = MT::Test::Permission->make_blog( parent_id => 0, name => 'test blog' );
 
-my $fields = [
-    {   id        => $cf_datetime->id,
-        order     => 6,
-        type      => $cf_datetime->type,
-        options   => { label => $cf_datetime->name },
-        unique_id => $cf_datetime->unique_id,
-    },
-    {   id      => $cf_category->id,
-        order   => 15,
-        type    => $cf_category->type,
-        options => {
-            label        => $cf_category->name,
-            category_set => $category_set->id,
-            multiple     => 1,
-            max          => 5,
-            min          => 1,
+    my $ct = MT::Test::Permission->make_content_type(
+        blog_id => $blog->id,
+        name    => 'test content type',
+    );
+
+    my $cf_datetime = MT::Test::Permission->make_content_field(
+        blog_id         => $ct->blog_id,
+        content_type_id => $ct->id,
+        name            => 'date and time',
+        type            => 'date_and_time',
+    );
+    my $cf_category = MT::Test::Permission->make_content_field(
+        blog_id         => $ct->blog_id,
+        content_type_id => $ct->id,
+        name            => 'categories',
+        type            => 'categories',
+    );
+    my $category_set = MT::Test::Permission->make_category_set(
+        blog_id => $ct->blog_id,
+        name    => 'test category set',
+    );
+    my $category1 = MT::Test::Permission->make_category(
+        blog_id         => $category_set->blog_id,
+        category_set_id => $category_set->id,
+        label           => 'category1',
+    );
+
+    my $fields = [
+        {   id        => $cf_datetime->id,
+            order     => 6,
+            type      => $cf_datetime->type,
+            options   => { label => $cf_datetime->name },
+            unique_id => $cf_datetime->unique_id,
         },
-    },
-];
-$ct->fields($fields);
-$ct->save or die $ct->errstr;
+        {   id      => $cf_category->id,
+            order   => 15,
+            type    => $cf_category->type,
+            options => {
+                label        => $cf_category->name,
+                category_set => $category_set->id,
+                multiple     => 1,
+                max          => 5,
+                min          => 1,
+            },
+        },
+    ];
+    $ct->fields($fields);
+    $ct->save or die $ct->errstr;
 
-my $author = MT::Test::Permission->make_author(
-    name     => 'yishikawa',
-    nickname => 'Yuki Ishikawa',
-);
-my $author2 = MT::Test::Permission->make_author(
-    name     => 'myanagida',
-    nickname => 'Masahiro Yanagida',
-);
+    my $author = MT::Test::Permission->make_author(
+        name     => 'yishikawa',
+        nickname => 'Yuki Ishikawa',
+    );
+    my $author2 = MT::Test::Permission->make_author(
+        name     => 'myanagida',
+        nickname => 'Masahiro Yanagida',
+    );
 
-my $cd = MT::Test::Permission->make_content_data(
-    blog_id         => $blog->id,
-    content_type_id => $ct->id,
-    author_id       => $author->id,
-    authored_on     => '20170909130530',
-    data            => {
-        $cf_datetime->id => '20170603180500',
-        $cf_category->id => [ $category1->id ],
-    },
-);
-my $cd1 = MT::Test::Permission->make_content_data(
-    blog_id         => $blog->id,
-    content_type_id => $ct->id,
-    author_id       => $author->id,
-    authored_on     => '20170809130530',
-    data            => {
-        $cf_datetime->id => '20170603180500',
-        $cf_category->id => [ $category1->id ],
-    },
-);
-my $cd2 = MT::Test::Permission->make_content_data(
-    blog_id         => $blog->id,
-    content_type_id => $ct->id,
-    author_id       => $author->id,
-    authored_on     => '20171009130530',
-    data            => {
-        $cf_datetime->id => '20170603180500',
-        $cf_category->id => [ $category1->id ],
-    },
-);
-my $cd_no_category_author2 = MT::Test::Permission->make_content_data(
-    blog_id         => $blog->id,
-    content_type_id => $ct->id,
-    author_id       => $author2->id,
-    authored_on     => '20160909130530',
-    data            => { $cf_datetime->id => '20180603180500', },
-);
+    my $cd = MT::Test::Permission->make_content_data(
+        blog_id         => $blog->id,
+        content_type_id => $ct->id,
+        author_id       => $author->id,
+        authored_on     => '20170909130530',
+        data            => {
+            $cf_datetime->id => '20170603180500',
+            $cf_category->id => [ $category1->id ],
+        },
+    );
+    my $cd1 = MT::Test::Permission->make_content_data(
+        blog_id         => $blog->id,
+        content_type_id => $ct->id,
+        author_id       => $author->id,
+        authored_on     => '20170809130530',
+        data            => {
+            $cf_datetime->id => '20170603180500',
+            $cf_category->id => [ $category1->id ],
+        },
+    );
+    my $cd2 = MT::Test::Permission->make_content_data(
+        blog_id         => $blog->id,
+        content_type_id => $ct->id,
+        author_id       => $author->id,
+        authored_on     => '20171009130530',
+        data            => {
+            $cf_datetime->id => '20170603180500',
+            $cf_category->id => [ $category1->id ],
+        },
+    );
+    my $cd_no_category_author2 = MT::Test::Permission->make_content_data(
+        blog_id         => $blog->id,
+        content_type_id => $ct->id,
+        author_id       => $author2->id,
+        authored_on     => '20160909130530',
+        data            => { $cf_datetime->id => '20180603180500', },
+    );
 
-my $pre_text = <<PRE;
+    my $pre_text = <<PRE;
 <\$mt:ArchiveTitle\$>
 PRE
-my $content_type_text
-    = $pre_text . "<mt:ContentNext>\"<mt:ContentID>\"</mt:ContentNext>";
-my $text
-    = $pre_text
-    . "<mt:Contents><mt:ContentNext>\"<mt:ContentID>\"</mt:ContentNext></mt:Contents>";
-my $tmpl = MT::Test::Permission->make_template(
-    blog_id         => $blog->id,
-    content_type_id => $cd->id,
-    name            => 'ContentType Test',
-    type            => 'ct',
-    text            => $content_type_text,
-);
-my $tmpl_archive = MT::Test::Permission->make_template(
-    blog_id         => $blog->id,
-    content_type_id => $cd->id,
-    name            => 'ContentType Archive Test',
-    type            => 'ct_archive',
-    text            => $text,
-);
+    my $content_type_text
+        = $pre_text . "<mt:ContentNext>\"<mt:ContentID>\"</mt:ContentNext>";
+    my $text
+        = $pre_text
+        . "<mt:Contents><mt:ContentNext>\"<mt:ContentID>\"</mt:ContentNext></mt:Contents>";
+    my $tmpl = MT::Test::Permission->make_template(
+        blog_id         => $blog->id,
+        content_type_id => $cd->id,
+        name            => 'ContentType Test',
+        type            => 'ct',
+        text            => $content_type_text,
+    );
+    my $tmpl_archive = MT::Test::Permission->make_template(
+        blog_id         => $blog->id,
+        content_type_id => $cd->id,
+        name            => 'ContentType Archive Test',
+        type            => 'ct_archive',
+        text            => $text,
+    );
 
-my $ct_dummy = MT::Test::Permission->make_content_type(
-    blog_id => $blog->id,
-    name    => 'dummy content type',
-);
-$ct_dummy->fields($fields);
-$ct_dummy->save or die $ct->errstr;
-my $cd_dummy = MT::Test::Permission->make_content_data(
+    my $ct_dummy = MT::Test::Permission->make_content_type(
+        blog_id => $blog->id,
+        name    => 'dummy content type',
+    );
+    $ct_dummy->fields($fields);
+    $ct_dummy->save or die $ct->errstr;
+    my $cd_dummy = MT::Test::Permission->make_content_data(
+        blog_id         => $blog->id,
+        content_type_id => $ct_dummy->id,
+        author_id       => $author->id,
+        authored_on     => '20170909130530',
+        data            => {
+            $cf_datetime->id => '20170603180500',
+            $cf_category->id => [ $category1->id ],
+        },
+    );
+});
+
+my $blog = MT::Blog->load( { name => 'test blog' } );
+
+my $author = MT::Author->load( { name => 'yishikawa' } );
+
+my $cf_datetime = MT::ContentField->load( { name => 'date and time' } );
+my $cf_category = MT::ContentField->load( { name => 'categories' } );
+
+my $ct = MT::ContentType->load( { name => 'test content type' } );
+
+my $category1 = MT::Category->load( { label => 'category1' } );
+
+my $cd = MT::ContentData->load( {
     blog_id         => $blog->id,
-    content_type_id => $ct_dummy->id,
+    content_type_id => $ct->id,
     author_id       => $author->id,
     authored_on     => '20170909130530',
-    data            => {
-        $cf_datetime->id => '20170603180500',
-        $cf_category->id => [ $category1->id ],
-    },
-);
+} );
+
+my $tmpl         = MT::Template->load( { name => 'ContentType Test' } );
+my $tmpl_archive = MT::Template->load( { name => 'ContentType Archive Test' } );
 
 my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
 

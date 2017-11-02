@@ -16,7 +16,7 @@ use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
 use MT::Test::Permission;
 my $app = MT->instance;
 
@@ -30,75 +30,79 @@ filters {
 my $mt = MT->instance;
 
 # Make test data
-my $b = $mt->model('blog')->new;
-$b->set_values( { id => 1, } );
-$b->save or die $b->errstr;
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-my $cat = MT::Test::Permission->make_category( blog_id => $b->id, );
+    my $b = $mt->model('blog')->new;
+    $b->set_values( { id => 1, } );
+    $b->save or die $b->errstr;
 
-my $folder = MT::Test::Permission->make_category( blog_id => $b->id, );
+    my $cat = MT::Test::Permission->make_category( blog_id => $b->id, );
 
-my @dates = (
-    {   authored_on  => '20131201000000',
-        modified_on  => '20130901000000',
-        has_category => 0
-    },
-    {   authored_on  => '20131101000000',
-        modified_on  => '20131001000000',
-        has_category => 1
-    },
-    {   authored_on  => '20131001000000',
-        modified_on  => '20131101000000',
-        has_category => 1
-    },
-    {   authored_on  => '20130901000000',
-        modified_on  => '20131201000000',
-        has_category => 1
-    },
-);
-foreach (@dates) {
-    my %values = (
-        blog_id     => 1,
-        author_id   => 1,
-        status      => MT::Entry::RELEASE,
-        authored_on => $_->{authored_on},
-        modified_on => $_->{modified_on},
-        created_on  => $_->{modified_on},
+    my $folder = MT::Test::Permission->make_category( blog_id => $b->id, );
+
+    my @dates = (
+        {   authored_on  => '20131201000000',
+            modified_on  => '20130901000000',
+            has_category => 0
+        },
+        {   authored_on  => '20131101000000',
+            modified_on  => '20131001000000',
+            has_category => 1
+        },
+        {   authored_on  => '20131001000000',
+            modified_on  => '20131101000000',
+            has_category => 1
+        },
+        {   authored_on  => '20130901000000',
+            modified_on  => '20131201000000',
+            has_category => 1
+        },
     );
+    foreach (@dates) {
+        my %values = (
+            blog_id     => 1,
+            author_id   => 1,
+            status      => MT::Entry::RELEASE(),
+            authored_on => $_->{authored_on},
+            modified_on => $_->{modified_on},
+            created_on  => $_->{modified_on},
+        );
 
-    # page
-    my $p = $mt->model('page')->new;
-    $p->set_values( \%values );
-    $p->save or die $p->errstr;
+        # page
+        my $p = $mt->model('page')->new;
+        $p->set_values( \%values );
+        $p->save or die $p->errstr;
 
-    # entry
-    my $e = $mt->model('entry')->new;
-    $e->set_values( \%values );
-    $e->save or die $e->errstr;
+        # entry
+        my $e = $mt->model('entry')->new;
+        $e->set_values( \%values );
+        $e->save or die $e->errstr;
 
-    next unless $_->{has_category};
+        next unless $_->{has_category};
 
-    # associate with category/folder
-    my $p_place = $mt->model('placement')->new;
-    $p_place->set_values(
-        {   blog_id     => $b->id,
-            category_id => $folder->id,
-            entry_id    => $p->id,
-            is_primary  => 1,
-        }
-    );
-    $p_place->save or die $p_place->errstr;
+        # associate with category/folder
+        my $p_place = $mt->model('placement')->new;
+        $p_place->set_values(
+            {   blog_id     => $b->id,
+                category_id => $folder->id,
+                entry_id    => $p->id,
+                is_primary  => 1,
+            }
+        );
+        $p_place->save or die $p_place->errstr;
 
-    my $e_place = $mt->model('placement')->new;
-    $e_place->set_values(
-        {   blog_id     => $b->id,
-            category_id => $cat->id,
-            entry_id    => $e->id,
-            is_primary  => 1,
-        }
-    );
-    $e_place->save or die $e_place->errstr;
-}
+        my $e_place = $mt->model('placement')->new;
+        $e_place->set_values(
+            {   blog_id     => $b->id,
+                category_id => $cat->id,
+                entry_id    => $e->id,
+                is_primary  => 1,
+            }
+        );
+        $e_place->save or die $e_place->errstr;
+    }
+});
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);

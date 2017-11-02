@@ -18,7 +18,7 @@ use MT::Test::Tag;
 plan tests => 1 * blocks;
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
 use MT::Test::Permission;
 my $app = MT->instance;
 
@@ -30,19 +30,21 @@ filters {
     error    => [qw( chomp )],
 };
 
-my $mt = MT->instance;
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-my $ct = MT::Test::Permission->make_content_type(
-    name    => 'test content data',
-    blog_id => $blog_id,
-);
-my $cd = MT::Test::Permission->make_content_data(
-    blog_id         => $blog_id,
-    content_type_id => $ct->id,
-);
-my $blog = $cd->blog;
-$blog->description('test description');
-$blog->save or die $blog->errstr;
+    my $ct = MT::Test::Permission->make_content_type(
+        name    => 'test content data',
+        blog_id => $blog_id,
+    );
+    my $cd = MT::Test::Permission->make_content_data(
+        blog_id         => $blog_id,
+        content_type_id => $ct->id,
+    );
+    my $blog = $cd->blog;
+    $blog->description('test description');
+    $blog->save or die $blog->errstr;
+});
 
 MT::Test::Tag->run_perl_tests($blog_id);
 # MT::Test::Tag->run_php_tests($blog_id);

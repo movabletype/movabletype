@@ -12,46 +12,67 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db :data);
+use MT::Test;
 use MT::Test::Permission;
 
-my $aikawa = MT::Test::Permission->make_author(
-    name     => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
-my $ichikawa = MT::Test::Permission->make_author(
-    name     => 'ichikawa',
-    nickname => 'Jiro Ichikawa',
-);
-my $ukawa = MT::Test::Permission->make_author(
-    name     => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
-my $admin = MT::Author->load(1);
+MT::Test->init_app;
 
-my $website = MT::Website->load(2);
-my $blog    = $website->blogs;
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
+    MT::Test->init_data;
+
+    my $aikawa = MT::Test::Permission->make_author(
+        name     => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
+    my $ichikawa = MT::Test::Permission->make_author(
+        name     => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
+    my $ukawa = MT::Test::Permission->make_author(
+        name     => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
+    my $admin = MT::Author->load(1);
+
+    my $website = MT::Website->load(2);
+    my $blog    = $website->blogs;
+
+    my %entries = ();
+    for my $e ( MT::Entry->load ) {
+        $entries{ $e->id } = $e;
+    }
+    my $website_entry = MT::Test::Permission->make_entry(
+        blog_id   => $website->id,
+        author_id => $admin->id,
+        title     => 'A Sunny Day',
+    );
+
+    my $edit_all_posts = MT::Test::Permission->make_role(
+        name        => 'Edit All Posts',
+        permissions => "'edit_all_posts'",
+    );
+    my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+
+    require MT::Association;
+    MT::Association->link( $aikawa,   $edit_all_posts, $website );
+    MT::Association->link( $ichikawa, $edit_all_posts, $blog->[0] );
+    MT::Association->link( $ukawa,    $designer,       $website );
+});
+
+my $aikawa   = MT::Author->load( { name => 'aikawa' } );
+my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
+my $ukawa    = MT::Author->load( { name => 'ukawa' } );
+my $website  = MT::Website->load(2);
+my $blog     = $website->blogs;
+my $admin    = MT::Author->load(1);
+
+my $website_entry = MT::Entry->load( { title => 'A Sunny Day' } );
 
 my %entries = ();
 for my $e ( MT::Entry->load ) {
     $entries{ $e->id } = $e;
 }
-my $website_entry = MT::Test::Permission->make_entry(
-    blog_id   => $website->id,
-    author_id => $admin->id,
-    title     => 'A Sunny Day',
-);
-
-my $edit_all_posts = MT::Test::Permission->make_role(
-    name        => 'Edit All Posts',
-    permissions => "'edit_all_posts'",
-);
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
-
-require MT::Association;
-MT::Association->link( $aikawa,   $edit_all_posts, $website );
-MT::Association->link( $ichikawa, $edit_all_posts, $blog->[0] );
-MT::Association->link( $ukawa,    $designer,       $website );
 
 subtest 'search_replace' => sub {
     my @suite = (

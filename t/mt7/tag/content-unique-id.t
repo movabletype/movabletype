@@ -18,7 +18,7 @@ use MT::Test::Tag;
 plan tests => 1 * blocks;
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
 use MT::Test::Permission;
 my $app = MT->instance;
 
@@ -35,16 +35,25 @@ filters {
     expected => [qw( uid chomp )],
 };
 
-my $mt = MT->instance;
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-my $ct = MT::Test::Permission->make_content_type(
-    name    => 'test content data',
-    blog_id => $blog_id,
-);
-my $cd = MT::Test::Permission->make_content_data(
+    my $ct = MT::Test::Permission->make_content_type(
+        name    => 'test content data',
+        blog_id => $blog_id,
+    );
+    my $cd = MT::Test::Permission->make_content_data(
+        blog_id         => $blog_id,
+        content_type_id => $ct->id,
+    );
+});
+
+my $ct = MT::ContentType->load( { name => 'test content data' } );
+my $cd = MT::ContentData->load( {
     blog_id         => $blog_id,
     content_type_id => $ct->id,
-);
+} );
+
 $uid = $cd->unique_id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
