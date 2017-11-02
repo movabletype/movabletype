@@ -168,11 +168,13 @@ sub _connect_info_mysql {
         if ( $opts{user} ) {
             $info{DBUser} = $opts{user};
         }
+        $self->{dsn}
+            = "dbi:mysql:" . ( join ";", map {"$_=$opts{$_}"} keys %opts );
     }
     else {
-        $dsn
-            = "dbi:mysql:$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
-        my $dbh = DBI->connect($dsn) or die $DBI::errstr;
+        $self->{dsn}
+            = "dbi:mysql:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
+        my $dbh = DBI->connect( $self->{dsn} ) or die $DBI::errstr;
         $self->_prepare_mysql_database($dbh);
     }
     return %info;
@@ -182,6 +184,7 @@ sub _connect_info_sqlite {
     my $self = shift;
 
     my $database = $self->path("mt.db");
+    $self->{dsn} = "dbi:SQLite:$database";
 
     return (
         ObjectDriver => "DBI::sqlite",
