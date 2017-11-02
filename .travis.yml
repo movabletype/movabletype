@@ -6,12 +6,12 @@ perl:
 
 env:
   matrix:
-    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
-    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
-    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
-    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
-    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
-    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - TEST_COMMAND="prove -Ilocal/lib/perl5 t/[^12]*.t"
+    - TEST_COMMAND="prove -Ilocal/lib/perl5 t/1*.t"
+    - TEST_COMMAND="prove -Ilocal/lib/perl5 t/2*.t"
+    - TEST_COMMAND="prove -Ilocal/lib/perl5 t/mt7/[^t]*"
+    - TEST_COMMAND="prove -Ilocal/lib/perl5 t/mt7/t*"
+    - TEST_COMMAND="prove -Ilocal/lib/perl5 plugins/*/t"
     - TEST_COMMAND="./phpunit"
 
 cache:
