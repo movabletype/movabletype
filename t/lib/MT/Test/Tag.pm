@@ -19,6 +19,8 @@ BEGIN {
 sub run_perl_tests {
     my ( $blog_id, $callback ) = @_;
 
+    MT->instance;
+
     run {
         my $block = shift;
     SKIP: {
