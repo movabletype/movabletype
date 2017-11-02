@@ -121,6 +121,7 @@ sub edit {
                 )
                 if ( MT::Author::AUTHOR() == $cmtr->type )
                 && $app->user->is_superuser;
+            $param->{can_edit_commenters} = 0 if $cmtr->is_superuser;
         }
     }
     $param->{invisible_unregistered} = !$obj->visible
@@ -166,8 +167,8 @@ sub edit_commenter {
         if MT::Author::AUTHOR() == $obj->type;
 
     $param->{can_edit_commenters}
-        = $app->user->is_superuser
-        ? 1
+        = $obj->is_superuser            ? 0
+        : $app->user->is_superuser      ? 1
         : $app->config->SingleCommunity ? $app->blog
             ? 0
             : $app->user->can_do('edit_commenter_status') ? 1
