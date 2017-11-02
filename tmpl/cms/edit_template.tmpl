@@ -739,6 +739,7 @@ function setSyntaxHighlight(on_or_off) {
           <select name="archive_file_sel" id="archive_file_sel" tabindex="11" class="form-control">
           </select>
           <input type="text" id="archive_file_tmpl" name="archive_file_tmpl" class="form-control tmpl-path tmpl-path-custom last-child" value="" style="display:none;" />
+          <input type="hidden" id="custom_path" />
         </mtapp:setting>
 
         <mtapp:setting
@@ -1188,20 +1189,33 @@ function saveTemplatePrefs( sync ) {
     }
     function selectArchiveFile(sel) {
       var archive_file_sel = jQuery(sel).val();
-      var archive_file_tmpl;
+      var archiveFileTempl;
+      var customPath;
       if ( !jQuery(sel).attr('id') || jQuery(sel).attr('id') === 'archive_file_sel' ) {
-        archive_file_tmpl = 'archive_file_tmpl';
+        archiveFileTempl = jQuery("#archive_file_tmpl");
+        customPath       = jQuery("#custom_path");
       }
       else {
         var map_id        = jQuery(sel).attr('id').match(/\d+/);
-        archive_file_tmpl = 'archive_file_tmpl_' + map_id;
+        archiveFileTempl = jQuery("#archive_file_tmpl_" + map_id);
+        customPath       = jQuery("#custom_path_" + map_id);
       }
+      var custom_path_val = customPath.val();
       if (!archive_file_sel) {
-        jQuery("#" + archive_file_tmpl).css("display", "block");
+        if (custom_path_val) {
+          archiveFileTempl.val(customPath.val());
+        }
+        else {
+          customPath.val(archiveFileTempl.val());
+        }
+        archiveFileTempl.css("display", "block");
       }
       else {
-        jQuery("#" + archive_file_tmpl).css("display", "none");
-        jQuery("#" + archive_file_tmpl).val(archive_file_sel);
+        if (custom_path_val) {
+          customPath.val(archiveFileTempl.val());
+        }
+        archiveFileTempl.css("display", "none");
+        archiveFileTempl.val(archive_file_sel);
       }
       <mt:if name="type" like="^ct">
       getContentFields(sel);
