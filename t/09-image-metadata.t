@@ -16,11 +16,15 @@ use File::Copy;
 use File::Spec;
 use File::Temp qw( tempfile );
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT;
 use MT::Image;
 
 use Image::ExifTool;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db');
 
 my $cfg = MT->config;
 

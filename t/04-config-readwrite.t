@@ -12,10 +12,12 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw(:db);
+use MT::Test;
 use MT;
 
-my $mt = MT->instance;
+$test_env->prepare_fixture('db');
+
+my $mt  = MT->instance;
 my $cfg = $mt->config;
 
 my $domain = 'example.com';

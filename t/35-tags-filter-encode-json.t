@@ -16,7 +16,7 @@ use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
 use MT::Test::Permission;
 my $app = MT->instance;
 
@@ -38,6 +38,8 @@ sub _unescape {
     # \\\\b => \\b
     s/\\(\\[b|f|r|n|t])/$1/g;
 }
+
+$test_env->prepare_fixture('db');
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);

@@ -17,7 +17,7 @@ plan tests => 2 * blocks;
 
 use MT;
 use MT::Util qw( epoch2ts );
-use MT::Test qw(:db);
+use MT::Test;
 use MT::Test::Permission;
 my $app = MT->instance;
 
@@ -27,6 +27,8 @@ filters {
     template => [qw( chomp )],
     expected => [qw( chomp )],
 };
+
+$test_env->prepare_fixture('db');
 
 my $now = time;
 my $today = epoch2ts( MT->model('blog')->load($blog_id), $now );

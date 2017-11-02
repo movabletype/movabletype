@@ -11,8 +11,10 @@ BEGIN {
 }
 
 use MT;
-use MT::Test qw( :db );
+use MT::Test;
 use MT::Test::Permission;
+
+$test_env->prepare_fixture('db');
 
 subtest 'can_manage_content_types' => sub {
     my $user1 = MT::Test::Permission->make_author;

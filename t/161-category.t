@@ -12,8 +12,12 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw(:app :db);
+use MT::Test;
 use MT::Test::Permission;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db');
 
 my $cat_class = MT->model('category');
 

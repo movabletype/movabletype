@@ -13,8 +13,12 @@ BEGIN {
 }
 
 use MT;
-use MT::Test qw(:app :db);
+use MT::Test;
 use MT::Test::Permission;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db');
 
 my $admin = MT::Author->load(1);
 

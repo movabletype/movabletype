@@ -10,9 +10,11 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :db );
+use MT::Test;
 
 use MT::ContentFieldIndex;
+
+$test_env->prepare_fixture('db');
 
 subtest 'set_value' => sub {
     my $cf_idx = MT::ContentFieldIndex->new;

@@ -18,7 +18,9 @@ plan tests => 29;
 use MT;
 use MT::Object;
 
-use MT::Test qw(:db);
+use MT::Test;
+
+$test_env->prepare_fixture('db');
 
 my $mt = MT->instance;    # plugins are go!
 

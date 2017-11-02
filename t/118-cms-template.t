@@ -12,11 +12,14 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 use MT::Association;
 
+MT::Test->init_app;
+
 ### Make test data
+$test_env->prepare_fixture('db');
 
 # Website
 my $website = MT->model('website')->load();

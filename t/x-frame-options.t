@@ -18,9 +18,13 @@ BEGIN {
 
 use HTTP::Request;
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT;
 use MT::PSGI;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db');
 
 my $config = MT->instance->config;
 my $user   = MT->model('author')->load(1);

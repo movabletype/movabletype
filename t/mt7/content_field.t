@@ -11,9 +11,11 @@ BEGIN {
 }
 
 use MT;
-use MT::Test qw( :db );
+use MT::Test;
 
 use MT::ContentField;
+
+$test_env->prepare_fixture('db');
 
 subtest 'set unique_id' => sub {
     my $unique_id = '1234' x 10;
