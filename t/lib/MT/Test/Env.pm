@@ -161,6 +161,7 @@ sub _connect_info_mysql {
         $self->_prepare_mysql_database($dbh);
         $dsn =~ s/^DBI:mysql://i;
         my %opts = map { split '=', $_ } split ';', $dsn;
+        $opts{dbname} = $info{Database};
         if ( $opts{mysql_socket} ) {
             delete $info{DBHost};
             $info{DBSocket} = $opts{mysql_socket};
