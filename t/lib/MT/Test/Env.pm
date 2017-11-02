@@ -212,4 +212,17 @@ sub prepare {
     $class->_prepare_mysql_database($dbh);
 }
 
+sub dbh {
+    my $self = shift;
+    $self->connect_info unless $self->{dsn};
+    DBI->connect(
+        $self->{dsn},
+        undef, undef,
+        {   RaiseError         => 1,
+            PrintError         => 0,
+            ShowErrorStatement => 1,
+        }
+    ) or die $DBI::errstr;
+}
+
 1;
