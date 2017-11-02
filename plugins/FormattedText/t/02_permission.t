@@ -12,162 +12,199 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
+
+MT::Test->init_app;
 
 my $mt = MT->instance;
 
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+    # Website
+    my $website = MT::Test::Permission->make_website(
+        name => 'my website',
+    );
 
-# Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-my $second_blog
-    = MT::Test::Permission->make_blog( parent_id => $website->id, );
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
+    my $second_blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'second blog',
+    );
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name     => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name     => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
 
-my $ichikawa = MT::Test::Permission->make_author(
-    name     => 'ichikawa',
-    nickname => 'Jiro Ichikawa',
-);
+    my $ichikawa = MT::Test::Permission->make_author(
+        name     => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
 
-my $ukawa = MT::Test::Permission->make_author(
-    name     => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
+    my $ukawa = MT::Test::Permission->make_author(
+        name     => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
 
-my $egawa = MT::Test::Permission->make_author(
-    name     => 'egawa',
-    nickname => 'Shiro Egawa',
-);
+    my $egawa = MT::Test::Permission->make_author(
+        name     => 'egawa',
+        nickname => 'Shiro Egawa',
+    );
 
-my $ogawa = MT::Test::Permission->make_author(
-    name     => 'ogawa',
-    nickname => 'Goro Ogawa',
-);
+    my $ogawa = MT::Test::Permission->make_author(
+        name     => 'ogawa',
+        nickname => 'Goro Ogawa',
+    );
 
-my $kagawa = MT::Test::Permission->make_author(
-    name     => 'kagawa',
-    nickname => 'Ichiro Kagawa',
-);
+    my $kagawa = MT::Test::Permission->make_author(
+        name     => 'kagawa',
+        nickname => 'Ichiro Kagawa',
+    );
 
-my $kikkawa = MT::Test::Permission->make_author(
-    name     => 'kikkawa',
-    nickname => 'Jiro Kikkawa',
-);
+    my $kikkawa = MT::Test::Permission->make_author(
+        name     => 'kikkawa',
+        nickname => 'Jiro Kikkawa',
+    );
 
-my $kumekawa = MT::Test::Permission->make_author(
-    name     => 'kumekawa',
-    nickname => 'Saburo Kumekawa',
-);
+    my $kumekawa = MT::Test::Permission->make_author(
+        name     => 'kumekawa',
+        nickname => 'Saburo Kumekawa',
+    );
 
-my $kemikawa = MT::Test::Permission->make_author(
-    name     => 'kemikawa',
-    nickname => 'Shiro Kemikawa',
-);
+    my $kemikawa = MT::Test::Permission->make_author(
+        name     => 'kemikawa',
+        nickname => 'Shiro Kemikawa',
+    );
 
-my $koishikawa = MT::Test::Permission->make_author(
-    name     => 'koishikawa',
-    nickname => 'Goro Koishikawa',
-);
+    my $koishikawa = MT::Test::Permission->make_author(
+        name     => 'koishikawa',
+        nickname => 'Goro Koishikawa',
+    );
 
-my $sagawa = MT::Test::Permission->make_author(
-    name     => 'sagawa',
-    nickname => 'Ichiro Sagawa',
-);
+    my $sagawa = MT::Test::Permission->make_author(
+        name     => 'sagawa',
+        nickname => 'Ichiro Sagawa',
+    );
 
-my $shimoda = MT::Test::Permission->make_author(
-    name     => 'shimoda',
-    nickname => 'Jiro Shimoda',
-);
+    my $shimoda = MT::Test::Permission->make_author(
+        name     => 'shimoda',
+        nickname => 'Jiro Shimoda',
+    );
 
-my $suda = MT::Test::Permission->make_author(
-    name     => 'suda',
-    nickname => 'Saburo Suda',
-);
+    my $suda = MT::Test::Permission->make_author(
+        name     => 'suda',
+        nickname => 'Saburo Suda',
+    );
 
-my $seta = MT::Test::Permission->make_author(
-    name     => 'seta',
-    nickname => 'Shiro Seta',
-);
+    my $seta = MT::Test::Permission->make_author(
+        name     => 'seta',
+        nickname => 'Shiro Seta',
+    );
 
-my $soneda = MT::Test::Permission->make_author(
-    name     => 'soneda',
-    nickname => 'Goro Soneda',
-);
+    my $soneda = MT::Test::Permission->make_author(
+        name     => 'soneda',
+        nickname => 'Goro Soneda',
+    );
 
-my $taneda = MT::Test::Permission->make_author(
-    name     => 'taneda',
-    nickname => 'Ichiro Taneda',
-);
+    my $taneda = MT::Test::Permission->make_author(
+        name     => 'taneda',
+        nickname => 'Ichiro Taneda',
+    );
 
-my $tsuda = MT::Test::Permission->make_author(
-    name     => 'tsuda',
-    nickname => 'Saburo Tsuda',
-);
+    my $tsuda = MT::Test::Permission->make_author(
+        name     => 'tsuda',
+        nickname => 'Saburo Tsuda',
+    );
 
-my $tezuka = MT::Test::Permission->make_author(
-    name     => 'tezuka',
-    nickname => 'Shiro Tezuka',
-);
+    my $tezuka = MT::Test::Permission->make_author(
+        name     => 'tezuka',
+        nickname => 'Shiro Tezuka',
+    );
+
+    my $admin = MT::Author->load(1);
+
+    # Role
+    my $create_post = MT::Test::Permission->make_role(
+        name        => 'Create Post',
+        permissions => "'create_post'",
+    );
+
+    my $edit_all_posts = MT::Test::Permission->make_role(
+        name        => 'Edit All Posts',
+        permissions => "'edit_all_posts'",
+    );
+
+    my $manage_pages = MT::Test::Permission->make_role(
+        name        => 'Manage Pages',
+        permissions => "'manage_pages'",
+    );
+
+    my $publish_post = MT::Test::Permission->make_role(
+        name        => 'Publish Post',
+        permissions => "'publish_post'",
+    );
+
+    my $edit_config = MT::Test::Permission->make_role(
+        name        => 'Edit Config',
+        permissions => "'edit_config'",
+    );
+
+    my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+
+    require MT::Association;
+    MT::Association->link( $aikawa   => $edit_config    => $blog );
+    MT::Association->link( $ichikawa => $create_post    => $blog );
+    MT::Association->link( $ukawa    => $edit_all_posts => $blog );
+    MT::Association->link( $egawa    => $manage_pages   => $blog );
+    MT::Association->link( $ogawa    => $create_post    => $blog );
+    MT::Association->link( $kagawa   => $designer       => $blog );
+    MT::Association->link( $shimoda  => $publish_post   => $blog );
+    MT::Association->link( $seta     => $publish_post   => $blog );
+
+    MT::Association->link( $kikkawa    => $edit_config    => $second_blog );
+    MT::Association->link( $kumekawa   => $create_post    => $second_blog );
+    MT::Association->link( $koishikawa => $edit_all_posts => $second_blog );
+    MT::Association->link( $kemikawa   => $manage_pages   => $second_blog );
+    MT::Association->link( $suda       => $publish_post   => $second_blog );
+
+    MT::Association->link( $soneda, $edit_config,    $website );
+    MT::Association->link( $taneda, $create_post,    $website );
+    MT::Association->link( $tsuda,  $edit_all_posts, $website );
+    MT::Association->link( $tezuka, $manage_pages,   $website );
+});
+
+my $website = MT::Website->load( { name => 'my website' } );
+
+my $blog = MT::Blog->load( { name => 'my blog' } );
+
+my $aikawa     = MT::Author->load( { name => 'aikawa' } );
+my $ichikawa   = MT::Author->load( { name => 'ichikawa' } );
+my $ukawa      = MT::Author->load( { name => 'ukawa' } );
+my $egawa      = MT::Author->load( { name => 'egawa' } );
+my $ogawa      = MT::Author->load( { name => 'ogawa' } );
+my $kagawa     = MT::Author->load( { name => 'kagawa' } );
+my $kikkawa    = MT::Author->load( { name => 'kikkawa' } );
+my $kumekawa   = MT::Author->load( { name => 'kumekawa' } );
+my $kemikawa   = MT::Author->load( { name => 'kemikawa' } );
+my $koishikawa = MT::Author->load( { name => 'koishikawa' } );
+my $sagawa     = MT::Author->load( { name => 'sagawa' } );
+my $shimoda    = MT::Author->load( { name => 'shimoda' } );
+my $suda       = MT::Author->load( { name => 'suda' } );
+my $seta       = MT::Author->load( { name => 'seta' } );
+my $soneda     = MT::Author->load( { name => 'soneda' } );
+my $taneda     = MT::Author->load( { name => 'taneda' } );
+my $tsuda      = MT::Author->load( { name => 'tsuda' } );
+my $tezuka     = MT::Author->load( { name => 'tezuka' } );
 
 my $admin = MT::Author->load(1);
-
-# Role
-my $create_post = MT::Test::Permission->make_role(
-    name        => 'Create Post',
-    permissions => "'create_post'",
-);
-
-my $edit_all_posts = MT::Test::Permission->make_role(
-    name        => 'Edit All Posts',
-    permissions => "'edit_all_posts'",
-);
-
-my $manage_pages = MT::Test::Permission->make_role(
-    name        => 'Manage Pages',
-    permissions => "'manage_pages'",
-);
-
-my $publish_post = MT::Test::Permission->make_role(
-    name        => 'Publish Post',
-    permissions => "'publish_post'",
-);
-
-my $edit_config = MT::Test::Permission->make_role(
-    name        => 'Edit Config',
-    permissions => "'edit_config'",
-);
-
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
-
-require MT::Association;
-MT::Association->link( $aikawa   => $edit_config    => $blog );
-MT::Association->link( $ichikawa => $create_post    => $blog );
-MT::Association->link( $ukawa    => $edit_all_posts => $blog );
-MT::Association->link( $egawa    => $manage_pages   => $blog );
-MT::Association->link( $ogawa    => $create_post    => $blog );
-MT::Association->link( $kagawa   => $designer       => $blog );
-MT::Association->link( $shimoda  => $publish_post   => $blog );
-MT::Association->link( $seta     => $publish_post   => $blog );
-
-MT::Association->link( $kikkawa    => $edit_config    => $second_blog );
-MT::Association->link( $kumekawa   => $create_post    => $second_blog );
-MT::Association->link( $koishikawa => $edit_all_posts => $second_blog );
-MT::Association->link( $kemikawa   => $manage_pages   => $second_blog );
-MT::Association->link( $suda       => $publish_post   => $second_blog );
-
-MT::Association->link( $soneda, $edit_config,    $website );
-MT::Association->link( $taneda, $create_post,    $website );
-MT::Association->link( $tsuda,  $edit_all_posts, $website );
-MT::Association->link( $tezuka, $manage_pages,   $website );
 
 my $ichikawa_template = $mt->model('formatted_text')->new;
 $ichikawa_template->set_values(
