@@ -10,40 +10,53 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 
-# Site
+MT::Test->init_app;
+
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
+
+    # Site
+    my $site = MT->model('website')->load();
+
+    # Author
+    my $admin = MT->model('author')->load(1);
+
+    my $content_type_01 = MT::Test::Permission->make_content_type(
+        blog_id => $site->id,
+        name    => 'test content type 01',
+    );
+
+    my $content_type_02 = MT::Test::Permission->make_content_type(
+        blog_id => $site->id,
+        name    => 'test content type 02',
+    );
+
+    my $template_01 = MT::Test::Permission->make_template(
+        blog_id         => $site->id,
+        content_type_id => $content_type_01->id,
+        name            => 'ContentType Test 01',
+        type            => 'ct',
+        text            => 'test',
+    );
+
+    my $template_02 = MT::Test::Permission->make_template(
+        blog_id         => $site->id,
+        content_type_id => $content_type_02->id,
+        name            => 'ContentType Test 02',
+        type            => 'ct',
+        text            => 'test',
+    );
+});
+
 my $site = MT->model('website')->load();
 
-# Author
 my $admin = MT->model('author')->load(1);
 
-my $content_type_01 = MT::Test::Permission->make_content_type(
-    blog_id => $site->id,
-    name    => 'test content type 01',
-);
-
-my $content_type_02 = MT::Test::Permission->make_content_type(
-    blog_id => $site->id,
-    name    => 'test content type 02',
-);
-
-my $template_01 = MT::Test::Permission->make_template(
-    blog_id         => $site->id,
-    content_type_id => $content_type_01->id,
-    name            => 'ContentType Test 01',
-    type            => 'ct',
-    text            => 'test',
-);
-
-my $template_02 = MT::Test::Permission->make_template(
-    blog_id         => $site->id,
-    content_type_id => $content_type_02->id,
-    name            => 'ContentType Test 02',
-    type            => 'ct',
-    text            => 'test',
-);
+my $template_01 = MT::Template->load( { name => 'ContentType Test 01' } );
+my $template_02 = MT::Template->load( { name => 'ContentType Test 02' } );
 
 subtest 'Add 1st TemplateMap' => sub {
     my $app = _run_app(

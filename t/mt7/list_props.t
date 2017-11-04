@@ -15,38 +15,46 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
+
+MT::Test->init_app;
 
 use MT::ContentData;
 use MT::ListProperty;
 
-my $content_type = MT::Test::Permission->make_content_type(
-    blog_id => 1,
-    name    => 'test content type',
-);
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-my $content_field = MT::Test::Permission->make_content_field(
-    blog_id         => $content_type->blog_id,
-    content_type_id => $content_type->id,
-    name            => 'single text',
-    type            => 'single_line_text',
-);
+    my $content_type = MT::Test::Permission->make_content_type(
+        blog_id => 1,
+        name    => 'test content type',
+    );
 
-my $fields = [
-    {   id      => $content_field->id,
-        order   => 1,
-        type    => $content_field->type,
-        options => {
-            display  => 'force',
-            hint     => '',
-            label    => 1,
-            required => 1,
-        },
-    }
-];
-$content_type->fields($fields);
-$content_type->save or die $content_type->errstr;
+    my $content_field = MT::Test::Permission->make_content_field(
+        blog_id         => $content_type->blog_id,
+        content_type_id => $content_type->id,
+        name            => 'single text',
+        type            => 'single_line_text',
+    );
+
+    my $fields = [
+        {   id      => $content_field->id,
+            order   => 1,
+            type    => $content_field->type,
+            options => {
+                display  => 'force',
+                hint     => '',
+                label    => 1,
+                required => 1,
+            },
+        }
+    ];
+    $content_type->fields($fields);
+    $content_type->save or die $content_type->errstr;
+});
+
+my $content_type = MT::ContentType->load( { name => 'test content type' } );
 
 subtest 'make_list_props' => sub {
     my $props = MT::ContentData::make_list_props();

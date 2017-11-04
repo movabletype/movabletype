@@ -21,7 +21,11 @@ BEGIN {
 use MT;
 use MT::Author;
 use MT::Blog;
-use MT::Test qw( :app :db :data );
+use MT::Test;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $blog = MT::Blog->load(1);
 my $user = MT::Author->load(2);

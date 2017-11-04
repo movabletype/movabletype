@@ -18,6 +18,8 @@ use MT::Test;
 use MT::ConfigMgr;
 use MT::Image;
 
+MT->instance;
+
 my $file   = File::Spec->rel2abs(__FILE__);
 my $mt_dir = dirname( dirname($file) );
 

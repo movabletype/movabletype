@@ -23,8 +23,10 @@ use Test::Base;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test qw(:db :data);
+use MT::Test;
 my $app = MT->instance;
+
+$test_env->prepare_fixture('db_data');
 
 # Remove objects in website (blog_id = 2).
 $app->model('page')->remove( { id => 24 } );

@@ -16,7 +16,7 @@ use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
 use MT::Test::Permission;
 my $app = MT->instance;
 
@@ -27,25 +27,29 @@ filters {
     expected => [qw( chomp )],
 };
 
-my $mt = MT->instance;
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-my $blog = MT::Blog->load($blog_id);
-$blog->archive_type('Page,Individual,Category,Monthly');
-$blog->save or die $blog->errstr;
+    my $mt = MT->instance;
 
-my $category = MT::Test::Permission->make_category( blog_id => $blog_id, );
+    my $blog = MT::Blog->load($blog_id);
+    $blog->archive_type('Page,Individual,Category,Monthly');
+    $blog->save or die $blog->errstr;
 
-my $entry_new = MT::Test::Permission->make_entry(
-    blog_id     => $blog_id,
-    authored_on => '20150101000000',
-);
-$entry_new->attach_categories($category);
+    my $category = MT::Test::Permission->make_category( blog_id => $blog_id, );
 
-my $entry_old = MT::Test::Permission->make_entry(
-    blog_id     => $blog_id,
-    authored_on => '20130101000000',
-);
-$entry_old->attach_categories($category);
+    my $entry_new = MT::Test::Permission->make_entry(
+        blog_id     => $blog_id,
+        authored_on => '20150101000000',
+    );
+    $entry_new->attach_categories($category);
+
+    my $entry_old = MT::Test::Permission->make_entry(
+        blog_id     => $blog_id,
+        authored_on => '20130101000000',
+    );
+    $entry_old->attach_categories($category);
+});
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);

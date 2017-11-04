@@ -17,8 +17,12 @@ BEGIN {
 }
 
 use MT;
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db');
 
 subtest 'Check transencoding in validate_request_params().' => sub {
     my $flag = 0;

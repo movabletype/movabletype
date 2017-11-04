@@ -10,9 +10,11 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :db );
+use MT::Test;
 
 use MT::ContentType;
+
+$test_env->prepare_fixture('db');
 
 subtest 'set unique_id' => sub {
     my $unique_id = '1234' x 10;

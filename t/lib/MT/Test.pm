@@ -113,9 +113,7 @@ sub import {
         }
     }
 
-    # We need *some* instance created up front, to initialize the database
-    # factory etc properly, so do so now.
-    MT->instance;
+    MT->instance unless $ENV{MT_TEST_ROOT};
 
     # Export requested or all exportable functions.
     $pkg->export_to_level( 1, @to_export || qw( :DEFAULT ) );
@@ -344,7 +342,7 @@ sub init_memcached {
     };
 }
 
-sub init_newdb {
+sub _load_classes {
     my $pkg = shift;
     my ($cfg) = @_;
 
@@ -374,6 +372,13 @@ sub init_newdb {
                 or die $@;
         }
     }
+    @classes;
+}
+
+sub init_newdb {
+    my $pkg = shift;
+
+    my @classes = $pkg->_load_classes(@_);
 
     # Clear existing database tables
     my $driver = MT::Object->driver();

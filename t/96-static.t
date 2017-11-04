@@ -16,7 +16,11 @@ BEGIN {
 plan tests => 1;
 
 use MT;
-use MT::Test qw( :app :db :data );
+use MT::Test;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $app = MT::App::CMS->instance();
 

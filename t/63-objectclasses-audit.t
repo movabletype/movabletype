@@ -12,10 +12,14 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw(:time :db);
+use MT::Test;
 use MT::App;
 use MT::Object;
 use MT::Entry;
+
+MT::Test->init_time;
+
+$test_env->prepare_fixture('db');
 
 my $app  = MT::App->new;
 my $blog = MT::Blog->load(1);

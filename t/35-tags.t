@@ -26,7 +26,7 @@ use IO::String;
 
 $| = 1;
 
-use MT::Test qw(:db :data);
+use MT::Test;
 use JSON -support_by_pp;
 use MT;
 use MT::Util qw(ts2epoch epoch2ts);
@@ -34,6 +34,8 @@ use MT::Template::Context;
 use MT::Builder;
 
 require POSIX;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new();
 

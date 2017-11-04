@@ -14,10 +14,12 @@ BEGIN {
 # Tests for bugid:113085.
 # https://movabletype.fogbugz.com/default.asp?113085
 
-use MT::Test qw( :db );
+use MT::Test;
 use MT::Test::Permission;
 use MT;
 use MT::Template::Context;
+
+$test_env->prepare_fixture('db');
 
 MT->new;
 

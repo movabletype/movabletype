@@ -14,6 +14,8 @@ BEGIN {
 use MT::Test::DataAPI;
 use MT::App::DataAPI;
 
+$test_env->prepare_fixture('db_data');
+
 my $app = MT::App::DataAPI->new;
 
 my $suite = suite();

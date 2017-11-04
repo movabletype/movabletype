@@ -13,8 +13,12 @@ BEGIN {
 }
 
 use MT;
-use MT::Test qw( :cms :db );
+use MT::Test;
 use MT::Test::Permission;
+
+MT::Test->init_cms;
+
+$test_env->prepare_fixture('db');
 
 # Create records
 my $admin = MT::Author->load(1);

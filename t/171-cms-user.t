@@ -16,8 +16,12 @@ use MT::Association;
 use MT::CMS::User;
 use MT::Role;
 
-use MT::Test qw( :app :db :data );
+use MT::Test;
 use MT::Test::Permission;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 MT->instance;
 my $admin = MT::Author->load(1);

@@ -16,11 +16,13 @@ plan tests => 5;
 use CGI;
 
 use MT;
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT::Plugin;
 use MT::Entry;
 use MT::App::CMS;
 use MT::Permission;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new;
 die "Couldn't create MT (" . MT->errstr. ")" unless $mt;

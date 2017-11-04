@@ -12,7 +12,11 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db :data );
+use MT::Test;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $admin = MT::Author->load(1);
 

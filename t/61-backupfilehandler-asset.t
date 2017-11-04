@@ -13,11 +13,13 @@ BEGIN {
 }
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
 use JSON;
 use File::Spec;
 
 use MT::BackupRestore;
+
+$test_env->prepare_fixture('db');
 
 my $schema_version = 5.0034;
 

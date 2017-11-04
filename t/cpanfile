@@ -96,6 +96,8 @@ on 'test' => sub {
     requires 'Net::SFTP';
     requires 'PHP::Serialization';
     requires 'pQuery';
+    requires 'SQL::Maker';
+    requires 'SQL::Translator';
     requires 'Test::Base';
     requires 'Test::Class';
     requires 'Test::Data';

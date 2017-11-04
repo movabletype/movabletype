@@ -11,60 +11,70 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :db );
+use MT::Test;
 use MT::Test::Permission;
 
 use MT::Category;
 
 my $blog_id = 1;
 
-my $category_set
-    = MT::Test::Permission->make_category_set( blog_id => $blog_id, );
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-my $category1 = MT::Test::Permission->make_category(
-    blog_id         => $category_set->blog_id,
-    category_set_id => $category_set->id,
-    label           => 'category1',
-);
-my $category2 = MT::Test::Permission->make_category(
-    blog_id         => $category_set->blog_id,
-    category_set_id => $category_set->id,
-    label           => 'category2',
-);
+    my $category_set
+        = MT::Test::Permission->make_category_set( blog_id => $blog_id, );
 
-my $ct = MT::Test::Permission->make_content_type(
-    blog_id => $blog_id,
-    name    => 'test content type',
-);
+    my $category1 = MT::Test::Permission->make_category(
+        blog_id         => $category_set->blog_id,
+        category_set_id => $category_set->id,
+        label           => 'category1',
+    );
+    my $category2 = MT::Test::Permission->make_category(
+        blog_id         => $category_set->blog_id,
+        category_set_id => $category_set->id,
+        label           => 'category2',
+    );
 
-my $cf = MT::Test::Permission->make_content_field(
-    blog_id            => $ct->blog_id,
-    content_type_id    => $ct->id,
-    name               => 'categories',
-    type               => 'categories',
-    related_cat_set_id => $category_set->id,
-);
+    my $ct = MT::Test::Permission->make_content_type(
+        blog_id => $blog_id,
+        name    => 'test content type',
+    );
 
-my $fields = [
-    {   id      => $cf->id,
-        order   => 1,
-        type    => $cf->type,
-        options => {
-            label        => 1,
-            category_set => $cf->related_cat_set_id,
-        },
-        unique_id => $cf->unique_id,
-    }
-];
-$ct->fields($fields);
-$ct->save or die $ct->errstr;
+    my $cf = MT::Test::Permission->make_content_field(
+        blog_id            => $ct->blog_id,
+        content_type_id    => $ct->id,
+        name               => 'categories',
+        type               => 'categories',
+        related_cat_set_id => $category_set->id,
+    );
 
-my $cd = MT::Test::Permission->make_content_data(
-    blog_id         => $ct->blog_id,
-    author_id       => 1,
-    content_type_id => $ct->id,
-    data            => { $cf->id => $category1->id },
-);
+    my $fields = [
+        {   id      => $cf->id,
+            order   => 1,
+            type    => $cf->type,
+            options => {
+                label        => 1,
+                category_set => $cf->related_cat_set_id,
+            },
+            unique_id => $cf->unique_id,
+        }
+    ];
+    $ct->fields($fields);
+    $ct->save or die $ct->errstr;
+
+    my $cd = MT::Test::Permission->make_content_data(
+        blog_id         => $ct->blog_id,
+        author_id       => 1,
+        content_type_id => $ct->id,
+        data            => { $cf->id => $category1->id },
+    );
+});
+
+my $category1 = MT::Category->load( { label => 'category1' } );
+my $category2 = MT::Category->load( { label => 'category2' } );
+
+my $ct = MT::ContentType->load( { name => 'test content type' } );
+my $cf = MT::ContentField->load( { name => 'categories' } );
 
 subtest 'no $opt or $opt = 1' => sub {
     MT::ContentData->remove_all;

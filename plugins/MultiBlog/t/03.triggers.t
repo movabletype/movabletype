@@ -20,8 +20,12 @@ BEGIN {
 use Test::MockObject::Extends;
 
 use MT;
-use MT::Test qw(:db :data);
-use MultiBlog;
+use MT::Test;
+use MT::Entry;
+
+$test_env->prepare_fixture('db_data');
+
+require MultiBlog;
 
 my $app     = MT->instance;
 my $request = MT::Request->instance;

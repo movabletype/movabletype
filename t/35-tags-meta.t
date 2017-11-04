@@ -17,8 +17,7 @@ plan tests => 2 * blocks;
 
 use MT;
 
-use MT::Test qw(:db);
-my $app = MT->instance;
+use MT::Test;
 
 my $blog_id = 1;
 
@@ -37,26 +36,30 @@ my $blog_class  = $mt->model('blog');
 my $entry_class = $mt->model('entry');
 $entry_class->install_meta( { column_defs => $entry_meta_fields, } );
 
-if ( !$blog_class->load(1) ) {
-    my $b = $blog_class->new;
-    $b->set_values( { id => 1, } );
-    $b->save or die $b->errstr;
-}
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-$entry_class->remove_all( { blog_id => 1 } );
-for my $v (qw(1 2 10)) {
-    my $e = $entry_class->new;
-    $e->set_values(
-        {   title     => $v,
-            blog_id   => 1,
-            author_id => 1,
-            status    => MT::Entry::RELEASE,
-        }
-    );
-    $e->meta( 'field.test_text',    $v );
-    $e->meta( 'field.test_integer', $v );
-    $e->save or die $e->errstr;
-}
+    if ( !$blog_class->load(1) ) {
+        my $b = $blog_class->new;
+        $b->set_values( { id => 1, } );
+        $b->save or die $b->errstr;
+    }
+
+    $entry_class->remove_all( { blog_id => 1 } );
+    for my $v (qw(1 2 10)) {
+        my $e = $entry_class->new;
+        $e->set_values(
+            {   title     => $v,
+                blog_id   => 1,
+                author_id => 1,
+                status    => MT::Entry::RELEASE(),
+            }
+        );
+        $e->meta( 'field.test_text',    $v );
+        $e->meta( 'field.test_integer', $v );
+        $e->save or die $e->errstr;
+    }
+});
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id, \&_set_entry_meta_php);

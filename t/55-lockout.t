@@ -24,8 +24,12 @@ BEGIN {
     *CORE::GLOBAL::time = \&fixed_time;
     use MT::FailedLogin;
 
-    use MT::Test qw(:app :db);
+    use MT::Test;
 }
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db');
 
 use MT::Lockout;
 

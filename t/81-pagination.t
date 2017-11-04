@@ -20,7 +20,11 @@ use MT::Blog;
 use MT::Comment;
 use MT::Entry;
 use MT::Template;
-use MT::Test qw( :app :db :data );
+use MT::Test;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my @blogs = MT::Blog->load();
 foreach my $blog (@blogs) {

@@ -24,8 +24,10 @@ use MT::Permission;
 use MT::Template;
 use MT::TemplateMap;
 
-use MT::Test qw(:db);
+use MT::Test;
 MT->instance;
+
+$test_env->prepare_fixture('db');
 
 my $BLOG_NAME = 'Fear of a Black Planet';
 my $BLOG_DESC = 'Wherein Chuck D expounds on the plight of the black man in '

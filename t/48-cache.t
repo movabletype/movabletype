@@ -12,8 +12,10 @@ BEGIN {
 
 plan tests => 8;
 
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT;
+
+$test_env->prepare_fixture('db_data');
 
 require MT::Category;
 my $cat_cache = MT::Category->cache(blog_id => 1);

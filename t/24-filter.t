@@ -14,10 +14,12 @@ BEGIN {
 
 use utf8;
 
-use MT::Test qw(:db :data);
+use MT::Test;
 
 use MT;
 use MT::Filter;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new();
 
@@ -69,7 +71,7 @@ my @count_specs = (
             args  => {
                 'join' => MT::Comment->join_on(
                     'entry_id',
-                    { junk_status => MT::Comment::JUNK },
+                    { junk_status => MT::Comment::JUNK() },
                     { unique      => 1 }
                 ),
             },

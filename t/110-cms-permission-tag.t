@@ -12,79 +12,95 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 
+MT::Test->init_app;
+
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+    # Website
+    my $website = MT::Test::Permission->make_website();
 
-# Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
-my $second_blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
+    my $second_blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'second blog',
+    );
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
 
-my $ichikawa = MT::Test::Permission->make_author(
-    name => 'ichikawa',
-    nickname => 'Jiro Ichikawa',
-);
+    my $ichikawa = MT::Test::Permission->make_author(
+        name => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
 
-my $ukawa = MT::Test::Permission->make_author(
-    name => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
+    my $ukawa = MT::Test::Permission->make_author(
+        name => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
 
-my $egawa = MT::Test::Permission->make_author(
-    name => 'egawa',
-    nickname => 'Shiro Egawa',
-);
+    my $egawa = MT::Test::Permission->make_author(
+        name => 'egawa',
+        nickname => 'Shiro Egawa',
+    );
 
-my $ogawa = MT::Test::Permission->make_author(
-    name => 'ogawa',
-    nickname => 'Goro Ogawa',
-);
+    my $ogawa = MT::Test::Permission->make_author(
+        name => 'ogawa',
+        nickname => 'Goro Ogawa',
+    );
+
+    my $admin = MT::Author->load(1);
+
+    # Role
+    my $create_post = MT::Test::Permission->make_role(
+       name  => 'Create Post',
+       permissions => "'create_post'",
+    );
+
+    my $edit_tags = MT::Test::Permission->make_role(
+       name  => 'Edit Tags',
+       permissions => "'edit_tags'",
+    );
+
+    my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+
+    require MT::Association;
+    MT::Association->link( $aikawa => $create_post => $blog );
+    MT::Association->link( $ichikawa => $edit_tags => $blog );
+    MT::Association->link( $ukawa => $create_post => $second_blog );
+    MT::Association->link( $egawa => $edit_tags => $second_blog );
+    MT::Association->link( $ogawa => $designer => $blog );
+
+    # Entry
+    my $entry = MT::Test::Permission->make_entry(
+        blog_id        => $blog->id,
+        author_id      => $ichikawa->id,
+    );
+    $entry->tags( 'alpha', 'beta' );
+    $entry->save;
+});
+
+my $blog = MT::Blog->load( { name => 'my blog' } );
+
+my $aikawa   = MT::Author->load( { name => 'aikawa' } );
+my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
+my $ukawa    = MT::Author->load( { name => 'ukawa' } );
+my $egawa    = MT::Author->load( { name => 'egawa' } );
+my $ogawa    = MT::Author->load( { name => 'ogawa' } );
 
 my $admin = MT::Author->load(1);
 
-# Role
-my $create_post = MT::Test::Permission->make_role(
-   name  => 'Create Post',
-   permissions => "'create_post'",
-);
-
-my $edit_tags = MT::Test::Permission->make_role(
-   name  => 'Edit Tags',
-   permissions => "'edit_tags'",
-);
-
-my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
-
-require MT::Association;
-MT::Association->link( $aikawa => $create_post => $blog );
-MT::Association->link( $ichikawa => $edit_tags => $blog );
-MT::Association->link( $ukawa => $create_post => $second_blog );
-MT::Association->link( $egawa => $edit_tags => $second_blog );
-MT::Association->link( $ogawa => $designer => $blog );
-
-# Entry
-my $entry = MT::Test::Permission->make_entry(
-    blog_id        => $blog->id,
-    author_id      => $ichikawa->id,
-);
-$entry->tags( 'alpha', 'beta' );
-$entry->save;
-
-# Tag
 require MT::Tag;
 my $tag = MT::Tag->load({ name => 'alpha' });
 

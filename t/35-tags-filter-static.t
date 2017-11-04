@@ -20,7 +20,7 @@ BEGIN {
 plan tests => 1 * blocks;
 
 use MT;
-use MT::Test qw(:db :data);
+use MT::Test;
 my $app = MT->instance;
 
 my $blog_id = 2;
@@ -29,6 +29,8 @@ filters {
     template => [qw( chomp )],
     expected => [qw( chomp )],
 };
+
+$test_env->prepare_fixture('db_data');
 
 run {
     my $block = shift;

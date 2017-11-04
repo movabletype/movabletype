@@ -13,9 +13,11 @@ BEGIN {
 }
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
 use MT::Test::Permission;
 use MT::FileMgr;
+
+$test_env->prepare_fixture('db');
 
 my $mt = MT->new();
 

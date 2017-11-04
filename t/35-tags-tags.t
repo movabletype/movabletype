@@ -16,7 +16,7 @@ use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
 my $app = MT->instance;
 
 my $blog_id = 1;
@@ -26,47 +26,51 @@ filters {
     expected => [qw( chomp )],
 };
 
-my $mt = MT->instance;
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-{
-    my $b = $mt->model('blog')->new;
-    $b->set_values({
-        id => 1,
-    });
-    $b->save or die $b->errstr;
-}
+    my $mt = MT->instance;
 
-{
-    my $e = $mt->model('entry')->new;
-    $e->set_values({
-        blog_id => 1,
-        author_id => 1,
-        status => MT::Entry::RELEASE,
-    });
-    $e->tags(qw(@1clm TEST));
-    $e->save or die $e->errstr;
-}
+    {
+        my $b = $mt->model('blog')->new;
+        $b->set_values({
+            id => 1,
+        });
+        $b->save or die $b->errstr;
+    }
 
-{
-    my $p = $mt->model('page')->new;
-    $p->set_values({
-        blog_id => 1,
-        author_id => 1,
-        status => MT::Entry::RELEASE,
-    });
-    $p->tags(qw(@1clm TEST));
-    $p->save or die $p->errstr;
-}
+    {
+        my $e = $mt->model('entry')->new;
+        $e->set_values({
+            blog_id => 1,
+            author_id => 1,
+            status => MT::Entry::RELEASE(),
+        });
+        $e->tags(qw(@1clm TEST));
+        $e->save or die $e->errstr;
+    }
 
-{
-    my $a = $mt->model('asset')->new;
-    $a->set_values({
-        blog_id => 1,
-        author_id => 1,
-    });
-    $a->tags(qw(@1clm TEST));
-    $a->save or die $a->errstr;
-}
+    {
+        my $p = $mt->model('page')->new;
+        $p->set_values({
+            blog_id => 1,
+            author_id => 1,
+            status => MT::Entry::RELEASE(),
+        });
+        $p->tags(qw(@1clm TEST));
+        $p->save or die $p->errstr;
+    }
+
+    {
+        my $a = $mt->model('asset')->new;
+        $a->set_values({
+            blog_id => 1,
+            author_id => 1,
+        });
+        $a->tags(qw(@1clm TEST));
+        $a->save or die $a->errstr;
+    }
+});
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);

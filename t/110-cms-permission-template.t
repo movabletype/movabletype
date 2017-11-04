@@ -12,140 +12,184 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 
+MT::Test->init_app;
+
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website       = MT::Test::Permission->make_website();
-my $other_website = MT::Test::Permission->make_website();
+    # Website
+    my $website       = MT::Test::Permission->make_website(
+        name => 'my website',
+    );
+    my $other_website = MT::Test::Permission->make_website(
+        name => 'other website',
+    );
 
-# Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-my $second_blog
-    = MT::Test::Permission->make_blog( parent_id => $website->id, );
-my $other_blog
-    = MT::Test::Permission->make_blog( parent_id => $other_website->id, );
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
+    my $second_blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'second blog',
+    );
+    my $other_blog = MT::Test::Permission->make_blog(
+        parent_id => $other_website->id,
+        name => 'other blog',
+    );
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name     => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name     => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
 
-my $ichikawa = MT::Test::Permission->make_author(
-    name     => 'ichikawa',
-    nickname => 'Jiro Ichikawa',
-);
+    my $ichikawa = MT::Test::Permission->make_author(
+        name     => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
 
-my $ukawa = MT::Test::Permission->make_author(
-    name     => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
+    my $ukawa = MT::Test::Permission->make_author(
+        name     => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
 
-my $egawa = MT::Test::Permission->make_author(
-    name     => 'egawa',
-    nickname => 'Shiro Egawa',
-);
+    my $egawa = MT::Test::Permission->make_author(
+        name     => 'egawa',
+        nickname => 'Shiro Egawa',
+    );
 
-my $ogawa = MT::Test::Permission->make_author(
-    name     => 'ogawa',
-    nickname => 'Goro Ogawa',
-);
+    my $ogawa = MT::Test::Permission->make_author(
+        name     => 'ogawa',
+        nickname => 'Goro Ogawa',
+    );
 
-my $kagawa = MT::Test::Permission->make_author(
-    name     => 'kagawa',
-    nickname => 'Ichiro Kagawa',
-);
+    my $kagawa = MT::Test::Permission->make_author(
+        name     => 'kagawa',
+        nickname => 'Ichiro Kagawa',
+    );
 
-my $kikkawa = MT::Test::Permission->make_author(
-    name     => 'kikkawa',
-    nickname => 'Jiro Kikkawa',
-);
+    my $kikkawa = MT::Test::Permission->make_author(
+        name     => 'kikkawa',
+        nickname => 'Jiro Kikkawa',
+    );
 
-my $kumekawa = MT::Test::Permission->make_author(
-    name     => 'kumekawa',
-    nickname => 'Saburo Kumekawa',
-);
+    my $kumekawa = MT::Test::Permission->make_author(
+        name     => 'kumekawa',
+        nickname => 'Saburo Kumekawa',
+    );
 
-my $kemikawa = MT::Test::Permission->make_author(
-    name     => 'kemikawa',
-    nickname => 'Shiro Kemikawa',
-);
+    my $kemikawa = MT::Test::Permission->make_author(
+        name     => 'kemikawa',
+        nickname => 'Shiro Kemikawa',
+    );
 
-my $koishikawa = MT::Test::Permission->make_author(
-    name     => 'koishikawa',
-    nickname => 'Goro Koishikawa',
-);
+    my $koishikawa = MT::Test::Permission->make_author(
+        name     => 'koishikawa',
+        nickname => 'Goro Koishikawa',
+    );
 
-my $sagawa = MT::Test::Permission->make_author(
-    name     => 'sagawa',
-    nickname => 'Ichiro Sagawa',
-);
+    my $sagawa = MT::Test::Permission->make_author(
+        name     => 'sagawa',
+        nickname => 'Ichiro Sagawa',
+    );
 
-my $shiki = MT::Test::Permission->make_author(
-    name     => 'shiki',
-    nickname => 'Jiro Shiki',
-);
+    my $shiki = MT::Test::Permission->make_author(
+        name     => 'shiki',
+        nickname => 'Jiro Shiki',
+    );
 
-my $suda = MT::Test::Permission->make_author(
-    name     => 'suda',
-    nickname => 'Saburo Suda',
-);
+    my $suda = MT::Test::Permission->make_author(
+        name     => 'suda',
+        nickname => 'Saburo Suda',
+    );
 
-my $seta = MT::Test::Permission->make_author(
-    name     => 'seta',
-    nickname => 'Shiro Seta',
-);
+    my $seta = MT::Test::Permission->make_author(
+        name     => 'seta',
+        nickname => 'Shiro Seta',
+    );
+
+    my $admin = MT::Author->load(1);
+
+    # Role
+    my $edit_templates = MT::Test::Permission->make_role(
+        name        => 'Edit Templates',
+        permissions => "'edit_templates'",
+    );
+
+    my $rebuild = MT::Test::Permission->make_role(
+        name        => 'rebuild',
+        permissions => "'rebuild'",
+    );
+
+    my $create_post = MT::Test::Permission->make_role(
+        name        => 'Create Post',
+        permissions => "'create_post'",
+    );
+
+    require MT::Association;
+    MT::Association->link( $aikawa   => $edit_templates => $blog );
+    MT::Association->link( $ichikawa => $rebuild        => $blog );
+    MT::Association->link( $ukawa    => $edit_templates => $second_blog );
+    MT::Association->link( $egawa    => $rebuild        => $second_blog );
+    MT::Association->link( $ogawa    => $create_post    => $blog );
+
+    MT::Association->link( $kikkawa, $edit_templates, $website );
+    MT::Association->link( $sagawa,  $create_post,    $website );
+    MT::Association->link( $shiki,   $rebuild,        $website );
+
+    MT::Association->link( $kemikawa, $edit_templates, $other_website );
+    MT::Association->link( $suda,     $rebuild,        $other_website );
+
+    MT::Association->link( $koishikawa, $edit_templates, $other_blog );
+    MT::Association->link( $seta,       $rebuild,        $other_blog );
+
+    $kagawa->can_edit_templates(1);
+    $kagawa->save();
+
+    # Template
+    my $tmpl = MT::Test::Permission->make_template(
+        blog_id => $blog->id,
+        name => 'my template',
+    );
+
+    my $widget = MT::Test::Permission->make_template(
+        blog_id => $blog->id,
+        type    => 'widget',
+        name    => 'my widget',
+    );
+
+    my $sys_tmpl = MT::Test::Permission->make_template( blog_id => 0, );
+});
+
+my $website = MT::Website->load( { name => 'my website' } );
+
+my $blog = MT::Blog->load( { name => 'my blog' } );
+
+my $aikawa     = MT::Author->load( { name => 'aikawa' } );
+my $ichikawa   = MT::Author->load( { name => 'ichikawa' } );
+my $ukawa      = MT::Author->load( { name => 'ukawa' } );
+my $egawa      = MT::Author->load( { name => 'egawa' } );
+my $ogawa      = MT::Author->load( { name => 'ogawa' } );
+my $kagawa     = MT::Author->load( { name => 'kagawa' } );
+my $kikkawa    = MT::Author->load( { name => 'kikkawa' } );
+my $kumekawa   = MT::Author->load( { name => 'kumekawa' } );
+my $kemikawa   = MT::Author->load( { name => 'kemikawa' } );
+my $koishikawa = MT::Author->load( { name => 'koishikawa' } );
+my $sagawa     = MT::Author->load( { name => 'sagawa' } );
+my $shiki      = MT::Author->load( { name => 'shiki' } );
+my $suda       = MT::Author->load( { name => 'suda' } );
+my $seta       = MT::Author->load( { name => 'seta' } );
 
 my $admin = MT::Author->load(1);
 
-# Role
-my $edit_templates = MT::Test::Permission->make_role(
-    name        => 'Edit Templates',
-    permissions => "'edit_templates'",
-);
-
-my $rebuild = MT::Test::Permission->make_role(
-    name        => 'rebuild',
-    permissions => "'rebuild'",
-);
-
-my $create_post = MT::Test::Permission->make_role(
-    name        => 'Create Post',
-    permissions => "'create_post'",
-);
-
-require MT::Association;
-MT::Association->link( $aikawa   => $edit_templates => $blog );
-MT::Association->link( $ichikawa => $rebuild        => $blog );
-MT::Association->link( $ukawa    => $edit_templates => $second_blog );
-MT::Association->link( $egawa    => $rebuild        => $second_blog );
-MT::Association->link( $ogawa    => $create_post    => $blog );
-
-MT::Association->link( $kikkawa, $edit_templates, $website );
-MT::Association->link( $sagawa,  $create_post,    $website );
-MT::Association->link( $shiki,   $rebuild,        $website );
-
-MT::Association->link( $kemikawa, $edit_templates, $other_website );
-MT::Association->link( $suda,     $rebuild,        $other_website );
-
-MT::Association->link( $koishikawa, $edit_templates, $other_blog );
-MT::Association->link( $seta,       $rebuild,        $other_blog );
-
-$kagawa->can_edit_templates(1);
-$kagawa->save();
-
-# Template
-my $tmpl = MT::Test::Permission->make_template( blog_id => $blog->id, );
-
-my $widget = MT::Test::Permission->make_template(
-    blog_id => $blog->id,
-    type    => 'widget',
-);
-
-my $sys_tmpl = MT::Test::Permission->make_template( blog_id => 0, );
+my $tmpl   = MT::Template->load( { name => 'my template' } );
+my $widget = MT::Template->load( { name => 'my widget' } );
 
 # Run
 my ( $app, $out );

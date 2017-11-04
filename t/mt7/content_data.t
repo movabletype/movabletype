@@ -10,40 +10,54 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :db );
+use MT::Test;
 use MT::Test::Permission;
 
 use MT::ContentFieldIndex;
 
-my $ct = MT::Test::Permission->make_content_type(
-    blog_id => 1,
-    name    => 'test content type',
-);
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-my $cf = MT::Test::Permission->make_content_field(
-    blog_id         => $ct->blog_id,
-    content_type_id => $ct->id,
-    name            => 'single text',
-    type            => 'single_line_text',
-);
+    my $ct = MT::Test::Permission->make_content_type(
+        blog_id => 1,
+        name    => 'test content type',
+    );
 
-my $fields = [
-    {   id        => $cf->id,
-        label     => 1,
-        name      => $cf->name,
-        order     => 1,
-        type      => $cf->type,
-        unique_id => $cf->unique_id,
+    my $cf = MT::Test::Permission->make_content_field(
+        blog_id         => $ct->blog_id,
+        content_type_id => $ct->id,
+        name            => 'single text',
+        type            => 'single_line_text',
+    );
+
+    my $fields = [
+        {   id        => $cf->id,
+            label     => 1,
+            name      => $cf->name,
+            order     => 1,
+            type      => $cf->type,
+            unique_id => $cf->unique_id,
+        }
+    ];
+    $ct->fields($fields);
+    $ct->save or die $ct->errstr;
+
+    my $cd = MT::Test::Permission->make_content_data(
+        blog_id         => $ct->blog_id,
+        author_id       => 1,
+        content_type_id => $ct->id,
+        data            => { $cf->id => 'test text' },
+    );
+});
+
+my $ct = MT::ContentType->load( { name => 'test content type' } );
+my $cf = MT::ContentField->load( { name => 'single text' } );
+my $cd = MT::ContentData->load(
+    {
+        blog_id         => $ct->blog_id,
+        author_id       => 1,
+        content_type_id => $ct->id,
     }
-];
-$ct->fields($fields);
-$ct->save or die $ct->errstr;
-
-my $cd = MT::Test::Permission->make_content_data(
-    blog_id         => $ct->blog_id,
-    author_id       => 1,
-    content_type_id => $ct->id,
-    data            => { $cf->id => 'test text' },
 );
 
 subtest 'save' => sub {

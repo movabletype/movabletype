@@ -13,7 +13,9 @@ BEGIN {
 }
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
+
+$test_env->prepare_fixture('db');
 
 my $mt = MT->instance;
 my $fileinfo = $mt->model('fileinfo');
