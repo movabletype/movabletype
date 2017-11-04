@@ -7,7 +7,7 @@ use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 BEGIN {
-    eval qq{ use IPC::Run3 }
+    eval qq{ use IPC::Run3; 1 }
         or plan skip_all => 'IPC::Run3 is not installed';
 }
 
