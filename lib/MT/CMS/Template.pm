@@ -1815,10 +1815,10 @@ sub _populate_archive_loop {
                 $required_fields = $_->{required_fields};
             }
             else {
-                $custom = $map->{file_template} || $_->{value};
             }
         }
         if ($custom) {
+            $custom = $map->{file_template};
             unshift @$tmpl_loop,
                 {
                 name   => $map->{file_template},
