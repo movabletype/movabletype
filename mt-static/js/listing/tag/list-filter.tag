@@ -270,7 +270,7 @@
                 data-mt-filter-type={ type }
                 onclick={ addFilterItem }
               >
-                { label }
+                <raw content={ label }></raw>
               </a>
             </div>
           </div>
@@ -299,7 +299,7 @@
     this.mixin('listFilterTop')
 
     addFilterItem(e) {
-      const filterType = e.target.dataset.mtFilterType
+      const filterType = e.currentTarget.dataset.mtFilterType
       this.listFilterTop.addFilterItem(filterType)
     }
   </script>

@@ -373,12 +373,12 @@ riot.tag2('list-filter-header', '<div class="row"> <div class="col-11"> <ul clas
     }.bind(this)
 });
 
-riot.tag2('list-filter-detail', '<div class="row"> <div class="col-12"> <ul class="list-inline"> <li class="list-inline-item"> <div class="dropdown"> <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> {trans(\'Select Filter Item...\')} </button> <div class="dropdown-menu"> <a each="{listTop.opts.filterTypes}" if="{editable}" class="{disabled: parent.listFilterTop.isFilterItemSelected(type), dropdown-item: true}" href="#" data-mt-filter-type="{type}" onclick="{addFilterItem}"> {label} </a> </div> </div> </li> </ul> </div> </div> <div class="row mb-3"> <div class="col-12"> <ul class="list-group"> <li data-is="list-filter-item" each="{item, index in listFilterTop.currentFilter.items}" data-mt-list-item-index="{index}" item="{item}" class="list-group-item"> </li> </ul> </div> </div> <div class="row"> <div data-is="list-filter-buttons" class="col-12"></div> </div>', '', '', function(opts) {
+riot.tag2('list-filter-detail', '<div class="row"> <div class="col-12"> <ul class="list-inline"> <li class="list-inline-item"> <div class="dropdown"> <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> {trans(\'Select Filter Item...\')} </button> <div class="dropdown-menu"> <a each="{listTop.opts.filterTypes}" if="{editable}" class="{disabled: parent.listFilterTop.isFilterItemSelected(type), dropdown-item: true}" href="#" data-mt-filter-type="{type}" onclick="{addFilterItem}"> <raw content="{label}"></raw> </a> </div> </div> </li> </ul> </div> </div> <div class="row mb-3"> <div class="col-12"> <ul class="list-group"> <li data-is="list-filter-item" each="{item, index in listFilterTop.currentFilter.items}" data-mt-list-item-index="{index}" item="{item}" class="list-group-item"> </li> </ul> </div> </div> <div class="row"> <div data-is="list-filter-buttons" class="col-12"></div> </div>', '', '', function(opts) {
     this.mixin('listTop')
     this.mixin('listFilterTop')
 
     this.addFilterItem = function(e) {
-      const filterType = e.target.dataset.mtFilterType
+      const filterType = e.currentTarget.dataset.mtFilterType
       this.listFilterTop.addFilterItem(filterType)
     }.bind(this)
 });
@@ -681,7 +681,7 @@ riot.tag2('list-table', '<thead data-is="list-table-header"></thead> <tbody if="
     this.mixin('listTop')
 });
 
-riot.tag2('list-table-header', '<tr> <th class="mt-table__control"> <label class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" checked="{store.checkedAllRowsOnPage}" onchange="{toggleAllRowsOnPage}"> <span class="custom-control-indicator"></span> </label> </th> <th each="{store.columns}" scope="col" if="{checked}" data-id="{id}" class="{primary: primary,         sortable: sortable,         sorted: parent.store.sortBy == id}"> <a href="javascript:void(0)" if="{sortable}" onclick="{toggleSortColumn}" class="{mt-table__ascend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'ascend\',           mt-table__descend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'descend\'}"> {label} </a> <virtual if="{!sortable}">{label}</virtual> </th> </tr>', '', '', function(opts) {
+riot.tag2('list-table-header', '<tr> <th class="mt-table__control"> <label class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" checked="{store.checkedAllRowsOnPage}" onchange="{toggleAllRowsOnPage}"> <span class="custom-control-indicator"></span> </label> </th> <th each="{store.columns}" scope="col" if="{checked}" data-id="{id}" class="{primary: primary,         sortable: sortable,         sorted: parent.store.sortBy == id}"> <a href="javascript:void(0)" if="{sortable}" onclick="{toggleSortColumn}" class="{mt-table__ascend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'ascend\',           mt-table__descend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'descend\'}"> <raw content="{label}"></raw> </a> <raw if="{!sortable}" content="{label}"></raw> </th> </tr>', '', '', function(opts) {
     this.mixin('listTop')
 
     this.toggleAllRowsOnPage = function(e) {
@@ -759,4 +759,9 @@ riot.tag2('list-top', '<div class="mb-3" data-is="display-options"></div> <div c
         })
       })
     }.bind(this)
+});
+
+riot.tag2('raw', '<span></span>', '', '', function(opts) {
+
+  this.root.innerHTML = opts.content
 });
