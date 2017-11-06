@@ -186,7 +186,7 @@
       })
       if ( errors ) {
         this.$validateErrorMessage = this.showMessage(
-          trans('[_1] Filter Items have errors', errors ),
+          trans('[_1] Filter Items have fields not filled in properly', errors ),
           'error'
         )
       }
