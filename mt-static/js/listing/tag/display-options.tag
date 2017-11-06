@@ -100,7 +100,9 @@
               onchange={ toggleColumn }
             />
             <span class="custom-control-indicator"></span>
-            <span class="custom-control-description">{ column.label }</span>
+            <span class="custom-control-description">
+              <raw content={ column.label }></raw>
+            </span>
           </label>
         </li>
         <li
