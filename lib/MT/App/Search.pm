@@ -980,7 +980,7 @@ sub renderfeed {
         or return;
     my $out = $app->build_page($tmpl);
     my $ctx = $tmpl->context;
-    if ( my $content_type = $ctx->stash('content_type') ) {
+    if ( my $content_type = $ctx->stash('http_content_type') ) {
         $app->{response_content_type} = $content_type;
     }
     return $out;

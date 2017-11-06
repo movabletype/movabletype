@@ -6099,7 +6099,7 @@ B<Example:>
 sub _hdlr_http_content_type {
     my ( $ctx, $args ) = @_;
     my $type = $args->{type};
-    $ctx->stash( 'content_type', $type );
+    $ctx->stash( 'http_content_type', $type );
     return qq{};
 }
 

@@ -452,7 +452,7 @@ sub execute {
         $app->translate( "Publishing results failed: [_1]", $ctx->errstr ) );
     $res = $app->_set_form_elements($res);
 
-    if ( defined( $ctx->stash('content_type') ) ) {
+    if ( defined( $ctx->stash('http_content_type') ) ) {
         $app->{no_print_body} = 1;
         if ( $app->{searchparam}{Template} eq 'feed' ) {
             my $last_update;
@@ -471,17 +471,17 @@ sub execute {
             {
                 $app->response_code(304);
                 $app->response_message('Not Modified');
-                $app->send_http_header( $ctx->stash('content_type') );
+                $app->send_http_header( $ctx->stash('http_content_type') );
             }
             else {
                 $app->set_header( 'Last-Modified', time2str($last_update) )
                     if $last_update;
-                $app->send_http_header( $ctx->stash('content_type') );
+                $app->send_http_header( $ctx->stash('http_content_type') );
                 $app->print($res);
             }
         }
         else {
-            $app->send_http_header( $ctx->stash('content_type') );
+            $app->send_http_header( $ctx->stash('http_content_type') );
             $app->print($res);
         }
     }
