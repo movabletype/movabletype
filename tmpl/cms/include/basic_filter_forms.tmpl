@@ -16,7 +16,7 @@
   </select>
   </mt:setvarblock>
   <__trans phrase="[_1] [_2] [_3]"
-           params="<mt:var name="label" escape="js">%%<mt:var name="string_options">%%
+           params="<mt:var name="label" escape="html" escape="js">%%<mt:var name="string_options">%%
                    <input type="text" class="form-control m-1 prop-string <mt:var name="type">-string text med required" value="" />">
 </mt:setvartemplate>
 
@@ -33,13 +33,13 @@
   </select>
   </mt:setvarblock>
   <__trans phrase="[_1] [_2] [_3]"
-           params="<mt:var name="label" escape="js">%%<mt:var name="string_options">%%
+           params="<mt:var name="label" escape="html" escape="js">%%<mt:var name="string_options">%%
                    <input type="text" class="form-control m-1 prop-string <mt:var name="type">-string text med required" value="" />">
 </mt:setvartemplate>
 
 <mt:setvartemplate name="filter_form_integer">
 <__trans phrase="[_1] [_2] [_3]"
-         params="<mt:var name="label" escape="js">%%
+         params="<mt:var name="label" escape="html" escape="js">%%
                  <select class="custom-select form-control m-1 <mt:var name="type">-option">
                    <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
                    <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
@@ -53,7 +53,7 @@
 
 <mt:setvartemplate name="filter_form_blank_integer">
 <__trans phrase="[_1] [_2] [_3]"
-         params="<mt:var name="label" escape="js">%%
+         params="<mt:var name="label" escape="html" escape="js">%%
                  <select class="custom-select form-control m-1 <mt:var name="type">-option filter-blank">
                    <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
                    <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
@@ -69,7 +69,7 @@
 
 <mt:setvartemplate name="filter_form_float">
 <__trans phrase="[_1] [_2] [_3]"
-         params="<mt:var name="label" escape="js">%%
+         params="<mt:var name="label" escape="html" escape="js">%%
                  <select class="custom-select form-control m-1 <mt:var name="type">-option">
                    <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
                    <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
@@ -83,7 +83,7 @@
 
 <mt:setvartemplate name="filter_form_blank_float">
 <__trans phrase="[_1] [_2] [_3]"
-         params="<mt:var name="label" escape="js">%%
+         params="<mt:var name="label" escape="html" escape="js">%%
                  <select class="custom-select form-control m-1 <mt:var name="type">-option filter-blank">
                    <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
                    <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
@@ -296,7 +296,7 @@
 
 <mt:setvartemplate name="filter_form_single_select">
 <__trans phrase="[_1] [_3] [_2]"
-         params="<mt:var name="label" escape="js">%%
+         params="<mt:var name="label" escape="html" escape="js">%%
                  <select class="custom-select form-control m-1 <mt:var name="type">-value">
                  <mt:loop name="single_select_options">
                    <option value="<mt:var name="value">"><mt:var name="label" encode_html="1" encode_js="1" encode_html="1" ></option>
@@ -307,6 +307,6 @@
 <mt:setvartemplate name="filter_form_hidden">
 <input type="hidden" class="prop-hidden <mt:var name="type">-value" value="" />
 <input type="hidden" class="prop-hidden <mt:var name="type">-label" value="" />
-<mt:var name="label" escape="js">
+<mt:var name="label" escape="html" escape="js">
 </mt:setvartemplate>
 
