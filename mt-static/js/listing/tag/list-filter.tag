@@ -185,8 +185,14 @@
         }
       })
       if ( errors ) {
+        let errorMessage
+        if ( errors > 1 ) {
+          errorMessage = '[_1] Filter Items have field(s) not filled in properly'
+        } else {
+          errorMessage = '[_1] Filter Item has field(s) not filled in properly'
+        }
         this.$validateErrorMessage = this.showMessage(
-          trans('[_1] Filter Items have fields not filled in properly', errors ),
+          trans(errorMessage, errors ),
           'error'
         )
       }
