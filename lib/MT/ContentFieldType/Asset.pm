@@ -398,7 +398,7 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $is_image  = $prop->idx_type eq 'image';
+    my $is_image  = $prop->idx_type eq 'asset_image';
     my $cd_id     = $content_data->id;
     my $field_id  = $prop->content_field_id;
     my $asset_ids = $content_data->data->{$field_id} || [];
