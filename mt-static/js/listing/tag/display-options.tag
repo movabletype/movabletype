@@ -115,6 +115,7 @@
               id={ subField.id }
               pid={ subField.parent_id }
               class="custom-control-input { subField.class }"
+              disabled={ disabled: !column.checked }
               checked={ subField.checked }
               onchange={ toggleSubField }
             />
