@@ -221,33 +221,6 @@ sub tmpl_param_edit_role {
     my ( $cb, $app, $param, $tmpl ) = @_;
 
     $param->{content_type_perm_groups} = MT::ContentType->permission_groups;
-
-    # Insert content type permission template.
-    my $privileges_settinggroup_node
-        = $tmpl->getElementById('role-privileges');
-    my $content_type_permission_node = $tmpl->createElement( 'loop',
-        { name => 'content_type_perm_groups' } );
-    $content_type_permission_node->innerHTML(
-        _content_type_permission_tmpl() );
-    $privileges_settinggroup_node->appendChild($content_type_permission_node);
-}
-
-sub _content_type_permission_tmpl {
-    return <<'__TMPL__';
-    <mt:setvarblock name="ct_perm_group"><mt:var name="__VALUE__"></mt:setvarblock>
-    <mtapp:setting
-      id="<mt:var name="ct_perm_group">"
-      label="<mt:var name="ct_perm_group">"
-    >
-      <ul class="fixed-width multiple-selection">
-      <mt:loop name="loaded_permissions">
-      <mt:if name="group" eq="$ct_perm_group">
-        <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
-      </mt:if>
-      </mt:loop>
-      </ul>
-    </mtapp:setting>
-__TMPL__
 }
 
 sub save {

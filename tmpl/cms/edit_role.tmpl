@@ -233,13 +233,19 @@ function init() {
       <mtapp:setting
         id="<mt:var name="ct_perm_group">"
         label="<mt:var name="ct_perm_group">">
-        <ul class="fixed-width multiple-selection">
+        <div class="form-group">
         <mt:loop name="loaded_permissions">
         <mt:if name="group" eq="$ct_perm_group">
-          <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
+          <div class="form-check">
+            <label class="custom-control custom-checkbox">
+                <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><mt:var name="label" escape="html"></span>
+            </label>
+          </div>
         </mt:if>
         </mt:loop>
-        </ul>
+    </div>
       </mtapp:setting>
       </mt:if>
     </mt:loop>
