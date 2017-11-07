@@ -272,6 +272,10 @@ sub process_log_feed {
             = entity_translate( encode_html( $item->{'log.message'}, 1 ) );
         my $class = $log->class || 'system';
 
+        if ( $class =~ /^content_data_/ ) {
+            $class = 'content_data';
+        }
+
         if ( !$templates{$class} ) {
             $templates{$class} = $app->load_tmpl("feed_$class.tmpl")
                 || $app->load_tmpl("feed_system.tmpl");
