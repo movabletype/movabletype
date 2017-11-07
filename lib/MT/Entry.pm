@@ -827,6 +827,7 @@ sub list_props {
                             { not => [ map { $_->id } @all_authors ] }, };
                 }
                 else {
+                    my $datasource = $prop->datasource->datasource;
                     my $status
                         = $val eq 'enabled'
                         ? MT::Author::ACTIVE()
@@ -835,7 +836,7 @@ sub list_props {
                     push @{ $db_args->{joins} },
                         MT->model('author')->join_on(
                         undef,
-                        {   id     => \'= entry_author_id',
+                        {   id     => \"= ${datasource}_author_id",
                             status => $status,
                         },
                         );
