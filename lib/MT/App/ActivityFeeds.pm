@@ -66,6 +66,7 @@ sub _generate_content_data_callbacks {
         $callbacks{"ActivityFeed.${cd_name}"} = \&_feed_content_data;
         $callbacks{"ActivityFeed.filter_object.${cd_name}"}
             = \&_filter_content_data;
+        $ct->generate_object_log_class;
     }
     %callbacks;
 }
