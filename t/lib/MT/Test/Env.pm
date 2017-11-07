@@ -398,11 +398,16 @@ sub _sql_translator_filter_mysql {
         }
 
         # Some of the PHP tests assume that float has no explicit size
+        my $order = 0;
         for my $field ( $table->get_fields ) {
+            $field->order( $order++ );
             if ( lc $field->data_type eq 'float' ) {
                 $field->size(0);
             }
         }
+
+        my @indices = sort { $a->name cmp $b->name } $table->get_indices;
+        @{ $table->_indices } = @indices;
     }
 }
 
