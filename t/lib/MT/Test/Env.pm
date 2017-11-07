@@ -232,18 +232,18 @@ sub dbh {
 
 sub prepare_fixture {
     my $self = shift;
-    my ( $id, $code );
+    my $code;
     my $fixture_dir = "$MT_HOME/t/fixture";
+    my $id = (caller)[1];    # file
+    $id =~ s!^($MT_HOME/)?!!;
+    $id =~ s!\.t$!!;
+    $id =~ s!^(?:(.*?)/)?t/!!;
+    if ($1) {
+        $fixture_dir = "$MT_HOME/$1/t/fixture";
+        mkpath $fixture_dir unless -d $fixture_dir;
+    }
     if ( ref $_[0] eq 'CODE' ) {
         $code = shift;
-        $id   = (caller)[1];    # file
-        $id =~ s!^($MT_HOME/)?!!;
-        $id =~ s!\.t$!!;
-        $id =~ s!^(?:(.*?)/)?t/!!;
-        if ($1) {
-            $fixture_dir = "$MT_HOME/$1/t/fixture";
-            mkpath $fixture_dir unless -d $fixture_dir;
-        }
     }
     else {
         $id = shift;
@@ -263,7 +263,7 @@ sub prepare_fixture {
         }
     }
     my $driver  = lc $self->{driver};
-    my $schema  = "$MT_HOME/t/fixture/schema.$driver.sql";
+    my $schema  = "$fixture_dir/schema.$driver.sql";
     my $fixture = "$fixture_dir/$id.json";
     if ( !$ENV{MT_TEST_UPDATE_FIXTURE} and !$ENV{MT_TEST_IGNORE_FIXTURE} ) {
         $self->load_schema_and_fixture( $schema, $fixture ) or $code->();
