@@ -476,4 +476,36 @@ sub save_fixture {
     close $fh;
 }
 
+sub disable_addon {
+    my ( $self, $name ) = @_;
+    my $config   = "$MT_HOME/addons/$name/config.yaml";
+    my $disabled = "$config.disabled";
+
+    # Want a lock?
+    if ( -f $config ) {
+        rename( $config, $disabled )
+            or plan skip_all => "$config cannot be renamed.: $!";
+        push @{ $self->{disabled} ||= [] }, $name;
+    }
+}
+
+sub enable_addon {
+    my ( $self, $name ) = @_;
+    my $config   = "$MT_HOME/addons/$name/config.yaml";
+    my $disabled = "$config.disabled";
+
+    if ( -f $disabled ) {
+        rename( $disabled, $config ) or warn $!;
+    }
+}
+
+sub DESTROY {
+    my $self = shift;
+    if ( my @disabled = @{ $self->{disabled} || [] } ) {
+        for my $name (@disabled) {
+            $self->enable_addon($name);
+        }
+    }
+}
+
 1;
