@@ -1006,7 +1006,7 @@ sub list {
     my $initial_filter;
 
     my $list_prefs = $app->user->list_prefs || {};
-    my $list_pref = $list_prefs->{ ( $subtype || $type ) }{$blog_id} || {};
+    my $list_pref = $list_prefs->{ $type . $subtype }{$blog_id} || {};
     my $rows        = $list_pref->{rows}        || 50;    ## FIXME: Hardcoded
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
