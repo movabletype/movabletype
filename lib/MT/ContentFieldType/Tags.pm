@@ -93,7 +93,7 @@ sub terms {
 
         my $join_terms = { value_integer => [ \'IS NULL', @tag_ids ] };
         my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
-        $cd_ids ? { id => { not => \$cd_ids } } : ();
+        $cd_ids ? { id => { not => $cd_ids } } : ();
     }
     elsif ( $option eq 'blank' ) {
         my $join_terms = { value_integer => \'IS NULL' };
