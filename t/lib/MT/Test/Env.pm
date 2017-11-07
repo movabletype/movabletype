@@ -415,7 +415,7 @@ sub save_fixture {
         my $rows = $dbh->selectall_arrayref( "SELECT * FROM $table",
             { Slice => +{} } );
         next unless @{ $rows || [] };
-        my @keys = keys %{ $rows->[0] };
+        my @keys = sort keys %{ $rows->[0] };
         my @rows_modified;
         for my $row (@$rows) {
             my @data;
