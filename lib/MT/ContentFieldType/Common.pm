@@ -287,9 +287,7 @@ sub single_select_options_multiple {
 
     my $content_field_id = $prop->{content_field_id};
     my $content_field    = MT::ContentField->load($content_field_id);
-    my $values           = $content_field->options->{values} || [];
-
-    [ map { +{ label => $_->{key}, value => $_->{value} } } @{$values} ];
+    return $content_field->options->{values} || [];
 }
 
 sub tag_handler_datetime {
