@@ -383,11 +383,18 @@ sub _sql_translator_filter_mysql {
     for my $table ( $schema->get_tables ) {
         my $options = $table->options;
         my $i       = 0;
+        my $saw_charset;
         while ( $i < @$options ) {
             my ( $key, $value ) = %{ $options->[$i] };
-            $options->[$i]{$key} = 'utf8' if $key eq 'CHARACTER SET';
+            if ( $key eq 'CHARACTER SET' ) {
+                $options->[$i]{$key} = 'utf8';
+                $saw_charset = 1;
+            }
             splice @$options, $i, 1 if $key eq 'AUTO_INCREMENT';
             $i++;
+        }
+        if ( !$saw_charset ) {
+            $table->options( { 'CHARACTER SET' => 'utf8' } );
         }
 
         # Some of the PHP tests assume that float has no explicit size
