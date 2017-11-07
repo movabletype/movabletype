@@ -15,36 +15,9 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
-}
 
-use File::Spec;
-use File::Copy;
-
-# Disable Commercial.pack temporarily.
-BEGIN {
-    my $commercialpack_config
-        = File::Spec->catfile(qw/ addons Commercial.pack config.yaml /);
-    my $commercialpack_config_rename
-        = File::Spec->catfile(
-        qw/ addons Commercial.pack config.yaml.disabled /);
-
-    if ( -f $commercialpack_config ) {
-        move( $commercialpack_config, $commercialpack_config_rename )
-            or plan skip_all => "$commercialpack_config cannot be moved.";
-    }
-}
-
-# Recover Commercial.pack.
-END {
-    my $commercialpack_config
-        = File::Spec->catfile(qw/ addons Commercial.pack config.yaml /);
-    my $commercialpack_config_rename
-        = File::Spec->catfile(
-        qw/ addons Commercial.pack config.yaml.disabled /);
-
-    if ( -f $commercialpack_config_rename ) {
-        move( $commercialpack_config_rename, $commercialpack_config );
-    }
+    # Disable Commercial.pack temporarily.
+    $test_env->disable_addon('Commercial.pack');
 }
 
 use MT::Test;
