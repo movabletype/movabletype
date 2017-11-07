@@ -60,6 +60,8 @@ sub write_config {
     my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER} ||
         ( eval { require Image::Magick } ? 'ImageMagick' : 'Imager' );
 
+    require MT;
+
     # common directives
     my %config = (
         PluginPath => [
@@ -83,6 +85,8 @@ sub write_config {
         EmailAddressMain    => 'mt@localhost',
         WeblogTemplatesPath => 'MT_HOME/default_templates',
         ImageDriver         => $image_driver,
+        MTVersion           => MT->version_number,
+        MTReleaseNumber     => MT->release_number,
     );
 
     if ($extra) {
