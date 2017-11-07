@@ -80,7 +80,7 @@ sub single_select_options {
         { unique => 1 },
     );
     my @options;
-    my $iter = MT::Asset->load_iter( undef,
+    my $iter = MT::Asset->load_iter( { class => '*' },
         { join => $cf_idx_join, fetchonly => { id => 1, label => 1 } } );
     while ( my $asset = $iter->() ) {
         my $label = $asset->label . ' (id:' . $asset->id . ')';
