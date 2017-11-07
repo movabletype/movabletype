@@ -60,6 +60,8 @@ sub write_config {
     my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER} ||
         ( eval { require Image::Magick } ? 'ImageMagick' : 'Imager' );
 
+    require MT;
+
     # common directives
     my %config = (
         PluginPath => [
@@ -83,6 +85,8 @@ sub write_config {
         EmailAddressMain    => 'mt@localhost',
         WeblogTemplatesPath => 'MT_HOME/default_templates',
         ImageDriver         => $image_driver,
+        MTVersion           => MT->version_number,
+        MTReleaseNumber     => MT->release_number,
     );
 
     if ($extra) {
@@ -228,18 +232,18 @@ sub dbh {
 
 sub prepare_fixture {
     my $self = shift;
-    my ( $id, $code );
+    my $code;
     my $fixture_dir = "$MT_HOME/t/fixture";
+    my $id = (caller)[1];    # file
+    $id =~ s!^($MT_HOME/)?!!;
+    $id =~ s!\.t$!!;
+    $id =~ s!^(?:(.*?)/)?t/!!;
+    if ($1) {
+        $fixture_dir = "$MT_HOME/$1/t/fixture";
+        mkpath $fixture_dir unless -d $fixture_dir;
+    }
     if ( ref $_[0] eq 'CODE' ) {
         $code = shift;
-        $id   = (caller)[1];    # file
-        $id =~ s!^($MT_HOME/)?!!;
-        $id =~ s!\.t$!!;
-        $id =~ s!^(?:(.*?)/)?t/!!;
-        if ($1) {
-            $fixture_dir = "$MT_HOME/$1/t/fixture";
-            mkpath $fixture_dir unless -d $fixture_dir;
-        }
     }
     else {
         $id = shift;
@@ -259,7 +263,7 @@ sub prepare_fixture {
         }
     }
     my $driver  = lc $self->{driver};
-    my $schema  = "$MT_HOME/t/fixture/schema.$driver.sql";
+    my $schema  = "$fixture_dir/schema.$driver.sql";
     my $fixture = "$fixture_dir/$id.json";
     if ( !$ENV{MT_TEST_UPDATE_FIXTURE} and !$ENV{MT_TEST_IGNORE_FIXTURE} ) {
         $self->load_schema_and_fixture( $schema, $fixture ) or $code->();
@@ -383,19 +387,31 @@ sub _sql_translator_filter_mysql {
     for my $table ( $schema->get_tables ) {
         my $options = $table->options;
         my $i       = 0;
+        my $saw_charset;
         while ( $i < @$options ) {
             my ( $key, $value ) = %{ $options->[$i] };
-            $options->[$i]{$key} = 'utf8' if $key eq 'CHARACTER SET';
+            if ( $key eq 'CHARACTER SET' ) {
+                $options->[$i]{$key} = 'utf8';
+                $saw_charset = 1;
+            }
             splice @$options, $i, 1 if $key eq 'AUTO_INCREMENT';
             $i++;
         }
+        if ( !$saw_charset ) {
+            $table->options( { 'CHARACTER SET' => 'utf8' } );
+        }
 
         # Some of the PHP tests assume that float has no explicit size
+        my $order = 0;
         for my $field ( $table->get_fields ) {
+            $field->order( $order++ );
             if ( lc $field->data_type eq 'float' ) {
                 $field->size(0);
             }
         }
+
+        my @indices = sort { $a->name cmp $b->name } $table->get_indices;
+        @{ $table->_indices } = @indices;
     }
 }
 
@@ -415,7 +431,7 @@ sub save_fixture {
         my $rows = $dbh->selectall_arrayref( "SELECT * FROM $table",
             { Slice => +{} } );
         next unless @{ $rows || [] };
-        my @keys = keys %{ $rows->[0] };
+        my @keys = sort keys %{ $rows->[0] };
         my @rows_modified;
         for my $row (@$rows) {
             my @data;
@@ -458,6 +474,38 @@ sub save_fixture {
     flock $fh, LOCK_EX;
     print $fh JSON->new->pretty->canonical->utf8->encode( \%data );
     close $fh;
+}
+
+sub disable_addon {
+    my ( $self, $name ) = @_;
+    my $config   = "$MT_HOME/addons/$name/config.yaml";
+    my $disabled = "$config.disabled";
+
+    # Want a lock?
+    if ( -f $config ) {
+        rename( $config, $disabled )
+            or plan skip_all => "$config cannot be renamed.: $!";
+        push @{ $self->{disabled} ||= [] }, $name;
+    }
+}
+
+sub enable_addon {
+    my ( $self, $name ) = @_;
+    my $config   = "$MT_HOME/addons/$name/config.yaml";
+    my $disabled = "$config.disabled";
+
+    if ( -f $disabled ) {
+        rename( $disabled, $config ) or warn $!;
+    }
+}
+
+sub DESTROY {
+    my $self = shift;
+    if ( my @disabled = @{ $self->{disabled} || [] } ) {
+        for my $name (@disabled) {
+            $self->enable_addon($name);
+        }
+    }
 }
 
 1;
