@@ -384,6 +384,22 @@ sub tag_handler_asset {
     $ctx->invoke_handler( 'assets', $args, $cond );
 }
 
+sub tag_handler_content_type {
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
+
+    my $content_type = $ctx->stash('content_type')
+        or return $ctx->_no_content_type_error;
+    my $content_data = $ctx->stash('content')
+        or return $ctx->_no_content_error;
+
+    my $ids = $content_data->data->{ $field_data->{id} };
+    my @archive_contents
+        = MT->model('content_data')->load( { id => $ids } );
+    local $ctx->{__stash}{archive_contents} = \@archive_contents;
+
+    $ctx->invoke_handler( 'contents', $args, $cond );
+}
+
 sub _has_some_modifier {
     my $args = shift;
     my %arg_keys = map { $_ => 1 } keys %{ $args || {} };

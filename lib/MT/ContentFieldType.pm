@@ -40,8 +40,12 @@ sub _content_type_registry {
         field_html => 'field_html/field_html_content_type.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::ContentType::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::ContentType::field_value_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::ContentType::ss_validator',
+        tag_handler =>
+            '$Core::MT::ContentFieldType::Common::tag_handler_content_type',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::ContentType::theme_import_handler',
         list_props => {
@@ -468,6 +472,8 @@ sub _asset_registry {
         field_html => 'field_html/field_html_asset.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Asset::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::field_value_handler',
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
@@ -577,6 +583,8 @@ sub _audio_registry {
         field_html => 'field_html/field_html_asset.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Asset::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::field_value_handler',
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
@@ -685,6 +693,8 @@ sub _video_registry {
         field_html => 'field_html/field_html_asset.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Asset::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::field_value_handler',
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
@@ -793,6 +803,8 @@ sub _image_registry {
         field_html => 'field_html/field_html_asset.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Asset::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::field_value_handler',
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
@@ -944,6 +956,8 @@ sub _categories_registry {
         field_html => 'field_html/field_html_categories.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Categories::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Categories::field_value_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Categories::ss_validator',
         tag_handler => '$Core::MT::ContentFieldType::Categories::tag_handler',
@@ -994,6 +1008,8 @@ sub _tags_registry {
         field_html => 'field_html/field_html_tags.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Tags::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Tags::field_value_handler',
         ss_validator => '$Core::MT::ContentFieldType::Tags::ss_validator',
         tag_handler  => '$Core::MT::ContentFieldType::Tags::tag_handler',
         list_props   => {

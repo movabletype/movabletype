@@ -315,5 +315,11 @@ sub options_validation_handler {
     return;
 }
 
+sub field_value_handler {
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
+    my $content = $ctx->stash('Tag');
+    return $content ? $content->id : '';
+}
+
 1;
 
