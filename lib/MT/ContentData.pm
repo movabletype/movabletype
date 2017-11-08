@@ -780,7 +780,24 @@ sub make_list_props {
                 label   => 'Unpublish Date',
                 order   => $order + 400,
             },
-            status        => { base    => 'entry.status' },
+            status    => { base => 'entry.status' },
+            author_id => {
+                base            => 'entry.author_id',
+                label_via_param => sub {
+                    my $prop = shift;
+                    my ( $app, $val ) = @_;
+                    my $author = MT->model('author')->load( $val || 0 )
+                        or return $prop->error(
+                        MT->translate(
+                            '[_1] ( id:[_2] ) does not exists.',
+                            MT->translate("Author"),
+                            defined $val ? $val : ''
+                        )
+                        );
+                    return MT->translate( 'Contents by [_1]',
+                        $author->nickname );
+                },
+            },
             author_status => { base    => 'entry.author_status' },
             blog_name     => { display => 'none', filter_editable => 0 },
             current_context => { filter_editable => 0 },
