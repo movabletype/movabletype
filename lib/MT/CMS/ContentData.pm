@@ -843,7 +843,7 @@ sub make_content_actions {
 }
 
 sub make_list_actions {
-    my $common_delete_action = {
+    my $common_actions = {
         delete => {
             label      => 'Delete',
             order      => 100,
@@ -856,7 +856,7 @@ sub make_list_actions {
     my $list_actions = {};
     while ( my $ct = $iter->() ) {
         my $key = 'content_data.content_data_' . $ct->id;
-        $list_actions->{$key} = $common_delete_action;
+        $list_actions->{$key} = $common_actions;
     }
     $list_actions;
 }
