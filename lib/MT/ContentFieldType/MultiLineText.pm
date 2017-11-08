@@ -77,4 +77,22 @@ sub options_html_params {
     return { text_filters => \@text_filters };
 }
 
+sub field_value_handler {
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
+
+    return $value unless $args->{convert_breaks};
+
+    my $content_data = $ctx->stash('content')
+        or return $ctx->_no_content_error;
+    my $convert_breaks
+        = $content_data
+        ? MT::Serialize->unserialize( $content_data->convert_breaks )
+        : undef;
+    my $filters
+        = $convert_breaks ? $$convert_breaks->{ $field_data->{id} } : '';
+    $value = MT->apply_text_filters( $value, [$filters], $ctx );
+
+    return $value;
+}
+
 1;

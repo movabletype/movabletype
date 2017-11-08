@@ -121,6 +121,8 @@ sub _multi_line_text_registry {
         order     => 30,
         data_load_handler =>
             '$Core::MT::ContentFieldType::MultiLineText::data_load_handler',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::MultiLineText::field_value_handler',
         list_props => {
             multi_line_text => {
                 base  => '__virtual.string',

@@ -350,6 +350,12 @@ $test_env->prepare_fixture(
                 $cf_image->id    => [ $image1->id,    $image2->id ],
             },
         );
+        $cd01->convert_breaks(
+            MT::Serialize->serialize(
+                \{ $cf_multi_line_text->id => '__default__' }
+            )
+        );
+        $cd01->save;
         my $cd02 = MT::Test::Permission->make_content_data(
             blog_id         => $ct->blog_id,
             content_type_id => $ct->id,
@@ -460,3 +466,9 @@ aaa,bbb,ccc
 2,1
 1,2
 
+=== mt:ContentFieldValue with convert_breaks
+--- template
+<mt:Contents blog_id="1" name="test content data" offset="1" limit="1"><mt:ContentField label="multi line text"><mt:ContentFieldValue convert_breaks="1"></mt:ContentField></mt:Contents>
+--- expected
+<p>test multi line text<br />
+aaaaa</p>
