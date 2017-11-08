@@ -1040,7 +1040,7 @@ sub list {
                         if ( my $errstr = $prop->errstr ) {
                             push @messages,
                                 {
-                                cls => 'alert',
+                                cls => 'warning',
                                 msg => MT->translate(
                                     q{Invalid filter: [_1]},
                                     MT::Util::encode_html($errstr)
@@ -1056,7 +1056,7 @@ sub list {
                         if ( my $errstr = $prop->errstr ) {
                             push @messages,
                                 {
-                                cls => 'alert',
+                                cls => 'warning',
                                 msg => MT->translate(
                                     q{Invalid filter: [_1]},
                                     MT::Util::encode_html($errstr),
@@ -1076,7 +1076,7 @@ sub list {
             else {
                 push @messages,
                     {
-                    cls => 'alert invalid-filter',
+                    cls => 'warning invalid-filter',
                     msg => MT->translate(
                         q{Invalid filter: [_1]},
                         MT::Util::encode_html($col),
