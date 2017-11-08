@@ -403,7 +403,7 @@ sub tag_handler_content_type {
 sub _has_some_modifier {
     my $args = shift;
     my %arg_keys = map { $_ => 1 } keys %{ $args || {} };
-    delete $arg_keys{$_} for qw( unique_id content_field_id label @ );
+    delete $arg_keys{$_} for qw( unique_id content_field_id label glue @ );
     %arg_keys ? 1 : 0;
 }
 
