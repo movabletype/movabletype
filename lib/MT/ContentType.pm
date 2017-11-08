@@ -64,7 +64,7 @@ sub list_props {
             link_mode => 'view',
             html      => \&_make_name_html,
         },
-        author_name  => { base => '__virtual.author_name', order => 300 },
+        author_name => { base => '__virtual.author_name', order => 300 },
         modified_on => {
             base    => '__virtual.modified_on',
             display => 'default',
