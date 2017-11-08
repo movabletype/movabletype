@@ -348,32 +348,28 @@ function handleMessages( data, additional_class ) {
 
 function showMessage( content, cls ){
   var error_block;
-  if ( typeof content == 'object' ) {
-    jQuery('#msg-block').append(
-      error_block = jQuery('<div>')
-      .attr('class', 'msg msg-' + cls )
-      .append(
-        jQuery('<p />')
-          .attr('class', 'msg-text')
-          .append(content)
-          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>')
-      )
-    );
-  }
-  else {
-    jQuery('#msg-block').append(
-      error_block = jQuery('<div />')
-      .attr('class', 'msg msg-' + cls )
-      .append(
-        jQuery('<p />')
-          .attr('class', 'msg-text')
-          .append(content)
-          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>')
-      )
-    );
-  }
+  jQuery('#msg-block').append(
+    error_block = jQuery('<div />')
+    .attr('class', 'alert alert-dismissable alert-' + cls )
+    .append(
+      jQuery('<button class="close" data-dismiss="alert" aria-label="Close" />')
+        .append('<span aria-hidden="true">&times;</span>')
+    )
+    .append(content)
+  );
   return error_block;
 }
+
+<mt:if name="system_messages">
+jQuery(document).ready(function () {
+  var system_messages = <mt:var name="system_messages">;
+  for ( var i=0; i < system_messages.length; i++ ) {
+      var message = system_messages[i];
+      showMessage( message.msg, message.cls );
+  }
+});
+</mt:if>
+
 </script>
 </mt:setvarblock>
 
