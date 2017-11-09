@@ -844,9 +844,24 @@ sub make_content_actions {
 
 sub make_list_actions {
     my $common_actions = {
+        'publish' => {
+            label      => 'Publish',
+            code       => '$Core::MT::CMS::Blog::rebuild_new_phase',
+            mode       => 'rebuild_new_phase',
+            order      => 100,
+            js_message => 'publish',
+            button     => 1,
+            condition  => sub {
+                return 0 if MT->app->mode eq 'view';
+                _check_permission(
+                    'publish_content_data_via_list_',
+                    'publish_all_content_data_',
+                );
+            },
+        },
         delete => {
             label      => 'Delete',
-            order      => 100,
+            order      => 110,
             code       => '$Core::MT::CMS::ContentData::delete',
             button     => 1,
             js_message => 'delete',
@@ -856,33 +871,8 @@ sub make_list_actions {
             order     => 200,
             code      => '$Core::MT::CMS::ContentData::draft_content_data',
             condition => sub {
-                my $app = MT->app;
-                return 0 if $app->mode eq 'view';
-
-                my $type    = $app->param('type');
-                my ($ct_id) = $type =~ /^content_data_([0-9]+)$/;
-                my $ct      = MT::ContentType->load( $ct_id || 0 );
-                return 0 unless $ct;
-
-                my $terms = {
-                    author_id   => $app->user->id,
-                    permissions => \'IS NOT NULL',
-                    blog_id     => $app->blog->id,
-                };
-
-                my $count = MT->model('permission')->count($terms);
-                return 0 unless $count;
-
-                my $permitted_action
-                    = 'set_content_data_draft_vi_list_' . $ct->unique_id;
-                my $iter = MT->model('permission')->load_iter($terms);
-                while ( my $p = $iter->() ) {
-                    if ( $p->can_do($permitted_action) ) {
-                        return 1;
-                    }
-                }
-
-                return 0;
+                return 0 if MT->app->mode eq 'view';
+                return _check_permission('set_content_data_draft_via_list_');
             },
         },
     };
@@ -893,6 +883,35 @@ sub make_list_actions {
         $list_actions->{$key} = $common_actions;
     }
     $list_actions;
+}
+
+sub _check_permission {
+    my (@actions) = @_;
+
+    my $app     = MT->app;
+    my $type    = $app->param('type');
+    my ($ct_id) = $type =~ /^content_data_([0-9]+)$/;
+    my $ct      = MT::ContentType->load( $ct_id || 0 );
+    return 0 unless $ct;
+
+    my $terms = {
+        author_id   => $app->user->id,
+        permissions => \'IS NOT NULL',
+        blog_id     => $app->blog->id,
+    };
+
+    return 0 unless MT->model('permission')->count($terms);
+
+    my $iter = MT->model('permission')->load_iter($terms);
+    while ( my $p = $iter->() ) {
+        for my $act (@actions) {
+            if ( $p->can_do( $act . $ct->unique_id ) ) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
 }
 
 sub make_menus {
@@ -1367,6 +1386,13 @@ sub _build_content_data_preview {
         $app->request( 'preview_object', $content_data );
         return $app->load_tmpl( 'preview_content_data_strip.tmpl', \%param );
     }
+}
+
+sub publish_content_data {
+    my $app = shift;
+    require MT::Entry;
+    _update_content_data_status( $app, MT::Entry::RELEASE(),
+        $app->multi_param('id') );
 }
 
 sub draft_content_data {

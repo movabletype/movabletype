@@ -3226,8 +3226,9 @@ sub load_core_permissions {
             'label'            => 'Publish Site',
             'order'            => 600,
             'permitted_action' => {
-                'rebuild'                => 1,
-                'publish_entry_via_list' => 1,
+                'rebuild'                       => 1,
+                'publish_entry_via_list'        => 1,
+                'publish_content_data_via_list' => 1,
             }
         },
         'blog.send_notifications' => {

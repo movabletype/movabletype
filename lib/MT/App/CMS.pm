@@ -4551,6 +4551,7 @@ sub rebuild_these_content_data {
         my $params = {
             return_args => $app->return_args,
             blog_id     => $app->param('blog_id') || 0,
+            _type       => 'content_data',
             id          => [ keys %$rebuild_set ],
             start_time  => $start_time,
         };
@@ -4593,9 +4594,10 @@ sub rebuild_these_content_data {
         }
         my $params = {
             return_args     => scalar $app->param('return_args'),
-            build_type_name => $app->translate("entry"),
+            build_type_name => $app->translate("content data"),
             blog_id         => $app->param('blog_id') || 0,
             blog_ids        => [ keys %blogs ],
+            _type           => 'content_data',
             id              => \@rest,
             start_time      => $start_time,
         };
