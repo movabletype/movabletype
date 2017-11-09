@@ -254,6 +254,7 @@ sub _publish_content_data_permission {
                 'edit_own_unpublished_content_data_' . $self->unique_id => 1,
                 'publish_own_content_data_' . $self->unique_id          => 1,
                 'set_entry_draft_via_list_' . $self->unique_id          => 1,
+                'publish_content_data_via_list_' . $self->unique_id     => 1,
             },
         }
     );

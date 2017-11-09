@@ -702,9 +702,12 @@ sub rebuild_phase {
     my @ids  = $app->multi_param('id');
     $app->{goback} = $app->return_uri;
     $app->{value} ||= $app->translate('Back');
+    my %ids = map { $_ => 1 } @ids;
     if ( $type eq 'entry' ) {
-        my %ids = map { $_ => 1 } @ids;
         return $app->rebuild_these( \%ids );
+    }
+    elsif ( $type eq 'content_data' ) {
+        return $app->rebuild_these_content_data( \%ids );
     }
     elsif ( $type eq 'template' ) {
         require MT::Template;
@@ -1197,8 +1200,15 @@ sub rebuild_new_phase {
 
     $app->setup_filtered_ids
         if $app->param('all_selected');
-    require MT::CMS::Entry;
-    MT::CMS::Entry::publish_entries($app);
+
+    if ( $app->param('_type') eq 'content_data' ) {
+        require MT::CMS::ContentData;
+        MT::CMS::ContentData::publish_content_data($app);
+    }
+    else {
+        require MT::CMS::Entry;
+        MT::CMS::Entry::publish_entries($app);
+    }
 }
 
 sub start_rebuild_pages {
