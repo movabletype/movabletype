@@ -431,7 +431,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
             );
         }
 
-        {
+        SKIP: {
             my $wsse_header = make_wsse($chuck_token);
             my $uri         = new URI;
             $uri->path( $base_uri . "/blog_id=$blog_id/entry_id=$entry_id" );
