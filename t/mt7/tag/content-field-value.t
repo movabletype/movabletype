@@ -483,3 +483,19 @@ aaaaa</p>
 --- expected
 test
 test
+
+=== mt:ContentFieldValue with date format
+--- template
+<mt:Contents blog_id="1" name="test content data" offset="1" limit="1">
+<mt:ContentField label="date and time"><mt:ContentFieldValue format="%Y"></mt:ContentField>
+<mt:ContentField label="date_only"><mt:ContentFieldValue format="%y"></mt:ContentField>
+<mt:ContentField label="time_only"><mt:ContentFieldValue format="%H"></mt:ContentField>
+<mt:ContentField label="date and time"><mt:ContentFieldValue format_name="iso8601"></mt:ContentField>
+<mt:ContentField label="date and time"><mt:ContentFieldValue language="it"></mt:ContentField>
+</mt:Contents>
+--- expected
+2017
+17
+12
+2017-06-03T18:05:00+00:00
+03.06.17 18:05

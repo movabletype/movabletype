@@ -221,12 +221,12 @@ sub _date_time_registry {
         field_html => 'field_html/field_html_datetime.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::DateTime::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Common::field_value_handler_datetime',
         data_load_handler =>
             '$Core::MT::ContentFieldType::DateTime::data_load_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
-        tag_handler =>
-            '$Core::MT::ContentFieldType::Common::tag_handler_datetime',
         list_props => {
             date_and_time => {
                 base => '__virtual.date',
@@ -264,12 +264,12 @@ sub _date_registry {
         field_html => 'field_html/field_html_date.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Date::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Common::field_value_handler_datetime',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Date::data_load_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
-        tag_handler =>
-            '$Core::MT::ContentFieldType::Common::tag_handler_datetime',
         list_props => {
             date_only => {
                 base => '__virtual.date',
@@ -307,12 +307,12 @@ sub _time_registry {
         field_html => 'field_html/field_html_time.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Time::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Common::field_value_handler_datetime',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Time::data_load_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
-        tag_handler =>
-            '$Core::MT::ContentFieldType::Common::tag_handler_datetime',
         list_props => {
             time_only => {
                 filter_tmpl =>

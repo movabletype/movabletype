@@ -290,27 +290,6 @@ sub single_select_options_multiple {
     return $content_field->options->{values} || [];
 }
 
-sub tag_handler_datetime {
-    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
-    my $tok     = $ctx->stash('tokens');
-    my $builder = $ctx->stash('builder');
-    my $vars    = $ctx->{__stash}{vars} ||= {};
-
-    my $field_type = $field_data->{type};
-
-    local $args->{format} = '%x'
-        if $field_type eq 'date_only' && !_has_some_modifier($args);
-    local $args->{format} = '%X'
-        if $field_type eq 'time_only' && !_has_some_modifier($args);
-
-    local $args->{ts} = $value;
-
-    local $vars->{__raw__}   = $value;
-    local $vars->{__value__} = $ctx->build_date($args);
-
-    $builder->build( $ctx, $tok, {%$cond} );
-}
-
 sub tag_handler_multiple {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
     my $tok     = $ctx->stash('tokens');
@@ -400,10 +379,28 @@ sub tag_handler_content_type {
     $ctx->invoke_handler( 'contents', $args, $cond );
 }
 
+sub field_value_handler_datetime {
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
+    my $tok     = $ctx->stash('tokens');
+    my $builder = $ctx->stash('builder');
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+
+    my $field_type = $field_data->{type};
+
+    local $args->{format} = '%x'
+        if $field_type eq 'date_only' && !_has_some_modifier($args);
+    local $args->{format} = '%X'
+        if $field_type eq 'time_only' && !_has_some_modifier($args);
+
+    local $args->{ts} = $value;
+
+    return $ctx->build_date($args);
+}
+
 sub _has_some_modifier {
     my $args = shift;
     my %arg_keys = map { $_ => 1 } keys %{ $args || {} };
-    delete $arg_keys{$_} for qw( unique_id content_field_id label glue @ );
+    delete $arg_keys{$_} for qw( convert_breaks words @ );
     %arg_keys ? 1 : 0;
 }
 
