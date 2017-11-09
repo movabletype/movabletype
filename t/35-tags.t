@@ -98,7 +98,7 @@ my %const = (
     TEST_ROOT => $test_env->root,
 );
 
-$test_json =~ s/\Q$_\E/$const{$_}/g for keys %const;
+$test_json =~ s/$_/\Q$const{$_}\E/g for keys %const;
 $test_suite = $json->decode($test_json);
 
 $ctx->{current_timestamp} = '20040816135142';
