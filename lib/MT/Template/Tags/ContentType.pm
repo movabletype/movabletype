@@ -1457,6 +1457,11 @@ sub _hdlr_content_field {
         unless $ctx->stash('content_field_data');
 
     my $value = $content_data->data->{ $field_data->{id} };
+    if ( $field_data->{type} eq 'tables' ) {
+        my $str = MT::Util::remove_html($value);
+        $str =~ s/(\s|\r|\n)//g;
+        return $ctx->_hdlr_pass_tokens_else(@_) unless $str;
+    }
     return $ctx->_hdlr_pass_tokens_else(@_)
         if ref $value eq 'ARRAY' ? !@$value || !( $value->[0] ) : !$value;
 
