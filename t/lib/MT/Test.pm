@@ -1679,6 +1679,7 @@ sub _run_app {
             {
                 local $/ = undef;
                 open my $upload, "<", $src or die "Can't open $src: $!";
+                binmode $upload if $basename =~ /\.(?:gif|png|jpg)$/;
                 my $d = <$upload>;
                 close $upload;
                 print $cgi_fh $d;
