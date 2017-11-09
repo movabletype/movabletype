@@ -77,13 +77,16 @@ $ctx->stash('builder', MT::Builder->new);
 my $entry  = MT::Entry->load( 1 );
 ok($entry, "Test entry loaded");
 
+my $server_path = MT->instance->server_path;
+$server_path =~ s|\\|/|g if $^O eq 'MSWin32';
+
 # entry we want to capture is dated: 19780131074500
 my $tsdiff = time - ts2epoch($blog, '19780131074500');
 my $daysdiff = int($tsdiff / (60 * 60 * 24));
 my %const = (
     CFG_FILE => MT->instance->{cfg_file},
     VERSION_ID => MT->instance->version_id,
-    CURRENT_WORKING_DIRECTORY => MT->instance->server_path,
+    CURRENT_WORKING_DIRECTORY => $server_path,
     STATIC_CONSTANT => '1',
     DYNAMIC_CONSTANT => '',
     DAYS_CONSTANT1 => $daysdiff + 2,
