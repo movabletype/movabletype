@@ -843,20 +843,54 @@ sub make_content_actions {
 }
 
 sub make_list_actions {
-    my $common_delete_action = {
+    my $common_actions = {
         delete => {
             label      => 'Delete',
             order      => 100,
             code       => '$Core::MT::CMS::ContentData::delete',
             button     => 1,
             js_message => 'delete',
-        }
+        },
+        'set_draft' => {
+            label     => "Unpublish Contents",
+            order     => 200,
+            code      => '$Core::MT::CMS::ContentData::draft_content_data',
+            condition => sub {
+                my $app = MT->app;
+                return 0 if $app->mode eq 'view';
+
+                my $type    = $app->param('type');
+                my ($ct_id) = $type =~ /^content_data_([0-9]+)$/;
+                my $ct      = MT::ContentType->load( $ct_id || 0 );
+                return 0 unless $ct;
+
+                my $terms = {
+                    author_id   => $app->user->id,
+                    permissions => \'IS NOT NULL',
+                    blog_id     => $app->blog->id,
+                };
+
+                my $count = MT->model('permission')->count($terms);
+                return 0 unless $count;
+
+                my $permitted_action
+                    = 'set_content_data_draft_vi_list_' . $ct->unique_id;
+                my $iter = MT->model('permission')->load_iter($terms);
+                while ( my $p = $iter->() ) {
+                    if ( $p->can_do($permitted_action) ) {
+                        return 1;
+                    }
+                }
+
+                return 0;
+            },
+        },
     };
     my $iter         = MT::ContentType->load_iter;
     my $list_actions = {};
     while ( my $ct = $iter->() ) {
         my $key = 'content_data.content_data_' . $ct->id;
-        $list_actions->{$key} = $common_delete_action;
+        $list_actions->{$key} = $common_actions;
     }
     $list_actions;
 }
@@ -1011,6 +1045,11 @@ sub cms_pre_load_filtered_list {
     my $object_ds = $filter->object_ds;
     $object_ds =~ /content_data_(\d+)/;
     my $content_type_id = $1;
+    unless ($content_type_id) {
+        my $type = $app->param('type') || '';
+        $type =~ /content_data_(\d+)/;
+        $content_type_id = $1;
+    }
     $load_options->{terms}{content_type_id} = $content_type_id;
 }
 
@@ -1328,6 +1367,115 @@ sub _build_content_data_preview {
         $app->request( 'preview_object', $content_data );
         return $app->load_tmpl( 'preview_content_data_strip.tmpl', \%param );
     }
+}
+
+sub draft_content_data {
+    my $app = shift;
+    require MT::Entry;
+    _update_content_data_status( $app, MT::Entry::HOLD(),
+        $app->multi_param('id') );
+}
+
+sub _update_content_data_status {
+    my $app = shift;
+    my ( $new_status, @ids ) = @_;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('--- Start update_content_data_status.');
+
+    return $app->errtrans('Need a status to update content data')
+        unless $new_status;
+    return $app->errtrans('Need content data to update status')
+        unless @ids;
+
+    my $app_author = $app->user;
+    my $perms      = $app->permissions;
+
+    MT::Util::Log->info(' Start load content data.');
+
+    my ( @objects, %rebuild_these );
+    require MT::ContentData;
+    for my $id (@ids) {
+        my $content_data = MT::ContentData->load( $id || 0 );
+        return $app->errtrans( 'One of the content data ([_1]) did not exist',
+            $id )
+            unless $content_data;
+
+        return $app->permission_denied
+            unless $app_author->is_superuser
+            || $app_author->permissions( $content_data->id )
+            ->can_edit_content_data( $content_data, $app_author,
+            MT::Entry::HOLD() );
+
+        if (   $app->config('DeleteFilesAtRebuild')
+            && $content_data->status == MT::Entry::RELEASE() )
+        {
+            $app->publisher->remove_content_data_archive_file(
+                ContentData => $content_data,
+                ArchiveType => 'ContentType',
+                Force       => $new_status != MT::Entry::RELEASE() ? 1 : 0,
+            );
+        }
+
+        my $original   = $content_data->clone;
+        my $old_status = $content_data->status;
+        $content_data->status($new_status);
+        $content_data->save and $rebuild_these{$id} = 1;
+
+        # Clear cache for site stats dashboard widget.
+        if ((      $content_data->status == MT::Entry::RELEASE()
+                || $old_status == MT::Entry::RELEASE()
+            )
+            && $old_status != $content_data->status
+            )
+        {
+            require MT::Util;
+            MT::Util::clear_site_stats_widget_cache( $content_data->blog_id )
+                or return $app->errtrans('Removing stats cache failed.');
+        }
+
+        my $message = $app->translate(
+            "[_1] (ID:[_2]) status changed from [_3] to [_4]",
+            $content_data->class_label,
+            $content_data->id,
+            $app->translate( MT::Entry::status_text($old_status) ),
+            $app->translate( MT::Entry::status_text($new_status) )
+        );
+        $app->log(
+            {   message  => $message,
+                level    => MT::Log::INFO(),
+                class    => 'content_data_' . $content_data->content_type_id,
+                category => 'edit',
+                metadata => $content_data->id
+            }
+        );
+        push( @objects, { current => $content_data, original => $original } );
+    }
+
+    MT::Util::Log->info(' End   load content data.');
+
+    MT::Util::Log->info(' Start rebuild_these.');
+
+    my $tmpl = $app->rebuild_these_content_data( \%rebuild_these,
+        how => MT::App::CMS::NEW_PHASE() );
+
+    MT::Util::Log->info(' End   rebuild_these.');
+
+    if (@objects) {
+        my $obj = $objects[0]{current};
+
+        MT::Util::Log->info(' Start callbacks cms_post_bulk_save.');
+
+        $app->run_callbacks( 'cms_post_bulk_save.cd', $app, \@objects );
+
+        MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
+    }
+
+    MT::Util::Log->info('--- End   update_entry_status.');
+
+    $tmpl;
 }
 
 1;

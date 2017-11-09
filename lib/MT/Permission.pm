@@ -603,23 +603,58 @@ sub can_edit_content_data {
 
     return 1 if $self->can_do('edit_all_content_data');
 
-    my $content_data_name = 'content_data_' . $content_data->id;
+    my $content_type_unique_id = $content_data->ct_unique_id;
 
     return 1
-        if $self->can_do("edit_all_${content_data_name}");
+        if $self->can_do(
+        'edit_all_content_data_' . $content_type_unique_id );
 
     my $own_content_data = $content_data->author_id == $author->id;
 
     if ( defined $status ) {
         return $own_content_data
-            ? $self->can_do("edit_own_published_${content_data_name}")
-            : $self->can_do("edit_all_published_${content_data_name}");
+            ? $self->can_do(
+            'edit_own_published_content_data_' . $content_type_unique_id )
+            : $self->can_do(
+            'edit_all_published_content_data_' . $content_type_unique_id );
     }
     else {
         return $own_content_data
-            ? $self->can_do("edit_own_unpublished_${content_data_name}")
-            : $self->can_do("edit_all_unpublished_${content_data_name}");
+            ? $self->can_do(
+            'edit_own_unpublished_content_data_' . $content_type_unique_id )
+            : $self->can_do(
+            'edit_all_unpublished_content_data_' . $content_type_unique_id );
     }
+}
+
+sub can_republish_content_data {
+    my $perms = shift;
+    my ( $content_data, $author ) = @_;
+    die unless $author->isa('MT::Author');
+    return 1 if $author->is_superuser();
+    unless ( ref $content_data ) {
+        require MT::ContentData;
+        $content_data = MT::ContentData->load($content_data)
+            or return;
+    }
+
+    $perms = $author->permissions( $content_data->blog_id )
+        or return;
+
+    return 1
+        if $perms->can_do('rebuild')
+        || $perms->can_do('edit_all_content_data');
+
+    my $content_type_unique_id = $content_data->ct_unique_id;
+    return 1
+        if $perms->can_do(
+        'edit_all_content_data_' . $content_type_unique_id );
+    return 1
+        if $content_data->author_id == $author->id
+        && $perms->can_do(
+        'publish_own_content_data_' . $content_type_unique_id );
+
+    return 0;
 }
 
 sub is_empty {

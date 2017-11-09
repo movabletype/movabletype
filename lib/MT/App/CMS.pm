@@ -4502,6 +4502,107 @@ sub rebuild_these {
     }
 }
 
+sub rebuild_these_content_data {
+    my $app = shift;
+    my ( $rebuild_set, %options ) = @_;
+    my $complete = $options{complete_handler} || sub {
+        my ($app) = @_;
+        $app->call_return;
+    };
+    my $phase = $options{rebuild_phase_handler} || sub {
+        my ( $app, $params ) = @_;
+        my %param = (
+            is_full_screen  => 1,
+            redirect_target => $app->uri(
+                mode => 'rebuild_phase',
+                args => $params
+            )
+        );
+        $app->load_tmpl( 'rebuilding.tmpl', \%param );
+    };
+
+    # if there's nothing to rebuild, just return
+    if ( !keys %$rebuild_set ) {
+        if ( my $start_time = $app->param('start_time') ) {
+            $app->publisher->start_time($start_time);
+        }
+
+        # now, rebuild indexes for affected blogs
+        my @blogs = $app->multi_param('blog_ids');
+        if (@blogs) {
+            $app->run_callbacks('pre_build') if @blogs;
+            foreach my $blog_id (@blogs) {
+                my $blog = MT::Blog->load($blog_id) or next;
+                $app->rebuild_indexes( Blog => $blog )
+                    or return $app->publish_error();
+            }
+            my $blog_id = int( $app->param('blog_id') || 0 );
+            my $this_blog;
+            $this_blog = MT::Blog->load($blog_id) if $blog_id;
+            $app->run_callbacks( 'rebuild', $this_blog );
+            $app->run_callbacks('post_build');
+        }
+        return $complete->($app);
+    }
+
+    if ( exists $options{how} && ( $options{how} eq NEW_PHASE ) ) {
+        my $start_time = time;
+        $app->run_callbacks('pre_build');
+        my $params = {
+            return_args => $app->return_args,
+            blog_id     => $app->param('blog_id') || 0,
+            id          => [ keys %$rebuild_set ],
+            start_time  => $start_time,
+        };
+        return $phase->( $app, $params );
+    }
+    else {
+        my @blogs      = $app->multi_param('blog_ids');
+        my $start_time = $app->param('start_time');
+        $app->publisher->start_time($start_time) if $start_time;
+        my %blogs = map { $_ => () } @blogs;
+        my @set = keys %$rebuild_set;
+        my @rest;
+        my $entries_per_rebuild = $app->config('EntriesPerRebuild');
+        if ( scalar @set > $entries_per_rebuild ) {
+            @rest = @set[ $entries_per_rebuild .. $#set ];
+            @set  = @set[ 0 .. $entries_per_rebuild - 1 ];
+        }
+        require MT::ContentData;
+        for my $id (@set) {
+            my $cd = ref $id ? $id : MT::ContentData->load($id) or next;
+
+            my $perms = $app->user->permissions( $cd->blog_id );
+            return $app->permission_denied()
+                unless $perms
+                && $perms->can_republish_content_data( $cd, $app->user );
+
+            my $type = $cd->class;
+
+            $blogs{ $cd->blog_id } = ();
+            $app->rebuild_content_data(
+                ContentData       => $cd,
+                BuildDependencies => 1,
+                BuildIndexes      => 0
+            ) or return $app->publish_error();
+        }
+        if (@rest) {
+            foreach (@rest) {
+                $_ = $_->id if ref $_;
+            }
+        }
+        my $params = {
+            return_args     => scalar $app->param('return_args'),
+            build_type_name => $app->translate("entry"),
+            blog_id         => $app->param('blog_id') || 0,
+            blog_ids        => [ keys %blogs ],
+            id              => \@rest,
+            start_time      => $start_time,
+        };
+        return $phase->( $app, $params );
+    }
+}
+
 sub remove_preview_file {
     my $app = shift;
 
