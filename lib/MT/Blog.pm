@@ -757,6 +757,7 @@ sub site_path {
     if (@_) {
         my ($new_site_path) = @_;
         my $sep = quotemeta MT::Util::dir_separator;
+        $sep = qr![\\/]! if $^O eq 'MSWin32';
         $new_site_path =~ s/$sep*$//;
 
         $blog->column( 'site_path', $new_site_path );
