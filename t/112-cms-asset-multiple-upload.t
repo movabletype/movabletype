@@ -128,6 +128,11 @@ describe 'Uploaded asset (テスト.jpg)' => sub {
 sub upload_asset {
     my $file = shift;
 
+    if ($^O eq 'MSWin32') {
+        require Encode;
+        $file = Encode::encode(cp932 => $file);
+    }
+
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
     my $app = _run_app(
         'MT::App::CMS',
