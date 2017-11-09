@@ -230,4 +230,10 @@ sub options_pre_save_handler {
     return;
 }
 
+sub field_value_handler {
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
+    my $content = $ctx->stash('content');
+    return $content ? $content->id : '';
+}
+
 1;

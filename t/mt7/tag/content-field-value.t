@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../lib";    # t/lib
+use lib "$FindBin::Bin/../../lib";
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -15,7 +15,6 @@ BEGIN {
 
 use MT::Test::Tag;
 
-# plan tests => 2 * blocks;
 plan tests => 1 * blocks;
 
 use MT;
@@ -326,7 +325,7 @@ $test_env->prepare_fixture(
         ];
         $ct->fields($fields);
         $ct->save or die $ct->errstr;
-        my $cd = MT::Test::Permission->make_content_data(
+        my $cd01 = MT::Test::Permission->make_content_data(
             blog_id         => $ct->blog_id,
             content_type_id => $ct->id,
             author_id       => 1,
@@ -351,6 +350,35 @@ $test_env->prepare_fixture(
                 $cf_image->id    => [ $image1->id,    $image2->id ],
             },
         );
+        $cd01->convert_breaks(
+            MT::Serialize->serialize(
+                \{ $cf_multi_line_text->id => '__default__' }
+            )
+        );
+        $cd01->save;
+        my $cd02 = MT::Test::Permission->make_content_data(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct->id,
+            author_id       => 1,
+            data            => {
+                $cf_single_line_text->id => '',
+                $cf_multi_line_text->id  => '',
+                $cf_number->id           => '',
+                $cf_url->id              => '',
+                $cf_embedded_text->id    => '',
+                $cf_datetime->id         => '',
+                $cf_date->id             => '',
+                $cf_time->id             => '',
+                $cf_select_box->id       => [],
+                $cf_radio->id            => [],
+                $cf_checkbox->id         => [],
+                $cf_list->id             => [],
+                $cf_table->id            => '',
+                $cf_tag->id              => [],
+                $cf_category->id         => [],
+                $cf_image->id            => [],
+            },
+        );
     }
 );
 
@@ -360,131 +388,114 @@ MT::Test::Tag->run_perl_tests($blog_id);
 
 __END__
 
-=== mt:ContentField label="single line text"
+=== mt:ContentFieldValue with mt:Else
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="single line text"><mt:var name="__value__"></mt:ContentField></mt:Contents>
+<mt:Contents blog_id="1" name="test content data" limit="1"><mt:ContentFields><mt:ContentField glue=","><mt:ContentFieldValue><mt:Else>Empty</mt:ContentField>
+</mt:ContentFields></mt:Contents>
+--- expected
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+
+=== mt:ContentFieldValue no glue
+--- template
+<mt:Contents blog_id="1" name="test content data" offset="1" limit="1"><mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField>
+</mt:ContentFields></mt:Contents>
 --- expected
 test single line text
-
-=== mt:ContentField label="multi line text"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="multi line text"><mt:var name="__value__"></mt:ContentField></mt:Contents>
---- expected
 test multi line text
 aaaaa
-
-=== mt:ContentField label="number"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="number"><mt:var name="__value__"></mt:ContentField></mt:Contents>
---- expected
 12345
-
-=== mt:ContentField label="url"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="url"><mt:var name="__value__"></mt:ContentField></mt:Contents>
---- expected
 https://example.com/~abby
-
-=== mt:ContentField label="embedded text"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="embedded text"><mt:var name="__value__"></mt:ContentField></mt:Contents>
---- expected
 abc
 def
-
-=== mt:ContentField label="date and time"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date and time"><mt:ContentFieldValue></mt:ContentField></mt:Contents>
---- expected
 June  3, 2017  6:05 PM
-
-=== mt:ContentField label="date and time" format_name="iso8601"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date and time"><mt:ContentFieldValue format_name="iso8601"></mt:ContentField></mt:Contents>
---- expected
-2017-06-03T18:05:00+00:00
-
-=== mt:ContentField label="date_only"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date_only"><mt:ContentFieldValue></mt:ContentField></mt:Contents>
---- expected
 June  5, 2017
-
-=== mt:ContentField label="date_only" format_name="iso8601"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date_only"><mt:ContentFieldValue format_name="iso8601"></mt:ContentField></mt:Contents>
---- expected
-2017-06-05T00:00:00+00:00
-
-=== mt:ContentField label="time_only"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="time_only"><mt:ContentFieldValue></mt:ContentField></mt:Contents>
---- expected
 12:34 PM
-
-=== mt:ContentField label="time_only" format_name="iso8601"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="time_only"><mt:ContentFieldValue format_name="iso8601"></mt:ContentField></mt:Contents>
---- expected
-1970-01-01T12:34:56+00:00
-
-=== mt:ContentField label="select box"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="select box"><mt:var name="__key__">,<mt:var name="__value__"></mt:ContentField></mt:Contents>
---- expected
-def,2
-
-=== mt:ContentField label="radio button"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="radio button"><mt:var name="__key__">,<mt:var name="__value__"></mt:ContentField></mt:Contents>
---- expected
-ghi,3
-
-=== mt:ContentField label="checkboxes"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="checkboxes"><mt:var name="__key__">,<mt:var name="__value__">
-</mt:ContentField></mt:Contents>
---- expected
-abc,1
-ghi,3
-
-=== mt:ContentField label="list"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="list" glue=":"><mt:var name="__value__"></mt:ContentField></mt:Contents>
---- expected
-aaa:bbb:ccc
-
-=== mt:ContentField label="tables"
---- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="tables"><mt:var name="__value__"></mt:ContentField></mt:Contents>
---- expected
+2
+3
+13
+aaabbbccc
 <table>
 <tr><td>1</td><td></td><td></td></tr>
 <tr><td></td><td>2</td><td></td></tr>
 <tr><td></td><td></td><td>3</td></tr>
 </table>
+21
+21
+12
 
-=== mt:ContentField label="tags"
+=== mt:ContentFieldValue with glue
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="tags">
-<mt:TagName></mt:ContentField></mt:Contents>
+<mt:Contents blog_id="1" name="test content data" offset="1" limit="1"><mt:ContentFields><mt:ContentField glue=","><mt:ContentFieldValue></mt:ContentField>
+</mt:ContentFields></mt:Contents>
 --- expected
-tag2
-tag1
+test single line text
+test multi line text
+aaaaa
+12345
+https://example.com/~abby
+abc
+def
+June  3, 2017  6:05 PM
+June  5, 2017
+12:34 PM
+2
+3
+1,3
+aaa,bbb,ccc
+<table>
+<tr><td>1</td><td></td><td></td></tr>
+<tr><td></td><td>2</td><td></td></tr>
+<tr><td></td><td></td><td>3</td></tr>
+</table>
+2,1
+2,1
+1,2
 
-=== mt:ContentField label="categories"
+=== mt:ContentFieldValue with convert_breaks
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="categories">
-<mt:CategoryLabel></mt:ContentField></mt:Contents>
+<mt:Contents blog_id="1" name="test content data" offset="1" limit="1"><mt:ContentField label="multi line text"><mt:ContentFieldValue convert_breaks="1"></mt:ContentField></mt:Contents>
 --- expected
-category2
-category1
+<p>test multi line text<br />
+aaaaa</p>
 
-=== mt:ContentField label="asset_image"
+
+=== mt:ContentFieldValue with words
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="asset_image"><mt:AssetLabel>
-</mt:ContentField></mt:Contents>
+<mt:Contents blog_id="1" name="test content data" offset="1" limit="1">
+<mt:ContentField label="single line text"><mt:ContentFieldValue words="1"></mt:ContentField>
+<mt:ContentField label="multi line text"><mt:ContentFieldValue words="1"></mt:ContentField>
+</mt:Contents>
 --- expected
-Sample Image 1
-Sample Image 2
+test
+test
 
+=== mt:ContentFieldValue with date format
+--- template
+<mt:Contents blog_id="1" name="test content data" offset="1" limit="1">
+<mt:ContentField label="date and time"><mt:ContentFieldValue format="%Y"></mt:ContentField>
+<mt:ContentField label="date_only"><mt:ContentFieldValue format="%y"></mt:ContentField>
+<mt:ContentField label="time_only"><mt:ContentFieldValue format="%H"></mt:ContentField>
+<mt:ContentField label="date and time"><mt:ContentFieldValue format_name="iso8601"></mt:ContentField>
+<mt:ContentField label="date and time"><mt:ContentFieldValue language="it"></mt:ContentField>
+</mt:Contents>
+--- expected
+2017
+17
+12
+2017-06-03T18:05:00+00:00
+03.06.17 18:05

@@ -597,6 +597,7 @@ sub _hdlr_contents {
     my $res     = '';
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
+    my $glue    = $args->{glue};
     my $vars    = $ctx->{__stash}{vars} ||= {};
     local $ctx->{__stash}{contents}
         = ( @contents && defined $contents[0] ) ? \@contents : undef;
@@ -623,6 +624,7 @@ sub _hdlr_contents {
                 }
             )
         ) or return $ctx->error( $builder->errstr );
+        $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
         $i++;
     }
@@ -1447,22 +1449,28 @@ sub _hdlr_content_field {
             = grep { $_->{options}{label} eq $label }
             @{ $content_type->fields };
     }
-    if ( $field_data && $field_data->{type} eq 'content_type' ) {
-        my $ids = $content_data->data->{ $field_data->{id} };
-        my @archive_contents
-            = MT->model('content_data')->load( { id => $ids } );
-        local $ctx->{__stash}{archive_contents} = \@archive_contents;
-        return $ctx->invoke_handler( 'contents', $args, $cond );
-    }
-    $field_data ||= $ctx->stash('content_field') || $content_type->fields->[0]
+    $field_data
+        ||= $ctx->stash('content_field_data') || $content_type->fields->[0]
         or return $ctx->_no_content_field_error;
 
+    local $ctx->{__stash}{content_field_data} = $field_data
+        unless $ctx->stash('content_field_data');
+
     my $value = $content_data->data->{ $field_data->{id} };
+    if ( $field_data->{type} eq 'tables' ) {
+        my $str = MT::Util::remove_html($value);
+        $str =~ s/(\s|\r|\n)//g;
+        return $ctx->_hdlr_pass_tokens_else(@_) unless $str;
+    }
+    return $ctx->_hdlr_pass_tokens_else(@_)
+        if ref $value eq 'ARRAY' ? !@$value || !( $value->[0] ) : !$value;
 
     my $field_type
         = MT->registry('content_field_types')->{ $field_data->{type} }
         or return $ctx->error(
         MT->translate('No Content Field Type could be found.') );
+
+    local $ctx->{__stash}{content_field_type} = $field_type;
 
     if ( my $tag_handler = $field_type->{tag_handler} ) {
         if ( !ref $tag_handler ) {
@@ -1515,7 +1523,7 @@ sub _hdlr_content_fields {
         local $vars->{__counter__} = $i;
         $i++;
 
-        local $ctx->{__stash}{content_field} = $f;
+        local $ctx->{__stash}{content_field_data} = $f;
 
         local $vars->{content_field_id}        = $f->{id};
         local $vars->{content_field_unique_id} = $f->{unique_id};
@@ -1532,6 +1540,47 @@ sub _hdlr_content_fields {
     }
 
     $res;
+}
+
+=head2 ContentFieldValue
+
+A container tag that lists all of the fields which the content has.
+This tagset creates a content_field context within which contentfield tag
+may be used.
+
+=cut
+
+sub _hdlr_content_field_value {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $content_type = $ctx->stash('content_type')
+        or return $ctx->_no_content_type_error;
+    my $content_data = $ctx->stash('content')
+        or return $ctx->_no_content_error;
+    my $field_data = $ctx->stash('content_field_data')
+        or return $ctx->_no_content_field_error;
+
+    my $field_type = $ctx->stash('content_field_type')
+        || MT->registry('content_field_types')->{ $field_data->{type} };
+    return $ctx->error(
+        MT->translate('No Content Field Type could be found.') )
+        unless $field_type;
+
+    my $value = $ctx->{__stash}{vars}{__value__};
+    if ( my $handler = $field_type->{field_value_handler} ) {
+        if ( !ref $handler ) {
+            $handler = MT->handler_to_coderef($handler);
+        }
+        return $ctx->error(
+            MT->translate(
+                'Invalid field_value_handler of [_1].',
+                $field_data->{type}
+            )
+        ) unless ref $handler eq 'CODE';
+        $value = $handler->( $ctx, $args, $cond, $field_data, $value );
+    }
+
+    return $value;
 }
 
 sub _check_and_invoke {

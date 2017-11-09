@@ -600,5 +600,11 @@ sub options_validation_handler {
     return;
 }
 
+sub field_value_handler {
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
+    my $asset = $ctx->stash('asset');
+    return $asset ? $asset->id : '';
+}
+
 1;
 
