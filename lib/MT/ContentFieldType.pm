@@ -1080,6 +1080,8 @@ sub _table_registry {
     {   label      => 'Table',
         data_type  => 'blob',
         order      => 200,
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Table::data_load_handler',
         field_html => 'field_html/field_html_table.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Table::field_html_params',
