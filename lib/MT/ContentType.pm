@@ -253,6 +253,7 @@ sub _publish_content_data_permission {
                 'edit_own_published_content_data_' . $self->unique_id   => 1,
                 'edit_own_unpublished_content_data_' . $self->unique_id => 1,
                 'publish_own_content_data_' . $self->unique_id          => 1,
+                'set_entry_draft_via_list_' . $self->unique_id          => 1,
             },
         }
     );
@@ -270,6 +271,7 @@ sub _edit_all_content_data_permission {
                 'edit_all_published_content_data_' . $self->unique_id   => 1,
                 'edit_all_unpublished_content_data_' . $self->unique_id => 1,
                 'publish_all_content_data_' . $self->unique_id          => 1,
+                'set_entry_draft_via_list_' . $self->unique_id          => 1,
             },
         }
     );
