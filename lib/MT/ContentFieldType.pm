@@ -88,6 +88,8 @@ sub _single_line_text_registry {
         field_html => 'field_html/field_html_single_line_text.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::SingleLineText::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::SingleLineText::field_value_handler',
         ss_validator =>
             '$core::MT::ContentFieldType::SingleLineText::ss_validator',
         list_props => {

@@ -472,3 +472,14 @@ aaa,bbb,ccc
 --- expected
 <p>test multi line text<br />
 aaaaa</p>
+
+
+=== mt:ContentFieldValue with words
+--- template
+<mt:Contents blog_id="1" name="test content data" offset="1" limit="1">
+<mt:ContentField label="single line text"><mt:ContentFieldValue words="1"></mt:ContentField>
+<mt:ContentField label="multi line text"><mt:ContentFieldValue words="1"></mt:ContentField>
+</mt:Contents>
+--- expected
+test
+test
