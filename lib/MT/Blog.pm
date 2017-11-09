@@ -8,6 +8,7 @@ package MT::Blog;
 
 use strict;
 use base qw( MT::Object );
+use File::Spec;
 
 use MT::FileMgr;
 use MT::Util;
@@ -746,9 +747,7 @@ sub is_site_path_absolute {
     }
 
     return 0 if !defined $raw_path;
-    return 1 if $raw_path =~ m!^/!;
-    return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
-    return 1 if $raw_path =~ m!^\\\\[a-zA-Z0-9\.]+!;    # UNC
+    return 1 if File::Spec->file_name_is_absolute($raw_path);
     return 0;
 }
 
@@ -834,9 +833,7 @@ sub is_archive_path_absolute {
 
     my $raw_path = $blog->column('archive_path');
     return 0 unless $raw_path;
-    return 1 if $raw_path =~ m!^/!;
-    return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
-    return 1 if $raw_path =~ m!^\\\\[a-zA-Z0-9\.]+!;    # UNC
+    return 1 if File::Spec->file_name_is_absolute($raw_path);
     return 0;
 }
 
