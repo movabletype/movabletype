@@ -1045,6 +1045,11 @@ sub cms_pre_load_filtered_list {
     my $object_ds = $filter->object_ds;
     $object_ds =~ /content_data_(\d+)/;
     my $content_type_id = $1;
+    unless ($content_type_id) {
+        my $type = $app->param('type') || '';
+        $type =~ /content_data_(\d+)/;
+        $content_type_id = $1;
+    }
     $load_options->{terms}{content_type_id} = $content_type_id;
 }
 
