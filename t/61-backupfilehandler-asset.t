@@ -140,7 +140,7 @@ my $last_restored_asset;
 
     my $params = {
         file_path   => File::Spec->catfile( '%s', 'uploads', $file_name ),
-        url         => File::Spec->catfile( $path, $file_name ),
+        url         => "$path/$file_name",
         label       => 'Test Label',
         description => 'Test Description',
         created_on  => $created_on,
@@ -165,7 +165,7 @@ my $last_restored_asset;
     );
     delete $params->{url};
     is( $values->{url},
-        File::Spec->catfile( $path, $created_on, $file_name ),
+        "$path/$created_on/$file_name",
         'url is updated. (%s/uploads/$created_on/$file_name)'
     );
 
