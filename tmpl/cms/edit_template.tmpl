@@ -267,6 +267,7 @@
 </mt:if>
 
 <mt:if name="blog_id">
+<mt:if name="ct_selects">
 <mtapp:widget
    id="content-type-info"
    hidden="1"
@@ -361,6 +362,14 @@
     </dl>
 
 </mtapp:widget>
+<mt:else>
+<mtapp:widget
+   id="content-type-info"
+   label="<__trans phrase="Content Type">">
+<__trans phrase="No Content Type could be found.">
+<mt:if name="can_create_new_content_type"><__trans phrase="Create a new <a href="[_1]">Content Type</a>?" params="<mt:var name="script_url">?__mode=view&_type=content_type&blog_id=<mt:var name="blog_id">"></mt:if>
+</mtapp:widget>
+</mt:if>
 </mt:if>
 
 <$MTApp:PageActions from="edit_template"$>
@@ -1232,6 +1241,7 @@ function saveTemplatePrefs( sync ) {
     });
 
     <mt:if name="blog_id">
+    <mt:if name="ct_selects">
     function setContentTypeInfo() {
       var ct_data = <mt:var name="ct_data">;
       var id = jQuery("#content_type_sel").val();
@@ -1279,6 +1289,7 @@ function saveTemplatePrefs( sync ) {
     });
 
     setContentTypeInfo();
+    </mt:if>
     </mt:if>
 
     jQuery('button.mx-1').click(function() {
