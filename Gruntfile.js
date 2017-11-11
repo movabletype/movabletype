@@ -46,7 +46,7 @@ module.exports = function(grunt) {
     },
     exec: {
       riot: {
-        command: 'npm run build-riot'
+        command: 'yarn run build-riot'
       },
     }
   });
