@@ -271,7 +271,7 @@ TC.attachLoadEvent( init );
          id="asset-url"
          label_class="top-label"
          label="<__trans phrase="Embed Asset">">
-        <input type="text" readonly="readonly" name="asset-url" id="asset-url" class="text full readonly" value="<mt:var name="url" escape="html">" /> <a href="<mt:var name="url" encode_html="1">" class="view-asset-link" title="<__trans phrase="View this asset.">"><__trans phrase="View"></a>
+        <mt:var name="url" escape="html"> <a href="<mt:var name="url" escape="html">" class="button" target="_blank"><__trans phrase="View"></a><a href="javascript:void(0);" class="button" id="btn-copy-url"><__trans phrase="Copy"></a>
       </mtapp:setting>
     </div>
 
@@ -329,6 +329,14 @@ TC.attachLoadEvent( init );
             jQuery(this).mtDialog.open(jQuery(this).attr('href'));
         }
         return false;
+    });
+    jQuery('#btn-copy-url').click(function() {
+      var fld = document.createElement("textarea");
+      fld.value = '<mt:var name="url" escape="js">';
+      document.body.appendChild(fld);
+      fld.select();
+      document.execCommand("copy");
+      fld.parentElement.removeChild(fld);
     });
 </mt:setvarblock>
 
