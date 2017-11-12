@@ -741,7 +741,6 @@ sub complete_insert {
         $app->load_tmpl( 'dialog/asset_options.tmpl', $param );
     }
     else {
-        use Data::Dumper;
         if ( $app->can_do('access_to_asset_list') ) {
             my $redirect_args = {
                 blog_id => $app->param('blog_id'),
