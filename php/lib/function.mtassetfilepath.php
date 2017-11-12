@@ -18,8 +18,8 @@ function smarty_function_mtassetfilepath($args, &$ctx) {
     $asset_file = preg_replace('/^%a/', $blog_site_path, $asset_file);
 
     require_once('MTUtil.php');
-    $static_path = static_file_path();
-    $asset_file = preg_replace('/^%s/', $static_path, $asset_file);    
+    $static_path = support_directory_path();
+    $asset_file = preg_replace('/^%s/', $static_path, $asset_file);
 
     $blog_archive_path = $blog->archive_path();
     if (!$blog_archive_path) $blog_archive_path = $blog_site_path;
