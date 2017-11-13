@@ -1,0 +1,17 @@
+init:
+  - git config --global core.autocrlf input
+
+install:
+  - choco install strawberryperl
+  - SET PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
+
+  - cp t\cpanfile .
+  - cpanm --nq --installdeps 
+
+build: off
+
+test_script:
+  - prove t plugins/*/t
+
+shallow_clone: true
+
