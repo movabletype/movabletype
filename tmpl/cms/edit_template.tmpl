@@ -274,7 +274,7 @@
    label="<__trans phrase="Content Type">">
 
     <div id="ct_selects-field" class="form-group">
-      <label for="content_type_sel" class="sr-only first-child"><__trans phrase="Select Content Type"></label>
+      <label for="content_type_sel" id="content_type_sel-label" class="sr-only first-child"><__trans phrase="Select Content Type"></label>
       <select name="content_type_sel" id="content_type_sel" tabindex="13" class="form-control">
       <mt:loop name="ct_selects">
       <option value="<mt:var name="id">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
@@ -283,17 +283,17 @@
    </div>
 
     <div id="ct_label-field" class="form-group">
-      <label id="ct_label-label" class="font-weight-bold"><__trans phrase="Label"></label>
+      <p id="ct_label-label" class="font-weight-bold"><__trans phrase="Label"></p>
       <p id="ct_label"></p>
     </div>
 
     <div id="ct_id-field" class="form-group">
-      <label id="ct_id-label" class="font-weight-bold"><__trans phrase="ID"></label>
+      <p id="ct_id-label" class="font-weight-bold"><__trans phrase="ID"></p>
       <p id="ct_id"></p>
     </div>
 
     <div id="ct_unique_id-field" class="form-group">
-      <label id="ct_unique_id-label" class="font-weight-bold"><__trans phrase="Unique ID"></label>
+      <label for="ct_unique_id" id="ct_unique_id-label" class="font-weight-bold"><__trans phrase="Unique ID"></label>
       <div class="form-row">
         <div class="col">
           <input type="text" id="ct_unique_id" class="form-control id text full" readonly="readonly">
@@ -314,23 +314,23 @@
    label="<__trans phrase="Content field">">
 
     <div id="content_field_sel-field" class="form-group">
-      <label for="content_field_sel" class="sr-only font-weight-bold"><__trans phrase="Select Content Field"></label>
+      <label for="content_field_sel" id="content_field_sel-label" class="sr-only font-weight-bold"><__trans phrase="Select Content Field"></label>
       <select name="content_field_sel" id="content_field_sel" tabindex="13" class="form-control">
       </select>
     </div>
 
     <div id="cf_label-field" class="form-group">
-      <label for="cf_label" class="font-weight-bold"><__trans phrase="Label"></label>
+      <p id="cf_label-label" class="font-weight-bold"><__trans phrase="Label"></p>
       <p id="cf_label"></p>
     </div>
 
     <div id="cf_id-field" class="form-group">
-      <label for="cf_id" class="font-weight-bold"><__trans phrase="ID"></label>
+      <p id="cf_id-label" class="font-weight-bold"><__trans phrase="ID"></p>
       <p id="cf_id"></p>
     </div>
 
     <div id="cf_unique_id-field" class="form-group">
-      <label for="cf_unique_id" class="font-weight-bold"><__trans phrase="Unique ID"></label>
+      <label for="cf_unique_id" id="cf_unique_id-label" class="font-weight-bold"><__trans phrase="Unique ID"></label>
       <div class="form-row">
         <div class="col">
           <input type="text" id="cf_unique_id" class="form-control id text full" readonly="readonly">
@@ -343,10 +343,9 @@
       </div>
     </div>
 
-    <dl id="cf_type-field" class="last-child">
-      <dt class="first-child"><__trans phrase="Type"></label>
-      <dd id="cf_type">
-      </dd>
+    <div id="cf_type-field" class="last-child">
+      <p id="cf_type-label" class="font-weight-bold"><__trans phrase="Type"></p>
+      <p id="cf_type"></p>
     </dl>
 
 </mtapp:widget>
