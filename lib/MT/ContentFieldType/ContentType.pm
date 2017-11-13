@@ -174,9 +174,10 @@ sub theme_import_handler {
 
 sub options_html_params {
     my ( $app, $param ) = @_;
+    my $parent_id = $app->param('id');
     my $content_type_loop
         = MT->model('content_type')
-        ->get_related_content_type_loop( $app->blog->id );
+        ->get_related_content_type_loop( $app->blog->id, $parent_id );
 
     return { content_types => $content_type_loop, };
 }
