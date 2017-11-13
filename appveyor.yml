@@ -6,7 +6,7 @@ install:
   - SET PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
 
   - cp t\cpanfile .
-  - cpanm --nq --installdeps 
+  - cpanm -nq --installdeps 
 
 build: off
 
