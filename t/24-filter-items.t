@@ -80,6 +80,7 @@ my @count_specs = (
     },
 );
 
+no warnings 'once';
 $Data::ObjectDriver::PROFILE = 1;
 for my $spec (@count_specs) {
     note( $spec->{name} );

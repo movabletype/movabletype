@@ -1666,7 +1666,12 @@ sub _run_app {
             require CGI::File::Temp;
             my ($cgi_fh) = new CGI::File::Temp( UNLINK => 1 )
                 or die "CGI::File::Temp: $!";
-            $cgi_fh->_mp_filename( basename($src) );
+            my $basename = basename($src);
+            if ($^O eq 'MSWin32') {
+                require Encode;
+                Encode::from_to( $basename, 'cp932', 'utf8' );
+            }
+            $cgi_fh->_mp_filename($basename);
             $CGI::DefaultClass->binmode($cgi_fh)
                 if $CGI::needs_binmode
                 && defined fileno($cgi_fh);
@@ -1674,6 +1679,7 @@ sub _run_app {
             {
                 local $/ = undef;
                 open my $upload, "<", $src or die "Can't open $src: $!";
+                binmode $upload if $basename =~ /\.(?:gif|png|jpg)$/;
                 my $d = <$upload>;
                 close $upload;
                 print $cgi_fh $d;
