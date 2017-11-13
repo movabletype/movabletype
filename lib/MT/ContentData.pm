@@ -108,8 +108,24 @@ sub class_label_plural {
 sub to_hash {
     my $self = shift;
     my $hash = $self->SUPER::to_hash();
+
     $hash->{'cd.text_html'}
         = $self->_generate_text_html || $self->column('data');
+    $hash->{'cd.permalink'}   = $self->permalink;
+    $hash->{'cd.status_text'} = MT::Entry::status_text( $self->status );
+    $hash->{ 'cd.status_is_' . $self->status } = 1;
+    $hash->{'cd.created_on_iso'}
+        = sub { MT::Util::ts2iso( $self->blog_id, $self->created_on ) };
+    $hash->{'cd.modified_on_iso'}
+        = sub { MT::Util::ts2iso( $self->blog_id, $self->modified_on ) };
+    $hash->{'cd.authored_on_iso'}
+        = sub { MT::Util::ts2iso( $self->blog_id, $self->authored_on ) };
+
+    # Populate author info
+    my $auth = $self->author or return $hash;
+    my $auth_hash = $auth->to_hash;
+    $hash->{"cd.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
+
     $hash;
 }
 
