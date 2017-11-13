@@ -21,7 +21,9 @@ BEGIN {
 
 use LWP::UserAgent::Local;
 use URI;
-use MT::Test qw(:db :data);
+use MT::Test;
+
+$test_env->prepare_fixture('db_data');
 
 my $username = "Chuck D"; # Melody
 my $password = "bass"; # Nelson

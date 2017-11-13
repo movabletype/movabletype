@@ -692,7 +692,7 @@ class MT {
         $this->http_error = 200;
         header("HTTP/1.1 200 OK");
         // content-type header-- need to supplement with charset
-        $content_type = $ctx->stash('content_type');
+        $content_type = $ctx->stash('http_content_type');
 
         if (!isset($content_type)) {
             $content_type = $this->mime_types['__default__'];

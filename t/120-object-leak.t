@@ -13,13 +13,18 @@ BEGIN {
 
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        # see the comment below
+        DisableObjectCache => 1,
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT;
 plan tests => 36;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new();
 

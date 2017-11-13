@@ -12,73 +12,100 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 
+MT::Test->init_app;
+
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+    # Website
+    my $website = MT::Test::Permission->make_website(
+        name => 'my website',
+    );
 
-# Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-my $second_blog
-    = MT::Test::Permission->make_blog( parent_id => $website->id, );
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
+    my $second_blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'second blog',
+    );
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name     => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name     => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
 
-my $ichikawa = MT::Test::Permission->make_author(
-    name     => 'ichikawa',
-    nickname => 'Jiro Ichikawa',
-);
+    my $ichikawa = MT::Test::Permission->make_author(
+        name     => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
 
-my $ukawa = MT::Test::Permission->make_author(
-    name     => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
+    my $ukawa = MT::Test::Permission->make_author(
+        name     => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
 
-my $egawa = MT::Test::Permission->make_author(
-    name     => 'egawa',
-    nickname => 'Shiro Egawa',
-);
+    my $egawa = MT::Test::Permission->make_author(
+        name     => 'egawa',
+        nickname => 'Shiro Egawa',
+    );
 
-my $ogawa = MT::Test::Permission->make_author(
-    name     => 'ogawa',
-    nickname => 'Goro Ogawa',
-);
+    my $ogawa = MT::Test::Permission->make_author(
+        name     => 'ogawa',
+        nickname => 'Goro Ogawa',
+    );
 
-my $kagawa = MT::Test::Permission->make_author(
-    name     => 'kagawa',
-    nickname => 'Ichiro Kagawa',
-);
+    my $kagawa = MT::Test::Permission->make_author(
+        name     => 'kagawa',
+        nickname => 'Ichiro Kagawa',
+    );
 
-my $kikkawa = MT::Test::Permission->make_author(
-    name     => 'kikkawa',
-    nickname => 'Jiro Kikkawa',
-);
+    my $kikkawa = MT::Test::Permission->make_author(
+        name     => 'kikkawa',
+        nickname => 'Jiro Kikkawa',
+    );
 
-my $kumekawa = MT::Test::Permission->make_author(
-    name     => 'kumekawa',
-    nickname => 'saburo Kumekawa',
-);
+    my $kumekawa = MT::Test::Permission->make_author(
+        name     => 'kumekawa',
+        nickname => 'saburo Kumekawa',
+    );
+
+    my $admin = MT::Author->load(1);
+
+    # Role
+    require MT::Role;
+    my $site_admin
+        = MT::Role->load( { name => MT->translate('Site Administrator') } );
+    my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+
+    require MT::Association;
+    MT::Association->link( $aikawa   => $site_admin => $blog );
+    MT::Association->link( $ichikawa => $site_admin => $website );
+    MT::Association->link( $ogawa    => $site_admin => $second_blog );
+    MT::Association->link( $kumekawa => $designer   => $blog );
+});
+
+my $website = MT::Website->load( { name => 'my website' } );
+
+my $blog = MT::Blog->load( { name => 'my blog' } );
+
+my $aikawa   = MT::Author->load( { name => 'aikawa' } );
+my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
+my $ukawa    = MT::Author->load( { name => 'ukawa' } );
+my $egawa    = MT::Author->load( { name => 'egawa' } );
+my $ogawa    = MT::Author->load( { name => 'ogawa' } );
+my $kagawa   = MT::Author->load( { name => 'kagawa' } );
+my $kikkawa  = MT::Author->load( { name => 'kikkawa' } );
+my $kumekawa = MT::Author->load( { name => 'kumekawa' } );
 
 my $admin = MT::Author->load(1);
-
-# Role
-require MT::Role;
-my $site_admin
-    = MT::Role->load( { name => MT->translate('Site Administrator') } );
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
-
-require MT::Association;
-MT::Association->link( $aikawa   => $site_admin => $blog );
-MT::Association->link( $ichikawa => $site_admin => $website );
-MT::Association->link( $ogawa    => $site_admin => $second_blog );
-MT::Association->link( $kumekawa => $designer   => $blog );
 
 # Run
 my ( $app, $out );

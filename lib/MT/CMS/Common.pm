@@ -1006,7 +1006,7 @@ sub list {
     my $initial_filter;
 
     my $list_prefs = $app->user->list_prefs || {};
-    my $list_pref = $list_prefs->{ ( $subtype || $type ) }{$blog_id} || {};
+    my $list_pref = $list_prefs->{ $type . $subtype }{$blog_id} || {};
     my $rows        = $list_pref->{rows}        || 50;    ## FIXME: Hardcoded
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
@@ -1040,7 +1040,7 @@ sub list {
                         if ( my $errstr = $prop->errstr ) {
                             push @messages,
                                 {
-                                cls => 'alert',
+                                cls => 'warning',
                                 msg => MT->translate(
                                     q{Invalid filter: [_1]},
                                     MT::Util::encode_html($errstr)
@@ -1056,7 +1056,7 @@ sub list {
                         if ( my $errstr = $prop->errstr ) {
                             push @messages,
                                 {
-                                cls => 'alert',
+                                cls => 'warning',
                                 msg => MT->translate(
                                     q{Invalid filter: [_1]},
                                     MT::Util::encode_html($errstr),
@@ -1076,7 +1076,7 @@ sub list {
             else {
                 push @messages,
                     {
-                    cls => 'alert invalid-filter',
+                    cls => 'warning invalid-filter',
                     msg => MT->translate(
                         q{Invalid filter: [_1]},
                         MT::Util::encode_html($col),
@@ -1171,7 +1171,7 @@ sub list {
             {
             id        => $prop->id,
             type      => $prop->type,
-            label     => $prop->label,
+            label     => MT::Util::encode_html( $prop->label ),
             primary   => $primary_col{$id} ? 1 : 0,
             col_class => $prop->col_class,
             sortable  => $prop->can_sort($scope),
@@ -1212,10 +1212,11 @@ sub list {
 
         push @filter_types,
             {
-            prop                  => $prop,
-            id                    => $prop->id,
-            type                  => $prop->type,
-            label                 => $prop->filter_label || $prop->label,
+            prop => $prop,
+            id   => $prop->id,
+            type => $prop->type,
+            label =>
+                MT::Util::encode_html( $prop->filter_label || $prop->label ),
             field                 => $prop->filter_tmpl,
             single_select_options => $prop->single_select_options($app),
             verb                  => defined $prop->verb ? $prop->verb

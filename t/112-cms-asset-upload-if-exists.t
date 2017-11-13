@@ -20,12 +20,19 @@ BEGIN {
 }
 
 use File::Spec;
+use File::Path;
 
-use MT::Test qw( :app :db :data );
+use MT::Test;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $admin = MT::Author->load(1);
 my $blog  = MT::Blog->load(1);
 my $fmgr  = $blog->file_mgr;
+
+File::Path::mkpath $blog->archive_path unless -d $blog->archive_path;
 
 sub _run_app_with_upload_file {
     my ( $class, $params, $file_path, $file_info ) = @_;

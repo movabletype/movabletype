@@ -31,9 +31,11 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :db :data );
+use MT::Test;
 use MT;
 use MT::PSGI;
+
+$test_env->prepare_fixture('db_data');
 
 my $wight = Test::Wight->new;
 $wight->spawn_psgi( MT::PSGI->new->to_app );

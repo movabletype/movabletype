@@ -97,54 +97,63 @@ sub archive_group_iter {
 
 sub default_archive_templates {
     return [
-        {   label           => MT->translate('yyyy/mm/base-name.html'),
+        {   label           => MT->translate('yyyy/mm/content-basename.html'),
             template        => '%y/%m/%-f',
             default         => 1,
             required_fields => { date_and_time => 1 }
         },
-        {   label           => MT->translate('yyyy/mm/base_name.html'),
+        {   label           => MT->translate('yyyy/mm/content_basename.html'),
             template        => '%y/%m/%f',
             required_fields => { date_and_time => 1 }
         },
-        {   label           => MT->translate('yyyy/mm/base-name/index.html'),
-            template        => '%y/%m/%-b/%i',
+        {   label    => MT->translate('yyyy/mm/content-basename/index.html'),
+            template => '%y/%m/%-b/%i',
             required_fields => { date_and_time => 1 }
         },
-        {   label           => MT->translate('yyyy/mm/base_name/index.html'),
-            template        => '%y/%m/%b/%i',
+        {   label    => MT->translate('yyyy/mm/content_basename/index.html'),
+            template => '%y/%m/%b/%i',
             required_fields => { date_and_time => 1 }
         },
-        {   label           => MT->translate('yyyy/mm/dd/base-name.html'),
-            template        => '%y/%m/%d/%-f',
+        {   label    => MT->translate('yyyy/mm/dd/content-basename.html'),
+            template => '%y/%m/%d/%-f',
             required_fields => { date_and_time => 1 }
         },
-        {   label           => MT->translate('yyyy/mm/dd/base_name.html'),
-            template        => '%y/%m/%d/%f',
+        {   label    => MT->translate('yyyy/mm/dd/content_basename.html'),
+            template => '%y/%m/%d/%f',
             required_fields => { date_and_time => 1 }
         },
-        {   label    => MT->translate('yyyy/mm/dd/base-name/index.html'),
-            template => '%y/%m/%d/%-b/%i',
+        {   label => MT->translate('yyyy/mm/dd/content-basename/index.html'),
+            template        => '%y/%m/%d/%-b/%i',
             required_fields => { date_and_time => 1 }
         },
-        {   label    => MT->translate('yyyy/mm/dd/base_name/index.html'),
-            template => '%y/%m/%d/%b/%i',
+        {   label => MT->translate('yyyy/mm/dd/content_basename/index.html'),
+            template        => '%y/%m/%d/%b/%i',
             required_fields => { date_and_time => 1 }
         },
-        {   label    => MT->translate('category/sub-category/base-name.html'),
-            template => '%-c/%-f',
-            required_fields => { category => 1 }
+        {   label    => MT->translate('author/author-basename/index.html'),
+            template => 'author/%-a/%f',
+            default  => 1
+        },
+        {   label    => MT->translate('author/author_basename/index.html'),
+            template => 'author/%a/%f'
         },
         {   label =>
-                MT->translate('category/sub-category/base-name/index.html'),
+                MT->translate('category/sub-category/content-basename.html'),
+            template        => '%-c/%-f',
+            required_fields => { category => 1 }
+        },
+        {   label => MT->translate(
+                'category/sub-category/content-basename/index.html'),
             template        => '%-c/%-b/%i',
             required_fields => { category => 1 }
         },
-        {   label    => MT->translate('category/sub_category/base_name.html'),
-            template => '%c/%f',
+        {   label =>
+                MT->translate('category/sub_category/content_basename.html'),
+            template        => '%c/%f',
             required_fields => { category => 1 }
         },
-        {   label =>
-                MT->translate('category/sub_category/base_name/index.html'),
+        {   label => MT->translate(
+                'category/sub_category/content_basename/index.html'),
             template        => '%c/%b/%i',
             required_fields => { category => 1 }
         },

@@ -37,6 +37,21 @@ sub _create_empty_table {
     join "\n", ( map {$row} ( 1 .. $initial_rows ) );
 }
 
+sub data_load_handler {
+    my ( $app, $field_data ) = @_;
+    my $field_id = $field_data->{id};
+    my $value    = $app->param( 'content-field-' . $field_id );
+    if ( defined $value && $value ne '' ) {
+        my $str = MT::Util::remove_html($value);
+        $str =~ s/(\s|\r|\n)//g;
+        $value = undef unless $str;
+    }
+    else {
+        $value = undef;
+    }
+    return $value;
+}
+
 sub tag_handler {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 

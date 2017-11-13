@@ -12,7 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 
 use MT::Author;
@@ -20,34 +20,48 @@ use MT::ContentData;
 use MT::ContentFieldIndex;
 use MT::Entry;
 
+MT::Test->init_app;
+
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
+
+    my $admin = MT::Author->load(1);
+    my $user  = MT::Test::Permission->make_author(
+        name => 'test user',
+    );
+    $user->is_superuser(1);
+    $user->save or die $user->errstr;
+
+    my $content_type = MT::Test::Permission->make_content_type(
+        blog_id => 1,
+        name    => 'test content type',
+    );
+
+    my $content_field = MT::Test::Permission->make_content_field(
+        blog_id         => $content_type->blog_id,
+        content_type_id => $content_type->id,
+        name            => 'single text',
+        type            => 'single_line_text',
+    );
+
+    my $fields = [
+        {   id        => $content_field->id,
+            label     => 1,
+            name      => $content_field->name,
+            order     => 1,
+            type      => $content_field->type,
+            unique_id => $content_field->unique_id,
+        }
+    ];
+    $content_type->fields($fields);
+    $content_type->save or die $content_type->errstr;
+});
+
 my $admin = MT::Author->load(1);
-my $user  = MT::Test::Permission->make_author;
-$user->is_superuser(1);
-$user->save or die $user->errstr;
+my $user = MT::Author->load( { name => 'test user' } );
 
-my $content_type = MT::Test::Permission->make_content_type(
-    blog_id => 1,
-    name    => 'test content type',
-);
-
-my $content_field = MT::Test::Permission->make_content_field(
-    blog_id         => $content_type->blog_id,
-    content_type_id => $content_type->id,
-    name            => 'single text',
-    type            => 'single_line_text',
-);
-
-my $fields = [
-    {   id        => $content_field->id,
-        label     => 1,
-        name      => $content_field->name,
-        order     => 1,
-        type      => $content_field->type,
-        unique_id => $content_field->unique_id,
-    }
-];
-$content_type->fields($fields);
-$content_type->save or die $content_type->errstr;
+my $content_type  = MT::ContentType->load( { name => 'test content type' } );
+my $content_field = MT::ContentField->load( { name => 'single text' } );
 
 my ( $content_data, $cf_idx );
 

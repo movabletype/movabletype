@@ -14,7 +14,7 @@ use MT::Test::Tag;
 
 plan tests => 2 * blocks;
 
-use MT::Test qw( :db );
+use MT::Test;
 use MT::Test::Permission;
 
 use MT::Entry;
@@ -26,40 +26,44 @@ filters {
 
 my $blog_id = 1;
 
-my $foo = MT::Test::Permission->make_folder(
-    blog_id => $blog_id,
-    label   => 'foo',
-);
-my $bar = MT::Test::Permission->make_folder(
-    blog_id => $blog_id,
-    label   => 'bar',
-);
-my $baz = MT::Test::Permission->make_folder(
-    blog_id => $blog_id,
-    label   => 'baz',
-);
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-my $page1 = MT::Test::Permission->make_page( blog_id => $blog_id, );
-my $page2 = MT::Test::Permission->make_page( blog_id => $blog_id, );
-my $page3 = MT::Test::Permission->make_page( blog_id => $blog_id, );
+    my $foo = MT::Test::Permission->make_folder(
+        blog_id => $blog_id,
+        label   => 'foo',
+    );
+    my $bar = MT::Test::Permission->make_folder(
+        blog_id => $blog_id,
+        label   => 'bar',
+    );
+    my $baz = MT::Test::Permission->make_folder(
+        blog_id => $blog_id,
+        label   => 'baz',
+    );
 
-MT::Test::Permission->make_placement(
-    blog_id     => $blog_id,
-    entry_id    => $page1->id,
-    category_id => $foo->id,
-);
+    my $page1 = MT::Test::Permission->make_page( blog_id => $blog_id, );
+    my $page2 = MT::Test::Permission->make_page( blog_id => $blog_id, );
+    my $page3 = MT::Test::Permission->make_page( blog_id => $blog_id, );
 
-MT::Test::Permission->make_placement(
-    blog_id     => $blog_id,
-    entry_id    => $page2->id,
-    category_id => $bar->id,
-);
+    MT::Test::Permission->make_placement(
+        blog_id     => $blog_id,
+        entry_id    => $page1->id,
+        category_id => $foo->id,
+    );
 
-MT::Test::Permission->make_placement(
-    blog_id     => $blog_id,
-    entry_id    => $page3->id,
-    category_id => $baz->id,
-);
+    MT::Test::Permission->make_placement(
+        blog_id     => $blog_id,
+        entry_id    => $page2->id,
+        category_id => $bar->id,
+    );
+
+    MT::Test::Permission->make_placement(
+        blog_id     => $blog_id,
+        entry_id    => $page3->id,
+        category_id => $baz->id,
+    );
+});
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);

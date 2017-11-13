@@ -15,7 +15,9 @@ BEGIN {
 use utf8;
 
 plan tests => 8;
-use MT::Test qw(:db :data);
+use MT::Test;
+
+$test_env->prepare_fixture('db_data');
 
 use MT;
 use MT::Util qw(archive_file_for get_entry multi_iter);

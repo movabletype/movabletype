@@ -12,114 +12,130 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 use MT::Util;
 
+MT::Test->init_app;
+
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website        = MT::Test::Permission->make_website();
-my $second_website = MT::Test::Permission->make_website();
+    # Website
+    my $website        = MT::Test::Permission->make_website(
+        name => 'my website',
+    );
+    my $second_website = MT::Test::Permission->make_website(
+        name => 'second website',
+    );
 
-# Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-my $second_blog
-    = MT::Test::Permission->make_blog( parent_id => $second_website->id, );
+    # Blog
+    my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+    my $second_blog
+        = MT::Test::Permission->make_blog( parent_id => $second_website->id, );
 
-# Author
+    # Author
+    my $admin = MT::Author->load(1);
+
+    # Page
+    my $website_page = MT::Test::Permission->make_page(
+        blog_id   => $website->id,
+        author_id => $admin->id,
+    );
+
+    # Category
+    my $website_cat = MT::Test::Permission->make_category(
+        blog_id   => $website->id,
+        author_id => $admin->id,
+        label     => 'my category',
+    );
+    my $website_other_cat = MT::Test::Permission->make_category(
+        blog_id   => $website->id,
+        author_id => $admin->id,
+    );
+    my $blog_cat = MT::Test::Permission->make_category(
+        blog_id   => $blog->id,
+        author_id => $admin->id,
+    );
+    my $second_website_cat = MT::Test::Permission->make_category(
+        blog_id   => $second_website->id,
+        author_id => $admin->id,
+    );
+    my $second_blog_cat = MT::Test::Permission->make_category(
+        blog_id   => $second_blog->id,
+        author_id => $admin->id,
+    );
+
+    # Trackback
+    my $tb_page = MT::Test::Permission->make_tb(
+        blog_id  => $website->id,
+        entry_id => $website_page->id,
+    );
+    my $tb_website_cat = MT::Test::Permission->make_tb(
+        blog_id     => $website->id,
+        category_id => $website_cat->id,
+        entry_id    => 0,
+    );
+    my $tb_website_other_cat = MT::Test::Permission->make_tb(
+        blog_id     => $website->id,
+        category_id => $website_other_cat->id,
+        entry_id    => 0,
+    );
+    my $tb_blog_cat = MT::Test::Permission->make_tb(
+        blog_id     => $blog->id,
+        category_id => $blog_cat->id,
+        entry_id    => 0,
+    );
+    my $tb_second_website_cat = MT::Test::Permission->make_tb(
+        blog_id     => $second_website->id,
+        category_id => $second_website_cat->id,
+        entry_id    => 0,
+    );
+    my $tb_second_blog_cat = MT::Test::Permission->make_tb(
+        blog_id     => $second_blog->id,
+        category_id => $second_blog->id,
+        entry_id    => 0,
+    );
+
+    # Ping
+    my $ping_website_cat = MT::Test::Permission->make_ping(
+        blog_id => $website->id,
+        tb_id   => $tb_website_cat->id,
+        excerpt => 'Ichiro Aikawa',
+    );
+    my $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $website->id,
+        tb_id   => $tb_page->id,
+        excerpt => 'Jiro Ichikawa',
+    );
+    my $ping_website_other_cat = MT::Test::Permission->make_ping(
+        blog_id => $website->id,
+        tb_id   => $tb_website_other_cat->id,
+        excerpt => 'Saburo Ukawa',
+    );
+    my $ping_blog_cat = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_blog_cat->id,
+        excerpt => 'Shiro Egawa',
+    );
+    my $ping_second_website_cat = MT::Test::Permission->make_ping(
+        blog_id => $second_website->id,
+        tb_id   => $tb_second_website_cat->id,
+        excerpt => 'Goro Ogawa',
+    );
+    my $ping_second_blog_cat = MT::Test::Permission->make_ping(
+        blog_id => $second_blog->id,
+        tb_id   => $tb_second_blog_cat->id,
+        excerpt => 'Ichiro Kagawa',
+    );
+});
+
+my $website = MT::Website->load( { name => 'my website' } );
+
 my $admin = MT::Author->load(1);
 
-# Page
-my $website_page = MT::Test::Permission->make_page(
-    blog_id   => $website->id,
-    author_id => $admin->id,
-);
-
-# Category
-my $website_cat = MT::Test::Permission->make_category(
-    blog_id   => $website->id,
-    author_id => $admin->id,
-);
-my $website_other_cat = MT::Test::Permission->make_category(
-    blog_id   => $website->id,
-    author_id => $admin->id,
-);
-my $blog_cat = MT::Test::Permission->make_category(
-    blog_id   => $blog->id,
-    author_id => $admin->id,
-);
-my $second_website_cat = MT::Test::Permission->make_category(
-    blog_id   => $second_website->id,
-    author_id => $admin->id,
-);
-my $second_blog_cat = MT::Test::Permission->make_category(
-    blog_id   => $second_blog->id,
-    author_id => $admin->id,
-);
-
-# Trackback
-my $tb_page = MT::Test::Permission->make_tb(
-    blog_id  => $website->id,
-    entry_id => $website_page->id,
-);
-my $tb_website_cat = MT::Test::Permission->make_tb(
-    blog_id     => $website->id,
-    category_id => $website_cat->id,
-    entry_id    => 0,
-);
-my $tb_website_other_cat = MT::Test::Permission->make_tb(
-    blog_id     => $website->id,
-    category_id => $website_other_cat->id,
-    entry_id    => 0,
-);
-my $tb_blog_cat = MT::Test::Permission->make_tb(
-    blog_id     => $blog->id,
-    category_id => $blog_cat->id,
-    entry_id    => 0,
-);
-my $tb_second_website_cat = MT::Test::Permission->make_tb(
-    blog_id     => $second_website->id,
-    category_id => $second_website_cat->id,
-    entry_id    => 0,
-);
-my $tb_second_blog_cat = MT::Test::Permission->make_tb(
-    blog_id     => $second_blog->id,
-    category_id => $second_blog->id,
-    entry_id    => 0,
-);
-
-# Ping
-my $ping_website_cat = MT::Test::Permission->make_ping(
-    blog_id => $website->id,
-    tb_id   => $tb_website_cat->id,
-    excerpt => 'Ichiro Aikawa',
-);
-my $ping_page = MT::Test::Permission->make_ping(
-    blog_id => $website->id,
-    tb_id   => $tb_page->id,
-    excerpt => 'Jiro Ichikawa',
-);
-my $ping_website_other_cat = MT::Test::Permission->make_ping(
-    blog_id => $website->id,
-    tb_id   => $tb_website_other_cat->id,
-    excerpt => 'Saburo Ukawa',
-);
-my $ping_blog_cat = MT::Test::Permission->make_ping(
-    blog_id => $blog->id,
-    tb_id   => $tb_blog_cat->id,
-    excerpt => 'Shiro Egawa',
-);
-my $ping_second_website_cat = MT::Test::Permission->make_ping(
-    blog_id => $second_website->id,
-    tb_id   => $tb_second_website_cat->id,
-    excerpt => 'Goro Ogawa',
-);
-my $ping_second_blog_cat = MT::Test::Permission->make_ping(
-    blog_id => $second_blog->id,
-    tb_id   => $tb_second_blog_cat->id,
-    excerpt => 'Ichiro Kagawa',
-);
+my $website_cat = MT::Category->load( { label => 'my category' } );
 
 # Run test
 my ( $app, $out );

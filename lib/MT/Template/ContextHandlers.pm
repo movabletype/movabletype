@@ -1102,6 +1102,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::ContentType::_hdlr_contents_count',
             SiteContentCount =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_site_content_count',
+            ContentFieldValue =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_field_value',
 
             ## Category Set
             CategorySetName =>
@@ -6099,7 +6101,7 @@ B<Example:>
 sub _hdlr_http_content_type {
     my ( $ctx, $args ) = @_;
     my $type = $args->{type};
-    $ctx->stash( 'content_type', $type );
+    $ctx->stash( 'http_content_type', $type );
     return qq{};
 }
 

@@ -616,7 +616,7 @@ sub edit {
                     map { { id => $_->{id}, label => $_->{options}{label} } }
                         grep {
                         (          $_->{type} eq 'date_and_time'
-                                || $_->{type} eq 'date' )
+                                || $_->{type} eq 'date_only' )
                             && $_->{options}{required}
                         } @$fields
                 ],
@@ -986,10 +986,12 @@ sub edit {
             };
         }
     }
-    $param->{ct_selects} = \@ct_selects;
-    $param->{ct_data}    = MT::Util::to_json($ct_data);
-    $param->{cf_selects} = MT::Util::to_json($cf_selects);
-    $param->{cf_data}    = MT::Util::to_json($cf_data);
+    $param->{ct_selects}                  = \@ct_selects;
+    $param->{ct_data}                     = MT::Util::to_json($ct_data);
+    $param->{cf_selects}                  = MT::Util::to_json($cf_selects);
+    $param->{cf_data}                     = MT::Util::to_json($cf_data);
+    $param->{can_create_new_content_type} = 1
+        if $perms->can_do('create_new_content_type');
 
     1;
 }
@@ -1815,10 +1817,10 @@ sub _populate_archive_loop {
                 $required_fields = $_->{required_fields};
             }
             else {
-                $custom = $map->{file_template} || $_->{value};
             }
         }
         if ($custom) {
+            $custom = $map->{file_template};
             unshift @$tmpl_loop,
                 {
                 name   => $map->{file_template},
@@ -1874,7 +1876,7 @@ sub _populate_archive_loop {
                         }
                         grep {
                         (          $_->{type} eq 'date_and_time'
-                                || $_->{type} eq 'date' )
+                                || $_->{type} eq 'date_only' )
                             && $_->{options}{required}
                         } @$fields
                 ],

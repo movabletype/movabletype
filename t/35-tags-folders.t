@@ -14,7 +14,7 @@ use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test qw( :db );
+use MT::Test;
 use MT::Test::Permission;
 
 filters {
@@ -24,18 +24,22 @@ filters {
 
 my $blog_id = 1;
 
-MT::Test::Permission->make_folder(
-    blog_id => $blog_id,
-    label   => 'foo',
-);
-MT::Test::Permission->make_folder(
-    blog_id => $blog_id,
-    label   => 'bar',
-);
-MT::Test::Permission->make_folder(
-    blog_id => $blog_id,
-    label   => 'baz',
-);
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
+
+    MT::Test::Permission->make_folder(
+        blog_id => $blog_id,
+        label   => 'foo',
+    );
+    MT::Test::Permission->make_folder(
+        blog_id => $blog_id,
+        label   => 'bar',
+    );
+    MT::Test::Permission->make_folder(
+        blog_id => $blog_id,
+        label   => 'baz',
+    );
+});
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);

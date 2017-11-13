@@ -14,9 +14,15 @@ BEGIN {
 
 use MT::Test::DataAPI;
 use MT::Test::Permission;
+use File::Path;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
+
+my $blog = MT::Blog->load(1);
+File::Path::mkpath $blog->archive_path unless -d $blog->archive_path;
 
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');

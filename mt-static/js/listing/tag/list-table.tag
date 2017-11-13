@@ -44,9 +44,9 @@
           mt-table__descend: sortable && parent.store.sortBy == id && parent.store.sortOrder == 'descend'
         }
       >
-        { label }
+        <raw content={ label }></raw>
       </a>
-      <virtual if={ !sortable }>{ label }</virtual>
+      <raw if={ !sortable } content={ label }></raw>
     </th>
   </tr>
 

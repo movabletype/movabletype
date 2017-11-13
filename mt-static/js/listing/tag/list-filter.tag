@@ -185,8 +185,14 @@
         }
       })
       if ( errors ) {
+        let errorMessage
+        if ( errors > 1 ) {
+          errorMessage = '[_1] Filter Items have field(s) not filled in properly'
+        } else {
+          errorMessage = '[_1] Filter Item has field(s) not filled in properly'
+        }
         this.$validateErrorMessage = this.showMessage(
-          trans('[_1] Filter Items have errors', errors ),
+          trans(errorMessage, errors ),
           'error'
         )
       }
@@ -264,7 +270,7 @@
                 data-mt-filter-type={ type }
                 onclick={ addFilterItem }
               >
-                { label }
+                <raw content={ label }></raw>
               </a>
             </div>
           </div>
@@ -293,7 +299,7 @@
     this.mixin('listFilterTop')
 
     addFilterItem(e) {
-      const filterType = e.target.dataset.mtFilterType
+      const filterType = e.currentTarget.dataset.mtFilterType
       this.listFilterTop.addFilterItem(filterType)
     }
   </script>

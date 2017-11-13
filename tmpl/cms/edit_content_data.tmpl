@@ -668,7 +668,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   <mt:if name="can_edit">
   <div class="form-group">
     <label>
-      <mt:var name="options{label}"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></mt:if>
+      <mt:var name="options{label}" escape="html"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></mt:if>
 
       <mt:if name="options{min_length}">
         <mt:if name="options{max_length}">

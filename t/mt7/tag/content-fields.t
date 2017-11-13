@@ -18,7 +18,7 @@ use MT::Test::Tag;
 plan tests => 1 * blocks;
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
 use MT::Test::Permission;
 my $app = MT->instance;
 
@@ -30,52 +30,54 @@ filters {
     error    => [qw( chomp )],
 };
 
-my $mt = MT->instance;
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-my $ct = MT::Test::Permission->make_content_type(
-    name    => 'test content data',
-    blog_id => $blog_id,
-);
+    my $ct = MT::Test::Permission->make_content_type(
+        name    => 'test content data',
+        blog_id => $blog_id,
+    );
 
-my $cf1 = MT::Test::Permission->make_content_field(
-    blog_id         => $ct->blog_id,
-    content_type_id => $ct->id,
-    name            => 'single1',
-    type            => 'single_line_text',
-);
-my $cf2 = MT::Test::Permission->make_content_field(
-    blog_id         => $ct->blog_id,
-    content_type_id => $ct->id,
-    name            => 'single2',
-    type            => 'single_line_text',
-);
+    my $cf1 = MT::Test::Permission->make_content_field(
+        blog_id         => $ct->blog_id,
+        content_type_id => $ct->id,
+        name            => 'single1',
+        type            => 'single_line_text',
+    );
+    my $cf2 = MT::Test::Permission->make_content_field(
+        blog_id         => $ct->blog_id,
+        content_type_id => $ct->id,
+        name            => 'single2',
+        type            => 'single_line_text',
+    );
 
-my $fields = [
-    {   id        => $cf1->id,
-        order     => 1,
-        type      => $cf1->type,
-        options   => { label => $cf1->name },
-        unique_id => $cf1->unique_id,
-    },
-    {   id        => $cf2->id,
-        order     => 10,
-        type      => $cf2->type,
-        options   => { label => $cf2->name },
-        unique_id => $cf2->unique_id,
-    },
-];
-$ct->fields($fields);
-$ct->save or die $ct->errstr;
+    my $fields = [
+        {   id        => $cf1->id,
+            order     => 1,
+            type      => $cf1->type,
+            options   => { label => $cf1->name },
+            unique_id => $cf1->unique_id,
+        },
+        {   id        => $cf2->id,
+            order     => 10,
+            type      => $cf2->type,
+            options   => { label => $cf2->name },
+            unique_id => $cf2->unique_id,
+        },
+    ];
+    $ct->fields($fields);
+    $ct->save or die $ct->errstr;
 
-my $cd = MT::Test::Permission->make_content_data(
-    blog_id         => $ct->blog_id,
-    content_type_id => $ct->id,
-    author_id       => 1,
-    data            => {
-        $cf1->id => 'test1',
-        $cf2->id => 'test2',
-    },
-);
+    my $cd = MT::Test::Permission->make_content_data(
+        blog_id         => $ct->blog_id,
+        content_type_id => $ct->id,
+        author_id       => 1,
+        data            => {
+            $cf1->id => 'test1',
+            $cf2->id => 'test2',
+        },
+    );
+});
 
 MT::Test::Tag->run_perl_tests($blog_id);
 # MT::Test::Tag->run_php_tests($blog_id);

@@ -14,7 +14,7 @@ use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test qw( :db );
+use MT::Test;
 use MT::Test::Permission;
 
 filters {
@@ -25,66 +25,70 @@ filters {
 my $blog_id         = 1;
 my $category_set_id = 1;
 
-my $foo = MT::Test::Permission->make_category(
-    blog_id => $blog_id,
-    label   => 'foo',
-);
-my $bar = MT::Test::Permission->make_category(
-    blog_id => $blog_id,
-    label   => 'bar',
-);
-my $baz = MT::Test::Permission->make_category(
-    blog_id => $blog_id,
-    label   => 'baz',
-);
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-my $c123 = MT::Test::Permission->make_category(
-    blog_id => $blog_id,
-    parent  => $foo->id,
-    label   => 'c123',
-);
+    my $foo = MT::Test::Permission->make_category(
+        blog_id => $blog_id,
+        label   => 'foo',
+    );
+    my $bar = MT::Test::Permission->make_category(
+        blog_id => $blog_id,
+        label   => 'bar',
+    );
+    my $baz = MT::Test::Permission->make_category(
+        blog_id => $blog_id,
+        label   => 'baz',
+    );
 
-my $category_order = join( ',', map { $_->id } ( $foo, $c123, $bar, $baz ) );
+    my $c123 = MT::Test::Permission->make_category(
+        blog_id => $blog_id,
+        parent  => $foo->id,
+        label   => 'c123',
+    );
 
-my $blog = MT->model('blog')->load($blog_id) or die MT->model('blog')->errstr;
-$blog->category_order($category_order);
-$blog->save or die $blog->errstr;
+    my $category_order = join( ',', map { $_->id } ( $foo, $c123, $bar, $baz ) );
 
-my $category_set
-    = MT::Test::Permission->make_category_set( blog_id => $blog_id );
-$category_set->id($category_set_id);
-$category_set->save or die $category_set->errstr;
-if ( $category_set->id != $category_set_id ) {
-    die 'category_set->id is ' . ( $category_set->id || 'not set' );
-}
+    my $blog = MT->model('blog')->load($blog_id) or die MT->model('blog')->errstr;
+    $blog->category_order($category_order);
+    $blog->save or die $blog->errstr;
 
-my $abc = MT::Test::Permission->make_category(
-    blog_id         => $blog_id,
-    category_set_id => $category_set->id,
-    label           => 'abc',
-);
-my $def = MT::Test::Permission->make_category(
-    blog_id         => $blog_id,
-    category_set_id => $category_set->id,
-    label           => 'def',
-);
-my $ghi = MT::Test::Permission->make_category(
-    blog_id         => $blog_id,
-    category_set_id => $category_set->id,
-    label           => 'ghi',
-);
+    my $category_set
+        = MT::Test::Permission->make_category_set( blog_id => $blog_id );
+    $category_set->id($category_set_id);
+    $category_set->save or die $category_set->errstr;
+    if ( $category_set->id != $category_set_id ) {
+        die 'category_set->id is ' . ( $category_set->id || 'not set' );
+    }
 
-my $c456 = MT::Test::Permission->make_category(
-    blog_id         => $blog_id,
-    category_set_id => $category_set_id,
-    parent          => $ghi->id,
-    label           => 'c456',
-);
+    my $abc = MT::Test::Permission->make_category(
+        blog_id         => $blog_id,
+        category_set_id => $category_set->id,
+        label           => 'abc',
+    );
+    my $def = MT::Test::Permission->make_category(
+        blog_id         => $blog_id,
+        category_set_id => $category_set->id,
+        label           => 'def',
+    );
+    my $ghi = MT::Test::Permission->make_category(
+        blog_id         => $blog_id,
+        category_set_id => $category_set->id,
+        label           => 'ghi',
+    );
 
-my $category_set_order
-    = join( ',', map { $_->id } ( $def, $abc, $c456, $ghi ) );
-$category_set->order($category_set_order);
-$category_set->save or die $category_set->errstr;
+    my $c456 = MT::Test::Permission->make_category(
+        blog_id         => $blog_id,
+        category_set_id => $category_set_id,
+        parent          => $ghi->id,
+        label           => 'c456',
+    );
+
+    my $category_set_order
+        = join( ',', map { $_->id } ( $def, $abc, $c456, $ghi ) );
+    $category_set->order($category_set_order);
+    $category_set->save or die $category_set->errstr;
+});
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);

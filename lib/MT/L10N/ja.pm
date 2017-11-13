@@ -4590,6 +4590,8 @@ use vars qw( @ISA %Lexicon );
 	'__FILTER_DATE_ORIGIN' => 'が[_1]',
 	'[_1] and [_2]' => 'が[_1] から [_2]',
 	'_FILTER_DATE_DAYS' => 'が[_1]',
+	'[_1] hours' => 'が[_1]',
+	'__TIME_FILTER_HOURS' => '時間以内',
 
 ## tmpl/cms/include/blog_table.tmpl
 	'Some templates were not refreshed.' => '初期化できないテンプレートがありました。',

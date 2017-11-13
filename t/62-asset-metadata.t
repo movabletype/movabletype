@@ -16,12 +16,14 @@ use File::Copy;
 use File::Spec;
 use File::Temp qw( tempfile );
 
-use MT::Test qw(:db);
+use MT::Test;
 use MT::Test::Permission;
 use MT;
 use MT::Image;
 
 use Image::ExifTool;
+
+$test_env->prepare_fixture('db');
 
 my $cfg = MT->config;
 

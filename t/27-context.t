@@ -24,7 +24,9 @@ use MT::Template;
 use MT::Template::Context;
 use MT::Util qw( first_n_words html_text_transform );
 
-use MT::Test qw(:db :data);
+use MT::Test;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new or die MT->errstr;
 isa_ok($mt, 'MT');

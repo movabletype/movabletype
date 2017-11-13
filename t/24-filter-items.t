@@ -14,10 +14,12 @@ BEGIN {
 
 use utf8;
 
-use MT::Test qw(:db :data);
+use MT::Test;
 
 use MT;
 use MT::Filter;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new();
 
@@ -78,6 +80,7 @@ my @count_specs = (
     },
 );
 
+no warnings 'once';
 $Data::ObjectDriver::PROFILE = 1;
 for my $spec (@count_specs) {
     note( $spec->{name} );

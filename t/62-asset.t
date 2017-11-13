@@ -17,7 +17,7 @@ use File::Copy;
 use File::Temp qw( tempfile );
 
 plan tests => 71;
-use MT::Test qw(:db :data);
+use MT::Test;
 
 use Image::ExifTool;
 use Image::Size;
@@ -25,6 +25,8 @@ $Image::Size::NO_CACHE = 1;
 
 use MT;
 use MT::Asset;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT', 'Is MT' );
@@ -47,38 +49,36 @@ isa_ok( $mt, 'MT', 'Is MT' );
 
     {
         note('Resize to 100 x 100 without square option');
+        my $file = File::Spec->catfile( $test_root, 'site', 'assets_c', $cache_path, 'test-thumb-100xauto-1.jpg' );
         is( ( $asset->thumbnail_file( Height => 100, Width => 100 ) )[0],
-            "$test_root/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg",
+            $file,
             'thumbnail file name'
         );
-        my ( $width, $height )
-            = imgsize(
-            "$test_root/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg");
+        my ( $width, $height ) = imgsize($file);
         is( $width,  100, "resized image's width: 100" );
         is( $height, 75,  "resized image's height: 75" );
     }
 
     {
         note('Resize to 100 x 100 with square option');
+        my $file = File::Spec->catfile( $test_root, 'site', 'assets_c', $cache_path, 'test-thumb-100x100-1.jpg' );
         is( ( $asset->thumbnail_file( Height => 100, Square => 1 ) )[0],
-            "$test_root/site/assets_c/$cache_path/test-thumb-100x100-1.jpg",
+            $file,
             'thumbnail file name'
         );
-        my ( $width, $height )
-            = imgsize("$test_root/site/assets_c/$cache_path/test-thumb-100x100-1.jpg");
+        my ( $width, $height ) = imgsize($file);
         is( $width,  100, "resized image's width: 100" );
         is( $height, 100, "resized image's height: 100" );
     }
 
     {
         note('Resize to 100 x 100 without square option again');
+        my $file = File::Spec->catfile( $test_root, 'site', 'assets_c', $cache_path, 'test-thumb-100xauto-1.jpg' );
         is( ( $asset->thumbnail_file( Height => 100, Width => 100 ) )[0],
-            "$test_root/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg",
+            $file,
             'thumbnail file name'
         );
-        my ( $width, $height )
-            = imgsize(
-            "$test_root/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg");
+        my ( $width, $height ) = imgsize($file);
         is( $width,  100, "resized image's width: 100" );
         is( $height, 75,  "resized image's height: 75" );
     }
@@ -98,13 +98,13 @@ isa_ok( $mt, 'MT', 'Is MT' );
 
         ok( $asset->has_metadata, 'add metadata to image' );
 
+        my $file = File::Spec->catfile( $test_root, 'site', 'assets_c', $cache_path, 'test-thumb-100xauto-1.jpg' );
         is( ( $asset->thumbnail_file( Height => 100, Width => 100 ) )[0],
-            "$test_root/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg",
+            $file,
             'thumbnail file name'
         );
 
-        my $info = Image::ExifTool->new->ImageInfo(
-            "$test_root/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg");
+        my $info = Image::ExifTool->new->ImageInfo($file);
         ok( !exists $info->{GPSVersionID},
             'removed metadata from thumbnail file'
         );
@@ -137,7 +137,7 @@ isa_ok( $mt, 'MT', 'Is MT' );
         'metadata - URL'
     );
     is( $meta->{Location},
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
+        "$ENV{MT_HOME}/t/images/test.jpg",
         'metadata - Location'
     );
     is( $meta->{name},      "test.jpg",   'metadata - name' );
@@ -218,7 +218,7 @@ isa_ok( $mt, 'MT', 'Is MT' );
         'metadata - URL'
     );
     is( $meta_f->{Location},
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'test.tmpl' ),
+        "$ENV{MT_HOME}/t/test.tmpl",
         'metadata - Location'
     );
     is( $meta_f->{name},      "test.tmpl",  'metadata - name' );

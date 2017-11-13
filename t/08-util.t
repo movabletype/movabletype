@@ -18,7 +18,7 @@ use File::Spec;
 
 use MT;
 use MT::FileMgr;
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     start_end_period week2ymd munge_comment
     rich_text_transform html_text_transform encode_html decode_html
@@ -37,6 +37,8 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     extract_url_path break_up_text dir_separator deep_do
     deep_copy canonicalize_path is_valid_ip clear_site_stats_widget_cache);
 use MT::I18N qw( encode_text );
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new;
 $mt->config( 'NoHTMLEntities', 1 );

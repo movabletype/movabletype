@@ -40,8 +40,12 @@ sub _content_type_registry {
         field_html => 'field_html/field_html_content_type.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::ContentType::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::ContentType::field_value_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::ContentType::ss_validator',
+        tag_handler =>
+            '$Core::MT::ContentFieldType::Common::tag_handler_content_type',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::ContentType::theme_import_handler',
         list_props => {
@@ -84,6 +88,8 @@ sub _single_line_text_registry {
         field_html => 'field_html/field_html_single_line_text.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::SingleLineText::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::SingleLineText::field_value_handler',
         ss_validator =>
             '$core::MT::ContentFieldType::SingleLineText::ss_validator',
         list_props => {
@@ -117,6 +123,8 @@ sub _multi_line_text_registry {
         order     => 30,
         data_load_handler =>
             '$Core::MT::ContentFieldType::MultiLineText::data_load_handler',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::MultiLineText::field_value_handler',
         list_props => {
             multi_line_text => {
                 base  => '__virtual.string',
@@ -213,12 +221,12 @@ sub _date_time_registry {
         field_html => 'field_html/field_html_datetime.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::DateTime::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Common::field_value_handler_datetime',
         data_load_handler =>
             '$Core::MT::ContentFieldType::DateTime::data_load_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
-        tag_handler =>
-            '$Core::MT::ContentFieldType::Common::tag_handler_datetime',
         list_props => {
             date_and_time => {
                 base => '__virtual.date',
@@ -256,12 +264,12 @@ sub _date_registry {
         field_html => 'field_html/field_html_date.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Date::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Common::field_value_handler_datetime',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Date::data_load_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
-        tag_handler =>
-            '$Core::MT::ContentFieldType::Common::tag_handler_datetime',
         list_props => {
             date_only => {
                 base => '__virtual.date',
@@ -299,12 +307,12 @@ sub _time_registry {
         field_html => 'field_html/field_html_time.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Time::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Common::field_value_handler_datetime',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Time::data_load_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
-        tag_handler =>
-            '$Core::MT::ContentFieldType::Common::tag_handler_datetime',
         list_props => {
             time_only => {
                 filter_tmpl =>
@@ -468,6 +476,8 @@ sub _asset_registry {
         field_html => 'field_html/field_html_asset.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Asset::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::field_value_handler',
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
@@ -577,6 +587,8 @@ sub _audio_registry {
         field_html => 'field_html/field_html_asset.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Asset::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::field_value_handler',
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
@@ -685,6 +697,8 @@ sub _video_registry {
         field_html => 'field_html/field_html_asset.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Asset::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::field_value_handler',
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
@@ -793,6 +807,8 @@ sub _image_registry {
         field_html => 'field_html/field_html_asset.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Asset::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::field_value_handler',
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
@@ -944,6 +960,8 @@ sub _categories_registry {
         field_html => 'field_html/field_html_categories.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Categories::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Categories::field_value_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Categories::ss_validator',
         tag_handler => '$Core::MT::ContentFieldType::Categories::tag_handler',
@@ -994,6 +1012,8 @@ sub _tags_registry {
         field_html => 'field_html/field_html_tags.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Tags::field_html_params',
+        field_value_handler =>
+            '$Core::MT::ContentFieldType::Tags::field_value_handler',
         ss_validator => '$Core::MT::ContentFieldType::Tags::ss_validator',
         tag_handler  => '$Core::MT::ContentFieldType::Tags::tag_handler',
         list_props   => {
@@ -1060,6 +1080,8 @@ sub _table_registry {
     {   label      => 'Table',
         data_type  => 'blob',
         order      => 200,
+        data_load_handler =>
+            '$Core::MT::ContentFieldType::Table::data_load_handler',
         field_html => 'field_html/field_html_table.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Table::field_html_params',

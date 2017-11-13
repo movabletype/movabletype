@@ -21,7 +21,8 @@ use MT;
 use MT::XMLRPC;
 
 use MT::Test;
-MT::Test->import( qw(:db :data) );
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new or die MT->errstr;
 isa_ok($mt, 'MT');

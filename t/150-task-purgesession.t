@@ -14,8 +14,10 @@ BEGIN {
 
 use MT;
 use MT::Core;
-use MT::Test qw(:db);
+use MT::Test;
 use MT::Test::Permission;
+
+$test_env->prepare_fixture('db');
 
 my $session_class = MT->model('session');
 

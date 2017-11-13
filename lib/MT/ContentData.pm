@@ -744,20 +744,59 @@ sub make_list_props {
                 order   => 100,
                 html    => \&_make_id_html,
             },
-            modified_on => {
-                base    => '__virtual.modified_on',
-                display => 'force',
-                order   => $order,
-            },
             author_name => {
-                base    => '__virtual.author_name',
-                order   => $order + 100,
-                display => 'optional',
+                base  => '__virtual.author_name',
+                order => $order,
             },
-            status     => { base => 'entry.status' },
+            authored_on => {
+                auto       => 1,
+                display    => 'default',
+                label      => 'Publish Date',
+                use_future => 1,
+                order      => $order + 100,
+                sort       => sub {
+                    my $prop = shift;
+                    my ( $terms, $args ) = @_;
+                    my $dir = delete $args->{direction};
+                    $dir = ( 'descend' eq $dir ) ? "DESC" : "ASC";
+                    $args->{sort} = [
+                        { column => $prop->col, desc => $dir },
+                        { column => "id",       desc => $dir },
+                    ];
+                    return;
+                },
+            },
             created_on => {
-                base    => '__virtual.created_on',
-                display => 'none',
+                base  => '__virtual.created_on',
+                order => $order + 200,
+            },
+            modified_on => {
+                base  => '__virtual.modified_on',
+                order => $order + 300,
+            },
+            unpublished_on => {
+                auto    => 1,
+                display => 'optional',
+                label   => 'Unpublish Date',
+                order   => $order + 400,
+            },
+            status    => { base => 'entry.status' },
+            author_id => {
+                base            => 'entry.author_id',
+                label_via_param => sub {
+                    my $prop = shift;
+                    my ( $app, $val ) = @_;
+                    my $author = MT->model('author')->load( $val || 0 )
+                        or return $prop->error(
+                        MT->translate(
+                            '[_1] ( id:[_2] ) does not exists.',
+                            MT->translate("Author"),
+                            defined $val ? $val : ''
+                        )
+                        );
+                    return MT->translate( 'Contents by [_1]',
+                        $author->nickname );
+                },
             },
             author_status => { base    => 'entry.author_status' },
             blog_name     => { display => 'none', filter_editable => 0 },

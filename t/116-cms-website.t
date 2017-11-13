@@ -9,48 +9,39 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    # Move addons/Cloud.pack/config.yaml to config.yaml.disabled.
+    # An error occurs in save_community_prefs mode when Cloud.pack installed.
+    $test_env->disable_addon('Cloud.pack');
 }
 
-# Move addons/Cloud.pack/config.yaml to config.yaml.disabled.
-# An error occurs in save_community_prefs mode when Cloud.pack installed.
-use File::Spec;
-use File::Copy;
-
-BEGIN {
-    my $cloudpack_config
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
-    my $cloudpack_config_rename
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
-
-    if ( -f $cloudpack_config ) {
-        move( $cloudpack_config, $cloudpack_config_rename )
-            or plan skip_all => "$cloudpack_config cannot be moved.";
-    }
-}
-
-END {
-    my $cloudpack_config
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
-    my $cloudpack_config_rename
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
-
-    if ( -f $cloudpack_config_rename ) {
-        move( $cloudpack_config_rename, $cloudpack_config );
-    }
-}
-
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 
+MT::Test->init_app;
+
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+    # Website
+    my $website = MT::Test::Permission->make_website(
+        name => 'my website',
+    );
 
-# Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
 
-# Author
+    # Author
+    my $admin = MT->model('author')->load(1);
+});
+
+my $website = MT::Website->load( { name => 'my website' } );
+my $blog    = MT::Blog->load( { name => 'my blog' } );
+
 my $admin = MT->model('author')->load(1);
 
 # Run tests

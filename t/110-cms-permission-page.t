@@ -12,64 +12,85 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 
+MT::Test->init_app;
+
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+    # Website
+    my $website = MT::Test::Permission->make_website();
 
-# Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
-my $second_blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
+    my $second_blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'second blog',
+    );
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
 
-my $ichikawa = MT::Test::Permission->make_author(
-    name => 'ichikawa',
-    nickname => 'Jiro Ichikawa',
-);
+    my $ichikawa = MT::Test::Permission->make_author(
+        name => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
 
-my $ukawa = MT::Test::Permission->make_author(
-    name => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
+    my $ukawa = MT::Test::Permission->make_author(
+        name => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
+
+    my $admin = MT::Author->load(1);
+
+    # Role
+    my $manage_pages = MT::Test::Permission->make_role(
+       name  => 'Manage Pages',
+       permissions => "'manage_pages'",
+    );
+
+    my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+
+    require MT::Association;
+    MT::Association->link( $aikawa => $manage_pages => $blog );
+    MT::Association->link( $ichikawa => $manage_pages => $second_blog );
+    MT::Association->link( $ukawa => $designer => $blog );
+
+    # Entry
+    my $entry = MT::Test::Permission->make_entry(
+        blog_id        => $blog->id,
+        author_id      => $aikawa->id,
+        title          => 'my entry',
+    );
+
+    # Page
+    my $page = MT::Test::Permission->make_page(
+        blog_id        => $blog->id,
+        author_id      => $aikawa->id,
+        title          => 'my page',
+    );
+});
+
+my $blog        = MT::Blog->load( { name => 'my blog' } );
+my $second_blog = MT::Blog->load( { name => 'second blog' } );
+
+my $aikawa   = MT::Author->load( { name => 'aikawa' } );
+my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
+my $ukawa    = MT::Author->load( { name => 'ukawa' } );
 
 my $admin = MT::Author->load(1);
 
-# Role
-my $manage_pages = MT::Test::Permission->make_role(
-   name  => 'Manage Pages',
-   permissions => "'manage_pages'",
-);
-
-my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
-
-require MT::Association;
-MT::Association->link( $aikawa => $manage_pages => $blog );
-MT::Association->link( $ichikawa => $manage_pages => $second_blog );
-MT::Association->link( $ukawa => $designer => $blog );
-
-# Entry
-my $entry = MT::Test::Permission->make_entry(
-    blog_id        => $blog->id,
-    author_id      => $aikawa->id,
-);
-
-# Page
-my $page = MT::Test::Permission->make_page(
-    blog_id        => $blog->id,
-    author_id      => $aikawa->id,
-);
+my $entry = MT::Entry->load( { title => 'my entry' } );
+my $page = MT::Page->load( { title => 'my page' } );
 
 # Run
 my ( $app, $out );

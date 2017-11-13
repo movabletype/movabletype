@@ -13,8 +13,10 @@ BEGIN {
 }
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
 use MT::Test::Permission;
+
+$test_env->prepare_fixture('db');
 
 # Create test data
 my $website = MT::Test::Permission->make_website();

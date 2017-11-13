@@ -113,9 +113,7 @@ sub import {
         }
     }
 
-    # We need *some* instance created up front, to initialize the database
-    # factory etc properly, so do so now.
-    MT->instance;
+    MT->instance unless $ENV{MT_TEST_ROOT};
 
     # Export requested or all exportable functions.
     $pkg->export_to_level( 1, @to_export || qw( :DEFAULT ) );
@@ -344,7 +342,7 @@ sub init_memcached {
     };
 }
 
-sub init_newdb {
+sub _load_classes {
     my $pkg = shift;
     my ($cfg) = @_;
 
@@ -374,6 +372,13 @@ sub init_newdb {
                 or die $@;
         }
     }
+    @classes;
+}
+
+sub init_newdb {
+    my $pkg = shift;
+
+    my @classes = $pkg->_load_classes(@_);
 
     # Clear existing database tables
     my $driver = MT::Object->driver();
@@ -1661,7 +1666,12 @@ sub _run_app {
             require CGI::File::Temp;
             my ($cgi_fh) = new CGI::File::Temp( UNLINK => 1 )
                 or die "CGI::File::Temp: $!";
-            $cgi_fh->_mp_filename( basename($src) );
+            my $basename = basename($src);
+            if ($^O eq 'MSWin32') {
+                require Encode;
+                Encode::from_to( $basename, 'cp932', 'utf8' );
+            }
+            $cgi_fh->_mp_filename($basename);
             $CGI::DefaultClass->binmode($cgi_fh)
                 if $CGI::needs_binmode
                 && defined fileno($cgi_fh);
@@ -1669,6 +1679,7 @@ sub _run_app {
             {
                 local $/ = undef;
                 open my $upload, "<", $src or die "Can't open $src: $!";
+                binmode $upload if $basename =~ /\.(?:gif|png|jpg)$/;
                 my $d = <$upload>;
                 close $upload;
                 print $cgi_fh $d;

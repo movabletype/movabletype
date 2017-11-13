@@ -5,10 +5,6 @@ use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
-BEGIN {
-    $test_env = MT::Test::Env->new;
-    $ENV{MT_CONFIG} = $test_env->config_file;
-}
 
 use File::Basename;
 use File::Spec;
@@ -23,7 +19,16 @@ BEGIN {
     $Image::ExifTool::configFile = $config_file;
 }
 
-use MT::Test qw( :app :db );
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use MT::Test;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db');
 
 use Image::ExifTool;
 ok( !MT->can('load_exif_config'), "ExifTool's config file is not loaded." );

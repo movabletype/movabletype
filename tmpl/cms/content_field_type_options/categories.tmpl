@@ -29,7 +29,8 @@
 
   <mtapp:ContentFieldOption
      id="categories-category_set"
-     label="<__trans phrase="Source Category Set">">
+     label="<__trans phrase="Source Category Set">"
+     required="1">
     <select ref="category_set" name="category_set" id="categories-category_set" class="form-control">
     <mt:loop name="category_sets">
       <option value="<mt:var name="id" escape="html">" if={ options.category_set == <mt:var name="id" escape="html"> } selected="selected"><mt:var name="name" escape="html"></option>

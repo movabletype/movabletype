@@ -526,6 +526,7 @@ sub _hdlr_assets {
     my $res     = '';
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
+    my $glue    = $args->{glue};
     my $per_row = $args->{assets_per_row} || 0;
     $per_row -= 1 if $per_row;
     my $row_count   = 0;
@@ -554,6 +555,7 @@ sub _hdlr_assets {
             }
         );
         return $ctx->error( $builder->errstr ) unless defined $out;
+        $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
         $row_count++;
         $row_count = 0 if $row_count > $per_row;

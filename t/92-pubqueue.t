@@ -21,8 +21,10 @@ use MT::Log;
 use MT::PublishOption;
 use MT::Template;
 use MT::TemplateMap;
-use MT::Test qw( :db :data );
+use MT::Test;
 use MT::TheSchwartz::Error;
+
+$test_env->prepare_fixture('db_data');
 
 # Change file name from index.html into _index.html.
 my $fi = MT::FileInfo->load(

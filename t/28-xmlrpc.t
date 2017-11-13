@@ -15,7 +15,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT::Test::Permission;
 use MT::Util qw(archive_file_for);
 use File::Basename qw(dirname);
@@ -26,6 +26,8 @@ my $fmgr = MT::FileMgr->new('Local');
 
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new() or die MT->errstr;
 

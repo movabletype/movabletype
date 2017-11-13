@@ -287,30 +287,7 @@ sub single_select_options_multiple {
 
     my $content_field_id = $prop->{content_field_id};
     my $content_field    = MT::ContentField->load($content_field_id);
-    my $values           = $content_field->options->{values} || [];
-
-    [ map { +{ label => $_->{key}, value => $_->{value} } } @{$values} ];
-}
-
-sub tag_handler_datetime {
-    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
-    my $tok     = $ctx->stash('tokens');
-    my $builder = $ctx->stash('builder');
-    my $vars    = $ctx->{__stash}{vars} ||= {};
-
-    my $field_type = $field_data->{type};
-
-    local $args->{format} = '%x'
-        if $field_type eq 'date_only' && !_has_some_modifier($args);
-    local $args->{format} = '%X'
-        if $field_type eq 'time_only' && !_has_some_modifier($args);
-
-    local $args->{ts} = $value;
-
-    local $vars->{__raw__}   = $value;
-    local $vars->{__value__} = $ctx->build_date($args);
-
-    $builder->build( $ctx, $tok, {%$cond} );
+    return $content_field->options->{values} || [];
 }
 
 sub tag_handler_multiple {
@@ -386,10 +363,44 @@ sub tag_handler_asset {
     $ctx->invoke_handler( 'assets', $args, $cond );
 }
 
+sub tag_handler_content_type {
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
+
+    my $content_type = $ctx->stash('content_type')
+        or return $ctx->_no_content_type_error;
+    my $content_data = $ctx->stash('content')
+        or return $ctx->_no_content_error;
+
+    my $ids = $content_data->data->{ $field_data->{id} };
+    my @archive_contents
+        = MT->model('content_data')->load( { id => $ids } );
+    local $ctx->{__stash}{archive_contents} = \@archive_contents;
+
+    $ctx->invoke_handler( 'contents', $args, $cond );
+}
+
+sub field_value_handler_datetime {
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
+    my $tok     = $ctx->stash('tokens');
+    my $builder = $ctx->stash('builder');
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+
+    my $field_type = $field_data->{type};
+
+    local $args->{format} = '%x'
+        if $field_type eq 'date_only' && !_has_some_modifier($args);
+    local $args->{format} = '%X'
+        if $field_type eq 'time_only' && !_has_some_modifier($args);
+
+    local $args->{ts} = $value;
+
+    return $ctx->build_date($args);
+}
+
 sub _has_some_modifier {
     my $args = shift;
     my %arg_keys = map { $_ => 1 } keys %{ $args || {} };
-    delete $arg_keys{$_} for qw( unique_id content_field_id label @ );
+    delete $arg_keys{$_} for qw( convert_breaks words @ );
     %arg_keys ? 1 : 0;
 }
 

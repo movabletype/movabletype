@@ -18,12 +18,13 @@ BEGIN {
     $ENV{MT_CONFIG} ||= 'mysql-test.cfg';
 }
 
-eval(
-    $ENV{SKIP_REINITIALIZE_DATABASE}
-    ? "use MT::Test qw(:app);"
-    : "use MT::Test qw(:app :db :data);"
-);
-die $@ if $@;    # Display the cause of error.
+use MT::Test;
+
+MT::Test->init_app;
+unless ( $ENV{MT_TEST_ROOT} ) {
+    MT::Test->init_db;
+    MT::Test->init_data;
+}
 
 our @EXPORT = qw/ test_data_api /;
 

@@ -100,7 +100,9 @@
               onchange={ toggleColumn }
             />
             <span class="custom-control-indicator"></span>
-            <span class="custom-control-description">{ column.label }</span>
+            <span class="custom-control-description">
+              <raw content={ column.label }></raw>
+            </span>
           </label>
         </li>
         <li
@@ -113,6 +115,7 @@
               id={ subField.id }
               pid={ subField.parent_id }
               class="custom-control-input { subField.class }"
+              disabled={ disabled: !column.checked }
               checked={ subField.checked }
               onchange={ toggleSubField }
             />

@@ -13,11 +13,13 @@ BEGIN {
 }
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
 use JSON;
 use File::Spec;
 
 use MT::BackupRestore;
+
+$test_env->prepare_fixture('db');
 
 my $schema_version = 5.0034;
 
@@ -68,7 +70,7 @@ my $last_restored_asset;
     note('Restore an asset for first time.');
 
     my $params = {
-        file_path   => '%s/uploads/test.jpg',
+        file_path   => File::Spec->catfile( '%s', 'uploads', 'test.jpg' ),
         url         => '%s/uploads/test.jpg',
         label       => 'Test Label',
         description => 'Test Description',
@@ -100,7 +102,7 @@ my $last_restored_asset;
     );
 
     my $params = {
-        file_path   => '%s/uploads/test.jpg',
+        file_path   => File::Spec->catfile( '%s', 'uploads', 'test.jpg' ),
         url         => '%s/uploads/test.jpg',
         label       => 'Updated Test Label',
         description => 'Updated Test Description',
@@ -137,8 +139,8 @@ my $last_restored_asset;
     my $created_on = '20131001175056';
 
     my $params = {
-        file_path   => File::Spec->catfile( $path, $file_name ),
-        url         => File::Spec->catfile( $path, $file_name ),
+        file_path   => File::Spec->catfile( '%s', 'uploads', $file_name ),
+        url         => "$path/$file_name",
         label       => 'Test Label',
         description => 'Test Description',
         created_on  => $created_on,
@@ -158,12 +160,12 @@ my $last_restored_asset;
 
     delete $params->{file_path};
     is( $values->{file_path},
-        File::Spec->catfile( $path, $created_on, $file_name ),
+        File::Spec->catfile( '%s', 'uploads', $created_on, $file_name ),
         'file_path is updated. (%s/uploads/$created_on/$file_name)'
     );
     delete $params->{url};
     is( $values->{url},
-        File::Spec->catfile( $path, $created_on, $file_name ),
+        "$path/$created_on/$file_name",
         'url is updated. (%s/uploads/$created_on/$file_name)'
     );
 

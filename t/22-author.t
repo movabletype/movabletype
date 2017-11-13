@@ -15,7 +15,9 @@ BEGIN {
 use MT;
 use MT::Author;
 
-use MT::Test qw(:db :data);
+use MT::Test;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT' );

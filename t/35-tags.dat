@@ -842,7 +842,7 @@
 { "r" : "1", "t" : "<MTEntries include_blogs='all' class_type='entry' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #826
 { "r" : "1", "t" : "<MTEntries include_blogs='all' class_type='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "page"}, #827
 { "r" : "1", "t" : "<MTEntries include_blogs='all' class='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #828
-{ "r" : "1", "t" : "<MTAssets blog_ids='all'><MTAssetBlogID></MTAssets>", "e" : "0011"}, #829
+{ "r" : "1", "t" : "<MTAssets blog_ids='all' sort_by='id'><MTAssetID></MTAssets>", "e" : "4321"}, #829
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL width='1280'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg"}, #830
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL width='1280' force='1'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-1280xauto-1.jpg"}, #831
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL height='960'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg"}, #832

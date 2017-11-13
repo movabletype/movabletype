@@ -36,6 +36,7 @@ addons:
     - libjpeg-dev
     - cpanminus
     - perlmagick
+    - netpbm
     - zip
     - unzip
 

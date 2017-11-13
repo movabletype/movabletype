@@ -10,11 +10,15 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 
 use MT::Category;
 use MT::CategorySet;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db');
 
 my $blog_id = 1;
 

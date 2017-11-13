@@ -33,8 +33,10 @@ $ENV{HTTP_HOST} = 'localhost';
 my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT' );
 
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT::Test::Permission;
+
+$test_env->prepare_fixture('db_data');
 
 my %test_data;
 $test_data{'/mt-atom.cgi/weblog'} = <<XML1;
@@ -429,7 +431,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
             );
         }
 
-        {
+        SKIP: {
             my $wsse_header = make_wsse($chuck_token);
             my $uri         = new URI;
             $uri->path( $base_uri . "/blog_id=$blog_id/entry_id=$entry_id" );

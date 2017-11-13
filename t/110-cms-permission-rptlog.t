@@ -12,28 +12,36 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 
+MT::Test->init_app;
+
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+    # Website
+    my $website = MT::Test::Permission->make_website();
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
 
-my $admin = MT::Author->load(1);
+    my $admin = MT::Author->load(1);
 
-# Role
-require MT::Role;
-my $website_admin = MT::Role->load( { name => MT->translate( 'Site Administrator' ) } );
+    # Role
+    require MT::Role;
+    my $website_admin = MT::Role->load( { name => MT->translate( 'Site Administrator' ) } );
 
-require MT::Association;
-MT::Association->link( $aikawa => $website_admin => $website );
+    require MT::Association;
+    MT::Association->link( $aikawa => $website_admin => $website );
+});
+
+my $aikawa = MT::Author->load( { name => 'aikawa' } );
+my $admin  = MT::Author->load(1);
 
 # Run
 my ( $app, $out );

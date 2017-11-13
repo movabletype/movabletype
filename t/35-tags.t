@@ -7,7 +7,7 @@ use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 BEGIN {
-    eval qq{ use IPC::Run3 }
+    eval qq{ use IPC::Run3; 1 }
         or plan skip_all => 'IPC::Run3 is not installed';
 }
 
@@ -26,7 +26,7 @@ use IO::String;
 
 $| = 1;
 
-use MT::Test qw(:db :data);
+use MT::Test;
 use JSON -support_by_pp;
 use MT;
 use MT::Util qw(ts2epoch epoch2ts);
@@ -34,6 +34,8 @@ use MT::Template::Context;
 use MT::Builder;
 
 require POSIX;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new();
 
@@ -75,13 +77,16 @@ $ctx->stash('builder', MT::Builder->new);
 my $entry  = MT::Entry->load( 1 );
 ok($entry, "Test entry loaded");
 
+my $server_path = MT->instance->server_path;
+$server_path =~ s|\\|/|g if $^O eq 'MSWin32';
+
 # entry we want to capture is dated: 19780131074500
 my $tsdiff = time - ts2epoch($blog, '19780131074500');
 my $daysdiff = int($tsdiff / (60 * 60 * 24));
 my %const = (
     CFG_FILE => MT->instance->{cfg_file},
     VERSION_ID => MT->instance->version_id,
-    CURRENT_WORKING_DIRECTORY => MT->instance->server_path,
+    CURRENT_WORKING_DIRECTORY => $server_path,
     STATIC_CONSTANT => '1',
     DYNAMIC_CONSTANT => '',
     DAYS_CONSTANT1 => $daysdiff + 2,
@@ -93,7 +98,7 @@ my %const = (
     TEST_ROOT => $test_env->root,
 );
 
-$test_json =~ s/\Q$_\E/$const{$_}/g for keys %const;
+$test_json =~ s/$_/\Q$const{$_}\E/g for keys %const;
 $test_suite = $json->decode($test_json);
 
 $ctx->{current_timestamp} = '20040816135142';

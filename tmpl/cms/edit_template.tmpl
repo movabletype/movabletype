@@ -267,49 +267,44 @@
 </mt:if>
 
 <mt:if name="blog_id">
+<mt:if name="ct_selects">
 <mtapp:widget
    id="content-type-info"
    hidden="1"
    label="<__trans phrase="Content Type">">
 
-    <dl id="content_type_sel-field" class="first-child">
-      <dt for="content_type_sel" class="sr-only first-child"><__trans phrase="Select Content Type"></label>
-      <dd>
+    <div id="ct_selects-field" class="form-group">
+      <label for="content_type_sel" id="content_type_sel-label" class="sr-only first-child"><__trans phrase="Select Content Type"></label>
       <select name="content_type_sel" id="content_type_sel" tabindex="13" class="form-control">
       <mt:loop name="ct_selects">
       <option value="<mt:var name="id">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
       </mt:loop>
       </select>
-      </dd>
-    </dl>
+   </div>
 
-    <dl id="ct_label-field">
-      <dt for="ct_label" class="first-child"><__trans phrase="Label"></label>
-      <dd id="ct_label">
-      </dd>
-    </dl>
+    <div id="ct_label-field" class="form-group">
+      <p id="ct_label-label" class="font-weight-bold"><__trans phrase="Label"></p>
+      <p id="ct_label"></p>
+    </div>
 
-    <dl id="ct_id-field">
-      <dt for="ct_id" class="first-child"><__trans phrase="ID"></label>
-      <dd id="ct_id">
-      </dd>
-    </dl>
+    <div id="ct_id-field" class="form-group">
+      <p id="ct_id-label" class="font-weight-bold"><__trans phrase="ID"></p>
+      <p id="ct_id"></p>
+    </div>
 
-    <dl id="ct_unique_id-field" class="first-child">
-      <dt class="first-child"><__trans phrase="Unique ID"></dt>
-      <dd>
-        <div class="form-row">
-          <div class="col">
-            <input type="text" id="ct_unique_id" class="form-control id text full" readonly="readonly">
-          </div>
-          <div class="col-auto">
-            <a href="javascript:void(0)" id="copy_ct_unique_id">
-              <mtapp:svgicon id="ic_duplicate" title="<__trans phrase="Copy Unique ID">" size="secondary"></button>
-            </a>
-          </div>
+    <div id="ct_unique_id-field" class="form-group">
+      <label for="ct_unique_id" id="ct_unique_id-label" class="font-weight-bold"><__trans phrase="Unique ID"></label>
+      <div class="form-row">
+        <div class="col">
+          <input type="text" id="ct_unique_id" class="form-control id text full" readonly="readonly">
         </div>
-      </dd>
-    </dl>
+        <div class="col-auto">
+          <a href="javascript:void(0)" id="copy_ct_unique_id">
+            <mtapp:svgicon id="ic_duplicate" title="<__trans phrase="Copy Unique ID">" size="secondary"></button>
+          </a>
+        </div>
+      </div>
+    </div>
 
 </mtapp:widget>
 
@@ -318,49 +313,50 @@
    hidden="1"
    label="<__trans phrase="Content field">">
 
-    <dl id="content_field_sel-field" class="first-child">
-      <dt for="content_field_sel" class="sr-only first-child"><__trans phrase="Select Content Field"></label>
-      <dd>
+    <div id="content_field_sel-field" class="form-group">
+      <label for="content_field_sel" id="content_field_sel-label" class="sr-only font-weight-bold"><__trans phrase="Select Content Field"></label>
       <select name="content_field_sel" id="content_field_sel" tabindex="13" class="form-control">
       </select>
-      </dd>
-    </dl>
+    </div>
 
-    <dl id="cf_label-field">
-      <dt for="cf_label" class="first-child"><__trans phrase="Label"></label>
-      <dd id="cf_label">
-      </dd>
-    </dl>
+    <div id="cf_label-field" class="form-group">
+      <p id="cf_label-label" class="font-weight-bold"><__trans phrase="Label"></p>
+      <p id="cf_label"></p>
+    </div>
 
-    <dl id="cf_id-field">
-      <dt for="cf_id" class="first-child"><__trans phrase="ID"></label>
-      <dd id="cf_id">
-      </dd>
-    </dl>
+    <div id="cf_id-field" class="form-group">
+      <p id="cf_id-label" class="font-weight-bold"><__trans phrase="ID"></p>
+      <p id="cf_id"></p>
+    </div>
 
-    <dl id="cf_unique_id-field">
-      <dt class="first-child"><__trans phrase="Unique ID"></label>
-      <dd>
-        <div class="form-row">
-          <div class="col">
-            <input type="text" id="cf_unique_id" class="form-control id text full" readonly="readonly">
-          </div>
-          <div class="col-auto">
-            <a href="javascript:void(0)" id="copy_cf_unique_id">
-              <mtapp:svgicon id="ic_duplicate" title="<__trans phrase="Copy Unique ID">" size="secondary"></button>
-            </a>
-          </div>
+    <div id="cf_unique_id-field" class="form-group">
+      <label for="cf_unique_id" id="cf_unique_id-label" class="font-weight-bold"><__trans phrase="Unique ID"></label>
+      <div class="form-row">
+        <div class="col">
+          <input type="text" id="cf_unique_id" class="form-control id text full" readonly="readonly">
         </div>
-      </dd>
-    </dl>
+        <div class="col-auto">
+          <a href="javascript:void(0)" id="copy_cf_unique_id">
+            <mtapp:svgicon id="ic_duplicate" title="<__trans phrase="Copy Unique ID">" size="secondary"></button>
+          </a>
+        </div>
+      </div>
+    </div>
 
-    <dl id="cf_type-field" class="last-child">
-      <dt class="first-child"><__trans phrase="Type"></label>
-      <dd id="cf_type">
-      </dd>
+    <div id="cf_type-field" class="last-child">
+      <p id="cf_type-label" class="font-weight-bold"><__trans phrase="Type"></p>
+      <p id="cf_type"></p>
     </dl>
 
 </mtapp:widget>
+<mt:else>
+<mtapp:widget
+   id="content-type-info"
+   label="<__trans phrase="Content Type">">
+<__trans phrase="No Content Type could be found.">
+<mt:if name="can_create_new_content_type"><a href="<mt:var name="script_url">?__mode=view&_type=content_type&blog_id=<mt:var name="blog_id">"><__trans phrase="Create a new Content Type?"></a></mt:if>
+</mtapp:widget>
+</mt:if>
 </mt:if>
 
 <$MTApp:PageActions from="edit_template"$>
@@ -1232,6 +1228,7 @@ function saveTemplatePrefs( sync ) {
     });
 
     <mt:if name="blog_id">
+    <mt:if name="ct_selects">
     function setContentTypeInfo() {
       var ct_data = <mt:var name="ct_data">;
       var id = jQuery("#content_type_sel").val();
@@ -1279,6 +1276,7 @@ function saveTemplatePrefs( sync ) {
     });
 
     setContentTypeInfo();
+    </mt:if>
     </mt:if>
 
     jQuery('button.mx-1').click(function() {

@@ -22,8 +22,10 @@ use IPC::Open2;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test qw(:db :data);
+use MT::Test;
 my $app = MT->instance;
+
+$test_env->prepare_fixture('db_data');
 
 my $blog_id = 2;
 

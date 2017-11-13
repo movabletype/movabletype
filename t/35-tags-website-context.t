@@ -18,7 +18,10 @@ plan tests => 2 * blocks;
 
 use MT;
 use MT::PublishOption;
-use MT::Test qw(:app :db);
+use MT::Test;
+
+MT::Test->init_app;
+
 my $app    = MT->instance;
 my $config = $app->config;
 $config->AllowComments( 1, 1 );
@@ -28,1166 +31,1171 @@ $config->save_config;
 delete $app->{__static_file_path};
 
 my $blog_id       = 1;                                        # First Website
-my $first_website = $app->model('website')->load($blog_id);
-$first_website->set_values(
-    {   allow_reg_comments       => 1,
-        remote_auth_token        => 'token',
-        allow_unreg_comments     => 1,
-        commenter_authenticators => 'MovableType,TypeKey',
-    }
-);
-$first_website->save or die $first_website->errstr;
 
 filters {
     template => [qw( chomp )],
     expected => [qw( chomp )],
 };
 
-my $mt = MT->instance;
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Create userpic
-my $userpic = $mt->model('asset')->new;
-$userpic->set_values(
-    {   blog_id   => 0,
-        class     => 'image',
-        label     => 'Userpic',
-        file_path => './mt-static/images/logo/movable-type-logo.png',
-        file_name => 'movable-type-logo.png',
-        url       => '%s/images/logo/movable-type-logo.png',
-    }
-);
-$userpic->save or die $mt->errstr;
-
-my $admin = $mt->model('author')->load(1);    # Administrator
-$admin->set_values(
-    {   nickname         => 'Administrator Melody',
-        basename         => 'melody',
-        email            => 'melody@localhost',
-        url              => 'http://localhost/~melody/',
-        userpic_asset_id => $userpic->id,
-    }
-);
-$admin->save or die $admin->errstr;
-
-my $guest = $mt->model('author')->new;
-$guest->set_values(
-    {   name            => 'Guest',
-        nickname        => 'Guest',
-        basename        => 'guest',
-        email           => 'guest@localhost',
-        url             => 'http://localhost/~guest/',
-        password        => '',
-        type            => MT::Author::AUTHOR(),
-        locked_out_time => 0,
-    }
-);
-$guest->save or die $guest->errstr;
-
-{
-    # Parent website
-    my $w = $mt->model('website')->load($blog_id);
-    $w->set_values(
-        {   description => 'This is a first website.',
-            site_url    => 'http://localhost/first_website/',
-            site_path   => '/var/www/html/first_website',
-            cc_license =>
-                'by http://creativecommons.org/licenses/by/3.0/ http://i.creativecommons.org/l/by/3.0/88x31.png',
+    my $first_website = $app->model('website')->load($blog_id);
+    $first_website->set_values(
+        {   allow_reg_comments       => 1,
+            remote_auth_token        => 'token',
+            allow_unreg_comments     => 1,
+            commenter_authenticators => 'MovableType,TypeKey',
         }
     );
-    $w->save or die $w->errstr;
+    $first_website->save or die $first_website->errstr;
 
-    # apply theme
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'apply_theme',
-            blog_id          => $w->id,
-            theme_id         => 'classic_website',
-        },
-    );
+    my $mt = MT->instance;
 
-    # Create categories
-    my $cat1 = MT::Category->new;
-    $cat1->set_values(
-        {   blog_id     => $blog_id,
-            label       => 'Website Category 1',
-            basename    => 'website_category_1',
-            description => 'This is a website category 1.',
-            allow_pings => 1,
+    # Create userpic
+    my $userpic = $mt->model('asset')->new;
+    $userpic->set_values(
+        {   blog_id   => 0,
+            class     => 'image',
+            label     => 'Userpic',
+            file_path => './mt-static/images/logo/movable-type-logo.png',
+            file_name => 'movable-type-logo.png',
+            url       => '%s/images/logo/movable-type-logo.png',
         }
     );
-    $cat1->save or die $cat1->errstr;
+    $userpic->save or die $mt->errstr;
 
-    my $cat_tmpl
-        = MT::Template->load(
-        { blog_id => $blog_id, identifier => 'category_entry_listing' } );
-
-    my $tm_cat = MT::TemplateMap->new;
-    $tm_cat->set_values(
-        {   archive_type => 'Category',
-            blog_id      => $blog_id,
-            build_type   => MT::PublishOption::DYNAMIC(),
-            is_preferred => 1,
-            template_id  => $cat_tmpl->id,
+    my $admin = $mt->model('author')->load(1);    # Administrator
+    $admin->set_values(
+        {   nickname         => 'Administrator Melody',
+            basename         => 'melody',
+            email            => 'melody@localhost',
+            url              => 'http://localhost/~melody/',
+            userpic_asset_id => $userpic->id,
         }
     );
-    $tm_cat->save or die $tm_cat->errstr;
+    $admin->save or die $admin->errstr;
 
-    my $fi_cat1 = MT::FileInfo->new;
-    $fi_cat1->set_values(
-        {   archive_type => 'Category',
-            blog_id      => $blog_id,
-            category_id  => $cat1->id,
-            filepath =>
-                '/var/www/html/first_website/website_category_1/index.html',
-            template_id    => $cat_tmpl->id,
-            templatemap_id => $tm_cat->id,
-            url            => '/first_website/website-category-1/index.html',
+    my $guest = $mt->model('author')->new;
+    $guest->set_values(
+        {   name            => 'Guest',
+            nickname        => 'Guest',
+            basename        => 'guest',
+            email           => 'guest@localhost',
+            url             => 'http://localhost/~guest/',
+            password        => '',
+            type            => MT::Author::AUTHOR(),
+            locked_out_time => 0,
         }
     );
-    $fi_cat1->save or die $fi_cat1->errstr;
+    $guest->save or die $guest->errstr;
 
-    my $cat2 = MT::Category->new;
-    $cat2->set_values(
-        {   blog_id     => $blog_id,
-            label       => 'Website Subcategory 2',
-            basename    => 'website_subcategory_2',
-            description => 'This is a website subcategory 2.',
-            parent      => $cat1->id,
-        }
-    );
-    $cat2->save or die $cat2->errstr;
-
-    my $fi_cat2 = MT::FileInfo->new;
-    $fi_cat2->set_values(
-        {   archive_type => 'Category',
-            blog_id      => $blog_id,
-            category_id  => $cat2->id,
-            filepath =>
-                '/var/www/html/first_website/website_category_1/website_subcategory_2/index.html',
-            template_id    => $cat_tmpl->id,
-            templatemap_id => $tm_cat->id,
-            url =>
-                '/first_website/website-category-1/website-subcategory-2/index.html',
-        }
-    );
-    $fi_cat2->save or die $fi_cat2->errstr;
-
-    my $cat3 = MT::Category->new;
-    $cat3->set_values(
-        {   blog_id     => $blog_id,
-            label       => 'Website Category 3',
-            basename    => 'website_category_3',
-            description => 'This is a website category 3.',
-        }
-    );
-    $cat3->save or die $cat3->errstr;
-
-    my $fi_cat3 = MT::FileInfo->new;
-    $fi_cat3->set_values(
-        {   archive_type => 'Category',
-            blog_id      => $blog_id,
-            category_id  => $cat3->id,
-            filepath =>
-                '/var/www/html/first_website/website_category_3/index.html',
-            template_id    => $cat_tmpl->id,
-            templatemap_id => $tm_cat->id,
-            url            => '/first_website/website-category-3/index.html',
-        }
-    );
-    $fi_cat3->save or die $fi_cat3->errstr;
-
-    my $cat4 = MT::Category->new;
-    $cat4->set_values(
-        {   blog_id     => $blog_id,
-            label       => 'Website Category 4',
-            basename    => 'website_category_4',
-            description => 'This is a website category 4.',
-        }
-    );
-    $cat4->save or die $cat4->errstr;
-
-    my $fi_cat4 = MT::FileInfo->new;
-    $fi_cat4->set_values(
-        {   archive_type => 'Category',
-            blog_id      => $blog_id,
-            category_id  => $cat4->id,
-            filepath =>
-                '/var/www/html/first_website/website_category_4/index.html',
-            template_id    => $cat_tmpl->id,
-            templatemap_id => $tm_cat->id,
-            url            => '/first_website/website-category-4/index.html',
-        }
-    );
-    $fi_cat4->save or die $fi_cat4->errstr;
-
-    my $cat5 = MT::Category->new;
-    $cat5->set_values(
-        {   blog_id     => $blog_id,
-            label       => 'Website Subsubcategory 5',
-            basename    => 'website_subsubcategory_5',
-            description => 'This is a website subsubcategory 5.',
-            parent      => $cat2->id,
-        }
-    );
-    $cat5->save or die $cat5->errstr;
-
-    my $fi_cat5 = MT::FileInfo->new;
-    $fi_cat5->set_values(
-        {   archive_type => 'Category',
-            blog_id      => $blog_id,
-            category_id  => $cat5->id,
-            filepath =>
-                '/var/www/html/first_website/website_category_1/website_subcategory_2/website_subsubcategory_5/index.html',
-            template_id    => $cat_tmpl->id,
-            templatemap_id => $tm_cat->id,
-            url =>
-                '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/index.html',
-        }
-    );
-    $fi_cat5->save or die $fi_cat5->errstr;
-
-    my $cat6 = MT::Category->new;
-    $cat6->set_values(
-        {   blog_id     => $blog_id,
-            label       => 'Website Subsubcategory 6',
-            basename    => 'website_subsubcategory_6',
-            description => 'This is a website subsubcategory 6.',
-            parent      => $cat2->id,
-        }
-    );
-    $cat6->save or die $cat6->errstr;
-
-    my $fi_cat6 = MT::FileInfo->new;
-    $fi_cat6->set_values(
-        {   archive_type => 'Category',
-            blog_id      => $blog_id,
-            category_id  => $cat6->id,
-            filepath =>
-                '/var/www/html/first_website/website_category_1/website_subcategory_2/website_subsubcategory_6/index.html',
-            template_id    => $cat_tmpl->id,
-            templatemap_id => $tm_cat->id,
-            url =>
-                '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/index.html',
-        }
-    );
-    $fi_cat6->save or die $fi_cat6->errstr;
-
-    # Create entries
-    my $e1 = $mt->model('entry')->new;
-    $e1->set_values(
-        {   blog_id     => $blog_id,
-            author_id   => $admin->id,
-            status      => MT::Entry::RELEASE(),
-            title       => 'Website Entry 1',
-            basename    => 'website_entry_1',
-            text        => 'This is website entry 1.',
-            text_more   => 'Both allow_pings and allow_comments are null.',
-            excerpt     => 'Website Entry Excerpt 1',
-            keywords    => 'Foo',
-            authored_on => '20110101000000',
-            modified_on => '20110101000000',
-            created_on  => '20110101000000',
-        }
-    );
-    $e1->save or die $e1->errstr;
-
-    my $tmpl
-        = MT::Template->load( { blog_id => $blog_id, type => 'individual' } );
-
-    my $tm = MT::TemplateMap->new;
-    $tm->set_values(
-        {   archive_type => 'Individual',
-            blog_id      => $blog_id,
-            build_type   => MT::PublishOption::DYNAMIC(),
-            is_preferred => 1,
-            template_id  => $tmpl->id,
-        }
-    );
-    $tm->save or die $tm->errstr;
-
-    my $fi1 = MT::FileInfo->new;
-    $fi1->set_values(
-        {   archive_type => 'Individual',
-            blog_id      => $blog_id,
-            entry_id     => $e1->id,
-            file_path =>
-                '/var/www/html/first_website/2011/01/website-entry-1.html',
-            template_id    => $tmpl->id,
-            templatemap_id => $tm->id,
-            url            => '/first_website/2011/01/website-entry-1.html',
-            virtual        => 1,
-        }
-    );
-    $fi1->save or die $fi1->errstr;
-
-    # Set categories
-    my $pl1 = MT::Placement->new;
-    $pl1->set_values(
-        {   blog_id     => $blog_id,
-            category_id => $cat1->id,
-            entry_id    => $e1->id,
-            is_primary  => 1,
-        }
-    );
-    $pl1->save or die $pl1->errstr;
-
-    my $pl4 = MT::Placement->new;
-    $pl4->set_values(
-        {   blog_id     => $blog_id,
-            category_id => $cat4->id,
-            entry_id    => $e1->id,
-            is_primary  => 0,
-        }
-    );
-    $pl4->save or die $pl4->errstr;
-
-    # Create tag
-    my $tag1 = $mt->model('tag')->new;
-    $tag1->set_values( { name => 'Website Tag 1', } );
-    $tag1->save or die $tag1->errstr;
-
-    my $objtag1 = $mt->model('objecttag')->new;
-    $objtag1->set_values(
-        {   blog_id           => $blog_id,
-            object_datasource => 'entry',
-            object_id         => $e1->id,
-            tag_id            => $tag1->id,
-        }
-    );
-    $objtag1->save or die $objtag1->errstr;
-
-    # Create score
-    my $objscore1 = $mt->model('objectscore')->new;
-    $objscore1->set_values(
-        {   author_id => $admin->id,
-            namespace => 'test_namespace',
-            object_ds => 'entry',
-            object_id => $e1->id,
-            score     => 2,
-        }
-    );
-    $objscore1->save or die $objscore1->errstr;
-
-    my $objscore2 = $mt->model('objectscore')->new;
-    $objscore2->set_values(
-        {   author_id => $guest->id,
-            namespace => 'test_namespace',
-            object_ds => 'entry',
-            object_id => $e1->id,
-            score     => 4,
-        }
-    );
-    $objscore2->save or die $objscore2->errstr;
-
-    # allow_pings is set 1.
-    my $e2 = $mt->model('entry')->new;
-    $e2->set_values(
-        {   blog_id     => $blog_id,
-            author_id   => $admin->id,
-            status      => MT::Entry::RELEASE(),
-            title       => 'Website Entry 2',
-            basename    => 'website_entry_2',
-            text        => 'This is website entry 2.',
-            text_more   => 'Allow_pings is 1, allow_comments is null.',
-            excerpt     => 'Website Entry Excerpt 2',
-            allow_pings => 1,
-            authored_on => '20120202000000',
-            modified_on => '20120202000000',
-            created_on  => '20120202000000',
-        }
-    );
-    $e2->save or die $e2->errstr;
-
-    my $fi2 = MT::FileInfo->new;
-    $fi2->set_values(
-        {   archive_type => 'Individual',
-            blog_id      => $blog_id,
-            entry_id     => $e2->id,
-            file_path =>
-                '/var/www/html/first_website/2012/02/website-entry-2.html',
-            template_id    => $tmpl->id,
-            templatemap_id => $tm->id,
-            url            => '/first_website/2012/02/website-entry-2.html',
-            virtual        => 1,
-        }
-    );
-    $fi2->save or die $fi2->errstr;
-
-    my $pl2 = MT::Placement->new;
-    $pl2->set_values(
-        {   blog_id     => $blog_id,
-            category_id => $cat2->id,
-            entry_id    => $e2->id,
-            is_primary  => 1,
-        }
-    );
-    $pl2->save or die $pl2->errstr;
-
-    # allow_comments is set 1.
-    my $e3 = $mt->model('entry')->new;
-    $e3->set_values(
-        {   blog_id        => $blog_id,
-            author_id      => $admin->id,
-            status         => MT::Entry::RELEASE(),
-            title          => 'Website Entry 3',
-            basename       => 'website_entry_3',
-            text           => 'This is website entry 3.',
-            text_more      => 'Allow_pings is null, allow_comments is 1.',
-            excerpt        => 'Website Entry Excerpt 3',
-            allow_comments => 1,
-            keywords       => 'Bar',
-            authored_on    => '20130303000000',
-            modified_on    => '20130303000000',
-            created_on     => '20130303000000',
-        }
-    );
-    $e3->save or die $e3->errstr;
-
-    my $fi3 = MT::FileInfo->new;
-    $fi3->set_values(
-        {   archive_type => 'Individual',
-            blog_id      => $blog_id,
-            entry_id     => $e3->id,
-            file_path =>
-                '/var/www/html/first_website/2013/03/website-entry-3.html',
-            template_id    => $tmpl->id,
-            templatemap_id => $tm->id,
-            url            => '/first_website/2013/03/website-entry-3.html',
-            virtual        => 1,
-        }
-    );
-    $fi3->save or die $fi3->errstr;
-
-    my $pl3 = MT::Placement->new;
-    $pl3->set_values(
-        {   blog_id     => $blog_id,
-            category_id => $cat3->id,
-            entry_id    => $e3->id,
-            is_primary  => 1,
-        }
-    );
-    $pl3->save or die $pl3->errstr;
-
-    # status is set 1 (HOLD).
-    my $e4 = $mt->model('entry')->new;
-    $e4->set_values(
-        {   blog_id     => $blog_id,
-            author_id   => $admin->id,
-            status      => MT::Entry::HOLD(),
-            title       => 'Website Entry 4',
-            text        => 'This is website entry 4.',
-            authored_on => '20140404000000',
-        }
-    );
-    $e4->save or die $e4->errstr;
-
-    my $fi4 = MT::FileInfo->new;
-    $fi4->set_values(
-        {   archive_type => 'Individual',
-            blog_id      => $blog_id,
-            entry_id     => $e4->id,
-            file_path =>
-                '/var/www/html/first_website/2014/04/website-entry-4.html',
-            template_id    => $tmpl->id,
-            templatemap_id => $tm->id,
-            url            => '/first_website/2014/04/website-entry-4.html',
-            virtual        => 1,
-        }
-    );
-    $fi4->save or die $fi4->errstr;
-
-    my $e5 = $mt->model('entry')->new;
-    $e5->set_values(
-        {   blog_id     => $blog_id,
-            author_id   => $admin->id,
-            status      => MT::Entry::RELEASE(),
-            title       => 'Website Entry 5',
-            text        => 'This is website entry 5.',
-            authored_on => '20150505000000',
-            modified_on => '20150505000000',
-            created_on  => '20150505000000',
-        }
-    );
-    $e5->save or die $e5->errstr;
-
-    my $fi5 = MT::FileInfo->new;
-    $fi5->set_values(
-        {   archive_type => 'Individual',
-            blog_id      => $blog_id,
-            entry_id     => $e5->id,
-            file_path =>
-                '/var/www/html/first_website/2015/05/website-entry-5.html',
-            template_id    => $tmpl->id,
-            templatemap_id => $tm->id,
-            url            => '/first_website/2015/05/website-entry-5.html',
-            virtual        => 1,
-        }
-    );
-    $fi5->save or die $fi5->errstr;
-
-    my $pl5 = MT::Placement->new;
-    $pl5->set_values(
-        {   blog_id     => $blog_id,
-            category_id => $cat5->id,
-            entry_id    => $e5->id,
-            is_primary  => 1,
-        }
-    );
-    $pl5->save or die $pl5->errstr;
-
-    my $e6 = $mt->model('entry')->new;
-    $e6->set_values(
-        {   blog_id     => $blog_id,
-            author_id   => $admin->id,
-            status      => MT::Entry::RELEASE(),
-            title       => 'Website Entry 6',
-            text        => 'This is website entry 6.',
-            authored_on => '20160606000000',
-            modified_on => '20160606000000',
-            created_on  => '20160606000000',
-        }
-    );
-    $e6->save or die $e6->errstr;
-
-    my $fi6 = MT::FileInfo->new;
-    $fi6->set_values(
-        {   archive_type => 'Individual',
-            blog_id      => $blog_id,
-            entry_id     => $e6->id,
-            file_path =>
-                '/var/www/html/first_website/2016/06/website-entry-6.html',
-            template_id    => $tmpl->id,
-            templatemap_id => $tm->id,
-            url            => '/first_website/2016/06/website-entry-6.html',
-            virtual        => 1,
-        }
-    );
-    $fi6->save or die $fi6->errstr;
-
-    my $pl6 = MT::Placement->new;
-    $pl6->set_values(
-        {   blog_id     => $blog_id,
-            category_id => $cat6->id,
-            entry_id    => $e6->id,
-            is_primary  => 1,
-        }
-    );
-    $pl6->save or die $pl6->errstr;
-
-    my $e7 = $mt->model('entry')->new;
-    $e7->set_values(
-        {   blog_id     => $blog_id,
-            author_id   => $admin->id,
-            status      => MT::Entry::RELEASE(),
-            title       => 'Website Entry 7',
-            text        => 'This is website entry 7.',
-            authored_on => '20160606010000',
-            modified_on => '20160606010000',
-            created_on  => '20160606010000',
-        }
-    );
-    $e7->save or die $e7->errstr;
-
-    my $fi7 = MT::FileInfo->new;
-    $fi7->set_values(
-        {   archive_type => 'Individual',
-            blog_id      => $blog_id,
-            entry_id     => $e7->id,
-            file_path =>
-                '/var/www/html/first_website/2016/06/website-entry-7.html',
-            template_id    => $tmpl->id,
-            templatemap_id => $tm->id,
-            url            => '/first_website/2016/06/website-entry-7.html',
-            virtual        => 1,
-        }
-    );
-    $fi7->save or die $fi7->errstr;
-
-    # Create comment
-    my $c1 = $mt->model('comment')->new;
-    $c1->set_values(
-        {   blog_id       => $blog_id,
-            entry_id      => $e1->id,
-            commenter_id  => $admin->id,
-            author        => $admin->nickname,
-            email         => $admin->email,
-            url           => $admin->url,
-            last_moved_on => '20101010000000',
-            visible       => 1,
-            junk_status   => 1,                  # NOT_JUNK
-            ip            => '127.0.0.1',
-            text          => 'Comment 1',
-            created_on    => '20101010000000',
-            modified_on   => '20101010000000',
-        }
-    );
-    $c1->save or die $c1->errstr;
-
-    my $c2 = $mt->model('comment')->new;
-    $c2->set_values(
-        {   blog_id       => $blog_id,
-            entry_id      => $e1->id,
-            commenter_id  => $guest->id,
-            author        => $guest->nickname,
-            email         => $guest->email,
-            url           => $guest->url,
-            parent_id     => $c1->id,
-            last_moved_on => '20111111000000',
-            visible       => 1,
-            junk_status   => 1,                  # NOT_JUNK
-            ip            => '192.168.0.1',
-            text          => 'Comment 2',
-            created_on    => '20111111000000',
-            modified_on   => '20111111000000',
-        }
-    );
-    $c2->save or die $c2->errstr;
-
-    my $c3 = $mt->model('comment')->new;
-    $c3->set_values(
-        {   blog_id       => $blog_id,
-            entry_id      => $e1->id,
-            commenter_id  => $admin->id,
-            author        => $admin->nickname,
-            email         => $admin->email,
-            url           => $admin->url,
-            parent_id     => $c2->id,
-            last_moved_on => '20121212000000',
-            visible       => 1,
-            junk_status   => 1,                  # NOT_JUNK
-            ip            => '127.0.0.1',
-            text          => 'Comment 3',
-            created_on    => '20121212000000',
-            modified_on   => '20121212000000',
-        }
-    );
-    $c3->save or die $c3->errstr;
-
-    # Create comment score
-    my $objscore3 = $mt->model('objectscore')->new;
-    $objscore3->set_values(
-        {   author_id => $admin->id,
-            namespace => 'test_namespace',
-            object_ds => 'comment',
-            object_id => $c1->id,
-            score     => 1,
-        }
-    );
-    $objscore3->save or die $objscore3->errstr;
-
-    my $objscore4 = $mt->model('objectscore')->new;
-    $objscore4->set_values(
-        {   author_id => $admin->id,
-            namespace => 'test_namespace',
-            object_ds => 'comment',
-            object_id => $c1->id,
-            score     => 3,
-        }
-    );
-    $objscore4->save or die $objscore4->errstr;
-
-    # Create tbping
-    my $tbp1 = $mt->model('tbping')->new;
-    $tbp1->set_values(
-        {   blog_id       => $blog_id,
-            tb_id         => $e2->trackback->id,
-            ip            => '127.0.0.1',
-            visible       => 1,
-            junk_status   => 1,                    # NOT_JUNK
-            last_moved_on => '20080808000000',
-            blog_name     => 'first website',
-        }
-    );
-    $tbp1->save or die $tbp1->errstr;
-
-    my $tbp2 = $mt->model('tbping')->new;
-    $tbp2->set_values(
-        {   blog_id       => $blog_id,
-            tb_id         => 1,
-            ip            => '127.0.0.1',
-            visible       => 1,
-            junk_status   => 1,                  # NOT_JUNK
-            last_moved_on => '20090909000000',
-            blog_name     => 'first website',
-        }
-    );
-    $tbp2->save or die $tbp2->errstr;
-
-    # Create asset
-    my $as1 = $mt->model('asset')->new;
-    $as1->set_values(
-        {   blog_id => $blog_id,
-            label   => 'Website Asset 1',
-        }
-    );
-    $as1->save or die $as1->errstr;
-
-    my $objas1 = $mt->model('objectasset')->new;
-    $objas1->set_values(
-        {   asset_id  => $as1->id,
-            blog_id   => $blog_id,
-            object_ds => 'entry',
-            object_id => $e1->id,
-        }
-    );
-    $objas1->save or die $objas1->errstr;
-
-    # Create template maps for archive
-    my $tm_mo = $mt->model('templatemap')->load(
-        {   blog_id      => $blog_id,
-            archive_type => 'Monthly',
-        }
-    );
-
-    my %suite = (
-        Daily => [
-            {   file_path =>
-                    '/var/www/html/first_website/2011/01/01/index.html',
-                startdate => '20110101000000',
-                url       => '/first_website/2011/01/01/index.html',
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/2011/02/02/index.html',
-                startdate => '20120202000000',
-                url       => '/first_website/2012/02/02/index.html',
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/2013/03/03/index.html',
-                startdate => '20130303000000',
-                url       => '/first_website/2013/03/03/index.html',
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/2015/05/05/index.html',
-                startdate => '20150505000000',
-                url       => '/first_website/2015/05/05/index.html',
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/2016/06/06/index.html',
-                startdate => '20160606000000',
-                url       => '/first_website/2016/06/06/index.html',
-            },
-        ],
-        Weekly => [
-            {   file_path =>
-                    '/var/www/html/first_website/2010/12/26-week/index.html',
-                startdate => '20101226000000',
-                url       => '/first_website/2010/12/26-week/index.html',
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/2012/01/29-week/index.html',
-                startdate => '20120129000000',
-                url       => '/first_website/2012/01/29-week/index.html',
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/2013/03/03-week/index.html',
-                startdate => '20130303000000',
-                url       => '/first_website/2013/03/03-week/index.html',
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/2015/05/03-week/index.html',
-                startdate => '20150503000000',
-                url       => '/first_website/2015/05/03-week/index.html',
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/2016/06/05-week/index.html',
-                startdate => '20160605000000',
-                url       => '/first_website/2016/06/05-week/index.html',
-            },
-        ],
-        Monthly => [
-            {   file_path => '/var/www/html/first_website/2011/01/index.html',
-                startdate => '20110101000000',
-                url       => '/first_website/2011/01/index.html',
-            },
-            {   file_path => '/var/www/html/first_website/2012/02/index.html',
-                startdate => '20120201000000',
-                url       => '/first_website/2012/02/index.html',
-            },
-            {   file_path => '/var/www/html/first_website/2013/03/index.html',
-                startdate => '20130301000000',
-                url       => '/first_website/2013/03/index.html',
-            },
-            {   file_path => '/var/www/html/first_website/2015/05/index.html',
-                startdate => '20150501000000',
-                url       => '/first_website/2015/05/index.html',
-            },
-            {   file_path => '/var/www/html/first_website/2016/06/index.html',
-                startdate => '20160601000000',
-                url       => '/first_website/2016/06/index.html',
-            },
-        ],
-        Yearly => [
-            {   file_path => '/var/www/html/first_website/2011/index.html',
-                startdate => '20110101000000',
-                url       => '/first_website/2011/index.html',
-            },
-            {   file_path => '/var/www/html/first_website/2012/index.html',
-                startdate => '20120101000000',
-                url       => '/first_website/2012/index.html',
-            },
-            {   file_path => '/var/www/html/first_website/2013/index.html',
-                startdate => '20130101000000',
-                url       => '/first_website/2013/index.html',
-            },
-            {   file_path => '/var/www/html/first_website/2015/index.html',
-                startdate => '20150101000000',
-                url       => '/first_website/2015/index.html',
-            },
-            {   file_path => '/var/www/html/first_websiete/2016/index.html',
-                startdate => '20160101000000',
-                url       => '/first_website/2016/index.html'
-            },
-        ],
-        Author => [
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/index.html',
-                url       => '/first_website/author/melody/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/guest/index.html',
-                url       => '/first_website/author/guest/index.html',
-                author_id => 2,
-            },
-        ],
-        'Author-Daily' => [
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2011/01/01/index.html',
-                startdate => '20110101000000',
-                url => '/first_website/author/melody/2011/01/01/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2012/02/02/index.html',
-                startdate => '20120202000000',
-                url => '/first_website/author/melody/2012/02/02/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2013/03/03/index.html',
-                startdate => '20130303000000',
-                url => '/first_website/author/melody/2013/03/03/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2015/05/05/index.html',
-                startdate => '20150505000000',
-                url => '/first_website/author/melody/2015/05/05/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2016/06/06/index.html',
-                startdate => '20160606000000',
-                url => '/first_website/author/melody/2016/06/06/index.html',
-                author_id => 1,
-            },
-        ],
-        'Author-Weekly' => [
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2010/12/26-week/index.html',
-                startdate => '20101226000000',
-                url =>
-                    '/first_website/author/melody/2010/12/26-week/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2012/01/29-week/index.html',
-                startdate => '20120129000000',
-                url =>
-                    '/first_website/author/melody/2012/01/29-week/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2013/03/03-week/index.html',
-                startdate => '20130303000000',
-                url =>
-                    '/first_website/author/melody/2013/03/03-week/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2015/05/03-week/index.html',
-                startdate => '20150503000000',
-                url =>
-                    '/first_website/author/melody/2015/05/03-week/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2016/06/05-week/index.html',
-                startdate => '20160605000000',
-                url =>
-                    '/first_website/author/melody/2016/06/05-week/index.html',
-                author_id => 1,
-            },
-        ],
-        'Author-Monthly' => [
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2011/01/index.html',
-                startdate => '20110101000000',
-                url => '/first_website/author/melody/2011/01/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2012/02/index.html',
-                startdate => '20120201000000',
-                url => '/first_website/author/melody/2012/02/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2013/03/index.html',
-                startdate => '20130301000000',
-                url => '/first_website/author/melody/2013/03/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2015/05/index.html',
-                startdate => '20150501000000',
-                url => '/first_website/author/melody/2015/05/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2016/06/index.html',
-                startdate => '20160601000000',
-                url => '/first_website/author/melody/2016/06/index.html',
-                author_id => 1,
-            },
-        ],
-        'Author-Yearly' => [
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2011/index.html',
-                startdate => '20110101000000',
-                url       => '/first_website/author/melody/2011/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2012/index.html',
-                startdate => '20120101000000',
-                url       => '/first_website/author/melody/2012/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2013/index.html',
-                startdate => '20130101000000',
-                url       => '/first_website/author/melody/2013/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2015/index.html',
-                startdate => '20150101000000',
-                url       => '/first_website/author/melody/2015/index.html',
-                author_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/author/melody/2016/index.html',
-                startdate => '20160101000000',
-                url       => '/first_website/author/melody/2016/index.html',
-                author_id => 1,
-            },
-        ],
-        'Category-Daily' => [
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/2011/01/01/index.html',
-                startdate => '20110101000000',
-                url =>
-                    '/first_website/website-category-1/2011/01/01/index.html',
-                category_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/website-subcategory-2/2012/02/02/index.html',
-                startdate => '20120202000000',
-                url =>
-                    '/first_website/website-category-1/website-subcategory-2/2012/02/02/index.html',
-                category_id => 2,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-3/2013/03/03/index.html',
-                startdate => '20130303000000',
-                url =>
-                    '/first_website/website-category-3/2013/03/03/index.html',
-                category_id => 3,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/05/index.html',
-                startdate => '20150505000000',
-                url =>
-                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/05/index.html',
-                category_id => 5,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/06/index.html',
-                startdate => '20160606000000',
-                url =>
-                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/06/index.html',
-                category_id => 6,
-            },
-        ],
-        'Category-Weekly' => [
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/2010/12/26-week/index.html',
-                startdate => '20101226000000',
-                url =>
-                    '/first_website/website-category-1/2010/12/26-week/index.html',
-                category_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/website-subcategory-2/2012/01/29-week/index.html',
-                startdate => '20120129000000',
-                url =>
-                    '/first_website/website-category-1/website-subcategory-2/2012/01/29-week/index.html',
-                category_id => 2,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-3/2013/03/03-week/index.html',
-                startdate => '20130303000000',
-                url =>
-                    '/first_website/website-category-3/2013/03/03-week/index.html',
-                category_id => 3,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/03-week/index.html',
-                startdate => '20150503000000',
-                url =>
-                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/03-week/index.html',
-                category_id => 5,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/05-week/index.html',
-                startdate => '20160605000000',
-                url =>
-                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/05-week/index.html',
-                category_id => 6,
-            },
-        ],
-        'Category-Monthly' => [
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/2011/01/index.html',
-                startdate => '20110101000000',
-                url => '/first_website/website-category-1/2011/01/index.html',
-                category_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/website-subcategory-2/2012/02/index.html',
-                startdate => '20120201000000',
-                url =>
-                    '/first_website/website-category-1/website-subcategory-2/2012/02/index.html',
-                category_id => 2,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-3/2013/03/index.html',
-                startdate => '20130301000000',
-                url => '/first_website/website-category-3/2013/03/index.html',
-                category_id => 3,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/index.html',
-                startdate => '20150501000000',
-                url =>
-                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/index.html',
-                category_id => 5,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/index.html',
-                startdate => '20160601000000',
-                url =>
-                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/index.html',
-                category_id => 6,
-            },
-        ],
-        'Category-Yearly' => [
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/2011/index.html',
-                startdate => '20110101000000',
-                url => '/first_website/website-category-1/2011/index.html',
-                category_id => 1,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/website-subcategory-2/2012/index.html',
-                startdate => '20120101000000',
-                url =>
-                    '/first_website/website-category-1/website-subcategory-2/2012/index.html',
-                category_id => 2,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-3/2013/index.html',
-                startdate => '20130101000000',
-                url => '/first_website/website-category-3/2013/index.html',
-                category_id => 3,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/index.html',
-                startdate => '20150101000000',
-                url =>
-                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/index.html',
-                category_id => 5,
-            },
-            {   file_path =>
-                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/index.html',
-                startdate => '20160101000000',
-                url =>
-                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/index.html',
-                category_id => 6,
-            },
-        ],
-    );
-
-    foreach my $key ( keys %suite ) {
-        my $templatemap;
-        if ( $key eq 'Monthly' ) {
-            $templatemap = $tm_mo;
-        }
-        else {
-            $templatemap = $mt->model('templatemap')->new;
-            $templatemap->set_values(
-                {   archive_type => $key,
-                    blog_id      => $blog_id,
-                    build_type   => MT::PublishOption::DYNAMIC(),
-                    is_preferred => 1,
-                    template_id  => $tm_mo->template_id,
-                }
-            );
-            $templatemap->save or die $templatemap->errstr;
-        }
-
-        foreach my $data ( @{ $suite{$key} } ) {
-            my $fi = $mt->model('fileinfo')->new;
-            $fi->set_values(
-                {   archive_type   => $key,
-                    blog_id        => $blog_id,
-                    template_id    => $templatemap->template_id,
-                    templatemap_id => $templatemap->id,
-                    virtual        => 1,
-                }
-            );
-            foreach my $col ( keys %$data ) {
-                $fi->$col( $data->{$col} );
+    {
+        # Parent website
+        my $w = $mt->model('website')->load($blog_id);
+        $w->set_values(
+            {   description => 'This is a first website.',
+                site_url    => 'http://localhost/first_website/',
+                site_path   => '/var/www/html/first_website',
+                cc_license =>
+                    'by http://creativecommons.org/licenses/by/3.0/ http://i.creativecommons.org/l/by/3.0/88x31.png',
             }
-            $fi->save or die $fi->errstr;
+        );
+        $w->save or die $w->errstr;
+
+        # apply theme
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $admin,
+                __request_method => 'POST',
+                __mode           => 'apply_theme',
+                blog_id          => $w->id,
+                theme_id         => 'classic_website',
+            },
+        );
+
+        # Create categories
+        my $cat1 = MT::Category->new;
+        $cat1->set_values(
+            {   blog_id     => $blog_id,
+                label       => 'Website Category 1',
+                basename    => 'website_category_1',
+                description => 'This is a website category 1.',
+                allow_pings => 1,
+            }
+        );
+        $cat1->save or die $cat1->errstr;
+
+        my $cat_tmpl
+            = MT::Template->load(
+            { blog_id => $blog_id, identifier => 'category_entry_listing' } );
+
+        my $tm_cat = MT::TemplateMap->new;
+        $tm_cat->set_values(
+            {   archive_type => 'Category',
+                blog_id      => $blog_id,
+                build_type   => MT::PublishOption::DYNAMIC(),
+                is_preferred => 1,
+                template_id  => $cat_tmpl->id,
+            }
+        );
+        $tm_cat->save or die $tm_cat->errstr;
+
+        my $fi_cat1 = MT::FileInfo->new;
+        $fi_cat1->set_values(
+            {   archive_type => 'Category',
+                blog_id      => $blog_id,
+                category_id  => $cat1->id,
+                filepath =>
+                    '/var/www/html/first_website/website_category_1/index.html',
+                template_id    => $cat_tmpl->id,
+                templatemap_id => $tm_cat->id,
+                url            => '/first_website/website-category-1/index.html',
+            }
+        );
+        $fi_cat1->save or die $fi_cat1->errstr;
+
+        my $cat2 = MT::Category->new;
+        $cat2->set_values(
+            {   blog_id     => $blog_id,
+                label       => 'Website Subcategory 2',
+                basename    => 'website_subcategory_2',
+                description => 'This is a website subcategory 2.',
+                parent      => $cat1->id,
+            }
+        );
+        $cat2->save or die $cat2->errstr;
+
+        my $fi_cat2 = MT::FileInfo->new;
+        $fi_cat2->set_values(
+            {   archive_type => 'Category',
+                blog_id      => $blog_id,
+                category_id  => $cat2->id,
+                filepath =>
+                    '/var/www/html/first_website/website_category_1/website_subcategory_2/index.html',
+                template_id    => $cat_tmpl->id,
+                templatemap_id => $tm_cat->id,
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/index.html',
+            }
+        );
+        $fi_cat2->save or die $fi_cat2->errstr;
+
+        my $cat3 = MT::Category->new;
+        $cat3->set_values(
+            {   blog_id     => $blog_id,
+                label       => 'Website Category 3',
+                basename    => 'website_category_3',
+                description => 'This is a website category 3.',
+            }
+        );
+        $cat3->save or die $cat3->errstr;
+
+        my $fi_cat3 = MT::FileInfo->new;
+        $fi_cat3->set_values(
+            {   archive_type => 'Category',
+                blog_id      => $blog_id,
+                category_id  => $cat3->id,
+                filepath =>
+                    '/var/www/html/first_website/website_category_3/index.html',
+                template_id    => $cat_tmpl->id,
+                templatemap_id => $tm_cat->id,
+                url            => '/first_website/website-category-3/index.html',
+            }
+        );
+        $fi_cat3->save or die $fi_cat3->errstr;
+
+        my $cat4 = MT::Category->new;
+        $cat4->set_values(
+            {   blog_id     => $blog_id,
+                label       => 'Website Category 4',
+                basename    => 'website_category_4',
+                description => 'This is a website category 4.',
+            }
+        );
+        $cat4->save or die $cat4->errstr;
+
+        my $fi_cat4 = MT::FileInfo->new;
+        $fi_cat4->set_values(
+            {   archive_type => 'Category',
+                blog_id      => $blog_id,
+                category_id  => $cat4->id,
+                filepath =>
+                    '/var/www/html/first_website/website_category_4/index.html',
+                template_id    => $cat_tmpl->id,
+                templatemap_id => $tm_cat->id,
+                url            => '/first_website/website-category-4/index.html',
+            }
+        );
+        $fi_cat4->save or die $fi_cat4->errstr;
+
+        my $cat5 = MT::Category->new;
+        $cat5->set_values(
+            {   blog_id     => $blog_id,
+                label       => 'Website Subsubcategory 5',
+                basename    => 'website_subsubcategory_5',
+                description => 'This is a website subsubcategory 5.',
+                parent      => $cat2->id,
+            }
+        );
+        $cat5->save or die $cat5->errstr;
+
+        my $fi_cat5 = MT::FileInfo->new;
+        $fi_cat5->set_values(
+            {   archive_type => 'Category',
+                blog_id      => $blog_id,
+                category_id  => $cat5->id,
+                filepath =>
+                    '/var/www/html/first_website/website_category_1/website_subcategory_2/website_subsubcategory_5/index.html',
+                template_id    => $cat_tmpl->id,
+                templatemap_id => $tm_cat->id,
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/index.html',
+            }
+        );
+        $fi_cat5->save or die $fi_cat5->errstr;
+
+        my $cat6 = MT::Category->new;
+        $cat6->set_values(
+            {   blog_id     => $blog_id,
+                label       => 'Website Subsubcategory 6',
+                basename    => 'website_subsubcategory_6',
+                description => 'This is a website subsubcategory 6.',
+                parent      => $cat2->id,
+            }
+        );
+        $cat6->save or die $cat6->errstr;
+
+        my $fi_cat6 = MT::FileInfo->new;
+        $fi_cat6->set_values(
+            {   archive_type => 'Category',
+                blog_id      => $blog_id,
+                category_id  => $cat6->id,
+                filepath =>
+                    '/var/www/html/first_website/website_category_1/website_subcategory_2/website_subsubcategory_6/index.html',
+                template_id    => $cat_tmpl->id,
+                templatemap_id => $tm_cat->id,
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/index.html',
+            }
+        );
+        $fi_cat6->save or die $fi_cat6->errstr;
+
+        # Create entries
+        my $e1 = $mt->model('entry')->new;
+        $e1->set_values(
+            {   blog_id     => $blog_id,
+                author_id   => $admin->id,
+                status      => MT::Entry::RELEASE(),
+                title       => 'Website Entry 1',
+                basename    => 'website_entry_1',
+                text        => 'This is website entry 1.',
+                text_more   => 'Both allow_pings and allow_comments are null.',
+                excerpt     => 'Website Entry Excerpt 1',
+                keywords    => 'Foo',
+                authored_on => '20110101000000',
+                modified_on => '20110101000000',
+                created_on  => '20110101000000',
+            }
+        );
+        $e1->save or die $e1->errstr;
+
+        my $tmpl
+            = MT::Template->load( { blog_id => $blog_id, type => 'individual' } );
+
+        my $tm = MT::TemplateMap->new;
+        $tm->set_values(
+            {   archive_type => 'Individual',
+                blog_id      => $blog_id,
+                build_type   => MT::PublishOption::DYNAMIC(),
+                is_preferred => 1,
+                template_id  => $tmpl->id,
+            }
+        );
+        $tm->save or die $tm->errstr;
+
+        my $fi1 = MT::FileInfo->new;
+        $fi1->set_values(
+            {   archive_type => 'Individual',
+                blog_id      => $blog_id,
+                entry_id     => $e1->id,
+                file_path =>
+                    '/var/www/html/first_website/2011/01/website-entry-1.html',
+                template_id    => $tmpl->id,
+                templatemap_id => $tm->id,
+                url            => '/first_website/2011/01/website-entry-1.html',
+                virtual        => 1,
+            }
+        );
+        $fi1->save or die $fi1->errstr;
+
+        # Set categories
+        my $pl1 = MT::Placement->new;
+        $pl1->set_values(
+            {   blog_id     => $blog_id,
+                category_id => $cat1->id,
+                entry_id    => $e1->id,
+                is_primary  => 1,
+            }
+        );
+        $pl1->save or die $pl1->errstr;
+
+        my $pl4 = MT::Placement->new;
+        $pl4->set_values(
+            {   blog_id     => $blog_id,
+                category_id => $cat4->id,
+                entry_id    => $e1->id,
+                is_primary  => 0,
+            }
+        );
+        $pl4->save or die $pl4->errstr;
+
+        # Create tag
+        my $tag1 = $mt->model('tag')->new;
+        $tag1->set_values( { name => 'Website Tag 1', } );
+        $tag1->save or die $tag1->errstr;
+
+        my $objtag1 = $mt->model('objecttag')->new;
+        $objtag1->set_values(
+            {   blog_id           => $blog_id,
+                object_datasource => 'entry',
+                object_id         => $e1->id,
+                tag_id            => $tag1->id,
+            }
+        );
+        $objtag1->save or die $objtag1->errstr;
+
+        # Create score
+        my $objscore1 = $mt->model('objectscore')->new;
+        $objscore1->set_values(
+            {   author_id => $admin->id,
+                namespace => 'test_namespace',
+                object_ds => 'entry',
+                object_id => $e1->id,
+                score     => 2,
+            }
+        );
+        $objscore1->save or die $objscore1->errstr;
+
+        my $objscore2 = $mt->model('objectscore')->new;
+        $objscore2->set_values(
+            {   author_id => $guest->id,
+                namespace => 'test_namespace',
+                object_ds => 'entry',
+                object_id => $e1->id,
+                score     => 4,
+            }
+        );
+        $objscore2->save or die $objscore2->errstr;
+
+        # allow_pings is set 1.
+        my $e2 = $mt->model('entry')->new;
+        $e2->set_values(
+            {   blog_id     => $blog_id,
+                author_id   => $admin->id,
+                status      => MT::Entry::RELEASE(),
+                title       => 'Website Entry 2',
+                basename    => 'website_entry_2',
+                text        => 'This is website entry 2.',
+                text_more   => 'Allow_pings is 1, allow_comments is null.',
+                excerpt     => 'Website Entry Excerpt 2',
+                allow_pings => 1,
+                authored_on => '20120202000000',
+                modified_on => '20120202000000',
+                created_on  => '20120202000000',
+            }
+        );
+        $e2->save or die $e2->errstr;
+
+        my $fi2 = MT::FileInfo->new;
+        $fi2->set_values(
+            {   archive_type => 'Individual',
+                blog_id      => $blog_id,
+                entry_id     => $e2->id,
+                file_path =>
+                    '/var/www/html/first_website/2012/02/website-entry-2.html',
+                template_id    => $tmpl->id,
+                templatemap_id => $tm->id,
+                url            => '/first_website/2012/02/website-entry-2.html',
+                virtual        => 1,
+            }
+        );
+        $fi2->save or die $fi2->errstr;
+
+        my $pl2 = MT::Placement->new;
+        $pl2->set_values(
+            {   blog_id     => $blog_id,
+                category_id => $cat2->id,
+                entry_id    => $e2->id,
+                is_primary  => 1,
+            }
+        );
+        $pl2->save or die $pl2->errstr;
+
+        # allow_comments is set 1.
+        my $e3 = $mt->model('entry')->new;
+        $e3->set_values(
+            {   blog_id        => $blog_id,
+                author_id      => $admin->id,
+                status         => MT::Entry::RELEASE(),
+                title          => 'Website Entry 3',
+                basename       => 'website_entry_3',
+                text           => 'This is website entry 3.',
+                text_more      => 'Allow_pings is null, allow_comments is 1.',
+                excerpt        => 'Website Entry Excerpt 3',
+                allow_comments => 1,
+                keywords       => 'Bar',
+                authored_on    => '20130303000000',
+                modified_on    => '20130303000000',
+                created_on     => '20130303000000',
+            }
+        );
+        $e3->save or die $e3->errstr;
+
+        my $fi3 = MT::FileInfo->new;
+        $fi3->set_values(
+            {   archive_type => 'Individual',
+                blog_id      => $blog_id,
+                entry_id     => $e3->id,
+                file_path =>
+                    '/var/www/html/first_website/2013/03/website-entry-3.html',
+                template_id    => $tmpl->id,
+                templatemap_id => $tm->id,
+                url            => '/first_website/2013/03/website-entry-3.html',
+                virtual        => 1,
+            }
+        );
+        $fi3->save or die $fi3->errstr;
+
+        my $pl3 = MT::Placement->new;
+        $pl3->set_values(
+            {   blog_id     => $blog_id,
+                category_id => $cat3->id,
+                entry_id    => $e3->id,
+                is_primary  => 1,
+            }
+        );
+        $pl3->save or die $pl3->errstr;
+
+        # status is set 1 (HOLD).
+        my $e4 = $mt->model('entry')->new;
+        $e4->set_values(
+            {   blog_id     => $blog_id,
+                author_id   => $admin->id,
+                status      => MT::Entry::HOLD(),
+                title       => 'Website Entry 4',
+                text        => 'This is website entry 4.',
+                authored_on => '20140404000000',
+            }
+        );
+        $e4->save or die $e4->errstr;
+
+        my $fi4 = MT::FileInfo->new;
+        $fi4->set_values(
+            {   archive_type => 'Individual',
+                blog_id      => $blog_id,
+                entry_id     => $e4->id,
+                file_path =>
+                    '/var/www/html/first_website/2014/04/website-entry-4.html',
+                template_id    => $tmpl->id,
+                templatemap_id => $tm->id,
+                url            => '/first_website/2014/04/website-entry-4.html',
+                virtual        => 1,
+            }
+        );
+        $fi4->save or die $fi4->errstr;
+
+        my $e5 = $mt->model('entry')->new;
+        $e5->set_values(
+            {   blog_id     => $blog_id,
+                author_id   => $admin->id,
+                status      => MT::Entry::RELEASE(),
+                title       => 'Website Entry 5',
+                text        => 'This is website entry 5.',
+                authored_on => '20150505000000',
+                modified_on => '20150505000000',
+                created_on  => '20150505000000',
+            }
+        );
+        $e5->save or die $e5->errstr;
+
+        my $fi5 = MT::FileInfo->new;
+        $fi5->set_values(
+            {   archive_type => 'Individual',
+                blog_id      => $blog_id,
+                entry_id     => $e5->id,
+                file_path =>
+                    '/var/www/html/first_website/2015/05/website-entry-5.html',
+                template_id    => $tmpl->id,
+                templatemap_id => $tm->id,
+                url            => '/first_website/2015/05/website-entry-5.html',
+                virtual        => 1,
+            }
+        );
+        $fi5->save or die $fi5->errstr;
+
+        my $pl5 = MT::Placement->new;
+        $pl5->set_values(
+            {   blog_id     => $blog_id,
+                category_id => $cat5->id,
+                entry_id    => $e5->id,
+                is_primary  => 1,
+            }
+        );
+        $pl5->save or die $pl5->errstr;
+
+        my $e6 = $mt->model('entry')->new;
+        $e6->set_values(
+            {   blog_id     => $blog_id,
+                author_id   => $admin->id,
+                status      => MT::Entry::RELEASE(),
+                title       => 'Website Entry 6',
+                text        => 'This is website entry 6.',
+                authored_on => '20160606000000',
+                modified_on => '20160606000000',
+                created_on  => '20160606000000',
+            }
+        );
+        $e6->save or die $e6->errstr;
+
+        my $fi6 = MT::FileInfo->new;
+        $fi6->set_values(
+            {   archive_type => 'Individual',
+                blog_id      => $blog_id,
+                entry_id     => $e6->id,
+                file_path =>
+                    '/var/www/html/first_website/2016/06/website-entry-6.html',
+                template_id    => $tmpl->id,
+                templatemap_id => $tm->id,
+                url            => '/first_website/2016/06/website-entry-6.html',
+                virtual        => 1,
+            }
+        );
+        $fi6->save or die $fi6->errstr;
+
+        my $pl6 = MT::Placement->new;
+        $pl6->set_values(
+            {   blog_id     => $blog_id,
+                category_id => $cat6->id,
+                entry_id    => $e6->id,
+                is_primary  => 1,
+            }
+        );
+        $pl6->save or die $pl6->errstr;
+
+        my $e7 = $mt->model('entry')->new;
+        $e7->set_values(
+            {   blog_id     => $blog_id,
+                author_id   => $admin->id,
+                status      => MT::Entry::RELEASE(),
+                title       => 'Website Entry 7',
+                text        => 'This is website entry 7.',
+                authored_on => '20160606010000',
+                modified_on => '20160606010000',
+                created_on  => '20160606010000',
+            }
+        );
+        $e7->save or die $e7->errstr;
+
+        my $fi7 = MT::FileInfo->new;
+        $fi7->set_values(
+            {   archive_type => 'Individual',
+                blog_id      => $blog_id,
+                entry_id     => $e7->id,
+                file_path =>
+                    '/var/www/html/first_website/2016/06/website-entry-7.html',
+                template_id    => $tmpl->id,
+                templatemap_id => $tm->id,
+                url            => '/first_website/2016/06/website-entry-7.html',
+                virtual        => 1,
+            }
+        );
+        $fi7->save or die $fi7->errstr;
+
+        # Create comment
+        my $c1 = $mt->model('comment')->new;
+        $c1->set_values(
+            {   blog_id       => $blog_id,
+                entry_id      => $e1->id,
+                commenter_id  => $admin->id,
+                author        => $admin->nickname,
+                email         => $admin->email,
+                url           => $admin->url,
+                last_moved_on => '20101010000000',
+                visible       => 1,
+                junk_status   => 1,                  # NOT_JUNK
+                ip            => '127.0.0.1',
+                text          => 'Comment 1',
+                created_on    => '20101010000000',
+                modified_on   => '20101010000000',
+            }
+        );
+        $c1->save or die $c1->errstr;
+
+        my $c2 = $mt->model('comment')->new;
+        $c2->set_values(
+            {   blog_id       => $blog_id,
+                entry_id      => $e1->id,
+                commenter_id  => $guest->id,
+                author        => $guest->nickname,
+                email         => $guest->email,
+                url           => $guest->url,
+                parent_id     => $c1->id,
+                last_moved_on => '20111111000000',
+                visible       => 1,
+                junk_status   => 1,                  # NOT_JUNK
+                ip            => '192.168.0.1',
+                text          => 'Comment 2',
+                created_on    => '20111111000000',
+                modified_on   => '20111111000000',
+            }
+        );
+        $c2->save or die $c2->errstr;
+
+        my $c3 = $mt->model('comment')->new;
+        $c3->set_values(
+            {   blog_id       => $blog_id,
+                entry_id      => $e1->id,
+                commenter_id  => $admin->id,
+                author        => $admin->nickname,
+                email         => $admin->email,
+                url           => $admin->url,
+                parent_id     => $c2->id,
+                last_moved_on => '20121212000000',
+                visible       => 1,
+                junk_status   => 1,                  # NOT_JUNK
+                ip            => '127.0.0.1',
+                text          => 'Comment 3',
+                created_on    => '20121212000000',
+                modified_on   => '20121212000000',
+            }
+        );
+        $c3->save or die $c3->errstr;
+
+        # Create comment score
+        my $objscore3 = $mt->model('objectscore')->new;
+        $objscore3->set_values(
+            {   author_id => $admin->id,
+                namespace => 'test_namespace',
+                object_ds => 'comment',
+                object_id => $c1->id,
+                score     => 1,
+            }
+        );
+        $objscore3->save or die $objscore3->errstr;
+
+        my $objscore4 = $mt->model('objectscore')->new;
+        $objscore4->set_values(
+            {   author_id => $admin->id,
+                namespace => 'test_namespace',
+                object_ds => 'comment',
+                object_id => $c1->id,
+                score     => 3,
+            }
+        );
+        $objscore4->save or die $objscore4->errstr;
+
+        # Create tbping
+        my $tbp1 = $mt->model('tbping')->new;
+        $tbp1->set_values(
+            {   blog_id       => $blog_id,
+                tb_id         => $e2->trackback->id,
+                ip            => '127.0.0.1',
+                visible       => 1,
+                junk_status   => 1,                    # NOT_JUNK
+                last_moved_on => '20080808000000',
+                blog_name     => 'first website',
+            }
+        );
+        $tbp1->save or die $tbp1->errstr;
+
+        my $tbp2 = $mt->model('tbping')->new;
+        $tbp2->set_values(
+            {   blog_id       => $blog_id,
+                tb_id         => 1,
+                ip            => '127.0.0.1',
+                visible       => 1,
+                junk_status   => 1,                  # NOT_JUNK
+                last_moved_on => '20090909000000',
+                blog_name     => 'first website',
+            }
+        );
+        $tbp2->save or die $tbp2->errstr;
+
+        # Create asset
+        my $as1 = $mt->model('asset')->new;
+        $as1->set_values(
+            {   blog_id => $blog_id,
+                label   => 'Website Asset 1',
+            }
+        );
+        $as1->save or die $as1->errstr;
+
+        my $objas1 = $mt->model('objectasset')->new;
+        $objas1->set_values(
+            {   asset_id  => $as1->id,
+                blog_id   => $blog_id,
+                object_ds => 'entry',
+                object_id => $e1->id,
+            }
+        );
+        $objas1->save or die $objas1->errstr;
+
+        # Create template maps for archive
+        my $tm_mo = $mt->model('templatemap')->load(
+            {   blog_id      => $blog_id,
+                archive_type => 'Monthly',
+            }
+        );
+
+        my %suite = (
+            Daily => [
+                {   file_path =>
+                        '/var/www/html/first_website/2011/01/01/index.html',
+                    startdate => '20110101000000',
+                    url       => '/first_website/2011/01/01/index.html',
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/2011/02/02/index.html',
+                    startdate => '20120202000000',
+                    url       => '/first_website/2012/02/02/index.html',
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/2013/03/03/index.html',
+                    startdate => '20130303000000',
+                    url       => '/first_website/2013/03/03/index.html',
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/2015/05/05/index.html',
+                    startdate => '20150505000000',
+                    url       => '/first_website/2015/05/05/index.html',
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/2016/06/06/index.html',
+                    startdate => '20160606000000',
+                    url       => '/first_website/2016/06/06/index.html',
+                },
+            ],
+            Weekly => [
+                {   file_path =>
+                        '/var/www/html/first_website/2010/12/26-week/index.html',
+                    startdate => '20101226000000',
+                    url       => '/first_website/2010/12/26-week/index.html',
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/2012/01/29-week/index.html',
+                    startdate => '20120129000000',
+                    url       => '/first_website/2012/01/29-week/index.html',
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/2013/03/03-week/index.html',
+                    startdate => '20130303000000',
+                    url       => '/first_website/2013/03/03-week/index.html',
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/2015/05/03-week/index.html',
+                    startdate => '20150503000000',
+                    url       => '/first_website/2015/05/03-week/index.html',
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/2016/06/05-week/index.html',
+                    startdate => '20160605000000',
+                    url       => '/first_website/2016/06/05-week/index.html',
+                },
+            ],
+            Monthly => [
+                {   file_path => '/var/www/html/first_website/2011/01/index.html',
+                    startdate => '20110101000000',
+                    url       => '/first_website/2011/01/index.html',
+                },
+                {   file_path => '/var/www/html/first_website/2012/02/index.html',
+                    startdate => '20120201000000',
+                    url       => '/first_website/2012/02/index.html',
+                },
+                {   file_path => '/var/www/html/first_website/2013/03/index.html',
+                    startdate => '20130301000000',
+                    url       => '/first_website/2013/03/index.html',
+                },
+                {   file_path => '/var/www/html/first_website/2015/05/index.html',
+                    startdate => '20150501000000',
+                    url       => '/first_website/2015/05/index.html',
+                },
+                {   file_path => '/var/www/html/first_website/2016/06/index.html',
+                    startdate => '20160601000000',
+                    url       => '/first_website/2016/06/index.html',
+                },
+            ],
+            Yearly => [
+                {   file_path => '/var/www/html/first_website/2011/index.html',
+                    startdate => '20110101000000',
+                    url       => '/first_website/2011/index.html',
+                },
+                {   file_path => '/var/www/html/first_website/2012/index.html',
+                    startdate => '20120101000000',
+                    url       => '/first_website/2012/index.html',
+                },
+                {   file_path => '/var/www/html/first_website/2013/index.html',
+                    startdate => '20130101000000',
+                    url       => '/first_website/2013/index.html',
+                },
+                {   file_path => '/var/www/html/first_website/2015/index.html',
+                    startdate => '20150101000000',
+                    url       => '/first_website/2015/index.html',
+                },
+                {   file_path => '/var/www/html/first_websiete/2016/index.html',
+                    startdate => '20160101000000',
+                    url       => '/first_website/2016/index.html'
+                },
+            ],
+            Author => [
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/index.html',
+                    url       => '/first_website/author/melody/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/guest/index.html',
+                    url       => '/first_website/author/guest/index.html',
+                    author_id => 2,
+                },
+            ],
+            'Author-Daily' => [
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2011/01/01/index.html',
+                    startdate => '20110101000000',
+                    url => '/first_website/author/melody/2011/01/01/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2012/02/02/index.html',
+                    startdate => '20120202000000',
+                    url => '/first_website/author/melody/2012/02/02/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2013/03/03/index.html',
+                    startdate => '20130303000000',
+                    url => '/first_website/author/melody/2013/03/03/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2015/05/05/index.html',
+                    startdate => '20150505000000',
+                    url => '/first_website/author/melody/2015/05/05/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2016/06/06/index.html',
+                    startdate => '20160606000000',
+                    url => '/first_website/author/melody/2016/06/06/index.html',
+                    author_id => 1,
+                },
+            ],
+            'Author-Weekly' => [
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2010/12/26-week/index.html',
+                    startdate => '20101226000000',
+                    url =>
+                        '/first_website/author/melody/2010/12/26-week/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2012/01/29-week/index.html',
+                    startdate => '20120129000000',
+                    url =>
+                        '/first_website/author/melody/2012/01/29-week/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2013/03/03-week/index.html',
+                    startdate => '20130303000000',
+                    url =>
+                        '/first_website/author/melody/2013/03/03-week/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2015/05/03-week/index.html',
+                    startdate => '20150503000000',
+                    url =>
+                        '/first_website/author/melody/2015/05/03-week/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2016/06/05-week/index.html',
+                    startdate => '20160605000000',
+                    url =>
+                        '/first_website/author/melody/2016/06/05-week/index.html',
+                    author_id => 1,
+                },
+            ],
+            'Author-Monthly' => [
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2011/01/index.html',
+                    startdate => '20110101000000',
+                    url => '/first_website/author/melody/2011/01/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2012/02/index.html',
+                    startdate => '20120201000000',
+                    url => '/first_website/author/melody/2012/02/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2013/03/index.html',
+                    startdate => '20130301000000',
+                    url => '/first_website/author/melody/2013/03/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2015/05/index.html',
+                    startdate => '20150501000000',
+                    url => '/first_website/author/melody/2015/05/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2016/06/index.html',
+                    startdate => '20160601000000',
+                    url => '/first_website/author/melody/2016/06/index.html',
+                    author_id => 1,
+                },
+            ],
+            'Author-Yearly' => [
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2011/index.html',
+                    startdate => '20110101000000',
+                    url       => '/first_website/author/melody/2011/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2012/index.html',
+                    startdate => '20120101000000',
+                    url       => '/first_website/author/melody/2012/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2013/index.html',
+                    startdate => '20130101000000',
+                    url       => '/first_website/author/melody/2013/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2015/index.html',
+                    startdate => '20150101000000',
+                    url       => '/first_website/author/melody/2015/index.html',
+                    author_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/author/melody/2016/index.html',
+                    startdate => '20160101000000',
+                    url       => '/first_website/author/melody/2016/index.html',
+                    author_id => 1,
+                },
+            ],
+            'Category-Daily' => [
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/2011/01/01/index.html',
+                    startdate => '20110101000000',
+                    url =>
+                        '/first_website/website-category-1/2011/01/01/index.html',
+                    category_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/website-subcategory-2/2012/02/02/index.html',
+                    startdate => '20120202000000',
+                    url =>
+                        '/first_website/website-category-1/website-subcategory-2/2012/02/02/index.html',
+                    category_id => 2,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-3/2013/03/03/index.html',
+                    startdate => '20130303000000',
+                    url =>
+                        '/first_website/website-category-3/2013/03/03/index.html',
+                    category_id => 3,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/05/index.html',
+                    startdate => '20150505000000',
+                    url =>
+                        '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/05/index.html',
+                    category_id => 5,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/06/index.html',
+                    startdate => '20160606000000',
+                    url =>
+                        '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/06/index.html',
+                    category_id => 6,
+                },
+            ],
+            'Category-Weekly' => [
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/2010/12/26-week/index.html',
+                    startdate => '20101226000000',
+                    url =>
+                        '/first_website/website-category-1/2010/12/26-week/index.html',
+                    category_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/website-subcategory-2/2012/01/29-week/index.html',
+                    startdate => '20120129000000',
+                    url =>
+                        '/first_website/website-category-1/website-subcategory-2/2012/01/29-week/index.html',
+                    category_id => 2,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-3/2013/03/03-week/index.html',
+                    startdate => '20130303000000',
+                    url =>
+                        '/first_website/website-category-3/2013/03/03-week/index.html',
+                    category_id => 3,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/03-week/index.html',
+                    startdate => '20150503000000',
+                    url =>
+                        '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/03-week/index.html',
+                    category_id => 5,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/05-week/index.html',
+                    startdate => '20160605000000',
+                    url =>
+                        '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/05-week/index.html',
+                    category_id => 6,
+                },
+            ],
+            'Category-Monthly' => [
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/2011/01/index.html',
+                    startdate => '20110101000000',
+                    url => '/first_website/website-category-1/2011/01/index.html',
+                    category_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/website-subcategory-2/2012/02/index.html',
+                    startdate => '20120201000000',
+                    url =>
+                        '/first_website/website-category-1/website-subcategory-2/2012/02/index.html',
+                    category_id => 2,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-3/2013/03/index.html',
+                    startdate => '20130301000000',
+                    url => '/first_website/website-category-3/2013/03/index.html',
+                    category_id => 3,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/index.html',
+                    startdate => '20150501000000',
+                    url =>
+                        '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/index.html',
+                    category_id => 5,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/index.html',
+                    startdate => '20160601000000',
+                    url =>
+                        '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/index.html',
+                    category_id => 6,
+                },
+            ],
+            'Category-Yearly' => [
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/2011/index.html',
+                    startdate => '20110101000000',
+                    url => '/first_website/website-category-1/2011/index.html',
+                    category_id => 1,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/website-subcategory-2/2012/index.html',
+                    startdate => '20120101000000',
+                    url =>
+                        '/first_website/website-category-1/website-subcategory-2/2012/index.html',
+                    category_id => 2,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-3/2013/index.html',
+                    startdate => '20130101000000',
+                    url => '/first_website/website-category-3/2013/index.html',
+                    category_id => 3,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/index.html',
+                    startdate => '20150101000000',
+                    url =>
+                        '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/index.html',
+                    category_id => 5,
+                },
+                {   file_path =>
+                        '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/index.html',
+                    startdate => '20160101000000',
+                    url =>
+                        '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/index.html',
+                    category_id => 6,
+                },
+            ],
+        );
+
+        foreach my $key ( keys %suite ) {
+            my $templatemap;
+            if ( $key eq 'Monthly' ) {
+                $templatemap = $tm_mo;
+            }
+            else {
+                $templatemap = $mt->model('templatemap')->new;
+                $templatemap->set_values(
+                    {   archive_type => $key,
+                        blog_id      => $blog_id,
+                        build_type   => MT::PublishOption::DYNAMIC(),
+                        is_preferred => 1,
+                        template_id  => $tm_mo->template_id,
+                    }
+                );
+                $templatemap->save or die $templatemap->errstr;
+            }
+
+            foreach my $data ( @{ $suite{$key} } ) {
+                my $fi = $mt->model('fileinfo')->new;
+                $fi->set_values(
+                    {   archive_type   => $key,
+                        blog_id        => $blog_id,
+                        template_id    => $templatemap->template_id,
+                        templatemap_id => $templatemap->id,
+                        virtual        => 1,
+                    }
+                );
+                foreach my $col ( keys %$data ) {
+                    $fi->$col( $data->{$col} );
+                }
+                $fi->save or die $fi->errstr;
+            }
         }
     }
-}
 
-{
-    # Child blog
-    my $b = $mt->model('blog')->new;
-    $b->set_values(
-        {   author_id => $admin->id,
-            parent_id => $blog_id,
-            name      => 'First Blog',
-        }
-    );
-    $b->save or die $b->errstr;
+    {
+        # Child blog
+        my $b = $mt->model('blog')->new;
+        $b->set_values(
+            {   author_id => $admin->id,
+                parent_id => $blog_id,
+                name      => 'First Blog',
+            }
+        );
+        $b->save or die $b->errstr;
 
-    my $e1 = $mt->model('entry')->new;
-    $e1->set_values(
-        {   blog_id   => $b->id,
-            author_id => $admin->id,
-            status    => MT::Entry::RELEASE(),
-            title     => 'Blog Entry 1',
-        }
-    );
-    $e1->save or die $e1->errstr;
-}
+        my $e1 = $mt->model('entry')->new;
+        $e1->set_values(
+            {   blog_id   => $b->id,
+                author_id => $admin->id,
+                status    => MT::Entry::RELEASE(),
+                title     => 'Blog Entry 1',
+            }
+        );
+        $e1->save or die $e1->errstr;
+    }
+});
 
 MT->request->reset;
 

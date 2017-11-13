@@ -7,6 +7,8 @@ package MT::ContentFieldType::SingleLineText;
 use strict;
 use warnings;
 
+use MT::I18N qw( first_n_text const );
+
 sub field_html_params {
     my ( $app, $field_data ) = @_;
     my $required = $field_data->{options}{required} ? 'required' : '';
@@ -87,6 +89,13 @@ sub options_validation_handler {
     }
 
     return;
+}
+
+sub field_value_handler {
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
+    return exists $args->{words}
+        ? first_n_text( $value, $args->{words} )
+        : $value;
 }
 
 1;

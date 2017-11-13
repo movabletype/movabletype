@@ -16,10 +16,13 @@ plan tests => 3;
 
 use CGI;
 
-use MT::Test qw( :cms :db :data );
-
+use MT::Test;
 use MT::Plugin;
 use MT::Entry;
+
+MT::Test->init_cms;
+
+$test_env->prepare_fixture('db_data');
 
 ### Test app callbacks
 

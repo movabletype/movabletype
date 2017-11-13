@@ -18,8 +18,12 @@ use MT::Author;
 use MT::Blog;
 use MT::Role;
 use MT::Website;
-use MT::Test qw(:app :db);
+use MT::Test;
 use MT::Test::Permission;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db');
 
 my $admin   = MT::Author->load(1);
 my $website = MT::Website->load(1);

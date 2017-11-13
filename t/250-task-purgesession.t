@@ -13,13 +13,11 @@ BEGIN {
 }
 
 use MT;
+use MT::Test;
 use MT::App::DataAPI;
-eval(
-    $ENV{SKIP_REINITIALIZE_DATABASE}
-    ? "use MT::Test;"
-    : "use MT::Test qw(:db);"
-);
 use MT::Test::Permission;
+
+$test_env->prepare_fixture('db');
 
 my $token_class   = MT->model('accesstoken');
 my $session_class = MT->model('session');

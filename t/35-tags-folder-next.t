@@ -14,7 +14,7 @@ use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test qw( :db );
+use MT::Test;
 use MT::Test::Permission;
 
 filters {
@@ -24,24 +24,28 @@ filters {
 
 my $blog_id = 1;
 
-my $foo = MT::Test::Permission->make_folder(
-    blog_id => $blog_id,
-    label   => 'foo',
-);
-my $bar = MT::Test::Permission->make_folder(
-    blog_id => $blog_id,
-    label   => 'bar',
-);
-my $baz = MT::Test::Permission->make_folder(
-    blog_id => $blog_id,
-    label   => 'baz',
-);
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-my $folder_order = join( ',', map { $_->id } ( $foo, $bar, $baz ) );
+    my $foo = MT::Test::Permission->make_folder(
+        blog_id => $blog_id,
+        label   => 'foo',
+    );
+    my $bar = MT::Test::Permission->make_folder(
+        blog_id => $blog_id,
+        label   => 'bar',
+    );
+    my $baz = MT::Test::Permission->make_folder(
+        blog_id => $blog_id,
+        label   => 'baz',
+    );
 
-my $blog = MT->model('blog')->load($blog_id) or die MT->model('blog')->errstr;
-$blog->folder_order($folder_order);
-$blog->save or die $blog->errstr;
+    my $folder_order = join( ',', map { $_->id } ( $foo, $bar, $baz ) );
+
+    my $blog = MT->model('blog')->load($blog_id) or die MT->model('blog')->errstr;
+    $blog->folder_order($folder_order);
+    $blog->save or die $blog->errstr;
+});
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);

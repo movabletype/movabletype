@@ -20,7 +20,7 @@ use MT::Test::Tag;
 plan tests => 1 * blocks;
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
 use MT::Test::Permission;
 my $app = MT->instance;
 
@@ -32,23 +32,25 @@ filters {
     error    => [qw( chomp )],
 };
 
-my $mt = MT->instance;
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-my $ct = MT::Test::Permission->make_content_type(
-    name    => 'test content data',
-    blog_id => $blog_id,
-);
-require MT::Entry;
-my $cd1 = MT::Test::Permission->make_content_data(
-    blog_id         => $blog_id,
-    content_type_id => $ct->id,
-    status          => MT::Entry::HOLD(),
-);
-my $cd2 = MT::Test::Permission->make_content_data(
-    blog_id         => $blog_id,
-    content_type_id => $ct->id,
-    status          => MT::Entry::RELEASE(),
-);
+    my $ct = MT::Test::Permission->make_content_type(
+        name    => 'test content data',
+        blog_id => $blog_id,
+    );
+    require MT::Entry;
+    my $cd1 = MT::Test::Permission->make_content_data(
+        blog_id         => $blog_id,
+        content_type_id => $ct->id,
+        status          => MT::Entry::HOLD(),
+    );
+    my $cd2 = MT::Test::Permission->make_content_data(
+        blog_id         => $blog_id,
+        content_type_id => $ct->id,
+        status          => MT::Entry::RELEASE(),
+    );
+});
 
 MT::Test::Tag->run_perl_tests($blog_id);
 

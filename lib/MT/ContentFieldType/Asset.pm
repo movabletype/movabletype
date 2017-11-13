@@ -80,7 +80,7 @@ sub single_select_options {
         { unique => 1 },
     );
     my @options;
-    my $iter = MT::Asset->load_iter( undef,
+    my $iter = MT::Asset->load_iter( { class => '*' },
         { join => $cf_idx_join, fetchonly => { id => 1, label => 1 } } );
     while ( my $asset = $iter->() ) {
         my $label = $asset->label . ' (id:' . $asset->id . ')';
@@ -398,7 +398,7 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $is_image  = $prop->idx_type eq 'image';
+    my $is_image  = $prop->idx_type eq 'asset_image';
     my $cd_id     = $content_data->id;
     my $field_id  = $prop->content_field_id;
     my $asset_ids = $content_data->data->{$field_id} || [];
@@ -598,6 +598,12 @@ sub options_validation_handler {
     }
 
     return;
+}
+
+sub field_value_handler {
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
+    my $asset = $ctx->stash('asset');
+    return $asset ? $asset->id : '';
 }
 
 1;

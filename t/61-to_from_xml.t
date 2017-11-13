@@ -21,11 +21,15 @@ use MT::Category;
 use MT::Entry;
 use MT::TBPing;
 use MT::Comment;
-use MT::Test qw(:app :db :data);
+use MT::Test;
 use MT::Test::Permission;
+
+BEGIN { MT::Test->init_app; }
 
 use MT::BackupRestore;
 use Data::Dumper;
+
+$test_env->prepare_fixture('db_data');
 
 my @emails = ( 'fumiakiy@sixapart.jp', 'fyoshimatsu@sixapart.com' );
 my $chuck = MT::Author->load( { name => 'Chuck D' } );

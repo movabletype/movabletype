@@ -22,8 +22,11 @@ BEGIN {
 use IPC::Run3;
 use URI;
 
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT::WeblogPublisher;
+
+$test_env->prepare_fixture('db_data');
+
 my $app       = MT->instance;
 my $publisher = MT::WeblogPublisher->new;
 
