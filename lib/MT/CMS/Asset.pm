@@ -145,7 +145,7 @@ sub edit {
             $param->{created_by} = $app->translate('(user deleted)');
         }
         if ( $obj->modified_by() ) {
-            $user = MT->mode('author')->load(
+            $user = MT->model('author')->load(
                 {   id   => $obj->modified_by(),
                     type => MT::Author::AUTHOR()
                 }
@@ -204,7 +204,7 @@ sub dialog_list_asset {
         $terms{created_by} = $app->param('filter_val');
         $terms{blog_id}    = 0;
 
-        my $tag = MT->mode('tag')->load( { name => '@userpic' },
+        my $tag = MT->model('tag')->load( { name => '@userpic' },
             { binary => { name => 1 } } );
         if ($tag) {
             require MT::ObjectTag;
@@ -342,7 +342,7 @@ sub insert {
     my $tmpl;
 
     my $id = $app->param('id') or return $app->errtrans("Invalid request.");
-    my $asset = MT->mode('asset')->load($id);
+    my $asset = MT->model('asset')->load($id);
     if ($extension_message) {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
