@@ -966,7 +966,7 @@ sub post {
     if (   $blog->require_comment_emails()
         && !$commenter
         && !(
-               $comment->author
+               length($comment->author)
             && $comment->email
             && is_valid_email( $comment->email )
         )
