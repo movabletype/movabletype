@@ -299,6 +299,11 @@
     this.mixin('listFilterTop')
 
     addFilterItem(e) {
+      if (e.currentTarget.classList.contains('disabled')) {
+        e.preventDefault()
+        e.stopPropagation()
+        return
+      }
       const filterType = e.currentTarget.dataset.mtFilterType
       this.listFilterTop.addFilterItem(filterType)
     }
