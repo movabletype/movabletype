@@ -2745,7 +2745,7 @@ sub dialog_edit_asset {
     return $app->permission_denied()
         if $blog_id && !$app->can_do('upload');
 
-    my $asset = MT::Asset->load($id)
+    my $asset = MT->model('asset')->load($id)
         or return $app->errtrans( "Cannot load asset #[_1].", $id );
 
     my $param = {
