@@ -1516,7 +1516,6 @@ sub _hdlr_content_fields {
         local $vars->{__odd__}     = ( $i % 2 ) == 1;
         local $vars->{__even__}    = ( $i % 2 ) == 0;
         local $vars->{__counter__} = $i;
-        $i++;
 
         local $ctx->{__stash}{content_field_data} = $f;
 
@@ -1528,10 +1527,17 @@ sub _hdlr_content_fields {
         local $vars->{content_field_type_label}
             = $content_field_types->{ $f->{type} }{label};
 
-        my $out = $builder->build( $ctx, $tokens, {%$cond} );
-        return $ctx->error( $builder->errstr ) unless defined $out;
-
+        defined(
+            my $out = $builder->build(
+                $ctx, $tokens,
+                {   %{$cond},
+                    ContentFieldsHeader => $i == 1,
+                    ContentFieldsFooter => $i == scalar @field_data,
+                }
+            )
+        ) or return $ctx->error( $builder->errstr );
         $res .= $out;
+        $i++;
     }
 
     $res;

@@ -379,8 +379,10 @@ sub core_tags {
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_previous',
             Contents =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_contents',
-            ContentsFooter => \&slurp,
-            ContentsHeader => \&slurp,
+            ContentsFooter      => \&slurp,
+            ContentsHeader      => \&slurp,
+            ContentFieldsFooter => \&slurp,
+            ContentFieldsHeader => \&slurp,
 
             ## Category Set
             CategorySets =>
