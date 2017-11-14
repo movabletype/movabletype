@@ -11,8 +11,9 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
     $blog_id or $blog_id = $ctx->stash('blog_id');
     $blog_id or $blog_id = 0;
     if( isset( $args['parent'] ) ) {
-      if( $_stash_blog = $ctx->stash( 'blog' ) ){
-        $blog_id = $_stash_blog->blog_parent_id;
+      $_stash_blog = $ctx->stash( 'blog' );
+      if( $_stash_blog->is_blog() ){
+        $blog_id = $_stash_blog->website()->id;
       }
     }
 
