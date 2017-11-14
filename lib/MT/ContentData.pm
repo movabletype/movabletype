@@ -109,6 +109,8 @@ sub to_hash {
     my $self = shift;
     my $hash = $self->SUPER::to_hash();
 
+    $hash->{'cd.content_html'} = $self->_generate_content_html;
+
     $hash->{'cd.permalink'}   = $self->permalink;
     $hash->{'cd.status_text'} = MT::Entry::status_text( $self->status );
     $hash->{ 'cd.status_is_' . $self->status } = 1;
@@ -125,6 +127,34 @@ sub to_hash {
     $hash->{"cd.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
 
     $hash;
+}
+
+sub _generate_content_html {
+    my $self           = shift;
+    my $field_registry = MT->registry('content_field_types');
+
+    my $html = '';
+    for my $field ( @{ $self->content_type->fields } ) {
+        my $label = $field->{options}{label};
+        unless ( defined $label && $label ne '' ) {
+            $label = '(Field ID:' . $field->{id} . ')';
+        }
+
+        my $handler = $field_registry->{ $field->{type} }{feed_value_handler};
+        if ( $handler && !ref $handler ) {
+            $handler = MT->handler_to_coderef($handler);
+        }
+
+        my $field_values = $self->data->{ $field->{id} };
+        my $data
+            = $handler
+            ? $handler->( MT->app, $field, $field_values )
+            : $field_values;
+
+        $html .= "$label: $data<br>\n";
+    }
+
+    return $html;
 }
 
 sub unique_id {

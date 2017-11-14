@@ -99,5 +99,11 @@ sub tag_handler {
     $out;
 }
 
+sub feed_value_handler {
+    my ( $app, $field_data, $values ) = @_;
+    my $contents = join '', map {"<li>$_</li>"} @$values;
+    return "<ul>$contents</ul>";
+}
+
 1;
 

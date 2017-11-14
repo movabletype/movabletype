@@ -85,5 +85,10 @@ sub options_validation_handler {
     return;
 }
 
+sub feed_value_handler {
+    my ( $app, $field_data, $value ) = @_;
+    return qq{<table border="1">$value</table>};
+}
+
 1;
 
