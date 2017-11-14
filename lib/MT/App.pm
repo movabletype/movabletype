@@ -2414,7 +2414,7 @@ sub create_user_pending {
         $name =~ s/(^\s+|\s+$)//g;
         $param->{name} = $name;
     }
-    unless ( defined($name) && $name ) {
+    unless ( defined($name) && length($name) ) {
         return $app->error( $app->translate("User requires username.") );
     }
     elsif ( $name =~ m/([<>])/ ) {
