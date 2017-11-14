@@ -72,6 +72,11 @@ sub upgrade_functions {
             version_limit => 7.0021,
             priority      => 3.2,
         },
+        'v7_rebuild_content_field_permissions' => {
+            code          => \&_v7_rebuild_content_field_permissions,
+            version_limit => 7.0022,
+            priority      => 3.2,
+        },
     };
 }
 
@@ -584,6 +589,58 @@ sub _v7_rebuild_object_assets {
             }
         }
     }
+}
+
+sub _v7_rebuild_content_field_permissions {
+    my $self = shift;
+
+    $self->progress(
+        $self->translate_escape('Rebuilding content field permissions...') );
+
+    # because when role saved callback, add permissions. 
+    my $perm_iter = MT->model('permission')
+        ->load_iter( { permissions => { 'like' => '%content-field:%' } } );
+    while ( my $perm = $perm_iter->() ) {
+        my $permissions = $perm->permissions;
+        my @permissions = split ',', $permissions;
+        @permissions = map { $_ =~ s/content-field:/content_field:/g; $_; }
+            @permissions;
+        @permissions = map { $_ =~ s/'//g; $_; } @permissions;
+
+        # clear_permissions is content-field can not remove.
+        $perm->permissions('');
+        $perm->set_these_permissions(@permissions);
+        $perm->save
+            or return $self->error(
+            $self->translate_escape(
+                'Error saving record: [_1]',
+                $perm->errstr,
+            )
+            );
+    }
+
+    my $iter = MT->model('role')
+        ->load_iter( { permissions => { 'like' => '%content-field:%' } } );
+    while ( my $role = $iter->() ) {
+        my $permissions = $role->permissions;
+        my @permissions = split ',', $permissions;
+        @permissions = map { $_ =~ s/content-field:/content_field:/g; $_; }
+            @permissions;
+        @permissions = map { $_ =~ s/'//g; $_; } @permissions;
+
+        # clear_permissions is content-field: can not remove.
+        $role->permissions('');
+        $role->set_these_permissions(@permissions);
+        $role->save
+            or return $self->error(
+            $self->translate_escape(
+                'Error saving record: [_1]',
+                $role->errstr,
+            )
+            );
+
+    }
+
 }
 
 1;

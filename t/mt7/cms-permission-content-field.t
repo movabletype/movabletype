@@ -45,7 +45,7 @@ $content_type->save or die $content_type->errstr;
 my $permitted_action
     = 'content_type:'
     . $content_type->unique_id
-    . '-content-field:'
+    . '-content_field:'
     . $content_field->unique_id;
 
 my $edit_field_role = MT::Test::Permission->make_role(
@@ -59,9 +59,10 @@ MT::Association->link( $user => $edit_field_role => $site );
 my $content_field_id = $content_field->id;
 my $check_text       = 'name="content-field-' . $content_field->id;
 
+MT->model('permission')->clear_perms();
+
 # Run
 my ( $app, $out );
-
 $app = _run_app(
     'MT::App::CMS',
     {   __test_user      => $user,
@@ -75,24 +76,21 @@ $app = _run_app(
 );
 
 $out = delete $app->{__test_output};
-ok( $out =~ /content-field-1/, 'edit content data screen by permitted user' );
+ok( $out =~ /$check_text/, 'edit content data screen by permitted user' );
 
-MT->log($out);
+MT::Association->unlink( $user => $edit_field_role => $site );
 
-
-# MT::Association->unlink( $user => $edit_field_role => $site );
-#
-# $app = _run_app(
-#     'MT::App::CMS',
-#     {   __test_user      => $user,
-#         __request_method => 'POST',
-#         __mode           => 'view',
-#         blog_id          => $content_type->blog_id,
-#         content_type_id  => $content_type->id,
-#         _type            => 'content_data',
-#     },
-# );
-# $out = delete $app->{__test_output};
-# ok( $out !~ /content-field-1/, 'edit content data screen by non permitted user' ) or MT->log($out);
+$app = _run_app(
+    'MT::App::CMS',
+    {   __test_user      => $user,
+        __request_method => 'POST',
+        __mode           => 'view',
+        blog_id          => $content_type->blog_id,
+        content_type_id  => $content_type->id,
+        _type            => 'content_data',
+    },
+);
+$out = delete $app->{__test_output};
+ok( $out !~ /$check_text/, 'edit content data screen by non permitted user' );
 
 done_testing();

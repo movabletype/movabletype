@@ -120,7 +120,12 @@ sub global_perms {
         %perms = map { $_ => MT->registry( 'permissions' => $_ ) } keys %keys;
         %perms = +( %perms,
             %{ MT->app->model('content_type')->all_permissions } );
+
         \%perms;
+    }
+
+    sub clear_perms {
+        %perms = +() if %perms;
     }
 }
 
@@ -919,10 +924,10 @@ the following items:
 
     [ key, label, set ]
 
-The 'key' element is the value of that permission and is also a unique 
+The 'key' element is the value of that permission and is also a unique
 identifier that is used to identify the permission. Declared permissions
 may be tested through a 'can' method that is added to the MT::Permission
-namespace when registering them. So if you register with a 'key' value 
+namespace when registering them. So if you register with a 'key' value
 of 'foo', this creates a method 'can_foo', which may be tested for like this:
 
     my $perm = $app->permissions;
@@ -933,7 +938,7 @@ of 'foo', this creates a method 'can_foo', which may be tested for like this:
 The 'label' element is a phrase that identifies the permission.
 
 The 'set' element identifies which group or category of permissions the
-permission is associated with. Currently, there are two sets of 
+permission is associated with. Currently, there are two sets of
 permissions: 'blog' and 'system'.
 
 If you call the perms method with the $set parameter, it will only return

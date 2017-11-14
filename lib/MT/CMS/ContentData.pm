@@ -200,7 +200,7 @@ sub edit {
         my $can_edit_field
             = $app->permissions->can_do( 'content_type:'
                 . $ct_unique_id
-                . '-content-field:'
+                . '-content_field:'
                 . $e_unique_id );
         if (   $can_edit_field
             || $app->permissions->can_do('edit_all_content_data') )
