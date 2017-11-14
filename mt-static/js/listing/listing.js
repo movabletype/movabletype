@@ -378,6 +378,11 @@ riot.tag2('list-filter-detail', '<div class="row"> <div class="col-12"> <ul clas
     this.mixin('listFilterTop')
 
     this.addFilterItem = function(e) {
+      if (e.currentTarget.classList.contains('disabled')) {
+        e.preventDefault()
+        e.stopPropagation()
+        return
+      }
       const filterType = e.currentTarget.dataset.mtFilterType
       this.listFilterTop.addFilterItem(filterType)
     }.bind(this)
