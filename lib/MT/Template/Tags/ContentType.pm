@@ -1432,6 +1432,24 @@ A container tag that lists all of the field values which the content field has.
 
 =cut
 
+=head2 ContentFieldHeader
+
+The contents of this container tag will be displayed when the first
+content listed by a L<ContentField> tag is reached.
+
+=for tags contentfield
+
+=cut
+
+=head2 ContentFieldFooter
+
+The contents of this container tag will be displayed when the last
+content listed by a L<ContentField> tag is reached.
+
+=for tags contentfield
+
+=cut
+
 sub _hdlr_content_field {
     my ( $ctx, $args, $cond ) = @_;
 
@@ -1502,6 +1520,24 @@ sub _hdlr_content_field {
 A container tag that lists all of the fields which the content has.
 This tagset creates a content_field context within which contentfield tag
 may be used.
+
+=cut
+
+=head2 ContentFieldsHeader
+
+The contents of this container tag will be displayed when the first
+content listed by a L<ContentFields> tag is reached.
+
+=for tags contentfields
+
+=cut
+
+=head2 ContentFieldsFooter
+
+The contents of this container tag will be displayed when the last
+content listed by a L<ContentFields> tag is reached.
+
+=for tags contentfields
 
 =cut
 
