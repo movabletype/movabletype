@@ -108,20 +108,23 @@ sub class_label_plural {
 sub to_hash {
     my $self = shift;
     my $hash = $self->SUPER::to_hash();
-    $hash->{'cd.text_html'}
-        = $self->_generate_text_html || $self->column('data');
-    $hash;
-}
 
-sub _generate_text_html {
-    my $self      = shift;
-    my $data_hash = {};
-    for my $field_id ( keys %{ $self->data } ) {
-        my $field = MT::ContentField->load( $field_id || 0 );
-        my $hash_key = $field ? $field->name : "field_id_${field_id}";
-        $data_hash->{$hash_key} = $self->data->{$field_id};
-    }
-    eval { JSON::to_json( $data_hash, { canonical => 1, utf8 => 1 } ) };
+    $hash->{'cd.permalink'}   = $self->permalink;
+    $hash->{'cd.status_text'} = MT::Entry::status_text( $self->status );
+    $hash->{ 'cd.status_is_' . $self->status } = 1;
+    $hash->{'cd.created_on_iso'}
+        = sub { MT::Util::ts2iso( $self->blog_id, $self->created_on ) };
+    $hash->{'cd.modified_on_iso'}
+        = sub { MT::Util::ts2iso( $self->blog_id, $self->modified_on ) };
+    $hash->{'cd.authored_on_iso'}
+        = sub { MT::Util::ts2iso( $self->blog_id, $self->authored_on ) };
+
+    # Populate author info
+    my $auth = $self->author or return $hash;
+    my $auth_hash = $auth->to_hash;
+    $hash->{"cd.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
+
+    $hash;
 }
 
 sub unique_id {

@@ -66,6 +66,7 @@ sub _generate_content_data_callbacks {
         $callbacks{"ActivityFeed.${cd_name}"} = \&_feed_content_data;
         $callbacks{"ActivityFeed.filter_object.${cd_name}"}
             = \&_filter_content_data;
+        $ct->generate_object_log_class;
     }
     %callbacks;
 }
@@ -270,6 +271,10 @@ sub process_log_feed {
         $item->{'log.message'}
             = entity_translate( encode_html( $item->{'log.message'}, 1 ) );
         my $class = $log->class || 'system';
+
+        if ( $class =~ /^content_data_/ ) {
+            $class = 'content_data';
+        }
 
         if ( !$templates{$class} ) {
             $templates{$class} = $app->load_tmpl("feed_$class.tmpl")
