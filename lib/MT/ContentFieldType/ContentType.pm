@@ -237,4 +237,10 @@ sub field_value_handler {
     return $content ? $content->id : '';
 }
 
+sub feed_value_handler {
+    my ( $app, $field_data, $values ) = @_;
+    my $contents = join '', map {"<li>(ID:$_)</li>"} @$values;
+    return "<ul>$contents</ul>";
+}
+
 1;

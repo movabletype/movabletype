@@ -46,6 +46,8 @@ sub _content_type_registry {
             '$Core::MT::ContentFieldType::ContentType::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_content_type',
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::ContentType::feed_value_handler',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::ContentType::theme_import_handler',
         list_props => {
@@ -225,6 +227,8 @@ sub _date_time_registry {
             '$Core::MT::ContentFieldType::Common::field_value_handler_datetime',
         data_load_handler =>
             '$Core::MT::ContentFieldType::DateTime::data_load_handler',
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::DateTime::feed_value_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
         list_props => {
@@ -268,6 +272,8 @@ sub _date_registry {
             '$Core::MT::ContentFieldType::Common::field_value_handler_datetime',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Date::data_load_handler',
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Date::feed_value_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
         list_props => {
@@ -311,6 +317,8 @@ sub _time_registry {
             '$Core::MT::ContentFieldType::Common::field_value_handler_datetime',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Time::data_load_handler',
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Time::feed_value_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
         list_props => {
@@ -354,6 +362,8 @@ sub _select_box_registry {
             '$Core::MT::ContentFieldType::Common::ss_validator_multiple',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_multiple',
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         list_props => {
             select_box => {
                 filter_tmpl =>
@@ -481,6 +491,8 @@ sub _asset_registry {
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         list_props => {
             asset => {
                 filter_tmpl =>
@@ -592,6 +604,8 @@ sub _audio_registry {
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         list_props => {
             asset_audio => {
                 filter_tmpl =>
@@ -702,6 +716,8 @@ sub _video_registry {
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         list_props => {
             asset_video => {
                 filter_tmpl =>
@@ -812,6 +828,8 @@ sub _image_registry {
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         list_props => {
             asset_image => {
                 filter_tmpl =>
@@ -965,6 +983,8 @@ sub _categories_registry {
         ss_validator =>
             '$Core::MT::ContentFieldType::Categories::ss_validator',
         tag_handler => '$Core::MT::ContentFieldType::Categories::tag_handler',
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Categories::feed_value_handler',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::Categories::theme_import_handler',
         list_props => {
@@ -1014,6 +1034,8 @@ sub _tags_registry {
             '$Core::MT::ContentFieldType::Tags::field_html_params',
         field_value_handler =>
             '$Core::MT::ContentFieldType::Tags::field_value_handler',
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Tags::feed_value_handler',
         ss_validator => '$Core::MT::ContentFieldType::Tags::ss_validator',
         tag_handler  => '$Core::MT::ContentFieldType::Tags::tag_handler',
         list_props   => {
@@ -1054,7 +1076,9 @@ sub _list_registry {
         field_html_params =>
             '$Core::MT::ContentFieldType::List::field_html_params',
         tag_handler => '$Core::MT::ContentFieldType::List::tag_handler',
-        list_props  => {
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::List::feed_value_handler',
+        list_props => {
             list => {
                 base            => '__virtual.string',
                 col             => 'value_varchar',
@@ -1077,16 +1101,18 @@ sub _list_registry {
 }
 
 sub _table_registry {
-    {   label      => 'Table',
-        data_type  => 'blob',
-        order      => 200,
+    {   label     => 'Table',
+        data_type => 'blob',
+        order     => 200,
         data_load_handler =>
             '$Core::MT::ContentFieldType::Table::data_load_handler',
         field_html => 'field_html/field_html_table.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Table::field_html_params',
         tag_handler => '$Core::MT::ContentFieldType::Table::tag_handler',
-        list_props  => {
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Table::feed_value_handler',
+        list_props => {
             tables => {
                 base            => '__virtual.string',
                 col             => 'value_blob',

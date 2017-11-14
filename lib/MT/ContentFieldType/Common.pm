@@ -309,9 +309,8 @@ sub tag_handler_multiple {
         }
     }
 
-    my $key_value_options = $field_data->{options}{values};
-    my %value_key_hash
-        = map { $_->{value} => $_->{label} } @{ $key_value_options || [] };
+    my %value_label_hash = map { $_->{value} => $_->{label} }
+        @{ $field_data->{options}{values} || [] };
 
     for my $v (@values) {
         local $vars->{__first__}   = $i == 1;
@@ -319,7 +318,7 @@ sub tag_handler_multiple {
         local $vars->{__odd__}     = ( $i % 2 ) == 1;
         local $vars->{__even__}    = ( $i % 2 ) == 0;
         local $vars->{__counter__} = $i;
-        local $vars->{__key__}     = $value_key_hash{$v};
+        local $vars->{__key__}     = $value_label_hash{$v};
         local $vars->{__value__}   = $v;
 
         my $res = $builder->build( $ctx, $tok, $cond );
@@ -402,6 +401,19 @@ sub _has_some_modifier {
     my %arg_keys = map { $_ => 1 } keys %{ $args || {} };
     delete $arg_keys{$_} for qw( convert_breaks words @ );
     %arg_keys ? 1 : 0;
+}
+
+sub feed_value_handler_multiple {
+    my ( $app, $field_data, $values ) = @_;
+    my %value_label_hash = map { $_->{value} => $_->{label} }
+        @{ $field_data->{options}{values} || [] };
+
+    my $contents = '';
+    for my $v (@$values) {
+        my $label = $value_label_hash{$v};
+        $contents .= "<li>$label($v)</li>";
+    }
+    return "<ul>$contents</ul>";
 }
 
 1;

@@ -35,51 +35,7 @@
     &lt;b&gt;<__trans phrase="Author">:&lt;/b&gt; <mt:var name="log.cd.author.name" escape="html">&lt;br /&gt;
     &lt;/p&gt;
 
-<mt:contents type="$log.cd.ct_unique_id">
-  <mt:if tag="contentid" eq="$log.cd.id">
-    <mt:contentfields>
-      &lt;b&gt;<mt:var name="content_field_options{label}" escape="html">:&lt;/b&gt;
-      <mt:contentfield>
-        <mt:if name="content_field_type" eq="date_and_time">
-          <mt:contentfieldvalue format="%Y-%m-%d %H:%M:%S">
-        <mt:elseif name="content_field_type" eq="date_only">
-          <mt:contentfieldvalue format="%Y-%m-%d">
-        <mt:elseif name="content_field_type" eq="time_only">
-          <mt:contentfieldvalue format="%H:%M:%S">
-        <mt:elseif name="content_field_type" like="^(select_box|radio_button|checkboxes)$">
-          <mt:if name="__first__">&lt;ul&gt;</mt:if>
-            &lt;li&gt;<mt:var name="__key__" escape="html">(<mt:var name="__value__" escape="html">)&lt;/li&gt;
-          <mt:if name="__last__">&lt;/ul&gt;</mt:if>
-        <mt:elseif name="content_field_type" like="^(asset|asset_audio|asset_video|asset_image)$">
-          <mt:if name="__first__">&lt;ul&gt;</mt:if>
-            &lt;li&gt;<mt:AssetLabel escape="html"> (ID:<mt:AssetID>)&lt;/li&gt;
-          <mt:if name="__last__">&lt;/ul&gt;</mt:if>
-        <mt:elseif name="content_field_type" eq="categories">
-          <mt:if name="__first__">&lt;ul&gt;</mt:if>
-            &lt;li&gt;<mt:CategoryLabel escape="html"> (ID:<mt:CategoryID>)&lt;/li&gt;
-          <mt:if name="__last__">&lt;/ul&gt;</mt:if>
-        <mt:elseif name="content_field_type" eq="tags">
-          <mt:if name="__first__">&lt;ul&gt;</mt:if>
-            &lt;li&gt;<mt:TagLabel escape="html"><mt:if tag="tagid"> (ID:<mt:TagID>)</mt:if>&lt;/li&gt;
-          <mt:if name="__last__">&lt;/ul&gt;</mt:if>
-        <mt:elseif name="content_field_type" eq="list">
-          <mt:if name="__first__">&lt;ul&gt;</mt:if>
-            &lt;li&gt;<mt:var name="__value__" escape="html">&lt;/li&gt;
-          <mt:if name="__last__">&lt;/ul&gt;</mt:if>
-        <mt:elseif name="content_field_type" eq="tables">
-          <mt:var name="__value__" regex_replace="/table/","table border='1'" escape="html">
-        <mt:elseif name="content_field_type" eq="content_type">
-          <mt:if name="__first__">&lt;ul&gt;</mt:if>
-            &lt;li&gt;(ID:<mt:contentid>)&lt;/li&gt;
-          <mt:if name="__last__">&lt;/ul&gt;</mt:if>
-        <mt:else>
-          <mt:var name="__value__" escape="html">
-        </mt:if>
-      </mt:contentfield>
-      &lt;br&gt;
-    </mt:contentfields>
-  </mt:if>
-</mt:contents>
+      <mt:var name="log.cd.content_html" escape="html">
 
       &lt;hr /&gt;
     &lt;/div&gt;

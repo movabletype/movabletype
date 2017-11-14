@@ -99,5 +99,10 @@ sub options_pre_load_handler {
     }
 }
 
+sub feed_value_handler {
+    my ( $app, $field_data, $value ) = @_;
+    return MT::Util::format_ts( '%Y-%m-%d %H:%M:%S', $value, $app->blog );
+}
+
 1;
 

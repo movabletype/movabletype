@@ -321,5 +321,22 @@ sub field_value_handler {
     return $content ? $content->id : '';
 }
 
+sub feed_value_handler {
+    my ( $app, $field_data, $values ) = @_;
+
+    my @tags = MT->model('tag')
+        ->load( { id => $values }, { fetchonly => { id => 1, name => 1 } }, );
+    my %name_hash = map { $_->id => $_->name } @tags;
+
+    my $contents = '';
+    for my $id (@$values) {
+        my $name = $name_hash{$id};
+        $name = '' unless defined $name && $name ne '';
+        $contents .= "<li>$name (ID:$id)</li>";
+    }
+
+    return "<ul>$contents</ul>";
+}
+
 1;
 
