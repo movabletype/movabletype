@@ -85,8 +85,15 @@ sub tag_handler {
         local $vars->{__counter__} = $i;
         local $vars->{__value__}   = $v;
 
-        my $res = $builder->build( $ctx, $tok, $cond );
-        return $ctx->error( $builder->errstr ) unless defined $res;
+        defined(
+            my $res = $builder->build(
+                $ctx, $tok,
+                {   %{$cond},
+                    ContentFieldHeader => $i == 1,
+                    ContentFieldFooter => $i == scalar @$value,
+                }
+            )
+        ) or return $ctx->error( $builder->errstr );
 
         if ( $res ne '' ) {
             $out .= $glue

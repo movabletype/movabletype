@@ -291,8 +291,8 @@ sub tag_handler {
             my $out = $builder->build(
                 $ctx, $tokens,
                 {   %$cond,
-                    ArchiveListHeader => $i == 1,
-                    ArchiveListFooter => $last
+                    ContentFieldHeader => $i == 1,
+                    ContentFieldFooter => $last
                 }
             )
         ) or return $ctx->error( $builder->errstr );

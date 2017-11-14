@@ -272,19 +272,26 @@ sub tag_handler {
         @ordered_tags = grep { !$_->is_private } @ordered_tags;
     }
     for my $tag (@ordered_tags) {
-        local $vars->{__first__}   = $i == 1;
-        local $vars->{__last__}    = $i == scalar @ordered_tags;
-        local $vars->{__odd__}     = ( $i % 2 ) == 1;
-        local $vars->{__even__}    = ( $i % 2 ) == 0;
-        local $vars->{__counter__} = $i;
-        $i++;
+        local $vars->{__first__}                 = $i == 1;
+        local $vars->{__last__}                  = $i == scalar @ordered_tags;
+        local $vars->{__odd__}                   = ( $i % 2 ) == 1;
+        local $vars->{__even__}                  = ( $i % 2 ) == 0;
+        local $vars->{__counter__}               = $i;
         local $ctx->{__stash}{Tag}               = $tag;
         local $ctx->{__stash}{tag_count}         = undef;
         local $ctx->{__stash}{tag_content_count} = undef;
-        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
-            or return $ctx->error( $builder->errstr );
+        defined(
+            my $out = $builder->build(
+                $ctx, $tokens,
+                {   %$cond,
+                    ContentFieldHeader => $i == 1,
+                    ContentFieldFooter => $i == scalar @ordered_tags
+                }
+            )
+        ) or return $ctx->error( $builder->errstr );
         $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
+        $i++;
     }
     $res;
 }

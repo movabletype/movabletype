@@ -621,6 +621,13 @@ sub _hdlr_contents {
                 {   %{$cond},
                     ContentsHeader => !$i,
                     ContentsFooter => !defined $contents[ $i + 1 ],
+                    (   lc $ctx->stash('tag') eq 'contentfield'
+                        ? ( ContentFieldHeader => !$i,
+                            ContentFieldFooter => !
+                                defined $contents[ $i + 1 ],
+                            )
+                        : ()
+                    ),
                 }
             )
         ) or return $ctx->error( $builder->errstr );
@@ -1484,6 +1491,8 @@ sub _hdlr_content_field {
         my $builder = $ctx->stash('builder');
         my $vars    = $ctx->{__stash}{vars} ||= {};
         local $vars->{__value__} = $value;
+        $cond->{ContentFieldHeader} = 1;
+        $cond->{ContentFieldFooter} = 1;
         $builder->build( $ctx, $tok, {%$cond} );
     }
 }

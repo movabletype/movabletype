@@ -552,6 +552,12 @@ sub _hdlr_assets {
                 AssetIsLastInRow  => $l,
                 AssetsHeader      => !$i,
                 AssetsFooter      => !defined $assets[ $i + 1 ],
+                (   lc $ctx->stash('tag') eq 'contentfield'
+                    ? ( ContentFieldHeader => !$i,
+                        ContentFieldFooter => !defined $assets[ $i + 1 ],
+                        )
+                    : ()
+                ),
             }
         );
         return $ctx->error( $builder->errstr ) unless defined $out;

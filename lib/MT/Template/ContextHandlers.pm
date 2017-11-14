@@ -383,6 +383,8 @@ sub core_tags {
             ContentsHeader      => \&slurp,
             ContentFieldsFooter => \&slurp,
             ContentFieldsHeader => \&slurp,
+            ContentFieldFooter  => \&slurp,
+            ContentFieldHeader  => \&slurp,
 
             ## Category Set
             CategorySets =>
