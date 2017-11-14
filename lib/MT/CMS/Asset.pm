@@ -42,7 +42,7 @@ sub edit {
         }
         require MT::ObjectTag;
         my $tags_js = MT::Util::to_json(
-            [   map { $_->name } MT::Tag->load(
+            [   map { $_->name } MT->model('tag')->load(
                     undef,
                     {   join => [
                             'MT::ObjectTag', 'tag_id',
@@ -133,7 +133,7 @@ sub edit {
         $param->{previous_entry_id} = $prev_asset->id if $prev_asset;
         $param->{next_entry_id}     = $next_asset->id if $next_asset;
 
-        my $user = MT::Author->load(
+        my $user = MT->model('author')->load(
             {   id   => $obj->created_by(),
                 type => MT::Author::AUTHOR()
             }
@@ -145,7 +145,7 @@ sub edit {
             $param->{created_by} = $app->translate('(user deleted)');
         }
         if ( $obj->modified_by() ) {
-            $user = MT::Author->load(
+            $user = MT->mode('author')->load(
                 {   id   => $obj->modified_by(),
                     type => MT::Author::AUTHOR()
                 }
@@ -204,7 +204,7 @@ sub dialog_list_asset {
         $terms{created_by} = $app->param('filter_val');
         $terms{blog_id}    = 0;
 
-        my $tag = MT::Tag->load( { name => '@userpic' },
+        my $tag = MT->mode('tag')->load( { name => '@userpic' },
             { binary => { name => 1 } } );
         if ($tag) {
             require MT::ObjectTag;
@@ -342,7 +342,7 @@ sub insert {
     my $tmpl;
 
     my $id = $app->param('id') or return $app->errtrans("Invalid request.");
-    my $asset = MT::Asset->load($id);
+    my $asset = MT->mode('asset')->load($id);
     if ($extension_message) {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
@@ -631,7 +631,7 @@ sub complete_insert {
 
     if ( !$asset && $app->param('id') ) {
         require MT::Asset;
-        $asset = MT::Asset->load( $app->param('id') )
+        $asset = MT->model('asset')->load( $app->param('id') )
             || return $app->errtrans( "Cannot load file #[_1].",
             $app->param('id') );
     }
@@ -722,7 +722,7 @@ sub complete_insert {
         my $q       = $app->param;
         my $blog_id = $q->param('blog_id');
         my $tags_js = MT::Util::to_json(
-            [   map { $_->name } MT::Tag->load(
+            [   map { $_->name } MT->model('tag')->load(
                     undef,
                     {   join => [
                             'MT::ObjectTag', 'tag_id',
@@ -781,8 +781,7 @@ sub cancel_upload {
     $app->validate_magic() or return;
 
     my $asset;
-    require MT::Asset;
-    $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
+    $param{id} && ( $asset = MT->model('asset')->load( $param{id} ) )
         or return $app->errtrans("Invalid request.");
 
    # User has permission to delete asset and asset file, or user created asset
@@ -812,8 +811,7 @@ sub complete_upload {
     my $app   = shift;
     my %param = $app->param_hash;
     my $asset;
-    require MT::Asset;
-    $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
+    $param{id} && ( $asset = MT->model('asset')->load( $param{id} ) )
         or return $app->errtrans("Invalid request.");
 
     if ( $app->can('edit_assets') || $asset->created_by == $app->user->id ) {
@@ -1052,7 +1050,7 @@ sub build_asset_hasher {
 
         my $ts = $obj->created_on;
         if ( my $by = $obj->created_by ) {
-            my $user = MT::Author->load($by);
+            my $user = MT->model('author')->load($by);
             $row->{created_by}
                 = $user ? $user->name : $app->translate('(user deleted)');
         }
@@ -1124,8 +1122,7 @@ sub asset_insert_text {
     my $q       = $app->param;
     my $id      = $app->param('id')
         or return $app->errtrans("Invalid request.");
-    require MT::Asset;
-    my $asset = MT::Asset->load($id)
+    my $asset = MT->model('asset')->load($id)
         or return $app->errtrans( "Cannot load file #[_1].", $id );
     $param->{enclose} = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
     return $asset->as_html($param);
@@ -1135,8 +1132,7 @@ sub _process_post_upload {
     my $app   = shift;
     my %param = $app->param_hash;
     my $asset;
-    require MT::Asset;
-    $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
+    $param{id} && ( $asset = MT->model('asset')->load( $param{id} ) )
         or return $app->errtrans("Invalid request.");
 
     if ( $app->can('edit_assets') || $asset->created_by == $app->user->id ) {
@@ -1173,8 +1169,7 @@ sub _set_start_upload_params_compat {
             unless $perms->can_do('upload');
 
         my $blog_id = $app->param('blog_id');
-        require MT::Blog;
-        my $blog = MT::Blog->load($blog_id)
+        my $blog = MT->model('blog')->load($blog_id)
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
@@ -1417,8 +1412,7 @@ sub _set_start_upload_params {
 
     if ( my $perms = $app->permissions ) {
         my $blog_id = $app->param('blog_id');
-        require MT::Blog;
-        my $blog = MT::Blog->load($blog_id)
+        my $blog = MT->model('blog')->load($blog_id)
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
@@ -1575,8 +1569,7 @@ sub _upload_file_compat {
         }
 
         $param{blog_id} = $blog_id;
-        require MT::Blog;
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->model('blog')->load($blog_id)
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         $fmgr = $blog->file_mgr;
@@ -2158,8 +2151,7 @@ sub _upload_file {
     if ( $blog_id = $q->param('blog_id') ) {
 
         $param{blog_id} = $blog_id;
-        require MT::Blog;
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->model('blog')->load($blog_id)
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         $fmgr = $blog->file_mgr;
@@ -2660,8 +2652,7 @@ sub cms_pre_load_filtered_list {
 
     my $load_blog_ids = $load_options->{blog_ids} || undef;
 
-    require MT::Permission;
-    my $iter = MT::Permission->load_iter(
+    my $iter = MT->model('permission')->load_iter(
         {   author_id => $user->id,
             (   $load_blog_ids
                 ? ( blog_id => $load_blog_ids )
@@ -2827,7 +2818,7 @@ sub dialog_edit_asset {
 
     require MT::ObjectTag;
     my $tags_js = MT::Util::to_json(
-        [   map { $_->name } MT::Tag->load(
+        [   map { $_->name } MT->model('tag')->load(
                 undef,
                 {   join => [
                         'MT::ObjectTag', 'tag_id',
@@ -2869,7 +2860,7 @@ sub js_save_asset {
         $app->json_error( $app->translate("Permission denied.") ) )
         if $blog_id && !$app->can_do('upload');
 
-    my $asset = MT::Asset->load($id)
+    my $asset = MT->model('asset')->load($id)
         or return $app->error(
         $app->json_error(
             $app->translate( "Cannot load asset #[_1].", $id )
@@ -3273,7 +3264,7 @@ sub insert_asset {
             my $id = $item->{id};
             return $app->errtrans('Invalid request.')
                 unless $id;
-            my $asset = MT::Asset->load($id)
+            my $asset = MT->model('asset')->load($id)
                 or return $app->errtrans( 'Cannot load asset #[_1]', $id );
             my %param;
             foreach my $k ( keys %$item ) {
