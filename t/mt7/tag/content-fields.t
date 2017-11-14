@@ -86,9 +86,13 @@ __END__
 
 === MT::ContentFields
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentFields>
-<mt:if name="content_field_options{label}" eq="single1"><mt:ContentField><mt:var name="__value__"></mt:ContentField><mt:else><mt:var name="content_field_order"></mt:if></mt:ContentFields></mt:Contents>
+<mt:Contents blog_id="1" name="test content data"><mt:ContentFields><mt:ContentFieldsHeader>Header</mt:ContentFieldsHeader>
+<mt:if name="content_field_options{label}" eq="single1"><mt:ContentField><mt:var name="__value__"></mt:ContentField><mt:else><mt:var name="content_field_order"></mt:if>
+<mt:ContentFieldsFooter>Footer</mt:ContentFieldsFooter></mt:ContentFields></mt:Contents>
 --- expected
+Header
 test1
+
 10
+Footer
 
