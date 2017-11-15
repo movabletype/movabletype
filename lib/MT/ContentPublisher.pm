@@ -1060,7 +1060,8 @@ sub rebuild_file {
     return 1 if ( $map->build_type == MT::PublishOption::DYNAMIC() );
     return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
     return 1
-        if ( $content_data && $content_data->status != MT::ContentStatus::RELEASE() );
+        if ( $content_data
+        && $content_data->status != MT::ContentStatus::RELEASE() );
     return 1 unless ( $map->build_type );
 
     my $timer = MT->get_timer;
@@ -1896,6 +1897,249 @@ sub rebuild_deleted_content_data {
     MT::Util::Log->info('--- End   rebuild_deleted_content_data.');
 
     return %rebuild_recipe;
+}
+
+sub publish_future_contents {
+    my $this = shift;
+
+    require MT::ContentStatus;
+    require MT::Util;
+    my $mt            = MT->instance;
+    my $total_changed = 0;
+    my @sites         = MT->model('blog')->load(
+        { class => '*' },
+        {   join => MT->model('content_data')->join_on(
+                'blog_id',
+                { status => MT::ContentStatus::FUTURE(), },
+                { unique => 1 }
+            )
+        }
+    );
+    foreach my $site (@sites) {
+
+        # Clear cache
+        MT->instance->request( '__published:' . $site->id, undef )
+            if MT->instance->request( '__published:' . $site->id );
+
+        my @ts = MT::Util::offset_time_list( time, $site );
+        my $now = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900,
+            $ts[4] + 1,
+            @ts[ 3, 2, 1, 0 ];
+        my $iter = MT->model('content_data')->load_iter(
+            {   blog_id => $site->id,
+                status  => MT::ContentStatus::FUTURE(),
+                class   => '*'
+            },
+            {   'sort'    => 'authored_on',
+                direction => 'descend'
+            }
+        );
+        my @queue;
+        while ( my $content_data = $iter->() ) {
+            push @queue, $content_data->id
+                if $content_data->authored_on le $now;
+        }
+
+        my $changed = 0;
+        my @results;
+        my %rebuild_queue;
+        foreach my $content_data_id (@queue) {
+            my $content_data
+                = MT->model('content_data')->load($content_data_id)
+                or next;
+            my $original = $content_data->clone();
+            $content_data->status( MT::ContentStatus::RELEASE() );
+            my @ts
+                = MT::Util::offset_time_list( time, $content_data->blog_id );
+            my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+                $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+            $content_data->modified_on($ts);
+            $content_data->save
+                or die $content_data->errstr;
+            $this->post_scheduled( $content_data, $original,
+                MT->translate('Scheduled publishing.') );
+
+            MT->run_callbacks( 'scheduled_post_published', $mt,
+                $content_data );
+
+            $rebuild_queue{ $content_data->id } = $content_data;
+            my $n = $content_data->next(1);
+            $rebuild_queue{ $n->id } = $n if $n;
+            my $p = $content_data->previous(1);
+            $rebuild_queue{ $p->id } = $p if $p;
+            $changed++;
+            $total_changed++;
+
+            # Clear cache for site stats dashnoard widget.
+            MT::Util::clear_site_stats_widget_cache( $site->id )
+                or die translate('Removing stats cache failed.');
+        }
+        if ($changed) {
+            my %rebuilt_okay;
+            my $rebuilt;
+            eval {
+                foreach my $id ( keys %rebuild_queue ) {
+                    my $content_data = $rebuild_queue{$id};
+                    $mt->rebuild_content_data(
+                        ContentData => $content_data,
+                        Blog        => $site
+                    ) or die $mt->errstr;
+                    $rebuilt_okay{$id} = 1;
+                    $rebuilt++;
+                }
+                $mt->rebuild_indexes( Blog => $site )
+                    or die $mt->errstr;
+            };
+            if ( my $err = $@ ) {
+
+                # a fatal error occurred while processing the rebuild
+                # step. LOG the error and revert the entry/entries:
+                require MT::Log;
+                $mt->log(
+                    {   message => $mt->translate(
+                            "An error occurred while publishing scheduled contents: [_1]",
+                            $err
+                        ),
+                        class    => "publish",
+                        category => 'rebuild',
+                        blog_id  => $site->id,
+                        level    => MT::Log::ERROR()
+                    }
+                );
+                foreach my $id (@queue) {
+                    next if exists $rebuilt_okay{$id};
+                    my $e = $rebuild_queue{$id};
+                    next unless $e;
+                    $e->status( MT::ContentStatus::FUTURE() );
+                    $e->save or die $e->errstr;
+                }
+            }
+        }
+    }
+    $total_changed > 0 ? 1 : 0;
+}
+
+sub unpublish_past_contents {
+    my $app = shift;
+
+    require MT::ContentStatus;
+    require MT::Util;
+    my $mt            = MT->instance;
+    my $total_changed = 0;
+    my @sites         = MT->model('website')->load();
+    my @blogs         = MT->model('blog')->load();
+    push @sites, @blogs;
+    foreach my $site (@sites) {
+
+        # Clear cache
+        MT->instance->request( '__published:' . $site->id, undef )
+            if MT->instance->request( '__published:' . $site->id );
+
+        my @ts = MT::Util::offset_time_list( time, $site );
+        my $now = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900,
+            $ts[4] + 1,
+            @ts[ 3, 2, 1, 0 ];
+        my $iter = MT->model('content_data')->load_iter(
+            {   blog_id        => $site->id,
+                status         => MT::ContentStatus::RELEASE(),
+                unpublished_on => [ undef, $now ],
+                class          => '*',
+            },
+            {   range     => { unpublished_on => 1 },
+                'sort'    => 'unpublished_on',
+                direction => 'descend',
+            }
+        );
+        my @queue;
+        while ( my $content_data = $iter->() ) {
+            push @queue, $content_data->id;
+        }
+
+        my $changed = 0;
+        my @results;
+        my %rebuild_queue;
+        foreach my $content_data_id (@queue) {
+            my $content_data
+                = MT->model('content_data')->load($content_data_id)
+                or next;
+            my $original = $content_data->clone();
+
+            $content_data->status( MT::ContentStatus::UNPUBLISH() );
+            my @ts
+                = MT::Util::offset_time_list( time, $content_data->blog_id );
+            my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+                $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+            $content_data->modified_on($ts);
+            $content_data->save
+                or die $content_data->errstr;
+            $app->post_scheduled( $content_data, $original );
+
+            # remove file
+            if ( $mt->config('DeleteFilesAtRebuild') ) {
+                $app->remove_content_data_archive_file(
+                    ContentData => $content_data,
+                    ArchiveType => 'ContentType',
+                );
+            }
+
+            MT->run_callbacks( 'unpublish_past_contents', $mt,
+                $content_data );
+
+            $rebuild_queue{ $content_data->id } = $content_data;
+            my $n = $content_data->next(1);
+            $rebuild_queue{ $n->id } = $n if $n;
+            my $p = $content_data->previous(1);
+            $rebuild_queue{ $p->id } = $p if $p;
+            $changed++;
+            $total_changed++;
+
+            # Clear cache for site stats dashnoard widget.
+            MT::Util::clear_site_stats_widget_cache( $site->id )
+                or die translate('Removing stats cache failed.');
+        }
+        if ($changed) {
+            my %rebuilt_okay;
+            my $rebuilt;
+            eval {
+                foreach my $id ( keys %rebuild_queue ) {
+                    my $content_data = $rebuild_queue{$id};
+                    $mt->rebuild_content_data(
+                        ContentData => $content_data,
+                        Blog        => $site
+                    ) or die $mt->errstr;
+                    $rebuilt_okay{$id} = 1;
+                    $rebuilt++;
+                }
+                $mt->rebuild_indexes( Blog => $site )
+                    or die $mt->errstr;
+            };
+            if ( my $err = $@ ) {
+
+                # a fatal error occurred while processing the rebuild
+                # step. LOG the error and revert the entry/entries:
+                require MT::Log;
+                $mt->log(
+                    {   message => $mt->translate(
+                            "An error occurred while unpublishing past contents: [_1]",
+                            $err
+                        ),
+                        class    => "unpublish",
+                        category => 'rebuild',
+                        blog_id  => $site->id,
+                        level    => MT::Log::ERROR()
+                    }
+                );
+                foreach my $id (@queue) {
+                    next if exists $rebuilt_okay{$id};
+                    my $e = $rebuild_queue{$id};
+                    next unless $e;
+                    $e->status( MT::ContentStatus::RELEASE() );
+                    $e->save or die $e->errstr;
+                }
+            }
+        }
+    }
+    $total_changed > 0 ? 1 : 0;
 }
 
 1;

@@ -2537,6 +2537,20 @@ sub load_core_tasks {
                 MT->instance->publisher->unpublish_past_entries;
             }
         },
+        'FutureContent' => {
+            label     => 'Publish Scheduled Contents',
+            frequency => $cfg->FuturePostFrequency * 60,     # once per minute
+            code      => sub {
+                MT->instance->publisher->publish_future_contents;
+            }
+        },
+        'UnpublishingContent' => {
+            label     => 'Unpublish Past Contents',
+            frequency => $cfg->UnpublishPostFrequency * 60,  # once per minute
+            code      => sub {
+                MT->instance->publisher->unpublish_past_contents;
+            }
+        },
         'AddSummaryWatcher' => {
             label     => 'Add Summary Watcher to queue',
             frequency => 2 * 60,                          # every other minute
