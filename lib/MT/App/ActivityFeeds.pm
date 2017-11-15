@@ -9,6 +9,7 @@ package MT::App::ActivityFeeds;
 use strict;
 use base 'MT::App';
 use MT::Author qw(AUTHOR);
+use MT::ContentStatus;
 use MT::Util qw(perl_sha1_digest_hex ts2epoch epoch2ts ts2iso iso2ts
     encode_html encode_url encode_xml);
 use HTTP::Date qw(time2isoz str2time time2str);
@@ -1003,7 +1004,9 @@ sub _filter_content_data {
 
     $item->{'log.cd.can_edit'}
         = $perm->can_edit_content_data( $content_data, $user,
-        ( $content_data->status eq MT::Entry::RELEASE() ? 1 : () ) ) ? 1 : 0;
+        ( $content_data->status eq MT::ContentStatus::RELEASE() ? 1 : () ) )
+        ? 1
+        : 0;
 
     # TODO: fix permission
     $item->{'log.cd.can_change_status'}

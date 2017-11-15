@@ -20,6 +20,7 @@ use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
+use MT::ContentStatus;
 use MT::ContentType;
 use MT::ContentType::UniqueID;
 use MT::ObjectAsset;
@@ -112,7 +113,7 @@ sub to_hash {
     $hash->{'cd.content_html'} = $self->_generate_content_html;
 
     $hash->{'cd.permalink'}   = $self->permalink;
-    $hash->{'cd.status_text'} = MT::Entry::status_text( $self->status );
+    $hash->{'cd.status_text'} = MT::ContentStatus::status_text( $self->status );
     $hash->{ 'cd.status_is_' . $self->status } = 1;
     $hash->{'cd.created_on_iso'}
         = sub { MT::Util::ts2iso( $self->blog_id, $self->created_on ) };
@@ -624,7 +625,7 @@ sub next {
         $terms = $opt;
     }
     else {
-        $terms = $opt ? { status => MT::Entry::RELEASE() } : {};
+        $terms = $opt ? { status => MT::ContentStatus::RELEASE() } : {};
     }
     $self->_nextprev( 'next', $terms );
 }
@@ -637,7 +638,7 @@ sub previous {
         $terms = $opt;
     }
     else {
-        $terms = $opt ? { status => MT::Entry::RELEASE() } : {};
+        $terms = $opt ? { status => MT::ContentStatus::RELEASE() } : {};
     }
     $self->_nextprev( 'previous', $terms );
 }

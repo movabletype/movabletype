@@ -16,8 +16,8 @@ use JSON ();
 use MT;
 use MT::Blog;
 use MT::CMS::ContentType;
+use MT::ContentStatus;
 use MT::ContentType;
-use MT::Entry;
 use MT::Log;
 use MT::Session;
 use MT::Template;
@@ -119,7 +119,7 @@ sub edit {
             my $rn                = $app->param('r');
             if ( defined $rn && $rn != $content_data->current_revision ) {
                 my $status_text
-                    = MT::Entry::status_text( $content_data->status );
+                    = MT::ContentStatus::status_text( $content_data->status );
                 $param->{current_status_text} = $status_text;
                 $param->{current_status_label}
                     = $app->translate($status_text);
@@ -147,7 +147,7 @@ sub edit {
         my $status = $app->param('status') || $content_data->status;
         $status =~ s/\D//g;
         $param->{status} = $status;
-        $param->{ 'status_' . MT::Entry::status_text($status) } = 1;
+        $param->{ 'status_' . MT::ContentStatus::status_text($status) } = 1;
 
         $param->{content_data_permalink}
             = MT::Util::encode_html( $content_data->permalink );
@@ -174,7 +174,7 @@ sub edit {
         else {
             $def_status = $blog->status_default;
         }
-        $param->{ "status_" . MT::Entry::status_text($def_status) } = 1;
+        $param->{ "status_" . MT::ContentStatus::status_text($def_status) } = 1;
 
         my @now = MT::Util::offset_time_list( time, $blog );
         $param->{authored_on_date} = $app->param('authored_on_date')
@@ -423,13 +423,13 @@ sub save {
     $content_data->identifier( scalar $app->param('identifier') );
 
     if ( $app->param('scheduled') ) {
-        $content_data->status( MT::Entry::FUTURE() );
+        $content_data->status( MT::ContentStatus::FUTURE() );
     }
     else {
         my $status = $app->param('status');
         $content_data->status($status);
     }
-    if ( ( $content_data->status || 0 ) != MT::Entry::HOLD() ) {
+    if ( ( $content_data->status || 0 ) != MT::ContentStatus::HOLD() ) {
         if ( !$blog->site_path || !$blog->site_url ) {
             return $app->error(
                 $app->translate(
@@ -472,7 +472,7 @@ sub save {
     }
 
     # TODO: permission check
-    if ( $content_data->status != MT::Entry::UNPUBLISH() ) {
+    if ( $content_data->status != MT::ContentStatus::UNPUBLISH() ) {
         if ( $uo_d || $uo_t ) {
             my %param = ();
             my $uo    = $uo_d . ' ' . $uo_t;
@@ -554,7 +554,7 @@ sub save {
         my $file = MT::Util::archive_file_for( $content_data, $blog,
             $archive_type );
         if (   $file ne $orig_file
-            || $content_data->status != MT::Entry::RELEASE() )
+            || $content_data->status != MT::ContentStatus::RELEASE() )
         {
             $app->publisher->remove_content_data_archive_file(
                 ContentData => $orig,
@@ -566,8 +566,8 @@ sub save {
     ## If the saved status is RELEASE, or if the *previous* status was
     ## RELEASE, then rebuild content data archives and indexes.
     ## Otherwise the status was and is HOLD, and we don't have to do anything.
-    if ( ( $content_data->status || 0 ) == MT::Entry::RELEASE()
-        || $status_old == MT::Entry::RELEASE() )
+    if ( ( $content_data->status || 0 ) == MT::ContentStatus::RELEASE()
+        || $status_old == MT::ContentStatus::RELEASE() )
     {
         if ( $blog->count_static_templates($archive_type) == 0
             || MT::Util->launch_background_tasks )
@@ -677,7 +677,7 @@ sub delete {
         %recipe = $app->publisher->rebuild_deleted_content_data(
             ContentData => $obj,
             Blog        => $obj->blog,
-        ) if $obj->status eq MT::Entry::RELEASE();
+        ) if $obj->status eq MT::ContentStatus::RELEASE();
 
         # Remove object from database
         my $content_type_name
@@ -758,8 +758,8 @@ sub post_save {
             "[_1] (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
             $ct->name,
             $obj->id,
-            $app->translate( MT::Entry::status_text( $orig_obj->status ) ),
-            $app->translate( MT::Entry::status_text( $obj->status ) ),
+            $app->translate( MT::ContentStatus::status_text( $orig_obj->status ) ),
+            $app->translate( MT::ContentStatus::status_text( $obj->status ) ),
             $author->name
         );
 
@@ -1390,15 +1390,13 @@ sub _build_content_data_preview {
 
 sub publish_content_data {
     my $app = shift;
-    require MT::Entry;
-    _update_content_data_status( $app, MT::Entry::RELEASE(),
+    _update_content_data_status( $app, MT::ContentStatus::RELEASE(),
         $app->multi_param('id') );
 }
 
 sub draft_content_data {
     my $app = shift;
-    require MT::Entry;
-    _update_content_data_status( $app, MT::Entry::HOLD(),
+    _update_content_data_status( $app, MT::ContentStatus::HOLD(),
         $app->multi_param('id') );
 }
 
@@ -1433,15 +1431,15 @@ sub _update_content_data_status {
             unless $app_author->is_superuser
             || $app_author->permissions( $content_data->id )
             ->can_edit_content_data( $content_data, $app_author,
-            MT::Entry::HOLD() );
+            MT::ContentStatus::HOLD() );
 
         if (   $app->config('DeleteFilesAtRebuild')
-            && $content_data->status == MT::Entry::RELEASE() )
+            && $content_data->status == MT::ContentStatus::RELEASE() )
         {
             $app->publisher->remove_content_data_archive_file(
                 ContentData => $content_data,
                 ArchiveType => 'ContentType',
-                Force       => $new_status != MT::Entry::RELEASE() ? 1 : 0,
+                Force       => $new_status != MT::ContentStatus::RELEASE() ? 1 : 0,
             );
         }
 
@@ -1451,8 +1449,8 @@ sub _update_content_data_status {
         $content_data->save and $rebuild_these{$id} = 1;
 
         # Clear cache for site stats dashboard widget.
-        if ((      $content_data->status == MT::Entry::RELEASE()
-                || $old_status == MT::Entry::RELEASE()
+        if ((      $content_data->status == MT::ContentStatus::RELEASE()
+                || $old_status == MT::ContentStatus::RELEASE()
             )
             && $old_status != $content_data->status
             )
@@ -1466,8 +1464,8 @@ sub _update_content_data_status {
             "[_1] (ID:[_2]) status changed from [_3] to [_4]",
             $content_data->class_label,
             $content_data->id,
-            $app->translate( MT::Entry::status_text($old_status) ),
-            $app->translate( MT::Entry::status_text($new_status) )
+            $app->translate( MT::ContentStatus::status_text($old_status) ),
+            $app->translate( MT::ContentStatus::status_text($new_status) )
         );
         $app->log(
             {   message  => $message,

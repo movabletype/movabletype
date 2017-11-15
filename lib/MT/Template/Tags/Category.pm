@@ -8,9 +8,10 @@ package MT::Template::Tags::Category;
 use strict;
 
 use MT;
+use MT::Category;
+use MT::ContentStatus;
 use MT::Util qw( archive_file_for dirify );
 use MT::Promise qw( delay );
-use MT::Category;
 
 sub _load_sibling_categories {
     my ( $ctx, $cat, $class_type ) = @_;
@@ -326,7 +327,7 @@ sub _hdlr_categories {
                         join  => MT->model('content_data')->join_on(
                             undef,
                             {   id     => \'=cf_idx_content_data_id',
-                                status => MT::Entry::RELEASE(),
+                                status => MT::ContentStatus::RELEASE(),
                             }
                         ),
                     }

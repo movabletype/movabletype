@@ -1026,10 +1026,10 @@ sub make_content_data {
     my $pkg    = shift;
     my %params = @_;
 
-    require MT::Entry;
+    require MT::ContentStatus;
     my $values = {
         blog_id        => 2,
-        status         => MT::Entry::RELEASE(),
+        status         => MT::ContentStatus::RELEASE(),
         author_id      => 1,
         authored_on    => '20170530163600',
         unpublished_on => '20170531163600',

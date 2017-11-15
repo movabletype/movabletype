@@ -10,6 +10,7 @@ use strict;
 use base
     qw( MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeWeekly MT::ArchiveType::AuthorWeekly );
 
+use MT::ContentStatus;
 use MT::Util qw( start_end_week week2ymd );
 
 sub name {
@@ -128,7 +129,7 @@ sub archive_group_iter {
                 join      => [
                     'MT::ContentData',
                     'author_id',
-                    { status => MT::Entry::RELEASE(), blog_id => $blog->id },
+                    { status => MT::ContentStatus::RELEASE(), blog_id => $blog->id },
                     { unique => 1 }
                 ]
             }
