@@ -15,7 +15,6 @@ BEGIN {
 
 use MT::Test::Tag;
 
-# plan tests => 2 * blocks;
 plan tests => 1 * blocks;
 
 use MT;
@@ -559,3 +558,47 @@ Sample Image 1
 
 Sample Image 2
 Footer
+
+=== mt:ContentFieldLabel
+--- template
+<mt:Contents blog_id="1" name="test content data"><mt:ContentFields><mt:ContentField><mt:ContentFieldHeader><mt:ContentFieldLabel></mt:ContentFieldHeader></mt:ContentField>
+</mt:ContentFields></mt:Contents>
+--- expected
+single line text
+multi line text
+number
+url
+embedded text
+date and time
+date_only
+time_only
+select box
+radio button
+checkboxes
+list
+tables
+tags
+categories
+asset_image
+
+=== mt:ContentFieldType
+--- template
+<mt:Contents blog_id="1" name="test content data"><mt:ContentFields><mt:ContentField><mt:ContentFieldHeader><mt:ContentFieldType></mt:ContentFieldHeader></mt:ContentField>
+</mt:ContentFields></mt:Contents>
+--- expected
+single_line_text
+multi_line_text
+number
+url
+embedded_text
+date_and_time
+date_only
+time_only
+select_box
+radio_button
+checkboxes
+list
+tables
+tags
+categories
+asset_image
