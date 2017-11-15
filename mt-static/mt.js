@@ -2817,8 +2817,10 @@ MT.App.CategorySelector = new Class( Component, {
         var obj = eval( "(" + r + ")" );
         if ( obj.error )
             return alert( obj.error );
-        if ( obj.result && obj.result.id )
+        if ( obj.result && obj.result.id ) {
+            obj.result.id = String(obj.result.id);
             this.addCategory( obj.result.id, p.label, obj.result.basename, p.arguments.parent );
+        }
         if ( app.fieldCategorySelectors ) {
             if ( app.formValidated ) {
                 var $input = jQuery( this.list.getItem( obj.result.id ) ).find('input');
