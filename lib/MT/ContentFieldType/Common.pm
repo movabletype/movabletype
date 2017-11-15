@@ -405,6 +405,9 @@ sub _has_some_modifier {
 
 sub feed_value_handler_multiple {
     my ( $app, $field_data, $values ) = @_;
+    unless ( ref $values eq 'ARRAY' ) {
+        $values = [$values];
+    }
     my %value_label_hash = map { $_->{value} => $_->{label} }
         @{ $field_data->{options}{values} || [] };
 
