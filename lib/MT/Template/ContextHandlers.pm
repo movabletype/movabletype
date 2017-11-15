@@ -1108,6 +1108,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::ContentType::_hdlr_site_content_count',
             ContentFieldValue =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_field_value',
+            ContentFieldLabel =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_field_label',
 
             ## Category Set
             CategorySetName =>

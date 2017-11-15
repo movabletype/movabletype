@@ -1628,6 +1628,25 @@ sub _hdlr_content_field_value {
     return $value;
 }
 
+=head2 ContentFieldLabel
+
+The function tag which outputs a label of a content field in context of content field.
+
+=cut
+
+sub _hdlr_content_field_label {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $content_type = $ctx->stash('content_type')
+        or return $ctx->_no_content_type_error;
+    my $content_data = $ctx->stash('content')
+        or return $ctx->_no_content_error;
+    my $field_data = $ctx->stash('content_field_data')
+        or return $ctx->_no_content_field_error;
+
+    $field_data->{options}{label} || '';
+}
+
 sub _check_and_invoke {
     my ( $tag, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
