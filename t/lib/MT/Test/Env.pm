@@ -307,6 +307,7 @@ sub _slurp {
 sub _find_addons_and_plugins {
     my @files;
     push @files, glob "$MT_HOME/addons/*/config.yaml";
+    push @files, glob "$MT_HOME/plugins/*/config.yaml";
     push @files, glob "$MT_HOME/plugins/*/*.pl";
     my %seen;
     grep {!$seen{$_}++} map {$_ =~ m!/((?:addons|plugins)/[^/]+)/!; $1} @files;
