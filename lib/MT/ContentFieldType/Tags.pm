@@ -10,6 +10,7 @@ use warnings;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 use MT::Tag;
+use MT::Util;
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
@@ -339,7 +340,8 @@ sub feed_value_handler {
     for my $id (@$values) {
         my $name = $name_hash{$id};
         $name = '' unless defined $name && $name ne '';
-        $contents .= "<li>$name (ID:$id)</li>";
+        my $encoded_name = MT::Util::encode_html($name);
+        $contents .= "<li>$encoded_name (ID:$id)</li>";
     }
 
     return "<ul>$contents</ul>";

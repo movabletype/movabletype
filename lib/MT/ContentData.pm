@@ -150,7 +150,7 @@ sub _generate_content_html {
         my $data
             = $handler
             ? $handler->( MT->app, $field, $field_values )
-            : $field_values;
+            : MT::Util::encode_html($field_values);
 
         $html .= "$label: $data<br>\n";
     }

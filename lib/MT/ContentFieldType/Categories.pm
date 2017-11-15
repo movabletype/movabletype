@@ -13,6 +13,7 @@ use MT::ContentField;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
 use MT::Meta::Proxy;
+use MT::Util;
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
@@ -405,7 +406,8 @@ sub feed_value_handler {
     for my $id (@$values) {
         my $label = $label_hash{$id};
         $label = '' unless defined $label && $label ne '';
-        $contents .= "<li>$label (ID:$id)</li>";
+        my $encoded_label = MT::Util::encode_html($label);
+        $contents .= "<li>$encoded_label (ID:$id)</li>";
     }
 
     return "<ul>$contents</ul>";
