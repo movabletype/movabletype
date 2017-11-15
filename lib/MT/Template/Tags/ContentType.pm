@@ -1647,6 +1647,25 @@ sub _hdlr_content_field_label {
     $field_data->{options}{label} || '';
 }
 
+=head2 ContentFieldType
+
+The function tag which outputs a type of a content field in context of content field.
+
+=cut
+
+sub _hdlr_content_field_type {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $content_type = $ctx->stash('content_type')
+        or return $ctx->_no_content_type_error;
+    my $content_data = $ctx->stash('content')
+        or return $ctx->_no_content_error;
+    my $field_data = $ctx->stash('content_field_data')
+        or return $ctx->_no_content_field_error;
+
+    $field_data->{type} || '';
+}
+
 sub _check_and_invoke {
     my ( $tag, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
