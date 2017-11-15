@@ -1,0 +1,5 @@
+plugins/Markdown
+plugins/MultiBlog
+plugins/spamlookup
+plugins/Textile
+plugins/WidgetManager
