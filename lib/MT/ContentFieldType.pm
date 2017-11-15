@@ -405,6 +405,8 @@ sub _radio_button_registry {
             '$Core::MT::ContentFieldType::Common::ss_validator_values',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_multiple',
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         list_props => {
             radio_button => {
                 filter_tmpl =>
@@ -445,6 +447,8 @@ sub _checkboxes_registry {
             '$Core::MT::ContentFieldType::Common::ss_validator_multiple',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_multiple',
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         list_props => {
             checkboxes => {
                 filter_tmpl =>
