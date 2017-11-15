@@ -20,6 +20,8 @@ BEGIN {
     $ENV{MT_HOME} = $MT_HOME;
 }
 use lib "$MT_HOME/lib", "$MT_HOME/extlib";
+use lib glob("$MT_HOME/addons/*/lib"), glob("$MT_HOME/addons/*/extlib");
+use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 
 sub new {
     my ( $class, %extra_config ) = @_;
