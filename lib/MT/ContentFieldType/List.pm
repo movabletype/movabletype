@@ -10,6 +10,7 @@ use warnings;
 use MT::ContentField;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
+use MT::Util;
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
@@ -101,7 +102,8 @@ sub tag_handler {
 
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
-    my $contents = join '', map {"<li>$_</li>"} @$values;
+    my $contents = join '',
+        map { '<li>' . MT::Util::encode_html($_) . '</li>' } @$values;
     return "<ul>$contents</ul>";
 }
 

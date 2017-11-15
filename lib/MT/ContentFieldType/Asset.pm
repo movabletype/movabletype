@@ -16,6 +16,7 @@ use MT::ContentFieldType::Common
 use MT::FileMgr;
 use MT::ObjectTag;
 use MT::Tag;
+use MT::Util;
 
 # content field idx_type => asset class
 my %ClassTable = (
@@ -619,7 +620,8 @@ sub feed_value_handler {
     for my $id (@$values) {
         my $label = $label_hash{$id};
         $label = '' unless defined $label && $label ne '';
-        $contents .= "<li>$label (ID:$id)</li>";
+        my $encoded_label = MT::Util::encode_html($label);
+        $contents .= "<li>$encoded_label (ID:$id)</li>";
     }
 
     return "<ul>$contents</ul>";

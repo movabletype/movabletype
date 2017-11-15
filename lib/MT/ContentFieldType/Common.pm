@@ -18,7 +18,7 @@ use MT::Asset;
 use MT::ContentData;
 use MT::ContentField;
 use MT::ContentFieldIndex;
-use MT::Util ();
+use MT::Util;
 
 sub get_cd_ids_by_inner_join {
     my $prop       = shift;
@@ -413,8 +413,9 @@ sub feed_value_handler_multiple {
 
     my $contents = '';
     for my $v (@$values) {
-        my $label = $value_label_hash{$v};
-        $contents .= "<li>$label($v)</li>";
+        my $encoded_v     = MT::Util::encode_html($v);
+        my $encoded_label = MT::Util::encode_html( $value_label_hash{$v} );
+        $contents .= "<li>$encoded_label($encoded_v)</li>";
     }
     return "<ul>$contents</ul>";
 }
