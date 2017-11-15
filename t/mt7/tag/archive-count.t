@@ -19,6 +19,8 @@ plan tests => 1 * blocks;
 use MT;
 use MT::Test;
 use MT::Test::Permission;
+
+use MT::ContentStatus;
 use MT::Template::Context;
 
 my $vars = {};
@@ -130,7 +132,7 @@ $test_env->prepare_fixture(sub {
     my $content_data_01 = MT::Test::Permission->make_content_data(
         blog_id         => $blog->id,
         content_type_id => $content_type_01->id,
-        status          => MT::Entry::RELEASE(),
+        status          => MT::ContentStatus::RELEASE(),
         authored_on     => '20170927112314',
         identifier      => 'mtarchivelist-test-data 01',
         author_id       => $author_01->id,
@@ -140,7 +142,7 @@ $test_env->prepare_fixture(sub {
     my $content_data_02 = MT::Test::Permission->make_content_data(
         blog_id         => $blog->id,
         content_type_id => $content_type_01->id,
-        status          => MT::Entry::RELEASE(),
+        status          => MT::ContentStatus::RELEASE(),
         authored_on     => '20180927112314',
         identifier      => 'mtarchivelist-test-data 02',
         author_id       => $author_01->id,
@@ -150,7 +152,7 @@ $test_env->prepare_fixture(sub {
     my $content_data_03 = MT::Test::Permission->make_content_data(
         blog_id         => $blog->id,
         content_type_id => $content_type_01->id,
-        status          => MT::Entry::RELEASE(),
+        status          => MT::ContentStatus::RELEASE(),
         authored_on     => '20190927112314',
         identifier      => 'mtarchivelist-test-data 02',
         author_id       => $author_02->id,
@@ -160,7 +162,7 @@ $test_env->prepare_fixture(sub {
     my $content_data_04 = MT::Test::Permission->make_content_data(
         blog_id         => $blog->id,
         content_type_id => $content_type_02->id,
-        status          => MT::Entry::RELEASE(),
+        status          => MT::ContentStatus::RELEASE(),
         authored_on     => '20170927112314',
         identifier      => 'mtarchivelist-test-data 02',
         author_id       => $author_01->id,

@@ -8,6 +8,8 @@ package MT::ArchiveType::ContentTypeDate;
 use strict;
 use base qw( MT::ArchiveType::Date );
 
+use MT::ContentStatus;
+
 sub contenttype_group_based {
     return 1;
 }
@@ -34,7 +36,7 @@ sub dated_group_contents {
             (   $content_type_id ? ( content_type_id => $content_type_id )
                 : ()
             ),
-            status => MT::Entry::RELEASE(),
+            status => MT::ContentStatus::RELEASE(),
             ( !$dt_field_id ? ( authored_on => [ $start, $end ] ) : () ),
         },
         {   ( !$dt_field_id ? ( range_incl => { authored_on => 1 } ) : () ),
@@ -78,7 +80,7 @@ sub dated_category_contents {
     my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
     my @contents     = MT::ContentData->load(
         {   blog_id => $blog->id,
-            status  => MT::Entry::RELEASE(),
+            status  => MT::ContentStatus::RELEASE(),
             ( !$dt_field_id ? ( authored_on => [ $start, $end ] ) : () ),
         },
         {   ( !$dt_field_id ? ( range_incl => { authored_on => 1 } ) : () ),
@@ -143,7 +145,7 @@ sub dated_author_contents {
     my @contents    = MT::ContentData->load(
         {   blog_id   => $blog->id,
             author_id => $author->id,
-            status    => MT::Entry::RELEASE(),
+            status    => MT::ContentStatus::RELEASE(),
             ( !$dt_field_id ? ( authored_on => [ $start, $end ] ) : () ),
         },
         {   (   !$dt_field_id ? ( range_incl => { authored_on => 1 } )
@@ -220,7 +222,7 @@ sub make_archive_group_terms {
         = @_;
     my $terms = {
         blog_id => $blog_id,
-        status  => MT::Entry::RELEASE(),
+        status  => MT::ContentStatus::RELEASE(),
         ( $content_type_id ? ( content_type_id => $content_type_id ) : () ),
     };
     $terms->{author_id} = $author_id
@@ -386,7 +388,7 @@ sub adjacent_archive_content_data {
     $ts = ( $order eq 'descend' ) ? $start : $end;
 
     my $terms = {
-        status => MT::Entry::RELEASE(),
+        status => MT::ContentStatus::RELEASE(),
         $blog_id ? ( blog_id   => $blog_id )    : (),
         $author  ? ( author_id => $author->id ) : (),
     };
@@ -404,7 +406,6 @@ sub adjacent_archive_content_data {
     }
 
     require MT::ContentData;
-    require MT::Entry;
     my $content_data;
     if ($datetime_field_id) {
         $content_data = MT::ContentData->load(

@@ -18,7 +18,7 @@ use MT::Test::Permission;
 use MT::Author;
 use MT::ContentData;
 use MT::ContentFieldIndex;
-use MT::Entry;
+use MT::ContentStatus;
 
 MT::Test->init_app;
 
@@ -73,7 +73,7 @@ subtest 'mode=save_content_data (create)' => sub {
             __mode                                => 'save',
             blog_id                               => $content_type->blog_id,
             content_type_id                       => $content_type->id,
-            status                                => MT::Entry::HOLD(),
+            status                                => MT::ContentStatus::HOLD(),
             'content-field-' . $content_field->id => 'test input',
             _type                                 => 'content_data',
             type => 'content_data_' . $content_type->id,
@@ -121,7 +121,7 @@ subtest 'mode=save_content_data (update)' => sub {
             id                                    => $content_data->id,
             blog_id                               => $content_type->blog_id,
             content_type_id                       => $content_type->id,
-            status                                => MT::Entry::HOLD(),
+            status                                => MT::ContentStatus::HOLD(),
             'content-field-' . $content_field->id => 'test input update',
             _type                                 => 'content_data',
             type => 'content_data_' . $content_type->id,

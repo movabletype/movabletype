@@ -11,8 +11,8 @@ use strict;
 use MT;
 use MT::ContentData;
 use MT::ContentField;
+use MT::ContentStatus;
 use MT::ContentType;
-use MT::Entry;
 use MT::Util;
 
 =head2 Contents
@@ -190,7 +190,7 @@ sub _hdlr_contents {
         $args->{lastn} = $args->{limit};
     }
 
-    $terms{status} = MT::Entry::RELEASE();
+    $terms{status} = MT::ContentStatus::RELEASE();
 
     if ( !$archive_contents ) {
         if ( $ctx->{inside_mt_categories} ) {
@@ -1022,7 +1022,7 @@ sub _hdlr_contents_count {
 
         my %terms = (
             blog_id => $ctx->stash('blog_id'),
-            status  => MT::Entry::RELEASE(),
+            status  => MT::ContentStatus::RELEASE(),
         );
         my %args = (
             sort      => $by,
@@ -1073,7 +1073,7 @@ sub _hdlr_site_content_count {
         or return $ctx->error( $ctx->errstr );
     $ctx->set_content_type_load_context( $args, $cond, \%terms, \%args )
         or return;
-    $terms{status} = MT::Entry::RELEASE();
+    $terms{status} = MT::ContentStatus::RELEASE();
     my $count = MT::ContentData->count( \%terms, \%args );
     return $ctx->count_format( $count, $args );
 }
@@ -1102,7 +1102,7 @@ sub _hdlr_author_content_count {
     $ctx->set_content_type_load_context( $args, $cond, \%terms, \%args )
         or return;
     $terms{author_id} = $author->id;
-    $terms{status}    = MT::Entry::RELEASE();
+    $terms{status}    = MT::ContentStatus::RELEASE();
     my $count = MT::ContentData->count( \%terms, \%args );
     return $ctx->count_format( $count, $args );
 }
@@ -1152,7 +1152,7 @@ sub _hdlr_author_has_content {
     my %terms;
     $terms{blog_id}   = $ctx->stash('blog_id');
     $terms{author_id} = $author->id;
-    $terms{status}    = MT::Entry::RELEASE();
+    $terms{status}    = MT::ContentStatus::RELEASE();
 
     $ctx->set_content_type_load_context( $args, $cond, \%terms ) or return;
 
@@ -1320,7 +1320,7 @@ sub _hdlr_content_calendar {
     my $iter = MT::ContentData->load_iter(
         {   blog_id     => $blog_id,
             authored_on => [ $start, $end ],
-            status      => MT::Entry::RELEASE(),
+            status      => MT::ContentStatus::RELEASE(),
             %{$cd_terms},
         },
         {   range_incl => { authored_on => 1 },
@@ -1395,7 +1395,7 @@ sub _hdlr_content_nextprev {
     my ( $meth, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    my $terms = { status => MT::Entry::RELEASE() };
+    my $terms = { status => MT::ContentStatus::RELEASE() };
     $terms->{by_author} = 1 if $args->{by_author};
     if ( $args->{by_category} ) {
         if ( $args->{content_field_id} || $args->{category_id} ) {

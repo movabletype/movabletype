@@ -9,6 +9,7 @@ package MT::ArchiveType::ContentType;
 use strict;
 use base qw( MT::ArchiveType );
 
+use MT::ContentStatus;
 use MT::Util qw( remove_html encode_html );
 
 sub name {
@@ -76,7 +77,7 @@ sub archive_group_iter {
     require MT::ContentData;
     my $iter = MT::ContentData->load_iter(
         {   blog_id => $blog_id,
-            status  => MT::Entry::RELEASE(),
+            status  => MT::ContentStatus::RELEASE(),
             (   $ctx->stash('content_type')
                 ? ( content_type_id => $ctx->stash('content_type')->id )
                 : ()

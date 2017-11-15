@@ -9,6 +9,7 @@ package MT::ArchiveType::ContentTypeAuthor;
 use strict;
 use base qw( MT::ArchiveType::Author );
 
+use MT::ContentStatus;
 use MT::Util qw( remove_html encode_html );
 
 sub name {
@@ -67,7 +68,7 @@ sub archive_group_iter {
             direction => $auth_order,
             join      => [
                 'MT::ContentData', 'author_id',
-                { status => MT::Entry::RELEASE(), blog_id => $blog->id },
+                { status => MT::ContentStatus::RELEASE(), blog_id => $blog->id },
                 { unique => 1 }
             ]
         }
@@ -79,7 +80,7 @@ sub archive_group_iter {
             last if defined($limit) && $i == $limit;
             my $count = MT::ContentData->count(
                 {   blog_id   => $blog->id,
-                    status    => MT::Entry::RELEASE(),
+                    status    => MT::ContentStatus::RELEASE(),
                     author_id => $a->id,
                     (   $ctx->stash('content_type')
                         ? ( content_type_id =>
@@ -132,7 +133,7 @@ sub archive_group_contents {
                 : ()
             ),
             author_id => $a->id,
-            status    => MT::Entry::RELEASE()
+            status    => MT::ContentStatus::RELEASE()
         },
         {   'sort'      => 'authored_on',
             'direction' => 'descend',

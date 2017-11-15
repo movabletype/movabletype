@@ -284,7 +284,7 @@ sub rebuild {
         $arg{limit}  = $param{Limit}  if $param{Limit};
         my $pre_iter = MT::ContentData->load_iter(
             {   blog_id => $blog->id,
-                status  => MT::Entry::RELEASE(),
+                status  => MT::ContentStatus::RELEASE(),
                 (   $content_type_id
                     ? ( content_type_id => $content_type_id )
                     : ()
@@ -1060,7 +1060,7 @@ sub rebuild_file {
     return 1 if ( $map->build_type == MT::PublishOption::DYNAMIC() );
     return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
     return 1
-        if ( $content_data && $content_data->status != MT::Entry::RELEASE() );
+        if ( $content_data && $content_data->status != MT::ContentStatus::RELEASE() );
     return 1 unless ( $map->build_type );
 
     my $timer = MT->get_timer;

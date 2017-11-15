@@ -24,6 +24,12 @@ use MT::Util qw( archive_file_for discover_tb start_end_period extract_domain
     extract_domains weaken first_n_words remove_html encode_html trim );
 use MT::I18N qw( first_n_text const );
 
+use MT::EntryStatus qw(:all);
+
+use Exporter 'import';
+our @EXPORT_OK = qw( HOLD RELEASE FUTURE );
+our %EXPORT_TAGS = ( constants => [qw(HOLD RELEASE FUTURE)] );
+
 sub CATEGORY_CACHE_TIME () {604800}    ## 7 * 24 * 60 * 60 == 1 week
 
 __PACKAGE__->install_properties(
@@ -184,19 +190,6 @@ __PACKAGE__->install_properties(
         class_type  => 'entry',
     }
 );
-
-sub HOLD ()     {1}
-sub RELEASE ()  {2}
-sub REVIEW ()   {3}
-sub FUTURE ()   {4}
-sub JUNK ()     {5}
-sub UNPUBLISH() {6}
-
-use Exporter;
-*import = \&Exporter::import;
-use vars qw( @EXPORT_OK %EXPORT_TAGS);
-@EXPORT_OK = qw( HOLD RELEASE FUTURE );
-%EXPORT_TAGS = ( constants => [qw(HOLD RELEASE FUTURE)] );
 
 sub class_label {
     MT->translate("Entry");
@@ -933,29 +926,6 @@ sub status {
             unless exists( $entry->{__orig_value}->{status} );
     }
     return $entry->column( 'status', @_ );
-}
-
-sub status_text {
-    my $s = $_[0];
-          $s == HOLD      ? "Draft"
-        : $s == RELEASE   ? "Publish"
-        : $s == REVIEW    ? "Review"
-        : $s == FUTURE    ? "Future"
-        : $s == JUNK      ? "Spam"
-        : $s == UNPUBLISH ? "Unpublish"
-        :                   '';
-}
-
-sub status_int {
-    my $s = lc $_[0];    ## Lower-case it so that it's case-insensitive
-          $s eq 'draft'     ? HOLD
-        : $s eq 'publish'   ? RELEASE
-        : $s eq 'review'    ? REVIEW
-        : $s eq 'future'    ? FUTURE
-        : $s eq 'junk'      ? JUNK
-        : $s eq 'spam'      ? JUNK
-        : $s eq 'unpublish' ? UNPUBLISH
-        :                     undef;
 }
 
 sub authored_on_obj {

@@ -175,8 +175,10 @@ use_ok('MT::ContentFieldType::Tags');
 use_ok('MT::ContentFieldType::Time');
 use_ok('MT::ContentFieldType::URL');
 use_ok('MT::ContentPublisher');
+use_ok('MT::ContentStatus');
 use_ok('MT::ContentType');
 use_ok('MT::ContentType::UniqueID');
+use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
 

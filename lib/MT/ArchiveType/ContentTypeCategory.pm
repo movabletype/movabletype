@@ -9,6 +9,7 @@ package MT::ArchiveType::ContentTypeCategory;
 use strict;
 use base qw( MT::ArchiveType::Category );
 
+use MT::ContentStatus;
 use MT::Util qw( remove_html encode_html );
 
 sub name {
@@ -140,7 +141,7 @@ sub archive_group_iter {
                 undef,
                 {   id      => \'= cf_idx_content_data_id',
                     blog_id => $blog_id,
-                    status  => MT::Entry::RELEASE(),
+                    status  => MT::ContentStatus::RELEASE(),
                     (   $ctx->stash('content_type')
                         ? ( content_type_id =>
                                 $ctx->stash('content_type')->id )
@@ -192,7 +193,7 @@ sub archive_group_contents {
     my $cat_field_id = $map ? $map->cat_field_id : '';
     require MT::ContentData;
     my @contents = MT::ContentData->load(
-        {   status => MT::Entry::RELEASE(),
+        {   status => MT::ContentStatus::RELEASE(),
             (   $content_type_id
                 ? ( content_type_id => $content_type_id )
                 : ()

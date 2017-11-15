@@ -15,6 +15,7 @@ use MT::Test;
 use MT::Test::Permission;
 
 use MT::Category;
+use MT::ContentStatus;
 
 my $blog_id = 1;
 
@@ -82,14 +83,14 @@ subtest 'no $opt or $opt = 1' => sub {
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
-        status          => MT::Entry::RELEASE(),
+        status          => MT::ContentStatus::RELEASE(),
     };
     my $cd1 = MT::Test::Permission->make_content_data( %{$terms},
         authored_on => '20170602122000' );
     my $cd2 = MT::Test::Permission->make_content_data(
         %{$terms},
         authored_on => '20170603122000',
-        status      => MT::Entry::HOLD(),
+        status      => MT::ContentStatus::HOLD(),
     );
     my $cd3 = MT::Test::Permission->make_content_data( %{$terms},
         authored_on => '20170604122000' );
@@ -111,7 +112,7 @@ subtest '$opt = { by_modified_on => 1 }' => sub {
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
-        status          => MT::Entry::RELEASE(),
+        status          => MT::ContentStatus::RELEASE(),
     };
     my $cd1 = MT::Test::Permission->make_content_data( %{$terms} );
     my $cd2 = MT::Test::Permission->make_content_data( %{$terms} );
@@ -144,7 +145,7 @@ subtest '$opt = { by_author => 1 }' => sub {
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
-        status          => MT::Entry::RELEASE(),
+        status          => MT::ContentStatus::RELEASE(),
     };
     my $cd1 = MT::Test::Permission->make_content_data( %{$terms} );
     my $cd2 = MT::Test::Permission->make_content_data( %{$terms},
@@ -163,7 +164,7 @@ subtest '$opt = { by_category => 1 }' => sub {
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
-        status          => MT::Entry::RELEASE(),
+        status          => MT::ContentStatus::RELEASE(),
     };
     my $cd1 = MT::Test::Permission->make_content_data(
         %{$terms},
@@ -196,7 +197,7 @@ subtest '$opt = { by_category => { content_field_id => ??? } }' => sub {
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
-        status          => MT::Entry::RELEASE(),
+        status          => MT::ContentStatus::RELEASE(),
     };
     my $cd1 = MT::Test::Permission->make_content_data(
         %{$terms},
@@ -233,7 +234,7 @@ subtest
         author_id       => 1,
         blog_id         => $ct->blog_id,
         content_type_id => $ct->id,
-        status          => MT::Entry::RELEASE(),
+        status          => MT::ContentStatus::RELEASE(),
     };
     my $cd1 = MT::Test::Permission->make_content_data(
         %{$terms},

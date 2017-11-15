@@ -8,9 +8,9 @@ use strict;
 use warnings;
 
 use MT;
-use MT::ContentType;
 use MT::ContentData;
-use MT::Entry;
+use MT::ContentStatus;
+use MT::ContentType;
 use MT::Serialize;
 use MT::Theme::Common qw( get_author_id );
 
@@ -83,8 +83,9 @@ sub apply {
                     authored_on     => $ct_value->{authored_on},
                     unpublished_on  => $ct_value->{unpublished_on},
                     convert_breaks  => $ct_value->{convert_breaks},
-                    status => $ct_value->{status} || MT::Entry::RELEASE(),
-                    title  => defined( $ct_value->{title} )
+                    status          => $ct_value->{status}
+                        || MT::ContentStatus::RELEASE(),
+                    title => defined( $ct_value->{title} )
                     ? $theme->translate_templatized( $ct_value->{title} )
                     : '',
                 }

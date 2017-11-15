@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../lib"; # t/lib
+use lib "$FindBin::Bin/../../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -21,7 +22,7 @@ use MT;
 use MT::Test;
 use MT::Test::Permission;
 
-use MT::Entry;
+use MT::ContentStatus;
 
 my $app = MT->instance;
 
@@ -46,42 +47,44 @@ filters {
     error    => [qw( chomp )],
 };
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    my $user2 = MT::Test::Permission->make_author(
-        name => 'test user2',
-    );
-    $user2->is_superuser(1);
-    $user2->save or die $user2->errstr;
+        my $user2
+            = MT::Test::Permission->make_author( name => 'test user2', );
+        $user2->is_superuser(1);
+        $user2->save or die $user2->errstr;
 
-    my $ct1   = MT::Test::Permission->make_content_type(
-        name    => 'test content type 1',
-        blog_id => $blog_id,
-    );
-    MT::Test::Permission->make_content_data(
-        blog_id         => $blog_id,
-        content_type_id => $ct1->id,
-        status          => MT::Entry::RELEASE(),
-    ) for ( 1 .. 5 );
-    MT::Test::Permission->make_content_data(
-        blog_id         => $blog_id,
-        content_type_id => $ct1->id,
-        status          => MT::Entry::HOLD(),
-    );
-    MT::Test::Permission->make_content_data(
-        author_id       => $user2->id,
-        blog_id         => $blog_id,
-        content_type_id => $ct1->id,
-        status          => MT::Entry::HOLD(),
-    );
-});
+        my $ct1 = MT::Test::Permission->make_content_type(
+            name    => 'test content type 1',
+            blog_id => $blog_id,
+        );
+        MT::Test::Permission->make_content_data(
+            blog_id         => $blog_id,
+            content_type_id => $ct1->id,
+            status          => MT::ContentStatus::RELEASE(),
+        ) for ( 1 .. 5 );
+        MT::Test::Permission->make_content_data(
+            blog_id         => $blog_id,
+            content_type_id => $ct1->id,
+            status          => MT::ContentStatus::HOLD(),
+        );
+        MT::Test::Permission->make_content_data(
+            author_id       => $user2->id,
+            blog_id         => $blog_id,
+            content_type_id => $ct1->id,
+            status          => MT::ContentStatus::HOLD(),
+        );
+    }
+);
 
 my $user2 = MT::Author->load( { name => 'test user2' } );
 
 $vars->{user2_id} = $user2->id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
+
 # MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
