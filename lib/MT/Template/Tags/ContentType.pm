@@ -1590,9 +1590,8 @@ sub _hdlr_content_fields {
 
 =head2 ContentFieldValue
 
-A container tag that lists all of the fields which the content has.
-This tagset creates a content_field context within which contentfield tag
-may be used.
+The function tag which outputs a value of a content field in context of content field.
+Possible to control an output value by field_value_handler registry.
 
 =cut
 
