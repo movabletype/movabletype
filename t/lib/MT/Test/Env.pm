@@ -10,6 +10,7 @@ use File::Path 'mkpath';
 use File::Temp 'tempdir';
 use File::Basename 'dirname';
 use DBI;
+use Digest::MD5 'md5_hex';
 
 our $MT_HOME;
 
@@ -19,6 +20,8 @@ BEGIN {
     $ENV{MT_HOME} = $MT_HOME;
 }
 use lib "$MT_HOME/lib", "$MT_HOME/extlib";
+use lib glob("$MT_HOME/addons/*/lib"), glob("$MT_HOME/addons/*/extlib");
+use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 
 sub new {
     my ( $class, %extra_config ) = @_;
@@ -233,13 +236,17 @@ sub dbh {
 sub prepare_fixture {
     my $self = shift;
     my $code;
-    my $fixture_dir = "$MT_HOME/t/fixture";
+    my @addons = _find_addons_and_plugins();
+    my $uid    = substr( md5_hex( join '+', sort @addons ), 0, 7 );
+
+    my $fixture_dir = "$MT_HOME/t/fixture/$uid";
+
     my $id = (caller)[1];    # file
     $id =~ s!^($MT_HOME/)?!!;
     $id =~ s!\.t$!!;
     $id =~ s!^(?:(.*?)/)?t/!!;
     if ($1) {
-        $fixture_dir = "$MT_HOME/$1/t/fixture";
+        $fixture_dir = "$MT_HOME/$1/t/fixture/$uid";
         mkpath $fixture_dir unless -d $fixture_dir;
     }
     if ( ref $_[0] eq 'CODE' ) {
@@ -272,6 +279,10 @@ sub prepare_fixture {
         $code->();
     }
     if ( $ENV{MT_TEST_UPDATE_FIXTURE} ) {
+        mkpath $fixture_dir unless -d $fixture_dir;
+        open my $fh, '>', "$fixture_dir/README" or die $!;
+        print $fh join "\n", @addons, "";
+        close $fh;
         $self->save_schema($schema);
         $self->save_fixture($fixture);
     }
@@ -293,6 +304,15 @@ sub _slurp {
     open my $fh, '<', $file or die "$file: $!";
     local $/;
     <$fh>;
+}
+
+sub _find_addons_and_plugins {
+    my @files;
+    push @files, glob "$MT_HOME/addons/*/config.yaml";
+    push @files, glob "$MT_HOME/plugins/*/config.yaml";
+    push @files, glob "$MT_HOME/plugins/*/*.pl";
+    my %seen;
+    grep {!$seen{$_}++} map {$_ =~ m!/((?:addons|plugins)/[^/]+)/!; $1} @files;
 }
 
 sub load_schema_and_fixture {
