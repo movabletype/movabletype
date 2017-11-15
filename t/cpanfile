@@ -89,6 +89,7 @@ on 'test' => sub {
     requires 'DateTime';
     requires 'DateTime::TimeZone';
     requires 'DBD::SQLite';
+    requires 'DBI', '1.635';    # For $dbh->selectall_array
     requires 'HTTP::DAV';
     requires 'HTTP::Request::Common';
     requires 'IO::String';
