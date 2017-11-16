@@ -717,6 +717,9 @@ sub reply_preview {
         $app->translate( 'Cannot load blog #[_1].', $q->param('blog_id') ) )
         unless $blog;
 
+    can_do_reply( $app, $entry )
+        or return;
+
     require MT::Sanitize;
     my $spec = $blog->sanitize_spec
         || $app->config->GlobalSanitizeSpec;
