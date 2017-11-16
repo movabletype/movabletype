@@ -119,7 +119,7 @@ sub filter_tmpl_multiple {
          params="<mt:var name="label" escape="js">%%
                  <select class="custom-select form-control <mt:var name="type">-value">
                  <mt:loop name="single_select_options">
-                   <option value="<mt:var name="value">"><mt:var name="label" encode_html="1" encode_js="1" encode_html="1" ></option>
+                   <option value="<mt:var name="value" encode_js="1">"><mt:var name="label" encode_html="1" encode_js="1" encode_html="1" ></option>
                  </mt:loop>
                  </select>%%<mt:var name="select_options">">
 __TMPL__
