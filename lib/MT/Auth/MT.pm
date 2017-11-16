@@ -85,7 +85,7 @@ sub login_credentials {
     my ($ctx) = @_;
 
     my $app = $ctx->{app} or return;
-    if ( $app->param('username') && length( scalar $app->param('password') ) )
+    if ( length($app->param('username')) && length( scalar $app->param('password') ) )
     {
         my ( $user, $pass, $remember );
         $user     = $app->param('username');
