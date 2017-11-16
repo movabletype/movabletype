@@ -411,9 +411,11 @@ sub html {
     }
     my @assets = grep {$_} map { $assets{$_} } @$asset_ids;
 
+    my $can_double_encode = 1;
+
     my ( @labels, @thumbnails );
     for my $asset (@assets) {
-        my $label = $asset->label;
+        my $label = MT::Util::encode_html( $asset->label, $can_double_encode );
         my $edit_link = _edit_link( $app, $asset );
 
         push @labels,
