@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "h9p8kzgw",
+            "epl9qjfy",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$kUk7HEG4GF2LW9Xx$mrt5aFvgRZCkKNcdLyZfbe5AY7ELRb0DIMzMWKGDFAW5p4vbP81xX+SvkREpkqlgMlRQnQNk3r1J1+x6fg/D0g",
+            "$6$947BC3pymBQBGzbx$sLuk+eOaJfaqWSpePwvntQWC0A1e5m30oq71fSuwHKPC5GeOyU5M85bsYu75M4u6j4yfxdTntKAGnYYA5upX0g",
             "en_US",
             null,
             null,
@@ -347,15 +347,15 @@
             "1",
             null,
             "__NOW__",
-            "13e414c014c048de70ce0350a4db42c7ccc326b6",
+            "a7534659d2afe744f89996a8453fba291b713e7c",
             "0",
             "{\"1\":[\"1\",\"2\",\"3\"]}",
             "1",
-            "f25f07178dc8951b656ed998dc1f754ca7822555",
+            "06fd844f53efa6dfe4190417fbf9dcb885360bb9",
             null,
             "__NOW__",
             "2",
-            "f25f07178dc8951b656ed998dc1f754ca7822555",
+            "06fd844f53efa6dfe4190417fbf9dcb885360bb9",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -395,7 +395,7 @@
             null,
             null,
             "tags",
-            "cf9433864f1419889f795534ecdc19d7d38c8427"
+            "66f038c8d072ac1193e4bc638c5787d5761b09fb"
          ]
       ]
    },
@@ -470,7 +470,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0021\n",
+            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
             "1"
          ]
       ]
@@ -496,12 +496,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":1,\"type\":\"tags\",\"id\":\"1\",\"unique_id\":\"cf9433864f1419889f795534ecdc19d7d38c8427\"}]",
+            "[{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":1,\"type\":\"tags\",\"id\":\"1\",\"unique_id\":\"66f038c8d072ac1193e4bc638c5787d5761b09fb\"}]",
             "1",
             null,
             "__NOW__",
             "Sample Content Type",
-            "13e414c014c048de70ce0350a4db42c7ccc326b6",
+            "a7534659d2afe744f89996a8453fba291b713e7c",
             null,
             null
          ]

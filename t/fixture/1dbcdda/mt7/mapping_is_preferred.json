@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "uke7uecq",
+            "frnxcjlg",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$UiiiYXzIjD5qrYiG$jJSqQbcbt1JEG7vwMVFofr+hxIcwE/LvkZFOwjN6xP2PQbu1vJ3bcJ6PbNqhGOWrHNxAn9aDxPBt4bAw+arOmA",
+            "$6$5lOGzRqWZCUrCE85$AAT01Efn/7gI39AH29Nk+4LJ3wOQoIdJTYZQA/8B/rQBzm9T8VqZrzOCJGicRcOY+Mp3ouSaCYRmUUTPAwfWww",
             "en_US",
             null,
             null,
@@ -324,7 +324,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0021\n",
+            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
             "1"
          ]
       ]
@@ -355,7 +355,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "a68fb91c44932db57d2440eaad0e74b5196cd870",
+            "865a0e1c41eefb52088d85daca6fe4f9597e3f4b",
             null,
             null
          ],
@@ -369,7 +369,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "ae501fa025377e89061c1a5a467391cee85cd37b",
+            "2311b5b280d496ed1ede5352dbec490c0f68340b",
             null,
             null
          ]

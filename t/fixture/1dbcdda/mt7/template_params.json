@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "oklh4j43",
+            "rdrdv307",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$fg26Xozba6B0WkPb$fURN+za4mUQuqdjemraLqToRvdcsRJK0S191oBpjN8YX3kEtcPXJioHasGemLi67OnlFdjvRtVctRDyGC3GJzw",
+            "$6$JUnucfWaJSuPpAOH$ijHLIIb0wiLEyNLtLJXB/94iZyx4GcV/Yy8EwHuPiWw3gXY/EdUY6ZQetXBRkZS7siaDc2cgO2A4AfaO99AjsA",
             "en_US",
             null,
             null,
@@ -111,7 +111,7 @@
             null,
             "yishikawa",
             "Yuki Ishikawa",
-            "$6$1megqqtgZMQWneWX$NNZ7k49K6zRdZZviqNSvYdUtyKsZi+AJIMGskBc3ITpJR7qyF5J+PF60GDcXdueHEGimsT3HtCGbtenFooftcQ",
+            "$6$Nn4Dr5hYFOWaj8zI$89OFpLg/YutPDgO5DPaqY3fCS9sAjrBADzHENhJSIDpzzWNc5WowI+Mpw5gx52gnJjakg+RlMBtds3GpBG6cpQ",
             "en_US",
             null,
             null,
@@ -548,15 +548,15 @@
             "1",
             null,
             "__NOW__",
-            "71afffdeb4abc8639aa096ceb5de85fafb75e8e7",
+            "bfdf3335c7b96287fa84c9276b8e1926c8ded2eb",
             "0",
             "{\"1\":\"20170603180500\",\"2\":[\"1\"]}",
             "1",
-            "c7b048be93d94a3d4e8c7320dccf9ced8719fcc4",
+            "a22169f7495e673a7eb300dec9ef222f54a95baa",
             null,
             "__NOW__",
             "2",
-            "c7b048be93d94a3d4e8c7320dccf9ced8719fcc4",
+            "a22169f7495e673a7eb300dec9ef222f54a95baa",
             "2017-05-31 16:36:00",
             "201736"
          ]
@@ -596,7 +596,7 @@
             null,
             null,
             "date_and_time",
-            "d791abfcdf00efed3164dea98351c2d41aca50b6"
+            "f0fa64dd2bf70c3bbd25965cf561f092d62af115"
          ],
          [
             "2",
@@ -613,7 +613,7 @@
             null,
             null,
             "categories",
-            "11e788e40178839009b819c4197b51f42d9268f2"
+            "63f2afaf7a53d3f8826ebf34b4b426eea8b02d2d"
          ]
       ]
    },
@@ -673,7 +673,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0021\n",
+            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
             "1"
          ]
       ]
@@ -699,12 +699,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"options\":{\"label\":\"date and time\"},\"order\":6,\"type\":\"date_and_time\",\"id\":\"1\",\"unique_id\":\"d791abfcdf00efed3164dea98351c2d41aca50b6\"},{\"options\":{\"min\":1,\"max\":5,\"category_set\":\"1\",\"multiple\":1,\"label\":\"categories\"},\"order\":15,\"type\":\"categories\",\"id\":\"2\"}]",
+            "[{\"options\":{\"label\":\"date and time\"},\"order\":6,\"type\":\"date_and_time\",\"id\":\"1\",\"unique_id\":\"f0fa64dd2bf70c3bbd25965cf561f092d62af115\"},{\"options\":{\"min\":1,\"max\":5,\"category_set\":\"1\",\"multiple\":1,\"label\":\"categories\"},\"order\":15,\"type\":\"categories\",\"id\":\"2\"}]",
             "1",
             null,
             "__NOW__",
             "test content type",
-            "71afffdeb4abc8639aa096ceb5de85fafb75e8e7",
+            "bfdf3335c7b96287fa84c9276b8e1926c8ded2eb",
             null,
             null
          ]

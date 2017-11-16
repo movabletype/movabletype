@@ -73,7 +73,7 @@
       ],
       "rows" : [
          [
-            "fkihu54q",
+            "yb8hmi60",
             "MT",
             "authorce2f3",
             null,
@@ -92,7 +92,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$pSPA3G5P7P63rRyt$GHvHspvQzgvpo2dzNpV/A+X6py3Voe1jySo6p3vbZP1cGCbldyWbZChVho9LPURJEyNaJQhtswBAtf1MW/HJvg",
+            "$6$ieOKlKjBd4XJPA4q$XwtpKRHfrEVSTK8hHdtEw67h96PMudZDngYtkMz2bdl7ziB3UL8zl7i8rLHWvO53dvnowEwjr6EJwOKU9xJTwg",
             "en_US",
             null,
             null,
@@ -123,7 +123,7 @@
             null,
             "aikawa",
             "Ichiro Aikawa",
-            "$6$ebHCadDrGAQFnZdv$x4AdQ0yOMP40HbFqGJ891Zt08Zfc2sNSGwKSpoyJVy5OpFKegi21t1VIy+2Y2v7On6kGcyByxwpsxlMI6J7qyg",
+            "$6$hpYPHOnhOPcFIXlP$mO4Dz3IzibQKN5dk3crMLf3c7ddXX8JU2UuZ4+n9XYrkGEgLU/IvMatOF2F8ChscTBOqmYh+ogNiW7X5eK0PQw",
             "en_US",
             null,
             null,
@@ -154,7 +154,7 @@
             null,
             "ichikawa",
             "Jiro Ichikawa",
-            "$6$CinEPofXBLpIYAmZ$KRLYDn8GbMV32bF6yAThlCaEk3V1elqifWYmi0GJjM4hzAXuuk+k4O1PuyudNtebAnyMk6jJVVMU/qZQcoPLFw",
+            "$6$gAzyOVdIMlOWctqg$3Ujx61/ndq9ftMEdgFWbblUfv9RJJQaLgDCLIUqy1CZOYTkYp9qjZksJ2xaT5ap+2zET4mviqQG3b0i6+3h3KQ",
             "en_US",
             null,
             null,
@@ -572,7 +572,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0021\n",
+            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
             "1"
          ]
       ]

@@ -73,7 +73,7 @@
       ],
       "rows" : [
          [
-            "j7bs44ot",
+            "jdcr2t00",
             "MT",
             "authorce2f3",
             null,
@@ -92,7 +92,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$6ZLl6Z6PxfpPMyPS$9H/wzO4ZpBTcJ3W5XXHki6fXfVOF0sXx1HHecyLWAGx+4WCsnpa0YdaTnZw/UdwPTshdTZPXHksJwupvceMaOA",
+            "$6$hcFq9NoOnoBDENo4$/WHDcXETOlceuqEnTRHMHgPyNtXQo08iidAaixCeOMlgB4LC6Gz5oyw3cajLd4ZpZM5mU1EwmMwCDBMGmZRHHA",
             "en_US",
             null,
             null,
@@ -123,7 +123,7 @@
             null,
             "aikawa",
             "Ichiro Aikawa",
-            "$6$0To71Dt0W7F69Rxl$2xsyKHD6FNnj5MWvvjyOz51hzt8QIUX7yaGp9R90LvGMGyXEchpKxemAmBM4sXf16N7hgtpGiDLJVqpIoCp40g",
+            "$6$MrBLcjvm9N3Q60Wk$Muv9kHjpxl0CT+z3Ef0Q2zzIsKFU+5ZG5zvWM4+uoYxLFLEfnMEpyGETEyPbYI7repCMhhY8vsZCgO9pkkh+fw",
             "en_US",
             null,
             null,
@@ -541,7 +541,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0021\n",
+            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
             "1"
          ]
       ]

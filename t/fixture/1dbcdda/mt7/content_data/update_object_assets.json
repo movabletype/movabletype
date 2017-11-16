@@ -150,7 +150,7 @@
       ],
       "rows" : [
          [
-            "v7ygjqyx",
+            "aayn04mz",
             "MT",
             "authorce2f3",
             null,
@@ -169,7 +169,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$ILQn46ftUhdet6Df$x+Ulqxl9dMqjJbl0tT2snmJiW2/pJiyhPWjq6+3GkAad4XaoK5gzTFUY1gej/P6wU/5APtN7SM6a2pBqteBwbQ",
+            "$6$Daddtqdbt0J1XOAB$0QzDJ6Xr20pMEMHi/VDkeRTJZkt66pX4TrqFybcATSMDaIYlVMc693Roy+1KXMOv/xP0CGQEK1aX+Jw5omOypw",
             "en_US",
             null,
             null,
@@ -436,15 +436,15 @@
             "1",
             null,
             "__NOW__",
-            "1b75bcdd1ef6b0d5f76341b0bb50d6509f82292e",
+            "371b5d539f4be056496d626576dbd0259ee79490",
             "0",
             "{\"4\":[\"4\"],\"1\":[\"1\"],\"3\":[\"3\"],\"2\":[\"2\"]}",
             "1",
-            "c9996c56c01f3e4a8440f93c15e7e7ed470d4d30",
+            "77206c1c068bd24b14e01a61f7fd5348211ff579",
             null,
             "__NOW__",
             "2",
-            "c9996c56c01f3e4a8440f93c15e7e7ed470d4d30",
+            "77206c1c068bd24b14e01a61f7fd5348211ff579",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -484,7 +484,7 @@
             null,
             null,
             "asset",
-            "f1bf60720207ff7c915e94da8bb4443a98ac4125"
+            "78e7555d3285076637f17bd951a6d68c4b65859a"
          ],
          [
             "1",
@@ -501,7 +501,7 @@
             null,
             null,
             "asset_audio",
-            "18aff003796ea50a067f42ae93f2060eae84454c"
+            "48fde93ab04f12124b08a25bd0a604d75e505e7b"
          ],
          [
             "1",
@@ -518,7 +518,7 @@
             null,
             null,
             "asset_video",
-            "ec11d745cc9c964ff36d00f873271ec7ffac66bc"
+            "2200e0a52cf7376fd84aad49ee26c046f029b2d8"
          ],
          [
             "1",
@@ -535,7 +535,7 @@
             null,
             null,
             "asset_image",
-            "30786af01946b927c0e3c38c7753230eac886fa4"
+            "4f01150afde15a25c4d772005a80eef500ae1ab1"
          ]
       ]
    },
@@ -625,7 +625,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0021\n",
+            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
             "1"
          ]
       ]
@@ -651,12 +651,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":1,\"type\":\"asset\",\"id\":\"1\",\"unique_id\":\"f1bf60720207ff7c915e94da8bb4443a98ac4125\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":2,\"type\":\"asset_audio\",\"id\":\"2\",\"unique_id\":\"18aff003796ea50a067f42ae93f2060eae84454c\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":3,\"type\":\"asset_video\",\"id\":\"3\",\"unique_id\":\"ec11d745cc9c964ff36d00f873271ec7ffac66bc\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":4,\"type\":\"asset_image\",\"id\":\"4\",\"unique_id\":\"30786af01946b927c0e3c38c7753230eac886fa4\"}]",
+            "[{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":1,\"type\":\"asset\",\"id\":\"1\",\"unique_id\":\"78e7555d3285076637f17bd951a6d68c4b65859a\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":2,\"type\":\"asset_audio\",\"id\":\"2\",\"unique_id\":\"48fde93ab04f12124b08a25bd0a604d75e505e7b\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":3,\"type\":\"asset_video\",\"id\":\"3\",\"unique_id\":\"2200e0a52cf7376fd84aad49ee26c046f029b2d8\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":4,\"type\":\"asset_image\",\"id\":\"4\",\"unique_id\":\"4f01150afde15a25c4d772005a80eef500ae1ab1\"}]",
             "1",
             null,
             "__NOW__",
             "Sample Content Type",
-            "1b75bcdd1ef6b0d5f76341b0bb50d6509f82292e",
+            "371b5d539f4be056496d626576dbd0259ee79490",
             null,
             null
          ]

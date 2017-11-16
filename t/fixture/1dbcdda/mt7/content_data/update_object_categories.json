@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "rqf6ur4d",
+            "jrf7gsh4",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$Ltzl1XmiMEKEjRsF$nblH1DZ3ggbPLxsCESjWNpRNJr8z/U3usbpV2FP3eT4QchPBuj6XR7rtWlH9iAE5TwrDwb/WS77uqMTB6yc62w",
+            "$6$Z2ZUl90tcrfPQ7EQ$HHapvM5oVWMR/RAzeHVhkCyZgguuQhJKMuwHJPU/58uk1XEbksv3zKLX4EFeujQ/0qJlW7VWgdqDJ7W6i/M6FA",
             "en_US",
             null,
             null,
@@ -447,15 +447,15 @@
             "1",
             null,
             "__NOW__",
-            "a2c998b695e12af14942797ad8a9093bcf1eada8",
+            "3b9298829683ea62979bdae9dcadf5d5cd9848e6",
             "0",
             "{\"1\":[\"1\",\"2\",\"3\"]}",
             "1",
-            "fc42623c845b89876969d96e7b1d524efcda072e",
+            "4fd9164d2bdb13cb173299cf59545cd2ee713552",
             null,
             "__NOW__",
             "2",
-            "fc42623c845b89876969d96e7b1d524efcda072e",
+            "4fd9164d2bdb13cb173299cf59545cd2ee713552",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -495,7 +495,7 @@
             null,
             null,
             "categories",
-            "6423abcf4673094b1ece684e80ca91e64c4be8ab"
+            "9b5ed7b7502a1a632813a041e93f18213aec2cba"
          ]
       ]
    },
@@ -570,7 +570,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0021\n",
+            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
             "1"
          ]
       ]
@@ -596,12 +596,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"uniuque_id\":\"6423abcf4673094b1ece684e80ca91e64c4be8ab\",\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":1,\"type\":\"categories\",\"id\":\"1\"}]",
+            "[{\"uniuque_id\":\"9b5ed7b7502a1a632813a041e93f18213aec2cba\",\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":1,\"type\":\"categories\",\"id\":\"1\"}]",
             "1",
             null,
             "__NOW__",
             "Sample Content Type",
-            "a2c998b695e12af14942797ad8a9093bcf1eada8",
+            "3b9298829683ea62979bdae9dcadf5d5cd9848e6",
             null,
             null
          ]
