@@ -30,22 +30,24 @@ applications:
                         return 1 if $app->user->is_superuser;
 
                         # Blog context
-                        if ($app->blog) {
-                            return
-                                $app->permissions
-                                ->can_do('access_to_formatted_text_list');
+                        if ( $app->blog ) {
+                            my $perm = $app->permissions;
+                            return 0 unless $perm;
+                            return $perm->can_do(
+                                'access_to_formatted_text_list');
                         }
 
                         # System context
                         my $iter = $app->model('permission')->load_iter(
                             {   author_id => $app->user->id,
-                                    blog_id => { not => 0 }
+                                blog_id   => { not => 0 }
                             }
                         );
 
                         while ( my $p = $iter->() ) {
                             return 1
-                                if $p->can_do('access_to_formatted_text_list');
+                                if $p->can_do(
+                                    'access_to_formatted_text_list');
                         }
 
                         return 0;
