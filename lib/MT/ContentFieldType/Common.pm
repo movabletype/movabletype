@@ -257,7 +257,11 @@ sub html_multiple {
 
     my $values = $content_data->data->{ $prop->content_field_id } || [];
     $values = [$values] unless ref $values eq 'ARRAY';
-    my @labels = map { $label_hash{$_} } @{$values};
+
+    my $can_double_encode = 1;
+    my @labels
+        = map { MT::Util::encode_html( $label_hash{$_}, $can_double_encode ) }
+        @{$values};
 
     join ', ', @labels;
 }
