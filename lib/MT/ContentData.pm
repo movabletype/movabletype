@@ -112,8 +112,9 @@ sub to_hash {
 
     $hash->{'cd.content_html'} = $self->_generate_content_html;
 
-    $hash->{'cd.permalink'}   = $self->permalink;
-    $hash->{'cd.status_text'} = MT::ContentStatus::status_text( $self->status );
+    $hash->{'cd.permalink'} = $self->permalink;
+    $hash->{'cd.status_text'}
+        = MT::ContentStatus::status_text( $self->status );
     $hash->{ 'cd.status_is_' . $self->status } = 1;
     $hash->{'cd.created_on_iso'}
         = sub { MT::Util::ts2iso( $self->blog_id, $self->created_on ) };
@@ -1036,6 +1037,8 @@ sub _make_title_html {
     }
 
     $label = '' unless defined $label;
+    my $can_double_encode = 1;
+    $label = MT::Util::encode_html( $label, $can_double_encode );
 
     return qq{<span class="label">$label</span>};
 }
