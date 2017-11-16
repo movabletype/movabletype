@@ -129,9 +129,12 @@ sub html {
         $tag_names{ $tag->id } = $tag->name;
     }
 
+    my $can_double_encode = 1;
+
     my @links;
     for my $id (@$tag_ids) {
-        my $tag_name = $tag_names{$id};
+        my $tag_name
+            = MT::Util::encode_html( $tag_names{$id}, $can_double_encode );
         my $link = _link( $app, $tag_name );
         push @links, qq{<a href="$link">${tag_name}</a>};
     }
