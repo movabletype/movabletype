@@ -141,9 +141,11 @@ sub html {
     }
     my @cats = grep {$_} map { $cats{$_} } @$cat_ids;
 
+    my $can_double_encode = 1;
+
     my @links;
     for my $cat (@cats) {
-        my $label = $cat->label;
+        my $label = MT::Util::encode_html( $cat->label, $can_double_encode );
         my $edit_link = _edit_link( $app, $cat );
         push @links, qq{<a href="${edit_link}">${label}</a>};
     }
