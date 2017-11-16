@@ -123,10 +123,6 @@ sub global_perms {
 
         \%perms;
     }
-
-    sub clear_perms {
-        %perms = +() if %perms;
-    }
 }
 
 # Legend:

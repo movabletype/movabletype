@@ -995,6 +995,7 @@ sub make_content_type {
     $ct->save or die q{Couldn't save content type record: } . $ct->errstr;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    _mock_perms_from_registry();
 
     $ct;
 }
@@ -1018,6 +1019,7 @@ sub make_content_field {
     $cf->save or die q{Couldn't save content field record: } . $cf->errstr;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    _mock_perms_from_registry();
 
     $cf;
 }
@@ -1045,6 +1047,37 @@ sub make_content_data {
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
 
     $cd;
+}
+
+{
+
+    my $mock_permission;
+    my ( %perms, $load_content_type_perm );
+
+    sub _mock_perms_from_registry {
+        eval { require Test::MockModule } or return;
+
+        $mock_permission = Test::MockModule->new('MT::Permission');
+        $mock_permission->mock(
+            'perms_from_registry',
+            sub {
+                return \%perms if ( %perms && $load_content_type_perm );
+
+                my $regs = MT::Component->registry('permissions');
+                my %keys = map { $_ => 1 } map { keys %$_ } @$regs;
+                %perms = map { $_ => MT->registry( 'permissions' => $_ ) }
+                    keys %keys;
+                my $content_type_perm
+                    = MT->app->model('content_type')->all_permissions;
+                %perms = +( %perms, %{$content_type_perm} );
+
+                $load_content_type_perm = 1 if $content_type_perm;
+
+                \%perms;
+            }
+        ) if !$mock_permission->is_mocked('perms_from_registry');
+
+    }
 }
 
 1;
