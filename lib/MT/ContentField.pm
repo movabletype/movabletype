@@ -89,7 +89,7 @@ sub permission {
     my $permitted_action
         = 'content_type:'
         . $content_type->unique_id
-        . '-content-field:'
+        . '-content_field:'
         . $obj->unique_id;
     my $name = 'blog.' . $permitted_action;
     return +{
@@ -115,7 +115,7 @@ sub _post_remove {
     my $perm_name
         = 'content_type:'
         . $content_type->unique_id
-        . '-content-field:'
+        . '-content_field:'
         . $obj->unique_id;
     require MT::Role;
     my @roles = MT::Role->load_by_permission($perm_name);

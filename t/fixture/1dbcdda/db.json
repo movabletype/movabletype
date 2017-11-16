@@ -61,7 +61,11 @@
       ],
       "rows" : [
          [
+<<<<<<< HEAD:t/fixture/1dbcdda/db.json
             "vp5q6x87",
+=======
+            "raut6uf0",
+>>>>>>> fix/content-field-privileges:t/fixture/db.json
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +84,11 @@
             "__NOW__",
             "Melody",
             "",
+<<<<<<< HEAD:t/fixture/1dbcdda/db.json
             "$6$eByVVzlhHfGsdAMH$UeJNZtKrkl0xZUQ/kNMwpVfn4Yjc3lHd/MGAE1bifUu5AF1nXPXUG1ZMQIQjiql/VgBaXYuvodVUeVHoeIEQcQ",
+=======
+            "$6$aRBSKk5IaZ04bLN4$xcygFQgFEC7iWql79SBvGSjXy5/D3o9y1+Gq7lZ0l6TjhINznLy0mS0/YPnoFu6adZriEnbT1rfdYn6sEhaa8g",
+>>>>>>> fix/content-field-privileges:t/fixture/db.json
             "en_US",
             null,
             null,
@@ -324,7 +332,11 @@
       ],
       "rows" : [
          [
+<<<<<<< HEAD:t/fixture/1dbcdda/db.json
             "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0021\n",
+=======
+            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
+>>>>>>> fix/content-field-privileges:t/fixture/db.json
             "1"
          ]
       ]
@@ -778,6 +790,22 @@
             "1",
             "<mt:SetVarBlock name=\"message\">If this was an error, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, choosing Blog Config - IP Banning, and deleting the IP address <$mt:Var name=\"throttled_ip\"$> from the list of banned addresses.</mt:SetVarBlock>\nA visitor to your blog <$mt:BlogName$> has automatically been banned by adding more than the allowed number of comments in the last <$mt:Var name=\"throttle_seconds\"$> seconds.\n\nThis was done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is\n\n<$mt:Var name=\"throttled_ip\"$>\n\n<$mt:Var name=\"message\"$>\n",
             "email"
+         ]
+      ]
+   },
+   "mt_touch" : {
+      "cols" : [
+         "touch_blog_id",
+         "touch_id",
+         "touch_modified_on",
+         "touch_object_type"
+      ],
+      "rows" : [
+         [
+            "0",
+            "1",
+            "__NOW__",
+            "author"
          ]
       ]
    }
