@@ -468,7 +468,7 @@ sub edit {
             };
         push @sel_cats, $_->{category_id}
             if $places{ $_->{category_id} }
-            && $_->{category_id} != $cat_id;
+            && $_->{category_id} ne $cat_id;
     }
     $param->{category_tree} = $cat_tree;
     unshift @sel_cats, $top_cat if defined $top_cat && $top_cat ne "";
