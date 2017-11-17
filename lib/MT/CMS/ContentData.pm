@@ -174,7 +174,8 @@ sub edit {
         else {
             $def_status = $blog->status_default;
         }
-        $param->{ "status_" . MT::ContentStatus::status_text($def_status) } = 1;
+        $param->{ "status_" . MT::ContentStatus::status_text($def_status) }
+            = 1;
 
         my @now = MT::Util::offset_time_list( time, $blog );
         $param->{authored_on_date} = $app->param('authored_on_date')
@@ -758,7 +759,9 @@ sub post_save {
             "[_1] (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
             $ct->name,
             $obj->id,
-            $app->translate( MT::ContentStatus::status_text( $orig_obj->status ) ),
+            $app->translate(
+                MT::ContentStatus::status_text( $orig_obj->status )
+            ),
             $app->translate( MT::ContentStatus::status_text( $obj->status ) ),
             $author->name
         );
@@ -1390,8 +1393,11 @@ sub _build_content_data_preview {
 
 sub publish_content_data {
     my $app = shift;
-    _update_content_data_status( $app, MT::ContentStatus::RELEASE(),
-        $app->multi_param('id') );
+    _update_content_data_status(
+        $app,
+        MT::ContentStatus::RELEASE(),
+        $app->multi_param('id')
+    );
 }
 
 sub draft_content_data {
@@ -1439,7 +1445,7 @@ sub _update_content_data_status {
             $app->publisher->remove_content_data_archive_file(
                 ContentData => $content_data,
                 ArchiveType => 'ContentType',
-                Force       => $new_status != MT::ContentStatus::RELEASE() ? 1 : 0,
+                Force => $new_status != MT::ContentStatus::RELEASE() ? 1 : 0,
             );
         }
 
