@@ -213,8 +213,8 @@ subtest 'mode = category_do_add (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: category_do_add" );
-    ok( $out =~ m!Permission denied!i, "category_do_add by other website" );
+    ok( $out,                     "Request: category_do_add" );
+    ok( $out =~ m!permission=1!i, "category_do_add by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -239,8 +239,8 @@ subtest 'mode = category_do_add (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: category_do_add" );
-    ok( $out =~ m!Permission denied!i, "category_do_add by other blog" );
+    ok( $out,                     "Request: category_do_add" );
+    ok( $out =~ m!permission=1!i, "category_do_add by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -353,8 +353,8 @@ subtest 'mode = js_add_category (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: js_add_category" );
-    ok( $out =~ m!Permission denied!i, "js_add_category by other website" );
+    ok( $out,                     "Request: js_add_category" );
+    ok( $out =~ m!permission=1!i, "js_add_category by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -379,8 +379,8 @@ subtest 'mode = js_add_category (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: js_add_category" );
-    ok( $out =~ m!Permission denied!i, "js_add_category by other blog" );
+    ok( $out,                     "Request: js_add_category" );
+    ok( $out =~ m!permission=1!i, "js_add_category by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -715,7 +715,7 @@ subtest 'mode = bulk_update_category' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                          "Request: bulk_update_category" );
-    ok( $out =~ m!permission denied!i, "bulk_update_category by other blog" );
+    ok( $out =~ m!Permission denied!i, "bulk_update_category by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -790,9 +790,8 @@ subtest 'mode = bulk_update_category (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: bulk_update_category" );
-    ok( $out =~ m!permission denied!i,
-        "bulk_update_category by other website" );
+    ok( $out,                     "Request: bulk_update_category" );
+    ok( $out =~ m!permission=1!i, "bulk_update_category by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -805,7 +804,7 @@ subtest 'mode = bulk_update_category (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                          "Request: bulk_update_category" );
-    ok( $out =~ m!permission denied!i, "bulk_update_category by child blog" );
+    ok( $out =~ m!Permission denied!i, "bulk_update_category by child blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -817,8 +816,8 @@ subtest 'mode = bulk_update_category (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: bulk_update_category" );
-    ok( $out =~ m!permission denied!i, "bulk_update_category by other blog" );
+    ok( $out,                     "Request: bulk_update_category" );
+    ok( $out =~ m!permission=1!i, "bulk_update_category by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -894,8 +893,8 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
-    ok( $out =~ m!invalid request!i, "save (new) by other blog" );
+    ok( $out,                         "Request: save" );
+    ok( $out =~ m!Invalid request.!i, "save (new) by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -954,8 +953,8 @@ subtest 'mode = save (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
-    ok( $out =~ m!invalid request!i, "save (new) by other website" );
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save (new) by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -969,7 +968,7 @@ subtest 'mode = save (new, website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                        "Request: save" );
-    ok( $out =~ m!invalid request!i, "save (new) by child blog" );
+    ok( $out =~ m!Invalid request!i, "save (new) by child blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -982,8 +981,8 @@ subtest 'mode = save (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
-    ok( $out =~ m!invalid request!i, "save (new) by other blog" );
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save (new) by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1290,8 +1289,8 @@ subtest 'mode = edit (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!invalid request!i, "edit (new) by other website" );
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!permission=1!i, "edit (new) by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1318,8 +1317,8 @@ subtest 'mode = edit (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!invalid request!i, "edit (new) by other blog" );
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!permission=1!i, "edit (new) by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1466,8 +1465,9 @@ subtest 'mode = edit (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
-    ok( $out =~ m!permission=1!i, "edit (edit) by child blog" );
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!__mode=dashboard&redirect=1!i,
+        "edit (edit) by child blog" );
 
     $app = _run_app(
         'MT::App::CMS',

@@ -2825,16 +2825,55 @@ sub validate_magic {
 }
 
 sub is_authorized {
-    my $app     = shift;
-    my $blog_id = $app->param('blog_id');
+    my $app = shift;
+
+    # Clear current permissions
     $app->permissions(undef);
+
+    # Not authroized.
+    my $user = $app->user;
+    return unless $user;
+
+    # System administrator is alweays true
+    return 1 if $user->is_superuser;
+
+    # Always true if blog_id is undef or 0 because scope is
+    # User or System.
+    my $blog_id = $app->param('blog_id');
     return 1 unless $blog_id;
-    return unless my $user = $app->user;
-    my $perms = $app->permissions( $user->permissions($blog_id) );
-    $perms
-        ? 1
-        : $app->error(
-        $app->translate("You are not authorized to log in to this blog.") );
+
+    my $blog = MT->model('blog')->load($blog_id)
+        or return $app->errtrans( 'Cannot load blog (ID:[_1])', $blog_id );
+
+    # Return true if user has any permissions for a specified
+    # blog or parent website
+    my @blog_ids = [ 0, $blog_id ];
+    if ( $blog->is_blog ) {
+        push @blog_ids, $blog->website;
+    }
+    else {
+        push @blog_ids, +( map { $_->id } @{ $blog->blogs } );
+    }
+
+    my $terms = [
+        { author_id => $user->id },
+        '-and',
+        { blog_id => \@blog_ids },
+        '-and',
+        [   { permissions => \'IS NOT NULL' },
+            '-or',
+            { permissions => { not => '' } },
+        ]
+    ];
+    my $perm = MT->model('permission')->count($terms);
+
+    if ( $perm > 0 ) {
+        return 1;
+    }
+    else {
+        return $app->permission_denied();
+    }
+
 }
 
 sub set_default_tmpl_params {
@@ -3626,9 +3665,19 @@ sub build_user_menus {
 sub return_to_dashboard {
     my $app = shift;
     my (%param) = @_;
+
     $param{redirect} = 1 unless %param;
+
     my $blog_id = $app->param('blog_id');
-    $param{blog_id} = $blog_id if defined($blog_id) && $blog_id ne '';
+    if ( defined($blog_id) && $blog_id ne '' ) {
+        my $perm = MT->model('permission')->load(
+            {   author_id => $app->user->id,
+                blog_id   => $blog_id,
+            }
+        );
+        $param{blog_id} = $blog_id if $perm;
+    }
+
     return $app->redirect(
         $app->uri( mode => 'dashboard', args => \%param ) );
 }

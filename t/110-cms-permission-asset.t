@@ -332,6 +332,138 @@ subtest 'mode = complete_upload' => sub {
         "complete_upload by other permission" );
 };
 
+subtest 'mode = dialog_asset_modal' => sub {
+
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'GET',
+            __mode           => 'dialog_asset_modal',
+            edit_field       => 'customfield_test',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_asset_modal" );
+    ok( $out =~ m!<div id="content-body-left">!i,
+        "dialog_asset_modal by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'GET',
+            __mode           => 'dialog_asset_modal',
+            edit_field       => 'customfield_test',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_asset_modal" );
+    ok( $out =~ m!<div id="content-body-left">!i,
+        "dialog_asset_modal by permitted user"
+    );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'GET',
+            __mode           => 'dialog_asset_modal',
+            edit_field       => 'customfield_test',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_asset_modal" );
+    ok( $out =~ m!__mode=dashboard!i && $out =~ m!permission=1!i,
+        "dialog_asset_modal by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'GET',
+            __mode           => 'dialog_asset_modal',
+            edit_field       => 'customfield_test',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_asset_modal" );
+    ok( $out =~ m!name="select_asset" id="select_asset"!i,
+        "dialog_asset_modal by other permission"
+    );
+};
+
+subtest 'mode = dialog_list_asset' => sub {
+
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'GET',
+            __mode           => 'dialog_list_asset',
+            edit_field       => 'customfield_test',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_list_asset" );
+    ok( $out =~ m!<div id="content-body-left">!i,
+        "dialog_list_asset by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'GET',
+            __mode           => 'dialog_list_asset',
+            edit_field       => 'customfield_test',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_list_asset" );
+    ok( $out =~ m!<div id="content-body-left">!i,
+        "dialog_list_asset by permitted user"
+    );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'GET',
+            __mode           => 'dialog_list_asset',
+            edit_field       => 'customfield_test',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_list_asset" );
+    ok( $out =~ m!__mode=dashboard!i && $out =~ m!permission=1!i,
+        "dialog_list_asset by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'GET',
+            __mode           => 'dialog_list_asset',
+            edit_field       => 'customfield_test',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_list_asset" );
+    ok( $out =~ m!name="select_asset" id="select_asset"!i,
+        "dialog_list_asset by other permission"
+    );
+};
+
 subtest 'mode = asset_insert' => sub {
 
     # By admim
@@ -662,8 +794,8 @@ subtest 'mode = upload_file' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: upload_file" );
-    ok( $out =~ m!Permission denied!i, "upload_file by other blog" );
+    ok( $out,                      "Request: upload_file" );
+    ok( $out =~ m!&permission=1!i, "upload_file by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -940,8 +1072,8 @@ subtest 'mode = add_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: add_tags" );
-    ok( $out =~ m!not implemented!i, "add_tags by other blog" );
+    ok( $out,                      "Request: add_tags" );
+    ok( $out =~ m!&permission=1!i, "add_tags by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -1037,8 +1169,8 @@ subtest 'mode = remove_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: remove_tags" );
-    ok( $out =~ m!not implemented!i, "remove_tags by other blog" );
+    ok( $out,                      "Request: remove_tags" );
+    ok( $out =~ m!&permission=1!i, "remove_tags by other blog" );
 
     # By other permission
     $app = _run_app(

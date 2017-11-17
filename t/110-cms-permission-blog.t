@@ -611,8 +611,8 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                   "Request: list" );
-    ok( $out =~ m!redirect=1!i, "list by other blog" );
+    ok( $out,                     "Request: list" );
+    ok( $out =~ m!permission=1!i, "list by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',

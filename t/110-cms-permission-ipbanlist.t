@@ -281,8 +281,8 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid request!i, "edit by other blog (edit config)" );
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!permission=1!i, "edit by other blog (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -295,8 +295,8 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid request!i, "edit by other blog (manage feedback)" );
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!permission=1!i, "edit by other blog (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',

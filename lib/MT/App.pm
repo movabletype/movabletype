@@ -294,7 +294,7 @@ sub list_actions {
                     if 'CODE' eq ref($code);
             }
             else {
-                $actions->{$a}{js_message} = $actions->{$a}{label}
+                $actions->{$a}{js_message} = $actions->{$a}{label};
             }
         }
 
@@ -1326,7 +1326,31 @@ sub user {
 
 sub permissions {
     my $app = shift;
-    $app->{perms} = shift if @_;
+
+    if (@_) {
+        $app->{perms} = shift;
+    }
+    else {
+        if ( !$app->{perms} ) {
+            my $user = $app->user
+                or return;
+
+            # Exists?
+            my $blog_id = $app->param('blog_id');
+            my $blog    = MT->model('blog')->load($blog_id)
+                or return $app->errtrans( 'Cannot load blog (ID:[_1])',
+                $blog_id );
+
+            my $perm = $user->permissions($blog_id);
+            if ( $perm->permissions ) {
+                $app->{perms} = $perm;
+            }
+            else {
+                $app->{perms} = undef;
+            }
+        }
+    }
+
     return $app->{perms};
 }
 

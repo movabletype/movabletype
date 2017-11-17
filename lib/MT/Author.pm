@@ -1153,7 +1153,7 @@ sub permissions {
             }
         }
     }
-    unless ($perm) {
+    if ( !$perm or ( $perm and !$perm->permissions ) ) {
         $perm = new MT::Permission;
         $perm->author_id( $author->id );
         $perm->clear_full_permissions;

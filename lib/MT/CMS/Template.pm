@@ -202,8 +202,11 @@ sub edit {
                 foreach my $tag (@$includes) {
                     my $include = {};
                     my $attr    = $tag->attributes;
-                    my $mod     = $include->{include_module} = $attr->{module}
-                        || $attr->{widget} || $attr->{identifier};
+                    my $mod
+                        = $include->{include_module}
+                        = $attr->{module}
+                        || $attr->{widget}
+                        || $attr->{identifier};
                     next unless $mod;
                     next if $mod =~ /^\$.*/;
                     my $type = $attr->{widget} ? 'widget' : 'custom';
@@ -239,9 +242,9 @@ sub edit {
                             = $attr->{identifier}
                             ? ( identifier => $mod )
                             : (
-                                blog_id => $inc_blog_id,
-                                name    => $mod,
-                                type    => $type,
+                            blog_id => $inc_blog_id,
+                            name    => $mod,
+                            type    => $type,
                             );
 
                         my $other = MT::Template->load(
@@ -1734,7 +1737,7 @@ sub can_view {
     else {
         my $perms = $app->permissions;
         return 0
-            unless $perms->can_do('edit_templates');
+            unless $perms && $perms->can_do('edit_templates');
     }
     return 1;
 }

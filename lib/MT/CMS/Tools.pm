@@ -935,7 +935,8 @@ sub save_cfg_system_web_services {
 sub upgrade {
     my $app = shift;
 
-    if ( $ENV{FAST_CGI} ||  MT->config->PIDFilePath ) {
+    if ( $ENV{FAST_CGI} || MT->config->PIDFilePath ) {
+
         # don't enter the upgrade loop.
         $app->reboot;
     }
@@ -1114,11 +1115,12 @@ sub start_restore {
 }
 
 sub backup {
-    my $app      = shift;
-    my $user     = $app->user;
-    my $q        = $app->param;
-    my $blog_id  = $q->param('blog_id');
-    my $perms    = $app->permissions;
+    my $app     = shift;
+    my $user    = $app->user;
+    my $q       = $app->param;
+    my $blog_id = $q->param('blog_id');
+    my $perms   = $app->permissions
+        or return $app->permission_denied();
     my $blog_ids = $q->param('backup_what');
     my @blog_ids = split ',', $blog_ids;
 
@@ -1442,7 +1444,9 @@ sub backup_download {
     unless ( $user->is_superuser ) {
         my $perms = $app->permissions;
         return $app->permission_denied()
-            unless defined($blog_id) && $perms->can_do('backup_download');
+            unless defined($perms)
+            && defined($blog_id)
+            && $perms->can_do('backup_download');
     }
     $app->validate_magic() or return;
     my $filename  = $app->param('filename');
