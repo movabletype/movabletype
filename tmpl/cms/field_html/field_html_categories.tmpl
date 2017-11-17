@@ -73,7 +73,7 @@
 
       new Timer(function () {
           var selectedCategoryList = <$mt:if name="selected_category_loop"><$mt:var name="selected_category_loop" to_json="1"$><mt:else>[]</mt:if>;
-          var categoryList = <$mt:if name="category_tree"><$mt:var name="category_tree" to_json="1" regex_replace="/(s)(cript)/ig","$1\\$2"$><mt:else>[]</mt:if>;
+          var categoryList = <$mt:if name="category_tree"><$mt:var name="category_tree" to_json="1" regex_replace="/(s)(cript)/ig","$1\$2"$><mt:else>[]</mt:if>;
 
           var categorySetId = <mt:if name="options{category_set}"><mt:var name="options{category_set}" escape="js"><mt:else>0</mt:if>;
           var contentFieldId = <mt:var name="content_field_id" escape="js">;
