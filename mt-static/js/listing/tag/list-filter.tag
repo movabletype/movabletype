@@ -513,7 +513,7 @@
 
 <list-filter-select-modal>
   <div class="modal fade" id="select-filter" tabindex="-1">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{ trans( 'Select Filter' ) }</h5>
