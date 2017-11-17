@@ -513,7 +513,7 @@
 
 <list-filter-select-modal>
   <div class="modal fade" id="select-filter" tabindex="-1">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{ trans( 'Select Filter' ) }</h5>
@@ -535,7 +535,11 @@
                   </a>
                   <div class="float-right">
                     <a href="#" onclick={ startEditingFilter }>[{ trans( 'rename' ) }]</a>
-                    <a href="#" onclick={ removeFilter }>[{ trans( 'remove' ) }]</a>
+                    <a href="#" onclick={ removeFilter }>
+                      <svg title={ trans('Remove') } role="img" class="mt-icon mt-icon--sm">
+                        <use xlink:href={ StaticURI + 'images/sprite.svg#ic_trash' } />
+                      </svg>
+                    </a>
                   </div>
                 </virtual>
                 <div class="form-inline" if={ parent.isEditingFilter[id] }>
