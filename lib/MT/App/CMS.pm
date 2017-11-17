@@ -2848,10 +2848,7 @@ sub is_authorized {
     # Return true if user has any permissions for a specified
     # blog or parent website
     my @blog_ids = [ 0, $blog_id ];
-    if ( $blog->is_blog ) {
-        push @blog_ids, $blog->website;
-    }
-    else {
+    if ( !$blog->is_blog ) {
         push @blog_ids, +( map { $_->id } @{ $blog->blogs } );
     }
 
