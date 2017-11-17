@@ -629,19 +629,30 @@ sub remove {
         }
         $asset->remove_cached_files;
 
+        # in MT::Object.load_iter
+        my $default_window_size = 100;
+
         # remove children.
-        my $class = ref $asset;
-        my $iter  = __PACKAGE__->load_iter(
-            { parent => $asset->id, class => '*' } );
-        while ( my $a = $iter->() ) {
-            $a->remove;
+        while (
+            my @assets = __PACKAGE__->load(
+                { parent => $asset->id, class => '*' },
+                { limit  => $default_window_size },
+            )
+            )
+        {
+            $_->remove for @assets;
         }
 
         # Remove MT::ObjectAsset records
-        $class = MT->model('objectasset');
-        $iter = $class->load_iter( { asset_id => $asset->id } );
-        while ( my $o = $iter->() ) {
-            $o->remove;
+        my $class = MT->model('objectasset');
+        while (
+            my @oa = $class->load(
+                { asset_id => $asset->id },
+                { limit    => $default_window_size },
+            )
+            )
+        {
+            $_->remove for @oa;
         }
     }
 
