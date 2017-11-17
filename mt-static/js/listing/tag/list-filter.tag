@@ -535,7 +535,11 @@
                   </a>
                   <div class="float-right">
                     <a href="#" onclick={ startEditingFilter }>[{ trans( 'rename' ) }]</a>
-                    <a href="#" onclick={ removeFilter }>[{ trans( 'remove' ) }]</a>
+                    <a href="#" onclick={ removeFilter }>
+                      <svg title={ trans('Remove') } role="img" class="mt-icon mt-icon--sm">
+                        <use xlink:href={ StaticURI + 'images/sprite.svg#ic_trash' } />
+                      </svg>
+                    </a>
                   </div>
                 </virtual>
                 <div class="form-inline" if={ parent.isEditingFilter[id] }>
