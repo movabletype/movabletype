@@ -142,7 +142,7 @@
             <div id="quick-search-form" class="detail search-form" style="display: none;">
               <form id="basic-search" class="basic-search" name="quicksearch" method="get" action="<$mt:var name="mt_url"$>">
                 <input type="hidden" name="__mode" value="search_replace" />
-                <input type="hidden" name="_type" value="<mt:if name="search_type"><mt:var name="search_type"><mt:else><mt:if name="object_type"><$mt:var name="object_type"$><mt:else>entry</mt:if></mt:if>" />
+                <input type="hidden" name="_type" value="<mt:if name="search_type"><mt:var name="search_type" escape="html"><mt:else><mt:if name="object_type"><$mt:var name="object_type" escape="html"$><mt:else>entry</mt:if></mt:if>" />
               <mt:if name="blog_id">
                 <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
               </mt:if>
