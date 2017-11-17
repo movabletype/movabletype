@@ -1237,8 +1237,7 @@ sub list {
     } @filter_types;
 
     require MT::CMS::Filter;
-    my $filters = MT::CMS::Filter::filters( $app, $type . $subtype,
-        encode_html => 1 );
+    my $filters = MT::CMS::Filter::filters( $app, $type . $subtype );
 
     my $allpass_filter = {
         label => MT->translate(
@@ -1254,23 +1253,22 @@ sub list {
     };
     $initial_filter = $allpass_filter
         unless $initial_filter;
-    ## Encode all HTML in complex structure.
-    MT::Util::deep_do(
-        $initial_filter,
-        sub {
-            my $ref = shift;
-            $$ref = MT::Util::encode_html($$ref);
-        }
-    );
 
     require JSON;
     my $json = JSON->new->utf8(0);
 
+    my $encode_filter = sub {
+        my $raw = shift;
+        my $encoded = $json->encode($raw);
+        $encoded =~ s/(s)(cript)/$1\\$2/gi;
+        return $encoded;
+    };
+
     $param{common_listing}    = 1;
     $param{blog_id}           = $blog_id || '0';
-    $param{filters}           = $json->encode($filters);
-    $param{initial_filter}    = $json->encode($initial_filter);
-    $param{allpass_filter}    = $json->encode($allpass_filter);
+    $param{filters}           = $encode_filter->($filters),
+    $param{initial_filter}    = $encode_filter->($initial_filter),
+    $param{allpass_filter}    = $encode_filter->($allpass_filter);
     $param{system_messages}   = $json->encode( \@messages );
     $param{filters_raw}       = $filters;
     $param{default_sort_key}  = $default_sort;
@@ -1696,7 +1694,7 @@ sub filtered_list {
     $app->user->save;
 
     require MT::CMS::Filter;
-    my $filters = MT::CMS::Filter::filters( $app, $ds, encode_html => 1 );
+    my $filters = MT::CMS::Filter::filters( $app, $ds );
 
     require POSIX;
     my %res;
