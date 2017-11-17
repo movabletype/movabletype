@@ -1201,7 +1201,7 @@ sub rebuild_new_phase {
     $app->setup_filtered_ids
         if $app->param('all_selected');
 
-    if ( $app->param('_type') eq 'content_data' ) {
+    if ( ( $app->param('_type') || '' ) eq 'content_data' ) {
         require MT::CMS::ContentData;
         MT::CMS::ContentData::publish_content_data($app);
     }
