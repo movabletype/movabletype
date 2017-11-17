@@ -17,6 +17,12 @@ sub contenttype_group_based {
 sub dated_group_contents {
     my $obj = shift;
     my ( $ctx, $at, $ts, $limit, $content_type_id ) = @_;
+
+    $content_type_id ||=
+          $ctx->stash('template')
+        ? $ctx->stash('template')->content_type_id
+        : undef;
+
     my $blog = $ctx->stash('blog');
     my ( $start, $end );
     if ($ts) {
@@ -64,7 +70,12 @@ sub dated_group_contents {
 
 sub dated_category_contents {
     my $obj = shift;
-    my ( $ctx, $at, $cat, $ts ) = @_;
+    my ( $ctx, $at, $cat, $ts, $limit, $content_type_id ) = @_;
+
+    $content_type_id ||=
+          $ctx->stash('template')
+        ? $ctx->stash('template')->content_type_id
+        : undef;
 
     my $blog = $ctx->stash('blog');
     my ( $start, $end );
@@ -80,7 +91,10 @@ sub dated_category_contents {
     my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
     my @contents     = MT::ContentData->load(
         {   blog_id => $blog->id,
-            status  => MT::ContentStatus::RELEASE(),
+            (   $content_type_id ? ( content_type_id => $content_type_id )
+                : ()
+            ),
+            status => MT::ContentStatus::RELEASE(),
             ( !$dt_field_id ? ( authored_on => [ $start, $end ] ) : () ),
         },
         {   ( !$dt_field_id ? ( range_incl => { authored_on => 1 } ) : () ),
@@ -129,7 +143,12 @@ sub dated_category_contents {
 
 sub dated_author_contents {
     my $obj = shift;
-    my ( $ctx, $at, $author, $ts ) = @_;
+    my ( $ctx, $at, $author, $ts, $limit, $content_type_id ) = @_;
+
+    $content_type_id ||=
+          $ctx->stash('template')
+        ? $ctx->stash('template')->content_type_id
+        : undef;
 
     my $blog = $ctx->stash('blog');
     my ( $start, $end );
@@ -145,7 +164,10 @@ sub dated_author_contents {
     my @contents    = MT::ContentData->load(
         {   blog_id   => $blog->id,
             author_id => $author->id,
-            status    => MT::ContentStatus::RELEASE(),
+            (   $content_type_id ? ( content_type_id => $content_type_id )
+                : ()
+            ),
+            status => MT::ContentStatus::RELEASE(),
             ( !$dt_field_id ? ( authored_on => [ $start, $end ] ) : () ),
         },
         {   (   !$dt_field_id ? ( range_incl => { authored_on => 1 } )

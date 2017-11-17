@@ -67,8 +67,11 @@ sub archive_group_iter {
         {   sort      => 'name',
             direction => $auth_order,
             join      => [
-                'MT::ContentData', 'author_id',
-                { status => MT::ContentStatus::RELEASE(), blog_id => $blog->id },
+                'MT::ContentData',
+                'author_id',
+                {   status  => MT::ContentStatus::RELEASE(),
+                    blog_id => $blog->id
+                },
                 { unique => 1 }
             ]
         }
@@ -117,6 +120,12 @@ sub archive_contents_count {
 sub archive_group_contents {
     my $obj = shift;
     my ( $ctx, %param, $content_type_id ) = @_;
+
+    $content_type_id ||=
+          $ctx->stash('template')
+        ? $ctx->stash('template')->content_type_id
+        : undef;
+
     my $blog  = $ctx->stash('blog');
     my $a     = $param{author} || $ctx->stash('author');
     my $limit = $param{limit};
