@@ -345,15 +345,8 @@ sub core_search_apis {
                 my $app    = MT->instance;
                 my $author = $app->user;
                 my $perm   = $author->permissions( $obj->blog_id );
-
-                if (   $app->param('edit_field')
-                    && $app->param('edit_field') =~ m/^customfield_.*$/ )
-                {
-                    !$perm->is_empty;
-                }
-                else {
-                    $perm->can_do('search_assets');
-                }
+                return 1 if $perm && $perm->can_do('search_assets');
+                return 0;
             },
             'search_cols' => {
                 'file_name'   => sub { $app->translate('Filename') },
