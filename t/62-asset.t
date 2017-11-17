@@ -88,8 +88,9 @@ isa_ok( $mt, 'MT', 'Is MT' );
 
         # Changing t/images/test.jpg affects t/35-tags.t,
         # so preserve this image file here.
-        my ( undef, $temp_file )
-            = tempfile( DIR => MT->config->TempDir, OPEN => 0 );
+        my ( $fh, $temp_file )
+            = tempfile( DIR => MT->config->TempDir );
+        close($fh);
         copy( $asset->file_path, $temp_file );
 
         my $exif = $asset->exif;
