@@ -1089,6 +1089,9 @@ sub start_export {
 
 sub preview {
     my $app = shift;
+    if ( $app->config('PreviewInNewWindow') ) {
+        $app->{hide_goback_button} = 1;
+    }
     return unless $app->validate_magic;
     my $content_data = _create_temp_content_data($app);
     return _build_content_data_preview( $app, $content_data );

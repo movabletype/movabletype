@@ -1261,6 +1261,10 @@ sub preview {
     my $tmpl;
     my $user_id = $app->user->id;
 
+    if ( $app->config('PreviewInNewWindow') ) {
+        $app->{hide_goback_button} = 1;
+    }
+
     return unless $app->validate_magic;
 
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;

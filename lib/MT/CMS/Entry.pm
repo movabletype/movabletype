@@ -1070,6 +1070,10 @@ PERMCHECK: {
 sub preview {
     my $app = shift;
 
+    if ( $app->config('PreviewInNewWindow') ) {
+        $app->{hide_goback_button} = 1;
+    }
+
     $app->validate_magic or return;
 
     my $entry = _create_temp_entry($app);
