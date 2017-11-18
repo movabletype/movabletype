@@ -46,7 +46,6 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-print $out;
 ok( $out,                     "Create a new asset" );
 ok( $out =~ m!permission=1!i, "Create a new Asset: result" );
 
@@ -63,7 +62,6 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-print $out;
 ok( $out,                     "Delete asset" );
 ok( $out =~ m/permission=1/i, "Delete asset: result" );
 
@@ -233,7 +231,6 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-print $out;
 ok( $out,                     "Delete category" );
 ok( $out =~ m/permission=1/i, "Delete category: result" );
 
