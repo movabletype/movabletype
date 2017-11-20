@@ -1155,7 +1155,7 @@ sub updates_widget {
             return;
         }
 
-        my $version_url = const('LATEST_VESION_URL');
+        my $version_url = const('LATEST_VERSION_URL');
         my $req         = new HTTP::Request( GET => $version_url );
         my $resp        = $ua->request($req);
         my $result      = $resp->content();
