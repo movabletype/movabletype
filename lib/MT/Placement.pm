@@ -7,6 +7,7 @@
 package MT::Placement;
 
 use strict;
+use warnings;
 
 use base qw( MT::Object );
 

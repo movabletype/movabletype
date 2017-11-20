@@ -7,6 +7,7 @@
 package MT::ArchiveType::ContentTypeAuthorWeekly;
 
 use strict;
+use warnings;
 use base
     qw( MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeWeekly MT::ArchiveType::AuthorWeekly );
 

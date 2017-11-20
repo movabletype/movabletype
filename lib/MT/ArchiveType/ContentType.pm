@@ -7,6 +7,7 @@
 package MT::ArchiveType::ContentType;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType );
 
 use MT::ContentStatus;

@@ -7,6 +7,7 @@
 package MT::BackupRestore::BackupFileScanner;
 
 use strict;
+use warnings;
 use XML::SAX::Base;
 use MIME::Base64;
 

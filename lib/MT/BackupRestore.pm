@@ -6,6 +6,7 @@
 
 package MT::BackupRestore;
 use strict;
+use warnings;
 
 use MT::Util qw( encode_url );
 use Symbol;

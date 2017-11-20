@@ -7,6 +7,7 @@
 package MT::Entry;
 
 use strict;
+use warnings;
 
 use MT::Tag;        # Holds MT::Taggable
 use MT::Summary;    # Holds MT::Summarizable

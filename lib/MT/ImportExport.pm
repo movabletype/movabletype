@@ -6,6 +6,7 @@
 
 package MT::ImportExport;
 use strict;
+use warnings;
 
 use Symbol;
 use MT::Entry;

@@ -8,6 +8,7 @@
 
 package MT::Sanitize;
 use strict;
+use warnings;
 
 use MT::Util qw(decode_html);
 

@@ -6,6 +6,7 @@
 package MT::Template::Tags::Misc;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Util qw( start_end_day start_end_week

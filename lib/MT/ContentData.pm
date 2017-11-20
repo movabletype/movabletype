@@ -7,6 +7,7 @@
 package MT::ContentData;
 
 use strict;
+use warnings;
 use base qw( MT::Object MT::Revisable );
 
 use JSON  ();

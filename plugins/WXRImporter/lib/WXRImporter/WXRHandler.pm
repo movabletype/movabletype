@@ -7,6 +7,7 @@
 package WXRImporter::WXRHandler;
 
 use strict;
+use warnings;
 use XML::SAX::Base;
 use Time::Local qw( timegm );
 use MT;

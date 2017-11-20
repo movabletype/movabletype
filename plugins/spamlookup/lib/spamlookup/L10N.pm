@@ -8,6 +8,7 @@
 
 package spamlookup::L10N;
 use strict;
+use warnings;
 
 use MT::Plugin::L10N;
 @spamlookup::L10N::ISA = qw(MT::Plugin::L10N);

@@ -7,6 +7,7 @@
 package MT::Template::Tags::ContentType;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::ContentData;

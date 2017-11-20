@@ -6,6 +6,7 @@
 package MT::Template::Tags::Category;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Category;

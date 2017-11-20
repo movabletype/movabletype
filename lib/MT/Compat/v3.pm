@@ -7,6 +7,7 @@
 package MT::Compat;
 
 use strict;
+use warnings;
 
 # These were loaded by default under MT 3.x in the main MT module.
 use MT::Entry;

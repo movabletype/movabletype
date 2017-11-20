@@ -7,6 +7,7 @@
 package MT::App::Search::TagSearch;
 
 use strict;
+use warnings;
 use MT::Util qw( epoch2ts offset_time_list );
 use HTTP::Date qw( str2time );
 

@@ -7,6 +7,7 @@
 package MT::Util;
 
 use strict;
+use warnings;
 use utf8;
 use base 'Exporter';
 use MT::I18N qw( const );

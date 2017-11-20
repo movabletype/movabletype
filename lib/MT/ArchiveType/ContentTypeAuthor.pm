@@ -7,6 +7,7 @@
 package MT::ArchiveType::ContentTypeAuthor;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Author );
 
 use MT::ContentStatus;

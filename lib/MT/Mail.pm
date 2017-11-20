@@ -7,6 +7,7 @@
 package MT::Mail;
 
 use strict;
+use warnings;
 
 use MT;
 use base qw( MT::ErrorHandler );

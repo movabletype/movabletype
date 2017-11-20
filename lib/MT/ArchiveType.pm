@@ -7,6 +7,7 @@
 package MT::ArchiveType;
 
 use strict;
+use warnings;
 use MT::WeblogPublisher;
 
 sub new {

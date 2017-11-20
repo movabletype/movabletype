@@ -7,6 +7,7 @@
 package MT::Image;
 
 use strict;
+use warnings;
 use MT;
 use base qw( Class::Accessor::Fast MT::ErrorHandler );
 

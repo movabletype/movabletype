@@ -7,6 +7,7 @@
 package MT::L10N::en_us;    # American English
 
 use strict;
+use warnings;
 use utf8;
 use MT::L10N;
 use vars qw( @ISA %Lexicon );

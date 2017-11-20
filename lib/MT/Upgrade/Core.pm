@@ -7,6 +7,7 @@
 package MT::Upgrade::Core;
 
 use strict;
+use warnings;
 
 MT->add_callback( 'MT::Upgrade::seed_database', 5, undef, \&seed_database );
 MT->add_callback( 'MT::Upgrade::upgrade_end', 5, undef,

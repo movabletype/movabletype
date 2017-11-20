@@ -6,6 +6,7 @@
 package MT::CMS::Category;
 
 use strict;
+use warnings;
 use MT::Util qw( encode_url encode_js );
 
 sub edit {

@@ -6,6 +6,7 @@
 
 package MT::FileInfo;
 use strict;
+use warnings;
 
 use base qw(MT::Object);
 

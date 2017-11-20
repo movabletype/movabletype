@@ -7,6 +7,7 @@
 package MT::ArchiveType::ContentTypeYearly;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::ContentTypeDate MT::ArchiveType::Yearly );
 
 use MT::Util qw( start_end_year );

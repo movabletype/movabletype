@@ -7,6 +7,7 @@
 package MT::ObjectDriver::Driver::DBI;
 
 use strict;
+use warnings;
 use base qw( Data::ObjectDriver::Driver::DBI );
 
 sub PING_CHECK_THROTTLE () {5}

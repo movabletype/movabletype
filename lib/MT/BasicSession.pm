@@ -10,6 +10,7 @@ package MT::BasicSession;
 # declaring it inline...
 
 use strict;
+use warnings;
 use MT::Object;
 @MT::BasicSession::ISA = qw( MT::Object );
 __PACKAGE__->install_properties(

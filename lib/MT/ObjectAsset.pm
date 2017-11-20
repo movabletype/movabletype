@@ -7,6 +7,7 @@
 package MT::ObjectAsset;
 
 use strict;
+use warnings;
 use MT::Blog;
 use base qw( MT::Object );
 

@@ -7,6 +7,7 @@
 package MT::Object::BaseCache;
 
 use strict;
+use warnings;
 use base qw( Data::ObjectDriver::Driver::BaseCache );
 
 sub is_cacheable {

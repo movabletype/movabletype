@@ -7,6 +7,7 @@
 package MT::TBPing;
 
 use strict;
+use warnings;
 use base qw( MT::Object MT::Scorable );
 
 sub JUNK()      {-1}

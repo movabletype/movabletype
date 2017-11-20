@@ -7,6 +7,7 @@
 package MT::ArchiveType::ContentTypeCategory;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Category );
 
 use MT::ContentStatus;

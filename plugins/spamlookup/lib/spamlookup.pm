@@ -9,6 +9,7 @@
 package spamlookup;
 
 use strict;
+use warnings;
 use MT::JunkFilter qw(ABSTAIN);
 
 sub tborigin {

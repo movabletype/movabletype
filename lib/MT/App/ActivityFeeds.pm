@@ -7,6 +7,7 @@
 package MT::App::ActivityFeeds;
 
 use strict;
+use warnings;
 use base 'MT::App';
 use MT::Author qw(AUTHOR);
 use MT::ContentStatus;

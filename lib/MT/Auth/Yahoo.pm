@@ -7,6 +7,7 @@
 package MT::Auth::Yahoo;
 
 use strict;
+use warnings;
 use base qw( MT::Auth::OpenID );
 
 sub set_extension_args {

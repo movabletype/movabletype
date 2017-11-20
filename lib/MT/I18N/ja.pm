@@ -7,6 +7,7 @@
 package MT::I18N::ja;
 
 use strict;
+use warnings;
 use MT::Util qw(remove_html);
 use vars qw( @ISA );
 @ISA = qw( MT::I18N::default );

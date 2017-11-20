@@ -7,6 +7,7 @@
 package MT::Auth;
 
 use strict;
+use warnings;
 use base 'MT::ErrorHandler';
 
 sub SUCCESS ()          {1}

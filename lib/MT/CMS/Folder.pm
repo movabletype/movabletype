@@ -6,6 +6,7 @@
 package MT::CMS::Folder;
 
 use strict;
+use warnings;
 
 sub edit {
     require MT::CMS::Category;

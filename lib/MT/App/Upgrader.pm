@@ -6,6 +6,7 @@
 
 package MT::App::Upgrader;
 use strict;
+use warnings;
 
 use MT::App;
 use base qw( MT::App );
