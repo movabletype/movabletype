@@ -7,6 +7,7 @@
 package MT::ArchiveType::ContentTypeDaily;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::ContentTypeDate MT::ArchiveType::Daily );
 
 use MT::Util qw( start_end_day );

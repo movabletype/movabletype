@@ -6,6 +6,7 @@
 package MT::CMS::Asset;
 
 use strict;
+use warnings;
 use Symbol;
 use MT::Util
     qw( epoch2ts encode_url format_ts relative_date perl_sha1_digest_hex);

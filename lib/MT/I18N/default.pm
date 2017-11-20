@@ -7,6 +7,7 @@
 package MT::I18N::default;
 
 use strict;
+use warnings;
 use base qw( MT::ErrorHandler );
 
 sub DEFAULT_LENGTH_ENTRY_EXCERPT ()                    {40}

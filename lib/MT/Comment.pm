@@ -7,6 +7,7 @@
 package MT::Comment;
 
 use strict;
+use warnings;
 use base qw( MT::Object MT::Scorable );
 use MT::Util qw( weaken );
 

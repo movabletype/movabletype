@@ -7,6 +7,7 @@
 package MT::ArchiveType::Weekly;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Date );
 use MT::Util qw( start_end_week week2ymd );
 

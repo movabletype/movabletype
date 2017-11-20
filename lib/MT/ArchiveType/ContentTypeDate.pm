@@ -6,6 +6,7 @@
 package MT::ArchiveType::ContentTypeDate;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Date );
 
 use MT::ContentStatus;

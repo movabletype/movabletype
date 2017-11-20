@@ -6,6 +6,7 @@
 package MT::CMS::Search;
 
 use strict;
+use warnings;
 use MT::Util qw( is_valid_date encode_html first_n_words );
 
 sub core_search_apis {

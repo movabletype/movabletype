@@ -6,6 +6,7 @@
 package MT::CMS::TrackBack;
 
 use strict;
+use warnings;
 use MT::Util
     qw( format_ts relative_date encode_url encode_html break_up_text );
 use MT::I18N qw( const );

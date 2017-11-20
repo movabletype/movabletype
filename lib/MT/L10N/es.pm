@@ -6,6 +6,7 @@
 
 package MT::L10N::es;
 use strict;
+use warnings;
 use utf8;
 use MT::L10N;
 use MT::L10N::en_us;

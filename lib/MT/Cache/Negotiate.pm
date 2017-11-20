@@ -7,6 +7,7 @@
 package MT::Cache::Negotiate;
 
 use strict;
+use warnings;
 
 sub new {
     my $class = shift;

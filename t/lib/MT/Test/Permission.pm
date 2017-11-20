@@ -6,6 +6,7 @@
 package MT::Test::Permission;
 
 use strict;
+use warnings;
 
 sub make_author {
     my $pkg    = shift;

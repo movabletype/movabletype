@@ -7,6 +7,7 @@
 package MT::Auth::BasicAuth;
 
 use strict;
+use warnings;
 use base 'MT::Auth::MT';
 use MT::Author qw(AUTHOR);
 

@@ -6,6 +6,7 @@
 
 package MT::XMLRPC;
 use strict;
+use warnings;
 
 use MT;
 use MT::Util qw( encode_xml );

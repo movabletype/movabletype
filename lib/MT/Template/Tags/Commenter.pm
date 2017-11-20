@@ -6,6 +6,7 @@
 package MT::Template::Tags::Commenter;
 
 use strict;
+use warnings;
 
 use MT;
 

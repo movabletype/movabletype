@@ -6,6 +6,7 @@
 package MT::CMS::Plugin;
 
 use strict;
+use warnings;
 use MT::Util qw( remove_html );
 
 sub cfg_plugins {

@@ -7,6 +7,7 @@
 package MT::Permission;
 
 use strict;
+use warnings;
 
 use MT::Blog;
 use MT::ContentData;

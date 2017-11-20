@@ -7,6 +7,7 @@
 package MT::BackupRestore::BackupFileHandler;
 
 use strict;
+use warnings;
 use XML::SAX::Base;
 use MIME::Base64;
 use File::Basename;

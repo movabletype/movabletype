@@ -7,6 +7,7 @@
 package MT::ObjectTag;
 
 use strict;
+use warnings;
 
 use MT::Blog;
 use base qw( MT::Object );

@@ -6,6 +6,7 @@
 package MT::CMS::BanList;
 
 use strict;
+use warnings;
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;

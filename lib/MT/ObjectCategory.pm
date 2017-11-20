@@ -7,6 +7,7 @@
 package MT::ObjectCategory;
 
 use strict;
+use warnings;
 
 use MT;
 use base qw( MT::Object );

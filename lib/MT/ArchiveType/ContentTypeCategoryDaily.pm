@@ -7,6 +7,7 @@
 package MT::ArchiveType::ContentTypeCategoryDaily;
 
 use strict;
+use warnings;
 use base
     qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeDaily MT::ArchiveType::CategoryDaily );
 

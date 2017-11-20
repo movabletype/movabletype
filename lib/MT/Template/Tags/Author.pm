@@ -6,6 +6,7 @@
 package MT::Template::Tags::Author;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Util qw( spam_protect );

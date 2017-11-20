@@ -6,6 +6,7 @@
 package MT::Util::PerformanceData;
 
 use strict;
+use warnings;
 use File::Spec;
 use IO::File;
 

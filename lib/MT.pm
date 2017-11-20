@@ -7,6 +7,7 @@
 package MT;
 
 use strict;
+use warnings;
 use base qw( MT::ErrorHandler );
 use filetest 'access';
 use File::Spec;

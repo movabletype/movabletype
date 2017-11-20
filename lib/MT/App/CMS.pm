@@ -7,6 +7,7 @@
 package MT::App::CMS;
 
 use strict;
+use warnings;
 use base qw( MT::App );
 
 use MT::CMS::ContentData;

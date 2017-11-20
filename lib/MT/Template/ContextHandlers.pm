@@ -7,6 +7,7 @@
 package MT::Template::Context;
 
 use strict;
+use warnings;
 
 use MT::Util qw( format_ts relative_date );
 use Time::Local qw( timelocal );

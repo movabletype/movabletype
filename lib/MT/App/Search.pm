@@ -7,6 +7,7 @@
 package MT::App::Search;
 
 use strict;
+use warnings;
 use base qw( MT::App );
 
 use MT::Util qw( encode_html encode_url perl_sha1_digest_hex );

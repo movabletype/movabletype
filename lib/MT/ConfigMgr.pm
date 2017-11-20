@@ -7,6 +7,7 @@
 package MT::ConfigMgr;
 
 use strict;
+use warnings;
 use base qw( MT::ErrorHandler );
 
 our $cfg;

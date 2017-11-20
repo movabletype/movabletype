@@ -9,6 +9,7 @@
 package MultiBlog::L10N::en_us;
 
 use strict;
+use warnings;
 
 use base 'MultiBlog::L10N';
 use vars qw( %Lexicon );

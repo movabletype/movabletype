@@ -6,6 +6,7 @@
 package MT::CMS::Log;
 
 use strict;
+use warnings;
 
 use MT::Util
     qw( format_ts epoch2ts ts2epoch relative_date offset_time encode_url dirify encode_url );

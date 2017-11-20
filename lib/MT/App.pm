@@ -7,6 +7,7 @@
 package MT::App;
 
 use strict;
+use warnings;
 use base qw( MT );
 
 use File::Spec;

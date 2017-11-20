@@ -7,6 +7,7 @@
 package MT::BackupRestore::ManifestFileHandler;
 
 use strict;
+use warnings;
 use XML::SAX::Base;
 
 @MT::BackupRestore::ManifestFileHandler::ISA = qw(XML::SAX::Base);

@@ -7,6 +7,7 @@
 package MT::App::Wizard;
 
 use strict;
+use warnings;
 use base qw( MT::App );
 
 use MT::Util qw( trim browser_language );

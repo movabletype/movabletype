@@ -7,6 +7,7 @@
 package MT::ArchiveType::ContentTypeCategoryWeekly;
 
 use strict;
+use warnings;
 use base
     qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeWeekly MT::ArchiveType::CategoryWeekly );
 

@@ -7,6 +7,7 @@
 package MT::Core;
 
 use strict;
+use warnings;
 use MT;
 use base 'MT::Component';
 
