@@ -1,4 +1,3 @@
-<mt:unless name="invalid_category_set">
 <div class="group-container">
   <div class="ml-2">
     <a href="javascript:void(0)" class="toggle-link" id="open-category-selector-<mt:var name="content_field_id" escape="html">" onclick="app.fieldCategorySelectors[<mt:var name="content_field_id" escape="html">].open(this)" mt:close-el="close-category-selector-<mt:var name="content_field_id" escape="html">" title="<__trans phrase="Add category">"><__trans phrase="edit"/></a>
@@ -142,8 +141,3 @@
   <input id="category-ids-<mt:var name="content_field_id" escape="js">" type="hidden" style="display: none;" name="category-<mt:var name="content_field_id" escape="html">" value="<$mt:var name="selected_category_loop" glue=","$>" <mt:var name="required"> <mt:var name="multiple"> />
 </mtapp:setting>
 </div>
-<mt:else>
-<div class="alert alert-warning">
-  <__trans phrase="Valid Category Set is not selected in this field.">
-</div>
-</mt:unless>
