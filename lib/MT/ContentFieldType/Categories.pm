@@ -17,19 +17,11 @@ use MT::Util;
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
-    my $options = $field_data->{options} || {};
-
-    unless ( $options->{category_set}
-        && !ref $options->{category_set}
-        && MT::CategorySet->exist( $options->{category_set} ) )
-    {
-        $field_data->{can_edit} = 0;
-        return;
-    }
-
     my $value = $field_data->{value};
     $value = ''       unless defined $value;
     $value = [$value] unless ref $value eq 'ARRAY';
+
+    my $options = $field_data->{options};
 
     my $multiple = '';
     if ( $options->{multiple} ) {
@@ -45,7 +37,17 @@ sub field_html_params {
     my ( $category_tree, $selected_category_loop )
         = _build_category_list( $app, $field_data );
 
+    my $invalid_category_set;
+    if ( $options->{category_set} ) {
+        $invalid_category_set
+            = MT::CategorySet->exist( $options->{category_set} ) ? 0 : 1;
+    }
+    else {
+        $invalid_category_set = 1;
+    }
+
     {   category_tree          => $category_tree,
+        invalid_category_set   => $invalid_category_set,
         multiple               => $multiple,
         required               => $required,
         selected_category_loop => $selected_category_loop,
