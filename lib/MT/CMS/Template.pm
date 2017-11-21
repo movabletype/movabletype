@@ -1421,7 +1421,7 @@ sub preview {
 
     # Default case; works for index templates (other template types should
     # have defined $archive_file by now).
-    my $outfile = $preview_tmpl->outfile;
+    my $outfile = defined $preview_tmpl->outfile ? $preview_tmpl : '';
     my ($path_in_outfile) = $outfile =~ m/^(.*\/)/;
     $path_in_outfile ||= '';
     $archive_file = File::Spec->catfile( $blog_path, $outfile )
