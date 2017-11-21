@@ -64,7 +64,7 @@
       </div>
     </fieldset>
   </form>
-  <button type="button" class="btn btn-primary" onclick={ submit }>{ trans("Save") }</button>
+  <button type="button" class="btn btn-primary" disabled={ !canSubmit() } onclick={ submit }>{ trans("Save") }</button>
 
   <script>
     this.fields = opts.fields
@@ -103,7 +103,21 @@
       e.preventDefault()
     }
 
+    canSubmit() {
+      if (this.fields.length == 0) {
+        return true
+      }
+      const invalidFields = this.fields.filter((field) => {
+        return opts.invalid_types[field.type]
+      })
+      return invalidFields.length == 0 ? true : false
+    }
+
     submit(e) {
+      if (!this.canSubmit()) {
+        return
+      }
+
       setDirty(false)
       fieldOptions = [];
       if ( this.fields ) {

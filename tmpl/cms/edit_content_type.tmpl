@@ -6,7 +6,16 @@
 </mt:if>
 
 <mt:setvarblock name="system_msg">
-<div id="msg-block"></div>
+<div id="msg-block">
+<mt:loop name="content_field_types">
+  <mt:if name="warning">
+    <mtapp:statusmsg
+       class="warning"
+       can_close="0">
+      <mt:var name="warning">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:loop>
   <mt:if name="saved">
     <mtapp:statusmsg
        id="saved"
@@ -22,6 +31,7 @@
       <mt:var name="error">
     </mtapp:statusmsg>
   </mt:if>
+</div>
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
@@ -40,7 +50,13 @@
 </mt:if>
 <script type="text/javascript" src="<mt:var name="static_uri">riot/riot+compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script>
-  var content_field_types = JSON.parse('<mt:var name="content_field_types" escape="js">');
+  var content_field_types = JSON.parse('<mt:var name="content_field_types_json" escape="js">');
+  var invalid_types = content_field_types.filter(function (field_type) {
+    return field_type.warning;
+  }).reduce(function (hash, field_type) {
+    hash[field_type.type] = true;
+    return hash;
+  }, {});
   var fields = <mt:if name="fields">JSON.parse('<mt:var name="fields" escape="js">');<mt:else>[];</mt:if>
   riot.mount('content-fields', {
     blog_id: "<mt:var name="blog_id" escape="js">",
@@ -53,6 +69,7 @@
     user_disp_option: "<mt:unless name="id">checked<mt:else><mt:if name="user_disp_option">checked</mt:if></mt:unless>",
     fields: fields,
     types: content_field_types,
+    invalid_types: invalid_types,
   });
 </script>
 </mt:setvarblock>
