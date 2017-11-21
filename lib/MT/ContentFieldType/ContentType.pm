@@ -14,16 +14,6 @@ use MT::ContentType;
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
-    my $options = $field_data->{options} || {};
-
-    unless ( $options->{source}
-        && !ref $options->{source}
-        && MT::ContentType->exist( $options->{source} ) )
-    {
-        $field_data->{can_edit} = 0;
-        return;
-    }
-
     my $value = $field_data->{value} || [];
     $value = [$value] unless ref $value eq 'ARRAY';
 
@@ -47,6 +37,8 @@ sub field_html_params {
         = $content_field ? $content_field->related_content_type : undef;
     my $content_type_name
         = $related_content_type ? $related_content_type->name : undef;
+
+    my $options = $field_data->{options} || {};
 
     my $multiple = '';
     if ( $options->{multiple} ) {
