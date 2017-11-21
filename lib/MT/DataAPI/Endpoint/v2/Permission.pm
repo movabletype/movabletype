@@ -167,7 +167,7 @@ sub _grant {
 
     if (  !$site->is_blog
         && $site->has_blog
-        && $role->has('manage_member_blogs')
+        && $role->has('create_site')
         && _exists_administer_blog_role() )
     {
 # Load Blog Administrator role. If no roles found, should be return successfully.

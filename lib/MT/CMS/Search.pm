@@ -839,7 +839,7 @@ sub do_search_replace {
                     if (   $blog
                         && !$blog->is_blog
                         && ( $author->permissions($blog_id)
-                            ->has('manage_member_blogs')
+                            ->has('create_site')
                             || $author->is_superuser )
                         )
                     {
@@ -863,7 +863,7 @@ sub do_search_replace {
                 if (   $blog
                     && !$blog->is_blog
                     && $author->permissions($blog_id)
-                    ->has('manage_member_blogs') )
+                    ->has('create_site') )
                 {
                     my @blogs = MT::Blog->load( { parent_id => $blog->id } );
                     my @blog_ids = map { $_->id } @blogs;

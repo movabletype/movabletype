@@ -222,7 +222,7 @@ sub add_blog {
         { type => MT::Author::AUTHOR(), },
         {   join => MT::Permission->join_on(
                 'author_id',
-                {   permissions => "\%'manage_member_blogs'\%",
+                {   permissions => "\%'create_site'\%",
                     blog_id     => $website->id,
                 },
                 { 'like' => { 'permissions' => 1 } }
