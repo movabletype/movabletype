@@ -308,6 +308,7 @@ sub make_template {
         name    => 'blog-name',
         text    => '<MTBlogName>',
         type    => 'custom',
+        outfile => 'blog.html',
     };
 
     if (%params) {

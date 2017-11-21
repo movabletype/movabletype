@@ -1423,6 +1423,7 @@ sub preview {
     # have defined $archive_file by now).
     my $outfile = $preview_tmpl->outfile;
     my ($path_in_outfile) = $outfile =~ m/^(.*\/)/;
+    $path_in_outfile ||= '';
     $archive_file = File::Spec->catfile( $blog_path, $outfile )
         unless defined $archive_file;
 
@@ -1923,8 +1924,8 @@ sub delete_map {
 
     $app->model('template')
         ->load( { id => $template_id, blog_id => $blog_id } )
-        or
-        return $app->errtrans( 'Cannot load template #[_1].', $template_id );
+        or return $app->errtrans( 'Cannot load template #[_1].',
+        $template_id || '(undef)' );
 
     require MT::TemplateMap;
     my $map = MT::TemplateMap->load( { id => $id, blog_id => $blog_id } )
@@ -3184,7 +3185,11 @@ sub save_widget {
         $app->run_callbacks( 'cms_save_permission_filter.template',
             $app, $id )
             || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            $app->translate(
+                "Permission denied: [_1]",
+                defined $app->errstr ? $app->errstr : ''
+            )
+            );
     }
 
     my $filter_result
@@ -3265,7 +3270,11 @@ sub edit_widget {
         $app->run_callbacks( 'cms_view_permission_filter.template',
             $app, $id, $obj_promise )
             || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            $app->translate(
+                "Permission denied: [_1]",
+                defined $app->errstr ? $app->errstr : ''
+            )
+            );
     }
 
     my $param = {
@@ -3483,7 +3492,11 @@ sub delete_widget {
         $app->run_callbacks( 'cms_delete_permission_filter.template',
             $app, $obj )
             || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            $app->translate(
+                "Permission denied: [_1]",
+                defined $app->errstr ? $app->errstr : ''
+            )
+            );
 
         $obj->remove
             or return $app->errtrans(
