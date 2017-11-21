@@ -12,7 +12,7 @@
       <div class="col">
         <div id="name-field" class="form-group">
           <label for="name" class="form-control-label">{ trans('Content Type Name') } <span class="badge badge-danger">{ trans('Required') }</span></label>
-          <input type="text" name="name" id="name" class="required form-control" value={opts.name}>
+          <input type="text" name="name" id="name" class="required form-control" value={opts.name} onkeypress={ stopSubmitting }>
         </div>
       </div>
     </div>
@@ -72,6 +72,14 @@
     this.currentTypeLabel = opts.types[0].label
     this.isEmpty = this.fields.length > 0 ? false : true
     this.data = "";
+
+    stopSubmitting(e) {
+      if (e.which == 13) {
+        e.preventDefault()
+        return false
+      }
+      return true
+    }
 
     changeType(e) {
       this.currentType = e.target.options[e.target.selectedIndex].value
