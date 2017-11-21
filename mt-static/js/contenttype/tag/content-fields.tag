@@ -12,7 +12,7 @@
       <div class="col">
         <div id="name-field" class="form-group">
           <label for="name" class="form-control-label">{ trans('Content Type Name') } <span class="badge badge-danger">{ trans('Required') }</span></label>
-          <input type="text" name="name" id="name" class="required form-control" value={opts.name} onkeypress={ stopSubmitting }>
+          <input type="text" name="name" id="name" class="form-control html5-form" value={opts.name} onkeypress={ stopSubmitting } required>
         </div>
       </div>
     </div>
@@ -103,6 +103,19 @@
       e.preventDefault()
     }
 
+    _validateFields() {
+      return jQuery('.html5-form').mtValidate('simple')
+    }
+
+    _openAllInvalidContentFieldBlocks() {
+      jQuery('.content-field-block').each(function () {
+        const $block = jQuery(this)
+        if ($block.has('.html5-form.is-invalid')) {
+          $block.find('.mt-collapse__content').collapse('show')
+        }
+      })
+    }
+
     canSubmit() {
       if (this.fields.length == 0) {
         return true
@@ -115,6 +128,11 @@
 
     submit(e) {
       if (!this.canSubmit()) {
+        return
+      }
+
+      if ( !this._validateFields() ) {
+        this._openAllInvalidContentFieldBlocks()
         return
       }
 
