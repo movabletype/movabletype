@@ -104,13 +104,16 @@
     }
 
     _validateFields() {
-      return jQuery('.html5-form').mtValidate('simple')
+      const simple = jQuery('.html5-form').mtValidate('simple')
+      const valuesOptionTable = jQuery('.values-option-table')
+                                  .mtValidate('selection-field-values-option')
+      return simple && valuesOptionTable
     }
 
     _openAllInvalidContentFieldBlocks() {
       jQuery('.content-field-block').each(function () {
         const $block = jQuery(this)
-        if ($block.has('.html5-form.is-invalid')) {
+        if ( $block.has('.html5-form.is-invalid, .values-option-table.is-invalid') ) {
           $block.find('.mt-collapse__content').collapse('show')
         }
       })

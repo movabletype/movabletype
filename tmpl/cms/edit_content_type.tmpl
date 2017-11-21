@@ -38,6 +38,22 @@
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/content-type.css?v=<$mt:var name="mt_version_id" escape="url"$>">
 </mt:setvarblock>
 
+<mt:setvarblock name="css_include" append="1">
+<style>
+.values-option-table.is-invalid input[type=text]:not([value]),
+.values-option-table.is-invalid input[type=text][value=""]
+{
+    border-color: #D33638;
+}
+
+.values-option-table.is-invalid input[type=text]:not([value]):focus,
+.values-option-table.is-invalid input[type=text][value=""]:focus
+{
+    box-shadow: 0 0 0 0.2rem rgba(211, 54, 56, 0.25);
+}
+</style>
+</mt:setvarblock>
+
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 <script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-fields.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
@@ -90,12 +106,46 @@
   jQuery('select').change(function() {
     setDirty(true);
   });
+
+  jQuery.mtValidator('selection-field-values-option',
+    jQuery.extend({}, jQuery.mtValidator('simple'), {
+      showError: function ( $target, $error_block ) {
+        $target.parent().append($error_block);
+      },
+    })
+  );
+
+  jQuery.mtValidateAddRules({
+    '.values-option-table': function ($e) {
+      var valuesCount = 0;
+      $e.find('tbody tr').each(function () {
+        var $tr = jQuery(this);
+        var label = $tr.find('input[name=label]').val();
+        var value = $tr.find('input[name=value]').val();
+        if (label.length > 0 && value.length > 0) {
+          valuesCount++;
+        }
+      });
+      return valuesCount > 0 ? true : false;
+    }
+  });
+
+  jQuery.mtValidateAddMessages({
+    '.values-option-table': jQuery.mtValidateMessages['.required']
+  });
+
+  jQuery(document).on('keyup change input', '.values-option-table input', function () {
+      var $valuesOption = jQuery(this).parents('.values-option-table');
+      var ns = $valuesOption.data( 'mtValidator' );
+      if ( !ns ) return true;
+      $valuesOption.mtValid({ focus: false });
+  });
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
 
   <div data-is="content-fields"></div>
-  
+
   </mtapp:form>
 </mt:setvarblock>
 
