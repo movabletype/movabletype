@@ -3447,8 +3447,10 @@ abstract class MTDatabase {
                 $sort_by = 'asset_' . $args['sort_by'];
             }
         }
-        if (isset($args['lastn']))
+        if (isset($args['lastn'])) {
             $order = 'desc';
+            $sort_by = 'asset_created_on';
+        }
 
         $join_score = "";
         $distinct = "";
