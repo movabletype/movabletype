@@ -1012,7 +1012,7 @@ sub grant_role {
                 next unless ref $ug;
                 MT::Association->link( $ug => $role => $blog );
                 if (   $admin_role
-                    && $role->has('manage_member_blogs')
+                    && $role->has('create_site')
                     && !$blog->is_blog )
                 {
                     my $blogs = $blog->blogs;

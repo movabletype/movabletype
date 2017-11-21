@@ -4896,7 +4896,7 @@ sub _load_child_blog_ids {
 
     my @ids;
     if (  !$blog->is_blog
-        && $user->permissions( $blog->id )->can_do('manage_member_blogs') )
+        && $user->permissions( $blog->id )->can_do('create_site') )
     {
         my $blogs = $blog->blogs();
         @ids = map { $_->id } @$blogs
