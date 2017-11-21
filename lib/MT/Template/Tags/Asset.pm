@@ -411,14 +411,22 @@ sub _hdlr_assets {
             = lc( $args->{sort_order} )
             || ( $blog ? $blog->sort_order_posts : undef )
             || '';
-        my $col = lc( $args->{sort_by} || 'created_on' );
+        my $col
+            = $args->{lastn}
+            ? 'created_on'
+            : lc( $args->{sort_by} || 'created_on' );
 
         # TBD: check column being sorted; if it is numeric, use numeric sort
-        @$assets
-            = $so eq 'ascend'
-            ? sort { $a->$col() cmp $b->$col() } @$assets
-            : sort { $b->$col() cmp $a->$col() } @$assets;
-        $no_resort = 1;
+        if( $args->{lastn} ){
+            @$assets = sort { $b->$col() cmp $a->$col() } @$assets;
+            $no_resort = 0;
+        } else {
+            @$assets
+                = $so eq 'ascend'
+                ? sort { $a->$col() cmp $b->$col() } @$assets
+                : sort { $b->$col() cmp $a->$col() } @$assets;
+            $no_resort = 1;
+        }
         if (@filters) {
             my $i   = 0;
             my $j   = 0;
@@ -449,11 +457,7 @@ sub _hdlr_assets {
             }
             if ( my $last = $args->{lastn} || $args->{limit} ) {
                 if ( scalar @assets > $last ) {
-                    if( $args->{lastn} && $args->{sort_order} eq 'ascend' ){
-                        @assets = @assets[ $#assets - $last + 1 .. $#assets ];
-                    }else{
-                        @assets = @assets[ 0 .. $last - 1 ];
-                    }
+                    @assets = @assets[ 0 .. $last - 1 ];
                 }
             }
         }
