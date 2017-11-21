@@ -114,20 +114,40 @@ sub edit {
     $param->{fields} = JSON::to_json( @fields ? \@fields : [] );
 
     # Content Field Types
-    my @type_array = map {
-        my $label = $content_field_types->{$_}{label};
+    my @type_array;
+    for my $key ( keys %$content_field_types ) {
+        my $label = $content_field_types->{$key}{label};
         $label = $label->()
             if ref $label eq 'CODE';
-        my $type = $_;
+        my $type = $key;
         $type =~ s/_/-/g;
-        my $hash = {};
-        $hash->{type}  = $type;
-        $hash->{label} = $label;
-        $hash->{order} = $content_field_types->{$_}{order};
-        $hash;
-    } keys %$content_field_types;
+
+        my $warning;
+        if ( my $validation
+            = $content_field_types->{$key}{field_type_validation_handler} )
+        {
+            $validation = MT->handler_to_coderef($validation);
+            if (   $validation
+                && ref $validation eq 'CODE'
+                && ( $warning = $validation->($app) ) )
+            {
+                $warning
+                    = $app->translate( '[_1] field cannot be saved: [_2]',
+                    $label, $warning );
+            }
+        }
+
+        push @type_array,
+            {
+            type    => $type,
+            label   => $label,
+            order   => $content_field_types->{$key}{order},
+            warning => $warning,
+            };
+    }
     @type_array = sort { $a->{order} <=> $b->{order} } @type_array;
-    $param->{content_field_types} = JSON::to_json( \@type_array );
+    $param->{content_field_types}      = \@type_array;
+    $param->{content_field_types_json} = JSON::to_json( \@type_array );
 
     foreach my $name (qw( saved err_msg id name )) {
         $param->{$name} = $app->param($name) if $app->param($name);

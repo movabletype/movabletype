@@ -243,4 +243,20 @@ sub feed_value_handler {
     return "<ul>$contents</ul>";
 }
 
+sub field_type_validation_handler {
+    my $app                 = shift;
+    my $content_type_id     = $app->param('id');
+    my $content_type_exists = MT::ContentType->exist(
+        {   blog_id => $app->blog->id,
+            $content_type_id ? ( id => { not => $content_type_id } ) : (),
+        }
+    );
+    unless ($content_type_exists) {
+        return $app->translate(
+            'There is no content type that can be used. Please create new content type.'
+        );
+    }
+    return;
+}
+
 1;
