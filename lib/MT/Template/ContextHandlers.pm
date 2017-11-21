@@ -3448,7 +3448,7 @@ sub _hdlr_app_statusmsg {
     if ( !$blog && $blog_id ) {
         $blog = MT->model('blog')->load($blog_id);
     }
-    if ( $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
+    if ( $id && $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
         my $link_l
             = $no_link
             ? ''
