@@ -110,15 +110,6 @@
       return simple && valuesOptionTable
     }
 
-    _openAllInvalidContentFieldBlocks() {
-      jQuery('.content-field-block').each(function () {
-        const $block = jQuery(this)
-        if ( $block.has('.html5-form.is-invalid, .values-option-table.is-invalid') ) {
-          $block.find('.mt-collapse__content').collapse('show')
-        }
-      })
-    }
-
     canSubmit() {
       if (this.fields.length == 0) {
         return true
@@ -135,7 +126,6 @@
       }
 
       if ( !this._validateFields() ) {
-        this._openAllInvalidContentFieldBlocks()
         return
       }
 
