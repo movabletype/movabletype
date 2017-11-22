@@ -1937,6 +1937,17 @@ sub delete {
                 push @not_deleted, $obj->id;
                 next;
             }
+
+            my $used_in_content_type_field
+                = $app->model('content_field')->exist(
+                {   blog_id                 => $obj->blog_id,
+                    related_content_type_id => $obj->id,
+                }
+                );
+            if ($used_in_content_type_field) {
+                push @not_deleted, $obj->id;
+                next;
+            }
         }
 
         $obj->remove
@@ -2244,7 +2255,8 @@ sub save_snapshot {
             $original->current_revision($revision);
 
             # call update to bypass instance save method
-            $original->update or return $original->error( $original->errstr );
+            $original->update
+                or return $original->error( $original->errstr );
         }
 
         $app->run_callbacks( 'cms_post_save.' . "$type:revision",
