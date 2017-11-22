@@ -1949,6 +1949,18 @@ sub delete {
                 next;
             }
         }
+        elsif ( $type eq 'category_set' ) {
+            my $used_in_categories_field
+                = $app->model('content_field')->exist(
+                {   blog_id            => $obj->blog_id,
+                    related_cat_set_id => $obj->id,
+                }
+                );
+            if ($used_in_categories_field) {
+                push @not_deleted, $obj->id;
+                next;
+            }
+        }
 
         $obj->remove
             or return $app->errtrans(
