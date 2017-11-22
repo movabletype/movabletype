@@ -1932,7 +1932,9 @@ sub delete {
         elsif ( $type eq 'content_type' ) {
             my $template_class = $app->model('template');
             my $count
-                = $template_class->count( { content_type_id => $obj->id, } );
+                = $template_class->count(
+                { content_type_id => $obj->id, type => { not => 'backup' } }
+                );
             if ( $count > 0 ) {
                 push @not_deleted, $obj->id;
                 next;
