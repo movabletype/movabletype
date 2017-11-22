@@ -4241,7 +4241,7 @@ sub _hdlr_app_contentfield_option_group {
      id="$type-label"
      label="<__trans phrase="Label">"
      required="1">
-    <input type="text" ref="label" name="label" id="$type-label" class="form-control" oninput={ inputLabel } value={ options.label} >
+    <input type="text" ref="label" name="label" id="$type-label" class="form-control html5-form" oninput={ inputLabel } value={ options.label } required>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -4330,7 +4330,7 @@ sub _hdlr_app_contentfield_option_group {
             array.push( val )
           }
         }
-        else { 
+        else {
           data[f.name] = val
         }
       }

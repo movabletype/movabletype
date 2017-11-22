@@ -32,7 +32,7 @@
      required="1"
      label="<__trans phrase="Source Content Type">">
     <mt:if name="content_types">
-      <select ref="source" name="source" id="content_type-source" class="form-control">
+      <select ref="source" name="source" id="content_type-source" class="form-control html5-form">
       <mt:loop name="content_types">
         <option value="<mt:var name="id" escape="html">" if={ options.source == <mt:var name="id" escape="html"> } selected="selected"><mt:var name="name" escape="html"></option>
         <option value="<mt:var name="id" escape="html">" if={ options.source != <mt:var name="id" escape="html"> }><mt:var name="name" escape="html"></option>
