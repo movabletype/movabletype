@@ -1259,17 +1259,17 @@ sub list {
     my $json = JSON->new->utf8(0);
 
     my $encode_filter = sub {
-        my $raw = shift;
+        my $raw     = shift;
         my $encoded = $json->encode($raw);
         $encoded =~ s/(s)(cript)/$1\\$2/gi;
         return $encoded;
     };
 
-    $param{common_listing}    = 1;
-    $param{blog_id}           = $blog_id || '0';
-    $param{filters}           = $encode_filter->($filters),
-    $param{initial_filter}    = $encode_filter->($initial_filter),
-    $param{allpass_filter}    = $encode_filter->($allpass_filter);
+    $param{common_listing}     = 1;
+    $param{blog_id}            = $blog_id || '0';
+    $param{filters}            = $encode_filter->($filters),
+        $param{initial_filter} = $encode_filter->($initial_filter),
+        $param{allpass_filter} = $encode_filter->($allpass_filter);
     $param{system_messages}   = $json->encode( \@messages );
     $param{filters_raw}       = $filters;
     $param{default_sort_key}  = $default_sort;
