@@ -253,7 +253,7 @@ sub field_type_validation_handler {
     );
     unless ($content_type_exists) {
         return $app->translate(
-            'There is no content type that can be used. Please create new content type.'
+            'There is no content type that can be selected. Please create new content type if you use Content Type field type.'
         );
     }
     return;

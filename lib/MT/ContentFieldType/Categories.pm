@@ -421,7 +421,8 @@ sub field_type_validation_handler {
         = MT::CategorySet->exist( { blog_id => $app->blog->id } );
     unless ($category_set_exists) {
         return $app->translate(
-            'There is no category set. Please create a category set.');
+            'There is no category set that can be selected. Please create a category set if you use Categories field type.'
+        );
     }
     return;
 }

@@ -31,14 +31,24 @@
      id="categories-category_set"
      label="<__trans phrase="Source Category Set">"
      required="1">
-    <select ref="category_set" name="category_set" id="categories-category_set" class="form-control">
-    <mt:loop name="category_sets">
-      <option value="<mt:var name="id" escape="html">" if={ options.category_set == <mt:var name="id" escape="html"> } selected="selected"><mt:var name="name" escape="html"></option>
-      <option value="<mt:var name="id" escape="html">" if={ options.category_set != <mt:var name="id" escape="html"> }><mt:var name="name" escape="html"></option>        
-    </mt:loop>
-    </select>
+    <mt:if name="category_sets">
+      <select ref="category_set" name="category_set" id="categories-category_set" class="form-control">
+      <mt:loop name="category_sets">
+        <option value="<mt:var name="id" escape="html">" if={ options.category_set == <mt:var name="id" escape="html"> } selected="selected"><mt:var name="name" escape="html"></option>
+        <option value="<mt:var name="id" escape="html">" if={ options.category_set != <mt:var name="id" escape="html"> }><mt:var name="name" escape="html"></option>
+      </mt:loop>
+      </select>
+    <mt:else>
+      <mtapp:statusmsg
+        id="no-cateogry-set"
+        class="warning"
+        can_close="0"
+      >
+        <__trans phrase="There is no category set that can be selected. Please create a category set if you use Categories field type.">
+      </mtapp:statusmsg>
+    </mt:if>
   </mtapp:ContentFieldOption>
-  
+
   <mtapp:ContentFieldOptionScript>
     if ( this.options.multiple === "0" ) {
       this.options.multiple = 0
