@@ -51,8 +51,14 @@ sub field_html_params {
 
     my $required = $options->{required} ? 'data-mt-required="1"' : '';
 
+    my $invalid_source
+        = $options->{source}
+        ? !MT::ContentType->exist( $options->{source} )
+        : 1;
+
     {   content_data_loop => \@content_data_loop,
         content_type_name => $content_type_name,
+        invalid_source    => $invalid_source,
         multiple          => $multiple,
         required          => $required,
     };
