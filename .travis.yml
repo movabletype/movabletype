@@ -1,90 +1,27 @@
-dist: precise
+sudo: required
 
-language: perl
-perl:
-  - 5.18
+services:
+  - docker
 
 env:
   matrix:
-    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
-    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
-    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
-    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
-    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
-    - TEST_COMMAND="prove -Ilocal/lib/perl5 -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
-    - TEST_COMMAND="./phpunit"
-
-cache:
-  directories:
-    - ./local
-
-services:
-  - memcached
-
-addons:
-  apt_packages:
-    - libgd2-xpm-dev
-    - libgmp3-dev
-    - libperl-dev
-    - php5
-    - php5-cli
-    - php5-mysql
-    - php5-gd
-    - php5-memcache
-    - libpng12-dev
-    - libgif-dev
-    - libjpeg-dev
-    - cpanminus
-    - perlmagick
-    - netpbm
-    - zip
-    - unzip
-
-before_install:
-  # Use PHPUnit 4.8, because PHP version of Travis CI is 5.3.
-  - wget -O phpunit https://phar.phpunit.de/phpunit-old.phar
-  - chmod +x phpunit
+    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
+    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - TEST_COMMAND="phpunit"
 
 install:
-  - cpanm --notest App::cpm
-
-  - cpm install -g App::Prove::Plugin::MySQLPool
-
-  # Tests fail with Perl 5.10.
-  - cpm install XML::Parser::PerlSAX
-
-  # Use to install patched Coro.
-  - cpanm --notest --quiet LWP::Protocol::https
-
-  # Use patched Coro for Perl 5.22.
-  - cpanm -l --notest --quiet https://github.com/rurban/Coro/archive/rel-6.48_01.tar.gz
-
-  # Tests fail with Perl 5.8 and 5.10.
-  - cpm install Twiggy
-
-  # Cannot install Math::GMP 2.12 and 2.13 with Perl 5.8.
-  - cpm install Math::GMP@2.11
-
-  # Instal CPAN modules.
-  - cp ./t/cpanfile .
-  - travis_retry cpm install
-
-  # Build MT.
-  #- SHELL=/bin/bash make me
+  - docker build -t mt .
 
 before_script:
-  # Create MySQL database for tests.
-  - mysql -e "create database mt_test;"
-  - mysql -uroot -e "grant all privileges on mt_test.* to mt@localhost;"
-
-  # Some tests need mt-config.cgi.
-  #- cp ./t/mysql-test.cfg ./mt-config.cgi
-
   # Skip failed test.
   - rm plugins/MultiBlog/t/02.tags.t
 
 script:
-  - $TEST_COMMAND
+  - docker run -t -v $PWD:/root/movabletype -w /root/movabletype mt bash -c "find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && $TEST_COMMAND"
 
 notifications:
   slack:
