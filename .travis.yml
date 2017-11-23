@@ -21,7 +21,7 @@ before_script:
   - rm plugins/MultiBlog/t/02.tags.t
 
 script:
-  - docker run -v $PWD:/root/movabletype -w /root/movabletype mt bash -c "find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && $TEST_COMMAND"
+  - docker run -t -v $PWD:/root/movabletype -w /root/movabletype mt bash -c "find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && $TEST_COMMAND"
 
 notifications:
   slack:
