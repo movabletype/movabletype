@@ -1,4 +1,4 @@
-FROM masiuchi/docker-mt-test:trusty-full
+FROM masiuchi/docker-mt-test:stretch-full
 
 COPY t/cpanfile .
 
