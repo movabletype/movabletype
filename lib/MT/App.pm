@@ -3226,7 +3226,6 @@ sub run {
 
             if ( my $new_mode = $app->{forward} ) {
                 $mode = $new_mode;
-                $app->mode($new_mode);
                 $get_method_info->();
                 goto REQUEST;
             }
