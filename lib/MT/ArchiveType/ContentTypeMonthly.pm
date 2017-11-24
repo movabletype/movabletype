@@ -7,6 +7,7 @@
 package MT::ArchiveType::ContentTypeMonthly;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::ContentTypeDate MT::ArchiveType::Monthly );
 
 use MT::Util qw( start_end_month );

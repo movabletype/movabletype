@@ -10,6 +10,7 @@ package MT::BasicAuthor;
 # declaring it inline...
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 
 __PACKAGE__->install_properties(

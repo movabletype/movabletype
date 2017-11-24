@@ -6,6 +6,7 @@
 
 package MT::Auth::OpenID;
 use strict;
+use warnings;
 
 use MT::Util
     qw( decode_url is_valid_email escape_unicode ts2epoch expat_parser );

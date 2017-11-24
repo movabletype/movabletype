@@ -6,6 +6,7 @@
 package MT::CMS::Dashboard;
 
 use strict;
+use warnings;
 use MT::Util
     qw( ts2epoch epoch2ts encode_html relative_date offset_time format_ts );
 use MT::Stats qw(readied_provider);
@@ -326,7 +327,7 @@ sub generate_site_stats_data {
             my $date = sprintf( '%04d-%02d-%02d',
                 $timelist[5] + 1900,
                 $timelist[4] + 1,
-                @timelist[ 3, 2, 1, 0 ] );
+                $timelist[3] );
             push @dates, $date;
         }
 
@@ -481,7 +482,7 @@ sub site_stats_widget_pageview_lines {
     my $today = sprintf( '%04d-%02d-%02d',
         $ts[5] + 1900,
         $ts[4] + 1,
-        @ts[ 3, 2, 1, 0 ] );
+        $ts[ 3 ] );
     my $for_date = $provider->pageviews_for_date(
         $app,
         {   startDate => $ten_days_ago,
@@ -1155,7 +1156,7 @@ sub updates_widget {
             return;
         }
 
-        my $version_url = const('LATEST_VESION_URL');
+        my $version_url = const('LATEST_VERSION_URL');
         my $req         = new HTTP::Request( GET => $version_url );
         my $resp        = $ua->request($req);
         my $result      = $resp->content();

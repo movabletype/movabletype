@@ -7,6 +7,7 @@
 package MT::ContentFieldIndex;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 
 my %IdxTypes = (

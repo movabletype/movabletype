@@ -6,6 +6,7 @@
 
 package WXRImporter::Import;
 use strict;
+use warnings;
 
 use base qw(MT::ErrorHandler);
 

@@ -6,6 +6,7 @@
 package MT::CMS::Common;
 
 use strict;
+use warnings;
 
 use MT::Util qw( format_ts offset_time_list relative_date remove_html);
 
@@ -1258,17 +1259,17 @@ sub list {
     my $json = JSON->new->utf8(0);
 
     my $encode_filter = sub {
-        my $raw = shift;
+        my $raw     = shift;
         my $encoded = $json->encode($raw);
         $encoded =~ s/(s)(cript)/$1\\$2/gi;
         return $encoded;
     };
 
-    $param{common_listing}    = 1;
-    $param{blog_id}           = $blog_id || '0';
-    $param{filters}           = $encode_filter->($filters),
-    $param{initial_filter}    = $encode_filter->($initial_filter),
-    $param{allpass_filter}    = $encode_filter->($allpass_filter);
+    $param{common_listing}     = 1;
+    $param{blog_id}            = $blog_id || '0';
+    $param{filters}            = $encode_filter->($filters),
+        $param{initial_filter} = $encode_filter->($initial_filter),
+        $param{allpass_filter} = $encode_filter->($allpass_filter);
     $param{system_messages}   = $json->encode( \@messages );
     $param{filters_raw}       = $filters;
     $param{default_sort_key}  = $default_sort;
@@ -1931,8 +1932,33 @@ sub delete {
         elsif ( $type eq 'content_type' ) {
             my $template_class = $app->model('template');
             my $count
-                = $template_class->count( { content_type_id => $obj->id, } );
+                = $template_class->count(
+                { content_type_id => $obj->id, type => { not => 'backup' } }
+                );
             if ( $count > 0 ) {
+                push @not_deleted, $obj->id;
+                next;
+            }
+
+            my $used_in_content_type_field
+                = $app->model('content_field')->exist(
+                {   blog_id                 => $obj->blog_id,
+                    related_content_type_id => $obj->id,
+                }
+                );
+            if ($used_in_content_type_field) {
+                push @not_deleted, $obj->id;
+                next;
+            }
+        }
+        elsif ( $type eq 'category_set' ) {
+            my $used_in_categories_field
+                = $app->model('content_field')->exist(
+                {   blog_id            => $obj->blog_id,
+                    related_cat_set_id => $obj->id,
+                }
+                );
+            if ($used_in_categories_field) {
                 push @not_deleted, $obj->id;
                 next;
             }
@@ -2243,7 +2269,8 @@ sub save_snapshot {
             $original->current_revision($revision);
 
             # call update to bypass instance save method
-            $original->update or return $original->error( $original->errstr );
+            $original->update
+                or return $original->error( $original->errstr );
         }
 
         $app->run_callbacks( 'cms_post_save.' . "$type:revision",

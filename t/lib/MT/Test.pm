@@ -11,6 +11,7 @@ our @EXPORT
     = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks location_param_contains query_param_contains has_php );
 
 use strict;
+use warnings;
 
 # Handle cwd = MT_DIR, MT_DIR/t
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';

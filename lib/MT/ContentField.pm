@@ -7,6 +7,7 @@
 package MT::ContentField;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 
 use MT;

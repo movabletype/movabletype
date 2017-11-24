@@ -6,6 +6,7 @@
 package MT::Template::Tags::Score;
 
 use strict;
+use warnings;
 
 # FIXME: should this routine return an empty string?
 sub _object_score_for {

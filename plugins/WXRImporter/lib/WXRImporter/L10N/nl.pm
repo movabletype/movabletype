@@ -5,6 +5,7 @@
 package WXRImporter::L10N::nl;
 
 use strict;
+use warnings;
 use base 'WXRImporter::L10N::en_us';
 use vars qw( %Lexicon );
 

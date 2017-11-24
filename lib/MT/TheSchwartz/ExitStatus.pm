@@ -7,6 +7,7 @@
 package MT::TheSchwartz::ExitStatus;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 
 __PACKAGE__->install_properties(

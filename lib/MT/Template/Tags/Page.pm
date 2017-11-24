@@ -6,6 +6,7 @@
 package MT::Template::Tags::Page;
 
 use strict;
+use warnings;
 
 use MT;
 

@@ -7,6 +7,7 @@
 package MT::Lockout;
 
 use strict;
+use warnings;
 
 use MT::Auth;
 use MT::Util qw(is_valid_email epoch2ts);

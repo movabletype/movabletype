@@ -7,6 +7,7 @@
 package MT::Serialize;
 
 use strict;
+use warnings;
 our $VERSION            = '5';
 our $SERIALIZER_VERSION = '2';
 

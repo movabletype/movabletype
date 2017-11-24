@@ -7,6 +7,7 @@
 package MT::Core;
 
 use strict;
+use warnings;
 use MT;
 use base 'MT::Component';
 
@@ -2821,16 +2822,17 @@ sub load_core_permissions {
             'label'            => 'Create Sites',
             'order'            => 200,
             'permitted_action' => {
-                'create_blog'                => 1,
-                'create_new_blog'            => 1,
-                'use_blog:create_menu'       => 1,
-                'edit_new_blog_config'       => 1,
-                'open_new_blog_screen'       => 1,
-                'set_new_blog_publish_paths' => 1,
-                'access_to_system_dashboard' => 1,
-                'use_tools:search'           => 1,
-
-                'create_site' => 1,
+                'create_blog'                  => 1,
+                'create_new_blog'              => 1,
+                'use_blog:create_menu'         => 1,
+                'edit_new_blog_config'         => 1,
+                'open_new_blog_screen'         => 1,
+                'set_new_blog_publish_paths'   => 1,
+                'access_to_system_dashboard'   => 1,
+                'use_tools:search'             => 1,
+                'create_site'                  => 1,
+                'open_blog_listing_screen'     => 1,
+                'open_all_blog_listing_screen' => 1,
             }
         },
         'blog.comment' => {

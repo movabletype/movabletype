@@ -12,7 +12,7 @@
       <div class="col">
         <div id="name-field" class="form-group">
           <label for="name" class="form-control-label">{ trans('Content Type Name') } <span class="badge badge-danger">{ trans('Required') }</span></label>
-          <input type="text" name="name" id="name" class="required form-control" value={opts.name}>
+          <input type="text" name="name" id="name" class="form-control html5-form" value={opts.name} onkeypress={ stopSubmitting } required>
         </div>
       </div>
     </div>
@@ -64,7 +64,7 @@
       </div>
     </fieldset>
   </form>
-  <button type="button" class="btn btn-primary" onclick={ submit }>{ trans("Save") }</button>
+  <button type="button" class="btn btn-primary" disabled={ !canSubmit() } onclick={ submit }>{ trans("Save") }</button>
 
   <script>
     this.fields = opts.fields
@@ -72,6 +72,14 @@
     this.currentTypeLabel = opts.types[0].label
     this.isEmpty = this.fields.length > 0 ? false : true
     this.data = "";
+
+    stopSubmitting(e) {
+      if (e.which == 13) {
+        e.preventDefault()
+        return false
+      }
+      return true
+    }
 
     changeType(e) {
       this.currentType = e.target.options[e.target.selectedIndex].value
@@ -95,7 +103,42 @@
       e.preventDefault()
     }
 
+    _validateFields() {
+      const simple = jQuery('.html5-form').mtValidate('simple')
+      const valuesOptionTable = jQuery('.values-option-table')
+                                  .mtValidate('selection-field-values-option')
+      return simple && valuesOptionTable
+    }
+
+    _openAllInvalidContentFieldBlocks() {
+      jQuery('.content-field-block').each(function () {
+        const $block = jQuery(this)
+        if ( $block.has('.html5-form.is-invalid, .values-option-table.is-invalid') ) {
+          $block.find('.mt-collapse__content').collapse('show')
+        }
+      })
+    }
+
+    canSubmit() {
+      if (this.fields.length == 0) {
+        return true
+      }
+      const invalidFields = this.fields.filter((field) => {
+        return opts.invalid_types[field.type]
+      })
+      return invalidFields.length == 0 ? true : false
+    }
+
     submit(e) {
+      if (!this.canSubmit()) {
+        return
+      }
+
+      if ( !this._validateFields() ) {
+        this._openAllInvalidContentFieldBlocks()
+        return
+      }
+
       setDirty(false)
       fieldOptions = [];
       if ( this.fields ) {

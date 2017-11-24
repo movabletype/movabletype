@@ -7,6 +7,7 @@
 package MT::ArchiveType::ContentTypeCategoryMonthly;
 
 use strict;
+use warnings;
 use base
     qw( MT::ArchiveType::ContentTypeCategory MT::ArchiveType::ContentTypeMonthly MT::ArchiveType::CategoryMonthly );
 

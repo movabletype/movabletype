@@ -6,6 +6,7 @@
 
 package MT::Notification;
 use strict;
+use warnings;
 
 use MT::Blog;
 use MT::Object;

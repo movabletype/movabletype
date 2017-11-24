@@ -6,6 +6,7 @@
 package MT::CMS::User;
 
 use strict;
+use warnings;
 
 use MT::Util
     qw( format_ts relative_date is_valid_email is_url encode_url encode_html );
@@ -1012,7 +1013,7 @@ sub grant_role {
                 next unless ref $ug;
                 MT::Association->link( $ug => $role => $blog );
                 if (   $admin_role
-                    && $role->has('manage_member_blogs')
+                    && $role->has('create_site')
                     && !$blog->is_blog )
                 {
                     my $blogs = $blog->blogs;

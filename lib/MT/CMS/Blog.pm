@@ -6,6 +6,7 @@
 package MT::CMS::Blog;
 
 use strict;
+use warnings;
 use MT::Util qw( dirify dir_separator );
 
 sub edit {

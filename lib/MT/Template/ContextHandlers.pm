@@ -7,6 +7,7 @@
 package MT::Template::Context;
 
 use strict;
+use warnings;
 
 use MT::Util qw( format_ts relative_date );
 use Time::Local qw( timelocal );
@@ -3447,7 +3448,7 @@ sub _hdlr_app_statusmsg {
     if ( !$blog && $blog_id ) {
         $blog = MT->model('blog')->load($blog_id);
     }
-    if ( $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
+    if ( $id && $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
         my $link_l
             = $no_link
             ? ''
@@ -4240,7 +4241,7 @@ sub _hdlr_app_contentfield_option_group {
      id="$type-label"
      label="<__trans phrase="Label">"
      required="1">
-    <input type="text" ref="label" name="label" id="$type-label" class="form-control" oninput={ inputLabel } value={ options.label} >
+    <input type="text" ref="label" name="label" id="$type-label" class="form-control html5-form" oninput={ inputLabel } value={ options.label } required>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -4329,7 +4330,7 @@ sub _hdlr_app_contentfield_option_group {
             array.push( val )
           }
         }
-        else { 
+        else {
           data[f.name] = val
         }
       }

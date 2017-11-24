@@ -7,6 +7,7 @@
 package MT::App::Search::FreeText;
 
 use strict;
+use warnings;
 use base qw( MT::App::Search );
 use MT::ObjectDriver::SQL qw( :constants );
 

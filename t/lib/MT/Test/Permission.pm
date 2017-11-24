@@ -6,6 +6,7 @@
 package MT::Test::Permission;
 
 use strict;
+use warnings;
 
 sub make_author {
     my $pkg    = shift;
@@ -307,6 +308,7 @@ sub make_template {
         name    => 'blog-name',
         text    => '<MTBlogName>',
         type    => 'custom',
+        outfile => 'blog.html',
     };
 
     if (%params) {

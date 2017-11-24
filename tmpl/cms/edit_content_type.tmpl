@@ -6,7 +6,16 @@
 </mt:if>
 
 <mt:setvarblock name="system_msg">
-<div id="msg-block"></div>
+<div id="msg-block">
+<mt:loop name="content_field_types">
+  <mt:if name="warning">
+    <mtapp:statusmsg
+       class="warning"
+       can_close="0">
+      <mt:var name="warning">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:loop>
   <mt:if name="saved">
     <mtapp:statusmsg
        id="saved"
@@ -22,10 +31,27 @@
       <mt:var name="error">
     </mtapp:statusmsg>
   </mt:if>
+</div>
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/content-type.css?v=<$mt:var name="mt_version_id" escape="url"$>">
+</mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<style>
+.values-option-table.is-invalid input[type=text]:not([value]),
+.values-option-table.is-invalid input[type=text][value=""]
+{
+    border-color: #D33638;
+}
+
+.values-option-table.is-invalid input[type=text]:not([value]):focus,
+.values-option-table.is-invalid input[type=text][value=""]:focus
+{
+    box-shadow: 0 0 0 0.2rem rgba(211, 54, 56, 0.25);
+}
+</style>
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
@@ -40,7 +66,13 @@
 </mt:if>
 <script type="text/javascript" src="<mt:var name="static_uri">riot/riot+compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script>
-  var content_field_types = JSON.parse('<mt:var name="content_field_types" escape="js">');
+  var content_field_types = JSON.parse('<mt:var name="content_field_types_json" escape="js">');
+  var invalid_types = content_field_types.filter(function (field_type) {
+    return field_type.warning;
+  }).reduce(function (hash, field_type) {
+    hash[field_type.type] = true;
+    return hash;
+  }, {});
   var fields = <mt:if name="fields">JSON.parse('<mt:var name="fields" escape="js">');<mt:else>[];</mt:if>
   riot.mount('content-fields', {
     blog_id: "<mt:var name="blog_id" escape="js">",
@@ -53,6 +85,7 @@
     user_disp_option: "<mt:unless name="id">checked<mt:else><mt:if name="user_disp_option">checked</mt:if></mt:unless>",
     fields: fields,
     types: content_field_types,
+    invalid_types: invalid_types,
   });
 </script>
 </mt:setvarblock>
@@ -73,12 +106,46 @@
   jQuery('select').change(function() {
     setDirty(true);
   });
+
+  jQuery.mtValidator('selection-field-values-option',
+    jQuery.extend({}, jQuery.mtValidator('simple'), {
+      showError: function ( $target, $error_block ) {
+        $target.parent().append($error_block);
+      },
+    })
+  );
+
+  jQuery.mtValidateAddRules({
+    '.values-option-table': function ($e) {
+      var valuesCount = 0;
+      $e.find('tbody tr').each(function () {
+        var $tr = jQuery(this);
+        var label = $tr.find('input[name=label]').val();
+        var value = $tr.find('input[name=value]').val();
+        if (label.length > 0 && value.length > 0) {
+          valuesCount++;
+        }
+      });
+      return valuesCount > 0 ? true : false;
+    }
+  });
+
+  jQuery.mtValidateAddMessages({
+    '.values-option-table': jQuery.mtValidateMessages['.required']
+  });
+
+  jQuery(document).on('keyup change input', '.values-option-table input', function () {
+      var $valuesOption = jQuery(this).parents('.values-option-table');
+      var ns = $valuesOption.data( 'mtValidator' );
+      if ( !ns ) return true;
+      $valuesOption.mtValid({ focus: false });
+  });
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
 
   <div data-is="content-fields"></div>
-  
+
   </mtapp:form>
 </mt:setvarblock>
 

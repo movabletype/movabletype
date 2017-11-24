@@ -7,6 +7,7 @@
 package MT::Upgrade::v6;
 
 use strict;
+use warnings;
 
 sub upgrade_functions {
     return {

@@ -6,6 +6,7 @@
 package MT::Template::Tags::Ping;
 
 use strict;
+use warnings;
 use MT::Util qw( encode_xml );
 
 ###########################################################################

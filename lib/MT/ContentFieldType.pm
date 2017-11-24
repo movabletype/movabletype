@@ -40,6 +40,8 @@ sub _content_type_registry {
         field_html => 'field_html/field_html_content_type.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::ContentType::field_html_params',
+        field_type_validation_handler =>
+            '$Core::MT::ContentFieldType::ContentType::field_type_validation_handler',
         field_value_handler =>
             '$Core::MT::ContentFieldType::ContentType::field_value_handler',
         ss_validator =>
@@ -982,6 +984,8 @@ sub _categories_registry {
         field_html => 'field_html/field_html_categories.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Categories::field_html_params',
+        field_type_validation_handler =>
+            '$Core::MT::ContentFieldType::Categories::field_type_validation_handler',
         field_value_handler =>
             '$Core::MT::ContentFieldType::Categories::field_value_handler',
         ss_validator =>

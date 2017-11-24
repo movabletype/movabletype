@@ -6,6 +6,7 @@
 
 package MT::AtomServer;
 use strict;
+use warnings;
 
 use XML::Atom;
 use XML::Atom::Util qw( first textValue );

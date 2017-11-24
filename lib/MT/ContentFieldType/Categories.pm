@@ -415,4 +415,16 @@ sub feed_value_handler {
     return "<ul>$contents</ul>";
 }
 
+sub field_type_validation_handler {
+    my $app = shift;
+    my $category_set_exists
+        = MT::CategorySet->exist( { blog_id => $app->blog->id } );
+    unless ($category_set_exists) {
+        return $app->translate(
+            'There is no category set that can be selected. Please create a category set if you use Categories field type.'
+        );
+    }
+    return;
+}
+
 1;

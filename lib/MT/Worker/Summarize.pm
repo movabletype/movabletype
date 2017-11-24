@@ -7,6 +7,7 @@
 package MT::Worker::Summarize;
 
 use strict;
+use warnings;
 use base qw( TheSchwartz::Worker );
 
 use TheSchwartz::Job;

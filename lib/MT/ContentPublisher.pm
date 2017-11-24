@@ -7,6 +7,7 @@
 package MT::ContentPublisher;
 
 use strict;
+use warnings;
 use base qw( MT::WeblogPublisher );
 our @EXPORT = qw(ArchiveFileTemplate ArchiveType);
 

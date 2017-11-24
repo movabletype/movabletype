@@ -231,8 +231,8 @@ function init() {
       <mt:setvarblock name="ct_perm_group"><mt:var name="__VALUE__"></mt:setvarblock>
 
       <mtapp:setting
-        id="<mt:var name="ct_perm_group">"
-        label="<mt:var name="ct_perm_group">">
+        id="<mt:var name="ct_perm_group" escape="html">"
+        label="<mt:var name="ct_perm_group" escape="html">">
         <div class="form-group">
         <mt:loop name="loaded_permissions">
         <mt:if name="group" eq="$ct_perm_group">

@@ -51,8 +51,14 @@ sub field_html_params {
 
     my $required = $options->{required} ? 'data-mt-required="1"' : '';
 
+    my $invalid_source
+        = $options->{source}
+        ? !MT::ContentType->exist( $options->{source} )
+        : 1;
+
     {   content_data_loop => \@content_data_loop,
         content_type_name => $content_type_name,
+        invalid_source    => $invalid_source,
         multiple          => $multiple,
         required          => $required,
     };
@@ -241,6 +247,22 @@ sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
     my $contents = join '', map {"<li>(ID:$_)</li>"} @$values;
     return "<ul>$contents</ul>";
+}
+
+sub field_type_validation_handler {
+    my $app                 = shift;
+    my $content_type_id     = $app->param('id');
+    my $content_type_exists = MT::ContentType->exist(
+        {   blog_id => $app->blog->id,
+            $content_type_id ? ( id => { not => $content_type_id } ) : (),
+        }
+    );
+    unless ($content_type_exists) {
+        return $app->translate(
+            'There is no content type that can be selected. Please create new content type if you use Content Type field type.'
+        );
+    }
+    return;
 }
 
 1;

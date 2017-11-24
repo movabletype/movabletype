@@ -7,6 +7,7 @@
 package MT::Permission;
 
 use strict;
+use warnings;
 
 use MT::Blog;
 use MT::ContentData;
@@ -161,7 +162,7 @@ sub global_perms {
         # permission field. So it works with MT::Permission and MT::Role.
         my ($more_perm) = @_;
         if ( my $more = $more_perm->permissions ) {
-            if ( $more =~ /\'manage_member_blogs\'/ ) {
+            if ( $more =~ /\'create_site\'/ ) {
                 $more = _all_perms('blog');
             }
             else {

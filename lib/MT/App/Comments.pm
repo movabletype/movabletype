@@ -6,6 +6,7 @@
 
 package MT::App::Comments;
 use strict;
+use warnings;
 
 use base 'MT::App';
 

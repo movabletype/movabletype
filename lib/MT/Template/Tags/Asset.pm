@@ -6,6 +6,7 @@
 package MT::Template::Tags::Asset;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Util qw( offset_time_list );

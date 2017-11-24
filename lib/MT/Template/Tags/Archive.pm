@@ -6,6 +6,7 @@
 package MT::Template::Tags::Archive;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Util qw( archive_file_for );

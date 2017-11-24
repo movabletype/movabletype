@@ -1,3 +1,4 @@
+<mt:unless name="invalid_source">
 <div id="content-type-field-<mt:var name="content_field_id" escape="html">" class="content-type-field-container content-field" data-mt-content-type-name="<mt:var name="content_type_name" escape="html">" <mt:var name="required"> <mt:var name="multiple">>
   <ul id="content-field-<mt:var name="content_field_id" escape="html">-list-content-data" class="list-unstyled w-50 content-data-list">
 <mt:loop name="content_data_loop">
@@ -57,4 +58,9 @@ jQuery('ul.content-data-list').on('click', 'li a.icon-remove', function () {
   app.setDirty();
 });
   </mt:setvarblock>
+</mt:unless>
+<mt:else>
+<div class="alert alert-warning">
+  <__trans phrase="This field is disabled because valid Content Type is not selected in this field.">
+</div>
 </mt:unless>

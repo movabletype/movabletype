@@ -6,6 +6,7 @@
 package MT::CMS::Tag;
 
 use strict;
+use warnings;
 
 use MT::ObjectTag;
 use MT::Tag;

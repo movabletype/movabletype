@@ -5,6 +5,7 @@
 # $Id$
 package MT::Theme::Category;
 use strict;
+use warnings;
 use MT;
 use MT::Theme::Common qw( add_categories );
 

@@ -6,6 +6,7 @@
 package MT::Template::Tags::Folder;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Template::Tags::Category;

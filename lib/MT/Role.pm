@@ -7,6 +7,7 @@
 package MT::Role;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 
 # NOTE: Keep the role_mask fields defined here in sync with those in

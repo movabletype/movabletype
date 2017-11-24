@@ -6,6 +6,7 @@
 
 package MT::FileMgr::Local;
 use strict;
+use warnings;
 
 use MT::FileMgr;
 @MT::FileMgr::Local::ISA = qw( MT::FileMgr );

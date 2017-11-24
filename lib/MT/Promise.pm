@@ -6,6 +6,7 @@
 
 package MT::Promise;
 use strict;
+use warnings;
 use Exporter;
 *import                 = \&Exporter::import;
 @MT::Promise::EXPORT_OK = qw(delay force lazy);
