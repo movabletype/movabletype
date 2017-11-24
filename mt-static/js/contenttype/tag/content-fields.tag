@@ -104,12 +104,12 @@
     }
 
     _validateFields() {
-      const simple = jQuery('.html5-form').mtValidate('simple')
-      const valuesOptionTable = jQuery('.values-option-table')
-                                  .mtValidate('selection-field-values-option')
-      const contentFieldBlock = jQuery('.content-field-block')
-                                  .mtValidate('content-field-block')
-      return simple && valuesOptionTable && contentFieldBlock
+      const simpleIsValid = jQuery('.html5-form').mtValidate('simple')
+      const valuesOptionTableIsValid = jQuery('.values-option-table')
+                                         .mtValidate('selection-field-values-option')
+      const contentFieldBlockIsValid = jQuery('.content-field-block')
+                                         .mtValidate('content-field-block')
+      return simpleIsValid && valuesOptionTableIsValid && contentFieldBlockIsValid
     }
 
     canSubmit() {
