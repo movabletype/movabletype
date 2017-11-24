@@ -13,8 +13,16 @@ env:
     - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - TEST_COMMAND="phpunit"
 
+    - IMAGE_TAG="stretch-full" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
+    - IMAGE_TAG="stretch-full" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+    - IMAGE_TAG="stretch-full" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+    - IMAGE_TAG="stretch-full" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - IMAGE_TAG="stretch-full" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - IMAGE_TAG="stretch-full" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - IMAGE_TAG="stretch-full" TEST_COMMAND="phpunit"
+
 install:
-  - docker build -t mt .
+  - docker build --build-arg image_tag=$IMAGE_TAG -t mt .
 
 before_script:
   # Skip failed test.

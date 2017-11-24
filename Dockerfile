@@ -1,4 +1,5 @@
-FROM masiuchi/docker-mt-test:trusty-full
+ARG image_tag="trusty-full"
+FROM masiuchi/docker-mt-test:$image_tag
 
 COPY t/cpanfile .
 
