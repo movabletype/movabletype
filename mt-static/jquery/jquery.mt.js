@@ -1435,7 +1435,7 @@ $.fn.extend({
         var errors = 0,
             error_elements = [],
             successes = 0,
-            defaults = { focus: true };
+            defaults = { focus: true, afterTrigger: true };
         opts = $.extend( defaults, opts );
         this.each( function () {
             var $this = $(this),
@@ -1481,6 +1481,9 @@ $.fn.extend({
         });
         if ( opts.focus && error_elements.length ) {
             error_elements[0].focus();
+        }
+        if ( opts.afterTrigger ) {
+            this.trigger('after-mt-valid');
         }
         return errors == 0;
     },
