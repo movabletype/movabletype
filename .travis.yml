@@ -23,14 +23,14 @@ env:
 
 install:
   - if [ "$PERL_VERSION" = "5.24" ]; then cp -f Dockerfile.perl-5.24 Dockerfile; fi
-  - docker build -t mt .
+  - if [ $TRAVIS_BRANCH = "master" || $TRAVIS_BRANCH = "develop" || "$PERL_VERSION" != "5.24" ]; then docker build -t mt .; fi
 
 before_script:
   # Skip failed test.
   - rm plugins/MultiBlog/t/02.tags.t
 
 script:
-  - docker run -t -v $PWD:/root/movabletype -w /root/movabletype mt bash -c "find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && $TEST_COMMAND"
+  - if [ $TRAVIS_BRANCH = "master" || $TRAVIS_BRANCH = "develop" || "$PERL_VERSION" != "5.24" ]; then docker run -t -v $PWD:/root/movabletype -w /root/movabletype mt bash -c "find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && $TEST_COMMAND"; fi
 
 notifications:
   slack:
