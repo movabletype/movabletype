@@ -115,7 +115,18 @@
     })
   );
 
+  jQuery.mtValidator('content-field-block', {
+    errorClass: 'border-danger',
+    removeError: function () {},
+    showError: function () {},
+    updateError: function () {},
+    wrapError: function () {}
+  });
+
   jQuery.mtValidateAddRules({
+    '.content-field-block': function ($e) {
+      return $e.has('.has-error').length == 0;
+    },
     '.values-option-table': function ($e) {
       var valuesCount = 0;
       $e.find('tbody tr').each(function () {
@@ -139,6 +150,13 @@
       var ns = $valuesOption.data( 'mtValidator' );
       if ( !ns ) return true;
       $valuesOption.mtValid({ focus: false });
+  });
+
+  jQuery(document).on('after-mt-valid', '.content-field-block input, .values-option-table', function () {
+    var $block = jQuery(this).parents('.content-field-block');
+    var ns = $block.data( 'mtValidator' );
+    if ( !ns ) return true;
+    $block.mtValid({ focus: false, afterTrigger: false });
   });
 </mt:setvarblock>
 

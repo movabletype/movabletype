@@ -107,7 +107,9 @@
       const simple = jQuery('.html5-form').mtValidate('simple')
       const valuesOptionTable = jQuery('.values-option-table')
                                   .mtValidate('selection-field-values-option')
-      return simple && valuesOptionTable
+      const contentFieldBlock = jQuery('.content-field-block')
+                                  .mtValidate('content-field-block')
+      return simple && valuesOptionTable && contentFieldBlock
     }
 
     canSubmit() {
