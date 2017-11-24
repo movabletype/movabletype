@@ -388,7 +388,7 @@ sub save {
         $app->param( 'serialized_data', $data );
         my %param;
         $param{err_msg} = $errors->[0]{error};
-        return $app->forward( 'view', \%param );
+        return $app->forward( 'view_content_data', \%param );
     }
 
     my $content_data
@@ -463,7 +463,7 @@ sub save {
             $app->param( '_type',           'content_data' );
             $app->param( 'reedit',          1 );
             $app->param( 'serialized_data', $data );
-            return $app->forward( "view", \%param );
+            return $app->forward( "view_content_data", \%param );
         }
         if ( $content_data->authored_on ) {
             $previous_old = $content_data->previous(1);
@@ -516,7 +516,7 @@ sub save {
                 $app->param( '_type',           'content_data' );
                 $app->param( 'reedit',          1 );
                 $app->param( 'serialized_data', $data );
-                return $app->forward( "view", \%param );
+                return $app->forward( "view_content_data", \%param );
             }
             if ( $content_data->unpublished_on ) {
                 $previous_old = $content_data->previous(1);
