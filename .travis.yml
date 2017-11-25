@@ -5,6 +5,14 @@ services:
 
 env:
   matrix:
+    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
+    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - PERL_VERSION="5.10" TEST_COMMAND="phpunit"
+
     - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
     - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
     - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
@@ -22,7 +30,7 @@ env:
     - PERL_VERSION="5.24" TEST_COMMAND="phpunit"
 
 install:
-  - if [ "$PERL_VERSION" = "5.24" ]; then cp -f Dockerfile.perl-5.24 Dockerfile; fi
+  - if [ "$PERL_VERSION" = "5.10" ] || [ "$PERL_VERSION" = "5.24" ]; then cp -f Dockerfile.perl-$PERL_VERSION Dockerfile; fi
   - if [ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [ "$PERL_VERSION" != "5.24" ]; then docker build -t mt .; fi
 
 before_script:
