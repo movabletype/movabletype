@@ -31,7 +31,7 @@ env:
 
 install:
   - if [ "$PERL_VERSION" = "5.10" ] || [ "$PERL_VERSION" = "5.24" ]; then cp -f Dockerfile.perl-$PERL_VERSION Dockerfile; fi
-  - if [ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [ "$PERL_VERSION" != "5.24" ]; then docker build -t mt .; fi
+  - if [ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || ([ "$PERL_VERSION" != "5.10" ] && [ "$PERL_VERSION" != "5.24" ]); then docker build -t mt .; fi
 
 before_script:
   # Skip failed test.
@@ -39,7 +39,7 @@ before_script:
 
 script:
   - if ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [ "$PERL_VERSION" != "5.24" ]) && [ "$PERL_VERSION" != "5.10" ]; then docker run -t -v $PWD:/root/movabletype -w /root/movabletype mt bash -c "find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && $TEST_COMMAND"; fi
-  - if [ "$PERL_VERSION" = "5.10" ]; then docker run -t -v $PWD:/root/movabletype -w /root/movabletype mt bash -c "service mysqld start && service memcached start && $TEST_COMMAND"; fi
+  - if ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ]) && [ "$PERL_VERSION" = "5.10" ]; then docker run -t -v $PWD:/root/movabletype -w /root/movabletype mt bash -c "service mysqld start && service memcached start && $TEST_COMMAND"; fi
 
 notifications:
   slack:
