@@ -179,6 +179,7 @@ BEGIN {
             'content_field_index' => 'MT::ContentFieldIndex',
             'content_type'        => 'MT::ContentType',
             'objectcategory'      => 'MT::ObjectCategory',
+            'rebuild_trigger'     => 'MT::RebuildTrigger',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',

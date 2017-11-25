@@ -1,0 +1,173 @@
+<mt:setvar name="page_title" value="<__trans phrase="Config Rebuild Trigger">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvar name="config-rebuild-trigger" value="1">
+
+<mt:setvarblock name="system_msg">
+  <mt:if name="saved">
+    <mtapp:statusmsg
+       id="saved"
+       class="success">
+      <__trans phrase="Rebuild Trigger settings has been saved.">
+    </mtapp:statusmsg>
+  </mt:if>
+  <mt:if name="error">
+    <mtapp:statusmsg
+       id="error"
+       class="error"
+       can_close="0">
+      <mt:var name="error">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<mtapp:form id="cfg_rebuild_trigger" name="cfg_rebuild_trigger" mode="save" object_type="rebuild_trigger">
+<mt:if name="blog_id">
+<mtapp:setting
+   id="blog_content_accessible"
+   label="<__trans phrase="Content Privacy">"
+   label_for="blog_content_accessible">
+  <select name="blog_content_accessible" id="blog_content_accessible" class="custom-select form-control">
+    <option value="0"><__trans phrase="Use system default"></option>
+    <option value="2"<mt:if name="blog_content_accessible" eq="2"> selected="selected"</mt:if>><__trans phrase="Allow"></option>
+    <option value="1"<mt:if name="blog_content_accessible" eq="1"> selected="selected"</mt:if>><__trans phrase="Disallow"></option>
+  </select>
+</mtapp:setting>
+
+<mtapp:setting
+   id="default_mtmultiblog_action"
+   label="<__trans phrase="MTMultiBlog tag default arguments">"
+   class="form-inline"
+   hint="<__trans phrase="Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or 'all' (include_blogs only) are acceptable values.">"
+   show_hint="1">
+  <select name="default_mtmultiblog_action" id="default_mtmultiblog_action" class="custom-select form-control">
+    <option value="1"<mt:if name="default_mtmultiblog_action" eq="1"> selected="selected"</mt:if>>
+      <__trans phrase="Include sites/child sites">
+    </option>
+    <option value="0"<mt:unless name="default_mtmultiblog_action"> selected="selected"</mt:unless>>
+      <__trans phrase="Exclude sites/child sites">
+    </option>
+  </select>
+  <input class="form-control" name="default_mtmulitblog_blogs" type="text" value="<mt:var name="default_mtmulitblog_blogs">" />
+</mtapp:setting>
+
+<mtapp:setting
+   id="rebuild_triggers"
+   label="<__trans phrase="Rebuild Triggers">">
+  <input type="hidden" name="rebuild_triggers" id="rebuild_triggers" value="<mt:var name="rebuild_triggers">" />
+  <input type="hidden" name="old_rebuild_triggers" id="old_rebuild_triggers" value="<mt:var name="rebuild_triggers">" />
+  <p><a href="<mt:var name="script_url">?__mode=add_rebuild_trigger&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create mt-open-dialog mt-modal-open" data-mt-modal-large><__trans phrase="Create Rebuild Trigger"></a></p>
+  <mt:unless name="rebuilds_loop">
+    <mtapp:statusmsg
+       id="info"
+       class="info"
+       can_close="0">
+      <__trans phrase="You have not defined any rebuild triggers.">
+    </mtapp:statusmsg>
+  </mt:unless>
+  <div id="multiblog_blog_list" class="listing hide_actions<mt:unless name="rebuilds_loop"> hidden</mt:unless>"></div>
+</mtapp:setting>
+
+<mt:if name="rebuilds_loop">
+<script type="text/javascript">
+<!--
+rebuildMultiBlogTriggerTable();
+// -->
+</script>
+</mt:if>
+
+<mt:setvarblock name="js_include" append="1">
+  <script type="text/javascript">
+  /* <![CDATA[ */
+  var multiBlogRebuilds = new Array();
+  <mt:loop name="rebuilds_loop">
+  multiBlogRebuilds[multiBlogRebuilds.length] = new Array ("<mt:var name="action_name" escape="html">", "<mt:var name="action_value">", "<mt:var name="blog_name" escape="html">", "<mt:var name="blog_id">", "<mt:var name="trigger_name">", "<mt:var name="trigger_value">");
+  </mt:loop>
+  
+  function rebuildMultiBlogTriggerTable() {
+      DOM.addClassName(getByID('multiblog_blog_list_zero_state'), 'hidden');
+      DOM.removeClassName(getByID('multiblog_blog_list'), 'hidden');
+      getByID('multiblog_blog_list').innerHTML = "";
+      getByID('rebuild_triggers').value = "";
+      if (multiBlogRebuilds.length > 0) {
+          var values = new Array();
+          var str = "";
+          for (var i = 0; i < multiBlogRebuilds.length; i++) {
+              str += "<tr class=\"" + ((i + 1) % 2 == 0 ? "even" : "odd") + "\">";
+              str += "<td class=\"col\"> <__trans phrase="When"> "
+                  + multiBlogRebuilds[i][2]
+                  + "</td><td class='col'>"
+                  + multiBlogRebuilds[i][4]
+                  + "</td>";
+              str += "<td class='col'>" + multiBlogRebuilds[i][0] + "</td>";
+              str += "<td class='col si'><a href='javascript:void(0)' onclick='removeMultiBlogTrigger(" + i + ")'><img alt='<__trans phrase="Remove">' src='<mt:var NAME='STATIC_URI'>images/nav_icons/mini/delete.gif' /></a></td>";
+              str += "</tr>\n";
+              values[i] = multiBlogRebuilds[i][1];
+              values[i] += ":";
+              values[i] += multiBlogRebuilds[i][3];
+              values[i] += ":";
+              values[i] += multiBlogRebuilds[i][5];
+          }
+          str = "<table class='table mt-table'><thead><tr><th class='col head primary' scope='col'><span class='col-label'><__trans phrase="Site/Child Site" escape="js"></span></th><th class='col head primary' scope='col'><span class='col-label'><__trans phrase="Trigger" escape="js"></span></th><th class='col head primary' scope='col'><span class='col-label'><__trans phrase="Action" escape="js"></span></th><th class='col head si' scope='col'><img alt='<__trans phrase="Remove">' src='<mt:var name='static_uri'>images/nav_icons/mini/delete.gif' /></th></tr></thead>\n" + str + "</table>";
+          getByID('multiblog_blog_list').innerHTML = str;
+          getByID('rebuild_triggers').value = values.join('|');
+      }
+  }
+  
+  function removeMultiBlogTrigger(index) {
+      multiBlogRebuilds.splice(index, 1);
+      rebuildMultiBlogTriggerTable();
+  }
+  
+  function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerName, triggerValue) {
+      multiBlogRebuilds[multiBlogRebuilds.length] = [actionName, actionValue, blogName, blogId, triggerName, triggerValue];
+      rebuildMultiBlogTriggerTable();
+  }
+  /* ]]> */
+  </script>
+</mt:setvarblock>
+
+<mt:else>
+<mtapp:setting
+   id="default_access_allowed"
+   label="<__trans phrase="Default system aggregation policy">">
+  <ul class="list-unstyled">
+    <li>
+      <label class="custom-control custom-radio">
+        <input type="radio" value="1" name="default_access_allowed" id="default_access_allowed" class="custom-control-input rb"<mt:if name="default_access_allowed"> checked="checked"</mt:if> onclick="hide('mb-disallow');show('mb-allow');" />
+        <span class="custom-control-indicator"></span>
+        <span class="custom-control-description"><__trans phrase="Allow"></span>
+      </label>
+    </li>
+    <li>
+      <label class="custom-control custom-radio">
+        <input type="radio" value="0" name="default_access_allowed" id="default_access_allowed" class="custom-control-input rb"<mt:unless name="default_access_allowed"> checked="checked"</mt:unless> onclick="hide('mb-allow');show('mb-disallow');" />
+        <span class="custom-control-indicator"></span>
+        <span class="custom-control-description"><__trans phrase="Disallow"></span>
+      </label>
+    </li>
+  </ul>
+  <p id="mb-allow" style="display:<mt:if name="default_access_allowed">block<mt:else>none</mt:if>;">
+    <__trans phrase="Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.">
+  </p>
+  <p id="mb-disallow" style="display:<mt:if name="default_access_allowed">none<mt:else>block</mt:if>;">
+    <__trans phrase="Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.">
+  </p>
+</mtapp:setting>
+</mt:if>
+
+<mt:setvarblock name="action_buttons" id="action-buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to these settings (s)">"
+        class="save action primary button btn btn-primary">
+      <__trans phrase="Save Changes">
+    </button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</mtapp:form>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
