@@ -219,7 +219,6 @@ sub load_config {
         $args->{rebuilds_loop} = \@rebuilds;
     }
 
-    my $app = MT->instance;
     if ( $app->isa('MT::App') ) {
         $args->{blog_id} = $app->blog->id if $app->blog;
     }
