@@ -104,19 +104,12 @@
     }
 
     _validateFields() {
-      const simple = jQuery('.html5-form').mtValidate('simple')
-      const valuesOptionTable = jQuery('.values-option-table')
-                                  .mtValidate('selection-field-values-option')
-      return simple && valuesOptionTable
-    }
-
-    _openAllInvalidContentFieldBlocks() {
-      jQuery('.content-field-block').each(function () {
-        const $block = jQuery(this)
-        if ( $block.has('.html5-form.is-invalid, .values-option-table.is-invalid') ) {
-          $block.find('.mt-collapse__content').collapse('show')
-        }
-      })
+      const simpleIsValid = jQuery('.html5-form').mtValidate('simple')
+      const valuesOptionTableIsValid = jQuery('.values-option-table')
+                                         .mtValidate('selection-field-values-option')
+      const contentFieldBlockIsValid = jQuery('.content-field-block')
+                                         .mtValidate('content-field-block')
+      return simpleIsValid && valuesOptionTableIsValid && contentFieldBlockIsValid
     }
 
     canSubmit() {
@@ -135,7 +128,6 @@
       }
 
       if ( !this._validateFields() ) {
-        this._openAllInvalidContentFieldBlocks()
         return
       }
 

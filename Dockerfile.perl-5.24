@@ -1,0 +1,5 @@
+FROM masiuchi/docker-mt-test:stretch-full
+
+COPY t/cpanfile .
+
+RUN cpm install -g --test

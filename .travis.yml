@@ -5,23 +5,32 @@ services:
 
 env:
   matrix:
-    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
-    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
-    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
-    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
-    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
-    - TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
-    - TEST_COMMAND="phpunit"
+    - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
+    - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+    - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+    - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - PERL_VERSION="5.18" TEST_COMMAND="phpunit"
+
+    - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
+    - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+    - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+    - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - PERL_VERSION="5.24" TEST_COMMAND="phpunit"
 
 install:
-  - docker build -t mt .
+  - if [ "$PERL_VERSION" = "5.24" ]; then cp -f Dockerfile.perl-5.24 Dockerfile; fi
+  - if [ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [ "$PERL_VERSION" != "5.24" ]; then docker build -t mt .; fi
 
 before_script:
   # Skip failed test.
   - rm plugins/MultiBlog/t/02.tags.t
 
 script:
-  - docker run -t -v $PWD:/root/movabletype -w /root/movabletype mt bash -c "find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && $TEST_COMMAND"
+  - if [ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [ "$PERL_VERSION" != "5.24" ]; then docker run -t -v $PWD:/root/movabletype -w /root/movabletype mt bash -c "find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && $TEST_COMMAND"; fi
 
 notifications:
   slack:
