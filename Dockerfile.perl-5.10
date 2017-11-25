@@ -1,0 +1,5 @@
+FROM masiuchi/docker-mt-test:centos6-full
+
+COPY t/cpanfile .
+
+RUN cpm install -g --test
