@@ -38,5 +38,10 @@
   </mt:unless>
 </mt:unless>
 
-<script type="text/javascript" src="<$mt:var name="static_uri"$>popper/popper.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>bootstrap/js/bootstrap.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+<mt:unless name="optimize_ui">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>popper/popper.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>bootstrap/js/bootstrap.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+<mt:else>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>popper/popper.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>bootstrap/js/bootstrap.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+</mt:unless>
