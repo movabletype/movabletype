@@ -439,6 +439,34 @@ sub save {
     # Remove fields
     if ($content_type_id) {
         my @field_ids = map { $_->{object}->id } @field_objects;
+
+        my $iter = $cf_class->load_iter(
+            {   content_type_id => $content_type_id,
+                ( @field_ids ? ( id => \@field_ids ) : () ),
+            },
+            { ( @field_ids ? ( not => { id => 1 } ) : () ), }
+        );
+        while ( my $content_field = $iter->() ) {
+            if (   $content_field->type eq 'date_and_time'
+                || $content_field->type eq 'date_only' )
+            {
+                if ( MT->model('templatemap')
+                    ->count( { dt_field_id => $content_field->id } ) )
+                {
+                    $app->add_return_arg( not_deleted => 1 );
+                    return $app->call_return;
+                }
+            }
+            elsif ( $content_field->type eq 'categories' ) {
+                if ( MT->model('templatemap')
+                    ->count( { cat_field_id => $content_field->id } ) )
+                {
+                    $app->add_return_arg( not_deleted => 1 );
+                    return $app->call_return;
+                }
+            }
+        }
+
         $cf_class->remove(
             {   content_type_id => $content_type_id,
                 ( @field_ids ? ( id => \@field_ids ) : () ),
