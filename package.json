@@ -30,7 +30,7 @@
   "homepage": "https://github.com/movabletype/movabletype#readme",
   "dependencies": {
     "bootstrap": "4.0.0-beta",
-    "mt7-style-guide": "git+ssh://git@github.com:movabletype/mt7-style-guide.git",
+    "mt7-style-guide": "git+ssh://git@github.com:movabletype/mt7-style-guide.git#bundled-to-mt-core",
     "popper.js": "^1.12.1",
     "riot": "^3.6.1",
     "svg4everybody": "^2.1.9"
