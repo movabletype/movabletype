@@ -361,6 +361,290 @@ subtest 'mode = edit' => sub {
     done_testing();
 };
 
+subtest 'mode = edit (type is tbping)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Invalid request!i,
+        "edit by permitted user (manage feedback)" );
+
+    my $entry3 = MT::Test::Permission->make_entry(
+        blog_id   => $blog->id,
+        author_id => $ogawa->id,
+    );
+    my $tb_entry3 = MT::Test::Permission->make_tb(
+        blog_id  => $blog->id,
+        entry_id => $entry3->id,
+    );
+    my $ping_entry3 = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry3->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry3->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit by permitted user (create post)" );
+
+    my $entry2 = MT::Test::Permission->make_entry(
+        blog_id   => $blog->id,
+        author_id => $kumekawa->id,
+    );
+    my $tb_entry2 = MT::Test::Permission->make_tb(
+        blog_id  => $blog->id,
+        entry_id => $entry2->id,
+    );
+    my $ping_entry2 = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry2->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kumekawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry2->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit by permitted user (publish_post)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!permission=1!i, "edit by other blog (manage feedback)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kemigawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!permission=1!i, "edit by other blog (publish post)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit by other permission" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_page->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Invalid request!i,
+        "edit by non permitted user (create_post)" );
+
+    done_testing();
+};
+
+subtest 'mode = edit (type is ping_cat)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Invalid request!i,
+        "edit by permitted user (manage feedback)" );
+
+    my $entry3 = MT::Test::Permission->make_entry(
+        blog_id   => $blog->id,
+        author_id => $ogawa->id,
+    );
+    my $tb_entry3 = MT::Test::Permission->make_tb(
+        blog_id  => $blog->id,
+        entry_id => $entry3->id,
+    );
+    my $ping_entry3 = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry3->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry3->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit by permitted user (create post)" );
+
+    my $entry2 = MT::Test::Permission->make_entry(
+        blog_id   => $blog->id,
+        author_id => $kumekawa->id,
+    );
+    my $tb_entry2 = MT::Test::Permission->make_tb(
+        blog_id  => $blog->id,
+        entry_id => $entry2->id,
+    );
+    my $ping_entry2 = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry2->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kumekawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry2->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit by permitted user (publish_post)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!permission=1!i, "edit by other blog (manage feedback)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kemigawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!permission=1!i, "edit by other blog (publish post)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit by other permission" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            id               => $ping_page->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Invalid request!i,
+        "edit by non permitted user (create_post)" );
+
+    done_testing();
+};
+
 subtest 'mode = save' => sub {
     $app = _run_app(
         'MT::App::CMS',
@@ -486,6 +770,266 @@ subtest 'mode = save' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i,
+        "save by non permitted user (create_post)" );
+
+    done_testing();
+};
+
+subtest 'mode = save (type is tbping)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Invalid request!i,
+        "save by permitted user (manage feedback)" );
+
+    my $entry2 = MT::Test::Permission->make_entry(
+        blog_id   => $blog->id,
+        author_id => $kumekawa->id,
+    );
+    my $tb_entry2 = MT::Test::Permission->make_tb(
+        blog_id  => $blog->id,
+        entry_id => $entry2->id,
+    );
+    my $ping_entry2 = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry2->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kumekawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_entry2->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by permitted user (create_post)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog (manage feedback)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_page->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog (manage pages)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog (create post)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!INvalid request!i, "save by other permission" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_page->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Invalid request!i,
+        "save by non permitted user (create_post)" );
+
+    done_testing();
+};
+
+subtest 'mode = save (type is ping_cat)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Invalid request!i,
+        "save by permitted user (manage feedback)" );
+
+    my $entry2 = MT::Test::Permission->make_entry(
+        blog_id   => $blog->id,
+        author_id => $kumekawa->id,
+    );
+    my $tb_entry2 = MT::Test::Permission->make_tb(
+        blog_id  => $blog->id,
+        entry_id => $entry2->id,
+    );
+    my $ping_entry2 = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry2->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kumekawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_entry2->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by permitted user (create_post)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog (manage feedback)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_page->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog (manage pages)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog (create post)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!INvalid request!i, "save by other permission" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            id               => $ping_page->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Invalid request!i,
         "save by non permitted user (create_post)" );
 
     done_testing();
@@ -670,6 +1214,380 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
+    ok( $out, "Request: delete" );
+    ok( $out =~ m!permission=1!i,
+        "delete by non permitted user (create_post)" );
+
+    done_testing();
+};
+
+subtest 'mode = delete (type is tbping)' => sub {
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by admin" );
+
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: delete" );
+    ok( $out =~ m!Invalid request!i,
+        "delete by permitted user (manage feedback)" );
+
+    my $entry2 = MT::Test::Permission->make_entry(
+        blog_id   => $blog->id,
+        author_id => $kumekawa->id,
+    );
+    my $tb_entry2 = MT::Test::Permission->make_tb(
+        blog_id  => $blog->id,
+        entry_id => $entry2->id,
+    );
+    my $ping_entry2 = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry2->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kumekawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_entry2->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by permitted user (publish)" );
+
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!permission=1!i, "delete by other blog (manage feedback)" );
+
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_page->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!permission=1!i, "delete by other blog (manage pages)" );
+
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kemigawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!permission=1!i, "delete by other blog (publish post)" );
+
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'tbping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by other permission" );
+
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_page->id,
+            _type            => 'ping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    print $out;
+    ok( $out, "Request: delete" );
+    ok( $out =~ m!permission=1!i,
+        "delete by non permitted user (create_post)" );
+
+    done_testing();
+};
+
+subtest 'mode = delete (type is ping_cat)' => sub {
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by admin" );
+
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: delete" );
+    ok( $out =~ m!Invalid request!i,
+        "delete by permitted user (manage feedback)" );
+
+    my $entry2 = MT::Test::Permission->make_entry(
+        blog_id   => $blog->id,
+        author_id => $kumekawa->id,
+    );
+    my $tb_entry2 = MT::Test::Permission->make_tb(
+        blog_id  => $blog->id,
+        entry_id => $entry2->id,
+    );
+    my $ping_entry2 = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry2->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kumekawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_entry2->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by permitted user (publish)" );
+
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!permission=1!i, "delete by other blog (manage feedback)" );
+
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_page->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!permission=1!i, "delete by other blog (manage pages)" );
+
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kemigawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!permission=1!i, "delete by other blog (publish post)" );
+
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_entry->id,
+            _type            => 'ping_cat',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by other permission" );
+
+    $ping_entry = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_entry->id,
+    );
+    $ping_page = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id   => $tb_page->id,
+    );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            id               => $ping_page->id,
+            _type            => 'ping',
+        }
+    );
+    $out = delete $app->{__test_output};
+    print $out;
     ok( $out, "Request: delete" );
     ok( $out =~ m!permission=1!i,
         "delete by non permitted user (create_post)" );

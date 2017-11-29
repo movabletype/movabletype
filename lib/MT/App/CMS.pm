@@ -2662,9 +2662,19 @@ sub core_user_menus {
 sub core_disable_object_methods {
     my $app = shift;
     return {
+        accesstoken => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
         association => {
             edit => 1,
             save => 1,
+        },
+        audio => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
         },
         banlist   => { edit => 1, },
         blocklist => {
@@ -2692,7 +2702,22 @@ sub core_disable_object_methods {
                 return 1;
             },
         },
+        commenter => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
         config => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        failedlogin => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        file => {
             save   => 1,
             delete => 1,
             edit   => 1,
@@ -2711,6 +2736,16 @@ sub core_disable_object_methods {
                 return 0 if $app->param('id');
                 return 1;
             },
+        },
+        image => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        ipbanlist => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
         },
         log => {
             save   => 1,
@@ -2738,6 +2773,11 @@ sub core_disable_object_methods {
             delete => 1,
             edit   => 1,
         },
+        ping_cat => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
         placement => {
             save   => 1,
             delete => 1,
@@ -2749,6 +2789,16 @@ sub core_disable_object_methods {
             edit   => 1,
         },
         session => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        site => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        tbping => {
             save   => 1,
             delete => 1,
             edit   => 1,
@@ -2788,6 +2838,16 @@ sub core_disable_object_methods {
             edit   => 1,
         },
         ts_job => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        user => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        video => {
             save   => 1,
             delete => 1,
             edit   => 1,
