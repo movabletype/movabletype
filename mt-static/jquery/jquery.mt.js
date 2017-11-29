@@ -963,7 +963,7 @@ $.mtValidator('top', {
     showError: function( $target, $error_block ) {
         if ( $('div#msg-block').text() == 0 ) {
             var $block = $('<div/>')
-                .addClass('msg msg-error')
+                .addClass('alert alert-danger')
                 .append( $('<p>').text( trans('You have an error in your input.') ) )
                 .append( $('<ul />') );
 
