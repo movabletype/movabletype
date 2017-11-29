@@ -60,7 +60,7 @@ function doSubmitFormConfirm( f, mode, message ) {
     if (confirm(message)) {
         if (f.elements["__mode"] && mode)
             f.elements["__mode"].value = mode;
-        f.submit();
+        return true;
     }
     return false;
 }
@@ -145,7 +145,7 @@ function init() {
       <mt:if name="group" eq="blog_admin">
         <div class="form-check form-check-inline">
           <label class="custom-control custom-checkbox">
-            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
             <span class="custom-control-indicator"></span>
             <span class="custom-control-description"><mt:var name="label" escape="html"></span>
           </label>
@@ -238,7 +238,7 @@ function init() {
         <mt:if name="group" eq="$ct_perm_group">
           <div class="form-check">
             <label class="custom-control custom-checkbox">
-                <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+                <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
                 <span class="custom-control-indicator"></span>
                 <span class="custom-control-description"><mt:var name="label" escape="html"></span>
             </label>
