@@ -21,4 +21,5 @@ build:
         code: |
           # https://github.com/wercker/wercker/issues/95#issuecomment-234287539
           script -qfc "prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t" | cat
+          phpunit
 
