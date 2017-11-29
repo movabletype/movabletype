@@ -19,10 +19,44 @@ build:
           service mysql start
           service memcached start
     - script:
-        name: Run test
+        name: Copy config file
         code: |
           cp t/mysql-test.cfg mt-config.cgi
 
-          prove t plugins/*/t
+    - script:
+        name: Run test 110-cms-permission (1)
+        code: |
+          prove t/110-cms-permission-[abcdefghijklmno]*.t
+    - script:
+        name: Run test 110-cms-permission (2)
+        code: |
+          prove t/110-cms-permission-[^abcdefghijklmno]*.t
+    - script:
+        name: Run test 1?? without 110-cms-permission
+        code: |
+          prove t/110-commercial-permission-cms.t t/110-community-pemission.t t/110-enterprise-permission.t t/11[^0]-*.t t/1[^1]?-*.t
+    - script:
+        name: Run test 200-249
+        code: |
+          prove t/2[01234]?-*.t
+    - script:
+        name: Run test 250-299, 300-399
+        code: |
+          prove t/2[^01234]?-*.t t/3??-*.t
+    - script:
+        name: Run test 00-39
+        code: |
+          prove t/[0-3]?-*.t
+    - script:
+        name: Run test 40-99 and others
+        code: |
+          prove t/[4-9]?-*.t t/[^0-9]*.t
+    - script:
+        name: Run plugins test
+        code: |
+          prove plugins/*/t
+    - script:
+        name: Run PHP test
+        code: |
           phpunit
 
