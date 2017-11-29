@@ -455,8 +455,6 @@ sub cfg_prefs {
     my $blog_id = $q->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 ) unless $blog_id;
 
-    my $blog_prefs = $app->user_blog_prefs;
-    my $perms      = $app->permissions;
     return $app->permission_denied()
         unless $app->can_do('access_to_blog_config_screen');
 

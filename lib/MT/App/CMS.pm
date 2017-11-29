@@ -4301,41 +4301,6 @@ sub listify {
     \@ret;
 }
 
-sub user_blog_prefs {
-    my $app   = shift;
-    my $prefs = $app->request('user_blog_prefs');
-    return $prefs if $prefs && !$app->param('config_view');
-
-    my $perms = $app->permissions;
-    return {} unless $perms;
-    my @prefs = split /,/, $perms->blog_prefs || '';
-    my %prefs;
-    foreach (@prefs) {
-        my ( $name, $value ) = split /=/, $_, 2;
-        $prefs{$name} = $value;
-    }
-    my $updated = 0;
-    if ( my $view = $app->param('config_view') ) {
-        $prefs{'config_view'} = $view;
-        $updated = 1;
-    }
-    if ($updated) {
-        my $pref = '';
-        foreach ( keys %prefs ) {
-            $pref .= ',' if $pref ne '';
-            $pref .= $_ . '=' . $prefs{$_};
-        }
-        $perms->blog_prefs($pref);
-        if ( !$perms->blog_id ) {
-            my $blog = $app->blog;
-            $perms->blog_id( $blog->id ) if $blog;
-        }
-        $perms->save if $perms->blog_id;
-    }
-    $app->request( 'user_blog_prefs', \%prefs );
-    \%prefs;
-}
-
 sub archive_type_sorter {
     my ( $a, $b ) = @_;
 
