@@ -1599,6 +1599,37 @@ sub set_status_by_text {
     }
 }
 
+sub rebuild_favorite_sites {
+    my $user = shift;
+
+    return
+        if $user->is_superuser
+        || $user->permissions(0)->can_do('edit_templates');
+
+    # Favorite blogs
+    my @parents;
+    my @current_blog = @{ $user->favorite_blogs || [] };
+    if (@current_blog) {
+        @current_blog = grep { $user->has_perm($_) } @current_blog;
+        foreach my $blog_id (@current_blog) {
+            if ( my $blog = MT->model('blog')->load($blog_id) ) {
+                push @parents, $blog->website->id;
+            }
+        }
+        $user->favorite_blogs( \@current_blog );
+        $user->save;
+    }
+
+    # Favorite websites
+    my @current_website = @{ $user->favorite_websites || [] };
+    if (@current_website) {
+        @current_website = grep { $user->has_perm($_) } @current_website;
+    }
+    push @current_website, @parents if @parents;
+    $user->favorite_websites( \@current_website );
+    $user->save;
+}
+
 1;
 
 __END__
