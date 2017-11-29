@@ -324,14 +324,27 @@ sub _post_remove {
 
     $obj->remove_children( { key => 'content_type_id' } );
 
-    my $perm_name = 'manage_content_type:' . $obj->unique_id;
+    my @perm_names = (
+        'manage_content_data:' . $obj->unique_id,
+        'create_content_data:' . $obj->unique_id,
+        'publish_content_data:' . $obj->unique_id,
+        'edit_all_content_data:' . $obj->unique_id,
+    );
+
     require MT::Role;
-    my @roles = MT::Role->load_by_permission($perm_name);
+    my @roles = MT::Role->load(
+        {   'permissions' =>
+                { like => '%_content_data:' . $obj->unique_id . '%' }
+        },
+    );
     foreach my $role (@roles) {
         my $permissions = $role->permissions;
         my @permissions = split ',', $permissions;
-        @permissions = grep { $_ !~ /$perm_name/ } @permissions;
-        @permissions = map { $_ =~ s/'//g; $_; } @permissions;
+
+        foreach my $perm_name (@perm_names) {
+            @permissions = grep { $_ !~ /$perm_name/ } @permissions;
+            @permissions = map { $_ =~ s/'//g; $_; } @permissions;
+        }
         $role->clear_full_permissions;
         $role->set_these_permissions(@permissions);
         $role->save;
