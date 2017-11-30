@@ -1136,12 +1136,34 @@ function saveTemplatePrefs( sync ) {
         var map = getByID('template-maps');
         if (map)
             map.innerHTML = res;
+        jQuery("[id^=toggle_edit_mapping_]").click(function(){
+          toggleEditMapping(jQuery(this).attr('id').match(/\d+/));
+        });
         jQuery("[id^=delete_map_]").click(function(){
           deleteMap(jQuery(this).attr('id').match(/\d+/));
         });
         jQuery("[id^=archive_file_sel]").change(function(){
           selectArchiveFile(this);
         });
+        jQuery("[id^=archive_file_label_]").each(function(){
+          setArchiveFileLabel(jQuery(this).attr('id').match(/\d+/));
+        });
+    }
+    function toggleEditMapping(mapid) {
+      var content = jQuery("#edit-mapping-" + mapid);
+      if (content.hasClass('show')) {
+        jQuery("#archive_file_sel_" + mapid).css("display", "none");
+        jQuery("#archive_file_tmpl_" + mapid).css("display", "none");
+        var label = jQuery("#archive_file_sel_" + mapid).val() ? jQuery("#archive_file_sel_" + mapid + " option:selected").text() : jQuery("#archive_file_tmpl_" + mapid).val();
+        jQuery("#archive_file_label_" + mapid).val(label).css("display", "block");
+      }
+      else {
+        jQuery("#archive_file_label_" + mapid).css("display", "none");
+        jQuery("#archive_file_sel_" + mapid).css("display", "block");
+        if (!jQuery("#archive_file_sel_" + mapid).val()) {
+          jQuery("#archive_file_tmpl_" + mapid).css("display", "block");
+        }
+      }
     }
     function deleteMap(mapid) {
         if (!confirm('<__trans phrase="Are you sure you want to remove this template map?" escape="js">'))
@@ -1217,6 +1239,13 @@ function saveTemplatePrefs( sync ) {
       getContentFields(sel);
       </mt:if>
     }
+    function setArchiveFileLabel(mapid) {
+      var label = jQuery("#archive_file_sel_" + mapid).val() ? jQuery("#archive_file_sel_" + mapid + " option:selected").text() : jQuery("#archive_file_tmpl_" + mapid).val();
+      jQuery("#archive_file_label_" + mapid).val(label);
+    }
+    jQuery("[id^=toggle_edit_mapping_]").click(function(){
+      toggleEditMapping(jQuery(this).attr('id').match(/\d+/));
+    });
     jQuery("[id^=delete_map_]").click(function(){
       deleteMap(jQuery(this).attr('id').match(/\d+/));
     });
@@ -1225,6 +1254,9 @@ function saveTemplatePrefs( sync ) {
     });
     jQuery("#add_map").click(function(){
       addMap();
+    });
+    jQuery("[id^=archive_file_label_]").each(function(){
+      setArchiveFileLabel(jQuery(this).attr('id').match(/\d+/));
     });
 
     <mt:if name="blog_id">
