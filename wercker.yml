@@ -12,7 +12,11 @@ build:
         name: Install CPAN modules
         code: |
           cpm install -g --test --cpanfile=t/cpanfile
-          cpm install -g --test JSON::XS@2.24
+    - script:
+        name: Remove JSON::XS
+        code: |
+          cpm install -g --test App::pmuninstall
+          pm-uninstall -f JSON::XS
     - script:
         name: Start mysql and memcached
         code: |
