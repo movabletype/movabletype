@@ -12,6 +12,7 @@ build:
         name: Install CPAN modules
         code: |
           cpm install -g --test --cpanfile=t/cpanfile
+          cpm install -g --test JSON::XS@2.24
     - script:
         name: Start mysql and memcached
         code: |
