@@ -346,7 +346,7 @@
     <div id="cf_type-field" class="last-child">
       <p id="cf_type-label" class="font-weight-bold"><__trans phrase="Type"></p>
       <p id="cf_type"></p>
-    </dl>
+    </div>
 
 </mtapp:widget>
 <mt:else>
@@ -611,7 +611,7 @@ function setSyntaxHighlight(on_or_off) {
   </mt:if>
   </mtapp:setting>
 </mt:if>
-     
+
 <mt:if name="type_custom">
   <$mt:setvar name="template_name" value="<__trans phrase="Module Body">"$>
 <mt:else>
@@ -1120,7 +1120,7 @@ function saveTemplatePrefs( sync ) {
     });
     function saveArchiveMapChange(param) {
         showMsg('<__trans phrase="Processing request..." escape="js">', 'map-message', 'success')
-    
+
         // TBD: we need to get the blog id from the selector control
         // itself
         var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param, load: savedArchiveMapChange };
