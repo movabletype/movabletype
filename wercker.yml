@@ -1,0 +1,25 @@
+box: masiuchi/docker-mt-test:trusty-full
+
+build:
+  steps:
+    - script:
+        name: Remove skip test
+        code: |
+          rm plugins/MultiBlog/t/02.tags.t
+    - script:
+        name: Install CPAN modules
+        code: |
+          cpm install -g --test --cpanfile=t/cpanfile
+    - script:
+        name: Start mysql and memcached
+        code: |
+          find /var/lib/mysql -type f | xargs touch
+          service mysql start
+          service memcached start
+    - script:
+        name: Run test
+        code: |
+          # https://github.com/wercker/wercker/issues/95#issuecomment-234287539
+          script -qfc "prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t" | cat
+          phpunit
+
