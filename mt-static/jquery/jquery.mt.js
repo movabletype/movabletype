@@ -963,7 +963,7 @@ $.mtValidator('top', {
     showError: function( $target, $error_block ) {
         if ( $('div#msg-block').text() == 0 ) {
             var $block = $('<div/>')
-                .addClass('msg msg-error')
+                .addClass('alert alert-danger')
                 .append( $('<p>').text( trans('You have an error in your input.') ) )
                 .append( $('<ul />') );
 
@@ -1722,7 +1722,28 @@ function openModal(href, opts) {
 
   $modal.find('iframe.embed-responsive-item').attr('src', href);
 
-  $modal.modal({ keyboard: opts.esckeyclose });
+  $modal.modal(getModalOptions(opts));
+}
+
+function getModalOptions(opts) {
+  var modalOptions = {};
+
+  var modalOptionKeys = [
+    'backdrop',
+    'keyboard',
+    'focus',
+    'show'
+  ];
+  modalOptionKeys.forEach(function (key) {
+    if (opts.hasOwnProperty(key)) {
+      modalOptions[key] = opts[key];
+    }
+  });
+  if (!modalOptions.hasOwnProperty('keyboard')) {
+    modalOptions.keyboard = opts.esckeyclose;
+  }
+
+  return modalOptions;
 }
 
 function openModalWithForm(href, opts) {
