@@ -13,11 +13,6 @@ build:
         code: |
           cpm install -g --test --cpanfile=t/cpanfile
     - script:
-        name: Remove JSON::XS
-        code: |
-          cpm install -g --test App::pmuninstall
-          pm-uninstall -f JSON::XS
-    - script:
         name: Start mysql and memcached
         code: |
           find /var/lib/mysql -type f | xargs touch
@@ -27,6 +22,10 @@ build:
         name: Copy config file
         code: |
           cp t/mysql-test.cfg mt-config.cgi
+    - script:
+        name: Use JSON::PP
+        code: |
+          export PERL_JSON_BACKEND=JSON::PP
 
     - script:
         name: Run test 110-cms-permission (1)
