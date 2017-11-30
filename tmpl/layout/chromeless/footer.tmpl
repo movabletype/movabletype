@@ -21,7 +21,7 @@ if (window.jQuery) {
   <mt:var name="jq_js_include">
   });
   if (window.top && (window.top.location != window.location)) {
-    jQuery(document).reach(function () {
+    jQuery(document).ready(function () {
       window.top.jQuery.fn.mtDialogReady();
     });
   }
