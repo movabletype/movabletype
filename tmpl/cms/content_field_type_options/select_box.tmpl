@@ -25,7 +25,7 @@
      id="select_box-values"
      required="1"
      label="<__trans phrase="Values">">
-    <table class="table mt-table values-option-table">
+    <table class="table mt-table values-option-table" ref="table">
       <thead>
         <tr>
           <th scope="col"><__trans phrase="Selected"></th>
@@ -61,6 +61,10 @@
   if ( this.options.multiple === "0" ) {
     this.options.multiple = 0
   }
+
+  this.mount('updated', function () {
+    this.validateTable()
+  })
 
   addRow(e) {
     this.values.push({"checked": ""})
@@ -108,6 +112,13 @@
   }
   changeStateMultiple(e) {
     this.options.multiple = e.target.checked
+  }
+
+  validateTable() {
+    const $table = jQuery(this.refs.table)
+    var ns = $table.data( 'mtValidator' )
+    if ( !ns ) return true
+    $table.mtValid({ focus: false })
   }
   </mtapp:ContentFieldOptionScript>
 </mt:app:ContentFieldOptionGroup>

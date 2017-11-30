@@ -136,28 +136,23 @@
       return $e.has('.has-error').length == 0;
     },
     '.values-option-table': function ($e) {
-      var valuesCount = 0;
-      $e.find('tbody tr').each(function () {
-        var $tr = jQuery(this);
-        var label = $tr.find('input[name=label]').val();
-        var value = $tr.find('input[name=value]').val();
-        if (label.length > 0 && value.length > 0) {
-          valuesCount++;
-        }
-      });
-      return valuesCount > 0 ? true : false;
+      var valuesCount = $e.find('tbody tr').length;
+      if (valuesCount == 0) {
+        this.error = true;
+        this.errstr = trans('1 or more key-value pair is required');
+        return false;
+      }
+
+      var noInvalidValues = $e.find('tbody tr input[name=label]:not([value])').length == 0
+                         && $e.find('tbody tr input[name=label][value=""]').length == 0
+                         && $e.find('tbody tr input[name=value]:not([value])').length == 0
+                         && $e.find('tbody tr input[name=value][value=""]').length == 0;
+      return noInvalidValues ? true : false;
     }
   });
 
   jQuery.mtValidateAddMessages({
-    '.values-option-table': jQuery.mtValidateMessages['.required']
-  });
-
-  jQuery(document).on('keyup change input', '.values-option-table input', function () {
-      var $valuesOption = jQuery(this).parents('.values-option-table');
-      var ns = $valuesOption.data( 'mtValidator' );
-      if ( !ns ) return true;
-      $valuesOption.mtValid({ focus: false });
+    '.values-option-table': trans('All field is required')
   });
 
   jQuery(document).on('after-mt-valid', '.content-field-block input, .values-option-table', function () {

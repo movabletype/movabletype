@@ -5,7 +5,7 @@
      id="radio_button-values"
      required="1"
      label="<__trans phrase="Values">">
-    <table class="table mt-table values-option-table">
+    <table class="table mt-table values-option-table" ref="table">
       <thead>
         <tr>
           <th scope="col"><__trans phrase="Selected"></th>
@@ -25,7 +25,7 @@
     </table>
     <button onclick={ addRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="add">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_add" /></svg><__trans phrase="add"></button>
   </mtapp:ContentFieldOption>
-  
+
   <mtapp:ContentFieldOptionScript>
   this.values = this.options.values
   if ( !this.values ) {
@@ -33,6 +33,10 @@
       "checked": "checked"
     }]
   }
+
+  this.mount('updated', function () {
+    this.validateTable()
+  })
 
   addRow(e) {
     this.values.push({"checked": ""})
@@ -77,6 +81,13 @@
     return {
       values: this.values
     }
+  }
+
+  validateTable() {
+    const $table = jQuery(this.refs.table)
+    var ns = $table.data( 'mtValidator' )
+    if ( !ns ) return true
+    $table.mtValid({ focus: false })
   }
   </mtapp:ContentFieldOptionScript>
 </mt:app:ContentFieldOptionGroup>
