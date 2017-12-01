@@ -2735,8 +2735,8 @@ sub load_backup_instructions {
 
 sub load_core_permissions {
     require MT::ContentType;
-    my @content_type_permissions
-        = keys MT->app->model('content_type')->all_permissions;
+    my @content_type_permissions = keys %{ MT->app->model('content_type')->all_permissions };
+
     return {
         'blog.administer_site' => {
             'group'        => 'blog_admin',
