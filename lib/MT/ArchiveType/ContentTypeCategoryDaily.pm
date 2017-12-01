@@ -21,6 +21,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-CATEGORY-DAILY_ADV");
 }
 
+sub archive_short_label {
+    return MT->translate("CATEGORY-DAILY_ADV");
+}
+
 sub order {
     return 280;
 }

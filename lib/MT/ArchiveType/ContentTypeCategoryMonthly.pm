@@ -21,6 +21,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-CATEGORY-MONTHLY_ADV");
 }
 
+sub archive_short_label {
+    return MT->translate("CATEGORY-MONTHLY_ADV");
+}
+
 sub order {
     return 300;
 }

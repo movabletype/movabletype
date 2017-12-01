@@ -70,6 +70,10 @@ sub archive_label {
     shift->_getset_coderef( 'archive_label', @_ );
 }
 
+sub archive_short_label {
+    shift->_getset_coderef( 'archive_short_label', @_ );
+}
+
 sub group_based {
     my $obj = shift;
     if ( ref($obj) eq __PACKAGE__ ) {

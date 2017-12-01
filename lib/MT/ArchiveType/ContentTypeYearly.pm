@@ -20,6 +20,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-YEARLY_ADV");
 }
 
+sub archive_short_label {
+    return MT->translate("YEARLY_ADV");
+}
+
 sub order {
     return 210;
 }
