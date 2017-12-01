@@ -25,7 +25,7 @@
      id="select_box-values"
      required="1"
      label="<__trans phrase="Values">">
-    <table class="table mt-table values-option-table">
+    <table class="table mt-table values-option-table" ref="table">
       <thead>
         <tr>
           <th scope="col"><__trans phrase="Selected"></th>
@@ -37,8 +37,8 @@
       <tbody>
         <tr each={ values }>
           <td><input type="radio" class="form-control" name={ id + '-initial'} checked={ checked } onchange={ enterInitial }></td>
-          <td><input type="text" class="form-control" name="label" oninput={ enterLabel } value={ label }></td>
-          <td><input type="text" class="form-control" name="value" oninput={ enterValue } value={ value }></td>
+          <td><input type="text" class="form-control required" name="label" oninput={ enterLabel } value={ label }></td>
+          <td><input type="text" class="form-control required" name="value" oninput={ enterValue } value={ value }></td>
           <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="delete">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash" /></svg><__trans phrase="delete"></button></td>
         </tr>
       </tbody>
@@ -47,12 +47,6 @@
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOptionScript>
-  this.values = this.options.values
-  if ( !this.values ) {
-    this.values = [{
-      "checked": "checked"
-    }]
-  }
 
   if ( this.options.can_add === "0" ) {
     this.options.can_add = 0
@@ -62,9 +56,7 @@
     this.options.multiple = 0
   }
 
-  addRow(e) {
-    this.values.push({"checked": ""})
-  }
+  <mt:include name="content_field_type_options/selection_common_script.tmpl">
 
   deleteRow(e) {
     item = e.item
@@ -86,14 +78,6 @@
     }
   }
 
-  enterLabel(e) {
-    e.item.label = e.target.value
-  }
-
-  enterValue(e) {
-    e.item.value = e.target.value
-  }
-
   enterInitial(e) {
     this.values.forEach( function(v) {
       v.checked = "";
@@ -101,13 +85,9 @@
     e.item.checked = "checked"
   }
 
-  gather() {
-    return {
-      values: this.values
-    }
-  }
   changeStateMultiple(e) {
     this.options.multiple = e.target.checked
   }
+
   </mtapp:ContentFieldOptionScript>
 </mt:app:ContentFieldOptionGroup>
