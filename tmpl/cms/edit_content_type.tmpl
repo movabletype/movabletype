@@ -46,22 +46,6 @@
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/content-type.css?v=<$mt:var name="mt_version_id" escape="url"$>">
 </mt:setvarblock>
 
-<mt:setvarblock name="css_include" append="1">
-<style>
-.values-option-table.is-invalid input[type=text]:not([value]),
-.values-option-table.is-invalid input[type=text][value=""]
-{
-    border-color: #D33638;
-}
-
-.values-option-table.is-invalid input[type=text]:not([value]):focus,
-.values-option-table.is-invalid input[type=text][value=""]:focus
-{
-    box-shadow: 0 0 0 0.2rem rgba(211, 54, 56, 0.25);
-}
-</style>
-</mt:setvarblock>
-
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 <script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-fields.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
@@ -133,29 +117,36 @@
 
   jQuery.mtValidateAddRules({
     '.content-field-block': function ($e) {
-      return $e.has('.has-error').length == 0;
+      return $e.find('.has-error').length == 0;
     },
+
     '.values-option-table': function ($e) {
-      var valuesCount = $e.find('tbody tr').length;
-      if (valuesCount == 0) {
+      var hasNoValuesOption = $e.find('tbody tr').length == 0;
+      if (hasNoValuesOption) {
         this.error = true;
-        this.errstr = trans('1 or more key-value pair is required');
+        this.errstr = trans('1 or more label-value pair is required');
         return false;
       }
 
-      var noInvalidValues = $e.find('tbody tr input[name=label]:not([value])').length == 0
-                         && $e.find('tbody tr input[name=label][value=""]').length == 0
-                         && $e.find('tbody tr input[name=value]:not([value])').length == 0
-                         && $e.find('tbody tr input[name=value][value=""]').length == 0;
-      return noInvalidValues ? true : false;
+      var hasInvalidValuesOption = $e.find('input[type=text].is-invalid').length > 0;
+      if (hasInvalidValuesOption) {
+        this.error = true;
+        this.errstr = ' ';  // no error message
+        return false;
+      }
+
+      return true;
     }
   });
 
-  jQuery.mtValidateAddMessages({
-    '.values-option-table': trans('All field is required')
+  jQuery(document).on('after-mt-valid', '.values-option-table input[type=text]', function () {
+    var $table = jQuery(this).parents('.values-option-table');
+    var ns = $table.data( 'mtValidator' );
+    if ( !ns ) return true;
+    $table.mtValid({ focus: false });
   });
 
-  jQuery(document).on('after-mt-valid', '.content-field-block input, .values-option-table', function () {
+  jQuery(document).on('after-mt-valid', '.content-field-block div:not(.values-option-table) input, .values-option-table', function () {
     var $block = jQuery(this).parents('.content-field-block');
     var ns = $block.data( 'mtValidator' );
     if ( !ns ) return true;
