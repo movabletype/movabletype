@@ -346,7 +346,7 @@
     <div id="cf_type-field" class="last-child">
       <p id="cf_type-label" class="font-weight-bold"><__trans phrase="Type"></p>
       <p id="cf_type"></p>
-    </dl>
+    </div>
 
 </mtapp:widget>
 <mt:else>
@@ -611,7 +611,7 @@ function setSyntaxHighlight(on_or_off) {
   </mt:if>
   </mtapp:setting>
 </mt:if>
-     
+
 <mt:if name="type_custom">
   <$mt:setvar name="template_name" value="<__trans phrase="Module Body">"$>
 <mt:else>
@@ -1120,7 +1120,7 @@ function saveTemplatePrefs( sync ) {
     });
     function saveArchiveMapChange(param) {
         showMsg('<__trans phrase="Processing request..." escape="js">', 'map-message', 'success')
-    
+
         // TBD: we need to get the blog id from the selector control
         // itself
         var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param, load: savedArchiveMapChange };
@@ -1273,20 +1273,29 @@ function saveTemplatePrefs( sync ) {
     function setContentFieldSelect(id) {
       var cf_selects = <mt:var name="cf_selects">;
       jQuery("#content_field_sel").empty();
-      jQuery.each( cf_selects[id], function( index, cf_select ) {
-        var option = jQuery("<option/>").attr("value", cf_select.id).text(cf_select.label);
-        jQuery("#content_field_sel").append(option);
-      });
+      if (cf_selects && cf_selects[id]) {
+        jQuery.each( cf_selects[id], function( index, cf_select ) {
+          var option = jQuery("<option/>").attr("value", cf_select.id).text(cf_select.label);
+          jQuery("#content_field_sel").append(option);
+        });
+      }
       setContentFieldInfo();
     }
 
     function setContentFieldInfo() {
       var cf_data = <mt:var name="cf_data">;
       var id = jQuery("#content_field_sel").val();
-      jQuery("#cf_label").text(cf_data[id].label);
-      jQuery("#cf_id").text(cf_data[id].id);
-      jQuery("#cf_unique_id").val(cf_data[id].unique_id);
-      jQuery("#cf_type").text(cf_data[id].type);
+      if (cf_data && cf_data[id]) {
+        jQuery("#cf_label").text(cf_data[id].label);
+        jQuery("#cf_id").text(cf_data[id].id);
+        jQuery("#cf_unique_id").val(cf_data[id].unique_id);
+        jQuery("#cf_type").text(cf_data[id].type);
+      } else {
+        jQuery("#cf_label").text('');
+        jQuery("#cf_id").text('');
+        jQuery("#cf_unique_id").val('');
+        jQuery("#cf_type").text('');
+      }
     }
 
     jQuery("#content_type_id").change(function(){

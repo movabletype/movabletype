@@ -1670,7 +1670,7 @@ function getModalHtml() {
   return '<div class="modal fade mt-modal">'
     + '<div class="modal-dialog">'
     + '<div class="modal-content embed-responsive">'
-    + '<iframe class="embed-responsive-item"></iframe>'
+    + '<iframe id="mt-dialog-iframe" class="embed-responsive-item"></iframe>'
     + '</div>'
     + '</div>'
     + '</div>';

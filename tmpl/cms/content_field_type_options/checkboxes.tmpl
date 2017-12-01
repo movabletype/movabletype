@@ -17,7 +17,7 @@
      id="checkboxes-values"
      required="1"
      label="<__trans phrase="Values">">
-    <table class="table mt-table values-option-table">
+    <table class="table mt-table values-option-table" ref="table">
       <thead>
         <tr>
           <th scope="col"><__trans phrase="Selected"></th>
@@ -29,26 +29,18 @@
       <tbody>
         <tr each={ values }>
           <td><input type="checkbox" class="form-control" name="initial" checked={ checked } onchange={ enterInitial }></td>
-          <td><input type="text" class="form-control" name="label" oninput={ enterLabel } value={ label }></td>
-          <td><input type="text" class="form-control" name="value" oninput={ enterValue } value={ value }></td>
+          <td><input type="text" class="form-control required" name="label" oninput={ enterLabel } value={ label }></td>
+          <td><input type="text" class="form-control required" name="value" oninput={ enterValue } value={ value }></td>
           <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="delete">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash" /></svg><__trans phrase="delete"></button></td>
         </tr>
       </tbody>
     </table>
     <button onclick={ addRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="add">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_add" /></svg><__trans phrase="add"></button>
   </mtapp:ContentFieldOption>
-  
-  <mtapp:ContentFieldOptionScript>
-  this.values = this.options.values
-  if ( !this.values ) {
-    this.values = [{
-      "checked": ""
-    }]
-  }
 
-  addRow(e) {
-    this.values.push({"checked": ""})
-  }
+  <mtapp:ContentFieldOptionScript>
+
+  <mt:include name="content_field_type_options/selection_common_script.tmpl">
 
   deleteRow(e) {
     item = e.item
@@ -56,25 +48,12 @@
     this.values.splice(index, 1)
   }
 
-  enterLabel(e) {
-    e.item.label = e.target.value
-  }
-
-  enterValue(e) {
-    e.item.value = e.target.value
-  }
-
   enterInitial(e) {
     if ( e.target.checked )
       e.item.checked = "checked"
-    else 
+    else
       e.item.checked = ""
   }
 
-  gather() {
-    return {
-      values: this.values
-    }
-  }
   </mtapp:ContentFieldOptionScript>
 </mt:app:ContentFieldOptionGroup>
