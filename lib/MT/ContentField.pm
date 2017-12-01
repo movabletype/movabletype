@@ -77,6 +77,44 @@ sub save {
     $self->SUPER::save(@_);
 }
 
+sub remove {
+    my ( $self, $terms, $args ) = @_;
+
+    if ( !ref $self ) {
+        my @content_fields = __PACKAGE__->load( $terms, $args );
+        foreach my $content_field (@content_fields) {
+            require MT::Role;
+            my @roles = MT::Role->load(
+                {   'permissions' => {
+                        like => '%-content_field:'
+                            . $content_field->unique_id . '%'
+                    }
+                }
+            );
+            my $perm_name
+                = 'content_type:.*?'
+                . '-content_field:'
+                . $content_field->unique_id;
+            foreach my $role (@roles) {
+                my $permissions = $role->permissions;
+                my @permissions = split ',', $permissions;
+                @permissions = grep { $_ !~ /'$perm_name'/ } @permissions;
+                @permissions = map { $_ =~ s/'//g; $_; } @permissions;
+                $role->clear_full_permissions;
+                $role->set_these_permissions(@permissions);
+                $role->save;
+            }
+            $content_field->remove();
+        }
+
+    }
+    if ( ref $self ) {
+        $self->SUPER::remove(@_);
+    }
+
+    MT->app->reboot;
+}
+
 sub content_type {
     my $obj = shift;
     my $content_type

@@ -2734,24 +2734,27 @@ sub load_backup_instructions {
 }
 
 sub load_core_permissions {
+    require MT::ContentType;
+    my @content_type_permissions
+        = keys MT->app->model('content_type')->all_permissions;
     return {
         'blog.administer_site' => {
             'group'        => 'blog_admin',
             'label'        => 'Manage Sites',
             'order'        => 100,
             'inherit_from' => [
-                'blog.comment',             'blog.create_post',
-                'blog.edit_all_posts',      'blog.edit_assets',
-                'blog.edit_categories',     'blog.edit_config',
-                'blog.edit_notifications',  'blog.edit_tags',
-                'blog.edit_templates',      'blog.manage_pages',
-                'blog.manage_users',        'blog.publish_post',
-                'blog.rebuild',             'blog.send_notifications',
-                'blog.set_publish_paths',   'blog.upload',
-                'blog.view_blog_log',       'blog.manage_feedback',
-                'blog.manage_themes',       'blog.create_site',
-                'blog.manage_category_set', 'blog.manage_content_data',
-                'blog.manage_content_types',
+                'blog.comment',              'blog.create_post',
+                'blog.edit_all_posts',       'blog.edit_assets',
+                'blog.edit_categories',      'blog.edit_config',
+                'blog.edit_notifications',   'blog.edit_tags',
+                'blog.edit_templates',       'blog.manage_pages',
+                'blog.manage_users',         'blog.publish_post',
+                'blog.rebuild',              'blog.send_notifications',
+                'blog.set_publish_paths',    'blog.upload',
+                'blog.view_blog_log',        'blog.manage_feedback',
+                'blog.manage_themes',        'blog.create_site',
+                'blog.manage_category_set',  'blog.manage_content_data',
+                'blog.manage_content_types', @content_type_permissions
             ],
             'permitted_action' => {
 
