@@ -39,33 +39,13 @@
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOptionScript>
-  this.values = this.options.values
-  if ( !this.values ) {
-    this.values = [{
-      "checked": ""
-    }]
-  }
 
-  this.on('updated', function () {
-    this.validateTable()
-  })
-
-  addRow(e) {
-    this.values.push({"checked": ""})
-  }
+  <mt:include name="content_field_type_options/selection_common_script.tmpl">
 
   deleteRow(e) {
     item = e.item
     index = this.values.indexOf(item)
     this.values.splice(index, 1)
-  }
-
-  enterLabel(e) {
-    e.item.label = e.target.value
-  }
-
-  enterValue(e) {
-    e.item.value = e.target.value
   }
 
   enterInitial(e) {
@@ -75,23 +55,5 @@
       e.item.checked = ""
   }
 
-  gather() {
-    return {
-      values: this.values
-    }
-  }
-
-  validateTable() {
-    const $table = jQuery(this.refs.table)
-    const tableIsValidated = $table.data('mtValidator') ? true : false
-    if (tableIsValidated) {
-      const $notValidatedLabelsValues = $table.find('input[type=text]:not(.is-invalid)')
-      if ($notValidatedLabelsValues.length > 0) {
-        $notValidatedLabelsValues.mtValidate('simple')
-      } else {
-        $table.mtValid({ focus: false })
-      }
-    }
-  }
   </mtapp:ContentFieldOptionScript>
 </mt:app:ContentFieldOptionGroup>
