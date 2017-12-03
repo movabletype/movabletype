@@ -796,17 +796,14 @@ sub _rebuild_permissions {
     my $app = MT->instance;
     return if !$app or $app->isa('MT::App::Upgrader');
 
-    # Clear all permissions then rebuild it.
-    $perm->permissions('');
-
     # rebuild permissions for this user / blog
     my $user_id = $perm->author_id;
     my $blog_id = $perm->blog_id;
 
     return unless $user_id && $blog_id;
 
-    # clean slate
-    $perm->clear_full_permissions;
+    # Clear all permissions then rebuild it.
+    $perm->permissions('');
 
     # find all blogs for this user
     my $user = MT::Author->load($user_id) or return;
