@@ -29,7 +29,7 @@ env:
     - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - PERL_VERSION="5.24" TEST_COMMAND="phpunit"
 
-    - TEST_COMMAND="npm run test-riot"
+    - TEST_COMMAND="npm install -g yarn riot-cli && yarn test-riot"
 
 before_script:
   # Skip failed test.
