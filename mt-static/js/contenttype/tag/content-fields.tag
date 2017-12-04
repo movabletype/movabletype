@@ -104,14 +104,14 @@
     }
 
     _validateFields() {
-      const requiredFieldsAreValid    = jQuery('.html5-form')
-                                          .mtValidate('simple')
-      const textFieldsInTableAreValid = jQuery('.values-option-table input[type=text]')
-                                          .mtValidate('simple');
-      const tableIsValid              = jQuery('.values-option-table')
-                                          .mtValidate('selection-field-values-option')
-      const contentFieldBlockIsValid  = jQuery('.content-field-block')
-                                          .mtValidate('content-field-block')
+      var requiredFieldsAreValid    = jQuery('.html5-form')
+                                        .mtValidate('simple')
+      var textFieldsInTableAreValid = jQuery('.values-option-table input[type=text]')
+                                        .mtValidate('simple');
+      var tableIsValid              = jQuery('.values-option-table')
+                                        .mtValidate('selection-field-values-option')
+      var contentFieldBlockIsValid  = jQuery('.content-field-block')
+                                        .mtValidate('content-field-block')
 
       return requiredFieldsAreValid && textFieldsInTableAreValid
           && tableIsValid && contentFieldBlockIsValid
@@ -121,7 +121,7 @@
       if (this.fields.length == 0) {
         return true
       }
-      const invalidFields = this.fields.filter((field) => {
+      var invalidFields = this.fields.filter(function (field) {
         return opts.invalid_types[field.type]
       })
       return invalidFields.length == 0 ? true : false
@@ -143,13 +143,12 @@
         if ( child ) {
           if ( !Array.isArray(child) )
             child = [ child ]
-          i = 0;
-          child.forEach( function(c) {
+          child.forEach( function (c, i) {
             field = c.tags[c.type]
             options = field.gatheringData()
             data = {}
             data.type = c.type
-            data.order = ++i
+            data.order = i + 1
             data.options = options
             if ( !c.isNew )
               data.id = c.id
