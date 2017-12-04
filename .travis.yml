@@ -30,7 +30,7 @@ env:
     - PERL_VERSION="5.24" TEST_COMMAND="phpunit"
 
 before_script:
-  -   # Skip failed test.
+  # Skip failed test.
   - rm plugins/MultiBlog/t/02.tags.t
 
 script:
