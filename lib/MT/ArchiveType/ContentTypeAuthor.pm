@@ -21,6 +21,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-AUTHOR_ADV");
 }
 
+sub archive_short_label {
+    return MT->translate("AUTHOR_ADV");
+}
+
 sub order {
     return 220;
 }
