@@ -2,90 +2,45 @@
 
 <mt:loop name="template_map_loop">
 
+<mt:if name="show"><mt:if name="custom_path">
+<mt:setvar name="display_archive_file_tmpl" value="1">
+</mt:if></mt:if>
+
   <div class="mt-archivemapping<mt:if name="map_is_preferred"> mt-archivemapping--priority</mt:if>">
     <div class="mt-collapse__container align-items-center">
 
-      <mtapp:setting
-         id="archive-path"
-         class="archive-path col"
-         label="<__trans phrase="Path">"
-         label_for="archive-path"
-         label_class="top-label"
-         help_page="templates"
-         help_section="archive_path">
-        <select id="archive_file_sel_<mt:var name="map_id">" class="form-control tmpl-path w-75" name="archive_file_sel_<mt:var name="map_id">">
-        <mt:loop name="archive_tmpl_loop">
-          <mt:unless name="custom">
-          <option value="<mt:var name="value" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="name" escape="html"></option>
-          </mt:unless>
-        </mt:loop>
-          <option value=""<mt:if name="custom_path"> selected="selected"</mt:if>><__trans phrase="Custom..."></option>
-        </select>
-        <input type="text" id="archive_file_tmpl_<mt:var name="map_id">" class="form-control tmpl-path tmpl-path-custom w-75" name="archive_file_tmpl_<mt:var name="map_id">" value="<mt:var name="file_template" escape="html">"<mt:unless name="custom_path"> style="display:none;"</mt:unless> />
-        <input type="hidden" id="custom_path_<mt:var name="map_id">" value="<mt:var name="custom_path" escape="html">" />
-      </mtapp:setting>
+    <div class="col">
+      <label for="archive_file_sel_<mt:var name="map_id">"><__trans phrase="Path"></label>
+      <select id="archive_file_sel_<mt:var name="map_id">" class="custom-select form-control" name="archive_file_sel_<mt:var name="map_id">"<mt:unless name="show"> style="display:none;"</mt:unless>>
+      <mt:loop name="archive_tmpl_loop">
+        <mt:unless name="custom">
+        <option value="<mt:var name="value" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="name" escape="html"></option>
+        </mt:unless>
+      </mt:loop>
+        <option value=""<mt:if name="custom_path"> selected="selected"</mt:if>><__trans phrase="Custom..."></option>
+      </select>
+      <input type="text" id="archive_file_tmpl_<mt:var name="map_id">" class="form-control" name="archive_file_tmpl_<mt:var name="map_id">" value="<mt:var name="file_template" escape="html">"<mt:unless name="display_archive_file_tmpl"> style="display:none;"</mt:unless> />
+      <input type="text" class="form-control-plaintext" id="archive_file_label_<mt:var name="map_id">" value="" readonly="readonly"<mt:if name="show"> style="display:none;"</mt:if>>
+      <input type="hidden" id="custom_path_<mt:var name="map_id">" value="<mt:var name="custom_path" escape="html">" />
+    </div>
 
-      <mtapp:setting
-         id="preffered"
-         class="col-auto"
-         help_page="templates">
+    <div class="col-auto">
+      <label for="archive_label_<mt:var name="map_id">"><__trans phrase="Type"></label>
+      <input type="text" class="form-control-plaintext" id="archive_label_<mt:var name="map_id">" value="<mt:var name="archive_label">" readonly="readonly">
+      <input type=hidden id="archive_type_<mt:var name="map_id">" value="<mt:var name="archive_type" escape="html">">
+    </div>
+
+    <div class="col-auto">
       <mt:if name="has_multiple_archives">
       <span class="custom-control-description mr-2<mt:unless name="map_is_preferred"> invisible</mt:unless>">優先</span><input type="checkbox" class="mt-switch" name="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">" id="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">"<mt:if name="map_is_preferred"> checked="checked"</mt:if> value="1" onchange="togglePreferred(this, '<mt:var name="map_id">')" /><label for="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">">優先</label>
       <input type="hidden" name="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">" value="<mt:if name="map_is_preferred">1<mt:else>0</mt:if>" />
       </mt:if>
-      <a href="javascript:void(0)" id="delete_map_<mt:var name="map_id">"><mtapp:svgicon id="ic_trash" title="$delete_button_title" size="secondary"></a><a data-toggle="collapse" href="#edit-mapping-<mt:var name="map_id">" aria-expanded="false" aria-controls="edit-mapping-<mt:var name="map_id">"><mtapp:svgicon title="<__trans phrase="Collapse">" id="ic_collapse" size="secondary"></a>
-    </mtapp:setting>
+      <a data-toggle="collapse" id="toggle_edit_mapping_<mt:var name="map_id">" href="#edit-mapping-<mt:var name="map_id">" aria-expanded="false" aria-controls="edit-mapping-<mt:var name="map_id">"><mtapp:svgicon title="<__trans phrase="Collapse">" id="ic_collapse" size="secondary"></a>
+    </div>
 
     </div>
     <div class="collapse mt-collapse__content<mt:if name="show"> show</mt:if>" id="edit-mapping-<mt:var name="map_id">">
       <div class="row">
-        <div class="form-group col">
-
-          <mtapp:setting
-             id="archive-type"
-             class="archive-type"
-             label="<__trans phrase="Type">"
-             label_for="archive-type"
-             label_class="top-label"
-             help_page="templates"
-             help_section="archive_type">
-          <div class="font-weight-bold"><mt:var name="archive_label"></div>
-          <input type=hidden id="archive_type_<mt:var name="map_id">" value="<mt:var name="archive_type" escape="html">">
-          </mtapp:setting>
-
-          <mtapp:setting
-             id="cat_field_id_<mt:var name="map_id">"
-             class="cat_field_id_<mt:var name="map_id">"
-             label="<__trans phrase="Category Field">"
-             label_for="cat_field_id_<mt:var name="map_id">"
-             label_class="top-label"
-             help_page="templates"
-             help_section="cat_field_id"
-             shown="$show_cat_field">
-            <select name="cat_field_id_<mt:var name="map_id">" id="cat_field_id_<mt:var name="map_id">" tabindex="12" class="form-control">
-              <mt:loop name='cat_fields'>
-                <option value="<mt:var name="id">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
-              </mt:loop>
-            </select>
-          </mtapp:setting>
-
-          <mtapp:setting
-             id="dt_field_id_<mt:var name="map_id">"
-             class="dt_field_id_<mt:var name="map_id">"
-             label="<__trans phrase="Date & Time Field">"
-             label_for="dt_field_id_<mt:var name="map_id">"
-             label_class="top-label"
-             help_page="templates"
-             help_section="dt_field_id"
-             shown="$show_dt_field">
-            <select name="dt_field_id_<mt:var name="map_id">" id="dt_field_id_<mt:var name="map_id">" tabindex="13" class="form-control">
-              <mt:loop name='dt_fields'>
-                <option value="<mt:var name="id">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
-              </mt:loop>
-            </select>
-          </mtapp:setting>
-
-        </div>
         <div class="form-group col">
 
           <mtapp:setting
@@ -117,6 +72,55 @@
               <option value="0"<mt:if name="map_build_type_0"> selected="selected"</mt:if>><__trans phrase="Do Not Publish"></option>
             </select>
           </mtapp:setting>
+
+        </div>
+        <div class="form-group col">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col">
+
+          <mtapp:setting
+             id="cat_field_id_<mt:var name="map_id">"
+             class="cat_field_id_<mt:var name="map_id">"
+             label="<__trans phrase="Category Field">"
+             label_for="cat_field_id_<mt:var name="map_id">"
+             label_class="top-label"
+             help_page="templates"
+             help_section="cat_field_id"
+             shown="$show_cat_field">
+            <select name="cat_field_id_<mt:var name="map_id">" id="cat_field_id_<mt:var name="map_id">" tabindex="12" class="form-control">
+              <mt:loop name='cat_fields'>
+                <option value="<mt:var name="id">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+              </mt:loop>
+            </select>
+          </mtapp:setting>
+
+        </div>
+        <div class="form-group col">
+
+          <mtapp:setting
+             id="dt_field_id_<mt:var name="map_id">"
+             class="dt_field_id_<mt:var name="map_id">"
+             label="<__trans phrase="Date & Time Field">"
+             label_for="dt_field_id_<mt:var name="map_id">"
+             label_class="top-label"
+             help_page="templates"
+             help_section="dt_field_id"
+             shown="$show_dt_field">
+            <select name="dt_field_id_<mt:var name="map_id">" id="dt_field_id_<mt:var name="map_id">" tabindex="13" class="form-control">
+              <mt:loop name='dt_fields'>
+                <option value="<mt:var name="id">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+              </mt:loop>
+            </select>
+          </mtapp:setting>
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col">
+
+          <button type="button" id="delete_map_<mt:var name="map_id">" class="btn btn-default"><__trans phrase="Delete"></button>
 
         </div>
       </div>

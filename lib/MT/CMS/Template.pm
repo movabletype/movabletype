@@ -1791,7 +1791,7 @@ sub _populate_archive_loop {
 
         my $archiver = $app->publisher->archiver($at);
         next unless $archiver;
-        $map->{archive_label} = $archiver->archive_label;
+        $map->{archive_label} = $archiver->archive_short_label || $archiver->archive_label;
         my $tmpls     = $archiver->default_archive_templates;
         my $tmpl_loop = [];
         foreach (@$tmpls) {

@@ -22,6 +22,10 @@ sub archive_label {
     return MT->translate("CONTENTTYPE-AUTHOR-WEEKLY_ADV");
 }
 
+sub archive_short_label {
+    return MT->translate("AUTHOR-WEEKLY_ADV");
+}
+
 sub order {
     return 240;
 }
@@ -130,7 +134,9 @@ sub archive_group_iter {
                 join      => [
                     'MT::ContentData',
                     'author_id',
-                    { status => MT::ContentStatus::RELEASE(), blog_id => $blog->id },
+                    {   status  => MT::ContentStatus::RELEASE(),
+                        blog_id => $blog->id
+                    },
                     { unique => 1 }
                 ]
             }
