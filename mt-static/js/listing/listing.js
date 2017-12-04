@@ -41,14 +41,14 @@ riot.tag2('list-actions', '<button each="{action, key in listTop.opts.buttonActi
       this.selectedAction = this.getAction(this.selectedActionId)
       this.selectedActionPhrase = this.selectedAction.js_message || trans('act upon')
 
-      const args = {}
+      var args = {}
 
       if (!this.checkCount()) {
         return false
       }
 
       if (this.selectedAction.input) {
-        const input = prompt(this.selectedAction.input)
+        var input = prompt(this.selectedAction.input)
         if (input) {
           args.itemsetActionInput = input
         } else {
@@ -68,13 +68,13 @@ riot.tag2('list-actions', '<button each="{action, key in listTop.opts.buttonActi
         }
       }
 
-      const requestArgs = this.generateRequestArguments(args)
+      var requestArgs = this.generateRequestArguments(args)
 
       if (this.selectedAction.xhr) {
       } else if (this.selectedAction.dialog) {
-        const requestData = this.listTop.opts.listActionClient.generateRequestData(requestArgs)
+        var requestData = this.listTop.opts.listActionClient.generateRequestData(requestArgs)
         requestData.dialog = 1
-        const url = ScriptURI + '?' + jQuery.param(requestData, true)
+        var url = ScriptURI + '?' + jQuery.param(requestData, true)
         jQuery.fn.mtModal.open(url, { large: true });
       } else {
         this.sendRequest(requestArgs)
@@ -106,7 +106,7 @@ riot.tag2('list-actions', '<button each="{action, key in listTop.opts.buttonActi
     }.bind(this)
 
     this.checkCount = function() {
-      const checkedRowCount = this.getCheckedRowCount()
+      var checkedRowCount = this.getCheckedRowCount()
 
       if (checkedRowCount == 0) {
         this.alertNoSelectedError()
@@ -148,7 +148,7 @@ riot.tag2('list-actions', '<button each="{action, key in listTop.opts.buttonActi
     }.bind(this)
 
     this.getConfirmMessage = function() {
-      const checkedRowCount = this.getCheckedRowCount()
+      var checkedRowCount = this.getCheckedRowCount()
 
       if (checkedRowCount == 1) {
         return trans(
@@ -182,10 +182,10 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
 
     this.currentFilter = this.store.currentFilter
 
-    const self = this
+    var self = this
 
     this.validateFilterName = function (name) {
-      return !this.store.filters.some((filter) => {
+      return !this.store.filters.some(function (filter) {
         return filter.label == name
       })
     }.bind(this)
@@ -202,11 +202,11 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
       self.currentFilter = self.store.currentFilter
     })
 
-    this.store.on('open_filter_detail', () => {
+    this.store.on('open_filter_detail', function () {
       jQuery('#list-filter-collapse').collapse('show')
     })
 
-    this.store.on('close_filter_detail', () => {
+    this.store.on('close_filter_detail', function () {
       jQuery('#list-filter-collapse').collapse('hide')
     })
 
@@ -220,13 +220,13 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
 
     this.addFilterItemContent = function(itemIndex, contentIndex) {
       if (this.currentFilter.items[itemIndex].type != 'pack') {
-        const items = [ this.currentFilter.items[itemIndex] ]
+        var items = [ this.currentFilter.items[itemIndex] ]
         this.currentFilter.items[itemIndex] = {
           type: 'pack',
           args: { op: 'and', items: items }
         }
       }
-      const type = this.currentFilter.items[itemIndex].args.items[0].type
+      var type = this.currentFilter.items[itemIndex].args.items[0].type
       this.currentFilter.items[itemIndex].args.items.splice(
         contentIndex + 1,
         0,
@@ -284,7 +284,7 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
     }.bind(this)
 
     this.isFilterItemSelected = function(type) {
-      return this.currentFilter.items.some((item) => {
+      return this.currentFilter.items.some(function (item) {
         return item.type == type
       })
     }.bind(this)
@@ -303,7 +303,7 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
     }.bind(this)
 
     this.showMessage = function( content, cls ){
-      let error_block
+      var error_block
       if ( typeof content == 'object' ) {
         jQuery('#msg-block').append(
           error_block = jQuery('<div>')
@@ -335,7 +335,7 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
       if ( this.$validateErrorMessage ) {
         this.$validateErrorMessage.remove()
       }
-      let errors = 0
+      var errors = 0
       jQuery('div#filter-detail div.filteritem').each( function () {
         if ( !jQuery(this).find('input:visible').mtValidate() ) {
           errors++
@@ -346,7 +346,7 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
         }
       })
       if ( errors ) {
-        let errorMessage
+        var errorMessage
         if ( errors > 1 ) {
           errorMessage = '[_1] Filter Items have field(s) not filled in properly'
         } else {
@@ -383,7 +383,7 @@ riot.tag2('list-filter-detail', '<div class="row"> <div class="col-12"> <ul clas
         e.stopPropagation()
         return
       }
-      const filterType = e.currentTarget.dataset.mtFilterType
+      var filterType = e.currentTarget.dataset.mtFilterType
       this.listFilterTop.addFilterItem(filterType)
     }.bind(this)
 });
@@ -406,8 +406,8 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
     })
 
     this.addFilterItemContent = function(e) {
-      const itemIndex = this.getListItemIndex(e.target)
-      const contentIndex = this.getListItemContentIndex(e.target)
+      var itemIndex = this.getListItemIndex(e.target)
+      var contentIndex = this.getListItemContentIndex(e.target)
       this.listFilterTop.addFilterItemContent(itemIndex, contentIndex)
     }.bind(this)
 
@@ -426,9 +426,9 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
     }.bind(this)
 
     this.initializeDateOption = function() {
-      const dateOption = ($node) => {
-        const val = $node.val()
-        let type;
+      var dateOption = function ($node) {
+        var val = $node.val()
+        var type;
         switch (val) {
         case 'hours':
           type = 'hours'
@@ -453,10 +453,10 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
         $node.parents('.item-content').find('.date-options span.date-option').hide()
         $node.parents('.item-content').find('.date-option.'+type).show()
       }
-      jQuery(this.root).find('.filter-date').each((index, element) => {
-        const $node = jQuery(element)
+      jQuery(this.root).find('.filter-date').each(function (index, element) {
+        var $node = jQuery(element)
         dateOption($node)
-        $node.on('change', () => { dateOption($node) })
+        $node.on('change', dateOption)
       })
       jQuery(this.root).find('input.date').datepicker({
         dateFormat: 'yy-mm-dd',
@@ -472,28 +472,28 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
     }.bind(this)
 
     this.initializeOptionWithBlank = function() {
-      const changeOption = ($node) => {
+      var changeOption = function ($node) {
         if ($node.val() == 'blank' || $node.val() == 'not_blank') {
           $node.parent().find('input[type=text]').hide()
         } else {
           $node.parent().find('input[type=text]').show()
         }
       }
-      jQuery(this.root).find('.filter-blank').each((index, element) => {
-        const $node = jQuery(element)
+      jQuery(this.root).find('.filter-blank').each(function (index, element) {
+        var $node = jQuery(element)
         changeOption($node)
-        $node.on('change', () => { changeOption($node) })
+        $node.on('change', changeOption)
       })
     }.bind(this)
 
     this.removeFilterItem = function(e) {
-      const itemIndex = this.getListItemIndex(e.target)
+      var itemIndex = this.getListItemIndex(e.target)
       this.listFilterTop.removeFilterItem(itemIndex)
     }.bind(this)
 
     this.removeFilterItemContent = function(e) {
-      const itemIndex = this.getListItemIndex(e.target)
-      const contentIndex = this.getListItemContentIndex(e.target)
+      var itemIndex = this.getListItemIndex(e.target)
+      var contentIndex = this.getListItemContentIndex(e.target)
       this.listFilterTop.removeFilterItemContent(itemIndex, contentIndex)
     }.bind(this)
 });
@@ -503,14 +503,15 @@ riot.tag2('list-filter-item-field', '<virtual></virtual>', '', '', function(opts
     this.mixin('listFilterTop')
 
     this.setValues = function() {
-      for (let key in opts.item.args) {
+      for (var key in opts.item.args) {
         if (typeof opts.item.args[key] != 'string'
           && typeof opts.item.args[key] != 'number')
         {
           continue
         }
-        const selector = '.' + opts.item.type + '-' + key
-        this.root.querySelectorAll(selector).forEach((element) => {
+        var selector = '.' + opts.item.type + '-' + key
+        var elements = this.root.querySelectorAll(selector)
+        Array.prototype.slice.call(selector).forEach(function (element) {
           if (element.tagName == 'INPUT' || element.tagName == 'SELECT') {
             element.value = opts.item.args[key]
           } else {
@@ -532,7 +533,7 @@ riot.tag2('list-filter-select-modal', '<div class="modal fade" id="select-filter
 
     this.applyFilter = function(e) {
       this.closeModal()
-      const filterId = e.target.parentElement.dataset.mtListFilterId
+      var filterId = e.target.parentElement.dataset.mtListFilterId
       this.store.trigger('apply_filter_by_id', filterId)
     }.bind(this)
 
@@ -548,7 +549,7 @@ riot.tag2('list-filter-select-modal', '<div class="modal fade" id="select-filter
     }.bind(this)
 
     this.renameFilter = function(e) {
-      const filterData = e.target.parentElement.parentElement.parentElement.dataset
+      var filterData = e.target.parentElement.parentElement.parentElement.dataset
       this.store.trigger(
         'rename_filter_by_id',
         filterData.mtListFilterId,
@@ -558,8 +559,8 @@ riot.tag2('list-filter-select-modal', '<div class="modal fade" id="select-filter
     }.bind(this)
 
     this.removeFilter = function(e) {
-      const filterData = e.target.parentElement.parentElement.dataset
-      const message = trans(
+      var filterData = e.target.parentElement.parentElement.dataset
+      var message = trans(
         "Are you sure you want to remove filter '[_1]'?",
         filterData.mtListFilterLabel
       )
@@ -571,7 +572,7 @@ riot.tag2('list-filter-select-modal', '<div class="modal fade" id="select-filter
 
     this.startEditingFilter = function(e) {
       this.stopEditingAllFilters()
-      const filterData = e.target.parentElement.parentElement.dataset
+      var filterData = e.target.parentElement.parentElement.dataset
       this.isEditingFilter[filterData.mtListFilterId] = true
     }.bind(this)
 
@@ -580,7 +581,7 @@ riot.tag2('list-filter-select-modal', '<div class="modal fade" id="select-filter
     }.bind(this)
 
     this.stopEditingFilter = function(e) {
-      const filterData = e.target.parentElement.parentElement.parentElement.dataset
+      var filterData = e.target.parentElement.parentElement.parentElement.dataset
       this.isEditingFilter[filterData.mtListFilterId] = false
     }.bind(this)
 });
@@ -594,7 +595,7 @@ riot.tag2('list-filter-buttons', '<button class="btn btn-primary" disabled="{lis
         return false
       }
       this.listFilterTop.getItemValues()
-      const noFilterId = true
+      var noFilterId = true
       this.store.trigger('apply_filter', this.listFilterTop.currentFilter, noFilterId)
     }.bind(this)
 
@@ -606,7 +607,7 @@ riot.tag2('list-filter-buttons', '<button class="btn btn-primary" disabled="{lis
         this.listFilterTop.getItemValues()
         this.store.trigger('save_filter', this.listFilterTop.currentFilter)
       } else {
-        const filterLabel = this.store.getNewFilterLabel(this.listTop.opts.objectLabel)
+        var filterLabel = this.store.getNewFilterLabel(this.listTop.opts.objectLabel)
         this.tags['list-filter-save-modal'].openModal({ filterLabel: filterLabel })
       }
     }.bind(this)
@@ -664,7 +665,7 @@ riot.tag2('list-pagination', '<nav aria-label="{store.listClient.objectType + \'
         return false
       }
 
-      let nextPage
+      var nextPage
       if (e.target.tagName == "INPUT") {
         if (e.which != 13) {
           return false
@@ -676,7 +677,7 @@ riot.tag2('list-pagination', '<nav aria-label="{store.listClient.objectType + \'
       if (!nextPage) {
         return false
       }
-      const moveToPagination = true
+      var moveToPagination = true
       this.store.trigger('move_page', nextPage, moveToPagination)
       return false
     }.bind(this)
@@ -694,7 +695,7 @@ riot.tag2('list-table-header', '<tr> <th class="mt-table__control"> <label class
     }.bind(this)
 
     this.toggleSortColumn = function(e) {
-      const columnId = e.currentTarget.parentElement.dataset.id
+      var columnId = e.currentTarget.parentElement.dataset.id
       this.store.trigger('toggle_sort_column', columnId)
     }.bind(this)
 });
@@ -738,7 +739,7 @@ riot.tag2('list-top', '<div class="mb-3" data-is="display-options"></div> <div c
     })
     this.mixin('listTop')
 
-    const self = this
+    var self = this
 
     opts.store.on('refresh_view', function (moveToPagination) {
       self.update()
@@ -753,9 +754,9 @@ riot.tag2('list-top', '<div class="mb-3" data-is="display-options"></div> <div c
     })
 
     this.updateSubFields = function() {
-      opts.store.columns.forEach((column) => {
-        column.sub_fields.forEach((subField) => {
-          const selector = `td.${subField.parent_id} .${subField.class}`
+      opts.store.columns.forEach(function (column) {
+        column.sub_fields.forEach(function (subField) {
+          var selector = 'td.' + subField.parent_id + ' .' + subField.class
           if (subField.checked) {
             jQuery(selector).show()
           } else {

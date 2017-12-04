@@ -58,7 +58,7 @@
     }
 
     toggleSortColumn(e) {
-      const columnId = e.currentTarget.parentElement.dataset.id
+      var columnId = e.currentTarget.parentElement.dataset.id
       this.store.trigger('toggle_sort_column', columnId)
     }
   </script>
