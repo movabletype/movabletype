@@ -48,15 +48,23 @@
 
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
-<script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-fields.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-field.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+
 <mt:if name="options_htmls">
 <script type="riot/tag">
 <mt:loop name="options_htmls"><mt:var name="html">
 </mt:loop>
 </script>
 </mt:if>
+
+<mt:unless name="optimize_ui">
+<script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-fields.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-field.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">riot/riot+compiler.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:else>
 <script type="text/javascript" src="<mt:var name="static_uri">riot/riot+compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/contenttype/contenttype.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:unless>
+
 <script>
   var content_field_types = JSON.parse('<mt:var name="content_field_types_json" escape="js">');
   var invalid_types = content_field_types.filter(function (field_type) {
@@ -66,19 +74,6 @@
     return hash;
   }, {});
   var fields = <mt:if name="fields">JSON.parse('<mt:var name="fields" escape="js">');<mt:else>[];</mt:if>
-  riot.mount('content-fields', {
-    blog_id: "<mt:var name="blog_id" escape="js">",
-    magic_token: "<mt:var name="magic_token" escape="js">",
-    return_args: "<mt:var name="return_args" escape="js">",
-    id: "<mt:var name="id" escape="js">",
-    unique_id: "<mt:var name="unique_id" escape="js">",
-    name: "<mt:var name="name" escape="js">",
-    description: "<mt:var name="description" escape="js">",
-    user_disp_option: "<mt:unless name="id">checked<mt:else><mt:if name="user_disp_option">checked</mt:if></mt:unless>",
-    fields: fields,
-    types: content_field_types,
-    invalid_types: invalid_types,
-  });
 </script>
 </mt:setvarblock>
 
@@ -151,6 +146,20 @@
     var ns = $block.data( 'mtValidator' );
     if ( !ns ) return true;
     $block.mtValid({ focus: false, afterTrigger: false });
+  });
+
+  riot.mount('content-fields', {
+    blog_id: "<mt:var name="blog_id" escape="js">",
+    magic_token: "<mt:var name="magic_token" escape="js">",
+    return_args: "<mt:var name="return_args" escape="js">",
+    id: "<mt:var name="id" escape="js">",
+    unique_id: "<mt:var name="unique_id" escape="js">",
+    name: "<mt:var name="name" escape="js">",
+    description: "<mt:var name="description" escape="js">",
+    user_disp_option: "<mt:unless name="id">checked<mt:else><mt:if name="user_disp_option">checked</mt:if></mt:unless>",
+    fields: fields,
+    types: content_field_types,
+    invalid_types: invalid_types,
   });
 </mt:setvarblock>
 
