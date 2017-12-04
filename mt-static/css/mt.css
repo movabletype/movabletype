@@ -6754,6 +6754,10 @@ a.bg-dark:focus, a.bg-dark:hover {
           clip-path: none;
 }
 
+.w-10 {
+  width: 10% !important;
+}
+
 .w-25 {
   width: 25% !important;
 }
@@ -6768,6 +6772,10 @@ a.bg-dark:focus, a.bg-dark:hover {
 
 .w-100 {
   width: 100% !important;
+}
+
+.h-10 {
+  height: 10% !important;
 }
 
 .h-25 {
@@ -8789,6 +8797,18 @@ fieldset.form-group {
   margin-bottom: 2rem;
 }
 
+.form-group label,
+.form-inline label {
+  font-weight: 600;
+}
+
+.form-group .custom-control-description,
+.form-group .form-check-label,
+.form-inline .custom-control-description,
+.form-inline .form-check-label {
+  font-weight: normal;
+}
+
 .form-control option {
   padding: 2px 4px;
 }
@@ -9270,6 +9290,7 @@ fieldset.form-group {
 .mt-pluginpanel .form-control-plaintext {
   display: block;
   width: 100%;
+  text-overflow: ellipsis;
 }
 
 .mt-archivemapping .form-control + .form-control,
