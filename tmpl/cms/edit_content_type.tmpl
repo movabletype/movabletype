@@ -48,15 +48,23 @@
 
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
-<script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-fields.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-field.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+
 <mt:if name="options_htmls">
 <script type="riot/tag">
 <mt:loop name="options_htmls"><mt:var name="html">
 </mt:loop>
 </script>
 </mt:if>
+
+<mt:unless name="optimize_ui">
+<script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-fields.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-field.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">riot/riot+compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:else>
+<script type="text/javascript" src="<mt:var name="static_uri">riot/riot+compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/contenttype/contenttype.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:unless>
+
 <script>
   var content_field_types = JSON.parse('<mt:var name="content_field_types_json" escape="js">');
   var invalid_types = content_field_types.filter(function (field_type) {

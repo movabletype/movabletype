@@ -7,7 +7,9 @@
     "lib": "lib"
   },
   "scripts": {
-    "build-riot": "riot mt-static/js/listing/tag mt-static/js/listing/listing.js",
+    "build-riot": "yarn build-riot-listing; yarn build-riot-contenttype",
+    "build-riot-listing": "riot mt-static/js/listing/tag mt-static/js/listing/listing.js",
+    "build-riot-contenttype": "riot mt-static/js/contenttype/tag mt-static/js/contenttype/contenttype.js",
     "copy": "yarn copy-bootstrap && yarn copy-popper && yarn copy-riot && yarn copy-svg4everybody && yarn copy-mt7-style-guide",
     "copy-bootstrap": "cp -rf node_modules/bootstrap/dist/* mt-static/bootstrap/",
     "copy-popper": "cp -rf node_modules/popper.js/dist/umd/* mt-static/popper/",
