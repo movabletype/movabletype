@@ -66,19 +66,6 @@
     return hash;
   }, {});
   var fields = <mt:if name="fields">JSON.parse('<mt:var name="fields" escape="js">');<mt:else>[];</mt:if>
-  riot.mount('content-fields', {
-    blog_id: "<mt:var name="blog_id" escape="js">",
-    magic_token: "<mt:var name="magic_token" escape="js">",
-    return_args: "<mt:var name="return_args" escape="js">",
-    id: "<mt:var name="id" escape="js">",
-    unique_id: "<mt:var name="unique_id" escape="js">",
-    name: "<mt:var name="name" escape="js">",
-    description: "<mt:var name="description" escape="js">",
-    user_disp_option: "<mt:unless name="id">checked<mt:else><mt:if name="user_disp_option">checked</mt:if></mt:unless>",
-    fields: fields,
-    types: content_field_types,
-    invalid_types: invalid_types,
-  });
 </script>
 </mt:setvarblock>
 
@@ -151,6 +138,20 @@
     var ns = $block.data( 'mtValidator' );
     if ( !ns ) return true;
     $block.mtValid({ focus: false, afterTrigger: false });
+  });
+
+  riot.mount('content-fields', {
+    blog_id: "<mt:var name="blog_id" escape="js">",
+    magic_token: "<mt:var name="magic_token" escape="js">",
+    return_args: "<mt:var name="return_args" escape="js">",
+    id: "<mt:var name="id" escape="js">",
+    unique_id: "<mt:var name="unique_id" escape="js">",
+    name: "<mt:var name="name" escape="js">",
+    description: "<mt:var name="description" escape="js">",
+    user_disp_option: "<mt:unless name="id">checked<mt:else><mt:if name="user_disp_option">checked</mt:if></mt:unless>",
+    fields: fields,
+    types: content_field_types,
+    invalid_types: invalid_types,
   });
 </mt:setvarblock>
 
