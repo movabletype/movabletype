@@ -9395,6 +9395,7 @@ h3 .badge, .h3 .badge {
   top: -1px;
   width: 24px;
   fill: #595959;
+  pointer-events: none;
   vertical-align: middle;
 }
 
