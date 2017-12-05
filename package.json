@@ -15,7 +15,7 @@
     "copy-popper": "cp -rf node_modules/popper.js/dist/umd/* mt-static/popper/",
     "copy-riot": "cd node_modules/riot && cp -f LICENSE.txt riot.js riot.min.js riot+compiler.js riot+compiler.min.js ../../mt-static/riot/",
     "copy-svg4everybody": "cd node_modules/svg4everybody/dist && cp -f svg4everybody.js svg4everybody.min.js ../../../mt-static/svg4everybody/",
-    "copy-mt7-style-guide": "yarn copy-mt7-style-guide-css && yarn copy-mt7-style-guide-gif && yarn copy-mt7-style-guide-gif && yarn copy-mt7-style-guide-icons",
+    "copy-mt7-style-guide": "yarn copy-mt7-style-guide-css && yarn copy-mt7-style-guide-gif && yarn copy-mt7-style-guide-svg && yarn copy-mt7-style-guide-icons",
     "copy-mt7-style-guide-css": "cp -rf node_modules/mt7-style-guide/dist/css/mt.* mt-static/css/",
     "copy-mt7-style-guide-gif": "cp -rf node_modules/mt7-style-guide/html/images/*.gif mt-static/images/",
     "copy-mt7-style-guide-svg": "cp -rf node_modules/mt7-style-guide/html/images/*.svg mt-static/images/",
