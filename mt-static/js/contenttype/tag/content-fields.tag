@@ -48,7 +48,7 @@
       <div class="mb-3">
         <div class="row">
           <div class="col-2">
-            <select onchange={ changeType } name="type" id="type" class="required form-control">
+            <select onchange={ changeType } name="type" id="type" class="required custom-select form-control">
               <option each={ opts.types } value={ type }>{ label }</option>
             </select>
           </div>
