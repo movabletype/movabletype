@@ -497,7 +497,7 @@
         }
         var selector = '.' + opts.item.type + '-' + key
         var elements = this.root.querySelectorAll(selector)
-        Array.prototype.slice.call(selector).forEach(function (element) {
+        Array.prototype.slice.call(elements).forEach(function (element) {
           if (element.tagName == 'INPUT' || element.tagName == 'SELECT') {
             element.value = opts.item.args[key]
           } else {
