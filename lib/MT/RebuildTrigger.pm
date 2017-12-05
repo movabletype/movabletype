@@ -193,6 +193,7 @@ sub get_config_hash {
 sub get_config_obj {
     my $self = shift;
     my ($blog_id) = @_;
+    $blog_id = 0 unless defined $blog_id;;
 
     my $cfg = MT->request('config_rebuild_trigger');
     unless ($cfg) {
@@ -230,8 +231,8 @@ sub apply_default_settings {
 sub post_content_save {
     my $self = shift;
     my ( $eh, $app, $content ) = @_;
-    my $blog_id = $content->blog_id;
-    my @blog_ids = ( $blog_id, 0 );
+    my $blog_id = $content->blog_id || 0;
+    my @blog_ids = $blog_id ?  (0) : ( $blog_id, 0 );
 
     my $code = sub {
         my ($d) = @_;
@@ -269,7 +270,7 @@ sub post_content_save {
 #    my $self= shift;
 #    my ( $eh, $app, $content ) = @_;
 #    my $blog_id = $content->blog_id;
-#    my @blog_ids = ( $blog_id, 0 );
+#    my @blog_ids = $blog_id ?  (0) : ( $blog_id, 0 );
 #
 #    my $code = sub {
 #        my ($d) = @_;
