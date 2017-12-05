@@ -50,14 +50,14 @@
       this.selectedAction = this.getAction(this.selectedActionId)
       this.selectedActionPhrase = this.selectedAction.js_message || trans('act upon')
 
-      const args = {}
+      var args = {}
 
       if (!this.checkCount()) {
         return false
       }
 
       if (this.selectedAction.input) {
-        const input = prompt(this.selectedAction.input)
+        var input = prompt(this.selectedAction.input)
         if (input) {
           args.itemsetActionInput = input
         } else {
@@ -77,13 +77,13 @@
         }
       }
 
-      const requestArgs = this.generateRequestArguments(args)
+      var requestArgs = this.generateRequestArguments(args)
 
       if (this.selectedAction.xhr) {
       } else if (this.selectedAction.dialog) {
-        const requestData = this.listTop.opts.listActionClient.generateRequestData(requestArgs)
+        var requestData = this.listTop.opts.listActionClient.generateRequestData(requestArgs)
         requestData.dialog = 1
-        const url = ScriptURI + '?' + jQuery.param(requestData, true)
+        var url = ScriptURI + '?' + jQuery.param(requestData, true)
         jQuery.fn.mtModal.open(url, { large: true });
       } else {
         this.sendRequest(requestArgs)
@@ -115,7 +115,7 @@
     }
 
     checkCount() {
-      const checkedRowCount = this.getCheckedRowCount()
+      var checkedRowCount = this.getCheckedRowCount()
 
       if (checkedRowCount == 0) {
         this.alertNoSelectedError()
@@ -157,7 +157,7 @@
     }
 
     getConfirmMessage() {
-      const checkedRowCount = this.getCheckedRowCount()
+      var checkedRowCount = this.getCheckedRowCount()
 
       if (checkedRowCount == 1) {
         return trans(

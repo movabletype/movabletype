@@ -29,9 +29,11 @@ env:
     - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - PERL_VERSION="5.24" TEST_COMMAND="phpunit"
 
+    - TEST_COMMAND="npm run test-riot"
+
 before_script:
-  -   # Skip failed test.
-  - rm plugins/MultiBlog/t/02.tags.t
+  # Skip failed test.
+  - if [ $PERL_VERSION ]; then rm plugins/MultiBlog/t/02.tags.t; fi
 
 script:
   - if [ $PERL_VERSION = "5.18" ]; then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "cpm install -g --test --cpanfile=t/cpanfile && find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && $TEST_COMMAND" ; fi
@@ -39,6 +41,8 @@ script:
   - if [ $PERL_VERSION = "5.24" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:stretch-full bash -c "cpm install -g --test --cpanfile=t/cpanfile && service mysql start && service memcached start && $TEST_COMMAND" ; fi
 
   - if [ $PERL_VERSION = "5.10" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:centos6-full bash -c "cpm install -g --test --cpanfile=t/cpanfile && service mysqld start && service memcached start && $TEST_COMMAND"; fi
+
+  - if [ -z $PERL_VERSION ]; then $TEST_COMMAND; fi
 
 notifications:
   slack:

@@ -19,7 +19,7 @@
 
     this.on('apply_filter', function (filter, noFilterId) {
       this.setFilter(filter);
-      const refreshCurrentFilter = true
+      var refreshCurrentFilter = true;
       this.loadList({
         refreshCurrentFilter: refreshCurrentFilter,
         noFilterId: noFilterId
@@ -28,7 +28,7 @@
 
     this.on('apply_filter_by_id', function (filterId) {
       this.setFilterById(filterId);
-      const refreshCurrentFilter = true
+      var refreshCurrentFilter = true;
       this.loadList({
         refreshCurrentFilter: refreshCurrentFilter
       });

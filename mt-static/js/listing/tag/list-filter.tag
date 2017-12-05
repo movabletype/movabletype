@@ -20,10 +20,10 @@
 
     this.currentFilter = this.store.currentFilter
 
-    const self = this
+    var self = this
 
     validateFilterName (name) {
-      return !this.store.filters.some((filter) => {
+      return !this.store.filters.some(function (filter) {
         return filter.label == name
       })
     }
@@ -41,11 +41,11 @@
       self.currentFilter = self.store.currentFilter
     })
 
-    this.store.on('open_filter_detail', () => {
+    this.store.on('open_filter_detail', function () {
       jQuery('#list-filter-collapse').collapse('show')
     })
 
-    this.store.on('close_filter_detail', () => {
+    this.store.on('close_filter_detail', function () {
       jQuery('#list-filter-collapse').collapse('hide')
     })
 
@@ -59,13 +59,13 @@
 
     addFilterItemContent(itemIndex, contentIndex) {
       if (this.currentFilter.items[itemIndex].type != 'pack') {
-        const items = [ this.currentFilter.items[itemIndex] ]
+        var items = [ this.currentFilter.items[itemIndex] ]
         this.currentFilter.items[itemIndex] = {
           type: 'pack',
           args: { op: 'and', items: items }
         }
       }
-      const type = this.currentFilter.items[itemIndex].args.items[0].type
+      var type = this.currentFilter.items[itemIndex].args.items[0].type
       this.currentFilter.items[itemIndex].args.items.splice(
         contentIndex + 1,
         0,
@@ -123,7 +123,7 @@
     }
 
     isFilterItemSelected(type) {
-      return this.currentFilter.items.some((item) => {
+      return this.currentFilter.items.some(function (item) {
         return item.type == type
       })
     }
@@ -142,7 +142,7 @@
     }
 
     showMessage( content, cls ){
-      let error_block
+      var error_block
       if ( typeof content == 'object' ) {
         jQuery('#msg-block').append(
           error_block = jQuery('<div>')
@@ -174,7 +174,7 @@
       if ( this.$validateErrorMessage ) {
         this.$validateErrorMessage.remove()
       }
-      let errors = 0
+      var errors = 0
       jQuery('div#filter-detail div.filteritem').each( function () {
         if ( !jQuery(this).find('input:visible').mtValidate() ) {
           errors++
@@ -185,7 +185,7 @@
         }
       })
       if ( errors ) {
-        let errorMessage
+        var errorMessage
         if ( errors > 1 ) {
           errorMessage = '[_1] Filter Items have field(s) not filled in properly'
         } else {
@@ -304,7 +304,7 @@
         e.stopPropagation()
         return
       }
-      const filterType = e.currentTarget.dataset.mtFilterType
+      var filterType = e.currentTarget.dataset.mtFilterType
       this.listFilterTop.addFilterItem(filterType)
     }
   </script>
@@ -388,8 +388,8 @@
     })
 
     addFilterItemContent(e) {
-      const itemIndex = this.getListItemIndex(e.target)
-      const contentIndex = this.getListItemContentIndex(e.target)
+      var itemIndex = this.getListItemIndex(e.target)
+      var contentIndex = this.getListItemContentIndex(e.target)
       this.listFilterTop.addFilterItemContent(itemIndex, contentIndex)
     }
 
@@ -408,9 +408,9 @@
     }
 
     initializeDateOption() {
-      const dateOption = ($node) => {
-        const val = $node.val()
-        let type;
+      var dateOption = function ($node) {
+        var val = $node.val()
+        var type;
         switch (val) {
         case 'hours':
           type = 'hours'
@@ -435,10 +435,10 @@
         $node.parents('.item-content').find('.date-options span.date-option').hide()
         $node.parents('.item-content').find('.date-option.'+type).show()
       }
-      jQuery(this.root).find('.filter-date').each((index, element) => {
-        const $node = jQuery(element)
+      jQuery(this.root).find('.filter-date').each(function (index, element) {
+        var $node = jQuery(element)
         dateOption($node)
-        $node.on('change', () => { dateOption($node) })
+        $node.on('change', dateOption)
       })
       jQuery(this.root).find('input.date').datepicker({
         dateFormat: 'yy-mm-dd',
@@ -454,28 +454,28 @@
     }
 
     initializeOptionWithBlank() {
-      const changeOption = ($node) => {
+      var changeOption = function ($node) {
         if ($node.val() == 'blank' || $node.val() == 'not_blank') {
           $node.parent().find('input[type=text]').hide()
         } else {
           $node.parent().find('input[type=text]').show()
         }
       }
-      jQuery(this.root).find('.filter-blank').each((index, element) => {
-        const $node = jQuery(element)
+      jQuery(this.root).find('.filter-blank').each(function (index, element) {
+        var $node = jQuery(element)
         changeOption($node)
-        $node.on('change', () => { changeOption($node) })
+        $node.on('change', changeOption)
       })
     }
 
     removeFilterItem(e) {
-      const itemIndex = this.getListItemIndex(e.target)
+      var itemIndex = this.getListItemIndex(e.target)
       this.listFilterTop.removeFilterItem(itemIndex)
     }
 
     removeFilterItemContent(e) {
-      const itemIndex = this.getListItemIndex(e.target)
-      const contentIndex = this.getListItemContentIndex(e.target)
+      var itemIndex = this.getListItemIndex(e.target)
+      var contentIndex = this.getListItemContentIndex(e.target)
       this.listFilterTop.removeFilterItemContent(itemIndex, contentIndex)
     }
   </script>
@@ -489,14 +489,15 @@
     this.mixin('listFilterTop')
 
     setValues() {
-      for (let key in opts.item.args) {
+      for (var key in opts.item.args) {
         if (typeof opts.item.args[key] != 'string'
           && typeof opts.item.args[key] != 'number')
         {
           continue
         }
-        const selector = '.' + opts.item.type + '-' + key
-        this.root.querySelectorAll(selector).forEach((element) => {
+        var selector = '.' + opts.item.type + '-' + key
+        var elements = this.root.querySelectorAll(selector)
+        Array.prototype.slice.call(elements).forEach(function (element) {
           if (element.tagName == 'INPUT' || element.tagName == 'SELECT') {
             element.value = opts.item.args[key]
           } else {
@@ -596,7 +597,7 @@
 
     applyFilter(e) {
       this.closeModal()
-      const filterId = e.target.parentElement.dataset.mtListFilterId
+      var filterId = e.target.parentElement.dataset.mtListFilterId
       this.store.trigger('apply_filter_by_id', filterId)
     }
 
@@ -612,7 +613,7 @@
     }
 
     renameFilter(e) {
-      const filterData = e.target.parentElement.parentElement.parentElement.dataset
+      var filterData = e.target.parentElement.parentElement.parentElement.dataset
       this.store.trigger(
         'rename_filter_by_id',
         filterData.mtListFilterId,
@@ -622,8 +623,8 @@
     }
 
     removeFilter(e) {
-      const filterData = e.target.parentElement.parentElement.dataset
-      const message = trans(
+      var filterData = e.target.parentElement.parentElement.dataset
+      var message = trans(
         "Are you sure you want to remove filter '[_1]'?",
         filterData.mtListFilterLabel
       )
@@ -635,7 +636,7 @@
 
     startEditingFilter(e) {
       this.stopEditingAllFilters()
-      const filterData = e.target.parentElement.parentElement.dataset
+      var filterData = e.target.parentElement.parentElement.dataset
       this.isEditingFilter[filterData.mtListFilterId] = true
     }
 
@@ -644,7 +645,7 @@
     }
 
     stopEditingFilter(e) {
-      const filterData = e.target.parentElement.parentElement.parentElement.dataset
+      var filterData = e.target.parentElement.parentElement.parentElement.dataset
       this.isEditingFilter[filterData.mtListFilterId] = false
     }
   </script>
@@ -682,7 +683,7 @@
         return false
       }
       this.listFilterTop.getItemValues()
-      const noFilterId = true
+      var noFilterId = true
       this.store.trigger('apply_filter', this.listFilterTop.currentFilter, noFilterId)
     }
 
@@ -694,7 +695,7 @@
         this.listFilterTop.getItemValues()
         this.store.trigger('save_filter', this.listFilterTop.currentFilter)
       } else {
-        const filterLabel = this.store.getNewFilterLabel(this.listTop.opts.objectLabel)
+        var filterLabel = this.store.getNewFilterLabel(this.listTop.opts.objectLabel)
         this.tags['list-filter-save-modal'].openModal({ filterLabel: filterLabel })
       }
     }
