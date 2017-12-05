@@ -37,7 +37,7 @@
     })
     this.mixin('listTop')
 
-    const self = this
+    var self = this
 
     opts.store.on('refresh_view', function (moveToPagination) {
       self.update()
@@ -52,9 +52,9 @@
     })
 
     updateSubFields() {
-      opts.store.columns.forEach((column) => {
-        column.sub_fields.forEach((subField) => {
-          const selector = `td.${subField.parent_id} .${subField.class}`
+      opts.store.columns.forEach(function (column) {
+        column.sub_fields.forEach(function (subField) {
+          var selector = 'td.' + subField.parent_id + ' .' + subField.class
           if (subField.checked) {
             jQuery(selector).show()
           } else {

@@ -96,7 +96,7 @@
         return false
       }
 
-      let nextPage
+      var nextPage
       if (e.target.tagName == "INPUT") {
         if (e.which != 13) {
           return false
@@ -108,7 +108,7 @@
       if (!nextPage) {
         return false
       }
-      const moveToPagination = true
+      var moveToPagination = true
       this.store.trigger('move_page', nextPage, moveToPagination)
       return false
     }

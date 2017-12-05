@@ -4298,7 +4298,7 @@ sub _hdlr_app_contentfield_option_group {
 
   this.on('mount', function() {
     elms = this.root.querySelectorAll('*')
-    elms.forEach( function(v) {
+    Array.prototype.slice.call(elms).forEach( function (v) {
       if ( v.hasAttribute('id') ) {
         v.setAttribute('id', v.getAttribute('id') + '-' + opts.id)
       }
