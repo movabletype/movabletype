@@ -112,7 +112,7 @@
     if (!filterId || !this.filters) {
       return;
     }
-    const selectedFilters = this.filters.filter(function (filter) {
+    var selectedFilters = this.filters.filter(function (filter) {
       return filter.id == filterId;
     });
     if (selectedFilters.length > 0) {
@@ -127,7 +127,7 @@
     var temp;
     while ( 1 ) {
       temp = trans('[_1] - Filter [_2]', objectLabel, temp_base++);
-      const hasSameLabel = this.filters.some(function (f) { return f.label == temp });
+      var hasSameLabel = this.filters.some(function (f) { return f.label == temp });
       if (!hasSameLabel) {
         break;
       }
@@ -201,11 +201,11 @@
   };
 
   ListData.prototype.setFilterById = function (filterId) {
-    let filter
+    var filter;
     if (filterId == this.allpassFilter.id) {
-      filter = this.allpassFilter
+      filter = this.allpassFilter;
     } else {
-      filter = this.getFilter(filterId)
+      filter = this.getFilter(filterId);
     }
     if (!filter) {
       return false;
