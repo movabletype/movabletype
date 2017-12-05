@@ -582,12 +582,13 @@ sub reply {
     my $blog_id     = encode_html( scalar $app->param('blog_id') );
     my $return_url  = encode_html( scalar $app->param('return_url') );
     my $text        = encode_html( scalar $app->param('comment-reply'), 1 );
-    my $indicator   = $app->static_path . 'images/indicator.gif';
+    my $indicator   = $app->static_path . 'images/ic_loading-lg.gif';
     my $url         = $app->uri;
     <<SPINNER;
 <html><head><style type="text/css">
 #dialog-indicator {position: relative;top: 200px;
-background: url($indicator)
+background: url($indicator);
+background-size: 48px 48px;
 no-repeat;width: 66px;height: 66px;margin: 0 auto;
 }</style><script type="text/javascript">
 function init() { var f = document.getElementById('f'); f.submit(); }
