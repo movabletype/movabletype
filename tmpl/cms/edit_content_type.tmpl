@@ -94,6 +94,11 @@
     setDirty(true);
   });
 
+  // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12756142/
+  jQuery(document).on('mouseup', '.content-field-block input, .content-field-block textarea', function () {
+    jQuery(this).blur().focus();
+  });
+
   jQuery.mtValidator('selection-field-values-option',
     jQuery.extend({}, jQuery.mtValidator('simple'), {
       showError: function ( $target, $error_block ) {
