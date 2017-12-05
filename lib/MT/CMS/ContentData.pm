@@ -747,6 +747,10 @@ sub post_save {
         $sess_obj->remove if $sess_obj;
     }
 
+    # Rebuild Trigger
+    require MT::RebuildTrigger;
+    MT::RebuildTrigger->runner( 'post_content_save', $app, $obj, $orig_obj );
+
     my $ct = $obj->content_type or return;
     my $author = $app->user;
     my $message;

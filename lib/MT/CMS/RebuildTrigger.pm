@@ -8,8 +8,8 @@ package MT::CMS::RebuildTrigger;
 use strict;
 
 sub config {
-    my $app = shift;
-    my %param;
+    my $app     = shift;
+    my $param   = {};
     my $blog_id = $app->param('blog_id') || 0;
 
     return $app->permission_denied()
@@ -28,23 +28,19 @@ sub config {
             rebuild_triggers /
             )
         {
-            $param{$key} = $data->{$key} if $data->{$key};
+            $param->{$key} = $data->{$key} if $data->{$key};
         }
 
-        load_config( $app, \%param,
+        load_config( $app, $param,
             ( $blog_id ? "blog:$blog_id" : 'system' ) );
     }
     else {
-        if ($blog_id) {
-            $param{default_mtmultiblog_action} = 1;
-        }
-        else {
-            $param{default_access_allowed} = 1;
-        }
+        require MT::RebuildTrigger;
+        MT::RebuildTrigger->apply_default_settings( $param, $blog_id );
     }
 
-    $param{saved} = $app->param('saved');
-    $app->load_tmpl( 'cfg_rebuild_trigger.tmpl', \%param );
+    $param->{saved} = $app->param('saved');
+    $app->load_tmpl( 'cfg_rebuild_trigger.tmpl', $param );
 }
 
 sub add {
