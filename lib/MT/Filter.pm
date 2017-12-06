@@ -108,6 +108,20 @@ sub list_props {
                         }
                     );
                 }
+                elsif ( my ($content_type_id)
+                    = $obj->object_ds
+                    =~ /^content_data\.content_data_[0-9]+$/ )
+                {
+                    return $app->uri(
+                        mode => 'list',
+                        args => {
+                            _type      => 'content_data',
+                            type       => 'content_data_' . $content_type_id,
+                            blog_id    => $obj->blog_id,
+                            filter_key => $obj->id,
+                        },
+                    );
+                }
                 else {
                     return;
                 }
