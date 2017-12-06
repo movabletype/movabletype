@@ -836,7 +836,6 @@ sub remove_user_assoc {
     $app->validate_magic or return;
 
     my $user  = $app->user;
-    my $perms = $app->permissions;
     return $app->permission_denied()
         unless $app->can_do('remove_user_assoc');
     my $can_remove_administrator
@@ -876,7 +875,6 @@ sub revoke_role {
     $app->validate_magic or return;
 
     my $user  = $app->user;
-    my $perms = $app->permissions;
     return $app->permission_denied()
         unless $app->can_do('revoke_role');
 

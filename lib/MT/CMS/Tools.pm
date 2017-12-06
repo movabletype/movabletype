@@ -1039,7 +1039,6 @@ sub start_backup {
     my $app     = shift;
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
-    my $perms   = $app->permissions;
 
     return $app->permission_denied()
         unless $app->can_do('start_backup');
@@ -1080,7 +1079,6 @@ sub start_restore {
     my $app     = shift;
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
-    my $perms   = $app->permissions;
 
     return $app->permission_denied()
         unless $app->can_do('start_restore');

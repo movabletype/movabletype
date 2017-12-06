@@ -20,7 +20,8 @@ sub save_pages {
 
 sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        or return 0;
     if (   !$id
         && !$perms->can_do('create_new_page') )
     {
@@ -67,7 +68,8 @@ sub can_delete {
         return unless $obj->isa('MT::Page');
     }
 
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        or return 0;
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
     if ( !$perms || $perms->blog_id != $blog_id ) {
         $perms = $author->permissions($blog_id);

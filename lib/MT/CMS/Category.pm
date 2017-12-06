@@ -82,7 +82,6 @@ sub edit {
 sub save {
     my $app   = shift;
     my $q     = $app->param;
-    my $perms = $app->permissions;
     my $type  = $q->param('_type');
     my $class = $app->model($type)
         or return $app->errtrans("Invalid request.");
@@ -427,7 +426,6 @@ sub js_add_category {
     }
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
-    my $perms   = $app->permissions;
     my $type    = $app->param('_type') || 'category';
     return $app->json_error( $app->translate("Invalid request.") )
         unless ( $type eq 'category' )

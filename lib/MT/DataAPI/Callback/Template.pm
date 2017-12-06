@@ -55,7 +55,7 @@ sub can_view {
     else {
         my $perms = $app->permissions;
         return 0
-            unless $perms->can_do('edit_templates');
+            unless $perms && $perms->can_do('edit_templates');
     }
     return 1;
 }

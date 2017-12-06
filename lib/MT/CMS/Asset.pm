@@ -14,7 +14,8 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
     my $user  = $app->user;
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        or return $app->permission_denied();
     if ($id) {
         my $asset_class = $app->model('asset');
         $param->{asset}        = $obj;
@@ -828,7 +829,6 @@ sub complete_upload {
 
     $asset->on_upload( \%param );
 
-    my $perms = $app->permissions;
     return $app->permission_denied()
         unless $app->can_do('access_to_asset_list');
 
@@ -1077,7 +1077,6 @@ sub build_asset_table {
     my (%args) = @_;
 
     my $asset_class = $app->model('asset') or return;
-    my $perms       = $app->permissions;
     my $list_pref   = $app->list_pref('asset');
     my $limit       = $args{limit};
     my $param       = $args{param} || {};

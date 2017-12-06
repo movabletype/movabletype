@@ -15,7 +15,8 @@ sub edit {
     my ( $app, $id, $obj, $param ) = @_;
 
     my $q       = $app->param;
-    my $perms   = $app->permissions;
+    my $perms   = $app->permissions
+        or return $app->permission_denied();
     my $blog    = $app->blog;
     my $blog_id = $q->param('blog_id');
     my $type    = $q->param('_type');
@@ -129,7 +130,8 @@ sub can_view {
     my $obj = $objp->force() or return 0;
     require MT::Trackback;
     my $tb    = MT::Trackback->load( $obj->tb_id );
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        or return $app->permission_denied();
     if ($tb) {
         if ( $tb->entry_id ) {
             require MT::Entry;
@@ -160,7 +162,6 @@ sub can_save {
     return 0 unless $id;    # Can't create new pings here
     return 1 if $app->user->is_superuser();
 
-    my $perms = $app->permissions;
     return 1
         if $app->can_do('save_all_trackback');
     my $p = MT::TBPing->load($id)
@@ -221,7 +222,6 @@ sub can_delete {
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
-    my $perms = $app->permissions;
 
 PERMCHECK: {
         last PERMCHECK

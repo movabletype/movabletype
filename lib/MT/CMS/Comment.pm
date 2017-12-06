@@ -16,7 +16,6 @@ sub edit {
 
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
-    my $perms   = $app->permissions;
     my $blog    = $app->blog;
     my $type    = $q->param('_type');
 
@@ -146,7 +145,6 @@ sub edit_commenter {
 
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
-    my $perms   = $app->permissions;
     my $type    = $q->param('_type');
 
     $param->{is_email_hidden} = $obj->is_email_hidden;
@@ -362,21 +360,18 @@ sub untrust_commenter {
 
 sub approve_item {
     my $app   = shift;
-    my $perms = $app->permissions;
     $app->param( 'approve', 1 );
     set_item_visible($app);
 }
 
 sub unapprove_item {
     my $app   = shift;
-    my $perms = $app->permissions;
     $app->param( 'unapprove', 1 );
     set_item_visible($app);
 }
 
 sub empty_junk {
     my $app      = shift;
-    my $perms    = $app->permissions;
     my $user     = $app->user;
     my $blog     = $app->blog;
     my $blog_ids = [];
@@ -830,7 +825,6 @@ sub can_view {
     require MT::Entry;
     my $entry = MT::Entry->load( $obj->entry_id )
         or return 0;
-    my $perms = $app->permissions;
     if ( $entry->author_id == $app->user->id ) {
         return $app->can_do('open_own_entry_comment_edit_screen');
     }
@@ -936,7 +930,6 @@ sub can_delete {
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
-    my $perms = $app->permissions;
 
     if ( !$app->can_do('edit_all_comments') ) {
         $app->can_do('edit_own_entry_comment')

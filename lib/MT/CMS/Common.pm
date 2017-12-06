@@ -1803,7 +1803,6 @@ sub delete {
     my $parent  = $q->param('parent');
     my $blog_id = $q->param('blog_id');
     my $class   = $app->model($type) or return;
-    my $perms   = $app->permissions;
     my $author  = $app->user;
 
     $app->validate_magic() or return;

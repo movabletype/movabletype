@@ -2887,18 +2887,18 @@ sub validate_magic {
 sub is_authorized {
     my $app = shift;
 
-    # Clear current permissions
+    # Clear current permissions.
     $app->permissions(undef);
 
     # Not authroized.
     my $user = $app->user;
     return unless $user;
 
-    # System administrator is alweays true
+    # System administrator is alweays true.
     return 1 if $user->is_superuser;
 
-    # User has Edit Templates permission on system,
-    # always true
+    # User has Edit Templates permission on system, always true.
+    # Permission will be verified on each mode.
     return 1 if $user->can_edit_templates;
 
     # Always true if blog_id is undef or 0 because scope is
@@ -2910,7 +2910,7 @@ sub is_authorized {
         or return $app->errtrans( 'Cannot load blog (ID:[_1])', $blog_id );
 
     # Return true if user has any permissions for a specified
-    # blog or parent website
+    # blog or parent website.
     my @blog_ids = [ 0, $blog_id ];
     if ( !$blog->is_blog ) {
         push @blog_ids, +( map { $_->id } @{ $blog->blogs } );
@@ -2927,7 +2927,6 @@ sub is_authorized {
         ]
     ];
     my $perm = MT->model('permission')->count($terms);
-
     if ( $perm > 0 ) {
         return 1;
     }
@@ -3745,6 +3744,7 @@ sub return_to_dashboard {
 
 sub return_to_user_dashboard {
     my $app = shift;
+
     my (%param) = @_;
     $param{redirect} = 1 unless %param;
     delete $param{blog_id} if exists $param{blog_id};

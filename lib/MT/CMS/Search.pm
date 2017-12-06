@@ -629,7 +629,8 @@ sub search_replace {
         && $app->param('_type') =~ /entry|page|comment|ping|template/ )
     {
         if ( $app->param('blog_id') ) {
-            my $perms = $app->permissions;
+            my $perms = $app->permissions
+                or return $app->permission_denied();
             $param->{can_republish} = $perms->can_rebuild
                 || $app->user->is_superuser;
             $param->{can_empty_junk} = $perms->can_rebuild

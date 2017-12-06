@@ -16,7 +16,8 @@ sub edit {
 
     my $q          = $app->param;
     my $type       = $q->param('_type');
-    my $perms      = $app->permissions;
+    my $perms      = $app->permissions
+        or return $app->permission_denied();
     my $blog_class = $app->model('blog');
     my $blog       = $app->blog;
     my $blog_id    = $blog->id;
@@ -670,7 +671,8 @@ sub list {
     my $pkg = $app->model($type) or return "Invalid request.";
 
     my $q     = $app->param;
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        or return $app->permission_denied();
 
     my $list_pref = $app->list_pref($type);
     my %param     = %$list_pref;
@@ -1100,8 +1102,9 @@ sub _create_temp_entry {
         $entry->blog_id($blog_id);
     }
 
+    my $perm = $app->permissions;
     return $app->return_to_dashboard( permission => 1 )
-        unless $app->permissions->can_edit_entry( $entry, $app->user );
+        unless $perm && $perm->can_edit_entry( $entry, $app->user );
 
     my $names = $entry->column_names;
     my %values = map { $_ => scalar $app->param($_) } @$names;
@@ -2031,7 +2034,8 @@ sub save_entries {
 
     MT::Util::Log->info('--- Start save_entries.');
 
-    my $perms   = $app->permissions;
+    my $perms   = $app->permissions
+        or $app->permission_denied();
     my $type    = $app->param('_type');
     my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
@@ -2582,7 +2586,8 @@ sub build_entry_table {
     my (%args) = @_;
 
     my $app_author = $app->user;
-    my $perms      = $app->permissions;
+    my $perms      = $app->permissions
+        or return $app->permission_denied();
     my $type       = $args{type};
     my $class      = $app->model($type);
 
@@ -2848,7 +2853,8 @@ sub can_save {
 
 sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        or return 0;
     if (   !$id
         && !$perms->can_do('access_to_new_entry_editor') )
     {
@@ -3011,7 +3017,6 @@ sub update_entry_status {
     require MT::Entry;
 
     my $app_author = $app->user;
-    my $perms      = $app->permissions;
 
     my @objects;
 

@@ -13,7 +13,6 @@ sub start_export {
     my %param;
     my $blog_id = $app->param('blog_id');
 
-    my $perms = $app->permissions;
     return $app->permission_denied()
         if !$app->can_do('open_blog_export_screen');
 

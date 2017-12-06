@@ -15,7 +15,7 @@ sub start_import {
 
     my $perms = $app->permissions;
     return $app->permission_denied()
-        unless $app->can_do('open_start_import_screen');
+        unless $perms && $app->can_do('open_start_import_screen');
 
     my $blog = $app->model('blog')->load($blog_id);
     return $app->return_to_dashboard( redirect => 1 )

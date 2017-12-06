@@ -14,7 +14,8 @@ sub can_view {
     my $obj = $objp->force() or return 0;
     require MT::Trackback;
     my $tb    = MT::Trackback->load( $obj->tb_id );
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        return 0;
     if ($tb) {
         my ( $entry, $cat );
         if ( $tb->entry_id ) {

@@ -1574,7 +1574,6 @@ sub pre_save {
 
     # two possibilities: user unchecked the option, or user was not allowed to
     # set the value (and therefore there was no field to submit).
-                my $perms = $app->permissions;
                 if ( $app->can_do('edit_blog_config') ) {
                     $obj->$cb(0);
                 }
@@ -1624,7 +1623,6 @@ sub pre_save {
             if ( my $expiry = $app->param('junk_folder_expiry') ) {
                 $obj->junk_folder_expiry($expiry);
             }
-            my $perms = $app->permissions;
             unless ( defined $app->param('auto_delete_junk') ) {
                 if ( $app->can_do('edit_junk_auto_delete') ) {
                     $obj->junk_folder_expiry(0);
@@ -2107,7 +2105,6 @@ sub save_filter {
         $name =~ s/(^\s+|\s+$)//g;
         $app->param( 'name', $name );
     }
-    my $perms = $app->permissions;
     my $screen = $app->param('cfg_screen') || '';
     return $eh->error( MT->translate("You did not specify a blog name.") )
         if ( !( $screen && $app->can_do('edit_blog_config') )

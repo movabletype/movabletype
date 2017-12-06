@@ -11,7 +11,6 @@ sub rename_tag {
     my $app = shift;
     $app->validate_magic or return;
 
-    my $perms = $app->permissions;
     my $blog_id;
     $blog_id = $app->blog->id if $app->blog;
     $app->can_do('rename_tag')
