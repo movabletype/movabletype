@@ -455,8 +455,7 @@ sub can_do {
         next if $self->is_restricted($perm);
         $perm = join(
             '.',
-            (   (   ( !defined $self->blog_id )
-                        || ( defined $self->blog_id && $self->blog_id != 0 )
+            (   (   ( defined $self->blog_id && $self->blog_id != 0 )
                     ? 'blog'
                     : 'system'
                 ),
