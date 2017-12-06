@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "q4hm7ec1",
+            "dlt0xy49",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$KeH1iwOe3odyjhaM$QEJXd9G38zl0OCuK0fFv0zkmzfTqHV4eE4yab3vGSK8UlPAowsIdj8ffQB+tH2pl0caaVhvTGh259xbKZw0vCw",
+            "$6$hJBzblR8iGNnzIuz$lus+0vNEH9YvhS7eZgyF4K6v92riSHFJtnaBBbpAf3UfBD4fRnLwV9u7cnYqzCY7RPDeBr47ZtqNx8rIXSqGWQ",
             "en_US",
             null,
             null,
@@ -396,7 +396,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
+            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0023\n",
             "1"
          ]
       ]
