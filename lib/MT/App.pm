@@ -2885,7 +2885,7 @@ sub show_error {
         $param = { error => $param };
     }
 
-    my $error = $param->{error};
+    my $error = $param->{error} || $app->translate('Unknown error');
 
     if ($MT::DebugMode) {
         if ($@) {
