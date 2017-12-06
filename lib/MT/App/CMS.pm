@@ -3339,6 +3339,16 @@ sub build_menus {
                             if ( $app_param_type eq 'blog' )
                             || ( $app_param_type eq 'website' );
                     }
+                    elsif ( $app_param_type eq 'content_data' ) {
+                        my ($content_type_id)
+                            = $app->param('type')
+                            =~ /^content_data_([0-9]+)$/;
+                        if ( $content_type_id
+                            && "content_data:$content_type_id" eq $sub_id )
+                        {
+                            $sub->{current} = 1;
+                        }
+                    }
                     else {
                         $sub->{current} = 1;
                     }
