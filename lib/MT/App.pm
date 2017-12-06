@@ -1344,7 +1344,10 @@ sub permissions {
                 $blog_id );
 
             my $perm = $user->permissions($blog_id);
-            if ( $perm->permissions ) {
+            if (   $user->is_superuser
+                || $user->can_edit_templates
+                || $perm->permissions )
+            {
                 $app->{perms} = $perm;
             }
             else {

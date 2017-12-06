@@ -2897,6 +2897,10 @@ sub is_authorized {
     # System administrator is alweays true
     return 1 if $user->is_superuser;
 
+    # User has Edit Templates permission on system,
+    # always true
+    return 1 if $user->can_edit_templates;
+
     # Always true if blog_id is undef or 0 because scope is
     # User or System.
     my $blog_id = $app->param('blog_id');
