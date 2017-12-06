@@ -453,8 +453,16 @@ sub can_do {
         $perm =~ s/'(.+)'/$1/;
         return 1 if 'administer' eq $perm;
         next if $self->is_restricted($perm);
-        $perm = join( '.',
-            ( ( $self->blog_id != 0 ? 'blog' : 'system' ), $perm ) );
+        $perm = join(
+            '.',
+            (   (   ( !defined $self->blog_id )
+                        || ( defined $self->blog_id && $self->blog_id != 0 )
+                    ? 'blog'
+                    : 'system'
+                ),
+                $perm
+            )
+        );
         my $result = __PACKAGE__->_confirm_action( $perm, $action );
         return $result if defined $result;
     }
