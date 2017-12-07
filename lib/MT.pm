@@ -738,16 +738,19 @@ sub init_config {
                 my @paths = $cfg->get($meth);
                 local $_;
                 foreach (@paths) {
-                    next if File::Spec->file_name_is_absolute($_);
-                    $_ = File::Spec->catfile( $config_dir, $_ );
+                    next if File::Spec->file_name_is_absolute($path);
+                    my $abs_path = File::Spec->catfile( $config_dir, $path );
+                    $abs_path = File::Spec->catfile( $mt->{mt_dir}, $path ) unless -d $abs_path;
+                    $_ = $abs_path;
                 }
                 $cfg->$meth( \@paths );
             }
             else {
                 next if ref($path);    # unexpected referene, ignore
                 if ( !File::Spec->file_name_is_absolute($path) ) {
-                    $path = File::Spec->catfile( $config_dir, $path );
-                    $cfg->$meth($path);
+                    my $abs_path = File::Spec->catfile( $config_dir, $path );
+                    $abs_path = File::Spec->catfile( $mt->{mt_dir}, $path ) unless -d $abs_path;
+                    $cfg->$meth($abs_path);
                 }
             }
         }
@@ -755,7 +758,9 @@ sub init_config {
             next if $type eq 'ARRAY';
             my $path = $cfg->default($meth);
             if ( defined $path ) {
-                $cfg->$meth( File::Spec->catfile( $config_dir, $path ) );
+                my $abs_path = File::Spec->catfile( $config_dir, $path );
+                $abs_path = File::Spec->catfile( $mt->{mt_dir}, $path ) unless -d $abs_path;
+                $cfg->$meth($abs_path);
             }
         }
     }

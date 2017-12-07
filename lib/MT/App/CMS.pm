@@ -3284,6 +3284,10 @@ sub build_menus {
     my $admin = $user->is_superuser()
         ;    # || ($perms && $perms->has('administer_site'));
 
+    my $app_param_type = $app->param('_type') || '';
+    my $filter_key     = $app->param('filter_key');
+    my $app_param_id   = $app->param('id');
+
     foreach my $id (@top_ids) {
         ## skip only if false value was set explicitly.
         next if exists $theme_modify->{$id} && !$theme_modify->{$id};
@@ -3334,13 +3338,11 @@ sub build_menus {
                 next unless $cond->();
             }
 
-            my $app_param_type = $app->param('_type') || '';
-            my $filter_key     = $app->param('filter_key');
-            my $app_param_id   = $app->param('id');
             if ( $sub->{args} ) {
                 if (   $sub->{mode} eq $mode
                     && defined($app_param_type)
                     && ( $sub->{args}->{_type} || '' ) eq $app_param_type
+                    && $app_param_type ne 'content_data'
                     && (!defined( $sub->{args}->{filter_key} )
                         || ( defined($filter_key)
                             && $sub->{args}->{filter_key} eq $filter_key )
@@ -3354,6 +3356,20 @@ sub build_menus {
                             || ( $app_param_type eq 'website' );
                     }
                     else {
+                        $sub->{current} = 1;
+                    }
+                }
+                elsif (( $app_param_type || '' ) eq 'content_data'
+                    && ( $sub->{args}{_type} || '' ) eq 'content_data' )
+                {
+                    $param->{screen_group} = $id;
+
+                    my ($content_type_id)
+                        = $app->param('type') =~ /^content_data_([0-9]+)$/;
+                    $content_type_id ||= $app->param('content_type_id');
+                    $content_type_id ||= 0;
+
+                    if ( "content_data:$content_type_id" eq $sub_id ) {
                         $sub->{current} = 1;
                     }
                 }

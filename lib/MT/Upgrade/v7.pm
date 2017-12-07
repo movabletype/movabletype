@@ -42,11 +42,6 @@ sub upgrade_functions {
                 code  => sub { $_[0]->rebuild; },
             },
         },
-        'v7_migrate_system_privileges' => {
-            code          => \&_migrate_system_privileges,
-            version_limit => 7.0012,
-            priority      => 3.5,
-        },
         'v7_migrate_blog_templatemap_archive_type' => {
             code          => \&_v7_migrate_blog_templatemap_archive_type,
             version_limit => 7.0014,
@@ -76,6 +71,11 @@ sub upgrade_functions {
             code          => \&_v7_rebuild_content_field_permissions,
             version_limit => 7.0022,
             priority      => 3.2,
+        },
+        'v7_migrate_system_privileges' => {
+            code          => \&_migrate_system_privileges,
+            version_limit => 7.0023,
+            priority      => 3.5,
         },
     };
 }
