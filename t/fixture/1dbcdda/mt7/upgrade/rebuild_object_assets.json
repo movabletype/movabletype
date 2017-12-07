@@ -150,7 +150,7 @@
       ],
       "rows" : [
          [
-            "sbwv7nwv",
+            "bmgvj9e8",
             "MT",
             "authorce2f3",
             null,
@@ -169,7 +169,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$Ux8QXl2rRipi8SZ7$R7A0SlfEJoZEBvFW9L/GT4es+/V5w9S0+4PAu1/xYGtyC+nEbOKTkZt4kBjaPnoqvhZXaofAPBAlx8L++1qTUA",
+            "$6$CX8LWtDWjQ5yRRHQ$BfOroXXxbJa46vOr79ec2zwQjdBZRRQtsoxaKS4EuMEb/xXA/TvxXgmSGn0pyZwxg0PrPIsxE8lFL/Hbg2XVmQ",
             "en_US",
             null,
             null,
@@ -436,15 +436,15 @@
             "1",
             null,
             "__NOW__",
-            "e28ec3b8f791cfda580c5bff3a788e6ced167bb9",
+            "41256ec0b38c194763bca2f3ada8997de6353a55",
             "0",
-            "{\"4\":[\"4\"],\"1\":[\"1\"],\"3\":[\"3\"],\"2\":[\"2\"]}",
+            "{\"2\":[\"2\"],\"3\":[\"3\"],\"4\":[\"4\"],\"1\":[\"1\"]}",
             "1",
-            "0f28e2a11306b5bbd2a16621a9a1933daa86a113",
+            "65e6f050f651b85ecbfb4e1d0362c7c712adbf09",
             null,
             "__NOW__",
             "2",
-            "0f28e2a11306b5bbd2a16621a9a1933daa86a113",
+            "65e6f050f651b85ecbfb4e1d0362c7c712adbf09",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -484,7 +484,7 @@
             null,
             null,
             "asset",
-            "77d4c85fd0ebe9d24913514fdc4a841bddee3a59"
+            "d24a73dd8bb6b482848032b00fbcb01523f49775"
          ],
          [
             "1",
@@ -501,7 +501,7 @@
             null,
             null,
             "asset_audio",
-            "596a584e97e8c7692bcc2ffe047f0ad9b021caa5"
+            "2129ee542c3b662b4f50f14d1a345e080256767c"
          ],
          [
             "1",
@@ -518,7 +518,7 @@
             null,
             null,
             "asset_video",
-            "f0aba1bf093875de5b254af19a991ea7cdb4a6c2"
+            "d5e9444537b1346a1fbc8b13a36bdb7f8e7d0883"
          ],
          [
             "1",
@@ -535,7 +535,7 @@
             null,
             null,
             "asset_image",
-            "249c2e76d547856954634fb90aaf32651d6fde74"
+            "501a581087331fd4dcafff65c077969f050e39af"
          ]
       ]
    },
@@ -625,7 +625,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
+            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion WidgetManager=1.1\nSchemaVersion 7.0023\n",
             "1"
          ]
       ]
@@ -651,12 +651,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":1,\"type\":\"asset\",\"id\":\"1\",\"unique_id\":\"77d4c85fd0ebe9d24913514fdc4a841bddee3a59\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":2,\"type\":\"asset_audio\",\"id\":\"2\",\"unique_id\":\"596a584e97e8c7692bcc2ffe047f0ad9b021caa5\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":3,\"type\":\"asset_video\",\"id\":\"3\",\"unique_id\":\"f0aba1bf093875de5b254af19a991ea7cdb4a6c2\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":4,\"type\":\"asset_image\",\"id\":\"4\",\"unique_id\":\"249c2e76d547856954634fb90aaf32651d6fde74\"}]",
+            "[{\"type\":\"asset\",\"unique_id\":\"d24a73dd8bb6b482848032b00fbcb01523f49775\",\"order\":1,\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"id\":\"1\"},{\"order\":2,\"options\":{\"label\":\"Sample Content Field\",\"multiple\":1},\"id\":\"2\",\"type\":\"asset_audio\",\"unique_id\":\"2129ee542c3b662b4f50f14d1a345e080256767c\"},{\"id\":\"3\",\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":3,\"unique_id\":\"d5e9444537b1346a1fbc8b13a36bdb7f8e7d0883\",\"type\":\"asset_video\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":4,\"id\":\"4\",\"unique_id\":\"501a581087331fd4dcafff65c077969f050e39af\",\"type\":\"asset_image\"}]",
             "1",
             null,
             "__NOW__",
             "Sample Content Type",
-            "e28ec3b8f791cfda580c5bff3a788e6ced167bb9",
+            "41256ec0b38c194763bca2f3ada8997de6353a55",
             null,
             null
          ]
@@ -704,7 +704,7 @@
             "2",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 108.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
             null,
             null,
             "__NOW__"
@@ -719,7 +719,7 @@
             "3",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 108.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
             null,
             null,
             "__NOW__"
@@ -734,7 +734,7 @@
             "4",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 108.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
             null,
             null,
             "__NOW__"
@@ -749,7 +749,7 @@
             "5",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 108.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
             null,
             null,
             "__NOW__"
@@ -865,7 +865,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'rebuild','edit_config','manage_users','edit_categories','send_notifications','set_publish_paths','manage_pages','manage_themes','view_blog_log','edit_tags','upload','manage_content_types','manage_category_set','edit_all_posts','administer_site','manage_content_data','edit_assets','create_post','publish_post','manage_feedback','edit_templates','comment','create_site','edit_notifications'",
             null,
             "0",
             null
@@ -1060,16 +1060,16 @@
             "__NOW__",
             "0",
             "1",
-            "notify-entry",
+            "new-comment",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Entry Notify",
+            "New Comment",
             null,
             "1",
-            "A new <$mt:entryclasslabel$> entitled '<$mt:EntryTitle$>' has been published to <$mt:BlogName$>.\n\n<mt:If name=\"object_type\" eq=\"entry\">View entry:<mt:Else>View page:</mt:If> <<mt:SetVarBlock name=\"entry_status\"><$mt:EntryStatus$></mt:SetVarBlock><mt:If name=\"entry_status\" eq=\"Publish\"><$mt:EntryPermalink$><mt:Else><$mt:Var name=\"entry_editurl\"$></mt:If>>\n\n------------------------------------------------------------------------\n<$mt:EntryClassLabel lower_case=\"1\"$> Title: <$mt:EntryTitle$>\nPublish Date: <$mt:EntryDate mail=\"1\"$>\n<mt:If name=\"send_excerpt\">\n\n<$mt:EntryExcerpt wrap_text=\"72\"$>\n</mt:If>\n------------------------------------------------------------------------\n\n<mt:If name=\"message\">Message from Sender:\n<$mt:Var name=\"message\"$></mt:If>\n<mt:If name=\"send_body\">\n------------------------------------------------------------------------\n\n<$mt:EntryBody remove_html=\"1\" wrap_text=\"72\"$>\n\n------------------------------------------------------------------------</mt:If>\n\nYou are receiving this email either because you have elected to receive notifications about new content on <$mt:BlogName$>, or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:\n\n<mt:if name=\"entry_author\"><$mt:AuthorDisplayName$> <<$mt:AuthorEmail$>><mt:else><$mt:var name=\"from_address\"$></mt:if>\n",
+            "<mt:If name=\"unapproved\" trim=\"1\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n        An unapproved comment has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>). You need to approve this comment before it will appear on your site.\n    <mt:Else>\n        An unapproved comment has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>). You need to approve this comment before it will appear on your site.\n    </mt:If>\n<mt:Else>\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n        A new comment has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>).\n    <mt:Else>\n        A new comment has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>).\n    </mt:If>\n</mt:If>\n\n<$mt:CommentBody remove_html=\"1\" wrap_text=\"72\"$>\n\nCommenter name: <$mt:CommentAuthor$> \nCommenter email address: <$mt:CommentEmail$>\nCommenter URL: <$mt:CommentURL$>\nCommenter IP address: <$mt:CommentIP$>\n\n<mt:If name=\"unapproved\"><mt:If name=\"state_editable\">Approve comment:\n    <<$mt:Var name=\"approve_url\"$>></mt:If></mt:If>\n<mt:If name=\"view_url\">View comment:\n    <<$mt:Var name=\"view_url\" escape=\"html\"$>></mt:If>\nEdit comment:\n    <<$mt:Var name=\"edit_url\"$>>\n<mt:If name=\"state_editable\">Report the comment as spam:\n    <<$mt:Var name=\"spam_url\"$>></mt:If>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
             "email"
          ],
          [
@@ -1082,28 +1082,6 @@
             "__NOW__",
             "0",
             "2",
-            "recover-password",
-            null,
-            null,
-            null,
-            null,
-            "__NOW__",
-            "Password Recovery",
-            null,
-            "1",
-            "A request was made to change your Movable Type password. To complete this process click on the link below to select a new password.\n\n<mt:var name=\"link_to_login\">\n\nIf you did not request this change, you can safely ignore this email.\n\n<mt:include module=\"Mail Footer\">\n",
-            "email"
-         ],
-         [
-            "0",
-            "0",
-            "0",
-            "1",
-            null,
-            null,
-            "__NOW__",
-            "0",
-            "3",
             "lockout-ip",
             null,
             null,
@@ -1125,17 +1103,39 @@
             null,
             "__NOW__",
             "0",
-            "4",
-            "commenter_confirm",
+            "3",
+            "new-ping",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Commenter Confirm",
+            "New Ping",
             null,
             "1",
-            "Thank you for registering an account to comment on <$mt:BlogName$>. \n\nFor your security and to prevent fraud, we ask you to confirm your account and email address before continuing. Once your account is confirmed, you will immediately be allowed to comment on <$mt:BlogName$>.\n\nTo confirm your account, please click on the following URL, or cut and paste this URL into a web browser:\n\n<$mt:Var name=\"confirm_url\"$>\n\nIf you did not make this request, or you don't want to register for an account to comment on <$mt:BlogName$>, then no further action is required.\n\nSincerely,\n<mt:If tag=\"AuthorDisplayName\"><$mt:AuthorDisplayName encode_html=\"1\"$><mt:Else>Movable Type</mt:If>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
+            "<mt:If name=\"unapproved\" trim=\"1\">\n  <mt:If name=\"entry_id\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n      An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>). You need to approve this TrackBack before it will appear on your site.\n    <mt:Else>\n      An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>). You need to approve this TrackBack before it will appear on your site.\n    </mt:If>\n  <mt:ElseIf name=\"category_id\">\n    An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on category #<$mt:CategoryID$>, (<$mt:CategoryLabel$>). You need to approve this TrackBack before it will appear on your site.\n  </mt:If>\n<mt:Else>\n  <mt:If name=\"entry_id\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n      A new TrackBack has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>).\n    <mt:Else>\n      A new TrackBack has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>).\n    </mt:If>\n  <mt:ElseIf name=\"category_id\">\n    A new TrackBack has been posted on your site '<$mt:BlogName$>', on category #<$mt:CategoryID$> (<$mt:CategoryLabel$>).\n  </mt:If>\n</mt:If>\n\nExcerpt: \n<$mt:PingExcerpt wrap_text=\"72\"$>\n\nURL: <$mt:PingURL$>\nTitle: <$mt:PingTitle$>\nBlog: <$mt:PingBlogName$>\nIP address: <$mt:PingIP$>\n\n<mt:If name=\"state_editable\"><mt:If name=\"unapproved\">Approve TrackBack: \n  <<$mt:Var name=\"approve_url\"$>>\n</mt:If></mt:If>\n<mt:If name=\"entry_id\"><mt:If tag=\"EntryPermalink\">View TrackBack: \n  <<$mt:EntryPermalink$>>\n</mt:If></mt:If>\n<mt:If name=\"state_editable\">Report TrackBack as spam: \n  <<$mt:Var name=\"spam_url\"$>>\n</mt:If>\nEdit TrackBack: \n  <<$mt:Var name=\"edit_url\"$>>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
+            "email"
+         ],
+         [
+            "0",
+            "0",
+            "0",
+            "1",
+            null,
+            null,
+            "__NOW__",
+            "0",
+            "4",
+            "comment_throttle",
+            null,
+            null,
+            null,
+            null,
+            "__NOW__",
+            "Comment throttle",
+            null,
+            "1",
+            "<mt:SetVarBlock name=\"message\">If this was an error, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, choosing Blog Config - IP Banning, and deleting the IP address <$mt:Var name=\"throttled_ip\"$> from the list of banned addresses.</mt:SetVarBlock>\nA visitor to your blog <$mt:BlogName$> has automatically been banned by adding more than the allowed number of comments in the last <$mt:Var name=\"throttle_seconds\"$> seconds.\n\nThis was done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is\n\n<$mt:Var name=\"throttled_ip\"$>\n\n<$mt:Var name=\"message\"$>\n",
             "email"
          ],
          [
@@ -1148,17 +1148,17 @@
             "__NOW__",
             "0",
             "5",
-            "new-ping",
+            "footer-email",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "New Ping",
+            "Mail Footer",
             null,
             "1",
-            "<mt:If name=\"unapproved\" trim=\"1\">\n  <mt:If name=\"entry_id\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n      An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>). You need to approve this TrackBack before it will appear on your site.\n    <mt:Else>\n      An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>). You need to approve this TrackBack before it will appear on your site.\n    </mt:If>\n  <mt:ElseIf name=\"category_id\">\n    An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on category #<$mt:CategoryID$>, (<$mt:CategoryLabel$>). You need to approve this TrackBack before it will appear on your site.\n  </mt:If>\n<mt:Else>\n  <mt:If name=\"entry_id\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n      A new TrackBack has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>).\n    <mt:Else>\n      A new TrackBack has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>).\n    </mt:If>\n  <mt:ElseIf name=\"category_id\">\n    A new TrackBack has been posted on your site '<$mt:BlogName$>', on category #<$mt:CategoryID$> (<$mt:CategoryLabel$>).\n  </mt:If>\n</mt:If>\n\nExcerpt: \n<$mt:PingExcerpt wrap_text=\"72\"$>\n\nURL: <$mt:PingURL$>\nTitle: <$mt:PingTitle$>\nBlog: <$mt:PingBlogName$>\nIP address: <$mt:PingIP$>\n\n<mt:If name=\"state_editable\"><mt:If name=\"unapproved\">Approve TrackBack: \n  <<$mt:Var name=\"approve_url\"$>>\n</mt:If></mt:If>\n<mt:If name=\"entry_id\"><mt:If tag=\"EntryPermalink\">View TrackBack: \n  <<$mt:EntryPermalink$>>\n</mt:If></mt:If>\n<mt:If name=\"state_editable\">Report TrackBack as spam: \n  <<$mt:Var name=\"spam_url\"$>>\n</mt:If>\nEdit TrackBack: \n  <<$mt:Var name=\"edit_url\"$>>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
-            "email"
+            "\n-- \nPowered by Movable Type <$mt:Version$>\n<$mt:Var name=\"portal_url\"$>\n",
+            "custom"
          ],
          [
             "0",
@@ -1192,16 +1192,16 @@
             "__NOW__",
             "0",
             "7",
-            "new-comment",
+            "notify-entry",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "New Comment",
+            "Entry Notify",
             null,
             "1",
-            "<mt:If name=\"unapproved\" trim=\"1\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n        An unapproved comment has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>). You need to approve this comment before it will appear on your site.\n    <mt:Else>\n        An unapproved comment has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>). You need to approve this comment before it will appear on your site.\n    </mt:If>\n<mt:Else>\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n        A new comment has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>).\n    <mt:Else>\n        A new comment has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>).\n    </mt:If>\n</mt:If>\n\n<$mt:CommentBody remove_html=\"1\" wrap_text=\"72\"$>\n\nCommenter name: <$mt:CommentAuthor$> \nCommenter email address: <$mt:CommentEmail$>\nCommenter URL: <$mt:CommentURL$>\nCommenter IP address: <$mt:CommentIP$>\n\n<mt:If name=\"unapproved\"><mt:If name=\"state_editable\">Approve comment:\n    <<$mt:Var name=\"approve_url\"$>></mt:If></mt:If>\n<mt:If name=\"view_url\">View comment:\n    <<$mt:Var name=\"view_url\" escape=\"html\"$>></mt:If>\nEdit comment:\n    <<$mt:Var name=\"edit_url\"$>>\n<mt:If name=\"state_editable\">Report the comment as spam:\n    <<$mt:Var name=\"spam_url\"$>></mt:If>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
+            "A new <$mt:entryclasslabel$> entitled '<$mt:EntryTitle$>' has been published to <$mt:BlogName$>.\n\n<mt:If name=\"object_type\" eq=\"entry\">View entry:<mt:Else>View page:</mt:If> <<mt:SetVarBlock name=\"entry_status\"><$mt:EntryStatus$></mt:SetVarBlock><mt:If name=\"entry_status\" eq=\"Publish\"><$mt:EntryPermalink$><mt:Else><$mt:Var name=\"entry_editurl\"$></mt:If>>\n\n------------------------------------------------------------------------\n<$mt:EntryClassLabel lower_case=\"1\"$> Title: <$mt:EntryTitle$>\nPublish Date: <$mt:EntryDate mail=\"1\"$>\n<mt:If name=\"send_excerpt\">\n\n<$mt:EntryExcerpt wrap_text=\"72\"$>\n</mt:If>\n------------------------------------------------------------------------\n\n<mt:If name=\"message\">Message from Sender:\n<$mt:Var name=\"message\"$></mt:If>\n<mt:If name=\"send_body\">\n------------------------------------------------------------------------\n\n<$mt:EntryBody remove_html=\"1\" wrap_text=\"72\"$>\n\n------------------------------------------------------------------------</mt:If>\n\nYou are receiving this email either because you have elected to receive notifications about new content on <$mt:BlogName$>, or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:\n\n<mt:if name=\"entry_author\"><$mt:AuthorDisplayName$> <<$mt:AuthorEmail$>><mt:else><$mt:var name=\"from_address\"$></mt:if>\n",
             "email"
          ],
          [
@@ -1214,17 +1214,17 @@
             "__NOW__",
             "0",
             "8",
-            "footer-email",
+            "recover-password",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Mail Footer",
+            "Password Recovery",
             null,
             "1",
-            "\n-- \nPowered by Movable Type <$mt:Version$>\n<$mt:Var name=\"portal_url\"$>\n",
-            "custom"
+            "A request was made to change your Movable Type password. To complete this process click on the link below to select a new password.\n\n<mt:var name=\"link_to_login\">\n\nIf you did not request this change, you can safely ignore this email.\n\n<mt:include module=\"Mail Footer\">\n",
+            "email"
          ],
          [
             "0",
@@ -1236,16 +1236,16 @@
             "__NOW__",
             "0",
             "9",
-            "commenter_notify",
+            "commenter_confirm",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Commenter Notify",
+            "Commenter Confirm",
             null,
             "1",
-            "This email is to notify you that a new user has successfully registered on the blog '<$mt:BlogName$>'. Here is some information about this new user.\n\nNew User Information:\nUsername: <$mt:CommenterUsername$> \nFull Name: <$mt:CommenterName$>\nEmail: <$mt:CommenterEmail$>\n\nTo view or edit this user, please click on or cut and paste the following URL into a web browser:\n<$mt:Var name=\"profile_url\"$>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
+            "Thank you for registering an account to comment on <$mt:BlogName$>. \n\nFor your security and to prevent fraud, we ask you to confirm your account and email address before continuing. Once your account is confirmed, you will immediately be allowed to comment on <$mt:BlogName$>.\n\nTo confirm your account, please click on the following URL, or cut and paste this URL into a web browser:\n\n<$mt:Var name=\"confirm_url\"$>\n\nIf you did not make this request, or you don't want to register for an account to comment on <$mt:BlogName$>, then no further action is required.\n\nSincerely,\n<mt:If tag=\"AuthorDisplayName\"><$mt:AuthorDisplayName encode_html=\"1\"$><mt:Else>Movable Type</mt:If>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
             "email"
          ],
          [
@@ -1258,16 +1258,16 @@
             "__NOW__",
             "0",
             "10",
-            "comment_throttle",
+            "commenter_notify",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Comment throttle",
+            "Commenter Notify",
             null,
             "1",
-            "<mt:SetVarBlock name=\"message\">If this was an error, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, choosing Blog Config - IP Banning, and deleting the IP address <$mt:Var name=\"throttled_ip\"$> from the list of banned addresses.</mt:SetVarBlock>\nA visitor to your blog <$mt:BlogName$> has automatically been banned by adding more than the allowed number of comments in the last <$mt:Var name=\"throttle_seconds\"$> seconds.\n\nThis was done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is\n\n<$mt:Var name=\"throttled_ip\"$>\n\n<$mt:Var name=\"message\"$>\n",
+            "This email is to notify you that a new user has successfully registered on the blog '<$mt:BlogName$>'. Here is some information about this new user.\n\nNew User Information:\nUsername: <$mt:CommenterUsername$> \nFull Name: <$mt:CommenterName$>\nEmail: <$mt:CommenterEmail$>\n\nTo view or edit this user, please click on or cut and paste the following URL into a web browser:\n<$mt:Var name=\"profile_url\"$>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
             "email"
          ]
       ]
