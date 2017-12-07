@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "nwq5s0xz",
+            "78ee2cdq",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$ZaWtEEljOvz5NKf0$YNSg4a2gdEhGb5gLPHFeNfNnHA2z3dgrQQzjN7z8CItcl95WTLZIuXYWKlMKtJFfPqf87wbRIE5qmz59O5M/EQ",
+            "$6$IYViGOaW1PeYQiC9$dcGMxxpI0JocbPBtaCGMR3ebFH1S1SXPKcublO4QG4SZ7RjYKRMMxbwmevaVJLmg0OE8DuGFFwk3yqQkryai+g",
             "en_US",
             null,
             null,
@@ -261,37 +261,23 @@
       "rows" : [
          [
             "1",
+            "category_order",
+            null,
+            null,
+            null,
+            "1,2,3,4,6,5,7",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+         ],
+         [
+            "1",
             "commenter_authenticators",
             null,
             "MovableType",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-         ],
-         [
-            "1",
-            "nofollow_urls",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            "1",
-            null
-         ],
-         [
-            "1",
-            "page_layout",
-            null,
-            "layout-wtt",
             null,
             null,
             null,
@@ -317,11 +303,25 @@
          ],
          [
             "1",
-            "category_order",
+            "nofollow_urls",
             null,
             null,
             null,
-            "1,2,3,4,6,5,7",
+            null,
+            null,
+            null,
+            null,
+            null,
+            "1",
+            null
+         ],
+         [
+            "1",
+            "page_layout",
+            null,
+            "layout-wtt",
+            null,
+            null,
             null,
             null,
             null,
@@ -625,7 +625,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion cloud=1.0\nPluginSchemaVersion multiblog=2.8\nPluginSchemaVersion enterprise=1.1\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion sync=1.04\nPluginSchemaVersion commercial=1.55\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
+            "PluginSchemaVersion cloud=1.0\nPluginSchemaVersion multiblog=2.8\nPluginSchemaVersion enterprise=1.1\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion sync=1.04\nPluginSchemaVersion commercial=1.55\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0023\n",
             "1"
          ]
       ]

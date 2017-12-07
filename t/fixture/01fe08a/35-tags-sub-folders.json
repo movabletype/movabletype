@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "32i545ym",
+            "uc8ifu79",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$xvTRlfZkcI64XlIz$Rnv4NiPfx6J+5gRQ8j4vJ8OzgkD7IMuQNl02+ryXOFNZ9p5yhL2M4uBiN84CXiMv5ZV6c959vtrewJg8JDm4wg",
+            "$6$fKOzUXkyw1HA7xDb$ux4EOWEPTqq1h87BKtzvT9eoo91feVJq1Q62TfZCra/R6slP0klyg+uzmbAZ9IDO5XjvZs32s19B6fgTp1bY3A",
             "en_US",
             null,
             null,
@@ -275,6 +275,20 @@
          ],
          [
             "1",
+            "follow_auth_links",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "1",
+            null
+         ],
+         [
+            "1",
             "nofollow_urls",
             null,
             null,
@@ -299,20 +313,6 @@
             null,
             null,
             null,
-            null
-         ],
-         [
-            "1",
-            "follow_auth_links",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            "1",
             null
          ]
       ]
@@ -396,7 +396,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion cloud=1.0\nPluginSchemaVersion multiblog=2.8\nPluginSchemaVersion enterprise=1.1\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion sync=1.04\nPluginSchemaVersion commercial=1.55\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
+            "PluginSchemaVersion cloud=1.0\nPluginSchemaVersion multiblog=2.8\nPluginSchemaVersion enterprise=1.1\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion sync=1.04\nPluginSchemaVersion commercial=1.55\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0023\n",
             "1"
          ]
       ]

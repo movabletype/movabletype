@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "2mpetqgv",
+            "v5hk8h4u",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$4wYrppfrl7fmx1dm$wCv9zBtUzf+XN7c4bNUW9Qg4B7kxHNiNvNC0BLG4sMf9bPur2eQ/nBfBOQ+v/5WoB+XtdPwbzC021+tYXXR9OA",
+            "$6$uhCpScfhE3ZCMG0X$TJIBcesiq6NUP4aciSGdWvkzGLDOQLm8qhipgDOJalUu/fRRP1/xfBi7J45z2RiyN+cAQIBv3E6itmH22K28DQ",
             "en_US",
             null,
             null,
@@ -261,20 +261,6 @@
       "rows" : [
          [
             "1",
-            "category_order",
-            null,
-            null,
-            null,
-            "1,4,2,3",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-         ],
-         [
-            "1",
             "commenter_authenticators",
             null,
             "MovableType",
@@ -331,188 +317,47 @@
          ]
       ]
    },
-   "mt_category" : {
+   "mt_cd" : {
       "cols" : [
-         "category_allow_pings",
-         "category_author_id",
-         "category_basename",
-         "category_blog_id",
-         "category_category_set_id",
-         "category_class",
-         "category_created_by",
-         "category_created_on",
-         "category_description",
-         "category_id",
-         "category_label",
-         "category_modified_by",
-         "category_modified_on",
-         "category_parent",
-         "category_ping_urls"
+         "cd_author_id",
+         "cd_authored_on",
+         "cd_blog_id",
+         "cd_class",
+         "cd_content_type_id",
+         "cd_created_by",
+         "cd_created_on",
+         "cd_ct_unique_id",
+         "cd_current_revision",
+         "cd_data",
+         "cd_id",
+         "cd_identifier",
+         "cd_modified_by",
+         "cd_modified_on",
+         "cd_status",
+         "cd_unique_id",
+         "cd_unpublished_on",
+         "cd_week_number"
       ],
       "rows" : [
          [
-            "0",
             "1",
-            "foo",
+            "2017-05-30 16:36:00",
             "1",
-            "0",
-            "category",
+            "content_data",
+            "1",
             null,
             "__NOW__",
-            "foo",
+            "5ea0cb60c49823ba290361cf58d541f72d2413ec",
+            "0",
+            null,
             "1",
-            "foo",
+            "23785bdb99082ba30f24760ea2ec38576c7e8081",
             null,
             "__NOW__",
-            "0",
-            null
-         ],
-         [
-            "0",
-            "1",
-            "bar",
-            "1",
-            "0",
-            "category",
-            null,
-            "__NOW__",
-            "foo",
             "2",
-            "bar",
-            null,
-            "__NOW__",
-            "0",
-            null
-         ],
-         [
-            "0",
-            "1",
-            "baz",
-            "1",
-            "0",
-            "category",
-            null,
-            "__NOW__",
-            "foo",
-            "3",
-            "baz",
-            null,
-            "__NOW__",
-            "0",
-            null
-         ],
-         [
-            "0",
-            "1",
-            "c123",
-            "1",
-            "0",
-            "category",
-            null,
-            "__NOW__",
-            "foo",
-            "4",
-            "c123",
-            null,
-            "__NOW__",
-            "1",
-            null
-         ],
-         [
-            "0",
-            "1",
-            "abc",
-            "1",
-            "1",
-            "category",
-            null,
-            "__NOW__",
-            "foo",
-            "5",
-            "abc",
-            null,
-            "__NOW__",
-            "0",
-            null
-         ],
-         [
-            "0",
-            "1",
-            "def",
-            "1",
-            "1",
-            "category",
-            null,
-            "__NOW__",
-            "foo",
-            "6",
-            "def",
-            null,
-            "__NOW__",
-            "0",
-            null
-         ],
-         [
-            "0",
-            "1",
-            "ghi",
-            "1",
-            "1",
-            "category",
-            null,
-            "__NOW__",
-            "foo",
-            "7",
-            "ghi",
-            null,
-            "__NOW__",
-            "0",
-            null
-         ],
-         [
-            "0",
-            "1",
-            "c456",
-            "1",
-            "1",
-            "category",
-            null,
-            "__NOW__",
-            "foo",
-            "8",
-            "c456",
-            null,
-            "__NOW__",
-            "7",
-            null
-         ]
-      ]
-   },
-   "mt_category_set" : {
-      "cols" : [
-         "category_set_blog_id",
-         "category_set_cat_count",
-         "category_set_created_by",
-         "category_set_created_on",
-         "category_set_ct_count",
-         "category_set_id",
-         "category_set_modified_by",
-         "category_set_modified_on",
-         "category_set_name",
-         "category_set_order"
-      ],
-      "rows" : [
-         [
-            "1",
-            "4",
-            null,
-            "__NOW__",
-            "0",
-            "1",
-            null,
-            "__NOW__",
-            "Sample Category Set",
-            "6,5,8,7"
+            "23785bdb99082ba30f24760ea2ec38576c7e8081",
+            "2017-05-31 16:36:00",
+            "201722"
          ]
       ]
    },
@@ -525,6 +370,72 @@
          [
             "PluginSchemaVersion cloud=1.0\nPluginSchemaVersion multiblog=2.8\nPluginSchemaVersion enterprise=1.1\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion sync=1.04\nPluginSchemaVersion commercial=1.55\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0023\n",
             "1"
+         ]
+      ]
+   },
+   "mt_content_type" : {
+      "cols" : [
+         "content_type_blog_id",
+         "content_type_created_by",
+         "content_type_created_on",
+         "content_type_description",
+         "content_type_fields",
+         "content_type_id",
+         "content_type_modified_by",
+         "content_type_modified_on",
+         "content_type_name",
+         "content_type_unique_id",
+         "content_type_user_disp_option",
+         "content_type_version"
+      ],
+      "rows" : [
+         [
+            "1",
+            null,
+            "__NOW__",
+            "This is a sample.",
+            null,
+            "1",
+            null,
+            "__NOW__",
+            "test content data",
+            "5ea0cb60c49823ba290361cf58d541f72d2413ec",
+            null,
+            null
+         ]
+      ]
+   },
+   "mt_log" : {
+      "cols" : [
+         "log_author_id",
+         "log_blog_id",
+         "log_category",
+         "log_class",
+         "log_created_by",
+         "log_created_on",
+         "log_id",
+         "log_ip",
+         "log_level",
+         "log_message",
+         "log_metadata",
+         "log_modified_by",
+         "log_modified_on"
+      ],
+      "rows" : [
+         [
+            "0",
+            "0",
+            "callback",
+            "system",
+            null,
+            "__NOW__",
+            "1",
+            null,
+            "4",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 319.\n",
+            null,
+            null,
+            "__NOW__"
          ]
       ]
    },
