@@ -880,6 +880,11 @@ sub template_param_list {
     my $type  = $app->param('_type');
     my $class = MT->model($type);
     $param->{basename_prefix} = $class->basename_prefix;
+
+    # for category_set
+    if ( $app->isa('MT::App::CMS') ) {
+        $param->{saved} = $app->param('saved') ? 1 : 0;
+    }
 }
 
 sub pre_load_filtered_list {
