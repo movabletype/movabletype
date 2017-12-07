@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "1xenupfl",
+            "vhtjhzm3",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$hCzJK5IlTp3ix0Z3$3Q86VMRfG3cDK7BowuwZGRyKkUI0Eg7nMdPzJ3Kfyfs+pLSxdEV0uNnussZuzg4QxUArqkawgXNHAY/A/beD4Q",
+            "$6$y3FPInd6hw7q44MQ$fdRc5iPEyl9UQ+z0v2ipQiUoZRWRm40jDeZD++0MZMv9hqfhM6Of8TeZz2NkjQM5V0LFsgd0pEvPhbGlNxpFIg",
             "en_US",
             null,
             null,
@@ -275,25 +275,11 @@
          ],
          [
             "1",
-            "nofollow_urls",
+            "folder_order",
             null,
             null,
             null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            "1",
-            null
-         ],
-         [
-            "1",
-            "page_layout",
-            null,
-            "layout-wtt",
-            null,
-            null,
+            "1,2,3",
             null,
             null,
             null,
@@ -317,11 +303,25 @@
          ],
          [
             "1",
-            "folder_order",
+            "nofollow_urls",
             null,
             null,
             null,
-            "1,2,3",
+            null,
+            null,
+            null,
+            null,
+            null,
+            "1",
+            null
+         ],
+         [
+            "1",
+            "page_layout",
+            null,
+            "layout-wtt",
+            null,
+            null,
             null,
             null,
             null,
@@ -410,7 +410,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion cloud=1.0\nPluginSchemaVersion multiblog=2.8\nPluginSchemaVersion enterprise=1.1\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion sync=1.04\nPluginSchemaVersion commercial=1.55\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
+            "PluginSchemaVersion cloud=1.0\nPluginSchemaVersion multiblog=2.8\nPluginSchemaVersion enterprise=1.1\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion sync=1.04\nPluginSchemaVersion commercial=1.55\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0023\n",
             "1"
          ]
       ]
