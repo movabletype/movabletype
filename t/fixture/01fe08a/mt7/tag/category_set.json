@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "uwvj5bbw",
+            "1o2b0a87",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$GREzmZeVQzIJpwvD$A0eE8bb0dFBMilWl7i5zGlp8fa6dhtadynJOOIC6P8idSXokKqYdz98xx3Qjq31eIWYJGEU7vEyzSwpZj7gfRg",
+            "$6$tsshPpBeDZ0ucfkk$fUgIZ9MNMkxQ/upjMQ6chIWhFyiZqSr0wvp0S9K6SGckXUKh5MHpqBZ/cluKntzplpT+t77DWfWDrIvYnbwNlw",
             "en_US",
             null,
             null,
@@ -348,6 +348,20 @@
          ],
          [
             "1",
+            "follow_auth_links",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "1",
+            null
+         ],
+         [
+            "1",
             "nofollow_urls",
             null,
             null,
@@ -372,20 +386,6 @@
             null,
             null,
             null,
-            null
-         ],
-         [
-            "1",
-            "follow_auth_links",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            "1",
             null
          ],
          [
@@ -533,7 +533,7 @@
             null,
             null,
             "categories",
-            "9320253bdaa817c683a1248061c894b2f417f094"
+            "21ff064344d9093316cc7dc111b0501c0a60ab78"
          ],
          [
             "2",
@@ -550,7 +550,7 @@
             null,
             null,
             "categories",
-            "77a3c4eb7ee8b407b9ccaf5fb00ca53324e8e589"
+            "7cb092ada024f671d05838a76da929c3ab4f54cf"
          ]
       ]
    },
@@ -561,7 +561,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion cloud=1.0\nPluginSchemaVersion multiblog=2.8\nPluginSchemaVersion enterprise=1.1\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion sync=1.04\nPluginSchemaVersion commercial=1.55\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
+            "PluginSchemaVersion cloud=1.0\nPluginSchemaVersion multiblog=2.8\nPluginSchemaVersion enterprise=1.1\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion sync=1.04\nPluginSchemaVersion commercial=1.55\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0023\n",
             "1"
          ]
       ]
@@ -592,7 +592,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "86d7aded437a5b21b0149ac286802767ef258f2a",
+            "940c8d5aeb95755e692b9a3ae6a59d8d36fe332b",
             null,
             null
          ],
@@ -606,7 +606,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "6512dcfdac654b44942c56dfad0e4ad18f3a975f",
+            "c1be577381dee69e175381c37cb3a97e120d1129",
             null,
             null
          ]
@@ -669,7 +669,7 @@
             "3",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 108.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
             null,
             null,
             "__NOW__"
@@ -684,7 +684,7 @@
             "4",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 108.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
             null,
             null,
             "__NOW__"
@@ -1665,16 +1665,16 @@
             "__NOW__",
             "0",
             "33",
-            "comments",
+            "sidebar",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Comments",
+            "Sidebar",
             null,
             "1",
-            "<mt:Ignore>\n<!-- Display comments for the entry/page or commenting form if entry/page is accepting comments -->\n</mt:Ignore>\n<mt:IfCommentsActive>\n\n<div id=\"comments\" class=\"comments\">\n\n\n    <mt:Ignore>\n    <!-- Display comments -->\n    </mt:Ignore>\n    <mt:Comments lastn=\"$comments_per_page\">\n        <mt:CommentsHeader>\n    <h2 class=\"comments-header\"><$mt:EntryCommentCount singular=\"1 Comment\" plural=\"# Comments\" none=\"No Comments\"$></h2>\n            <mt:If tag=\"EntryCommentCount\" gt=\"$comments_per_page\">\n    <ul id=\"top-comment-nav\">\n        <li id=\"top-prev-comments\">\n            <a href=\"javascript://\" id=\"top-prev-comments-link\" title=\"Previous\">&lt;&lt;&nbsp;Previous</a>\n        </li>\n        <li id=\"top-num-comments\">\n            <span id=\"top-current-comments\"></span>\n        </li>\n        <li id=\"top-next-comments\">\n            <a href=\"javascript://\" id=\"top-next-comments-link\" title=\"Next\">Next&nbsp;&gt;&gt;</a>\n        </li>\n    </ul>\n            </mt:If>\n    <div id=\"comments-content\" class=\"comments-content\">\n        </mt:CommentsHeader>\n        <$mt:Include module=\"Comment Detail\"$>\n        <mt:CommentsFooter>\n    </div>\n            <mt:If tag=\"EntryCommentCount\" gt=\"$comments_per_page\">\n                <mt:Ignore>The data is modified by the paginate script</mt:Ignore>\n    <ul id=\"comment-nav\">\n        <li id=\"prev-comments\">\n            <a href=\"javascript://\" id=\"prev-comments-link\" title=\"Previous\">&lt;&lt;&nbsp;Previous</a>\n        </li>\n        <li id=\"num-comments\">\n            <span id=\"current-comments\"></span>\n        </li>\n        <li id=\"next-comments\">\n            <a href=\"javascript://\" id=\"next-comments-link\" title=\"Next\">Next&nbsp;&gt;&gt;</a>\n        </li>\n    </ul>\n            </mt:If>\n        </mt:CommentsFooter>\n    </mt:Comments>\n    <mt:Ignore>\n    <!-- Display commenting form if entry/page is accepting comments -->\n    </mt:Ignore>\n    <mt:IfCommentsAccepted>\n    <div class=\"comments-open\" id=\"comments-open\">\n        <h2 class=\"comments-open-header\">Leave a comment</h2>\n        <div class=\"comments-open-content\">\n\n        <mt:Ignore>\n        <!-- Display greeting for users if blog allows users to register locally -->\n        </mt:Ignore>\n            <div id=\"comment-greeting\"></div>\n\n            <form method=\"post\" action=\"<$mt:CGIPath$><$mt:CommentScript$>\" name=\"comments_form\" id=\"comments-form\" onsubmit=\"return mtCommentOnSubmit(this)\">\n                <input type=\"hidden\" name=\"static\" value=\"1\" />\n                <input type=\"hidden\" name=\"entry_id\" value=\"<$mt:EntryID$>\" />\n                <input type=\"hidden\" name=\"__lang\" value=\"<$mt:BlogLanguage$>\" />\n                <input type=\"hidden\" name=\"parent_id\" value=\"<$mt:CommentParentID escape=\"html\"$>\" id=\"comment-parent-id\" />\n                <input type=\"hidden\" name=\"armor\" value=\"1\" />\n                <input type=\"hidden\" name=\"preview\" value=\"\" />\n                <input type=\"hidden\" name=\"sid\" value=\"\" />\n                <div id=\"comments-open-data\">\n                    <div id=\"comment-form-name\">\n                        <label for=\"comment-author\">Name</label>\n                        <input id=\"comment-author\" name=\"author\" size=\"30\" value=\"\" onfocus=\"mtCommentFormOnFocus()\" />\n                    </div>\n                    <div id=\"comment-form-email\">\n                        <label for=\"comment-email\">Email Address</label>\n                        <input id=\"comment-email\" name=\"email\" size=\"30\" value=\"\" onfocus=\"mtCommentFormOnFocus()\" />\n                    </div>\n                    <div id=\"comment-form-url\">\n                        <label for=\"comment-url\">URL</label>\n                        <input id=\"comment-url\" name=\"url\" size=\"30\" value=\"\" onfocus=\"mtCommentFormOnFocus()\" />\n                    </div>\n                    <div id=\"comment-form-remember-me\">\n                        <input type=\"checkbox\" id=\"comment-bake-cookie\" name=\"bakecookie\" onclick=\"mtRememberMeOnClick(this)\" value=\"1\" accesskey=\"r\" />\n                        <label for=\"comment-bake-cookie\">Remember personal info?</label>\n                    </div>\n                </div>\n                <div id=\"comment-form-reply\" style=\"display:none\">\n                    <input type=\"checkbox\" id=\"comment-reply\" name=\"comment_reply\" value=\"\" onclick=\"mtSetCommentParentID()\" />\n                    <label for=\"comment-reply\" id=\"comment-reply-label\"></label>\n                </div>\n                <div id=\"comments-open-text\">\n                    <label for=\"comment-text\">Comments\n                    <mt:IfAllowCommentHTML>(You may use HTML tags for style)</mt:IfAllowCommentHTML></label>\n                    <textarea id=\"comment-text\" name=\"text\" rows=\"15\" cols=\"50\" onfocus=\"mtCommentFormOnFocus()\"></textarea>\n                </div>\n                <div id=\"comments-open-captcha\"></div>\n                <div id=\"comments-open-footer\">\n                    <input type=\"submit\" accesskey=\"v\" name=\"preview_button\" id=\"comment-preview\" value=\"Preview\" onclick=\"this.form.preview.value='1';\" />\n                    <input type=\"submit\" accesskey=\"s\" name=\"post\" id=\"comment-submit\" value=\"Submit\" />\n                </div>\n            </form>\n\n\n        </div>\n    </div>\n    <script type=\"text/javascript\">\n    <!--\n    mtAttachEvent(\"load\", mtEntryOnLoad);\n    mtAttachEvent(\"unload\", mtEntryOnUnload);\n    //-->\n    </script>\n    </mt:IfCommentsAccepted>\n\n\n</div>\n</mt:IfCommentsActive>\n",
+            "<mt:Ignore><!-- \n#\n#  The sidebar is made up of one or two columns.\n#  For 2-column designs, just beta.\n#  For 3-column designs, beta and gamma.\n#\n--></mt:Ignore>\n\n\n<div id=\"beta\">\n    <div id=\"beta-inner\">\n\n<mt:If name=\"page_columns\" eq=\"2\">\n    <mt:Ignore><!-- Use the 2-column layout Sidebar if page layout is layout-wt or layout-tw. --></mt:Ignore>\n    <$mt:WidgetSet name=\"2-column layout - Sidebar\"$>\n<mt:Else name=\"page_columns\" eq=\"3\">\n    <mt:Ignore><!-- Use the 3-column layout Primary Sidebar if page layout is layout-wtt or layout-twt. --></mt:Ignore>\n    <$mt:WidgetSet name=\"3-column layout - Primary Sidebar\"$>\n</mt:If>\n\n    </div>\n</div>\n\n\n<mt:If name=\"page_columns\" eq=\"3\">\n    <mt:Ignore><!-- Use the 3-column layout Secondary Sidebar if page layout is layout-wtt or layout-twt. --></mt:Ignore>\n<div id=\"gamma\">\n    <div id=\"gamma-inner\">\n    <$mt:WidgetSet name=\"3-column layout - Secondary Sidebar\"$>\n    </div>\n</div>\n</mt:If>\n",
             "custom"
          ],
          [
@@ -1687,16 +1687,16 @@
             "__NOW__",
             "0",
             "34",
-            "sidebar",
+            "comments",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Sidebar",
+            "Comments",
             null,
             "1",
-            "<mt:Ignore><!-- \n#\n#  The sidebar is made up of one or two columns.\n#  For 2-column designs, just beta.\n#  For 3-column designs, beta and gamma.\n#\n--></mt:Ignore>\n\n\n<div id=\"beta\">\n    <div id=\"beta-inner\">\n\n<mt:If name=\"page_columns\" eq=\"2\">\n    <mt:Ignore><!-- Use the 2-column layout Sidebar if page layout is layout-wt or layout-tw. --></mt:Ignore>\n    <$mt:WidgetSet name=\"2-column layout - Sidebar\"$>\n<mt:Else name=\"page_columns\" eq=\"3\">\n    <mt:Ignore><!-- Use the 3-column layout Primary Sidebar if page layout is layout-wtt or layout-twt. --></mt:Ignore>\n    <$mt:WidgetSet name=\"3-column layout - Primary Sidebar\"$>\n</mt:If>\n\n    </div>\n</div>\n\n\n<mt:If name=\"page_columns\" eq=\"3\">\n    <mt:Ignore><!-- Use the 3-column layout Secondary Sidebar if page layout is layout-wtt or layout-twt. --></mt:Ignore>\n<div id=\"gamma\">\n    <div id=\"gamma-inner\">\n    <$mt:WidgetSet name=\"3-column layout - Secondary Sidebar\"$>\n    </div>\n</div>\n</mt:If>\n",
+            "<mt:Ignore>\n<!-- Display comments for the entry/page or commenting form if entry/page is accepting comments -->\n</mt:Ignore>\n<mt:IfCommentsActive>\n\n<div id=\"comments\" class=\"comments\">\n\n\n    <mt:Ignore>\n    <!-- Display comments -->\n    </mt:Ignore>\n    <mt:Comments lastn=\"$comments_per_page\">\n        <mt:CommentsHeader>\n    <h2 class=\"comments-header\"><$mt:EntryCommentCount singular=\"1 Comment\" plural=\"# Comments\" none=\"No Comments\"$></h2>\n            <mt:If tag=\"EntryCommentCount\" gt=\"$comments_per_page\">\n    <ul id=\"top-comment-nav\">\n        <li id=\"top-prev-comments\">\n            <a href=\"javascript://\" id=\"top-prev-comments-link\" title=\"Previous\">&lt;&lt;&nbsp;Previous</a>\n        </li>\n        <li id=\"top-num-comments\">\n            <span id=\"top-current-comments\"></span>\n        </li>\n        <li id=\"top-next-comments\">\n            <a href=\"javascript://\" id=\"top-next-comments-link\" title=\"Next\">Next&nbsp;&gt;&gt;</a>\n        </li>\n    </ul>\n            </mt:If>\n    <div id=\"comments-content\" class=\"comments-content\">\n        </mt:CommentsHeader>\n        <$mt:Include module=\"Comment Detail\"$>\n        <mt:CommentsFooter>\n    </div>\n            <mt:If tag=\"EntryCommentCount\" gt=\"$comments_per_page\">\n                <mt:Ignore>The data is modified by the paginate script</mt:Ignore>\n    <ul id=\"comment-nav\">\n        <li id=\"prev-comments\">\n            <a href=\"javascript://\" id=\"prev-comments-link\" title=\"Previous\">&lt;&lt;&nbsp;Previous</a>\n        </li>\n        <li id=\"num-comments\">\n            <span id=\"current-comments\"></span>\n        </li>\n        <li id=\"next-comments\">\n            <a href=\"javascript://\" id=\"next-comments-link\" title=\"Next\">Next&nbsp;&gt;&gt;</a>\n        </li>\n    </ul>\n            </mt:If>\n        </mt:CommentsFooter>\n    </mt:Comments>\n    <mt:Ignore>\n    <!-- Display commenting form if entry/page is accepting comments -->\n    </mt:Ignore>\n    <mt:IfCommentsAccepted>\n    <div class=\"comments-open\" id=\"comments-open\">\n        <h2 class=\"comments-open-header\">Leave a comment</h2>\n        <div class=\"comments-open-content\">\n\n        <mt:Ignore>\n        <!-- Display greeting for users if blog allows users to register locally -->\n        </mt:Ignore>\n            <div id=\"comment-greeting\"></div>\n\n            <form method=\"post\" action=\"<$mt:CGIPath$><$mt:CommentScript$>\" name=\"comments_form\" id=\"comments-form\" onsubmit=\"return mtCommentOnSubmit(this)\">\n                <input type=\"hidden\" name=\"static\" value=\"1\" />\n                <input type=\"hidden\" name=\"entry_id\" value=\"<$mt:EntryID$>\" />\n                <input type=\"hidden\" name=\"__lang\" value=\"<$mt:BlogLanguage$>\" />\n                <input type=\"hidden\" name=\"parent_id\" value=\"<$mt:CommentParentID escape=\"html\"$>\" id=\"comment-parent-id\" />\n                <input type=\"hidden\" name=\"armor\" value=\"1\" />\n                <input type=\"hidden\" name=\"preview\" value=\"\" />\n                <input type=\"hidden\" name=\"sid\" value=\"\" />\n                <div id=\"comments-open-data\">\n                    <div id=\"comment-form-name\">\n                        <label for=\"comment-author\">Name</label>\n                        <input id=\"comment-author\" name=\"author\" size=\"30\" value=\"\" onfocus=\"mtCommentFormOnFocus()\" />\n                    </div>\n                    <div id=\"comment-form-email\">\n                        <label for=\"comment-email\">Email Address</label>\n                        <input id=\"comment-email\" name=\"email\" size=\"30\" value=\"\" onfocus=\"mtCommentFormOnFocus()\" />\n                    </div>\n                    <div id=\"comment-form-url\">\n                        <label for=\"comment-url\">URL</label>\n                        <input id=\"comment-url\" name=\"url\" size=\"30\" value=\"\" onfocus=\"mtCommentFormOnFocus()\" />\n                    </div>\n                    <div id=\"comment-form-remember-me\">\n                        <input type=\"checkbox\" id=\"comment-bake-cookie\" name=\"bakecookie\" onclick=\"mtRememberMeOnClick(this)\" value=\"1\" accesskey=\"r\" />\n                        <label for=\"comment-bake-cookie\">Remember personal info?</label>\n                    </div>\n                </div>\n                <div id=\"comment-form-reply\" style=\"display:none\">\n                    <input type=\"checkbox\" id=\"comment-reply\" name=\"comment_reply\" value=\"\" onclick=\"mtSetCommentParentID()\" />\n                    <label for=\"comment-reply\" id=\"comment-reply-label\"></label>\n                </div>\n                <div id=\"comments-open-text\">\n                    <label for=\"comment-text\">Comments\n                    <mt:IfAllowCommentHTML>(You may use HTML tags for style)</mt:IfAllowCommentHTML></label>\n                    <textarea id=\"comment-text\" name=\"text\" rows=\"15\" cols=\"50\" onfocus=\"mtCommentFormOnFocus()\"></textarea>\n                </div>\n                <div id=\"comments-open-captcha\"></div>\n                <div id=\"comments-open-footer\">\n                    <input type=\"submit\" accesskey=\"v\" name=\"preview_button\" id=\"comment-preview\" value=\"Preview\" onclick=\"this.form.preview.value='1';\" />\n                    <input type=\"submit\" accesskey=\"s\" name=\"post\" id=\"comment-submit\" value=\"Submit\" />\n                </div>\n            </form>\n\n\n        </div>\n    </div>\n    <script type=\"text/javascript\">\n    <!--\n    mtAttachEvent(\"load\", mtEntryOnLoad);\n    mtAttachEvent(\"unload\", mtEntryOnUnload);\n    //-->\n    </script>\n    </mt:IfCommentsAccepted>\n\n\n</div>\n</mt:IfCommentsActive>\n",
             "custom"
          ],
          [
@@ -1784,7 +1784,7 @@
             "About This Page",
             null,
             "1",
-            "<mt:unless name=\"main_index\">\n<div class=\"widget-about-this-page widget\">\n    <h3 class=\"widget-header\">\n<mt:If name=\"entry_template\">\n        About this Entry\n<mt:Else>\n    <mt:If name=\"archive_template\">\n        About this Archive\n    </mt:If>\n</mt:If>\n<mt:If name=\"archive_index\">\n        About Archives\n</mt:If>\n    </h3>\n    <div class=\"widget-content\">\n<mt:If name=\"archive_index\">\n        <p>This page contains links to all of the archived content.</p>\n</mt:If>\n<mt:If name=\"entry_template\">\n        <p class=\"first\">This page contains a single entry by <$mt:EntryAuthorLink$> published on <em><$mt:EntryDate format=\"%x %X\"$></em>.</p>\n    <mt:EntryPrevious>\n        <p><a href=\"<$mt:EntryPermalink$>\"><$mt:EntryTitle remove_html=\"1\"$></a> was the previous entry in this blog.</p>\n    </mt:EntryPrevious>\n    <mt:EntryNext>\n        <p><a href=\"<$mt:EntryPermalink$>\"><$mt:EntryTitle remove_html=\"1\"$></a> is the next entry in this blog.</p>\n    </mt:EntryNext>\n</mt:If>\n<mt:If name=\"category_archive\">\n    <mt:If name=\"datebased_archive\">\n        <p class=\"first\">This page is an archive of entries in the <strong><$mt:CategoryLabel$></strong> category from <strong><$mt:ArchiveDate format=\"%B %Y\"$></strong>.</p>\n        <mt:ArchivePrevious>\n        <p><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a> is the previous archive.</p>\n        </mt:ArchivePrevious>\n        <mt:ArchiveNext>\n        <p><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a> is the next archive.</p>\n        </mt:ArchiveNext>\n    <mt:Else>\n        <p class=\"first\">This page is an archive of recent entries in the <strong><$mt:CategoryLabel$></strong> category.</p>\n        <mt:CategoryPrevious>\n        <p><a href=\"<$mt:CategoryArchiveLink$>\"><$mt:CategoryLabel$></a> is the previous category.</p>\n        </mt:CategoryPrevious>\n        <mt:CategoryNext>\n        <p><a href=\"<$mt:CategoryArchiveLink$>\"><$mt:CategoryLabel$></a> is the next category.</p>\n        </mt:CategoryNext>\n    </mt:If>\n</mt:If>\n<mt:If name=\"author_archive\">\n    <mt:If name=\"datebased_archive\">\n        <p class=\"first\">This page is an archive of recent entries written by <strong><$mt:AuthorDisplayName encode_html=\"1\"$></strong> in <strong><$mt:ArchiveDate format=\"%B %Y\"$></strong>.</p>\n        <mt:ArchivePrevious>\n        <p><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a> is the previous archive.</p>\n        </mt:ArchivePrevious>\n        <mt:ArchiveNext>\n        <p><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a> is the next archive.</p>\n        </mt:ArchiveNext>\n    <mt:Else>\n        <p class=\"first\">This page is an archive of recent entries written by <strong><$mt:AuthorDisplayName encode_html=\"1\"$></strong>.</p>\n    </mt:If>\n</mt:If>\n<mt:If name=\"datebased_only_archive\">\n        <p class=\"first\">This page is an archive of entries from <strong><$mt:ArchiveDate format=\"%B %Y\"$></strong> listed from newest to oldest.</p>\n    <mt:ArchivePrevious>\n        <p><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a> is the previous archive.</p>\n    </mt:ArchivePrevious>\n    <mt:ArchiveNext>\n        <p><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a> is the next archive.</p>\n    </mt:ArchiveNext>\n</mt:If>\n<mt:If name=\"archive_index\">\n        <p>Find recent content on the <a href=\"<$mt:BlogURL$>\">main index</a>.</p>\n<mt:Else>\n        <p>Find recent content on the <a href=\"<$mt:BlogURL$>\">main index</a> or look in the <a href=\"<$mt:Link template=\"archive_index\"$>\">archives</a> to find all content.</p>\n</mt:If>\n    </div>\n</div>\n</mt:unless>\n",
+            "<mt:unless name=\"main_index\">\n<div class=\"widget-about-this-page widget\">\n    <h3 class=\"widget-header\">\n<mt:If name=\"entry_template\">\n        About this Entry\n<mt:Else>\n    <mt:If name=\"archive_template\">\n        About this Archive\n    </mt:If>\n</mt:If>\n<mt:If name=\"archive_index\">\n        About Archives\n</mt:If>\n    </h3>\n    <div class=\"widget-content\">\n<mt:If name=\"archive_index\">\n        <p>This page contains links to all of the archived content.</p>\n</mt:If>\n<mt:If name=\"entry_template\">\n        <p class=\"first\">This page contains a single entry by <$mt:EntryAuthorLink$> published on <em><$mt:EntryDate format=\"%x %X\"$></em>.</p>\n    <mt:EntryPrevious>\n        <p><a href=\"<$mt:EntryPermalink$>\"><$mt:EntryTitle remove_html=\"1\"$></a> was the previous entry in this blog.</p>\n    </mt:EntryPrevious>\n    <mt:EntryNext>\n        <p><a href=\"<$mt:EntryPermalink$>\"><$mt:EntryTitle remove_html=\"1\"$></a> is the next entry in this blog.</p>\n    </mt:EntryNext>\n</mt:If>\n<mt:If name=\"category_based_archive\">\n    <mt:If name=\"datebased_archive\">\n        <p class=\"first\">This page is an archive of entries in the <strong><$mt:CategoryLabel$></strong> category from <strong><$mt:ArchiveDate format=\"%B %Y\"$></strong>.</p>\n        <mt:ArchivePrevious>\n        <p><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a> is the previous archive.</p>\n        </mt:ArchivePrevious>\n        <mt:ArchiveNext>\n        <p><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a> is the next archive.</p>\n        </mt:ArchiveNext>\n    <mt:Else>\n        <p class=\"first\">This page is an archive of recent entries in the <strong><$mt:CategoryLabel$></strong> category.</p>\n        <mt:CategoryPrevious>\n        <p><a href=\"<$mt:CategoryArchiveLink$>\"><$mt:CategoryLabel$></a> is the previous category.</p>\n        </mt:CategoryPrevious>\n        <mt:CategoryNext>\n        <p><a href=\"<$mt:CategoryArchiveLink$>\"><$mt:CategoryLabel$></a> is the next category.</p>\n        </mt:CategoryNext>\n    </mt:If>\n</mt:If>\n<mt:If name=\"author_based_archive\">\n    <mt:If name=\"datebased_archive\">\n        <p class=\"first\">This page is an archive of recent entries written by <strong><$mt:AuthorDisplayName encode_html=\"1\"$></strong> in <strong><$mt:ArchiveDate format=\"%B %Y\"$></strong>.</p>\n        <mt:ArchivePrevious>\n        <p><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a> is the previous archive.</p>\n        </mt:ArchivePrevious>\n        <mt:ArchiveNext>\n        <p><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a> is the next archive.</p>\n        </mt:ArchiveNext>\n    <mt:Else>\n        <p class=\"first\">This page is an archive of recent entries written by <strong><$mt:AuthorDisplayName encode_html=\"1\"$></strong>.</p>\n    </mt:If>\n</mt:If>\n<mt:If name=\"datebased_only_archive\">\n        <p class=\"first\">This page is an archive of entries from <strong><$mt:ArchiveDate format=\"%B %Y\"$></strong> listed from newest to oldest.</p>\n    <mt:ArchivePrevious>\n        <p><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a> is the previous archive.</p>\n    </mt:ArchivePrevious>\n    <mt:ArchiveNext>\n        <p><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a> is the next archive.</p>\n    </mt:ArchiveNext>\n</mt:If>\n<mt:If name=\"archive_index\">\n        <p>Find recent content on the <a href=\"<$mt:BlogURL$>\">main index</a>.</p>\n<mt:Else>\n        <p>Find recent content on the <a href=\"<$mt:BlogURL$>\">main index</a> or look in the <a href=\"<$mt:Link template=\"archive_index\"$>\">archives</a> to find all content.</p>\n</mt:If>\n    </div>\n</div>\n</mt:unless>\n",
             "widget"
          ],
          [
@@ -1916,7 +1916,7 @@
             "Archive Widgets Group",
             null,
             "1",
-            "<mt:Ignore>\n    This is a custom set of widgets that serve different content depending on the type of archive in which it is included. More info: http://www.movabletype.org/documentation/designer/widget-sets.html\n</mt:Ignore>\n<mt:If name=\"category_archive\">\n    <mt:IfArchiveTypeEnabled archive_type=\"Category-Monthly\">\n        <$mt:Include widget=\"Current Category Monthly Archives\"$>\n    </mt:IfArchiveTypeEnabled>\n</mt:If>\n<mt:IfArchiveTypeEnabled archive_type=\"Category\">\n    <$mt:Include widget=\"Category Archives\"$>\n</mt:IfArchiveTypeEnabled>\n<mt:IfArchiveTypeEnabled archive_type=\"Monthly\">\n    <$mt:Include widget=\"Monthly Archives\"$>\n</mt:IfArchiveTypeEnabled>\n",
+            "<mt:Ignore>\n    This is a custom set of widgets that serve different content depending on the type of archive in which it is included. More info: http://www.movabletype.org/documentation/designer/widget-sets.html\n</mt:Ignore>\n<mt:If name=\"category_based_archive\">\n    <mt:IfArchiveTypeEnabled archive_type=\"Category-Monthly\">\n        <$mt:Include widget=\"Current Category Monthly Archives\"$>\n    </mt:IfArchiveTypeEnabled>\n</mt:If>\n<mt:IfArchiveTypeEnabled archive_type=\"Category\">\n    <$mt:Include widget=\"Category Archives\"$>\n</mt:IfArchiveTypeEnabled>\n<mt:IfArchiveTypeEnabled archive_type=\"Monthly\">\n    <$mt:Include widget=\"Monthly Archives\"$>\n</mt:IfArchiveTypeEnabled>\n",
             "widget"
          ],
          [

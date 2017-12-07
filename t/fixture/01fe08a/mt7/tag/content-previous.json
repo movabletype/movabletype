@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "ktcks4yh",
+            "dcgydt4c",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$FuVYY6nT5LPCxzFb$0tbvuG/oxBG6W/6XkPIIECexT99XWeyT+AYtcHuNfc/TQae/cZhU/y0dGOPx3tRcdYAksphzwPGonXZOCDTfDQ",
+            "$6$6GDPxTPlzoiEtaU3$gJnmmmctzeRsuR9T2ZJbjii1t8BMHfOlzHmSqeXdMAeJaXJio/iI3M0PS7eWm0nJ192htAsXEDImUNBl7VcI/w",
             "en_US",
             null,
             null,
@@ -111,7 +111,7 @@
             null,
             "test user2",
             "test1",
-            "$6$3OPyqiwRGHFwbkTK$i3anfPtxifuyX97/rn5dujNjyEskH/ldCEf1ZX+OQFYKpW3Ai9KMF3VLLZA4f+5GTUXvC6z3Ry5xO/u3a6rkbg",
+            "$6$fqUqZrqc8Wn3zIg5$lAr4i92YmSs5WLwEPZQ0CNpqLOnZSCddsVIsVQClPd4HnGWFV0xeSY8ATsmWrSssO+LlSwEehCmkPe56WbR20w",
             "en_US",
             null,
             null,
@@ -306,6 +306,20 @@
          ],
          [
             "1",
+            "follow_auth_links",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "1",
+            null
+         ],
+         [
+            "1",
             "nofollow_urls",
             null,
             null,
@@ -330,20 +344,6 @@
             null,
             null,
             null,
-            null
-         ],
-         [
-            "1",
-            "follow_auth_links",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            "1",
             null
          ]
       ]
@@ -461,15 +461,15 @@
             "1",
             null,
             "__NOW__",
-            "d1c588c256b424883bf164dba4240731bdb2f69f",
+            "42a28739773120ff0fd4c49ec45ec57bcfbbaff6",
             "0",
             "{\"1\":[\"1\"]}",
             "1",
-            "ed24759f64cc3724def37e797421e53b1cfdac77",
+            "2ac4042d20f4eb5e9b8909a0f40a91b43a1eb393",
             null,
             "2017-06-01 19:30:00",
             "2",
-            "ed24759f64cc3724def37e797421e53b1cfdac77",
+            "2ac4042d20f4eb5e9b8909a0f40a91b43a1eb393",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -481,15 +481,15 @@
             "1",
             null,
             "__NOW__",
-            "d1c588c256b424883bf164dba4240731bdb2f69f",
+            "42a28739773120ff0fd4c49ec45ec57bcfbbaff6",
             "0",
             "{\"1\":[\"2\"]}",
             "2",
-            "a21ad1c1dfbe264eea29b67c61b7ea263bd24af0",
+            "975364f67316787fc58fe1f6f04a43b0024d1847",
             null,
             "2017-05-31 19:30:00",
             "2",
-            "a21ad1c1dfbe264eea29b67c61b7ea263bd24af0",
+            "975364f67316787fc58fe1f6f04a43b0024d1847",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -501,15 +501,15 @@
             "1",
             null,
             "__NOW__",
-            "d1c588c256b424883bf164dba4240731bdb2f69f",
+            "42a28739773120ff0fd4c49ec45ec57bcfbbaff6",
             "0",
             "{\"1\":[\"1\"]}",
             "3",
-            "cf50811e79042f76823d9ad411ddb1b1bd966616",
+            "198fa396dd924d7c6e5e0ea447ca5e3c0de58536",
             null,
             "2017-05-30 19:30:00",
             "2",
-            "cf50811e79042f76823d9ad411ddb1b1bd966616",
+            "198fa396dd924d7c6e5e0ea447ca5e3c0de58536",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -549,7 +549,7 @@
             null,
             null,
             "categories",
-            "83af082118321479596cdd2561097ed8704ea464"
+            "8b9f44efa973ac30d404bf2152c496208ac7f16e"
          ]
       ]
    },
@@ -624,7 +624,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion cloud=1.0\nPluginSchemaVersion multiblog=2.8\nPluginSchemaVersion enterprise=1.1\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion sync=1.04\nPluginSchemaVersion commercial=1.55\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0022\n",
+            "PluginSchemaVersion cloud=1.0\nPluginSchemaVersion multiblog=2.8\nPluginSchemaVersion enterprise=1.1\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion sync=1.04\nPluginSchemaVersion commercial=1.55\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0023\n",
             "1"
          ]
       ]
@@ -650,12 +650,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"options\":{\"category_set\":\"1\",\"label\":1},\"order\":1,\"type\":\"categories\",\"id\":\"1\",\"unique_id\":\"83af082118321479596cdd2561097ed8704ea464\"}]",
+            "[{\"options\":{\"category_set\":\"1\",\"label\":1},\"order\":1,\"type\":\"categories\",\"id\":\"1\",\"unique_id\":\"8b9f44efa973ac30d404bf2152c496208ac7f16e\"}]",
             "1",
             null,
             "__NOW__",
             "test content type",
-            "d1c588c256b424883bf164dba4240731bdb2f69f",
+            "42a28739773120ff0fd4c49ec45ec57bcfbbaff6",
             null,
             null
          ]
@@ -703,7 +703,7 @@
             "2",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 108.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
             null,
             null,
             "__NOW__"
