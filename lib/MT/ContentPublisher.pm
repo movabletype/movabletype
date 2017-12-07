@@ -1963,6 +1963,11 @@ sub publish_future_contents {
             MT->run_callbacks( 'scheduled_post_published', $mt,
                 $content_data );
 
+            # Rebuild Trigger
+            require MT::RebuildTrigger;
+            MT::RebuildTrigger->runner( 'post_content_pub', $mt,
+                $content_data );
+
             $rebuild_queue{ $content_data->id } = $content_data;
             my $n = $content_data->next(1);
             $rebuild_queue{ $n->id } = $n if $n;
@@ -2084,6 +2089,11 @@ sub unpublish_past_contents {
             }
 
             MT->run_callbacks( 'unpublish_past_contents', $mt,
+                $content_data );
+
+            # Rebuild Trigger
+            require MT::RebuildTrigger;
+            MT::RebuildTrigger->runner( 'post_content_unpub', $app,
                 $content_data );
 
             $rebuild_queue{ $content_data->id } = $content_data;

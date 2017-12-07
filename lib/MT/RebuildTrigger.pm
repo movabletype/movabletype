@@ -27,22 +27,6 @@ sub class_label {
     MT->translate("Rebuild Trigger");
 }
 
-# Register entry post-save callback for rebuild triggers
-#MT->add_callback( 'cms_post_save.cd', 10, MT->instance,
-#    sub { MT::RebuildTrigger->runner( 'post_content_save', @_ ) } );
-#MT->add_callback( 'api_post_save.cd', 10, MT->instance,
-#    sub { MT::RebuildTrigger->runner( 'post_content_save', @_ ) } );
-#MT->add_callback( 'cms_post_bulk_save.cd', 10, MT->instance,
-#    sub { MT::RebuildTrigger->runner( 'post_contents_bulk_save', @_ ) } );
-#MT->add_callback( 'scheduled_post_published', 10, MT->instance,
-#    sub { MT::RebuildTrigger->runner( 'post_content_pub', @_ ) } );
-#MT->add_callback( 'unpublish_past_contents', 10, MT->instance,
-#    sub { MT::RebuildTrigger->runner( 'post_content_unpub', @_ ) } );
-
-## Register restore callback to restore blog assciation of triggers
-#MT->add_callback( 'restore', 10, MT->instance,
-#    sub { MT::RebuildTrigger->runner( 'post_restore', @_ ) } );
-
 #sub preprocess_native_tags {
 #    my ( $ctx, $args, $cond ) = @_;
 #    my $plugin = MT::Plugin::MultiBlog->instance;
@@ -133,50 +117,13 @@ sub class_label {
 #    return $result;
 #}
 
-#sub post_feedback_save {
-#    my $plugin = shift;
-#    my ( $trigger, $eh, $feedback ) = @_;
-#    if ( $feedback->visible ) {
-#        my $blog_id = $feedback->blog_id;
-#        my $app     = MT->instance;
-#
-#        my $code = sub {
-#            my ($d) = @_;
-#
-#            while ( my ( $id, $a ) = each( %{ $d->{$trigger} } ) ) {
-#                next if $id == $blog_id;
-#                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
-#            }
-#        };
-#
-#        foreach my $scope ( "blog:$blog_id", "system" ) {
-#            my $d
-#                = $plugin->get_config_value(
-#                $scope eq 'system' ? 'all_triggers' : 'other_triggers',
-#                $scope );
-#            $code->($d);
-#        }
-#
-#        my $blog = $feedback->blog;
-#        if ( $blog->is_blog ) {
-#            if ( my $website = $blog->website ) {
-#                my $scope = "blog:" . $website->id;
-#                my $d
-#                    = $plugin->get_config_value( 'blogs_in_website_triggers',
-#                    $scope );
-#                $code->($d);
-#            }
-#        }
-#    }
-#}
-
-#sub post_contents_bulk_save {
-#    my $self = shift;
-#    my ( $eh, $self, $contents ) = @_;
-#    foreach my $content (@$contents) {
-#        &post_content_save( $self, $eh, $app, $content->{current} );
-#    }
-#}
+sub post_contents_bulk_save {
+    my $self = shift;
+    my ( $eh, $app, $contents ) = @_;
+    foreach my $content (@$contents) {
+        &post_content_save( $self, $eh, $app, $content->{current} );
+    }
+}
 
 sub get_config_value {
     my $self = shift;
@@ -193,7 +140,7 @@ sub get_config_hash {
 sub get_config_obj {
     my $self = shift;
     my ($blog_id) = @_;
-    $blog_id = 0 unless defined $blog_id;;
+    $blog_id = 0 unless defined $blog_id;
 
     my $cfg = MT->request('config_rebuild_trigger');
     unless ($cfg) {
@@ -232,7 +179,7 @@ sub post_content_save {
     my $self = shift;
     my ( $eh, $app, $content ) = @_;
     my $blog_id = $content->blog_id || 0;
-    my @blog_ids = $blog_id ?  (0) : ( $blog_id, 0 );
+    my @blog_ids = $blog_id ? (0) : ( $blog_id, 0 );
 
     my $code = sub {
         my ($d) = @_;
@@ -250,86 +197,67 @@ sub post_content_save {
         }
     };
 
-    foreach my $blog_id (@blog_ids) {
-        my $d = $self->get_config_value(
-            $blog_id == 0 ? 'all_triggers' : 'other_triggers', $blog_id );
-
-        #    $code->($d);
-    }
-
-    #my $blog = $content->blog;
-    #if ( my $website = $blog->website ) {
-    #    my $blog_id = $website->id;
-    #    my $d     = $self->get_config_value( 'blogs_in_website_triggers',
-    #        $blog_id );
-    #    $code->($d);
-    #}
+    $self->post_content_common( \@blog_ids, $code, $content->blog );
 }
 
-#sub post_content_pub {
-#    my $self= shift;
-#    my ( $eh, $app, $content ) = @_;
-#    my $blog_id = $content->blog_id;
-#    my @blog_ids = $blog_id ?  (0) : ( $blog_id, 0 );
-#
-#    my $code = sub {
-#        my ($d) = @_;
-#
-#        require MT::ContentStatus;
-#        if ( ( $content->status || 0 ) == MT::ContentStatus::RELEASE() ) {
-#            while ( my ( $id, $a ) = each( %{ $d->{'content_pub'} } ) ) {
-#                next if $id == $blog_id;
-#                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
-#            }
-#        }
-#    };
-#
-#    foreach my $blog_id (@blog_ids) {
-#        my $d = $self->get_config_value(
-#            $blog_id == 0 ? 'all_triggers' : 'other_triggers', $id );
-#        $code->($d);
-#    }
-#
-#    my $blog = $content->blog;
-#    if ( my $website = $blog->website ) {
-#        my $blog_id = $website->id;
-#        my $d     = $self->get_config_value( 'blogs_in_website_triggers',
-#            $blog_id );
-#        $code->($d);
-#    }
-#}
+sub post_content_pub {
+    my $self = shift;
+    my ( $eh, $app, $content ) = @_;
+    my $blog_id = $content->blog_id;
+    my @blog_ids = $blog_id ? (0) : ( $blog_id, 0 );
 
-#sub post_content_unpub {
-#    my $plugin = shift;
-#    my ( $eh, $app, $content ) = @_;
-#    my $blog_id = $content->blog_id;
-#
-#    my $code = sub {
-#        my ($d) = @_;
-#
-#        require MT::ContentStatus;
-#        if ( ( $content->status || 0 ) == MT::ContentStatus::UNPUBLISH() ) {
-#            while ( my ( $id, $a ) = each( %{ $d->{'content_unpub'} } ) ) {
-#                next if $id == $blog_id;
-#                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
-#            }
-#        }
-#    };
-#
-#    foreach my $scope ( "blog:$blog_id", "system" ) {
-#        my $d = $self->get_config_value(
-#            $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
-#        $code->($d);
-#    }
-#
-#    my $blog = $content->blog;
-#    if ( my $website = $blog->website ) {
-#        my $scope = "blog:" . $website->id;
-#        my $d     = $self->get_config_value( 'blogs_in_website_triggers',
-#            $scope );
-#        $code->($d);
-#    }
-#}
+    my $code = sub {
+        my ($d) = @_;
+
+        require MT::ContentStatus;
+        if ( ( $content->status || 0 ) == MT::ContentStatus::RELEASE() ) {
+            while ( my ( $id, $a ) = each( %{ $d->{'content_pub'} } ) ) {
+                next if $id == $blog_id;
+                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
+            }
+        }
+    };
+
+    _post_content_common( $self, \@blog_ids, $code, $content->blog );
+}
+
+sub post_content_unpub {
+    my $self = shift;
+    my ( $eh, $app, $content ) = @_;
+    my $blog_id = $content->blog_id;
+    my @blog_ids = $blog_id ? (0) : ( $blog_id, 0 );
+
+    my $code = sub {
+        my ($d) = @_;
+
+        require MT::ContentStatus;
+        if ( ( $content->status || 0 ) == MT::ContentStatus::UNPUBLISH() ) {
+            while ( my ( $id, $a ) = each( %{ $d->{'content_unpub'} } ) ) {
+                next if $id == $blog_id;
+                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
+            }
+        }
+    };
+
+    _post_content_common( $self, \@blog_ids, $code, $content->blog );
+}
+
+sub _post_content_common {
+    my ( $self, $blog_ids, $code, $blog ) = @_;
+
+    foreach my $blog_id (@$blog_ids) {
+        my $d = $self->get_config_value(
+            $blog_id == 0 ? 'all_triggers' : 'other_triggers', $blog_id );
+        $code->($d);
+    }
+
+    if ( my $website = $blog->website ) {
+        my $blog_id = $website->id;
+        my $d       = $self->get_config_value( 'blogs_in_website_triggers',
+            $blog_id );
+        $code->($d);
+    }
+}
 
 sub init_rebuilt_cache {
     my ( $self, $app ) = @_;
@@ -354,21 +282,15 @@ sub perform_mb_action {
     # we rebuild indexes for the given blog_id
     if ( $action =~ /^ri/ ) {
         $app->rebuild_indexes( BlogID => $blog_id );
-
-        # And if the action contains a p
-        # we send out pings for the given blog_id too
-        #if ( $action =~ /p/ ) {
-        #    $app->ping( BlogID => $blog_id );
-        #}
     }
 }
-#
+
 #sub filter_blogs_from_args {
 #    my ( $self, $ctx, $args ) = @_;
 #    my %acl = load_multiblog_acl( $plugin, $ctx );
 #    $args->{ $acl{mode} } = $acl{acl};
 #}
-#
+
 #sub load_multiblog_acl {
 #    my $self= shift;
 #    my ($ctx) = @_;
@@ -400,7 +322,8 @@ sub perform_mb_action {
 #
 #    return ( mode => $mode, acl => @acl ? \@acl : undef );
 #}
-#
+
+## 'post_restore' is implemented in the future. ##
 #sub post_restore {
 #    my ( $self, $cb, $objects, $deferred, $errors, $callback ) = @_;
 #
@@ -493,6 +416,7 @@ sub perform_mb_action {
 
 # Run-time loading for Rebuild Trigger core methods
 sub runner {
+    warn 'runner';
     my $self   = shift;
     my $method = shift;
     $self->init_rebuilt_cache( MT->instance );

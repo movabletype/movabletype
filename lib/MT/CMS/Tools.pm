@@ -345,7 +345,7 @@ sub do_list_action {
     my $subtype     = $app->param('type') ? '.' . $app->param('type') : '';
     my ($the_action)
         = ( grep { $_->{key} eq $action_name }
-            @{ $app->list_actions($type . $subtype) } );
+            @{ $app->list_actions( $type . $subtype ) } );
     return $app->errtrans(
         "That action ([_1]) is apparently not implemented!", $action_name )
         unless $the_action;
@@ -2522,6 +2522,11 @@ sub dialog_restore_upload {
     }
     MT->run_callbacks( 'restore', $objects, $deferred, \@errors,
         sub { _progress( $app, @_ ) } );
+
+    # Rebuild Trigger
+    require MT::RebuildTrigger;
+    MT::RebuildTrigger->runner( 'post_restore', $objects, $deferred,
+        \@errors, sub { _progress( $app, @_ ) } );
 
     $app->print_encode(
         $app->build_page( 'dialog/restore_end.tmpl', $param ) );

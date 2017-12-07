@@ -1507,6 +1507,11 @@ sub _update_content_data_status {
 
         $app->run_callbacks( 'cms_post_bulk_save.cd', $app, \@objects );
 
+        # Rebuild Trigger
+        require MT::RebuildTrigger;
+        MT::RebuildTrigger->runner( 'post_contents_bulk_save', $app,
+            \@objects );
+
         MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
     }
 
